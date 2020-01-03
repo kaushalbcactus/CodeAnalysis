@@ -227,6 +227,7 @@ export class ClientReviewComponent implements OnInit {
       filter: currentFilter,
       top: 4200
     };
+    this.commonService.SetNewrelic('projectManagment', 'client-review', 'GetSchedules');
     this.crArrays.taskItems = await this.spServices.readItems(this.Constant.listNames.Schedules.name, queryOptions);
     const projectCodeTempArray = [];
     const shortTitleTempArray = [];
@@ -321,6 +322,8 @@ export class ClientReviewComponent implements OnInit {
       // batchContents.push('--batch_' + batchGuid + '--');
       // const userBatchBody = batchContents.join('\r\n');
       // const arrResults = await this.spServices.executeGetBatchRequest(batchGuid, userBatchBody);
+      this.commonService.SetNewrelic('projectManagment', 'client-review', 'GetSchedules');
+
       let arrResults = await this.spServices.executeBatch(batchUrl);
       arrResults = arrResults.length > 0 ? arrResults.map(a => a.retItems) : [];
       for (const taskItem of tempCRArray) {
@@ -430,6 +433,7 @@ export class ClientReviewComponent implements OnInit {
   async closeTaskWithStatus(task, options, unt) {
     const isActionRequired = await this.commonService.checkTaskStatus(task);
     if (isActionRequired) {
+      this.commonService.SetNewrelic('projectManagment', 'client-review', 'UpdateSchedules');
       await this.spOperations.updateItem(this.Constant.listNames.Schedules.name, task.ID, options, this.Constant.listNames.Schedules.type);
       const projectInfoOptions = { Status: 'Unallocated' };
       const projectID = this.pmObject.allProjectItems.filter(item => item.ProjectCode === task.ProjectCode);

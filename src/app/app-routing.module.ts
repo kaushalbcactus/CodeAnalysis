@@ -7,9 +7,9 @@ import { AdminAuthGuard } from './admin/auth/admin-auth.guard';
 import { QmsAuthGuard } from './qms/auth/qms-auth.guard';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+  { path: '', redirectTo: 'defaultDashboard', pathMatch: 'full' },
   { path: 'accessleveldashboard', loadChildren: () => import('./accessleveldashboard/accessleveldashboard.module').then(m => m.AccessleveldashboardModule) },
-  { path: 'dashboard', loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule) , data: {title: 'Medcom | Dashboard'}},
+  { path: 'defaultDashboard', loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule) , data: {title: 'Medcom | Dashboard'}},
   { path: 'pubSupport', loadChildren: () => import('./pubsupport/pubsupport.module').then(m => m.PubsupportModule) , data: {title: 'Medcom | Publication Support'},},
   { path: 'admin', canLoad: [AdminAuthGuard], loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule) , data: {title: 'Medcom | Admin'}},
   { path: 'projectMgmt', canLoad: [AuthGuard], loadChildren: () => import('./projectmanagement/projectmanagement.module').then(m => m.ProjectmanagementModule) , data: {title: 'Medcom | Project Management'},},

@@ -4,6 +4,7 @@ import { AdminObjectService } from 'src/app/admin/services/admin-object.service'
 import { MessageService } from 'primeng/api';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
+import { CommonService } from 'src/app/Services/common.service';
 
 @Component({
   selector: 'app-group-description',
@@ -34,7 +35,8 @@ export class GroupDescriptionComponent implements OnInit {
     private adminObject: AdminObjectService,
     private messageService: MessageService,
     private adminConstants: AdminConstantService,
-    private constants: ConstantsService
+    private constants: ConstantsService,
+    private common: CommonService
   ) { }
   /**
    * Construct a method to initialize all the data.
@@ -71,6 +73,7 @@ export class GroupDescriptionComponent implements OnInit {
     groupGet.type = 'GET';
     groupGet.listName = 'Groups';
     batchURL.push(groupGet);
+    this.common.SetNewrelic('admin', 'admin-entitlement-groupDescription', 'GetAllGroups');
     const result = await this.spServices.executeBatch(batchURL);
     console.log(result);
     return result;
@@ -124,6 +127,7 @@ export class GroupDescriptionComponent implements OnInit {
       __metadata: { type: 'SP.Group' },
       Description: this.adminConstants.GROUP_CONSTANT_TEXT.SP_TEAM + this.description
     };
+    this.common.SetNewrelic('admin', 'admin-entitlement-groupDescription', 'updateGroupItem');
     await this.spServices.updateGroupItem(this.selectedGroup, data);
     this.messageService.add({
       key: 'adminCustom', severity: 'success',

@@ -1,6 +1,6 @@
 import { Component, NgZone, OnDestroy } from '@angular/core';
 import { GlobalService } from './Services/global.service';
-import { Router, ActivatedRoute , NavigationEnd} from '@angular/router';
+import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { environment } from '../environments/environment';
 import { ConstantsService } from './Services/constants.service';
 import { SPOperationService } from './Services/spoperation.service';
@@ -20,12 +20,7 @@ export class AppComponent implements OnDestroy {
   title = 'Medcom SPA';
   display = false;
   items: MenuItem[];
-  leftNavigation = [
-    { title: 'My Dashboard', href: '/dashboard#/myDashboard', visible: true },
-    { title: 'QMS', href: '/dashboard#/qms', visible: true },
-    { title: 'Leave Calendar', href: '/dashboard#/leaveCalendar', visible: true },
-    { title: 'Publication Support', href: '/dashboard#/pubSupport', visible: true },
-  ];
+  leftNavigation = [];
   // tslint:disable-next-line:variable-name
   constructor(
     public globalService: GlobalService,
@@ -35,11 +30,10 @@ export class AppComponent implements OnDestroy {
     public constantsService: ConstantsService,
     private spService: SPOperationService,
     private titleService: Title,
-    private activatedRoute:ActivatedRoute
+    private activatedRoute: ActivatedRoute
   ) { }
   // tslint:disable-next-line:use-life-cycle-interface
   ngOnInit() {
-
     const appTitle = this.titleService.getTitle();
     this.router
       .events.pipe(
@@ -66,7 +60,7 @@ export class AppComponent implements OnDestroy {
     this.items = [{
       label: 'Misc',
       items: [
-        { label: 'Site Contents', url: this.globalService.sharePointPageObject.webRelativeUrl+'/_layouts/15/viewlsts.aspx' }
+        { label: 'Site Contents', url: this.globalService.sharePointPageObject.webRelativeUrl + '/_layouts/15/viewlsts.aspx' }
       ]
     }]
   }
@@ -80,6 +74,15 @@ export class AppComponent implements OnDestroy {
       : _spPageContextInfo.siteServerRelativeUrl;
     this.globalService.sharePointPageObject.serverRelativeUrl = this.globalService.sharePointPageObject.webRelativeUrl;
     this.globalService.sharePointPageObject.rootsite = window.origin;
+    this.globalService.url = window.location.href.indexOf('localhost') > -1 ? '#' : this.globalService.sharePointPageObject.webRelativeUrl + "/dashboard#";
+
+    this.leftNavigation = [
+      { title: 'My Dashboard', href: this.globalService.url + '/myDashboard', visible: true },
+      { title: 'QMS', href: this.globalService.url + '/qms', visible: true },
+      { title: 'Leave Calendar', href: this.globalService.url + '/leaveCalendar', visible: true },
+      { title: 'Publication Support', href: this.globalService.url + '/pubSupport', visible: true },
+    ]
+
   }
 
   async initSPLoggedInUser() {
@@ -101,25 +104,25 @@ export class AppComponent implements OnDestroy {
     const currentUserGroups = groups.results.map(g => g.LoginName);
     if (currentUserGroups.length > 0) {
       if (currentUserGroups.find(g => g === 'Managers' || g === 'ProjectManagement Members' || g === 'Invoice_Team')) {
-        this.leftNavigation.push({ title: 'Project Management', href: '/dashboard#/projectMgmt', visible: true });
+        this.leftNavigation.push({ title: 'Project Management', href: this.globalService.url + '/projectMgmt', visible: true });
       }
       if (currentUserGroups.find(g => g === 'Managers' || g === 'TaskAllocation Members')) {
-        this.leftNavigation.push({ title: 'Allocation', href: '/dashboard#/taskAllocation', visible: true });
+        this.leftNavigation.push({ title: 'Allocation', href: this.globalService.url + '/taskAllocation', visible: true });
       }
       if (currentUserGroups.find(g => g === 'Managers' || g === 'CentralAllocation Members')) {
-        this.leftNavigation.push({ title: 'Central Allocation', href: '/dashboard#/centralallocation', visible: true });
+        this.leftNavigation.push({ title: 'Central Allocation', href: this.globalService.url + '/centralallocation', visible: true });
       }
       if (currentUserGroups.find(g => g === 'Managers' || g === 'CapacityDashboard Members' || g === 'CapacityLink Members')) {
-        this.leftNavigation.push({ title: 'Capacity Dashboard', href: '/dashboard#/capacityDashboard', visible: true });
+        this.leftNavigation.push({ title: 'Capacity Dashboard', href: this.globalService.url + '/capacityDashboard', visible: true });
       }
       if (currentUserGroups.find(g => g === 'Managers' || g === 'FinanceDashboard Members' || g === 'Invoice_Team')) {
-        this.leftNavigation.push({ title: 'Finance Dashboard', href: '/dashboard#/financeDashboard', visible: true });
+        this.leftNavigation.push({ title: 'Finance Dashboard', href: this.globalService.url + '/financeDashboard', visible: true });
       }
       if (currentUserGroups.find(g => g === 'Managers' || g === 'AttributeManagement Members')) {
-        this.leftNavigation.push({ title: 'Attr Management', href: '/attribute', visible: true });
+        this.leftNavigation.push({ title: 'Attr Management', href: this.globalService.url + '/attribute', visible: true });
       }
       if (currentUserGroups.find(g => g === 'Managers' || g === 'AttributeManagement Members')) {
-        this.leftNavigation.push({ title: 'Admin', href: '/dashboard#/admin', visible: true });
+        this.leftNavigation.push({ title: 'Admin', href: this.globalService.url + '/admin', visible: true });
       }
     }
   }
@@ -136,7 +139,7 @@ export class AppComponent implements OnDestroy {
       component: this, zone: this._ngZone,
       loadTaskAllocation: () => this.goToTaskAllocation(),
     };
-    window['accessLecelDashboardComponentReference'] = {
+    window['accessLevelDashboardComponentReference'] = {
       component: this, zone: this._ngZone,
       loadAccessLevelDashboard: () => this.goToAccessLevelDashboard(),
     };
@@ -152,6 +155,16 @@ export class AppComponent implements OnDestroy {
     window['leaveCalendarComponentReference'] = {
       component: this, zone: this._ngZone,
       loadLeaveCalendar: () => this.goToLeaveCalendar(),
+    };
+
+    window['aldIfNotLinkComponentReference'] = {
+      component: this, zone: this._ngZone,
+      loadaldInNoLinkDashboard: () => this.goToAccessLevelDashboardIfNoLink(),
+    };
+
+    window['pageNotFoundComponentReference'] = {
+      component: this, zone: this._ngZone,
+      loadPageNotFound: () => this.goToPageNotFound(),
     };
   }
 
@@ -204,7 +217,12 @@ export class AppComponent implements OnDestroy {
     if (!window.location.href.includes('accessleveldashboard')) {
       this.router.navigate(['/accessleveldashboard']);
     }
+  }
 
+  goToAccessLevelDashboardIfNoLink() {
+    if (window.location.href.includes('defaultDashboard') || !window.location.href.includes('#')) {
+      this.router.navigate(['/accessleveldashboard']);
+    }
   }
 
   goToCapacityDashboard() {
@@ -216,6 +234,12 @@ export class AppComponent implements OnDestroy {
   goToLeaveCalendar() {
     if (!window.location.href.includes('leaveCalendar')) {
       this.router.navigate(['/leaveCalendar']);
+    }
+  }
+
+  goToPageNotFound() {
+    if (!window.location.href.includes('pageNotFound')) {
+      this.router.navigate(['/pageNotFound']);
     }
   }
 
@@ -231,6 +255,7 @@ export class AppComponent implements OnDestroy {
     window['caComponentReference'] = null;
     window['capacityComponentReference'] = null;
     window['leaveCalendarComponentReference'] = null;
-
+    window['aldIfNotLinkComponentReference'] = null;
+    window['pageNotFoundComponentReference'] = null;
   }
 }

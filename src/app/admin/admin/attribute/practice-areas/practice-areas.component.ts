@@ -120,6 +120,7 @@ export class PracticeAreasComponent implements OnInit {
     const getPracticeAreaInfo = Object.assign({}, this.adminConstants.QUERY.GET_PRACTICE_AREA_BY_ACTIVE);
     getPracticeAreaInfo.filter = getPracticeAreaInfo.filter.replace(/{{isActive}}/gi,
       this.adminConstants.LOGICAL_FIELD.YES);
+    this.common.SetNewrelic('admin', 'admin-attribute-practice-areas', 'getBusinessVerticals');
     const results = await this.spServices.readItems(this.constants.listNames.BusinessVerticals.name, getPracticeAreaInfo);
     if (results && results.length) {
       results.forEach(item => {
@@ -210,6 +211,7 @@ export class PracticeAreasComponent implements OnInit {
     const data = {
       Title: this.practiceArea
     };
+    this.common.SetNewrelic('admin', 'admin-attribute-practice-areas', 'createBusinessVerticals');
     const result = await this.spServices.createItem(this.constants.listNames.BusinessVerticals.name, data,
       this.constants.listNames.BusinessVerticals.type);
     console.log(result);
@@ -257,6 +259,7 @@ export class PracticeAreasComponent implements OnInit {
    */
   async confirmUpdate(data, updateData, listName, type) {
     this.adminObject.isMainLoaderHidden = false;
+    this.common.SetNewrelic('admin', 'admin-attribute-practice-areas', 'updateBusinessVerticals');
     const result = await this.spServices.updateItem(listName, data.ID, updateData, type);
     this.messageService.add({
       key: 'adminCustom', severity: 'success', sticky: true,
