@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone, ViewEncapsulation, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, NgZone, ViewEncapsulation, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { GlobalService } from 'src/app/Services/global.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { MenuItem, MessageService, ConfirmationService } from 'primeng/api';
@@ -16,6 +16,8 @@ import { DataService } from 'src/app/Services/data.service';
   encapsulation: ViewEncapsulation.None
 })
 export class ProjectmanagementComponent implements OnInit, OnDestroy {
+  @ViewChild('myInput', { static: true })
+myInputVariable: ElementRef;
   isUserAllowed = true;
   private tabMenuItems: MenuItem[];
   buttons: MenuItem[];
@@ -39,6 +41,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
   addSowForm: FormGroup;
   addAdditionalBudgetForm: FormGroup;
   selectedFile: any;
+  
   filePathUrl: any;
   subscription;
   constructor(
@@ -860,12 +863,15 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.pmObject.addSOW.Addendum.TotalBudget = +'';
     this.pmObject.addSOW.Addendum.TaxBudget = +'';
     this.pmObject.isSOWFormSubmit = false;
+    this.selectedFile = null;
+    this.myInputVariable.nativeElement.value = '';
   }
   /**
    * This method is used to close the additional Popup.
    */
   closeAdditonalPop() {
     this.addAdditionalBudgetForm.reset();
+    this.myInputVariable.nativeElement.value = '';
     this.pmObject.isSOWFormSubmit = false;
     this.pmObject.isAdditionalBudgetVisible = false;
     this.selectedFile = null;
