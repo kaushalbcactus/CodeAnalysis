@@ -1,6 +1,6 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { GlobalService } from '../../../Services/global.service';
-import { IMyDrpOptions, IMyDateRangeModel } from 'mydaterangepicker';
+// import { IMyDrpOptions, IMyDateRangeModel } from 'mydaterangepicker';
 import { CommonService } from '../../../Services/common.service';
 import { DataService } from '../../../Services/data.service';
 import { SelectItem } from 'primeng/api';
@@ -17,11 +17,11 @@ export class FiltersComponent implements OnInit {
   value: Date[] = [new Date(new Date().setMonth(new Date().getMonth() - 6)), new Date()];
   filter;
   // DateRange picker options
-  myDateRangePickerOptions: IMyDrpOptions = {
-    dateFormat: 'dd.mm.yyyy',
-    disableUntil: { year: new Date().getFullYear() - 2, month: 12, day: 31 },
-    showClearBtn: false
-  };
+  // myDateRangePickerOptions: IMyDrpOptions = {
+  //   dateFormat: 'dd.mm.yyyy',
+  //   disableUntil: { year: new Date().getFullYear() - 2, month: 12, day: 31 },
+  //   showClearBtn: false
+  // };
   // selectedValue: {label: 'year', value: 2019};
 
   // Filter Object to be passed to filter data

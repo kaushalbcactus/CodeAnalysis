@@ -1,4 +1,4 @@
-.ui-datatable-data > tr > td:first-child a {
+.ui-table-tbody > tr > td:first-child a {
     color: black;
 }
 
@@ -684,19 +684,19 @@ tr td:last-child .ui-menu {
     top:0px;
 }
 
-.pubsuppotTable .custom-pdatatable .ui-datatable-tablewrapper> table> tbody.ui-datatable-data>tr>td:last-child {
+.pubsuppotTable .custom-pdatatable .ui-table-wrapper> table> tbody.ui-table-tbody>tr>td:last-child {
     overflow: visible;
 }
 
- .pubsuppotTable .custom-pdatatable .ui-datatable-tablewrapper> table> tbody.ui-datatable-data>tr>td:last-child>span>div {
+ .pubsuppotTable .custom-pdatatable .ui-table-wrapper> table> tbody.ui-table-tbody>tr>td:last-child>div {
     position: relative;
 }
 
- .pubsuppotTable .custom-pdatatable .ui-datatable-tablewrapper> table> tbody.ui-datatable-data>tr>td:last-child>span>div>i {
+ .pubsuppotTable .custom-pdatatable .ui-table-wrapper> table> tbody.ui-table-tbody>tr>td:last-child>div>i {
     top: 0px !important;
 }
 
- .pubsuppotTable .custom-pdatatable .ui-datatable-tablewrapper> table> tbody.ui-datatable-data>tr>td:last-child>span>div div.ui-menu {
+ .pubsuppotTable .custom-pdatatable .ui-table-wrapper> table> tbody.ui-table-tbody>tr>td:last-child>div div.ui-menu {
     top: 0px !important;
     left: inherit !important;
     right: 40px !important;

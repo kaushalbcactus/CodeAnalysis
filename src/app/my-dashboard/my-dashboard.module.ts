@@ -1,6 +1,7 @@
 
 import { NgModule } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
+import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { FormsModule } from '@angular/forms';
 
 import { MyDashboardComponent } from './my-dashboard.component';
@@ -9,7 +10,6 @@ import { SearchProjectsComponent } from './search-projects/search-projects.compo
 import { MyDashoardRoutingModule } from './my-dashoard-routing.module';
 import { PrimengModule } from '../primeng/primeng.module';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { AddEditCommentComponent } from './add-edit-comment-dialog/add-edit-comment-dialog.component';
 import { TimeSpentDialogComponent } from './time-spent-dialog/time-spent-dialog.component';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
@@ -62,8 +62,10 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     ProjectDraftsComponent,
     MyprojectsComponent,
     DisplayProjectsComponent,
-    CreateTaskComponent],
+    CreateTaskComponent,
+  ],
   imports: [
+    NgxMaterialTimepickerModule,
     SharedModule,
     ViewUploadDocumentModule,
     CommonModule,
@@ -71,7 +73,6 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     MyDashoardRoutingModule,
     FlexLayoutModule,
     PrimengModule,
-    NgxMaterialTimepickerModule,
     PerfectScrollbarModule,
     CustomMaterialModule,
     NgxAutoScrollModule,

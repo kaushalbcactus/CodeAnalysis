@@ -24,6 +24,19 @@ import { CommonService } from 'src/app/Services/common.service';
 // tslint: disable
 export class PubsupportComponent implements OnInit {
 
+    pubsupportCols: any[] = [
+        { field: 'ProjectCode', header: 'Project Code', visibility: true },
+        { field: 'ClientLegalEntity', header: 'Client Legal Entity', visibility: true },
+        { field: 'DeliverableType', header: 'Deliverable Type', visibility: true },
+        { field: 'PrimaryPOC', header: 'Primary POC', visibility: true },
+        { field: 'Status', header: 'Status', visibility: true },
+        { field: 'PubSupportStatus', header: 'Pub Sup Status', visibility: true },
+        { field: 'LastSubmissionDate', header: 'Last Submission', visibility: true },
+        { field: '', header: 'Authors and Author Forms', visibility: true },
+    ];
+
+    expandedRows: any = {};
+
     constructor(
         private formBuilder: FormBuilder,
         public spOperationsService: SPOperationService,
@@ -335,7 +348,7 @@ export class PubsupportComponent implements OnInit {
 
     initialiseInvites() {
         // Set default values and re-fetch any data you need.
-        
+
     }
     callGetProjects(isClosed) {
         if (this.loggedInUserGroup.findIndex(c => (c === 'Managers' || c === 'Project-FullAccess')) !== -1) {
@@ -980,19 +993,20 @@ export class PubsupportComponent implements OnInit {
             }];
         }
         const res = await this.spOperationsService.executeBatch(jcObj);
-        if (res[0].retItems.hasError) {
+        if (res.length && res[0].retItems.hasError) {
             this.messageService.add({ key: 'myKey1', severity: 'error', summary: 'Error message', detail: res[0].retItems.message.value, life: 4000 });
             this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
             return;
-        } else if (res[0].retItems) {
-            console.log('Res ', res);
+        } else if (res.length && res[0].retItems) {
             this.jcListArray = res[0].retItems;
             console.log('this.jcListArray ', this.jcListArray);
         }
-        if (type === 'Journal') {
-            this.jcListArray = this.sortJournalData(res[0].retItems);
-        } else if (type === 'Conference') {
-            this.jcListArray = this.sortConferenceData(res[0].retItems);
+        if (res.length && res[0].retItems) {
+            if (type === 'Journal') {
+                this.jcListArray = this.sortJournalData(res[0].retItems);
+            } else if (type === 'Conference') {
+                this.jcListArray = this.sortConferenceData(res[0].retItems);
+            }
         }
         this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
     }
@@ -1798,7 +1812,7 @@ export class PubsupportComponent implements OnInit {
     }
 
     // On Click of Project code
-    goToProjectDetails(data: any, index: number) {
+    goToProjectDetails(data: any) {
         window.open(this.globalObject.sharePointPageObject.webRelativeUrl + '/dashboard#/projectMgmt/allProjects?ProjectCode=' +
             data.ProjectCode);
     }

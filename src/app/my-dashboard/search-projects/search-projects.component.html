@@ -73,32 +73,41 @@
 
               <p-multiSelect filter="true" resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()"
                 *ngSwitchCase="'SOWCode'" [options]="ProjectColArray.SOWCode" defaultLabel="All"
-                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
               <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true"
                 *ngSwitchCase="'ProjectCode'" [options]="ProjectColArray.ProjectCode" defaultLabel="All"
-                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
               <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true"
                 *ngSwitchCase="'WBJID'" defaultLabel="All" [options]="ProjectColArray.WBJID"
-                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
               <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true"
                 *ngSwitchCase="'ClientLegalEntity'" [options]="ProjectColArray.ClientLegalEntity" defaultLabel="All"
-                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                (onPanelShow)="isOptionFilter=true;">
               </p-multiSelect>
               <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true"
                 *ngSwitchCase="'DeliverableType'" [options]="ProjectColArray.DeliverableType" defaultLabel="All"
-                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
               <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true"
                 *ngSwitchCase="'ProjectType'" [options]="ProjectColArray.ProjectType" defaultLabel="All"
-                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
               <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true"
                 *ngSwitchCase="'Status'" [options]="ProjectColArray.Status" defaultLabel="All"
-                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
               <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true"
                 *ngSwitchCase="'CreatedBy'" [options]="ProjectColArray.CreatedBy" defaultLabel="All"
-                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
               <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true"
                 *ngSwitchCase="'CreatedDate'" [options]="ProjectColArray.CreatedDate" defaultLabel="All"
-                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
             </ng-container>
           </th>
           <th></th>
@@ -152,92 +161,94 @@
           </div>
 
           <table [hidden]="modalloaderenable" class="ProjectDetails" style="width:100%;margin:10px 0px 0px 0px;">
-            <tr>
-              <th>Client / Subdivision </th>
-              <td>{{ProjectPopupDetails.ClientLegalEntity}} <span *ngIf="ProjectPopupDetails.SubDivision">/</span>
-                {{ProjectPopupDetails.SubDivision}}</td>
-              <th>POC </th>
-              <td>{{ProjectPopupDetails.POC}}</td>
-            </tr>
-            <tr>
-              <th>Project Title </th>
-              <td>{{ProjectPopupDetails.Title}}</td>
-              <th>Status </th>
-              <td>{{ProjectPopupDetails.Status}}</td>
-            </tr>
-            <tr>
-              <th>Deliverable Type </th>
-              <td>{{ProjectPopupDetails.DeliverableType}}</td>
-              <th>Sub-Deliverable / Service </th>
-              <td>{{ProjectPopupDetails.SubDeliverable}} <span *ngIf="ProjectPopupDetails.ServiceLevel"> / </span>
-                {{ProjectPopupDetails.ServiceLevel}} </td>
-            </tr>
-            <tr>
-              <th>TA & Indication </th>
-              <td>{{ProjectPopupDetails.TA}} <span *ngIf="ProjectPopupDetails.Indication"> & </span>
-                {{ProjectPopupDetails.Indication}}</td>
-              <th>Molecule </th>
-              <td>{{ProjectPopupDetails.Molecule}}</td>
-            </tr>
-            <tr>
-              <th>Practice Area </th>
-              <td>{{ProjectPopupDetails.BusinessVertical}}</td>
-              <th>Priority </th>
-              <td>{{ProjectPopupDetails.Priority}}</td>
-            </tr>
-            <tr>
-              <th>Proposed Start Date </th>
+            <tbody>
+              <tr>
+                <th>Client / Subdivision </th>
+                <td>{{ProjectPopupDetails.ClientLegalEntity}} <span *ngIf="ProjectPopupDetails.SubDivision">/</span>
+                  {{ProjectPopupDetails.SubDivision}}</td>
+                <th>POC </th>
+                <td>{{ProjectPopupDetails.POC}}</td>
+              </tr>
+              <tr>
+                <th>Project Title </th>
+                <td>{{ProjectPopupDetails.Title}}</td>
+                <th>Status </th>
+                <td>{{ProjectPopupDetails.Status}}</td>
+              </tr>
+              <tr>
+                <th>Deliverable Type </th>
+                <td>{{ProjectPopupDetails.DeliverableType}}</td>
+                <th>Sub-Deliverable / Service </th>
+                <td>{{ProjectPopupDetails.SubDeliverable}} <span *ngIf="ProjectPopupDetails.ServiceLevel"> / </span>
+                  {{ProjectPopupDetails.ServiceLevel}} </td>
+              </tr>
+              <tr>
+                <th>TA & Indication </th>
+                <td>{{ProjectPopupDetails.TA}} <span *ngIf="ProjectPopupDetails.Indication"> & </span>
+                  {{ProjectPopupDetails.Indication}}</td>
+                <th>Molecule </th>
+                <td>{{ProjectPopupDetails.Molecule}}</td>
+              </tr>
+              <tr>
+                <th>Practice Area </th>
+                <td>{{ProjectPopupDetails.BusinessVertical}}</td>
+                <th>Priority </th>
+                <td>{{ProjectPopupDetails.Priority}}</td>
+              </tr>
+              <tr>
+                <th>Proposed Start Date </th>
 
-              <td>
-                <span
-                  *ngIf="ProjectPopupDetails.ProposedStartDate !== null">{{ProjectPopupDetails.ProposedStartDate | date:'medium'}}
-                </span>
-              </td>
-              <th>Proposed End Date </th>
-              <td>
-                <span
-                  *ngIf="ProjectPopupDetails.ProposedEndDate !== null">{{ProjectPopupDetails.ProposedEndDate | date:'medium'}}
-                </span>
-              </td>
-            </tr>
-            <tr>
-              <th>Confirmation Date</th>
-              <td>
-                <span
-                  *ngIf="ProjectPopupDetails.ActualStartDate !== null">{{ProjectPopupDetails.ActualStartDate | date:'medium'}}
-                </span>
+                <td>
+                  <span
+                    *ngIf="ProjectPopupDetails.ProposedStartDate !== null">{{ProjectPopupDetails.ProposedStartDate | date:'medium'}}
+                  </span>
+                </td>
+                <th>Proposed End Date </th>
+                <td>
+                  <span
+                    *ngIf="ProjectPopupDetails.ProposedEndDate !== null">{{ProjectPopupDetails.ProposedEndDate | date:'medium'}}
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <th>Confirmation Date</th>
+                <td>
+                  <span
+                    *ngIf="ProjectPopupDetails.ActualStartDate !== null">{{ProjectPopupDetails.ActualStartDate | date:'medium'}}
+                  </span>
 
-              </td>
-              <th>Actual End Date </th>
-              <td>
-                <span
-                  *ngIf="ProjectPopupDetails.ActualEndDate !== null">{{ProjectPopupDetails.ActualEndDate | date:'medium'}}
-                </span>
-              </td>
-            </tr>
-            <tr>
-              <th>Pub Support Required</th>
-              <td>{{ProjectPopupDetails.IsPubSupport}}</td>
-              <th>Pub support Status </th>
-              <td>{{ProjectPopupDetails.PubSupportStatus}} </td>
-            </tr>
-            <tr>
-              <th>Journal / Conference </th>
-              <td>{{ProjectPopupDetails.ConferenceJournal}}</td>
-              <th>Authors </th>
-              <td>{{ProjectPopupDetails.Authors}} </td>
-            </tr>
-            <tr>
-              <th>SOW Box Link</th>
-              <td>{{ProjectPopupDetails.SOWBoxLink}}</td>
-              <th> End use of Deliverable </th>
-              <td>{{ProjectPopupDetails.Description}} </td>
-            </tr>
-            <tr>
-              <th>Comments </th>
-              <td colspan="3">{{ProjectPopupDetails.Comments}}</td>
+                </td>
+                <th>Actual End Date </th>
+                <td>
+                  <span
+                    *ngIf="ProjectPopupDetails.ActualEndDate !== null">{{ProjectPopupDetails.ActualEndDate | date:'medium'}}
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <th>Pub Support Required</th>
+                <td>{{ProjectPopupDetails.IsPubSupport}}</td>
+                <th>Pub support Status </th>
+                <td>{{ProjectPopupDetails.PubSupportStatus}} </td>
+              </tr>
+              <tr>
+                <th>Journal / Conference </th>
+                <td>{{ProjectPopupDetails.ConferenceJournal}}</td>
+                <th>Authors </th>
+                <td>{{ProjectPopupDetails.Authors}} </td>
+              </tr>
+              <tr>
+                <th>SOW Box Link</th>
+                <td>{{ProjectPopupDetails.SOWBoxLink}}</td>
+                <th> End use of Deliverable </th>
+                <td>{{ProjectPopupDetails.Description}} </td>
+              </tr>
+              <tr>
+                <th>Comments </th>
+                <td colspan="3">{{ProjectPopupDetails.Comments}}</td>
 
-            </tr>
+              </tr>
+            </tbody>
           </table>
         </ng-template>
       </mat-expansion-panel-header>
@@ -265,35 +276,37 @@
           </div>
 
           <table [hidden]="modalloaderenable" class="ProjectDetails" style="width:100%;margin:10px 0px 0px 0px;">
-            <tr>
-              <th>Client Managers </th>
-              <td>{{projectResource.CMMembers}}</td>
-              <th>Delivery Leads </th>
-              <td>{{projectResource.PMMembers}}</td>
-            </tr>
-            <tr>
-              <th>Writers </th>
-              <td>{{projectResource.Writers}}</td>
-              <th>Reviewers </th>
-              <td>{{projectResource.Reviewers}}</td>
-            </tr>
-            <tr>
-              <th>Editors </th>
-              <td>{{projectResource.Editors}}</td>
-              <th>QCers </th>
-              <td>{{projectResource.QC}}</td>
-            </tr>
-            <tr>
-              <th>Graphics Designers </th>
-              <td>{{projectResource.GraphicsMembers}}</td>
-              <th>Publication Support </th>
-              <td>{{projectResource.PubSupport}}</td>
-            </tr>
-            <tr>
-              <th>Primary Resources </th>
-              <td colspan="3">{{projectResource.PrimaryResource}}</td>
+            <tbody>
+              <tr>
+                <th>Client Managers </th>
+                <td>{{projectResource.CMMembers}}</td>
+                <th>Delivery Leads </th>
+                <td>{{projectResource.PMMembers}}</td>
+              </tr>
+              <tr>
+                <th>Writers </th>
+                <td>{{projectResource.Writers}}</td>
+                <th>Reviewers </th>
+                <td>{{projectResource.Reviewers}}</td>
+              </tr>
+              <tr>
+                <th>Editors </th>
+                <td>{{projectResource.Editors}}</td>
+                <th>QCers </th>
+                <td>{{projectResource.QC}}</td>
+              </tr>
+              <tr>
+                <th>Graphics Designers </th>
+                <td>{{projectResource.GraphicsMembers}}</td>
+                <th>Publication Support </th>
+                <td>{{projectResource.PubSupport}}</td>
+              </tr>
+              <tr>
+                <th>Primary Resources </th>
+                <td colspan="3">{{projectResource.PrimaryResource}}</td>
 
-            </tr>
+              </tr>
+            </tbody>
           </table>
         </ng-template>
       </mat-expansion-panel-header>
@@ -352,4 +365,6 @@
   </mat-accordion>
 </p-dialog>
 
-<app-timeline-history #timelineRef></app-timeline-history>
+<ng-container>
+  <app-timeline-history #timelineRef></app-timeline-history>
+</ng-container>

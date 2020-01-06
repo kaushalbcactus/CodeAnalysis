@@ -8,7 +8,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 // FIle upload
-import { FileUploadModule  } from 'ng2-file-upload';
+// import { FileUploadModule  } from 'ng2-file-upload';
 import { DataService } from './Services/data.service';
 import { TimelineHistoryComponent } from './timeline/timeline-history/timeline-history.component';
 import { MessageService } from 'primeng/api';
@@ -20,7 +20,7 @@ import { PrimengModule } from './primeng/primeng.module';
   imports: [
     BrowserModule,
     CommonModule,
-    FileUploadModule,
+    // FileUploadModule,
     FormsModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,

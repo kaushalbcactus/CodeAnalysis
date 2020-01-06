@@ -96,7 +96,7 @@
 
                                         <span *ngIf="viewNote" style="color:red;    padding: 0px 0px 0px 15px;">Note*: Please click on load budgets button to load budget data. </span>
 
-                                        <p-button type="button" style="float:right;" label="load Budgets" (onClick)="loadBudgetHours(pmConstant.filterAction.ACTIVE_PROJECT);viewNote =false;"></p-button>
+                                        <p-button type="button" styleClass="btnRight" label="load Budgets" (onClick)="loadBudgetHours(pmConstant.filterAction.ACTIVE_PROJECT);viewNote =false;"></p-button>
 
                                         <div *ngIf="loaderenable" id="scTableInnerLoader"></div>
 
@@ -160,7 +160,7 @@
                                         <input type="text" pInputText size="50" placeholder="search" (input)="pipeLineProject.filterGlobal($event.target.value, 'contains')" (keydown.enter)="$event.preventDefault()" style="width:auto">
 
                                         <span *ngIf="viewNote" style="color:red;    padding: 0px 0px 0px 15px;">Note*: Please click on load budgets button to load budget data. </span>
-                                        <p-button type="button" style="float:right;" label="load Budgets" (onClick)="loadBudgetHours(pmConstant.filterAction.PIPELINE_PROJECT);viewNote =false;"></p-button>
+                                        <p-button type="button" styleClass="btnRight" label="load Budgets" (onClick)="loadBudgetHours(pmConstant.filterAction.PIPELINE_PROJECT);viewNote =false;"></p-button>
 
                                         <div *ngIf="loaderenable" id="scTableInnerLoader"></div>
 
@@ -224,7 +224,7 @@
 
                                         <span *ngIf="viewNote" style="color:red;    padding: 0px 0px 0px 15px;">Note*: Please click on load budgets button to load budget data. </span>
 
-                                        <p-button type="button" style="float:right;" label="load Budgets" (onClick)="loadBudgetHours(pmConstant.filterAction.INACTIVE_PROJECT);viewNote =false;"></p-button>
+                                        <p-button type="button" styleClass="btnRight" label="load Budgets" (onClick)="loadBudgetHours(pmConstant.filterAction.INACTIVE_PROJECT);viewNote =false;"></p-button>
 
                                         <div *ngIf="loaderenable" id="scTableInnerLoader"></div>
 

@@ -16,8 +16,7 @@ import { Table } from 'primeng';
 @Component({
   selector: 'app-client-masterdata',
   templateUrl: './client-masterdata.component.html',
-  styleUrls: ['./client-masterdata.component.css'],
-  encapsulation: ViewEncapsulation.None
+  styleUrls: ['./client-masterdata.component.css']
 })
 /**
  * A class that uses ngPrime to display the data in table.
