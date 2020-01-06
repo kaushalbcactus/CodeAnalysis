@@ -128,9 +128,12 @@
                     <div class="ui-g-4">
                         <input class="mr-5" formControlName="status" type="text" pInputText>
                     </div>
-                    <div class="ui-g-2">SOW Document</div>
+                    <div class="ui-g-2"><span class="compulsory">*</span>SOW Document</div>
                     <div class="ui-g-4">
-                        <input type="file" name="myfile" class="form-control" (change)="onFileChange($event)" formControlName="sowDocuments" />
+                        <input type="file" name="myfile" #myInput class="form-control" (change)="onFileChange($event)" formControlName="sowDocuments" />
+                        <!-- <div class="error" *ngIf="pmObject.isSOWFormSubmit  && addSowForm.controls['sowDocuments'].hasError('required')">
+                            SOW Document is required
+                        </div> -->
                     </div>
                 </div>
                 <div class="ui-g mt-20">
@@ -264,7 +267,8 @@
             <div class="ui-g mt-20">
                 <div class="ui-g-5">SOW Document</div>
                 <div class="ui-g-5">
-                    <input type="file" name="myfile" class="form-control" (change)="onFileChange($event)" formControlName="sowDocumentsAdd" />
+                    <input type="file" #myInput name="myfile" class="form-control" (change)="onFileChange($event)" formControlName="sowDocumentsAdd" />
+
                 </div>
             </div>
             <div class="mt-20" style="float: right">

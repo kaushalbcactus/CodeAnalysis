@@ -140,9 +140,7 @@ export class UserProfileComponent implements OnInit {
   };
   filteredCountriesMultiple: any[];
   showTable = true;
-  @ViewChild('up', { static: false }) userProfileTable: Table;
-  @ViewChildren('up') eventsTable: Table;
-
+  
   /**
    * Construct a method to create an instance of required component.
    *
@@ -162,7 +160,7 @@ export class UserProfileComponent implements OnInit {
    */
   constructor(
     private datePipe: DatePipe,
-    private frmbuilder: FormBuilder,
+    private fb: FormBuilder,
     private adminCommonService: AdminCommonService,
     private constants: ConstantsService,
     private adminConstants: AdminConstantService,
@@ -185,47 +183,7 @@ export class UserProfileComponent implements OnInit {
     router.events.subscribe((uri) => {
       zone.run(() => applicationRef.tick());
     });
-    this.addUser = frmbuilder.group({
-      username: ['', Validators.required],
-      account: ['', null],
-      bucket: ['', Validators.required],
-      dateofexit: ['', null],
-      dateofjoin: ['', Validators.required],
-      deliverableExclusion: ['', null],
-      deliverable: ['', null],
-      designation: ['', Validators.required],
-      liveDate: ['', Validators.required],
-      inCapacity: ['', Validators.required],
-      isActive: ['', null],
-      manager: ['', Validators.required],
-      maxHrs: ['', [Validators.required, Validators.max(12), Validators.min(1)]],
-      // '^((?:[1-9]|1[0-9]|2[0-3])(?:\.\d[05]0?)(?:\.\d{1,2})?|24?)$'
-      // maxHrs: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.max(24)]],
-      pooled: ['', Validators.required],
-      primarySkill: ['', Validators.required],
-      readyTo: ['', null],
-      role: ['', null],
-      skillLevel: ['', Validators.required],
-      ta: ['', null],
-      taExclusion: ['', null],
-      task: ['', Validators.required],
-      timeZone: ['', Validators.required],
-      practiceArea: ['', Validators.required],
-      BucketDate: [new Date(), null],
-      MaxHrsDate: [new Date(), null],
-      managerEffectiveDate: [new Date(), null],
-      practiceAreaEffectiveDate: ['', null],
-      timeZoneEffectiveDate: ['', null],
-      primarySkillEffectiveDate: ['', null],
-      skillLevelEffectiveDate: ['', null],
-      workSunday: [{ value: '', disabled: true }, null],
-      workMonday: ['', null],
-      workTuesday: ['', null],
-      workWednessday: ['', null],
-      workThursday: ['', null],
-      workFriday: ['', null],
-      workSaturday: [{ value: '', disabled: true }, null],
-    });
+
   }
   /**
    * Construct a method to initialize all the data.
@@ -236,7 +194,7 @@ export class UserProfileComponent implements OnInit {
    *
    */
   async ngOnInit() {
-    // console.log('eventsTable ', this.eventsTable);
+    this.initialAddUserForm();
     this.minPastMonth = new Date(new Date().setDate(new Date().getDate() - 30));
     const currentYear = new Date();
     this.yearRange = (currentYear.getFullYear() - 10) + ':' + (currentYear.getFullYear() + 10);
@@ -270,6 +228,51 @@ export class UserProfileComponent implements OnInit {
     await this.loadUserTable();
     this.colFilters1(this.auditHistoryRows);
     this.loadDropDownValue();
+  }
+
+  // Initial form Fields
+  initialAddUserForm() {
+    this.addUser = this.fb.group({
+      username: ['', Validators.required],
+      account: ['', null],
+      bucket: ['', Validators.required],
+      dateofexit: ['', null],
+      dateofjoin: [new Date(), Validators.required],
+      deliverableExclusion: ['', null],
+      deliverable: ['', null],
+      designation: ['', Validators.required],
+      liveDate: [new Date(), Validators.required],
+      inCapacity: ['', Validators.required],
+      isActive: ['', null],
+      manager: ['', Validators.required],
+      maxHrs: ['', [Validators.required, Validators.max(12), Validators.min(1)]],
+      // '^((?:[1-9]|1[0-9]|2[0-3])(?:\.\d[05]0?)(?:\.\d{1,2})?|24?)$'
+      // maxHrs: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.max(24)]],
+      pooled: ['', Validators.required],
+      primarySkill: ['', Validators.required],
+      readyTo: ['', null],
+      role: ['', null],
+      skillLevel: ['', Validators.required],
+      ta: ['', null],
+      taExclusion: ['', null],
+      task: ['', Validators.required],
+      timeZone: ['', Validators.required],
+      practiceArea: ['', Validators.required],
+      BucketDate: [new Date(), null],
+      MaxHrsDate: [new Date(), null],
+      managerEffectiveDate: [new Date(), null],
+      practiceAreaEffectiveDate: ['', null],
+      timeZoneEffectiveDate: ['', null],
+      primarySkillEffectiveDate: ['', null],
+      skillLevelEffectiveDate: ['', null],
+      workSunday: [{ value: '', disabled: true }, null],
+      workMonday: ['', null],
+      workTuesday: ['', null],
+      workWednessday: ['', null],
+      workThursday: ['', null],
+      workFriday: ['', null],
+      workSaturday: [{ value: '', disabled: true }, null],
+    });
   }
   /**
    * Construct a method to set the conditional validators when form edited.
@@ -651,7 +654,6 @@ export class UserProfileComponent implements OnInit {
   onChangeSelect() {
     if (this.selectedOption === this.adminConstants.LOGICAL_FIELD.INACTIVE) {
       this.showTable = false;
-      // console.log(this.userProfileTable);
       this.showUserInput = true;
       const emptyProjects = [];
       this.userProfileData = [...emptyProjects];
@@ -1043,6 +1045,11 @@ export class UserProfileComponent implements OnInit {
       const b = { label: a.Details, value: a.Details }; return b;
     }));
 
+  }
+
+  // Reset when p-dialog close reset form value
+  cancelFormSub() {
+    this.addUser.reset();
   }
   /**
    * Construct a method for saving and updating the user details to `Resource Categerization` List.
@@ -1841,7 +1848,7 @@ export class UserProfileComponent implements OnInit {
    * Construct a method to show the add user form.
    */
   showAddUserModal() {
-    this.addUser.reset();
+    this.initialAddUserForm();
     // this.userProfileData = this.adminConstants.LOGICAL_FIELD.ACTIVE;
     this.date.isManagerEffectiveDateActive = false;
     this.date.isPracticeEffectiveDateActive = false;
