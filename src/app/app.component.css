@@ -32,19 +32,9 @@ legend {
     text-align: center !important;
 } */
 
-  /* Loadder ICON  */
+  
 
-  @-webkit-keyframes spin {
-    0% { -webkit-transform: rotate(0deg); }
-    100% { -webkit-transform: rotate(360deg); }
-  }
-  
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-  
-  #mainLoader, #scInnerLoader{
+  /* #mainLoader, #scInnerLoader{
     border: 10px solid #f3f3f3;
     border-radius: 50%;
     border-top: 10px solid red;
@@ -74,16 +64,7 @@ legend {
     text-transform: uppercase;
     top: 0;
     margin-bottom: 1%;
-  }
-
-  .tableLoader{
-    position: fixed; /* or absolute */
-    /* top: 20%;
-    left: 50%; */
-    z-index: 9999;
-    background-color: rgba(255, 255, 255, 0.7);
-    height: 70%;
-  }
+  } */
 
   .layout-topbar{
     background-color: #C53E3E;
@@ -96,9 +77,6 @@ legend {
     box-shadow: 0 2px 5px 0 rgba(0,0,0,.3); 
   }
 
- .logo {
-   /* float: left; */
-}
  .logo img {
   height: 32px;
   padding-right: 5px;

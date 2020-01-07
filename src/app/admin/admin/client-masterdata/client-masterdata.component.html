@@ -369,8 +369,8 @@
             <div class="p-col-2 "><span class="compulsory">*</span>CM Level 1</div>
             <div class="p-col-4">
                 <p-multiSelect [options]="dropdown.CMLevel1Array" defaultLabel="Select CM Level 1"
-                    formControlName="cmLevel1" (keydown.enter)="$event.preventDefault()" filter="true"
-                    resetFilterOnHide="true"></p-multiSelect>
+                    formControlName="cmLevel1" (keydown.enter)="$event.preventDefault()" [maxSelectedLabels]="1"
+                    filter="true" resetFilterOnHide="true"></p-multiSelect>
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.cmLevel1.errors">
                     <div *ngIf="addClient.controls.cmLevel1.errors.required">
                         CM Level 1 is required</div>
@@ -391,8 +391,8 @@
             <div class="p-col-2 ">Delivery Level 1</div>
             <div class="p-col-4">
                 <p-multiSelect [options]="dropdown.DeliveryLevel1Array" defaultLabel="Select Delivery Level 1"
-                    formControlName="deliveryLevel1" (keydown.enter)="$event.preventDefault()" filter="true"
-                    resetFilterOnHide="true"></p-multiSelect>
+                    formControlName="deliveryLevel1" (keydown.enter)="$event.preventDefault()" [maxSelectedLabels]="1"
+                    filter="true" resetFilterOnHide="true"></p-multiSelect>
             </div>
             <div class="p-col-2 "><span class="compulsory">*</span>Delivery Level 2</div>
             <div class="p-col-4">

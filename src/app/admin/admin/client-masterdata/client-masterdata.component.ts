@@ -1221,7 +1221,7 @@ export class ClientMasterdataComponent implements OnInit {
     getSubDivisionInfo.filter = getSubDivisionInfo.filter
       .replace(/{{isActive}}/gi, this.adminConstants.LOGICAL_FIELD.YES)
       .replace(/{{clientLegalEntity}}/gi, this.currClientObj.ClientLegalEntity);
-      this.common.SetNewrelic('admin', 'admin-clientMaster', 'GetClientSubdivision');
+    this.common.SetNewrelic('admin', 'admin-clientMaster', 'GetClientSubdivision');
     const results = await this.spServices.readItems(this.constantsService.listNames.ClientSubdivision.name, getSubDivisionInfo);
     if (results && results.length) {
       results.forEach(item => {
@@ -1312,7 +1312,7 @@ export class ClientMasterdataComponent implements OnInit {
       const getResourceCat = Object.assign({}, this.adminConstants.QUERY.GET_RESOURCE_CATEGERIZATION_ORDER_BY_USERNAME);
       getResourceCat.filter = getResourceCat.filter.replace(/{{isActive}}/gi,
         this.adminConstants.LOGICAL_FIELD.YES);
-        this.common.SetNewrelic('admin', 'admin-clientMaster', 'GetRC');
+      this.common.SetNewrelic('admin', 'admin-clientMaster', 'GetRC');
       const result = await this.spServices.readItems(this.constantsService.listNames.ResourceCategorization.name, getResourceCat);
       this.separateResourceCat(result);
     }
@@ -1415,7 +1415,7 @@ export class ClientMasterdataComponent implements OnInit {
       .replace(/{{isActive}}/gi, this.adminConstants.LOGICAL_FIELD.YES)
       .replace(/{{clientLegalEntity}}/gi, this.currClientObj.ClientLegalEntity)
       .replace(/{{Id}}/gi, ID);
-      this.common.SetNewrelic('admin', 'admin-clientMaster', 'getClientSubdivision');
+    this.common.SetNewrelic('admin', 'admin-clientMaster', 'getClientSubdivision');
     const result = await this.spServices.readItems(this.constantsService.listNames.ClientSubdivision.name, subDivisionGet);
     if (result && result.length) {
       const item = result[0];
@@ -1536,7 +1536,7 @@ export class ClientMasterdataComponent implements OnInit {
     getPocInfo.filter = getPocInfo.filter
       .replace(/{{active}}/gi, this.adminConstants.LOGICAL_FIELD.ACTIVE)
       .replace(/{{clientLegalEntity}}/gi, this.currClientObj.ClientLegalEntity);
-      this.common.SetNewrelic('admin', 'admin-clientMaster', 'getProjectContacts');
+    this.common.SetNewrelic('admin', 'admin-clientMaster', 'getProjectContacts');
     const results = await this.spServices.readItems(this.constantsService.listNames.ProjectContacts.name, getPocInfo);
     if (results && results.length) {
       results.forEach(item => {
@@ -1872,7 +1872,7 @@ export class ClientMasterdataComponent implements OnInit {
       .replace(/{{active}}/gi, this.adminConstants.LOGICAL_FIELD.ACTIVE)
       .replace(/{{clientLegalEntity}}/gi, this.currClientObj.ClientLegalEntity)
       .replace(/{{Id}}/gi, ID);
-      this.common.SetNewrelic('admin', 'admin-clientMaster', 'getProjectContacts');
+    this.common.SetNewrelic('admin', 'admin-clientMaster', 'getProjectContacts');
     const result = await this.spServices.readItems(this.constantsService.listNames.ProjectContacts.name, pocGet);
     if (result && result.length) {
       const item = result[0];
@@ -1991,7 +1991,7 @@ export class ClientMasterdataComponent implements OnInit {
     getPOInfo.filter = getPOInfo.filter
       .replace(/{{active}}/gi, this.adminConstants.LOGICAL_FIELD.ACTIVE)
       .replace(/{{clientLegalEntity}}/gi, this.currClientObj.ClientLegalEntity);
-      this.common.SetNewrelic('admin', 'admin-clientMaster', 'getPO');
+    this.common.SetNewrelic('admin', 'admin-clientMaster', 'getPO');
     const results = await this.spServices.readItems(this.constantsService.listNames.PO.name, getPOInfo);
     if (results && results.length) {
       results.forEach(item => {
@@ -2498,7 +2498,7 @@ export class ClientMasterdataComponent implements OnInit {
       .replace(/{{active}}/gi, this.adminConstants.LOGICAL_FIELD.ACTIVE)
       .replace(/{{clientLegalEntity}}/gi, this.currClientObj.ClientLegalEntity)
       .replace(/{{Id}}/gi, ID);
-      this.common.SetNewrelic('admin', 'admin-clientMaster', 'getPO');
+    this.common.SetNewrelic('admin', 'admin-clientMaster', 'getPO');
     const result = await this.spServices.readItems(this.constantsService.listNames.PO.name, poGet);
     if (result && result.length) {
       const item = result[0];

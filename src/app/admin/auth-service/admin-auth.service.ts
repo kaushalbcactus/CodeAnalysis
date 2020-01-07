@@ -43,11 +43,6 @@ export class AdminAuthService {
           { label: 'Entitlement', routerLink: ['entitlement'] }
         )
 
-        // { routerLink: ['/admin/entitlement/userRoleMapping'], label: 'User to Role Mapping', value: 'UserToRoleMapping' },
-        // { routerLink: ['/admin/entitlement/roleUserMapping'], label: 'Role to User Mapping', value: 'RoleToUserMapping' },
-        // { routerLink: ['/admin/entitlement/copyPermission'], label: 'Copy Permission', value: 'Copy Permission' },
-        // { routerLink: ['/admin/entitlement/addUserToSow'], label: 'Add User To Sow', value: 'AddUserToSow' },
-        // { routerLink: ['/admin/entitlement/addUserToProjects'], label: 'Add User To Projects', value: 'AddUserToProjects' }
         this.adminConstantService.EntitleMentMenu.List = [];
         if (groups.indexOf('Entitlement_Admin') > -1) {
           this.adminConstantService.userRole.SPMEA = true;
@@ -93,7 +88,7 @@ export class AdminAuthService {
 
       }
 
-      this.constantsService.loader.isPSInnerLoaderHidden = true;
+      // this.constantsService.loader.isPSInnerLoaderHidden = true;
       return true;
     } else {
       return false;
