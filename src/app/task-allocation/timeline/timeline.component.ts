@@ -2390,8 +2390,16 @@ export class TimelineComponent implements OnInit, OnDestroy {
    */
   async compareSlotSubTasksTimeline(sentPrevNode1, subMilestonePosition, selectedMil) {
     // fetch slot based on submilestone presnt or not
-    const sentPrevNode = subMilestonePosition === 0 ? this.milestoneData[selectedMil].children.find(st => st.data.pName === sentPrevNode1.pName) :
-      this.milestoneData[selectedMil].children[subMilestonePosition - 1].children.find(st => st.data.pName === sentPrevNode1.pName);
+    let sentPrevNode;
+    if(subMilestonePosition === 0) {
+      sentPrevNode = this.milestoneData[selectedMil].children.find(st => st.data.pName === sentPrevNode1.pName)
+    } else {
+      const submilestone = this.milestoneData[selectedMil].children.find(sm => sm.data.pName === sentPrevNode1.submilestone);
+      sentPrevNode = submilestone.children.find(st => st.data.pName === sentPrevNode1.pName);
+    }
+    // const sentPrevNode = subMilestonePosition === 0 ?  :
+    //   this.milestoneData[selectedMil].children[subMilestonePosition - 1].children.find(st => st.data.pName === sentPrevNode1.pName);
+      
     let slotFirstTask = sentPrevNode ? sentPrevNode.children ? sentPrevNode.children.filter(st => !st.data.previousTask) : [] : [];
     // cascade if slot start date is more than first subtask in slot
     if (slotFirstTask.length) {
