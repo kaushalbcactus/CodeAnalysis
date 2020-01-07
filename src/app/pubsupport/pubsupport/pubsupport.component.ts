@@ -165,7 +165,7 @@ export class PubsupportComponent implements OnInit {
     journal_Conf_details: any = {};
 
     // Year Range
-    yearsRange = new Date().getFullYear() + ':' + (new Date().getFullYear() + 10);
+    yearsRange = new Date().getFullYear() - 1 + ':' + (new Date().getFullYear() + 10);
 
     submission_details_data: any = [];
 

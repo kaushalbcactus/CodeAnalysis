@@ -36,7 +36,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   Today = new Date();
   tempComment;
   minDateValue = new Date();
-  yearsRange = new Date().getFullYear() + ':' + (new Date().getFullYear() + 10);
+  yearsRange = new Date().getFullYear() - 1 + ':' + (new Date().getFullYear() + 10);
   userCapacityEnable = false;
   task;
   errorMessage;
