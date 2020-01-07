@@ -167,7 +167,7 @@
                             <span *ngIf="rowData.type !=='task' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.pName.indexOf('Slot') > -1)">
                                 {{rowData.pName}}</span>
                             <span style="color:#dc2038;cursor: pointer;"
-                                *ngIf="(rowData.type ==='task' && rowData.IsCentrallyAllocated === 'No') || (rowData.IsCentrallyAllocated === 'Yes' && rowData.pName.indexOf('Slot') < 0)"
+                                *ngIf="(rowData.type ==='task' && rowData.IsCentrallyAllocated !== 'Yes') || (rowData.IsCentrallyAllocated === 'Yes' && rowData.pName.indexOf('Slot') < 0)"
                                 (click)="ViewTaskDetails(rowData)"> {{rowData.pName}}</span>
 
                             <div id="nextMilestone"
@@ -278,7 +278,7 @@
                                 *ngIf="rowData.type ==='milestone' || rowData.type ==='submilestone'">{{rowData.tatVal}}</span>
                             <span
                                 *ngIf="!rowData.editMode && rowData.type ==='task' ">{{rowData.tat === true ? 'Yes' :'No'}}</span>
-                            <p-checkbox *ngIf="rowData.editMode && rowData.type === 'task' && (rowData.IsCentrallyAllocated === 'No' || rowData.slotType === 'Both' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.pName.indexOf('Slot') < 0))  "
+                            <p-checkbox *ngIf="rowData.editMode && rowData.type === 'task' && (rowData.IsCentrallyAllocated !== 'Yes' || rowData.slotType === 'Both' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.pName.indexOf('Slot') < 0))  "
                                 [disabled]=" rowData.pName ==='Client Review'"
                                 (onChange)="ChangeEndDate($event, rowData)"
                                 [(ngModel)]="rowData.pName ==='Client Review' ? 'Yes' : rowData.tat" binary="true">
@@ -287,9 +287,9 @@
 
                         <!-- Assign To -->
                         <td>
-                            <span *ngIf="!rowData.editMode && (rowData.IsCentrallyAllocated === 'No' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.pName.indexOf('Slot') < 0))"> {{rowData.pRes}}</span>
+                            <span *ngIf="!rowData.editMode && (rowData.IsCentrallyAllocated !== 'Yes' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.pName.indexOf('Slot') < 0))"> {{rowData.pRes}}</span>
                             <p-dropdown [style]="{'width':'100%'}"
-                                *ngIf="rowData.editMode && rowData.type !=='milestone' && rowData.type !=='submilestone' && (rowData.IsCentrallyAllocated === 'No' || rowData.slotType === 'Both' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.pName.indexOf('Slot') < 0))"
+                                *ngIf="rowData.editMode && rowData.type !=='milestone' && rowData.type !=='submilestone' && (rowData.IsCentrallyAllocated !== 'Yes' || rowData.slotType === 'Both' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.pName.indexOf('Slot') < 0))"
                                 #assignedTo class="txtTask" [options]="rowData.assignedUsers" [disabled] = "rowData.status=== 'In Progress'"
                                 [panelStyle]="{minWidth:'15em' }" [(ngModel)]="rowData.AssignedTo"
                                 placeholder="Select Resource" [showClear]="true" [group]="true" filter="true"
@@ -305,10 +305,10 @@
                         <!-- Allow start -->
                         <td [ngStyle]="{'text-align': 'rowData.editMode' ? 'center':'left'}">
                             <span
-                                *ngIf="((rowData.editMode || !rowData.editMode) && rowData.type ==='milestone'  && rowData.type !=='submilestone') || (!rowData.editMode && rowData.type !=='milestone'  && rowData.type !=='submilestone' && (rowData.IsCentrallyAllocated === 'No' || rowData.slotType === 'Both' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.pName.indexOf('Slot') < 0))) ">{{rowData.allowStart === true ? 'Yes':'No'}}</span>
+                                *ngIf="((rowData.editMode || !rowData.editMode) && rowData.type ==='milestone'  && rowData.type !=='submilestone') || (!rowData.editMode && rowData.type !=='milestone'  && rowData.type !=='submilestone' && (rowData.IsCentrallyAllocated !== 'Yes' || rowData.slotType === 'Both' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.pName.indexOf('Slot') < 0))) ">{{rowData.allowStart === true ? 'Yes':'No'}}</span>
 
                             <p-inputSwitch
-                                *ngIf="rowData.editMode && (rowData.type !== 'milestone' && rowData.type !=='submilestone') && (rowData.itemType !=='Client Review' && rowData.itemType !=='Send to client') && rowData.IsCentrallyAllocated === 'No'"
+                                *ngIf="rowData.editMode && (rowData.type !== 'milestone' && rowData.type !=='submilestone') && (rowData.itemType !=='Client Review' && rowData.itemType !=='Send to client') && rowData.IsCentrallyAllocated !== 'Yes'"
                                 [(ngModel)]="rowData.allowStart"></p-inputSwitch>
 
                             <!-- <p-checkbox *ngIf="rowData.editMode && (rowData.type !== 'milestone' && rowData.type !=='submilestone') && (rowData.pName !=='Client Review' && rowData.pName !=='SC')" [(ngModel)]="rowData.allowStart" binary="true"></p-checkbox> -->
