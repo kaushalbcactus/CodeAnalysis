@@ -17,7 +17,7 @@ import { DataService } from 'src/app/Services/data.service';
 })
 export class ProjectmanagementComponent implements OnInit, OnDestroy {
   @ViewChild('myInput', { static: true })
-myInputVariable: ElementRef;
+  myInputVariable: ElementRef;
   isUserAllowed = true;
   private tabMenuItems: MenuItem[];
   buttons: MenuItem[];
@@ -41,7 +41,7 @@ myInputVariable: ElementRef;
   addSowForm: FormGroup;
   addAdditionalBudgetForm: FormGroup;
   selectedFile: any;
-  
+
   filePathUrl: any;
   subscription;
   constructor(
@@ -189,9 +189,9 @@ myInputVariable: ElementRef;
    * This method is called when client legal entity value is changed.
    */
   onChangeClientLegalEntity() {
-    if (!this.pmObject.addSOW.ClientLegalEntity) {
-      this.pmObject.addSOW.ClientLegalEntity = this.addSowForm.value.clientLegalEntity;
-    }
+    // if (!this.pmObject.addSOW.ClientLegalEntity) {
+    this.pmObject.addSOW.ClientLegalEntity = this.addSowForm.value.clientLegalEntity;
+    // }
     if (this.pmObject.addSOW.ClientLegalEntity) {
       this.sowDropDown.POC = [];
       this.sowDropDown.POCOptional = [];
