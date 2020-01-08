@@ -1287,6 +1287,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
     }
 
     async uploadFileData() {
+        this.commonService.SetNewrelic('Finance-Dashboard', 'Proforma', 'uploadFile');
         const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result)
         // console.log('selectedFile uploaded .', res.ServerRelativeUrl);
         const batchUrl = [];

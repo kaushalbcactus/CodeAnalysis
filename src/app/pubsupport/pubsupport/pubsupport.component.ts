@@ -1330,6 +1330,7 @@ export class PubsupportComponent implements OnInit {
             }
             this.submitBtn.isClicked = true;
             this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
+            this.common.SetNewrelic('pubsupport', 'pubsupport-updateJCRequirementModal', 'uploadFile');
             const res = await this.spOperationsService.uploadFile(this.filePathUrl, this.fileReader.result);
             console.log('selectedFile uploaded .', res.ServerRelativeUrl);
             if (res.hasError) {

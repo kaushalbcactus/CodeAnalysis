@@ -725,6 +725,7 @@ export class PMCommonService {
     }
     const folderPath: string = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + libraryName + '/' + docFolder;
     const filePathUrl = await this.spServices.getFileUploadUrl(folderPath, selectedFile.name, true);
+    this.commonService.SetNewrelic('projectmanagement', 'pmcommon-submitFile', 'uploadFile');
     const res = await this.spServices.uploadFile(filePathUrl, fileReader.result);
     if (res.hasOwnProperty('ServerRelativeUrl') && res.hasOwnProperty('Name') && !res.hasOwnProperty('hasError')) {
       this.pmObject.addProject.FinanceManagement.SOWFileURL = res.ServerRelativeUrl;
