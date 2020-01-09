@@ -7,6 +7,7 @@ import { SPOperationService } from './Services/spoperation.service';
 import { MenuItem } from 'primeng/api';
 import { Title } from '@angular/platform-browser';
 import { filter, map } from 'rxjs/operators';
+import { CommonService } from './Services/common.service';
 // import { Environment } from '../environments/environment.prod';
 declare const _spPageContextInfo;
 declare const newrelic;
@@ -30,7 +31,8 @@ export class AppComponent implements OnDestroy {
     public constantsService: ConstantsService,
     private spService: SPOperationService,
     private titleService: Title,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private common: CommonService
   ) { }
   // tslint:disable-next-line:use-life-cycle-interface
   ngOnInit() {
@@ -91,6 +93,7 @@ export class AppComponent implements OnDestroy {
       'sneha.danduk@cactusglobal.com' : _spPageContextInfo.userEmail;
     this.globalService.currentUser.title = window.location.href.indexOf('localhost') > -1 ? 'Rahul' : _spPageContextInfo.userDisplayName;
     this.spService.setBaseUrl(null);
+    this.common.SetNewrelic('RootApp', 'initSPLoggedInUser', 'getUserInfo');
     const currentUserInfo = await this.spService.getUserInfo(this.globalService.currentUser.userId);
     this.linkAccessForUsers(currentUserInfo.Groups);
     console.log(currentUserInfo);

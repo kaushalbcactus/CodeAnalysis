@@ -689,6 +689,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
     }
 
     async uploadFileData(type: string) {
+        this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'UploadFiles');
         const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
         if (res.ServerRelativeUrl) {
             this.fileUploadedUrl = res.ServerRelativeUrl ? res.ServerRelativeUrl : '';

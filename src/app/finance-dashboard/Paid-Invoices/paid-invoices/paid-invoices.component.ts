@@ -338,6 +338,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         this.loggedInUserInfo = [];
         this.loggedInUserGroup = [];
         //let curruentUsrInfo = await this.spServices.getCurrentUser();
+        this.commonService.SetNewrelic('Finance-Dashboard', 'paid-invoices', 'getUserInfo');
         let currentUsrInfo = await this.spServices.getUserInfo(userId);
         this.loggedInUserInfo = currentUsrInfo.Groups.results;
         this.loggedInUserInfo.forEach(element => {

@@ -398,13 +398,16 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   downloadFile() {
     if (this.selectedDocuments.length > 0) {
       if (this.selectedTask.DisplayTitle) {
+        this.commonService.SetNewrelic('Shared', 'downloadFile-DisplayTitle', 'createZip');
         this.spServices.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), this.selectedTask.DisplayTitle);
       } else if (this.selectedTask.ProjectName) {
+        this.commonService.SetNewrelic('Shared', 'downloadFile-ProjectName', 'createZip');
         this.spServices.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl),
           this.selectedTask.ProjectName + ' ' + this.selectedTask.Milestone + ' ' + this.selectedTask.Task);
       } else {
         const downloadName = this.selectedTask.WBJID ? this.selectedTask.ProjectCode + ' (' +
           this.selectedTask.WBJID + ' )' : this.selectedTask.ProjectCode;
+        this.commonService.SetNewrelic('Shared', 'downloadFile', 'createZip');
         this.spServices.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), downloadName);
       }
 

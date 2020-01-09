@@ -1053,6 +1053,7 @@ export class AllProjectsComponent implements OnInit {
   }
 
   async getTosList() {
+    this.commonService.SetNewrelic('Finance-Dashboard', 'all-projects-getTosList', 'getGroupInfo');
     const approvers = await this.spServices.getGroupInfo('ExpenseApprovers');
     let arrayTo = [];
     if (approvers.results) {

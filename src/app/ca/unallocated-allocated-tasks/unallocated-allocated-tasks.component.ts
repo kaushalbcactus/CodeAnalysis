@@ -581,6 +581,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         const userEmail = user.EMail;
         arrayTo.push(userEmail);
       }
+      this.commonService.SetNewrelic('CA', 'unallocated-allocated-tasks', 'SendMail');
       this.spServices.sendMail(arrayTo.join(','), fromUser, mailSubject, objEmailBody);
     }
   }

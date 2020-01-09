@@ -186,6 +186,7 @@ export class SendToClientComponent implements OnInit {
     // }
     const fileName = task.ProjectCode + ' - ' + task.Milestone;
     // this.spServices.downloadMultipleFiles(tempArray, fileName);
+    this.commonService.SetNewrelic('projectmanagement', 'sendtoclient', 'createZip');
     this.spServices.createZip(tempArray.map(c => c.url), fileName);
     
     // }, 500);

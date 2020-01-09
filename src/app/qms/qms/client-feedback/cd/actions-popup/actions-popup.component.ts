@@ -104,26 +104,13 @@ export class ActionsPopupComponent implements OnInit {
   };
   public hideResourceLoader = true;
   constructor(private globalConstant: ConstantsService, private spService: SPOperationService,
-    private global: GlobalService, private qmsConstant: QMSConstantsService, private messageService: MessageService,
-    // private platformLocation: PlatformLocation,
-    // private locationStrategy: LocationStrategy,
-    // private readonly _router: Router,
+    private global: GlobalService, 
+    private qmsConstant: QMSConstantsService, 
+    private messageService: MessageService,
+    private commonService: CommonService,
     _applicationRef: ApplicationRef,
     zone: NgZone
   ) {
-
-
-    // // Browser back button disabled & bookmark issue solution
-    // history.pushState(null, null, window.location.href);
-    // platformLocation.onPopState(() => {
-    //   history.pushState(null, null, window.location.href);
-    // });
-
-    // _router.events.subscribe((uri) => {
-    //   zone.run(() => _applicationRef.tick());
-    // });
-
-
   }
 
   ngOnInit() {
@@ -334,6 +321,7 @@ export class ActionsPopupComponent implements OnInit {
           validityMailContent = this.replaceContent(validityMailContent, '@@Val1@@',
             this.global.sharePointPageObject.webAbsoluteUrl + '/dashboard#/qms/clientFeedback/clientDissatisfaction');
           // tslint:disable: max-line-length
+          this.commonService.SetNewrelic('QMS', 'CD-Popup-closeCD-Admin', 'SendMail');
           this.spService.sendMail(strCDdAdminsEmail, this.global.currentUser.email, validityMailSubject, validityMailContent, this.global.currentUser.email);
         }
         if (oldStatus === this.globalConstant.cdStatus.Created) {
@@ -342,6 +330,7 @@ export class ActionsPopupComponent implements OnInit {
             const notifyMailSubject = this.qc.projectCode + '(#' + this.qc.qcID + '): Dissatisfaction';
             const strTo = this.qc.selectedSegregation === 'Internal' ? cd.Internal.resourcesEmail.join(',') : cd.External.resourcesEmail.join(',');
             notifyMailContent = this.replaceContent(notifyMailContent, '@@Val1@@', this.global.sharePointPageObject.webAbsoluteUrl + '/dashboard#/qms/personalFeedback/externalFeedback');
+            this.commonService.SetNewrelic('QMS', 'CD-Popup-closeCD', 'SendMail');
             this.spService.sendMail(strTo, this.global.currentUser.email, notifyMailSubject, notifyMailContent, this.global.currentUser.email);
           }
         }
@@ -412,6 +401,7 @@ export class ActionsPopupComponent implements OnInit {
           const rejectMailSubject = this.qc.projectCode + '(#' + this.qc.qcID + '): Dissatisfaction rejected';
           const strTo = this.qc.deliveryLevel2.emailIDs.join(',');
           rejectMailContent = this.replaceContent(rejectMailContent, "@@Val1@@", this.global.sharePointPageObject.webAbsoluteUrl + '/dashboard#/qms/clientFeedback/clientDissatisfaction');
+          this.commonService.SetNewrelic('QMS', 'CD-updateValidity', 'SendMail');
           this.spService.sendMail(strTo, this.global.currentUser.email, rejectMailSubject, rejectMailContent, this.global.currentUser.email);
         }
         this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD rejected for ' + this.qc.projectCode + '.' });
@@ -495,6 +485,7 @@ export class ActionsPopupComponent implements OnInit {
         const createMailSubject = this.qc.projectCode + '(#' + this.qc.qcID + '): Dissatisfaction';
         const strTo = delivery2EMail.toString();
         createMailContent = this.replaceContent(createMailContent, "@@Val1@@", this.global.sharePointPageObject.webAbsoluteUrl + '/dashboard#/qms/clientFeedback/clientDissatisfaction');
+        this.commonService.SetNewrelic('QMS', 'CD-actions-popup-tag', 'SendMail');
         this.spService.sendMail(strTo, this.global.currentUser.email, createMailSubject, createMailContent, this.global.currentUser.email);
       }
       this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD Tagged Successfully!' });

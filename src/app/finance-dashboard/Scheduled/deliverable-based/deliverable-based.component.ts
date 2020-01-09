@@ -833,6 +833,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         const ccUser = this.getCCList();
         // ccUser.push(this.currentUserInfoData.Email);
         const tos = this.getTosList();
+        this.commonService.SetNewrelic('Finance-Dashboard', 'deliverableBased-invoiceConfirmMail', 'SendMail');
         this.spServices.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
         this.reFetchData();
     }

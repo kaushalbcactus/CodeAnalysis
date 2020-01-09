@@ -149,6 +149,7 @@ export class CDComponent implements OnInit, OnDestroy {
    */
   protected async getQCItems(filterObj?): Promise<[]> {
     const qcComponent = JSON.parse(JSON.stringify(this.qmsConstant.ClientFeedback.ClientDissatisfactionComponent));
+    this.commonService.SetNewrelic('QMS', 'CD', 'getGroupInfo');
     const result = await this.spService.getGroupInfo(this.globalConstant.Groups.CDAdmin);
     this.global.cdAdmins = result.results ? result.results : [];
     this.global.currentUser.isCDAdmin = this.global.cdAdmins.find(t => t.Id === this.global.currentUser.userId) ? true : false;

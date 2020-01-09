@@ -846,6 +846,7 @@ export class PubsupportComponent implements OnInit {
         if (data) {
             const projectCodeData: any = data;
             const fileEndPoint = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + projectCodeData.ClientLegalEntity + '/' + projectCodeData.ProjectCode + '/Publication Support/Forms/';
+            this.common.SetNewrelic('PubSupport', 'pubsupport-updateAuthorForms', 'readFiles');
             this.filesToCopy = await this.spOperationsService.readFiles(fileEndPoint);
             if (this.filesToCopy.length) {
                 this.noFileMsg = '';
@@ -1375,6 +1376,7 @@ export class PubsupportComponent implements OnInit {
             this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
             if (this.filesToCopy.length) {
                 this.update_author_form.removeControl('file');
+                this.common.SetNewrelic('Pubsupport', 'pubsupport-onsubmit', 'copyFiles');
                 const fileCopyEndPoint = await this.spOperationsService.copyFiles(this.fileSourcePath, this.fileDestinationPath);
                 this.messageService.add({
                     key: 'myKey1', severity: 'success', summary: 'Success message',
@@ -1833,6 +1835,7 @@ export class PubsupportComponent implements OnInit {
                 detail: 'Files are downloading...', life: 2000
             });
             const fileArray = file.split(';#');
+            this.common.SetNewrelic('pubsupport', 'downloadFile', 'createZip');
             this.spOperationsService.createZip(fileArray, fileName);
         } else {
             this.messageService.add({ key: 'myKey1', severity: 'warn', summary: 'Info message', detail: 'No file avaliable.', life: 4000 });

@@ -6,6 +6,7 @@ import { FdConstantsService } from '../fdServices/fd-constants.service';
 import { Router } from '@angular/router';
 import { PubsuportConstantsService } from 'src/app/pubsupport/Services/pubsuport-constants.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
+import { CommonService } from 'src/app/Services/common.service';
 
 @Injectable({
     providedIn: 'root'
@@ -22,6 +23,7 @@ export class FdAuthService {
         private router: Router,
         public pubsupportService: PubsuportConstantsService,
         public constantService: ConstantsService,
+        public common: CommonService
 
     ) {
 
@@ -47,7 +49,7 @@ export class FdAuthService {
             { label: 'Deliverable Based / FTE', routerLink: ['deliverablebased-fte'] },
             { label: 'OOP', routerLink: ['oop'] },
         ];
-
+        this.common.SetNewrelic('Finance-Dashboard', 'fd-auth', 'getUserInfo');
         this.globalObject.userInfo = await this.spOperationsServices.getUserInfo(this.globalObject.currentUser.userId);
         console.log('this.globalObject.userInfo ', this.globalObject.userInfo);
         // this.constantsService.loader.isPSInnerLoaderHidden = true;

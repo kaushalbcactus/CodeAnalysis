@@ -266,6 +266,7 @@ export class PMCommonService {
 
   async getUserProperties(): Promise<any> {
     if (this.pmObject.projectContactsItems.length === 0) {
+      this.commonService.SetNewrelic('Project-Management', 'pmcommon', 'getUserInfo');
       const userProp = await this.spServices.getUserInfo(this.globalObject.currentUser.userId);
       this.pmObject.currLoginInfo = userProp;
       if (userProp && userProp.Groups && userProp.Groups.results && userProp.Groups.results.length) {
@@ -543,6 +544,7 @@ export class PMCommonService {
     objEmailBody.forEach(element => {
       mailBody = mailBody.replace(RegExp(element.key, 'gi'), element.value);
     });
+    this.commonService.SetNewrelic('ProjectManagement', 'pmcommon', 'SendMail');
     this.spServices.sendMail(arrayTo.join(','), this.pmObject.currLoginInfo.Email, mailSubject, mailBody,
       cc.join(','));
   }

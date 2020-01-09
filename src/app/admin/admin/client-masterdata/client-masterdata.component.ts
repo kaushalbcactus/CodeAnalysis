@@ -2362,6 +2362,7 @@ export class ClientMasterdataComponent implements OnInit {
         // write the logic of create new PO.
         const poData = await this.getPOData();
         if (!this.showeditPO) {
+          this.common.SetNewrelic('admin', 'client-masterdata', 'savePO');
           const results = await this.spServices.createItem(this.constantsService.listNames.PO.name,
             poData, this.constantsService.listNames.PO.type);
           if (!results.hasOwnProperty('hasError') && !results.hasError) {
