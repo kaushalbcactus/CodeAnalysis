@@ -763,6 +763,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     }
 
     async uploadPaymentFileData(type: string) {
+        this.commonService.SetNewrelic('Finance-Dashboard', 'outstanding-invoices-payment-resolved', 'uploadFile');
         const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
         const batchUrl = [];
         // console.log('selectedFile uploaded .', res.ServerRelativeUrl);
@@ -883,6 +884,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             // console.log('form is submitting ..... & Form data is ', this.creditOrDebitNote_form.value);
             // sts = type === 'Mark as Sent to Client' ? 'Sent' : 'Rejected'
             this.isPSInnerLoaderHidden = false;
+            this.commonService.SetNewrelic('Finance-Dashboard', 'outstanding-invoices-creditdebit', 'uploadFile');
             const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
             if (res) {
                 // console.log('selectedFile uploaded .', res);

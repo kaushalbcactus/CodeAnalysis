@@ -2355,6 +2355,7 @@ export class ClientMasterdataComponent implements OnInit {
       const libraryName = this.currClientObj.ListName;
       const folderPath: string = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + libraryName + '/' + docFolder;
       this.filePathUrl = await this.spServices.getFileUploadUrl(folderPath, this.selectedFile.name, true);
+      this.common.SetNewrelic('Admin-ClientMasterData', 'SavePO', 'UploadFile');
       const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
       console.log(res);
       if (this.selectedFile && !res.hasOwnProperty('hasError')) {

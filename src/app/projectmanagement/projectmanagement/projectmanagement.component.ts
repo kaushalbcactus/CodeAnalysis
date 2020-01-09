@@ -436,6 +436,7 @@ myInputVariable: ElementRef;
     }
     const folderPath: string = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + libraryName + '/' + docFolder;
     this.filePathUrl = await this.spServices.getFileUploadUrl(folderPath, this.selectedFile.name, true);
+    this.commonService.SetNewrelic('ProjectManagement', 'projectmanagement-submitFile', 'uploadFile');
     const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
     console.log(res);
     // Added by kaushal on 12-07-2019
@@ -487,7 +488,8 @@ myInputVariable: ElementRef;
           // tslint:disable-next-line:quotemark
           "&@TargetFileName='" + filename + "'&$expand=ListItemAllFields";
         // tslint:enable
-        const res: any = this.spServices.uploadFile(filePathUrl, this.fileReader.result)
+        this.commonService.SetNewrelic('ProjectManagement', 'projectmanagement-uploadDocuments', 'uploadFile');
+        const res: any = this.spServices.uploadFile(filePathUrl, this.fileReader.result);
         // .subscribe(res => {
         if (res) {
           // uploadedFiles.push(res);

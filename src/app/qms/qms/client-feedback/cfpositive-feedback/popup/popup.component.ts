@@ -341,6 +341,7 @@ export class PopupComponent implements OnInit {
           const notifyMailSubject = this.pf.projectCode + '(#' + this.pf.pfID + '): Positive Feedback';
           const strTo = allResourcesEmails.join(',');
           notifyMailContent = this.replaceContent(notifyMailContent, '@@Val1@@', this.global.sharePointPageObject.webAbsoluteUrl + '/dashboard#/qms/personalFeedback/positiveFeedback');
+          this.commonService.SetNewrelic('cfpositive-feedback-popup', 'updatePF', 'PositveFeedbackMail');
           this.spService.sendMail(strTo, this.global.currentUser.email, notifyMailSubject, notifyMailContent, this.global.currentUser.email);
         }
       }

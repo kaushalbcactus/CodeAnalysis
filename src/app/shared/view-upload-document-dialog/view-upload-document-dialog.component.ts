@@ -486,7 +486,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
               // tslint:disable-next-line: quotemark
               "&@TargetFileName='" + fileObj.name + "'&$expand=ListItemAllFields";
 
-            this.commonService.SetNewrelic('Shared', 'viewUpladDoc', 'uploadDocuments');
+            this.commonService.SetNewrelic('Shared', 'viewUpladDocDialog', 'uploadDocuments');
             const res = await this.spOperations.uploadFile(filePathUrl, fileObj.reader.result);
             uploadedFiles.push(res);
             if (readers.length === uploadedFiles.length) {

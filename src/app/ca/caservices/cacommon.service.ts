@@ -185,30 +185,30 @@ export class CACommonService {
     sDate = sDates + ' ' + sHrs + ':' + sMins + ':00 ' + sAMPM;
     return sDate;
   }
-  /**
-   * This method is used to send the email to particualr user with subject and body.
-   * @param to
-   * @param from
-   * @param cc
-   * @param templateName
-   * @param objEmailBody
-   * @param mailSubject
-   */
-  async triggerMail(to, from, cc, templateName, objEmailBody, mailSubject) {
-    const mailContent = this.globalConstantService.listNames.MailContent.name;
-    const mailQuery = this.caConstantService.mailContent;
-    mailQuery.filter = mailQuery.filter.replace('{0}', templateName);
-    //tslint:disable
-    // tslint:enable
-    const body = await this.spServices.readItems(mailContent, mailQuery);
-    // let mailBody = JSON.parse(body._body).d.results[0].Content;
-    let mailBody = body.length ? body[0].Content : [];
-    for (const data of objEmailBody) {
-      mailBody = mailBody.replace(RegExp(data.key, 'gi'), data.value);
-    }
-    //  cc = [fromEmail];
-    this.spServices.sendMail(to, from, mailSubject, mailBody, cc);
-  }
+  // /**
+  //  * This method is used to send the email to particualr user with subject and body.
+  //  * @param to
+  //  * @param from
+  //  * @param cc
+  //  * @param templateName
+  //  * @param objEmailBody
+  //  * @param mailSubject
+  //  */
+  // async triggerMail(to, from, cc, templateName, objEmailBody, mailSubject) {
+  //   const mailContent = this.globalConstantService.listNames.MailContent.name;
+  //   const mailQuery = this.caConstantService.mailContent;
+  //   mailQuery.filter = mailQuery.filter.replace('{0}', templateName);
+  //   //tslint:disable
+  //   // tslint:enable
+  //   const body = await this.spServices.readItems(mailContent, mailQuery);
+  //   // let mailBody = JSON.parse(body._body).d.results[0].Content;
+  //   let mailBody = body.length ? body[0].Content : [];
+  //   for (const data of objEmailBody) {
+  //     mailBody = mailBody.replace(RegExp(data.key, 'gi'), data.value);
+  //   }
+  //   //  cc = [fromEmail];
+  //   this.spServices.sendMail(to, from, mailSubject, mailBody, cc);
+  // }
   /**
    * This method is to give the unique value with seperator.
    * @param sVal
