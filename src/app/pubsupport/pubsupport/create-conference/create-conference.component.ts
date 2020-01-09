@@ -26,7 +26,7 @@ export class CreateConferenceComponent implements OnInit {
         isSubmit: false
     }
 
-    yearsRange = new Date().getFullYear() + ':' + (new Date().getFullYear() + 10);
+    yearsRange = new Date().getFullYear() - 1 + ':' + (new Date().getFullYear() + 10);
 
     constructor(
         private fb: FormBuilder,
