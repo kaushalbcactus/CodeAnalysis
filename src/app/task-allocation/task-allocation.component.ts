@@ -40,8 +40,8 @@ import { PlatformLocation, LocationStrategy } from '@angular/common';
 })
 export class TaskAllocationComponent implements OnInit {
 
-  @ViewChild(TimelineComponent, { static: true }) timelineChild: TimelineComponent;
-  @ViewChild(ResourcesComponent, { static: true }) resourcesComponentChild: ResourcesComponent;
+  @ViewChild(TimelineComponent, { static: false }) timelineChild: TimelineComponent;
+  @ViewChild(ResourcesComponent, { static: false }) resourcesComponentChild: ResourcesComponent;
   customCollapsedHeight = '30px';
   Searchenable = false;
   SearchView = true;

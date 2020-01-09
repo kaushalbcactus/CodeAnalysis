@@ -219,14 +219,14 @@
         <div class="mt-20" style="float: left">
             <p-button class="mr-5" type="button" (click)="goToSow()" type="button" label="Back"></p-button>
         </div>
-        <div class="mt-20" style="float: right">
+        <div class="mt-20" style="float: right;">
             <p-button class="mr-5" type="button" (click)="goToTimeline(addProjectAttributesForm.value)"
                 label="Continue To Timeline">
             </p-button>
         </div>
     </div>
-    <div *ngIf="showEditSave">
-        <p-button class="mr-5" type="button" (click)="saveEditProject()" label="Save" style="float: right;"></p-button>
+    <div *ngIf="showEditSave" style="float: right;">
+        <p-button type="button" (click)="saveEditProject()" label="Save"></p-button>
     </div>
 </div>
 
@@ -247,7 +247,7 @@
                         Molecule is required</div>
                 </div>
             </div>
-            <div class="mt-20" style="float: right">
+            <div class="mt-20" style="float: right;">
                 <p-button type="button" class="mr-5" (click)="addMoleculeToList()" label="Add"></p-button>
                 <p-button type="button" class="mr-5" (click)="resetMoleculeAdd()" label="Cancel"></p-button>
             </div>
