@@ -103,6 +103,7 @@ export class AdminViewComponent implements OnInit {
 
   async ngOnInit() {
     if (!this.global.currentUser.groups.length) {
+      this.commonService.SetNewrelic('QMS', 'admin-view', 'getUserInfo');
       const result = await this.spService.getUserInfo(this.global.currentUser.userId);
       this.global.currentUser.groups = result.Groups.results ? result.Groups.results : [];
     }

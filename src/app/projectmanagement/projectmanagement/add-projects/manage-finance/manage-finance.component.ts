@@ -381,6 +381,7 @@ export class ManageFinanceComponent implements OnInit {
   }
 
   async getTosList() {
+    this.commonService.SetNewrelic('Project-Management', 'manage-finance-getTosList', 'getGroupInfo');
     const approvers = await this.spServices.getGroupInfo('ExpenseApprovers');
     let arrayTo = [];
     if (approvers.results) {
@@ -1539,6 +1540,7 @@ export class ManageFinanceComponent implements OnInit {
     });
   }
   async commitInvoiceItem(rowData) {
+    this.commonService.SetNewrelic('Finance-Dashboard', 'manage-finance-commitInvoiceItem', 'getGroupInfo');
     const groupInfo = await this.spServices.getGroupInfo('Invoice_Team');
     const approvers = groupInfo.results;
     const arrayTo = [];

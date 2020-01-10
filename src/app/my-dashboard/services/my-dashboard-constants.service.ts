@@ -609,6 +609,7 @@ export class MyDashboardConstantsService {
     const documentsUrl = "/Drafts/Internal/" + task.Milestone;
     let completeFolderRelativeUrl = '';
     completeFolderRelativeUrl = this.projectInfo.ProjectFolder + documentsUrl;
+    this.common.SetNewrelic('MyDashboard', 'my-dashboard-constants', 'readFiles');
     this.response = await this.spServices.readFiles(completeFolderRelativeUrl);
     this.allDocuments = this.response.length > 0 ? this.response : [];
     this.allDocuments.map(c => c.isFileMarkedAsFinal = c.ListItemAllFields.Status.split(" ").splice(-1)[0] === "Complete" ? true : false);

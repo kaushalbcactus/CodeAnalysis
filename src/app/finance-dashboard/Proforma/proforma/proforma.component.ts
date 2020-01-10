@@ -286,6 +286,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         this.loggedInUserInfo = [];
         this.loggedInUserGroup = [];
         //let curruentUsrInfo = await this.spServices.getCurrentUser();
+        this.commonService.SetNewrelic('Finance-Dashboard', 'proforma', 'getUserInfo');
         let currentUsrInfo = await this.spServices.getUserInfo(userId);
         this.loggedInUserInfo = currentUsrInfo.Groups.results;
         this.loggedInUserInfo.forEach(element => {
@@ -1697,6 +1698,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 const oCLE = this.cleData.find(e => e.Title === oInv.ClientLegalEntity);
                 pdfCall.ListName = oCLE.ListName;
                 pdfCall.HtmlContent = proformHtml;
+                this.commonService.SetNewrelic('Finance-Dashboard', 'proforma', 'executeJS');
                 const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
                 await this.spServices.executeJS(pdfService, pdfCall);
             }

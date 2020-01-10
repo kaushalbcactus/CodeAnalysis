@@ -598,6 +598,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
 
   async checkCompleteTask(task) {
     const allowedStatus = ['Completed', 'AllowCompletion', 'Auto Closed'];
+    this.commonService.SetNewrelic('MyDashboard', 'MyCurrentCompletedTasks', 'readItem');
     const response = await this.spServices.readItem(this.constants.listNames.Schedules.name, task.ID);
     const stval = await this.myDashboardConstantsService.getPrevTaskStatus(task);
 

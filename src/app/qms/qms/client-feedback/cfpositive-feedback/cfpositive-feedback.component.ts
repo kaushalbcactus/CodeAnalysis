@@ -138,6 +138,7 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
    */
   protected async getPFItems(filterObj?): Promise<[]> {
     const pfComponent = JSON.parse(JSON.stringify(this.qmsConstant.ClientFeedback.PositiveFeedbackComponent));
+    this.commonService.SetNewrelic('QMS', 'cfpositive-feedback', 'getGroupInfo');
     const result = await this.spService.getGroupInfo(this.globalConstant.Groups.PFAdmin);
     this.global.pfAdmins = result.results ? result.results : [];
     this.global.currentUser.isPFAdmin = this.global.pfAdmins.find(t => t.Id === this.global.currentUser.userId) ? true : false;

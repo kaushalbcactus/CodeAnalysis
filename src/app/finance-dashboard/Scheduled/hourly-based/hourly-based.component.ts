@@ -1051,7 +1051,9 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         // var ccUser = [];
         // ccUser.push(this.currentUserInfoData.Email);
         // let tos = this.getTosList();
+        this.commonService.SetNewrelic('Finance-Dashboard', 'HourlyBased-invoiceTeam', 'SendMail');
         this.spServices.sendMail(this.getTosList('i').join(','), this.currentUserInfoData.Email, mailSubject, mailContent, this.getCCList('i').join(','));
+        this.commonService.SetNewrelic('Finance-Dashboard', 'HourlyBased-proposeClosure', 'SendMail');
         this.spServices.sendMail(this.getTosList('pc').join(','), this.currentUserInfoData.Email, pcmailSubject, pcmailContent, this.getCCList('pc').join(','));
         this.confirmationModal = false;
         this.reFetchData('confirm');

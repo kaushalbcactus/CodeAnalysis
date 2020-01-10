@@ -3,6 +3,7 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { AdminObjectService } from '../../services/admin-object.service';
 import { AdminConstantService } from '../../services/admin-constant.service';
+import { CommonService } from 'src/app/Services/common.service';
 @Component({
   selector: 'app-entitlement',
   templateUrl: './entitlement.component.html',
@@ -14,7 +15,8 @@ export class EntitlementComponent implements OnInit {
     private spServices: SPOperationService,
     private globalObject: GlobalService,
     public adminObject: AdminObjectService,
-    public adminConstantService: AdminConstantService
+    public adminConstantService: AdminConstantService,
+    public commonService: CommonService
     ) { }
 
   async ngOnInit() {
@@ -29,6 +31,7 @@ export class EntitlementComponent implements OnInit {
   }
   async checkUserPresentInGroup() {
     const isPresent = false;
+    this.commonService.SetNewrelic('Admin', 'entitlement', 'getUserInfo');
     const userInfo = await this.spServices.getUserInfo(this.globalObject.currentUser.userId);
     if (userInfo && userInfo.hasOwnProperty('Groups')) {
       if (userInfo.Groups && userInfo.Groups.results && userInfo.Groups.results.length) {

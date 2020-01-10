@@ -726,6 +726,7 @@ export class OopComponent implements OnInit, OnDestroy {
 
         const ccUser = this.getCCList();
         const tos = this.getTosList();
+        this.commonService.SetNewrelic('Finance-Dashboard', 'oop-CreateExpense', 'SendMail');
         this.spOperationsService.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
         this.reFetchData();
     }
