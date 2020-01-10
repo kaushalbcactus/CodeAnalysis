@@ -598,7 +598,7 @@ export class PubsupportComponent implements OnInit {
             form.get('UserName').setValue(data.element.UserName);
             form.get('Password').setValue(data.element.Password);
             form.get('Comments').setValue(data.element.Comments);
-            if (data.element.EntryType === 'journal') {
+            if (data.element.EntryType.toLowerCase() === 'journal') {
                 // Set New Values
                 // form.get('jcLineItemName').setValue(journalConfItem.JournalName);
                 form.get('ExpectedReviewPeriod').setValue(data.element.ExpectedReviewPeriod);
@@ -1128,7 +1128,7 @@ export class PubsupportComponent implements OnInit {
     addJCControls(form: any, type: string, actionType: string) {
         actionType === 'Add' ? form.addControl('UserName', new FormControl('')) : form.addControl('UserName', new FormControl([''], Validators.required));
         actionType === 'Add' ? form.addControl('Password', new FormControl('')) : form.addControl('Password', new FormControl([''], Validators.required));
-        if (type === 'journal') {
+        if (type.toLowerCase() === 'journal') {
             // tslint:disable-next-line: max-line-length
             form.addControl('ExpectedReviewPeriod', new FormControl([''], Validators.required));
             form.addControl('IF', new FormControl([''], Validators.required));

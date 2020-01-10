@@ -1806,14 +1806,14 @@ export class AllProjectsComponent implements OnInit {
     if (this.pmObject.addProject.Timeline.Standard.IsStandard) {
       this.pmObject.addProject.Timeline.Standard.Service = proj.StandardService;
       this.pmObject.addProject.Timeline.Standard.ProposedStartDate = proj.ProposedStartDate;
-      this.pmObject.addProject.Timeline.Standard.ProposedEndDate = proj.ProposedStartDate;
+      this.pmObject.addProject.Timeline.Standard.ProposedEndDate = proj.ProposedEndDate;
     }
     if (this.pmObject.addProject.Timeline.NonStandard.IsStandard) {
       this.pmObject.addProject.Timeline.NonStandard.Service = proj.StandardService;
       this.pmObject.addProject.Timeline.NonStandard.DeliverableType = proj.DeliverableType;
       this.pmObject.addProject.Timeline.NonStandard.SubDeliverable = proj.SubDeliverable;
       this.pmObject.addProject.Timeline.NonStandard.ProposedStartDate = proj.ProposedStartDate;
-      this.pmObject.addProject.Timeline.NonStandard.ProposedEndDate = proj.ProposedStartDate;
+      this.pmObject.addProject.Timeline.NonStandard.ProposedEndDate = proj.ProposedEndDate;
     }
     let cm1Array = [];
     let delivery1Array = [];
