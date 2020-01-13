@@ -2477,7 +2477,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         }
         if (availableHours >= allocatedHours) {
           // filter tasks based on dates and subtasks within same slot
-          retTask = retTask.filter(t => t.ID !== task.data.pID);
+          retTask = retTask.filter(t => t.ID !== task.data.pID && t.Status !== 'Completed');
 
           retTask = retTask.filter((tsk) => {
             return ((task.data.pUserStart <= tsk.DueDate && task.data.pUserEnd >= tsk.DueDate)
