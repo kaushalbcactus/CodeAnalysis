@@ -192,6 +192,7 @@ export class CDComponent implements OnInit, OnDestroy {
       }
       qcUrl = qcComponent.getQC;
     }
+    this.commonService.SetNewrelic('QMS', 'ClientFeedback-cd-getQCItems', 'readItems');
     const arrResult = await this.spService.readItems(this.globalConstant.listNames.QualityComplaints.name, qcUrl);
     const arrQCs = arrResult.length > 0 ? this.appendPropertyTOObject(arrResult) : [];
     return arrQCs;

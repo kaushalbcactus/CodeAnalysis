@@ -615,7 +615,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
     const mailObj = this.caConstant.getMailTemplate;
     mailObj.filter = mailObj.filter.replace('{{templateName}}', templateName);
-    this.commonService.SetNewrelic('unallocated-allocated', 'CA', 'GetMailContent');
+    this.commonService.SetNewrelic('unallocated-allocated', 'CA-GetMailContent', 'readItems');
     const templateData = await this.spServices.readItems(this.globalConstant.listNames.MailContent.name,
       mailObj);
     mailContent = templateData.length > 0 ? templateData[0].Content : [];

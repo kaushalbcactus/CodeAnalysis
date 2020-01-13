@@ -512,6 +512,7 @@ export class ActionsPopupComponent implements OnInit {
     } else {
       const common = this.qmsConstant.common;
       common.getMailTemplate.filter = common.getMailTemplate.filter.replace('{{templateName}}', arrTemplateName);
+      this.commonService.SetNewrelic('QMS', 'cd-actionpopup-getMailContent', 'readItems');
       const templateData = await this.spService.readItems(this.globalConstant.listNames.MailContent.name,
         common.getMailTemplate);
       arrResult = templateData.length > 0 ? templateData : [];
@@ -530,6 +531,7 @@ export class ActionsPopupComponent implements OnInit {
       const group = this.qc.selectedGroup;
       const tagItemsUrl = group.value === 'Project' ? cdComponent.getOpenProjects : cdComponent.getClients;
       const tagListName = group.value === 'Project' ? this.globalConstant.listNames.ProjectInformation.name : this.globalConstant.listNames.ClientLegalEntity.name;
+      this.commonService.SetNewrelic('QMS', 'cd-actionpopup-getSelectedGroupItems', 'readItems');
       let items = await this.spService.readItems(tagListName, tagItemsUrl);
       items = items.length > 0 ? items : [];
       this.qc.tagGroupItems = [...items];

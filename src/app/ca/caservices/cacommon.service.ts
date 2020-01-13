@@ -291,6 +291,7 @@ export class CACommonService {
     const Project = Object.assign({}, this.caConstantService.projectQueryOptions);
     Project.filterByCode = Project.filterByCode.replace(/{{projectCode}}/gi, projectCode);
     Project.filter = Project.filterByCode;
+    this.commonService.SetNewrelic('CA', 'cacommon-getProjectDetailsByCode', 'readItems');
     const arrResults = await this.spServices.readItems(this.globalConstantService.listNames.ProjectInformation.name, Project);
     // const projectEndPoint = this.spServices.getReadURL('' + projectInformationList + '', Project);
     // this.spServices.getBatchBodyGet(batchContents, batchGuid, projectEndPoint);
@@ -897,6 +898,7 @@ export class CACommonService {
     const projectObj = Object.assign({}, this.caConstantService.projectQueryOptions);
     projectObj.filterByCode = projectObj.filterByCode.replace(/{{projectCode}}/gi, task.projectCode);
     projectObj.filter = projectObj.filterByCode;
+    this.commonService.SetNewrelic('CA', 'cacommon-ResourceAllocation', 'readItems');
     const arrResults = await this.spServices.readItems(this.globalConstantService.listNames.ProjectInformation.name, projectObj);
     const project = arrResults.length > 0 ? arrResults[0] : {}
     // const project = await this.getProjectDetailsByCode(projectInformationList, task.projectCode);
@@ -975,6 +977,7 @@ export class CACommonService {
     const projectObj = Object.assign({}, this.caConstantService.projectQueryOptions);
     projectObj.filterByCode = projectObj.filterByCode.replace(/{{projectCode}}/gi, task.projectCode);
     projectObj.filter = projectObj.filterByCode;
+    this.commonService.SetNewrelic('CA', 'cacommon-ResourceAllocation', 'readItems');
     const arrResults = await this.spServices.readItems(this.globalConstantService.listNames.ProjectInformation.name, projectObj);
     const project = arrResults.length > 0 ? arrResults[0] : {}
     // const project = await this.getProjectDetailsByCode(projectInformationList, task.projectCode);

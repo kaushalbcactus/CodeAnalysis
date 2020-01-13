@@ -1074,6 +1074,7 @@ export class MyDashboardConstantsService {
 
 
     let ClientLegalEntities = Object.assign({}, this.mydashboardComponent.ClientLegalEntities);
+    this.common.SetNewrelic('MyDashboard', 'MyDashboardConstants-getAllClients', 'readItems');
     this.response = await this.spServices.readItems(this.constants.listNames.ClientLegalEntity.name, ClientLegalEntities);
 
    
@@ -1194,6 +1195,7 @@ export class MyDashboardConstantsService {
     if (newValue.length === 1 && tempArray.length) {
       const taskObj = Object.assign({}, this.mydashboardComponent.TaskDetails);
       taskObj.filter = previousTaskFilter;
+      this.common.SetNewrelic('MyDashboard', 'MyDashboardConstants-callQMSPopup', 'readItems');
       const previousItems = await this.spServices.readItems(this.constants.listNames.Schedules.name, taskObj);
       const obj = {
         documentURL: tempArray,
