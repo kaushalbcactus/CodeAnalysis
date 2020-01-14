@@ -79,7 +79,7 @@ export class PendingAllocationComponent implements OnInit {
     // milestoneArray: [],
     // statusArray: []
   };
-  @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
+  @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
   @ViewChild('paTableRef', { static: false }) paTableRef: Table;
   constructor(
     public globalObject: GlobalService,

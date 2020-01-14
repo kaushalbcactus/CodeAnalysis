@@ -28,7 +28,7 @@ declare var Tooltip: any;
 export class MyTimelineComponent implements OnInit {
   @ViewChild('menuPopup', { static: true }) plusmenu: MenuModule;
   @ViewChild('calendar', { static: true }) fullCalendar: any;
-  @ViewChild('feedbackPopup', { static: true }) feedbackPopupComponent: FeedbackPopupComponent;
+  @ViewChild('feedbackPopup', { static: false }) feedbackPopupComponent: FeedbackPopupComponent;
   response: any[];
   display: boolean;
   tasks: any;

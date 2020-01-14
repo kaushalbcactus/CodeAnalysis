@@ -6,8 +6,7 @@ import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { QMSConstantsService } from '../../../services/qmsconstants.service';
 import { MessageService } from 'primeng/api';
-import { PlatformLocation, LocationStrategy } from '@angular/common';
-import { Router } from '@angular/router';
+import { CommonService } from 'src/app/Services/common.service';
 
 @Component({
   selector: 'app-actions-popup',

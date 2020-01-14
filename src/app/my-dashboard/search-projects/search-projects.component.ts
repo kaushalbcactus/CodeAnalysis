@@ -20,13 +20,13 @@ import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/time
 })
 export class SearchProjectsComponent implements OnInit, OnDestroy {
 
-  @ViewChild(ProjectDraftsComponent, { static: true })
+  @ViewChild(ProjectDraftsComponent, { static: false })
   projectDraftsComponent: ProjectDraftsComponent;
 
-  @ViewChild(TimelineComponent, { static: true })
+  @ViewChild(TimelineComponent, { static: false })
   timelineComponent: TimelineComponent;
 
-  @ViewChild(ViewUploadDocumentDialogComponent, { static: true })
+  @ViewChild(ViewUploadDocumentDialogComponent, { static: false })
   viewUploadDocumentDialogComponent: ViewUploadDocumentDialogComponent;
 
   @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;

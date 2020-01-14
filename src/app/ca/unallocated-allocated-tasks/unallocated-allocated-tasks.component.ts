@@ -40,7 +40,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   tempClick: any;
   multiselectClick: any;
   loaderenable = true;
-  @ViewChild('taskTable', { static: true }) taskTable: Table;
+  @ViewChild('taskTable', { static: false }) taskTable: Table;
   TableBlock: Table;
   taskMenu: MenuItem[];
   selectedTab = 'unallocated';

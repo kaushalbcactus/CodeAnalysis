@@ -8,7 +8,7 @@ import { AllProjectsComponent } from 'src/app/projectmanagement/projectmanagemen
   providers: [AllProjectsComponent, SearchProjectsComponent]
 })
 export class DisplayProjectsComponent implements OnInit {
-  @ViewChild('searchProject', { static: true }) searchProject: SearchProjectsComponent;
+  @ViewChild('searchProject', { static: false }) searchProject: SearchProjectsComponent;
   constructor(
     public allProject: AllProjectsComponent) { }
 

@@ -20,7 +20,7 @@ import { PlatformLocation, LocationStrategy } from '@angular/common';
   encapsulation: ViewEncapsulation.None
 })
 export class ManagerViewComponent implements OnInit, OnDestroy {
-  @ViewChild('userFeedbackRef', { static: true }) userFeedbackRef: UserFeedbackComponent;
+  @ViewChild('userFeedbackRef', { static: false }) userFeedbackRef: UserFeedbackComponent;
   feedbacksColumns = [];
   feedbacksTableColumns = [];
   innerTable = [];

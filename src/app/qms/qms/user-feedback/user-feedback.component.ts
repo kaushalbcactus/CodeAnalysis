@@ -18,7 +18,7 @@ export class UserFeedbackComponent implements OnInit {
   UFColumns: any[];
   UFRows: any = [];
   ref;
-  @ViewChild('uf', { static: true }) uf;
+  // @ViewChild('uf', { static: false }) uf: Table;
   @Output() setAverageRating = new EventEmitter<string>();
   @Output() feedbackData = new EventEmitter<any>();
   @ViewChild('uf', { static: false }) userFeedbackTable: Table;
@@ -83,6 +83,7 @@ export class UserFeedbackComponent implements OnInit {
     this.UFColArray.Feedbackby = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Author.Title, value: a.Author.Title, filterValue: a.Author.Title }; return b; }));
     this.UFColArray.Rating = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.AverageRating, value: +a.AverageRating, filterValue: a.AverageRating }; return b; }));
     this.UFColArray.Comments = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Comments, value: a.Comments, filterValue: a.Comments }; return b; }));
+    console.log('this.UFColArray ', this.UFColArray);
   }
 
   /**
@@ -200,8 +201,8 @@ export class UserFeedbackComponent implements OnInit {
       });
     });
     this.feedbackData.emit(this.UFRows);
-
-    this.ref = this.uf;
+    console.log('this.UFRows ', this.UFRows);
+    this.ref = this.userFeedbackTable;
   }
 
   getAverageRating(itemsArray) {
@@ -247,7 +248,12 @@ export class UserFeedbackComponent implements OnInit {
     }
   }
 
+  changeDDValue(val, colField, type) {
+    console.log('val ', val + 'colFiled ', colField + 'type ', type);
+  }
+
   ngAfterViewChecked() {
+    // console.log('In after view checked ', this.UFColArray);
     if (this.UFRows.length && this.isOptionFilter) {
       let obj = {
         tableData: this.userFeedbackTable,
@@ -256,6 +262,8 @@ export class UserFeedbackComponent implements OnInit {
       }
       if (obj.tableData.filteredValue) {
         this.commonService.updateOptionValues(obj);
+        // this.colFilters(obj.tableData.filteredValue);
+        console.log('this.UFColArray ', this.UFColArray)
       } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
         this.colFilters(obj.tableData.value);
         this.isOptionFilter = false;

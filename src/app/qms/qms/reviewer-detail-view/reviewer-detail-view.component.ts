@@ -24,7 +24,7 @@ export class ReviewerDetailViewComponent implements OnInit {
 
   // For Reviewer pending tasks table
   @Output() myEvent = new EventEmitter<string>();
-  @ViewChild(FeedbackPopupComponent, { static: true }) popup: FeedbackPopupComponent;
+  @ViewChild(FeedbackPopupComponent, { static: false }) popup: FeedbackPopupComponent;
   @ViewChild('rd', { static: false }) rdTable: Table;
 
   public hideLoader = true;

@@ -976,7 +976,7 @@ export class PubsupportComponent implements OnInit {
         this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
         let endpoint;
         let jcObj = [];
-        if (type === 'Journal') {
+        if (type.toLowerCase() === 'journal') {
             this.optionLabel.title = 'JournalName';
             endpoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.Journal.name + '', this.pubsupportService.pubsupportComponent.journal);
             jcObj = [{
@@ -984,7 +984,7 @@ export class PubsupportComponent implements OnInit {
                 type: 'GET',
                 listName: this.constantService.listNames.Journal.name
             }];
-        } else if (type === 'Conference') {
+        } else if (type.toLowerCase() === 'conference') {
             this.optionLabel.title = 'ConferenceName';
             endpoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.Conference.name + '', this.pubsupportService.pubsupportComponent.conference);
             jcObj = [{
@@ -1207,8 +1207,8 @@ export class PubsupportComponent implements OnInit {
                 width: '85%'
             });
 
-            ref.onClose.subscribe((conference) => {
-                if (conference) {
+            ref.onClose.subscribe((journal) => {
+                if (journal) {
                     this.messageService.add({
                         key: 'myKey1', severity: 'success', summary: 'Success message',
                         detail: 'Journal Created.', life: 4000
@@ -1384,7 +1384,7 @@ export class PubsupportComponent implements OnInit {
                 });
                 this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
                 this.updateAuthorModal_1 = false;
-                this.reload();
+                // this.reload();
             } else {
                 this.uploadFileData('updateAuthors');
             }
@@ -1701,7 +1701,7 @@ export class PubsupportComponent implements OnInit {
                 key: 'myKey1', severity: 'success', summary: 'Success message',
                 detail: 'Author details updated.', life: 4000
             });
-            this.reload();
+            // this.reload();
             this.updateAuthorModal_1 = false;
             // document.getElementById('closeModalButton').click();
             this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
@@ -1869,15 +1869,13 @@ export class PubsupportComponent implements OnInit {
 
     reload() {
         // setTimeout(() => {
-        //     // window.location.reload();
-        //     this.currentUserInfo();
-        // }, 3000);
-        //
+        //     this.router.navigated = false;
+        //     this.router.navigate([this.router.url]);
+        // }, 5000);
 
         setTimeout(() => {
-            this.router.navigated = false;
-            this.router.navigate([this.router.url]);
-        }, 5000);
+            this.callGetProjects(false);
+        }, 3000);
 
         // this.router.navigated = false;
         // this.router.navigate([this.router.url]);

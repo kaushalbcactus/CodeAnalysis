@@ -83,7 +83,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
   thenBlock: Table;
   public loderenable = false;
 
-  @ViewChild('feedbackPopup', { static: true }) feedbackPopupComponent: FeedbackPopupComponent;
+  @ViewChild('feedbackPopup', { static: false }) feedbackPopupComponent: FeedbackPopupComponent;
   @ViewChild('taskId', { static: false }) taskId: Table;
   showCalender: boolean;
   selectedDate: any;

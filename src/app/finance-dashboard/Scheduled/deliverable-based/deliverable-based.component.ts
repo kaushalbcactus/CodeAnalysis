@@ -109,7 +109,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     // List of Subscribers
     private subscription: Subscription = new Subscription();
 
-    @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
+    @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
     @ViewChild('db', { static: false }) deliverableTable: Table;
     // Project Info
     projectInfoData: any = [];

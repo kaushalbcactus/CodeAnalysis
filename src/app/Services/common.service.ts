@@ -6,6 +6,7 @@ import { ConstantsService } from './constants.service';
 import { PmconstantService } from '../projectmanagement/services/pmconstant.service';
 import { PMObjectService } from '../projectmanagement/services/pmobject.service';
 import { DatePipe } from '@angular/common';
+import { Table } from 'primeng';
 declare var $;
 
 declare const newrelic;
@@ -24,6 +25,7 @@ export class CommonService {
     };
     batchContents = new Array();
     public sharedTaskAllocateObj = this.sharedObject.oTaskAllocation;
+    public tableObj: any;
     constructor(private pmObject: PMObjectService,
         private spServices: SPOperationService,
         private constants: ConstantsService,
@@ -670,7 +672,7 @@ export class CommonService {
             grpResourceObj.type = 'GET';
             batchUrl.push(grpResourceObj);
         }
-       
+
         const arrResult = await this.spServices.executeBatch(batchUrl);
         this.response = arrResult.length > 0 ? arrResult.map(a => a.retItems) : [];
         if (this.response.length > 0) {
@@ -809,7 +811,6 @@ export class CommonService {
         return sortedDates;
     }
 
-    public tableObj: any;
     // Filter multiselct option
     updateOptionValues(obj) {
         this.tableObj = obj;
@@ -851,8 +852,9 @@ export class CommonService {
                 tempArr.push({ label: element, value: element });
             }
         }
-        // console.log(tempArr);
-        this.tableObj.colFields[colName] = [...tempArr];
+        // this.tableObj.colFields[colName] = [...tempArr];
+        this.tableObj.colFields[colName] = tempArr;
+        console.log('this.tableObj ', this.tableObj);
     }
 
     uniqueArrayObj(array: any) {
@@ -866,7 +868,7 @@ export class CommonService {
     }
 
 
-    SetNewrelic(moduleType,routeType,value) {
+    SetNewrelic(moduleType, routeType, value) {
         if (typeof newrelic === 'object') {
             newrelic.setCustomAttribute('spModuleType', moduleType);
             newrelic.setCustomAttribute('spRouteType', routeType);

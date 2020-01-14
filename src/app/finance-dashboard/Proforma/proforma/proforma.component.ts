@@ -72,11 +72,11 @@ export class ProformaComponent implements OnInit, OnDestroy {
     };
     pageNumber: number = 0;
 
-    @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
-    @ViewChild('editorRef', { static: true }) editorRef: EditorComponent;
+    @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
+    @ViewChild('editorRef', { static: false }) editorRef: EditorComponent;
     @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
 
-    @ViewChild('pfc', { static: false }) proformaTable: Table;
+    @ViewChild('pfc', { static: false }) proformaTable;
 
     // List of Subscribers 
     private subscription: Subscription = new Subscription();
@@ -1799,9 +1799,9 @@ export class ProformaComponent implements OnInit, OnDestroy {
         if (this.proformaRes.length && this.isOptionFilter) {
             let obj = {
                 tableData: this.proformaTable,
-                colFields: this.proformaColArray,
-                // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
+                colFields: this.proformaColArray
             }
+            // console.log('obj.tableData.filteredValue ', obj.tableData.filteredValue);
             if (obj.tableData.filteredValue) {
                 this.commonService.updateOptionValues(obj);
             } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
@@ -1809,30 +1809,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 this.isOptionFilter = false;
             }
             this.cdr.detectChanges();
-        }
-    }
-
-    // proformaTable: any;
-    ngAfterViewChecked1() {
-        // this.proformaTable = this.proformaTable;
-        if (this.proformaTable.filteredValue) {
-            // console.log('Object.entries(this.proformaTable.filters).length ', Object.entries(this.proformaTable.filters).length);
-            // if (Object.entries(this.proformaTable.filters).length === 0 && this.proformaTable.filters.constructor === Object) {
-            //     // console.log('Object is empty');
-            // } else 
-            if (Object.entries(this.proformaTable.filters).length >= 1) {
-                this.isEmpty(this.proformaColArray, this.proformaTable.filters);
-            }
-            // else {
-            //     // console.log('this.proformaTable ', this.proformaTable)
-            // }
-            // console.log('in ngAfterViewChecked this.proformaRes ', this.proformaTable);
-            // this.createColFieldValues(this.proformaTable.filteredValue);
-
-        } else if (this.proformaTable.filteredValue === null || this.proformaTable.filteredValue === undefined) {
-            this.createColFieldValues(this.proformaRes);
-        } else {
-            // console.log('this.proformaTable ->  ', this.proformaTable);
         }
     }
 

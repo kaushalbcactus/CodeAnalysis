@@ -108,7 +108,7 @@ export class InactiveComponent implements OnInit {
     });
 
   }
-  @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
+  @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
   ngOnInit() {
     this.isIAPInnerLoaderHidden = false;
     this.isIAPFilterHidden = false;

@@ -131,15 +131,7 @@ export class AddAuthorComponent implements OnInit {
             this.addAuthorModal = false;
             this.add_author_form.reset();
             this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
-            this.reload();
         }
-    }
-
-    reload() {
-        setTimeout(() => {
-            this.router.navigated = false;
-            this.router.navigate([this.router.url]);
-        }, 200);
     }
 
     // tslint:disable-next-line: use-life-cycle-interface

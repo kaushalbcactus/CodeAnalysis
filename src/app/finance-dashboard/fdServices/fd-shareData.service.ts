@@ -456,7 +456,7 @@ export class FDDataShareService {
         pdfContent.HtmlContent = JSON.stringify(objReturn);
 
         ///// Call service
-        this.common.SetNewrelic('Finance-Dashboard', 'fd-shareData-callProformaInvoiceEdit', 'executeJS');
+        this.commonService.SetNewrelic('Finance-Dashboard', 'fd-shareData-callProformaInvoiceEdit', 'executeJS');
         const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
         await this.spServices.executeJS(pdfService, pdfContent);
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;

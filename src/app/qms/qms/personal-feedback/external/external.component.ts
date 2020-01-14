@@ -42,7 +42,7 @@ export class ExternalComponent implements OnDestroy {
     BusinessImpact: []
   };
 
-  @ViewChild('qc', { static: false }) pfTable: Table;
+  @ViewChild('qc', { static: true }) pfTable: Table;
   constructor(
     private spService: SPOperationService,
     private datepipe: DatePipe,

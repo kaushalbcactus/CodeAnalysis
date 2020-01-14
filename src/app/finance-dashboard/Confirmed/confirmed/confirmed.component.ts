@@ -108,8 +108,8 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         type: '',
         listName: ''
     };
-    @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
-    @ViewChild('editorRef', { static: true }) editorRef: EditorComponent;
+    @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
+    @ViewChild('editorRef', { static: false }) editorRef: EditorComponent;
 
     @ViewChild('cnf', { static: false }) confirmTable: Table;
     // List of Subscribers

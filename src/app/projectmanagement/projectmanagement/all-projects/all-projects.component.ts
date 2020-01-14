@@ -122,7 +122,7 @@ export class AllProjectsComponent implements OnInit {
   selectedOption: any = '';
   showProjectInput = false;
   providedProjectCode = '';
-  @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
+  @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
   @ViewChild('allProjectRef', { static: true }) allProjectRef: Table;
   ExcelDownloadenable = false;
   firstLoad = true;

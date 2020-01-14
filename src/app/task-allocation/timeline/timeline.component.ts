@@ -31,7 +31,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   public GanttchartData = [];
   tempGanttchartData = [];
   public noTaskError = 'No milestones found.';
-  @ViewChild('gantteditor', { static: true }) gantteditor: GanttEditorComponent;
+  @ViewChild('gantteditor', { static: false }) gantteditor: GanttEditorComponent;
   @ViewChild('reallocationMailTableID', { static: false }) reallocateTable: ElementRef;
   Today = new Date();
   tempComment;

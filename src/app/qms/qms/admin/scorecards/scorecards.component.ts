@@ -62,7 +62,7 @@ export class ScorecardsComponent implements OnInit {
   resourceColumns: [{}];
   navigationSubscription;
   value: Date[] = [new Date(new Date().setMonth(new Date().getMonth() - 6)), new Date()];
-  @ViewChild(FeedbackBymeComponent, { static: true }) feedbackTable: FeedbackBymeComponent;
+  @ViewChild(FeedbackBymeComponent, { static: false }) feedbackTable: FeedbackBymeComponent;
   constructor(
     private qmsConstant: QMSConstantsService,
     private globalConstant: ConstantsService,

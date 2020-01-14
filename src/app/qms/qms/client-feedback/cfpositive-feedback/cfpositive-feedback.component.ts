@@ -26,8 +26,8 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
   items: MenuItem[];
   private cfPFNavigationSubscription;
 
-  @ViewChild('positveFilter', { static: true }) filter: FilterComponent;
-  @ViewChild('PFPopup', { static: true }) PFPopup: PopupComponent;
+  @ViewChild('positveFilter', { static: false }) filter: FilterComponent;
+  @ViewChild('PFPopup', { static: false }) PFPopup: PopupComponent;
   @ViewChild('cfp', { static: false }) cfpositiveTable: Table;
 
   public hideLoader = true;

@@ -68,8 +68,8 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         endDate: '',
     };
 
-    @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
-    @ViewChild('popupMenu', { static: true }) popupMenu;
+    @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
+    @ViewChild('popupMenu', { static: false }) popupMenu;
     @ViewChild('pi', { static: false }) paidInvTable: Table;
     // List of Subscribers 
     private subscription: Subscription = new Subscription();
@@ -487,7 +487,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
     }
 
     createColFieldValues(resArray) {
-        this.outInvoiceColArray.InvoiceStatus = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.InvoiceStatus, value: a.InvoiceStatus }; return b; }).filter(ele => ele.label));
+        // this.outInvoiceColArray.InvoiceStatus = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.InvoiceStatus, value: a.InvoiceStatus }; return b; }).filter(ele => ele.label));
         this.outInvoiceColArray.InvoiceNumber = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.InvoiceNumber, value: a.InvoiceNumber }; return b; }).filter(ele => ele.label)));
         // this.outInvoiceColArray.PONumber this.commonService.sortData(= this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }).filter(ele => ele.label)));
         this.outInvoiceColArray.POValues = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POValues, value: a.POValues }; return b; }).filter(ele => ele.label)));
@@ -499,6 +499,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         this.outInvoiceColArray.Amount = this.fdDataShareServie.customSort(amount, 1, 'label');
         this.outInvoiceColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
         this.outInvoiceColArray.POC = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POC, value: a.POC }; return b; }).filter(ele => ele.label)));
+        console.log('this.outInvoiceColArray ', this.outInvoiceColArray);
     }
 
     uniqueArrayObj(array: any) {

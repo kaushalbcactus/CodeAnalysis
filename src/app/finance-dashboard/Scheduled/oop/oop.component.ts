@@ -106,7 +106,7 @@ export class OopComponent implements OnInit, OnDestroy {
         type: '',
         listName: ''
     };
-    @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
+    @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
     @ViewChild('oop', { static: false }) oopTable: Table;
 
     // Project Info 

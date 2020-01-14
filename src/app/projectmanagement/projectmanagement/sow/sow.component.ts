@@ -123,7 +123,7 @@ export class SOWComponent implements OnInit, OnDestroy {
   sowViewDataArray = [];
   subscription;
   showProjectLink = false;
-  @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
+  @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
   @ViewChild('allProjectRef', { static: true }) allProjectRef: Table;
   step: number;
   ProjectArray = [];

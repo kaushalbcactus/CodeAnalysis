@@ -66,8 +66,8 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     pageNumber: number = 0;
     // Loader
     isPSInnerLoaderHidden: boolean = false;
-    @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
-    @ViewChild('editorRef', { static: true }) editorRef: EditorComponent;
+    @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
+    @ViewChild('editorRef', { static: false }) editorRef: EditorComponent;
     @ViewChild('replaceInvoiceFile', { static: false }) replaceInvoiceFile: ElementRef;
     @ViewChild('paymentResolvedFile', { static: false }) paymentResolvedFile: ElementRef;
     @ViewChild('outi', { static: false }) outInvTable: Table;

@@ -102,7 +102,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     private subscription: Subscription = new Subscription();
 
     minScheduleDate: Date = new Date();
-    @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
+    @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
     @ViewChild('hb', { static: false }) hourlyTable: Table;
     // Purchase Order Number
     purchaseOrdersList: any = [];

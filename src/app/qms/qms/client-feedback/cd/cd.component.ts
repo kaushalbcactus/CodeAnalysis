@@ -23,7 +23,7 @@ import { Table } from 'primeng/table';
 export class CDComponent implements OnInit, OnDestroy {
   // @ViewChild(MatSort) cdSort: MatSort;
   @ViewChild('popupLoader', { static: true }) popupLoader: ElementRef;
-  @ViewChild('CDPopup', { static: true }) CDPopup: ActionsPopupComponent;
+  @ViewChild('CDPopup', { static: false }) CDPopup: ActionsPopupComponent;
   @ViewChild('cd', { static: false }) cdTable: Table;
 
   // public successMessage: string;
