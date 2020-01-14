@@ -36,7 +36,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   Today = new Date();
   tempComment;
   minDateValue = new Date();
-  yearsRange = new Date().getFullYear() + ':' + (new Date().getFullYear() + 10);
+  yearsRange = new Date().getFullYear() - 1 + ':' + (new Date().getFullYear() + 10);
   userCapacityEnable = false;
   task;
   errorMessage;
@@ -2394,8 +2394,16 @@ export class TimelineComponent implements OnInit, OnDestroy {
    */
   async compareSlotSubTasksTimeline(sentPrevNode1, subMilestonePosition, selectedMil) {
     // fetch slot based on submilestone presnt or not
-    const sentPrevNode = subMilestonePosition === 0 ? this.milestoneData[selectedMil].children.find(st => st.data.pName === sentPrevNode1.pName) :
-      this.milestoneData[selectedMil].children[subMilestonePosition - 1].children.find(st => st.data.pName === sentPrevNode1.pName);
+    let sentPrevNode;
+    if(subMilestonePosition === 0) {
+      sentPrevNode = this.milestoneData[selectedMil].children.find(st => st.data.pName === sentPrevNode1.pName)
+    } else {
+      const submilestone = this.milestoneData[selectedMil].children.find(sm => sm.data.pName === sentPrevNode1.submilestone);
+      sentPrevNode = submilestone.children.find(st => st.data.pName === sentPrevNode1.pName);
+    }
+    // const sentPrevNode = subMilestonePosition === 0 ?  :
+    //   this.milestoneData[selectedMil].children[subMilestonePosition - 1].children.find(st => st.data.pName === sentPrevNode1.pName);
+      
     let slotFirstTask = sentPrevNode ? sentPrevNode.children ? sentPrevNode.children.filter(st => !st.data.previousTask) : [] : [];
     // cascade if slot start date is more than first subtask in slot
     if (slotFirstTask.length) {
@@ -2473,7 +2481,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         }
         if (availableHours >= allocatedHours) {
           // filter tasks based on dates and subtasks within same slot
-          retTask = retTask.filter(t => t.ID !== task.data.pID);
+          retTask = retTask.filter(t => t.ID !== task.data.pID && t.Status !== 'Completed');
 
           retTask = retTask.filter((tsk) => {
             return ((task.data.pUserStart <= tsk.DueDate && task.data.pUserEnd >= tsk.DueDate)

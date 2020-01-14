@@ -460,19 +460,22 @@ export class DragDropComponent implements OnInit {
     let prvnode = [];
 
     var count = 0;
+    let nodeLabel = '';
+    if (!event.id) {
+      if (miletype === 'milestone') {
+        count = this.alldbMilestones.filter(function (node) { return new RegExp(event.data, 'g').test(node) }).length > 0 ? this.alldbMilestones.filter(function (node) { return new RegExp(event.data, 'g').test(node) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => parseInt(c)).length > 0 ? Math.max.apply(null, this.alldbMilestones.filter(function (node) { return new RegExp(event.data, 'g').test(node) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => parseInt(c))) : 1 : 0;
+      }
+      else {
+        count = this.milestonesGraph.nodes[this.milestoneIndex].allsubmilestones.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).length > 0 ? this.milestonesGraph.nodes[this.milestoneIndex].allsubmilestones.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => parseInt(c)).length > 0 ? Math.max.apply(null, this.milestonesGraph.nodes[this.milestoneIndex].allsubmilestones.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => parseInt(c))) : 1 : 0;
+      }
+      nodeLabel = count >= 1 ? (event.data === 'Draft' ? event.data + ' ' + (count + 1) : event.data + ' ' + (count + 1)) : event.data === 'Draft' ? event.data + ' ' + (count + 1) : event.data;
 
-    if (miletype === 'milestone') {
-      count = this.alldbMilestones.filter(function (node) { return new RegExp(event.data, 'g').test(node) }).length > 0 ? this.alldbMilestones.filter(function (node) { return new RegExp(event.data, 'g').test(node) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => parseInt(c)).length > 0 ? Math.max.apply(null, this.alldbMilestones.filter(function (node) { return new RegExp(event.data, 'g').test(node) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => parseInt(c))) : 1 : 0;
+      if (Restructureenable) {
+        nodeLabel = count > 1 ? (event.data === 'Draft' ? event.data + ' ' + (count - 1) : event.data + ' ' + (count - 1)) : count === 1 ? event.data === 'Draft' ? event.data + ' ' + (count) : event.data : event.data;
+      }
+    } else {
+      nodeLabel = event.data;
     }
-    else {
-      count = this.milestonesGraph.nodes[this.milestoneIndex].allsubmilestones.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).length > 0 ? this.milestonesGraph.nodes[this.milestoneIndex].allsubmilestones.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => parseInt(c)).length > 0 ? Math.max.apply(null, this.milestonesGraph.nodes[this.milestoneIndex].allsubmilestones.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => parseInt(c))) : 1 : 0;
-    }
-    let nodeLabel = count >= 1 ? (event.data === 'Draft' ? event.data + ' ' + (count + 1) : event.data + ' ' + (count + 1)) : event.data === 'Draft' ? event.data + ' ' + (count + 1) : event.data;
-
-    if (Restructureenable) {
-      nodeLabel = count > 1 ? (event.data === 'Draft' ? event.data + ' ' + (count - 1) : event.data + ' ' + (count - 1)) : count === 1 ? event.data === 'Draft' ? event.data + ' ' + (count) : event.data : event.data;
-    }
-
     this.alldbMilestones.push(nodeLabel);
 
     const milestoneTasks = this.AlldbRecords.find(c => c.milestone.Title === nodeLabel) ? this.AlldbRecords.find(c => c.milestone.Title === nodeLabel).tasks : []

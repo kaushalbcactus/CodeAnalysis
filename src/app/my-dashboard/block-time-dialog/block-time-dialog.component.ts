@@ -26,7 +26,7 @@ export class BlockTimeDialogComponent implements OnInit {
   endtime: any;
   eventDate: any;
   eventEndDate: any;
-  yearsRange = new Date().getFullYear() + ':' + (new Date().getFullYear() + 10);
+  yearsRange = new Date().getFullYear() - 1+ ':' + (new Date().getFullYear() + 10);
   darkTheme: NgxMaterialTimepickerTheme = {
     container: {
       bodyBackgroundColor: '#424242',

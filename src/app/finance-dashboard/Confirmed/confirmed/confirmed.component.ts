@@ -978,7 +978,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 // Update PF
                 const pf = await this.getPFByPC();
                 // console.log('pf ', pf);
-                if (pf.length) {
+                if (pf) {
                     const pfData = {
                         __metadata: {
                             type: this.constantService.listNames.ProjectFinances.type
