@@ -131,3 +131,6 @@ button {
     margin: auto;
     width: 98%;
 }
+.searchPrj {
+    border: 0px!important;
+}
