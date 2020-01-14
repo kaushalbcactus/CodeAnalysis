@@ -1449,11 +1449,11 @@ export class AllProjectsComponent implements OnInit {
         type: '',
         listName: ''
       };
-      const statusUpdateScheduleList = {
+      const statusNotStartedScheduleList = {
         __metadata: {
           type: this.constants.listNames.Schedules.type
         },
-        Status: this.constants.STATUS.IN_PROGRESS
+        Status: this.constants.STATUS.NOT_STARTED
       };
       const statusCompletedScheduleList = {
         __metadata: {
@@ -1472,7 +1472,7 @@ export class AllProjectsComponent implements OnInit {
           batchURL.push(scheduleStatusUpdate);
         } else {
           const scheduleStatusUpdate = Object.assign({}, options);
-          scheduleStatusUpdate.data = statusUpdateScheduleList;
+          scheduleStatusUpdate.data = statusNotStartedScheduleList;
           scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
           scheduleStatusUpdate.type = 'PATCH';
           scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
