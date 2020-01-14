@@ -1440,7 +1440,8 @@ export class AllProjectsComponent implements OnInit {
     scheduleFilter.filter = scheduleFilter.filter.replace(/{{projectCode}}/gi, selectedProjectObj.ProjectCode);
     const sResult = await this.spServices.readItems(this.constants.listNames.Schedules.name, scheduleFilter);
     if (sResult && sResult.length > 0) {
-      const filterResult = sResult.filter(a => a.Title.indexOf(selectedProjectObj.monthName) > -1);
+      const filterResult = sResult.filter(a => a.Title.indexOf(selectedProjectObj.monthName) > -1
+        && a.Milestone === selectedProjectObj.monthName);
       const batchURL = [];
       const options = {
         data: null,
@@ -1460,24 +1461,8 @@ export class AllProjectsComponent implements OnInit {
         },
         Status: this.constants.STATUS.COMPLETED
       };
-      const statusNotStartedScheduleList = {
-        __metadata: {
-          type: this.constants.listNames.Schedules.type
-        },
-        Status: this.constants.STATUS.NOT_STARTED
-      };
       filterResult.forEach(element => {
-        if (element.Task !== this.pmConstant.task.BLOCKING ||
-          element.Task !== this.pmConstant.task.TRAINING ||
-          element.Task !== this.pmConstant.task.MEETING) {
-          const scheduleStatusUpdate = Object.assign({}, options);
-          scheduleStatusUpdate.data = statusUpdateScheduleList;
-          scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
-          scheduleStatusUpdate.type = 'PATCH';
-          scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
-            element.ID);
-          batchURL.push(scheduleStatusUpdate);
-        } else if (element.Task === this.pmConstant.task.BLOCKING) {
+        if (element.Task === this.pmConstant.task.BLOCKING) {
           const scheduleStatusUpdate = Object.assign({}, options);
           scheduleStatusUpdate.data = statusCompletedScheduleList;
           scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
@@ -1487,7 +1472,7 @@ export class AllProjectsComponent implements OnInit {
           batchURL.push(scheduleStatusUpdate);
         } else {
           const scheduleStatusUpdate = Object.assign({}, options);
-          scheduleStatusUpdate.data = statusNotStartedScheduleList;
+          scheduleStatusUpdate.data = statusUpdateScheduleList;
           scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
           scheduleStatusUpdate.type = 'PATCH';
           scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
