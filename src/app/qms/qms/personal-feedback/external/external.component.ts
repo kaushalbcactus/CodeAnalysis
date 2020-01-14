@@ -154,6 +154,7 @@ export class ExternalComponent implements OnDestroy {
     qcComponent.getQC.top = qcComponent.getQC.top.replace('{{TopCount}}', '' + topCount);
     qcComponent.getQC.filter = qcComponent.getQC.filter.replace('{{startDate}}', startDate)
       .replace('{{endDate}}', endDate);
+      this.common.SetNewrelic('QMS', 'personalfeedback-external-getQCItems', 'readItems');
     let qcs = await this.spService.readItems(this.globalConstant.listNames.QualityComplaints.name,
       qcComponent.getQC);
     qcs = qcs.length > 0 ? qcs.sort((a, b) => new Date(a.SentDate).getTime() - new Date(b.SentDate).getTime()) : [];

@@ -192,9 +192,9 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    * This method is called when client legal entity value is changed.
    */
   onChangeClientLegalEntity() {
-    // if (!this.pmObject.addSOW.ClientLegalEntity) {
+    if (this.addSowForm.value.clientLegalEntity) {
     this.pmObject.addSOW.ClientLegalEntity = this.addSowForm.value.clientLegalEntity;
-    // }
+    }
     if (this.pmObject.addSOW.ClientLegalEntity) {
       this.sowDropDown.POC = [];
       this.sowDropDown.POCOptional = [];

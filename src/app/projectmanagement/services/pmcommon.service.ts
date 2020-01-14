@@ -832,7 +832,7 @@ export class PMCommonService {
     } else {
       if (this.pmObject.userRights.isMangers || this.pmObject.userRights.isHaveProjectFullAccess) {
         const projectManageFilter = Object.assign({}, this.pmConstant.PM_QUERY.ALL_PROJECT_INFORMATION);
-        this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetProjectInfo');
+        this.commonService.SetNewrelic('projectManagment', 'PmCommon-FullAccess', 'GetProjectInfo');
         arrResults = await this.spServices.readItems(this.constant.listNames.ProjectInformation.name, projectManageFilter);
       } else {
         let projectManageFilter: any;
@@ -841,7 +841,7 @@ export class PMCommonService {
         } else {
           projectManageFilter = Object.assign({}, this.pmConstant.PM_QUERY.USER_SPECIFIC_PROJECT_INFORMATION_MY);
         }
-
+        this.commonService.SetNewrelic('projectManagment', 'PmCommon-getProjects', 'readItems');
         arrResults = await this.spServices.readItems(this.constant.listNames.ProjectInformation.name, projectManageFilter);
       }
     }

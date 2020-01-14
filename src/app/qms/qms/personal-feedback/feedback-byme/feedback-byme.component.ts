@@ -161,6 +161,7 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
       // tslint:disable-next-line: quotemark
       getScorecardUrl.filter.replace("{{FeedbackTypeFilter}}", "and FeedbackType eq '" + this.globalConstant.FeedbackType.taskRating + "'") :
       getScorecardUrl.filter.replace('{{FeedbackTypeFilter}}', '');
+    this.commonService.SetNewrelic('QMS', 'personalfeedback-feedbackbyme-getScorecardItems', 'readItems');
     const arrResult = await this.spService.readItems(this.globalConstant.listNames.Scorecard.name, getScorecardUrl);
     // If Last.. Filter used then fetch top Task Feedback only ( Rating) and Qualitative feedback based on rating item dates
     const arrScoreCards = arrResult.length > 0 ? arrResult : [];

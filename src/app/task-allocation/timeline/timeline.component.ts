@@ -2481,7 +2481,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         }
         if (availableHours >= allocatedHours) {
           // filter tasks based on dates and subtasks within same slot
-          retTask = retTask.filter(t => t.ID !== task.data.pID);
+          retTask = retTask.filter(t => t.ID !== task.data.pID && t.Status !== 'Completed');
 
           retTask = retTask.filter((tsk) => {
             return ((task.data.pUserStart <= tsk.DueDate && task.data.pUserEnd >= tsk.DueDate)
@@ -3030,6 +3030,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     for (const mail of this.deallocationMailArray) {
       await this.sendCentralTaskMail(mail.project, mail.slot.data, mail.subject, mail.template);
     }
+    this.commonService.SetNewrelic('TaskAllocation', 'timeline-getProjectResources', 'setMilestone');
     await this.commonService.getProjectResources(this.oProjectDetails.projectCode, false, false);
     this.getMilestones(false);
 
@@ -3300,6 +3301,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   async getsendEmailObjBody(milestoneTask, projectDetails, EmailType, templateName) {
     const mailObj = Object.assign({}, this.taskAllocationService.common.getMailTemplate);
     mailObj.filter = mailObj.filter.replace('{{templateName}}', templateName);
+    this.commonService.SetNewrelic('TaskAllocation', 'timeline-getsendEmailObjBody', 'readItems');
     const templateData = await this.spServices.readItems(this.constants.listNames.MailContent.name,
       mailObj);
     let mailContent = templateData.length > 0 ? templateData[0].Content : [];
@@ -3317,6 +3319,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   async getReallocateEmailObjBody(data, slot, templateName) {
     const mailObj = Object.assign({}, this.taskAllocationService.common.getMailTemplate);
     mailObj.filter = mailObj.filter.replace('{{templateName}}', templateName);
+    this.commonService.SetNewrelic('TaskAllocation', 'timeline-getReallocateEmailObjBody', 'readItems');
     const templateData = await this.spServices.readItems(this.constants.listNames.MailContent.name,
       mailObj);
     let mailContent = templateData.length > 0 ? templateData[0].Content : [];
@@ -3928,6 +3931,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       this.commonService.SetNewrelic('TaskAllocation', 'Timeline', 'SendEarlyTaskCompletionNotification');
       await this.spServices.executeBatch(notificationBatchUrl);
     }
+    this.commonService.SetNewrelic('TaskAllocation', 'timeline-getProjectResources', 'setAsNextMilestone');
     await this.commonService.getProjectResources(this.oProjectDetails.projectCode, false, false);
     this.getMilestones(false);
   }
