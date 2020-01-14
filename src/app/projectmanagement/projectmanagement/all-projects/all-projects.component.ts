@@ -1440,8 +1440,7 @@ export class AllProjectsComponent implements OnInit {
     scheduleFilter.filter = scheduleFilter.filter.replace(/{{projectCode}}/gi, selectedProjectObj.ProjectCode);
     const sResult = await this.spServices.readItems(this.constants.listNames.Schedules.name, scheduleFilter);
     if (sResult && sResult.length > 0) {
-      const filterResult = sResult.filter(a => a.Title.indexOf(selectedProjectObj.monthName) > -1
-        && a.Milestone === selectedProjectObj.monthName);
+      const filterResult = sResult.filter(a => a.Title.indexOf(selectedProjectObj.monthName) > -1);
       const batchURL = [];
       const options = {
         data: null,
@@ -1455,6 +1454,12 @@ export class AllProjectsComponent implements OnInit {
         },
         Status: this.constants.STATUS.NOT_STARTED
       };
+      const statusInProgressStartedScheduleList = {
+        __metadata: {
+          type: this.constants.listNames.Schedules.type
+        },
+        Status: this.constants.STATUS.IN_PROGRESS
+      };
       const statusCompletedScheduleList = {
         __metadata: {
           type: this.constants.listNames.Schedules.type
@@ -1462,7 +1467,18 @@ export class AllProjectsComponent implements OnInit {
         Status: this.constants.STATUS.COMPLETED
       };
       filterResult.forEach(element => {
-        if (element.Task === this.pmConstant.task.BLOCKING) {
+        if (element.Task !== this.pmConstant.task.BLOCKING &&
+          element.Task !== this.pmConstant.task.MEETING &&
+          element.Task !== this.pmConstant.task.TRAINING) {
+
+          const scheduleStatusUpdate = Object.assign({}, options);
+          scheduleStatusUpdate.data = statusInProgressStartedScheduleList;
+          scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
+          scheduleStatusUpdate.type = 'PATCH';
+          scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
+            element.ID);
+          batchURL.push(scheduleStatusUpdate);
+        } else if (element.Task === this.pmConstant.task.BLOCKING) {
           const scheduleStatusUpdate = Object.assign({}, options);
           scheduleStatusUpdate.data = statusCompletedScheduleList;
           scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
