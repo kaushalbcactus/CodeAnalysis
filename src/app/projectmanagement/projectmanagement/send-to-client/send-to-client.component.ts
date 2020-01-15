@@ -187,7 +187,7 @@ export class SendToClientComponent implements OnInit {
     const fileName = task.ProjectCode + ' - ' + task.Milestone;
     // this.spServices.downloadMultipleFiles(tempArray, fileName);
     this.spServices.createZip(tempArray.map(c => c.url), fileName);
-    
+
     // }, 500);
   }
   goToAllocationPage(task) {
@@ -211,14 +211,13 @@ export class SendToClientComponent implements OnInit {
     const isActionRequired = await this.commonService.checkTaskStatus(task);
     if (isActionRequired) {
       await this.spOperations.updateItem(this.Constant.listNames.Schedules.name, task.ID, options, this.Constant.listNames.Schedules.type);
-
+      const projectInfoOptions = { Status: 'Author Review' };
+      const projectID = this.pmObject.allProjectItems.filter(item => item.ProjectCode === task.ProjectCode);
+      await this.spOperations.updateItem(this.Constant.listNames.ProjectInformation.name, projectID[0].ID, projectInfoOptions,
+        this.Constant.listNames.ProjectInformation.type);
       // check whether next task is null or not.
       // Update the next task columnn PreviousTaskClosureDate with current date and time.
       if (task.NextTasks) {
-        const projectInfoOptions = { Status: 'Author Review' };
-        const projectID = this.pmObject.allProjectItems.filter(item => item.ProjectCode === task.ProjectCode);
-        await this.spOperations.updateItem(this.Constant.listNames.ProjectInformation.name, projectID[0].ID, projectInfoOptions,
-          this.Constant.listNames.ProjectInformation.type);
         const nextOptions = { PreviousTaskClosureDate: new Date() };
         const nextTask = this.scArrays.nextTaskArray.filter(item => item.Title === task.NextTasks);
         if (nextTask && nextTask.length) {
