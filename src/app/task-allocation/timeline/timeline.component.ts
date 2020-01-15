@@ -2426,12 +2426,12 @@ export class TimelineComponent implements OnInit, OnDestroy {
               this.cascadeNextTask(sentPrevNode, element, subMilestonePosition, selectedMil);
             }
           });
-          if (slotFirstTask[0].data.AssignedTo.ID && slotFirstTask[0].data.AssignedTo.ID !== -1) {
+          if (sentPrevNode.data.status !== 'In Progress' && slotFirstTask[0].data.AssignedTo.ID && slotFirstTask[0].data.AssignedTo.ID !== -1) {
             // All task of slot will be allocated at once so if first task is assigned to resource then check for resource and new task date availability 
             await this.checkTaskResourceAvailability(sentPrevNode, subMilestonePosition, selectedMil, this.sharedObject.oTaskAllocation.oResources);
           }
         }
-      } else if (slotFirstTask[0].data.AssignedTo.EMail) {
+      } else if (sentPrevNode.data.status !== 'In Progress' && slotFirstTask[0].data.AssignedTo.EMail) {
         // All task of slot will be allocated at once so if first task is assigned to resource then check for resource and new task date availability 
         await this.checkTaskResourceAvailability(sentPrevNode, subMilestonePosition, selectedMil, this.sharedObject.oTaskAllocation.oResources);
       }
