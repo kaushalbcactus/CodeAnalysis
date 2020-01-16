@@ -41,46 +41,46 @@
                     <th *ngFor="let col of columns" [ngSwitch]="col.field" [hidden]="!col.visibility">
                         <p-multiSelect *ngSwitchCase="'User'" [style]="{'width':'100%'}" [maxSelectedLabels]="1"
                             [options]="userProfileColArray.User" (onChange)="up.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'PrimarySkill'" [style]="{'width':'100%'}" [maxSelectedLabels]="1"
                             [options]="userProfileColArray.PrimarySkill"
                             (onChange)="up.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'Bucket'" [style]="{'width':'100%'}" [maxSelectedLabels]="1"
                             [options]="userProfileColArray.Bucket" (onChange)="up.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'PracticeArea'" [style]="{'width':'100%'}" [maxSelectedLabels]="1"
                             [options]="userProfileColArray.PracticeArea"
                             (onChange)="up.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'InCapacity'" [style]="{'width':'100%'}" [maxSelectedLabels]="1"
                             [options]="userProfileColArray.InCapacity"
                             (onChange)="up.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'DateOfJoining'" [style]="{'width':'100%'}"
                             [maxSelectedLabels]="1" [options]="userProfileColArray.DateOfJoining"
                             (onChange)="up.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'GoLiveDate'" [style]="{'width':'100%'}" [maxSelectedLabels]="1"
                             [options]="userProfileColArray.GoLiveDate"
                             (onChange)="up.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}" [maxSelectedLabels]="1"
                             [options]="userProfileColArray.LastUpdated"
                             (onChange)="up.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}"
                             [maxSelectedLabels]="1" [options]="userProfileColArray.LastUpdatedBy"
                             (onChange)="up.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                     </th>
                     <th></th>

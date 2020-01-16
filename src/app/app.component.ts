@@ -19,9 +19,9 @@ declare const newrelic;
 })
 export class AppComponent implements OnDestroy {
   title = 'Medcom SPA';
-  display = false;
   items: MenuItem[];
   leftNavigation = [];
+  visibleSidebar: boolean;
   // tslint:disable-next-line:variable-name
   constructor(
     public globalService: GlobalService,
@@ -36,6 +36,7 @@ export class AppComponent implements OnDestroy {
   ) { }
   // tslint:disable-next-line:use-life-cycle-interface
   ngOnInit() {
+    this.visibleSidebar = false;
     const appTitle = this.titleService.getTitle();
     this.router
       .events.pipe(
@@ -67,12 +68,19 @@ export class AppComponent implements OnDestroy {
     }]
   }
 
+  goToEmpDashboard() {
+    this.visibleSidebar = false;
+    if (!this.router.url.includes('/myDashboard/my-current-tasks')) {
+      this.router.navigate(['/myDashboard']);
+    }
+  }
+
   initSPPageObject() {
     this.globalService.sharePointPageObject.publicCdn = window.location.href.indexOf('localhost') > -1
       ? '/sites/medcomcdn/PublishingImages/Images' : '/sites/medcomcdn/PublishingImages/Images';
-    this.globalService.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/Medcomqa'
+    this.globalService.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomdev'
       : _spPageContextInfo.webAbsoluteUrl;
-    this.globalService.sharePointPageObject.webRelativeUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/Medcomqa'
+    this.globalService.sharePointPageObject.webRelativeUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomdev'
       : _spPageContextInfo.siteServerRelativeUrl;
     this.globalService.sharePointPageObject.serverRelativeUrl = this.globalService.sharePointPageObject.webRelativeUrl;
     this.globalService.sharePointPageObject.rootsite = window.origin;
@@ -87,7 +95,7 @@ export class AppComponent implements OnDestroy {
   }
 
   async initSPLoggedInUser() {
-    this.globalService.currentUser.userId = window.location.href.indexOf('localhost') > -1 ? 428 : _spPageContextInfo.userId;
+    this.globalService.currentUser.userId = window.location.href.indexOf('localhost') > -1 ? 287 : _spPageContextInfo.userId;
     this.globalService.currentUser.email = window.location.href.indexOf('localhost') > -1 ?
       'sneha.danduk@cactusglobal.com' : _spPageContextInfo.userEmail;
     this.globalService.currentUser.title = window.location.href.indexOf('localhost') > -1 ? 'Rahul' : _spPageContextInfo.userDisplayName;

@@ -139,7 +139,9 @@ export class UserProfileComponent implements OnInit {
   };
   filteredCountriesMultiple: any[];
   showTable = true;
-  
+
+  isOptionFilter: boolean;
+  @ViewChild('up', { static: true }) userProfile: Table;
   /**
    * Construct a method to create an instance of required component.
    *
@@ -193,6 +195,7 @@ export class UserProfileComponent implements OnInit {
    *
    */
   async ngOnInit() {
+    this.constants.loader.isPSInnerLoaderHidden = true;
     this.initialAddUserForm();
     this.minPastMonth = new Date(new Date().setDate(new Date().getDate() - 30));
     const currentYear = new Date();
@@ -1246,7 +1249,7 @@ export class UserProfileComponent implements OnInit {
     const resGet = Object.assign({}, this.adminConstants.QUERY.GET_RESOURCE_CATEGERIZATION_BY_ID);
     resGet.filter = resGet.filter.replace(/{{isActive}}/gi,
       this.adminConstants.LOGICAL_FIELD.YES).replace(/{{Id}}/gi, ID);
-      this.common.SetNewrelic('admin', 'admin-UserProfile', 'GetResourceCategorization');
+    this.common.SetNewrelic('admin', 'admin-UserProfile', 'GetResourceCategorization');
     const result = await this.spServices.readItems(this.constants.listNames.ResourceCategorization.name, resGet);
     if (result && result.length) {
       const item = result[0];
@@ -2088,7 +2091,32 @@ export class UserProfileComponent implements OnInit {
       }
     });
   }
+
   downloadExcel(up) {
     up.exportCSV();
   }
+
+  optionFilter(event: any) {
+    if (event.target.value) {
+      this.isOptionFilter = false;
+    }
+  }
+
+  ngAfterViewChecked() {
+    if (this.userProfileData.length && this.isOptionFilter) {
+      const obj = {
+        tableData: this.userProfile,
+        colFields: this.userProfileColArray
+      };
+      if (obj.tableData.filteredValue) {
+        this.common.updateOptionValues(obj);
+      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+        this.colFilters(obj.tableData.value);
+        this.isOptionFilter = false;
+      }
+      this.cdr.detectChanges();
+    }
+  }
+
+
 }

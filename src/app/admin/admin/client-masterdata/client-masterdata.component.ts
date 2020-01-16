@@ -69,12 +69,12 @@ export class ClientMasterdataComponent implements OnInit {
      * This is used to initialize the Client form.
      */
     this.addClient = frmbuilder.group({
-      name: ['', [Validators.required, Validators.pattern(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL_WITHSPACE)]],
+      name: ['', [Validators.required]],
       acronym: ['', [Validators.required, Validators.maxLength(5),
       Validators.pattern(this.adminConstants.REG_EXPRESSION.THREE_UPPERCASE_TWO_NUMBER)]],
       group: ['', Validators.required],
       distributionList: [''],
-      invoiceName: ['', [Validators.required, Validators.pattern(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL_WITHSPACE)]],
+      invoiceName: ['', [Validators.required]],
       realization: ['', [Validators.required, this.adminCommonService.checkPositiveNumber]],
       market: ['', Validators.required],
       billingEntry: ['', Validators.required],
@@ -98,7 +98,7 @@ export class ClientMasterdataComponent implements OnInit {
      * This is used to initialize the subDivision form.
      */
     this.subDivisionform = frmbuilder.group({
-      subDivision_Name: ['', [Validators.required, Validators.pattern(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL_WITHSPACE)]],
+      subDivision_Name: ['', [Validators.required]],
       distributionList: [''],
       cmLevel1: [''],
       deliveryLevel1: [''],
@@ -317,6 +317,8 @@ export class ClientMasterdataComponent implements OnInit {
 
   @ViewChild('cmd', { static: false }) clientMasterTable: Table;
 
+  cleNameInputPattern = /[^a-zA-Z0-9\s_-]*/g;
+
 
   isOptionFilter: boolean;
   /**
@@ -325,7 +327,7 @@ export class ClientMasterdataComponent implements OnInit {
   initAddPOForm() {
     this.PoForm = this.frmbuilder.group({
       poNumber: ['', [Validators.required, Validators.pattern(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL_NUMERIC)]],
-      poName: ['', [Validators.required, Validators.pattern(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL_WITHSPACE)]],
+      poName: ['', [Validators.required]],
       currency: ['', Validators.required],
       poExpiryDate: ['', Validators.required],
       poc: ['', Validators.required],

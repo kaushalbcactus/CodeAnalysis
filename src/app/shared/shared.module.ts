@@ -3,10 +3,12 @@ import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NumberOnlyDirective } from './directives/number-only.directive';
+import { InputPatterenDirective } from './directives/input-patteren.directive';
 
 @NgModule({
   declarations: [
-    NumberOnlyDirective
+    NumberOnlyDirective,
+    InputPatterenDirective
   ],
   imports: [
     CommonModule,
@@ -17,6 +19,7 @@ import { NumberOnlyDirective } from './directives/number-only.directive';
   exports: [
     ReactiveFormsModule,
     NumberOnlyDirective,
+    InputPatterenDirective,
     CommonModule,
     FormsModule,
   ]

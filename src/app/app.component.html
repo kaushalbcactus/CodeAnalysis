@@ -3,17 +3,19 @@
     <div id="scInnerLoader"></div>
     <div id="scInnerLoaderText">Loading...</div>
 </div>
-<p-sidebar class="sidenav" [(visible)]="display" [showCloseIcon]="false" [style]="{width:'19em'}">
-    <div class="logo">
-        <img class="ng-tns-c0-0" alt="logo"
-            src="https://cactusglobal.sharepoint.com/sites/medcomcdn/PublishingImages/Images/CACTUSRLogo3.png">
+<p-sidebar class="sidenav" [(visible)]="visibleSidebar" [showCloseIcon]="false" [style]="{width:'19em'}">
+    <div>
+        <a [routerLink]="" (click)="goToEmpDashboard()" class="logo">
+            <img class="ng-tns-c0-0" alt="logo"
+                src="https://cactusglobal.sharepoint.com/sites/medcomcdn/PublishingImages/Images/CACTUSRLogo3.png">
+        </a>
     </div>
     <a target="_blank" *ngFor="let link of leftNavigation" [href]="link.href">{{link.title}}</a>
 </p-sidebar>
 <div class="layout-topbar">
     <div class="float-left img-bg">
-        <i (click)="display = true" class="pi pi-list sidebar-icon"></i>
-        <a class="logo" href="#/accessleveldashboard">
+        <i (click)="visibleSidebar = true" class="pi pi-list sidebar-icon"></i>
+        <a [routerLink]="" (click)="goToEmpDashboard()" class="logo">
             <img class="ng-tns-c0-0" alt="logo"
                 src="https://cactusglobal.sharepoint.com/sites/medcomcdn/PublishingImages/Images/CACTUSRLogo3.png">
         </a>

@@ -246,7 +246,7 @@
         <div class="p-grid mt-20">
             <div class="p-col-2"><span class="compulsory">*</span>Name</div>
             <div class="p-col-4">
-                <input class="mr-5" type="text" size="30" formControlName="name" placeholder="Name" pInputText>
+                <input class="mr-5" type="text" size="30" formControlName="name" placeholder="Name" pInputText inputPatteren pattern="/[^a-zA-Z0-9\s_-]*/g">
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.name.errors">
                     <div *ngIf="addClient.controls.name.errors.required">
                         Name is required</div>
@@ -574,7 +574,7 @@
             <div class="p-col-2 mr-10"><span class="compulsory">*</span>Sub-Division Name</div>
             <div class="p-col-4">
                 <input class="mr-5" type="text" size="60" formControlName="subDivision_Name"
-                    placeholder="Sub-Division Name" pInputText>
+                    placeholder="Sub-Division Name" pInputText inputPatteren>
                 <div class="error"
                     *ngIf="cmObject.isSubDivisionFormSubmit && subDivisionform.controls.subDivision_Name.errors">
                     <div *ngIf="subDivisionform.controls.subDivision_Name.errors.required">
@@ -737,7 +737,7 @@
         <div class="p-grid mt-20">
             <div class="p-col-3 mr-10"><span class="compulsory">*</span>First Name</div>
             <div class="p-col-4">
-                <input class="mr-5" type="text" size="60" formControlName="fname" placeholder="First Name" pInputText>
+                <input class="mr-5" type="text" size="60" formControlName="fname" placeholder="First Name" pInputText inputPatteren>
                 <div class="error" *ngIf="cmObject.isPOCFormSubmit && pocForm.controls.fname.errors">
                     <div *ngIf="pocForm.controls.fname.errors.required">
                         First Name is required</div>
