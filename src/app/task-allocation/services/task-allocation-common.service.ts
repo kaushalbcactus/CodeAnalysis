@@ -7,6 +7,9 @@ import { GlobalService } from 'src/app/Services/global.service';
 export class TaskAllocationCommonService {
 
   constructor(public sharedObject: GlobalService) { }
+
+  ganttParseObject: any = {}
+
   getResourceByMatrix(task, allTasks) {
     let resources = this.sharedObject.oTaskAllocation.oResources;
     resources = resources.filter(e=>e.TAVisibility === 'Yes');

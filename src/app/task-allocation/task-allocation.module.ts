@@ -20,6 +20,9 @@ import { ResourcesComponent } from './resources/resources.component';
 import { UserCapacityModule } from '../shared/usercapacity/usercapacity.module';
 import { UsercapacityComponent } from '../shared/usercapacity/usercapacity.component';
 import { CascadeDialogComponent } from './cascade-dialog/cascade-dialog.component';
+import { GanttChartModule } from '../shared/gantt-chart/gantt-chart.module';
+import { GanttChartComponent } from '../shared/gantt-chart/gantt-chart.component';
+
 @NgModule({
   declarations: [TaskAllocationComponent, TimelineComponent, DragDropComponent,
      TaskDetailsDialogComponent, ResourcesComponent, CascadeDialogComponent],
@@ -37,13 +40,14 @@ import { CascadeDialogComponent } from './cascade-dialog/cascade-dialog.componen
     NgxGraphModule,
     NgxChartsModule,
     NgxMaterialTimepickerModule,
-    UserCapacityModule
+    UserCapacityModule,
+    GanttChartModule
   ],
   exports: [
     TimelineComponent
   ],
   providers: [DatePipe, DynamicDialogConfig, DynamicDialogRef, ConfirmationService],
-  entryComponents: [UsercapacityComponent, DragDropComponent, TaskDetailsDialogComponent]
+  entryComponents: [UsercapacityComponent, DragDropComponent, TaskDetailsDialogComponent, GanttChartComponent]
   // providers: [TaskAllocationAPI]
 })
 export class TaskAllocationModule { }

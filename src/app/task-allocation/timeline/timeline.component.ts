@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, Output, EventEmitter, ViewEncapsulation, Input, OnDestroy, HostListener, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, Output, EventEmitter, ViewEncapsulation, Input, OnDestroy, HostListener, ElementRef, ComponentFactoryResolver, ComponentRef, ComponentFactory, ViewContainerRef } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -14,6 +14,8 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { UsercapacityComponent } from 'src/app/shared/usercapacity/usercapacity.component';
 import { CascadeDialogComponent } from '../cascade-dialog/cascade-dialog.component';
 import { TaskAllocationCommonService } from '../services/task-allocation-common.service';
+import { GanttChartComponent } from '../../shared/gantt-chart/gantt-chart.component'
+import { SelectItem } from 'primeng/api';
 
 
 
@@ -26,6 +28,8 @@ import { TaskAllocationCommonService } from '../services/task-allocation-common.
 })
 export class TimelineComponent implements OnInit, OnDestroy {
 
+  scales: SelectItem[];
+  selectedScale: any;
   @Input() projectDetails: any;
   @Output() reloadResources = new EventEmitter<string>();
   public GanttchartData = [];
@@ -33,6 +37,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   public noTaskError = 'No milestones found.';
   @ViewChild('gantteditor', { static: true }) gantteditor: GanttEditorComponent;
   @ViewChild('reallocationMailTableID', { static: false }) reallocateTable: ElementRef;
+  @ViewChild('ganttcontainer', { read: ViewContainerRef, static: false }) ganttChart: ViewContainerRef;
   Today = new Date();
   tempComment;
   minDateValue = new Date();
@@ -41,6 +46,10 @@ export class TimelineComponent implements OnInit, OnDestroy {
   task;
   errorMessage;
   milestoneDataCopy = [];
+  ganttObject: any = {}
+  ganttArray = []
+  resource = []
+  ganttComponentRef: any;
   public colors = [
     {
       key: 'Not Confirmed',
@@ -160,11 +169,20 @@ export class TimelineComponent implements OnInit, OnDestroy {
     private confirmationService: ConfirmationService,
     private taskAllocateCommonService: TaskAllocationCommonService,
     private usercapacityComponent: UsercapacityComponent,
+    private resolver: ComponentFactoryResolver
   ) {
 
   }
 
   ngOnInit() {
+
+    this.scales = [
+      { label: 'Minute Scale', value: '0' },
+      { label: 'Day Scale', value: '1' },
+      { label: 'Week Scale', value: '2' },
+      { label: 'Month Scale', value: '3' },
+      { label: 'Quarter Scale', value: '4' },
+      { label: 'Year Scale', value: '5' }]
 
     if (this.projectDetails !== undefined) {
       this.sharedObject.oTaskAllocation.oProjectDetails = this.projectDetails;
@@ -173,6 +191,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
       this.onPopupload();
 
     }
+
+
 
 
 
@@ -1204,7 +1224,114 @@ export class TimelineComponent implements OnInit, OnDestroy {
       this.visualgraph = false;
     } else {
       this.visualgraph = true;
+      this.ganttArray = [];
+      console.log(this.GanttchartData)
+      this.GanttchartData.forEach((item, index) => {
+        this.ganttArray.push({
+          "id": item.pID,
+          "text": item.pName,
+          "start_date": new Date(item.pStart),
+          "end_date": new Date(item.pEnd),
+          "user": item.pRes,
+          "type": item.status,
+          "open": item.pOpen,
+          "parent": item.pParent,
+          "AssignedTo": item.AssignedTo,
+          "res_id": item.AssignedTo ? item.AssignedTo.ID : '',
+          "budgetHours": item.budgetHours,
+          "spentTime": item.spentTime,
+          "assignedUsers": item.assignedUsers 
+        })
+      })
+
+
+      this.GanttchartData.forEach((item, index) => {
+        if (item.AssignedTo) {
+          this.resource.push({
+            "key": item.AssignedTo.ID,
+            "Name": item.AssignedTo.Name,
+            "label": item.AssignedTo.Title,
+            "Email": item.AssignedTo.EMail
+          })
+        }
+      })
+
+        this.resource = this.resource.filter(function (a) {
+          var key = a.label;
+          if (!this[key]) {
+              this[key] = true;
+              return true;
+          }
+      }, Object.create(null));
+
+      this.taskAllocateCommonService.ganttParseObject.data = this.ganttArray;
+      this.loadComponent();
     }
+  }
+
+  loadComponent() {
+    var tasks = {
+    "data": [
+      {
+        "id": "10", "text": "Pre Kick-Off", "start_date": new Date("2019-12-05 00:00:00"), "end_date": new Date("2019-12-16 11:00:00")
+        , "order": 10, "progress": 0.4, "type": gantt.config.types.completed, "user": 2, 'b_hrs': 3.5, 's_hrs': 1.0
+      },
+      { "id": "1", "text": "Write", "start_date": new Date("2019-12-05 09:00:00"), "end_date": new Date("2019-12-05 19:15:00"), "order": 10, "progress": 0.6, "type": gantt.config.types.onhold, "parent": "10", 'b_hrs': 0.0, 's_hrs': 0.0, "user": 0 },
+
+      { "id": "2", "text": "Edit Slot", "start_date": new Date("2019-12-06 09:15:00"), "end_date": new Date("2019-12-11 17:15:00"), "order": 20, "progress": 0.6, "type": gantt.config.types.onhold, "parent": "10", 'b_hrs': 0.0, 's_hrs': 0.0, "user": 3 },
+      { "id": "20", "text": "Edit", "start_date": new Date("2019-12-05 09:15:00"), "end_date": new Date("2019-12-05 17:15:00"), "order": 10, "progress": 0.4, "type": gantt.config.types.onhold, "parent": "2", 'b_hrs': 0.0, 's_hrs': 0.0, "user": 1 },
+      { "id": "3", "text": "Review-Edit", "start_date": new Date("2019-12-09 09:15:00"), "end_date": new Date("2019-12-09 17:15:00"), "order": 10, "progress": 0.6, "type": gantt.config.types.onhold, "parent": "2", 'b_hrs': 0.0, 's_hrs': 0.0, "user": 1 },
+      { "id": "4", "text": "Inco-Edit", "start_date": new Date("2019-12-11 09:15:00"), "end_date": new Date("2019-12-11 17:15:00"), "order": 20, "progress": 0.6, "type": gantt.config.types.onhold, "parent": "2", 'b_hrs': 0.0, 's_hrs': 0.0, "user": 0 },
+      { "id": "6", "text": "Abc", "start_date": new Date("2019-12-05 09:15:00"), "end_date": new Date("2019-12-05 17:15:00"), "order": 10, "progress": 0.4, "type": gantt.config.types.onhold, "parent": "20", 'b_hrs': 0.0, 's_hrs': 0.0, "user": 1 },
+
+      { "id": "5", "text": "Data Vision", "start_date": new Date("2019-12-11 17:15:00"), "end_date": new Date("2019-12-12 15:00:00"), "duration": 0, "order": 10, "progress": 0.6, "type": gantt.config.types.onhold, "parent": "10", 'b_hrs': 0.0, 's_hrs': 0.0, "user": 3 },
+    ],
+    "links": [
+      { "id": 10, "source": 1, "target": 2, "type": "1" },
+      { "id": 2, "source": 2, "target": 5, "type": "0" },
+      { "id": 3, "source": 3, "target": 4, "type": "0" },
+      { "id": 4, "source": 4, "target": 6, "type": "2" }
+    ],
+  };
+
+  var resource = [// resources
+    { key: '0', label: "N/A" },
+    { key: '1', label: "John" },
+    { key: '2', label: "Mike" },
+    { key: '3', label: "Anna" }
+  ]
+
+    this.ganttChart.clear();
+    const factory = this.resolver.resolveComponentFactory(GanttChartComponent);
+    this.ganttComponentRef = this.ganttChart.createComponent(factory);
+    this.ganttComponentRef.instance.tasks = this.taskAllocateCommonService.ganttParseObject;
+    this.ganttComponentRef.instance.resource = this.resource;
+    gantt.serverList("res_id", this.resource);
+    this.setScale({ label: 'Minute Scale', value: '0' });
+    
+    setTimeout(() => {
+    // this.ganttComponentRef.instance.showResourceView()
+    },1000)
+    this.ganttComponentRef.instance.isLoaderHidden = true;
+  }
+
+  save() {
+    var json = gantt.serialize();
+    console.log(json);
+  }
+
+  setScale(scale) {
+    this.ganttComponentRef.instance.setScaleConfig(scale.value)
+  }
+
+  zoomIn() {
+    this.ganttComponentRef.instance.zoomIn()
+    this.selectedScale = this.scales[gantt.ext.zoom.getCurrentLevel()];
+  }
+
+  zoomOut() {
+    this.ganttComponentRef.instance.zoomOut()
+    this.selectedScale = this.scales[gantt.ext.zoom.getCurrentLevel()]; 
   }
 
 
@@ -2395,7 +2522,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   async compareSlotSubTasksTimeline(sentPrevNode1, subMilestonePosition, selectedMil) {
     // fetch slot based on submilestone presnt or not
     let sentPrevNode;
-    if(subMilestonePosition === 0) {
+    if (subMilestonePosition === 0) {
       sentPrevNode = this.milestoneData[selectedMil].children.find(st => st.data.pName === sentPrevNode1.pName)
     } else {
       const submilestone = this.milestoneData[selectedMil].children.find(sm => sm.data.pName === sentPrevNode1.submilestone);
@@ -2403,7 +2530,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     }
     // const sentPrevNode = subMilestonePosition === 0 ?  :
     //   this.milestoneData[selectedMil].children[subMilestonePosition - 1].children.find(st => st.data.pName === sentPrevNode1.pName);
-      
+
     let slotFirstTask = sentPrevNode ? sentPrevNode.children ? sentPrevNode.children.filter(st => !st.data.previousTask) : [] : [];
     // cascade if slot start date is more than first subtask in slot
     if (slotFirstTask.length) {
