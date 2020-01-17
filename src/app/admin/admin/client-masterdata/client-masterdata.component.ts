@@ -69,7 +69,7 @@ export class ClientMasterdataComponent implements OnInit {
      * This is used to initialize the Client form.
      */
     this.addClient = frmbuilder.group({
-      name: ['', [Validators.required]],
+      name: ['', Validators.required],
       acronym: ['', [Validators.required, Validators.maxLength(5),
       Validators.pattern(this.adminConstants.REG_EXPRESSION.THREE_UPPERCASE_TWO_NUMBER)]],
       group: ['', Validators.required],
@@ -1015,7 +1015,7 @@ export class ClientMasterdataComponent implements OnInit {
    */
   getClientData() {
     const data: any = {
-      ListName: this.addClient.value.name ? this.addClient.value.name.replace(/[^a-zA-Z]/g, "").substring(0, 21) : '',
+      ListName: this.addClient.value.name ? this.addClient.value.name.replace(/[^a-zA-Z]/g, "").substring(0, 20) : '',
       ClientGroup: this.addClient.value.group,
       InvoiceName: this.addClient.value.invoiceName,
       Realization: + this.addClient.value.realization,

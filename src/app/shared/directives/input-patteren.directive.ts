@@ -1,5 +1,6 @@
-import { Directive, ElementRef, HostListener, OnInit, Input } from '@angular/core';
+import { Directive, ElementRef, HostListener, OnInit, Input, HostBinding } from '@angular/core';
 import { MessageService } from 'primeng/api';
+import { NG_VALUE_ACCESSOR, NgControl, FormControlName } from '@angular/forms';
 
 @Directive({
     selector: '[inputPatteren]'
@@ -8,10 +9,13 @@ export class InputPatterenDirective implements OnInit {
 
     @Input() pattern: string;
 
+    @HostBinding('value') value: string;
+
     private element: HTMLInputElement;
     constructor(
         private el: ElementRef,
-        private messageService: MessageService
+        private messageService: MessageService,
+        public model: FormControlName
     ) {
         //elRef will get a reference to the element where
         //the directive is placed
@@ -29,6 +33,9 @@ export class InputPatterenDirective implements OnInit {
             if (initialValue !== this.el.nativeElement.value) {
                 this.messageService.add({ key: 'adminAuth1', severity: 'error', summary: 'Error message', detail: 'Allowed special characters are \'-\' and \'_\'.', life: 3000 });
                 event.stopPropagation();
+                this.value = initialValue.substring(0, initialValue.length - 1);
+                this.model.control.setValue(this.value);
+                return this.value;
             }
         }
     }
