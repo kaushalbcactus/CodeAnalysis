@@ -402,16 +402,8 @@ export class SendToClientComponent implements OnInit {
         preTaskObj.listName = this.Constant.listNames.Schedules.name;
         preTaskObj.type = 'GET';
         batchUrl.push(preTaskObj);
-
-        // const previousTaskEndPoint = this.spServices.getReadURL('' + this.Constant.listNames.Schedules.name + '',
-        //   this.pmConstant.previousTaskOptions);
-        // const previousTaskUpdatedEndPoint = previousTaskEndPoint.replace('{0}', scObj.PreviousTask).replace('{1}', scObj.NextTasks);
-        // this.spServices.getBatchBodyGet(batchContents, batchGuid, previousTaskUpdatedEndPoint);
         tempSendToClientArray.push(scObj);
       }
-      // batchContents.push('--batch_' + batchGuid + '--');
-      // const userBatchBody = batchContents.join('\r\n');
-      // const arrResults = await this.spServices.executeGetBatchRequest(batchGuid, userBatchBody);
       let counter = 0;
       let arrResults = await this.spServices.executeBatch(batchUrl);
       arrResults = arrResults.length > 0 ? arrResults.map(a => a.retItems) : [];
@@ -428,6 +420,12 @@ export class SendToClientComponent implements OnInit {
         });
         counter++;
         if (prevTask.length) {
+          // if (prevTask[0].IsCentrallyAllocated === 'Yes') {
+          //   const preTaskObj = Object.assign({}, this.pmConstant.subtaskOptions);
+          //   preTaskObj.filter = preTaskObj.filter.replace('{0}', prevTask[0].ID);
+          //   const previousTask = await this.spServices.readItems(this.Constant.listNames.Schedules.name, preTaskObj);
+          //   prevTask = previousTask.length ? previousTask : prevTask;
+          // }
           this.scArrays.previousTaskArray.push(prevTask[0]);
           taskItem.PreviousTaskStatus = prevTask[0].Status;
           taskItem.PreviousTaskUser = prevTask[0].AssignedTo ? prevTask[0].AssignedTo.Title : '';
@@ -442,20 +440,9 @@ export class SendToClientComponent implements OnInit {
       if (tempSendToClientArray.length) {
         this.createColFieldValues(tempSendToClientArray);
       }
-      // this.scArrays.projectCodeArray = this.commonService.unique(projectCodeTempArray, 'value');
-      // this.scArrays.shortTitleArray = this.commonService.unique(shortTitleTempArray, 'value');
-      // this.scArrays.clientLegalEntityArray = this.commonService.unique(clientLegalEntityTempArray, 'value');
-      // this.scArrays.POCArray = this.commonService.unique(POCTempArray, 'value');
-      // this.scArrays.deliveryTypeArray = this.commonService.unique(deliveryTypeTempArray, 'value');
-      // this.scArrays.dueDateArray = this.commonService.unique(dueDateTempArray, 'value');
-      // this.scArrays.milestoneArray = this.commonService.unique(milestoneTempArray, 'value');
-      // this.scArrays.previousTaskOwnerArray = this.commonService.unique(previousTaskOwnerTempArray, 'value');
-      // this.scArrays.previousTaskStatusArray = this.commonService.unique(previousTaskStatusTempArray, 'value');
       this.pmObject.sendToClientArray = tempSendToClientArray;
       const tableRef: any = this.sct;
       tableRef.first = 0;
-      // this.pmObject.totalRecords.SendToClient = this.pmObject.sendToClientArray.length;
-      // this.pmObject.sendToClientArray_copy = tempSendToClientArray.slice(0, 5);
       this.isSCTableHidden = false;
       this.isSCInnerLoaderHidden = true;
       this.isSCFilterHidden = false;
