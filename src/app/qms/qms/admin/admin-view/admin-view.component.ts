@@ -69,7 +69,7 @@ export class AdminViewComponent implements OnInit {
   };
 
   @ViewChild('admin', { static: false }) adminTable: Table;
-
+  showAdminTable: boolean;
   constructor(
 
     public commonService: CommonService,
@@ -102,6 +102,7 @@ export class AdminViewComponent implements OnInit {
   }
 
   async ngOnInit() {
+    this.showAdminTable = true;
     if (!this.global.currentUser.groups.length) {
       this.commonService.SetNewrelic('QMS', 'admin-view', 'getUserInfo');
       const result = await this.spService.getUserInfo(this.global.currentUser.userId);
@@ -200,11 +201,14 @@ export class AdminViewComponent implements OnInit {
    *
    */
   fetchResourcesTasks(element) {
+    this.showAdminTable = false;
+    this.isOptionFilter = false;
     if (element && !this.global.viewTabsPermission.hideAdmin) {
       this.showLoader();
       setTimeout(async () => {
         const tasks = await this.getResourceTasks(4500, element.value.UserName.ID);
         this.bindAdminView(tasks);
+        this.showAdminTable = true;
         this.showTable();
       }, 500);
     }
@@ -294,6 +298,8 @@ export class AdminViewComponent implements OnInit {
    *
    */
   filterResource() {
+    this.showAdminTable = false;
+    this.isOptionFilter = false;
     this.filterObj.selectedResource = null;
     this.filterObj.filteredResources = [];
     // tslint:disable

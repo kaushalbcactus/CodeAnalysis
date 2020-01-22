@@ -220,7 +220,7 @@ export class ClientMasterdataComponent implements OnInit {
     Market: [],
     InvoiceName: [],
     LastUpdated: [],
-    LastUpdatedBy: []
+    LastModifiedBy: []
   };
 
   auditHistoryArray = {
@@ -505,7 +505,7 @@ export class ClientMasterdataComponent implements OnInit {
       };
       return b;
     });
-    this.clientMasterDataColArray.LastUpdatedBy = this.common.sortData(this.adminCommonService.uniqueArrayObj(
+    this.clientMasterDataColArray.LastModifiedBy = this.common.sortData(this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; })));
 
     this.clientMasterDataColArray.BillingEntity = this.common.sortData(this.adminCommonService.uniqueArrayObj(colData.map(a => {
@@ -3045,6 +3045,7 @@ export class ClientMasterdataComponent implements OnInit {
   downloadExcel(cmd) {
     cmd.exportCSV();
   }
+  
   optionFilter(event: any) {
     if (event.target.value) {
       this.isOptionFilter = false;

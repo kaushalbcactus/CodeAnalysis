@@ -88,7 +88,7 @@ export class UserProfileComponent implements OnInit {
   userProfileColArray = {
     User: [],
     LastUpdated: [],
-    LastUpdatedBy: [],
+    LastModifiedBy: [],
     PrimarySkill: [],
     Bucket: [],
     PracticeArea: [],
@@ -141,7 +141,7 @@ export class UserProfileComponent implements OnInit {
   showTable = true;
 
   isOptionFilter: boolean;
-  @ViewChild('up', { static: true }) userProfile: Table;
+  @ViewChild('up', { static: false }) userProfileTable: Table;
   /**
    * Construct a method to create an instance of required component.
    *
@@ -195,6 +195,7 @@ export class UserProfileComponent implements OnInit {
    *
    */
   async ngOnInit() {
+    this.showTable = true;
     this.constants.loader.isPSInnerLoaderHidden = true;
     this.initialAddUserForm();
     this.minPastMonth = new Date(new Date().setDate(new Date().getDate() - 30));
@@ -210,7 +211,7 @@ export class UserProfileComponent implements OnInit {
       { field: 'GoLiveDate', header: 'Go Live Date', visibility: true },
       { field: 'LastUpdated', header: 'Last Updated', visibility: false, exportable: false },
       { field: 'LastUpdatedFormat', header: 'Last Updated Date', visibility: false },
-      { field: 'LastUpdatedBy', header: 'Last Updated By', visibility: false },
+      { field: 'LastModifiedBy', header: 'Last Updated By', visibility: false },
     ];
     this.auditHistoryColumns = [
       { field: 'User', header: 'User' },
@@ -407,7 +408,7 @@ export class UserProfileComponent implements OnInit {
         userObj.User = item.UserName.Title;
         userObj.LastUpdated = new Date(new Date(item.Modified).toDateString());
         userObj.LastUpdatedFormat = this.datePipe.transform(new Date(item.Modified), 'MMM dd, yyyy');
-        userObj.LastUpdatedBy = item.Editor.Title;
+        userObj.LastModifiedBy = item.Editor.Title;
         userObj.IsActive = item.IsActive;
         userObj.DisplayText = item.Manager.Title;
         userObj.DateofExit = item.DateofExit;
@@ -653,7 +654,21 @@ export class UserProfileComponent implements OnInit {
       }
     }
   }
+
+  updateOptionValues(obj) {
+    if (obj.filteredValue.length) {
+      const filterCol = Object.entries(obj.filters);
+      if (filterCol.length >= 1) {
+        this.userProfileTable.restoringFilter;
+        obj.filter('', filterCol[0][0], 'contains')
+      }
+    }
+  }
+
   onChangeSelect() {
+    // this.updateOptionValues(this.userProfileTable);
+    // console.log('this.userProfileTable ', this.userProfileTable);
+    this.colFilters([]);
     if (this.selectedOption === this.adminConstants.LOGICAL_FIELD.INACTIVE) {
       this.showTable = false;
       this.showUserInput = true;
@@ -718,7 +733,7 @@ export class UserProfileComponent implements OnInit {
         userObj.User = item.UserName.Title;
         userObj.LastUpdated = new Date(new Date(item.Modified).toDateString());
         userObj.LastUpdatedFormat = this.datePipe.transform(new Date(item.Modified), 'MMM dd, yyyy');
-        userObj.LastUpdatedBy = item.Editor.Title;
+        userObj.LastModifiedBy = item.Editor.Title;
         userObj.IsActive = item.IsActive;
         userObj.DisplayText = item.Manager.Title;
         userObj.DateofExit = item.DateofExit;
@@ -1024,8 +1039,8 @@ export class UserProfileComponent implements OnInit {
       };
       return b;
     });
-    this.userProfileColArray.LastUpdatedBy = this.common.sortData(this.adminCommonService.uniqueArrayObj(colData.map(a => {
-      const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b;
+    this.userProfileColArray.LastModifiedBy = this.common.sortData(this.adminCommonService.uniqueArrayObj(colData.map(a => {
+      const b = { label: a.LastModifiedBy, value: a.LastModifiedBy }; return b;
     })));
   }
 
@@ -1286,7 +1301,7 @@ export class UserProfileComponent implements OnInit {
       userObj.Manager = item.Manager.Title;
       userObj.User = item.UserName.Title;
       userObj.LastUpdated = item.Modified;
-      userObj.LastUpdatedBy = item.Editor.Title;
+      userObj.LastModifiedBy = item.Editor.Title;
       userObj.IsActive = item.IsActive;
       userObj.DisplayText = item.Manager.Title;
       userObj.DateofExit = item.DateofExit;
@@ -2092,8 +2107,8 @@ export class UserProfileComponent implements OnInit {
     });
   }
 
-  downloadExcel(up) {
-    up.exportCSV();
+  downloadExcel() {
+    this.userProfileTable.exportCSV();
   }
 
   optionFilter(event: any) {
@@ -2103,9 +2118,10 @@ export class UserProfileComponent implements OnInit {
   }
 
   ngAfterViewChecked() {
+    console.log('this.userProfileTable ', this.userProfileTable);
     if (this.userProfileData.length && this.isOptionFilter) {
       const obj = {
-        tableData: this.userProfile,
+        tableData: this.userProfileTable,
         colFields: this.userProfileColArray
       };
       if (obj.tableData.filteredValue) {

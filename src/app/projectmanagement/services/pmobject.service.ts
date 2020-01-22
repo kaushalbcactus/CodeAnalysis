@@ -122,6 +122,7 @@ export class PMObjectService {
     ShortTitle: '',
     ClientLegalEntity: '',
     DeliverableType: '',
+    SubDeliverable: '',
     ProjectType: '',
     Status: '',
     CreatedBy: '',

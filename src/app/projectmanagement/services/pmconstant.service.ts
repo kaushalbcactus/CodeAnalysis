@@ -40,7 +40,7 @@ export class PmconstantService {
     top: 4200
   };
   public projectInformationQueryOptions = {
-    select: 'ID,Title,ProjectCode,DeliverableType,PrimaryPOC,ClientLegalEntity,ProjectFolder,SOWCode,BillingEntity,'
+    select: 'ID,Title,ProjectCode,DeliverableType,SubDeliverable,PrimaryPOC,ClientLegalEntity,ProjectFolder,SOWCode,BillingEntity,'
       // tslint:disable-next-line:max-line-length
       + 'CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title',
     // tslint:disable-next-line:max-line-length
@@ -62,7 +62,7 @@ export class PmconstantService {
   public pInfoPendingAllocationIndiviualViewOptions = {
     select: 'PubSupportStatus,PrimaryResMembers/Id,PrimaryResMembers/Title,AllDeliveryResources/Id,'
       + 'AllDeliveryResources/Title,AllOperationresources/Id,AllOperationresources/Title,ClientLegalEntity,Title,'
-      + 'ID,DeliverableType,TA,Molecule,ProjectCode,Status,Milestone,WBJID,StatusReportDesc,NextSCDate,PrimaryPOC,Description',
+      + 'ID,DeliverableType,SubDeliverable,TA,Molecule,ProjectCode,Status,Milestone,WBJID,StatusReportDesc,NextSCDate,PrimaryPOC,Description',
     expand: 'PrimaryResMembers/Id,PrimaryResMembers/Title,AllDeliveryResources/Id,AllDeliveryResources/Title,'
       + 'AllOperationresources/Id,AllOperationresources/Title,PrimaryResMembers/Id,PrimaryResMembers/Title',
     filter: '((AllOperationresources/Id eq ' + this.global.currentUser.userId + ') and (Status eq \'Unallocated\'))',
@@ -72,7 +72,7 @@ export class PmconstantService {
   public pInfoInactiveProjectIndiviualViewOptions = {
     select: 'PubSupportStatus,PrimaryResMembers/Id,PrimaryResMembers/Title,AllDeliveryResources/Id,'
       + 'AllDeliveryResources/Title,AllOperationresources/Id,AllOperationresources/Title,ClientLegalEntity,Title,'
-      + 'ID,DeliverableType,TA,Molecule,ProjectCode,Status,Milestone,WBJID,StatusReportDesc,NextSCDate,PrimaryPOC,Description',
+      + 'ID,DeliverableType,SubDeliverable,TA,Molecule,ProjectCode,Status,Milestone,WBJID,StatusReportDesc,NextSCDate,PrimaryPOC,Description',
     expand: 'PrimaryResMembers/Id,PrimaryResMembers/Title,AllDeliveryResources/Id,AllDeliveryResources/Title,'
       + 'AllOperationresources/Id,AllOperationresources/Title,PrimaryResMembers/Id,PrimaryResMembers/Title',
     filter: '((AllOperationresources/Id eq ' + this.global.currentUser.userId + ') and '
@@ -83,7 +83,7 @@ export class PmconstantService {
   public PM_QUERY = {
     ALL_PROJECT_INFORMATION: {
       // tslint:disable-next-line:max-line-length
-      select: 'ID,Title,ProjectCode,DeliverableType,PrimaryPOC,ClientLegalEntity,ProjectFolder,SOWCode,WBJID,ProjectType,Status,Author/Id,Author/Title,Created,Modified,'
+      select: 'ID,Title,ProjectCode,DeliverableType,SubDeliverable,PrimaryPOC,ClientLegalEntity,ProjectFolder,SOWCode,WBJID,ProjectType,Status,Author/Id,Author/Title,Created,Modified,'
         + 'Authors,POC,SubDivision, Priority, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,'
         // tslint:disable-next-line:max-line-length
         + 'Description, ConferenceJournal, Comments, PO, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
@@ -99,7 +99,7 @@ export class PmconstantService {
     },
     USER_SPECIFIC_PROJECT_INFORMATION: {
       // tslint:disable-next-line:max-line-length
-      select: 'ID,Title,ProjectCode,DeliverableType,PrimaryPOC,ClientLegalEntity,ProjectFolder,SOWCode,WBJID,ProjectType,Status,Author/Id,Author/Title,Created,Modified,'
+      select: 'ID,Title,ProjectCode,DeliverableType,SubDeliverable,PrimaryPOC,ClientLegalEntity,ProjectFolder,SOWCode,WBJID,ProjectType,Status,Author/Id,Author/Title,Created,Modified,'
         + 'Authors,POC,SubDivision, Priority, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,'
         // tslint:disable-next-line:max-line-length
         + 'Description, ConferenceJournal, Comments, PO, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
@@ -116,7 +116,7 @@ export class PmconstantService {
     },
     USER_SPECIFIC_PROJECT_INFORMATION_MY: {
       // tslint:disable-next-line:max-line-length
-      select: 'ID,Title,ProjectCode,DeliverableType,PrimaryPOC,ClientLegalEntity,ProjectFolder,SOWCode,WBJID,ProjectType,Status,Author/Id,Author/Title,Created,'
+      select: 'ID,Title,ProjectCode,DeliverableType,SubDeliverable,PrimaryPOC,ClientLegalEntity,ProjectFolder,SOWCode,WBJID,ProjectType,Status,Author/Id,Author/Title,Created,'
         + 'Authors,POC,SubDivision, Priority, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,'
         // tslint:disable-next-line:max-line-length
         + 'Description, ConferenceJournal, Comments, PO, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
@@ -133,7 +133,7 @@ export class PmconstantService {
     },
     PROJECT_INFORMATION_BY_PROJECTCODE: {
       // tslint:disable-next-line:max-line-length
-      select: 'ID,Title,ProjectCode,DeliverableType,PrimaryPOC,ClientLegalEntity,ProjectFolder,SOWCode,WBJID,ProjectType,Status,Author/Id,Author/Title,Created,'
+      select: 'ID,Title,ProjectCode,DeliverableType,SubDeliverable,PrimaryPOC,ClientLegalEntity,ProjectFolder,SOWCode,WBJID,ProjectType,Status,Author/Id,Author/Title,Created,'
         + 'Authors,POC,SubDivision, Priority, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,'
         // tslint:disable-next-line:max-line-length
         + 'Description, ConferenceJournal, Comments, PO, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
@@ -149,7 +149,7 @@ export class PmconstantService {
     },
     PROJECT_INFORMATION_BY_PROJECTCODE_ALL: {
       // tslint:disable-next-line:max-line-length
-      select: 'ID,Title,ProjectCode,DeliverableType,PrimaryPOC,ClientLegalEntity,ProjectFolder,SOWCode,WBJID,ProjectType,Status,Author/Id,Author/Title,Created,Modified,'
+      select: 'ID,Title,ProjectCode,DeliverableType,SubDeliverable,PrimaryPOC,ClientLegalEntity,ProjectFolder,SOWCode,WBJID,ProjectType,Status,Author/Id,Author/Title,Created,Modified,'
         + 'Authors,POC,SubDivision, Priority, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,'
         // tslint:disable-next-line:max-line-length
         + 'Description, ConferenceJournal, Comments, PO, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
@@ -484,26 +484,26 @@ export class PmconstantService {
       filter: 'ProjectCode eq \'{{projectCode}}\' and (Status eq \'Approved\' or Status eq \'Approval Pending\')'
     },
     ACTIVE_PROJECT_BY_SOWCODE: {
-      select: 'ID, Title, ProjectType,ProjectCode,Title,DeliverableType,WBJID,Status,IsApproved,SOWCode,ProposedStartDate',
+      select: 'ID, Title, ProjectType,ProjectCode,Title,DeliverableType,SubDeliverable,WBJID,Status,IsApproved,SOWCode,ProposedStartDate',
       filter: 'SOWCode eq \'{{sowCode}}\' and (Status eq \'In Progress\' or Status eq \'Ready for Client\''
         + ' or Status eq \'Author Review\' or Status eq \'Sent To AM For Approval\''
         + ' or Status eq \'Audit In Progress\' or Status eq \'Pending Closure\')',
       top: 4900
     },
     PIPELINE_PROJECT_BY_SOWCODE: {
-      select: 'ID, Title, ProjectType, ProjectCode, Title, DeliverableType, WBJID, Status, IsApproved, SOWCode, ProposedStartDate',
+      select: 'ID, Title, ProjectType, ProjectCode, Title, DeliverableType,SubDeliverable, WBJID, Status, IsApproved, SOWCode, ProposedStartDate',
       filter: 'SOWCode eq \'{{sowCode}}\' and (Status eq \'In Discussion\' or Status eq \'Unallocated\')',
       top: 4900
     },
     INACTIVE_PROJECTS_BY_SOWCODE1: {
-      select: 'ID, Title, ProjectType, ProjectCode, Title, DeliverableType, WBJID, Status, IsApproved, SOWCode, ProposedStartDate',
+      select: 'ID, Title, ProjectType, ProjectCode, Title, DeliverableType,SubDeliverable, WBJID, Status, IsApproved, SOWCode, ProposedStartDate',
       filter: 'SOWCode eq \'{{sowCode}}\' and ((Status eq \'Closed\' and ActualEndDate gt datetime\'{{actualEndDate}}\')'
         + ' or (Status eq \'On Hold\') or (Status eq \'Awaiting Cancel Approval\') or (Status eq \'Cancelled\''
         + ' and (RejectionDate gt datetime\'{{rejectionDate}}\' or ProposedStartDate gt datetime\'{{proposedStartDate}}\')))',
       top: 4900
     },
     INACTIVE_PROJECTS_BY_SOWCODE: {
-      select: 'ID, Title, ProjectType, ProjectCode, Title, DeliverableType, WBJID, Status, IsApproved, SOWCode, ProposedStartDate',
+      select: 'ID, Title, ProjectType, ProjectCode, Title, DeliverableType,SubDeliverable, WBJID, Status, IsApproved, SOWCode, ProposedStartDate',
       filter: 'SOWCode eq \'{{sowCode}}\' and ((Status eq \'Closed\' and ActualEndDate gt datetime\'{{actualStartDate}}\''
         + ' and ActualEndDate lt datetime\'{{actualEndDate}}\') or (Status eq \'On Hold\')'
         + ' or (Status eq \'Awaiting Cancel Approval\') or (Status eq \'Cancelled\''
