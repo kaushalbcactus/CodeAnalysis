@@ -123,7 +123,7 @@ export class AllProjectsComponent implements OnInit {
   showProjectInput = false;
   providedProjectCode = '';
   @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
-  @ViewChild('allProjectRef', { static: true }) allProjectRef: Table;
+  @ViewChild('allProjectRef', { static: false }) allProjectRef: Table;
   ExcelDownloadenable = false;
   firstLoad = true;
   showExpenseEnable = false;
@@ -133,6 +133,7 @@ export class AllProjectsComponent implements OnInit {
   { field: string; header: string; visibility: boolean; exportable: boolean; })[];
   projectExpenses: any;
   expenseColArray: any = [];
+  showTable: boolean;
   constructor(
     public pmObject: PMObjectService,
     private datePipe: DatePipe,
@@ -168,6 +169,7 @@ export class AllProjectsComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.showTable = true;
     this.overAllValues = [
       { name: 'Open', value: 'Open' },
       { name: 'Closed / Cancelled', value: 'Closed' }
@@ -329,8 +331,8 @@ export class AllProjectsComponent implements OnInit {
     this.pmObject.allProjectItems = [];
     this.reloadAllProject();
   }
-  async getAllProjects() {
 
+  async getAllProjects() {
     const sowCodeTempArray = [];
     const projectCodeTempArray = [];
     const shortTitleTempArray = [];
@@ -350,6 +352,7 @@ export class AllProjectsComponent implements OnInit {
       arrResults = await this.pmCommonService.getProjects(this.showNavigateSOW);
       this.pmObject.allProjectItems = arrResults;
     }
+    this.showTable = true;
     if (this.pmObject.allProjectItems.length) {
       // this.pmObject.countObj.allProjectCount = arrResults.length;
       this.pmObject.countObj.allProjectCount = this.pmObject.allProjectItems.length; // added by kaushal on 12-07-2019
@@ -452,7 +455,6 @@ export class AllProjectsComponent implements OnInit {
     if (this.pmObject.allProjectItems && this.pmObject.allProjectItems.length) {
       const tempAllProjectArray = [];
       for (const task of this.pmObject.allProjectItems) {
-
         const projObj = $.extend(true, {}, this.pmObject.allProject);
         projObj.ID = task.ID;
         projObj.Title = task.Title;
@@ -461,6 +463,7 @@ export class AllProjectsComponent implements OnInit {
         projObj.ShortTitle = task.WBJID;
         projObj.ClientLegalEntity = task.ClientLegalEntity;
         projObj.DeliverableType = task.DeliverableType;
+        projObj.SubDeliverable = task.SubDeliverable;
         projObj.ProjectType = task.ProjectType;
         projObj.Status = task.Status;
         projObj.OOPBudget = 0;
@@ -2482,9 +2485,11 @@ export class AllProjectsComponent implements OnInit {
 
   onChangeSelect(event) {
     if (this.selectedOption.name === 'Open') {
+      this.showTable = false;
       this.showProjectInput = false;
       this.callReloadProject();
     } else {
+      this.showTable = false;
       const emptyProjects = [];
       this.pmObject.allProjectsArray = [...emptyProjects];
       this.showProjectInput = true;
@@ -2516,6 +2521,7 @@ export class AllProjectsComponent implements OnInit {
       projectCode);
     this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetProjectInformation');
     const results = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, projectInfoFilter);
+    this.showTable = true;
     if (results && results.length) {
       this.pmObject.allProjectItems = results;
       this.reloadAllProject();

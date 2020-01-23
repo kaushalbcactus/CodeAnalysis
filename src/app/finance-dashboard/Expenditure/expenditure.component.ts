@@ -439,7 +439,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         // this.piCleData = [...this.projectInfoData, ...this.cleData];
         for (let i = 0; i < this.projectInfoData.length; i++) {
             const element = this.projectInfoData[i];
-            const projectType = element.ProjectType.toLowerCase();
+            const projectType = element.ProjectType ? element.ProjectType.toLowerCase() : '';
             if (projectType.indexOf('writing') > -1) {
                 this.piCleData.push({
                     label: element.ProjectCode,

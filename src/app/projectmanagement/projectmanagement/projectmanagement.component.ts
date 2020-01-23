@@ -123,6 +123,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    * This method will display the add project section.
    */
   displayAddProject() {
+    this.pmService.resetAddProject();
     this.pmObject.isAddProjectVisible = true;
   }
   /**

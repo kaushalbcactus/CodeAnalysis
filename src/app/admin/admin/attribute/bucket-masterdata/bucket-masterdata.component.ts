@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, ApplicationRef, NgZone } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ApplicationRef, NgZone, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { DatePipe, PlatformLocation } from '@angular/common';
 import { MessageService, Message, ConfirmationService } from 'primeng/api';
 import { CommonService } from '../../../../Services/common.service';
@@ -8,6 +8,7 @@ import { ConstantsService } from 'src/app/Services/constants.service';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
 import { AdminCommonService } from 'src/app/admin/services/admin-common.service';
 import { Router } from '@angular/router';
+import { Table } from 'primeng';
 
 @Component({
   selector: 'app-bucket-masterdata',
@@ -29,7 +30,7 @@ export class BucketMasterdataComponent implements OnInit {
     Bucket: [],
     Client: [],
     LastUpdated: [],
-    LastUpdatedBy: []
+    LastModifiedBy: []
   };
   auditHistoryArray = {
     Action: [],
@@ -53,6 +54,9 @@ export class BucketMasterdataComponent implements OnInit {
   clientArray: any[];
   minDateValue = new Date();
   min30Days = new Date();
+
+  isOptionFilter: boolean;
+  @ViewChild('bmd', { static: false }) bmTable: Table;
   /**
    * Construct a method to create an instance of required component.
    *
@@ -84,7 +88,8 @@ export class BucketMasterdataComponent implements OnInit {
     private router: Router,
     private applicationRef: ApplicationRef,
     private zone: NgZone,
-    private common: CommonService
+    private common: CommonService,
+    private cdr: ChangeDetectorRef
   ) {
     // Browser back button disabled & bookmark issue solution
     history.pushState(null, null, window.location.href);
@@ -109,7 +114,7 @@ export class BucketMasterdataComponent implements OnInit {
       { field: 'Bucket', header: 'Bucket', visibility: true },
       { field: 'Client', header: 'Client', visibility: true },
       { field: 'LastUpdated', header: 'Last Updated', visibility: true, exportable: false },
-      { field: 'LastUpdatedBy', header: 'Last Updated By', visibility: true },
+      { field: 'LastModifiedBy', header: 'Last Updated By', visibility: true },
       { field: 'LastUpdatedFormat', header: 'Last Updated Date', visibility: false },
     ];
     this.loadBucketTable();
@@ -147,7 +152,7 @@ export class BucketMasterdataComponent implements OnInit {
         obj.Bucket = item.Title;
         obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
         obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd, yyyy');
-        obj.LastUpdatedBy = item.Editor.Title;
+        obj.LastModifiedBy = item.Editor.Title;
         obj.Client = clientFilteredArray && clientFilteredArray.length ? clientFilteredArray.map(x => x.Title).join(', ') : '';
         if (obj.Client.length > 30) {
           obj.PatClients = obj.Client.substring(0, 30) + '...';
@@ -304,8 +309,8 @@ export class BucketMasterdataComponent implements OnInit {
       };
       return b;
     });
-    this.bucketDataColArray.LastUpdatedBy = this.common.sortData(this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; })));
+    this.bucketDataColArray.LastModifiedBy = this.common.sortData(this.adminCommonService.uniqueArrayObj(
+      colData.map(a => { const b = { label: a.LastModifiedBy, value: a.LastModifiedBy }; return b; })));
   }
   /**
    * Construct a method to append the menu in bucket table.
@@ -616,6 +621,29 @@ export class BucketMasterdataComponent implements OnInit {
   }
   downloadExcel(bmd) {
     bmd.exportCSV();
+  }
+
+  optionFilter(event: any) {
+    if (event.target.value) {
+      this.isOptionFilter = false;
+    }
+  }
+
+
+  ngAfterViewChecked() {
+    if (this.bucketDataRows.length && this.isOptionFilter) {
+      const obj = {
+        tableData: this.bmTable,
+        colFields: this.bucketDataColArray
+      };
+      if (obj.tableData.filteredValue) {
+        this.common.updateOptionValues(obj);
+      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+        this.colFilters(obj.tableData.value);
+        this.isOptionFilter = false;
+      }
+      this.cdr.detectChanges();
+    }
   }
 
 }

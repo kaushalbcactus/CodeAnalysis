@@ -852,9 +852,7 @@ export class CommonService {
                 tempArr.push({ label: element, value: element });
             }
         }
-        // this.tableObj.colFields[colName] = [...tempArr];
-        this.tableObj.colFields[colName] = tempArr;
-        console.log('this.tableObj ', this.tableObj.colFields);
+        this.tableObj.colFields[colName] = [...tempArr];
     }
 
     uniqueArrayObj(array: any) {
