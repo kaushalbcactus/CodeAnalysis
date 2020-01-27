@@ -88,7 +88,7 @@ export class PmconstantService {
         // tslint:disable-next-line:max-line-length
         + 'Description, ConferenceJournal, Comments, PO, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
         + 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID,'
-        + 'DeliveryLevel2/Title, BusinessVertical, BillingEntity, SOWLink, PubSupportStatus, IsStandard, StandardService,'
+        + 'DeliveryLevel2/Title, BusinessVertical, BillingEntity, SOWLink, PubSupportStatus, IsStandard, StandardService,SlideCount,PageCount,ReferenceCount,AnnotationBinder,'
         + 'PrimaryResMembers/Id,PrimaryResMembers/Title,Editor/Title',
       expand: 'Author/Id,Author/Title, CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title,'
         + 'DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title,'
@@ -104,7 +104,7 @@ export class PmconstantService {
         // tslint:disable-next-line:max-line-length
         + 'Description, ConferenceJournal, Comments, PO, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
         + 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID,'
-        + 'DeliveryLevel2/Title, BusinessVertical, BillingEntity, SOWLink, PubSupportStatus, IsStandard, StandardService,'
+        + 'DeliveryLevel2/Title, BusinessVertical, BillingEntity, SOWLink, PubSupportStatus, IsStandard, StandardService,SlideCount,PageCount,ReferenceCount,AnnotationBinder,'
         + 'PrimaryResMembers/Id,PrimaryResMembers/Title,Editor/Title',
       expand: 'Author/Id,Author/Title, CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title,'
         + 'DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title,'
@@ -121,7 +121,7 @@ export class PmconstantService {
         // tslint:disable-next-line:max-line-length
         + 'Description, ConferenceJournal, Comments, PO, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
         + 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID,'
-        + 'DeliveryLevel2/Title, BusinessVertical, BillingEntity, SOWLink, PubSupportStatus, IsStandard, StandardService,'
+        + 'DeliveryLevel2/Title, BusinessVertical, BillingEntity, SOWLink, PubSupportStatus, IsStandard, StandardService,SlideCount,PageCount,ReferenceCount,AnnotationBinder,'
         + 'PrimaryResMembers/Id,PrimaryResMembers/Title',
       expand: 'Author/Id,Author/Title, CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title,'
         + 'DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title,'
@@ -138,7 +138,7 @@ export class PmconstantService {
         // tslint:disable-next-line:max-line-length
         + 'Description, ConferenceJournal, Comments, PO, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
         + 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID,'
-        + 'DeliveryLevel2/Title, BusinessVertical, BillingEntity, SOWLink, PubSupportStatus, IsStandard, StandardService,'
+        + 'DeliveryLevel2/Title, BusinessVertical, BillingEntity, SOWLink, PubSupportStatus, IsStandard, StandardService,SlideCount,PageCount,ReferenceCount,AnnotationBinder,'
         + 'PrimaryResMembers/Id,PrimaryResMembers/Title',
       expand: 'Author/Id,Author/Title, CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title,'
         + 'DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title,'
@@ -154,7 +154,7 @@ export class PmconstantService {
         // tslint:disable-next-line:max-line-length
         + 'Description, ConferenceJournal, Comments, PO, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
         + 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID,'
-        + 'DeliveryLevel2/Title, BusinessVertical, BillingEntity, SOWLink, PubSupportStatus, IsStandard, StandardService,'
+        + 'DeliveryLevel2/Title, BusinessVertical, BillingEntity, SOWLink, PubSupportStatus, IsStandard, StandardService,SlideCount,PageCount,ReferenceCount,AnnotationBinder,'
         + 'PrimaryResMembers/Id,PrimaryResMembers/Title,Editor/Title',
       expand: 'Author/Id,Author/Title, CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title,'
         + 'DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title,'

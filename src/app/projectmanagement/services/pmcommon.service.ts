@@ -627,7 +627,11 @@ export class PMCommonService {
       ConferenceJournal: addObj.ProjectAttributes.ConferenceJournal ? addObj.ProjectAttributes.ConferenceJournal : '',
       Comments: addObj.ProjectAttributes.Comments ? addObj.ProjectAttributes.Comments : '',
       PubSupportStatus: addObj.ProjectAttributes.PUBSupportStatus ? addObj.ProjectAttributes.PUBSupportStatus : '',
-      SOWLink: addObj.FinanceManagement.SOWFileURL ? addObj.FinanceManagement.SOWFileURL : ''
+      SOWLink: addObj.FinanceManagement.SOWFileURL ? addObj.FinanceManagement.SOWFileURL : '',
+      SlideCount: addObj.ProjectAttributes.SlideCount,
+      PageCount: addObj.ProjectAttributes.PageCount,
+      ReferenceCount: addObj.ProjectAttributes.ReferenceCount,
+      AnnotationBinder: addObj.ProjectAttributes.AnnotationBinder === true ? 'Yes' : 'No'
     };
     if (isCreate) {
       data.SOWCode = addObj.SOWSelect.SOWCode;
@@ -823,6 +827,7 @@ export class PMCommonService {
     return tempArray;
   }
   async getProjects(bPM) {
+    debugger;
     let arrResults: any = [];
 
     const allProjects = localStorage.getItem('allProjects');
@@ -877,6 +882,10 @@ export class PMCommonService {
     this.pmObject.addProject.ProjectAttributes.ConferenceJournal = '';
     this.pmObject.addProject.ProjectAttributes.Authors = '';
     this.pmObject.addProject.ProjectAttributes.Comments = '';
+    this.pmObject.addProject.ProjectAttributes.SlideCount = 0;
+    this.pmObject.addProject.ProjectAttributes.ReferenceCount = 0;
+    this.pmObject.addProject.ProjectAttributes.PageCount = 0;
+    this.pmObject.addProject.ProjectAttributes.AnnotationBinder = false;
     this.pmObject.addProject.Timeline.Standard.IsStandard = false;
     this.pmObject.addProject.Timeline.Standard.Service = {};
     this.pmObject.addProject.Timeline.Standard.Resource = {};
@@ -906,6 +915,7 @@ export class PMCommonService {
     this.pmObject.addProject.FinanceManagement.selectedFile = '';
     this.pmObject.addProject.FinanceManagement.isBudgetRateAdded = false;
     this.pmObject.addProject.SOWSelect.GlobalFilterValue = '';
+    
   }
   async setBilledBy() {
     // this.pmObject.billedBy = [
@@ -999,6 +1009,7 @@ export class PMCommonService {
     const createSummaryObj = Object.assign({}, options);
     createSummaryObj.url = this.spServices.getReadURL(this.constant.listNames.Schedules.name, null);
     createSummaryObj.data = summaryObj;
+    debugger;
     createSummaryObj.type = 'POST';
     createSummaryObj.listName = this.constant.listNames.Schedules.name;
     batchURL.push(createSummaryObj);

@@ -38,6 +38,7 @@ export class ProjectAttributesComponent implements OnInit {
   sowObj;
   showMoleculeAdd = false;
   formSubmit = false;
+  enableCountFields = false;
   constructor(
     private frmbuilder: FormBuilder,
     public pmObject: PMObjectService,
@@ -50,7 +51,7 @@ export class ProjectAttributesComponent implements OnInit {
     private dynamicDialogRef: DynamicDialogRef,
     private router: Router,
     private dataService: DataService,
-    private commonService : CommonService
+    private commonService: CommonService
   ) { }
   async ngOnInit() {
     this.initForm();
@@ -196,6 +197,19 @@ export class ProjectAttributesComponent implements OnInit {
     if (projObj.Comments) {
       this.addProjectAttributesForm.get('comments').setValue(projObj.Comments);
     }
+    if (projObj.PageCount) {
+      this.addProjectAttributesForm.get('PageCount').setValue(projObj.PageCount);
+    }
+    if (projObj.ReferenceCount) {
+      this.addProjectAttributesForm.get('ReferenceCount').setValue(projObj.ReferenceCount);
+    }
+    if (projObj.SlideCount) {
+      this.addProjectAttributesForm.get('SlideCount').setValue(projObj.SlideCount);
+    }
+    if (projObj.AnnotationBinder) {
+      this.addProjectAttributesForm.get('AnnotationBinder').setValue(projObj.AnnotationBinder);
+    }
+
     this.isProjectAttributeTableHidden = false;
     this.isProjectAttributeLoaderHidden = true;
   }
@@ -287,7 +301,11 @@ export class ProjectAttributesComponent implements OnInit {
       sowBoxLink: ['', Validators.maxLength(255)],
       conference: [''],
       authors: [''],
-      comments: ['']
+      comments: [''],
+      SlideCount: [0],
+      ReferenceCount: [0],
+      PageCount: [0],
+      AnnotationBinder: [''],
     });
 
     this.addMolecule = this.frmbuilder.group({
@@ -310,6 +328,21 @@ export class ProjectAttributesComponent implements OnInit {
    */
   goToSow() {
     this.pmObject.activeIndex = 1;
+  }
+
+
+  /**
+   * This method is used to Enable disable fields.
+   */
+  EnableDisableCountFields() {
+
+    if (this.addProjectAttributesForm.get('practiceArea').value.toLowerCase() === 'medinfo' || this.addProjectAttributesForm.get('practiceArea').value.toLowerCase() === 'medcomm') {
+      this.enableCountFields = true;
+    }
+    else {
+      this.enableCountFields = false;
+    }
+
   }
   /**
    * This method is used to validate project attributes field.
@@ -355,6 +388,28 @@ export class ProjectAttributesComponent implements OnInit {
     this.pmObject.addProject.ProjectAttributes.ConferenceJournal = this.addProjectAttributesForm.get('conference').value;
     this.pmObject.addProject.ProjectAttributes.Authors = this.addProjectAttributesForm.get('authors').value;
     this.pmObject.addProject.ProjectAttributes.Comments = this.addProjectAttributesForm.get('comments').value;
+
+    debugger;
+    if (this.pmObject.addProject.ProjectAttributes.PracticeArea.toLowerCase() === 'medcomm' ||
+      this.pmObject.addProject.ProjectAttributes.PracticeArea.toLowerCase() === 'medinfo') {
+
+      this.enableCountFields = true;
+      this.pmObject.addProject.ProjectAttributes.AnnotationBinder = this.addProjectAttributesForm.get('AnnotationBinder').value === null ?
+        false : this.addProjectAttributesForm.get('AnnotationBinder').value;
+      this.pmObject.addProject.ProjectAttributes.SlideCount = this.addProjectAttributesForm.get('SlideCount').value ?
+        this.addProjectAttributesForm.get('SlideCount').value : 0;
+      this.pmObject.addProject.ProjectAttributes.PageCount = this.addProjectAttributesForm.get('PageCount').value ?
+        this.addProjectAttributesForm.get('PageCount').value : 0;
+      this.pmObject.addProject.ProjectAttributes.ReferenceCount = this.addProjectAttributesForm.get('ReferenceCount').value ?
+        this.addProjectAttributesForm.get('ReferenceCount').value : 0;
+    } else {
+      this.pmObject.addProject.ProjectAttributes.AnnotationBinder = false;
+      this.pmObject.addProject.ProjectAttributes.SlideCount = 0;
+      this.pmObject.addProject.ProjectAttributes.PageCount = 0;
+      this.pmObject.addProject.ProjectAttributes.ReferenceCount = 0;
+    }
+
+
   }
   /**
    * This method get called when user changed the billed by dropdonw value.
@@ -374,6 +429,8 @@ export class ProjectAttributesComponent implements OnInit {
    * @param projObj Pass the projObj as parameter.
    */
   editProject(projObj) {
+
+    debugger;
     this.pmObject.addProject.ProjectAttributes.ClientLegalEntity = projObj.ClientLegalEntity;
     this.pmObject.addProject.ProjectAttributes.SubDivision = projObj.SubDivision;
     this.pmObject.addProject.ProjectAttributes.BillingEntity = projObj.BillingEntity;
@@ -426,12 +483,20 @@ export class ProjectAttributesComponent implements OnInit {
     this.pmObject.addProject.ProjectAttributes.ConferenceJournal = projObj.ConferenceJournal;
     this.pmObject.addProject.ProjectAttributes.Authors = projObj.Authors;
     this.pmObject.addProject.ProjectAttributes.Comments = projObj.Comments;
+    this.pmObject.addProject.ProjectAttributes.SlideCount = projObj.SlideCount;
+    // tslint:disable-next-line: max-line-length
+    this.pmObject.addProject.ProjectAttributes.ReferenceCount = projObj.ReferenceCount; this.pmObject.addProject.ProjectAttributes.PageCount = projObj.PageCount; this.pmObject.addProject.ProjectAttributes.AnnotationBinder = projObj.AnnotationBinder ? projObj.AnnotationBinder === 'Yes' ? true : false : false;
+
+    this.enableCountFields = this.pmObject.addProject.ProjectAttributes.PracticeArea.toLowerCase()
+      === 'medcomm' || this.pmObject.addProject.ProjectAttributes.PracticeArea.toLowerCase() === 'medinfo' ? true : false;
     this.setFieldProperties(this.pmObject.addProject.ProjectAttributes, null, false);
   }
   /**
    * This method is used to update the project.
    */
   async saveEditProject() {
+
+    debugger;
     if (this.addProjectAttributesForm.valid) {
       this.pmObject.isMainLoaderHidden = false;
       this.setFormFieldValue();

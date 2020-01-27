@@ -48,7 +48,10 @@ export class AllProjectsComponent implements OnInit {
     { field: 'CreatedBy', header: 'Created By', visibility: false },
     { field: 'CreatedDateFormat', header: 'Created Date', visibility: false },
     { field: 'ModifiedBy', header: 'Modified By', visibility: false },
-    { field: 'ModifiedDateFormat', header: 'Modified Date', visibility: false },
+    { field: 'ReferenceCount', header: 'Reference Count', visibility: false },
+    { field: 'PageCount', header: 'Page Count', visibility: false },
+    { field: 'SlideCount', header: 'Slide Count', visibility: false },
+    { field: 'AnnotationBinder', header: 'Annotation/Binder', visibility: false },
 
     // { field: 'CreatedDate', header: 'Created Date', visibility: true, exportable: false }
   ];
@@ -134,6 +137,7 @@ export class AllProjectsComponent implements OnInit {
   projectExpenses: any;
   expenseColArray: any = [];
   showTable: boolean;
+  enableCountFields = false;
   constructor(
     public pmObject: PMObjectService,
     private datePipe: DatePipe,
@@ -333,6 +337,7 @@ export class AllProjectsComponent implements OnInit {
   }
 
   async getAllProjects() {
+    debugger;
     const sowCodeTempArray = [];
     const projectCodeTempArray = [];
     const shortTitleTempArray = [];
@@ -521,6 +526,11 @@ export class AllProjectsComponent implements OnInit {
         projObj.StandardService = task.StandardService ? task.StandardService : '';
         projObj.Priority = task.Priority ? task.Priority : '';
         projObj.Authors = task.Authors ? task.Authors : '';
+
+        projObj.SlideCount = task.SlideCount ? task.SlideCount : 0;
+        projObj.PageCount = task.PageCount ? task.PageCount : 0;
+        projObj.ReferenceCount = task.ReferenceCount ? task.ReferenceCount : 0;
+        projObj.AnnotationBinder = task.AnnotationBinder ? task.AnnotationBinder : 'No';
         projObj.PrimaryResources = this.commonService.returnText(task.PrimaryResMembers.results);
         switch (projObj.Status) {
           case this.constants.projectStatus.InDiscussion:
@@ -796,7 +806,7 @@ export class AllProjectsComponent implements OnInit {
    * @param menu menu object.
    */
   storeRowData(rowData, menu) {
-
+    debugger;
     this.selectedProjectObj = rowData;
     const status = this.selectedProjectObj.Status;
     const route = this.router.url;
@@ -1798,6 +1808,12 @@ export class AllProjectsComponent implements OnInit {
     this.pmObject.addProject.ProjectAttributes.ConferenceJournal = proj.ConferenceJournal;
     this.pmObject.addProject.ProjectAttributes.Authors = proj.Authors;
     this.pmObject.addProject.ProjectAttributes.Comments = proj.Comments;
+
+    this.pmObject.addProject.ProjectAttributes.PageCount = proj.PageCount;
+    this.pmObject.addProject.ProjectAttributes.ReferenceCount = proj.ReferenceCount;
+    this.pmObject.addProject.ProjectAttributes.SlideCount = proj.SlideCount;
+    this.pmObject.addProject.ProjectAttributes.AnnotationBinder = proj.AnnotationBinder;
+
     this.pmObject.addProject.ProjectAttributes.ProjectTitle = proj.Title;
     this.pmObject.addProject.ProjectAttributes.EndUseofDeliverable = proj.Description;
     if (proj.IsStandard === 'Yes') {
@@ -1860,10 +1876,16 @@ export class AllProjectsComponent implements OnInit {
       }
     }
 
+
+
     this.projectViewDataArray.push(this.pmObject.addProject);
+    this.enableCountFields = this.pmObject.addProject.ProjectAttributes.PracticeArea.toLowerCase() === 'medcomm'
+    || this.pmObject.addProject.ProjectAttributes.PracticeArea.toLowerCase() === 'medinfo' ? true : false;
     console.log('Test');
     console.log(this.projectViewDataArray);
     this.pmObject.isProjectRightSideVisible = true;
+
+   
   }
   goToAllocationPage(task) {
     window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +
