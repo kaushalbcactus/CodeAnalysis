@@ -52,6 +52,8 @@ export class CapacityDashboardComponent implements OnInit {
   }
 
 
+ 
+
   async GetResources() {
     const batchURL = [];
     const options = {

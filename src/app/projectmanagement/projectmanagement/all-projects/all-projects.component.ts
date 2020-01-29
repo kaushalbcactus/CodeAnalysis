@@ -337,7 +337,6 @@ export class AllProjectsComponent implements OnInit {
   }
 
   async getAllProjects() {
-    debugger;
     const sowCodeTempArray = [];
     const projectCodeTempArray = [];
     const shortTitleTempArray = [];
@@ -806,7 +805,6 @@ export class AllProjectsComponent implements OnInit {
    * @param menu menu object.
    */
   storeRowData(rowData, menu) {
-    debugger;
     this.selectedProjectObj = rowData;
     const status = this.selectedProjectObj.Status;
     const route = this.router.url;

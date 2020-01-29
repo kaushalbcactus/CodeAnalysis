@@ -827,7 +827,7 @@ export class PMCommonService {
     return tempArray;
   }
   async getProjects(bPM) {
-    debugger;
+
     let arrResults: any = [];
 
     const allProjects = localStorage.getItem('allProjects');
@@ -1009,7 +1009,6 @@ export class PMCommonService {
     const createSummaryObj = Object.assign({}, options);
     createSummaryObj.url = this.spServices.getReadURL(this.constant.listNames.Schedules.name, null);
     createSummaryObj.data = summaryObj;
-    debugger;
     createSummaryObj.type = 'POST';
     createSummaryObj.listName = this.constant.listNames.Schedules.name;
     batchURL.push(createSummaryObj);

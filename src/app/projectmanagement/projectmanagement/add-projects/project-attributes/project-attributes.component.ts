@@ -389,7 +389,6 @@ export class ProjectAttributesComponent implements OnInit {
     this.pmObject.addProject.ProjectAttributes.Authors = this.addProjectAttributesForm.get('authors').value;
     this.pmObject.addProject.ProjectAttributes.Comments = this.addProjectAttributesForm.get('comments').value;
 
-    debugger;
     if (this.pmObject.addProject.ProjectAttributes.PracticeArea.toLowerCase() === 'medcomm' ||
       this.pmObject.addProject.ProjectAttributes.PracticeArea.toLowerCase() === 'medinfo') {
 
@@ -429,8 +428,6 @@ export class ProjectAttributesComponent implements OnInit {
    * @param projObj Pass the projObj as parameter.
    */
   editProject(projObj) {
-
-    debugger;
     this.pmObject.addProject.ProjectAttributes.ClientLegalEntity = projObj.ClientLegalEntity;
     this.pmObject.addProject.ProjectAttributes.SubDivision = projObj.SubDivision;
     this.pmObject.addProject.ProjectAttributes.BillingEntity = projObj.BillingEntity;
@@ -496,7 +493,6 @@ export class ProjectAttributesComponent implements OnInit {
    */
   async saveEditProject() {
 
-    debugger;
     if (this.addProjectAttributesForm.valid) {
       this.pmObject.isMainLoaderHidden = false;
       this.setFormFieldValue();

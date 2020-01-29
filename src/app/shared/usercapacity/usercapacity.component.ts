@@ -39,6 +39,7 @@ export class UsercapacityComponent implements OnInit {
   enableTaskDialog = false;
   selectedTask: any;
   disableCamera = false;
+  enableDownload: boolean;
   constructor(
     public datepipe: DatePipe, public config: DynamicDialogConfig,
     private spService: SPOperationService,
@@ -61,7 +62,15 @@ export class UsercapacityComponent implements OnInit {
     if (this.data) {
       this.dynamicload = true;
       this.Onload(this.data);
+      if (this.data.type === 'CapacityDashboard') {
+        this.enableDownload = true;
+      }
     }
+  }
+
+
+  downloadExcel() {
+    this.common.tableToExcel('capacityTable1', 'Capacity Dashboard');
   }
   // tslint:disable
   public oCapacity = {
@@ -553,7 +562,6 @@ export class UsercapacityComponent implements OnInit {
         objTotalAllocatedPerUser.timeMins = oUser.dates[i].totalTimeAllocatedPerDay.indexOf(':')
           ? oUser.dates[i].totalTimeAllocatedPerDay.split(':')[1] : 0;
         arrTotalAllocatedPerUser.push(objTotalAllocatedPerUser);
-
         const av = tasksDetails.filter(k => k.task === 'Blocking');
         if (av.length) {
           oUser.dates[i].availableHrs = '0:0';
@@ -585,10 +593,16 @@ export class UsercapacityComponent implements OnInit {
         oUser.businessDays.push(oUser.dates[i].date);
       }
     }
+
+
     oUser.totalAllocated = arrTotalAllocatedPerUser.length > 0 ? this.commonservice.ajax_addHrsMins(arrTotalAllocatedPerUser) : 0;
     oUser.totalUnAllocated = arrTotalAvailablePerUser.length > 0 ? this.commonservice.ajax_addHrsMins(arrTotalAvailablePerUser) : 0;
     oUser.displayTotalAllocated = oUser.totalAllocated;
     oUser.displayTotalUnAllocated = oUser.totalUnAllocated === 0 ? '0:0' : oUser.totalUnAllocated;
+    oUser.displayTotalAllocatedExport =   oUser.displayTotalAllocated.split(':')[0] + 'h:' +
+     oUser.displayTotalAllocated.split(':')[1] + 'm' ;
+    oUser.displayTotalUnAllocatedExport = oUser.displayTotalUnAllocated.split(':')[0] + 'h:' +
+    oUser.displayTotalUnAllocated.split(':')[1] + 'm' ;
     oUser.dayTasks = [];
   }
 
@@ -627,7 +641,7 @@ export class UsercapacityComponent implements OnInit {
     }
   }
 
-  fetchProjectTaskDetails(user, tasks, objt) {
+  fetchProjectTaskDetails(user, tasks, date, objt) {
     if (tasks.length > 0) {
       const oItem = $(objt.target).closest('.UserTasksRow').siblings('.TaskPerDayRow');
       oItem.hide();
@@ -638,6 +652,13 @@ export class UsercapacityComponent implements OnInit {
         this.bindProjectTaskDetails(tasks, objt, user);
       }, 300);
     }
+
+    user.dates.map(c => delete c.backgroundColor);
+    date.backgroundColor = '#ffeb9c';
+
+    this.getColor(date);
+
+
   }
   // tslint:disable
   async bindProjectTaskDetails(tasks, objt, user) {
@@ -822,13 +843,42 @@ export class UsercapacityComponent implements OnInit {
     ref.onClose.subscribe(async (tasks: any) => {
     });
   }
- 
 
-  collpaseTable(objt) {
+
+  collpaseTable(objt, user) {
+
     const oCollpase = $(objt).closest('.TaskPerDayRow');
     oCollpase.prev().find('.highlightCell').removeClass('highlightCell');
     oCollpase.slideUp();
+    user.dayTasks = [];
+    user.dates.map(c => delete c.backgroundColor);
+    // this.getColor(date);
+    // const oCollpase1= document.getElementById(userId+'taskexpandrow').remove();
+    // oCollpase1.remove('TaskPerDayRow');
+
+
   }
+
+
+  getColor(date) {
+    if(date.backgroundColor){
+      return 'orange';
+    } 
+    switch (date.userCapacity) {
+      case 'Leave':
+        return 'grey';
+      case 'NotAvailable':
+        return '#EF3D3D';
+      case 'Available':
+        return '#55bf3b';
+    }
+   
+  }
+
+
+ 
+
+
 
   @HostListener('window:resize', ['$event'])
   onResize(event) {
