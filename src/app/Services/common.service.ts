@@ -407,7 +407,7 @@ export class CommonService {
     }
     async getTaskDocument(folderUrl, documentUrl) {
         let completeFolderRelativeUrl = folderUrl + documentUrl;
-        this.common.SetNewrelic('Services', 'Common-getTaskDocuments', 'readFiles');
+        this.SetNewrelic('Services', 'Common-getTaskDocuments', 'readFiles');
         let documents = await this.spServices.readFiles(completeFolderRelativeUrl);
         if (documents.length) {
             documents = documents.sort(function (a, b) {
@@ -436,7 +436,7 @@ export class CommonService {
         return sReturn;
     }
     async checkTaskStatus(task) {
-        this.common.SetNewrelic('Service', 'Common-Service', 'readItem');
+        this.SetNewrelic('Service', 'Common-Service', 'readItem');
         const currentTask = await this.spServices.readItem(this.constants.listNames.Schedules.name, task.ID);
         let isActionRequired: boolean;
         if (currentTask) {
