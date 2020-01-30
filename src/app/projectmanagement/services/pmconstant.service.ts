@@ -49,10 +49,17 @@ export class PmconstantService {
     top: 4200
   };
   public previousTaskOptions = {
-    select: 'ID,Title,Status, AssignedTo/ID,AssignedTo/Title',
+    select: 'ID,Title,Status, AssignedTo/ID,AssignedTo/Title, IsCentrallyAllocated',
     expand: 'AssignedTo/ID,AssignedTo/Title',
     filter: 'Title eq \'{0}\' or Title eq \'{1}\''
   };
+  public subtaskOptions = {
+    select: 'ID,Title,Status, AssignedTo/ID,AssignedTo/Title',
+    expand: 'AssignedTo/ID,AssignedTo/Title',
+    filter: 'ParentSlot eq \'{0}\' and NextTasks eq null',
+    top: 4200
+  };
+
   public crTaskOptions = {
     select: 'ID,Title,Status, AssignedTo/ID,AssignedTo/Title,DueDate',
     expand: 'AssignedTo/ID,AssignedTo/Title',
