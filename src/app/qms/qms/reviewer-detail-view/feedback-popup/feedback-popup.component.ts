@@ -341,7 +341,7 @@ export class FeedbackPopupComponent implements OnInit {
    *
    */
   closeFeedback() {
-    if (Object.keys(this.global.templateMatrix.currentTask).length === 0) {
+    if (Object.keys(this.global.templateMatrix.currentTask).length > 0) {
       this.popupClosed.emit(this.global.templateMatrix.currentTask);
     }
     this.global.templateMatrix = JSON.parse(JSON.stringify(this.global.templateMatrix_copy));

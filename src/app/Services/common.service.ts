@@ -407,7 +407,7 @@ export class CommonService {
     }
     async getTaskDocument(folderUrl, documentUrl) {
         let completeFolderRelativeUrl = folderUrl + documentUrl;
-        this.common.SetNewrelic('Services', 'Common-getTaskDocuments', 'readFiles');
+        this.SetNewrelic('Services', 'Common-getTaskDocuments', 'readFiles');
         let documents = await this.spServices.readFiles(completeFolderRelativeUrl);
         if (documents.length) {
             documents = documents.sort(function (a, b) {
