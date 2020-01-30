@@ -241,7 +241,7 @@ export class AllProjectsComponent implements OnInit {
 
     // debugger;
     // console.log(this.allProjectRef)
-
+    this.showTable = true;
     this.ExcelDownloadenable = true;
     console.log(data);
     const budgets = await this.pmCommonService.getAllBudget(this.allProjectRef.filteredValue ?
@@ -259,12 +259,8 @@ export class AllProjectsComponent implements OnInit {
     });
 
     data._values = this.pmObject.allProjectsArray;
-
-
-
     this.pmCommonService.convertToExcelFile(data);
     this.ExcelDownloadenable = false;
-
   }
 
   reloadAllProject() {
@@ -333,6 +329,7 @@ export class AllProjectsComponent implements OnInit {
   }
 
   async getAllProjects() {
+    this.showTable = true;
     const sowCodeTempArray = [];
     const projectCodeTempArray = [];
     const shortTitleTempArray = [];
@@ -352,7 +349,6 @@ export class AllProjectsComponent implements OnInit {
       arrResults = await this.pmCommonService.getProjects(this.showNavigateSOW);
       this.pmObject.allProjectItems = arrResults;
     }
-    this.showTable = true;
     if (this.pmObject.allProjectItems.length) {
       // this.pmObject.countObj.allProjectCount = arrResults.length;
       this.pmObject.countObj.allProjectCount = this.pmObject.allProjectItems.length; // added by kaushal on 12-07-2019
@@ -572,7 +568,7 @@ export class AllProjectsComponent implements OnInit {
         tempAllProjectArray.push(projObj);
       }
       if (tempAllProjectArray) {
-        this.createColFieldValues(tempAllProjectArray);
+        await this.createColFieldValues(tempAllProjectArray);
       }
       // this.allProjects.sowCodeArray = this.commonService.unique(sowCodeTempArray, 'value');
       // this.allProjects.projectCodeArray = this.commonService.unique(projectCodeTempArray, 'value');

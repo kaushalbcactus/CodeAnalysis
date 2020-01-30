@@ -24,19 +24,6 @@ import { CommonService } from 'src/app/Services/common.service';
 // tslint: disable
 export class PubsupportComponent implements OnInit {
 
-    pubsupportCols: any[] = [
-        { field: 'ProjectCode', header: 'Project Code', visibility: true },
-        { field: 'ClientLegalEntity', header: 'Client Legal Entity', visibility: true },
-        { field: 'DeliverableType', header: 'Deliverable Type', visibility: true },
-        { field: 'PrimaryPOC', header: 'Primary POC', visibility: true },
-        { field: 'Status', header: 'Status', visibility: true },
-        { field: 'PubSupportStatus', header: 'Pub Sup Status', visibility: true },
-        { field: 'LastSubmissionDate', header: 'Last Submission', visibility: true },
-        { field: '', header: 'Authors and Author Forms', visibility: true },
-    ];
-
-    expandedRows: any = {};
-
     constructor(
         private formBuilder: FormBuilder,
         public spOperationsService: SPOperationService,
@@ -124,6 +111,19 @@ export class PubsupportComponent implements OnInit {
     get isValidUpdateJCRequirementForm() {
         return this.update_Journal_Requirement_form.controls;
     }
+
+    pubsupportCols: any[] = [
+        { field: 'ProjectCode', header: 'Project Code', visibility: true },
+        { field: 'ClientLegalEntity', header: 'Client Legal Entity', visibility: true },
+        { field: 'DeliverableType', header: 'Deliverable Type', visibility: true },
+        { field: 'PrimaryPOC', header: 'Primary POC', visibility: true },
+        { field: 'Status', header: 'Status', visibility: true },
+        { field: 'PubSupportStatus', header: 'Pub Sup Status', visibility: true },
+        { field: 'LastSubmissionDate', header: 'Last Submission', visibility: true },
+        { field: '', header: 'Authors and Author Forms', visibility: true },
+    ];
+
+    expandedRows: any = {};
 
     updateAuthorModal_1: boolean;
     updateDecisionModal: boolean;
@@ -287,6 +287,9 @@ export class PubsupportComponent implements OnInit {
 
     tempClick: any;
     ref: any;
+    cleDataArray: any = [];
+
+    closedProjectCode: string;
     showDialog() {
         this.display = true;
     }
@@ -404,7 +407,8 @@ export class PubsupportComponent implements OnInit {
         }
 
         const projectContactEndPoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.ProjectContacts.name + '', this.pubsupportService.pubsupportComponent.projectContact);
-        arrEndPoints.push(projectContactEndPoint);
+        const cleEndPoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.ClientLegalEntity.name + '', this.pubsupportService.pubsupportComponent.clientLegalEntity);
+        arrEndPoints.push(projectContactEndPoint, cleEndPoint);
 
         let arrProjects = [], arrProjectContacts = [];
         const pipcObj = [
@@ -417,6 +421,11 @@ export class PubsupportComponent implements OnInit {
                 url: projectContactEndPoint,
                 type: 'GET',
                 listName: this.constantService.listNames.ProjectContacts.name
+            },
+            {
+                url: cleEndPoint,
+                type: 'GET',
+                listName: this.constantService.listNames.ClientLegalEntity.name
             }
         ];
 
@@ -437,9 +446,12 @@ export class PubsupportComponent implements OnInit {
                 arrProjects = arrResults[0].retItems;
             }
             arrProjectContacts = arrResults[1].retItems;
+            this.cleDataArray = arrResults[2].retItems;
+
         } else if (arrResults.length) {
             arrProjects = arrResults[0].retItems;
             arrProjectContacts = arrResults[1].retItems;
+            this.cleDataArray = arrResults[2].retItems;
         }
 
         this.projectInfoFormatData(arrProjects, arrProjectContacts);
@@ -654,7 +666,7 @@ export class PubsupportComponent implements OnInit {
         } else if (this.selectedModal === 'Edit Journal / Conference') {
             await this.getJCDetails(data);
             await this.getJCList(this.journal_Conf_data[0].element.EntryType);
-            this.addJCControls(this.journal_Conference_Edit_Detail_form, this.journal_Conf_data[0].element.EntryType, 'Edit')
+            this.addJCControls(this.journal_Conference_Edit_Detail_form, this.journal_Conf_data[0].element.EntryType, 'Edit');
             this.setJCDetails(this.journal_Conf_data[0]);
             this.editJCDetailsModal = true;
             this.formatMilestone(this.milestonesList);
@@ -815,7 +827,7 @@ export class PubsupportComponent implements OnInit {
         ];
         this.jc_jcSubId = [];
         this.common.SetNewrelic('PubSupport', 'pubsupport', 'GetJCbyProjectCodeAndStatus');
-        const arrResults = await this.spOperationsService.executeBatch(objData); //.subscribe(res => {
+        const arrResults = await this.spOperationsService.executeBatch(objData); // .subscribe(res => {
         this.jc_jcSubId = arrResults;
     }
 
@@ -845,7 +857,8 @@ export class PubsupportComponent implements OnInit {
         // this.batchContents = [];
         if (data) {
             const projectCodeData: any = data;
-            const fileEndPoint = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + projectCodeData.ClientLegalEntity + '/' + projectCodeData.ProjectCode + '/Publication Support/Forms/';
+            const found = this.cleDataArray.find(item => item.Title === projectCodeData.ClientLegalEntity);
+            const fileEndPoint = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + found.ListName + '/' + projectCodeData.ProjectCode + '/Publication Support/Forms/';
             this.common.SetNewrelic('PubSupport', 'pubsupport-updateAuthorForms', 'readFiles');
             this.filesToCopy = await this.spOperationsService.readFiles(fileEndPoint);
             if (this.filesToCopy.length) {
@@ -853,7 +866,7 @@ export class PubsupportComponent implements OnInit {
                 this.update_author_form.removeControl('file');
                 this.filesToCopy.forEach(element => {
                     this.fileSourcePath.push(element.ServerRelativeUrl);
-                    this.fileDestinationPath.push(this.globalObject.sharePointPageObject.webRelativeUrl + '/' + this.selectedProject.ClientLegalEntity + '/' + this.selectedProject.ProjectCode + '/Publication Support/Forms/' + element.Name);
+                    this.fileDestinationPath.push(this.globalObject.sharePointPageObject.webRelativeUrl + '/' + found.ListName + '/' + this.selectedProject.ProjectCode + '/Publication Support/Forms/' + element.Name);
                 });
             } else {
                 this.noFileMsg = 'There is no file to copy from selected project.';
@@ -912,26 +925,26 @@ export class PubsupportComponent implements OnInit {
         this.confirmationService.confirm({
             message: 'Are you sure that you want to Cancel Journal Conference Details?',
             accept: () => {
-                //Project status empty, journalConference pubsuport status cancelled, jcSubmission Status Cancelled
+                // Project status empty, journalConference pubsuport status cancelled, jcSubmission Status Cancelled
                 // Update ProjectInformation
                 const piObj = {
                     PubSupportStatus: ''
                 };
-                piObj['__metadata'] = { type: this.constantService.listNames.ProjectInformation.type }
+                piObj['__metadata'] = { type: this.constantService.listNames.ProjectInformation.type };
                 const piEndpoint = this.spOperationsService.getItemURL(this.constantService.listNames.ProjectInformation.name, this.selectedProject.Id);
 
                 // Update JC
                 const jcObj = {
                     Status: 'Cancelled'
                 };
-                jcObj['__metadata'] = { type: this.constantService.listNames.JournalConf.type }
+                jcObj['__metadata'] = { type: this.constantService.listNames.JournalConf.type };
                 const jcEndpoint = this.spOperationsService.getItemURL(this.constantService.listNames.JournalConf.name, SelectedRowJCItemId);
 
                 // Update JCSubmission
                 const jcSubObj = {
                     Status: 'Cancelled'
                 };
-                jcSubObj['__metadata'] = { type: this.constantService.listNames.JCSubmission.type }
+                jcSubObj['__metadata'] = { type: this.constantService.listNames.JCSubmission.type };
                 const jcSubEndpoint = this.spOperationsService.getItemURL(this.constantService.listNames.JCSubmission.name, SelectedRowJCSubItemId);
 
                 const data = [
@@ -1023,7 +1036,7 @@ export class PubsupportComponent implements OnInit {
                 }
             }
             return 0;
-        })
+        });
     }
 
     sortConferenceData(array: any) {
@@ -1037,7 +1050,7 @@ export class PubsupportComponent implements OnInit {
                 }
             }
             return 0;
-        })
+        });
     }
 
     // onChangeSelectedJCItem(item: any, type: string) {
@@ -1259,6 +1272,8 @@ export class PubsupportComponent implements OnInit {
             // this.update_author_form.controls.hasOwnProperty('existingAuthorList')) {
             //     this.update_author_form.reset();
             // }
+            this.updateAuthorFormField();
+            this.filesToCopy = [];
             this.noFileMsg = '';
             this.updateAuthorModal_1 = false;
         } else if (formType === 'updateDecisionModal') {
@@ -1373,8 +1388,13 @@ export class PubsupportComponent implements OnInit {
                 return;
             }
             this.submitBtn.isSubmit = true;
-            this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
+            // this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
             if (this.filesToCopy.length) {
+                this.messageService.add({
+                    key: 'psInfoToast', severity: 'warn', summary: 'Info message',
+                    detail: 'Files are copying from ' + this.selectedType.ProjectCode + ' to ' + this.selectedProject.ProjectCode,
+                    life: 2000
+                });
                 this.update_author_form.removeControl('file');
                 this.common.SetNewrelic('Pubsupport', 'pubsupport-onsubmit', 'copyFiles');
                 const fileCopyEndPoint = await this.spOperationsService.copyFiles(this.fileSourcePath, this.fileDestinationPath);
@@ -1382,7 +1402,7 @@ export class PubsupportComponent implements OnInit {
                     key: 'myKey1', severity: 'success', summary: 'Success message',
                     detail: 'Author details updated.', life: 4000
                 });
-                this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
+                // this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
                 this.updateAuthorModal_1 = false;
                 // this.reload();
             } else {
@@ -1668,7 +1688,7 @@ export class PubsupportComponent implements OnInit {
     }
 
     async uploadFileData(type: string) {
-
+        this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
         this.common.SetNewrelic('PubSupport', 'pubsupport', 'UploadFile');
         const res = await this.spOperationsService.uploadFile(this.filePathUrl, this.fileReader.result);
         console.log('selectedFile uploaded .', res.ServerRelativeUrl);
@@ -1912,10 +1932,8 @@ export class PubsupportComponent implements OnInit {
             this.providedProjectCode = '';
         }
     }
-
-    closedProjectCode: string;
     searchClosedProject(event) {
-        let checkPC = this.providedProjectCode;
+        const checkPC = this.providedProjectCode;
         if (checkPC !== this.closedProjectCode) {
             this.getClosedProject();
         }

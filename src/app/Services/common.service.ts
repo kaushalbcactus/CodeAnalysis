@@ -435,8 +435,9 @@ export class CommonService {
         }
         return sReturn;
     }
+    
     async checkTaskStatus(task) {
-        this.common.SetNewrelic('Service', 'Common-Service', 'readItem');
+        this.SetNewrelic('Service', 'Common-Service', 'readItem');
         const currentTask = await this.spServices.readItem(this.constants.listNames.Schedules.name, task.ID);
         let isActionRequired: boolean;
         if (currentTask) {
@@ -448,6 +449,7 @@ export class CommonService {
         }
         return isActionRequired;
     }
+    
     setIframeHeight() {
         setTimeout(() => {
             const height = $('.custom-table-container').height();
@@ -481,8 +483,6 @@ export class CommonService {
         iDateDiff -= iAdjust;                            // take into account both days on weekend
         return (iDateDiff + 1);                         // add 1 because dates are inclusive
     }
-
-
 
     ajax_addHrsMins(arrayTotalTimeSpent) {
         let totalTime = '';
@@ -546,8 +546,6 @@ export class CommonService {
         return currentsystemOffset;
     }
 
-
-
     ajax_checkIfCurrentUserInArray(array, currentUserID) {
         let item = '';
         if (array.length > 0) {
@@ -557,8 +555,6 @@ export class CommonService {
         }
         return item;
     }
-
-
 
     convertToHrsMins(hours) {
         if (hours != null) {

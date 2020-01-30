@@ -33,7 +33,7 @@
                 </th>
                 <th *ngFor="let col of columns"
                     [ngStyle]="{'width': (col.field === 'RequestType' || col.field === 'ProjectCode' || col.field === 'Category'|| col.field === 'ExpenseType'|| col.field === 'ClientAmount'|| col.field === 'ClientCurrency'|| col.field === 'CreatedDate'|| col.field === 'CreatedBy' ) ? '10em': (col.field === 'ClientLegalEntity') ? '15em':(col.field === 'VendorName') ? '20em':'3em' }"
-                    [pSortableColumn]="col.field" pResizableColumn pReorderableColumn [hidden]="!col.visibility">
+                    [pSortableColumn]="col.field"  [hidden]="!col.visibility">
                     {{col.header}}
                     <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
                 </th>

@@ -462,6 +462,7 @@
 
 <!-- Toast Messages -->
 <p-toast position="bottom-center" key="myKey1"></p-toast>
+<p-toast position="bottom-right" key="psInfoToast"></p-toast>
 <!-- Modal  -->
 
 <!-- Add author Component Start-->
@@ -508,36 +509,6 @@
                         </option>
                     </ng-container>
                 </select>
-
-                <!-- <p-dropdown resetFilterOnHide="true" [options]="projectCodeRes" formControlName="existingAuthorList"
-                    placeholder="Select" [filter]="true" optionLabel="ProjectCode"
-                    (onChange)="updateAuthorFormsFiles($event.value, $event)" [style]="{width: '215px'}">
-
-                    <ng-template let-item pTemplate="item">
-                        <ng-container *ngIf="item.label != selectedProject.ProjectCode">
-                            <div *ngIf="item.label != selectedProject.ProjectCode" class="ui-helper-clearfix">
-                                <div style="font-size:14px;float:left;margin-top:4px">{{item.label }}</div>
-                            </div>
-                        </ng-container>
-                    </ng-template>
-                </p-dropdown> -->
-
-                <!-- <p-dropdown resetFilterOnHide="true" [options]="projectCodeRes" placeholder="Select"
-                    [style]="{'width':'100%'}" formControlName="existingAuthorList" [filter]="true"
-                    [virtualScroll]="true" (onChange)="updateAuthorFormsFiles($event.value, $event)">
-                    {{projectCodeRes | json}}
-                    <ng-template let-item pTemplate="selectedItem">
-                        <span>{{item | json}}</span>
-                    </ng-template>
-                    optionLabel="ProjectCode" 
-                    <ng-template let-car pTemplate="item">
-                        <div class="ui-helper-clearfix" style="position: relative;height:25px;">
-                            <div style="font-size:14px;float:right;margin-top:4px">{{car.ProjectCode}}</div>
-                        </div>
-                    </ng-template>
-
-                </p-dropdown> -->
-
                 <div *ngIf="formSubmit.isSubmit && isValidUpdateAuthorForm.existingAuthorList.errors">
                     <div *ngIf="isValidUpdateAuthorForm.existingAuthorList.errors.required" style="color: red;">Existing
                         author is required.</div>

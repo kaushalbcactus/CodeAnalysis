@@ -35,6 +35,12 @@ export class PubsuportConstantsService {
             filter: "Status ne 'InActive'",
             top: 4500
         },
+        clientLegalEntity: {
+            select: "ID,Title,ListName",
+            filter: "IsActive eq 'Yes'",
+            orderby: "Title",
+            top: 4500
+        },
         journalConf: {
             select: "ID, Title, Name, IF, RejectionRate, ExpectedReviewPeriod, JournalEditorInfo, IsSelected, Status, UserName, Password, PublicationDate, PublicationURL, PublicationTitle, Citation, PDFAvailable, JournalRequirementURL, EntryType, AbstractSubmissionDeadline, CongressDate, Milestone, JournalRequirementDate, Created, Comments, JournalRequirementResponse, JournalConferenceId",
             filter: "Title eq '{{ProjectCode}}' and Status ne 'Cancelled' ",

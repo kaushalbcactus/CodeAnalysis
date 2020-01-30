@@ -88,7 +88,7 @@ export class AddEditCommentComponent implements OnInit {
 
   async getComments(task, firstLoad) {
 
-    let objComment = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.Comments);
+    const objComment = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.Comments);
     // Comment.filter = Comment.filter.replace(/{{taskID}}/gi, task.ID);
 
     this.common.SetNewrelic('MyDashboard', 'AddEditCommentDialog', 'getComments');
@@ -119,12 +119,12 @@ export class AddEditCommentComponent implements OnInit {
 
 
     this.modalloaderenable = false;
-  };
+  }
 
 
-  //*********************************************************************************************************
+  // *********************************************************************************************************
   //  Cancel task comment
-  //*********************************************************************************************************
+  // *********************************************************************************************************
   cancelComment() {
     this.editor.setData('');
     if (this.config.data !== undefined) {
@@ -133,7 +133,7 @@ export class AddEditCommentComponent implements OnInit {
     }
   }
 
-  //*********************************************************************************************************
+  // *********************************************************************************************************
   //  save / Update task comment
   // ********************************************************************************************************
 
@@ -141,42 +141,40 @@ export class AddEditCommentComponent implements OnInit {
     const commentObj = {
       comment: this.previousComment !== null ? this.previousComment + this.editor.getData() : this.editor.getData(),
       IsMarkComplete: IsMarkComplete
-    }
+    };
     if (IsMarkComplete) {
       this.ref.close(commentObj);
-    }
-    else {
-      if (this.editor.getData() !== "") {
+    } else {
+      if (this.editor.getData() !== '') {
         this.modalloaderenable = true;
         this.commentsdb = [];
         if (this.config.data) {
           this.ref.close(commentObj);
-        }
-        else {
+        } else {
           const data = {
             TaskComments: commentObj.comment
-          }
+          };
           this.editor.setData('');
           this.common.SetNewrelic('MyDashboard', 'AddEditCommentDialog', 'SaveComment');
-          await this.spServices.updateItem(this.constants.listNames.Schedules.name, this.data.ID, data, "SP.Data.SchedulesListItem");
+          await this.spServices.updateItem(this.constants.listNames.Schedules.name, this.data.ID, data, 'SP.Data.SchedulesListItem');
           this.messageService.add({ key: 'custom-comment', severity: 'success', summary: 'Success Message', detail: 'Comment saved successfully' });
 
           this.getComments(this.data, false);
         }
 
-      }
-      else {
-        this.messageService.add({ key: 'custom-comment', severity: 'warn', summary: 'Warning Message', detail: 'Please enter the comment' });
+      } else {
+        this.messageService.add({ key: 'custom-comment', severity: 'warn',
+         summary: 'Warning Message', detail: 'Please enter the comment' });
       }
     }
   }
 
-  //*********************************************************************************************************
+  // *********************************************************************************************************
   //  Get all comments of milestones
   // ***********************************************************************************************************
   async fetchCommentsForMilestone(oCurrentTask) {
 
-    let milestone = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.Milestone);
+    const milestone = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.Milestone);
     milestone.filter = milestone.filter.replace(/{{ProjectCode}}/gi, oCurrentTask.ProjectCode).replace(/{{Milestone}}/gi, oCurrentTask.Milestone);
     this.common.SetNewrelic('MyDashboard', 'AddEditCommentDialog', 'fetchMilestoneComments');
     this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, milestone);
@@ -199,11 +197,10 @@ export class AddEditCommentComponent implements OnInit {
       if (this.commentsdb.find(c => c.ID === this.currentTask.ID) !== undefined) {
         this.previousComment = this.commentsdb.find(c => c.ID === this.currentTask.ID).TaskComments;
       }
-    }
-    else {
+    } else {
       this.commentsdb = [];
     }
 
-  };
+  }
 
 }
