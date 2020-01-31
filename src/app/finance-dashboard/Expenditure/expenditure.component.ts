@@ -1056,7 +1056,10 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             mailContent = this.replaceContent(mailContent, '@@Val9@@', this.currentUserInfoData.Title);
             mailContent = this.replaceContent(mailContent, '@@Val8@@', !isCleData.hasOwnProperty('ClientLegalEntity') ?
                 'Client legal entity' : 'Project');
-            mailContent = this.replaceContent(mailContent, '@@Val0@@', expense.ID);
+            mailContent = this.replaceContent(mailContent, '@@Val0@@', this.globalService.sharePointPageObject.rootsite + '/' +
+            this.globalService.sharePointPageObject.webRelativeUrl + '/dashboard#/financeDashboard?Expense=' + expense.ID + '&amp;Trigger=0');
+            mailContent = this.replaceContent(mailContent, '@@Val13@@', this.globalService.sharePointPageObject.rootsite + '/' +
+            this.globalService.sharePointPageObject.webRelativeUrl + '/dashboard#/financeDashboard?Expense=' + expense.ID + '&amp;Trigger=2');
             mailContent = this.replaceContent(mailContent, '@@Val1@@', val1);
             mailContent = this.replaceContent(mailContent, '@@Val2@@', expense.Category);
             mailContent = this.replaceContent(mailContent, '@@Val4@@', expense.SpendType);
