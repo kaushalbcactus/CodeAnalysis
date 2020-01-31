@@ -917,112 +917,6 @@ export class DragDropComponent implements OnInit {
       event.preventDefault();
       this.resizeGraph = mileType;
       this.GraphResize();
-      // if (mileType === 'milestone') {
-      //   this.milestonesGraph.nodes.splice(index, 1);
-      //   this.milestonesGraph.nodeOrder.splice(this.milestonesGraph.nodeOrder.indexOf(node.id), 1);
-      //   var RemoveLinks = this.milestonesGraph.links.filter(c => c.source === node.id || c.target === node.id);
-      //   if (this.milestonesGraph.links.find(c => c.source === node.id) !== undefined && this.milestonesGraph.links.find(c => c.target === node.id) !== undefined) {
-      //     var link = {
-      //       source: this.milestonesGraph.links.find(c => c.target === node.id).source,
-      //       target: this.milestonesGraph.links.find(c => c.source === node.id).target,
-      //     };
-
-      //     if (link.source !== link.target) {
-      //       this.milestonesGraph.links.push(link);
-      //     }
-
-      //   }
-      //   this.milestonesGraph.links = this.milestonesGraph.links.filter(value => !RemoveLinks.includes(value));
-
-      //   if (this.milestoneIndex === index) {
-      //     this.milestoneIndex = -1;
-      //     this.submilestoneIndex = -1;
-      //     this.selectedMilestone = null;
-      //     this.selectedSubMilestone = null;
-      //   }
-      //   else {
-      //     if (this.milestonesGraph.nodes.find(c => c.color === '#d26767') !== undefined) {
-      //       this.milestoneIndex = this.milestonesGraph.nodes.indexOf(this.milestonesGraph.nodes.find(c => c.color === '#d26767'));
-      //     }
-      //   }
-
-      //   this.messageService.add({ key: 'custom', severity: 'error', summary: 'Deleted', detail: 'Milestone Deleted' });
-      // }
-      // else if (mileType === 'submilestone') {
-      //   if (this.submilestoneIndex === index) {
-      //     this.submilestoneIndex = -1;
-      //     this.selectedSubMilestone = null;
-      //   }
-
-      //   this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.splice(index, 1);
-      //   this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodeOrder.splice(this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.indexOf(node.id), 1);
-      //   RemoveLinks = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.filter(c => c.source === node.id || c.target === node.id);
-
-      //   if (this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.find(c => c.source === node.id) !== undefined && this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.find(c => c.target === node.id) !== undefined) {
-      //     var target = RemoveLinks.filter(c => c.source === node.id).map(c => c.target);
-      //     if (target.length > 0) {
-      //       target.forEach(element => {
-      //         var link = {
-      //           source: this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.find(c => c.target === node.id).source,
-      //           target: element,
-      //         };
-      //         this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.push(link);
-      //       });
-      //     }
-      //   }
-
-      //   this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.filter(value => !RemoveLinks.includes(value));
-      //   this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links = [... this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links]
-      //   this.messageService.add({ key: 'custom', severity: 'error', summary: 'Deleted', detail: 'Sub Milestone Deleted' });
-      // }
-      // else {
-      //   if (node.label === 'Client Review') {
-      //     this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Cant remove Client Review.' });
-      //   }
-      //   else {
-      //     var source = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.filter(c => c.target === node.id).map(c => c.source);
-      //     this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes.splice(index, 1);
-      //     RemoveLinks = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.filter(c => c.source === node.id || c.target === node.id);
-      //     if (this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.find(c => c.source === node.id) !== undefined && this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.find(c => c.target === node.id) !== undefined) {
-
-      //       var target = RemoveLinks.filter(c => c.source === node.id).map(c => c.target);
-      //       if (target.length > 0) {
-      //         target.forEach(element => {
-      //           var link = {
-      //             source: this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.find(c => c.target === node.id).source,
-      //             target: element,
-      //           };
-      //           if (target.length > 1) {
-      //             if (this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes.find(c => c.id === link.target).label.replace(/[0-9]/g, '') !== 'SC') {
-      //               this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.push(link);
-      //             }
-      //           }
-      //           else {
-      //             if (this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes.find(c => c.id === link.target).label.replace(/[0-9]/g, '') !== 'Client Review') {
-      //               this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.push(link);
-      //             }
-      //           }
-      //         });
-      //       }
-      //     }
-
-      //     this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.filter(value => !RemoveLinks.includes(value));
-      //     this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links = [... this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links]
-      //     this.messageService.add({ key: 'custom', severity: 'error', summary: 'Deleted', detail: 'Task Deleted' });
-
-      //     if (RemoveLinks.filter(c => c.source === node.id).length > 0) {
-      //       this.previousSource = RemoveLinks.filter(c => c.source === node.id).map(c => c.target);
-      //       if (this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.filter(c => this.previousSource.includes(c.source)).length > 0) {
-      //         this.previousSource = undefined;
-      //       }
-      //       else {
-      //         this.previousSource = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes.find(e => e.id === this.previousSource[0]);
-      //       }
-      //     }
-      //     else {
-      //       this.previousSource = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes.find(e => e.id === source[0]);
-      //     }
-      //   }
     }
 
   }
@@ -1106,10 +1000,15 @@ export class DragDropComponent implements OnInit {
     else {
       var nodes = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes;
       this.previousSource = nodes.find(e => e.id === event.source);
-      this.recentEventNode = this.previousSource.id;
-      var RemoveLinkindex = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.indexOf(this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.find(c => c.source === event.source && c.target === event.target));
-      this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.splice(RemoveLinkindex, 1);
-      this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links = [... this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links]
+      const target = nodes.find(e => e.id === event.target);
+      if (target.tasktype !== 'Send to client' && target.status !== 'Completed') {
+        this.recentEventNode = this.previousSource.id;
+        var RemoveLinkindex = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.indexOf(this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.find(c => c.source === event.source && c.target === event.target));
+        this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.splice(RemoveLinkindex, 1);
+        this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links = [... this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links]
+      } else {
+        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Cant remove link as send to client task is completed.' });
+      }
     }
 
     this.resizeGraph = mileType;
@@ -1261,19 +1160,20 @@ export class DragDropComponent implements OnInit {
           var findNextNode = subMilestone.task.nodes.find(e => e.id === pathLocation.target);
           if (node.taskType === 'Send to client') {
             this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Send to client cant be dropped two tasks so dropped at the end' });
-          }
-          else if (findPreNode.taskType !== 'Send to client' && findNextNode.taskType !== 'Client Review') {
-            var linkRemoveLink = subMilestone.task.links.findIndex(e => (e.source === pathLocation.source && e.target === pathLocation.target))
-            subMilestone.task.links.splice(linkRemoveLink, 1);
-            subMilestone.task.links.push({
-              source: pathLocation.source,
-              target: node.id
-            });
-            subMilestone.task.links.push({
-              source: node.id,
-              target: pathLocation.target
-            });
-            this.previousSource = undefined;
+          } else if (findPreNode.taskType !== 'Send to client' && findNextNode.taskType !== 'Client Review') {
+            if (!(findNextNode.taskType === 'Send to client' && findNextNode.status === 'Completed')) {
+              var linkRemoveLink = subMilestone.task.links.findIndex(e => (e.source === pathLocation.source && e.target === pathLocation.target))
+              subMilestone.task.links.splice(linkRemoveLink, 1);
+              subMilestone.task.links.push({
+                source: pathLocation.source,
+                target: node.id
+              });
+              subMilestone.task.links.push({
+                source: node.id,
+                target: pathLocation.target
+              });
+              this.previousSource = undefined;
+            }
           }
           else {
             this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Task cant be added between Send to client and Client Review so dropped at the end' });
@@ -1436,11 +1336,15 @@ export class DragDropComponent implements OnInit {
         };
         var submilestone = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex];
         if (this.taskUp.taskType === 'Send to client') {
-          if (submilestone.task.links.find(c => c.target === link.target) === undefined) {
-            submilestone.task.links.push(link);
-          }
-          else {
-            this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warn Message', detail: 'Send to client can have only one incoming path' });
+          if (this.taskUp.status !== 'Completed') {
+            if (submilestone.task.links.find(c => c.target === link.target) === undefined) {
+              submilestone.task.links.push(link);
+            }
+            else {
+              this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warn Message', detail: 'Send to client can have only one incoming path' });
+            }
+          } else {
+            this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warn Message', detail: 'Task cannot be linked to completed send to client task' });
           }
         }
         else if (this.taskDown.taskType !== 'Client Review') {
