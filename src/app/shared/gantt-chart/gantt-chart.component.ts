@@ -341,25 +341,25 @@ export class GanttChartComponent implements OnInit {
   
   
     function getTaskType(task) {
-      if (task.type == gantt.config.types.meeting) {
+      if (task.status == gantt.config.types.meeting) {
         return "Meeting";
       }
-      else if (task.type == gantt.config.types.planned) {
+      else if (task.status == gantt.config.types.planned) {
         return "Planned";
       }
-      else if (task.type == gantt.config.types.notstarted) {
+      else if (task.status == gantt.config.types.notstarted) {
         return "Not Started";
       }
-      else if (task.type == gantt.config.types.inprogress) {
+      else if (task.status == gantt.config.types.inprogress) {
         return "In Progress";
       }
-      else if (task.type == gantt.config.types.completed) {
+      else if (task.status == gantt.config.types.completed) {
         return "Completed";
       }
-      else if (task.type == gantt.config.types.autoclosed) {
+      else if (task.status == gantt.config.types.autoclosed) {
         return "Auto Closed";
       }
-      else if (task.type == gantt.config.types.onhold) {
+      else if (task.status == gantt.config.types.onhold) {
         return "On Hold";
       }
     }
@@ -397,25 +397,25 @@ export class GanttChartComponent implements OnInit {
 
 
     gantt.templates.task_class = function (start, end, task) {
-      if(task.type == gantt.config.types.meeting){
+      if(task.status == gantt.config.types.meeting){
           return "meeting_task";
       }
-      else if(task.type == gantt.config.types.planned){
+      else if(task.status == gantt.config.types.planned){
           return "planned_task";
       }
-      else if(task.type == gantt.config.types.notstarted){
+      else if(task.status == gantt.config.types.notstarted){
           return "notstarted_task";
       }
-      else if(task.type == gantt.config.types.inprogress){
+      else if(task.status == gantt.config.types.inprogress){
           return "inprogress_task";
       }
-      else if(task.type == gantt.config.types.completed){
+      else if(task.status == gantt.config.types.completed){
           return "completed_task";
       }
-      else if(task.type == gantt.config.types.autoclosed){
+      else if(task.status == gantt.config.types.autoclosed){
           return "autoclosed_task";
       }
-      else if(task.type == gantt.config.types.onhold){
+      else if(task.status == gantt.config.types.onhold){
           return "onhold_task";
       }
     return "";

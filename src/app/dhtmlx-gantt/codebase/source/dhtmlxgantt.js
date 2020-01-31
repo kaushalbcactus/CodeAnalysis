@@ -7600,49 +7600,49 @@ module.exports = function(gantt) {
 			},
 
 			task_text: function (start, end, task) {
-                if(task.type == gantt.config.types.meeting){
+                if(task.status == gantt.config.types.meeting){
                     return "Meeting: <b>" + task.text + "</b>";
                 }
-                else if(task.type == gantt.config.types.planned){
+                else if(task.status == gantt.config.types.planned){
                     return "Planned: <b>" + task.text + "</b>";
                 }
-                else if(task.type == gantt.config.types.notstarted){
+                else if(task.status == gantt.config.types.notstarted){
                     return "Not Started: <b>" + task.text + "</b>";
                 }
-                else if(task.type == gantt.config.types.inprogress){
+                else if(task.status == gantt.config.types.inprogress){
                     return "In Progress: <b>" + task.text + "</b>";
                 }
-                else if(task.type == gantt.config.types.completed){
+                else if(task.status == gantt.config.types.completed){
                     return "Completed: <b>" + task.text + "</b>";
                 }
-                else if(task.type == gantt.config.types.autoclosed){
+                else if(task.status == gantt.config.types.autoclosed){
                     return "Auto Closed: <b>" + task.text + "</b>";
                 }
-                else if(task.type == gantt.config.types.onhold){
+                else if(task.status == gantt.config.types.onhold){
                     return "On Hold: <b>" + task.text + "</b>";
                 }
 				return task.text;
 			},
 			task_class: function (start, end, task) {
-                if(task.type == gantt.config.types.meeting){
+                if(task.status == gantt.config.types.meeting){
                     return "meeting_task";
                 }
-                else if(task.type == gantt.config.types.planned){
+                else if(task.status == gantt.config.types.planned){
                     return "planned_task";
                 }
-                else if(task.type == gantt.config.types.notstarted){
+                else if(task.status == gantt.config.types.notstarted){
                     return "notstarted_task";
                 }
-                else if(task.type == gantt.config.types.inprogress){
+                else if(task.status == gantt.config.types.inprogress){
                     return "inprogress_task";
                 }
-                else if(task.type == gantt.config.types.completed){
+                else if(task.status == gantt.config.types.completed){
                     return "completed_task";
                 }
-                else if(task.type == gantt.config.types.autoclosed){
+                else if(task.status == gantt.config.types.autoclosed){
                     return "autoclosed_task";
                 }
-                else if(task.type == gantt.config.types.onhold){
+                else if(task.status == gantt.config.types.onhold){
                     return "onhold_task";
                 }
 				return "";
@@ -7926,7 +7926,7 @@ module.exports = function(gantt) {
 	};
 
 	gantt._get_task_timing_mode = function (task, force) {
-		var task_type = this.getTaskType(task.type);
+		var task_type = this.getTaskType(task.status);
 
 		var state = {
 			type: task_type,
@@ -13488,7 +13488,7 @@ module.exports = function (gantt) {
 
 		var task = this.getTask(id);
 
-		var box = this.getLightbox(this.getTaskType(task.type));
+		var box = this.getLightbox(this.getTaskType(task.status));
 		this._center_lightbox(box);
 		this.showCover();
 		this._fill_lightbox(id, box);
@@ -15231,7 +15231,7 @@ module.exports = function(gantt) {
 
 	function updateTaskType(task, targetType) {
 		if(!gantt.getState().group_mode){
-			task.type = targetType;
+			task.status = targetType;
 			gantt.updateTask(task.id);
 		}
 	}
@@ -15239,7 +15239,7 @@ module.exports = function(gantt) {
 	function getTaskTypeToUpdate(task) {
 		var allTypes = gantt.config.types;
 		var hasChildren = gantt.hasChild(task.id);
-		var taskType = gantt.getTaskType(task.type);
+		var taskType = gantt.getTaskType(task.status);
 
 		if (hasChildren && taskType === allTypes.task) {
 			return allTypes.project;
@@ -15907,7 +15907,7 @@ module.exports = function addPlaceholder(gantt){
 				});
 
 				delete newTask["!nativeeditor_status"];
-				newTask.type = gantt.config.types.task;
+				newtask.status = gantt.config.types.task;
 				newTask.id = gantt.uid();
 				gantt.addTask(newTask);
 
@@ -15928,7 +15928,7 @@ module.exports = function addPlaceholder(gantt){
 		ready = true;
 		gantt.attachEvent("onAfterTaskUpdate", callIfEnabled(afterEdit));
 		gantt.attachEvent("onAfterTaskAdd", callIfEnabled(function(id, task){
-			if(task.type != gantt.config.types.placeholder){
+			if(task.status != gantt.config.types.placeholder){
 				var placeholders = gantt.getTaskBy("type", gantt.config.types.placeholder);
 				placeholders.forEach(function(p){
 					gantt.silent(function(){
@@ -16020,7 +16020,7 @@ function createResourceMethods(gantt){
 		if (!resourceTaskCache[cacheKey]) {
 			res = resourceTaskCache[cacheKey] = [];
 			gantt.eachTask(function (task) {
-				if (task.type == gantt.config.types.project) return;
+				if (task.status == gantt.config.types.project) return;
 				if (property in task) {
 					var resourceValue;
 					if (!helpers.isArray(task[property])) {
@@ -23437,7 +23437,7 @@ var path_builder = {
 function getMilestonePosition(task, view){
 	var config = view.$getConfig();
 	var pos = view.getItemPosition(task);
-	if(gantt.getTaskType(task.type) == config.types.milestone){
+	if(gantt.getTaskType(task.status) == config.types.milestone){
 		var milestoneHeight = gantt.getTaskHeight();
 		var milestoneWidth = Math.sqrt(2*milestoneHeight*milestoneHeight);
 		pos.left -= milestoneWidth / 2;
@@ -23697,7 +23697,7 @@ function createTaskRenderer(gantt){
 	function _render_task_element(task, view) {
 		var config = view.$getConfig();
 		var painters = config.type_renderers;
-		var renderer = painters[gantt.getTaskType(task.type)],
+		var renderer = painters[gantt.getTaskType(task.status)],
 			defaultRenderer = _task_default_render;
 
 		if (!renderer) {
@@ -23718,7 +23718,7 @@ function createTaskRenderer(gantt){
 			templates = view.$getTemplates();
 		var height = view.getItemHeight();
 
-		var taskType = gantt.getTaskType(task.type);
+		var taskType = gantt.getTaskType(task.status);
 
 		var padd = Math.floor((gantt.config.row_height - height) / 2);
 		if (taskType == cfg.types.milestone && cfg.link_line_width > 1) {
@@ -23859,7 +23859,7 @@ function createTaskRenderer(gantt){
 
 	function _render_task_content(task, width, templates) {
 		var content = document.createElement("div");
-		if (gantt.getTaskType(task.type) != gantt.config.types.milestone)
+		if (gantt.getTaskType(task.status) != gantt.config.types.milestone)
 			content.innerHTML = templates.task_text(task.start_date, task.end_date, task);
 		content.className = "gantt_task_content";
 		//content.style.width = width + 'px';
@@ -23941,13 +23941,13 @@ function createTaskRenderer(gantt){
 
 		var task = gantt.getTask(itemId);
 
-		if (gantt.getTaskType(task.type) == cfg.types.milestone) {
+		if (gantt.getTaskType(task.status) == cfg.types.milestone) {
 			css.push("gantt_milestone");
-		}else if (gantt.getTaskType(task.type) == cfg.types.project) {
+		}else if (gantt.getTaskType(task.status) == cfg.types.project) {
 			css.push("gantt_project");
 		}
 
-		css.push("gantt_bar_" + gantt.getTaskType(task.type));
+		css.push("gantt_bar_" + gantt.getTaskType(task.status));
 
 
 		if (gantt.isSummaryTask(task))
@@ -24690,7 +24690,7 @@ var initLinksDND = function(timeline, gantt) {
 	}
 
 	function isMilestone(task) {
-		return gantt.getTaskType(task.type) == gantt.config.types.milestone;
+		return gantt.getTaskType(task.status) == gantt.config.types.milestone;
 	}
 
 	function getDndState(){
@@ -24791,7 +24791,7 @@ var initLinksDND = function(timeline, gantt) {
 		}
 		res.yEnd = res.y + res.height;
 
-		if(gantt.getTaskType(task.type) == gantt.config.types.milestone){
+		if(gantt.getTaskType(task.status) == gantt.config.types.milestone){
 			var milestoneWidth = getVisibleMilestoneWidth();
 
 			res.x += (!cfg.rtl ? -1 : 1)*(milestoneWidth / 2);
