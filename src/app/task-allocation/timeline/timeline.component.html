@@ -60,10 +60,10 @@
                 </button>
             </div>
             <div *ngIf='visualgraph'>
-                <button type="button" mat-raised-button (click)="zoomIn()">Zoom In</button>
-                <button type="button" mat-raised-button (click)="zoomOut()">Zoom Out</button>
+                <button class="mr-20" type="button" mat-raised-button (click)="zoomIn()">Zoom In</button>
+                <button class="mr-20" type="button" mat-raised-button (click)="zoomOut()">Zoom Out</button>
+                <p-dropdown class="mr-20" #mySelect [options]="scales" [(ngModel)]="selectedScale" (onChange)="setScale(mySelect.value)" optionLabel="label"></p-dropdown>
                 <button type="button" mat-raised-button (click)="save()">Save</button>
-                <p-dropdown #mySelect [options]="scales" [(ngModel)]="selectedScale" (onChange)="setScale(mySelect.value)" optionLabel="label"></p-dropdown>
             </div>
         </div>
 

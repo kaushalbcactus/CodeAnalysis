@@ -19,7 +19,7 @@ import { UsercapacityComponent } from '../shared/usercapacity/usercapacity.compo
 export class CapacityDashboardComponent implements OnInit {
   rangeDates: Date[];
   @ViewChildren('cmp') components: QueryList<MultiSelect>;
-  @ViewChild('InitialUserCapacity', { static: true }) userCapacity: UsercapacityComponent;
+  @ViewChild('InitialUserCapacity', { static: false }) userCapacity: UsercapacityComponent;
   AlldbResources: any;
   Resources: [];
   Skills: [];

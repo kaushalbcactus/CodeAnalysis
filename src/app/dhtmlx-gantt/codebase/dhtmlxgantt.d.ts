@@ -859,6 +859,8 @@ interface GanttConfigOptions {
 	 * sets the step of the time scale (X-Axis)
 	*/
 	step: number;
+	
+	ignore_time: any;
 
 	scales: any[];
 	/**

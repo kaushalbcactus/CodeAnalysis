@@ -252,6 +252,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
   // tslint:disable
   public async getMilestones(bFirstLoad) {
+    // this.ganttArray = [];
+    // this.linkArray = [];
+    // this.taskAllocateCommonService.ganttParseObject = {};
     this.GanttchartData = [];
     this.oProjectDetails = this.sharedObject.oTaskAllocation.oProjectDetails;
     const projectHoursSpent = [];
@@ -1219,17 +1222,23 @@ export class TimelineComponent implements OnInit, OnDestroy {
     return response;
   }
 
+  linkArray = [];
+
   showVisualRepresentation() {
     if (this.visualgraph === true) {
       this.visualgraph = false;
+      this.ganttChart.remove();
     } else {
+      this.selectedScale = { label: 'Minute Scale', value: '0' }
       this.visualgraph = true;
       this.ganttArray = [];
-      console.log(this.GanttchartData)
+      this.linkArray = [];
       this.GanttchartData.forEach((item, index) => {
         this.ganttArray.push({
           "id": item.pID,
           "text": item.pName,
+          "title": item.pName,
+          "milestone": item.milestone,
           "start_date": new Date(item.pStart),
           "end_date": new Date(item.pEnd),
           "user": item.pRes,
@@ -1239,80 +1248,128 @@ export class TimelineComponent implements OnInit, OnDestroy {
           "AssignedTo": item.AssignedTo,
           "res_id": item.AssignedTo ? item.AssignedTo.ID : '',
           "budgetHours": item.budgetHours,
+          //"taskBusinessDays": this.commonService.calcBusinessDays(new Date(item.pStart), new Date(item.pEnd)),
+          //"taskAllocatedPerDay": this.commonService.convertToHrsMins('' + this.getPerDayTime(item.budgetHours, this.commonService.calcBusinessDays(new Date(item.pStart), new Date(item.pEnd)))),
           "spentTime": item.spentTime,
-          "assignedUsers": item.assignedUsers 
+          "assignedUsers": item.assignedUsers,
+          "nextTask": item.nextTask,
+          "previousTask": item.previousTask
         })
       })
 
-
-      this.GanttchartData.forEach((item, index) => {
-        if (item.AssignedTo) {
-          this.resource.push({
-            "key": item.AssignedTo.ID,
-            "Name": item.AssignedTo.Name,
-            "label": item.AssignedTo.Title,
-            "Email": item.AssignedTo.EMail
+      var task: any;
+      this.ganttArray.forEach((item, index) => {
+       task = this.fetchTask(item)
+       if(task.length) {
+       task.forEach((e)=>{      
+         if(e.milestone === item.milestone) {
+          this.linkArray.push({
+            "id": item.id,
+            "name": item.title,
+            "source": item.id,
+            "target": e.id,
+            "type": 1,
+            "nextTask": item.nextTask,
+            "prevTask": item.previousTask
           })
+        }
+       })
+      }
+      })
+
+
+      this.ganttArray.forEach((item, index) => {
+        if (item.AssignedTo) {
+          if (item.AssignedTo.ID >= 0) {
+            this.resource.push({
+              "key": item.AssignedTo.ID,
+              "Name": item.AssignedTo.Name,
+              "label": item.AssignedTo.Title,
+              "Email": item.AssignedTo.EMail
+            })
+          }
         }
       })
 
-        this.resource = this.resource.filter(function (a) {
-          var key = a.label;
-          if (!this[key]) {
-              this[key] = true;
-              return true;
-          }
+      this.resource = this.resource.filter(function (a) {
+        var key = a.label;
+        if (!this[key]) {
+          this[key] = true;
+          return true;
+        }
       }, Object.create(null));
 
       this.taskAllocateCommonService.ganttParseObject.data = this.ganttArray;
+      this.taskAllocateCommonService.ganttParseObject.links = this.linkArray;
       this.loadComponent();
     }
   }
 
+  fetchTask(task) {
+    return this.ganttArray.filter(e =>  e.title === task.nextTask);
+  }
+
   loadComponent() {
     var tasks = {
-    "data": [
-      {
-        "id": "10", "text": "Pre Kick-Off", "start_date": new Date("2019-12-05 00:00:00"), "end_date": new Date("2019-12-16 11:00:00")
-        , "order": 10, "progress": 0.4, "type": gantt.config.types.completed, "user": 2, 'b_hrs': 3.5, 's_hrs': 1.0
-      },
-      { "id": "1", "text": "Write", "start_date": new Date("2019-12-05 09:00:00"), "end_date": new Date("2019-12-05 19:15:00"), "order": 10, "progress": 0.6, "type": gantt.config.types.onhold, "parent": "10", 'b_hrs': 0.0, 's_hrs': 0.0, "user": 0 },
+      "data": [
+        {
+          "id": "10", "text": "Pre Kick-Off", "start_date": new Date("2019-12-05 00:00:00"), "end_date": new Date("2019-12-16 11:00:00")
+          , "order": 10, "progress": 0.4, "type": gantt.config.types.completed, "user": 2, 'b_hrs': 3.5, 's_hrs': 1.0
+        },
+        { "id": "1", "text": "Write", "start_date": new Date("2019-12-05 09:00:00"), "end_date": new Date("2019-12-05 19:15:00"), "order": 10, "progress": 0.6, "type": gantt.config.types.onhold, "parent": "10", 'b_hrs': 0.0, 's_hrs': 0.0, "user": 0 },
 
-      { "id": "2", "text": "Edit Slot", "start_date": new Date("2019-12-06 09:15:00"), "end_date": new Date("2019-12-11 17:15:00"), "order": 20, "progress": 0.6, "type": gantt.config.types.onhold, "parent": "10", 'b_hrs': 0.0, 's_hrs': 0.0, "user": 3 },
-      { "id": "20", "text": "Edit", "start_date": new Date("2019-12-05 09:15:00"), "end_date": new Date("2019-12-05 17:15:00"), "order": 10, "progress": 0.4, "type": gantt.config.types.onhold, "parent": "2", 'b_hrs': 0.0, 's_hrs': 0.0, "user": 1 },
-      { "id": "3", "text": "Review-Edit", "start_date": new Date("2019-12-09 09:15:00"), "end_date": new Date("2019-12-09 17:15:00"), "order": 10, "progress": 0.6, "type": gantt.config.types.onhold, "parent": "2", 'b_hrs': 0.0, 's_hrs': 0.0, "user": 1 },
-      { "id": "4", "text": "Inco-Edit", "start_date": new Date("2019-12-11 09:15:00"), "end_date": new Date("2019-12-11 17:15:00"), "order": 20, "progress": 0.6, "type": gantt.config.types.onhold, "parent": "2", 'b_hrs': 0.0, 's_hrs': 0.0, "user": 0 },
-      { "id": "6", "text": "Abc", "start_date": new Date("2019-12-05 09:15:00"), "end_date": new Date("2019-12-05 17:15:00"), "order": 10, "progress": 0.4, "type": gantt.config.types.onhold, "parent": "20", 'b_hrs': 0.0, 's_hrs': 0.0, "user": 1 },
+        { "id": "2", "text": "Edit Slot", "start_date": new Date("2019-12-06 09:15:00"), "end_date": new Date("2019-12-11 17:15:00"), "order": 20, "progress": 0.6, "type": gantt.config.types.onhold, "parent": "10", 'b_hrs': 0.0, 's_hrs': 0.0, "user": 3 },
+        { "id": "20", "text": "Edit", "start_date": new Date("2019-12-05 09:15:00"), "end_date": new Date("2019-12-05 17:15:00"), "order": 10, "progress": 0.4, "type": gantt.config.types.onhold, "parent": "2", 'b_hrs': 0.0, 's_hrs': 0.0, "user": 1 },
+        { "id": "3", "text": "Review-Edit", "start_date": new Date("2019-12-09 09:15:00"), "end_date": new Date("2019-12-09 17:15:00"), "order": 10, "progress": 0.6, "type": gantt.config.types.onhold, "parent": "2", 'b_hrs': 0.0, 's_hrs': 0.0, "user": 1 },
+        { "id": "4", "text": "Inco-Edit", "start_date": new Date("2019-12-11 09:15:00"), "end_date": new Date("2019-12-11 17:15:00"), "order": 20, "progress": 0.6, "type": gantt.config.types.onhold, "parent": "2", 'b_hrs': 0.0, 's_hrs': 0.0, "user": 0 },
+        { "id": "6", "text": "Abc", "start_date": new Date("2019-12-05 09:15:00"), "end_date": new Date("2019-12-05 17:15:00"), "order": 10, "progress": 0.4, "type": gantt.config.types.onhold, "parent": "20", 'b_hrs': 0.0, 's_hrs': 0.0, "user": 1 },
 
-      { "id": "5", "text": "Data Vision", "start_date": new Date("2019-12-11 17:15:00"), "end_date": new Date("2019-12-12 15:00:00"), "duration": 0, "order": 10, "progress": 0.6, "type": gantt.config.types.onhold, "parent": "10", 'b_hrs': 0.0, 's_hrs': 0.0, "user": 3 },
-    ],
-    "links": [
-      { "id": 10, "source": 1, "target": 2, "type": "1" },
-      { "id": 2, "source": 2, "target": 5, "type": "0" },
-      { "id": 3, "source": 3, "target": 4, "type": "0" },
-      { "id": 4, "source": 4, "target": 6, "type": "2" }
-    ],
-  };
+        { "id": "5", "text": "Data Vision", "start_date": new Date("2019-12-11 17:15:00"), "end_date": new Date("2019-12-12 15:00:00"), "duration": 0, "order": 10, "progress": 0.6, "type": gantt.config.types.onhold, "parent": "10", 'b_hrs': 0.0, 's_hrs': 0.0, "user": 3 },
+      ],
+      "links": [
+        { "id": 1, "source": 1, "target": 2, "type": "1" },
+        { "id": 2, "source": 2, "target": 5, "type": "0" },
+        { "id": 3, "source": 3, "target": 4, "type": "0" },
+        { "id": 4, "source": 4, "target": 6, "type": "2" }
+      ],
+    };
 
-  var resource = [// resources
-    { key: '0', label: "N/A" },
-    { key: '1', label: "John" },
-    { key: '2', label: "Mike" },
-    { key: '3', label: "Anna" }
-  ]
+    var resource = [// resources
+      { key: '0', label: "N/A" },
+      { key: '1', label: "John" },
+      { key: '2', label: "Mike" },
+      { key: '3', label: "Anna" }
+    ] 
 
+    gantt.serverList("res_id", this.resource);
     this.ganttChart.clear();
+    this.ganttChart.remove();
     const factory = this.resolver.resolveComponentFactory(GanttChartComponent);
     this.ganttComponentRef = this.ganttChart.createComponent(factory);
-    this.ganttComponentRef.instance.tasks = this.taskAllocateCommonService.ganttParseObject;
-    this.ganttComponentRef.instance.resource = this.resource;
-    gantt.serverList("res_id", this.resource);
-    this.setScale({ label: 'Minute Scale', value: '0' });
-    
-    setTimeout(() => {
-    // this.ganttComponentRef.instance.showResourceView()
-    },1000)
     this.ganttComponentRef.instance.isLoaderHidden = true;
+    gantt.init(this.ganttComponentRef.instance.ganttContainer.nativeElement);
+    gantt.clearAll();
+    this.ganttComponentRef.instance.onLoad(this.taskAllocateCommonService.ganttParseObject,this.resource);
+    this.setScale({ label: 'Minute Scale', value: '0' });
+  }
+
+  getPerDayTime(sTime, numberOfBusDays) {
+    if (numberOfBusDays === 1) {
+      return sTime;
+    } else {
+      let nTime = 0.0;
+      if (sTime.indexOf('.') > -1) {
+        const arrTime = sTime.split('.');
+        const nTotalMins = parseFloat(arrTime[0]) * 60 + (parseFloat('0.' + arrTime[1]) * 60);
+        const nTimePerDay = Math.round(nTotalMins / numberOfBusDays);
+        const nHrs = nTimePerDay / 60;
+        const nMins = nTimePerDay % 60;
+        return nHrs + ':' + nMins;
+      } else {
+        nTime = parseFloat(sTime);
+        return (nTime / numberOfBusDays).toFixed(2);
+      }
+    }
   }
 
   save() {
@@ -1331,7 +1388,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   zoomOut() {
     this.ganttComponentRef.instance.zoomOut()
-    this.selectedScale = this.scales[gantt.ext.zoom.getCurrentLevel()]; 
+    this.selectedScale = this.scales[gantt.ext.zoom.getCurrentLevel()];
   }
 
 

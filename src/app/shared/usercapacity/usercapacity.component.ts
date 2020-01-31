@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, HostListener, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ElementRef, HostListener, ChangeDetectorRef, ViewChild, ViewContainerRef, ComponentFactoryResolver } from '@angular/core';
 import { DatePipe, CommonModule } from '@angular/common';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -9,6 +9,8 @@ import { CACommonService } from 'src/app/ca/caservices/cacommon.service';
 import { SharedConstantsService } from '../services/shared-constants.service';
 import { MilestoneTasksDialogComponent } from './milestone-tasks-dialog/milestone-tasks-dialog.component';
 import { CommonService } from 'src/app/Services/common.service';
+import { GanttChartComponent } from '../../shared/gantt-chart/gantt-chart.component'
+
 
 @Component({
   selector: 'app-usercapacity',
@@ -16,6 +18,7 @@ import { CommonService } from 'src/app/Services/common.service';
   styleUrls: ['./usercapacity.component.css']
 })
 export class UsercapacityComponent implements OnInit {
+  @ViewChild('ganttcontainer', { read: ViewContainerRef, static: false }) ganttChart: ViewContainerRef;
   public modalReference = null;
   private Schedules = this.globalConstantService.listNames.Schedules.name;
   private ProjectInformation = this.globalConstantService.listNames.ProjectInformation.name;
@@ -51,7 +54,8 @@ export class UsercapacityComponent implements OnInit {
     private sharedConstant: SharedConstantsService,
     private cdRef: ChangeDetectorRef,
     public dialogService: DialogService,
-    private common: CommonService) {
+    private common: CommonService,
+    private resolver: ComponentFactoryResolver) {
     this.elRef = elRef;
   }
 
@@ -109,6 +113,7 @@ export class UsercapacityComponent implements OnInit {
       oCapacity.arrUserDetails = tempUserDetailsArray;
     }
     this.oCapacity = oCapacity;
+    console.log(this.oCapacity)
 
     if (data.Module) {
       if (data.Module === 'PM') {
@@ -639,6 +644,20 @@ export class UsercapacityComponent implements OnInit {
       }, 300);
     }
   }
+
+  loadComponent() {
+    // gantt.serverList("res_id", this.resource);
+    this.ganttChart.clear();
+    this.ganttChart.remove();
+    const factory = this.resolver.resolveComponentFactory(GanttChartComponent);
+    var ganttComponentRef = this.ganttChart.createComponent(factory);
+    ganttComponentRef.instance.isLoaderHidden = true;
+    gantt.init(ganttComponentRef.instance.ganttContainer.nativeElement);
+    gantt.clearAll();
+    // ganttComponentRef.instance.onLoad(this.taskAllocateCommonService.ganttParseObject,this.resource);
+    // this.setScale({ label: 'Minute Scale', value: '0' });
+  }
+
   // tslint:disable
   async bindProjectTaskDetails(tasks, objt, user) {
     if (tasks.length > 0) {

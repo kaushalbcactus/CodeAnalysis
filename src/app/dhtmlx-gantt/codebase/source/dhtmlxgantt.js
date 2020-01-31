@@ -6517,7 +6517,7 @@ module.exports = function () {
         /*scale*/
         scale_offset_minimal: true,
         inherit_scale_class: false,
-        ignore_time: null,
+        // ignore_time: null,
         scales: [
             // {
             //     unit: "day",
@@ -16498,41 +16498,7 @@ function createResourceMethods(gantt){
 			});
 		}
 		return assignments;
-    }
-
-    function resourceLine(t) {
-        init = function(e, i, n, r) {
-            var a = t.apply(this, arguments) || this;
-            return a.$config.bindLinks = null, a
-        }
-        return o(e, t), utils.mixin(e.prototype, {
-            init: function() {
-                void 0 === this.$config.bind && (this.$config.bind = this.$getConfig().resource_store), t.prototype.init.apply(this, arguments)
-            },
-            _createLayerConfig: function () {
-                var gantt = this.$gantt;
-                var self = this;
-                var layers = [
-                    {
-                        renderer: gantt.$ui.layers.resourceRow(),
-                        container: this.$task_bars,
-                        filter: [function () {
-                            return self.isVisible();
-                        }]
-                    },
-                    {
-                        renderer: this.$gantt.$ui.layers.taskBg(),
-                        container: this.$task_bg,
-                        filter: [function () {
-                            return self.isVisible();
-                        }]
-                    }
-                ];
-                return layers;
-            },
-        }, !0), utils.mixin(e.prototype, a(e), !0), e
-    }(timeline);
-  
+    }  
 
 	return {
 		renderLine: generateRenderResourceLine,
@@ -16549,8 +16515,8 @@ module.exports = function(gantt){
 	gantt.getResourceAssignments = methods.getResourceAssignments;
 	gantt.$ui.layers.resourceRow = methods.renderLine;
 	gantt.$ui.layers.resourceHistogram = methods.renderHistogram;
-	gantt.config.resource_property = "user";
-	gantt.config.resource_store = "resource";
+	gantt.config.resource_property = "res_id";
+	gantt.config.resource_store = "task";
 	gantt.config.resource_render_empty_cells = false;
 
 	/**
@@ -16580,7 +16546,12 @@ module.exports = function(gantt){
 	};
 
 	gantt.templates.resource_cell_value = function(start, end, resource, tasks) {
-		return tasks.length * 8;
+        console.log("resource cell value")
+        if(tasks.duration > 0) {
+        // return tasks.length * 8;
+        } else {
+            // return '';
+        }
     };
     
 };
@@ -25225,27 +25196,27 @@ var initializer = (function(){
 					gantt.callEvent("onScaleClick", [e, coll_date]);
 				}, gantt), this.$task);
 
-				this._mouseDelegates.delegate("doubleclick", "gantt_task_link", gantt.bind(function (e, id, trg) {
-					var id = this.locate(e, gantt.config.link_attribute);
-					_delete_link_handler.call(this, id, e);
-				}, gantt), this.$task);
+				// this._mouseDelegates.delegate("doubleclick", "gantt_task_link", gantt.bind(function (e, id, trg) {
+				// 	var id = this.locate(e, gantt.config.link_attribute);
+				// 	_delete_link_handler.call(this, id, e);
+				// }, gantt), this.$task);
 
-				this._mouseDelegates.delegate("doubleclick", "gantt_link_point", gantt.bind(function (e, id, trg) {
-					var id = this.locate(e),
-						task = this.getTask(id);
+				// this._mouseDelegates.delegate("doubleclick", "gantt_link_point", gantt.bind(function (e, id, trg) {
+				// 	var id = this.locate(e),
+				// 		task = this.getTask(id);
 
-					var link = null;
-					if (trg.parentNode && domHelpers.getClassName(trg.parentNode)) {
-						if (domHelpers.getClassName(trg.parentNode).indexOf("_left") > -1) {
-							link = task.$target[0];
-						} else {
-							link = task.$source[0];
-						}
-					}
-					if (link)
-						_delete_link_handler.call(this, link, e);
-					return false;
-				}, gantt), this.$task);
+				// 	var link = null;
+				// 	if (trg.parentNode && domHelpers.getClassName(trg.parentNode)) {
+				// 		if (domHelpers.getClassName(trg.parentNode).indexOf("_left") > -1) {
+				// 			link = task.$target[0];
+				// 		} else {
+				// 			link = task.$source[0];
+				// 		}
+				// 	}
+				// 	if (link)
+				// 		_delete_link_handler.call(this, link, e);
+				// 	return false;
+				// }, gantt), this.$task);
 			},
 
 			_attachStateProvider: function(gantt, timeline){
@@ -25511,9 +25482,18 @@ function ScaleHelper(gantt){
 			return false;
 		},
 		//defined in an extension
-		processIgnores: function (config) {
-			config.ignore_x = {};
-			config.display_count = config.count;
+		processIgnores: function (e) {
+            var i = e.count;
+             if (e.ignore_x = {}, gantt.ignore_time || gantt.config.skip_off_time) {
+            var n = gantt.ignore_time || function() {
+                return false
+            };
+            i = 0;
+            for (var r = 0; r < e.trace_x.length; r++) n.call(gantt, e.trace_x[r]) || this._ignore_time_config.call(gantt, e.trace_x[r], e) ? (e.ignore_x[e.trace_x[r].valueOf()] = true, e.ignored_colls = true) : i++
+        }
+        e.display_count = i
+			// config.ignore_x = {};
+			// config.display_count = config.count;
 		},
 		initColSizes: function (config, min_col_width, full_width, line_height) {
 			var cont_width = full_width;
@@ -26290,6 +26270,21 @@ function _findBinary(array, target) {
 		return i;
 	}
 	return array.length - 1;
+}
+
+module.exports = function(gantt) {
+    var e = new ScaleHelper(gantt);
+    return e.processIgnores = function(e) {
+        var i = e.count;
+        if (e.ignore_x = {}, gantt.ignore_time || gantt.config.skip_off_time) {
+            var n = gantt.ignore_time || function() {
+                return false
+            };
+            i = 0;
+            for (var r = 0; r < e.trace_x.length; r++) n.call(gantt, e.trace_x[r]) || this._ignore_time_config.call(t, e.trace_x[r], e) ? (e.ignore_x[e.trace_x[r].valueOf()] = true, e.ignored_colls = true) : i++
+        }
+        e.display_count = i
+    }, e
 }
 
 Timeline.prototype = {
@@ -28519,7 +28514,7 @@ CalendarDisabledTimeStrategy.prototype = {
 
 		var res = 0;
 		if (fixedUnits[unit]) {
-			res = Math.round((new Date(end) - new Date(start)) / (step * fixedUnits[unit])) + 1;
+			res = Math.round((new Date(end) - new Date(start)) / (step * fixedUnits[unit]));// + 1;
 		} else {
 			var from = new Date(start),
 				to = new Date(end);
