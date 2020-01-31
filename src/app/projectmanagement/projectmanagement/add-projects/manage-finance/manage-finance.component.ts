@@ -151,6 +151,9 @@ export class ManageFinanceComponent implements OnInit {
   tagExistingInvSection = false;
   updateInvoices = [];
   hideRemoveButton = false;
+
+  @Output() maximizeDialog = new EventEmitter<any>();
+
   constructor(
     private frmbuilder: FormBuilder,
     public pmObject: PMObjectService,
@@ -176,7 +179,8 @@ export class ManageFinanceComponent implements OnInit {
   ngOnInit() {
     this.reInitializePopup();
   }
-  reInitializePopup() {
+  
+  async reInitializePopup() {
     this.poList = [];
     this.pmObject.addProject.FinanceManagement.POListArray = [];
     this.pmObject.addProject.FinanceManagement.POArray = [];
@@ -193,22 +197,27 @@ export class ManageFinanceComponent implements OnInit {
       { label: 'No', value: 'No' }
     ];
     if (this.config && this.config.hasOwnProperty('data')) {
-      setTimeout(() => {
+      setTimeout(async () => {
         this.projObj = this.config.data.projectObj;
         this.isPOEdit = true;
         // this.setBudget();
         this.projectType = this.projObj.ProjectType;
         this.projectStatus = this.projObj.Status;
-        this.editManageFinances(this.projObj);
+        await this.editManageFinances(this.projObj);
       }, this.pmConstant.TIME_OUT);
     } else {
       this.projObj = undefined;
       this.isPOEdit = false;
       this.projectType = this.pmObject.addProject.ProjectAttributes.BilledBy;
       this.projectStatus = this.constant.projectList.status.InDiscussion;
-      this.setBudget();
+      await this.setBudget();
     }
+
+    // if (this.poData && this.poData.length >= 2) {
+    //   this.maximizeDialog.next(); // Maxmize finance dialog
+    // }
   }
+
 
   /**
    * This method is used to get required data before loading the page.
@@ -655,6 +664,9 @@ export class ManageFinanceComponent implements OnInit {
         this.error = true;
         this.errorMsg = this.pmConstant.ERROR.PO_ALREADY_EXIST;
       } else {
+        if (this.poData && this.poData.length) {
+          this.maximizeDialog.next(); // Maxmize finance dialog
+        }
         this.showPo = true;
         this.error = false;
         const tempPOObj = $.extend(true, {}, this.poObj);

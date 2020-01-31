@@ -1082,7 +1082,7 @@ p-table tbody tr td {
 }
 
 .ui-dynamicdialog {
-    max-height: 550px !important;
+    max-height: 98% !important;
     overflow-y: auto !important;
     width: 90% !important;
 }
