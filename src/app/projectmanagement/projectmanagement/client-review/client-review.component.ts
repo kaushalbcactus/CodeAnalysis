@@ -253,7 +253,8 @@ export class ClientReviewComponent implements OnInit {
       // const batchContents = new Array();
       // const batchGuid = this.spServices.generateUUID();
       // Iterate each CR Task
-
+      let taskCount = 0;
+      let arrResults = [];
       for (const task of this.crArrays.taskItems) {
         const crObj: any = $.extend(true, {}, this.pmObject.clientReviewObj);
 
@@ -306,30 +307,35 @@ export class ClientReviewComponent implements OnInit {
         deliveryTypeTempArray.push({ label: crObj.DeliverableType, value: crObj.DeliverableType });
         dueDateTempArray.push({ label: crObj.DueDate, value: crObj.DueDate });
         milestoneTempArray.push({ label: crObj.Milestone, value: crObj.Milestone });
-
         const preTaskObj = Object.assign({}, this.options);
         preTaskObj.url = this.spServices.getReadURL(this.Constant.listNames.Schedules.name, this.pmConstant.crTaskOptions);
         preTaskObj.url = preTaskObj.url.replace('{0}', crObj.PreviousTask);
         preTaskObj.listName = this.Constant.listNames.Schedules.name;
         preTaskObj.type = 'GET';
         batchUrl.push(preTaskObj);
-        // const previousTaskEndPoint = this.spServices.getReadURL('' + this.Constant.listNames.Schedules.name + '',
-        //   this.pmConstant.crTaskOptions);
-        // const previousTaskUpdatedEndPoint = previousTaskEndPoint.replace('{0}', crObj.PreviousTask);
-        // this.spServices.getBatchBodyGet(batchContents, batchGuid, previousTaskUpdatedEndPoint);
         tempCRArray.push(crObj);
+        taskCount++;
+        if (taskCount % 100 === 0) {
+          const innerResults = await this.spServices.executeBatch(batchUrl);
+          arrResults = [...arrResults, ...innerResults];
+          batchUrl.length = 0;
+        }
       }
       // batchContents.push('--batch_' + batchGuid + '--');
       // const userBatchBody = batchContents.join('\r\n');
       // const arrResults = await this.spServices.executeGetBatchRequest(batchGuid, userBatchBody);
       this.commonService.SetNewrelic('projectManagment', 'client-review', 'GetSchedules');
 
-      let arrResults = await this.spServices.executeBatch(batchUrl);
+      // let arrResults = await this.spServices.executeBatch(batchUrl);
+      const remainingResults = await this.spServices.executeBatch(batchUrl);
+      arrResults = [...arrResults, ...remainingResults];
       arrResults = arrResults.length > 0 ? arrResults.map(a => a.retItems) : [];
       for (const taskItem of tempCRArray) {
         // tslint:disable-next-line:only-arrow-functions
         const prevTask = arrResults.filter((previousTaskElement) => {
-          return previousTaskElement[0].Title === taskItem.PreviousTask;
+          if (previousTaskElement[0]) {
+            return previousTaskElement[0].Title === taskItem.PreviousTask;
+          }
         });
         if (prevTask[0] && prevTask[0].length) {
           taskItem.PreviousTaskStatus = prevTask[0][0].Status;
@@ -343,14 +349,6 @@ export class ClientReviewComponent implements OnInit {
       if (tempCRArray.length) {
         this.createColFieldValues(tempCRArray);
       }
-      // this.crArrays.projectCodeArray = this.commonService.unique(projectCodeTempArray, 'value');
-      // this.crArrays.shortTitleArray = this.commonService.unique(shortTitleTempArray, 'value');
-      // this.crArrays.clientLegalEntityArray = this.commonService.unique(clientLegalEntityTempArray, 'value');
-      // this.crArrays.POCArray = this.commonService.unique(POCTempArray, 'value');
-      // this.crArrays.deliveryTypeArray = this.commonService.unique(deliveryTypeTempArray, 'value');
-      // this.crArrays.dueDateArray = this.commonService.unique(dueDateTempArray, 'value');
-      // this.crArrays.milestoneArray = this.commonService.unique(milestoneTempArray, 'value');
-      // this.crArrays.deliveryDateArray = this.commonService.unique(deliveryDateTempArray, 'value');
       this.pmObject.clientReviewArray = tempCRArray;
       this.pmObject.countObj.crCount = tempCRArray.length;
       this.pmObject.clientReviewArray_copy = tempCRArray.slice(0, 5);
