@@ -8,7 +8,9 @@ export class TaskAllocationCommonService {
 
   constructor(public sharedObject: GlobalService) { }
 
-  ganttParseObject: any = {}
+  ganttParseObject: any = {
+    
+  }
 
   getResourceByMatrix(task, allTasks) {
     let resources = this.sharedObject.oTaskAllocation.oResources;

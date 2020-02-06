@@ -49,6 +49,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   ganttObject: any = {}
   resource = []
   ganttComponentRef: any;
+  updatedTasks: any;
   public colors = [
     {
       key: 'Not Confirmed',
@@ -1264,6 +1265,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     return this.GanttchartData.filter(e =>  e.title === task.nextTask);
   }
 
+  
   loadComponent() {
     gantt.serverList("res_id", this.resource);
     this.ganttChart.clear();
@@ -1275,6 +1277,40 @@ export class TimelineComponent implements OnInit, OnDestroy {
     gantt.clearAll();
     this.ganttComponentRef.instance.onLoad(this.taskAllocateCommonService.ganttParseObject,this.resource);
     this.setScale({ label: 'Minute Scale', value: '0' });
+
+  
+    var editedTasks = (task) => {
+      if(task.slotType == 'Slot') {
+        task.pUserStartDatePart = this.getDatePart(task.start_date);
+        task.pUserStartTimePart = this.getTimePart(task.start_date);
+        task.pUserEndDatePart = this.getDatePart(task.end_date);
+        task.pUserEndTimePart = this.getTimePart(task.end_date);
+      }
+      var tasks: any = gantt.serialize();
+      this.updatedTasks = tasks;
+    }
+
+    // specific task drag 
+    gantt.attachEvent("onBeforeTaskDrag", function (id, mode, e) {
+      var task:any = gantt.getTask(id)
+      task.edited = true;
+      editedTasks(task)
+      if(task.parentSlot != '') {
+        task.edited = false;
+       return false; 
+      }
+      return true;
+    });
+
+    // task Row Drag
+    gantt.attachEvent("onBeforeRowDragEnd", function(id, parent, tindex){
+      var task = gantt.getTask(id);
+      // if(task.parent != parent)
+      //     return false;
+      console.log(task)
+      return true;
+  });
+   
   }
 
   getPerDayTime(sTime, numberOfBusDays) {
@@ -1297,12 +1333,18 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
 
   save() {
-    var json = gantt.serialize();
-    gantt.attachEvent("onBeforeTaskChanged", function(id, mode, task){
-     console.log(id, task)
-      return true;
-    });
-    console.log(json);
+    this.updatedTasks.data.forEach((item)=>{
+      this.milestoneData.forEach((task)=>{
+        if(task.data.type === 'milestone')
+        {
+          if(task.data.id === item.id ) {
+            task.data.edited = true;
+            }
+        }
+      })
+    })
+
+    this.saveTasks();
   }
 
   setScale(scale) {
@@ -2358,6 +2400,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
     this.deallocationMailArray.length = 0;
     Node.pUserStart = new Date(this.datepipe.transform(Node.pUserStartDatePart, 'MMM d, y') + ' ' + Node.pUserStartTimePart);
     Node.pUserEnd = new Date(this.datepipe.transform(Node.pUserEndDatePart, 'MMM d, y') + ' ' + Node.pUserEndTimePart);
+    // Node.start_date = Node.pUserStart;
+    // Node.end_date =  Node.pUserEnd;
     this.DateChange(Node, type);
   }
   // tslint:disable

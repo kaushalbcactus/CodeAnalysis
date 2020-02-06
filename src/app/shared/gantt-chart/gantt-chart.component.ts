@@ -28,7 +28,10 @@ export class GanttChartComponent implements OnInit {
     // this.onLoad(data,this.resource)
   }
 
-  onLoad(data,resource) {
+
+  onLoad(data, resource) {
+
+    gantt.config.fit_tasks = true;
 
     var zoomConfig = {
       levels: [
@@ -105,7 +108,7 @@ export class GanttChartComponent implements OnInit {
 
     gantt.config.order_branch = true;
     gantt.config.order_branch_free = true;
-  
+
     var date_to_str = gantt.date.date_to_str(gantt.config.task_date);
     var today = new Date();
     gantt.addMarker({
@@ -114,36 +117,38 @@ export class GanttChartComponent implements OnInit {
       text: "Today",
       title: "Today: " + date_to_str(today)
     });
-  
+
+
+
     function calculateResourceLoad(tasks, scale) {
       var step = scale.unit;
       var timegrid = {};
-  
+
       for (let i = 0; i < tasks.length; i++) {
         var task = tasks[i];
-        if(task.duration > 0) {
-        var currDate = gantt.date[step + "_start"](new Date(task.start_date));
-  
-        while (currDate < task.end_date) {
-  
-          var date = currDate;
-          currDate = gantt.date.add(currDate, 1, step);
-  
-          if (!gantt.isWorkTime({ date: date, task: task })) {
-            continue;
-          }
-          
-          var timestamp = date.valueOf();
-         
-          if (!timegrid[timestamp])
-            timegrid[timestamp] = 0;
+        if (task.duration > 0) {
+          var currDate = gantt.date[step + "_start"](new Date(task.start_date));
 
-          timegrid[timestamp] += 8;
-          
-        }
+          while (currDate < task.end_date) {
+
+            var date = currDate;
+            currDate = gantt.date.add(currDate, 1, step);
+
+            if (!gantt.isWorkTime({ date: date, task: task })) {
+              continue;
+            }
+
+            var timestamp = date.valueOf();
+
+            if (!timegrid[timestamp])
+              timegrid[timestamp] = 0;
+
+            timegrid[timestamp] += 8;
+
+          }
         }
       }
-  
+
       var timetable = [];
       var start, end;
       let i: any
@@ -156,32 +161,32 @@ export class GanttChartComponent implements OnInit {
           value: timegrid[i]
         });
       }
-  
+
       return timetable;
     }
-  
-  
-    var renderResourceLine = function(resource, timeline) {
+
+
+    var renderResourceLine = function (resource, timeline) {
       var tasks = gantt.getTaskBy("res_id", resource.id);
       var timetable = calculateResourceLoad(tasks, timeline.getScale());
-  
+
       var row = document.createElement("div");
-  
+
       for (var i = 0; i < timetable.length; i++) {
-  
+
         var day = timetable[i];
-  
+
         var css = "";
         if (day.value <= 8) {
           css = "gantt_resource_marker gantt_resource_marker_ok";
         } else {
           css = "gantt_resource_marker gantt_resource_marker_overtime";
         }
-  
+
         var sizes = timeline.getItemPosition(resource, day.start_date, day.end_date);
         var el = document.createElement('div');
         el.className = css;
-  
+
         el.style.cssText = [
           'left:' + sizes.left + 'px',
           'width:' + sizes.width + 'px',
@@ -190,7 +195,7 @@ export class GanttChartComponent implements OnInit {
           'line-height:' + sizes.height + 'px',
           'top:' + sizes.top + 'px'
         ].join(";");
-  
+
         el.innerHTML = day.value;
         row.appendChild(el);
       }
@@ -212,7 +217,7 @@ export class GanttChartComponent implements OnInit {
           }
         },
         { name: "start_date", width: 150 },
-        { name: "end_date" , width: 150},
+        { name: "end_date", width: 150 },
       ]
     };
 
@@ -220,10 +225,10 @@ export class GanttChartComponent implements OnInit {
       var store = gantt.getDatastore('task'),
         field = gantt.config.resource_property,
         tasks;
-  
+
       if (store.hasChild(resourceId)) {
         tasks = gantt.getTaskBy(field, store.getChildren(resourceId));
-      }else{
+      } else {
         tasks = gantt.getTaskBy(field, resourceId);
       }
       return tasks;
@@ -240,12 +245,12 @@ export class GanttChartComponent implements OnInit {
           name: "workload", label: "Workload", template: function (resource) {
             var tasks = gantt.getTaskBy("res_id", resource.id);
             // var tasks = getResourceTasks(resource.id);
-					var totalDuration = 0;
-					tasks.forEach(function(task){
-						totalDuration += task.duration;
-					});
+            var totalDuration = 0;
+            tasks.forEach(function (task) {
+              totalDuration += task.duration;
+            });
 
-					return (totalDuration || 0) *8 + "h";
+            return (totalDuration || 0) * 8 + "h";
 
           }
         }
@@ -258,9 +263,9 @@ export class GanttChartComponent implements OnInit {
       rows: [
         {
           cols: [
-            { view: "grid", group: "grids", config: mainGridConfig, scrollX: "scrollHor",scrollY: "scrollVer" },
+            { view: "grid", group: "grids", config: mainGridConfig, scrollX: "scrollHor", scrollY: "scrollVer" },
             { view: "timeline", id: "timeline", scrollX: "scrollHor", scrollY: "scrollVer" },
-            { view: "scrollbar", id: "scrollVer" , group: "vertical"}
+            { view: "scrollbar", id: "scrollVer", group: "vertical" }
           ]
         },
         { view: "scrollbar", id: "scrollHor" }
@@ -312,7 +317,7 @@ export class GanttChartComponent implements OnInit {
     });
 
     gantt.templates.timeline_cell_class = function (task, date) {
-      if (!gantt.isWorkTime({date: date, task: task}))
+      if (!gantt.isWorkTime({ date: date, task: task }))
         return "week_end";
       return "";
     };
@@ -338,8 +343,8 @@ export class GanttChartComponent implements OnInit {
       if (!task.user) return "";
       return task.user
     }
-  
-  
+
+
     function getTaskType(task) {
       if (task.status == gantt.config.types.meeting) {
         return "Meeting";
@@ -379,76 +384,74 @@ export class GanttChartComponent implements OnInit {
     var tooltips = gantt.ext.tooltips;
 
     gantt.attachEvent("onGanttReady", function () {
-    tooltips.tooltipFor({
-      selector: ".gantt_row_project",
-      html: function (event, node) {
+      tooltips.tooltipFor({
+        selector: ".gantt_row_project",
+        html: function (event, node) {
           return false;
-      }
-    });
+        }
+      });
 
-    tooltips.tooltipFor({
-      selector: ".gantt_project",
-      html: function (event, node) {
+      tooltips.tooltipFor({
+        selector: ".gantt_project",
+        html: function (event, node) {
           return false;
-      }
-    });
+        }
+      });
 
-  });
+    });
 
 
     gantt.templates.task_class = function (start, end, task) {
-      if(task.status == gantt.config.types.meeting){
-          return "meeting_task";
+      if (task.status == gantt.config.types.meeting) {
+        return "meeting_task";
       }
-      else if(task.status == gantt.config.types.planned){
-          return "planned_task";
+      else if (task.status == gantt.config.types.planned) {
+        return "planned_task";
       }
-      else if(task.status == gantt.config.types.notstarted){
-          return "notstarted_task";
+      else if (task.status == gantt.config.types.notstarted) {
+        return "notstarted_task";
       }
-      else if(task.status == gantt.config.types.inprogress){
-          return "inprogress_task";
+      else if (task.status == gantt.config.types.inprogress) {
+        return "inprogress_task";
       }
-      else if(task.status == gantt.config.types.completed){
-          return "completed_task";
+      else if (task.status == gantt.config.types.completed) {
+        return "completed_task";
       }
-      else if(task.status == gantt.config.types.autoclosed){
-          return "autoclosed_task";
+      else if (task.status == gantt.config.types.autoclosed) {
+        return "autoclosed_task";
       }
-      else if(task.status == gantt.config.types.onhold){
-          return "onhold_task";
+      else if (task.status == gantt.config.types.onhold) {
+        return "onhold_task";
       }
-    return "";
+      return "";
     }
 
     resourcesStore.parse(resource);
     gantt.config.sort = true;
     this.ganttParseObject = data;
-   
-    gantt.config.work_time = true;
+
+    // gantt.config.work_time = true;
     gantt.config.skip_off_time = true;
-    
-    
-    gantt.ignore_time = function(date){
+
+
+    gantt.ignore_time = function (date) {
       // console.log('ignore time')
-        if(date.getDay() == 0 || date.getDay() == 6)
-          return true;
+      if (date.getDay() == 0 || date.getDay() == 6)
+        return true;
     };
-    gantt.config.fit_tasks = true; 
 
     gantt.init(this.ganttContainer.nativeElement)
     gantt.config.branch_loading = true;
-    console.log(data)
-    gantt.parse(data)   
+    gantt.parse(data)
 
   }
 
   setScaleConfig(value) {
     this.isLoaderHidden = false;
     // if (value == '0') {
-      gantt.config.layout = this.gridConfig;
+    gantt.config.layout = this.gridConfig;
     // } else {
-      // gantt.config.layout = this.resourcePanelConfig;
+    // gantt.config.layout = this.resourcePanelConfig;
     // }
     gantt.ext.zoom.setLevel(value);
     setTimeout(() => {
@@ -495,6 +498,6 @@ export class GanttChartComponent implements OnInit {
     }
   }
 
-  
+
 
 }
