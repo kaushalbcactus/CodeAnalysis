@@ -33,6 +33,7 @@
         "@fullcalendar/list": "^4.3.0",
         "@fullcalendar/timegrid": "^4.3.0",
         "@ng-bootstrap/ng-bootstrap": "^5.1.5",
+        "@popperjs/core": "^2.0.5",
         "@swimlane/ngx-charts": "^8.1.0",
         "@swimlane/ngx-graph": "^5.6.0",
         "bootstrap": "^4.4.1",
