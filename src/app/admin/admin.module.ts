@@ -24,6 +24,7 @@ import { ReferenceDataComponent } from './admin/reference-data/reference-data.co
 import { RulesComponent } from './admin/rules/rules.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { GroupDescriptionComponent } from './admin/entitlement/group-description/group-description.component';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -46,15 +47,12 @@ import { GroupDescriptionComponent } from './admin/entitlement/group-description
     AddUserToProjectsComponent,
     GroupDescriptionComponent],
   imports: [
-    CommonModule,
+    SharedModule,
     AdminRoutingModule,
     PrimengModule,
-    FormsModule,
-    ReactiveFormsModule,
     NgbModule,
   ],
   providers: [
-    
   ]
 })
 export class AdminModule { }

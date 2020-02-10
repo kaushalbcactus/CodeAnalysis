@@ -2970,36 +2970,17 @@ export class EditorComponent implements OnInit {
         await this.cleInfo();
         this.poInfo();
         this.projectContacts();
-        const id = "2393";
-        // const batchContents = new Array();
-        // const batchGuid = this.spOperationsServices.generateUUID();
+        const id = '3250';
         const prfObj = Object.assign({}, this.fdConstantsService.fdComponent.proformaForUser);
         prfObj.filter = prfObj.filter.replace('{{ItemID}}', id);
         const res = await this.spOperationsServices.readItems(this.constantsService.listNames.Proforma.name, prfObj);
-        // let invoicesQuery = this.spOperationsServices.getReadURL('' + this.constantsService.listNames.Proforma.name +
-        //  '', this.fdConstantsService.fdComponent.proformaForUser);
-        // invoicesQuery = invoicesQuery.replace('{{ItemID}}', id);
-        // let endPoints = [invoicesQuery];
-        // let userBatchBody = '';
-        // for (let i = 0; i < endPoints.length; i++) {
-        //     const element = endPoints[i];
-        //     this.spOperationsServices.getBatchBodyGet(batchContents, batchGuid, element);
-        // }
-        // batchContents.push('--batch_' + batchGuid + '--');
-        // userBatchBody = batchContents.join('\r\n');
-        // let arrResults: any = [];
-        // const res = await this.spOperationsServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
-        // console.log('REs in Confirmed Invoice ', res);
         const arrResults = res.length ? res : [];
         if (arrResults.length) {
             const prf = arrResults[0];
-            // console.log(prf);
             await this.getILIByPID(id);
-            // console.log(this.iliByPidRes);
-
-            const projectAppendix = await this.createProjectAppendix(this.iliByPidRes);
+            const projectAppendix = await this.createProjectAppendix( this.projectContactsData, this.iliByPidRes);
+            // tslint:disable-next-line: max-line-length
             await this.fdShareDataService.callProformaCreation(prf, this.cleData, this.projectContactsData, this.purchaseOrdersList, this, projectAppendix);
-
         }
     }
 
@@ -3094,10 +3075,9 @@ export class EditorComponent implements OnInit {
         }))
     }
 
-    async createProjectAppendix(selectedProjects) {
+    async createProjectAppendix(prjContacts, selectedProjects) {
 
         const projectAppendix = [];
-        let retProjects = [];
         let projects = [];
         const projectProcessed = [];
         const callProjects = [];
@@ -3107,13 +3087,11 @@ export class EditorComponent implements OnInit {
                 if (project) {
                     projects.push(project);
                     projectProcessed.push(project.ProjectCode);
-                }
-                else {
-                    callProjects.push(element.ProjectCode);
+                } else {
+                    callProjects.push(element.Title);
                 }
             }
         });
-
         if (callProjects.length) {
             const batchURL = [];
             const options = {
@@ -3122,8 +3100,9 @@ export class EditorComponent implements OnInit {
                 type: '',
                 listName: ''
             };
-
-            callProjects.forEach(element => {
+            let callCount = 0;
+            let retProjects = [];
+            for (const element of callProjects) {
                 const getPIData = Object.assign({}, options);
                 getPIData.url = this.spOperationsServices.getReadURL(this.constantsService.listNames.ProjectInformation.name,
                     this.fdConstantsService.fdComponent.projectInfoCode);
@@ -3131,21 +3110,28 @@ export class EditorComponent implements OnInit {
                 getPIData.listName = this.constantsService.listNames.ProjectInformation.name;
                 getPIData.type = 'GET';
                 batchURL.push(getPIData);
-
-            });
-
-            retProjects = await this.spOperationsServices.executeBatch(batchURL);
+                callCount++;
+                if (callCount % 100 === 0) {
+                    const innerResults = await this.spOperationsServices.executeBatch(batchURL);
+                    retProjects = [...retProjects, ...innerResults];
+                    batchURL.length = 0;
+                }
+            }
+            const remainingResults = await this.spOperationsServices.executeBatch(batchURL);
+            retProjects = [...retProjects, ...remainingResults];
             const mappedProjects = retProjects.map(obj => obj.retItems.length ? obj.retItems[0] : []);
             projects = [...projects, ...mappedProjects];
         }
-        const appendixObj = { dvcode: '', cactusSpCode: '', title: '', amount: '' };
+        const appendixObj = { dvcode: '', cactusSpCode: '', title: '', poc: '', amount: '' };
         selectedProjects.forEach(element => {
             const project = projects.find(e => e.ProjectCode === element.Title);
-            let appendix = Object.assign({}, appendixObj);
+            const appendix = Object.assign({}, appendixObj);
             if (project) {
+                const projectContact = prjContacts.find(pc => pc.ID === project.PrimaryPOC);
                 appendix.dvcode = project.WBJID ? project.WBJID : '';
                 appendix.cactusSpCode = project.ProjectCode ? project.ProjectCode : '';
                 appendix.title = project.Title ? project.Title : '';
+                appendix.poc = projectContact ? projectContact.FullName : '';
             }
             appendix.amount = element.Amount;
             projectAppendix.push(appendix);

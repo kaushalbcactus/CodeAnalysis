@@ -97,7 +97,7 @@ button.ui-datepicker-trigger.ui-calendar-button span.ui-button-text.ui-clickable
     animation: spin 2s linear infinite;
     margin: 0 auto;
     position: relative;
-    top: 50%;
+    top: 27%;
     transform: translateY(-50%);
     margin-top: 1%;
 }
@@ -114,6 +114,7 @@ button.ui-datepicker-trigger.ui-calendar-button span.ui-button-text.ui-clickable
     opacity: 0.5;
     text-align: center;
     text-transform: uppercase;
-    top: 0;
-    margin-bottom: 1%;
+    margin-top: 14%;
+    /* top: 0;
+    margin-bottom: 1%; */
 }

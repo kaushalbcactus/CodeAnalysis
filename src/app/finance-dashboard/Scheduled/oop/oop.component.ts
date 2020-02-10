@@ -260,6 +260,7 @@ export class OopComponent implements OnInit, OnDestroy {
     createANBCols() {
         this.oopBasedCols = [
             { field: 'ProjectCode', header: 'Project Code', visibility: true },
+            { field: 'ProjectTitle', header: 'Project Title', visibility: false },
             { field: 'SOWValue', header: 'SOW Code/ Name', visibility: true },
             { field: 'ProjectMileStone', header: 'Project Milestone', visibility: true },
             { field: 'POValues', header: 'PO Number/ Name', visibility: true },
@@ -326,8 +327,7 @@ export class OopComponent implements OnInit, OnDestroy {
     async formatData(data: any[]) {
         this.oopBasedRes = [];
         this.selectedAllRowsItem = [];
-        for (let i = 0; i < data.length; i++) {
-            const element = data[i];
+        for (const element of data) {
             const sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(element.SOWCode);
             const sowCode = element.SOWCode ? element.SOWCode : '';
             const sowName = sowItem.Title ? sowItem.Title : '';
@@ -351,6 +351,7 @@ export class OopComponent implements OnInit, OnDestroy {
             this.oopBasedRes.push({
                 Id: element.ID,
                 ProjectCode: element.Title,
+                ProjectTitle: piInfo.Title ? piInfo.Title : '',
                 SOWCode: element.SOWCode,
                 SOWName: sowItem.Title,
                 SOWValue: sowcn,
@@ -526,15 +527,21 @@ export class OopComponent implements OnInit, OnDestroy {
             this.items.push({ label: 'Confirm Invoice', command: (e) => this.openMenuContent(e, data) });
         } else {
             if (!(date >= last3Days && date <= lastDay)) {
-                this.messageService.add({ key: 'oopInfoToast', severity: 'info', summary: 'Info message',
-                 detail: 'To confirm the line item, scheduled Date should be between last 3 working days & last date of the current month.',
-                  life: 4000 });
+                this.messageService.add({
+                    key: 'oopInfoToast', severity: 'info', summary: 'Info message',
+                    detail: 'To confirm the line item, scheduled Date should be between last 3 working days & last date of the current month.',
+                    life: 4000
+                });
             } else if (!retPO) {
-                this.messageService.add({ key: 'oopInfoToast', severity: 'info', summary: 'Info message',
-                 detail: 'PO not available for the selected line item.', life: 4000 });
+                this.messageService.add({
+                    key: 'oopInfoToast', severity: 'info', summary: 'Info message',
+                    detail: 'PO not available for the selected line item.', life: 4000
+                });
             } else if (!(new Date(retPO.POExpiryDate) >= todaysDateTimeZero)) {
-                this.messageService.add({ key: 'oopInfoToast', severity: 'info', summary: 'Info message',
-                 detail: 'PO expired on' + this.datePipe.transform(retPO.POExpiryDate, 'MMM dd, yyyy'), life: 4000 });
+                this.messageService.add({
+                    key: 'oopInfoToast', severity: 'info', summary: 'Info message',
+                    detail: 'PO expired on' + this.datePipe.transform(retPO.POExpiryDate, 'MMM dd, yyyy'), life: 4000
+                });
             }
         }
         this.items.push({ label: 'Edit Invoice', command: (e) => this.openMenuContent(e, data) });
@@ -570,7 +577,8 @@ export class OopComponent implements OnInit, OnDestroy {
     // Go to Project Details Page
     goToProjectDetails(data: any) {
         console.log(data);
-        window.open(this.globalService.sharePointPageObject.webAbsoluteUrl + '/projectmanagement#/projectMgmt/allProjects?ProjectCode=' + data.ProjectCode);
+        window.open(this.globalService.sharePointPageObject.webAbsoluteUrl
+            + '/projectmanagement#/projectMgmt/allProjects?ProjectCode=' + data.ProjectCode);
     }
 
     // Update Form
@@ -707,7 +715,8 @@ export class OopComponent implements OnInit, OnDestroy {
         mailContent = this.replaceContent(mailContent, '@@Val2@@', this.selectedRowItem.ProjectCode);
         mailContent = this.replaceContent(mailContent, '@@Val3@@', this.selectedRowItem.ClientName);
         mailContent = this.replaceContent(mailContent, '@@Val4@@', this.selectedRowItem.PONumber);
-        mailContent = this.replaceContent(mailContent, '@@Val5@@', this.datePipe.transform(this.selectedRowItem.ScheduledDate, 'MMM dd, yyyy'));
+        mailContent = this.replaceContent(mailContent, '@@Val5@@',
+            this.datePipe.transform(this.selectedRowItem.ScheduledDate, 'MMM dd, yyyy'));
         mailContent = this.replaceContent(mailContent, '@@Val6@@', this.selectedRowItem.Currency + ' ' + this.selectedRowItem.Amount);
         mailContent = this.replaceContent(mailContent, '@@Val7@@', this.selectedRowItem.SOWCode);
 

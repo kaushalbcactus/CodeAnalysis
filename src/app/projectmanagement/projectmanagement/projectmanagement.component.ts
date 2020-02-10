@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone, ViewEncapsulation, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, NgZone, ViewEncapsulation, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { GlobalService } from 'src/app/Services/global.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { MenuItem, MessageService, ConfirmationService } from 'primeng/api';
@@ -16,6 +16,8 @@ import { DataService } from 'src/app/Services/data.service';
   encapsulation: ViewEncapsulation.None
 })
 export class ProjectmanagementComponent implements OnInit, OnDestroy {
+  @ViewChild('myInput', { static: true })
+  myInputVariable: ElementRef;
   isUserAllowed = true;
   private tabMenuItems: MenuItem[];
   buttons: MenuItem[];
@@ -39,6 +41,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
   addSowForm: FormGroup;
   addAdditionalBudgetForm: FormGroup;
   selectedFile: any;
+
   filePathUrl: any;
   subscription;
   constructor(
@@ -186,8 +189,8 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    * This method is called when client legal entity value is changed.
    */
   onChangeClientLegalEntity() {
-    if (!this.pmObject.addSOW.ClientLegalEntity) {
-      this.pmObject.addSOW.ClientLegalEntity = this.addSowForm.value.clientLegalEntity;
+    if (this.addSowForm.value.clientLegalEntity) {
+    this.pmObject.addSOW.ClientLegalEntity = this.addSowForm.value.clientLegalEntity;
     }
     if (this.pmObject.addSOW.ClientLegalEntity) {
       this.sowDropDown.POC = [];
@@ -245,7 +248,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       sowExpiryDate: ['', Validators.required],
       currency: ['', Validators.required],
       status: [null],
-      sowDocuments: [null],
+      sowDocuments: [],
       comments: [null],
       total: [0, [Validators.required, Validators.min(0)]],
       net: [0, [Validators.required, Validators.min(0)]],
@@ -262,7 +265,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       addNet: [0, [Validators.required, Validators.min(0)]],
       addOOP: [0, [Validators.required, Validators.min(0)]],
       addTax: [0, [Validators.required, Validators.min(0)]],
-      sowDocumentsAdd: [null],
+      sowDocumentsAdd: ['', Validators.required],
     });
   }
   /**
@@ -295,6 +298,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    * This method is used to add the sow
    */
   async createSOW() {
+
     this.pmObject.isSOWFormSubmit = true;
     if (this.addSowForm.valid) {
       this.pmObject.isSOWFormSubmit = false;
@@ -303,7 +307,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
           key: 'custom', severity: 'error',
           summary: 'Error Message', detail: 'Please select SOW document.'
         });
-        return;
+        return false;
       }
       // get all the value from form.
       this.pmObject.addSOW.ClientLegalEntity = this.addSowForm.value.clientLegalEntity ? this.addSowForm.value.clientLegalEntity :
@@ -377,6 +381,8 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     } else {
       this.validateAllFormFields(this.addSowForm);
     }
+
+    this.selectedFile = null;
   }
   /**
    * This method is used to set the field properties.
@@ -400,10 +406,18 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.addSowForm.get('oop').setValue(this.pmObject.addSOW.Budget.OOP);
     this.addSowForm.get('tax').setValue(this.pmObject.addSOW.Budget.Tax);
     this.addSowForm.get('cm').setValue(this.pmObject.addSOW.CM1);
+
     this.addSowForm.get('cm2').setValue(this.pmObject.addSOW.CM2);
     this.addSowForm.get('deliveryOptional').setValue(this.pmObject.addSOW.DeliveryOptional);
     this.addSowForm.get('delivery').setValue(this.pmObject.addSOW.Delivery);
     this.addSowForm.get('sowOwner').setValue(this.pmObject.addSOW.SOWOwner);
+    // if (this.pmObject.addSOW.SOWDocument) {
+    //   if (this.pmObject.addSOW.SOWDocument.lastIndexOf('/') > -1) {
+    //     this.addSowForm.get('sowDocuments').setValue(this.pmObject.addSOW.SOWDocument.substr(this.pmObject.addSOW.SOWDocument.lastIndexOf('/') + 1));
+    //   } else {
+    //     this.addSowForm.get('sowDocuments').setValue(this.pmObject.addSOW.SOWDocument);
+    //   }
+    // }
   }
   /**
    * This method is used to upload the file on finance/sow.
@@ -439,6 +453,10 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     if (event.target.files && event.target.files.length > 0) {
       this.selectedFile = event.target.files[0];
       this.fileReader.readAsArrayBuffer(this.selectedFile);
+
+      // this.addSowForm.patchValue({
+      //   'sowDocuments': this.selectedFile ? this.selectedFile.name : ''
+      // })
     }
   }
   /**
@@ -757,7 +775,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       Year: year,
       CreatedDate: sowObj.SOWCreationDate,
       ExpiryDate: sowObj.SOWExpiryDate,
-      SOWLink: sowObj.SOWFileURL,
+      SOWLink: sowObj.SOWFileURL ? sowObj.SOWFileURL : sowObj.SOWDocument,
       CMLevel1Id: {
         results: sowObj.CM1 ? sowObj.CM1 : [],
       },
@@ -845,15 +863,18 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.pmObject.addSOW.Addendum.TotalBudget = +'';
     this.pmObject.addSOW.Addendum.TaxBudget = +'';
     this.pmObject.isSOWFormSubmit = false;
+    this.selectedFile = null;
+    this.myInputVariable.nativeElement.value = '';
   }
   /**
    * This method is used to close the additional Popup.
    */
   closeAdditonalPop() {
     this.addAdditionalBudgetForm.reset();
+    this.myInputVariable.nativeElement.value = '';
     this.pmObject.isSOWFormSubmit = false;
     this.pmObject.isAdditionalBudgetVisible = false;
-
+    this.selectedFile = null;
     if (this.router.url === '/projectMgmt/allSOW') {
       this.dataService.publish('reload-EditSOW');
     }
@@ -987,7 +1008,16 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       }
     } else {
       this.validateAllFormFields(this.addAdditionalBudgetForm);
+      if (!this.selectedFile) {
+        this.messageService.add({
+          key: 'custom', severity: 'error',
+          summary: 'Error Message', detail: 'Please select SOW document.'
+        });
+        return false;
+      }
+
     }
+    this.selectedFile = null;
   }
   /**
    * This method is used to get the edit SOWObj value based on selected sow.
@@ -1029,6 +1059,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.addSowForm.controls.clientLegalEntity.disable();
       this.addSowForm.controls.sowCreationDate.disable();
       this.addSowForm.controls.cactusBillingEntity.disable();
+      // this.addSowForm.controls.sowDocuments
       this.pmService.setGlobalVariable(sowItem);
       this.pmObject.addSOW.isSOWCodeDisabled = true;
       this.pmObject.addSOW.isStatusDisabled = false;

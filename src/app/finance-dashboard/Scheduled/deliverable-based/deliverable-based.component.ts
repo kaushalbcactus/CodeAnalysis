@@ -312,6 +312,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     createDBICols() {
         this.deliverableBasedCols = [
             { field: 'ProjectCode', header: 'Project Code', visibility: true },
+            { field: 'ProjectTitle', header: 'Project Title', visibility: false },
             { field: 'SOWValue', header: 'SOW Code/ Name', visibility: true },
             { field: 'ProjectMileStone', header: 'Project Milestone', visibility: true },
             { field: 'POValues', header: 'PO Number/ Name', visibility: true },
@@ -399,13 +400,8 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     async formatData(data: any[]) {
         this.deliverableBasedRes = [];
         this.selectedAllRowsItem = [];
-        for (let i = 0; i < data.length; i++) {
-            const element = data[i];
+        for (const element of data) {
             const piInfo = await this.getMilestones(element);
-            // let resCInfo = await this.fdDataShareServie.getResDetailById(this.rcData, element);
-            // if (resCInfo && resCInfo.hasOwnProperty('UserName') && resCInfo.UserName.hasOwnProperty('Title')) {
-            //     resCInfo = resCInfo.UserName.Title
-            // }
             const sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(element.SOWCode);
             const sowCode = element.SOWCode ? element.SOWCode : '';
             const sowName = sowItem.Title ? sowItem.Title : '';
@@ -427,6 +423,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             this.deliverableBasedRes.push({
                 Id: element.ID,
                 ProjectCode: element.Title,
+                ProjectTitle: piInfo.Title ? piInfo.Title : '',
                 SOWCode: element.SOWCode,
                 SOWValue: sowcn,
                 SOWName: sowItem.Title,
@@ -493,7 +490,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     // Project Current Milestones
     getMilestones(pc: any) {
         const found = this.projectInfoData.find((x) => {
-            if (x.ProjectCode == pc.Title) {
+            if (x.ProjectCode === pc.Title) {
                 return x;
             }
         });
@@ -503,7 +500,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     // Project Current Milestones
     getPracticeArea(pc: any) {
         const found = this.projectInfoData.find((x) => {
-            if (x.ProjectCode == pc.Title) {
+            if (x.ProjectCode === pc.Title) {
                 return x;
             }
         });
