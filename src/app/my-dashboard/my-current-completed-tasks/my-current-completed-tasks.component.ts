@@ -429,7 +429,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     this.selectedindex = row;
     this.selectedType = type;
 
-    if (type === 'TaskName') { 
+    if (type === 'TaskName') {
       this.getNextPreviousTaskDialog(task);
     }
     if (type === 'TimeSpent') {

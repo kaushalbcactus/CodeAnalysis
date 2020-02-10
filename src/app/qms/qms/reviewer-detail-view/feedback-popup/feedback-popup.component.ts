@@ -354,19 +354,24 @@ export class FeedbackPopupComponent implements OnInit {
    * @param content - content dispalyed within popup which is defined in HTML
    */
   openPopup(element: any) {
-    this.display = true;
-    this.getTemplates();
-    this.global.templateMatrix.task = element.title ? element.title : element.taskTitle;
-    this.global.templateMatrix.submilestones = element.subMilestones;
-    this.global.templateMatrix.taskID = element.taskID;
-    this.global.templateMatrix.assignedToID = element.resourceID;
-    this.global.templateMatrix.assignedTo = element.resource;
-    this.global.templateMatrix.taskCompletionDate = element.taskCompletionDate;
-    this.global.templateMatrix.documentUrl = element.documentURL.length > 0 ? element.documentURL.join(';#') : '';
-    this.global.templateMatrix.reviewTaskDocUrl = element.reviewTaskDocUrl.length > 0 ?
-      element.reviewTaskDocUrl.join(';#') : '';
-    this.global.templateMatrix.reviewTask = element.reviewTask ? element.reviewTask : '';
-    this.global.templateMatrix.currentTask = element.currentTask ? element.currentTask : '';
+    if (element.documentURL.length > 0) {
+      this.display = true;
+      this.getTemplates();
+      this.global.templateMatrix.task = element.title ? element.title : element.taskTitle;
+      this.global.templateMatrix.submilestones = element.subMilestones;
+      this.global.templateMatrix.taskID = element.taskID;
+      this.global.templateMatrix.assignedToID = element.resourceID;
+      this.global.templateMatrix.assignedTo = element.resource;
+      this.global.templateMatrix.taskCompletionDate = element.taskCompletionDate;
+      this.global.templateMatrix.documentUrl = element.documentURL.length > 0 ? element.documentURL.join(';#') : '';
+      this.global.templateMatrix.reviewTaskDocUrl = element.reviewTaskDocUrl.length > 0 ?
+        element.reviewTaskDocUrl.join(';#') : '';
+      this.global.templateMatrix.reviewTask = element.reviewTask ? element.reviewTask : '';
+      this.global.templateMatrix.currentTask = element.currentTask ? element.currentTask : '';
+    } else {
+      this.global.templateMatrix.currentTask = element.currentTask ? element.currentTask : '';
+      this.closeFeedback();
+    }
   }
 
   // #endregion ForRatingPopup

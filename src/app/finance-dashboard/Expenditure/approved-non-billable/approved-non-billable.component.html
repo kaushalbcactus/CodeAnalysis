@@ -8,7 +8,7 @@
         <div style="display: -webkit-inline-box;">
 
             <div class="box" style="margin-right: 20px" *ngIf="constantService.userPermission.isFDUserAdmin">
-                <button pButton type="button" type="button" label="Mark As Payment" class="ui-button-raised"
+                <button pButton type="button" class="fdBtn" label="Mark As Payment"
                     (click)="openPopup('markAsPaymentModal')" style="float:left"></button>
             </div>
             <div class="box">
@@ -151,7 +151,7 @@
         <div class="ui-g mb-15">
             <div class="ui-g-4">Payment Date</div>
             <div class="ui-g-6 box1">
-                <p-calendar [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy"
+                <p-calendar styleClass="pCalendarBtn" [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy"
                     yearRange="2019:2030" [disabledDays]="[0,6]" [yearNavigator]="true" formControlName="DateSpend">
                 </p-calendar>
                 <div *ngIf="formSubmit.isSubmit && isValidMarkAsPaymentForm.DateSpend.errors">
@@ -201,7 +201,7 @@
         <!-- </div> -->
     </form>
     <p-footer>
-        <button pButton type="button" label="Mark As Payment" [disabled]="submitBtn.isClicked"
+        <button pButton type="button" class="fdBtn" label="Mark As Payment" [disabled]="submitBtn.isClicked"
             (click)="onSubmit('markAsPayment_form')"></button>
     </p-footer>
 </p-dialog>

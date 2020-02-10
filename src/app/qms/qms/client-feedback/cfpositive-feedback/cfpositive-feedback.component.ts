@@ -10,7 +10,7 @@ import { Subject } from 'rxjs/internal/Subject';
 import { SPOperationService } from '../../../../Services/spoperation.service';
 import { FilterComponent } from '../filter/filter.component';
 import { MenuItem, MessageService } from 'primeng/api';
-import { PopupComponent } from './popup/popup.component'
+import { PopupComponent } from './popup/popup.component';
 import { QMSConstantsService } from '../../services/qmsconstants.service';
 import { Table } from 'primeng/table';
 import { CommonService } from 'src/app/Services/common.service';
@@ -20,6 +20,38 @@ import { CommonService } from 'src/app/Services/common.service';
   styleUrls: ['./cfpositive-feedback.component.css']
 })
 export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
+  constructor(
+    private router: Router,
+    private globalConstant: ConstantsService,
+    private spCommon: SPCommonService,
+    private global: GlobalService,
+    private datepipe: DatePipe,
+    private spService: SPOperationService,
+    private messageService: MessageService,
+    private qmsConstant: QMSConstantsService,
+    private qmsCommon: QMSCommonService,
+    private commonService: CommonService,
+    private cdr: ChangeDetectorRef,
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    private readonly _router: Router,
+    _applicationRef: ApplicationRef,
+    zone: NgZone
+  ) {
+    // this.router.routeReuseStrategy.shouldReuseRoute = function () {
+    //   return false;
+    // }
+
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+
+    this.cfPFNavigationSubscription = this.router.events.subscribe((e: any) => {
+      zone.run(() => _applicationRef.tick());
+    });
+  }
   tempClick: any;
   CFColumns = [];
   CFRows = [];
@@ -41,38 +73,9 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
     Status: [],
     Resources: []
   };
-  constructor(
-    private router: Router,
-    private globalConstant: ConstantsService,
-    private spCommon: SPCommonService,
-    private global: GlobalService,
-    private datepipe: DatePipe,
-    private spService: SPOperationService,
-    private messageService: MessageService,
-    private qmsConstant: QMSConstantsService,
-    private qmsCommon: QMSCommonService,
-    private commonService: CommonService,
-    private cdr: ChangeDetectorRef,
-    private platformLocation: PlatformLocation,
-    private locationStrategy: LocationStrategy,
-    private readonly _router: Router,
-    _applicationRef: ApplicationRef,
-    zone: NgZone
-    ) {
-      // this.router.routeReuseStrategy.shouldReuseRoute = function () {
-      //   return false;
-      // }
-    
-    // Browser back button disabled & bookmark issue solution
-    history.pushState(null, null, window.location.href);
-    platformLocation.onPopState(() => {
-      history.pushState(null, null, window.location.href);
-    });
 
-    this.cfPFNavigationSubscription = this.router.events.subscribe((e: any) => {
-      zone.run(() => _applicationRef.tick());
-    });
-  }
+
+  isOptionFilter: boolean;
 
   async ngOnInit() {
     this.initialiseCFPositive();
@@ -98,6 +101,7 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
       { field: 'SentDate', header: 'Sent Date' },
       { field: 'SentBy', header: 'Sent By' },
       { field: 'Resources', header: 'Resources' },
+      { field: '', header: '' },
     ];
     setTimeout(async () => {
       this.pfs = await this.getPFItems();
@@ -272,7 +276,7 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
     const pfItem = this.pfs.filter(p => p.ID === +pf.pfID);
     if (pfItem.length > 0) {
       pfItem[0].Title = pf.projectCode ? pf.projectCode : pfItem[0].Title;
-      pfItem[0].resources = pf.resources.results ? pf.resources.results.map(a => a.Title) : pf.resources ? pf.resources : '';
+      pfItem[0].resources = pf.resources.results ? pf.resources.results.map(a => a.Title).join(',') : pf.resources ? pf.resources : '';
       pfItem[0].Status = pf.Status ? pf.Status : pfItem[0].Status;
     }
     this.bindTable(this.pfs);
@@ -314,8 +318,6 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
     }
   }
 
-
-  isOptionFilter: boolean;
   optionFilter(event: any) {
     if (event.target.value) {
       this.isOptionFilter = false;
@@ -324,11 +326,11 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
 
   ngAfterViewChecked() {
     if (this.CFRows.length && this.isOptionFilter) {
-      let obj = {
+      const obj = {
         tableData: this.cfpositiveTable,
         colFields: this.CFPositiveColArray,
         // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
-      }
+      };
       if (obj.tableData.filteredValue) {
         this.commonService.updateOptionValues(obj);
       } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {

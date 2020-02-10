@@ -43,8 +43,8 @@ export class AppComponent implements OnDestroy {
         filter(event => event instanceof NavigationEnd),
         map(() => {
           const child = this.activatedRoute.firstChild;
-          if (child.snapshot.data['title']) {
-            return child.snapshot.data['title'];
+          if (child.snapshot.data.title) {
+            return child.snapshot.data.title;
           }
           return appTitle;
         })
@@ -65,7 +65,7 @@ export class AppComponent implements OnDestroy {
       items: [
         { label: 'Site Contents', url: this.globalService.sharePointPageObject.webRelativeUrl + '/_layouts/15/viewlsts.aspx' }
       ]
-    }]
+    }];
   }
 
   goToEmpDashboard() {
@@ -78,13 +78,13 @@ export class AppComponent implements OnDestroy {
   initSPPageObject() {
     this.globalService.sharePointPageObject.publicCdn = window.location.href.indexOf('localhost') > -1
       ? '/sites/medcomcdn/PublishingImages/Images' : '/sites/medcomcdn/PublishingImages/Images';
-    this.globalService.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomdev'
+    this.globalService.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomm'
       : _spPageContextInfo.webAbsoluteUrl;
-    this.globalService.sharePointPageObject.webRelativeUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomdev'
+    this.globalService.sharePointPageObject.webRelativeUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomm'
       : _spPageContextInfo.siteServerRelativeUrl;
     this.globalService.sharePointPageObject.serverRelativeUrl = this.globalService.sharePointPageObject.webRelativeUrl;
     this.globalService.sharePointPageObject.rootsite = window.origin;
-    this.globalService.url = window.location.href.indexOf('localhost') > -1 ? '#' : this.globalService.sharePointPageObject.webRelativeUrl + "/dashboard#";
+    this.globalService.url = window.location.href.indexOf('localhost') > -1 ? '#' : this.globalService.sharePointPageObject.webRelativeUrl + '/dashboard#';
 
     this.leftNavigation = [
       { title: 'My Dashboard', href: this.globalService.url + '/myDashboard', visible: true },
@@ -95,9 +95,9 @@ export class AppComponent implements OnDestroy {
   }
 
   async initSPLoggedInUser() {
-    this.globalService.currentUser.userId = window.location.href.indexOf('localhost') > -1 ? 286 : _spPageContextInfo.userId;
+    this.globalService.currentUser.userId = window.location.href.indexOf('localhost') > -1 ? 9 : _spPageContextInfo.userId;
     this.globalService.currentUser.email = window.location.href.indexOf('localhost') > -1 ?
-      'sneha.danduk@cactusglobal.com' : _spPageContextInfo.userEmail;
+      'rahul.chamle@cactusglobal.com' : _spPageContextInfo.userEmail;
     this.globalService.currentUser.title = window.location.href.indexOf('localhost') > -1 ? 'Rahul' : _spPageContextInfo.userDisplayName;
     this.spService.setBaseUrl(null);
     this.common.SetNewrelic('RootApp', 'initSPLoggedInUser', 'getUserInfo');

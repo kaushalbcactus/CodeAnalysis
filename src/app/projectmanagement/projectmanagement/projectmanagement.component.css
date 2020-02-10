@@ -1039,7 +1039,7 @@ p-table tbody tr td {
 
 .ui-dialog-resizable .ui-dialog-content {
     overflow: auto;
-    height: 500px;
+    height: auto;
 }
 
 .today {
@@ -1078,7 +1078,7 @@ p-table tbody tr td {
 .compulsory {
     display: inline;
     padding-right: 2px;
-    color: #D7181F;
+    color: #c53e3e ;
 }
 
 .ui-dynamicdialog {
@@ -1093,21 +1093,21 @@ p-table tbody tr td {
 }
 
 .ui-tabmenu .ui-tabmenu-nav .ui-tabmenuitem.ui-state-active {
-    background-color: #D7181F !important;
-    border: 1px solid #D7181F !important;
+    background-color: #c53e3e  !important;
+    border: 1px solid #c53e3e  !important;
 }
 
 .ui-steps .ui-steps-item.ui-state-highlight .ui-steps-number {
-    background: #D7181F !important;
+    background: #c53e3e  !important;
 }
 
 .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active {
-    background: #D7181F !important;
+    background: #c53e3e  !important;
 }
 
 .ui-button:enabled:active {
-    background-color: #D7181F !important;
-    border-color: #D7181F !important;
+    background-color: #c53e3e  !important;
+    border-color: #c53e3e  !important;
 }
 
 .custom-table-container .ui-splitbutton.ui-buttonset {
@@ -1120,23 +1120,9 @@ p-table tbody tr td {
 
 /* New changes in css 19-6-2019 Start */
 
-body .ui-tabmenu .ui-tabmenu-nav .ui-tabmenuitem.ui-state-active,
-body .ui-button,
-body .ui-button:enabled:active,
-body .ui-button:enabled:hover,
-body .ui-steps .ui-steps-item.ui-state-highlight .ui-steps-number,
-body .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active,
-body .ui-chkbox .ui-chkbox-box.ui-state-active:not(.ui-state-disabled):hover,
-body .ui-multiselect-panel .ui-multiselect-items .ui-multiselect-item.ui-state-highlight,
-body .ui-table .ui-sortable-column.ui-state-highlight,
-body .ui-radiobutton .ui-radiobutton-box.ui-state-active,
-body .ui-radiobutton .ui-radiobutton-box.ui-state-active:not(.ui-state-disabled):hover,
-body .ui-datepicker table td>a.ui-state-active,
-body .ui-datepicker table td>span.ui-state-active,
-body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight,
-body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item-group.ui-state-highlight {
-    background-color: #C53E3E !important;
-    border: 1px solid #C53E3E !important;
+body .ui-splitbutton.ui-buttonset .ui-button {
+    background-color: #c53e3e !important;
+    border-color: #c53e3e !important;
 }
 
 body .ui-accordion .ui-accordion-header:not(.ui-state-disabled).ui-state-active a,
@@ -1264,4 +1250,18 @@ body .ui-corner-top {
 
 body .ui-dialog .ui-dialog-content {
     padding: 1em 1em 4em 1em !important;
+}
+
+.pmBtn {
+    background-color: #c53e3e !important;
+    border: 1px solid #C53E3D !important;
+}
+
+.ui-calendar-w-btn>input {
+    width: 26% !important;
+}
+
+body .ui-multiselect-panel .ui-multiselect-items .ui-multiselect-item.ui-state-highlight {
+    background-color: #c53e3e !important;
+    border: 1px solid #C53E3D !important;
 }

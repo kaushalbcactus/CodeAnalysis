@@ -1,6 +1,7 @@
 import {
   Component, OnInit, ViewChild, AfterViewInit, ViewChildren, QueryList, ViewContainerRef,
   ComponentFactoryResolver,
+  ViewEncapsulation,
 } from '@angular/core';
 import { MenuItem, DialogService, MessageService } from 'primeng';
 import { SPOperationService } from '../Services/spoperation.service';

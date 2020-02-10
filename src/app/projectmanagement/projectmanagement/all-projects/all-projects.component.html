@@ -410,18 +410,18 @@
         </p-dialog>
     </div>
     <div *ngIf="pmObject.isMoveProjectToSOWVisible">
-        <p-dialog [(visible)]="pmObject.isMoveProjectToSOWVisible" [modal]="true" [style]="{width: '900px'}">
+        <p-dialog [(visible)]="pmObject.isMoveProjectToSOWVisible" [modal]="true" [style]="{width: '900px'}" [contentStyle]="{'max-height':'450px', 'height':'305px'}">
             <p-header>
                 Move Project To SOW
             </p-header>
             <div class="ui-grid-col-2">SOW Code</div>
             <div class="ui-grid-col-4">
-                <p-dropdown [(ngModel)]="newSelectedSOW" [options]="sowDropDownArray" placeholder="Please Select"
+                <p-dropdown [(ngModel)]="newSelectedSOW" appendTo="body" [options]="sowDropDownArray"  placeholder="Please Select"
                     [showClear]="true" [filter]="true" resetFilterOnHide="true"></p-dropdown>
             </div>
             <p-footer>
-                <p-button type="button" class="mr-5" (click)="performSOWMove()" label="Move"></p-button>
-                <p-button type="button" class="mr-5" (click)="closeMoveSOW()" label="Cancel"></p-button>
+                <button type="button" pButton class="mr-5" (click)="performSOWMove()" label="Move"></button>
+                <button type="button" pButton class="mr-5" (click)="closeMoveSOW()" label="Cancel"></button>
             </p-footer>
         </p-dialog>
     </div>

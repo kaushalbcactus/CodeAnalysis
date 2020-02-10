@@ -89,7 +89,7 @@ export class TaskAllocationComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.globalObject.currentTitle = 'Task Allocation'; 
+    this.globalObject.currentTitle = 'Task Allocation';
     await this.currentUserGroup();
     // tslint:disable-next-line: no-string-literal
     this.projectCode = this.route.snapshot.queryParams['ProjectCode'];
@@ -110,7 +110,7 @@ export class TaskAllocationComponent implements OnInit {
 
     this.commonService.SetNewrelic('TaskAllocation', 'task-allocation', 'CurrentUser');
     const currentUser = await this.sPOperationService.getUserInfo(this.globalObject.currentUser.userId);
- 
+
     this.globalObject.currentUser.loggedInUserInfo = currentUser.Groups.results;
 
     this.globalObject.currentUser.loggedInUserInfo.forEach(element => {
@@ -191,11 +191,11 @@ export class TaskAllocationComponent implements OnInit {
   // Central Group
   // ***********************************************************************************************************************************
   public async checkIfAccessAllowedToUser(code) {
-   
+
     const checkAccessCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.checkAccess);
     checkAccessCall.filter = checkAccessCall.filter.replace(/{{code}}/gi, code);
     this.commonService.SetNewrelic('TaskAllocation', 'task-allocation', 'checkIfAccessAllowedToUser');
-    const project = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name,  checkAccessCall);
+    const project = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, checkAccessCall);
     let arrayOperationResources;
     if (project.length > 0) {
       arrayOperationResources = project[0].AllOperationresources.results != null ? project[0].AllOperationresources.results : '';

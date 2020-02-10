@@ -20,16 +20,15 @@
 <!-- Table Start -->
 <div class="financeTable">
     <p-table #hb [columns]="hourlyBasedCols" [value]="hourlyBasedRes" [paginator]="true" [rows]="10"
-         (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)"
-        selectionMode="" [(selection)]="selectedAllRowsItem" exportFilename="Hourly_Based_Projects">
+        (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)" selectionMode=""
+        [(selection)]="selectedAllRowsItem" exportFilename="Hourly_Based_Projects">
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th>S.No</th>
                 <th style="width: 2.25em">
                     <p-tableHeaderCheckbox (click)="selectAllRows()"></p-tableHeaderCheckbox>
                 </th>
-                <th *ngFor="let col of columns" [pSortableColumn]="col.field" 
-                    [hidden]="!col.visibility">
+                <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
                     {{col.header}}
                     <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
 
@@ -40,40 +39,63 @@
                 <th></th>
                 <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
                     <ng-container *ngIf="col.field">
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ProjectCode'" [options]="hourlyBasedColArray.ProjectCode"
-                            defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="hb.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            *ngSwitchCase="'ProjectCode'" [options]="hourlyBasedColArray.ProjectCode" defaultLabel="All"
+                            [maxSelectedLabels]="1" (onChange)="hb.filter($event.value, col.field, 'in')"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'SOWValue'" [options]="hourlyBasedColArray.SOWValue"
-                            defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="hb.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            *ngSwitchCase="'SOWValue'" [options]="hourlyBasedColArray.SOWValue" defaultLabel="All"
+                            [maxSelectedLabels]="1" (onChange)="hb.filter($event.value, col.field, 'in')"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ProjectMileStone'"
-                            [options]="hourlyBasedColArray.ProjectMileStone" defaultLabel="All" [maxSelectedLabels]="1" 
-                            (onChange)="hb.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            *ngSwitchCase="'ProjectMileStone'" [options]="hourlyBasedColArray.ProjectMileStone"
+                            defaultLabel="All" [maxSelectedLabels]="1"
+                            (onChange)="hb.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                            (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ClientLegalEntity'"
-                            [options]="hourlyBasedColArray.ClientLegalEntity" defaultLabel="All" [maxSelectedLabels]="1" 
-                            (onChange)="hb.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            *ngSwitchCase="'ClientLegalEntity'" [options]="hourlyBasedColArray.ClientLegalEntity"
+                            defaultLabel="All" [maxSelectedLabels]="1"
+                            (onChange)="hb.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                            (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'PONumber'" [options]="hourlyBasedColArray.PONumber"
-                            defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="hb.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            *ngSwitchCase="'PONumber'" [options]="hourlyBasedColArray.PONumber" defaultLabel="All"
+                            [maxSelectedLabels]="1" (onChange)="hb.filter($event.value, col.field, 'in')"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'POName'" [options]="hourlyBasedColArray.POName"
-                            defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="hb.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            *ngSwitchCase="'POName'" [options]="hourlyBasedColArray.POName" defaultLabel="All"
+                            [maxSelectedLabels]="1" (onChange)="hb.filter($event.value, col.field, 'in')"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'Rate'" [options]="hourlyBasedColArray.Rate" defaultLabel="All" [maxSelectedLabels]="1" 
-                            (onChange)="hb.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            *ngSwitchCase="'Rate'" [options]="hourlyBasedColArray.Rate" defaultLabel="All"
+                            [maxSelectedLabels]="1" (onChange)="hb.filter($event.value, col.field, 'in')"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'HoursSpent'" [options]="hourlyBasedColArray.HoursSpent"
-                            defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="hb.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            *ngSwitchCase="'HoursSpent'" [options]="hourlyBasedColArray.HoursSpent" defaultLabel="All"
+                            [maxSelectedLabels]="1" (onChange)="hb.filter($event.value, col.field, 'in')"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'TotalInvoice'" [options]="hourlyBasedColArray.TotalInvoice"
-                            defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="hb.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            *ngSwitchCase="'TotalInvoice'" [options]="hourlyBasedColArray.TotalInvoice"
+                            defaultLabel="All" [maxSelectedLabels]="1"
+                            (onChange)="hb.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                            (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'Currency'" [options]="hourlyBasedColArray.Currency"
-                            defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="hb.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            *ngSwitchCase="'Currency'" [options]="hourlyBasedColArray.Currency" defaultLabel="All"
+                            [maxSelectedLabels]="1" (onChange)="hb.filter($event.value, col.field, 'in')"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'POCName'" [options]="hourlyBasedColArray.POCName"
-                            defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="hb.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            *ngSwitchCase="'POCName'" [options]="hourlyBasedColArray.POCName" defaultLabel="All"
+                            [maxSelectedLabels]="1" (onChange)="hb.filter($event.value, col.field, 'in')"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
 
                     </ng-container>
@@ -148,7 +170,7 @@
 
             <div class="ui-g-6">Approval Date ({{confirmHourlybased_form.value.approvalDate}})</div>
             <div class="ui-g-6">
-                <p-calendar [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy"
+                <p-calendar styleClass="pCalendarBtn" [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy"
                     yearRange="2019:2030" [disabledDays]="[0,6]" [yearNavigator]="true" [minDate]="minScheduleDate"
                     (onFocus)="updateCalendarUI(fromCalendar)" #fromCalendar
                     [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}" formControlName="approvalDate">
@@ -162,9 +184,9 @@
         </div>
     </form>
     <p-footer>
-        <button pButton type="button" type="button" label="Approve" [disabled]="submitBtn.isClicked"
+        <button pButton type="button" class="fdBtn" label="Approve" [disabled]="submitBtn.isClicked"
             (click)="onSubmit('confirmInvoice')"></button>
-        <button pButton type="button" type="button" label="Cancel"
+        <button pButton type="button" class="fdBtn" label="Cancel"
             (click)="cancelFormSub('confirmationModal')"></button>
     </p-footer>
 </p-dialog>
@@ -205,8 +227,7 @@
             </div>
             <div class="ui-g-6">Hours Spent</div>
             <div class="ui-g-6">
-                <input type="text" pInputText formControlName="HoursSpent" appNumberOnly
-                    maxlength="15" />
+                <input type="text" pInputText formControlName="HoursSpent" appNumberOnly maxlength="15" />
                 <div *ngIf="formSubmit.isSubmit && isValidEdithourlyForm.HoursSpent.errors">
                     <div *ngIf="isValidEdithourlyForm.HoursSpent.errors.required" style="color:red;">Please
                         provide Hours Spent.</div>
@@ -217,9 +238,9 @@
         </div>
     </form>
     <p-footer>
-        <button pButton type="button" type="button" label="Save" [disabled]="submitBtn.isClicked"
+        <button pButton type="button" class="fdBtn" label="Save" [disabled]="submitBtn.isClicked"
             (click)="onSubmit('editInvoice')"></button>
-        <button pButton type="button" type="button" label="Cancel" (click)="cancelFormSub('editHourly')"></button>
+        <button pButton type="button" class="fdBtn" label="Cancel" (click)="cancelFormSub('editHourly')"></button>
     </p-footer>
 </p-dialog>
 <app-timeline-history #timelineRef></app-timeline-history>

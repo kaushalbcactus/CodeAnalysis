@@ -25,7 +25,7 @@
     <div class="ui-g-6 f-right">
         <div style="display: -webkit-inline-box;">
             <div class="box" style="margin-right: 20px;">
-                <button type="button" pButton icon="fa fa-plus-circle" iconPos="left" label="Add to Proforma"
+                <button type="button" class="fdBtn" pButton icon="fa fa-plus-circle" iconPos="left" label="Add to Proforma"
                     (click)="addProforma()"></button>
             </div>
             <div class="box">
@@ -45,7 +45,8 @@
 
 <div class="ui-g">
     <div class="ui-g-3">
-        Revenue Balance : &nbsp; <label style="margin: 0 8px;" *ngIf="selectedPurchaseNumber">{{po.revenuBalance}}</label>
+        Revenue Balance : &nbsp; <label style="margin: 0 8px;"
+            *ngIf="selectedPurchaseNumber">{{po.revenuBalance}}</label>
     </div>
     <div class="ui-g-3">
         OOP Balance : &nbsp; <label style="margin: 0 8px;" *ngIf="selectedPurchaseNumber">{{po.oopBalance}}</label>
@@ -61,17 +62,16 @@
 </div>
 
 <div class="financeTable">
-    <p-table #cnf [columns]="confirmCols" [value]="confirmedRes" [paginator]="false" 
-        (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)" [(selection)]="selectedAllRowData"
-        selectionMode="" exportFilename="Confirmed_InvoiceLineItems">
+    <p-table #cnf [columns]="confirmCols" [value]="confirmedRes" [paginator]="false" (onRowSelect)="onRowSelect($event)"
+        (onRowUnselect)="onRowUnselect($event)" [(selection)]="selectedAllRowData" selectionMode=""
+        exportFilename="Confirmed_InvoiceLineItems">
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th>S.No</th>
                 <th style="width: 2.25em">
                     <p-tableHeaderCheckbox (click)="handleData($event)"></p-tableHeaderCheckbox>
                 </th>
-                <th *ngFor="let col of columns" [pSortableColumn]="col.field" 
-                    [hidden]="!col.visibility">
+                <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
                     {{col.header}}
                     <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
 
@@ -84,60 +84,74 @@
                     <ng-container *ngIf="col.field">
                 <td></td>
                 <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                    *ngSwitchCase="'ProjectCode'" [options]="confirmedInColArray.ProjectCode" defaultLabel="All" [maxSelectedLabels]="1" 
-                    (onChange)="cnf.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                    *ngSwitchCase="'ProjectCode'" [options]="confirmedInColArray.ProjectCode" defaultLabel="All"
+                    [maxSelectedLabels]="1" (onChange)="cnf.filter($event.value, col.field, 'in')"
+                    (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                 </p-multiSelect>
                 <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                    *ngSwitchCase="'SOWValue'" [options]="confirmedInColArray.SOWCode" defaultLabel="All" [maxSelectedLabels]="1" 
-                    (onChange)="cnf.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                    *ngSwitchCase="'SOWValue'" [options]="confirmedInColArray.SOWCode" defaultLabel="All"
+                    [maxSelectedLabels]="1" (onChange)="cnf.filter($event.value, col.field, 'in')"
+                    (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                 </p-multiSelect>
                 <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
                     *ngSwitchCase="'ClientLegalEntity'" [options]="confirmedInColArray.ClientLegalEntity"
-                    defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="cnf.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                    defaultLabel="All" [maxSelectedLabels]="1" (onChange)="cnf.filter($event.value, col.field, 'in')"
+                    (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                 </p-multiSelect>
                 <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
                     *ngSwitchCase="'ProjectMileStone'" [options]="confirmedInColArray.ProjectMileStone"
-                    defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="cnf.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                    defaultLabel="All" [maxSelectedLabels]="1" (onChange)="cnf.filter($event.value, col.field, 'in')"
+                    (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                 </p-multiSelect>
                 <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                    *ngSwitchCase="'POName'" [options]="confirmedInColArray.POName" defaultLabel="All" [maxSelectedLabels]="1" 
-                    (onChange)="cnf.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                    *ngSwitchCase="'POName'" [options]="confirmedInColArray.POName" defaultLabel="All"
+                    [maxSelectedLabels]="1" (onChange)="cnf.filter($event.value, col.field, 'in')"
+                    (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                 </p-multiSelect>
                 <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                    *ngSwitchCase="'ClientName'" [options]="confirmedInColArray.ClientName" defaultLabel="All" [maxSelectedLabels]="1" 
-                    (onChange)="cnf.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                    *ngSwitchCase="'ClientName'" [options]="confirmedInColArray.ClientName" defaultLabel="All"
+                    [maxSelectedLabels]="1" (onChange)="cnf.filter($event.value, col.field, 'in')"
+                    (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                 </p-multiSelect>
                 <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                    *ngSwitchCase="'ClientAmount'" [options]="confirmedInColArray.ClientAmount" defaultLabel="All" [maxSelectedLabels]="1" 
-                    (onChange)="cnf.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                    *ngSwitchCase="'ClientAmount'" [options]="confirmedInColArray.ClientAmount" defaultLabel="All"
+                    [maxSelectedLabels]="1" (onChange)="cnf.filter($event.value, col.field, 'in')"
+                    (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                 </p-multiSelect>
                 <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                    *ngSwitchCase="'ClientCurrency'" [options]="confirmedInColArray.ClientCurrency" defaultLabel="All" [maxSelectedLabels]="1" 
-                    (onChange)="cnf.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                    *ngSwitchCase="'ClientCurrency'" [options]="confirmedInColArray.ClientCurrency" defaultLabel="All"
+                    [maxSelectedLabels]="1" (onChange)="cnf.filter($event.value, col.field, 'in')"
+                    (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                 </p-multiSelect>
                 <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                    *ngSwitchCase="'ScheduledDate'" [options]="confirmedInColArray.ScheduledDate" defaultLabel="All" [maxSelectedLabels]="1" 
-                    (onChange)="cnf.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                    *ngSwitchCase="'ScheduledDate'" [options]="confirmedInColArray.ScheduledDate" defaultLabel="All"
+                    [maxSelectedLabels]="1" (onChange)="cnf.filter($event.value, col.field, 'in')"
+                    (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                 </p-multiSelect>
                 <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                    *ngSwitchCase="'ScheduleType'" [options]="confirmedInColArray.ScheduleType" defaultLabel="All" [maxSelectedLabels]="1" 
-                    (onChange)="cnf.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                    *ngSwitchCase="'ScheduleType'" [options]="confirmedInColArray.ScheduleType" defaultLabel="All"
+                    [maxSelectedLabels]="1" (onChange)="cnf.filter($event.value, col.field, 'in')"
+                    (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                 </p-multiSelect>
                 <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'POC'"
-                    [options]="confirmedInColArray.POC" defaultLabel="All" [maxSelectedLabels]="1" 
-                    (onChange)="cnf.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                    [options]="confirmedInColArray.POC" defaultLabel="All" [maxSelectedLabels]="1"
+                    (onChange)="cnf.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                    (onPanelShow)="isOptionFilter=true;">
                 </p-multiSelect>
                 <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                    *ngSwitchCase="'Amount'" [options]="confirmedInColArray.Amount" defaultLabel="All" [maxSelectedLabels]="1" 
-                    (onChange)="cnf.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                    *ngSwitchCase="'Amount'" [options]="confirmedInColArray.Amount" defaultLabel="All"
+                    [maxSelectedLabels]="1" (onChange)="cnf.filter($event.value, col.field, 'in')"
+                    (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                 </p-multiSelect>
                 <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                    *ngSwitchCase="'Currency'" [options]="confirmedInColArray.Currency" defaultLabel="All" [maxSelectedLabels]="1" 
-                    (onChange)="cnf.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                    *ngSwitchCase="'Currency'" [options]="confirmedInColArray.Currency" defaultLabel="All"
+                    [maxSelectedLabels]="1" (onChange)="cnf.filter($event.value, col.field, 'in')"
+                    (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                 </p-multiSelect>
                 <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                    *ngSwitchCase="'POCName'" [options]="confirmedInColArray.POCName" defaultLabel="All" [maxSelectedLabels]="1" 
-                    (onChange)="cnf.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                    *ngSwitchCase="'POCName'" [options]="confirmedInColArray.POCName" defaultLabel="All"
+                    [maxSelectedLabels]="1" (onChange)="cnf.filter($event.value, col.field, 'in')"
+                    (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                 </p-multiSelect>
 
                 </ng-container>
@@ -213,9 +227,9 @@
         </div>
     </form>
     <p-footer>
-        <button pButton type="button" label="Yes" [disabled]="submitBtn.isClicked"
+        <button pButton type="button" class="fdBtn" label="Yes" [disabled]="submitBtn.isClicked"
             (click)="onSubmit('revertInvoice')"></button>
-        <button pButton type="button" label="No" (click)="cancelFormSub('revertInvoice')"></button>
+        <button pButton type="button" class="fdBtn" label="No" (click)="cancelFormSub('revertInvoice')"></button>
     </p-footer>
 
 </p-dialog>
@@ -286,8 +300,8 @@
             </div>
             <div class="p-col-12 p-md-6 p-lg-3">
                 <div class="box">
-                    <input id="disabled-input" type="text" appNumberOnly pInputText
-                        formControlName="Amount" maxlength="15" (input)="enteredPOAmt($event.target.value)" />
+                    <input id="disabled-input" type="text" appNumberOnly pInputText formControlName="Amount"
+                        maxlength="15" (input)="enteredPOAmt($event.target.value)" />
                 </div>
                 <div *ngIf="formSubmit.isSubmit && isValidAddToProformaForm.Amount.errors">
                     <div *ngIf="isValidAddToProformaForm.Amount.errors.required" style="color:red;">Please
@@ -404,10 +418,9 @@
             </div>
             <div class="p-col-12 p-md-6 p-lg-9">
                 <div class="box">
-                    <p-calendar [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy"
+                    <p-calendar styleClass="pCalendarBtn" [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy"
                         yearRange="2019:2030" [disabledDays]="[0,6]" [yearNavigator]="true" [minDate]="minProformaDate"
-                        (onFocus)="updateCalendarUI(fromCalendar)" #fromCalendar
-                        (onClose)="updatePrformaNumFromPT()" 
+                        (onFocus)="updateCalendarUI(fromCalendar)" #fromCalendar (onClose)="updatePrformaNumFromPT()"
                         [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}"
                         formControlName="ProformaDate">
                     </p-calendar>
@@ -442,9 +455,9 @@
 
     </form>
     <p-footer>
-        <button pButton type="button" label="Add Proforma" [disabled]="submitBtn.isClicked"
+        <button pButton type="button" class="fdBtn" label="Add Proforma" [disabled]="submitBtn.isClicked"
             (click)="onSubmit('add2Proforma')"></button>
-        <button pButton type="button" label="Cancel" (click)="cancelFormSub('editDeliverable')"></button>
+        <button pButton type="button" class="fdBtn" label="Cancel" (click)="cancelFormSub('editDeliverable')"></button>
     </p-footer>
 </p-dialog>
 

@@ -50,8 +50,8 @@
             <input [attr.disabled]=true [(ngModel)]="hourlyBudgetHours" type="number" style="width:100%" pInputText>
           </div>
           <div class="ui-grid-col-2">
-            <p-button type="button" class="mr-5" [hidden]="isAddRateButtonHidden" label="Add Rate to Project"
-              (click)="addRateToProject();">
+            <p-button type="button" styleClass="pmBtn" class="mr-5" [hidden]="isAddRateButtonHidden"
+              label="Add Rate to Project" (click)="addRateToProject();">
             </p-button>
           </div>
         </div>
@@ -79,7 +79,7 @@
           <tr>
             <td>
               <p-button class="mt-20" [hidden]="isAddBudgetButtonHidden" label="Add Budget"
-                (click)="addBudgetToProject()" type="button">
+                (click)="addBudgetToProject()" type="button" styleClass="pmBtn">
               </p-button>
             </td>
             <td><input [attr.disabled]=true type="number" style="width:100%" pInputText></td>
@@ -118,10 +118,12 @@
           PO List
         </div>
         <div [hidden]="isAddToProjectHidden" class="ui-grid-col-4">
-          <p-dropdown filter="true" [options]="poList" placeholder="Select Po" [(ngModel)]="selectedPo" resetFilterOnHide="true"></p-dropdown>
+          <p-dropdown filter="true" [options]="poList" placeholder="Select Po" [(ngModel)]="selectedPo"
+            resetFilterOnHide="true"></p-dropdown>
         </div>
         <div [hidden]="isAddToProjectHidden" class="ui-grid-col-4">
-          <p-button type="button" class="mr-5" label="Add Po" (click)="addPoToProject()">
+          <p-button type="button" styleClass="pmBtn" class="mr-5" label="Add Po" appendTo="body"
+            (click)="addPoToProject()">
           </p-button>
         </div>
       </div>
@@ -270,10 +272,11 @@
           </tr>
           <tr>
             <td colspan="5">
-              <p-button [hidden]="hideRemoveButton" class="mt-20" label="Reduce project budget" (click)="removeUnassigned()" type="button">
+              <p-button [hidden]="hideRemoveButton" class="mt-20" label="Reduce project budget"
+                (click)="removeUnassigned()" type="button" styleClass="pmBtn">
               </p-button>
               <div [hidden]="!hideRemoveButton">
-                Budget reduction approval pending. Please either approve or reject the request. 
+                Budget reduction approval pending. Please either approve or reject the request.
               </div>
             </td>
           </tr>
@@ -284,18 +287,17 @@
   </p-accordion>
   <div *ngIf="!isPOEdit">
     <div class="ui-grid-row mt-20" style="float:right">
-      <p-button *ngIf="showSave" type="button" (click)="savePo()" label="Save"></p-button>
-      <!-- <p-button class="mr-5" type="button" label="Cancel"></p-button> -->
+      <p-button *ngIf="showSave" type="button" styleClass="pmBtn" (click)="savePo()" label="Save"></p-button>
+      <!-- <p-button class="mr-5" type="button" styleClass="pmBtn"  label="Cancel"></p-button> -->
     </div>
   </div>
   <div *ngIf="isPOEdit">
     <div class="ui-grid-row mt-20" style="float:right">
-      <p-button *ngIf="showSave" type="button" (click)="saveUpdatePO()" label="Save"></p-button>
+      <p-button *ngIf="showSave" type="button" styleClass="pmBtn" (click)="saveUpdatePO()" label="Save"></p-button>
     </div>
   </div>
 </div>
-<p-dialog [header]="invoiceHeader" appendTo='body' [(visible)]="showAddInvoiceDetails"
-  [style]="{width: '500px',height:'500px'}">
+<p-dialog [header]="invoiceHeader" appendTo='body' [(visible)]="showAddInvoiceDetails" [style]="{width: '500px'}">
   <form [formGroup]='addPOForm'>
     <div class="ui-grid-row mt-20">
       <div class="ui-grid-col-3">Date</div>
@@ -315,7 +317,8 @@
     </div>
     <div class="ui-grid-row mt-20">
       <div class="ui-grid-col-3">Client POC</div>
-      <p-dropdown [options]="primaryPoc" filter="true" formControlName="primarypoc" placeholder="Select POC" resetFilterOnHide="true">
+      <p-dropdown [options]="primaryPoc" filter="true" formControlName="primarypoc" placeholder="Select POC"
+        resetFilterOnHide="true">
       </p-dropdown>
       <div class="error" *ngIf="!addPOForm.controls['primarypoc'].valid&&addPOForm.controls['primarypoc'].touched">
         Please select poc.</div>
@@ -327,11 +330,13 @@
         Please select address</div>
     </div>
     <div class="error" *ngIf="addInvoiceError">{{addInvoiceErrorMsg}}</div>
-    <div class="ui-grid-row mt-20" style="float:right">
-      <p-button class="mr-5" type="button" (click)="addInvoiceDetails()" value="Post Data" label="Save"></p-button>
-      <p-button class="mr-5" type="button" (click)="showAddInvoiceDetails=false" label="Cancel"></p-button>
-    </div>
   </form>
+  <p-footer>
+    <button type="button" pButton styleClass="pmBtn" (click)="addInvoiceDetails()" value="Post Data"
+      label="Save"></button>
+    <button type="button" pButton styleClass="pmBtn" (click)="showAddInvoiceDetails=false" label="Cancel">
+    </button>
+  </p-footer>
 </p-dialog>
 
 <p-dialog [(visible)]="showBudgetIncrease" appendTo='body' [style]="{width: '500px'}">
@@ -359,15 +364,15 @@
     </div>
   </div>
   <p-footer>
-    <p-button type="button" (click)="increaseBudget()" label="Confirm"></p-button>
-    <p-button type="button" (click)="showBudgetIncrease=false" label="Cancel">
+    <p-button type="button" styleClass="pmBtn" (click)="increaseBudget()" label="Confirm"></p-button>
+    <p-button type="button" styleClass="pmBtn" (click)="showBudgetIncrease=false" label="Cancel">
     </p-button>
   </p-footer>
 </p-dialog>
 
 <p-dialog *ngIf="showReduction" [(visible)]="showReduction" appendTo='body' [style]="{width: '500px'}">
   <p-header>
-    Budget Reduction Popup 
+    Budget Reduction Popup
   </p-header>
   <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
     <div class="ui-grid-col-12">
@@ -411,19 +416,21 @@
         </div> -->
   </div>
   <p-footer>
-    <p-button type="button" (click)="reduceBudget()" label="Confirm"></p-button>
-    <p-button type="button" (click)="showReduction=false" label="Cancel">
+    <p-button type="button" styleClass="pmBtn" (click)="reduceBudget()" label="Confirm"></p-button>
+    <p-button type="button" styleClass="pmBtn" (click)="showReduction=false" label="Cancel">
     </p-button>
   </p-footer>
 </p-dialog>
 
-<p-dialog *ngIf="relatedInvoiceLinkingPopup" [(visible)]="relatedInvoiceLinkingPopup" appendTo='body' [style]="{width: '500px'}">
+<p-dialog *ngIf="relatedInvoiceLinkingPopup" [(visible)]="relatedInvoiceLinkingPopup" appendTo='body'
+  [style]="{width: '500px'}">
   <p-header>
     Advance invoice tagging decision
   </p-header>
   <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
     <div class="ui-grid-col-12">
-      There is an advance invoice existing on this PO. Do you want to tag the project to that invoice or create a new schedule
+      There is an advance invoice existing on this PO. Do you want to tag the project to that invoice or create a new
+      schedule
       ?
     </div>
   </div>
@@ -433,10 +440,9 @@
     </div>
   </div>
   <p-footer>
-    <p-button type="button" (click)="tagExistingInv()" label="Tag to existing"></p-button>
-    <p-button type="button" (click)="scheduleNew()" label="Schedule New Invoice"></p-button>
-    <p-button type="button" (click)="relatedInvoiceLinkingPopup=false" label="Cancel">
-    </p-button>
+    <button type="button" class="pmBtn" pButton (click)="tagExistingInv()" label="Tag to existing"></button>
+    <button type="button" class="pmBtn" pButton (click)="scheduleNew()" label="Schedule New Invoice"></button>
+    <button type="button" class="pmBtn" pButton (click)="relatedInvoiceLinkingPopup=false" label="Cancel"></button>
   </p-footer>
 </p-dialog>
 
@@ -444,13 +450,13 @@
   <p-header>
     Tag Existing Invoice
   </p-header>
-  
+
   <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
     <div class="ui-grid-col-4"><span class="compulsory">*</span>Invoice List</div>
     <div class="ui-grid-col-4">
       <div class="floatLeft">
-        <p-dropdown  [(ngModel)]="advanceInvID" (onChange)="setInvData($event)" [options]="advanceInvArray" placeholder="Please Select"
-        [showClear]="true" [filter]="true" resetFilterOnHide="true"></p-dropdown>
+        <p-dropdown [(ngModel)]="advanceInvID" (onChange)="setInvData($event)" [options]="advanceInvArray"
+          placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true"></p-dropdown>
       </div>
     </div>
   </div>
@@ -458,7 +464,7 @@
     <div class="ui-grid-col-4"><span class="compulsory">*</span>Inv Date</div>
     <div class="ui-grid-col-4">
       <div class="floatLeft">
-        <input disabled [(ngModel)]="existingInvDate"type="text" style="width:100%" pInputText>
+        <input disabled [(ngModel)]="existingInvDate" type="text" style="width:100%" pInputText>
       </div>
     </div>
   </div>
@@ -487,8 +493,8 @@
     </div>
   </div>
   <p-footer>
-    <p-button type="button" (click)="tagToInv()" label="Tag to invoice"></p-button>
-    <p-button type="button" (click)="tagExistingInvSection=false" label="Cancel"></p-button>
+    <p-button type="button" styleClass="pmBtn" (click)="tagToInv()" label="Tag to invoice"></p-button>
+    <p-button type="button" styleClass="pmBtn" (click)="tagExistingInvSection=false" label="Cancel"></p-button>
   </p-footer>
 </p-dialog>
 

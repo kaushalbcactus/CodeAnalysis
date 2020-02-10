@@ -189,7 +189,7 @@ export class MyDashboardConstantsService {
       select: "ID,Title,Status,StartDate,DueDate,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,Comments,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,TATStatus,Entity,SubMilestones",
       orderby: "DueDate asc",
       filter: "AssignedTo eq  {{userId}} and (Task ne 'Send to client') and (Task ne 'Follow up') and (Task ne 'Client Review') and  (Task ne 'Time Booking') and (Task ne 'Blocking') and ",
-      filterNotCompleted: "(Status ne 'Completed') and (Status ne 'Not Confirmed') and (Status ne 'Deleted') and (Status ne 'Abandon') and (Status ne 'Hold Request') and (Status ne 'Abandon Request') and (Status ne 'Hold') and (Status ne 'Project on Hold')",
+      filterNotCompleted: "(Status ne 'Completed') and (Status ne 'Not Confirmed') and (Status ne 'Deleted') and (Status ne 'Abandon') and (Status ne 'Hold Request') and (Status ne 'Abandon Request') and (Status ne 'Hold') and (Status ne 'Project on Hold') and (Status ne 'Auto Closed')",
       filterPlanned: "(Status eq 'Not Confirmed')",
       filterCompleted: "(Task ne 'Adhoc') and ((Status eq 'Completed' ) or (Status eq 'Auto Closed'))",
       filterAdhoc: "(Task eq 'Adhoc' and ProjectCode eq 'Adhoc' and Status eq 'Completed')",
@@ -1077,7 +1077,7 @@ export class MyDashboardConstantsService {
     this.common.SetNewrelic('MyDashboard', 'MyDashboardConstants-getAllClients', 'readItems');
     this.response = await this.spServices.readItems(this.constants.listNames.ClientLegalEntity.name, ClientLegalEntities);
 
-   
+
     const tempClientLegalEntities = this.response.map(c => c.Title);
 
     const ClientLegalEntitiesResponse = tempClientLegalEntities.filter(function (item, pos) {
@@ -1179,7 +1179,7 @@ export class MyDashboardConstantsService {
 
     const tempArray = [];
     const reviewDocArray = [];
-    
+
     const documents = await this.common.getTaskDocument(folderUrl, documentsUrl);
     for (const doc in documents) {
       if (currentTaskElement.PrevTasks.indexOf(documents[doc].ListItemAllFields.TaskName) > -1 && documents[doc].ListItemAllFields.Status.indexOf('Complete') > -1) {
@@ -1192,7 +1192,7 @@ export class MyDashboardConstantsService {
         reviewDocArray.push(reviewDocuments[document].ServerRelativeUrl);
       }
     }
-    if (newValue.length === 1 && tempArray.length) {
+    if (newValue.length === 1) {
       const taskObj = Object.assign({}, this.mydashboardComponent.TaskDetails);
       taskObj.filter = previousTaskFilter;
       this.common.SetNewrelic('MyDashboard', 'MyDashboardConstants-callQMSPopup', 'readItems');
@@ -1212,7 +1212,7 @@ export class MyDashboardConstantsService {
         taskTitle: previousItems[0].Title,
         taskID: previousItems[0].ID,
         reviewTaskDocUrl: reviewDocArray,
-        currentTask : currentTaskElement
+        currentTask: currentTaskElement
       };
       qmsObj.openPopup(obj);
     }

@@ -192,7 +192,7 @@
             </div>
             <div class="ui-g-6">Schedule Date</div>
             <div class="ug-g-6">
-                <p-calendar [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy"
+                <p-calendar styleClass="pCalendarBtn" [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy"
                     yearRange="2019:2030" [disabledDays]="[0,6]" [yearNavigator]="true" [minDate]="minScheduleDate"
                     (onFocus)="updateCalendarUI(fromCalendar)" #fromCalendar
                     [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}" formControlName="ScheduledDate">
@@ -206,9 +206,9 @@
         </div>
     </form>
     <p-footer>
-        <button pButton type="button" type="button" label="Save" [disabled]="submitBtn.isClicked"
+        <button pButton type="button" class="fdBtn" label="Save" [disabled]="submitBtn.isClicked"
             (click)="onSubmit('editInvoice')"></button>
-        <button pButton type="button" type="button" label="Cancel" (click)="cancelFormSub('editDeliverable')"></button>
+        <button pButton type="button" class="fdBtn" label="Cancel" (click)="cancelFormSub('editDeliverable')"></button>
     </p-footer>
     <br><br><br><br>
 </p-dialog>

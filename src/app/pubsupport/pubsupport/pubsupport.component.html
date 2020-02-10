@@ -461,8 +461,8 @@
 </div>
 
 <!-- Toast Messages -->
-<p-toast position="bottom-center" key="myKey1"></p-toast>
-<p-toast position="bottom-right" key="psInfoToast"></p-toast>
+<p-toast position="bottom-center" key="myKey1" [hideTransitionOptions]="'0ms'"></p-toast>
+<p-toast position="bottom-center" key="psInfoToast" [hideTransitionOptions]="'0ms'"></p-toast>
 <!-- Modal  -->
 
 <!-- Add author Component Start-->
@@ -519,9 +519,9 @@
 
     </form>
     <p-footer>
-        <button pButton type="button" label="Update" [disabled]="submitBtn.isClicked"
+        <button pButton type="button" label="Update" class="ui_button_danger" [disabled]="submitBtn.isClicked"
             (click)="onSubmit('updateAuthor')"></button>
-        <button pButton type="button" label="Cancel" (click)="cancelFormSub('updateAuthorModal')"></button>
+        <button pButton type="button" label="Cancel" class="ui_button_danger" (click)="cancelFormSub('updateAuthorModal')"></button>
     </p-footer>
 
 </p-dialog>

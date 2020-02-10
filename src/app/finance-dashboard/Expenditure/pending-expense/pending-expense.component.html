@@ -7,10 +7,10 @@
     <div class="p-col-12 p-md-12 p-lg-12 f-right">
         <div style="display: -webkit-inline-box;">
             <div *ngIf="constantService.userPermission.isFDUserAdmin" class="box" style="margin-right: 20px">
-                <button type="button" pButton label="Approve Expense" (click)="approveExpense('approve')"></button>
+                <button type="button" class="fdBtn" pButton label="Approve Expense" (click)="approveExpense('approve')"></button>
             </div>
             <div *ngIf="constantService.userPermission.isFDUserAdmin" class="box" style="margin-right: 20px">
-                <button type="button" pButton label="Reject Expense" (click)="approveExpense('reject')"></button>
+                <button type="button" class="fdBtn" pButton label="Reject Expense" (click)="approveExpense('reject')"></button>
             </div>
             <div class="box">
                 <!-- <button type="button" pButton label="Export" (click)="fdDataShareServie.convertToExcelFile(pendingExpense)"></button> -->
@@ -190,7 +190,7 @@
         </div>
     </form>
     <p-footer *ngIf="cancelRejectDialog.title === 'Cancel Expense' || cancelRejectDialog.title === 'Reject Expense'  ">
-        <button pButton type="button" label="{{cancelRejectDialog.title}}" [disabled]="submitBtn.isClicked"
+        <button pButton type="button" class="fdBtn" label="{{cancelRejectDialog.title}}" [disabled]="submitBtn.isClicked"
             (click)="onSubmit(cancelRejectDialog.title)"></button>
     </p-footer>
 
@@ -232,7 +232,7 @@
                 </div>
                 <div class="ui-g-6">Payment Date</div>
                 <div class="ui-g-6 pl-0">
-                    <p-calendar [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy"
+                    <p-calendar styleClass="pCalendarBtn" [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy"
                         yearRange="2019:2030" [disabledDays]="[0,6]" [yearNavigator]="true"
                         [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}" [appendTo]="body"
                         formControlName="DateSpend">
@@ -299,7 +299,7 @@
         </div>
     </form>
     <p-footer *ngIf="cancelRejectDialog.title === 'Approve Expense'">
-        <button pButton type="button" label="{{cancelRejectDialog.title}}" [disabled]="submitBtn.isClicked"
+        <button pButton type="button" class="fdBtn" label="{{cancelRejectDialog.title}}" [disabled]="submitBtn.isClicked"
             (click)="onSubmit(cancelRejectDialog.title)"></button>
     </p-footer>
 </p-dialog>

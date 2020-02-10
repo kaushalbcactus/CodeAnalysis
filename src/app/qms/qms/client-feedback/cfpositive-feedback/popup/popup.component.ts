@@ -76,16 +76,20 @@ export class PopupComponent implements OnInit {
   };
   // tslint:disable: max-line-length
   constructor(private global: GlobalService, private globalConstant: ConstantsService, private commonService: CommonService,
-    private spService: SPOperationService, private spcommon: SPCommonService, private qmsConstant: QMSConstantsService) {
+    private spService: SPOperationService, private qmsConstant: QMSConstantsService) {
   }
 
   ngOnInit() {
   }
 
-  openPopup(element: any, content: any) {
+  async openPopup(element: any, content: any) {
     this.display = true;
-    const resourceDetails = this.getResourceDetails(content.Title);
-    this.setPFObject(element, content, resourceDetails);
+    const currentElement = {
+      currentTarget: element.currentTarget,
+      Status: element.Status
+    };
+    const resourceDetails = await this.getResourceDetails(content.Title);
+    this.setPFObject(currentElement, content, resourceDetails);
   }
 
   async getResourceDetails(code) {
