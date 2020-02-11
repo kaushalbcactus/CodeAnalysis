@@ -3045,7 +3045,7 @@ export class ClientMasterdataComponent implements OnInit {
   downloadExcel(cmd) {
     cmd.exportCSV();
   }
-  
+
   optionFilter(event: any) {
     if (event.target.value) {
       this.isOptionFilter = false;

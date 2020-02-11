@@ -71,7 +71,7 @@
                 <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility" [ngStyle]="{'width': (col.field === 'ExpectedTime' || col.field === 'TimeSpent' ) ? '7em': (col.field === 'StartDate' || col.field === 'DueDate'|| col.field === 'MainStatus' || col.field === 'TaskStatus') ? '10em' : '25em' }"
                     >
                     {{col.header}}
-                    <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
+                    <p-sortIcon *ngIf="col.header != ''  && col.field != 'TimeSpent' " [field]="col.field"></p-sortIcon>
 
                 </th>
                 <th style="width: 3em;"></th>

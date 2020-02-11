@@ -30,7 +30,8 @@
 </div>
 <div class="project-section">
     <p-dialog #pDialog [(visible)]="pmObject.isAddProjectVisible" [modal]="true" (onHide)="pmService.resetAddProject();"
-        [style]="{width: '1300px'}">
+        [style]="{'width': '1300px'}" [positionTop]="15" [responsive]="true" [blockScroll]="true"
+        [contentStyle]="{'max-height':'550px', 'top':'0px'}">
         <p-header>
             Add Project
         </p-header>
@@ -40,8 +41,9 @@
     </p-dialog>
 </div>
 <div class="add-sow-section">
-    <p-dialog [(visible)]="pmObject.isAddSOWVisible" [modal]="true" [style]="{width: '1100px', height: '500px'}"
-        [contentStyle]="{'max-height':'430px'}" (onHide)="resetAddSOW();">
+    <p-dialog [(visible)]="pmObject.isAddSOWVisible" [modal]="true"
+        [style]="{'width': '1100px', 'height': '500px', 'top':'10px'}" [contentStyle]="{'max-height':'430px'}"
+        (onHide)="resetAddSOW();">
         <p-header>
             {{sowHeader}}
         </p-header>

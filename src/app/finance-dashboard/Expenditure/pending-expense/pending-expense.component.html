@@ -60,18 +60,18 @@
                             *ngSwitchCase="'SOWCode'" [options]="pendinExpenseColArray.SOWCode" defaultLabel="All" [maxSelectedLabels]="1" 
                             (onChange)="pendingExpense.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                        <!-- <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
                             *ngSwitchCase="'SOWName'" [options]="pendinExpenseColArray.SOWName" defaultLabel="All" [maxSelectedLabels]="1"
                             (onChange)="pendingExpense.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
+                        </p-multiSelect> -->
                         <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
                             *ngSwitchCase="'Category'" [options]="pendinExpenseColArray.Category" defaultLabel="All" [maxSelectedLabels]="1"
                             (onChange)="pendingExpense.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                        <!-- <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
                             *ngSwitchCase="'PONumber'" [options]="pendinExpenseColArray.PONumber" defaultLabel="All" [maxSelectedLabels]="1"
                             (onChange)="pendingExpense.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
+                        </p-multiSelect> -->
                         <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
                             *ngSwitchCase="'ExpenseType'" [options]="pendinExpenseColArray.ExpenseType"
                             defaultLabel="All" [maxSelectedLabels]="1" (onChange)="pendingExpense.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
@@ -116,7 +116,7 @@
                 <td>
                     <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
                 </td>
-                <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility" class="ui-resizable-column">
+                <td *ngFor="let col of columns;" [hidden]="!col.visibility" class="ui-resizable-column" >
                     <ng-container *ngIf="col.field != 'CreatedDate' && col.field != 'Modified' &&  col.field != '' ">
                         {{rowData[col.field]}}
                     </ng-container>
@@ -234,7 +234,7 @@
                 <div class="ui-g-6 pl-0">
                     <p-calendar styleClass="pCalendarBtn" [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy"
                         yearRange="2019:2030" [disabledDays]="[0,6]" [yearNavigator]="true"
-                        [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}" [appendTo]="body"
+                        [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}" appendTo="body"
                         formControlName="DateSpend">
                     </p-calendar>
                     <div *ngIf="formSubmit.isSubmit && isValidApproveExpeseForm.DateSpend.errors">

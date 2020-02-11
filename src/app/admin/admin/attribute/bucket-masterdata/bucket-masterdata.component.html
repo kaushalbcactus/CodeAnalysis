@@ -7,7 +7,7 @@
       </span>
     </div>
     <div class="p-col-2">
-      <p-button label="Add" type="button" (click)="addBucketData()"></p-button>
+      <button pButton class="adminBtn" label="Add" type="button" (click)="addBucketData()"></button>
     </div>
   </div>
 </div>
@@ -184,7 +184,7 @@
             {{rowData.Title}}
           </td>
           <td>
-            <p-calendar [(ngModel)]="rowData.EffectiveDate" [minDate]="min30Days" [showIcon]="true"
+            <p-calendar  styleClass="pCalendarBtn" [(ngModel)]="rowData.EffectiveDate" [minDate]="min30Days" [showIcon]="true"
               [maxDate]="minDateValue"   [showOnFocus]="false"   [monthNavigator]="true" [readonlyInput]="true">
             </p-calendar>
           </td>

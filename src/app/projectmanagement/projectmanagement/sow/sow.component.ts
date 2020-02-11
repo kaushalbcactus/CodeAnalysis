@@ -138,7 +138,7 @@ export class SOWComponent implements OnInit, OnDestroy {
     public pmObject: PMObjectService,
     private datePipe: DatePipe,
     private commonService: CommonService,
-    private pmConstant: PmconstantService,
+    public pmConstant: PmconstantService,
     private dataService: DataService,
     public dialogService: DialogService,
     private spServices: SPOperationService,

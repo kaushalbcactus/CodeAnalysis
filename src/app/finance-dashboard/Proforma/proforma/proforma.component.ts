@@ -1555,20 +1555,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
             cleObj.type = 'PATCH';
             cleObj.data = cleData;
             batchUrl.push(cleObj);
-            // const cleEndpoint = this.fdConstantsService.fdComponent.addUpdateClientLegalEntity.update.replace('{{Id}}', currentCle.Id);
-
-            // let data = [
-            //     {
-            //         objData: obj,
-            //         endpoint: endpoint,
-            //         requestPost: true
-            //     },
-            //     {
-            //         objData: cleObj,
-            //         endpoint: cleEndpoint,
-            //         requestPost: false
-            //     }
-            // ];
             this.submitForm(batchUrl, type);
         } else if (type === 'replaceProforma') {
             if (this.replaceProforma_form.invalid) {

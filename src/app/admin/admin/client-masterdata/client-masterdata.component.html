@@ -5,9 +5,9 @@
         </a>
     </div>
     <div class="addNewClientBtnPosition">
-        <p-button type="button" icon="pi pi-plus-circle" label="Add New Client Form" *ngIf="isUserSPMCA"
-            (click)="showAddClientModal()">
-        </p-button>
+        <button pButton type="button" class="adminBtn" icon="pi pi-plus-circle" label="Add New Client Form"
+            *ngIf="isUserSPMCA" (click)="showAddClientModal()">
+        </button>
     </div>
 </div>
 <div class="clearBoth"></div>
@@ -247,7 +247,7 @@
             <div class="p-col-2"><span class="compulsory">*</span>Name</div>
             <div class="p-col-4">
                 <input class="mr-5" type="text" size="30" formControlName="name" placeholder="Name" pInputText
-                inputPatteren>
+                    inputPatteren>
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.name.errors">
                     <div *ngIf="addClient.controls.name.errors.required">
                         Name is required
@@ -460,8 +460,9 @@
             <div class="p-col-2" *ngIf="isBucketEffectiveDateActive"><span class="compulsory">*</span>Bucket Effective
                 Date</div>
             <div class="p-col-4" *ngIf="isBucketEffectiveDateActive">
-                <p-calendar formControlName="bucketEffectiveDate" [minDate]="min30Days" [showIcon]="true"
-                    [maxDate]="minDateValue"   [showOnFocus]="false"   [monthNavigator]="true" [readonlyInput]="true">
+                <p-calendar styleClass="pCalendarBtn" formControlName="bucketEffectiveDate" [minDate]="min30Days"
+                    [showIcon]="true" [maxDate]="minDateValue"   [showOnFocus]="false"   [monthNavigator]="true"
+                    [readonlyInput]="true">
                 </p-calendar>
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.bucketEffectiveDate.errors">
                     <div *ngIf="addClient.controls.bucketEffectiveDate.errors.required">
@@ -471,7 +472,7 @@
         </div>
     </form>
     <p-footer>
-        <button pButton label={{buttonLabel}} type="button" (click)="saveClient()"></button>
+        <button pButton label={{buttonLabel}} type="button" class="adminBtn" (click)="saveClient()"></button>
     </p-footer>
 </p-dialog>
 
@@ -483,9 +484,9 @@
         <a (click)="downloadExcel(sd)" class="download-worksheet td-none"><i class="fa fa-fw fa-file-excel-o"
                 aria-hidden="true"></i>
         </a>
-        <p-button styleClass="pBtnRight" type="button" icon="pi pi-plus-circle" label="Add New Sub-Division"
-            *ngIf="isUserSPMCA" (click)="showAddSubDivision()">
-        </p-button>
+        <button styleClass="pBtnRight" pButton type="button" class="adminBtn" icon="pi pi-plus-circle"
+            label="Add New Sub-Division" *ngIf="isUserSPMCA" (click)="showAddSubDivision()">
+        </button>
     </div>
     <div class="clearBoth"></div>
     <p-header>
@@ -631,8 +632,8 @@
         <a (click)="downloadExcel(poc)" class="download-worksheet td-none"><i class="fa fa-fw fa-file-excel-o"
                 aria-hidden="true"></i>
         </a>
-        <p-button styleClass="pBtnRight" type="button" icon="pi pi-plus-circle" label="Add New POC" *ngIf="isUserSPMCA"
-            (click)="showAddPOC()"></p-button>
+        <button pButton styleClass="pBtnRight" type="button" class="adminBtn" icon="pi pi-plus-circle"
+            label="Add New POC" *ngIf="isUserSPMCA" (click)="showAddPOC()"></button>
     </div>
     <div class="clearBoth"></div>
     <p-header>
@@ -853,7 +854,7 @@
         </div>
     </form>
     <p-footer>
-        <button pButton label="{{buttonLabel}}" type="button" (click)="savePOC()"></button>
+        <button pButton label="{{buttonLabel}}" type="button" class="adminBtn" (click)="savePOC()"></button>
     </p-footer>
 </p-dialog>
 
@@ -865,16 +866,16 @@
         <a (click)="downloadExcel(po)" class="download-worksheet td-none"><i class="fa fa-fw fa-file-excel-o"
                 aria-hidden="true"></i>
         </a>
-        <p-button styleClass="pBtnRight" type="button" icon="pi pi-plus-circle" label="Add New Purchase Order"
-            *ngIf="isUserSPMCA || isUserPO" (click)="showAddPO()">
-        </p-button>
+        <button pButton styleClass="pBtnRight" type="button" class="adminBtn" icon="pi pi-plus-circle"
+            label="Add New Purchase Order" *ngIf="isUserSPMCA || isUserPO" (click)="showAddPO()">
+        </button>
     </div>
     <div class="clearBoth"></div>
     <p-header>
         Purchase Order
     </p-header>
     <div class="adminTable">
-        <p-table #po [columns]="POColumns" [value]="PORows" exportFilename="Purchase Order" class="minFirstLastCol5Per"
+        <p-table #poTable [columns]="POColumns" [value]="PORows" exportFilename="Purchase Order" class="minFirstLastCol5Per"
             [paginator]="true" [rows]="10">
             <ng-template pTemplate="header" let-columns>
                 <tr>
@@ -892,37 +893,37 @@
                     <th></th>
                     <th *ngFor="let col of columns" [hidden]="!col.visibility" [ngSwitch]="col.field">
                         <p-multiSelect *ngSwitchCase="'PoName'" [style]="{'width':'100%'}" [options]="POColArray.PoName"
-                            defaultLabel="Po Name" (onChange)="po.filter($event.value, col.field, 'in')"
+                            defaultLabel="Po Name" (onChange)="poTable.filter($event.value, col.field, 'in')"
                             (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
                             resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'PoNumber'" [style]="{'width':'100%'}"
                             [options]="POColArray.PoNumber" defaultLabel="Po Number"
-                            (onChange)="po.filter($event.value, col.field, 'in')"
+                            (onChange)="poTable.filter($event.value, col.field, 'in')"
                             (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
                             resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'AmountRevenue'" [style]="{'width':'100%'}"
                             [options]="POColArray.AmountRevenue" defaultLabel="Revenue"
-                            (onChange)="po.filter($event.value, col.field, 'in')"
+                            (onChange)="poTable.filter($event.value, col.field, 'in')"
                             (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
                             resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'AmountOOP'" [style]="{'width':'100%'}"
                             [options]="POColArray.AmountOOP" defaultLabel="OOP"
-                            (onChange)="po.filter($event.value, col.field, 'in')"
+                            (onChange)="poTable.filter($event.value, col.field, 'in')"
                             (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
                             resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}"
                             [options]="POColArray.LastUpdated" defaultLabel="LastUpdated"
-                            (onChange)="po.filter($event.value, col.field, 'in')"
+                            (onChange)="poTable.filter($event.value, col.field, 'in')"
                             (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
                             resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}"
                             [options]="POColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy"
-                            (onChange)="po.filter($event.value, col.field, 'in')"
+                            (onChange)="poTable.filter($event.value, col.field, 'in')"
                             (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
                             resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
@@ -1131,7 +1132,7 @@
         </div>
     </form>
     <p-footer>
-        <button pButton label="Submit" type="button" (click)="saveBudget()"></button>
+        <button pButton label="Submit" type="button" class="adminBtn" (click)="saveBudget()"></button>
     </p-footer>
 </p-dialog>
 
@@ -1226,8 +1227,9 @@
             </div>
             <div class="p-col-2 "><span class="compulsory">*</span>PO Expiry Date</div>
             <div class="p-col-4">
-                <p-calendar formControlName="poExpiryDate" [minDate]="minDateValue" [showIcon]="true"  
-                    [showOnFocus]="false"   [monthNavigator]="true" [readonlyInput]="true"></p-calendar>
+                <p-calendar styleClass="pCalendarBtn" formControlName="poExpiryDate" [minDate]="minDateValue"
+                    [showIcon]="true" [showOnFocus]="false" [monthNavigator]="true" [readonlyInput]="true">
+                </p-calendar>
                 <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.poExpiryDate.errors">
                     <div *ngIf="PoForm.controls.poExpiryDate.errors.required">
                         PO Expiry Date is required</div>
@@ -1300,7 +1302,7 @@
         </div>
     </form>
     <p-footer>
-        <button pButton label="{{buttonLabel}}" type="button" (click)="savePO()"></button>
+        <button pButton label="{{buttonLabel}}" type="button" class="adminBtn" (click)="savePO()"></button>
     </p-footer>
 </p-dialog>
 <div *ngIf="po.isRightVisible" class="ng-right-side-overlay">
