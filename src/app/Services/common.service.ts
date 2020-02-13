@@ -622,10 +622,6 @@ export class CommonService {
 
     async getProjectResources(projectCode, bFirstCall, bSaveRes) {
 
-
-        // this.batchContents = new Array();
-        // const batchGuid = this.spServices.generateUUID();
-        // let projectResource = '';
         const batchUrl = [];
 
         // ***********************************************************************************************************************************
@@ -713,9 +709,6 @@ export class CommonService {
                     this.batchContents = new Array();
                     let clCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.ClientLegal);
                     clCall.filter = clCall.filter.replace(/{{ProjectDetailsaccount}}/gi, this.sharedTaskAllocateObj.oProjectDetails.account);
-                    // const clientLegalurl = this.spServices.getReadURL('' + this.constants.listNames.ClientLegalEntity.name + '', clCall);
-                    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, clientLegalurl);
-                    // var Data = await this.spServices.getDataByApi(batchGuid, this.batchContents);
                     const data = await this.spServices.readItems(this.constants.listNames.ClientLegalEntity.name, clCall);
                     if (data.length > 0) {
                         this.sharedTaskAllocateObj.oLegalEntity = data;

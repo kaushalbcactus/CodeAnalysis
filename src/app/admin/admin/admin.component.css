@@ -66,48 +66,7 @@ form{
     z-index:9999;
   }
   /** Loader **/
-/* @-webkit-keyframes spin {
-    0% { -webkit-transform: rotate(0deg); }
-    100% { -webkit-transform: rotate(360deg); }
-  }
-  
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-  
-  #mainLoader{
-      border: 10px solid #f3f3f3;
-      border-radius: 50%;
-      border-top: 10px solid red;
-      border-bottom: 10px solid red;
-      width: 100px;
-      height: 100px;
-      -webkit-animation: spin 2s linear infinite;
-      animation: spin 2s linear infinite;
-      margin: 0 auto;
-      position: relative;
-      top: 50%;
-      transform: translateY(-50%);
-      margin-top: 1%;
-    }
-    
-    #mainLoaderText{
-      -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
-      -o-animation: loading-text-opacity 2s linear 0s infinite normal;
-      -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
-      animation: loading-text-opacity 2s linear 0s infinite normal;
-      color: black;
-      font-family: "Helvetica Neue, "Helvetica", ""arial";
-      font-size: 10px;
-      font-weight: bold;
-      opacity: 0.5;
-      text-align: center;
-      text-transform: uppercase;
-      top: 0;
-      margin-bottom: 1%;
-      position: relative;
-    } */
+
     .ng-invalid.ng-dirty:not(form), .ng-invalid:not(form).form-submitted {
         border: solid 2px lightcoral;
     }
@@ -123,25 +82,7 @@ form{
     .clearBoth{
         clear: both;
     }
-    /* .ui-tabmenu .ui-tabmenu-nav .ui-tabmenuitem.ui-state-active, 
-    .ui-button, 
-    .ui-button:enabled:active, 
-    .ui-button:enabled:hover, 
-    .ui-steps .ui-steps-item.ui-state-highlight .ui-steps-number, 
-    .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active, 
-    .ui-chkbox .ui-chkbox-box.ui-state-active:not(.ui-state-disabled):hover, 
-    .ui-multiselect-panel .ui-multiselect-items .ui-multiselect-item.ui-state-highlight, 
-    .ui-table .ui-sortable-column.ui-state-highlight, 
-    .ui-radiobutton .ui-radiobutton-box.ui-state-active, 
-    .ui-radiobutton .ui-radiobutton-box.ui-state-active:not(.ui-state-disabled):hover, 
-    .ui-datepicker table td>a.ui-state-active, 
-    .ui-datepicker table td>span.ui-state-active, 
-    .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight, 
-    .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item-group.ui-state-highlight,
-    .ui-chkbox .ui-chkbox-box.ui-state-active {
-        background-color: #C53E3E !important;
-        border: 1px solid #C53E3E !important;
-    } */
+   
     body .ui-tabmenu .ui-tabmenu-nav .ui-tabmenuitem.ui-state-active {
         background-color: #c53e3e !important;
         border: 1px solid #c53e3e !important;
@@ -317,3 +258,4 @@ form{
     .adminBtn>span.ui-button-text.ui-clickable {
         color: #fff;
     }
+    

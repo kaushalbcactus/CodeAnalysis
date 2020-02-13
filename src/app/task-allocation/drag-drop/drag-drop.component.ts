@@ -481,7 +481,7 @@ export class DragDropComponent implements OnInit {
     const milestoneTasks = this.AlldbRecords.find(c => c.milestone.Title === nodeLabel) ? this.AlldbRecords.find(c => c.milestone.Title === nodeLabel).tasks : []
     let milestoneTaskProcess = [];
     milestoneTasks.forEach(task => {
-      const TaskType = task.replace(/[0-9]/g, '').replace(/\s+$/, '');
+      const TaskType = task.replace(/[0-9]/g, '').replace(/\s+$/, '') === 'SC' ? 'Send to client' : task.replace(/[0-9]/g, '').replace(/\s+$/, '');
       if (milestoneTaskProcess.length > 0 && milestoneTaskProcess.find(c => c.type === TaskType)) {
         milestoneTaskProcess.find(c => c.type === TaskType).tasks.push(task);
       }

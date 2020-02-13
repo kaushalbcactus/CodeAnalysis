@@ -93,6 +93,11 @@
                 </div>
             </div>
             <div>
+                <div *ngIf="!visualgraph" class="input-color" fxLayoutAlign="end center" style="margin-right: 10px;">
+                    <button *ngIf="!projectDetails" mat-raised-button type="button" (click)="onPopupload()" [disabled]="disableSave">
+                        <mat-icon>refresh</mat-icon> Refresh
+                    </button>
+                </div>
                 <div *ngIf="!visualgraph && changeInRestructure " class="input-color" fxLayoutAlign="end center"
                     style="margin-right: 10px;">
                     <button *ngIf="!projectDetails" mat-raised-button type="button"
@@ -100,7 +105,6 @@
                         <mat-icon>delete_forever</mat-icon> Discard All
                     </button>
                 </div>
-
                 <div *ngIf=" !visualgraph && oProjectDetails.status !== 'In Discussion' && oProjectDetails.status !== 'Closed' &&oProjectDetails.status !== 'Cancelled' && oProjectDetails.status !== 'Awaiting Cancel Approval' && oProjectDetails.status !== 'Pending Closure' && oProjectDetails.status !== 'Audit In Progress' && oProjectDetails.projectType !== 'FTE-Writing'"
                     class="input-color" fxLayoutAlign="end center">
                     <button *ngIf="!projectDetails" mat-raised-button type="button" [disabled]="disableSave"

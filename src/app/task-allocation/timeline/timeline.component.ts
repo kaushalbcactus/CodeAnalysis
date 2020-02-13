@@ -171,14 +171,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
       this.projectDetails.projectCode = this.projectDetails.ProjectCode;
       this.oProjectDetails.projectCode = this.projectDetails.projectCode;
       this.onPopupload();
-
     }
-
-
-
     this.sharedObject.currentUser.timeZone = this.commonService.getCurrentUserTimeZone();
     this.editorOptions = {
-
       vCaptionType: 'Complete',  // Set to Show Caption : None,Caption,Resource,Duration,Complete,
       vDayColWidth: 36,
       vWeekColWidth: 150,
@@ -196,7 +191,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
       vAdditionalHeaders: null,
     };
   }
-
   ngOnDestroy() {
   }
 
@@ -2015,13 +2009,10 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
       milestoneTask.ActiveCA = this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestoneTask.milestone ? 'No' : milestoneTask.ActiveCA;
       milestoneTask.itemType = milestoneTask.itemType.replace(/Slot/g, '');
-      // const taskCount = milestoneTask.pName.match(/\d+$/) ? ' ' + milestoneTask.pName.match(/\d+$/)[0] : '';
-      // let newName = taskCount ? milestoneTask.itemType + taskCount : milestoneTask.itemType;
       let newName = '';
-      // const counter = taskCount ? +taskCount : 1;
       if (milestoneTask.IsCentrallyAllocated === 'Yes') {
         newName = milestoneTask.itemType;
-        newName = this.getNewTaskName(milestoneTask, subMilestone, newName);
+        newName = this.getNewTaskName(milestoneTask, newName);
         milestoneTask.IsCentrallyAllocated = 'No';
       } else {
         newName = milestoneTask.pName;
@@ -2053,11 +2044,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
       milestoneTask.IsCentrallyAllocated = 'Yes';
       milestoneTask.ActiveCA = this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestoneTask.milestone ? 'Yes' : milestoneTask.ActiveCA;
       milestoneTask.itemType = milestoneTask.itemType + 'Slot';
-      // const taskCount = milestoneTask.pName.match(/\d+$/) ? ' ' + milestoneTask.pName.match(/\d+$/)[0] : '';
-      // let newName = milestoneTask.itemType + taskCount;
-      // const counter = taskCount ? +taskCount : 1;
       let newName = milestoneTask.itemType;
-      newName = this.getNewTaskName(milestoneTask, subMilestone, newName);
+      newName = this.getNewTaskName(milestoneTask, newName);
       if (milestoneTask.nextTask) {
         const nextTasks = milestoneTask.nextTask.split(';');
         nextTasks.forEach(task => {
@@ -2084,13 +2072,13 @@ export class TimelineComponent implements OnInit, OnDestroy {
     }
   }
 
-  getNewTaskName(milestoneTask, subMilestone, originalName) {
+  getNewTaskName(milestoneTask, originalName) {
     let counter = 1;
-    let getItem = subMilestone.children.filter(e => e.data.pName === originalName);
+    let getItem = this.tempGanttchartData.filter(e => e.pName === originalName && e.milestone === milestoneTask.milestone);
     while (getItem.length) {
       counter++;
       originalName = milestoneTask.itemType + ' ' + counter;
-      getItem = subMilestone.children.filter(e => e.data.pName === originalName);
+      getItem = this.tempGanttchartData.filter(e => e.pName === originalName);
     }
 
     return originalName;
@@ -4014,7 +4002,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
           } else {
             checkTasks = milestoneTasks;
           }
-          checkTasks = checkTasks.filter(t => !t.parentSlot && t.IsCentrallyAllocated === 'No');
+          checkTasks = checkTasks.filter(t => !t.parentSlot);
           // tslint:disable
           const checkTaskAllocatedTime = checkTasks.filter(e => (e.budgetHours === '' || +e.budgetHours === 0)
             && e.itemType !== 'Send to client' && e.itemType !== 'Client Review' && e.itemType !== 'Follow up' && e.status !== 'Completed');
@@ -4028,7 +4016,20 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
             return false;
           }
+          const compareDates = checkTasks.filter(e => (e.pEnd <= e.pStart && e.tat === false
+            && e.itemType !== 'Send to client' && e.itemType !== 'Client Review' &&
+            e.itemType !== 'Follow up' && e.status !== 'Completed'));
+          if (compareDates.length > 0) {
+
+            this.messageService.add({
+              key: 'custom', severity: 'warn', summary: 'Warning Message',
+              detail: 'End date should be greater than start date of ' + milestone.data.pName + ' - ' + compareDates[0].pName
+            });
+
+            return false;
+          }
           let validateAllocation = true;
+          // checkTasks = checkTasks.filter(t => t.IsCentrallyAllocated === 'No');
           checkTasks.forEach(element => {
             const title = element.AssignedTo ? element.AssignedTo.Title : null;
             if (!title) {
@@ -4043,20 +4044,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
             return false;
           }
-
-          const compareDates = checkTasks.filter(e => (e.pEnd <= e.pStart && e.tat === false
-            && e.itemType !== 'Send to client' && e.itemType !== 'Client Review' &&
-            e.itemType !== 'Follow up' && e.status !== 'Completed'));
-          if (compareDates.length > 0) {
-
-            this.messageService.add({
-              key: 'custom', severity: 'warn', summary: 'Warning Message',
-              detail: 'End date should be greater than start date of ' + milestone.data.pName + ' - ' + compareDates[0].pName
-            });
-
-            return false;
-          }
-
           const errorPresnet = this.validateTaskDates(checkTasks);
           if (errorPresnet) {
             return false;

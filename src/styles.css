@@ -162,3 +162,8 @@ body .ui-datepicker table td > a.ui-state-active, body .ui-datepicker table td >
     /* top: 0;
     margin-bottom: 1%; */
 }
+body .ui-table .ui-sortable-column.ui-state-highlight, 
+body .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active, 
+body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight {
+    background-color: #C53E3E !important;
+}
