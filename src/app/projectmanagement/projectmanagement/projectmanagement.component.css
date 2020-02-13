@@ -1221,18 +1221,12 @@ body .ui-corner-top {
 }
 
 .tableLoader {
-    position: fixed;
-    /* or absolute */
-    /* top: 20%;
-    left: 50%;
-    z-index: 9999; */
-    width: 100%;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    background-color: rgba(255, 255, 255, 0.7);
+    position: fixed; /* or absolute */
+    /* top: 20%; */
+    width: 100% !important;
     z-index: 9999;
+    background-color: rgba(255, 255, 255, 0.7);
+    height: 100% !important;
 }
 
 .excelIcon {
