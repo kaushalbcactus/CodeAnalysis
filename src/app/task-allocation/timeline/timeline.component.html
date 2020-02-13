@@ -93,6 +93,11 @@
                 </div>
             </div>
             <div>
+                <div *ngIf="!visualgraph" class="input-color" fxLayoutAlign="end center" style="margin-right: 10px;">
+                    <button *ngIf="!projectDetails" mat-raised-button type="button" (click)="onPopupload()" [disabled]="disableSave">
+                        <mat-icon>refresh</mat-icon> Refresh
+                    </button>
+                </div>
                 <div *ngIf="!visualgraph && changeInRestructure " class="input-color" fxLayoutAlign="end center"
                     style="margin-right: 10px;">
                     <button *ngIf="!projectDetails" mat-raised-button type="button"
@@ -100,7 +105,6 @@
                         <mat-icon>delete_forever</mat-icon> Discard All
                     </button>
                 </div>
-
                 <div *ngIf=" !visualgraph && oProjectDetails.status !== 'In Discussion' && oProjectDetails.status !== 'Closed' &&oProjectDetails.status !== 'Cancelled' && oProjectDetails.status !== 'Awaiting Cancel Approval' && oProjectDetails.status !== 'Pending Closure' && oProjectDetails.status !== 'Audit In Progress' && oProjectDetails.projectType !== 'FTE-Writing'"
                     class="input-color" fxLayoutAlign="end center">
                     <button *ngIf="!projectDetails" mat-raised-button type="button" [disabled]="disableSave"
@@ -305,12 +309,12 @@
                         <!-- Allow start -->
                         <td [ngStyle]="{'text-align': 'rowData.editMode' ? 'center':'left'}">
                             <span
-                                *ngIf="((rowData.editMode || !rowData.editMode) && rowData.type ==='milestone'  && rowData.type !=='submilestone') || (!rowData.editMode && rowData.type !=='milestone'  && rowData.type !=='submilestone' && (rowData.IsCentrallyAllocated !== 'Yes' || rowData.slotType === 'Both' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.pName.indexOf('Slot') < 0))) ">{{rowData.allowStart === true ? 'Yes':'No'}}</span>
-
+                            *ngIf="((rowData.editMode || !rowData.editMode) && rowData.type ==='milestone'  && rowData.type !=='submilestone') || (!rowData.editMode && rowData.type !=='milestone'  && rowData.type !=='submilestone' ) ">{{rowData.allowStart === true ? 'Yes':'No'}}</span>
+                            <!-- && (rowData.IsCentrallyAllocated !== 'Yes' || rowData.slotType === 'Both' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.pName.indexOf('Slot') < 0)) -->
                             <p-inputSwitch
-                                *ngIf="rowData.editMode && (rowData.type !== 'milestone' && rowData.type !=='submilestone') && (rowData.itemType !=='Client Review' && rowData.itemType !=='Send to client') && rowData.IsCentrallyAllocated !== 'Yes'"
+                            *ngIf="rowData.editMode && (rowData.type !== 'milestone' && rowData.type !=='submilestone') && (rowData.itemType !=='Client Review' && rowData.itemType !=='Send to client')"
                                 [(ngModel)]="rowData.allowStart"></p-inputSwitch>
-
+                            <!-- rowData.IsCentrallyAllocated !== 'Yes'" -->
                             <!-- <p-checkbox *ngIf="rowData.editMode && (rowData.type !== 'milestone' && rowData.type !=='submilestone') && (rowData.pName !=='Client Review' && rowData.pName !=='SC')" [(ngModel)]="rowData.allowStart" binary="true"></p-checkbox> -->
                         </td>
                         <!-- Disable cascade -->

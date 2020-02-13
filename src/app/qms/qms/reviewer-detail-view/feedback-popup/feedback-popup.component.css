@@ -37,37 +37,6 @@
 ::ng-deep .cd-rating{background: #4faf54;color: #fff;padding: 0px 8px;border-radius: 3px;display: inline-block;margin-right: 3px}
 ::ng-deep .customer-detail{color: #777777;display: inline-block}
 ::ng-deep .star-white{color: #fff;margin-left: 2px;font-size: 14px !important}
-::ng-deep #popupLoader{
-  border: 10px solid #f3f3f3;
-  border-radius: 50%;
-  border-top: 10px solid red;
-  border-bottom: 10px solid red;
-  width: 100px;
-  height: 100px;
-  -webkit-animation: spin 2s linear infinite;
-  animation: spin 2s linear infinite;
-  margin: 0 auto;
-  position: relative;
-  top: 50%;
-  transform: translateY(-50%);
-  margin-top: 1%;
-}
-
-::ng-deep #popupLoaderText{
-  -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
-  -o-animation: loading-text-opacity 2s linear 0s infinite normal;
-  -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
-  animation: loading-text-opacity 2s linear 0s infinite normal;
-  color: black;
-  font-family: "Helvetica Neue, "Helvetica", ""arial";
-  font-size: 10px;
-  font-weight: bold;
-  opacity: 0.5;
-  text-align: center;
-  text-transform: uppercase;
-  top: 0;
-  margin-bottom: 1%;
-}
 
 @-webkit-keyframes spin {
   0% { -webkit-transform: rotate(0deg); }

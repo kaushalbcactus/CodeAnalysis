@@ -245,7 +245,7 @@ export class AllProjectsComponent implements OnInit {
 
     // debugger;
     // console.log(this.allProjectRef)
-
+    this.showTable = true;
     this.ExcelDownloadenable = true;
     console.log(data);
     const budgets = await this.pmCommonService.getAllBudget(this.allProjectRef.filteredValue ?
@@ -263,12 +263,8 @@ export class AllProjectsComponent implements OnInit {
     });
 
     data._values = this.pmObject.allProjectsArray;
-
-
-
     this.pmCommonService.convertToExcelFile(data);
     this.ExcelDownloadenable = false;
-
   }
 
   reloadAllProject() {
@@ -337,6 +333,7 @@ export class AllProjectsComponent implements OnInit {
   }
 
   async getAllProjects() {
+    this.showTable = true;
     const sowCodeTempArray = [];
     const projectCodeTempArray = [];
     const shortTitleTempArray = [];
@@ -356,7 +353,6 @@ export class AllProjectsComponent implements OnInit {
       arrResults = await this.pmCommonService.getProjects(this.showNavigateSOW);
       this.pmObject.allProjectItems = arrResults;
     }
-    this.showTable = true;
     if (this.pmObject.allProjectItems.length) {
       // this.pmObject.countObj.allProjectCount = arrResults.length;
       this.pmObject.countObj.allProjectCount = this.pmObject.allProjectItems.length; // added by kaushal on 12-07-2019
@@ -581,7 +577,7 @@ export class AllProjectsComponent implements OnInit {
         tempAllProjectArray.push(projObj);
       }
       if (tempAllProjectArray) {
-        this.createColFieldValues(tempAllProjectArray);
+        await this.createColFieldValues(tempAllProjectArray);
       }
       // this.allProjects.sowCodeArray = this.commonService.unique(sowCodeTempArray, 'value');
       // this.allProjects.projectCodeArray = this.commonService.unique(projectCodeTempArray, 'value');
@@ -1468,7 +1464,13 @@ export class AllProjectsComponent implements OnInit {
         type: '',
         listName: ''
       };
-      const statusUpdateScheduleList = {
+      const statusNotStartedScheduleList = {
+        __metadata: {
+          type: this.constants.listNames.Schedules.type
+        },
+        Status: this.constants.STATUS.NOT_STARTED
+      };
+      const statusInProgressStartedScheduleList = {
         __metadata: {
           type: this.constants.listNames.Schedules.type
         },
@@ -1480,18 +1482,13 @@ export class AllProjectsComponent implements OnInit {
         },
         Status: this.constants.STATUS.COMPLETED
       };
-      const statusNotStartedScheduleList = {
-        __metadata: {
-          type: this.constants.listNames.Schedules.type
-        },
-        Status: this.constants.STATUS.NOT_STARTED
-      };
       filterResult.forEach(element => {
-        if (element.Task !== this.pmConstant.task.BLOCKING ||
-          element.Task !== this.pmConstant.task.TRAINING ||
-          element.Task !== this.pmConstant.task.MEETING) {
+        if (element.Task !== this.pmConstant.task.BLOCKING &&
+          element.Task !== this.pmConstant.task.MEETING &&
+          element.Task !== this.pmConstant.task.TRAINING) {
+
           const scheduleStatusUpdate = Object.assign({}, options);
-          scheduleStatusUpdate.data = statusUpdateScheduleList;
+          scheduleStatusUpdate.data = statusInProgressStartedScheduleList;
           scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
           scheduleStatusUpdate.type = 'PATCH';
           scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,

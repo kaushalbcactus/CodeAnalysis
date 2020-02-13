@@ -22,8 +22,7 @@
                 <th style="width: 2.25em">
                     <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
                 </th>
-                <th *ngFor="let col of columns" [pSortableColumn]="col.field"
-                    [hidden]="!col.visibility">
+                <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
                     {{col.header}}
                     <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
                 </th>
@@ -163,9 +162,9 @@
         </div>
     </form>
     <p-footer>
-        <button pButton type="button" label="Save" [disabled]="submitBtn.isClicked"
+        <button pButton type="button" class="fdBtn" label="Save" [disabled]="submitBtn.isClicked"
             (click)="onSubmit('paymentResoved')"></button>
-        <button pButton type="button" label="Cancel" (click)="cancelFormSub('paymentResoved')"></button>
+        <button pButton type="button" class="fdBtn" label="Cancel" (click)="cancelFormSub('paymentResoved')"></button>
     </p-footer>
 </p-dialog>
 
@@ -229,9 +228,9 @@
         </div>
     </form>
     <p-footer>
-        <button pButton type="button" label="Save" [disabled]="submitBtn.isClicked"
+        <button pButton type="button" class="fdBtn" label="Save" [disabled]="submitBtn.isClicked"
             (click)="onSubmit('replaceInvoice')"></button>
-        <button pButton type="button" label="Cancel" (click)="cancelFormSub('replaceInvoice')"></button>
+        <button pButton type="button" class="fdBtn" label="Cancel" (click)="cancelFormSub('replaceInvoice')"></button>
     </p-footer>
 
 </p-dialog>
@@ -295,9 +294,9 @@
     </form>
 
     <p-footer>
-        <button pButton type="button" label="Confirm" [disabled]="submitBtn.isClicked"
+        <button pButton type="button" class="fdBtn" label="Confirm" [disabled]="submitBtn.isClicked"
             (click)="onSubmit('creditDebit')"></button>
-        <button pButton type="button" label="Cancel" (click)="cancelFormSub('creditDebit')"></button>
+        <button pButton type="button" class="fdBtn" label="Cancel" (click)="cancelFormSub('creditDebit')"></button>
     </p-footer>
 </p-dialog>
 <app-timeline-history #timelineRef></app-timeline-history>

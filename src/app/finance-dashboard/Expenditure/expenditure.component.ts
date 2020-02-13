@@ -628,6 +628,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         this.projectClientIsEmpty = this.isEmpty(this.totalLineItems);
         if (totalAmt <= expenditureAmt) {
             // this.addSts = false;
+            this.submitBtn.isClicked = false;
             this.addSts = totalAmt === expenditureAmt ? true : false;
         } else {
             this.addSts = false;

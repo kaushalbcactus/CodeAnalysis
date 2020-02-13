@@ -407,7 +407,7 @@ export class CommonService {
     }
     async getTaskDocument(folderUrl, documentUrl) {
         let completeFolderRelativeUrl = folderUrl + documentUrl;
-        this.common.SetNewrelic('Services', 'Common-getTaskDocuments', 'readFiles');
+        this.SetNewrelic('Services', 'Common-getTaskDocuments', 'readFiles');
         let documents = await this.spServices.readFiles(completeFolderRelativeUrl);
         if (documents.length) {
             documents = documents.sort(function (a, b) {
@@ -435,8 +435,9 @@ export class CommonService {
         }
         return sReturn;
     }
+    
     async checkTaskStatus(task) {
-        this.common.SetNewrelic('Service', 'Common-Service', 'readItem');
+        this.SetNewrelic('Service', 'Common-Service', 'readItem');
         const currentTask = await this.spServices.readItem(this.constants.listNames.Schedules.name, task.ID);
         let isActionRequired: boolean;
         if (currentTask) {
@@ -448,6 +449,7 @@ export class CommonService {
         }
         return isActionRequired;
     }
+    
     setIframeHeight() {
         setTimeout(() => {
             const height = $('.custom-table-container').height();
@@ -481,8 +483,6 @@ export class CommonService {
         iDateDiff -= iAdjust;                            // take into account both days on weekend
         return (iDateDiff + 1);                         // add 1 because dates are inclusive
     }
-
-
 
     ajax_addHrsMins(arrayTotalTimeSpent) {
         let totalTime = '';
@@ -546,8 +546,6 @@ export class CommonService {
         return currentsystemOffset;
     }
 
-
-
     ajax_checkIfCurrentUserInArray(array, currentUserID) {
         let item = '';
         if (array.length > 0) {
@@ -557,8 +555,6 @@ export class CommonService {
         }
         return item;
     }
-
-
 
     convertToHrsMins(hours) {
         if (hours != null) {
@@ -626,10 +622,6 @@ export class CommonService {
 
     async getProjectResources(projectCode, bFirstCall, bSaveRes) {
 
-
-        // this.batchContents = new Array();
-        // const batchGuid = this.spServices.generateUUID();
-        // let projectResource = '';
         const batchUrl = [];
 
         // ***********************************************************************************************************************************
@@ -717,9 +709,6 @@ export class CommonService {
                     this.batchContents = new Array();
                     let clCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.ClientLegal);
                     clCall.filter = clCall.filter.replace(/{{ProjectDetailsaccount}}/gi, this.sharedTaskAllocateObj.oProjectDetails.account);
-                    // const clientLegalurl = this.spServices.getReadURL('' + this.constants.listNames.ClientLegalEntity.name + '', clCall);
-                    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, clientLegalurl);
-                    // var Data = await this.spServices.getDataByApi(batchGuid, this.batchContents);
                     const data = await this.spServices.readItems(this.constants.listNames.ClientLegalEntity.name, clCall);
                     if (data.length > 0) {
                         this.sharedTaskAllocateObj.oLegalEntity = data;

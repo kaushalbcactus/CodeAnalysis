@@ -57,8 +57,8 @@
                         </p-calendar>
                 </div>
                 <div class="col-md-4 col-xs-4 col-lg-4">
-                    <button id="standardTimelineCapacity" class="btn btn-danger" type="button" (click)="getInitialUserCapactiy(InitialUserCapacity)">Capacity</button>
-                    <button id="standardTimelineGenerate" class="btn btn-danger" type="button" (click)="getMilestones()">Generate</button>
+                    <button id="standardTimelineCapacity" class="btn btn-danger" type="button" styleClass="pmBtn"  (click)="getInitialUserCapactiy(InitialUserCapacity)">Capacity</button>
+                    <button id="standardTimelineGenerate" class="btn btn-danger" type="button" styleClass="pmBtn"  (click)="getMilestones()">Generate</button>
                 </div>
             </div>
         </div>
@@ -216,14 +216,14 @@
         <div class="row">
             <div class="col-md-2 col-xs-2 col-lg-2">
                 <div>
-                    <p-button type="button" class="mr-5" label="Back" (click)="goToProjectAttributes()"></p-button>
+                    <p-button type="button" styleClass="pmBtn"  class="mr-5" label="Back" (click)="goToProjectAttributes()"></p-button>
                 </div>
             </div>
             <div class="col-md-4 col-xs-4 col-lg-4"></div>
             <div class="col-md-6 col-xs-6 col-lg-6">
                 <div>
-                    <button id="standardTimelineConfirm" class="mr-5 btn btn-danger" type="button" (click)="saveTimelineData()">Save Project</button>
-                    <!-- <p-button type="button" class="mr-5" label="Continue to Finance & Management" (click)="goToFinanceMang()"></p-button> -->
+                    <button id="standardTimelineConfirm" class="mr-5 btn btn-danger" type="button" styleClass="pmBtn"  (click)="saveTimelineData()">Save Project</button>
+                    <!-- <p-button type="button" styleClass="pmBtn"  class="mr-5" label="Continue to Finance & Management" (click)="goToFinanceMang()"></p-button> -->
                 </div>
             </div>
         </div>

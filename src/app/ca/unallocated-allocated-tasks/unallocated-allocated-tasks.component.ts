@@ -763,10 +763,9 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
           if (RowData.MilestoneAllTasks.length > 0 && RowData.MilestoneAllTasks.find(c => c.type ===
             task.taskType && c.milestone === RowData.Milestone)) {
-            if (!RowData.MilestoneAllTasks.find(c => c.type === task.taskType).tasks.find(c => c ===
-              task.label && c.milestone === RowData.Milestone)) {
-              RowData.MilestoneAllTasks.find(c => c.type === task.taskType && c.milestone ===
-                RowData.Milestone).tasks.push(RowData.TaskName);
+            // tslint:disable: max-line-length
+            if (!RowData.MilestoneAllTasks.find(c => c.type === task.taskType && c.milestone === RowData.Milestone).tasks.find(c => c === task.label)) {
+              RowData.MilestoneAllTasks.find(c => c.type === task.taskType && c.milestone === RowData.Milestone).tasks.push(RowData.TaskName);
             }
           } else {
             RowData.MilestoneAllTasks.push({ type: task.taskType, milestone: RowData.Milestone, tasks: [RowData.TaskName] });
@@ -793,7 +792,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
     event.data.subTaskloaderenable = true;
     if (event.data.SlotTasks) {
-      if (event.data.SlotTasks.length === 1 && event.data.SlotTasks[0].id === undefined) {
+      if (event.data.SlotTasks.length === 1 && event.data.SlotTasks[0].Id === undefined) {
         event.data.SlotTasks[0].editMode = true;
         event.data.SlotTasks[0].edited = true;
       }
@@ -818,19 +817,16 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         let count = 0;
         const constTask = event.data.MilestoneAllTasks.find(c => c.type === tasks[0] && c.milestone === event.data.Milestone);
         if (constTask) {
-
-          count = constTask.tasks.filter((task) => { return new RegExp(tasks[0], 'g').test(task); }).length > 0 ?
-            constTask.tasks.filter((task) => { return new RegExp(tasks[0], 'g').test(task) }).filter((v) => {
-              return v.replace(/.*\D/g, '')
+          count = constTask.tasks.filter(task => new RegExp(tasks[0], 'g').test(task)).length > 0 ?
+            constTask.tasks.filter(task => new RegExp(tasks[0], 'g').test(task)).filter((v) => {
+              return v.replace(/.*\D/g, '');
             }).map((v) => {
-              return v.replace(new RegExp(tasks[0],
-                'g'), '')
-              // tslint:disable-next-line: radix
+              return v.replace(new RegExp(tasks[0], 'g'), '');
+              // tslint:disable: radix
             }).map(c => (!isNaN(c) ? parseInt(c) : 0)).length > 0 ?
               Math.max.apply(null, constTask.tasks.filter((task) => {
-                return new RegExp(tasks[0], 'g').test
-                  (task)
-              }).filter((v) => { return v.replace(/.*\D/g, '') }).map((v) => {
+                return new RegExp(tasks[0], 'g').test(task);
+              }).filter((v) => v.replace(/.*\D/g, '')).map((v) => {
                 return v.replace(new RegExp(tasks[0], 'g'), '');
               }).map(c => (!isNaN(c) ? parseInt(c) : 0))) : 1 : 0;
         }

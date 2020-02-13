@@ -60,7 +60,7 @@
 
       <ng-template pTemplate="header" let-columns>
         <tr>
-          <th *ngFor="let col of columns" [pSortableColumn]="col.field" pResizableColumn pReorderableColumn>
+          <th *ngFor="let col of columns" [pSortableColumn]="col.field" >
             {{col.header}}
             <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
           </th>

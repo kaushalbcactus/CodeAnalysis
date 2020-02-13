@@ -11,17 +11,17 @@ export class PubsuportConstantsService {
         isPSInnerLoaderHidden: true,
         projectInfo: {
             select: "ID,ProjectCode,ClientLegalEntity,DeliverableType,Status,PubSupportStatus,PrimaryPOC,JournalSelectionURL,JournalSelectionDate,LastSubmissionDate,Milestones,ProjectFolder",
-            filter: "Status ne 'Closed' and Status ne 'Cancelled' and Status ne 'In Discussion' and Status ne 'Pending Closure' and IsPubSupport eq 'Yes' and substringof('Writing', ProjectType)",
+            filter: "Status ne 'Closed' and Status ne 'Cancelled' and Status ne 'In Discussion' and Status ne 'Pending Closure' and IsPubSupport eq 'Yes' and substringof('Writing', ProjectType) and ProjectType ne 'FTE-Writing'",
             top: 4500
         },
         projectInfoClosed: {
             select: "ID,ProjectCode,ClientLegalEntity,DeliverableType,Status,PubSupportStatus,PrimaryPOC,JournalSelectionURL,JournalSelectionDate,LastSubmissionDate,Milestones,ProjectFolder",
-            filter: "ProjectCode eq '{{ProjectCode}}' and (Status eq 'Closed' or Status eq 'Pending Closure') and IsPubSupport eq 'Yes' and substringof('Writing', ProjectType)",
+            filter: "ProjectCode eq '{{ProjectCode}}' and (Status eq 'Closed' or Status eq 'Pending Closure') and IsPubSupport eq 'Yes' and substringof('Writing', ProjectType) and ProjectType ne 'FTE-Writing'",
             top: 1
         },
         projectInfoUser: {
             select: "ID,ProjectCode,ClientLegalEntity,DeliverableType,Status,PubSupportStatus,PrimaryPOC,JournalSelectionURL,JournalSelectionDate,LastSubmissionDate,Milestones,ProjectFolder",
-            filter: "((Status ne 'Closed' and Status ne 'Cancelled' and Status ne 'In Discussion' and Status ne 'Pending Closure' and IsPubSupport eq 'Yes' and substringof('Writing', ProjectType)) and (AllOperationresourcesId eq {{ID}} or AllDeliveryResourcesId eq {{ID}}))",
+            filter: "((Status ne 'Closed' and Status ne 'Cancelled' and Status ne 'In Discussion' and Status ne 'Pending Closure' and IsPubSupport eq 'Yes' and substringof('Writing', ProjectType) and ProjectType ne 'FTE-Writing') and (AllOperationresourcesId eq {{ID}} or AllDeliveryResourcesId eq {{ID}}))",
             top: 4500
         },
         projectInfoCode: {
@@ -33,6 +33,12 @@ export class PubsuportConstantsService {
         projectContact: {
             select: "ID, ClientLegalEntity, FName, LName, EmailAddress, Status",
             filter: "Status ne 'InActive'",
+            top: 4500
+        },
+        clientLegalEntity: {
+            select: "ID,Title,ListName",
+            filter: "IsActive eq 'Yes'",
+            orderby: "Title",
             top: 4500
         },
         journalConf: {

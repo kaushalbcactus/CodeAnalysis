@@ -11,6 +11,8 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { Router } from '@angular/router';
 import { PMCommonService } from '../../services/pmcommon.service';
 import { Table } from 'primeng/table';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 declare var $;
 @Component({
@@ -130,11 +132,13 @@ export class SOWComponent implements OnInit, OnDestroy {
   totalRevenueBudget = 0;
   totalOOPBudget = 0;
   loaderenable = false;
+  private _destroy$ = new Subject();
+
   constructor(
     public pmObject: PMObjectService,
     private datePipe: DatePipe,
     private commonService: CommonService,
-    private pmConstant: PmconstantService,
+    public pmConstant: PmconstantService,
     private dataService: DataService,
     public dialogService: DialogService,
     private spServices: SPOperationService,
@@ -208,8 +212,9 @@ export class SOWComponent implements OnInit, OnDestroy {
         command: (task) => this.timeline.showTimeline(this.pmObject.selectedSOWTask.ID, 'ProjectMgmt', 'SOW')
       }
     ];
-    this.subscription = this.dataService.on('reload-EditSOW').subscribe(() => this.loadSOWInit());
+    this.subscription = this.dataService.on('reload-EditSOW').pipe(takeUntil(this._destroy$)).subscribe(() => this.loadSOWInit());
   }
+
   ngOnDestroy() {
     this.subscription.unsubscribe();
   }

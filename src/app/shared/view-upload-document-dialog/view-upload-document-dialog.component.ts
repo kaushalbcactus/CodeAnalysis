@@ -307,34 +307,21 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
         __metadata: { type: 'SP.ListItem' },
         Status: this.selectedTask.Task + ' Complete'
       };
-      // const batchGuid = this.spServices.generateUUID();
-      // const batchContents = new Array();
-      // const changeSetId = this.spServices.generateUUID();
       const batchUrl = [];
-      // var arrDocNames = this.selectedDocuments.map(c=> c = c.fileUrl.split('/')[7]);
       this.selectedDocuments.forEach(async element => {
         if (element.status.indexOf('Complete') === -1) {
           this.loaderenable = true;
           bSelectedNewFiles = true;
           const listName = element.ServerRelativeUrl.split('/')[3];
-          // const endPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl +
-          //   // tslint:disable-next-line: quotemark
-          //   "/_api/web/lists/getbytitle('" + listName + "')/items(" + +(element.ListItemAllFields.ID) +
-          //   // tslint:disable-next-line: quotemark
-          //   ")";
-          // var test = await  this.updateDocumentProperties(true,element);
           const updateObj = Object.assign({}, this.queryConfig);
           updateObj.url = this.spServices.getItemURL(listName, +element.ListItemAllFields.ID);
           updateObj.data = objPost;
           updateObj.listName = listName;
           updateObj.type = 'PATCH';
           batchUrl.push(updateObj);
-          // await this.spServices.updateItem(listName, +element.ListItemAllFields.ID, objPost);
-          // this.spServices.getChangeSetBodySC(batchContents, changeSetId, endPoint, JSON.stringify(objPost), false);
         }
       });
       if (bSelectedNewFiles) {
-
         const jsonData = {
           __metadata: { type: 'SP.Data.SchedulesListItem' },
           FinalDocSubmit: true
@@ -345,27 +332,12 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
         taskObj.listName = this.constants.listNames.Schedules.name;
         taskObj.type = 'PATCH';
         batchUrl.push(taskObj);
-
-        // const endPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl +
-        //   // tslint:disable-next-line: quotemark
-        //   "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name +
-        //   // tslint:disable-next-line: quotemark
-        //   "')/items(" + (this.selectedTask.ID) + ')';
-        // this.spServices.getChangeSetBodySC(batchContents, changeSetId, endPoint, JSON.stringify(jsonData), false);
         this.selectedTask.FinalDocSubmit = true;
-        // batchContents.push('--changeset_' + changeSetId + '--');
-        // const batchBody = batchContents.join('\r\n');
-        // const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
-        // batchBodyContent.push('--batch_' + batchGuid + '--');
-        // const batchBodyContents = batchBodyContent.join('\r\n');
-
-        // const response = this.spServices.executeBatchPostRequestByRestAPI(batchGuid, batchBodyContents);
-
         this.commonService.SetNewrelic('Shared', 'viewUpladDoc', 'UpdateSchedules');
         const response = await this.spServices.executeBatch(batchUrl);
         this.selectedDocuments = [];
         if (this.enableNotification) {
-          this.SendEmailNotification(this.selectedTask);
+          await this.SendEmailNotification(this.selectedTask);
         }
         this.loadDraftDocs(this.selectedTab);
 
@@ -537,7 +509,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       taskObj.listName = listName;
       taskObj.type = 'PATCH';
       batchUrl.push(taskObj);
-      
+
     });
     this.commonService.SetNewrelic('Shared', 'viewUpladDoc', 'linkDocToProject');
     await this.spServices.executeBatch(batchUrl);
@@ -552,45 +524,45 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     const mailSubject = 'New File Uploaded.';
 
     // ClosedTaskNotification
+    if (task.NextTasks) {
+      const nts = task.NextTasks.split(';#');
+      nts.forEach(async nextTask => {
+        const npInfo = await this.myDashboardConstantsService.getNextPreviousTask(task);
+        const iterator = npInfo.find(item => item.Title === nextTask);
+        const ArrayTo = [];
+        const objEmailBody = [];
+        objEmailBody.push({
+          key: '@@Val1@@', //  Next  Task Assign To
+          value: iterator.AssignedTo ? iterator.AssignedTo.Title : ''
+        });
+        objEmailBody.push({
+          key: '@@Val2@@', // Current Task Name
+          value: task.Title
+        });
+        objEmailBody.push({
+          key: '@@Val21@@', // Current Task Assign To
+          value: task.AssignedTo ? task.AssignedTo.Title : ''
+        });
+        objEmailBody.push({
+          key: '@@Val3@@', // Next Task Name
+          value: iterator.Title
+        });
+        objEmailBody.push({
+          key: '@@Val31@@', //  Next  Task Assign To
+          value: iterator.AssignedTo ? iterator.AssignedTo.Title : ''
+        });
 
-    task.nextTasks.forEach(nextTask => {
-      const ArrayTo = [];
-      const objEmailBody = [];
-      objEmailBody.push({
-        'key': '@@Val1@@', //  Next  Task Assign To
-        'value': nextTask.AssignedTo ? nextTask.AssignedTo.Title : ''
+        let mailBody = this.Emailtemplate;
+
+        for (const data of objEmailBody) {
+          mailBody = mailBody.replace(RegExp(data.key, 'gi'), data.value);
+        }
+        this.commonService.SetNewrelic('Shared', 'viewUpladDoc', 'SendMails');
+        // Send  email
+        this.spServices.sendMail(iterator.AssignedTo.EMail, task.AssignedTo.EMail, mailSubject, mailBody, task.AssignedTo.EMail);
+
       });
-      objEmailBody.push({
-        'key': '@@Val2@@', // Current Task Name
-        'value': task.Title
-      });
-      objEmailBody.push({
-        'key': '@@Val21@@', // Current Task Assign To
-        'value': task.AssignedTo ? task.AssignedTo.Title : ''
-      });
-      objEmailBody.push({
-        'key': '@@Val3@@', // Next Task Name
-        'value': nextTask.Title
-      });
-      objEmailBody.push({
-        'key': '@@Val31@@', //  Next  Task Assign To
-        'value': nextTask.AssignedTo ? nextTask.AssignedTo.Title : ''
-      });
-
-      let mailBody = this.Emailtemplate;
-
-      for (const data of objEmailBody) {
-        mailBody = mailBody.replace(RegExp(data.key, 'gi'), data.value);
-      }
-
-
-      this.commonService.SetNewrelic('Shared', 'viewUpladDoc', 'SendMails');
-
-
-      // Send  email
-      this.spServices.sendMail(nextTask.AssignedTo.EMail, task.AssignedTo.EMail, mailSubject, mailBody, task.AssignedTo.EMail);
-
-    });
+    }
 
   }
 

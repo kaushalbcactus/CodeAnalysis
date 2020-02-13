@@ -4,7 +4,7 @@
 <app-addtimeline *ngIf="pmObject.activeIndex==3"></app-addtimeline>
 <app-finance-management *ngIf="pmObject.activeIndex==1" [manageData]="financeManageData"
    (dataEvent)="receiveData($event)"></app-finance-management>
-<p-dialog [(visible)]="isMangageFinanceVisible" appendTo='body' [modal]="true" [style]="{width: '90%'}" #pfm>
+<p-dialog [(visible)]="isMangageFinanceVisible" appendTo='body' [modal]="true" [style]="{width: '100%'}" [contentStyle]="{'max-height':'500px', 'top':'0px'}">
    <p-header>
       Project Finance Management
    </p-header>

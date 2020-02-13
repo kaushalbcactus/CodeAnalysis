@@ -7,10 +7,10 @@
     <div class="p-col-12 p-md-12 p-lg-12 f-right">
         <div style="display: -webkit-inline-box;">
             <div *ngIf="constantService.userPermission.isFDUserAdmin" class="box" style="margin-right: 20px">
-                <button type="button" pButton label="Approve Expense" (click)="approveExpense('approve')"></button>
+                <button type="button" class="fdBtn" pButton label="Approve Expense" (click)="approveExpense('approve')"></button>
             </div>
             <div *ngIf="constantService.userPermission.isFDUserAdmin" class="box" style="margin-right: 20px">
-                <button type="button" pButton label="Reject Expense" (click)="approveExpense('reject')"></button>
+                <button type="button" class="fdBtn" pButton label="Reject Expense" (click)="approveExpense('reject')"></button>
             </div>
             <div class="box">
                 <!-- <button type="button" pButton label="Export" (click)="fdDataShareServie.convertToExcelFile(pendingExpense)"></button> -->
@@ -33,7 +33,7 @@
                 </th>
                 <th *ngFor="let col of columns"
                     [ngStyle]="{'width': (col.field === 'RequestType' || col.field === 'ProjectCode' || col.field === 'Category'|| col.field === 'ExpenseType'|| col.field === 'ClientAmount'|| col.field === 'ClientCurrency'|| col.field === 'CreatedDate'|| col.field === 'CreatedBy' ) ? '10em': (col.field === 'ClientLegalEntity') ? '15em':(col.field === 'VendorName') ? '20em':'3em' }"
-                    [pSortableColumn]="col.field" pResizableColumn pReorderableColumn [hidden]="!col.visibility">
+                    [pSortableColumn]="col.field"  [hidden]="!col.visibility">
                     {{col.header}}
                     <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
                 </th>
@@ -60,18 +60,18 @@
                             *ngSwitchCase="'SOWCode'" [options]="pendinExpenseColArray.SOWCode" defaultLabel="All" [maxSelectedLabels]="1" 
                             (onChange)="pendingExpense.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                        <!-- <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
                             *ngSwitchCase="'SOWName'" [options]="pendinExpenseColArray.SOWName" defaultLabel="All" [maxSelectedLabels]="1"
                             (onChange)="pendingExpense.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
+                        </p-multiSelect> -->
                         <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
                             *ngSwitchCase="'Category'" [options]="pendinExpenseColArray.Category" defaultLabel="All" [maxSelectedLabels]="1"
                             (onChange)="pendingExpense.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                        <!-- <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
                             *ngSwitchCase="'PONumber'" [options]="pendinExpenseColArray.PONumber" defaultLabel="All" [maxSelectedLabels]="1"
                             (onChange)="pendingExpense.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
+                        </p-multiSelect> -->
                         <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
                             *ngSwitchCase="'ExpenseType'" [options]="pendinExpenseColArray.ExpenseType"
                             defaultLabel="All" [maxSelectedLabels]="1" (onChange)="pendingExpense.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
@@ -116,7 +116,7 @@
                 <td>
                     <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
                 </td>
-                <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility" class="ui-resizable-column">
+                <td *ngFor="let col of columns;" [hidden]="!col.visibility" class="ui-resizable-column" >
                     <ng-container *ngIf="col.field != 'CreatedDate' && col.field != 'Modified' &&  col.field != '' ">
                         {{rowData[col.field]}}
                     </ng-container>
@@ -190,7 +190,7 @@
         </div>
     </form>
     <p-footer *ngIf="cancelRejectDialog.title === 'Cancel Expense' || cancelRejectDialog.title === 'Reject Expense'  ">
-        <button pButton type="button" label="{{cancelRejectDialog.title}}" [disabled]="submitBtn.isClicked"
+        <button pButton type="button" class="fdBtn" label="{{cancelRejectDialog.title}}" [disabled]="submitBtn.isClicked"
             (click)="onSubmit(cancelRejectDialog.title)"></button>
     </p-footer>
 
@@ -232,9 +232,9 @@
                 </div>
                 <div class="ui-g-6">Payment Date</div>
                 <div class="ui-g-6 pl-0">
-                    <p-calendar [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy"
+                    <p-calendar styleClass="pCalendarBtn" [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy"
                         yearRange="2019:2030" [disabledDays]="[0,6]" [yearNavigator]="true"
-                        [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}" [appendTo]="body"
+                        [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}" appendTo="body"
                         formControlName="DateSpend">
                     </p-calendar>
                     <div *ngIf="formSubmit.isSubmit && isValidApproveExpeseForm.DateSpend.errors">
@@ -299,7 +299,7 @@
         </div>
     </form>
     <p-footer *ngIf="cancelRejectDialog.title === 'Approve Expense'">
-        <button pButton type="button" label="{{cancelRejectDialog.title}}" [disabled]="submitBtn.isClicked"
+        <button pButton type="button" class="fdBtn" label="{{cancelRejectDialog.title}}" [disabled]="submitBtn.isClicked"
             (click)="onSubmit(cancelRejectDialog.title)"></button>
     </p-footer>
 </p-dialog>

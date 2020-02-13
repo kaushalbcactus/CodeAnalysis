@@ -671,9 +671,9 @@ input[type=submit]:hover {
     width: auto !important;
 }
 
-body .ui-button {
-    background-color: #d7181f !important;
-    border: 1px solid #d7181f !important;
+.ui-dialog-footer .ui-button {
+    background-color: #ce2e35 !important;
+    border: 1px solid #ce2e35 !important;
 }
 
 .ui-dialog .ui-dialog-titlebar {

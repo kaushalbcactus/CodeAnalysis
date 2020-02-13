@@ -5,7 +5,7 @@
         <span>User:</span>
       </div>
       <div class="ui-g-3">
-        <p-multiSelect [options]="sourceUsersArray" defaultLabel="Select User" [(ngModel)]="sourceUsers"
+        <p-multiSelect styleClass="" [options]="sourceUsersArray" defaultLabel="Select User" [(ngModel)]="sourceUsers"
           (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"
           (onPanelHide)="onSourceUsersChange()">
         </p-multiSelect>
@@ -14,7 +14,7 @@
         <span>Copy/Add Permission</span>
       </div>
       <div class="ui-g-3">
-        <p-dropdown [options]="destinationUsersArray" [(ngModel)]="destinationUser" filter="true"
+        <p-dropdown  [options]="destinationUsersArray" [(ngModel)]="destinationUser" filter="true"
           resetFilterOnHide="true" placeholder='Select User' (onChange)="onDestinationUserChange()">
         </p-dropdown>
       </div>

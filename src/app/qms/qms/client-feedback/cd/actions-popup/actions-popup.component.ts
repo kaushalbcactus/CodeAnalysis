@@ -190,14 +190,14 @@ export class ActionsPopupComponent implements OnInit {
     this.qc.deliveryLevel2 = content.ASD && content.ASD.results ? this.getResourceEmail(content.ASD.results) : this.qc.deliveryLevel2;
     this.qc.deliveryLevel1 = content.TL && content.TL.results ? this.getResourceEmail(content.TL.results) : this.qc.deliveryLevel1;
     this.qc.cm = content.CS && content.CS.results ? this.getResourceEmail(content.CS.results) : this.qc.cm;
-    if (this.qc.deliveryLevel2.ids.length <= 0) {
+    if (this.qc.deliveryLevel2 && this.qc.deliveryLevel2.ids.length <= 0) {
       this.qc.deliveryLevel2 = codeDetails.DeliveryLevel2 ? this.getResourceEmail([codeDetails.DeliveryLevel2]) : this.qc.deliveryLevel2;
     }
-    if (this.qc.deliveryLevel1.ids.length <= 0) {
+    if (this.qc.deliveryLevel1 && this.qc.deliveryLevel1.ids.length <= 0) {
       this.qc.deliveryLevel1 = codeDetails.DeliveryLevel1 && codeDetails.DeliveryLevel1.results ?
         this.getResourceEmail(codeDetails.DeliveryLevel1.results) : this.qc.deliveryLevel1;
     }
-    if (this.qc.cm.ids.length <= 0) {
+    if (this.qc.cm && this.qc.cm.ids.length <= 0) {
       this.qc.cm = codeDetails.CMLevel1 && codeDetails.CMLevel1.results ?
         this.getResourceEmail([...codeDetails.CMLevel1.results, ...[codeDetails.CMLevel2]]) : this.qc.cm;
     }

@@ -2118,7 +2118,6 @@ export class UserProfileComponent implements OnInit {
   }
 
   ngAfterViewChecked() {
-    console.log('this.userProfileTable ', this.userProfileTable);
     if (this.userProfileData.length && this.isOptionFilter) {
       const obj = {
         tableData: this.userProfileTable,

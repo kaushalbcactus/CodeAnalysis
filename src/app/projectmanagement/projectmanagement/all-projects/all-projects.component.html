@@ -359,7 +359,7 @@
     <div *ngIf="pmObject.isAuditRollingVisible">
         <p-dialog [(visible)]="pmObject.isAuditRollingVisible" [modal]="true" [style]="{width: '1300px'}">
             <p-header>
-                Audit Project.
+                Audit Project
             </p-header>
             <p-table [value]="addRollingProjectArray" class="audit-rolling-section">
                 <ng-template pTemplate="header">
@@ -389,17 +389,18 @@
         </p-dialog>
     </div>
     <div *ngIf="pmObject.isMoveProjectToSOWVisible">
-        <p-dialog [(visible)]="pmObject.isMoveProjectToSOWVisible" [modal]="true" [style]="{width: '900px'}">
+        <p-dialog [(visible)]="pmObject.isMoveProjectToSOWVisible" [modal]="true" [style]="{width: '900px'}" [contentStyle]="{'max-height':'450px', 'height':'305px'}">
             <p-header>
                 Move Project To SOW
             </p-header>
             <div class="ui-grid-col-2">SOW Code</div>
             <div class="ui-grid-col-4">
-                <p-dropdown [(ngModel)]="newSelectedSOW" [options]="sowDropDownArray" placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true"></p-dropdown>
+                <p-dropdown [(ngModel)]="newSelectedSOW" appendTo="body" [options]="sowDropDownArray"  placeholder="Please Select"
+                    [showClear]="true" [filter]="true" resetFilterOnHide="true"></p-dropdown>
             </div>
             <p-footer>
-                <p-button type="button" class="mr-5" (click)="performSOWMove()" label="Move"></p-button>
-                <p-button type="button" class="mr-5" (click)="closeMoveSOW()" label="Cancel"></p-button>
+                <button type="button" pButton class="mr-5" (click)="performSOWMove()" label="Move"></button>
+                <button type="button" pButton class="mr-5" (click)="closeMoveSOW()" label="Cancel"></button>
             </p-footer>
         </p-dialog>
     </div>
@@ -446,8 +447,9 @@
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th style="width: 4em;">S.No</th>
-                <th *ngFor="let col of columns" [ngStyle]="{'width': col.field === 'Status' ? '15em !important':(col.field === 'Category'|| col.field === 'ClientAmount'|| col.field === 'ClientCurrency') ? '11.5em !important':'' }" [pSortableColumn]="col.field" pResizableColumn
-                    pReorderableColumn [hidden]="!col.visibility">
+                <th *ngFor="let col of columns"
+                    [ngStyle]="{'width': col.field === 'Status' ? '15em !important':(col.field === 'Category'|| col.field === 'ClientAmount'|| col.field === 'ClientCurrency') ? '11.5em !important':'' }"
+                    [pSortableColumn]="col.field"  [hidden]="!col.visibility">
                     {{col.header}}
                     <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
                 </th>

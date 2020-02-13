@@ -188,7 +188,7 @@ export class SendToClientComponent implements OnInit {
     // this.spServices.downloadMultipleFiles(tempArray, fileName);
     this.commonService.SetNewrelic('projectmanagement', 'sendtoclient', 'createZip');
     this.spServices.createZip(tempArray.map(c => c.url), fileName);
-    
+
     // }, 500);
   }
   goToAllocationPage(task) {
@@ -213,7 +213,10 @@ export class SendToClientComponent implements OnInit {
     if (isActionRequired) {
       this.commonService.SetNewrelic('projectManagment', 'sendToClient', 'UpdateSchedules');
       await this.spOperations.updateItem(this.Constant.listNames.Schedules.name, task.ID, options, this.Constant.listNames.Schedules.type);
-
+      const projectInfoOptions = { Status: 'Author Review' };
+      const projectID = this.pmObject.allProjectItems.filter(item => item.ProjectCode === task.ProjectCode);
+      await this.spOperations.updateItem(this.Constant.listNames.ProjectInformation.name, projectID[0].ID, projectInfoOptions,
+        this.Constant.listNames.ProjectInformation.type);
       // check whether next task is null or not.
       // Update the next task columnn PreviousTaskClosureDate with current date and time.
       if (task.NextTasks) {
@@ -407,16 +410,8 @@ export class SendToClientComponent implements OnInit {
         preTaskObj.listName = this.Constant.listNames.Schedules.name;
         preTaskObj.type = 'GET';
         batchUrl.push(preTaskObj);
-
-        // const previousTaskEndPoint = this.spServices.getReadURL('' + this.Constant.listNames.Schedules.name + '',
-        //   this.pmConstant.previousTaskOptions);
-        // const previousTaskUpdatedEndPoint = previousTaskEndPoint.replace('{0}', scObj.PreviousTask).replace('{1}', scObj.NextTasks);
-        // this.spServices.getBatchBodyGet(batchContents, batchGuid, previousTaskUpdatedEndPoint);
         tempSendToClientArray.push(scObj);
       }
-      // batchContents.push('--batch_' + batchGuid + '--');
-      // const userBatchBody = batchContents.join('\r\n');
-      // const arrResults = await this.spServices.executeGetBatchRequest(batchGuid, userBatchBody);
       let counter = 0;
       this.commonService.SetNewrelic('projectManagment', 'sendToClient', 'GetSchedules');
       let arrResults = await this.spServices.executeBatch(batchUrl);
@@ -434,6 +429,12 @@ export class SendToClientComponent implements OnInit {
         });
         counter++;
         if (prevTask.length) {
+          // if (prevTask[0].IsCentrallyAllocated === 'Yes') {
+          //   const preTaskObj = Object.assign({}, this.pmConstant.subtaskOptions);
+          //   preTaskObj.filter = preTaskObj.filter.replace('{0}', prevTask[0].ID);
+          //   const previousTask = await this.spServices.readItems(this.Constant.listNames.Schedules.name, preTaskObj);
+          //   prevTask = previousTask.length ? previousTask : prevTask;
+          // }
           this.scArrays.previousTaskArray.push(prevTask[0]);
           taskItem.PreviousTaskStatus = prevTask[0].Status;
           taskItem.PreviousTaskUser = prevTask[0].AssignedTo ? prevTask[0].AssignedTo.Title : '';
@@ -448,20 +449,9 @@ export class SendToClientComponent implements OnInit {
       if (tempSendToClientArray.length) {
         this.createColFieldValues(tempSendToClientArray);
       }
-      // this.scArrays.projectCodeArray = this.commonService.unique(projectCodeTempArray, 'value');
-      // this.scArrays.shortTitleArray = this.commonService.unique(shortTitleTempArray, 'value');
-      // this.scArrays.clientLegalEntityArray = this.commonService.unique(clientLegalEntityTempArray, 'value');
-      // this.scArrays.POCArray = this.commonService.unique(POCTempArray, 'value');
-      // this.scArrays.deliveryTypeArray = this.commonService.unique(deliveryTypeTempArray, 'value');
-      // this.scArrays.dueDateArray = this.commonService.unique(dueDateTempArray, 'value');
-      // this.scArrays.milestoneArray = this.commonService.unique(milestoneTempArray, 'value');
-      // this.scArrays.previousTaskOwnerArray = this.commonService.unique(previousTaskOwnerTempArray, 'value');
-      // this.scArrays.previousTaskStatusArray = this.commonService.unique(previousTaskStatusTempArray, 'value');
       this.pmObject.sendToClientArray = tempSendToClientArray;
       const tableRef: any = this.sct;
       tableRef.first = 0;
-      // this.pmObject.totalRecords.SendToClient = this.pmObject.sendToClientArray.length;
-      // this.pmObject.sendToClientArray_copy = tempSendToClientArray.slice(0, 5);
       this.isSCTableHidden = false;
       this.isSCInnerLoaderHidden = true;
       this.isSCFilterHidden = false;

@@ -17,7 +17,6 @@ export class PopupComponent implements OnInit {
   display = false;
   @Output() bindTableEvent = new EventEmitter<{}>();
   @Output() setSuccessMessage = new EventEmitter<{}>();
-  public loading = false;
   public hidePopupLoader = true;
   public hidePopupTable = false;
   public pf = {
@@ -75,17 +74,25 @@ export class PopupComponent implements OnInit {
     listName: ''
   };
   // tslint:disable: max-line-length
-  constructor(private global: GlobalService, private globalConstant: ConstantsService, private commonService: CommonService,
-    private spService: SPOperationService, private spcommon: SPCommonService, private qmsConstant: QMSConstantsService) {
+  constructor(
+    private global: GlobalService,
+    private globalConstant: ConstantsService,
+    private commonService: CommonService,
+    private spService: SPOperationService,
+    private qmsConstant: QMSConstantsService) {
   }
 
   ngOnInit() {
   }
 
-  openPopup(element: any, content: any) {
+  async openPopup(element: any, content: any) {
     this.display = true;
-    const resourceDetails = this.getResourceDetails(content.Title);
-    this.setPFObject(element, content, resourceDetails);
+    const currentElement = {
+      currentTarget: element.currentTarget,
+      Status: element.Status
+    };
+    const resourceDetails = await this.getResourceDetails(content.Title);
+    this.setPFObject(currentElement, content, resourceDetails);
   }
 
   async getResourceDetails(code) {
@@ -133,7 +140,7 @@ export class PopupComponent implements OnInit {
     this.pf.cmLevel1 = resourceDetails.CMLevel1 && resourceDetails.CMLevel1.results ? this.getResourceEmail(resourceDetails.CMLevel1.results) : this.pf.cmLevel1;
     this.pf.cmLevel2 = resourceDetails.CMLevel2 && resourceDetails.CMLevel2.EMail ? resourceDetails.CMLevel2 : '';
     this.pf.deliveryLevel2 = resourceDetails.DeliveryLevel2 && resourceDetails.DeliveryLevel2.EMail ? resourceDetails.DeliveryLevel2 : '';
-    this.pf.resources = content.resources ? content.resources : '';
+    this.pf.resources = Array.isArray(content.Resources) ? content.Resources.length ? content.Resources : '' : content.resources ? content.resources : '';
   }
 
   /**
@@ -243,7 +250,7 @@ export class PopupComponent implements OnInit {
    * fetches resources based on accountable group
    */
   getSelectedGroupItems() {
-    this.loading = true;
+    this.globalConstant.loader.isPSInnerLoaderHidden = false;
     setTimeout(async () => {
       const group = this.pf.selectedGroup;
       const cdComponent = JSON.parse(JSON.stringify(this.qmsConstant.ClientFeedback.ClientDissatisfactionComponent));
@@ -294,7 +301,7 @@ export class PopupComponent implements OnInit {
           }
         }
       });
-      this.loading = false;
+      this.globalConstant.loader.isPSInnerLoaderHidden = true;
     }, 300);
   }
 
@@ -346,7 +353,7 @@ export class PopupComponent implements OnInit {
         }
       }
       this.update(pfDetails);
-      this.bindTableEvent.emit(this.pf);
+      await this.bindTableEvent.emit(this.pf);
       this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'Positive feedback ' + this.pf.Status + '!' });
       this.close();
       this.hidePopupLoader = true;

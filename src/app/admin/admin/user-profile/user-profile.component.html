@@ -13,7 +13,7 @@
     <p-dropdown [options]="userFilterOptions" [(ngModel)]="selectedOption" styleClass="custom-dropDown"
         (onChange)="onChangeSelect()" resetFilterOnHide="true" filter="true"></p-dropdown>
     <div style="float: left;" class="pr-20" *ngIf="selectedOption ==='Active'">
-        <p-button icon="pi pi-plus-circle" label="Add New User" type="button" (click)="showAddUserModal()"></p-button>
+        <button pButton class="adminBtn" icon="pi pi-plus-circle" label="Add New User" type="button" (click)="showAddUserModal()"></button>
     </div>
 </div>
 <div class="clearBoth"></div>
@@ -434,7 +434,7 @@
                         <div *ngIf="addUser.controls.manager.errors.required"> Manager is required</div>
                     </div>
                     <div class="mt-5" *ngIf="date.isManagerEffectiveDateActive">
-                        <p-calendar formControlName="managerEffectiveDate" placeholder="Manager Date" showIcon="true"
+                        <p-calendar  styleClass="pCalendarBtn" formControlName="managerEffectiveDate" placeholder="Manager Date" showIcon="true"
                             [readonlyInput]="true" [minDate]="minPastMonth" dateFormat="M dd, yy"></p-calendar>
                         <div class="error"
                             *ngIf="upObject.isFormSubmit && addUser.controls.managerEffectiveDate.errors">
@@ -456,7 +456,7 @@
                     </div>
 
                     <div class="mt-5" *ngIf="date.isBucketDateActive">
-                        <p-calendar formControlName="BucketDate" placeholder="Date" showIcon="true"
+                        <p-calendar  styleClass="pCalendarBtn" formControlName="BucketDate" placeholder="Date" showIcon="true"
                             [readonlyInput]="true" [minDate]="addUser.value.dateofjoin" dateFormat="M dd, yy">
                         </p-calendar>
                         <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.BucketDate.errors">
@@ -482,7 +482,7 @@
                         <div *ngIf="addUser.controls.practiceArea.errors.required">Practice Area is required</div>
                     </div>
                     <div class="mt-5" *ngIf="date.isPracticeEffectiveDateActive">
-                        <p-calendar formControlName="practiceAreaEffectiveDate" placeholder="Practice Area Date"
+                        <p-calendar  styleClass="pCalendarBtn" formControlName="practiceAreaEffectiveDate" placeholder="Practice Area Date"
                             showIcon="true" [readonlyInput]="true" [minDate]="minPastMonth" dateFormat="M dd, yy">
                         </p-calendar>
                         <div class="error"
@@ -505,7 +505,7 @@
                         <div *ngIf="addUser.controls.timeZone.errors.required">Time Zone is required</div>
                     </div>
                     <div class="mt-5" *ngIf="date.isTimeZoneEffectiveDateActive">
-                        <p-calendar formControlName="timeZoneEffectiveDate" placeholder="Time Zone Date" showIcon="true"
+                        <p-calendar  styleClass="pCalendarBtn" formControlName="timeZoneEffectiveDate" placeholder="Time Zone Date" showIcon="true"
                             [readonlyInput]="true" [minDate]="addUser.value.dateofjoin" dateFormat="M dd, yy">
                         </p-calendar>
                         <div class="error"
@@ -518,7 +518,7 @@
                 </div>
                 <div class="p-col-2"><span class="compulsory">*</span>Date of Joining</div>
                 <div class="p-col-4">
-                    <p-calendar formControlName="dateofjoin" placeholder="Date of Joining" showIcon="true"
+                    <p-calendar  styleClass="pCalendarBtn" formControlName="dateofjoin" placeholder="Date of Joining" showIcon="true"
                         [readonlyInput]="true" [monthNavigator]="true" [yearNavigator]="true" yearRange="{{yearRange}}"
                         dateFormat="M dd, yy" (onClose)="onCloseDateOfJoining()">
                     </p-calendar>
@@ -530,7 +530,7 @@
             <div class="p-grid mt-20">
                 <div class="p-col-2"><span class="compulsory">*</span>Go Live Date</div>
                 <div class="p-col-4">
-                    <p-calendar formControlName="liveDate" placeholder="Go Live Date" showIcon="true"
+                    <p-calendar  styleClass="pCalendarBtn" formControlName="liveDate" placeholder="Go Live Date" showIcon="true"
                         [readonlyInput]="true" [monthNavigator]="true" [yearNavigator]="true"
                         [minDate]="addUser.value.dateofjoin" yearRange="{{yearRange}}" dateFormat="M dd, yy">
                     </p-calendar>
@@ -588,7 +588,7 @@
                     </div>
 
                     <div class="mt-5" *ngIf="date.isMaxHrsDateActive">
-                        <p-calendar formControlName="MaxHrsDate" placeholder="Date" showIcon="true"
+                        <p-calendar  styleClass="pCalendarBtn" formControlName="MaxHrsDate" placeholder="Date" showIcon="true"
                             [readonlyInput]="true" [minDate]="addUser.value.dateofjoin" dateFormat="M dd, yy">
                         </p-calendar>
                         <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.MaxHrsDate.errors">
@@ -607,7 +607,7 @@
                         <div *ngIf="addUser.controls.primarySkill.errors.required"> Primary Skill is required</div>
                     </div>
                     <div class="mt-5" *ngIf="date.isPrimarySkillEffectiveDateActive">
-                        <p-calendar formControlName="primarySkillEffectiveDate" placeholder="Primary Skill Date"
+                        <p-calendar  styleClass="pCalendarBtn" formControlName="primarySkillEffectiveDate" placeholder="Primary Skill Date"
                             showIcon="true" [readonlyInput]="true" [minDate]="minPastMonth" dateFormat="M dd, yy">
                         </p-calendar>
                         <div class="error"
@@ -630,7 +630,7 @@
                         <div *ngIf="addUser.controls.skillLevel.errors.required">Skill Level is required</div>
                     </div>
                     <div class="mt-5" *ngIf="date.isSkillLevelEffectiveDateActive">
-                        <p-calendar formControlName="skillLevelEffectiveDate" placeholder="Skill Level Date"
+                        <p-calendar  styleClass="pCalendarBtn" formControlName="skillLevelEffectiveDate" placeholder="Skill Level Date"
                             showIcon="true" [readonlyInput]="true" [minDate]="minPastMonth" dateFormat="M dd, yy">
                         </p-calendar>
                         <div class="error"
@@ -716,7 +716,7 @@
                 </div>
                 <div class="p-col-2"><span class="compulsory">*</span>Date of Exit</div>
                 <div class="p-col-4">
-                    <p-calendar formControlName="dateofexit" placeholder="Date of Exit" showIcon="true"
+                    <p-calendar  styleClass="pCalendarBtn" formControlName="dateofexit" placeholder="Date of Exit" showIcon="true"
                         [minDate]="addUser.value.dateofjoin" [readonlyInput]="true" dateFormat="M dd, yy">
                     </p-calendar>
                     <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.dateofexit.errors">
@@ -755,6 +755,6 @@
         </div>
     </form>
     <p-footer>
-        <button pButton label="{{customLabel}}" type="button" (click)="saveUser(addUser)"></button>
+        <button pButton class="adminBtn" label="{{customLabel}}" type="button" (click)="saveUser(addUser)"></button>
     </p-footer>
 </p-dialog>

@@ -33,6 +33,29 @@ button.ui-datepicker-trigger.ui-calendar-button span.ui-button-text.ui-clickable
     padding: 5px !important;
 }
 
+/* P-dialog Footer button  */
+
+.ui-dialog-footer .ui-button {
+    background-color: #c53e3e !important;
+    border: 1px solid #C53E3D !important;
+}
+
+body .ui-radiobutton .ui-radiobutton-box.ui-state-active {
+    border-color: #c53e3e !important;
+    background-color: #c53e3e !important;
+    color: #ffffff  !important;
+}
+
+body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight{
+    background-color: #c53e3e !important;
+}
+
+body .ui-datepicker table td.ui-datepicker-today > a.ui-state-active, body .ui-datepicker table td.ui-datepicker-today > span.ui-state-active, 
+body .ui-datepicker table td > a.ui-state-active, body .ui-datepicker table td > span.ui-state-active {
+    background-color: #c53e3e !important;
+}
+ 
+
 /* Loadder ICON  */
 
 @-webkit-keyframes spin {
@@ -138,4 +161,9 @@ button.ui-datepicker-trigger.ui-calendar-button span.ui-button-text.ui-clickable
     margin-top: 14%;
     /* top: 0;
     margin-bottom: 1%; */
+}
+body .ui-table .ui-sortable-column.ui-state-highlight, 
+body .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active, 
+body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight {
+    background-color: #C53E3E !important;
 }

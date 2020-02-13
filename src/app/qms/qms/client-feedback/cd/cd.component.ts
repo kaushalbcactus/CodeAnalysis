@@ -106,6 +106,7 @@ export class CDComponent implements OnInit, OnDestroy {
       { field: 'Accountable', header: 'Accountble' },
       { field: 'Segregation', header: 'Segregation' },
       { field: 'BusinessImpact', header: 'Business Imapact' },
+      { field: '', header: '' },
     ];
     // this.initializeMsg();
     setTimeout(async () => {
