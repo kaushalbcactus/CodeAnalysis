@@ -60,7 +60,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
 
     this.loaderenable = true;
     this.DocumentArray = [];
-    this.data = this.config.data === undefined ? this.taskData : this.config.data;
+    this.data = this.config.data ? this.taskData : this.config.data;
     this.status = this.data.Status;
     this.enableNotification = this.data.emailNotificationEnable ? this.data.emailNotificationEnable : false;
     if (this.enableNotification) {

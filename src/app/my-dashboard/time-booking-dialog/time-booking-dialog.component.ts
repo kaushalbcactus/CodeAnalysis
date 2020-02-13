@@ -62,6 +62,7 @@ export class TimeBookingDialogComponent implements OnInit {
   TotalOfTotal: any = [];
   FinalTotal = '00:00';
   displayComment = false;
+  displayFileUpload = false;
   timebookingRow: any;
   constructor(
     public config: DynamicDialogConfig,
@@ -292,6 +293,8 @@ export class TimeBookingDialogComponent implements OnInit {
 
     const tempMilestones = this.allTasks.map(o => new Object({
       ID: o.ID, Entity: o.Entity,
+      Title: o.Title,
+      Task: o.Task,
       ProjectCode: o.ProjectCode === 'Adhoc' ? '-' : o.ProjectCode,
       Milestone: o.Milestone === 'Select one' ? o.Comments : o.Milestone,
       SubMilestone: o.SubMilestones,
@@ -442,9 +445,8 @@ export class TimeBookingDialogComponent implements OnInit {
     this.batchContents = new Array();
 
     const ProjectInformation = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.projectInfo);
-    const count = 0;
+    // const count = 0;
     let ProjectInformationFilter = '';
-    const batchUrl = [];
 
 
     allProjectCodes.forEach((value, i) => {
@@ -598,7 +600,8 @@ export class TimeBookingDialogComponent implements OnInit {
   checkMilestone(event, rowData) {
     rowData.Milestone = event.lastIndexOf(' - ') > -1 ? event.substr(0, event.lastIndexOf(' - ')) : event;
     rowData.SubMilestone = event.lastIndexOf(' - ') > -1 ? event.substr(event.lastIndexOf(' - ') + 3) : null;
-
+    // tslint:disable-next-line: max-line-length
+    // rowData.Title = rowData.ID === -1 ? rowData.ProjectCode + ' ' + rowData.Milestone + ' TB ' + this.sharedObject.currentUser.title : rowData.Title;
     if (this.UserMilestones.filter(c => c.Entity === rowData.Entity && c.ProjectCode ===
       rowData.ProjectCode && c.displayName === event).length > 1) {
       const index = this.UserMilestones.indexOf(rowData);
@@ -679,9 +682,17 @@ export class TimeBookingDialogComponent implements OnInit {
   // *************************************************************************************************
 
 
-  openDialog(rowData) {
-    this.displayComment = true;
-    this.timebookingRow = rowData;
+  openDialog(rowData, type) {
+    if (type === 'comments') {
+      this.displayComment = true;
+      this.timebookingRow = rowData;
+    } else {
+      this.displayFileUpload = true;
+      this.timebookingRow = {
+        ...rowData,
+        task : rowData
+      };
+    }
   }
 
 
