@@ -52,6 +52,14 @@
     background-color: grey;
 }
 
+.colorgoLive {
+    background-color: #ccffcc;
+}
+
+.colortrainee {
+    background-color: #ffffff;
+}
+
 .colorAvailable {
     background-color: #55bf3b;
     cursor: pointer;
@@ -239,7 +247,7 @@
 #capacityTable>thead>tr>th:first-child,
 .capacityBody tr.UserTasksRow table tr:first-child>td:first-child {
     padding: 3px;
-    width: 6%;
+    /* width: 6%; */
 }
 
 .capacityBody #TasksPerDay>thead>tr>td,
@@ -310,10 +318,7 @@ table#milestoneTasks td {
     width: 6%;
 }
 
-tr[class$="taskrow"]+tr
-/*.capacityBody tr.UserTasksRow table tr:last-child */
-
-{
+tr[class$="taskrow"]+tr {
     position: absolute;
     left: 0;
     z-index: 200;
@@ -321,12 +326,24 @@ tr[class$="taskrow"]+tr
     background-color: transparent;
 }
 
+
+/* tr[class$='spenttaskRow'] {
+    position: relative !important;
+} */
+
 tr[class$="taskrow"]+tr>td
 /* .capacityBody tr.UserTasksRow table tr:last-child > td */
 
 {
     border: none !important;
 }
+
+
+/* tr[class$='spenttaskRow']>td {
+    border-top: 0px !important;
+    padding: 3px !important;
+    border: 1px solid #ddd !important;
+} */
 
 .more,
 .less {

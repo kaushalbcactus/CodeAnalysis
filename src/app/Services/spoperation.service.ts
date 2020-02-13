@@ -97,7 +97,7 @@ export class SPOperationService {
       CCEmailId: cc
     };
 
-    
+
     const result = await this.createItem(this.constants.listNames.SendEmail.name, data,
       this.constants.listNames.SendEmail.type);
     return this.parseRetSingle(result);
@@ -802,6 +802,53 @@ export class SPOperationService {
       }
     });
   }
+
+
+
+  // postJson(endpointUrl, payload, success, failure) {
+  //   $.ajax({
+  //     type: "POST",
+  //     headers: {
+  //       "accept": "application/json;odata=verbose",
+  //       "content-type": "application/json;odata=verbose",
+  //       "X-RequestDigest": $("#__REQUESTDIGEST").val()
+  //     },
+  //     data: JSON.stringify(payload),
+  //     url: endpointUrl,
+  //     success: success,
+  //     failure: failure
+  //   });
+
+  //   debugger;
+  // }
+
+
+  // // tslint:disable-next-line: whitespace
+  // getListItems('Site', "<View><Query><Where><Contains><FieldRef Name='Keywords'/><Value Type='Note'>test</Value></Contains></Where></Query></View>",
+  // function(items) {
+  //   for (var i = 0; i < items.length; i++) {
+  //     console.log(items);
+  //   }
+  // },
+  // function(error) {
+  //   console.log(JSON.stringify(error));
+  // });
+
+  // getListItems(success, failure) {
+  //   var queryPayload = {
+  //     'query': {
+  //       '__metadata': { 'type': 'SP.CamlQuery' },
+  //       'ViewXml': '<View><Query><Where><Contains><FieldRef Name="Tue,Feb4,2020"/><Value Type="TimeSpentPerday">test</Value></Contains></Where></Query></View>'
+  //     }
+  //   };
+
+  //   debugger;
+  //   var endpointUrl = this.baseUrl + "/_api/web/lists/getbytitle('Schedules')/getitems";
+  //   this.postJson(endpointUrl, queryPayload,
+  //     function (data) {
+  //       success(data.d.results);
+  //     }, failure);
+  // }
 
 }
   // added function From old sharepoint service

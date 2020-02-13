@@ -39,7 +39,10 @@ export class UsercapacityComponent implements OnInit {
   enableTaskDialog = false;
   selectedTask: any;
   disableCamera = false;
-  enableDownload: boolean;
+  enableDownload = false;
+  displayCount: any;
+  taskStatus = 'All';
+  tableLoaderenable = false;
   constructor(
     public datepipe: DatePipe, public config: DynamicDialogConfig,
     private spService: SPOperationService,
@@ -62,9 +65,7 @@ export class UsercapacityComponent implements OnInit {
     if (this.data) {
       this.dynamicload = true;
       this.Onload(this.data);
-      if (this.data.type === 'CapacityDashboard') {
-        this.enableDownload = true;
-      }
+
     }
   }
 
@@ -84,16 +85,26 @@ export class UsercapacityComponent implements OnInit {
     this.cdRef.detectChanges();
   }
 
-  // *************************************************************************************************************************************
+  // ******************************************************************************************************
   // load component for user capacity from diff. module
-  // *************************************************************************************************************************************
+  // ******************************************************************************************************
 
 
   async Onload(data) {
+
     this.messageService.add({
       key: 'myKey1', severity: 'warn', sticky: true,
       summary: 'Info Message', detail: 'Fetching data...'
     });
+    this.enableDownload = data.type === 'CapacityDashboard' ? true : false;
+    setTimeout(() => {
+      if (data.type === 'CapacityDashboard') {
+
+        this.displayCount = data.resourceType === 'OnJob' ? 'Total On Job Resource: ' + data.task.resources.length : 'Total Trainee: ' + data.task.resources.length;
+        this.taskStatus = data.taskStatus
+      }
+
+    }, 500);
 
 
     let setResourcesExtn = $.extend(true, [], data.task.resources);
@@ -141,7 +152,7 @@ export class UsercapacityComponent implements OnInit {
     return new Date(d.setDate(diff));
   }
 
-  getDates(startDate, stopDate) {
+  getDates(startDate, stopDate, remove) {
     const objDates = {
       dateStringArray: [],
       dateArray: []
@@ -151,7 +162,12 @@ export class UsercapacityComponent implements OnInit {
     let newStopDate = new Date(stopDate);
     newStopDate = new Date(newStopDate.setHours(23, 59, 59, 0));
     while (currentDate <= newStopDate) {
-      if (currentDate.getDay() !== 6 && currentDate.getDay() !== 0) {
+      if (remove) {
+        if (currentDate.getDay() !== 6 && currentDate.getDay() !== 0) {
+          objDates.dateArray.push(new Date(currentDate));
+        }
+      }
+      else {
         objDates.dateArray.push(new Date(currentDate));
       }
       currentDate.setDate(currentDate.getDate() + 1);
@@ -160,6 +176,7 @@ export class UsercapacityComponent implements OnInit {
   }
 
   async applyFilter(startDate, endDate, selectedUsers) {
+
     const oCapacity = {
       arrUserDetails: [],
       arrDateRange: [],
@@ -170,6 +187,8 @@ export class UsercapacityComponent implements OnInit {
     let batchResults = [];
     let finalArray = [];
     let tempFinalArray = [];
+    let tempTimeSpentFinalArray = [];
+    let TimeSpentbatchResults = [];
     let startDateString = this.datepipe.transform(startDate, 'yyyy-MM-dd') + 'T00:00:01.000Z';
     let endDateString = this.datepipe.transform(endDate, 'yyyy-MM-dd') + 'T23:59:00.000Z';
     const sTopStartDate = startDate;
@@ -178,13 +197,15 @@ export class UsercapacityComponent implements OnInit {
       arrDateRange: [],
       arrDateFormat: []
     };
-    obj.arrDateRange = this.getDates(startDate, endDate).dateArray;
-    obj.arrDateFormat = this.getDates(startDate, endDate).dateArray;
+    obj.arrDateRange = this.getDates(startDate, endDate, false).dateArray;
+    obj.arrDateFormat = this.getDates(startDate, endDate, false).dateArray;
     oCapacity.arrDateRange = obj.arrDateRange;
     oCapacity.arrDateFormat = obj.arrDateFormat;
     const batchGuid = this.spService.generateUUID();
     let batchContents = new Array();
     let batchUrl = [];
+    let TimeSpentbatchUrl = [];
+
     for (const userIndex in selectedUsers) {
       if (selectedUsers.hasOwnProperty(userIndex)) {
         if (selectedUsers[userIndex]) {
@@ -197,14 +218,24 @@ export class UsercapacityComponent implements OnInit {
             leaves: [],
             businessDays: [],
             totalAllocated: 0,
-            totalUnAllocated: 0
+            totalUnAllocated: 0,
+            TotalTimeSpent: 0,
+            GoLiveDate: '',
+            JoiningDate: '',
+            TimeSpentTasks: [],
           };
+
           const userDetail = [selectedUsers[userIndex]];
           if (userDetail.length > 0) {
             oUser.uid = userDetail[0].UserName.ID ? userDetail[0].UserName.ID : userDetail[0].UserName.Id;
             oUser.userName = userDetail[0].UserName.Title;
             oUser.maxHrs = userDetail[0].UserName.MaxHrs ? userDetail[0].UserName.MaxHrs : userDetail[0].MaxHrs;
+            oUser.GoLiveDate = userDetail[0].GoLiveDate;
+            oUser.JoiningDate = userDetail[0].DateOfJoining;
             this.fetchData(oUser, startDateString, endDateString, batchUrl);
+            if (this.enableDownload) {
+              this.fetchDataForTimeSpent(oUser, startDateString, endDateString, TimeSpentbatchUrl);
+            }
 
             if (batchUrl.length === 99) {
               this.common.SetNewrelic('Shared', 'UserCapacity', 'fetchTaskByUsers');
@@ -212,6 +243,13 @@ export class UsercapacityComponent implements OnInit {
               console.log(batchResults);
               tempFinalArray = [...tempFinalArray, ...batchResults];
               batchUrl = [];
+            }
+            if (TimeSpentbatchUrl.length === 99) {
+              TimeSpentbatchResults = await this.spService.executeBatch(TimeSpentbatchUrl);
+              console.log(batchResults);
+              tempTimeSpentFinalArray = [...tempTimeSpentFinalArray, ...TimeSpentbatchResults];
+              TimeSpentbatchUrl = [];
+
             }
             oCapacity.arrUserDetails.push(oUser);
           }
@@ -223,10 +261,18 @@ export class UsercapacityComponent implements OnInit {
       batchResults = await this.spService.executeBatch(batchUrl);
       tempFinalArray = [...tempFinalArray, ...batchResults];
     }
+    if (TimeSpentbatchUrl.length) {
+      this.common.SetNewrelic('Shared', 'UserCapacity', 'fetchSpentTaskByUsers');
+
+      TimeSpentbatchResults = await this.spService.executeBatch(TimeSpentbatchUrl);
+      tempTimeSpentFinalArray = [...tempTimeSpentFinalArray, ...TimeSpentbatchResults];
+
+    }
 
     // let arruserResults = await this.spService.executeBatch(batchUrl);
     const arruserResults = tempFinalArray.length ? tempFinalArray.map(a => a.retItems) : [];
 
+    const arruserResults1 = tempTimeSpentFinalArray.length ? tempTimeSpentFinalArray.map(a => a.retItems) : [];
     let batchURL = [];
     batchResults = [];
     finalArray = [];
@@ -239,14 +285,39 @@ export class UsercapacityComponent implements OnInit {
 
     for (const indexUser in oCapacity.arrUserDetails) {
       if (oCapacity.arrUserDetails.hasOwnProperty(indexUser)) {
-        oCapacity.arrUserDetails[indexUser].tasks = this.fetchTasks(oCapacity.arrUserDetails[indexUser], arruserResults[indexUser]);
+        // oCapacity.arrUserDetails[indexUser].tasks = this.fetchTasks(oCapacity.arrUserDetails[indexUser], arruserResults[indexUser]);
+
+
+        let TempTasks = this.fetchTasks(oCapacity.arrUserDetails[indexUser], arruserResults[indexUser]);
+
+        if (TempTasks) {
+
+          TempTasks = this.taskStatus === 'Confirmed' ? TempTasks.filter(c => c.Status === 'Completed' || c.Status === 'Not Started' || c.Status === 'In Progress') :
+            this.taskStatus === 'NotConfirmed' ? TempTasks.filter(c => c.Status === 'Not Confimed' || c.Status === 'Planned' || c.Status === 'Blocked') : TempTasks;
+        }
+
+        oCapacity.arrUserDetails[indexUser].tasks = TempTasks;
+
+
+        if(this.enableDownload){
+          const TimeSpentTasks = this.fetchTasks(oCapacity.arrUserDetails[indexUser], arruserResults1[indexUser]);
+          oCapacity.arrUserDetails[indexUser].TimeSpentTasks = this.SplitfetchTasks(TimeSpentTasks);
+
+          if (oCapacity.arrUserDetails[indexUser].TimeSpentTasks && oCapacity.arrUserDetails[indexUser].TimeSpentTasks.length) {
+            oCapacity.arrUserDetails[indexUser].TimeSpentTasks.sort((a, b) => {
+              return b.DueDate - a.DueDate;
+            });
+          }
+        }
+
+      
 
         if (oCapacity.arrUserDetails[indexUser].tasks && oCapacity.arrUserDetails[indexUser].tasks.length) {
           oCapacity.arrUserDetails[indexUser].tasks.sort((a, b) => {
             return b.DueDate - a.DueDate;
           });
           // tslint:disable
-          this.datepipe.transform(startDate, 'yyyy-MM-dd') + 'T00:00:01.000Z'
+           this.datepipe.transform(startDate, 'yyyy-MM-dd') + 'T00:00:01.000Z'
           endDateString = new Date(sTopEndDate) > new Date(this.datepipe.transform(oCapacity.arrUserDetails[indexUser].tasks[0].DueDate, 'yyyy-MM-ddT') + '23:59:00.000Z')
             ? sTopEndDate.toISOString() : this.datepipe.transform(oCapacity.arrUserDetails[indexUser].tasks[0].DueDate, 'yyyy-MM-ddT') + "23:59:00.000Z";
 
@@ -259,10 +330,11 @@ export class UsercapacityComponent implements OnInit {
           endDateString = sTopEndDate.toISOString();
         }
 
+      
+
         selectedUsers.map(c => c.ResourceUserID = c.UserName.Id ? c.UserName.Id : c.UserName.ID);
 
         oCapacity.arrUserDetails.map(c => c.AvailableHoursRID = selectedUsers.find(c => c.ResourceUserID === oCapacity.arrUserDetails[indexUser].uid).ID)
-
 
         if (batchURL.length === 99) {
           this.common.SetNewrelic('Shared', 'UserCapacity', 'fetchTaskByUsers');
@@ -295,10 +367,6 @@ export class UsercapacityComponent implements OnInit {
         availableHrsGet.type = 'GET';
         availableHrsGet.listName = this.globalConstantService.listNames.AvailableHours.name;
         batchURL.push(availableHrsGet);
-
-
-
-
       }
     }
 
@@ -308,14 +376,7 @@ export class UsercapacityComponent implements OnInit {
       batchResults = await this.spService.executeBatch(batchURL);
       finalArray = [...finalArray, ...batchResults];
     }
-    // } else {
-    //   batchResults = await this.spServices.executeBatch(batchURL);
-    //   finalArray = [...finalArray, ...batchResults];
-    // }
 
-
-
-    // let arrResults = await this.spService.executeBatch(batchURL);
     finalArray = finalArray.length ? finalArray : [];
     if (finalArray) {
 
@@ -354,12 +415,6 @@ export class UsercapacityComponent implements OnInit {
   fetchData(oUser, startDateString, endDateString, batchUrl) {
 
     const selectedUserID = oUser.uid;
-    // tslint:disable
-    // const endpoint = this.globalService.sharePointPageObject.webAbsoluteUrl
-    //   + "/_api/web/lists/getbytitle('" + this.Schedules + "')/items?$select=ID,Milestone,SubMilestones,Task,Status,Title,TimeSpent,ExpectedTime,StartDate,DueDate,TimeZone&$top=4500&$filter=(AssignedTo/Id eq " + selectedUserID + ") and(" +
-    //   "(StartDate ge '" + startDateString + "' and StartDate le '" + endDateString + "') or (DueDate ge '" + startDateString + "' and DueDate le '" + endDateString + "') or (StartDate le '" + startDateString + "' and DueDate ge '" + endDateString + "')" +
-    //   ") and Status ne 'Abandon' and Status ne 'Deleted'&$orderby=StartDate";
-    // tslint:enable
     const invObj = Object.assign({}, this.queryConfig);
     // tslint:disable-next-line: max-line-length
     invObj.url = this.spService.getReadURL(this.globalConstantService.listNames.Schedules.name, this.sharedConstant.userCapacity.fetchTasks);
@@ -372,26 +427,30 @@ export class UsercapacityComponent implements OnInit {
     // return this.spService.getBatchBodyGet(batchContents, batchGuid, endpoint);
   }
 
+  fetchDataForTimeSpent(oUser, startDateString, endDateString, TimeSpentbatchUrl) {
+
+    const selectedUserID = oUser.uid;
+    const invObj = Object.assign({}, this.queryConfig);
+    // tslint:disable-next-line: max-line-length
+    invObj.url = this.spService.getReadURL(this.globalConstantService.listNames.Schedules.name, this.sharedConstant.userCapacity.fetchSpentTimeTasks);
+    invObj.url = invObj.url.replace('{{userID}}', selectedUserID).replace(/{{startDateString}}/gi, startDateString)
+      .replace(/{{endDateString}}/gi, endDateString);
+    invObj.listName = this.globalConstantService.listNames.Schedules.name;
+    invObj.type = 'GET';
+    TimeSpentbatchUrl.push(invObj);
+    return TimeSpentbatchUrl;
+  }
+
   async executeBatchRequest(batchUrl) {
-    // const arrResults = [];
-    // const response = this.spService.executeBatchPostRequestByRestAPI(batchGuid, sBatchData);
     const response = await this.spService.executeBatch(batchUrl);
     const arrResults = response.length ? response.map(a => a.retItems) : [];
-    // const responseInLines = response.split('\n');
-    // for (let currentLine = 0; currentLine < responseInLines.length; currentLine++) {
-    //   try {
-    //     const tryParseJson = JSON.parse(responseInLines[currentLine]);
-    //     arrResults.push(tryParseJson.d.results);
-    //   } catch (e) {
-
-    //   }
-    // }
     return arrResults;
   }
   // tslint:disable
   fetchTasks(oUser, tasks) {
     for (const index in tasks) {
       if (tasks.hasOwnProperty(index)) {
+
         tasks[index].TotalAllocated = tasks[index].Task !== 'Adhoc' ?
           this.commonservice.convertToHrsMins('' + tasks[index].ExpectedTime).replace('.', ':')
           : tasks[index].TimeSpent.replace('.', ':');
@@ -403,6 +462,8 @@ export class UsercapacityComponent implements OnInit {
     }
     return tasks;
   }
+
+
 
   async calculateAvailableHours(availableHrs) {
 
@@ -441,7 +502,9 @@ export class UsercapacityComponent implements OnInit {
           taskCount: 0,
           maxAvailableHours: AvailableHrs.find(c => c.date.getTime() === oCapacity.arrDateFormat[index].getTime()) ? AvailableHrs.find(c => c.date.getTime() === oCapacity.arrDateFormat[index].getTime()).availableHrs : oUser.maxHrs,
           totalTimeAllocated: 0,
-          availableHrs: 0
+          availableHrs: 0,
+          TimeSpent: 0,
+
         };
         oUser.dates.push(temp);
       }
@@ -451,9 +514,9 @@ export class UsercapacityComponent implements OnInit {
         if (leaves.hasOwnProperty(i)) {
           let arrLeaves = [];
           let arrLeavesDates = [];
-          arrLeaves = $.merge(arrLeaves, this.getDates(leaves[i].EventDate, leaves[i].EndDate).dateArray);
+          arrLeaves = $.merge(arrLeaves, this.getDates(leaves[i].EventDate, leaves[i].EndDate, true).dateArray);
           if (!leaves[i].IsHalfDay) {
-            arrLeavesDates = $.merge(arrLeavesDates, this.getDates(leaves[i].EventDate, leaves[i].EndDate).dateArray);
+            arrLeavesDates = $.merge(arrLeavesDates, this.getDates(leaves[i].EventDate, leaves[i].EndDate, true).dateArray);
           }
           for (const j in arrLeaves) {
             if (arrLeaves.hasOwnProperty(j)) {
@@ -485,6 +548,11 @@ export class UsercapacityComponent implements OnInit {
     for (const i in oUser.dates) {
       if (oUser.dates.hasOwnProperty(i)) {
         const tasksDetails = [];
+
+        if (oUser.dates[i].date.getDay() === 6 || oUser.dates[i].date.getDay() === 0) {
+          oUser.dates[i].userCapacity = 'Leave';
+          oUser.dates[i].maxAvailableHours = 0;
+        }
         const bLeave = oUser.dates[i].userCapacity !== 'Leave' ? false : true;
         const arrHoursMins = [];
         const objTotalAllocatedPerUser = {
@@ -503,6 +571,7 @@ export class UsercapacityComponent implements OnInit {
             // const taskEndDate = new Date(new Date(oUser.tasks[j].DueDate));
             const taskBusinessDays = this.commonservice.calcBusinessDays(taskStartDate, taskEndDate);
             oUser.tasks[j].taskBusinessDays = taskBusinessDays;
+            oUser.tasks[j].taskTotalDays = this.CalculateWorkingDays(taskStartDate, taskEndDate);
 
             let arrLeaveDays = [];
             if (oUser.leaves.length) {
@@ -584,6 +653,11 @@ export class UsercapacityComponent implements OnInit {
           }
         }
 
+        const allTimeSpentArray = oUser.TimeSpentTasks.filter(c => c.TimeSpentDate.getTime() === oUser.dates[i].date.getTime()) ?
+          oUser.TimeSpentTasks.filter(c => c.TimeSpentDate.getTime() === oUser.dates[i].date.getTime()).map(c =>
+            new Object({ timeHrs: c.TimeSpentPerDay.split(':')[0], timeMins: c.TimeSpentPerDay.split(':')[1] })) : [];
+
+        oUser.dates[i].TimeSpent = allTimeSpentArray.length > 0 ? this.commonservice.ajax_addHrsMins(allTimeSpentArray) : '0:0';
         oUser.dates[i].taskCount = taskCount;
         if (bLeave) {
           oUser.dates[i].totalTimeAllocatedPerDay = 0;
@@ -594,19 +668,43 @@ export class UsercapacityComponent implements OnInit {
       }
     }
 
+    const ArrayTimespentPerDay = oUser.dates.map(c => new Object({
+      timeHrs: c.TimeSpent.split(':')[0],
+      timeMins: c.TimeSpent.split(':')[1]
+    }));
+
+    oUser.TotalTimeSpent = ArrayTimespentPerDay.length > 0 ? this.commonservice.ajax_addHrsMins(ArrayTimespentPerDay) : 0;
 
     oUser.totalAllocated = arrTotalAllocatedPerUser.length > 0 ? this.commonservice.ajax_addHrsMins(arrTotalAllocatedPerUser) : 0;
     oUser.totalUnAllocated = arrTotalAvailablePerUser.length > 0 ? this.commonservice.ajax_addHrsMins(arrTotalAvailablePerUser) : 0;
-    oUser.displayTotalAllocated = oUser.totalAllocated;
+    oUser.displayTotalAllocated = oUser.totalAllocated === 0 ? '0:0' : oUser.totalAllocated;
     oUser.displayTotalUnAllocated = oUser.totalUnAllocated === 0 ? '0:0' : oUser.totalUnAllocated;
-    oUser.displayTotalAllocatedExport =   oUser.displayTotalAllocated.split(':')[0] + 'h:' +
-     oUser.displayTotalAllocated.split(':')[1] + 'm' ;
+    oUser.displayTotalAllocatedExport = oUser.displayTotalAllocated.split(':')[0] + 'h:' +
+      oUser.displayTotalAllocated.split(':')[1] + 'm';
     oUser.displayTotalUnAllocatedExport = oUser.displayTotalUnAllocated.split(':')[0] + 'h:' +
-    oUser.displayTotalUnAllocated.split(':')[1] + 'm' ;
+      oUser.displayTotalUnAllocated.split(':')[1] + 'm';
+    oUser.displayTotalTimeSpent = oUser.TotalTimeSpent === 0 ? '0:0' : oUser.TotalTimeSpent;
+    oUser.displayTotalTimeSpentExport = oUser.displayTotalTimeSpent.split(':')[0] + 'h:' +
+      oUser.displayTotalTimeSpent.split(':')[1] + 'm';
     oUser.dayTasks = [];
+    oUser.TimeSpentDayTasks = [];
   }
 
+
+  CalculateWorkingDays(startDate, endDate) {
+    let tempDate = new Date(startDate);
+    let days = 1;
+    while (endDate > tempDate) {
+      tempDate = new Date(tempDate.setDate(tempDate.getDate() + 1));
+      days += 1;
+    }
+    return days;
+  }
+
+
   getPerDayTime(sTime, numberOfBusDays) {
+
+
     if (numberOfBusDays === 1) {
       return sTime;
     } else {
@@ -642,8 +740,12 @@ export class UsercapacityComponent implements OnInit {
   }
 
   fetchProjectTaskDetails(user, tasks, date, objt) {
+
+
     if (tasks.length > 0) {
-      const oItem = $(objt.target).closest('.UserTasksRow').siblings('.TaskPerDayRow');
+      // const oItem = $(objt.target).closest('.UserTasksRow').siblings('.TaskPerDayRow');
+      $('.' + user.uid + 'loaderenable').show();
+      const oItem = $(objt.target).closest('.UserTasksRow').find('.TaskPerDayRow');
       oItem.hide();
       oItem.find('#TasksPerDay').hide();
       oItem.find('.innerTableLoader').show();
@@ -670,20 +772,12 @@ export class UsercapacityComponent implements OnInit {
         if (tasks.hasOwnProperty(taskIndex)) {
           if (tasks[taskIndex].projectCode !== 'Adhoc') {
             // tslint:disable
-            // const url = this.globalService.sharePointPageObject.webAbsoluteUrl
-            //   + "/_api/web/lists/getbytitle('" + this.ProjectInformation + "')/items?$select=WBJID&&$filter=ProjectCode eq '" + tasks[taskIndex].projectCode + "'";
-            // this.spService.getBatchBodyGet(batchContents, batchGuid, url);
             const piObj = Object.assign({}, this.queryConfig);
             piObj.url = this.spService.getReadURL(this.globalConstantService.listNames.ProjectInformation.name, this.sharedConstant.userCapacity.getProjectInformation);
             piObj.url = piObj.url.replace('{{projectCode}}', tasks[taskIndex].projectCode)
             piObj.listName = this.globalConstantService.listNames.ProjectInformation.name;
             piObj.type = 'GET';
             batchUrl.push(piObj);
-
-
-            // var sSchedulesURL = this.globalService.sharePointPageObject.webAbsoluteUrl
-            //   + "/_api/web/lists/getbytitle('" + this.Schedules + "')/items?$select=ID,Task,Title,ExpectedTime,StartDate,DueDate,TimeZone,Status,AssignedToText,ContentType/Name&$expand=ContentType&$filter=startswith(Title,'" + tasks[taskIndex].projectCode + "') and Milestone eq '" + tasks[taskIndex].milestone + "' and Status ne 'Abandon' and Status ne 'Completed' and Status ne 'Deleted' and Status ne 'Auto Closed'";
-            // this.spService.getBatchBodyGet(batchContents, batchGuid, sSchedulesURL);
             const tasksObj = Object.assign({}, this.queryConfig);
             tasksObj.url = this.spService.getReadURL(this.globalConstantService.listNames.Schedules.name, this.sharedConstant.userCapacity.getProjectTasks);
             tasksObj.url = tasksObj.url.replace('{{projectCode}}', tasks[taskIndex].projectCode).replace('{{milestone}}', tasks[taskIndex].milestone);
@@ -696,9 +790,6 @@ export class UsercapacityComponent implements OnInit {
         }
       }
       if (batchUrl.length) {
-        // batchContents.push('--batch_' + batchGuid + '--');
-        // const sBatchData = batchContents.join('\r\n');
-        // const arrResults = this.executeBatchRequest(batchUrl);
         this.common.SetNewrelic('Shared', 'UserCapacity', 'getProInfoByPCAndTaskByPCandMilestone');
         let arrResults = await this.spService.executeBatch(batchUrl);
         arrResults = arrResults.length ? arrResults.map(a => a.retItems) : [];
@@ -746,15 +837,78 @@ export class UsercapacityComponent implements OnInit {
         }
       }
       user.dayTasks = tasks;
+
+      $('.' + user.uid + 'loaderenable').hide();
       const oTd = $(objt.target).closest('td');
-      const oUserRow = oTd.closest('.UserTasksRow');
-      const oUserTaskRow = oUserRow.next();
+      // const oUserRow = $(objt.target).closest('.UserTasksRow').find('.TaskPerDayRow');
+
+      // const oUserTaskRow = $(objt.target).next('TaskPerDayRow');
+
+      const oUserTaskRow = $(objt.target).closest('.UserTasksRow').find('.TaskPerDayRow');
       oUserTaskRow.find('.innerTableLoader').slideUp(function () {
         oUserTaskRow.find('#TasksPerDay').slideDown();
       });
       oTd.parent().find('.highlightCell').removeClass('highlightCell');
       oTd.addClass('highlightCell');
       $('.innerTableLoader').hide();
+    }
+  }
+
+
+  async fetchTimeSpentTaskDetails(user, date, objt) {
+    if (user.TimeSpentTasks.length > 0) {
+      const SpentTasks = user.TimeSpentTasks.filter(c => c.TimeSpentDate.getTime() === date.date.getTime() && c.TimeSpentPerDay !== '00:00');
+      if (SpentTasks.length > 0) {
+        user.TimeSpentDayTasks = SpentTasks;
+        // $('.' + user.uid + 'spentloaderenable').show();
+        const oItem = $(objt.target).closest('.spenttaskRow').next('tr');
+        oItem.hide();
+        oItem.find('#spentTasksPerDay').hide();
+        oItem.slideDown();
+        oItem.find('.innerspentTableLoader').show();
+        $(objt.target).closest('td').siblings().closest('.highlightCell').removeClass('highlightCell')
+        $(objt.target).closest('td').addClass('highlightCell');
+
+        const batchUrl = [];
+        for (const taskIndex in SpentTasks) {
+          if (SpentTasks.hasOwnProperty(taskIndex)) {
+            if (SpentTasks[taskIndex].projectCode !== 'Adhoc') {
+              // tslint:disable
+              const piObj = Object.assign({}, this.queryConfig);
+              piObj.url = this.spService.getReadURL(this.globalConstantService.listNames.ProjectInformation.name, this.sharedConstant.userCapacity.getProjectInformation);
+              piObj.url = piObj.url.replace('{{projectCode}}', SpentTasks[taskIndex].projectCode)
+              piObj.listName = this.globalConstantService.listNames.ProjectInformation.name;
+              piObj.type = 'GET';
+              batchUrl.push(piObj);
+            }
+          }
+        }
+
+        if (batchUrl.length) {
+          this.common.SetNewrelic('Shared', 'UserCapacity', 'getProInfoByPC');
+          let arrResults = await this.spService.executeBatch(batchUrl);
+          arrResults = arrResults.length ? arrResults.map(a => a.retItems) : [];
+          let nCount = 0;
+          for (const i in SpentTasks) {
+            if (SpentTasks.hasOwnProperty(i)) {
+              if (SpentTasks[i].projectCode !== 'Adhoc') {
+                const arrProject = arrResults[i];
+                if (arrProject.length > 0) {
+                  SpentTasks[i].shortTitle = arrProject[0].WBJID;
+                }
+              }
+            }
+          }
+        }
+
+
+
+        oItem.find('#spentTasksPerDay').show();
+        oItem.find('.innerspentTableLoader').hide();
+      }
+      user.dates.map(c => delete c.TimespentbackgroundColor);
+      date.TimespentbackgroundColor = '#ffeb9c';
+      this.getTimeSpentColorExcel(date, date.date, user.GoLiveDate);
     }
   }
 
@@ -766,6 +920,8 @@ export class UsercapacityComponent implements OnInit {
   calc(oCapacity) {
     const arrDateRange = oCapacity.arrDateFormat.length;
     this.loaderenable = false;
+
+
     if (arrDateRange <= 10) {
 
       setTimeout(() => {
@@ -784,7 +940,7 @@ export class UsercapacityComponent implements OnInit {
             let top = 0;
             this.height = '80px';
             users[i].height = '80px';
-            users[i].maxHeight = (users[i].tasks.length * 18) + 21 + 'px';
+            users[i].maxHeight = (users[i].tasks.length * 18) + 27 + 'px';
             this.verticalAlign = 'top';
             for (const j in users[i].tasks) {
               if (users[i].tasks.hasOwnProperty(j)) {
@@ -792,7 +948,9 @@ export class UsercapacityComponent implements OnInit {
                 let dateIndex = oCapacity.arrUserDetails[0].businessDays.findIndex(function (x) {
                   return x.valueOf() === startDate.valueOf();
                 });
-                let nBusinessDays = users[i].tasks[j].taskBusinessDays;
+
+                debugger;
+                let nBusinessDays = users[i].tasks[j].taskTotalDays;
                 if (dateIndex < 0) {
                   const tblStartDate = new Date(users[i].businessDays[0]);
                   const taskStartDate = new Date(this.datepipe.transform(users[i].tasks[j].StartDate, 'MMM dd yyyy')); // .format('MMM dd yyyy')
@@ -828,6 +986,9 @@ export class UsercapacityComponent implements OnInit {
       }, 500);
     }
 
+
+
+
   }
 
   getMilestoneTasks(task) {
@@ -845,38 +1006,88 @@ export class UsercapacityComponent implements OnInit {
   }
 
 
-  collpaseTable(objt, user) {
-
-    const oCollpase = $(objt).closest('.TaskPerDayRow');
-    oCollpase.prev().find('.highlightCell').removeClass('highlightCell');
-    oCollpase.slideUp();
-    user.dayTasks = [];
-    user.dates.map(c => delete c.backgroundColor);
-    // this.getColor(date);
-    // const oCollpase1= document.getElementById(userId+'taskexpandrow').remove();
-    // oCollpase1.remove('TaskPerDayRow');
-
-
+  collpaseTable(objt, user, type) {
+    if (type === 'available') {
+      const oCollpase = $(objt).closest('.TaskPerDayRow');
+      oCollpase.prev().prev().find('.highlightCell').removeClass('highlightCell');
+      oCollpase.slideUp();
+      user.dayTasks = [];
+      user.dates.map(c => delete c.backgroundColor);
+    }
+    else {
+      const oCollpase = $(objt).closest('.SpentTaskPerDayRow');
+      oCollpase.prev().find('.highlightCell').removeClass('highlightCell');
+      oCollpase.slideUp();
+      user.TimeSpentDayTasks = [];
+      user.dates.map(c => delete c.TimespentbackgroundColor);
+    }
   }
 
 
   getColor(date) {
-    if(date.backgroundColor){
+    if (date.backgroundColor) {
       return 'orange';
-    } 
+    }
+
     switch (date.userCapacity) {
       case 'Leave':
-        return 'grey';
+        return '#808080';
       case 'NotAvailable':
         return '#EF3D3D';
       case 'Available':
         return '#55bf3b';
     }
-   
+  }
+
+  getTimeSpentColorExcel(dateObj, date, GoLiveDate) {
+    if (dateObj.TimespentbackgroundColor) {
+      return 'orange';
+    }
+    if (GoLiveDate !== null && new Date(this.datepipe.transform(date, 'MM/dd/yyyy')) >= new Date(this.datepipe.transform(GoLiveDate, 'MM/dd/yyyy'))) {
+      return '#ccffcc';
+    }
+    else {
+      return '#ffffff';
+    }
+  }
+
+  getTimeSpentBColor(date, GoLiveDate) {
+    if (GoLiveDate !== null && new Date(this.datepipe.transform(date, 'MM/dd/yyyy')) >= new Date(this.datepipe.transform(GoLiveDate, 'MM/dd/yyyy'))) {
+      return 'colorgoLive';
+    }
+    else {
+      return 'colortrainee';
+    }
   }
 
 
- 
+  SplitfetchTasks(tasks) {
+
+    let ReturnTasks = [];
+    for (let i = 0; i < tasks.length; i++) {
+      const timeSpentForTask = tasks[i].TimeSpentPerDay ? tasks[i].TimeSpentPerDay.split(/\n/) : [];
+      if (timeSpentForTask.indexOf('') > -1) {
+        timeSpentForTask.splice(timeSpentForTask.indexOf(''), 1);
+      }
+      timeSpentForTask.forEach(element => {
+        ReturnTasks.push(new Object({
+          Title: tasks[i].Title,
+          projectCode: tasks[i].ProjectCode,
+          StartDate: tasks[i].Actual_x0020_Start_x0020_Date,
+          EndDate: tasks[i].Actual_x0020_End_x0020_Date ? tasks[i].Actual_x0020_End_x0020_Date : tasks[i].DueDate,
+          TimeSpentDate: new Date(element.split(':')[0]),
+          TimeSpentPerDay: element.split(':')[1] + ':' + element.split(':')[2],
+          Status: tasks[i].Status,
+          TotalTimeSpent: tasks[i].TimeSpent.replace('.', ':'),
+          SubMilestones: tasks[i].SubMilestones,
+          shortTitle: '',
+        }));
+      });
+    }
+    return ReturnTasks;
+  }
+
+
 
 
 

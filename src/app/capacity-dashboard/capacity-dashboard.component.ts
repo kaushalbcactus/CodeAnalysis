@@ -22,6 +22,9 @@ export class CapacityDashboardComponent implements OnInit {
   @ViewChild('InitialUserCapacity', { static: false }) userCapacity: UsercapacityComponent;
   AlldbResources: any;
   Resources: [];
+  ResourceType = [{ label: 'On Job Resource', value: 'OnJob' }, { label: 'Trainee', value: 'Trainee' }];
+  Statuses = [{ label: 'All', value: 'All' }, { label: 'Confirmed', value: 'Confirmed' },
+  { label: 'Not Confirmed', value: 'NotConfirmed' }];
   Skills: [];
   PracticeAreas: [];
   Buckets: [];
@@ -41,6 +44,8 @@ export class CapacityDashboardComponent implements OnInit {
     bucket: [''],
     practicearea: [''],
     skill: [''],
+    resourcetype: ['OnJob'],
+    status: ['All'],
     resources: ['', [Validators.required]],
     rangeDates: ['', [Validators.required]]
   });
@@ -52,7 +57,7 @@ export class CapacityDashboardComponent implements OnInit {
   }
 
 
- 
+
 
   async GetResources() {
     const batchURL = [];
@@ -65,7 +70,7 @@ export class CapacityDashboardComponent implements OnInit {
 
     const Resources = {
       // tslint:disable 
-      select: "ID,UserName/Id,UserName/Title,UserName/EMail,PrimarySkill,Bucket,Practice_x0020_Area,MaxHrs",
+      select: "ID,UserName/Id,UserName/Title,UserName/EMail,PrimarySkill,Bucket,Practice_x0020_Area,MaxHrs,GoLiveDate,DateOfJoining",
       expand: "UserName/ID,UserName/EMail,UserName/Title",
       filter: "IsActive eq 'Yes'",
       orderby: "UserName/Title asc",
@@ -110,6 +115,7 @@ export class CapacityDashboardComponent implements OnInit {
   }
 
   filterData(callType, dataType) {
+
     const arrValue = this.AlldbResources;
     let bucket = this.searchCapacityForm.controls['bucket'].value;
     let practiceArea = this.searchCapacityForm.controls['practicearea'].value;
@@ -203,17 +209,26 @@ export class CapacityDashboardComponent implements OnInit {
       const resValues = resources.map(({ value }) => value);
       this.searchCapacityForm.patchValue({ resources: resValues });
 
-    } else if (arrayType === 'resource') {
+    } else if (arrayType === 'resource') { } else if (arrayType === 'resourcetype') {
+    } else if (arrayType === 'taskType') { } else {
 
-    } else {
-
-      this.searchCapacityForm.patchValue({ bucket: [], practicearea: [], skill: [], resources: [] });
+      this.searchCapacityForm.patchValue({
+        bucket: [], practicearea: [], skill: [], resources: [],
+        resourcetype: ['OnJob'], status: ['All'],
+      });
     }
 
   }
 
 
   async onSubmit() {
+
+    this.searchCapacityForm.value.resourcetype = this.searchCapacityForm.value.resourcetype === null ?
+      'OnJob' : this.searchCapacityForm.value.resourcetype;
+
+    this.searchCapacityForm.value.status = this.searchCapacityForm.value.status === null ? 'All' : this.searchCapacityForm.value.status;
+
+
     if (!this.searchCapacityForm.valid) {
       if (!this.searchCapacityForm.value.resources) {
         this.messageService.add({ key: 'toastMessage', severity: 'warn', summary: 'Warn Message', detail: 'Please select Resource.' });
@@ -224,12 +239,38 @@ export class CapacityDashboardComponent implements OnInit {
 
     } else {
       this.fetchDataloader = true;
+
+      let Resources = this.searchCapacityForm.value.resources;
+
+      const startDate =  new Date(this.searchCapacityForm.value.rangeDates[0]);
+      if (this.searchCapacityForm.value.resourcetype === 'OnJob') {
+        if (this.searchCapacityForm.value.rangeDates[1]) {
+          Resources = Resources.filter(c => c.GoLiveDate !== null).filter(c => new Date(c.GoLiveDate)
+            <= this.searchCapacityForm.value.rangeDates[1]);
+        } else {
+          Resources = Resources.filter(c => c.GoLiveDate !== null).filter(c => new Date
+            (c.GoLiveDate) <= startDate);
+        }
+
+      } else {
+        // if (this.searchCapacityForm.value.rangeDates[1]) {
+        const nullResources = Resources.filter(c => c.GoLiveDate === null);
+        Resources = Resources.filter(c => c.GoLiveDate !== null).filter(c => new Date(c.GoLiveDate)
+          > startDate);
+        Resources.push.apply(Resources, nullResources);
+        // } else {
+        //   Resources = Resources.filter(c => this.searchCapacityForm.value.rangeDates[0] > new Date
+        //     (c.GoLiveDate));
+        // }
+      }
       const data = {
-        task: { resources: this.searchCapacityForm.value.resources },
+        task: { resources: Resources },
         startTime: this.searchCapacityForm.value.rangeDates[0],
         endTime: this.searchCapacityForm.value.rangeDates[1] ?
-          this.searchCapacityForm.value.rangeDates[1] : this.searchCapacityForm.value.rangeDates[0],
-        type: 'CapacityDashboard'
+          this.searchCapacityForm.value.rangeDates[1] : startDate,
+        type: 'CapacityDashboard',
+        resourceType: this.searchCapacityForm.value.resourcetype,
+        taskStatus: this.searchCapacityForm.value.status
       };
 
       this.userCapacity.loaderenable = true;
