@@ -1015,7 +1015,7 @@ export class ClientMasterdataComponent implements OnInit {
    */
   getClientData() {
     const data: any = {
-      ListName: this.addClient.value.name ? this.addClient.value.name.replace(/[^a-zA-Z]/g, "").substring(0, 20) : '',
+      // ListName: this.addClient.value.name ? this.addClient.value.name.replace(/[^a-zA-Z]/g, "").substring(0, 20) : '',
       ClientGroup: this.addClient.value.group,
       InvoiceName: this.addClient.value.invoiceName,
       Realization: + this.addClient.value.realization,
