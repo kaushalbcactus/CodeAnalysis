@@ -1878,12 +1878,12 @@ export class AllProjectsComponent implements OnInit {
 
     this.projectViewDataArray.push(this.pmObject.addProject);
     this.enableCountFields = this.pmObject.addProject.ProjectAttributes.PracticeArea.toLowerCase() === 'medcomm'
-    || this.pmObject.addProject.ProjectAttributes.PracticeArea.toLowerCase() === 'medinfo' ? true : false;
+      || this.pmObject.addProject.ProjectAttributes.PracticeArea.toLowerCase() === 'medinfo' ? true : false;
     console.log('Test');
     console.log(this.projectViewDataArray);
     this.pmObject.isProjectRightSideVisible = true;
 
-   
+
   }
   goToAllocationPage(task) {
     window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +
@@ -1893,15 +1893,18 @@ export class AllProjectsComponent implements OnInit {
     const projObj: any = selectedProjectObj;
     projObj.isUpdate = true;
     const ref = this.dialogService.open(ManageFinanceComponent, {
-      header: 'Manage Finance - ' + selectedProjectObj.ProjectCode + '(' + selectedProjectObj.Title + ')',
       data: {
         projectObj: projObj
-      }
+      },
+      header: 'Manage Finance - ' + selectedProjectObj.ProjectCode + '(' + selectedProjectObj.Title + ')',
+      contentStyle: { width: '100%', height: '100% !important' },
+      width: '100%'
     });
     ref.onClose.subscribe(element => {
       this.pmCommonService.resetAddProject();
     });
   }
+
   communications(selectedProjectObj) {
     selectedProjectObj.IsSearchProject = true;
     const ref = this.dialogService.open(ViewUploadDocumentDialogComponent, {
@@ -1912,6 +1915,7 @@ export class AllProjectsComponent implements OnInit {
       this.pmCommonService.resetAddProject();
     });
   }
+
   projectTimeline(selectedProjectObj) {
     const ref = this.dialogService.open(ProjectTimelineComponent, {
       header: 'Project Timeline - ' + selectedProjectObj.ProjectCode + '(' + selectedProjectObj.Title + ')',
@@ -1923,6 +1927,7 @@ export class AllProjectsComponent implements OnInit {
       this.pmCommonService.resetAddProject();
     });
   }
+
   showTimeline(selectedProjectObj) {
     const route = this.router.url;
     if (route.indexOf('myDashboard') > -1) {
@@ -1931,6 +1936,7 @@ export class AllProjectsComponent implements OnInit {
       this.timeline.showTimeline(selectedProjectObj.ID, 'ProjectMgmt', 'Project');
     }
   }
+
   /**
    * This method is used to complete the audit.
    */
@@ -1992,6 +1998,7 @@ export class AllProjectsComponent implements OnInit {
       }, this.pmConstant.TIME_OUT);
     }
   }
+
   /**
    * This method is used to send email by using template.
    * @param val pass the template name.
