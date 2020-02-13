@@ -892,7 +892,7 @@ body .ui-table .ui-table-tbody>tr:nth-child(even) {
 #scInnerLoader,
 #allProjectLoader,
 #allSOWLoader,
-#selectSOWLoader {
+#selectSOWLoader, #financeMgmtLoader {
     border: 10px solid #f3f3f3;
     border-radius: 50%;
     border-top: 10px solid red;
@@ -912,7 +912,7 @@ body .ui-table .ui-table-tbody>tr:nth-child(even) {
 #scInnerLoaderText,
 #allProjectLoaderText,
 #allSOWLoaderText,
-#selectSOWLoaderText {
+#selectSOWLoaderText, #financeMgmtLoaderText {
     -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
     -o-animation: loading-text-opacity 2s linear 0s infinite normal;
     -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;

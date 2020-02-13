@@ -1,4 +1,8 @@
-<div class="ui-grid-row mt-20">
+<div [hidden]='isFinanceLoaderHidden'>
+  <div id="financeMgmtLoader"></div>
+  <div id="financeMgmtLoaderText">Loading...</div>
+</div>
+<div class="ui-grid-row mt-20" [hidden]='isFinanceTableHidden'>
   <div>
     <div class="ui-grid-col-2">
       SOW Code
