@@ -1197,10 +1197,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
         return r;
       }, []);
 
-      this.GanttchartData.forEach((item,index) => {
-        var milestones = this.GanttchartData.find(e=> e.type == 'milestone')
-        console.log(milestones)
-      }) 
       
 
       this.GanttchartData.forEach((item,index) => {
