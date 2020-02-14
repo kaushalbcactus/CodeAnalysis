@@ -1,16 +1,18 @@
 import { Injectable } from '@angular/core';
 import { GlobalService } from 'src/app/Services/global.service';
+import { CommonService } from 'src/app/Services/common.service';
+import { DatePipe } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TaskAllocationCommonService {
 
-  constructor(public sharedObject: GlobalService) { }
+  constructor(public sharedObject: GlobalService,
+    private commonService: CommonService,
+    public datepipe: DatePipe) { }
 
-  ganttParseObject: any = {
-    
-  }
+  ganttParseObject: any = {}
 
   getResourceByMatrix(task, allTasks) {
     let resources = this.sharedObject.oTaskAllocation.oResources;
@@ -236,4 +238,126 @@ export class TaskAllocationCommonService {
     const targetLinks = submilestone.task.links.filter(c => c.source === target).map(c => c.target);
     return targetLinks;
   }
+
+  getDate(startDate) {
+    return startDate !== '' ? startDate.date.year + '/' + (startDate.date.month < 10 ?
+      '0' + startDate.date.month : startDate.date.month) + '/' + (startDate.date.day < 10
+        ? '0' + startDate.date.day : startDate.date.day) : '';
+  }
+  getDatePart(date) {
+    const newDate = new Date(date);
+    return new Date(this.datepipe.transform(newDate, 'MMM d, y'));
+  }
+  getTimePart(date) {
+    const newDate = new Date(date);
+    return this.datepipe.transform(newDate, 'hh:mm a');
+  }
+
+  convertDate(task) {
+    var converteddateObject: any = {}
+
+    converteddateObject.convertedStartDate = this.commonService.calcTimeForDifferentTimeZone(new Date(task.StartDate),
+      this.sharedObject.currentUser.timeZone, task.assignedUserTimeZone);
+    
+    converteddateObject.jsLocalStartDate = this.commonService.calcTimeForDifferentTimeZone(converteddateObject.convertedStartDate,
+        task.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
+
+    converteddateObject.convertedEndDate = this.commonService.calcTimeForDifferentTimeZone(new Date(task.DueDate),
+      this.sharedObject.currentUser.timeZone, task.assignedUserTimeZone);
+
+    converteddateObject.jsLocalEndDate = this.commonService.calcTimeForDifferentTimeZone(converteddateObject.convertedEndDate,
+      task.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
+    
+    return converteddateObject
+  }
+
+  milestoneObject(milestone) {
+    let milestoneData: any = {}
+
+    milestoneData.start_date = new Date(milestone.start_date);
+    milestoneData.end_date = new Date(milestone.end_date);
+    milestoneData.pUserStart = new Date(milestone.pUserStart);
+    milestoneData.pUserEnd = new Date(milestone.pUserEnd);
+    // milestoneData.pUserStartDatePart =
+    // milestoneData.pUserStartTimePart =
+    // milestoneData.pUserEndDatePart =
+    // milestoneData.pUserEndTimePart =
+    milestoneData.editMode = false;
+    milestoneData.edited = false;
+    milestoneData.tat = milestone.tat;
+    milestoneData.tatVal = this.commonService.calcBusinessDays(new Date(milestone.start_date), new Date(milestone.end_date));
+    milestoneData.AssignedTo = milestone.AssignedTo;
+    milestoneData.allowStart = milestone.allowStart;
+    milestoneData.budgetHours = milestone.budgetHours;
+    milestoneData.slotColor = milestone.slotColor;
+    milestoneData.DisableCascade = milestone.DisableCascade;
+
+    return milestoneData;
+  }
+
+  ganttDataObject(data) {
+
+    var milestoneSubmilestones = data.SubMilestones !== null ? data.SubMilestones.replace(/#/gi, "").split(';') : [];
+
+    var dbSubMilestones: Array<any> = milestoneSubmilestones.length > 0 ? milestoneSubmilestones.map(o => new Object({ subMile: o.split(':')[0], position: o.split(':')[1], status: o.split(':')[2] })) : [];
+
+    let ganttObject = {
+      'pUserStart': data.startDate !== "" ? data.startDate.date.year + "/" + (data.startDate.date.month < 10 ? "0" + data.startDate.date.month : data.startDate.date.month) + "/" + (data.startDate.date.day < 10 ? "0" + data.startDate.date.day : data.startDate.date.day) : '',
+      'pUserEnd': data.endDate !== "" ? data.endDate.date.year + "/" + (data.endDate.date.month < 10 ? "0" + data.endDate.date.month : data.endDate.date.month) + "/" + (data.endDate.date.day < 10 ? "0" + data.endDate.date.day : data.endDate.date.day) : '',
+      'pUserStartDatePart': this.getDate(data.startDate),
+      'pUserStartTimePart': '',
+      'pUserEndDatePart':  this.getDate(data.endDate),
+      'pUserEndTimePart': '',
+      'status': data.Status,
+      'id': data.Id,
+      'text': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === data.Title ? data.Title + " (Current)" : data.Title,
+      'title': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === data.Title ? data.Title + " (Current)" : data.Title,
+      'milestone': '',
+      'start_date': new Date(data.startDate !== "" ? data.startDate.date.year + "/" + (data.startDate.date.month < 10 ? "0" + data.startDate.date.month : data.startDate.date.month) + "/" + (data.startDate.date.day < 10 ? "0" + data.startDate.date.day : data.startDate.date.day) : ''),
+      'end_date': new Date(data.endDate !== "" ? data.endDate.date.year + "/" + (data.endDate.date.month < 10 ? "0" + data.endDate.date.month : data.endDate.date.month) + "/" + (data.endDate.date.day < 10 ? "0" + data.endDate.date.day : data.endDate.date.day) : ''),
+      'user': data.AssignedTo ? data.AssignedTo.Title !== undefined ? data.AssignedTo.Title : '' : '  ',
+      'open': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === data.Title ? 1 : 0,
+      'parent': 0,
+      'res_id': '',
+      'nextTask': '',
+      'previousTask': '',
+      'budgetHours': data.ExpectedTime ? data.ExpectedTime.toString() : '0',
+      'spentTime': '0:0',
+      'allowStart': false,
+      'tat': true,
+      'tatVal': this.commonService.calcBusinessDays(new Date(data.Actual_x0020_Start_x0020_Date), new Date(data.Actual_x0020_End_x0020_Date)),
+      'milestoneStatus': '',
+      'type': 'milestone',
+      'editMode': false,
+      'scope': null,
+      'isCurrent': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === data.Title ? true : false,
+      'isNext': this.sharedObject.oTaskAllocation.oProjectDetails.nextMilestone === data.Title ? true : false,
+      'isFuture': this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones !== undefined ? this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones.indexOf(data.Title)
+      > -1 ? true : false : false,
+      'assignedUsers': '',
+      'AssignedTo': '',
+      'userCapacityEnable': false,
+      'position': data.position,
+      'color': data.color,
+      'itemType': 'milestone',
+      'slotType': '',
+      'edited': false,
+      'added': false,
+      'slotColor': 'white',
+      'IsCentrallyAllocated': data.IsCentrallyAllocated,
+      'submilestone': data.SubMilestones,
+      'skillLevel': data.SkillLevel,
+      'CentralAllocationDone': data.CentralAllocationDone,
+      'ActiveCA': data.ActiveCA,
+      'assignedUserTimeZone': data.assignedUserTimeZone,
+      'parentSlot': data.ParentSlot ? data.ParentSlot : '',
+      'DisableCascade': (data.DisableCascade && data.DisableCascade === 'Yes') ? true : false,
+      'deallocateSlot': false,
+      'taskFullName': data.Title,
+      'subMilestonePresent': dbSubMilestones.length > 0 ? true : false
+    }
+
+    return ganttObject;
+  }
+
 }

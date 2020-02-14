@@ -24919,7 +24919,7 @@ var initLinksDND = function(timeline, gantt) {
 			var link = {source : drag.link_source_id, target: drag.link_target_id, type:type};
 			if(link.type && gantt.isLinkAllowed(link)) {
 				if(gantt.callEvent("onLinkCreated", [link])){
-					gantt.addLink(link);
+					// gantt.addLink(link);
 				}
 			}
 		}
