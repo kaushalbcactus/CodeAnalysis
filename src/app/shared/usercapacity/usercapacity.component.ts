@@ -288,20 +288,16 @@ export class UsercapacityComponent implements OnInit {
         // oCapacity.arrUserDetails[indexUser].tasks = this.fetchTasks(oCapacity.arrUserDetails[indexUser], arruserResults[indexUser]);
 
 
-        let TempTasks = this.fetchTasks(oCapacity.arrUserDetails[indexUser], arruserResults[indexUser]);
+        let TempTasks = await this.fetchTasks(oCapacity.arrUserDetails[indexUser], arruserResults[indexUser]);
 
-        if (TempTasks) {
 
-          TempTasks = this.taskStatus === 'Confirmed' ? TempTasks.filter(c => c.Status === 'Completed' || c.Status === 'Not Started' || c.Status === 'In Progress') :
-            this.taskStatus === 'NotConfirmed' ? TempTasks.filter(c => c.Status === 'Not Confimed' || c.Status === 'Planned' || c.Status === 'Blocked') : TempTasks;
-        }
-
-        oCapacity.arrUserDetails[indexUser].tasks = TempTasks;
-
+        oCapacity.arrUserDetails[indexUser].tasks = this.taskStatus === 'Confirmed' ? TempTasks.filter(c => c.Status === 'Completed' || c.Status === 'Not Started' || c.Status === 'In Progress' || c.Status === 'Auto Closed') :
+        this.taskStatus === 'NotConfirmed' ? TempTasks.filter(c => c.Status === 'Not Confirmed' || c.Status === 'Planned' || c.Status === 'Blocked') : TempTasks;
+      
 
         if(this.enableDownload){
           const TimeSpentTasks = this.fetchTasks(oCapacity.arrUserDetails[indexUser], arruserResults1[indexUser]);
-          oCapacity.arrUserDetails[indexUser].TimeSpentTasks = this.SplitfetchTasks(TimeSpentTasks);
+          oCapacity.arrUserDetails[indexUser].TimeSpentTasks = await this.SplitfetchTasks(TimeSpentTasks);
 
           if (oCapacity.arrUserDetails[indexUser].TimeSpentTasks && oCapacity.arrUserDetails[indexUser].TimeSpentTasks.length) {
             oCapacity.arrUserDetails[indexUser].TimeSpentTasks.sort((a, b) => {
@@ -447,7 +443,7 @@ export class UsercapacityComponent implements OnInit {
     return arrResults;
   }
   // tslint:disable
-  fetchTasks(oUser, tasks) {
+  async fetchTasks(oUser, tasks) {
     for (const index in tasks) {
       if (tasks.hasOwnProperty(index)) {
 
@@ -462,6 +458,7 @@ export class UsercapacityComponent implements OnInit {
     }
     return tasks;
   }
+  
 
 
 
@@ -1061,7 +1058,7 @@ export class UsercapacityComponent implements OnInit {
   }
 
 
-  SplitfetchTasks(tasks) {
+  async SplitfetchTasks(tasks) {
 
     let ReturnTasks = [];
     for (let i = 0; i < tasks.length; i++) {
