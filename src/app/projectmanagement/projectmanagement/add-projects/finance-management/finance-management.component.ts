@@ -52,8 +52,8 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
         this.clientLegalEntity = sow[0].ClientLegalEntity;
         this.pmObject.addProject.ProjectAttributes.ClientLegalEntity = this.clientLegalEntity;
       }
-      if (this.pmObject.addProject.ProjectAttributes.BilledBy) {
-        this.billedBy = this.pmObject.addProject.ProjectAttributes.BilledBy;
+      if (this.pmObject.addProject.FinanceManagement.BilledBy) {
+        this.billedBy = this.pmObject.addProject.FinanceManagement.BilledBy;
       }
       this.setHeaderColumn();
       this.budgethours = this.pmObject.addProject.Timeline.Standard.IsStandard ?
