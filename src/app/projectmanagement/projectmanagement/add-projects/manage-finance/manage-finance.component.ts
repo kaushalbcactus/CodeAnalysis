@@ -1183,6 +1183,7 @@ export class ManageFinanceComponent implements OnInit {
     this.pmObject.addProject.FinanceManagement.UnassignedArray = this.unassignedBudget;
     this.budgetOutputData.emit(this.savePOArray);
     this.pmObject.addProject.FinanceManagement.isBudgetRateAdded = true;
+    this.pmObject.addProject.FinanceManagement.BilledBy = this.projectType;
   }
   async editManageFinances(projObj) {
     this.hideRemoveButton = false;
