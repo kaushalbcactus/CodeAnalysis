@@ -97,16 +97,16 @@ export class UsercapacityComponent implements OnInit {
       summary: 'Info Message', detail: 'Fetching data...'
     });
     this.enableDownload = data.type === 'CapacityDashboard' ? true : false;
-    setTimeout(() => {
-      if (data.type === 'CapacityDashboard') {
-
-        this.displayCount = data.resourceType === 'OnJob' ? 'Total On Job Resource: ' + data.task.resources.length : 'Total Trainee: ' + data.task.resources.length;
-        this.taskStatus = data.taskStatus
-      }
-
-    }, 500);
+    // setTimeout(() => {
 
 
+    // }, 500);
+
+    if (data.type === 'CapacityDashboard') {
+
+      this.displayCount = data.resourceType === 'OnJob' ? 'Total On Job Resource: ' + data.task.resources.length : 'Total Trainee: ' + data.task.resources.length;
+      this.taskStatus = data.taskStatus
+    }
     let setResourcesExtn = $.extend(true, [], data.task.resources);
 
     const oCapacity = await this.applyFilterReturn(data.startTime, data.endTime, setResourcesExtn);
@@ -177,6 +177,8 @@ export class UsercapacityComponent implements OnInit {
 
   async applyFilter(startDate, endDate, selectedUsers) {
 
+
+    debugger;
     const oCapacity = {
       arrUserDetails: [],
       arrDateRange: [],
@@ -288,45 +290,45 @@ export class UsercapacityComponent implements OnInit {
         // oCapacity.arrUserDetails[indexUser].tasks = this.fetchTasks(oCapacity.arrUserDetails[indexUser], arruserResults[indexUser]);
 
 
-        let TempTasks = await this.fetchTasks(oCapacity.arrUserDetails[indexUser], arruserResults[indexUser]);
+        const TempTasks = this.fetchTasks(oCapacity.arrUserDetails[indexUser], arruserResults[indexUser]);
 
-
-        oCapacity.arrUserDetails[indexUser].tasks = this.taskStatus === 'Confirmed' ? TempTasks.filter(c => c.Status === 'Completed' || c.Status === 'Not Started' || c.Status === 'In Progress' || c.Status === 'Auto Closed') :
-        this.taskStatus === 'NotConfirmed' ? TempTasks.filter(c => c.Status === 'Not Confirmed' || c.Status === 'Planned' || c.Status === 'Blocked') : TempTasks;
-      
-
-        if(this.enableDownload){
-          const TimeSpentTasks = this.fetchTasks(oCapacity.arrUserDetails[indexUser], arruserResults1[indexUser]);
-          oCapacity.arrUserDetails[indexUser].TimeSpentTasks = await this.SplitfetchTasks(TimeSpentTasks);
-
-          if (oCapacity.arrUserDetails[indexUser].TimeSpentTasks && oCapacity.arrUserDetails[indexUser].TimeSpentTasks.length) {
-            oCapacity.arrUserDetails[indexUser].TimeSpentTasks.sort((a, b) => {
-              return b.DueDate - a.DueDate;
-            });
-          }
-        }
-
-      
+        oCapacity.arrUserDetails[indexUser].tasks = this.filterData(TempTasks);
 
         if (oCapacity.arrUserDetails[indexUser].tasks && oCapacity.arrUserDetails[indexUser].tasks.length) {
           oCapacity.arrUserDetails[indexUser].tasks.sort((a, b) => {
             return b.DueDate - a.DueDate;
           });
+
+
           // tslint:disable
-           this.datepipe.transform(startDate, 'yyyy-MM-dd') + 'T00:00:01.000Z'
+          this.datepipe.transform(startDate, 'yyyy-MM-dd') + 'T00:00:01.000Z'
           endDateString = new Date(sTopEndDate) > new Date(this.datepipe.transform(oCapacity.arrUserDetails[indexUser].tasks[0].DueDate, 'yyyy-MM-ddT') + '23:59:00.000Z')
             ? sTopEndDate.toISOString() : this.datepipe.transform(oCapacity.arrUserDetails[indexUser].tasks[0].DueDate, 'yyyy-MM-ddT') + "23:59:00.000Z";
 
           startDateString = new Date(sTopStartDate) < new Date(this.datepipe.transform(oCapacity.arrUserDetails[indexUser].tasks[0].StartDate, 'yyyy-MM-ddT') + '00:00:01.000Z')
             ? sTopStartDate.toISOString() : this.datepipe.transform(oCapacity.arrUserDetails[indexUser].tasks[0].StartDate, 'yyyy-MM-ddT') + '00:00:01.000Z';
           // tslint: enable
+
+
+
+          if (this.enableDownload) {
+            const TimeSpentTasks = this.fetchTasks(oCapacity.arrUserDetails[indexUser], arruserResults1[indexUser]);
+            oCapacity.arrUserDetails[indexUser].TimeSpentTasks = await this.SplitfetchTasks(TimeSpentTasks);
+
+            if (oCapacity.arrUserDetails[indexUser].TimeSpentTasks && oCapacity.arrUserDetails[indexUser].TimeSpentTasks.length) {
+              oCapacity.arrUserDetails[indexUser].TimeSpentTasks.sort((a, b) => {
+                return b.DueDate - a.DueDate;
+              });
+            }
+          }
+
         }
         else {
           startDateString = sTopStartDate.toISOString();
           endDateString = sTopEndDate.toISOString();
         }
 
-      
+
 
         selectedUsers.map(c => c.ResourceUserID = c.UserName.Id ? c.UserName.Id : c.UserName.ID);
 
@@ -389,6 +391,16 @@ export class UsercapacityComponent implements OnInit {
     return oCapacity;
   }
 
+  filterData(TempTasks) {
+    let taskArray = [];
+    taskArray = this.taskStatus === 'Confirmed' ? TempTasks.filter(c => c.Status === 'Completed' || c.Status === 'Not Started' || c.Status === 'In Progress' || c.Status === 'Auto Closed') :
+      this.taskStatus === 'NotConfirmed' ? TempTasks.filter(c => c.Status === 'Not Confirmed' || c.Status === 'Planned' || c.Status === 'Blocked') : TempTasks;
+
+    return taskArray;
+  }
+
+
+
   applyFilterReturn(startDate, endDate, selectedUsers) {
     return this.applyFilter(startDate, endDate, selectedUsers);
   }
@@ -413,6 +425,10 @@ export class UsercapacityComponent implements OnInit {
     const selectedUserID = oUser.uid;
     const invObj = Object.assign({}, this.queryConfig);
     // tslint:disable-next-line: max-line-length
+    // this.sharedConstant.userCapacity.fetchTasks.filter = this.taskStatus === ' Confirmed' ? this.sharedConstant.userCapacity.fetchTasks.filterConfirmed : this.taskStatus === 'NotConfirmed' ? this.sharedConstant.userCapacity.fetchTasks.filterNotConfirmed : this.sharedConstant.userCapacity.fetchTasks.filter;
+
+
+    // debugger;
     invObj.url = this.spService.getReadURL(this.globalConstantService.listNames.Schedules.name, this.sharedConstant.userCapacity.fetchTasks);
     invObj.url = invObj.url.replace('{{userID}}', selectedUserID).replace(/{{startDateString}}/gi, startDateString)
       .replace(/{{endDateString}}/gi, endDateString);
@@ -443,7 +459,7 @@ export class UsercapacityComponent implements OnInit {
     return arrResults;
   }
   // tslint:disable
-  async fetchTasks(oUser, tasks) {
+  fetchTasks(oUser, tasks) {
     for (const index in tasks) {
       if (tasks.hasOwnProperty(index)) {
 
@@ -458,7 +474,7 @@ export class UsercapacityComponent implements OnInit {
     }
     return tasks;
   }
-  
+
 
 
 

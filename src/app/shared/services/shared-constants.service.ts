@@ -10,6 +10,16 @@ export class SharedConstantsService {
   public userCapacity = {
     fetchTasks: {
       select: 'ID,Milestone,ProjectCode,SubMilestones,Task,Status,Title,TimeSpent,ExpectedTime,StartDate,DueDate,TimeZone,ParentSlot',
+      filterNotConfirmed:"(AssignedTo/Id eq {{userID}}) and(" +
+      "(StartDate ge '{{startDateString}}' and StartDate le '{{endDateString}}')" +
+      "or (DueDate ge '{{startDateString}}' and DueDate le '{{endDateString}}')" +
+      " or (StartDate le '{{startDateString}}' and DueDate ge '{{endDateString}}')" +
+      ") and (Status eq 'Not Confirmed' || Status eq 'Planned'  || Status eq 'Blocked') and ExpectedTime ne '0'",
+      filterConfirmed: "(AssignedTo/Id eq {{userID}}) and(" +
+      "(StartDate ge '{{startDateString}}' and StartDate le '{{endDateString}}')" +
+      "or (DueDate ge '{{startDateString}}' and DueDate le '{{endDateString}}')" +
+      " or (StartDate le '{{startDateString}}' and DueDate ge '{{endDateString}}')" +
+      ") and (Status eq 'Completed' || Status eq 'Not Started' || Status eq 'In Progress'  || Status eq 'Auto Closed') and ExpectedTime ne '0'",
       filter: "(AssignedTo/Id eq {{userID}}) and(" +
         "(StartDate ge '{{startDateString}}' and StartDate le '{{endDateString}}')" +
         "or (DueDate ge '{{startDateString}}' and DueDate le '{{endDateString}}')" +
