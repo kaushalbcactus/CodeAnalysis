@@ -39,6 +39,8 @@ export class ProjectAttributesComponent implements OnInit {
   showMoleculeAdd = false;
   formSubmit = false;
   enableCountFields = false;
+  CountError = false;
+  errorType: string = '';
   constructor(
     private frmbuilder: FormBuilder,
     public pmObject: PMObjectService,
@@ -135,6 +137,13 @@ export class ProjectAttributesComponent implements OnInit {
     }
     if (projObj.PracticeArea) {
       this.addProjectAttributesForm.get('practiceArea').setValue(projObj.PracticeArea);
+
+      if (projObj.PracticeArea.toLowerCase() === 'medinfo' || projObj.PracticeArea.toLowerCase() === 'medcomm') {
+        this.enableCountFields = true;
+      }
+      else {
+        this.enableCountFields = false;
+      }
     }
     if (projObj.Priority) {
       this.addProjectAttributesForm.get('priority').setValue(projObj.Priority);
@@ -316,12 +325,40 @@ export class ProjectAttributesComponent implements OnInit {
    * This method is used to goto timeline page.
    */
   goToTimeline(data) {
-    if (this.addProjectAttributesForm.valid) {
-      this.setFormFieldValue();
-      this.pmObject.activeIndex = 3;
-    } else {
-      this.validateAllFormFields(this.addProjectAttributesForm);
+    if (this.enableCountFields) {
+      if (this.addProjectAttributesForm.value.ReferenceCount === null || this.addProjectAttributesForm.value.ReferenceCount <= 0) {
+        this.CountError = true;
+        this.errorType = 'Reference';
+      }
+      else if (this.addProjectAttributesForm.value.SlideCount === null || this.addProjectAttributesForm.value.SlideCount <= 0) {
+        this.CountError = true;
+        this.errorType = 'Slide';
+      }
+      else if (this.addProjectAttributesForm.value.PageCount === null || this.addProjectAttributesForm.value.PageCount <= 0) {
+        this.CountError = true;
+        this.errorType = 'Page';
+      }
+      else {
+        this.CountError = false;
+        this.errorType = '';
+        if (this.addProjectAttributesForm.valid) {
+          this.setFormFieldValue();
+          this.pmObject.activeIndex = 3;
+        } else {
+          this.validateAllFormFields(this.addProjectAttributesForm);
+        }
+      }
     }
+    else {
+      if (this.addProjectAttributesForm.valid) {
+        this.setFormFieldValue();
+        this.pmObject.activeIndex = 3;
+      } else {
+        this.validateAllFormFields(this.addProjectAttributesForm);
+      }
+    }
+
+
   }
   /**
    * This method is used to navigate to SOW page.
@@ -335,9 +372,10 @@ export class ProjectAttributesComponent implements OnInit {
    * This method is used to Enable disable fields.
    */
   EnableDisableCountFields() {
-
+    this.CountError =false;
     if (this.addProjectAttributesForm.get('practiceArea').value.toLowerCase() === 'medinfo' || this.addProjectAttributesForm.get('practiceArea').value.toLowerCase() === 'medcomm') {
       this.enableCountFields = true;
+     
     }
     else {
       this.enableCountFields = false;

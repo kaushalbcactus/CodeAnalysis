@@ -945,8 +945,6 @@ export class UsercapacityComponent implements OnInit {
                 let dateIndex = oCapacity.arrUserDetails[0].businessDays.findIndex(function (x) {
                   return x.valueOf() === startDate.valueOf();
                 });
-
-                debugger;
                 let nBusinessDays = users[i].tasks[j].taskTotalDays;
                 if (dateIndex < 0) {
                   const tblStartDate = new Date(users[i].businessDays[0]);
