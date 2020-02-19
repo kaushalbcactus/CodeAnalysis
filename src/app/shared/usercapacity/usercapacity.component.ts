@@ -864,7 +864,7 @@ export class UsercapacityComponent implements OnInit {
 
   async fetchTimeSpentTaskDetails(user, date, objt) {
     if (user.TimeSpentTasks.length > 0) {
-      const SpentTasks = user.TimeSpentTasks.filter(c => c.TimeSpentDate.getTime() === date.date.getTime() && c.TimeSpentPerDay !== '00:00');
+      const SpentTasks = user.TimeSpentTasks.filter(c => c.TimeSpentDate.getTime() === date.date.getTime() && c.TimeSpentPerDay !== '00:00' && c.TimeSpentPerDay !== '0:00' );
       if (SpentTasks.length > 0) {
         user.TimeSpentDayTasks = SpentTasks;
         // $('.' + user.uid + 'spentloaderenable').show();
