@@ -1542,6 +1542,53 @@ export class AllProjectsComponent implements OnInit {
       pinfoUdateData.Status = this.constants.projectStatus.AuditInProgress;
       pinfoUdateData.ProposeClosureDate = new Date();
     }
+
+    const objMilestone = Object.assign({}, this.pmConstant.projectOptions);
+    objMilestone.filter = objMilestone.filter.replace(/{{projectCode}}/gi,
+      selectedProjectObj.ProjectCode);
+    this.commonService.SetNewrelic('projectManagment', 'allprojects', 'fetchMilestone');
+    const response = await this.spServices.readItems(this.constants.listNames.Schedules.name, objMilestone);
+
+    const allTasks = response.length ? response : [];
+    const batchUrl = [];
+    if (allTasks.length > 0) {
+
+      const milestones = allTasks.filter(c => c.FileSystemObjectType === 1 && (c.Status === 'Not Confirmed' || c.status === 'In Progress'));
+      console.log(milestones);
+
+      const allMilestoneTasks = allTasks.filter(c => c.FileSystemObjectType === 0 && (c.Status === 'Not Confirmed' || c.status === 'In Progress' || c.status === 'Not Started'));
+      console.log(allMilestoneTasks);
+
+      milestones.forEach(milestone => {
+        let modifiedSubMilestones = null;
+        let SubMilestonesObj = [];
+        if (milestone.SubMilestones) {
+          const SubMilestones = milestone.SubMilestones.split(';#');
+          if (SubMilestones) {
+            SubMilestones.forEach(element => {
+              const status = element.split(':')[2] === 'Not Started' || element.split(':')[2] === 'In Progress' ? 'Auto Closed' : element.split(':')[2];
+              if (status !== 'Not Confirmed') {
+                SubMilestonesObj.push(element.split(':')[0] + ':' + element.split(':')[1] + ':' + status);
+              }
+            });
+            modifiedSubMilestones = SubMilestonesObj.length > 0 ? SubMilestonesObj.join(';#') : null;
+          }
+        }
+        const data = {
+          Status: milestone.Status === 'Not Confirmed' ? 'Deleted' : 'Auto Closed',
+          SubMilestones: modifiedSubMilestones,
+          __metadata: { type: this.constants.listNames.Schedules.type }
+        };
+        this.getTaskObject(batchUrl, Object.assign({}, options), milestone, data);
+      });
+      allMilestoneTasks.forEach(task => {
+        const data = {
+          Status: task.Status === 'Not Confirmed' ? 'Deleted' : 'Auto Closed',
+          __metadata: { type: this.constants.listNames.Schedules.type }
+        };
+        this.getTaskObject(batchUrl, Object.assign({}, options), task, data);
+      });
+    }
     const piInfoUpdate = Object.assign({}, options);
     piInfoUpdate.data = pinfoUdateData;
     piInfoUpdate.listName = this.constants.listNames.ProjectInformation.name;
@@ -1584,6 +1631,17 @@ export class AllProjectsComponent implements OnInit {
         this.router.navigate(['/projectMgmt/allProjects']);
       }
     }, this.pmConstant.TIME_OUT);
+  }
+
+
+  getTaskObject(batchUrl, options, task, data) {
+    const taskObj = Object.assign({}, options);
+    taskObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, task.Id);
+    taskObj.data = data;
+    taskObj.listName = this.constants.listNames.Schedules.name;
+    taskObj.type = 'PATCH';
+    batchUrl.push(taskObj);
+
   }
   async getGetIds(selectedProjectObj, projectAction) {
     const batchURL = [];
@@ -1763,8 +1821,8 @@ export class AllProjectsComponent implements OnInit {
         const batchResults = await this.spServices.executeBatch(batchURL);
       }
     }
-   // return this.convertMinsToHrsMins(totalSpentTime);
-   return parseFloat((totalSpentTime/60).toFixed(2));
+    // return this.convertMinsToHrsMins(totalSpentTime);
+    return parseFloat((totalSpentTime / 60).toFixed(2));
   }
   timeToMins(time) {
     const b = time.split('.');
@@ -2087,7 +2145,7 @@ export class AllProjectsComponent implements OnInit {
     const projectFinanceID = this.toUpdateIds[1] && this.toUpdateIds[1].retItems && this.toUpdateIds[1].retItems.length ?
       this.toUpdateIds[1].retItems[0].ID : -1;
     if (this.selectedProjectObj.ProjectCode) {
-      totalHours = await this.getTotalHours(this.selectedProjectObj.ProjectCode, false,[]);
+      totalHours = await this.getTotalHours(this.selectedProjectObj.ProjectCode, false, []);
       // const pfUdpate = {
       //   HoursSpent: totalHours
       // };

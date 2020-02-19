@@ -73,6 +73,12 @@ export class PmconstantService {
     top: 4200
   };
 
+  public projectOptions = {
+    select: 'ID,Title,Task,Status,NextTasks,ExpectedTime,PrevTasks,Milestone,SubMilestones,DisableCascade, ParentSlot,FileSystemObjectType',
+    filter: "ProjectCode eq '{{projectCode}}'",
+    top: 4500
+  };
+
 
   public pInfoPendingAllocationIndiviualViewOptions = {
     select: 'PubSupportStatus,PrimaryResMembers/Id,PrimaryResMembers/Title,AllDeliveryResources/Id,'
@@ -535,7 +541,7 @@ export class PmconstantService {
       filter: 'ID eq \'{{proformaLookup}}\''
     },
     SCHEDULE_LIST_BY_PROJECTCODE: {
-      select:  'ID, Title, Task,TimeSpent, Status,SubMilestones,Milestone',
+      select: 'ID, Title, Task,TimeSpent, Status,SubMilestones,Milestone',
       filter: 'ProjectCode eq \'{{projectCode}}\'',
       top: 4900
     },
