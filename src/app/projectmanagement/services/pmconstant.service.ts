@@ -12,7 +12,8 @@ export class PmconstantService {
     CMLevel1: 'CM L1',
     CMLevel2: 'CM L2',
     DELIVERY_LEVEL_1: 'Delivery L1',
-    DELIVERY_LEVEL_2: 'Delivery L2'
+    DELIVERY_LEVEL_2: 'Delivery L2',
+    BUSINESS_DEVELOPMENT: 'Business Development',
   };
   public RESOURCES_CATEGORY = {
     BUSINESS_DEVELOPMENT: 'Business Development',
@@ -65,6 +66,13 @@ export class PmconstantService {
     expand: 'AssignedTo/ID,AssignedTo/Title',
     filter: 'Title eq \'{0}\''
   };
+
+  public milestoneOptions = {
+    select: 'ID,Title,ProjectCode,Milestone',
+    filter: "ProjectCode eq '{{projectCode}}' and Title eq '{{milestone}}'",
+    top: 4200
+  };
+
 
   public pInfoPendingAllocationIndiviualViewOptions = {
     select: 'PubSupportStatus,PrimaryResMembers/Id,PrimaryResMembers/Title,AllDeliveryResources/Id,'
@@ -527,7 +535,7 @@ export class PmconstantService {
       filter: 'ID eq \'{{proformaLookup}}\''
     },
     SCHEDULE_LIST_BY_PROJECTCODE: {
-      select: 'ID, Title, Status,TimeSpent',
+      select:  'ID, Title, Task,TimeSpent, Status,SubMilestones,Milestone',
       filter: 'ProjectCode eq \'{{projectCode}}\'',
       top: 4900
     },
@@ -596,3 +604,5 @@ export class PmconstantService {
   public MONTH_NAMES = ['January', 'February', 'March', 'April', 'May',
     'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 }
+
+

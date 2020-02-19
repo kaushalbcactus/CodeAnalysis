@@ -422,21 +422,52 @@ export class ClientReviewComponent implements OnInit {
   }
   closeTask(task) {
     if (task.PreviousTaskStatus === 'Completed') {
-      const options = { Status: 'Completed' };
-      this.closeTaskWithStatus(task, options, this.crRef);
+      this.closeTaskWithStatus(task, this.crRef);
     } else {
       this.changeErrorMessage('Previous task should be Completed or Auto Closed');
     }
   }
-  async closeTaskWithStatus(task, options, unt) {
+  async closeTaskWithStatus(task, unt) {
     const isActionRequired = await this.commonService.checkTaskStatus(task);
     if (isActionRequired) {
-      this.commonService.SetNewrelic('projectManagment', 'client-review', 'UpdateSchedules');
-      await this.spOperations.updateItem(this.Constant.listNames.Schedules.name, task.ID, options, this.Constant.listNames.Schedules.type);
-      const projectInfoOptions = { Status: 'Unallocated' };
+
+      const objMilestone = Object.assign({}, this.pmConstant.milestoneOptions);
+      objMilestone.filter = objMilestone.filter.replace(/{{projectCode}}/gi,
+        task.ProjectCode).replace(/{{milestone}}/gi,
+          task.Milestone);
+      this.commonService.SetNewrelic('projectManagment', 'client-review', 'fetchMilestone');
+      const response = await this.spServices.readItems(this.Constant.listNames.Schedules.name, objMilestone);
+
+      let batchUrl = [];
+      // update Task
+      const taskObj = Object.assign({}, this.options);
+      taskObj.url = this.spServices.getItemURL(this.Constant.listNames.Schedules.name, task.ID);
+      taskObj.data = { Status: 'Completed', __metadata: { type: this.Constant.listNames.Schedules.type } };
+      taskObj.listName = this.Constant.listNames.Schedules.name;
+      taskObj.type = 'PATCH';
+      batchUrl.push(taskObj);
+
+      // update Milestone
+      if (response.length > 0) {
+        const milestoneObj = Object.assign({}, this.options);
+        milestoneObj.url = this.spServices.getItemURL(this.Constant.listNames.Schedules.name, response[0].Id);
+        milestoneObj.data = { Status: 'Completed', __metadata: { type: this.Constant.listNames.Schedules.type } };
+        milestoneObj.listName = this.Constant.listNames.Schedules.name;
+        milestoneObj.type = 'PATCH';
+        batchUrl.push(milestoneObj);
+      }
+
+      //  update ProjectInformation
       const projectID = this.pmObject.allProjectItems.filter(item => item.ProjectCode === task.ProjectCode);
-      await this.spOperations.updateItem(this.Constant.listNames.ProjectInformation.name, projectID[0].ID,
-        projectInfoOptions, this.Constant.listNames.ProjectInformation.type);
+      const projectInfoObj = Object.assign({}, this.options);
+      projectInfoObj.url = this.spServices.getItemURL(this.Constant.listNames.ProjectInformation.name, projectID[0].ID);
+      projectInfoObj.data = { Status: 'Unallocated', __metadata: { type: this.Constant.listNames.ProjectInformation.type } };
+      projectInfoObj.listName = this.Constant.listNames.ProjectInformation.name;
+      projectInfoObj.type = 'PATCH';
+      batchUrl.push(projectInfoObj);
+      this.commonService.SetNewrelic('projectManagment', 'client-review', 'UpdateSchedules&PM');
+      await this.spServices.executeBatch(batchUrl);
+
       this.changeSuccessMessage(task.Title + ' is completed Sucessfully');
       const index = this.pmObject.clientReviewArray.findIndex(item => item.ID === task.ID);
       this.pmObject.clientReviewArray.splice(index, 1);
