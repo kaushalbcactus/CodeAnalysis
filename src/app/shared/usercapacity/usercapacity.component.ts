@@ -176,9 +176,6 @@ export class UsercapacityComponent implements OnInit {
   }
 
   async applyFilter(startDate, endDate, selectedUsers) {
-
-
-    debugger;
     const oCapacity = {
       arrUserDetails: [],
       arrDateRange: [],
@@ -425,10 +422,7 @@ export class UsercapacityComponent implements OnInit {
     const selectedUserID = oUser.uid;
     const invObj = Object.assign({}, this.queryConfig);
     // tslint:disable-next-line: max-line-length
-    // this.sharedConstant.userCapacity.fetchTasks.filter = this.taskStatus === ' Confirmed' ? this.sharedConstant.userCapacity.fetchTasks.filterConfirmed : this.taskStatus === 'NotConfirmed' ? this.sharedConstant.userCapacity.fetchTasks.filterNotConfirmed : this.sharedConstant.userCapacity.fetchTasks.filter;
-
-
-    // debugger;
+  
     invObj.url = this.spService.getReadURL(this.globalConstantService.listNames.Schedules.name, this.sharedConstant.userCapacity.fetchTasks);
     invObj.url = invObj.url.replace('{{userID}}', selectedUserID).replace(/{{startDateString}}/gi, startDateString)
       .replace(/{{endDateString}}/gi, endDateString);
