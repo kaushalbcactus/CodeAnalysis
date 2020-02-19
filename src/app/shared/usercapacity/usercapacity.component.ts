@@ -422,7 +422,7 @@ export class UsercapacityComponent implements OnInit {
     const selectedUserID = oUser.uid;
     const invObj = Object.assign({}, this.queryConfig);
     // tslint:disable-next-line: max-line-length
-  
+
     invObj.url = this.spService.getReadURL(this.globalConstantService.listNames.Schedules.name, this.sharedConstant.userCapacity.fetchTasks);
     invObj.url = invObj.url.replace('{{userID}}', selectedUserID).replace(/{{startDateString}}/gi, startDateString)
       .replace(/{{endDateString}}/gi, endDateString);
@@ -760,14 +760,12 @@ export class UsercapacityComponent implements OnInit {
       setTimeout(() => {
         this.bindProjectTaskDetails(tasks, objt, user);
       }, 300);
+
+      user.dates.map(c => delete c.backgroundColor);
+      date.backgroundColor = '#ffeb9c';
+      this.getColor(date);
+
     }
-
-    user.dates.map(c => delete c.backgroundColor);
-    date.backgroundColor = '#ffeb9c';
-
-    this.getColor(date);
-
-
   }
   // tslint:disable
   async bindProjectTaskDetails(tasks, objt, user) {
@@ -864,7 +862,7 @@ export class UsercapacityComponent implements OnInit {
 
   async fetchTimeSpentTaskDetails(user, date, objt) {
     if (user.TimeSpentTasks.length > 0) {
-      const SpentTasks = user.TimeSpentTasks.filter(c => c.TimeSpentDate.getTime() === date.date.getTime() && c.TimeSpentPerDay !== '00:00' && c.TimeSpentPerDay !== '0:00' );
+      const SpentTasks = user.TimeSpentTasks.filter(c => c.TimeSpentDate.getTime() === date.date.getTime() && c.TimeSpentPerDay !== '00:00' && c.TimeSpentPerDay !== '0:00');
       if (SpentTasks.length > 0) {
         user.TimeSpentDayTasks = SpentTasks;
         // $('.' + user.uid + 'spentloaderenable').show();
@@ -912,10 +910,12 @@ export class UsercapacityComponent implements OnInit {
 
         oItem.find('#spentTasksPerDay').show();
         oItem.find('.innerspentTableLoader').hide();
+
+        user.dates.map(c => delete c.TimespentbackgroundColor);
+        date.TimespentbackgroundColor = '#ffeb9c';
+        this.getTimeSpentColorExcel(date, date.date, user.GoLiveDate);
       }
-      user.dates.map(c => delete c.TimespentbackgroundColor);
-      date.TimespentbackgroundColor = '#ffeb9c';
-      this.getTimeSpentColorExcel(date, date.date, user.GoLiveDate);
+
     }
   }
 
