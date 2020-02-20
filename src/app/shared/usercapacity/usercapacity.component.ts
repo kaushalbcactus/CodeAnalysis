@@ -176,9 +176,6 @@ export class UsercapacityComponent implements OnInit {
   }
 
   async applyFilter(startDate, endDate, selectedUsers) {
-
-
-    debugger;
     const oCapacity = {
       arrUserDetails: [],
       arrDateRange: [],
