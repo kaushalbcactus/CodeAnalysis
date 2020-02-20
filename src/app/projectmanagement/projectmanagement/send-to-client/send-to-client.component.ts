@@ -202,7 +202,7 @@ export class SendToClientComponent implements OnInit {
   }
   closeTask(task) {
     if (task.PreviousTaskStatus === 'Auto Closed' || task.PreviousTaskStatus === 'Completed') {
-      const options = { Status: 'Completed', Actual_x0020_Start_x0020_Date: new Date(), Actual_x0020_End_x0020_Date: new Date() };
+      const options = { Status: 'Completed', Actual_x0020_Start_x0020_Date: new Date(), Actual_x0020_End_x0020_Date: new Date(), __metadata: { type: this.Constant.listNames.Schedules.type } };
       this.closeTaskWithStatus(task, options, this.sct);
     } else {
       this.changeErrorMessage('Previous task should be Completed or Auto Closed');
@@ -211,28 +211,39 @@ export class SendToClientComponent implements OnInit {
   async closeTaskWithStatus(task, options, unt) {
     const isActionRequired = await this.commonService.checkTaskStatus(task);
     if (isActionRequired) {
-      this.commonService.SetNewrelic('projectManagment', 'sendToClient', 'UpdateSchedules');
-      await this.spOperations.updateItem(this.Constant.listNames.Schedules.name, task.ID, options, this.Constant.listNames.Schedules.type);
-      const projectInfoOptions = { Status: 'Author Review' };
-      const projectID = this.pmObject.allProjectItems.filter(item => item.ProjectCode === task.ProjectCode);
-      await this.spOperations.updateItem(this.Constant.listNames.ProjectInformation.name, projectID[0].ID, projectInfoOptions,
-        this.Constant.listNames.ProjectInformation.type);
-      // check whether next task is null or not.
-      // Update the next task columnn PreviousTaskClosureDate with current date and time.
+
+      let batchUrl = [];
+      // update Task
+      const taskObj = Object.assign({}, this.options);
+      taskObj.url = this.spServices.getItemURL(this.Constant.listNames.Schedules.name, task.ID);
+      taskObj.data = options;
+      taskObj.listName = this.Constant.listNames.Schedules.name;
+      taskObj.type = 'PATCH';
+      batchUrl.push(taskObj);
+
       if (task.NextTasks) {
-        const projectInfoOptions = { Status: 'Author Review' };
         const projectID = this.pmObject.allProjectItems.filter(item => item.ProjectCode === task.ProjectCode);
-        this.commonService.SetNewrelic('projectManagment', 'sendToClient', 'UpdateProjectInfo');
-        await this.spOperations.updateItem(this.Constant.listNames.ProjectInformation.name, projectID[0].ID, projectInfoOptions,
-          this.Constant.listNames.ProjectInformation.type);
-        const nextOptions = { PreviousTaskClosureDate: new Date() };
+        const projectObj = Object.assign({}, this.options);
+        projectObj.url = this.spServices.getItemURL(this.Constant.listNames.ProjectInformation.name, projectID[0].ID);
+        projectObj.data = { Status: 'Author Review', __metadata: { type: this.Constant.listNames.ProjectInformation.type } };
+        projectObj.listName = this.Constant.listNames.ProjectInformation.name;
+        projectObj.type = 'PATCH';
+        batchUrl.push(projectObj);
+
         const nextTask = this.scArrays.nextTaskArray.filter(item => item.Title === task.NextTasks);
         if (nextTask && nextTask.length) {
-          this.commonService.SetNewrelic('projectManagment', 'sendToClient', 'UpdateSchedules');
-          await this.spOperations.updateItem(this.Constant.listNames.Schedules.name, nextTask[0].ID, nextOptions,
-            this.Constant.listNames.Schedules.type);
+
+          const taskObj = Object.assign({}, this.options);
+          taskObj.url = this.spServices.getItemURL(this.Constant.listNames.Schedules.name, nextTask[0].ID);
+          taskObj.data =  { PreviousTaskClosureDate: new Date(), __metadata: { type: this.Constant.listNames.Schedules.type } };;
+          taskObj.listName = this.Constant.listNames.Schedules.name;
+          taskObj.type = 'PATCH';
+          batchUrl.push(taskObj);
         }
       }
+
+      await this.spServices.executeBatch(batchUrl);
+
       this.changeSuccessMessage(task.Title + ' is completed Sucessfully');
 
       const index = this.pmObject.sendToClientArray.findIndex(item => item.ID === task.ID);
