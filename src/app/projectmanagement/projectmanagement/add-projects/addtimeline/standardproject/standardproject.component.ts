@@ -319,7 +319,7 @@ export class StandardprojectComponent implements OnInit {
     })
     matchingStandard.length > 0 ? templateName = matchingStandard[0].Title : templateName = '';
     const standardMilestoneOptions = {
-      select: 'ID,Title,ClientReviewDays,Hours,MilestoneName,DisplayOrder,MilestoneDays,SwimlaneCount,Template/ID,Template/Title,SubMilestones',
+      select: 'ID,Title,ClientReviewDays,Hours,MilestoneName,DisplayOrder,MilestoneDays,Template/ID,Template/Title,SubMilestones',
       expand: 'Template/ID,Template/Title',
       filter: 'Template/Title eq \'' + templateName + '\''
     }
@@ -386,7 +386,7 @@ export class StandardprojectComponent implements OnInit {
     };
     milestoneArray.forEach((milestone) => {
       const standardMilestoneTaskOptions = {
-        select: 'ID,Title,Skill,Hours,TaskDays,UseTaskDays,TaskPosition,Milestones/ID,Milestones/Title,TaskName/ID,TaskName/Title,PreviousTask/ID,PreviousTask/Title,SubMilestones/ID,SubMilestones/Title',
+        select: 'ID,Title,Skill,Hours,TaskDays,UseTaskDays,Milestones/ID,Milestones/Title,TaskName/ID,TaskName/Title,PreviousTask/ID,PreviousTask/Title,SubMilestones/ID,SubMilestones/Title',
         expand: 'Milestones/ID,Milestones/Title,TaskName/ID,TaskName/Title,PreviousTask/ID,PreviousTask/Title,SubMilestones/ID,SubMilestones/Title',
         filter: 'Milestones/Title eq \'' + milestone.Title + '\''
       };
@@ -695,7 +695,7 @@ export class StandardprojectComponent implements OnInit {
       milestoneObj.data.minEndDateValue = milestoneObj.data.StartDate;
       milestoneObj.data.ClientReviewDays = orginalMilestone[index].ClientReviewDays;
       milestoneObj.data.strSubMilestone = orginalMilestone[index].SubMilestones;
-      milestoneObj.data.SwimlaneCount = orginalMilestone[index].SwimlaneCount;
+
       milestoneObj.SubMilestones = this.getSubMilestones(orginalMilestone[index].SubMilestones);
       // check If submilestones is present or not
       if (milestoneObj.SubMilestones) {
@@ -1008,7 +1008,6 @@ export class StandardprojectComponent implements OnInit {
           taskObj.data.Skill = milestoneTask[index].Skill;
           taskObj.data.TaskDays = milestoneTask[index].TaskDays;
           taskObj.data.UseTaskDays = milestoneTask[index].UseTaskDays;
-          taskObj.data.TaskPosition = milestoneTask[index].TaskPosition;
           taskObj.data.Title = milestoneTask[index].Title;
           taskObj.data.Name = taskObj.data.TaskName;
           taskObj.data.isStartDateDisabled = false;
