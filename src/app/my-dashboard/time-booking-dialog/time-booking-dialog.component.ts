@@ -321,12 +321,8 @@ export class TimeBookingDialogComponent implements OnInit {
 
     this.UserMilestones = [];
     const uniqueLineItems = [];
-    // this.UserMilestones.push.apply(this.UserMilestones, uniquedbTasks);
-    // this.UserMilestones.push.apply(this.UserMilestones, uniqueAdhoc);
     uniqueLineItems.push.apply(uniqueLineItems, uniquedbTasks);
     uniqueLineItems.push.apply(uniqueLineItems, uniqueAdhoc);
-
-
     uniqueLineItems.forEach(record => {
       let milestoneTasks = [];
       let tbTask;
@@ -405,9 +401,6 @@ export class TimeBookingDialogComponent implements OnInit {
         if (timeSpentForTask.indexOf('') > -1) {
           timeSpentForTask.splice(timeSpentForTask.indexOf(''), 1);
         }
-        // const milestone = this.UserMilestones.find(c => c.Milestone === task.Milestone &&
-        //   c.ProjectCode === task.ProjectCode && c.SubMilestone === task.SubMilestones);
-        // if (milestone !== undefined) {
         timeSpentForTask.forEach(element => {
           // tslint:disable-next-line: no-shadowed-variable
           const hoursArray = [];
@@ -423,71 +416,13 @@ export class TimeBookingDialogComponent implements OnInit {
           if (currentMilestone !== undefined) {
             hoursArray.push(currentMilestone.MileHrs);
             currentMilestone.MileHrs = this.getTimeSpentHours(hoursArray);
-            // tslint:disable-next-line: no-shadowed-variable
-            // const timeSpentHours = hoursArray.map(c => c.split(':')).map(c => c[0]).map(Number).reduce
-            //   ((sum, num) => sum + num, 0) + Math.floor(hoursArray.map(c => c.split(':')).map(c => c[1])
-            //     .map(Number).reduce((sum, num) => sum + num, 0) / 60);
-            // // tslint:disable-next-line: no-shadowed-variable
-            // const timeSpentMin = hoursArray.map(c => c.split(':')).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) % 60;
-            // // tslint:disable-next-line: no-shadowed-variable
-            // const timeSpentHours1 = timeSpentHours < 10 ? '0' + timeSpentHours : timeSpentHours;
-            // currentMilestone.MileHrs = timeSpentMin < 10 ? timeSpentHours1 + ':' + '0' +
-            //   timeSpentMin : timeSpentHours1 + ':' + timeSpentMin;
-
             if (task.Task !== 'Time Booking') {
               hoursArray[1] = currentMilestone.minHrs;
               currentMilestone.minHrs = this.getTimeSpentHours(hoursArray);
-              // tslint:disable-next-line: no-shadowed-variable
-              // const timeSpentHours = hoursArray.map(c => c.split(':')).map(c => c[0]).map(Number)
-              //   .reduce((sum, num) => sum + num, 0) + Math.floor(hoursArray.map(c => c.split(':'))
-              //     .map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) / 60);
-              // // tslint:disable-next-line: no-shadowed-variable
-              // const timeSpentMin = hoursArray.map(c => c.split(':')).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) % 60;
-              // // tslint:disable-next-line: no-shadowed-variable
-              // const timeSpentHours1 = timeSpentHours < 10 ? '0' + timeSpentHours : timeSpentHours;
-              // currentMilestone.minHrs = timeSpentMin < 10 ? timeSpentHours1 + ':' + '0' +
-              //   timeSpentMin : timeSpentHours1 + ':' + timeSpentMin;
-
             }
-            // } else {
-            //   milestone.commentEnable = true;
-            //   milestone.Comments = task.TaskComments;
-            // }
           }
         });
-        // }
       }
-      // else if (task.ProjectCode === 'Adhoc') {
-      //   // tslint:disable-next-line: no-shadowed-variable
-      //   // const milestone = this.UserMilestones.find(c => c.Entity === task.Entity && c.Milestone === task.Comments);
-
-      //   // tslint:disable-next-line: no-shadowed-variable
-
-      // }
-      // else if (task.Task === 'Adhoc') {
-      //   // const milestone = this.UserMilestones.find(c => c.Entity === task.Entity && c.Milestone === task.Milestone);
-
-      //   const hoursArray = [];
-      //   hoursArray.push(task.TimeSpent);
-
-      //   if (milestone !== undefined) {
-      //     const currentMilestone = milestone.TimeSpents.find(c => new Date(this.datePipe.transform(c.date, 'yyyy-MM-dd')).getTime() ===
-      //       new Date(this.datePipe.transform(task.Actual_x0020_Start_x0020_Date, 'yyyy-MM-dd')).getTime());
-      //     if (currentMilestone !== undefined) {
-      //       hoursArray.push(currentMilestone.MileHrs);
-      //       const timeSpentHours = hoursArray.map(c => c.split(c.indexOf('.') > -1 ? '.' : ':')).map(c => c[0]).map(Number)
-      //      tslint:disable-next-line: max-line-length
-      //         .reduce((sum, num) => sum + num, 0) + Math.floor(hoursArray.map(c => c.split(c.indexOf('.') > -1 ? '.' : ':')).map(c => c[1])
-      //           .map(Number).reduce((sum, num) => sum + num, 0) / 60);
-      //       const timeSpentMin = hoursArray.map(c => c.split(c.indexOf('.') > -1 ? '.' : ':')).map(c => c[1]).map(Number)
-      //         .reduce((sum, num) => sum + num, 0) % 60;
-      //       const timeSpentHours1 = timeSpentHours < 10 ? '0' + timeSpentHours : timeSpentHours;
-      //       currentMilestone.MileHrs = timeSpentMin < 10 ?
-      //         timeSpentHours1 + ':' + '0' + timeSpentMin : timeSpentHours1 + ':' + timeSpentMin;
-
-      //     }
-      //   }
-      // }
     });
   }
 
@@ -504,6 +439,7 @@ export class TimeBookingDialogComponent implements OnInit {
       timeSpentHours1 + ':' + '0' + timeSpentMin : timeSpentHours1 + ':' + timeSpentMin;
     return timespent;
   }
+
   generateAdhocTimeSpent(tasks, milestone) {
     tasks.forEach(task => {
       const hoursArray = [];
@@ -516,18 +452,6 @@ export class TimeBookingDialogComponent implements OnInit {
         if (currentMilestone !== undefined) {
           hoursArray.push(currentMilestone.MileHrs);
           currentMilestone.MileHrs = this.getTimeSpentHours(hoursArray);
-          // currentMilestone.MileHrs = this.getTimeSpentHours(hoursArray);
-          // tslint:disable-next-line: no-shadowed-variable
-          // const timeSpentHours = hoursArray.map(c => c.split(c.indexOf('.') > -1 ? '.' : ':')).map(c => c[0]).map(Number).reduce
-          //   ((sum, num) => sum + num, 0) + Math.floor(hoursArray.map(c => c.split(c.indexOf('.') > -1 ? '.' : ':'))
-          //     .map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) / 60);
-          // // tslint:disable-next-line: no-shadowed-variable
-          // const timeSpentMin = hoursArray.map(c => c.split(c.indexOf('.') > -1 ? '.' : ':')).map(c => c[1]).map(Number).reduce
-          //   ((sum, num) => sum + num, 0) % 60;
-          // // tslint:disable-next-line: no-shadowed-variable
-          // const timeSpentHours1 = timeSpentHours < 10 ? '0' + timeSpentHours : timeSpentHours;
-          // currentMilestone.MileHrs = timeSpentMin < 10 ?
-          //   timeSpentHours1 + ':' + '0' + timeSpentMin : timeSpentHours1 + ':' + timeSpentMin;
         }
       }
     });
