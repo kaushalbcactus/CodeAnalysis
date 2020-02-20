@@ -1600,6 +1600,8 @@ export class AllProjectsComponent implements OnInit {
       this.selectedProjectObj.ID);
     batchURL.push(piInfoUpdate);
     // This function is used to calculate the hour spent for particular projects.
+
+    debugger;
     const hourSpent = await this.getTotalHours(this.selectedProjectObj.ProjectCode,
       true, scheduleItems);
     const projectFinaceData = {
@@ -1740,7 +1742,7 @@ export class AllProjectsComponent implements OnInit {
   async getTotalHours(projectCode, isScheduleListStatusUpdated, scheduleItems) {
     let totalSpentTime = 0;
     let sResult = [];
-    if (scheduleItems.length > 0) {
+    if (scheduleItems.length === 0) {
       const scheduleFilter = Object.assign({}, this.pmConstant.QUERY.GET_TIMESPENT);
       scheduleFilter.filter = scheduleFilter.filter.replace(/{{projectCode}}/gi, projectCode);
       this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetSchedulesbyProjectCode');
