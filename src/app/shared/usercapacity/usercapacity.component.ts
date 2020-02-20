@@ -642,12 +642,16 @@ export class UsercapacityComponent implements OnInit {
         if (av.length) {
           oUser.dates[i].availableHrs = '0:0';
           oUser.dates[i].displayAvailableHrs = oUser.dates[i].availableHrs;
+          oUser.dates[i].displayAvailableHrsstring = oUser.dates[i].displayAvailableHrs.split(':')[0] + 'h:' +
+            oUser.dates[i].displayAvailableHrs.split(':')[1] + 'm';
           oUser.dates[i].userCapacity = 'NotAvailable';
         } else {
           oUser.dates[i].availableHrs = this.commonservice.ajax_subtractHrsMins(
             this.commonservice.convertToHrsMins('' + oUser.dates[i].maxAvailableHours),
             totalTimeAllocatedPerDay.length > 0 ? totalTimeAllocatedPerDay.replace(':', '.') : 0);
-          oUser.dates[i].displayAvailableHrs = oUser.dates[i].availableHrs.toString();
+          oUser.dates[i].displayAvailableHrs = oUser.dates[i].availableHrs;
+          oUser.dates[i].displayAvailableHrsstring = oUser.dates[i].displayAvailableHrs.split(':')[0] + 'h:' +
+            oUser.dates[i].displayAvailableHrs.split(':')[1] + 'm';
           if (+oUser.dates[i].availableHrs.replace(':', '.') > 0) {
             objTotalAvailablePerUser.timeHrs = oUser.dates[i].availableHrs.split(':')[0];
             objTotalAvailablePerUser.timeMins = oUser.dates[i].availableHrs.split(':')[1];
@@ -665,6 +669,8 @@ export class UsercapacityComponent implements OnInit {
             new Object({ timeHrs: c.TimeSpentPerDay.split(':')[0], timeMins: c.TimeSpentPerDay.split(':')[1] })) : [];
 
         oUser.dates[i].TimeSpent = allTimeSpentArray.length > 0 ? this.commonservice.ajax_addHrsMins(allTimeSpentArray) : '0:0';
+        oUser.dates[i].TimeSpentstring = oUser.dates[i].TimeSpent.split(':')[0] + 'h:' +
+          oUser.dates[i].TimeSpent.split(':')[1] + 'm';
         oUser.dates[i].taskCount = taskCount;
         if (bLeave) {
           oUser.dates[i].totalTimeAllocatedPerDay = 0;

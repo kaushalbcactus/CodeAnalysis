@@ -285,16 +285,17 @@
                 <div> {{user.userName}} </div>
             </td>
             <td>
-                <div> {{user.JoiningDate | date : "dd MMM yy h:mm a"}} </div>
+                <div> {{user.JoiningDate | date : "EEE d MMM yyyy"}} </div>
             </td>
             <td>
-                <div> {{user.GoLiveDate | date : "dd MMM yy h:mm a"}} </div>
+                <div> {{user.GoLiveDate | date : "EEE d MMM yyyy"}} </div>
             </td>
 
             <td *ngFor="let date of user.dates" class="tableCell" [ngStyle]="{'background-color':getColor(date)}">
                 <!-- [ngStyle]="{'background-color': date.userCapacity ==='Leave' ? 'grey' : 'date.userCapacity' === 'NotAvailable' ? '#EF3D3D' : 'date.userCapacity' === 'Available' ? '#55bf3b' : 'date.backgroundColor' : 'date.backgroundColor' : 'date.backgroundColor'}"> -->
                 <div class="wrap">
-                    <div class="availableHrs center"> {{date.displayAvailableHrs}}
+                    <div class="availableHrs center">
+                        {{date.displayAvailableHrsstring}}
                     </div>
                 </div>
             </td>
@@ -361,7 +362,7 @@
             <td *ngFor="let date of user.dates" class="tableCell" [ngStyle]="{'background-color':getTimeSpentColorExcel(date,date.date,user.GoLiveDate)}">
                 <div class="wrap">
 
-                    <div class="availableHrs center"> {{date.TimeSpent}}
+                    <div class="availableHrs center"> {{date.TimeSpentstring}}
                     </div>
 
                 </div>
