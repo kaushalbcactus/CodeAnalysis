@@ -6508,10 +6508,9 @@ module.exports = function () {
         autofit: false,
         columns: [
             { name: "text", tree: true, width: "*", resize: true },
+            {name: "owner", width: 80, align: "center"},
             { name: "start_date", align: "center", resize: true },
             { name: "end_date", align: "center" },
-            // {name: "owner", width: 80, align: "center", template: function (item) {
-            //     return byId(gantt.serverList('people'), item.owner_id)}}
             // { name: "add", width: 44 }
         ],
         /*scale*/

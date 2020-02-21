@@ -62,6 +62,7 @@
             <div *ngIf='visualgraph'>
                 <button class="mr-20" type="button" mat-raised-button (click)="zoomIn()">Zoom In</button>
                 <button class="mr-20" type="button" mat-raised-button (click)="zoomOut()">Zoom Out</button>
+                <button class="mr-20" type="button" mat-raised-button (click)="ganttExportToExcel()">Export To Excel</button>
                 <p-dropdown class="mr-20" #mySelect [options]="scales" [(ngModel)]="selectedScale" (onChange)="setScale(mySelect.value)" optionLabel="label"></p-dropdown>
                 <button type="button" mat-raised-button (click)="save()">Save</button>
             </div>
@@ -403,7 +404,7 @@
            ********************************************************************************************************** -->
         <div fxLayout="row" fxLayoutAlign=" start center"
             [ngClass]="projectDetails  ? 'VisualRepresentationpopup':'VisualRepresentation'"
-            [hidden]="visualgraph === false">
+            [hidden]="visualgraph === false" style="width:100%">
             <!-- <ng-gantt style="width:100%;" *ngIf='visualgraph' [options]="editorOptions" [data]="GanttchartData"
                 #gantteditor></ng-gantt> -->
             <div style="width:100%">

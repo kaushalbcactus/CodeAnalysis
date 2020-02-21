@@ -69,6 +69,10 @@
       height:calc(100vh - 52px);
   }
 
+  .gantt_tooltip {
+    z-index: 1100;
+  }
+
   .planned_task{
     border:2px solid #FFD34E !important;
     /* color:#6ba8e3; */

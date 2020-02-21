@@ -13,6 +13,7 @@ export class TaskAllocationCommonService {
     public datepipe: DatePipe) { }
 
   ganttParseObject: any = {}
+  allTasks: any = {}
 
   getResourceByMatrix(task, allTasks) {
     let resources = this.sharedObject.oTaskAllocation.oResources;
@@ -271,80 +272,80 @@ export class TaskAllocationCommonService {
     return converteddateObject
   }
 
-  milestoneObject(milestone) {
-    let milestoneData: any = {}
+  milestoneObject(milestone,task?) {
+    milestone.start_date = task ? new Date(task.start_date) : new Date(milestone.start_date);
+    milestone.end_date = task ? new Date(task.end_date) : new Date(milestone.end_date);
+    milestone.pUserStart = task ? new Date(task.pUserStart) : new Date(milestone.pUserStart);
+    milestone.pUserEnd = task ? new Date(task.pUserEnd) : new Date(milestone.pUserEnd);
+    milestone.pUserStartDatePart = this.getDatePart(milestone.pUserStart);
+    milestone.pUserStartTimePart = this.getTimePart(milestone.pUserStart);
+    milestone.pUserEndDatePart = this.getDatePart(milestone.pUserEnd);
+    milestone.pUserEndTimePart = this.getTimePart(milestone.pUserEnd);
+    milestone.editMode = false;
+    milestone.edited = false;
+    milestone.tat = task ? task.tat : milestone.tat;
+    milestone.tatVal = this.commonService.calcBusinessDays(new Date(milestone.start_date), new Date(milestone.end_date));
+    milestone.AssignedTo = task ? task.AssignedTo : milestone.AssignedTo;
+    milestone.allowStart = task ? task.allowStart : milestone.allowStart;
+    milestone.budgetHours = task ? task.budgetHours : milestone.budgetHours;
+    milestone.slotColor = task ? task.slotColor : milestone.slotColor;
+    milestone.DisableCascade = task ? task.DisableCascade : milestone.DisableCascade;
 
-    milestoneData.start_date = new Date(milestone.start_date);
-    milestoneData.end_date = new Date(milestone.end_date);
-    milestoneData.pUserStart = new Date(milestone.pUserStart);
-    milestoneData.pUserEnd = new Date(milestone.pUserEnd);
-    // milestoneData.pUserStartDatePart =
-    // milestoneData.pUserStartTimePart =
-    // milestoneData.pUserEndDatePart =
-    // milestoneData.pUserEndTimePart =
-    milestoneData.editMode = false;
-    milestoneData.edited = false;
-    milestoneData.tat = milestone.tat;
-    milestoneData.tatVal = this.commonService.calcBusinessDays(new Date(milestone.start_date), new Date(milestone.end_date));
-    milestoneData.AssignedTo = milestone.AssignedTo;
-    milestoneData.allowStart = milestone.allowStart;
-    milestoneData.budgetHours = milestone.budgetHours;
-    milestoneData.slotColor = milestone.slotColor;
-    milestoneData.DisableCascade = milestone.DisableCascade;
-
-    return milestoneData;
+    return milestone;
   }
 
-  ganttDataObject(data) {
+  ganttDataObject(data, milestoneObj?, NextSubMilestone?, milestone?, hrsMinObject?) {
 
-    var milestoneSubmilestones = data.SubMilestones !== null ? data.SubMilestones.replace(/#/gi, "").split(';') : [];
+    var milestoneSubmilestones = data.SubMilestones ? data.SubMilestones !== null ? data.SubMilestones.replace(/#/gi, "").split(';') : [] : [];
 
     var dbSubMilestones: Array<any> = milestoneSubmilestones.length > 0 ? milestoneSubmilestones.map(o => new Object({ subMile: o.split(':')[0], position: o.split(':')[1], status: o.split(':')[2] })) : [];
 
+    let convertedDate = this.convertDate(data)
+
     let ganttObject = {
-      'pUserStart': data.startDate !== "" ? data.startDate.date.year + "/" + (data.startDate.date.month < 10 ? "0" + data.startDate.date.month : data.startDate.date.month) + "/" + (data.startDate.date.day < 10 ? "0" + data.startDate.date.day : data.startDate.date.day) : '',
-      'pUserEnd': data.endDate !== "" ? data.endDate.date.year + "/" + (data.endDate.date.month < 10 ? "0" + data.endDate.date.month : data.endDate.date.month) + "/" + (data.endDate.date.day < 10 ? "0" + data.endDate.date.day : data.endDate.date.day) : '',
-      'pUserStartDatePart': this.getDate(data.startDate),
-      'pUserStartTimePart': '',
-      'pUserEndDatePart':  this.getDate(data.endDate),
-      'pUserEndTimePart': '',
+      'pUserStart': data.type == 'submilestone' ? null : data.type == 'task' ? convertedDate.convertedStartDate : data.startDate !== "" ? data.startDate.date.year + "/" + (data.startDate.date.month < 10 ? "0" + data.startDate.date.month : data.startDate.date.month) + "/" + (data.startDate.date.day < 10 ? "0" + data.startDate.date.day : data.startDate.date.day) : '',
+      'pUserEnd': data.type == 'submilestone' ? null : data.type == 'task' ? convertedDate.convertedEndDate : data.endDate !== "" ? data.endDate.date.year + "/" + (data.endDate.date.month < 10 ? "0" + data.endDate.date.month : data.endDate.date.month) + "/" + (data.endDate.date.day < 10 ? "0" + data.endDate.date.day : data.endDate.date.day) : '',
+      'pUserStartDatePart': data.type == 'submilestone' ? '' : data.type == 'task' ? this.getDatePart(convertedDate.convertedStartDate) : this.getDate(data.startDate),
+      'pUserStartTimePart': data.type == 'task' ? this.getTimePart(convertedDate.convertedStartDate) : '',
+      'pUserEndDatePart':  data.type == 'submilestone' ? '' : data.type == 'task' ? this.getDatePart(convertedDate.convertedEndDate) : this.getDate(data.endDate),
+      'pUserEndTimePart': data.type == 'task' ? this.getTimePart(convertedDate.convertedEndDate) : '',
       'status': data.Status,
       'id': data.Id,
-      'text': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === data.Title ? data.Title + " (Current)" : data.Title,
-      'title': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === data.Title ? data.Title + " (Current)" : data.Title,
-      'milestone': '',
-      'start_date': new Date(data.startDate !== "" ? data.startDate.date.year + "/" + (data.startDate.date.month < 10 ? "0" + data.startDate.date.month : data.startDate.date.month) + "/" + (data.startDate.date.day < 10 ? "0" + data.startDate.date.day : data.startDate.date.day) : ''),
-      'end_date': new Date(data.endDate !== "" ? data.endDate.date.year + "/" + (data.endDate.date.month < 10 ? "0" + data.endDate.date.month : data.endDate.date.month) + "/" + (data.endDate.date.day < 10 ? "0" + data.endDate.date.day : data.endDate.date.day) : ''),
+      'text': data.type == 'submilestone' ? data.subMile : data.type == 'task' ? data.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + data.Milestone + ' ', '') : this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === data.Title ? data.Title + " (Current)" : data.Title,
+      'title': data.type == 'submilestone' ? data.subMile : data.type == 'task' ? data.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + data.Milestone + ' ', '') : this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === data.Title ? data.Title + " (Current)" : data.Title,
+      'milestone': (data.type == 'milestone' || data.type == 'submilestone') ? '' : data.Milestone,
+      'start_date': data.type == 'submilestone' ? '' : data.type == 'task' ? new Date(convertedDate.jsLocalStartDate) : new Date(data.startDate !== "" ? data.startDate.date.year + "/" + (data.startDate.date.month < 10 ? "0" + data.startDate.date.month : data.startDate.date.month) + "/" + (data.startDate.date.day < 10 ? "0" + data.startDate.date.day : data.startDate.date.day) : ''),
+      'end_date': data.type == 'submilestone' ? '' : data.type == 'task' ? new Date(convertedDate.jsLocalEndDate) : new Date(data.endDate !== "" ? data.endDate.date.year + "/" + (data.endDate.date.month < 10 ? "0" + data.endDate.date.month : data.endDate.date.month) + "/" + (data.endDate.date.day < 10 ? "0" + data.endDate.date.day : data.endDate.date.day) : ''),
       'user': data.AssignedTo ? data.AssignedTo.Title !== undefined ? data.AssignedTo.Title : '' : '  ',
-      'open': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === data.Title ? 1 : 0,
-      'parent': 0,
-      'res_id': '',
-      'nextTask': '',
-      'previousTask': '',
-      'budgetHours': data.ExpectedTime ? data.ExpectedTime.toString() : '0',
-      'spentTime': '0:0',
-      'allowStart': false,
-      'tat': true,
-      'tatVal': this.commonService.calcBusinessDays(new Date(data.Actual_x0020_Start_x0020_Date), new Date(data.Actual_x0020_End_x0020_Date)),
-      'milestoneStatus': '',
-      'type': 'milestone',
+      'open': data.type == 'task' ? data.IsCentrallyAllocated === 'Yes' ? 0 : 1 : this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === data.Title ? 1 : 0,
+      'parent': data.type == 'submilestone' ? milestone.Id : data.type == 'task' ? data.Task === 'Client Review' ? 0 : data.ParentSlot ? data.ParentSlot : milestone.Id : 0,
+      'res_id': data.type == 'task' ? data.AssignedTo ? data.AssignedTo.ID : '': '',
+      'nextTask': data.type == 'task' ? this.fetchTaskName(data.NextTasks, this.sharedObject.oTaskAllocation.oProjectDetails.projectCode, data.Milestone) : '',
+      'previousTask': data.type == 'task' ? this.fetchTaskName(data.PrevTasks, this.sharedObject.oTaskAllocation.oProjectDetails.projectCode, data.Milestone) : '',
+      'budgetHours': data.type == 'task' ? data.ExpectedTime : data.ExpectedTime ? data.ExpectedTime.toString() : '0',
+      'spentTime': data.Task == 'Client Review' ? '' : data.type == 'task' ? this.commonService.ajax_addHrsMins([hrsMinObject]) : '0:0',
+      'allowStart': data.type == 'task' ? data.AllowCompletion === true || data.AllowCompletion === 'Yes' ? true : false : false,
+      'tat': data.type == 'submilestone' ? false :data.type == 'task' ? data.TATStatus === true || data.TATStatus === 'Yes' ? true : false : true,
+      'tatVal': data.type == 'submilestone' ? 0 : data.type == 'task' ? this.commonService.calcBusinessDays(convertedDate.jsLocalStartDate, convertedDate.jsLocalEndDate) : this.commonService.calcBusinessDays(new Date(data.Actual_x0020_Start_x0020_Date), new Date(data.Actual_x0020_End_x0020_Date)),
+      'milestoneStatus': (data.type == 'task' || data.type == 'submilestone') ? milestone.Status : '',
+      'type': data.type,
       'editMode': false,
-      'scope': null,
-      'isCurrent': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === data.Title ? true : false,
-      'isNext': this.sharedObject.oTaskAllocation.oProjectDetails.nextMilestone === data.Title ? true : false,
-      'isFuture': this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones !== undefined ? this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones.indexOf(data.Title)
+      'scope': data.type == 'task' ? data.Comments :null,
+      'isCurrent': data.type == 'task' ? this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? true : false : data.type == 'submilestone' ? milestoneObj.isCurrent && NextSubMilestone.position === data.position && NextSubMilestone.status === data.status ? true : false : this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === data.Title ? true : false,
+      'isNext': data.type == 'submilestone' ? milestoneObj.isNext && NextSubMilestone.position === data.position && NextSubMilestone.status === data.status ? true : false : this.sharedObject.oTaskAllocation.oProjectDetails.nextMilestone === data.Title ? true : false,
+      'isFuture': data.type == 'submilestone' ? false : this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones !== undefined ? this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones.indexOf(data.Title)
       > -1 ? true : false : false,
-      'assignedUsers': '',
-      'AssignedTo': '',
+      'assignedUsers': data.type == 'task' ?  data.assignedUsers : '',
+      'AssignedTo': data.type == 'task' ? data.AssignedTo.ID ? data.AssignedTo : '' : '',
       'userCapacityEnable': false,
       'position': data.position,
       'color': data.color,
-      'itemType': 'milestone',
-      'slotType': '',
+      'itemType': (data.type == 'milestone' || data.type == 'submilestone') ? data.type : data.Task,
+      'slotType': data.type == 'task' ? data.IsCentrallyAllocated === 'Yes' ? 'Slot' : 'Task' : '',
       'edited': false,
       'added': false,
       'slotColor': 'white',
-      'IsCentrallyAllocated': data.IsCentrallyAllocated,
+      'IsCentrallyAllocated': (data.type == 'milestone' || data.type == 'submilestone' || data.Task == 'Client Review') ? 'No' : data.IsCentrallyAllocated,
       'submilestone': data.SubMilestones,
       'skillLevel': data.SkillLevel,
       'CentralAllocationDone': data.CentralAllocationDone,
@@ -361,3 +362,54 @@ export class TaskAllocationCommonService {
   }
 
 }
+
+// milestoneData.start_date = new Date(milestone.start_date);
+//     milestoneData.end_date = new Date(milestone.end_date);
+//     milestoneData.pUserStart = new Date(milestone.pUserStart);
+//     milestoneData.pUserEnd = new Date(milestone.pUserEnd);
+//     milestoneData.pUserStartDatePart = this.getDatePart(milestone.pUserStart);
+//     milestoneData.pUserStartTimePart = this.getTimePart(milestone.pUserStart);
+//     milestoneData.pUserEndDatePart = this.getDatePart(milestone.pUserEnd);
+//     milestoneData.pUserEndTimePart = this.getTimePart(milestone.pUserEnd);
+//     milestoneData.editMode = false;
+//     milestoneData.edited = false;
+//     milestoneData.tat = milestone.tat;
+//     milestoneData.tatVal = this.commonService.calcBusinessDays(new Date(milestone.start_date), new Date(milestone.end_date));
+//     milestoneData.AssignedTo = milestone.AssignedTo;
+//     milestoneData.allowStart = milestone.allowStart;
+//     milestoneData.budgetHours = milestone.budgetHours;
+//     milestoneData.slotColor = milestone.slotColor;
+//     milestoneData.DisableCascade = milestone.DisableCascade;
+//     milestoneData.status = milestone.status;
+//     milestoneData.id = milestone.id;
+//     milestoneData.text = milestone.text;
+//     milestoneData.title = milestone.title;
+//     milestoneData.milestone = milestone.milestone;
+//     milestoneData.user = milestone.user;
+//     milestoneData.open = milestone.open;
+//     milestoneData.parent = milestone.parent;
+//     milestoneData.res_id = milestone.res_id;
+//     milestoneData.nextTask = milestone.nextTask;
+//     milestoneData.previousTask = milestone.previousTask;
+//     milestoneData.spentTime = milestone.spentTime;
+//     milestoneData.milestoneStatus = milestone.milestoneStatus;
+//     milestoneData.type = milestone.type;
+//     milestoneData.scope = milestone.scope;
+//     milestoneData.isCurrent = milestone.isCurrent;
+//     milestoneData.isNext = milestone.isNext;
+//     milestoneData.isFuture = milestone.isFuture;
+//     milestoneData.assignedUsers = milestone.assignedUsers;
+//     milestoneData.userCapacityEnable = milestone.userCapacityEnable;
+//     milestoneData.position = milestone.position;
+//     milestoneData.color = milestone.color;
+//     milestoneData.itemType = milestone.itemType;
+//     milestoneData.slotType = milestone.slotType;
+//     milestoneData.added = milestone.added;
+//     milestoneData.IsCentrallyAllocated = milestone.IsCentrallyAllocated;
+//     milestoneData.submilestone = milestone.submilestone;
+//     milestoneData.skillLevel = milestone.skillLevel;
+//     milestoneData.CentralAllocationDone = milestone.CentralAllocationDone;
+//     milestoneData.ActiveCA = milestone.ActiveCA;
+//     milestoneData.assignedUserTimeZone = milestone.assignedUserTimeZone;
+//     milestoneData.parentSlot = milestone.parentSlot;
+//     milestoneData.deallocateSlot = milestone.deallocateSlot;

@@ -4,6 +4,9 @@ import { gantt, Gantt } from '../../dhtmlx-gantt/codebase/source/dhtmlxgantt';
 import '../../dhtmlx-gantt/codebase/ext/dhtmlxgantt_tooltip';
 import '../../dhtmlx-gantt/codebase/ext/dhtmlxgantt_marker';
 
+import '../../dhtmlx-gantt/codebase/ext/api';
+// import "http://export.dhtmlx.com/gantt/api.js";
+
 @Component({
   selector: 'app-gantt-chart',
   templateUrl: './gantt-chart.component.html',
@@ -77,17 +80,27 @@ export class GanttChartComponent implements OnInit {
         },
         {
           name: "4",
-          scale_height: 50,
+          scale_height: 60,
           min_column_width: 90,
           scales: [
-            { unit: "month", step: 1, format: "%M" },
-            {
-              unit: "quarter", step: 1, format: function (date) {
-                var dateToStr = gantt.date.date_to_str("%M");
-                var endDate = gantt.date.add(gantt.date.add(date, 3, "month"), -1, "day");
-                return dateToStr(date) + " - " + dateToStr(endDate);
+            {unit: "year", step: 1, format: "%Y"},
+            {unit: "quarter", step: 1, format: function quarterLabel(date) {
+              var month = date.getMonth();
+              var q_num;
+      
+              if (month >= 9) {
+                q_num = 4;
+              } else if (month >= 6) {
+                q_num = 3;
+              } else if (month >= 3) {
+                q_num = 2;
+              } else {
+                q_num = 1;
               }
-            }
+      
+              return "Q" + q_num;
+            }},
+            {unit: "month", step: 1, format: "%M"}
           ]
         },
         {
@@ -370,7 +383,7 @@ export class GanttChartComponent implements OnInit {
         "<b>Start date:</b> " +
         gantt.templates.tooltip_date_format(task.start_date) +
         "<br/><b>End date:</b> " + gantt.templates.tooltip_date_format(task.end_date) +
-        "<br/><b>Duration:</b> " + gantt.calculateDuration(task) + "<br/><b>Status:</b> " + getTaskType(task) +
+        "<br/><b>Duration:</b> " + gantt.calculateDuration(task) + "<br/><b>Status:</b> " + task.status +
         "<br/><b>Resource:</b> " + getResource(task) + "<br/><b>Budget Hrs:</b> " + task.budgetHours +
         "<br/><b>Spent Hrs:</b> " + task.spentTime;
     }
@@ -474,8 +487,9 @@ export class GanttChartComponent implements OnInit {
 
     resourcesStore.parse(resource);
 
-    gantt.config.sort = true;
-    gantt.config.order_branch = true;
+    gantt.config.layout = this.gridConfig;
+
+    // gantt.config.order_branch = true;
     // gantt.config.order_branch_free = true;
     gantt.config.drag_project = true; 
     gantt.config.fit_tasks = true;
@@ -502,14 +516,13 @@ export class GanttChartComponent implements OnInit {
 
   setScaleConfig(value) {
     this.isLoaderHidden = false;
-    if (value == '0') {
-    gantt.config.layout = this.gridConfig;
-    } else {
+    // if (value == '0') {
+    // gantt.config.layout = this.gridConfig;
+    // } else {
     // gantt.config.layout = this.resourcePanelConfig;
-    }
+    // }
     gantt.ext.zoom.setLevel(value);
     setTimeout(() => {
-      gantt.config.sort = true;
       gantt.init(this.ganttContainer.nativeElement)
       gantt.parse(this.ganttParseObject);
       this.isLoaderHidden = true;
@@ -529,7 +542,6 @@ export class GanttChartComponent implements OnInit {
     if (gantt.ext.zoom.getCurrentLevel() == 0) {
       this.isLoaderHidden = false;
       // gantt.config.layout = this.gridConfig;
-      gantt.config.sort = true;
       gantt.init(this.ganttContainer.nativeElement)
       setTimeout(() => {
         gantt.parse(this.ganttParseObject);
@@ -544,7 +556,6 @@ export class GanttChartComponent implements OnInit {
       this.isLoaderHidden = false;
       // gantt.config.layout = this.resourcePanelConfig;
       setTimeout(() => {
-        gantt.config.sort = true;
         gantt.init(this.ganttContainer.nativeElement)
         gantt.parse(this.ganttParseObject);
         this.isLoaderHidden = true;
