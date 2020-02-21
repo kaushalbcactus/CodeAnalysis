@@ -326,15 +326,15 @@ export class ProjectAttributesComponent implements OnInit {
    */
   goToTimeline(data) {
     if (this.enableCountFields) {
-      if (this.addProjectAttributesForm.value.ReferenceCount === null || this.addProjectAttributesForm.value.ReferenceCount <= 0) {
+      if (this.addProjectAttributesForm.value.ReferenceCount === null || this.addProjectAttributesForm.value.ReferenceCount < 0) {
         this.CountError = true;
         this.errorType = 'Reference';
       }
-      else if (this.addProjectAttributesForm.value.SlideCount === null || this.addProjectAttributesForm.value.SlideCount <= 0) {
+      else if (this.addProjectAttributesForm.value.SlideCount === null || this.addProjectAttributesForm.value.SlideCount < 0) {
         this.CountError = true;
         this.errorType = 'Slide';
       }
-      else if (this.addProjectAttributesForm.value.PageCount === null || this.addProjectAttributesForm.value.PageCount <= 0) {
+      else if (this.addProjectAttributesForm.value.PageCount === null || this.addProjectAttributesForm.value.PageCount < 0) {
         this.CountError = true;
         this.errorType = 'Page';
       }
@@ -520,7 +520,9 @@ export class ProjectAttributesComponent implements OnInit {
     this.pmObject.addProject.ProjectAttributes.Comments = projObj.Comments;
     this.pmObject.addProject.ProjectAttributes.SlideCount = projObj.SlideCount;
     // tslint:disable-next-line: max-line-length
-    this.pmObject.addProject.ProjectAttributes.ReferenceCount = projObj.ReferenceCount; this.pmObject.addProject.ProjectAttributes.PageCount = projObj.PageCount; this.pmObject.addProject.ProjectAttributes.AnnotationBinder = projObj.AnnotationBinder ? projObj.AnnotationBinder === 'Yes' ? true : false : false;
+    this.pmObject.addProject.ProjectAttributes.ReferenceCount = projObj.ReferenceCount; 
+    this.pmObject.addProject.ProjectAttributes.PageCount = projObj.PageCount;
+     this.pmObject.addProject.ProjectAttributes.AnnotationBinder = projObj.AnnotationBinder ? projObj.AnnotationBinder === 'Yes' ? true : false : false;
 
     this.enableCountFields = this.pmObject.addProject.ProjectAttributes.PracticeArea.toLowerCase()
       === 'medcomm' || this.pmObject.addProject.ProjectAttributes.PracticeArea.toLowerCase() === 'medinfo' ? true : false;
@@ -531,15 +533,15 @@ export class ProjectAttributesComponent implements OnInit {
    */
   async saveEditProject() {
     if (this.enableCountFields) {
-      if (this.addProjectAttributesForm.value.ReferenceCount === null || this.addProjectAttributesForm.value.ReferenceCount <= 0) {
+      if (this.addProjectAttributesForm.value.ReferenceCount === null || this.addProjectAttributesForm.value.ReferenceCount < 0) {
         this.CountError = true;
         this.errorType = 'Reference';
       }
-      else if (this.addProjectAttributesForm.value.SlideCount === null || this.addProjectAttributesForm.value.SlideCount <= 0) {
+      else if (this.addProjectAttributesForm.value.SlideCount === null || this.addProjectAttributesForm.value.SlideCount < 0) {
         this.CountError = true;
         this.errorType = 'Slide';
       }
-      else if (this.addProjectAttributesForm.value.PageCount === null || this.addProjectAttributesForm.value.PageCount <= 0) {
+      else if (this.addProjectAttributesForm.value.PageCount === null || this.addProjectAttributesForm.value.PageCount < 0) {
         this.CountError = true;
         this.errorType = 'Page';
       }

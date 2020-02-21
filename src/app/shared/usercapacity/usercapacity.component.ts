@@ -422,10 +422,7 @@ export class UsercapacityComponent implements OnInit {
     const selectedUserID = oUser.uid;
     const invObj = Object.assign({}, this.queryConfig);
     // tslint:disable-next-line: max-line-length
-    // this.sharedConstant.userCapacity.fetchTasks.filter = this.taskStatus === ' Confirmed' ? this.sharedConstant.userCapacity.fetchTasks.filterConfirmed : this.taskStatus === 'NotConfirmed' ? this.sharedConstant.userCapacity.fetchTasks.filterNotConfirmed : this.sharedConstant.userCapacity.fetchTasks.filter;
 
-
-    // debugger;
     invObj.url = this.spService.getReadURL(this.globalConstantService.listNames.Schedules.name, this.sharedConstant.userCapacity.fetchTasks);
     invObj.url = invObj.url.replace('{{userID}}', selectedUserID).replace(/{{startDateString}}/gi, startDateString)
       .replace(/{{endDateString}}/gi, endDateString);
@@ -645,12 +642,16 @@ export class UsercapacityComponent implements OnInit {
         if (av.length) {
           oUser.dates[i].availableHrs = '0:0';
           oUser.dates[i].displayAvailableHrs = oUser.dates[i].availableHrs;
+          oUser.dates[i].displayAvailableHrsstring = oUser.dates[i].displayAvailableHrs.split(':')[0] + 'h:' +
+            oUser.dates[i].displayAvailableHrs.split(':')[1] + 'm';
           oUser.dates[i].userCapacity = 'NotAvailable';
         } else {
           oUser.dates[i].availableHrs = this.commonservice.ajax_subtractHrsMins(
             this.commonservice.convertToHrsMins('' + oUser.dates[i].maxAvailableHours),
             totalTimeAllocatedPerDay.length > 0 ? totalTimeAllocatedPerDay.replace(':', '.') : 0);
-          oUser.dates[i].displayAvailableHrs = oUser.dates[i].availableHrs.toString();
+          oUser.dates[i].displayAvailableHrs = oUser.dates[i].availableHrs;
+          oUser.dates[i].displayAvailableHrsstring = oUser.dates[i].displayAvailableHrs.split(':')[0] + 'h:' +
+            oUser.dates[i].displayAvailableHrs.split(':')[1] + 'm';
           if (+oUser.dates[i].availableHrs.replace(':', '.') > 0) {
             objTotalAvailablePerUser.timeHrs = oUser.dates[i].availableHrs.split(':')[0];
             objTotalAvailablePerUser.timeMins = oUser.dates[i].availableHrs.split(':')[1];
@@ -668,6 +669,8 @@ export class UsercapacityComponent implements OnInit {
             new Object({ timeHrs: c.TimeSpentPerDay.split(':')[0], timeMins: c.TimeSpentPerDay.split(':')[1] })) : [];
 
         oUser.dates[i].TimeSpent = allTimeSpentArray.length > 0 ? this.commonservice.ajax_addHrsMins(allTimeSpentArray) : '0:0';
+        oUser.dates[i].TimeSpentstring = oUser.dates[i].TimeSpent.split(':')[0] + 'h:' +
+          oUser.dates[i].TimeSpent.split(':')[1] + 'm';
         oUser.dates[i].taskCount = taskCount;
         if (bLeave) {
           oUser.dates[i].totalTimeAllocatedPerDay = 0;
@@ -763,14 +766,12 @@ export class UsercapacityComponent implements OnInit {
       setTimeout(() => {
         this.bindProjectTaskDetails(tasks, objt, user);
       }, 300);
+
+      user.dates.map(c => delete c.backgroundColor);
+      date.backgroundColor = '#ffeb9c';
+      this.getColor(date);
+
     }
-
-    user.dates.map(c => delete c.backgroundColor);
-    date.backgroundColor = '#ffeb9c';
-
-    this.getColor(date);
-
-
   }
   // tslint:disable
   async bindProjectTaskDetails(tasks, objt, user) {
@@ -867,7 +868,7 @@ export class UsercapacityComponent implements OnInit {
 
   async fetchTimeSpentTaskDetails(user, date, objt) {
     if (user.TimeSpentTasks.length > 0) {
-      const SpentTasks = user.TimeSpentTasks.filter(c => c.TimeSpentDate.getTime() === date.date.getTime() && c.TimeSpentPerDay !== '00:00');
+      const SpentTasks = user.TimeSpentTasks.filter(c => c.TimeSpentDate.getTime() === date.date.getTime() && c.TimeSpentPerDay !== '00:00' && c.TimeSpentPerDay !== '0:00');
       if (SpentTasks.length > 0) {
         user.TimeSpentDayTasks = SpentTasks;
         // $('.' + user.uid + 'spentloaderenable').show();
@@ -915,10 +916,12 @@ export class UsercapacityComponent implements OnInit {
 
         oItem.find('#spentTasksPerDay').show();
         oItem.find('.innerspentTableLoader').hide();
+
+        user.dates.map(c => delete c.TimespentbackgroundColor);
+        date.TimespentbackgroundColor = '#ffeb9c';
+        this.getTimeSpentColorExcel(date, date.date, user.GoLiveDate);
       }
-      user.dates.map(c => delete c.TimespentbackgroundColor);
-      date.TimespentbackgroundColor = '#ffeb9c';
-      this.getTimeSpentColorExcel(date, date.date, user.GoLiveDate);
+
     }
   }
 

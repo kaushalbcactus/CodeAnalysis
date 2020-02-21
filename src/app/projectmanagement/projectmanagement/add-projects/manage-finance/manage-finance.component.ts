@@ -179,7 +179,7 @@ export class ManageFinanceComponent implements OnInit {
   ngOnInit() {
     this.reInitializePopup();
   }
-  
+
   async reInitializePopup() {
     this.poList = [];
     this.pmObject.addProject.FinanceManagement.POListArray = [];
@@ -1207,7 +1207,12 @@ export class ManageFinanceComponent implements OnInit {
       this.isAddRateButtonHidden = true;
       this.isHourlyRateDisabled = true;
       this.isHourlyOverNightDisabled = true;
+      // this.isAddBudgetButtonHidden = true;
+    } else if (this.projObj.ProjectType === this.pmConstant.PROJECT_TYPE.FTE.value) {
       this.isAddBudgetButtonHidden = true;
+      this.showHourly = false;
+      this.isrevenueFieldDisabled = true;
+      this.isPoRevenueDisabled = true;
     } else {
       this.showHourly = false;
       this.isrevenueFieldDisabled = false;
