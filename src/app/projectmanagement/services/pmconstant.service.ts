@@ -68,7 +68,7 @@ export class PmconstantService {
   };
 
   public milestoneOptions = {
-    select: 'ID,Title,ProjectCode,Milestone',
+    select: 'ID,Title,ProjectCode,Milestone,SubMilestones',
     filter: "ProjectCode eq '{{projectCode}}' and Title eq '{{milestone}}'",
     top: 4200
   };

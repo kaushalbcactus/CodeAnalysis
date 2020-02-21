@@ -35,7 +35,7 @@ export class SendToClientComponent implements OnInit {
     { field: 'POC', header: 'POC', visibility: true },
     { field: 'DeliverableType', header: 'Deliverable Type', visibility: true },
     { field: 'DueDate', header: 'Due Date', visibility: true, exportable: false },
-    { field: 'Milestone', header: 'Milestone', visibility: true },
+    { field: 'displayMilestone', header: 'Milestone', visibility: true },
     { field: 'PreviousTaskUser', header: 'Previous Task Owner', visibility: true },
     { field: 'PreviousTaskStatus', header: 'Previous Task Status', visibility: true },
     { field: 'DueDateFormat', header: 'Due Date', visibility: false }];
@@ -46,7 +46,7 @@ export class SendToClientComponent implements OnInit {
     { field: 'POC' },
     { field: 'DeliverableType' },
     { field: 'DueDate' },
-    { field: 'Milestone' },
+    { field: 'displayMilestone' },
     { field: 'PreviousTaskUser' },
     { field: 'PreviousTaskStatus' }];
   @ViewChild('sendToClientTableRef', { static: true }) sct: ElementRef;
@@ -74,7 +74,7 @@ export class SendToClientComponent implements OnInit {
     POC: [],
     DeliverableType: [],
     DueDate: [],
-    Milestone: [],
+    displayMilestone: [],
     PreviousTaskUser: [],
     PreviousTaskStatus: [],
 
@@ -172,19 +172,8 @@ export class SendToClientComponent implements OnInit {
         tempArray.push(docObj);
       }
     });
-    // for (const document in documents) {
-    //   // if (documents[document].visiblePrevTaskDoc === true) {
-    //   if (task.PreviousTask.indexOf(documents[document].taskName) > -1 && documents[document].status.indexOf('Complete') > -1) {
-    //   const docObj = {
-    //       url: '',
-    //       fileName: ''
-    //     };
-    //     docObj.url = documents[document].fileUrl;
-    //     docObj.fileName = documents[document].fileName;
-    //     tempArray.push(docObj);
-    //   }
-    // }
-    const fileName = task.ProjectCode + ' - ' + task.Milestone;
+
+    const fileName = task.ProjectCode + ' - ' + task.displayMilestone;
     // this.spServices.downloadMultipleFiles(tempArray, fileName);
     this.commonService.SetNewrelic('projectmanagement', 'sendtoclient', 'createZip');
     this.spServices.createZip(tempArray.map(c => c.url), fileName);
@@ -211,9 +200,42 @@ export class SendToClientComponent implements OnInit {
   async closeTaskWithStatus(task, options, unt) {
     const isActionRequired = await this.commonService.checkTaskStatus(task);
     if (isActionRequired) {
-
       debugger;
       let batchUrl = [];
+
+      if (task.SubMilestones) {
+        const objMilestone = Object.assign({}, this.pmConstant.milestoneOptions);
+        objMilestone.filter = objMilestone.filter.replace(/{{projectCode}}/gi,
+          task.ProjectCode).replace(/{{milestone}}/gi,
+            task.Milestone);
+        this.commonService.SetNewrelic('projectManagment', 'send to Client', 'fetchMilestone');
+        const response = await this.spServices.readItems(this.Constant.listNames.Schedules.name, objMilestone);
+
+        if (response.length > 0) {
+
+          const SubMilestonesObj = [];
+          let modifiedSubMilestones = null;
+          const SubMilestones = response[0].SubMilestones.split(';#');
+          if (SubMilestones) {
+            SubMilestones.forEach(element => {
+              if (element.split(':')[0] === task.SubMilestones) {
+                SubMilestonesObj.push(element.split(':')[0] + ':' + element.split(':')[1] + ':Completed');
+              }
+              else {
+                SubMilestonesObj.push(element);
+              }
+            });
+            modifiedSubMilestones = SubMilestonesObj.length > 1 ? SubMilestonesObj.join(';#') : SubMilestonesObj.toString();
+          }
+          const milestoneObj = Object.assign({}, this.options);
+          milestoneObj.url = this.spServices.getItemURL(this.Constant.listNames.Schedules.name, response[0].Id);
+          milestoneObj.data = { SubMilestones: modifiedSubMilestones, __metadata: { type: this.Constant.listNames.Schedules.type } };
+          milestoneObj.listName = this.Constant.listNames.Schedules.name;
+          milestoneObj.type = 'PATCH';
+          batchUrl.push(milestoneObj);
+        }
+      }
+
       // update Task
       const taskObj = Object.assign({}, this.options);
       taskObj.url = this.spServices.getItemURL(this.Constant.listNames.Schedules.name, task.ID);
@@ -236,15 +258,13 @@ export class SendToClientComponent implements OnInit {
 
           const taskObj = Object.assign({}, this.options);
           taskObj.url = this.spServices.getItemURL(this.Constant.listNames.Schedules.name, nextTask[0].ID);
-          taskObj.data =  { PreviousTaskClosureDate: new Date(), __metadata: { type: this.Constant.listNames.Schedules.type } };;
+          taskObj.data = { PreviousTaskClosureDate: new Date(), __metadata: { type: this.Constant.listNames.Schedules.type } };;
           taskObj.listName = this.Constant.listNames.Schedules.name;
           taskObj.type = 'PATCH';
           batchUrl.push(taskObj);
         }
       }
-
       await this.spServices.executeBatch(batchUrl);
-
       this.changeSuccessMessage(task.Title + ' is completed Sucessfully');
 
       const index = this.pmObject.sendToClientArray.findIndex(item => item.ID === task.ID);
@@ -393,8 +413,10 @@ export class SendToClientComponent implements OnInit {
         }
         scObj.DueDate = new Date(this.datePipe.transform(task.DueDate, 'MMM dd, yyyy, h:mm a'));
         scObj.DueDateFormat = this.datePipe.transform(new Date(scObj.DueDate), 'MMM dd, yyyy, h:mm a');
-        scObj.Milestone = task.SubMilestones ?
+        scObj.Milestone = task.Milestone;
+        scObj.displayMilestone = task.SubMilestones ?
           task.Milestone + ' - ' + task.SubMilestones : task.Milestone;
+        scObj.SubMilestones = task.SubMilestones
         if (new Date(new Date(scObj.DueDate).setHours(0, 0, 0, 0)).getTime() === new Date(new Date().setHours(0, 0, 0, 0)).getTime()) {
           scObj.isBlueIndicator = true;
           scObj.backgroundColor = '#add8e6';
@@ -414,7 +436,7 @@ export class SendToClientComponent implements OnInit {
         POCTempArray.push({ label: scObj.POC, value: scObj.POC });
         deliveryTypeTempArray.push({ label: scObj.DeliverableType, value: scObj.DeliverableType });
         dueDateTempArray.push({ label: scObj.DueDate, value: scObj.DueDate });
-        milestoneTempArray.push({ label: scObj.Milestone, value: scObj.Milestone });
+        milestoneTempArray.push({ label: scObj.displayMilestone, value: scObj.displayMilestone });
 
         const preTaskObj = Object.assign({}, this.options);
         preTaskObj.url = this.spServices.getReadURL(this.Constant.listNames.Schedules.name, this.pmConstant.previousTaskOptions);
@@ -490,7 +512,7 @@ export class SendToClientComponent implements OnInit {
     // this.scArrays.DueDate = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.DueDateFormat, value: a.DueDateFormat }; return b; }).filter(ele => ele.label)));
     this.scArrays.DueDate = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.DueDateFormat, 'MMM dd, yyyy, h:mm a'), value: new Date(this.datePipe.transform(a.DueDateFormat, 'MMM dd, yyyy, h:mm a')) }; return b; }).filter(ele => ele.label)));
 
-    this.scArrays.Milestone = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Milestone, value: a.Milestone }; return b; }).filter(ele => ele.label)));
+    this.scArrays.displayMilestone = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.displayMilestone, value: a.displayMilestone }; return b; }).filter(ele => ele.label)));
     this.scArrays.PreviousTaskUser = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PreviousTaskUser, value: a.PreviousTaskUser }; return b; }).filter(ele => ele.label)));
     this.scArrays.PreviousTaskStatus = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PreviousTaskStatus, value: a.PreviousTaskStatus }; return b; }).filter(ele => ele.label)));
   }
