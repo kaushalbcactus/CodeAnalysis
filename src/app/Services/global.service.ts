@@ -53,7 +53,8 @@ export class GlobalService {
       ID: 0,
       Title: ''
     },
-    currentTask: {}
+    currentTask: {},
+    previousTasks: []
   };
 
   /**
@@ -85,7 +86,8 @@ export class GlobalService {
       ID: 0,
       Title: ''
     },
-    currentTask: {}
+    currentTask: {},
+    previousTasks: []
   };
 
   public personalFeedback = {
