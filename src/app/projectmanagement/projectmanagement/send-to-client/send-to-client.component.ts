@@ -212,6 +212,7 @@ export class SendToClientComponent implements OnInit {
     const isActionRequired = await this.commonService.checkTaskStatus(task);
     if (isActionRequired) {
 
+      debugger;
       let batchUrl = [];
       // update Task
       const taskObj = Object.assign({}, this.options);
