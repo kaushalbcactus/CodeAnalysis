@@ -1076,24 +1076,41 @@ export class UsercapacityComponent implements OnInit {
 
     let ReturnTasks = [];
     for (let i = 0; i < tasks.length; i++) {
-      const timeSpentForTask = tasks[i].TimeSpentPerDay ? tasks[i].TimeSpentPerDay.split(/\n/) : [];
-      if (timeSpentForTask.indexOf('') > -1) {
-        timeSpentForTask.splice(timeSpentForTask.indexOf(''), 1);
-      }
-      timeSpentForTask.forEach(element => {
+      if(tasks[i].Task === 'Adhoc') {
         ReturnTasks.push(new Object({
           Title: tasks[i].Title,
           projectCode: tasks[i].ProjectCode,
-          StartDate: tasks[i].Actual_x0020_Start_x0020_Date,
-          EndDate: tasks[i].Actual_x0020_End_x0020_Date ? tasks[i].Actual_x0020_End_x0020_Date : tasks[i].DueDate,
-          TimeSpentDate: new Date(element.split(':')[0]),
-          TimeSpentPerDay: element.split(':')[1] + ':' + element.split(':')[2],
+          StartDate: tasks[i].StartDate,
+          EndDate: tasks[i].DueDate ,
+          TimeSpentDate: new Date(this.datepipe.transform(tasks[i].StartDate, 'MM/dd/yyyy')),
+          TimeSpentPerDay: tasks[i].TimeSpent.replace('.', ':'),
           Status: tasks[i].Status,
           TotalTimeSpent: tasks[i].TimeSpent.replace('.', ':'),
           SubMilestones: tasks[i].SubMilestones,
           shortTitle: '',
         }));
-      });
+      }
+      else {
+        const timeSpentForTask = tasks[i].TimeSpentPerDay ? tasks[i].TimeSpentPerDay.split(/\n/) : [];
+        if (timeSpentForTask.indexOf('') > -1) {
+          timeSpentForTask.splice(timeSpentForTask.indexOf(''), 1);
+        }
+        timeSpentForTask.forEach(element => {
+          ReturnTasks.push(new Object({
+            Title: tasks[i].Title,
+            projectCode: tasks[i].ProjectCode,
+            StartDate: tasks[i].Actual_x0020_Start_x0020_Date,
+            EndDate: tasks[i].Actual_x0020_End_x0020_Date ? tasks[i].Actual_x0020_End_x0020_Date : tasks[i].DueDate,
+            TimeSpentDate: new Date(element.split(':')[0]),
+            TimeSpentPerDay: element.split(':')[1] + ':' + element.split(':')[2],
+            Status: tasks[i].Status,
+            TotalTimeSpent: tasks[i].TimeSpent.replace('.', ':'),
+            SubMilestones: tasks[i].SubMilestones,
+            shortTitle: '',
+          }));
+        });
+      }
+      
     }
     return ReturnTasks;
   }

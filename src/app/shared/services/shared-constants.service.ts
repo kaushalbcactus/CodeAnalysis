@@ -22,12 +22,15 @@ export class SharedConstantsService {
     fetchSpentTimeTasks: {
       select: 'ID,Milestone,ProjectCode,SubMilestones,Task,Status,Title,TimeSpent,ExpectedTime,StartDate,DueDate,TimeZone,ParentSlot,TimeSpentPerDay,AssignedTo/Title,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date',
       filter : "(AssignedTo/Id eq {{userID}}) and ((Status eq 'Completed' and(" +
-      "(Actual_x0020_Start_x0020_Date ge '{{startDateString}}' and Actual_x0020_Start_x0020_Date le '{{endDateString}}')" +
-      "or (Actual_x0020_End_x0020_Date ge '{{startDateString}}' and Actual_x0020_End_x0020_Date le '{{endDateString}}')" +
+      "(StartDate ge '{{startDateString}}' and StartDate le '{{endDateString}}')" +
+      " or (DueDate ge '{{startDateString}}' and DueDate le '{{endDateString}}')" +
+      " or (StartDate le '{{startDateString}}' and DueDate ge '{{endDateString}}')"+
+      " or (Actual_x0020_Start_x0020_Date ge '{{startDateString}}' and Actual_x0020_Start_x0020_Date le '{{endDateString}}')" +
+      " or (Actual_x0020_End_x0020_Date ge '{{startDateString}}' and Actual_x0020_End_x0020_Date le '{{endDateString}}')" +
       " or (Actual_x0020_Start_x0020_Date le '{{startDateString}}' and Actual_x0020_End_x0020_Date ge '{{endDateString}}'))) or " +
       "((Status eq 'In Progress' or Status eq 'Auto Closed' ) and (" +
       "(Actual_x0020_Start_x0020_Date ge '{{startDateString}}' and Actual_x0020_Start_x0020_Date le '{{endDateString}}')" +
-      "or (DueDate ge '{{startDateString}}' and DueDate le '{{endDateString}}')" +
+      " or (DueDate ge '{{startDateString}}' and DueDate le '{{endDateString}}')" +
       " or (Actual_x0020_Start_x0020_Date le '{{startDateString}}' and DueDate ge '{{endDateString}}'))))",
       
       
