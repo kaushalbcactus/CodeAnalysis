@@ -138,7 +138,7 @@ export class ProjectAttributesComponent implements OnInit {
     if (projObj.PracticeArea) {
       this.addProjectAttributesForm.get('practiceArea').setValue(projObj.PracticeArea);
 
-      if (projObj.PracticeArea.toLowerCase() === 'medinfo' || projObj.PracticeArea.toLowerCase() === 'medcomm') {
+      if (projObj.PracticeArea.toLowerCase() === 'medinfo' || projObj.PracticeArea.toLowerCase() === 'medcom' || projObj.PracticeArea.toLowerCase() === 'medcomm') {
         this.enableCountFields = true;
       }
       else {
