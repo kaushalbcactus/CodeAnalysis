@@ -43,7 +43,7 @@ export class SharedConstantsService {
       orderby: 'StartDate'
     },
     getProjectInformation: {
-      select: 'WBJID',
+      select: 'ProjectCode, WBJID',
       filter: 'ProjectCode eq \'{{projectCode}}\'',
       top: '1'
     },

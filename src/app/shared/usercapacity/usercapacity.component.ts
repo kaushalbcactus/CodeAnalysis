@@ -881,10 +881,12 @@ export class UsercapacityComponent implements OnInit {
         $(objt.target).closest('td').addClass('highlightCell');
 
         const batchUrl = [];
+        const projectAdded = [];
         for (const taskIndex in SpentTasks) {
           if (SpentTasks.hasOwnProperty(taskIndex)) {
-            if (SpentTasks[taskIndex].projectCode !== 'Adhoc') {
+            if (SpentTasks[taskIndex].projectCode !== 'Adhoc' && projectAdded.indexOf(SpentTasks[taskIndex].projectCode) === -1) {
               // tslint:disable
+              projectAdded.push(SpentTasks[taskIndex].projectCode);
               const piObj = Object.assign({}, this.queryConfig);
               piObj.url = this.spService.getReadURL(this.globalConstantService.listNames.ProjectInformation.name, this.sharedConstant.userCapacity.getProjectInformation);
               piObj.url = piObj.url.replace('{{projectCode}}', SpentTasks[taskIndex].projectCode)
@@ -898,14 +900,14 @@ export class UsercapacityComponent implements OnInit {
         if (batchUrl.length) {
           this.common.SetNewrelic('Shared', 'UserCapacity', 'getProInfoByPC');
           let arrResults = await this.spService.executeBatch(batchUrl);
-          arrResults = arrResults.length ? arrResults.map(a => a.retItems) : [];
+          arrResults = arrResults.length ? arrResults.map(a => a.retItems[0]) : [];
           let nCount = 0;
           for (const i in SpentTasks) {
             if (SpentTasks.hasOwnProperty(i)) {
               if (SpentTasks[i].projectCode !== 'Adhoc') {
-                const arrProject = arrResults[i];
-                if (arrProject.length > 0) {
-                  SpentTasks[i].shortTitle = arrProject[0].WBJID;
+                const arrProject = arrResults.find(e=>e.ProjectCode === SpentTasks[i].projectCode);
+                if (arrProject) {
+                  SpentTasks[i].shortTitle = arrProject.WBJID;
                 }
               }
             }

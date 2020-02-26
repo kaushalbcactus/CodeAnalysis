@@ -846,8 +846,10 @@ export class PMCommonService {
         let projectManageFilter: any;
         if (bPM) {
           projectManageFilter = Object.assign({}, this.pmConstant.PM_QUERY.USER_SPECIFIC_PROJECT_INFORMATION);
+          projectManageFilter.filter = projectManageFilter.filter.replace('{{UserID}}', this.globalObject.currentUser.userId.toString());
         } else {
           projectManageFilter = Object.assign({}, this.pmConstant.PM_QUERY.USER_SPECIFIC_PROJECT_INFORMATION_MY);
+          projectManageFilter.filter = projectManageFilter.filter.replace(/{{UserID}}/gi, this.globalObject.currentUser.userId.toString());
         }
         this.commonService.SetNewrelic('projectManagment', 'PmCommon-getProjects', 'readItems');
         arrResults = await this.spServices.readItems(this.constant.listNames.ProjectInformation.name, projectManageFilter);
