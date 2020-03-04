@@ -4029,7 +4029,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
             return false;
           }
           let validateAllocation = true;
-          // checkTasks = checkTasks.filter(t => t.IsCentrallyAllocated === 'No');
+          checkTasks = checkTasks.filter(t => t.slotType === 'Task');
           checkTasks.forEach(element => {
             const title = element.AssignedTo ? element.AssignedTo.Title : null;
             if (!title) {
