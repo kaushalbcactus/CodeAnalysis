@@ -61,7 +61,7 @@ export class TaskDetailsDialogComponent implements OnInit {
     this.DocumentArray = [];
 
     if (this.data !== undefined) {
-      this.getComments(this.data.task.pID);
+      this.getComments(this.data.task.id);
     }
   }
   // tslint:disable-next-line: use-life-cycle-interface

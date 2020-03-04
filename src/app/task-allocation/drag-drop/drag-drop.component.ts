@@ -97,13 +97,13 @@ export class DragDropComponent implements OnInit {
     if (this.data.length > 0) {
       this.data.forEach(element => {
         const temp = {
-          data: element.data.pName.includes('(Current)') ? element.data.pName.replace('(Current)', '').trim() : element.data.pName,
-          id: element.data.pID,
+          data: element.data.title.includes('(Current)') ? element.data.title.replace('(Current)', '').trim() : element.data.title,
+          id: element.data.id,
           position: element.data.position,
           preTask: element.data.previousTask,
           nextTask: element.data.nextTask,
-          taskType: element.data.pName.toLowerCase().indexOf('adhoc') > -1 ? 'Adhoc' :
-            element.data.pName.toLowerCase().indexOf('tb') > -1 ? 'TB' : element.data.itemType,
+          taskType: element.data.title.toLowerCase().indexOf('adhoc') > -1 ? 'Adhoc' :
+            element.data.title.toLowerCase().indexOf('tb') > -1 ? 'TB' : element.data.itemType,
           status: element.data.status,
         };
         this.submilestoneIndex = 0;
@@ -121,13 +121,13 @@ export class DragDropComponent implements OnInit {
             // tslint:disable-next-line: no-shadowed-variable
             element.children.forEach(element => {
               const temp1 = {
-                data: element.data.pName,
-                id: element.data.pID,
+                data: element.data.title,
+                id: element.data.id,
                 position: element.data.position,
                 preTask: element.data.previousTask,
                 nextTask: element.data.nextTask,
-                taskType: element.data.pName.toLowerCase().indexOf('adhoc') > -1 ? 'Adhoc' :
-                  element.data.pName.toLowerCase().indexOf('tb') > -1 ? 'TB' : element.data.itemType,
+                taskType: element.data.title.toLowerCase().indexOf('adhoc') > -1 ? 'Adhoc' :
+                  element.data.title.toLowerCase().indexOf('tb') > -1 ? 'TB' : element.data.itemType,
                 IsCentrallyAllocated: element.data.IsCentrallyAllocated,
                 CentralAllocationDone: element.data.CentralAllocationDone,
                 ActiveCA: element.data.ActiveCA,
@@ -150,13 +150,13 @@ export class DragDropComponent implements OnInit {
                 // tslint:disable-next-line: no-shadowed-variable
                 element.children.forEach(element => {
                   const temp2 = {
-                    data: element.data.pName,
-                    id: element.data.pID,
+                    data: element.data.title,
+                    id: element.data.id,
                     position: element.data.position,
                     preTask: element.data.previousTask,
                     nextTask: element.data.nextTask,
-                    taskType: element.data.pName.toLowerCase().indexOf('adhoc') > -1 ? 'Adhoc' :
-                      element.data.pName.toLowerCase().indexOf('tb') > -1 ? 'TB' : element.data.itemType,
+                    taskType: element.data.title.toLowerCase().indexOf('adhoc') > -1 ? 'Adhoc' :
+                      element.data.title.toLowerCase().indexOf('tb') > -1 ? 'TB' : element.data.itemType,
                     IsCentrallyAllocated: element.data.IsCentrallyAllocated,
                     CentralAllocationDone: element.data.CentralAllocationDone,
                     ActiveCA: element.data.ActiveCA,
@@ -1330,7 +1330,7 @@ export class DragDropComponent implements OnInit {
 
       var nodes = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes;
 
-      var currentNode = nodes.find(e => e.label === event.pName);
+      var currentNode = nodes.find(e => e.label === event.title);
       preTasks.forEach(element => {
         var prevNode = nodes.find(e => e.label === element);
         if (prevNode) {

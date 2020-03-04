@@ -323,11 +323,11 @@ export class GanttChartComponent implements OnInit {
       }
     });
 
-    gantt.templates.timeline_cell_class = function (task, date) {
-      if (!gantt.isWorkTime({ date: date, task: task }))
-        return "week_end";
-      return "";
-    };
+    // gantt.templates.timeline_cell_class = function (task, date) {
+    //   if (!gantt.isWorkTime({ date: date, task: task }))
+    //     return "week_end";
+    //   return "";
+    // };
 
     gantt.templates.resource_cell_class = function (start_date, end_date, resource, tasks) {
       var css = [];

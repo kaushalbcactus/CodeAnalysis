@@ -241,9 +241,9 @@ export class TaskAllocationCommonService {
   }
 
   getDate(startDate) {
-    return startDate !== '' ? startDate.date.year + '/' + (startDate.date.month < 10 ?
+    return new Date(startDate !== '' ? startDate.date.year + '/' + (startDate.date.month < 10 ?
       '0' + startDate.date.month : startDate.date.month) + '/' + (startDate.date.day < 10
-        ? '0' + startDate.date.day : startDate.date.day) : '';
+        ? '0' + startDate.date.day : startDate.date.day) : '');
   }
   getDatePart(date) {
     const newDate = new Date(date);
@@ -303,8 +303,8 @@ export class TaskAllocationCommonService {
     let convertedDate = this.convertDate(data)
 
     let ganttObject = {
-      'pUserStart': data.type == 'submilestone' ? null : data.type == 'task' ? convertedDate.convertedStartDate : data.startDate !== "" ? data.startDate.date.year + "/" + (data.startDate.date.month < 10 ? "0" + data.startDate.date.month : data.startDate.date.month) + "/" + (data.startDate.date.day < 10 ? "0" + data.startDate.date.day : data.startDate.date.day) : '',
-      'pUserEnd': data.type == 'submilestone' ? null : data.type == 'task' ? convertedDate.convertedEndDate : data.endDate !== "" ? data.endDate.date.year + "/" + (data.endDate.date.month < 10 ? "0" + data.endDate.date.month : data.endDate.date.month) + "/" + (data.endDate.date.day < 10 ? "0" + data.endDate.date.day : data.endDate.date.day) : '',
+      'pUserStart': data.type == 'submilestone' ? null : data.type == 'task' ? new Date(convertedDate.convertedStartDate) : new Date(data.startDate !== "" ? data.startDate.date.year + "/" + (data.startDate.date.month < 10 ? "0" + data.startDate.date.month : data.startDate.date.month) + "/" + (data.startDate.date.day < 10 ? "0" + data.startDate.date.day : data.startDate.date.day) : ''),
+      'pUserEnd': data.type == 'submilestone' ? null : data.type == 'task' ? new Date(convertedDate.convertedEndDate) : new Date(data.endDate !== "" ? data.endDate.date.year + "/" + (data.endDate.date.month < 10 ? "0" + data.endDate.date.month : data.endDate.date.month) + "/" + (data.endDate.date.day < 10 ? "0" + data.endDate.date.day : data.endDate.date.day) : ''),
       'pUserStartDatePart': data.type == 'submilestone' ? '' : data.type == 'task' ? this.getDatePart(convertedDate.convertedStartDate) : this.getDate(data.startDate),
       'pUserStartTimePart': data.type == 'task' ? this.getTimePart(convertedDate.convertedStartDate) : '',
       'pUserEndDatePart':  data.type == 'submilestone' ? '' : data.type == 'task' ? this.getDatePart(convertedDate.convertedEndDate) : this.getDate(data.endDate),

@@ -6507,10 +6507,11 @@ module.exports = function () {
         root_id: 0,
         autofit: false,
         columns: [
-            { name: "text", tree: true, width: "*", resize: true },
-            {name: "owner", width: 80, align: "center"},
-            { name: "start_date", align: "center", resize: true },
-            { name: "end_date", align: "center" },
+            { name: "text", tree: true, width: "*", resize: true,hide: false },
+            { name: "owner", width: 80, align: "center", hide: false},
+            { name: "status", width: 80, hide: false},
+            { name: "start_date", align: "center", resize: true, hide: false },
+            { name: "end_date", align: "center" ,hide: false},
             // { name: "add", width: 44 }
         ],
         /*scale*/
@@ -7653,7 +7654,7 @@ module.exports = function(gantt) {
 				return "";
 			},
 			timeline_cell_class: function (item, date) {
-				return "";
+                return "";
 			},
 			scale_cell_class: function (date) {
 				return "";
@@ -29092,7 +29093,9 @@ module.exports = function (gantt) {
         section_owner: "Owner",
 		/* grid columns */
 		column_wbs: "WBS",
-		column_text: "Task name",
+        column_text: "Task name",
+        column_owner: "Resource",
+        column_status: "Status",
 		column_start_date: "Start Date",
 		column_end_date: "End Date",
 		column_add: "",

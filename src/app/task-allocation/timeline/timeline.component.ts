@@ -355,7 +355,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
             }
 
             let tempSubmilestones = [];
-            let GanttTaskObj = this.taskAllocateCommonService.ganttDataObject(element, GanttObj, NextSubMilestone,milestone,'')
+            let GanttTaskObj = this.taskAllocateCommonService.ganttDataObject(element, GanttObj, NextSubMilestone, milestone, '')
             // console.log(GanttTaskObj)
             // taskName = milestoneTask.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestoneTask.Milestone + ' ', '');
             if (GanttTaskObj.status !== 'Deleted') {
@@ -425,7 +425,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                 if (milestoneTask.Status !== 'Deleted') {
                   milestoneTask.type = 'task';
 
-                  let GanttTaskObj = this.taskAllocateCommonService.ganttDataObject(milestoneTask,'','',milestone,hrsMinObject);
+                  let GanttTaskObj = this.taskAllocateCommonService.ganttDataObject(milestoneTask, '', '', milestone, hrsMinObject);
                   // console.log(GanttTaskObj)
 
                   taskName = milestoneTask.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestoneTask.Milestone + ' ', '');
@@ -551,9 +551,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
               if (milestone.Title === milestoneTask.Milestone) {
                 if (milestoneTask.Status !== 'Deleted') {
                   milestoneTask.type = 'task';
-                  let GanttTaskObj = this.taskAllocateCommonService.ganttDataObject(milestoneTask,'','',milestone,hrsMinObject);
+                  let GanttTaskObj = this.taskAllocateCommonService.ganttDataObject(milestoneTask, '', '', milestone, hrsMinObject);
                   // console.log(GanttTaskObj)
-                  
+
                   taskName = milestoneTask.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestoneTask.Milestone + ' ', '');
                   this.GanttchartData.push(GanttTaskObj);
                   allRetrievedTasks.push(GanttTaskObj);
@@ -612,14 +612,14 @@ export class TimelineComponent implements OnInit, OnDestroy {
               ? AssignedUserTimeZone[0].TimeZone.Title ?
                 AssignedUserTimeZone[0].TimeZone.Title : '+5.5' : '+5.5';
 
-  
+
             let color = this.colors.filter(c => c.key == clientReviewObj[0].Status)
             if (color.length) {
               clientReviewObj[0].color = color[0].value;
             }
 
             clientReviewObj[0].type = 'task';
-            let GanttTaskObj = this.taskAllocateCommonService.ganttDataObject(clientReviewObj[0],'','',milestone,'');
+            let GanttTaskObj = this.taskAllocateCommonService.ganttDataObject(clientReviewObj[0], '', '', milestone, '');
             // console.log(GanttTaskObj)
 
             i = clientReviewObj[0].Id;
@@ -661,7 +661,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
               ? AssignedUserTimeZone[0].TimeZone.Title ?
                 AssignedUserTimeZone[0].TimeZone.Title : '+5.5' : '+5.5';
 
-  
+
             const hrsMinObject = {
               timeHrs: milestoneTask.TimeSpent != null ? milestoneTask.TimeSpent.indexOf('.') > -1 ?
                 milestoneTask.TimeSpent.split('.')[0] : milestoneTask.TimeSpent : '00',
@@ -697,7 +697,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
               if (milestoneTask.Status !== 'Deleted') {
                 milestoneTask.type = 'task';
 
-                GanttTaskObj = this.taskAllocateCommonService.ganttDataObject(milestoneTask,'','',milestone,hrsMinObject);
+                GanttTaskObj = this.taskAllocateCommonService.ganttDataObject(milestoneTask, '', '', milestone, hrsMinObject);
                 // console.log(GanttTaskObj)
 
                 if (milestoneTask.Task === 'Client Review' && milestoneTask.Status !== 'Deleted') {
@@ -893,7 +893,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       this.linkArray = [];
       var task: any;
 
-      var milestones = this.GanttchartData.filter(e=> e.type == 'milestone')
+      var milestones = this.GanttchartData.filter(e => e.type == 'milestone')
       const indexes = this.GanttchartData.reduce((r, e, i) => {
         e.itemType == 'Client Review' && r.push(i);
         return r;
@@ -901,21 +901,21 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
       var submilestones = this.GanttchartData.filter(item => item.type == 'submilestone')
 
-      this.GanttchartData.forEach((item)=>{
-        submilestones.forEach((subMile)=>{
-          if(item.submilestone === subMile.title) {
+      this.GanttchartData.forEach((item) => {
+        submilestones.forEach((subMile) => {
+          if (item.submilestone === subMile.title) {
             item.parent = subMile.id;
           }
         })
       })
-      
 
-      this.GanttchartData.forEach((item,index) => {
 
-      indexes.forEach((i)=>{
-        var clientReview = this.GanttchartData[i]
-        var nextMilestone = this.GanttchartData[i+1]
-        if(i !== this.GanttchartData.length-1 && !(this.linkArray.find(e => e.source == clientReview.id && e.target == nextMilestone.id))) {
+      this.GanttchartData.forEach((item, index) => {
+
+        indexes.forEach((i) => {
+          var clientReview = this.GanttchartData[i]
+          var nextMilestone = this.GanttchartData[i + 1]
+          if (i !== this.GanttchartData.length - 1 && !(this.linkArray.find(e => e.source == clientReview.id && e.target == nextMilestone.id))) {
             this.linkArray.push({
               "name": clientReview.title,
               "source": clientReview.id,
@@ -923,42 +923,42 @@ export class TimelineComponent implements OnInit, OnDestroy {
               "nextTask": clientReview.nextTask,
               "type": 0,
             })
+          }
+        })
+
+        task = this.fetchTask(item)
+        if (task.length) {
+          task.forEach((e) => {
+            if (e.milestone === item.milestone && item.nextTask !== 'Client Review') {
+              this.linkArray.push({
+                "name": item.title,
+                "source": item.id,
+                "target": e.id,
+                "nextTask": item.nextTask,
+                "type": 0,
+              })
+            } else if (e.type == 'task' && e.itemType == 'Client Review') {
+              milestones.forEach((m) => {
+                if (e.milestone === m.title.replace(' (Current)', '') && !(this.linkArray.find(e => e.name == m.title))) {
+                  this.linkArray.push({
+                    "name": m.title,
+                    "source": m.id,
+                    "target": e.id,
+                    "nextTask": e.nextTask,
+                    "type": 0,
+                  })
+                }
+              })
+            }
+          })
         }
       })
 
-       task = this.fetchTask(item)
-       if(task.length) {
-       task.forEach((e)=>{ 
-         if(e.milestone === item.milestone && item.nextTask !== 'Client Review' ) {
-            this.linkArray.push({
-              "name": item.title,
-              "source": item.id,
-              "target": e.id,
-              "nextTask": item.nextTask,
-              "type": 0,
-            })
-        } else if(e.type == 'task' && e.itemType == 'Client Review'){
-          milestones.forEach((m)=>{
-            if(e.milestone === m.title.replace(' (Current)', '') && !(this.linkArray.find(e => e.name == m.title))) {
-              this.linkArray.push({
-                "name": m.title,
-                "source": m.id,
-                "target": e.id,
-                "nextTask": e.nextTask,
-                "type": 0,
-              })
-            }
-           })     
-        }
-       })
-      }
-      }) 
-      
-      milestones.forEach((e) =>{
+      milestones.forEach((e) => {
         var i = this.GanttchartData.indexOf(e)
         var milestone = this.GanttchartData[i]
-        var nextTask = this.GanttchartData[i+1] 
-        if(milestone.title.replace(' (Current)', '') == nextTask.milestone) {
+        var nextTask = this.GanttchartData[i + 1]
+        if (milestone.title.replace(' (Current)', '') == nextTask.milestone) {
           this.linkArray.push({
             "name": nextTask.milestone,
             "source": milestone.id,
@@ -1007,16 +1007,16 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
       // this.min_date = new Date(2019, 11, 1)
       // this.max_date = new Date(2020, 10, 1)
-      
+
       this.loadComponent();
     }
   }
 
   fetchTask(task) {
-    return this.GanttchartData.filter(e =>  e.title === task.nextTask);
+    return this.GanttchartData.filter(e => e.title === task.nextTask);
   }
 
-  
+
   loadComponent() {
     gantt.serverList("res_id", this.resource);
     this.ganttChart.clear();
@@ -1026,12 +1026,12 @@ export class TimelineComponent implements OnInit, OnDestroy {
     this.ganttComponentRef.instance.isLoaderHidden = true;
     gantt.init(this.ganttComponentRef.instance.ganttContainer.nativeElement);
     gantt.clearAll();
-    this.ganttComponentRef.instance.onLoad(this.taskAllocateCommonService.ganttParseObject,this.resource);
+    this.ganttComponentRef.instance.onLoad(this.taskAllocateCommonService.ganttParseObject, this.resource);
     this.setScale({ label: 'Day Scale', value: '1' });
 
-  
+
     var editedTasks = (task) => {
-      if(task.slotType == 'Slot') {
+      if (task.slotType == 'Slot') {
         task.pUserStartDatePart = this.getDatePart(task.start_date);
         task.pUserStartTimePart = this.getTimePart(task.start_date);
         task.pUserEndDatePart = this.getDatePart(task.end_date);
@@ -1043,33 +1043,33 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
     // specific task drag 
     gantt.attachEvent("onBeforeTaskDrag", function (id, mode, e) {
-      var task:any = gantt.getTask(id)
+      var task: any = gantt.getTask(id)
       task.edited = true;
-      if(task.status == 'Not Confirmed') {
+      if (task.status == 'Not Confirmed') {
         editedTasks(task)
         return true;
-      } else if(task.parentSlot != '') {
-          task.edited = false;
-        return false; 
+      } else if (task.parentSlot != '') {
+        task.edited = false;
+        return false;
       }
     });
-    
+
     console.log(gantt.serialize());
   }
 
 
   save() {
-    this.updatedTasks.data.forEach((item)=>{
-      this.milestoneData.forEach((task)=>{
-        if(task.data.type === 'milestone')
-        {
-          if(task.data.id === item.id ) {
-            task.data.edited = true;
+    if (this.updatedTasks) {
+      this.updatedTasks.data.forEach((item) => {
+        this.milestoneData.forEach((task) => {
+          if (task.data.type === 'milestone') {
+            if (task.data.id === item.id) {
+              task.data.edited = true;
             }
-        }
+          }
+        })
       })
-    })
-
+    }
     this.saveTasks();
   }
 
@@ -1088,19 +1088,27 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
 
   ganttExportToExcel() {
+    var export_columns = [];
+    for (var i = 0; i < gantt.config.columns.length; i++) {
+      if (!gantt.config.columns[i].hide)
+        export_columns.push({ id: gantt.config.columns[i].name, header: gantt.config.columns[i].label, width: 40 });
+    }
+
     gantt.exportToExcel({
-      name:"document.xlsx", 
-      columns:[
-          { id:"text",  header:"Task", width:50 },
-          { id:"owner",  header:"Resource", width:50 },
-          { id:"start_date",  header:"Start date", width:60, type:"date" },
-          { id:"end_date",  header:"End date", width:60, type:"date" }
-          
+      name: "Task Allocation.xlsx",
+      columns: [
+        { id: "text", header: "Task", width: 200 },
+        { id: "status", header: "Status", width: 200 },
+        { id: "user", header: "Resource", width: 150 },
+        { id: "budgetHours", header: "Budget Hours", width: 50 },
+        { id: "spentTime", header: "Spent Hours", width: 50 },
+        { id: "start_date", header: "Start date", width: 250, type: "date" },
+        { id: "end_date", header: "End date", width: 250, type: "date" }
       ],
-      server:"https://export.dhtmlx.com/gantt",
-      visual:true,
-      cellColors:true,
-      data: this.taskAllocateCommonService.ganttParseObject.data
+      // server:"https://export.dhtmlx.com/gantt",
+      visual: true,
+      cellColors: true,
+      // data: this.taskAllocateCommonService.ganttParseObject.data
     })
   }
 
@@ -1122,7 +1130,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     }
     else if (type === 'task' && milestone.itemType === 'Client Review') {
       const tempMile = this.tempmilestoneData.find(c => c.data.id === milestone.id);
-      milestone = this.taskAllocateCommonService.milestoneObject(milestone , tempMile.data );
+      milestone = this.taskAllocateCommonService.milestoneObject(milestone, tempMile.data);
 
       var index = this.milestoneData.indexOf(this.milestoneData.find(c => c.data === milestone));
       if (index > -1 && index < this.milestoneData.length - 1) {
@@ -1137,7 +1145,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         const getAllTasks = this.getTasksFromMilestones(element, false, false);
         const SelectedTask = getAllTasks.find(c => c.id === milestone.id);
         if (SelectedTask !== undefined) {
-          milestone = this.taskAllocateCommonService.milestoneObject(milestone,SelectedTask);
+          milestone = this.taskAllocateCommonService.milestoneObject(milestone, SelectedTask);
         }
       });
 

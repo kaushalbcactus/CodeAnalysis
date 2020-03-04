@@ -371,7 +371,7 @@ function add_export_methods(gantt){
 		if (!this._hidden_export_form){
 			var t = this._hidden_export_form = document.createElement("div");
 			t.style.display = "none";
-			t.innerHTML = "<form method='POST' target='_blank'><textarea name='data' style='width:0px; height:0px;' readonly='true'></textarea><input type='hidden' name='type' value=''></form>";
+			t.innerHTML = "<form method='POST'><textarea name='data' style='width:0px; height:0px;' readonly='true'></textarea><input type='hidden' name='type' value=''></form>";
 			document.body.appendChild(t);
 		}
 		return this._hidden_export_form;
@@ -400,7 +400,7 @@ function add_export_methods(gantt){
 		var text = gantt.templates.task_text(obj.start_date, obj.end_date, obj);
 
 		var copy = copy_object_base(obj);
-		copy.text = text || copy.text;
+		copy.text = copy.text;
 
 		return copy;
 	}
@@ -435,7 +435,7 @@ function add_export_methods(gantt){
 		copy.$type	= obj.$rendered_type;
 
 		var tmps = gantt.templates;
-		copy.$text = tmps.task_text(obj.start, obj.end_date, obj);
+		// copy.$text = tmps.task_text(obj.start, obj.end_date, obj);
 		copy.$left = tmps.leftside_text ? tmps.leftside_text(obj.start, obj.end_date, obj) : "";
 		copy.$right = tmps.rightside_text ? tmps.rightside_text(obj.start, obj.end_date, obj) : "";
 	
@@ -570,7 +570,7 @@ function add_export_methods(gantt){
 		delete data.links;
 
 		if (config.cellColors){
-			var css = this.templates.task_cell_class;
+			var css = this.templates.timeline_cell_class;
 			if (css){
 				var raw = get_raw();
 				var steps = raw[0].trace_x;
@@ -647,7 +647,7 @@ function add_export_methods(gantt){
 			columns[ccount] = {
 				id:		((cols[i].template) ? ("_"+i) : cols[i].name),
 				header:	cols[i].label || gantt.locale.labels["column_"+cols[i].name],
-				width: 	(cols[i].width ? Math.floor(cols[i].width/4) : "")
+				width: 	(cols[i].width)
 			};
 
 			if (cols[i].name == "duration")
