@@ -1601,7 +1601,6 @@ export class AllProjectsComponent implements OnInit {
     batchURL.push(piInfoUpdate);
     // This function is used to calculate the hour spent for particular projects.
 
-    debugger;
     const hourSpent = await this.getTotalHours(this.selectedProjectObj.ProjectCode,
       true, scheduleItems);
     const projectFinaceData = {
