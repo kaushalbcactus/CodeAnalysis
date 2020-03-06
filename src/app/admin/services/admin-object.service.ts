@@ -20,6 +20,8 @@ export class AdminObjectService {
     InCapacity: '',
     Pooled: '',
     MaxHrs: 0,
+    BucketEffectiveDate: new Date(),
+    MaxHrsEffectiveDate: new Date(),
     PrimarySkill: '',
     SkillLevel: '',
     Role: '',
@@ -33,6 +35,10 @@ export class AdminObjectService {
     DeliverableExclusion: [],
     DeliverableExclusionText: '',
     TA: [],
+    TAVisibility: '',
+    CAVisibility: '',
+    IsFTE: '',
+    FTEEffectiveDate: new Date(),
     TAText: '',
     TAExclusion: [],
     TAExclusionText: '',
@@ -243,4 +249,108 @@ export class AdminObjectService {
     TotalScheduled: 0,
     CMLevel2: '',
   };
+
+  public clientMasterDataColArray = {
+    ClientLegalEntity: [],
+    BillingEntity: [],
+    Bucket: [],
+    Acronym: [],
+    Market: [],
+    InvoiceName: [],
+    LastUpdated: [],
+    LastModifiedBy: []
+  };
+
+  public auditHistoryArray = {
+    Action: [],
+    ActionBy: [],
+    Date: [],
+    Details: []
+  };
+
+  public auditHistorySelectedArray = {
+    ClientLegalEntry: [],
+    Action: [],
+    ActionBy: [],
+    Date: [],
+    Details: []
+  };
+
+  public subDivisionDetailsColArray = {
+    SubDivision: [],
+    LastUpdated: [],
+    LastUpdatedBy: []
+  };
+  public POCColArray = {
+    FName: [],
+    LName: [],
+    EmailAddress: [],
+    LastUpdated: [],
+    LastUpdatedBy: []
+  };
+  public POColArray = {
+    PoName: [],
+    PoNumber: [],
+    AmountRevenue: [],
+    AmountOOP: [],
+    LastUpdated: [],
+    LastUpdatedBy: []
+  };
+  public resultResponse = {
+    ClientGroupArray: [],
+    MarketArray: [],
+    TimeZonesArray: [],
+    BillingEntityArray: [],
+    ResourceCatArray: [],
+    CurrencyArray: [],
+    BucketArray: [],
+    ClientLegalEntityArray: []
+  };
+  public dropdown = {
+    ClientGroupArray: [],
+    MarketArray: [],
+    TimeZonesArray: [],
+    BillingEntityArray: [],
+    CMLevel1Array: [],
+    CMLevel2Array: [],
+    DeliveryLevel1Array: [],
+    DeliveryLevel2Array: [],
+    CurrencyArray: [],
+    BucketArray: [],
+    PORequiredArray: [],
+    POCRefferalSourceArray: [],
+    POCRelationshipArray: [],
+    POCProjectContactTypesArray: [],
+    POPointOfContactArray: [],
+    POTAArray: [],
+    POMoleculeArray: [],
+    POBuyingEntityArray: []
+  };
+  public po = {
+    total: 0,
+    revenue: 0,
+    oop: 0,
+    tax: 0,
+    isRightVisible: false
+  };
+  public oldBudget = {
+    Amount: 0,
+    AmountRevenue: 0,
+    AmountTax: 0,
+    AmountOOP: 0,
+    LastUpdated: new Date()
+  };
+  public newBudget = {
+    Amount: 0,
+    AmountRevenue: 0,
+    AmountTax: 0,
+    AmountOOP: 0
+  };
+  public finalBudget = {
+    Amount: 0,
+    AmountRevenue: 0,
+    AmountTax: 0,
+    AmountOOP: 0
+  };
+
 }

@@ -25,6 +25,9 @@ import { RulesComponent } from './admin/rules/rules.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { GroupDescriptionComponent } from './admin/entitlement/group-description/group-description.component';
 import { SharedModule } from '../shared/shared.module';
+import { AddEditUserProfileComponent } from './admin/user-profile/add-edit-user-profile/add-edit-user-profile.component';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { AddEditClientlegalentityDialogComponent } from './admin/client-masterdata/add-edit-clientlegalentity-dialog/add-edit-clientlegalentity-dialog.component';
 
 @NgModule({
   declarations: [
@@ -45,14 +48,19 @@ import { SharedModule } from '../shared/shared.module';
     CopyPermissionComponent,
     AddUserToSowComponent,
     AddUserToProjectsComponent,
-    GroupDescriptionComponent],
+    GroupDescriptionComponent,
+    AddEditUserProfileComponent,
+    AddEditClientlegalentityDialogComponent],
   imports: [
     SharedModule,
     AdminRoutingModule,
     PrimengModule,
     NgbModule,
+    FlexLayoutModule,
   ],
   providers: [
-  ]
+  ],
+  entryComponents : [AddEditUserProfileComponent, AddEditClientlegalentityDialogComponent]
+
 })
 export class AdminModule { }

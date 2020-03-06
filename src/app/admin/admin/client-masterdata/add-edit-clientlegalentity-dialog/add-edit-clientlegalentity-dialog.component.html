@@ -1,0 +1,275 @@
+<div fxLayout="column" style="padding: 12vw;" fxLayoutAlign="center center" [hidden]="!modalloaderenable">
+    <div id="modalInnerLoader"></div>
+    <div id="modalInnerLoaderText">Loading...</div>
+</div>
+
+<p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom-booking" [hideTransitionOptions]="'0ms'" position="bottom-center">
+</p-toast>
+
+<div class='UserButton' fxLayout="row" fxLayoutAlign="end center" [hidden]="modalloaderenable">
+
+    <button *ngIf="!showEditClient" type="button" pButton icon="pi pi-save" id="saveClient" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="SaveClientDetails()" label="Save"></button>
+    <button *ngIf="showEditClient" type="button" pButton icon="pi pi-save" id="saveClient" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="SaveClientDetails()" label="Update"></button>
+
+    <button type="button" pButton icon="pi pi-times" (click)="cancel();" label="Cancel" class="ui-button-secondary" style="background-color:ghostwhite;"></button>
+
+</div>
+
+<div fxLayout="row" *ngIf="!modalloaderenable" #scrollDown fxLayoutAlign="space-between start" fxLayoutGap="5px">
+
+    <form [formGroup]='addClient' class="p-col">
+
+        <div class="p-grid">
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>Name</div>
+                <div class="p-col-8">
+                    <input type="text" style="width: 100%;" formControlName="name" placeholder="Name" pInputText>
+                    <div class="error" *ngIf="isClientFormSubmit && addClient.controls.name.errors">
+                        <div *ngIf="addClient.controls.name.errors.required">
+                            Name is required
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>Acronym</div>
+                <div class="p-col-8">
+                    <input type="text" style="width: 100%;" formControlName="acronym" placeholder="Acronym" pInputText>
+                    <div class="error" *ngIf="isClientFormSubmit && addClient.controls.acronym.errors">
+                        <div *ngIf="addClient.controls.acronym.errors.required">
+                            Acronym is required</div>
+                        <div *ngIf="addClient.controls.acronym.errors.maxlength">
+                            Acronym can be maximum 5 characters.
+                        </div>
+                        <div *ngIf="addClient.controls.acronym.errors.pattern">
+                            Acronym can have exactly 3 UpperCase letters followed by 2 number.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>Group</div>
+                <div class="p-col-8">
+                    <p-dropdown [options]="adminObject.dropdown.ClientGroupArray" placeholder="Select Group" formControlName="group" editable="true" filter="true" resetFilterOnHide="true" [style]="{'width':'100%'}">
+                    </p-dropdown>
+                    <div class="error" *ngIf="isClientFormSubmit && addClient.controls.group.errors">
+                        <div *ngIf="addClient.controls.group.errors.required">
+                            Group is required</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-grid">
+            <div class="p-grid p-col">
+                <div class="p-col-4">Distribution List</div>
+                <div class="p-col-8">
+                    <input type="text" style="width: 100%;" formControlName="distributionList" placeholder="Distribution List" (focusout)="validateEmailId()" pInputText>
+                    <div class="error" *ngIf="isClientFormSubmit && addClient.controls.distributionList.errors">
+                        <div *ngIf="addClient.controls.distributionList.errors.email">Distribution List must be a valid email address</div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>Invoice Name</div>
+                <div class="p-col-8">
+                    <input type="text" style="width: 100%;" formControlName="invoiceName" placeholder="Invoice Name" pInputText>
+                    <div class="error" *ngIf="isClientFormSubmit && addClient.controls.invoiceName.errors">
+                        <div *ngIf="addClient.controls.invoiceName.errors.required">
+                            Invoice Name is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>Realization</div>
+                <div class="p-col-8">
+                    <input type="text" style="width: 100%;" formControlName="realization" placeholder="Realization" pInputText>
+                    <div class="error" *ngIf="isClientFormSubmit && addClient.controls.realization.errors">
+                        <div *ngIf="addClient.controls.realization.errors.required">
+                            Realization is required</div>
+                        <div *ngIf="addClient.controls.realization.errors.positiveNumber">
+                            Only positive numbers are allowed.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-grid">
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>Market</div>
+                <div class="p-col-8">
+                    <p-dropdown [options]="adminObject.dropdown.MarketArray" placeholder="Select Market" formControlName="market" filter="true" resetFilterOnHide="true" [style]="{'width':'100%'}">
+                    </p-dropdown>
+
+                    <div class="error" *ngIf="isClientFormSubmit && addClient.controls.market.errors">
+                        <div *ngIf="addClient.controls.market.errors.required">
+                            Market is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>Billing Entity
+                </div>
+                <div class="p-col-8">
+                    <p-dropdown [options]="adminObject.dropdown.BillingEntityArray" placeholder="Select Billing Entry" formControlName="billingEntry" filter="true" resetFilterOnHide="true" [style]="{'width':'100%'}">
+                    </p-dropdown>
+
+                    <div class="error" *ngIf="isClientFormSubmit && addClient.controls.billingEntry.errors">
+                        <div *ngIf="addClient.controls.billingEntry.errors.required">
+                            Billing Entry is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>PO Required</div>
+                <div class="p-col-8">
+                    <p-dropdown [options]="adminObject.dropdown.PORequiredArray" placeholder="Select Po Required" formControlName="poRequired" [style]="{'width':'100%'}">
+                    </p-dropdown>
+
+                    <div class="error" *ngIf="isClientFormSubmit && addClient.controls.poRequired.errors">
+                        <div *ngIf="addClient.controls.poRequired.errors.required">
+                            PO Required is required</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="p-grid">
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>Time Zone
+                </div>
+                <div class="p-col-8">
+                    <p-dropdown [options]="adminObject.dropdown.TimeZonesArray" placeholder="Select Time Zone" formControlName="timeZone" filter="true" resetFilterOnHide="true" [style]="{'width':'100%'}">
+                    </p-dropdown>
+
+                    <div class="error" *ngIf="isClientFormSubmit && addClient.controls.timeZone.errors">
+                        <div *ngIf="addClient.controls.timeZone.errors.required">
+                            Time Zone is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>CM Level 1</div>
+                <div class="p-col-8">
+                    <p-multiSelect [options]="adminObject.dropdown.CMLevel1Array" defaultLabel="Select CM Level 1" formControlName="cmLevel1" (keydown.enter)="$event.preventDefault()" [maxSelectedLabels]="1" filter="true" resetFilterOnHide="true" [style]="{'width':'100%'}"></p-multiSelect>
+                    <div class="error" *ngIf="isClientFormSubmit && addClient.controls.cmLevel1.errors">
+                        <div *ngIf="addClient.controls.cmLevel1.errors.required">
+                            CM Level 1 is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>CM Level 2</div>
+                <div class="p-col-8">
+                    <p-dropdown [options]="adminObject.dropdown.CMLevel2Array" placeholder="Select CM Level 2" formControlName="cmLevel2" filter="true" resetFilterOnHide="true" [style]="{'width':'100%'}">
+                    </p-dropdown>
+                    <div class="error" *ngIf="isClientFormSubmit && addClient.controls.cmLevel2.errors">
+                        <div *ngIf="addClient.controls.cmLevel2.errors.required">
+                            CM Level 2 is required</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-grid">
+
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">&nbsp;</span>Delivery Level 1</div>
+                <div class="p-col-8">
+                    <p-multiSelect [options]="adminObject.dropdown.DeliveryLevel1Array" defaultLabel="Select Delivery Level 1" formControlName="deliveryLevel1" (keydown.enter)="$event.preventDefault()" [maxSelectedLabels]="1" filter="true" resetFilterOnHide="true" [style]="{'width':'100%'}"></p-multiSelect>
+                </div>
+            </div>
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>Delivery Level 2</div>
+                <div class="p-col-8">
+                    <p-dropdown [options]="adminObject.dropdown.DeliveryLevel2Array" placeholder="Delivery Level 2" formControlName="deliveryLevel2" filter="true" resetFilterOnHide="true" [style]="{'width':'100%'}">
+                    </p-dropdown>
+                    <div class="error" *ngIf="isClientFormSubmit && addClient.controls.deliveryLevel2.errors">
+                        <div *ngIf="addClient.controls.deliveryLevel2.errors.required">
+                            Delivery Level 2 is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span> Currency</div>
+                <div class="p-col-8">
+                    <p-dropdown [options]="adminObject.dropdown.CurrencyArray" placeholder="Select Currency" formControlName="currency" filter="true" resetFilterOnHide="true" [style]="{'width':'100%'}">
+                    </p-dropdown>
+                    <div class="error" *ngIf="isClientFormSubmit && addClient.controls.currency.errors">
+                        <div *ngIf="addClient.controls.currency.errors.required">
+                            Currency is required</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-grid">
+
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>Bucket</div>
+                <div class="p-col-8">
+                    <p-dropdown [options]="adminObject.dropdown.BucketArray" placeholder="Select Bucket" formControlName="bucket" filter="true" (onChange)="onBucketChange()" [style]="{'width':'100%'}" resetFilterOnHide="true">
+                    </p-dropdown>
+                    <div class="error" *ngIf="isClientFormSubmit && addClient.controls.bucket.errors">
+                        <div *ngIf="addClient.controls.bucket.errors.required">
+                            Bucket is required</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-grid p-col" *ngIf="isBucketEffectiveDateActive">
+                <div class="p-col-4"> Bucket Effective Date </div>
+                <div class="p-col-8">
+                    <p-calendar styleClass="pCalendarBtn" formControlName="bucketEffectiveDate" [minDate]="min30Days" [showIcon]="true" [maxDate]="minDateValue"   [showOnFocus]="false"   [monthNavigator]="true" [readonlyInput]="true">
+                    </p-calendar>
+                    <div class="error" *ngIf="isClientFormSubmit && addClient.controls.bucketEffectiveDate.errors">
+                        <div *ngIf="addClient.controls.bucketEffectiveDate.errors.required">
+                            Bucket Effective Date is required</div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="p-grid p-col">
+                <div class="p-col-4">&nbsp;AP Email</div>
+                <div class="p-col-8">
+                    <input class="mr-5" type="text" style="width: 100%;" formControlName="APEmail" placeholder="AP Email" (focusout)="validateEmailId()" pInputText>
+                    <div class="error" *ngIf="isClientFormSubmit && addClient.controls.APEmail.errors">
+                        <div *ngIf="addClient.controls.APEmail.errors.email">APEmail must be a valid email address</div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-grid p-col" *ngIf="!isBucketEffectiveDateActive">
+                <div class="p-col-4"> </div>
+                <div class="p-col-8">
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="p-grid">
+            <div class="p-grid p-col">
+                <div class="p-col-4">&nbsp;Note</div>
+                <div class="p-col-8" style="padding: 0.5em 1.5em 0.5em 0.2em;">
+                    <!-- <textarea [rows]="7" [cols]="30" formControlName="notes" pInputTextarea maxlength="1000"></textarea> -->
+                    <textarea [rows]="5" [cols]="30" formControlName="notes" pInputTextarea maxlength="1000" autoResize="autoResize" style="width: 100%;"></textarea> <br>
+                    <span *ngIf="addClient.value.notes">{{addClient.value.notes.length}}/1000</span>
+                    <span *ngIf="addClient.value.notes && addClient.value.notes.length >= '1000'" style="color:red;float: right;">You have enter
+                        maximum length of Notes</span>
+                </div>
+            </div>
+            <div class="p-grid p-col-8" style="padding: 0.5em 0.5em 0.5em 0em;">
+                <div class="p-col-2" style="padding: 0.5em 0.5em 0.5em 0em;">&nbsp;Address</div>
+                <div class="p-col-10 AddressText" style="padding: 0.5em 0.5em 0.5em 0.2em;">
+                    <input type="text" formControlName="address1" pInputText>
+                    <input type="text" formControlName="address2" pInputText>
+                    <input type="text" formControlName="address3" pInputText>
+                    <input type="text" formControlName="address4" pInputText>
+
+                </div>
+            </div>
+        </div>
+
+    </form>
+</div>

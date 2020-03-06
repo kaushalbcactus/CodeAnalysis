@@ -5,65 +5,43 @@
         </a>
     </div>
     <div class="addNewClientBtnPosition">
-        <button pButton type="button" class="adminBtn" icon="pi pi-plus-circle" label="Add New Client Form"
-            *ngIf="isUserSPMCA" (click)="showAddClientModal()">
+        <button pButton type="button" class="adminBtn" icon="pi pi-plus-circle" label="Add New Client Form" *ngIf="isUserSPMCA" (click)="addEditClentLegalEntity('Add New Client Legal Entity', null)">
         </button>
     </div>
 </div>
 <div class="clearBoth"></div>
 <div class="adminTable">
-    <p-table #cmd [columns]="clientMasterDataColumns" [value]="clientMasterDataRows" exportFilename="Client Master Data"
-        [paginator]="true" [rows]="10" class="minFirstLastCol5Per">
+    <p-table #cmd [columns]="clientMasterDataColumns" [value]="clientMasterDataRows" exportFilename="Client Master Data" [paginator]="true" [rows]="10" class="minFirstLastCol5Per">
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th>Sr.No.</th>
                 <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
                     {{col.header}}
-                    <p-sortIcon [hidden]="!col.visibility" [field]="col.field" ariaLabel="Activate to sort"
-                        ariaLabelDesc="Activate to sort in descending order"
-                        ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                    <p-sortIcon [hidden]="!col.visibility" [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
                 </th>
                 <th></th>
             </tr>
             <tr>
                 <th></th>
                 <th *ngFor="let col of columns" [hidden]="!col.visibility" [ngSwitch]="col.field">
-                    <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [style]="{'width':'100%'}"
-                        [options]="clientMasterDataColArray.ClientLegalEntity" defaultLabel="Client Legal Entry"
-                        (onChange)="cmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                        filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true"
-                        (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'BillingEntity'" [style]="{'width':'100%'}"
-                        [options]="clientMasterDataColArray.BillingEntity" defaultLabel="Billing Entity"
-                        (onChange)="cmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                        filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true"
-                        (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'Bucket'" [style]="{'width':'100%'}"
-                        [options]="clientMasterDataColArray.Bucket" defaultLabel="Bucket"
-                        (onChange)="cmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                        filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true"
-                        (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'Acronym'" [style]="{'width':'100%'}"
-                        [options]="clientMasterDataColArray.Acronym" defaultLabel="Acronym"
-                        (onChange)="cmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                        filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true"
-                        (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'Market'" [style]="{'width':'100%'}"
-                        [options]="clientMasterDataColArray.Market" defaultLabel="Market"
-                        (onChange)="cmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                        filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true"
-                        (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'InvoiceName'" [style]="{'width':'100%'}"
-                        [options]="clientMasterDataColArray.InvoiceName" defaultLabel="Invoice Name"
-                        (onChange)="cmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                        filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true"
-                        (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [style]="{'width':'100%'}" [options]="adminObject.clientMasterDataColArray.ClientLegalEntity" defaultLabel="Client Legal Entry" (onChange)="cmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                        filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'BillingEntity'" [style]="{'width':'100%'}" [options]="adminObject.clientMasterDataColArray.BillingEntity" defaultLabel="Billing Entity" (onChange)="cmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                        filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'Bucket'" [style]="{'width':'100%'}" [options]="adminObject.clientMasterDataColArray.Bucket" defaultLabel="Bucket" (onChange)="cmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+                        [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'Acronym'" [style]="{'width':'100%'}" [options]="adminObject.clientMasterDataColArray.Acronym" defaultLabel="Acronym" (onChange)="cmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+                        [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'Market'" [style]="{'width':'100%'}" [options]="adminObject.clientMasterDataColArray.Market" defaultLabel="Market" (onChange)="cmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+                        [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'InvoiceName'" [style]="{'width':'100%'}" [options]="adminObject.clientMasterDataColArray.InvoiceName" defaultLabel="Invoice Name" (onChange)="cmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                        filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
                     <!-- <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}"
-                            [options]="clientMasterDataColArray.LastUpdated" defaultLabel="LastUpdated"
+                            [options]="adminObject.clientMasterDataColArray.LastUpdated" defaultLabel="LastUpdated"
                             (onChange)="cmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
                             filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}"
-                            [options]="clientMasterDataColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy"
+                            [options]="adminObject.clientMasterDataColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy"
                             (onChange)="cmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
                             filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect> -->
                 </th>
@@ -100,8 +78,7 @@
                 <td>
                     <div>
                         <p-menu #menu [popup]="true" [model]="items" styleClass="borderMenu"></p-menu>
-                        <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
-                            (click)="openMenuPopup(rowData);menu.toggle($event);"></i>
+                        <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;" (click)="openMenuPopup(rowData);menu.toggle($event);"></i>
                     </div>
                 </td>
             </tr>
@@ -234,258 +211,15 @@
       </ng-template>
     </p-table> -->
 
-<p-dialog [(visible)]="showaddClientModal" [modal]="true" [contentStyle]="{'max-height':'500px', 'top':'0px'}"
-    [style]="{width: '90%'}">
-    <p-header *ngIf="!showEditClient">
-        Add Client Legal Entity
-    </p-header>
-    <p-header *ngIf="showEditClient">
-        Edit Client Legal Entity
-    </p-header>
-    <form [formGroup]='addClient'>
-        <div class="p-grid mt-20">
-            <div class="p-col-2"><span class="compulsory">*</span>Name</div>
-            <div class="p-col-4">
-                <input class="mr-5" type="text" size="30" formControlName="name" placeholder="Name" pInputText
-                    inputPatteren>
-                <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.name.errors">
-                    <div *ngIf="addClient.controls.name.errors.required">
-                        Name is required
-                    </div>
-                    <!-- <div *ngIf="addClient.controls.name.errors.pattern">
-                        Special characters are allowed between alphabets. Allowed special characters are '-' and '_'.
-                    </div> -->
-                </div>
-            </div>
-            <div class="p-col-2"><span class="compulsory">*</span>Acronym</div>
-            <div class="p-col-4">
-                <input class="mr-5" type="text" size="30" formControlName="acronym" placeholder="Acronym" pInputText>
-                <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.acronym.errors">
-                    <div *ngIf="addClient.controls.acronym.errors.required">
-                        Acronym is required</div>
-                    <div *ngIf="addClient.controls.acronym.errors.maxlength">
-                        Acronym can be maximum 5 characters.
-                    </div>
-                    <div *ngIf="addClient.controls.acronym.errors.pattern">
-                        Acronym can have exactly 3 UpperCase letters followed by 2 number.
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="p-grid mt-20">
-            <div class="p-col-2"><span class="compulsory">*</span>Group</div>
-            <div class="p-col-4">
-                <p-dropdown [options]="dropdown.ClientGroupArray" placeholder="Select Group" formControlName="group"
-                    filter="true" resetFilterOnHide="true">
-                </p-dropdown>
-                <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.group.errors">
-                    <div *ngIf="addClient.controls.group.errors.required">
-                        Group is required</div>
-                </div>
-            </div>
-            <div class="p-col-2">Distribution List</div>
-            <div class="p-col-4">
-                <input class="mr-5" type="text" size="30" formControlName="distributionList"
-                    placeholder="Distribution List" (focusout)="validateEmailId()" pInputText>
-                <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.distributionList.errors">
-                    <div *ngIf="addClient.controls.distributionList.errors.email">Distribution List must be a valid
-                        email address</div>
-                </div>
-
-            </div>
-        </div>
-        <div class="p-grid mt-20">
-            <div class="p-col-2 "><span class="compulsory">*</span>Invoice Name</div>
-            <div class="p-col-4">
-                <input class="mr-5" type="text" size="30" formControlName="invoiceName" placeholder="Invoice Name"
-                    pInputText>
-                <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.invoiceName.errors">
-                    <div *ngIf="addClient.controls.invoiceName.errors.required">
-                        Invoice Name is required</div>
-                    <!-- <div *ngIf="addClient.controls.invoiceName.errors.pattern">
-                        Special characters are allowed between alphabets. Allowed special characters are '-' and '_'.
-                    </div> -->
-                </div>
-            </div>
-            <div class="p-col-2 "><span class="compulsory">*</span>Realization</div>
-            <div class="p-col-4">
-                <input class="mr-5" type="text" size="30" formControlName="realization" placeholder="Realization"
-                    pInputText>
-                <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.realization.errors">
-                    <div *ngIf="addClient.controls.realization.errors.required">
-                        Realization is required</div>
-                    <div *ngIf="addClient.controls.realization.errors.positiveNumber">
-                        Only positive numbers are allowed.</div>
-                </div>
-            </div>
-        </div>
-        <div class="p-grid mt-20">
-            <div class="p-col-2 "><span class="compulsory">*</span>Market</div>
-            <div class="p-col-4">
-                <p-dropdown [options]="dropdown.MarketArray" placeholder="Select Market" formControlName="market"
-                    filter="true" resetFilterOnHide="true">
-                </p-dropdown>
-
-                <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.market.errors">
-                    <div *ngIf="addClient.controls.market.errors.required">
-                        Market is required</div>
-                </div>
-            </div>
-            <div class="p-col-2 "><span class="compulsory">*</span>Billing Entity</div>
-            <div class="p-col-4">
-                <p-dropdown [options]="dropdown.BillingEntityArray" placeholder="Select Billing Entry"
-                    formControlName="billingEntry" filter="true" resetFilterOnHide="true">
-                </p-dropdown>
-
-                <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.billingEntry.errors">
-                    <div *ngIf="addClient.controls.billingEntry.errors.required">
-                        Billing Entry is required</div>
-                </div>
-            </div>
-        </div>
-        <div class="p-grid mt-20">
-            <div class="p-col-2 "><span class="compulsory">*</span>PO Required</div>
-            <div class="p-col-4">
-                <p-dropdown [options]="dropdown.PORequiredArray" placeholder="Select Po Required"
-                    formControlName="poRequired">
-                </p-dropdown>
-
-                <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.poRequired.errors">
-                    <div *ngIf="addClient.controls.poRequired.errors.required">
-                        PO Required is required</div>
-                </div>
-            </div>
-            <div class="p-col-2 "><span class="compulsory">*</span>Time Zone</div>
-            <div class="p-col-4">
-                <p-dropdown [options]="dropdown.TimeZonesArray" placeholder="Select Time Zone"
-                    formControlName="timeZone" filter="true" resetFilterOnHide="true">
-                </p-dropdown>
-
-                <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.timeZone.errors">
-                    <div *ngIf="addClient.controls.timeZone.errors.required">
-                        Time Zone is required</div>
-                </div>
-            </div>
-        </div>
-        <div class="p-grid mt-20">
-            <div class="p-col-2 "><span class="compulsory">*</span>CM Level 1</div>
-            <div class="p-col-4">
-                <p-multiSelect [options]="dropdown.CMLevel1Array" defaultLabel="Select CM Level 1"
-                    formControlName="cmLevel1" (keydown.enter)="$event.preventDefault()" [maxSelectedLabels]="1"
-                    filter="true" resetFilterOnHide="true"></p-multiSelect>
-                <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.cmLevel1.errors">
-                    <div *ngIf="addClient.controls.cmLevel1.errors.required">
-                        CM Level 1 is required</div>
-                </div>
-            </div>
-            <div class="p-col-2 "><span class="compulsory">*</span>CM Level 2</div>
-            <div class="p-col-4">
-                <p-dropdown [options]="dropdown.CMLevel2Array" placeholder="Select CM Level 2"
-                    formControlName="cmLevel2" filter="true" resetFilterOnHide="true">
-                </p-dropdown>
-                <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.cmLevel2.errors">
-                    <div *ngIf="addClient.controls.cmLevel2.errors.required">
-                        CM Level 2 is required</div>
-                </div>
-            </div>
-        </div>
-        <div class="p-grid mt-20">
-            <div class="p-col-2 ">Delivery Level 1</div>
-            <div class="p-col-4">
-                <p-multiSelect [options]="dropdown.DeliveryLevel1Array" defaultLabel="Select Delivery Level 1"
-                    formControlName="deliveryLevel1" (keydown.enter)="$event.preventDefault()" [maxSelectedLabels]="1"
-                    filter="true" resetFilterOnHide="true"></p-multiSelect>
-            </div>
-            <div class="p-col-2 "><span class="compulsory">*</span>Delivery Level 2</div>
-            <div class="p-col-4">
-                <p-dropdown [options]="dropdown.DeliveryLevel2Array" placeholder="Delivery Level 2"
-                    formControlName="deliveryLevel2" filter="true" resetFilterOnHide="true">
-                </p-dropdown>
-                <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.deliveryLevel2.errors">
-                    <div *ngIf="addClient.controls.deliveryLevel2.errors.required">
-                        Delivery Level 2 is required</div>
-                </div>
-            </div>
-        </div>
-        <div class="p-grid mt-20">
-            <div class="p-col-2 "><span class="compulsory">*</span>Currency</div>
-            <div class="p-col-4">
-                <p-dropdown [options]="dropdown.CurrencyArray" placeholder="Select Currency" formControlName="currency"
-                    filter="true" resetFilterOnHide="true">
-                </p-dropdown>
-                <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.currency.errors">
-                    <div *ngIf="addClient.controls.currency.errors.required">
-                        Currency is required</div>
-                </div>
-            </div>
-            <div class="p-col-2 ">AP Email</div>
-            <div class="p-col-4">
-                <input class="mr-5" type="text" size="30" formControlName="APEmail" placeholder="AP Email"
-                    (focusout)="validateEmailId()" pInputText>
-                <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.APEmail.errors">
-                    <div *ngIf="addClient.controls.APEmail.errors.email">APEmail must be a valid email address</div>
-                </div>
-            </div>
-        </div>
-        <div class="p-grid mt-20">
-            <div class="p-col-2 ">Address</div>
-            <div class="p-col-4">
-                <input class="mr-5" type="text" size="60" formControlName="address1" pInputText>
-                <input class="mr-5 mt-5" type="text" size="60" formControlName="address2" pInputText>
-                <input class="mr-5 mt-5" type="text" size="60" formControlName="address3" pInputText>
-                <input class="mr-5 mt-5" type="text" size="60" formControlName="address4" pInputText>
-            </div>
-        </div>
-        <div class="p-grid mt-20">
-            <div class="p-col-2 ">Notes</div>
-            <div class="p-col-4">
-                <textarea [rows]="5" [cols]="60" formControlName="notes" pInputTextarea maxlength="1000"></textarea>
-                <span *ngIf="addClient.value.notes" style="float: right;">{{addClient.value.notes.length}}/1000</span>
-                <span *ngIf="addClient.value.notes && addClient.value.notes.length >= '1000'"
-                    style="color:red;float: right;">You have enter
-                    maximum length of Notes</span>
-            </div>
-        </div>
-        <div class="p-grid mt-20">
-            <div class="p-col-2 "><span class="compulsory">*</span>Bucket</div>
-            <div class="p-col-4">
-                <p-dropdown [options]="dropdown.BucketArray" placeholder="Select Bucket" formControlName="bucket"
-                    filter="true" (onChange)="onBucketChange()" resetFilterOnHide="true">
-                </p-dropdown>
-                <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.bucket.errors">
-                    <div *ngIf="addClient.controls.bucket.errors.required">
-                        Bucket is required</div>
-                </div>
-            </div>
-            <div class="p-col-2" *ngIf="isBucketEffectiveDateActive"><span class="compulsory">*</span>Bucket Effective
-                Date</div>
-            <div class="p-col-4" *ngIf="isBucketEffectiveDateActive">
-                <p-calendar styleClass="pCalendarBtn" formControlName="bucketEffectiveDate" [minDate]="min30Days"
-                    [showIcon]="true" [maxDate]="minDateValue"   [showOnFocus]="false"   [monthNavigator]="true"
-                    [readonlyInput]="true">
-                </p-calendar>
-                <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.bucketEffectiveDate.errors">
-                    <div *ngIf="addClient.controls.bucketEffectiveDate.errors.required">
-                        Bucket Effective Date is required</div>
-                </div>
-            </div>
-        </div>
-    </form>
-    <p-footer>
-        <button pButton label={{buttonLabel}} type="button" class="adminBtn" (click)="saveClient()"></button>
-    </p-footer>
-</p-dialog>
 
 <!-- Sub-Division Dialog -->
 
-<p-dialog [(visible)]="showSubDivisionDetails" [modal]="true" [contentStyle]="{'max-height':'500px', 'top':'0px'}"
-    [style]="{width: '90%'}">
+<p-dialog [(visible)]="showSubDivisionDetails" [modal]="true" [contentStyle]="{'max-height':'500px', 'top':'0px'}" [style]="{width: '90%'}">
     <div class="pr-20">
         <a (click)="downloadExcel(sd)" class="download-worksheet td-none"><i class="fa fa-fw fa-file-excel-o"
                 aria-hidden="true"></i>
         </a>
-        <button styleClass="pBtnRight" pButton type="button" class="adminBtn" icon="pi pi-plus-circle"
-            label="Add New Sub-Division" *ngIf="isUserSPMCA" (click)="showAddSubDivision()">
+        <button styleClass="pBtnRight" pButton type="button" class="adminBtn" icon="pi pi-plus-circle" label="Add New Sub-Division" *ngIf="isUserSPMCA" (click)="showAddSubDivision()">
         </button>
     </div>
     <div class="clearBoth"></div>
@@ -493,16 +227,13 @@
         Sub-Division Details
     </p-header>
     <div class="adminTable">
-        <p-table #sd [columns]="subDivisionDetailsColumns" [value]="subDivisionDetailsRows"
-            exportFilename="Sub Division Details" class="minFirstLastCol5Per" [paginator]="true" [rows]="10">
+        <p-table #sd [columns]="subDivisionDetailsColumns" [value]="subDivisionDetailsRows" exportFilename="Sub Division Details" class="minFirstLastCol5Per" [paginator]="true" [rows]="10">
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th>Sr.No.</th>
                     <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
                         {{col.header}}
-                        <p-sortIcon [hidden]="!col.visibility" [field]="col.field" ariaLabel="Activate to sort"
-                            ariaLabelDesc="Activate to sort in descending order"
-                            ariaLabelAsc="Activate to sort in ascending order">
+                        <p-sortIcon [hidden]="!col.visibility" [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order">
                         </p-sortIcon>
                     </th>
                     <th></th>
@@ -510,23 +241,14 @@
                 <tr>
                     <th></th>
                     <th *ngFor="let col of columns" [ngSwitch]="col.field" [hidden]="!col.visibility">
-                        <p-multiSelect *ngSwitchCase="'SubDivision'" [style]="{'width':'100%'}"
-                            [options]="subDivisionDetailsColArray.SubDivision" defaultLabel="Sub-Division"
-                            (onChange)="sd.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
-                            resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect *ngSwitchCase="'SubDivision'" [style]="{'width':'100%'}" [options]="adminObject.subDivisionDetailsColArray.SubDivision" defaultLabel="Sub-Division" (onChange)="sd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                            filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}"
-                            [options]="subDivisionDetailsColArray.LastUpdated" defaultLabel="LastUpdated"
-                            (onChange)="sd.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
-                            resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}" [options]="adminObject.subDivisionDetailsColArray.LastUpdated" defaultLabel="LastUpdated" (onChange)="sd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                            filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}"
-                            [options]="subDivisionDetailsColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy"
-                            (onChange)="sd.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
-                            resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}" [options]="adminObject.subDivisionDetailsColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy" (onChange)="sd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                            filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                     </th>
                     <th></th>
@@ -548,8 +270,7 @@
                         <div>
                             <p-menu #menu [popup]="true" [model]="subDivisionItems" styleClass="borderMenu">
                             </p-menu>
-                            <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
-                                (click)="subDivisionMenu(rowData); menu.toggle($event);"></i>
+                            <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;" (click)="subDivisionMenu(rowData); menu.toggle($event);"></i>
                         </div>
                     </td>
                 </tr>
@@ -576,10 +297,8 @@
         <div class="p-grid mt-20">
             <div class="p-col-2 mr-10"><span class="compulsory">*</span>Sub-Division Name</div>
             <div class="p-col-4">
-                <input class="mr-5" type="text" size="60" formControlName="subDivision_Name"
-                    placeholder="Sub-Division Name" pInputText inputPatteren>
-                <div class="error"
-                    *ngIf="cmObject.isSubDivisionFormSubmit && subDivisionform.controls.subDivision_Name.errors">
+                <input class="mr-5" type="text" size="60" formControlName="subDivision_Name" placeholder="Sub-Division Name" pInputText inputPatteren>
+                <div class="error" *ngIf="cmObject.isSubDivisionFormSubmit && subDivisionform.controls.subDivision_Name.errors">
                     <div *ngIf="subDivisionform.controls.subDivision_Name.errors.required">
                         Sub-Division Name is required</div>
                     <!-- <div *ngIf="subDivisionform.controls.subDivision_Name.errors.pattern">
@@ -591,31 +310,24 @@
         <div class="p-grid mt-20">
             <div class="p-col-2 mr-10">Distribution List</div>
             <div class="p-col-4">
-                <input class="mr-5" type="text" size="60" formControlName="distributionList"
-                    placeholder="Distribution List" (focusout)="validateEmailId()" pInputText>
-                <div class="error"
-                    *ngIf="cmObject.isSubDivisionFormSubmit && subDivisionform.controls.distributionList.errors">
-                    <div *ngIf="subDivisionform.controls.distributionList.errors.email">Distribution List must be a
-                        valid email address</div>
+                <input class="mr-5" type="text" size="60" formControlName="distributionList" placeholder="Distribution List" (focusout)="validateEmailId()" pInputText>
+                <div class="error" *ngIf="cmObject.isSubDivisionFormSubmit && subDivisionform.controls.distributionList.errors">
+                    <div *ngIf="subDivisionform.controls.distributionList.errors.email">Distribution List must be a valid email address</div>
                 </div>
             </div>
         </div>
         <div class="p-grid mt-20">
             <div class="p-col-2 mr-10">Delivery Level 1</div>
             <div class="p-col-4">
-                <p-multiSelect [style]="{'width':'100%'}" [options]="dropdown.DeliveryLevel1Array"
-                    defaultLabel="Select Delivery Level 1" formControlName="deliveryLevel1"
-                    (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
-                    resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                <p-multiSelect [style]="{'width':'100%'}" [options]="adminObject.dropdown.DeliveryLevel1Array" defaultLabel="Select Delivery Level 1" formControlName="deliveryLevel1" (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true"
+                    (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
             </div>
         </div>
         <div class="p-grid mt-20">
             <div class="p-col-2 mr-10">CM Level 1</div>
             <div class="p-col-4">
-                <p-multiSelect [style]="{'width':'100%'}" [options]="dropdown.CMLevel1Array"
-                    defaultLabel="Select CM Level 1" formControlName="cmLevel1"
-                    (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
-                    resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                <p-multiSelect [style]="{'width':'100%'}" [options]="adminObject.dropdown.CMLevel1Array" defaultLabel="Select CM Level 1" formControlName="cmLevel1" (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true"
+                    (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
             </div>
         </div>
     </form>
@@ -626,30 +338,25 @@
 
 <!-- POC Dialog -->
 
-<p-dialog [(visible)]="showPointofContact" [modal]="true" [contentStyle]="{'max-height':'500px', 'top':'0px'}"
-    [style]="{width: '90%'}">
+<p-dialog [(visible)]="showPointofContact" [modal]="true" [contentStyle]="{'max-height':'500px', 'top':'0px'}" [style]="{width: '90%'}">
     <div class="pr-20">
         <a (click)="downloadExcel(poc)" class="download-worksheet td-none"><i class="fa fa-fw fa-file-excel-o"
                 aria-hidden="true"></i>
         </a>
-        <button pButton styleClass="pBtnRight" type="button" class="adminBtn" icon="pi pi-plus-circle"
-            label="Add New POC" *ngIf="isUserSPMCA" (click)="showAddPOC()"></button>
+        <button pButton styleClass="pBtnRight" type="button" class="adminBtn" icon="pi pi-plus-circle" label="Add New POC" *ngIf="isUserSPMCA" (click)="showAddPOC()"></button>
     </div>
     <div class="clearBoth"></div>
     <p-header>
         Point of Contact
     </p-header>
     <div class="adminTable">
-        <p-table #poc [columns]="POCColumns" [value]="POCRows" class="minFirstLastCol5Per"
-            exportFilename="Point of Contact" [paginator]="true" [rows]="10">
+        <p-table #poc [columns]="POCColumns" [value]="POCRows" class="minFirstLastCol5Per" exportFilename="Point of Contact" [paginator]="true" [rows]="10">
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th>Sr.No.</th>
                     <th *ngFor="let col of columns" [hidden]="!col.visibility" [pSortableColumn]="col.field">
                         {{col.header}}
-                        <p-sortIcon [hidden]="!col.visibility" [field]="col.field" ariaLabel="Activate to sort"
-                            ariaLabelDesc="Activate to sort in descending order"
-                            ariaLabelAsc="Activate to sort in ascending order">
+                        <p-sortIcon [hidden]="!col.visibility" [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order">
                         </p-sortIcon>
                     </th>
                     <th></th>
@@ -657,33 +364,20 @@
                 <tr>
                     <th></th>
                     <th *ngFor="let col of columns" [hidden]="!col.visibility" [ngSwitch]="col.field">
-                        <p-multiSelect *ngSwitchCase="'FName'" [style]="{'width':'100%'}" [options]="POCColArray.FName"
-                            defaultLabel="First Name" (onChange)="poc.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
+                        <p-multiSelect *ngSwitchCase="'FName'" [style]="{'width':'100%'}" [options]="adminObject.POCColArray.FName" defaultLabel="First Name" (onChange)="poc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
                             resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'LName'" [style]="{'width':'100%'}" [options]="POCColArray.LName"
-                            defaultLabel="Last Name" (onChange)="poc.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
+                        <p-multiSelect *ngSwitchCase="'LName'" [style]="{'width':'100%'}" [options]="adminObject.POCColArray.LName" defaultLabel="Last Name" (onChange)="poc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
                             resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'EmailAddress'" [style]="{'width':'100%'}"
-                            [options]="POCColArray.EmailAddress" defaultLabel="Email"
-                            (onChange)="poc.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
-                            resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect *ngSwitchCase="'EmailAddress'" [style]="{'width':'100%'}" [options]="adminObject.POCColArray.EmailAddress" defaultLabel="Email" (onChange)="poc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+                            [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}"
-                            [options]="POCColArray.LastUpdated" defaultLabel="LastUpdated"
-                            (onChange)="poc.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
-                            resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}" [options]="adminObject.POCColArray.LastUpdated" defaultLabel="LastUpdated" (onChange)="poc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+                            [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}"
-                            [options]="POCColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy"
-                            (onChange)="poc.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
-                            resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}" [options]="adminObject.POCColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy" (onChange)="poc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+                            [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                     </th>
                     <th></th>
@@ -711,8 +405,7 @@
                         <div>
                             <p-menu #menu [popup]="true" [model]="pocItems" styleClass="borderMenu">
                             </p-menu>
-                            <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
-                                (click)="pocMenu(rowData); menu.toggle($event);"></i>
+                            <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;" (click)="pocMenu(rowData); menu.toggle($event);"></i>
                         </div>
                     </td>
                 </tr>
@@ -728,8 +421,7 @@
     </div>
 </p-dialog>
 
-<p-dialog [(visible)]="showaddPOC" [modal]="true" appendTo="body" [contentStyle]="{'max-height':'500px', 'top':'0px'}"
-    [style]="{width: '90%'}">
+<p-dialog [(visible)]="showaddPOC" [modal]="true" appendTo="body" [contentStyle]="{'max-height':'500px', 'top':'0px'}" [style]="{width: '90%'}">
     <p-header *ngIf="!showeditPOC">
         Add Point Of Contact
     </p-header>
@@ -740,8 +432,7 @@
         <div class="p-grid mt-20">
             <div class="p-col-3 mr-10"><span class="compulsory">*</span>First Name</div>
             <div class="p-col-4">
-                <input class="mr-5" type="text" size="60" formControlName="fname" placeholder="First Name" pInputText
-                    inputPatteren>
+                <input class="mr-5" type="text" size="60" formControlName="fname" placeholder="First Name" pInputText inputPatteren>
                 <div class="error" *ngIf="cmObject.isPOCFormSubmit && pocForm.controls.fname.errors">
                     <div *ngIf="pocForm.controls.fname.errors.required">
                         First Name is required</div>
@@ -761,8 +452,7 @@
         <div class="p-grid mt-20">
             <div class="p-col-3 mr-10">Designation</div>
             <div class="p-col-4">
-                <input class="mr-5" type="text" size="60" formControlName="designation" placeholder="Designation"
-                    pInputText>
+                <input class="mr-5" type="text" size="60" formControlName="designation" placeholder="Designation" pInputText>
                 <div class="error" *ngIf="cmObject.isPOCFormSubmit && pocForm.controls.designation.errors">
                     <div *ngIf="pocForm.controls.designation.errors.required">
                         Designation is required</div>
@@ -792,26 +482,21 @@
             <div class="p-col-3 mr-10">Address</div>
             <div class="p-col-4">
                 <input class="mr-5" type="text" size="60" formControlName="address1" placeholder="Address" pInputText>
-                <input class="mr-5 mt-5" class="mt-10" type="text" size="60" formControlName="address2"
-                    placeholder="Address" pInputText>
-                <input class="mr-5" class="mt-10" type="text" size="60" formControlName="address3" placeholder="Address"
-                    pInputText>
-                <input class="mr-5" class="mt-10" type="text" size="60" formControlName="address4" placeholder="Address"
-                    pInputText>
+                <input class="mr-5 mt-5" class="mt-10" type="text" size="60" formControlName="address2" placeholder="Address" pInputText>
+                <input class="mr-5" class="mt-10" type="text" size="60" formControlName="address3" placeholder="Address" pInputText>
+                <input class="mr-5" class="mt-10" type="text" size="60" formControlName="address4" placeholder="Address" pInputText>
             </div>
         </div>
         <div class="p-grid mt-20">
             <div class="p-col-3 mr-10">Department</div>
             <div class="p-col-4">
-                <input class="mr-5" type="text" size="60" formControlName="department" placeholder="Department"
-                    pInputText>
+                <input class="mr-5" type="text" size="60" formControlName="department" placeholder="Department" pInputText>
             </div>
         </div>
         <div class="p-grid mt-20">
             <div class="p-col-3 mr-10"><span class="compulsory">*</span>Referral Source</div>
             <div class="p-col-4">
-                <p-dropdown [options]="dropdown.POCRefferalSourceArray" placeholder="Select Referral Source"
-                    formControlName="referralSource" filter="true" resetFilterOnHide="true">
+                <p-dropdown [options]="adminObject.dropdown.POCRefferalSourceArray" placeholder="Select Referral Source" formControlName="referralSource" filter="true" resetFilterOnHide="true">
                 </p-dropdown>
                 <div class="error" *ngIf="cmObject.isPOCFormSubmit && pocForm.controls.referralSource.errors">
                     <div *ngIf="pocForm.controls.referralSource.errors.required">
@@ -822,30 +507,26 @@
         <div class="p-grid mt-20">
             <div class="p-col-3 mr-10">Relationship Strength</div>
             <div class="p-col-4">
-                <p-dropdown [options]="dropdown.POCRelationshipArray" placeholder="Select Relationship"
-                    formControlName="relationshipStrength" filter="true" resetFilterOnHide="true">
+                <p-dropdown [options]="adminObject.dropdown.POCRelationshipArray" placeholder="Select Relationship" formControlName="relationshipStrength" filter="true" resetFilterOnHide="true">
                 </p-dropdown>
             </div>
         </div>
         <div class="p-grid mt-20">
             <div class="p-col-3 mr-10">Engagement Plan</div>
             <div class="p-col-4">
-                <textarea [rows]="5" [cols]="60" formControlName="engagementPlan" placeholder="Engagement Plan"
-                    pInputTextarea></textarea>
+                <textarea [rows]="5" [cols]="60" formControlName="engagementPlan" placeholder="Engagement Plan" pInputTextarea></textarea>
             </div>
         </div>
         <div class="p-grid mt-20">
             <div class="p-col-3 mr-10">Comments</div>
             <div class="p-col-4">
-                <textarea [rows]="5" [cols]="60" formControlName="comments" placeholder="Comments"
-                    pInputTextarea></textarea>
+                <textarea [rows]="5" [cols]="60" formControlName="comments" placeholder="Comments" pInputTextarea></textarea>
             </div>
         </div>
         <div class="p-grid mt-20">
             <div class="p-col-3 mr-10"><span class="compulsory">*</span>Project Contacts Type</div>
             <div class="p-col-4">
-                <p-dropdown [options]="dropdown.POCProjectContactTypesArray" placeholder="Select Project Contacts Type"
-                    formControlName="contactsType" resetFilterOnHide="true" filter="true"></p-dropdown>
+                <p-dropdown [options]="adminObject.dropdown.POCProjectContactTypesArray" placeholder="Select Project Contacts Type" formControlName="contactsType" resetFilterOnHide="true" filter="true"></p-dropdown>
                 <div class="error" *ngIf="cmObject.isPOCFormSubmit && pocForm.controls.contactsType.errors">
                     <div *ngIf="pocForm.controls.contactsType.errors.required">
                         Project Contacts Type is required</div>
@@ -860,14 +541,12 @@
 
 <!-- PO Dialog -->
 
-<p-dialog [(visible)]="showPurchaseOrder" [modal]="true" [contentStyle]="{'max-height':'500px', 'top':'0px'}"
-    [style]="{width: '90%'}">
+<p-dialog [(visible)]="showPurchaseOrder" [modal]="true" [contentStyle]="{'max-height':'500px', 'top':'0px'}" [style]="{width: '90%'}">
     <div class="pr-20">
-        <a (click)="downloadExcel(po)" class="download-worksheet td-none"><i class="fa fa-fw fa-file-excel-o"
+        <a (click)="downloadExcel(poTable)" class="download-worksheet td-none"><i class="fa fa-fw fa-file-excel-o"
                 aria-hidden="true"></i>
         </a>
-        <button pButton styleClass="pBtnRight" type="button" class="adminBtn" icon="pi pi-plus-circle"
-            label="Add New Purchase Order" *ngIf="isUserSPMCA || isUserPO" (click)="showAddPO()">
+        <button pButton styleClass="pBtnRight" type="button" class="adminBtn" icon="pi pi-plus-circle" label="Add New Purchase Order" *ngIf="isUserSPMCA || isUserPO" (click)="showAddPO()">
         </button>
     </div>
     <div class="clearBoth"></div>
@@ -875,16 +554,13 @@
         Purchase Order
     </p-header>
     <div class="adminTable">
-        <p-table #poTable [columns]="POColumns" [value]="PORows" exportFilename="Purchase Order" class="minFirstLastCol5Per"
-            [paginator]="true" [rows]="10">
+        <p-table #poTable [columns]="POColumns" [value]="PORows" exportFilename="Purchase Order" class="minFirstLastCol5Per" [paginator]="true" [rows]="10">
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th>Sr.No.</th>
                     <th *ngFor="let col of columns" [hidden]="!col.visibility" [pSortableColumn]="col.field">
                         {{col.header}}
-                        <p-sortIcon [hidden]="!col.visibility" [field]="col.field" ariaLabel="Activate to sort"
-                            ariaLabelDesc="Activate to sort in descending order"
-                            ariaLabelAsc="Activate to sort in ascending order">
+                        <p-sortIcon [hidden]="!col.visibility" [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order">
                         </p-sortIcon>
                     </th>
                     <th></th>
@@ -892,40 +568,23 @@
                 <tr>
                     <th></th>
                     <th *ngFor="let col of columns" [hidden]="!col.visibility" [ngSwitch]="col.field">
-                        <p-multiSelect *ngSwitchCase="'PoName'" [style]="{'width':'100%'}" [options]="POColArray.PoName"
-                            defaultLabel="Po Name" (onChange)="poTable.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
+                        <p-multiSelect *ngSwitchCase="'PoName'" [style]="{'width':'100%'}" [options]="adminObject.POColArray.PoName" defaultLabel="Po Name" (onChange)="poTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
                             resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'PoNumber'" [style]="{'width':'100%'}"
-                            [options]="POColArray.PoNumber" defaultLabel="Po Number"
-                            (onChange)="poTable.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
+                        <p-multiSelect *ngSwitchCase="'PoNumber'" [style]="{'width':'100%'}" [options]="adminObject.POColArray.PoNumber" defaultLabel="Po Number" (onChange)="poTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+                            [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
+                        </p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'AmountRevenue'" [style]="{'width':'100%'}" [options]="adminObject.POColArray.AmountRevenue" defaultLabel="Revenue" (onChange)="poTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+                            [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
+                        </p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'AmountOOP'" [style]="{'width':'100%'}" [options]="adminObject.POColArray.AmountOOP" defaultLabel="OOP" (onChange)="poTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
                             resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'AmountRevenue'" [style]="{'width':'100%'}"
-                            [options]="POColArray.AmountRevenue" defaultLabel="Revenue"
-                            (onChange)="poTable.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
-                            resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}" [options]="adminObject.POColArray.LastUpdated" defaultLabel="LastUpdated" (onChange)="poTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+                            [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'AmountOOP'" [style]="{'width':'100%'}"
-                            [options]="POColArray.AmountOOP" defaultLabel="OOP"
-                            (onChange)="poTable.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
-                            resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}"
-                            [options]="POColArray.LastUpdated" defaultLabel="LastUpdated"
-                            (onChange)="poTable.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
-                            resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}"
-                            [options]="POColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy"
-                            (onChange)="poTable.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
-                            resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}" [options]="adminObject.POColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy" (onChange)="poTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                            filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                     </th>
                     <th></th>
@@ -956,8 +615,7 @@
                         <div>
                             <p-menu #menu [popup]="true" [model]="poItems" styleClass="borderMenu">
                             </p-menu>
-                            <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
-                                (click)="poMenu(rowData); menu.toggle($event);"></i>
+                            <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;" (click)="poMenu(rowData); menu.toggle($event);"></i>
                         </div>
                     </td>
                 </tr>
@@ -973,14 +631,12 @@
     </div>
 </p-dialog>
 
-<p-dialog [(visible)]="showaddBudget" [modal]="true" appendTo="body"
-    [contentStyle]="{'max-height':'500px', 'top':'0px'}" [style]="{width: '90%'}">
+<p-dialog [(visible)]="showaddBudget" [modal]="true" appendTo="body" [contentStyle]="{'max-height':'500px', 'top':'0px'}" [style]="{width: '90%'}">
     <p-header>
         Change Budget
     </p-header>
 
-    <p-dropdown [options]="budgetType" placeholder="Select Value" [(ngModel)]="selectedValue" filter="true"
-        resetFilterOnHide="true">
+    <p-dropdown [options]="budgetType" placeholder="Select Value" [(ngModel)]="selectedValue" filter="true" resetFilterOnHide="true">
     </p-dropdown>
 
     <div class="ui-g" *ngIf="checkBudgetValue">
@@ -989,7 +645,7 @@
 
     <form [formGroup]='changeBudgetForm'>
         <div class="p-grid mt-20">
-            <div *ngIf="oldBudget" class="p-col-2 card-section">
+            <div *ngIf="adminObject.oldBudget" class="p-col-2 card-section">
                 <div class="card">
                     <div class="content">
                         <div class="p-grid">
@@ -1001,20 +657,20 @@
                             <div class="p-col-7">
                                 <div class="numbers">
                                     <p>Total</p>
-                                    <span class="brandColor">{{oldBudget.Amount}}</span>
+                                    <span class="brandColor">{{adminObject.oldBudget.Amount}}</span>
                                 </div>
                             </div>
                         </div>
                         <div class="footer">
                             <hr>
                             <div class="stats">
-                                <i class="pi pi-clock"></i> {{oldBudget.LastUpdated | date:'MMM dd, yyyy'}}
+                                <i class="pi pi-clock"></i> {{adminObject.oldBudget.LastUpdated | date:'MMM dd, yyyy'}}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div *ngIf="oldBudget" class="p-col-2 card-section">
+            <div *ngIf="adminObject.oldBudget" class="p-col-2 card-section">
                 <div class="card">
                     <div class="content">
                         <div class="p-grid">
@@ -1026,20 +682,20 @@
                             <div class="p-col-7">
                                 <div class="numbers">
                                     <p>Revenue</p>
-                                    <span class="brandColor">{{oldBudget.AmountRevenue}}</span>
+                                    <span class="brandColor">{{adminObject.oldBudget.AmountRevenue}}</span>
                                 </div>
                             </div>
                         </div>
                         <div class="footer">
                             <hr>
                             <div class="stats">
-                                <i class="pi pi-clock"></i> {{oldBudget.LastUpdated | date:'MMM dd, yyyy'}}
+                                <i class="pi pi-clock"></i> {{adminObject.oldBudget.LastUpdated | date:'MMM dd, yyyy'}}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div *ngIf="oldBudget" class="p-col-2 card-section">
+            <div *ngIf="adminObject.oldBudget" class="p-col-2 card-section">
                 <div class="card">
                     <div class="content">
                         <div class="p-grid">
@@ -1051,20 +707,20 @@
                             <div class="p-col-7">
                                 <div class="numbers">
                                     <p>OOP</p>
-                                    <span class="brandColor">{{oldBudget.AmountOOP}}</span>
+                                    <span class="brandColor">{{adminObject.oldBudget.AmountOOP}}</span>
                                 </div>
                             </div>
                         </div>
                         <div class="footer">
                             <hr>
                             <div class="stats">
-                                <i class="pi pi-clock"></i> {{oldBudget.LastUpdated | date:'MMM dd, yyyy'}}
+                                <i class="pi pi-clock"></i> {{adminObject.oldBudget.LastUpdated | date:'MMM dd, yyyy'}}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div *ngIf="oldBudget" class="p-col-2 card-section">
+            <div *ngIf="adminObject.oldBudget" class="p-col-2 card-section">
                 <div class="card">
                     <div class="content">
                         <div class="p-grid">
@@ -1076,14 +732,14 @@
                             <div class="p-col-7">
                                 <div class="numbers">
                                     <p>Tax</p>
-                                    <span class="brandColor">{{oldBudget.AmountTax}}</span>
+                                    <span class="brandColor">{{adminObject.oldBudget.AmountTax}}</span>
                                 </div>
                             </div>
                         </div>
                         <div class="footer">
                             <hr>
                             <div class="stats">
-                                <i class="pi pi-clock"></i> {{oldBudget.LastUpdated | date:'MMM dd, yyyy'}}
+                                <i class="pi pi-clock"></i> {{adminObject.oldBudget.LastUpdated | date:'MMM dd, yyyy'}}
                             </div>
                         </div>
                     </div>
@@ -1093,8 +749,7 @@
         <div class="p-grid mt-20">
             <div class="p-col-2">Total Amount</div>
             <div class="p-col-2">
-                <input class="mr-5" type="number" size="30" formControlName="total" placeholder="Total Amount"
-                    pInputText>
+                <input class="mr-5" type="number" size="30" formControlName="total" placeholder="Total Amount" pInputText>
                 <div class="error" *ngIf="cmObject.isBudgetFormSubmit && changeBudgetForm.controls.total.errors">
                     <div *ngIf="changeBudgetForm.controls.total.errors.required">Total Amount is required</div>
                 </div>
@@ -1103,8 +758,7 @@
         <div class="p-grid mt-20">
             <div class="p-col-2 ">Revenue</div>
             <div class="p-col-4">
-                <input class="mr-5" type="number" size="30" formControlName="revenue" placeholder="Revenue"
-                    (change)="setPOTotal()" pInputText>
+                <input class="mr-5" type="number" size="30" formControlName="revenue" placeholder="Revenue" (change)="setPOTotal()" pInputText>
                 <div class="error" *ngIf="cmObject.isBudgetFormSubmit && changeBudgetForm.controls.revenue.errors">
                     <div *ngIf="changeBudgetForm.controls.revenue.errors.required">Revenue is required</div>
                 </div>
@@ -1113,8 +767,7 @@
         <div class="p-grid mt-20">
             <div class="p-col-2 ">OOP</div>
             <div class="p-col-4">
-                <input class="mr-5" type="number" size="30" formControlName="oop" placeholder="OOP"
-                    (change)="setPOTotal()" pInputText>
+                <input class="mr-5" type="number" size="30" formControlName="oop" placeholder="OOP" (change)="setPOTotal()" pInputText>
                 <div class="error" *ngIf="cmObject.isBudgetFormSubmit && changeBudgetForm.controls.oop.errors">
                     <div *ngIf="changeBudgetForm.controls.oop.errors.required">OOP is required</div>
                 </div>
@@ -1123,8 +776,7 @@
         <div class="p-grid mt-20">
             <div class="p-col-2 ">Tax</div>
             <div class="p-col-4">
-                <input class="mr-5" type="number" size="30" formControlName="tax" placeholder="Tax"
-                    (change)="setPOTotal()">
+                <input class="mr-5" type="number" size="30" formControlName="tax" placeholder="Tax" (change)="setPOTotal()">
                 <div class="error" *ngIf="cmObject.isBudgetFormSubmit && changeBudgetForm.controls.tax.errors">
                     <div *ngIf="changeBudgetForm.controls.tax.errors.required">Tax is required</div>
                 </div>
@@ -1172,8 +824,7 @@
             <div class="p-grid mt-20">
                 <div class="p-col-2 "><span class="compulsory">*</span>Total Amount</div>
                 <div class="p-col-4">
-                    <input class="mr-5" type="number" size="30" formControlName="total" placeholder="Total Amount"
-                        pInputText>
+                    <input class="mr-5" type="number" size="30" formControlName="total" placeholder="Total Amount" pInputText>
                     <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.total.errors">
                         <div *ngIf="PoForm.controls.total.errors.required">Total Amount is required</div>
                         <div *ngIf="PoForm.controls.total.errors.nonZeroNumber">
@@ -1182,8 +833,7 @@
                 </div>
                 <div class="p-col-2 "><span class="compulsory">*</span>Revenue</div>
                 <div class="p-col-4">
-                    <input class="mr-5" type="number" size="30" formControlName="revenue" placeholder="Revenue"
-                        (change)="setPOTotal()" pInputText>
+                    <input class="mr-5" type="number" size="30" formControlName="revenue" placeholder="Revenue" (change)="setPOTotal()" pInputText>
                     <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.revenue.errors">
                         <div *ngIf="PoForm.controls.revenue.errors.required">Revenue is required</div>
                         <div *ngIf="PoForm.controls.revenue.errors.positiveNumber">
@@ -1194,8 +844,7 @@
             <div class="p-grid mt-20">
                 <div class="p-col-2 "><span class="compulsory">*</span>OOP</div>
                 <div class="p-col-4">
-                    <input class="mr-5" type="number" size="30" formControlName="oop" placeholder="OOP"
-                        (change)="setPOTotal()" pInputText>
+                    <input class="mr-5" type="number" size="30" formControlName="oop" placeholder="OOP" (change)="setPOTotal()" pInputText>
                     <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.oop.errors">
                         <div *ngIf="PoForm.controls.oop.errors.required">OOP is required</div>
                         <div *ngIf="PoForm.controls.oop.errors.positiveNumber">
@@ -1204,8 +853,7 @@
                 </div>
                 <div class="p-col-2 "><span class="compulsory">*</span>Tax</div>
                 <div class="p-col-4">
-                    <input class="mr-5" type="number" size="30" formControlName="tax" placeholder="Tax"
-                        (change)="setPOTotal()" pInputText>
+                    <input class="mr-5" type="number" size="30" formControlName="tax" placeholder="Tax" (change)="setPOTotal()" pInputText>
                     <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.tax.errors">
                         <div *ngIf="PoForm.controls.tax.errors.required">Tax is required</div>
                         <div *ngIf="PoForm.controls.tax.errors.positiveNumber">
@@ -1217,8 +865,7 @@
         <div class="p-grid mt-20">
             <div class="p-col-2 "><span class="compulsory">*</span>Currency</div>
             <div class="p-col-4">
-                <p-dropdown [options]="dropdown.CurrencyArray" placeholder="Select Currency" formControlName="currency"
-                    filter="true" resetFilterOnHide="true">
+                <p-dropdown [options]="adminObject.dropdown.CurrencyArray" placeholder="Select Currency" formControlName="currency" filter="true" resetFilterOnHide="true">
                 </p-dropdown>
                 <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.currency.errors">
                     <div *ngIf="PoForm.controls.currency.errors.required">
@@ -1227,8 +874,7 @@
             </div>
             <div class="p-col-2 "><span class="compulsory">*</span>PO Expiry Date</div>
             <div class="p-col-4">
-                <p-calendar styleClass="pCalendarBtn" formControlName="poExpiryDate" [minDate]="minDateValue"
-                    [showIcon]="true" [showOnFocus]="false" [monthNavigator]="true" [readonlyInput]="true">
+                <p-calendar styleClass="pCalendarBtn" formControlName="poExpiryDate" [minDate]="minDateValue" [showIcon]="true" [showOnFocus]="false" [monthNavigator]="true" [readonlyInput]="true">
                 </p-calendar>
                 <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.poExpiryDate.errors">
                     <div *ngIf="PoForm.controls.poExpiryDate.errors.required">
@@ -1239,8 +885,7 @@
         <div class="p-grid mt-20">
             <div class="p-col-2 "><span class="compulsory">*</span>Point of Contact</div>
             <div class="p-col-4">
-                <p-dropdown [options]="dropdown.POPointOfContactArray" placeholder="Select Point of Contact"
-                    formControlName="poc" filter="true" resetFilterOnHide="true">
+                <p-dropdown [options]="adminObject.dropdown.POPointOfContactArray" placeholder="Select Point of Contact" formControlName="poc" filter="true" resetFilterOnHide="true">
                 </p-dropdown>
                 <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.poc.errors">
                     <div *ngIf="PoForm.controls.poc.errors.required">
@@ -1259,8 +904,7 @@
         <div class="p-grid mt-20">
             <div class="p-col-2 "><span class="compulsory">*</span>TA</div>
             <div class="p-col-4">
-                <p-dropdown [options]="dropdown.POTAArray" placeholder="Select TA" formControlName="ta" filter="true"
-                    resetFilterOnHide="true">
+                <p-dropdown [options]="adminObject.dropdown.POTAArray" placeholder="Select TA" formControlName="ta" filter="true" resetFilterOnHide="true">
                 </p-dropdown>
                 <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.ta.errors">
                     <div *ngIf="PoForm.controls.ta.errors.required">
@@ -1269,8 +913,7 @@
             </div>
             <div class="p-col-2 "><span class="compulsory">*</span>Molecule</div>
             <div class="p-col-4">
-                <p-dropdown [options]="dropdown.POMoleculeArray" placeholder="Select Molecule"
-                    formControlName="molecule" filter="true" resetFilterOnHide="true">
+                <p-dropdown [options]="adminObject.dropdown.POMoleculeArray" placeholder="Select Molecule" formControlName="molecule" filter="true" resetFilterOnHide="true">
                 </p-dropdown>
                 <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.molecule.errors">
                     <div *ngIf="PoForm.controls.molecule.errors.required">
@@ -1281,8 +924,7 @@
         <div class="p-grid mt-20">
             <div class="p-col-2 "><span class="compulsory">*</span>CM Level 2</div>
             <div class="p-col-4">
-                <p-dropdown [options]="dropdown.CMLevel2Array" placeholder="Select CM Level 2"
-                    formControlName="cmLevel2" filter="true" resetFilterOnHide="true">
+                <p-dropdown [options]="adminObject.dropdown.CMLevel2Array" placeholder="Select CM Level 2" formControlName="cmLevel2" filter="true" resetFilterOnHide="true">
                 </p-dropdown>
                 <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.cmLevel2.errors">
                     <div *ngIf="PoForm.controls.cmLevel2.errors.required">
@@ -1291,8 +933,7 @@
             </div>
             <div class="p-col-2 "><span class="compulsory">*</span>PO Buying Entity</div>
             <div class="p-col-4">
-                <p-dropdown [options]="dropdown.POBuyingEntityArray" placeholder="Select PO Buying Entity"
-                    formControlName="poBuyingEntity" filter="true" resetFilterOnHide="true">
+                <p-dropdown [options]="adminObject.dropdown.POBuyingEntityArray" placeholder="Select PO Buying Entity" formControlName="poBuyingEntity" filter="true" resetFilterOnHide="true">
                 </p-dropdown>
                 <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.poBuyingEntity.errors">
                     <div *ngIf="PoForm.controls.poBuyingEntity.errors.required">
@@ -1305,8 +946,8 @@
         <button pButton label="{{buttonLabel}}" type="button" class="adminBtn" (click)="savePO()"></button>
     </p-footer>
 </p-dialog>
-<div *ngIf="po.isRightVisible" class="ng-right-side-overlay">
-    <p-sidebar [(visible)]="po.isRightVisible" position="right" styleClass="ui-sidebar-md">
+<div *ngIf="adminObject.po.isRightVisible" class="ng-right-side-overlay">
+    <p-sidebar [(visible)]="adminObject.po.isRightVisible" position="right" styleClass="ui-sidebar-md">
         <p-table [value]="PORightRows">
             <ng-template pTemplate="header">
                 <tr>
