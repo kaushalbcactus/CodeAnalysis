@@ -552,6 +552,7 @@ export class UsercapacityComponent implements OnInit {
 
     const totalAllocatedPerUser = 0, totalUnAllocatedPerUser = 0;
     const arrTotalAllocatedPerUser = [], arrTotalAvailablePerUser = [];
+    let bench = [];
     for (const i in oUser.dates) {
       if (oUser.dates.hasOwnProperty(i)) {
         const tasksDetails = [];
@@ -679,13 +680,25 @@ export class UsercapacityComponent implements OnInit {
         }
         oUser.businessDays.push(oUser.dates[i].date);
       }
+
+      if(oUser.dates[i].userCapacity == 'Available' || oUser.dates[i].userCapacity == "NotAvailable") {
+        
+        const calcBench =  this.commonservice.ajax_subtractHrsMins(
+          this.commonservice.convertToHrsMins('' + oUser.dates[i].maxAvailableHours), oUser.dates[i].TimeSpent);
+        if(calcBench .indexOf('-') === -1) {
+          bench.push(calcBench);
+        }
+      }
     }
 
     const ArrayTimespentPerDay = oUser.dates.map(c => new Object({
       timeHrs: c.TimeSpent.split(':')[0],
       timeMins: c.TimeSpent.split(':')[1]
     }));
-
+    oUser.Bench = bench.length > 0 ? this.commonservice.ajax_addHrsMins(bench.map(c => new Object({
+      timeHrs: c.split(':')[0],
+      timeMins: c.split(':')[1]
+    }))) : '0:0'; 
     oUser.TotalTimeSpent = ArrayTimespentPerDay.length > 0 ? this.commonservice.ajax_addHrsMins(ArrayTimespentPerDay) : 0;
 
     oUser.totalAllocated = arrTotalAllocatedPerUser.length > 0 ? this.commonservice.ajax_addHrsMins(arrTotalAllocatedPerUser) : 0;
@@ -1020,7 +1033,7 @@ export class UsercapacityComponent implements OnInit {
   collpaseTable(objt, user, type) {
     if (type === 'available') {
       const oCollpase = $(objt).closest('.TaskPerDayRow');
-      oCollpase.prev().prev().find('.highlightCell').removeClass('highlightCell');
+      oCollpase.prev().find('.highlightCell').removeClass('highlightCell');
       oCollpase.slideUp();
       user.dayTasks = [];
       user.dates.map(c => delete c.backgroundColor);

@@ -126,7 +126,7 @@
     background-color: transparent;
 }
 
-#TasksPerDay>thead>tr>td:first-child {
+#TasksPerDay>thead>tr>td:first-child, #spentTasksPerDay>thead>tr>td:first-child {
     background-color: #80808038;
     font-weight: bold;
 }
@@ -230,7 +230,8 @@
 
 .capacityBody>tr>td,
 .capacityBody>tr>td>table,
-.TaskPerDayRow>td {
+.TaskPerDayRow>td,
+.SpentTaskPerDayRow>td {
     border: 0px !important;
 }
 
@@ -240,7 +241,8 @@
     border: 1px solid #ddd;
 }
 
-.TaskPerDayRow>td {
+.TaskPerDayRow>td,
+.SpentTaskPerDayRow>td {
     padding: 0px !important;
 }
 
@@ -251,9 +253,14 @@
 }
 
 .capacityBody #TasksPerDay>thead>tr>td,
+.capacityBody #spentTasksPerDay>thead>tr>td,
 #capacityTable>thead>tr>th,
 table#milestoneTasks thead td {
     font-weight: bold;
+}
+
+#TasksPerDay, #spentTasksPerDay {
+    border: none !important;
 }
 
 #capacityTable>thead>tr>th {
@@ -357,9 +364,25 @@ tr[class$="taskrow"]+tr>td
     display: none !important;
 }
 
+.capacityBody #TasksPerDay>thead>tr>td,
+.capacityBody #TasksPerDay>tbody>tr>td,
+.capacityBody #spentTasksPerDay>thead>tr>td,
+.capacityBody #spentTasksPerDay>tbody>tr>td {
+    width: 12%;
+}
+
 .capacityBody #TasksPerDay>thead>tr>td:last-child,
-.capacityBody #TasksPerDay>tbody>tr>td:last-child {
-    width: 100px;
+.capacityBody #TasksPerDay>tbody>tr>td:last-child,
+.capacityBody #spentTasksPerDay>thead>tr>td:last-child,
+.capacityBody #spentTasksPerDay>tbody>tr>td:last-child {
+    width: 6%;
+}
+
+.capacityBody #TasksPerDay>thead>tr>td:first-child,
+.capacityBody #TasksPerDay>tbody>tr>td:first-child,
+.capacityBody #spentTasksPerDay>thead>tr>td:first-child,
+.capacityBody #spentTasksPerDay>tbody>tr>td:first-child {
+    width: 34%; 
 }
 
 .capacityBody>tr>td,
@@ -371,6 +394,11 @@ tr[class$="taskrow"]+tr>td
 #capacityTable .unallocated,
 #capacityTable .allocated {
     font-size: 12px;
+}
+
+#capacityTable > .capacityBody{
+    max-height: calc(100vh - 355px);
+    display: block;
 }
 
 
