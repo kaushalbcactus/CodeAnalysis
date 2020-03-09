@@ -285,7 +285,7 @@ export class MyTimelineComponent implements OnInit {
     this.getEvents(this.firstLoad, null, null);
   }
 
-  // Execute below function only when create task 
+  // Execute below function only when create task
 
   setCalendarView(firstLoad, gotoDate, startDate, endDate) {
     setTimeout(() => {
@@ -394,7 +394,7 @@ export class MyTimelineComponent implements OnInit {
 
 
   // *************************************************************************************************************************************
-  //  convert date into string 
+  //  convert date into string
   // *************************************************************************************************************************************
 
   async getStartEndDates(startDate, endDate) {
@@ -407,7 +407,7 @@ export class MyTimelineComponent implements OnInit {
     return filterDates;
   }
   // *************************************************************************************************************************************
-  //   to get event on button click 
+  //   to get event on button click
   // *************************************************************************************************************************************
 
   bindEvents() {
@@ -459,7 +459,7 @@ export class MyTimelineComponent implements OnInit {
 
 
   // *************************************************************************************************************************************
-  //   to get event on title click 
+  //   to get event on title click
   // *************************************************************************************************************************************
 
 
@@ -549,7 +549,7 @@ export class MyTimelineComponent implements OnInit {
   }
 
   // *************************************************************************************************************************************
-  //  dialog for time booking 
+  //  dialog for time booking
   // *************************************************************************************************************************************
   async loadBlockTimeDialog(event, task) {
     const ref = this.dialogService.open(BlockTimeDialogComponent, {
@@ -567,7 +567,7 @@ export class MyTimelineComponent implements OnInit {
 
         this.CalendarLoader = true;
         if (event === 'Leave') {
-          // update leaves table based on leaves 
+          // update leaves table based on leaves
           const dbAvailableHours = await this.getAvailableHours(blockTimeobj, 'apply');
 
           const batchURL = [];
@@ -717,7 +717,7 @@ export class MyTimelineComponent implements OnInit {
             header: 'Confirmation',
             icon: 'pi pi-exclamation-triangle',
             accept: async () => {
-              if (task.PrevTasks && task.PrevTasks.indexOf(';#') === -1 && task.Task.indexOf('Review-') > -1) {
+              if (task.PrevTasks && task.Task.indexOf('Review-') > -1) {
                 this.myDashboardConstantsService.callQMSPopup(task, this.feedbackPopupComponent);
               } else {
                 this.saveTask(task);

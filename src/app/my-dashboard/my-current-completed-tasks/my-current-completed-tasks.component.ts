@@ -520,7 +520,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
           task.TaskComments = Commentobj.comment;
           task.Status = 'Completed';
           this.commonService.SetNewrelic('MyCurrentCompletedTask', this.route.snapshot.data.type, 'CompleteTask');
-          if (task.PrevTasks && task.PrevTasks.indexOf(';#') === -1 && task.Task.indexOf('Review-') > -1) {
+          if (task.PrevTasks  && task.Task.indexOf('Review-') > -1) { // && task.PrevTasks.indexOf(';#') === -1
             this.myDashboardConstantsService.callQMSPopup(task, this.feedbackPopupComponent);
           } else {
             this.saveTask(task);
@@ -622,7 +622,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
             // this.allTasks = [];
             // this.callComplete(task);
             task.Status = 'Completed';
-            if (task.PrevTasks && task.PrevTasks.indexOf(';#') === -1 && task.Task.indexOf('Review-') > -1) {
+            if (task.PrevTasks && task.Task.indexOf('Review-') > -1) { // && task.PrevTasks.indexOf(';#') === -1
               this.myDashboardConstantsService.callQMSPopup(task, this.feedbackPopupComponent);
             } else {
               this.saveTask(task);
@@ -642,26 +642,6 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
       });
     }
   }
-
-  // async callComplete(task) {
-  //   task.Status = 'Completed';
-  //   const response = await this.myDashboardConstantsService.CompleteTask(task);
-  //   if (response) {
-  //     this.loaderenable = false;
-  //     this.GetDatabyDateSelection(this.selectedTab, this.days);
-  //     this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: response });
-  //   } else {
-  //     this.messageService.add({
-  //       key: 'custom', severity: 'success', summary: 'Success Message',
-  //       detail: task.Title + ' - Task Updated Successfully.'
-  //     });
-  //     this.GetDatabyDateSelection(this.selectedTab, this.days);
-  //     if (task.PrevTasks && task.PrevTasks.indexOf(';#') === -1 && task.Task.indexOf('Review-') > -1) {
-  //       this.myDashboardConstantsService.callQMSPopup(task, this.feedbackPopupComponent);
-  //     }
-  //   }
-
-  // }
 
   optionFilter(event: any) {
     if (event.target.value) {

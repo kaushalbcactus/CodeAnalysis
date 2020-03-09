@@ -50,11 +50,11 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight{
     background-color: #c53e3e !important;
 }
 
-body .ui-datepicker table td.ui-datepicker-today > a.ui-state-active, body .ui-datepicker table td.ui-datepicker-today > span.ui-state-active, 
+body .ui-datepicker table td.ui-datepicker-today > a.ui-state-active, body .ui-datepicker table td.ui-datepicker-today > span.ui-state-active,
 body .ui-datepicker table td > a.ui-state-active, body .ui-datepicker table td > span.ui-state-active {
     background-color: #c53e3e !important;
 }
- 
+
 
 /* Loadder ICON  */
 
@@ -62,7 +62,7 @@ body .ui-datepicker table td > a.ui-state-active, body .ui-datepicker table td >
     0% { -webkit-transform: rotate(0deg); }
     100% { -webkit-transform: rotate(360deg); }
   }
-  
+
   @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
@@ -115,7 +115,7 @@ body .ui-datepicker table td > a.ui-state-active, body .ui-datepicker table td >
     overflow: visible!important;
 }
 
-.ui-table.ui-widget {
+::ng-deep .ui-table.ui-widget {
     margin-top: 20px;
 }
 
@@ -162,8 +162,8 @@ body .ui-datepicker table td > a.ui-state-active, body .ui-datepicker table td >
     /* top: 0;
     margin-bottom: 1%; */
 }
-body .ui-table .ui-sortable-column.ui-state-highlight, 
-body .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active, 
+body .ui-table .ui-sortable-column.ui-state-highlight,
+body .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active,
 body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight {
     background-color: #C53E3E !important;
 }

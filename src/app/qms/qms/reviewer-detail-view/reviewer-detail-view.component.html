@@ -40,7 +40,7 @@
                 </ng-container>
            </td>
            <td>
-             <a mat-button class="download-worksheet" [hidden]="rowData['docUrlHtmlTag'] ? false : true" (click)="feedbackPopup.openPopup(rowData)"><i class="fa fa-edit" aria-hidden="true"></i>Provide Rating</a>
+             <a mat-button class="download-worksheet" [hidden]="rowData['docUrlHtmlTag'] ? false : true" (click)="feedbackPopup.openPopup([rowData], {})"><i class="fa fa-edit" aria-hidden="true"></i>Provide Rating</a>
           </td>
         </tr>
     </ng-template>
@@ -52,7 +52,6 @@
       </tr>
   </ng-template>
 </p-table>
-
   <app-feedback-popup #feedbackPopup (setSuccessMessage)="callParentSuccessMsg($event)"  (bindTableEvent)="bindReviewerTable($event)"></app-feedback-popup>
 </div>
 

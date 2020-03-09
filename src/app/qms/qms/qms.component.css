@@ -131,3 +131,14 @@ body .ui-button:enabled:hover {
 ::ng-deep .ui-datepicker:not(.ui-datepicker-inline) {
     top: 35px !important;
 }
+::ng-deep .download {
+  margin-right: 6px;
+  margin-top: 10px;
+}
+::ng-deep .downloadbutton {
+  float: right!important;
+  display: inline-block!important;
+}
+::ng-deep a.refreshButton{
+  margin-right: 14px!important;
+}
