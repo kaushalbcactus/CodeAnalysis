@@ -589,7 +589,8 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         todaysDateTimeZero.setHours(0, 0, 0, 0);
         if (date >= last3Days && date < lastDay && retPO && new Date(retPO.POExpiryDate) >= todaysDateTimeZero &&
             (projectData && projectData.Status !== this.constantService.projectList.status.InDiscussion &&
-                projectData.Status !== this.constantService.projectList.status.AwaitingCancelApproval)) {
+                projectData.Status !== this.constantService.projectList.status.AwaitingCancelApproval && 
+                projectData.Status !== this.constantService.projectList.status.OnHold)) {
             this.items.push({ label: 'Confirm Invoice', command: (e) => this.openMenuContent(e, data) });
         } else {
             if (!(date >= last3Days && date <= lastDay)) {

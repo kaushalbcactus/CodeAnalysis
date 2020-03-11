@@ -1401,7 +1401,6 @@ export class ManageFinanceComponent implements OnInit {
               || this.projectStatus === this.constant.projectStatus.InProgress
               || this.projectStatus === this.constant.projectStatus.ReadyForClient
               || this.projectStatus === this.constant.projectStatus.AuditInProgress
-              || this.projectStatus === this.constant.projectStatus.OnHold
               || this.projectStatus === this.constant.projectStatus.AuthorReview
               || this.projectStatus === this.constant.projectStatus.PendingClosure) {
               invoiceObj.isInvoiceItemConfirm = this.lineItemConfirmAllowed(invoiceObj);
