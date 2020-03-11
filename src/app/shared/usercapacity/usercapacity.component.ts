@@ -1033,7 +1033,7 @@ export class UsercapacityComponent implements OnInit {
   collpaseTable(objt, user, type) {
     if (type === 'available') {
       const oCollpase = $(objt).closest('.TaskPerDayRow');
-      oCollpase.prev().find('.highlightCell').removeClass('highlightCell');
+      oCollpase.prev().prev().find('.highlightCell').removeClass('highlightCell');
       oCollpase.slideUp();
       user.dayTasks = [];
       user.dates.map(c => delete c.backgroundColor);

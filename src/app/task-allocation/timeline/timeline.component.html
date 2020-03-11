@@ -19,7 +19,7 @@
         <div fxLayout="row" fxLayoutGap="20px" style="padding: 10px 0px 30px 0px;" fxLayoutAlign="space-around center">
 
             <div
-                *ngIf="(visualgraph === false && oProjectDetails.status !== 'In Discussion' && oProjectDetails.status !== 'Closed' &&oProjectDetails.status !== 'Cancelled' && oProjectDetails.status !== 'Awaiting Cancel Approval' && oProjectDetails.status !== 'Pending Closure' && oProjectDetails.status !== 'Audit In Progress' && oProjectDetails.projectType !== 'FTE-Writing') && !projectDetails">
+                *ngIf="(visualgraph === false && oProjectDetails.status !== 'On Hold' && oProjectDetails.status !== 'In Discussion' && oProjectDetails.status !== 'Closed' &&oProjectDetails.status !== 'Cancelled' && oProjectDetails.status !== 'Awaiting Cancel Approval' && oProjectDetails.status !== 'Pending Closure' && oProjectDetails.status !== 'Audit In Progress' && oProjectDetails.projectType !== 'FTE-Writing') && !projectDetails">
                 <button mat-raised-button type="button" (click)="showRestructure()">
                     <mat-icon>create</mat-icon> Restructure Project
                 </button>
@@ -105,7 +105,7 @@
                         <mat-icon>delete_forever</mat-icon> Discard All
                     </button>
                 </div>
-                <div *ngIf=" !visualgraph && oProjectDetails.status !== 'In Discussion' && oProjectDetails.status !== 'Closed' &&oProjectDetails.status !== 'Cancelled' && oProjectDetails.status !== 'Awaiting Cancel Approval' && oProjectDetails.status !== 'Pending Closure' && oProjectDetails.status !== 'Audit In Progress' && oProjectDetails.projectType !== 'FTE-Writing'"
+                <div *ngIf=" !visualgraph && oProjectDetails.status !== 'On Hold' && oProjectDetails.status !== 'In Discussion' && oProjectDetails.status !== 'Closed' &&oProjectDetails.status !== 'Cancelled' && oProjectDetails.status !== 'Awaiting Cancel Approval' && oProjectDetails.status !== 'Pending Closure' && oProjectDetails.status !== 'Audit In Progress' && oProjectDetails.projectType !== 'FTE-Writing'"
                     class="input-color" fxLayoutAlign="end center">
                     <button *ngIf="!projectDetails" mat-raised-button type="button" [disabled]="disableSave"
                         (click)="saveTasks()">
@@ -179,7 +179,7 @@
                                 (click)=" setAsNextMilestoneCall(rowData,rowNode)"
                                 *ngIf="(rowData.isNext === true && !rowData.subMilestonePresent && !changeInRestructure) || (rowData.type==='submilestone' && rowData.isCurrent && !changeInRestructure) || (rowData.type==='submilestone' && rowData.isNext &&   !changeInRestructure)  "
                                 style="display: inline;"
-                                [hidden]=" (rowData.type==='milestone' && (oProjectDetails.status ==='In Discussion' || oProjectDetails.projectType === 'FTE-Writing' || rowData.status === 'Completed' || rowData.pID === -1)) || (rowData.type==='submilestone' &&  rowData.status !== 'Not Confirmed') || projectDetails ">
+                                [hidden]=" (rowData.type==='milestone' && (oProjectDetails.status === 'On Hold' || oProjectDetails.status ==='In Discussion' || oProjectDetails.projectType === 'FTE-Writing' || rowData.status === 'Completed' || rowData.pID === -1)) || (rowData.type==='submilestone' &&  rowData.status !== 'Not Confirmed' || oProjectDetails.status === 'On Hold') || projectDetails ">
                                 <i class="pi pi-check" style="font-size: 2em;vertical-align: middle;"></i>
                             </div>
                         </td>

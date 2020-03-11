@@ -156,7 +156,7 @@ export class StandardprojectComponent implements OnInit {
     };
     const oCurrentDate = new Date();
     let sYear = oCurrentDate.getFullYear();
-    sYear = oCurrentDate.getMonth() > 2 ? sYear + 1 : sYear;
+    //sYear = oCurrentDate.getMonth() > 2 ? sYear + 1 : sYear;
     // Get ProjectPerYear
     const projectYearGet = Object.assign({}, options);
     const projectYearFilter = Object.assign({}, this.pmConstant.TIMELINE_QUERY.PROJECT_PER_YEAR);

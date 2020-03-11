@@ -561,7 +561,7 @@ export class PmconstantService {
       filter: 'ProjectNumber eq \'{{projectCode}}\' and Status eq \'Active\''
     },
     GET_SCHEDULE_LIST_ITEM_BY_PROJECT_CODE: {
-      select: 'ID,Title,Milestone,Status,Task,ProjectCode',
+      select: 'ID,Title,Milestone,Status,Task,ProjectCode,TimeSpent',
       filter: 'ProjectCode eq \'{{projectCode}}\''
     },
     GET_EARLY_TASK_COMPLETED: {
@@ -599,7 +599,9 @@ export class PmconstantService {
     CLOSE_PROJECT: 'Close Project',
     CANCEL_PROJECT: 'Cancel Project',
     APPROVED: 'Approved',
-    REJECTED: 'Rejected'
+    REJECTED: 'Rejected',
+    ON_HOLD: 'On Hold',
+    OFF_HOLD: 'Off Hold'
   };
   public PROJECT_BUDGET_DECREASE_REASON = {
     SCOPE_REDUCE: 'Scope reduction',
