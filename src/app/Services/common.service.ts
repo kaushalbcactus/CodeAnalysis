@@ -435,6 +435,21 @@ export class CommonService {
         }
         return sReturn;
     }
+
+    getResourceId(arr) {
+        let sReturn = {};
+        let arrItem = [];
+        if (arr) {
+            $.each(arr, function (index, value1) {
+                sReturn = {
+                    Id: value1.Id,
+                    Title: value1.Title
+                }
+                arrItem.push(sReturn);
+            });
+        }
+        return arrItem;
+    }
     
     async checkTaskStatus(task) {
         this.SetNewrelic('Service', 'Common-Service', 'readItem');
