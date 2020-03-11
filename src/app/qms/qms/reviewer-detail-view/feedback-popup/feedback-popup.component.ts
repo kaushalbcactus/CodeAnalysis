@@ -5,6 +5,7 @@ import { SPOperationService } from '../../../../Services/spoperation.service';
 import { QMSConstantsService } from '../../services/qmsconstants.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { IScorecard, IScorecardTemplate } from '../../../interfaces/qms';
+import { MessageService } from 'primeng';
 
 @Component({
   selector: 'app-feedback-popup',
@@ -44,7 +45,8 @@ export class FeedbackPopupComponent implements OnInit {
     private constantsService: ConstantsService,
     private qmsConstant: QMSConstantsService,
     public global: GlobalService,
-    private common: CommonService
+    private common: CommonService,
+    private messageService: MessageService
   ) {
   }
 
@@ -107,19 +109,6 @@ export class FeedbackPopupComponent implements OnInit {
     const ratingCount = taskTemplate.templateMatrix.filter(r => r.rating !== 0).length;
     const averageRating = ratingTotal / ratingCount;
     taskTemplate.averageRating = +averageRating.toFixed(2);
-    // let ratingTotal = 0;
-    // let averageRating = 0;
-    // const ratingCount = this.scorecardTemplates.templateMatrix.filter(r => r.rating !== 0).length;
-    // if (ratingCount > 0) {
-    //   this.scorecardTemplates.templateMatrix.forEach(element => {
-    //     if (element.question === ratingElement.question) {
-    //       element.rating = ratingElement.rating;
-    //     }
-    //     ratingTotal = ratingTotal + element.rating;
-    //   });
-    // }
-    // averageRating = ratingTotal / ratingCount;
-    // this.scorecardTemplates.averageRating = +averageRating.toFixed(2);
   }
 
   /**
@@ -127,42 +116,47 @@ export class FeedbackPopupComponent implements OnInit {
    *
    */
   saveRatingFeedback() {
-    this.showLoader();
-    setTimeout(async () => {
-      await this.save();
-      this.showTable();
-    }, 300);
+    const result = this.validateScorecard();
+    if (result) {
+      this.showLoader();
+      const scorecard = this.scorecardTasks.tasks.filter(t => !t.ignoreFeedback);
+      setTimeout(async () => {
+        await this.save(scorecard);
+        this.showTable();
+      }, 300);
+    }
+  }
+
+  validateScorecard() {
+    const emptyScorecard = this.scorecardTasks.tasks.filter(t => !t.ignoreFeedback && t.selectedTemplate.averageRating <= 0);
+    if (emptyScorecard.length) {
+      const tasksNames = emptyScorecard.map(s => s.task);
+      const taskString = tasksNames.join(',');
+      this.messageService.add({
+        key: 'custom', severity: 'warn', summary: 'Warning Message', life: 10000,
+        detail: 'Please mark ignore to scorecard of task ' + taskString
+      });
+      return false;
+    }
+    return true;
   }
 
   /**
    * Save feedback rating details to sharepoint list // Scorecard, ScorecardRatings, Schedules
    *
    */
-  async save() {
+  async save(taskDetails) {
     let firstBatchURL = [];
-    // const taskDetails = this.global.templateMatrix;
-    const taskDetails = this.scorecardTasks.tasks.filter(t => !t.ignoreFeedback);
     // Insert new scorecard item to scorecard list
     const firstPostRequestContent = this.addScorecardItem(taskDetails);
     // Insert Scorecard questions rating in scorecard rating list
-    // const scorecardMatrixContent = this.addScorecardMatrixItem(taskDetails);
-    // form single array of object eg:- {'endPoint': endpoint, 'data': scorecardDetails, 'isPostMethod': true}
-    // firstBatchURL = [...firstPostRequestContent, ...scorecardMatrixContent];
     firstBatchURL = [...firstPostRequestContent];
     this.common.SetNewrelic('QMS', 'ReviewDetails-View-Feedbackpopup', 'SaveFeedbackRating');
     const items = await this.spService.executeBatch(firstBatchURL);
     if (items && items.length > 0) {
       const scorecardMatrixContent = this.addScorecardMatrixItem(taskDetails, items);
-      // splitting scorecard item and scorecard rating items as 1 scorecoard item is created
-      // let scorecardItem = items.slice(0, 1);
-      // scorecardItem = scorecardItem.length > 0 ? scorecardItem[0].retItems : {};
-      // const scorecardRatingItems = items.slice(1);
-      // if (scorecardItem && scorecardRatingItems.length > 0) {
       let secondPostRequestContent = [];
-      // Update schedules list item
       const schedulesPostRequest = await this.updateSchedulesList(taskDetails);
-      // Update scorecardMatrix list item with scorecard lookup id
-      // const scorecardMatrixItem = this.updateScorecardMatrixItem(scorecardItem, scorecardRatingItems);
       secondPostRequestContent = [...schedulesPostRequest, ...scorecardMatrixContent];
       this.common.SetNewrelic('QMS', 'ReviewDetails-View-Feedbackpopup', 'SaveFeedbackRating');
       const result = await this.spService.executeBatch(secondPostRequestContent);
@@ -180,7 +174,6 @@ export class FeedbackPopupComponent implements OnInit {
         // }
         this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'Rating updated!' });
       }
-      // }
     }
   }
 
@@ -197,8 +190,8 @@ export class FeedbackPopupComponent implements OnInit {
         Title: taskDetail.task,
         SubMilestones: taskDetail.submilestones,
         FeedbackType: 'Task Feedback',
-        Comments: taskDetail.feedback,
-        AverageRating: taskDetail.averageRating,
+        Comments: taskDetail.feedbackComment,
+        AverageRating: taskDetail.selectedTemplate.averageRating,
         AssignedToId: taskDetail.assignedToID,
         DocumentsUrl: taskDetail.documentUrl,
         ReviewerDocsUrl: taskDetail.reviewTaskDocUrl,
@@ -211,20 +204,6 @@ export class FeedbackPopupComponent implements OnInit {
           SubmissionDate: taskDetail.taskCompletionDate
         };
       }
-      // else {
-      //   scorecardDetails = {
-      //     __metadata: { type: this.constantsService.listNames.Scorecard.type },
-      //     Title: taskDetail.task,
-      //     SubMilestones: taskDetail.submilestones,
-      //     FeedbackType: 'Task Feedback',
-      //     Comments: taskDetail.feedback,
-      //     AverageRating: taskDetail.averageRating,
-      //     AssignedToId: taskDetail.assignedToID,
-      //     DocumentsUrl: taskDetail.documentUrl,
-      //     ReviewerDocsUrl: taskDetail.reviewTaskDocUrl,
-      //     TemplateName: taskDetail.selectedTemplate.Title
-      //   };
-      // }
       const scorecardItemData = Object.assign({}, this.options);
       scorecardItemData.url = this.spService.getReadURL(this.constantsService.listNames.Scorecard.name);
       scorecardItemData.listName = this.constantsService.listNames.Scorecard.name;
@@ -407,7 +386,7 @@ export class FeedbackPopupComponent implements OnInit {
       tasks.forEach(element => {
         const scorecard: IScorecard = {
           task: element.title ? element.title : element.taskTitle,
-          submilestones: element.subMilestone,
+          submilestones: element.subMilestones,
           taskID: element.taskID,
           assignedToID: element.resourceID,
           assignedTo: element.resource,

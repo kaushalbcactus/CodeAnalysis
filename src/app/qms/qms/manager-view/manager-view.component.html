@@ -92,9 +92,9 @@
               <span id="ratenow1">{{rowData[col.field]}}</span>
               <small> based on {{rowData['ratingCount']}} ratings</small>
             </ng-container> -->
-            <ng-container *ngIf="col.field == 'averageRating'">
+            <!-- <ng-container *ngIf="col.field == 'averageRating'">
               <app-average-rating [tasks]="rowData.feedbackForMe" [headerLength]="ratingHeaderLength" (filter)="getResourceScorecard($event,userFeedbackRef, rowData)"></app-average-rating>
-            </ng-container>
+            </ng-container> -->
           </td>
           <td *ngIf="rowData['userFeedback'].length > 0">
             <p-table [columns]="innerTable" [value]="rowData['userFeedback']">
@@ -119,6 +119,9 @@
             </td>
             <td>
               {{  rowData1.Feedbackby }}
+            </td>
+            <td>
+              {{  rowData1.EvaluatorSkill }}
             </td>
             <td>
               {{  rowData1.Rating }}

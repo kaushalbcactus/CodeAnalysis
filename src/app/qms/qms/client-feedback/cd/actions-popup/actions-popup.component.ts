@@ -55,13 +55,13 @@ export class ActionsPopupComponent implements OnInit {
     rejectionComments: '',
     newRejectionComments: '',
     isActive: true,
-    asd: {
+    ASD: {
       results: []
     },
-    cs: {
+    CS: {
       results: []
     },
-    tl: {
+    TL: {
       results: []
     },
     deliveryLevel1: {
@@ -103,8 +103,8 @@ export class ActionsPopupComponent implements OnInit {
   };
   public hideResourceLoader = true;
   constructor(private globalConstant: ConstantsService, private spService: SPOperationService,
-    private global: GlobalService, 
-    private qmsConstant: QMSConstantsService, 
+    private global: GlobalService,
+    private qmsConstant: QMSConstantsService,
     private messageService: MessageService,
     private commonService: CommonService,
     _applicationRef: ApplicationRef,
@@ -419,7 +419,7 @@ export class ActionsPopupComponent implements OnInit {
 
   /**
    * one way binding of rejection comments
-   * @param event 
+   * @param event
    */
   updateRejectionComments(event) {
     this.qc.newRejectionComments = event.currentTarget.value;
@@ -457,7 +457,7 @@ export class ActionsPopupComponent implements OnInit {
       const delivery2EMail = [this.qc.selectedTaggedItem.DeliveryLevel2.EMail ? this.qc.selectedTaggedItem.DeliveryLevel2.EMail : ''];
       const primaryResources = this.qc.selectedTaggedItem.PrimaryResMembers && this.qc.selectedTaggedItem.PrimaryResMembers.results ?
         this.qc.selectedTaggedItem.PrimaryResMembers.results.map(u => u.ID) : [];
-      // update quality complaint line item    
+      // update quality complaint line item
       const cdDetails = {
         __metadata: { type: this.globalConstant.listNames.QualityComplaints.type },
         Title: this.qc.selectedTaggedItem.Title,
@@ -470,10 +470,10 @@ export class ActionsPopupComponent implements OnInit {
       };
       // update projectcode property to bind cd component
       this.qc.projectCode = this.qc.selectedTaggedItem.Title;
-      this.qc.asd = this.qc.selectedTaggedItem.DeliveryLevel1;
-      this.qc.tl.results.push(this.qc.selectedTaggedItem.DeliveryLevel2);
+      this.qc.ASD = this.qc.selectedTaggedItem.DeliveryLevel1;
+      this.qc.TL.results.push(this.qc.selectedTaggedItem.DeliveryLevel2);
       const cm1 = this.qc.selectedTaggedItem.CMLevel1.results ? this.qc.selectedTaggedItem.CMLevel1.results : [];
-      this.qc.cs.results = [...cm1, this.qc.selectedTaggedItem.CMLevel2];
+      this.qc.CS.results = [...cm1, this.qc.selectedTaggedItem.CMLevel2];
       this.updateCD(cdDetails);
       // Send updated qc to CD component and update CD
       this.bindTableEvent.emit(this.qc);
@@ -557,7 +557,7 @@ export class ActionsPopupComponent implements OnInit {
   }
 
   /**
-   * 
+   *
    * @param obj - QC item
    * @param array - array of resources
    * @param includeInEMail - should resources email to be added in email

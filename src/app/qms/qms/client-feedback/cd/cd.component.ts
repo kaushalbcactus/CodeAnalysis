@@ -358,6 +358,9 @@ export class CDComponent implements OnInit, OnDestroy {
       qcItem[0].RejectionComments = cd.rejectionComments ? cd.rejectionComments : null;
       qcItem[0].Segregation = cd.selectedSegregation ? cd.selectedSegregation : null;
       qcItem[0].Title = cd.projectCode ? cd.projectCode : qcItem[0].Title;
+      qcItem[0].TL = cd.TL ? cd.TL : qcItem[0].TL;
+      qcItem[0].ASD = cd.ASD ? cd.ASD : qcItem[0].ASD;
+      qcItem[0].CS = cd.CS ? cd.CS : qcItem[0].CS;
     }
     this.bindTable(this.qcs);
   }

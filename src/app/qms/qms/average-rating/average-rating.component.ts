@@ -71,7 +71,7 @@ export class AverageRatingComponent implements OnInit, OnChanges {
   getAverageRating(itemsArray, type) {
     //   Object.keys(this.ratingTypes).forEach((type) => {
     const arrTaskFeedback = itemsArray.filter((t) => {
-      const evaluatorSkill = t.EvaluatorSkill ? t.EvaluatorSkill : '';
+      const evaluatorSkill = t.EvaluatorSkill ? t.EvaluatorSkill !== 'Review' ? t.EvaluatorSkill : '' : '';
       if (t.FeedbackType && t.FeedbackType === this.constant.FeedbackType.taskRating && evaluatorSkill === type) {
         return t;
       }

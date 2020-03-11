@@ -317,7 +317,8 @@ export class ReviewerDetailViewComponent implements OnInit {
         if (tasks.prevTasksDetail[index].length > 0) {
           tasks.prevTasksDetail[index][0].reviewTask = tasks.reviewTasks[index];
           const milestoneTask = milestoneTasks.find(t => t.Title === tasks.reviewTasks[index].Task);
-          tasks.prevTasksDetail[index][0].reviewTask.defaultSkill = milestoneTask.DefaulSkill ? milestoneTask.DefaulSkill : '';
+          tasks.prevTasksDetail[index][0].reviewTask.defaultSkill = tasks.reviewTasks[index].Task.indexOf('Review-') > -1 ?
+                                                                    'Review' : milestoneTask.DefaulSkill ? milestoneTask.DefaulSkill : '';
         }
       }
     });

@@ -81,7 +81,7 @@ export class MyDashboardConstantsService {
     },
     ResourceCategorization: {
       select: 'ID,UserName/ID,UserName/Title,Account/ID,Account/Title,Manager/ID,Manager/Title,Designation,PrimarySkill,SkillLevel/ID,SkillLevel/Title,TimeZone/ID,TimeZone/Title,IsActive,IsFTE',
-      expand: 'UserName/ID,UserName/Title,Account/ID,Account/Title,Manager/ID,Manager/Title,SkillLevel/ID,SkillLevel/Title,SkillLevel/Name,TimeZone/ID,TimeZone/Title',
+      expand: 'UserName/ID,UserName/Title,Account/ID,Account/Title,Manager/ID,Manager/Title,SkillLevel,TimeZone/ID,TimeZone/Title',
       filter: 'IsActive eq \'Yes\'',
       orderby: 'UserName/Title',
       top: 4500
@@ -113,7 +113,7 @@ export class MyDashboardConstantsService {
       top: '4500'
     },
     previousNextTask: {
-      select: 'ID,Title,StartDate,DueDate,Status,Task,NextTasks,PrevTasks,Milestone,SubMilestones,IsCentrallyAllocated,ParentSlot,Start_x0020_Date_x0020_Text,End_x0020_Date_x0020_Text,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail',
+      select: 'ID,Title,StartDate,DueDate,Status,Task,NextTasks,PrevTasks,Milestone,SubMilestones,IsCentrallyAllocated,ParentSlot,Start_x0020_Date_x0020_Text,End_x0020_Date_x0020_Text,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail,  Actual_x0020_End_x0020_Date',
       filter: '',
       expand: 'AssignedTo/Title'
     },
@@ -1048,36 +1048,14 @@ export class MyDashboardConstantsService {
   }
 
   async callQMSPopup(currentTask, qmsObj) {
-    let previousTaskFilter = '';
-    let newValue = [];
     const qmsTasks = [];
     const batchUrl = [];
-    if (currentTask.PrevTasks) {
-      newValue = currentTask.PrevTasks.split(';#');
-      for (let i = 0; i < newValue.length; i++) {
-        previousTaskFilter += '(Title eq \'' + newValue[i] + '\')';
-        if (i !== newValue.length - 1) {
-          previousTaskFilter += ' or ';
-        }
-      }
-    }
+    const previousTasks = await this.getPreviousTask(currentTask);
     const project = this.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === currentTask.ProjectCode);
     const folderUrl = project.ProjectFolder;
     const documentsUrl = '/Drafts/Internal/' + currentTask.Milestone;
     const tempArray = [];
     const reviewDocArray = [];
-    const documents = await this.common.getTaskDocument(folderUrl, documentsUrl);
-    for (const doc in documents) {
-      if (currentTask.PrevTasks.indexOf(documents[doc].ListItemAllFields.TaskName) > -1 && documents[doc].ListItemAllFields.Status.indexOf('Complete') > -1) {
-        tempArray.push(documents[doc].ServerRelativeUrl);
-      }
-    }
-    const reviewDocuments = await this.common.getTaskDocument(folderUrl, documentsUrl);
-    for (const document in reviewDocuments) {
-      if (reviewDocuments[document].ListItemAllFields.TaskName === currentTask.Title && reviewDocuments[document].ListItemAllFields.Status.indexOf('Complete') > -1) {
-        reviewDocArray.push(reviewDocuments[document].ServerRelativeUrl);
-      }
-    }
     const options: ISPRequest = {
       data: null,
       url: '',
@@ -1091,42 +1069,50 @@ export class MyDashboardConstantsService {
     getMilestoneTasks.type = 'GET';
     batchUrl.push(getMilestoneTasks);
 
-    const getTaskDetail = Object.assign({}, options);
-    const taskObj = Object.assign({}, this.mydashboardComponent.TaskDetails);
-    taskObj.filter = previousTaskFilter;
-    getTaskDetail.url = this.spServices.getReadURL(this.constants.listNames.Schedules.name, taskObj);
-    getTaskDetail.listName = this.constants.listNames.Schedules.name;
-    getTaskDetail.type = 'GET';
-    batchUrl.push(getTaskDetail);
+    const getDocuments = Object.assign({}, options);
+    const url = folderUrl + documentsUrl;
+    getDocuments.url = this.spServices.getFilesFromFoldersURL(url);
+    getDocuments.listName = 'Milestone files';
+    getDocuments.type = 'GET';
+    batchUrl.push(getDocuments);
 
     this.common.SetNewrelic('MyDashboard', 'MyDashboardConstants-callQMSPopup', 'readItems');
     const arrResults = await this.spServices.executeBatch(batchUrl);
     const milestoneTasks = arrResults.length > 0 ? arrResults[0].retItems : [];
-    const previousItems = arrResults.length > 1 ? arrResults[1].retItems : [];
-    const milestoneTask = milestoneTasks.find(t => t.Title === currentTask.Task);
-    currentTask.defaultSkill = milestoneTask.DefaultSkill ? milestoneTask.DefaultSkill : '';
-    currentTask.scorecardRatingAllowed = milestoneTask.ScorecardRatingAllowed ? milestoneTask.ScorecardRatingAllowed : '';
+    const documents = arrResults.length > 1 ? arrResults[1].retItems : [];
+    documents.forEach(document => {
+      if (previousTasks.findIndex(pt => pt.Title === document.ListItemAllFields.TaskName) > -1 && document.ListItemAllFields.Status.indexOf('Complete') > -1) {
+        tempArray.push(document.ServerRelativeUrl);
+      }
+      if (document.ListItemAllFields.TaskName === currentTask.Title && document.ListItemAllFields.Status.indexOf('Complete') > -1) {
+        reviewDocArray.push(document.ServerRelativeUrl);
+      }
+    });
+
     const arrEQGTasks = ['Edit', 'QC', 'Graphics'];
     const arrFinalizeTasks = ['Finalize', 'Inco'];
     currentTask.isEQGTask = arrEQGTasks.indexOf(currentTask.Task) > -1 ? true : false;
     currentTask.isFinalizeTask = !currentTask.isEQGTask ? arrFinalizeTasks.indexOf(currentTask.Task) > -1 ? true : false : false;
     currentTask.isReviewTask = !currentTask.isEQGTask && !currentTask.isFinalizeTask ? currentTask.Task.indexOf('Review-') > -1 ? true : false : false;
-    previousItems.forEach(previousTask => {
+    const milestoneTask = milestoneTasks.find(t => t.Title === currentTask.Task);
+    currentTask.defaultSkill = currentTask.isReviewTask ? 'Review' : milestoneTask.DefaultSkill ? milestoneTask.DefaultSkill : '';
+    currentTask.scorecardRatingAllowed = milestoneTask.ScorecardRatingAllowed ? milestoneTask.ScorecardRatingAllowed : '';
+    previousTasks.forEach(previousTask => {
       if (currentTask.scorecardRatingAllowed) {
         const arrEQGSkills = ['Editor', 'QC', 'Graphics'];
         const writer = 'Writer';
         const reviewer = 'Reviewer';
         previousTask.skill = this.getResourceSkill(previousTask);
-        previousTask.isResourceEQG = arrEQGSkills.indexOf(previousTask.skill) > -1 ? true : false;
-        previousTask.isWriter = !previousTask.isResourceEQG ? previousTask.skill === writer ? true : false : false;
-        previousTask.isReviewer = !previousTask.isResourceEQG && !previousTask.isWriter ? previousTask.skill === reviewer ? true : false : false;
+        previousTask.isResourceEQG = arrEQGSkills.findIndex(t => previousTask.skill.includes(t)) > -1 ? true : false;
+        previousTask.isWriter = !previousTask.isResourceEQG ? previousTask.skill.includes(writer) : false;
+        previousTask.isReviewer = !previousTask.isResourceEQG && !previousTask.isWriter ? previousTask.skill.includes(reviewer) : false;
         previousTask.isReviewTask = previousTask.Task.indexOf('Review-') > -1 ? true : false;
         if (currentTask.isReviewTask || (!previousTask.isReviewTask &&
-                                          ((currentTask.isEQGTask && previousTask.isWriter) ||
-                                           (currentTask.isFinalizeTask && previousTask.isResourceEQG)
-                                          )
-                                        )
-            ) {
+          ((currentTask.isEQGTask && previousTask.isWriter) ||
+            (currentTask.isFinalizeTask && previousTask.isResourceEQG)
+          )
+        )
+        ) {
           const obj = {
             documentURL: tempArray,
             resourceID: previousTask.AssignedTo.Id,
@@ -1136,7 +1122,7 @@ export class MyDashboardConstantsService {
             reviewTask: {
               ID: currentTask.ID,
               Title: currentTask.Title ? currentTask.Title : currentTask.Title,
-              PrevTasks: currentTask.PrevTasks,
+              PrevTasks:  currentTask.PrevTasks,
               Rated: currentTask.Rated,
               defaultSkill: currentTask.defaultSkill
             },
@@ -1151,11 +1137,116 @@ export class MyDashboardConstantsService {
     qmsObj.openPopup(qmsTasks, currentTask);
   }
 
+  async getPreviousTask(task) {
+    this.tasks = [];
+    // let nextTaskFilter = '';
+    let previousTaskFilter = '';
+    // let nextTasks;
+    let previousTasks;
+    // let currentTaskNextTask = task.NextTasks;
+    let currentTaskPrevTask = task.PrevTasks;
+
+    if (task.ParentSlot) {
+      const parentPreviousNextTask = Object.assign({}, this.mydashboardComponent.previousNextTaskParent);
+      parentPreviousNextTask.filter = parentPreviousNextTask.filter.replace('{{ParentSlotId}}', task.ParentSlot);
+      this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'GetNextPreviousTasks');
+      let parentTask = await this.spServices.readItems(this.constants.listNames.Schedules.name, parentPreviousNextTask);
+      parentTask = parentTask.length ? parentTask[0] : [];
+      // if (!currentTaskNextTask) {
+      //   currentTaskNextTask = parentNPTask.NextTasks;
+      // }
+      if (!currentTaskPrevTask) {
+        currentTaskPrevTask = parentTask.PrevTasks;
+      }
+    }
+
+    // if (currentTaskNextTask) {
+    //   nextTasks = currentTaskNextTask.split(';#');
+    //   nextTasks.forEach((value, i) => {
+    //     // tslint:disable-next-line: quotemark
+    //     nextTaskFilter += "(Title eq '" + value + "')";
+    //     nextTaskFilter += i < nextTasks.length - 1 ? ' or ' : '';
+    //   });
+    // }
+    if (currentTaskPrevTask) {
+      previousTasks = currentTaskPrevTask.split(';#');
+      previousTasks.forEach((value, i) => {
+        previousTaskFilter += '(Title eq \'' + value + '\')';
+        previousTaskFilter += i < previousTasks.length - 1 ? ' or ' : '';
+      });
+    }
+
+    const taskFilter = previousTaskFilter !== '' ? previousTaskFilter : '';
+
+    if (!taskFilter) {
+      return [];
+    }
+    const previousNextTask = Object.assign({}, this.mydashboardComponent.previousNextTask);
+    previousNextTask.filter = taskFilter;
+    this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'GetNextPreviousTasksFromSchedules');
+    this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, previousNextTask);
+
+    this.tasks = this.response.length ? this.response : [];
+
+
+    // if (currentTaskNextTask) {
+    //   this.tasks.filter(c => nextTasks.includes(c.Title)).map(c => c.TaskType = 'Next Task');
+    // }
+    if (currentTaskPrevTask) {
+      this.tasks.filter(c => previousTasks.includes(c.Title)).map(c => c.TaskType = 'Previous Task');
+    }
+
+    this.previousNextTaskChildRes = [];
+    for (const ele of this.tasks) {
+      if (ele.IsCentrallyAllocated === 'Yes') {
+        let previousNextTaskChild: any = [];
+        previousNextTaskChild = Object.assign({}, this.mydashboardComponent.nextPreviousTaskChild);
+        previousNextTaskChild.filter = previousNextTaskChild.filter.replace('{{ParentSlotId}}', ele.ID.toString());
+        this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'GetNextPreviousTasksFromParentSlot');
+        let res: any = await this.spServices.readItems(this.constants.listNames.Schedules.name, previousNextTaskChild);
+        if (res.hasError) {
+          this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: res.message.value });
+          return;
+        }
+        res = res.length ? res : [];
+        const taskBreak = [];
+        res.forEach(element => {
+          if (ele.TaskType === 'Previous Task') {
+            //   if (!element.PrevTasks) {
+            //     element.TaskType = ele.TaskType;
+            //     taskBreak.push(element);
+            //   }
+            // } else {
+            if (!element.NextTasks) {
+              element.TaskType = ele.TaskType;
+              taskBreak.push(element);
+            }
+          }
+
+        });
+        if (!taskBreak.length) {
+          this.previousNextTaskChildRes.push(ele);
+        } else {
+          this.previousNextTaskChildRes = this.previousNextTaskChildRes.concat(taskBreak);
+        }
+
+      } else if (ele.IsCentrallyAllocated === 'No') {
+        this.previousNextTaskChildRes.push(ele);
+      }
+    }
+
+    this.tasks = this.previousNextTaskChildRes.length ? this.previousNextTaskChildRes : this.tasks;
+    // console.log('previousNextTaskChildRes ', this.previousNextTaskChildRes);
+    this.tasks.map(c => c.StartDate = c.StartDate !== null ? this.datePipe.transform(c.StartDate, 'MMM d, y h:mm a') : '-');
+    this.tasks.map(c => c.DueDate = c.DueDate !== null ? this.datePipe.transform(c.DueDate, 'MMM d, y h:mm a') : '-');
+
+    return this.tasks;
+  }
 
   getResourceSkill(task) {
     const assignedTo = task.AssignedTo ? task.AssignedTo : -1;
-    const resource = this.sharedObject.DashboardData.ResourceCategorization.find(res => res.UserName.ID === assignedTo);
-    const skill = resource.Skill.Name ? resource.Skill.Name : '';
+    const resource = this.sharedObject.DashboardData.ResourceCategorization.find(res => res.UserName.ID === assignedTo.Id);
+    const skill = resource ? resource.SkillLevel.Title ? resource.SkillLevel.Title : '' : '';
     return skill;
   }
   // *************************************************************************************************************************************

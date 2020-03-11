@@ -112,7 +112,7 @@ export class UserFeedbackComponent implements OnInit, AfterViewChecked {
       .replace('{{endDate}}', endDate);
     // tslint:disable: quotemark
     personalFeedbackComponent.getScorecard.filter = filterObj.ratingType !== undefined ? filterObj.ratingType === '' ?
-    personalFeedbackComponent.getScorecard.filter.replace("{{RatingType}}", "and EvaluatorSkill eq null") :
+    personalFeedbackComponent.getScorecard.filter.replace("{{RatingType}}", "and (EvaluatorSkill eq null or EvaluatorSkill eq 'Review')") :
       personalFeedbackComponent.getScorecard.filter.replace("{{RatingType}}", "and EvaluatorSkill eq '" + filterObj.ratingType + "'") :
       personalFeedbackComponent.getScorecard.filter.replace("{{RatingType}}", "");
     personalFeedbackComponent.getScorecard.filter = topCount < 4500 ?

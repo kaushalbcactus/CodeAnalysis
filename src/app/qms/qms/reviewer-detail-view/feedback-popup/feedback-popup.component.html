@@ -5,7 +5,7 @@
   [modal]="true"
   [responsive]="true"
   [closable]="false"
-  [style]="{ width: '800px', heigth: '1000px' }"
+  [style]="{ width: '800px' }"
   positionTop="10"
 >
   <p-header>
@@ -19,7 +19,7 @@
     >
     <p-header>
       <span>{{task.submilestones ? task.task + '-' + task.submilestones : task.task}}</span>
-      <span class="ignoreIcon"><p-inputSwitch (onChange)="onIgnoreClicked(task, $event)" [(ngModel)]="task.ignoreFeedback"></p-inputSwitch></span>
+      <span title="Ignore Feedback" class="ignoreIcon"><p-inputSwitch (onChange)="onIgnoreClicked(task, $event)" [(ngModel)]="task.ignoreFeedback"></p-inputSwitch></span>
 
     </p-header>
       <div class="ratework-popup" [hidden]="hidePopupTable">
@@ -117,7 +117,7 @@
             ><strong>Please share your feedback</strong>
           </mat-hint>
           <mat-hint align="end"
-            >{{ popupComments.value.length }} / 1000</mat-hint
+            >{{ task.feedbackComment.length }} / 1000</mat-hint
           >
         </mat-form-field>
       </div>

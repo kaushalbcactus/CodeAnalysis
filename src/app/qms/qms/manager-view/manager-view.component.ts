@@ -107,7 +107,7 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
     ];
     this.feedbacksTableColumns = [
       { field: 'userName', header: 'Resource', visibility: true, exportable: true },
-      { field: 'averageRating', header: 'Average Rating', visibility: true, exportable: true },
+      // { field: 'averageRating', header: 'Average Rating', visibility: true, exportable: true },
     ];
 
     this.innerTable = [
@@ -115,6 +115,7 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
       { field: 'userFeedback', header: 'Task', subfield: 'Task', exportable: true },
       { field: 'userFeedback', header: 'Type', subfield: 'Type', exportable: true },
       { field: 'userFeedback', header: 'Feedback By', subfield: 'Feedbackby', exportable: true },
+      { field: 'userFeedback', header: 'Evaluator Skill', subfield: 'Rating', exportable: true },
       { field: 'userFeedback', header: 'Rating', subfield: 'Rating', exportable: true },
       { field: 'userFeedback', header: 'Comments', subfield: 'Comments', exportable: true },
       { field: 'Parameters', header: 'Parameters', visibility: false, exportable: true },
@@ -211,6 +212,7 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
       obj.data.userName = element.UserName.Title;
       obj.data.userId = element.UserName.ID;
       obj.data.feedbackForMe = element.feedbackForMe;
+      obj.data.evaluatorSkill = element.EvaluatorSkill;
       // obj.data.averageRating = element.averageRating;
       // obj.data.ratingCount = element.ratingCount;
       arrFormattedData.push(obj);
