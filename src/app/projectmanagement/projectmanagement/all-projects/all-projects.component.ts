@@ -2419,6 +2419,7 @@ export class AllProjectsComponent implements OnInit {
         arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
       } else {
         const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.USER_SPECIFIC_SOW);
+        sowFilter.filter = sowFilter.filter.replace('{{UserID}}', this.globalObject.currentUser.userId.toString());
         this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetSow');
         arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
       }
@@ -2839,6 +2840,7 @@ export class AllProjectsComponent implements OnInit {
       projectInfoFilter = Object.assign({}, this.pmConstant.PM_QUERY.PROJECT_INFORMATION_BY_PROJECTCODE_ALL);
     } else {
       projectInfoFilter = Object.assign({}, this.pmConstant.PM_QUERY.PROJECT_INFORMATION_BY_PROJECTCODE);
+      projectInfoFilter.filter = projectInfoFilter.filter.replace('{{UserID}}', this.globalObject.currentUser.userId.toString());
     }
 
     projectInfoFilter.filter = projectInfoFilter.filter.replace(/{{projectCode}}/gi,

@@ -894,10 +894,12 @@ export class UsercapacityComponent implements OnInit {
         $(objt.target).closest('td').addClass('highlightCell');
 
         const batchUrl = [];
+        const projectAdded = [];
         for (const taskIndex in SpentTasks) {
           if (SpentTasks.hasOwnProperty(taskIndex)) {
-            if (SpentTasks[taskIndex].projectCode !== 'Adhoc') {
+            if (SpentTasks[taskIndex].projectCode !== 'Adhoc' && projectAdded.indexOf(SpentTasks[taskIndex].projectCode) === -1) {
               // tslint:disable
+              projectAdded.push(SpentTasks[taskIndex].projectCode);
               const piObj = Object.assign({}, this.queryConfig);
               piObj.url = this.spService.getReadURL(this.globalConstantService.listNames.ProjectInformation.name, this.sharedConstant.userCapacity.getProjectInformation);
               piObj.url = piObj.url.replace('{{projectCode}}', SpentTasks[taskIndex].projectCode)
@@ -911,14 +913,14 @@ export class UsercapacityComponent implements OnInit {
         if (batchUrl.length) {
           this.common.SetNewrelic('Shared', 'UserCapacity', 'getProInfoByPC');
           let arrResults = await this.spService.executeBatch(batchUrl);
-          arrResults = arrResults.length ? arrResults.map(a => a.retItems) : [];
+          arrResults = arrResults.length ? arrResults.map(a => a.retItems[0]) : [];
           let nCount = 0;
           for (const i in SpentTasks) {
             if (SpentTasks.hasOwnProperty(i)) {
               if (SpentTasks[i].projectCode !== 'Adhoc') {
-                const arrProject = arrResults[i];
-                if (arrProject.length > 0) {
-                  SpentTasks[i].shortTitle = arrProject[0].WBJID;
+                const arrProject = arrResults.find(e=>e.ProjectCode === SpentTasks[i].projectCode);
+                if (arrProject) {
+                  SpentTasks[i].shortTitle = arrProject.WBJID;
                 }
               }
             }
@@ -1089,24 +1091,41 @@ export class UsercapacityComponent implements OnInit {
 
     let ReturnTasks = [];
     for (let i = 0; i < tasks.length; i++) {
-      const timeSpentForTask = tasks[i].TimeSpentPerDay ? tasks[i].TimeSpentPerDay.split(/\n/) : [];
-      if (timeSpentForTask.indexOf('') > -1) {
-        timeSpentForTask.splice(timeSpentForTask.indexOf(''), 1);
-      }
-      timeSpentForTask.forEach(element => {
+      if(tasks[i].Task === 'Adhoc') {
         ReturnTasks.push(new Object({
           Title: tasks[i].Title,
           projectCode: tasks[i].ProjectCode,
-          StartDate: tasks[i].Actual_x0020_Start_x0020_Date,
-          EndDate: tasks[i].Actual_x0020_End_x0020_Date ? tasks[i].Actual_x0020_End_x0020_Date : tasks[i].DueDate,
-          TimeSpentDate: new Date(element.split(':')[0]),
-          TimeSpentPerDay: element.split(':')[1] + ':' + element.split(':')[2],
+          StartDate: tasks[i].StartDate,
+          EndDate: tasks[i].DueDate ,
+          TimeSpentDate: new Date(this.datepipe.transform(tasks[i].StartDate, 'MM/dd/yyyy')),
+          TimeSpentPerDay: tasks[i].TimeSpent.replace('.', ':'),
           Status: tasks[i].Status,
-          TotalTimeSpent: tasks[i].TimeSpent.replace('.', ':'),
+          TotalTimeSpent: tasks[i].TimeSpent ? tasks[i].TimeSpent.replace('.', ':') : '0:0',
           SubMilestones: tasks[i].SubMilestones,
           shortTitle: '',
         }));
-      });
+      }
+      else {
+        const timeSpentForTask = tasks[i].TimeSpentPerDay ? tasks[i].TimeSpentPerDay.split(/\n/) : [];
+        if (timeSpentForTask.indexOf('') > -1) {
+          timeSpentForTask.splice(timeSpentForTask.indexOf(''), 1);
+        }
+        timeSpentForTask.forEach(element => {
+          ReturnTasks.push(new Object({
+            Title: tasks[i].Title,
+            projectCode: tasks[i].ProjectCode,
+            StartDate: tasks[i].Actual_x0020_Start_x0020_Date,
+            EndDate: tasks[i].Actual_x0020_End_x0020_Date ? tasks[i].Actual_x0020_End_x0020_Date : tasks[i].DueDate,
+            TimeSpentDate: new Date(element.split(':')[0]),
+            TimeSpentPerDay: element.split(':')[1] + ':' + element.split(':')[2],
+            Status: tasks[i].Status,
+            TotalTimeSpent: tasks[i].TimeSpent ? tasks[i].TimeSpent.replace('.', ':') : '0:0',
+            SubMilestones: tasks[i].SubMilestones,
+            shortTitle: '',
+          }));
+        });
+      }
+      
     }
     return ReturnTasks;
   }

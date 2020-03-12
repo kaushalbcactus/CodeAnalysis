@@ -6,6 +6,7 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { DataService } from 'src/app/Services/data.service';
 import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.service';
+import { GlobalService } from 'src/app/Services/global.service';
 
 declare var $;
 @Component({
@@ -42,6 +43,7 @@ export class SelectSOWComponent implements OnInit {
     private spServices: SPOperationService,
     private constants: ConstantsService,
     private dataService: DataService,
+    private globalObject: GlobalService,
     private pmCommonService: PMCommonService) { }
 
   ngOnInit() {
@@ -71,6 +73,7 @@ export class SelectSOWComponent implements OnInit {
         arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
       } else {
         const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.USER_SPECIFIC_SOW);
+        sowFilter.filter = sowFilter.filter.replace('{{UserID}}', this.globalObject.currentUser.userId.toString());
         this.commonService.SetNewrelic('projectManagment', 'addproj-selectSow', 'GetSow');
         arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
       }
