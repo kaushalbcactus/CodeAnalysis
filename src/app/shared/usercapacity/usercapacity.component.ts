@@ -1087,7 +1087,7 @@ export class UsercapacityComponent implements OnInit {
           TimeSpentDate: new Date(this.datepipe.transform(tasks[i].StartDate, 'MM/dd/yyyy')),
           TimeSpentPerDay: tasks[i].TimeSpent.replace('.', ':'),
           Status: tasks[i].Status,
-          TotalTimeSpent: tasks[i].TimeSpent.replace('.', ':'),
+          TotalTimeSpent: tasks[i].TimeSpent ? tasks[i].TimeSpent.replace('.', ':') : '0:0',
           SubMilestones: tasks[i].SubMilestones,
           shortTitle: '',
         }));
@@ -1106,7 +1106,7 @@ export class UsercapacityComponent implements OnInit {
             TimeSpentDate: new Date(element.split(':')[0]),
             TimeSpentPerDay: element.split(':')[1] + ':' + element.split(':')[2],
             Status: tasks[i].Status,
-            TotalTimeSpent: tasks[i].TimeSpent.replace('.', ':'),
+            TotalTimeSpent: tasks[i].TimeSpent ? tasks[i].TimeSpent.replace('.', ':') : '0:0',
             SubMilestones: tasks[i].SubMilestones,
             shortTitle: '',
           }));
