@@ -839,12 +839,21 @@ export class AllProjectsComponent implements OnInit {
           menu.model[0].items[6].visible = false;
           break;
         case this.constants.projectStatus.Unallocated:
+          menu.model[0].items[0].visible = false;
+          menu.model[0].items[2].visible = false;
+          menu.model[0].items[3].visible = false;
           menu.model[0].items[6].visible = false;
           break;
         case this.constants.projectStatus.InProgress:
+          menu.model[0].items[0].visible = false;
+          menu.model[0].items[2].visible = false;
+          menu.model[0].items[3].visible = false;
           menu.model[0].items[6].visible = false;
           break;
         case this.constants.projectStatus.ReadyForClient:
+          menu.model[0].items[0].visible = false;
+          menu.model[0].items[2].visible = false;
+          menu.model[0].items[3].visible = false;
           menu.model[0].items[6].visible = false;
           break;
         case this.constants.projectStatus.OnHold:
@@ -879,9 +888,8 @@ export class AllProjectsComponent implements OnInit {
           menu.model[0].items[6].visible = false;
           break;
         case this.constants.projectStatus.Closed:
-            menu.model[0].items[5].visible = false;
-            menu.model[0].items[6].visible = false;
-            break;
+          menu.model[0].visible = false;
+          break;
         case this.constants.projectStatus.Cancelled:
           menu.model[0].visible = false;
           menu.model[1].items[1].visible = false;
