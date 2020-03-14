@@ -130,7 +130,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
 
         // Get details
         this.getRequiredData();
-        this.setCurrentPage(0); //will set table to given page number
+         //will set table to given page number
     }
 
     //  Purchase Order Number
@@ -343,6 +343,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         // }
         this.isPSInnerLoaderHidden = true;
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
+        this.setCurrentPage(0);
         // });
     }
 
