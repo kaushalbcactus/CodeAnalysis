@@ -113,7 +113,7 @@ export class MyDashboardConstantsService {
       top: '4500'
     },
     previousNextTask: {
-      select: 'ID,Title,StartDate,DueDate,Status,Task,NextTasks,PrevTasks,Milestone,SubMilestones,IsCentrallyAllocated,ParentSlot,Start_x0020_Date_x0020_Text,End_x0020_Date_x0020_Text,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail,  Actual_x0020_End_x0020_Date',
+      select: 'ID,Title,StartDate,DueDate,Status,Task,NextTasks,PrevTasks,Milestone,SubMilestones,IsCentrallyAllocated,ParentSlot,Start_x0020_Date_x0020_Text,End_x0020_Date_x0020_Text,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail,Actual_x0020_End_x0020_Date',
       filter: '',
       expand: 'AssignedTo/Title'
     },
@@ -123,7 +123,7 @@ export class MyDashboardConstantsService {
       expand: 'AssignedTo/Title'
     },
     nextPreviousTaskChild: {
-      select: 'ID,Title,StartDate,DueDate,Status,Task,NextTasks,PrevTasks,Milestone,SubMilestones,IsCentrallyAllocated,ParentSlot,Start_x0020_Date_x0020_Text,End_x0020_Date_x0020_Text,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail',
+      select: 'ID,Title,StartDate,DueDate,Status,Task,NextTasks,PrevTasks,Milestone,SubMilestones,IsCentrallyAllocated,ParentSlot,Start_x0020_Date_x0020_Text,End_x0020_Date_x0020_Text,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail,Actual_x0020_End_x0020_Date',
       filter: 'ParentSlot eq {{ParentSlotId}} and Status ne \'Deleted\'',
       expand: 'AssignedTo/Title'
     },
@@ -1047,94 +1047,90 @@ export class MyDashboardConstantsService {
     });
   }
 
-  async callQMSPopup(currentTask, qmsObj) {
+  async callQMSPopup(currentTask) {
     const qmsTasks = [];
     const batchUrl = [];
-    const previousTasks = await this.getPreviousTask(currentTask);
-    const project = this.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === currentTask.ProjectCode);
-    const folderUrl = project.ProjectFolder;
-    const documentsUrl = '/Drafts/Internal/' + currentTask.Milestone;
-    const tempArray = [];
-    const reviewDocArray = [];
-    const options: ISPRequest = {
-      data: null,
-      url: '',
-      type: '',
-      listName: ''
-    };
-    const getMilestoneTasks = Object.assign({}, options);
-    getMilestoneTasks.url = this.spServices.getReadURL(this.constants.listNames.MilestoneTasks.name,
-      this.qmsConstant.common.getMilestoneTasks);
-    getMilestoneTasks.listName = this.constants.listNames.MilestoneTasks.name;
-    getMilestoneTasks.type = 'GET';
-    batchUrl.push(getMilestoneTasks);
+    const previousTasks = currentTask.prevTaskDetails ? currentTask.prevTaskDetails : [];
+    if (previousTasks.length) {
+      const project = this.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === currentTask.ProjectCode);
+      const folderUrl = project.ProjectFolder;
+      const documentsUrl = '/Drafts/Internal/' + currentTask.Milestone;
+      const options: ISPRequest = {
+        data: null,
+        url: '',
+        type: '',
+        listName: ''
+      };
+      const getMilestoneTasks = Object.assign({}, options);
+      getMilestoneTasks.url = this.spServices.getReadURL(this.constants.listNames.MilestoneTasks.name,
+        this.qmsConstant.common.getMilestoneTasks);
+      getMilestoneTasks.listName = this.constants.listNames.MilestoneTasks.name;
+      getMilestoneTasks.type = 'GET';
+      batchUrl.push(getMilestoneTasks);
 
-    const getDocuments = Object.assign({}, options);
-    const url = folderUrl + documentsUrl;
-    getDocuments.url = this.spServices.getFilesFromFoldersURL(url);
-    getDocuments.listName = 'Milestone files';
-    getDocuments.type = 'GET';
-    batchUrl.push(getDocuments);
+      const getDocuments = Object.assign({}, options);
+      const url = folderUrl + documentsUrl;
+      getDocuments.url = this.spServices.getFilesFromFoldersURL(url);
+      getDocuments.listName = 'Milestone files';
+      getDocuments.type = 'GET';
+      batchUrl.push(getDocuments);
 
-    this.common.SetNewrelic('MyDashboard', 'MyDashboardConstants-callQMSPopup', 'readItems');
-    const arrResults = await this.spServices.executeBatch(batchUrl);
-    const milestoneTasks = arrResults.length > 0 ? arrResults[0].retItems : [];
-    const documents = arrResults.length > 1 ? arrResults[1].retItems : [];
-    documents.forEach(document => {
-      if (previousTasks.findIndex(pt => pt.Title === document.ListItemAllFields.TaskName) > -1 && document.ListItemAllFields.Status.indexOf('Complete') > -1) {
-        tempArray.push(document.ServerRelativeUrl);
-      }
-      if (document.ListItemAllFields.TaskName === currentTask.Title && document.ListItemAllFields.Status.indexOf('Complete') > -1) {
-        reviewDocArray.push(document.ServerRelativeUrl);
-      }
-    });
-
-    const arrEQGTasks = ['Edit', 'QC', 'Graphics'];
-    const arrFinalizeTasks = ['Finalize', 'Inco'];
-    currentTask.isEQGTask = arrEQGTasks.indexOf(currentTask.Task) > -1 ? true : false;
-    currentTask.isFinalizeTask = !currentTask.isEQGTask ? arrFinalizeTasks.indexOf(currentTask.Task) > -1 ? true : false : false;
-    currentTask.isReviewTask = !currentTask.isEQGTask && !currentTask.isFinalizeTask ? currentTask.Task.indexOf('Review-') > -1 ? true : false : false;
-    const milestoneTask = milestoneTasks.find(t => t.Title === currentTask.Task);
-    currentTask.defaultSkill = currentTask.isReviewTask ? 'Review' : milestoneTask.DefaultSkill ? milestoneTask.DefaultSkill : '';
-    currentTask.scorecardRatingAllowed = milestoneTask.ScorecardRatingAllowed ? milestoneTask.ScorecardRatingAllowed : '';
-    previousTasks.forEach(previousTask => {
-      if (currentTask.scorecardRatingAllowed) {
-        const arrEQGSkills = ['Editor', 'QC', 'Graphics'];
-        const writer = 'Writer';
-        const reviewer = 'Reviewer';
-        previousTask.skill = this.getResourceSkill(previousTask);
-        previousTask.isResourceEQG = arrEQGSkills.findIndex(t => previousTask.skill.includes(t)) > -1 ? true : false;
-        previousTask.isWriter = !previousTask.isResourceEQG ? previousTask.skill.includes(writer) : false;
-        previousTask.isReviewer = !previousTask.isResourceEQG && !previousTask.isWriter ? previousTask.skill.includes(reviewer) : false;
-        previousTask.isReviewTask = previousTask.Task.indexOf('Review-') > -1 ? true : false;
-        if (currentTask.isReviewTask || (!previousTask.isReviewTask &&
-          ((currentTask.isEQGTask && previousTask.isWriter) ||
-            (currentTask.isFinalizeTask && previousTask.isResourceEQG)
+      this.common.SetNewrelic('MyDashboard', 'MyDashboardConstants-callQMSPopup', 'readItems');
+      const arrResults = await this.spServices.executeBatch(batchUrl);
+      const milestoneTasks = arrResults.length > 0 ? arrResults[0].retItems : [];
+      const documents = arrResults.length > 1 ? arrResults[1].retItems : [];
+      const arrEQGTasks = ['Edit', 'QC', 'Graphics'];
+      const arrFinalizeTasks = ['Finalize', 'Inco'];
+      currentTask.isEQGTask = arrEQGTasks.indexOf(currentTask.Task) > -1 ? true : false;
+      currentTask.isFinalizeTask = !currentTask.isEQGTask ? arrFinalizeTasks.indexOf(currentTask.Task) > -1 ? true : false : false;
+      currentTask.isReviewTask = !currentTask.isEQGTask && !currentTask.isFinalizeTask ? currentTask.Task.indexOf('Review-') > -1 ? true : false : false;
+      const milestoneTask = milestoneTasks.find(t => t.Title === currentTask.Task);
+      currentTask.defaultSkill = currentTask.isReviewTask ? 'Review' : milestoneTask.DefaultSkill ? milestoneTask.DefaultSkill : '';
+      currentTask.scorecardRatingAllowed = milestoneTask.ScorecardRatingAllowed ? milestoneTask.ScorecardRatingAllowed : '';
+      for (const previousTask of previousTasks) {
+        if (currentTask.scorecardRatingAllowed) {
+          const arrEQGSkills = ['Editor', 'QC', 'Graphics'];
+          const writer = 'Writer';
+          const reviewer = 'Reviewer';
+          let arrPrevTaskDocUrl = documents.filter(d => d.ListItemAllFields.TaskName === previousTask.Title && d.ListItemAllFields.Status.indexOf('Complete') > -1);
+          arrPrevTaskDocUrl = arrPrevTaskDocUrl.length ? arrPrevTaskDocUrl.map(d => d.ServerRelativeUrl) : '';
+          let arrReviewDocUrl =  documents.filter(d => d.ListItemAllFields.TaskName === currentTask.Title && d.ListItemAllFields.Status.indexOf('Complete') > -1);
+          arrReviewDocUrl = arrReviewDocUrl ? arrReviewDocUrl.map(d => d.ServerRelativeUrl) : '';
+          previousTask.skill = this.getResourceSkill(previousTask);
+          previousTask.isResourceEQG = arrEQGSkills.findIndex(t => previousTask.skill.includes(t)) > -1 ? true : false;
+          previousTask.isWriter = !previousTask.isResourceEQG ? previousTask.skill.includes(writer) : false;
+          previousTask.isReviewer = !previousTask.isResourceEQG && !previousTask.isWriter ? previousTask.skill.includes(reviewer) : false;
+          previousTask.isReviewTask = previousTask.Task.indexOf('Review-') > -1 ? true : false;
+          if (currentTask.isReviewTask || (!previousTask.isReviewTask && arrPrevTaskDocUrl.length > 0 &&
+            ((currentTask.isEQGTask && previousTask.isWriter) ||
+              (currentTask.isFinalizeTask && previousTask.isResourceEQG)
+            )
           )
-        )
-        ) {
-          const obj = {
-            documentURL: tempArray,
-            resourceID: previousTask.AssignedTo.Id,
-            subMilestones: previousTask.SubMilestones,
-            resource: previousTask.AssignedTo.Title,
-            taskCompletionDate: previousTask.Actual_x0020_End_x0020_Date,
-            reviewTask: {
-              ID: currentTask.ID,
-              Title: currentTask.Title ? currentTask.Title : currentTask.Title,
-              PrevTasks:  currentTask.PrevTasks,
-              Rated: currentTask.Rated,
-              defaultSkill: currentTask.defaultSkill
-            },
-            taskTitle: previousTask.Title,
-            taskID: previousTask.ID,
-            reviewTaskDocUrl: reviewDocArray
-          };
-          qmsTasks.push(obj);
+          ) {
+            const obj = {
+              documentURL: arrPrevTaskDocUrl,
+              resourceID: previousTask.AssignedTo.Id,
+              milestone: previousTask.Milestone ? previousTask.Milestone : '',
+              subMilestones: previousTask.SubMilestones,
+              resource: previousTask.AssignedTo.Title,
+              taskCompletionDate: previousTask.Actual_x0020_End_x0020_Date,
+              reviewTask: {
+                ID: currentTask.ID,
+                Title: currentTask.Title ? currentTask.Title : currentTask.Title,
+                PrevTasks: currentTask.PrevTasks,
+                Rated: currentTask.Rated,
+                defaultSkill: currentTask.defaultSkill
+              },
+              taskTitle: previousTask.Title,
+              taskID: previousTask.ID,
+              reviewTaskDocUrl: arrReviewDocUrl
+            };
+            qmsTasks.push(obj);
+          }
         }
       }
-    });
-    qmsObj.openPopup(qmsTasks, currentTask);
+    }
+    return qmsTasks;
   }
 
   async getPreviousTask(task) {

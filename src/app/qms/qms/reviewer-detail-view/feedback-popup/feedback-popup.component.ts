@@ -23,7 +23,7 @@ export class FeedbackPopupComponent implements OnInit {
   public popupByJS = false;
   public hidePopupLoader = true;
   public hidePopupTable = false;
-  public activeIndex = 0;
+  public activeIndex = -1;
   display = false;
   public options = {
     data: null,
@@ -38,7 +38,7 @@ export class FeedbackPopupComponent implements OnInit {
   };
   public scorecardTasks = {
     tasks: [] as IScorecard[],
-    currentTask: {}
+    currentTask: {} as any
   };
   constructor(
     private spService: SPOperationService,
@@ -122,7 +122,7 @@ export class FeedbackPopupComponent implements OnInit {
       const scorecard = this.scorecardTasks.tasks.filter(t => !t.ignoreFeedback);
       setTimeout(async () => {
         await this.save(scorecard);
-        this.showTable();
+        this.constantsService.loader.isPSInnerLoaderHidden = true;
       }, 300);
     }
   }
@@ -162,16 +162,24 @@ export class FeedbackPopupComponent implements OnInit {
       const result = await this.spService.executeBatch(secondPostRequestContent);
       if (result) {
         this.closeFeedback();
-        // if (taskDetails.reviewTask) {
-        taskDetails.forEach(task => {
-          const taskIndex = this.global.oReviewerPendingTasks.findIndex(item => item.taskTitle === task.task);
-          this.global.oReviewerPendingTasks.splice(taskIndex, 1);
-        });
-        const reviewerPendingTasks = JSON.parse(JSON.stringify(this.global.oReviewerPendingTasks));
-        this.bindTableEvent.emit(reviewerPendingTasks);
-        // } else {
-        //   this.bindTableEvent.emit(taskDetails);
-        // }
+        if (Object.keys(this.scorecardTasks.currentTask).length > 0) {
+          switch (this.scorecardTasks.currentTask.parent) {
+            case 'Dashboard':
+              this.popupClosed.emit(this.scorecardTasks.currentTask);
+              break;
+            case 'Retrospective':
+              this.bindTableEvent.emit(this.global.oReviewerPendingTasks);
+              break;
+            case 'Reviewer':
+              taskDetails.forEach(task => {
+                const taskIndex = this.global.oReviewerPendingTasks.findIndex(item => item.taskTitle === task.task);
+                this.global.oReviewerPendingTasks.splice(taskIndex, 1);
+              });
+              const reviewerPendingTasks = JSON.parse(JSON.stringify(this.global.oReviewerPendingTasks));
+              this.bindTableEvent.emit(reviewerPendingTasks);
+              break;
+          }
+        }
         this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'Rating updated!' });
       }
     }
@@ -273,7 +281,7 @@ export class FeedbackPopupComponent implements OnInit {
    */
   async updateSchedulesList(taskDetails) {
     const batchURL = [];
-    taskDetails.forEach(async taskDetail => {
+    for (const taskDetail of taskDetails) {
       // update review task - Rated column true if all previous tasks are rated.
       // check if update done by QMS_Admin group user or reviewer
       // This will execute for reviewer
@@ -328,7 +336,7 @@ export class FeedbackPopupComponent implements OnInit {
       curTaskRatedData.type = 'PATCH';
       curTaskRatedData.url = this.spService.getItemURL(this.constantsService.listNames.Schedules.name, taskDetail.taskID);
       batchURL.push(curTaskRatedData);
-    });
+    }
     return batchURL;
   }
 
@@ -359,33 +367,32 @@ export class FeedbackPopupComponent implements OnInit {
    *
    */
   closeFeedback() {
-
-    if (Object.keys(this.scorecardTasks.currentTask).length > 0) {
-      this.popupClosed.emit(this.scorecardTasks.currentTask);
-    }
-    // this.global.templateMatrix = JSON.parse(JSON.stringify(this.global.templateMatrix_copy));
     this.scorecardTemplates.templateMatrix = [];
     this.display = false;
   }
 
+  cancel() {
+    if (Object.keys(this.scorecardTasks.currentTask).length > 0) {
+      this.popupClosed.emit(this.scorecardTasks.currentTask);
+    }
+    this.closeFeedback();
+  }
   /**
    * Open modal dialog with large size
    *
    * @param content - content dispalyed within popup which is defined in HTML
    */
-  async openPopup(tasks: any, reviewTask) {
-    const previousTasks = [];
-    this.display = true;
-    // this.global.templateMatrix.currentTask = tasks.currentTask ? tasks.currentTask : '';
-    // this.displayAccordionPopup = element.title ? false : true;
-    // this.displaySinglePopup = element.title ? true : false;
-    const displayPopup = tasks.find(t => t.documentURL.length > 0);
-    if (displayPopup) {
+  async openPopup(tasks: any, reviewTask: {}) {
+    this.showLoader();
+    setTimeout(async () => {
+      const previousTasks = [];
+      this.display = true;
       this.scorecardTasks.currentTask = reviewTask;
       this.scorecardTemplates.templates = await this.getTemplates();
-      tasks.forEach(element => {
+      for (const element of tasks) {
         const scorecard: IScorecard = {
           task: element.title ? element.title : element.taskTitle,
+          milestone: element.milestone,
           submilestones: element.subMilestones,
           taskID: element.taskID,
           assignedToID: element.resourceID,
@@ -410,21 +417,21 @@ export class FeedbackPopupComponent implements OnInit {
           }
         };
         previousTasks.push(scorecard);
-      });
+      }
       this.scorecardTasks.tasks = [...previousTasks];
-    } else {
-      this.closeFeedback();
-    }
+      this.showTable();
+    }, 300);
+    this.activeIndex = 0;
   }
 
   // #endregion ForRatingPopup
   showTable() {
-    this.hidePopupTable = false;
     this.constantsService.loader.isPSInnerLoaderHidden = true;
+    this.display = true;
   }
 
   showLoader() {
-    this.hidePopupTable = true;
+    this.display = false;
     this.constantsService.loader.isPSInnerLoaderHidden = false;
   }
 

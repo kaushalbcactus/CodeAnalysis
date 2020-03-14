@@ -144,7 +144,7 @@
                 mat-button
                 class="download-worksheet"
                 [hidden]="rowData['docUrlHtmlTag'] ? false : true"
-                (click)="feedbackPopup.openPopup(rowData)"
+                (click)="feedbackPopup.openPopup([rowData], {parent:'Retrospective'})"
                 ><i class="fa fa-edit" aria-hidden="true"></i>Provide Rating</a
               >
 

@@ -180,6 +180,7 @@ export class ReviewerDetailViewComponent implements OnInit {
           resource: element.AssignedTo ? element.AssignedTo.Title : '',
           resourceID: element.AssignedTo ? element.AssignedTo.ID : '',
           taskTitle: element.Title ? element.Title : '',
+          milestone: element.Milestone ? element.Milestone : '',
           SubMilestones: element.SubMilestones ? element.SubMilestones : '',
           taskID: element.ID ? element.ID : '',
           taskCompletionDate: taskDate,
