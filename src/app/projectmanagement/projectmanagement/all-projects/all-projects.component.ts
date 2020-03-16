@@ -927,7 +927,7 @@ export class AllProjectsComponent implements OnInit {
         if(obj.status == this.constants.projectStatus.Unallocated) {
           this.changeProjectStatusOffHoldtoUnallocated(selectedProjectObj, obj.invoiceLineItems)
         } else {
-          this.changeProjectStatusOnHold(selectedProjectObj)
+          this.changeProjectStatusOnHold(selectedProjectObj, obj.invoiceLineItems)
         }
       }
     });
@@ -1700,7 +1700,7 @@ export class AllProjectsComponent implements OnInit {
     }, this.pmConstant.TIME_OUT);
   }
 
-  async changeProjectStatusOnHold(selectedProjectObj) {
+  async changeProjectStatusOnHold(selectedProjectObj, invoiceLineItems) {
     console.log(selectedProjectObj)
     const batchURL = [];
     const options = {
@@ -1743,6 +1743,20 @@ export class AllProjectsComponent implements OnInit {
       Status: this.constants.projectStatus.OnHold,
       PrevStatus: selectedProjectObj.Status
     };
+
+    invoiceLineItems.forEach(element=>{
+      const lineItemsData: any = {
+        __metadata: { type: this.constants.listNames.InvoiceLineItems.type },
+        ScheduledDate: element.date,
+      };
+
+      const invoiceUpdate = Object.assign({}, options);
+      invoiceUpdate.url = this.spServices.getItemURL(this.constants.listNames.InvoiceLineItems.name, element.Id);
+      invoiceUpdate.data = lineItemsData;
+      invoiceUpdate.type = 'PATCH';
+      invoiceUpdate.listName = this.constants.listNames.InvoiceLineItems.name;
+      batchURL.push(invoiceUpdate);
+    })
 
     const piUpdate = Object.assign({}, options);
     piUpdate.data = piOnHoldUpdateData;
