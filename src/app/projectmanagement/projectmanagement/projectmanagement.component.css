@@ -892,7 +892,8 @@ body .ui-table .ui-table-tbody>tr:nth-child(even) {
 #scInnerLoader,
 #allProjectLoader,
 #allSOWLoader,
-#selectSOWLoader, #financeMgmtLoader {
+#selectSOWLoader,
+#financeMgmtLoader {
     border: 10px solid #f3f3f3;
     border-radius: 50%;
     border-top: 10px solid red;
@@ -912,7 +913,8 @@ body .ui-table .ui-table-tbody>tr:nth-child(even) {
 #scInnerLoaderText,
 #allProjectLoaderText,
 #allSOWLoaderText,
-#selectSOWLoaderText, #financeMgmtLoaderText {
+#selectSOWLoaderText,
+#financeMgmtLoaderText {
     -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
     -o-animation: loading-text-opacity 2s linear 0s infinite normal;
     -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
@@ -1078,13 +1080,12 @@ p-table tbody tr td {
 .compulsory {
     display: inline;
     padding-right: 2px;
-    color: #c53e3e ;
+    color: #c53e3e;
 }
 
 .ui-dynamicdialog {
     max-height: 98% !important;
     overflow-y: auto !important;
-    width: 90% !important;
 }
 
 .ui-card {
@@ -1093,21 +1094,21 @@ p-table tbody tr td {
 }
 
 .ui-tabmenu .ui-tabmenu-nav .ui-tabmenuitem.ui-state-active {
-    background-color: #c53e3e  !important;
-    border: 1px solid #c53e3e  !important;
+    background-color: #c53e3e !important;
+    border: 1px solid #c53e3e !important;
 }
 
 .ui-steps .ui-steps-item.ui-state-highlight .ui-steps-number {
-    background: #c53e3e  !important;
+    background: #c53e3e !important;
 }
 
 .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active {
-    background: #c53e3e  !important;
+    background: #c53e3e !important;
 }
 
 .ui-button:enabled:active {
-    background-color: #c53e3e  !important;
-    border-color: #c53e3e  !important;
+    background-color: #c53e3e !important;
+    border-color: #c53e3e !important;
 }
 
 .custom-table-container .ui-splitbutton.ui-buttonset {
@@ -1221,7 +1222,8 @@ body .ui-corner-top {
 }
 
 .tableLoader {
-    position: fixed; /* or absolute */
+    position: fixed;
+    /* or absolute */
     /* top: 20%; */
     width: 100% !important;
     z-index: 9999;
@@ -1242,7 +1244,7 @@ body .ui-corner-top {
     overflow-y: auto !important;
 }
 
-body .ui-dialog .ui-dialog-content {
+:host body .ui-dialog .ui-dialog-content {
     padding: 1em 1em 4em 1em !important;
 }
 

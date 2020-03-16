@@ -14,6 +14,7 @@ export class PmconstantService {
     DELIVERY_LEVEL_1: 'Delivery L1',
     DELIVERY_LEVEL_2: 'Delivery L2',
     BUSINESS_DEVELOPMENT: 'Business Development',
+    FINANCE :'Finance'
   };
   public RESOURCES_CATEGORY = {
     BUSINESS_DEVELOPMENT: 'Business Development',
@@ -224,6 +225,7 @@ export class PmconstantService {
       select: 'Content',
       filter: 'Title eq \'{{templateName}}\''
     },
+    
     SOW_BUDGET_BREAKUP: {
       select: 'ID',
       filter: 'SOWCode eq \'{{SOWCodeStr}}\''

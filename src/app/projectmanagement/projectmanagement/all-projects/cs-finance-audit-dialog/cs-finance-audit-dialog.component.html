@@ -1,0 +1,107 @@
+<div class='UserButton' fxLayout="row" fxLayoutAlign="end center" [hidden]="modalloaderenable">
+
+    <button type="button" pButton [icon]="buttonloader ? 'pi  pi-spin pi-spinner' : 'pi pi-save'" id="saveUser" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" [disabled]="selectedProjects.length === 0 || (AuditType ==='Finance'  &&  selectedProjects.length > 10) || buttonloader"
+        (click)="AuditProjects(AuditType)" label="Audit"></button>
+
+    <button type="button" pButton icon="pi pi-times" label="Cancel" class="ui-button-secondary" style="background-color:ghostwhite;" (click)="cancel();"></button>
+
+</div>
+
+<div fxLayout="column" style="padding: 12vw;" fxLayoutAlign="center center" [hidden]="!modalloaderenable">
+    <div id="modalInnerLoader"></div>
+    <div id="modalInnerLoaderText">Loading...</div>
+</div>
+
+<p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom-booking" [hideTransitionOptions]="'0ms'" position="bottom-center">
+</p-toast>
+
+
+<span style="color: #ff0000;" *ngIf="!modalloaderenable && AuditType ==='Finance'">*Note :
+Multiselect checkbox can select first 10 rows of current page.</span>
+
+<p-table #allProjectRef [hidden]="modalloaderenable" [columns]="displayedColumns" [(selection)]="selectedProjects" dataKey="ProjectCode" [value]="projectList" (onRowSelect)='onRowSelect()' [paginator]="true" [rows]="10" [style]="{'font-size':'13px'}"
+    (onHeaderCheckboxToggle)="MultipleSelectRows(AuditType)">
+    <ng-template pTemplate="header" let-columns>
+        <tr class="mainHeader">
+            <th style="top: 0px !important;">
+                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+            </th>
+            <th style="top: 0px !important;" *ngFor="let col of columns" [pSortableColumn]="col.field">
+                {{ col.header }}
+                <p-sortIcon [field]="col.field"></p-sortIcon>
+            </th>
+        </tr>
+        <tr>
+            <th></th>
+            <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid">
+
+
+                <p-multiSelect *ngSwitchCase="'SOWCode'" [options]="allProjects.SOWCode" defaultLabel="All" [(ngModel)]="columnFilter.SOWCode" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                    resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                </p-multiSelect>
+
+                <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="allProjects.ProjectCode" defaultLabel="All" [(ngModel)]="columnFilter.ProjectCode" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                    resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                </p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'ShortTitle'" [options]="allProjects.ShortTitle" defaultLabel="All" [(ngModel)]="columnFilter.ShortTitle" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                    resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                </p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="allProjects.ClientLegalEntity" [(ngModel)]="columnFilter.ClientLegalEntity" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                    resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                </p-multiSelect>
+
+                <p-multiSelect *ngSwitchCase="'ProjectType'" [options]="allProjects.ProjectType" defaultLabel="All" [(ngModel)]="columnFilter.ProjectType" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                    resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                </p-multiSelect>
+
+                <input *ngSwitchCase="'PrimaryResources'" pInputText type="text" [(ngModel)]="columnFilter.PrimaryResources" (input)="allProjectRef.filter($event.target.value, col.field, col.filterMatchMode)" (keydown.enter)="$event.preventDefault()">
+
+
+                <p-multiSelect *ngSwitchCase="'POC'" [options]="allProjects.POC" defaultLabel="All" [(ngModel)]="columnFilter.POC" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                    (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                </p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'TA'" [options]="allProjects.TA" defaultLabel="All" [(ngModel)]="columnFilter.TA" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                    (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                </p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'Molecule'" [options]="allProjects.Molecule" defaultLabel="All" [(ngModel)]="columnFilter.Molecule" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                    resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                </p-multiSelect>
+            </th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData let-task let-rowIndex="rowIndex">
+        <tr>
+            <td>
+
+                <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+            </td>
+            <td>{{task.SOWCode}}</td>
+            <td>{{task.ProjectCode}}</td>
+            <td>{{task.ShortTitle}}</td>
+            <td>{{task.ClientLegalEntity}}</td>
+            <td>{{task.ProjectType}}</td>
+            <td>{{task.PrimaryResources}}</td>
+            <td>{{task.POC}}</td>
+            <td>{{task.TA}}</td>
+            <td>{{task.Molecule}}</td>
+        </tr>
+    </ng-template>
+</p-table>
+
+
+
+
+
+<!-- <p-dialog header="Change Status of Project" [(visible)]="displayModal" [modal]="true" [style]="{width: '50vw'}" [baseZIndex]="10000" [draggable]="false" [resizable]="false">
+    <p>Are you sure you want to change the Status of Projects
+    </p>
+    <ul>
+        <li *ngFor="let project of selectedProjects">{{project.ProjectCode}}</li>
+    </ul>
+    <p> from Finance Audit to Closed ? </p>
+
+    <p-footer>
+        <button type="button" pButton icon="pi pi-check" (click)="displayModal=false" label="Yes"></button>
+        <button type="button" pButton icon="pi pi-times" (click)="displayModal=false" label="No" class="ui-button-secondary"></button>
+    </p-footer>
+</p-dialog> -->

@@ -204,7 +204,8 @@ export class PMObjectService {
     isMangers: false,
     isHaveProjectFullAccess: false,
     isHaveSOWFullAccess: false,
-    isHaveSOWBudgetManager: false
+    isHaveSOWBudgetManager: false,
+    isInvoiceTeam: false
   };
   public isMainLoaderHidden = true;
   public activeIndex = 0;

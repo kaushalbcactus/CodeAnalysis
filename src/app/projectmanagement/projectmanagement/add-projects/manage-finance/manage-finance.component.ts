@@ -151,7 +151,7 @@ export class ManageFinanceComponent implements OnInit {
   tagExistingInvSection = false;
   updateInvoices = [];
   hideRemoveButton = false;
-
+  disableAddBudget = false;
   @Output() maximizeDialog = new EventEmitter<any>();
 
   constructor(
@@ -199,6 +199,9 @@ export class ManageFinanceComponent implements OnInit {
     if (this.config && this.config.hasOwnProperty('data')) {
       setTimeout(async () => {
         this.projObj = this.config.data.projectObj;
+        if (this.projObj.Status === 'Pending Closure' && this.projObj.ProjectType.substr(this.projObj.ProjectType.lastIndexOf('-') + 1) === 'Writing') {
+          this.disableAddBudget= true;
+        }
         this.isPOEdit = true;
         // this.setBudget();
         this.projectType = this.projObj.ProjectType;

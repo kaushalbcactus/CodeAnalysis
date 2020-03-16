@@ -78,7 +78,7 @@
           </tr>
           <tr>
             <td>
-              <p-button class="mt-20" [hidden]="isAddBudgetButtonHidden" label="Add Budget"
+              <p-button class="mt-20" [hidden]="isAddBudgetButtonHidden || disableAddBudget" label="Add Budget"
                 (click)="addBudgetToProject()" type="button" styleClass="pmBtn">
               </p-button>
             </td>
@@ -272,7 +272,7 @@
           </tr>
           <tr>
             <td colspan="5">
-              <p-button [hidden]="hideRemoveButton" class="mt-20" label="Reduce project budget"
+              <p-button  [hidden]="hideRemoveButton || disableAddBudget" class="mt-20" label="Reduce project budget"
                 (click)="removeUnassigned()" type="button" styleClass="pmBtn">
               </p-button>
               <div [hidden]="!hideRemoveButton">
