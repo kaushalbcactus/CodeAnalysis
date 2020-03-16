@@ -90,57 +90,54 @@ export class CsFinanceAuditDialogComponent implements OnInit {
     this.AuditType = this.config.data.AuditListType;
     this.createColFieldValues(this.projectList);
 
-    this.modalloaderenable = false;
 
-  
+
+
 
     // this.EmailTemplate = this.pmCommonService.getEmailTemplate(this.constants.EMAIL_TEMPLATE_NAME.AUDIT_PROJECT);
   }
 
 
-   ngAfterViewInit() {
+  ngAfterViewInit() {
     if (this.config.data.tableData.filters.ProjectCode) {
       this.columnFilter.ProjectCode = this.config.data.tableData.filters.ProjectCode.value;
-      this.allProjectRef.filter(this.columnFilter.ProjectCode,'ProjectCode','in')
+      this.allProjectRef.filter(this.columnFilter.ProjectCode, 'ProjectCode', 'in')
     }
     if (this.config.data.tableData.filters.SOWCode) {
       this.columnFilter.SOWCode = this.config.data.tableData.filters.SOWCode.value;
-      this.allProjectRef.filter(this.columnFilter.SOWCode,'SOWCode','in')
+      this.allProjectRef.filter(this.columnFilter.SOWCode, 'SOWCode', 'in')
     }
     if (this.config.data.tableData.filters.ShortTitle) {
       this.columnFilter.ShortTitle = this.config.data.tableData.filters.ShortTitle.value;
-      this.allProjectRef.filter(this.columnFilter.ShortTitle,'ShortTitle','in')
+      this.allProjectRef.filter(this.columnFilter.ShortTitle, 'ShortTitle', 'in')
     }
     if (this.config.data.tableData.filters.ClientLegalEntity) {
       this.columnFilter.ClientLegalEntity = this.config.data.tableData.filters.ClientLegalEntity.value;
-      this.allProjectRef.filter(this.columnFilter.ClientLegalEntity,'ClientLegalEntity','in')
+      this.allProjectRef.filter(this.columnFilter.ClientLegalEntity, 'ClientLegalEntity', 'in')
     }
     if (this.config.data.tableData.filters.ProjectType) {
-      this.columnFilter.ProjectType =  this.allProjects.ProjectType.map(c=>c.value).filter(c => this.config.data.tableData.filters.ProjectType.value.includes(c));
-      this.allProjectRef.filter(this.columnFilter.ProjectType,'ProjectType','in')
+      this.columnFilter.ProjectType = this.allProjects.ProjectType.map(c => c.value).filter(c => this.config.data.tableData.filters.ProjectType.value.includes(c));
+      this.allProjectRef.filter(this.columnFilter.ProjectType, 'ProjectType', 'in')
     }
     if (this.config.data.tableData.filters.POC) {
-      this.columnFilter.POC =  this.allProjects.POC.map(c=>c.value).filter(c => this.config.data.tableData.filters.POC.value.includes(c));
-      this.allProjectRef.filter(this.columnFilter.POC,'POC','in');
+      this.columnFilter.POC = this.allProjects.POC.map(c => c.value).filter(c => this.config.data.tableData.filters.POC.value.includes(c));
+      this.allProjectRef.filter(this.columnFilter.POC, 'POC', 'in');
     }
     if (this.config.data.tableData.filters.PrimaryResources) {
       this.columnFilter.PrimaryResources = this.config.data.tableData.filters.PrimaryResources.value;
-      this.allProjectRef.filter(this.columnFilter.PrimaryResources,'PrimaryResources','in')
-
+      this.allProjectRef.filter(this.columnFilter.PrimaryResources, 'PrimaryResources', 'in')
     }
     if (this.config.data.tableData.filters.TA) {
       this.columnFilter.TA = this.config.data.tableData.filters.TA.value;
-      this.allProjectRef.filter(this.columnFilter.TA,'TA','in')
-
+      this.allProjectRef.filter(this.columnFilter.TA, 'TA', 'in')
     }
     if (this.config.data.tableData.filters.Molecule) {
       this.columnFilter.Molecule = this.config.data.tableData.filters.Molecule.value;
-      this.allProjectRef.filter(this.columnFilter.Molecule,'Molecule','in')
-
+      this.allProjectRef.filter(this.columnFilter.Molecule, 'Molecule', 'in')
     }
+    this.modalloaderenable = false;
+  }
 
-   }
- 
   isOptionFilter: boolean;
   optionFilter(event: any) {
     if (event.target.value) {
@@ -236,7 +233,7 @@ export class CsFinanceAuditDialogComponent implements OnInit {
           // debugger;
 
 
-          // this.modalloaderenable = true;
+          this.modalloaderenable = true;
 
           // // let dbProjects = [];
           // // this.selectedProjects.forEach(async element => {
@@ -326,11 +323,12 @@ export class CsFinanceAuditDialogComponent implements OnInit {
           });
 
 
-      
+
         }
       });
     } else {
       this.buttonloader = true;
+      this.modalloaderenable = true;
       const dbExpenseInvoiceArray = await this.getInvoceExpense(this.selectedProjects);
       let dbInvoiceLineItems = [];
       let dbExpenseLineItems = [];
@@ -365,6 +363,7 @@ export class CsFinanceAuditDialogComponent implements OnInit {
             key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
             detail: UniqueInvalidInvoices.join(', ') + ' line items are not Confirmed.'
           });
+
         }
 
         if (UniqueInvalidExpenses.length > 0) {
@@ -373,6 +372,7 @@ export class CsFinanceAuditDialogComponent implements OnInit {
             detail: UniqueInvalidExpenses.join(', ') + ' expense are not scheduled / confirmed.'
           });
         }
+        this.modalloaderenable = false;
         this.buttonloader = false;
         this.csref.close(this.projectUpdated);
       }
@@ -382,7 +382,7 @@ export class CsFinanceAuditDialogComponent implements OnInit {
           { checked: false, parameter: 'All invoices are generated', comments: '' },
           { checked: false, parameter: 'All expenses are billed', comments: '' },
         ];
-         
+        this.modalloaderenable = false;
         this.buttonloader = false;
         const ref = this.dialogService.open(AuditProjectDialogComponent, {
           header: ' Audit Projects',
@@ -392,7 +392,7 @@ export class CsFinanceAuditDialogComponent implements OnInit {
         });
         ref.onClose.subscribe(async (Auditproj: any) => {
           if (Auditproj) {
-            // this.modalloaderenable = true;
+            this.modalloaderenable = true;
             const piUdpate = {
               FinanceAuditCheckList: Auditproj,
               Status: this.constants.projectStatus.Closed,
@@ -405,7 +405,7 @@ export class CsFinanceAuditDialogComponent implements OnInit {
               key: 'custom', severity: 'success', summary: 'Success Message',
               detail: 'Selected projects closed successfully.'
             });
-          
+
           }
         });
       }
@@ -415,7 +415,7 @@ export class CsFinanceAuditDialogComponent implements OnInit {
 
 
 
-  async UpdateProjects(piUdpate){
+  async UpdateProjects(piUdpate) {
 
     let batchResults = [];
     let batchURL = [];

@@ -16,8 +16,7 @@
 </p-toast>
 
 
-<span style="color: #ff0000;" *ngIf="!modalloaderenable && AuditType ==='Finance'">*Note :
-Multiselect checkbox can select first 10 rows of current page.</span>
+<div class="p-col-12" style="color: #ff0000;" *ngIf="!modalloaderenable && AuditType ==='Finance'">*Note : Multiselect checkbox can select first 10 rows of current page.</div>
 
 <p-table #allProjectRef [hidden]="modalloaderenable" [columns]="displayedColumns" [(selection)]="selectedProjects" dataKey="ProjectCode" [value]="projectList" (onRowSelect)='onRowSelect()' [paginator]="true" [rows]="10" [style]="{'font-size':'13px'}"
     (onHeaderCheckboxToggle)="MultipleSelectRows(AuditType)">
