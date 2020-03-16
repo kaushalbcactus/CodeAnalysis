@@ -1,7 +1,7 @@
 <div class="ui-g">
     <div class="ui-g-12 ui-fluid ui-md-4">
         <p-calendar [(ngModel)]="rangeDates" selectionMode="range" [readonlyInput]="true" dateFormat="M dd, yy"
-            placeholder="Select Start & End Date" showButtonBar="true" (onClose)="SelectedDateRange()"
+            placeholder="Select Start & End Date" showButtonBar="true" (onClose)="SelectedDateRange()" [minDate]="min2Years"
             (onClearClick)="setDefault()"></p-calendar>
     </div>
 
@@ -14,7 +14,7 @@
 </div>
 <div class="financeTable">
     <p-table #pi [columns]="outstandingInCols" [value]="paidInvoicesRes" [paginator]="true" [rows]="10"
-        [(selection)]="selectedRowData" [(selection)]="selectedRowData" selectionMode=""
+        [(selection)]="selectedRowData" [(selection)]="selectedRowData" selectionMode="" 
         (onRowSelect)="onRowSelect($event)" exportFilename="Paid_Invoices" (click)="onTableClick()">
         <ng-template pTemplate="header" let-columns>
             <tr>

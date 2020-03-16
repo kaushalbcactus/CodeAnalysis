@@ -12,6 +12,7 @@ export interface ISPRequest {
 }
 export interface IScorecard {
   task: string;
+  milestone: string;
   submilestones: string;
   taskID: number;
   assignedToID: number;

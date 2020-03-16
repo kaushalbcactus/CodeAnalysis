@@ -138,7 +138,7 @@ export class ProjectAttributesComponent implements OnInit {
     if (projObj.PracticeArea) {
       this.addProjectAttributesForm.get('practiceArea').setValue(projObj.PracticeArea);
 
-      if (projObj.PracticeArea.toLowerCase() === 'medinfo' || projObj.PracticeArea.toLowerCase() === 'medcomm') {
+      if (projObj.PracticeArea.toLowerCase() === 'medinfo' || projObj.PracticeArea.toLowerCase() === 'medcom' || projObj.PracticeArea.toLowerCase() === 'medcomm') {
         this.enableCountFields = true;
       }
       else {
@@ -373,7 +373,8 @@ export class ProjectAttributesComponent implements OnInit {
    */
   EnableDisableCountFields() {
     this.CountError = false;
-    if (this.addProjectAttributesForm.get('practiceArea').value.toLowerCase() === 'medinfo' || this.addProjectAttributesForm.get('practiceArea').value.toLowerCase() === 'medcomm') {
+    const practiceValue = this.addProjectAttributesForm.get('practiceArea').value.toLowerCase();
+    if (practiceValue === 'medinfo' || practiceValue === 'medcomm' || practiceValue === 'medcom') {
       this.enableCountFields = true;
 
     }
@@ -428,6 +429,7 @@ export class ProjectAttributesComponent implements OnInit {
     this.pmObject.addProject.ProjectAttributes.Comments = this.addProjectAttributesForm.get('comments').value;
 
     if (this.pmObject.addProject.ProjectAttributes.PracticeArea.toLowerCase() === 'medcomm' ||
+      this.pmObject.addProject.ProjectAttributes.PracticeArea.toLowerCase() === 'medcom' ||
       this.pmObject.addProject.ProjectAttributes.PracticeArea.toLowerCase() === 'medinfo') {
 
       this.enableCountFields = true;
@@ -525,7 +527,8 @@ export class ProjectAttributesComponent implements OnInit {
      this.pmObject.addProject.ProjectAttributes.AnnotationBinder = projObj.AnnotationBinder ? projObj.AnnotationBinder === 'Yes' ? true : false : false;
 
     this.enableCountFields = this.pmObject.addProject.ProjectAttributes.PracticeArea.toLowerCase()
-      === 'medcomm' || this.pmObject.addProject.ProjectAttributes.PracticeArea.toLowerCase() === 'medinfo' ? true : false;
+      === 'medcomm' || this.pmObject.addProject.ProjectAttributes.PracticeArea.toLowerCase()
+      === 'medcom' || this.pmObject.addProject.ProjectAttributes.PracticeArea.toLowerCase() === 'medinfo' ? true : false;
     this.setFieldProperties(this.pmObject.addProject.ProjectAttributes, null, false);
   }
   /**

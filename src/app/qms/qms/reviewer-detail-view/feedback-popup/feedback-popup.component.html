@@ -9,20 +9,21 @@
   positionTop="10"
 >
   <p-header>
-    <div class="ratework-popup" [hidden]="hidePopupTable">
+    <div class="ratework-popup">
       <div class="modal-title popup-header">Rate Work</div>
     </div>
   </p-header>
+
   <p-accordion [activeIndex] = "activeIndex">
     <p-accordionTab
       *ngFor="let task of scorecardTasks.tasks;"
     >
     <p-header>
       <span>{{task.submilestones ? task.task + '-' + task.submilestones : task.task}}</span>
-      <span title="Ignore Feedback" class="ignoreIcon"><p-inputSwitch (onChange)="onIgnoreClicked(task, $event)" [(ngModel)]="task.ignoreFeedback"></p-inputSwitch></span>
+      <span *ngIf="task?.milestone !== 'Draft 1' || scorecardTasks?.currentTask?.parent === 'Dashboard'" title="Ignore Feedback" class="ignoreIcon"><p-inputSwitch (onChange)="onIgnoreClicked(task, $event)" [(ngModel)]="task.ignoreFeedback"></p-inputSwitch></span>
 
     </p-header>
-      <div class="ratework-popup" [hidden]="hidePopupTable">
+      <div class="ratework-popup">
         <table class="table popup-rating-row" id="templates">
           <tbody>
             <tr>
@@ -124,11 +125,12 @@
     </p-accordionTab>
   </p-accordion>
   <div class="footer">
-    <div [hidden]="hidePopupTable">
+    <div>
       <button
+       *ngIf="this.scorecardTasks.currentTask?.Milestone !== 'Draft 1'"
         type="button"
         class="btn btn-light button cancel-rating"
-        (click)="closeFeedback()"
+        (click)="cancel()"
       >
         Cancel
       </button>

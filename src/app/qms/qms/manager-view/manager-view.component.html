@@ -14,8 +14,8 @@
         <th *ngFor="let col of columns" [hidden]="!col.visibility" style="width:20%">
           {{col.header}}
         </th>
-        <th style="width:65%">Average Rating</th>
-        <th style="width:15%"></th>
+        <th style="width:55%">Average Rating</th>
+        <th style="width:25%"></th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
@@ -145,127 +145,6 @@
     </p-table>
   </div>
 </div>
-
-<!-- <table id="downloadManagerTable" [hidden]="true" class="user-tabular-data-screen-3" cellpadding="0" cellspacing="0">
-  <thead>
-    <tr>
-      <th>Resource</th>
-      <th></th>
-      <th>Average Rating</th>
-    </tr>
-  </thead>
-  <tbody *ngFor="let feedback of internalFeedbacks">
-    <tr>
-      <th>{{feedback.resource.userName}}</th>
-      <td></td>
-      <td>{{feedback.averageRating}} based on {{feedback.ratingCount}} ratings</td>
-    </tr>
-    <tr>
-      <th colspan=2> Internal Feedback </th>
-    </tr>
-    <tr>
-      <td colspan=2>
-        <table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Task</th>
-              <th>Type</th>
-              <th>Feedback By</th>
-              <th>Rating</th>
-              <th>Comments</th>
-              <th>Parameters</th>
-              <th>Score</th>
-            </tr>
-          </thead>
-          <tbody *ngFor="let element of feedback.arrScorecard">
-            <tr>
-              <td>
-                {{element.Created | date : 'd MMM, yyyy'}}
-              </td>
-              <td>
-                {{element.Title}}
-              </td>
-              <td>
-                {{element.FeedbackType}}
-              </td>
-              <td>
-                {{element.Author.Title}}
-              </td>
-              <td>
-                {{element.AverageRating}}
-              </td>
-              <td>
-                {{element.Comments}}
-              </td>
-              <td [innerHTML]="element.ParameterRating">
-              </td>
-              <td [innerHTML]="element.Value">
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </td>
-    </tr>
-    <tr>
-      <th colspan=2> Client Dissatisfaction</th>
-    </tr>
-    <tr>
-      <td colspan=2>
-        <table>
-          <thead>
-            <tr>
-              <th>Complaint ID</th>
-              <th>Project Code</th>
-              <th>Sent Date</th>
-              <th>Sent By</th>
-              <th>Status</th>
-              <th>Accountable</th>
-              <th>CD Category </th>
-              <th>Business Impact</th>
-              <th>Comments</th>
-              <th>Root Cause Analysis</th>
-              <th>Corrective Actions</th>
-              <th>Preventive Actions</th>
-            </tr>
-          </thead>
-          <tbody *ngFor="let element of feedback.externalQC">
-            <tr>
-              <td>
-                {{element.ID}}
-              </td>
-              <td>
-                {{element.Title}}
-              </td>
-              <td>
-                {{element.SentDate | date : 'd MMM, yyyy'}}
-              </td>
-              <td>
-                {{element.SentBy.Title }}
-              </td>
-              <td>
-                {{element.Status}}
-              </td>
-              <td>
-                {{element.Category}}
-              </td>
-              <td>
-                {{element.SeverityLevel}}
-              </td>
-              <td> {{element.BusinessImpact}} </td>
-              <td> {{element.Comments}} </td>
-              <td> {{element.RootCauseAnalysis}} </td>
-              <td> {{element.CorrectiveActions}} </td>
-              <td> {{element.PreventiveActions}} </td>
-            </tr>
-          </tbody>
-        </table>
-      </td>
-    </tr>
-    <tr></tr>
-  </tbody>
-</table> -->
-
 
 <ng-template #popupContent let-modal>
   <div class="modal-body">

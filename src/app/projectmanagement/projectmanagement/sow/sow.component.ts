@@ -13,6 +13,7 @@ import { PMCommonService } from '../../services/pmcommon.service';
 import { Table } from 'primeng/table';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { GlobalService } from 'src/app/Services/global.service';
 
 declare var $;
 @Component({
@@ -145,6 +146,7 @@ export class SOWComponent implements OnInit, OnDestroy {
     private constants: ConstantsService,
     private router: Router,
     public pmCommonService: PMCommonService,
+    private globalObject: GlobalService,
     private cdr: ChangeDetectorRef,
     private platformLocation: PlatformLocation,
     private locationStrategy: LocationStrategy,
@@ -292,6 +294,7 @@ export class SOWComponent implements OnInit, OnDestroy {
       arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
     } else {
       const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.USER_SPECIFIC_SOW);
+      sowFilter.filter = sowFilter.filter.replace('{{UserID}}', this.globalObject.currentUser.userId.toString());
       this.commonService.SetNewrelic('projectManagment', 'sow', 'GetSow');
       arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
     }

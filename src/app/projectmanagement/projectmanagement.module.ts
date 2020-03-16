@@ -34,6 +34,9 @@ import { SharedModule } from 'primeng';
 import { ViewUploadDocumentDialogComponent } from '../shared/view-upload-document-dialog/view-upload-document-dialog.component';
 import { UserCapacityModule } from '../shared/usercapacity/usercapacity.module';
 import { UsercapacityComponent } from '../shared/usercapacity/usercapacity.component';
+import { CsFinanceAuditDialogComponent } from './projectmanagement/all-projects/cs-finance-audit-dialog/cs-finance-audit-dialog.component';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { AuditProjectDialogComponent } from './projectmanagement/all-projects/audit-project-dialog/audit-project-dialog.component';
 import { InvoiceLineitemsComponent } from './projectmanagement/all-projects/invoice-lineitems/invoice-lineitems.component';
 
 @NgModule({
@@ -54,6 +57,8 @@ import { InvoiceLineitemsComponent } from './projectmanagement/all-projects/invo
     StandardprojectComponent,
     NonStandardprojectComponent,
     ProjectTimelineComponent,
+    CsFinanceAuditDialogComponent,
+    AuditProjectDialogComponent,
     InvoiceLineitemsComponent],
   imports: [
     SharedModule,
@@ -68,7 +73,8 @@ import { InvoiceLineitemsComponent } from './projectmanagement/all-projects/invo
     CustomMaterialModule,
     NgbModule,
     TaskAllocationModule,
-    UserCapacityModule
+    UserCapacityModule,
+    FlexLayoutModule,
   ],
   exports: [
     AllProjectsComponent
@@ -88,6 +94,8 @@ import { InvoiceLineitemsComponent } from './projectmanagement/all-projects/invo
     ProjectTimelineComponent,
     ViewUploadDocumentDialogComponent,
     UsercapacityComponent,
+    CsFinanceAuditDialogComponent,
+    AuditProjectDialogComponent,
     InvoiceLineitemsComponent
   ]
 })

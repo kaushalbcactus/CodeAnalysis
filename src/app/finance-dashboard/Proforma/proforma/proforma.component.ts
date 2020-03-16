@@ -71,6 +71,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         listName: ''
     };
     pageNumber: number = 0;
+    generateInvoiceInProgress: boolean = false;
 
     @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
     @ViewChild('editorRef', { static: false }) editorRef: EditorComponent;
@@ -897,8 +898,12 @@ export class ProformaComponent implements OnInit, OnDestroy {
     // Generate Invoice Number
     invoiceNumber: any;
     generateInvoiceNumber() {
-        this.invoiceNumber = '';
-        this.addUpdateRequired();
+        if(!this.generateInvoiceInProgress) {
+            this.generateInvoiceInProgress = true;
+            this.invoiceNumber = '';
+            this.addUpdateRequired();
+            this.generateInvoiceInProgress = false;
+        }
     }
 
     getPOItemByPOId(ppo) {
