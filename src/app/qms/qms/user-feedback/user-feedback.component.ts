@@ -253,7 +253,12 @@ export class UserFeedbackComponent implements OnInit, AfterViewChecked {
   }
 
   async applyArrayFilter(filter) {
-    const newScorecard = this.originalScorecard.filter(sc => sc.EvaluatorSkill === filter);
+    let newScorecard = [];
+    if (filter === '') {
+      newScorecard = this.originalScorecard.filter(sc => sc.EvaluatorSkill === null || sc.EvaluatorSkill === '' || sc.EvaluatorSkill === 'Review');
+    } else {
+      newScorecard = this.originalScorecard.filter(sc => sc.EvaluatorSkill === filter);
+    }
     // this.bindTable(newScorecard);
     this.UFRows = [...newScorecard];
     this.colFilters(newScorecard);
