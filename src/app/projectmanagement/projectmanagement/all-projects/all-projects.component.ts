@@ -966,8 +966,8 @@ export class AllProjectsComponent implements OnInit {
         c.listName === 'Schedules').retItems : [];
       switch (projectAction) {
         case this.pmConstant.ACTION.CONFIRM_PROJECT:
-          this.loaderView.nativeElement.classList.removeClass('show');
-          this.spannerView.nativeElement.classList.removeClass('show');
+          this.loaderView.nativeElement.classList.remove('show');
+          this.spannerView.nativeElement.classList.remove('show');
           this.confirmationService.confirm({
             header: 'Change Status of Project -' + selectedProjectObj.ProjectCode + '',
             icon: 'pi pi-exclamation-triangle',
@@ -1047,18 +1047,6 @@ export class AllProjectsComponent implements OnInit {
             }
           });
           break;
-        // case this.pmConstant.ACTION.AUDIT_PROJECT:
-        //   this.loaderView.nativeElement.classList.remove('show');
-        //   this.spannerView.nativeElement.classList.remove('show');
-        //   this.addRollingProjectArray = [
-        //     { parameter: 'All necessary project details updated' },
-        //     { parameter: 'All files uploaded' },
-        //     { parameter: 'All tasks completed and hrs updated' },
-        //     { parameter: 'Invoicing is complete' },
-        //     { parameter: 'Budget hours updated' },
-        //   ];
-        //   this.pmObject.isAuditRollingVisible = true;
-        //   break;
         case this.pmConstant.ACTION.CLOSE_PROJECT:
           this.loaderView.nativeElement.classList.remove('show');
           this.spannerView.nativeElement.classList.remove('show');
@@ -1095,8 +1083,8 @@ export class AllProjectsComponent implements OnInit {
           batchURL.push(inoviceGet);
           this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetInvoiceLineItem');
           const sResult = await this.spServices.executeBatch(batchURL);
-          $("div.spanner").removeClass("show");
-          $("div.overlay").removeClass("show");
+          this.loaderView.nativeElement.classList.remove('show');
+          this.spannerView.nativeElement.classList.remove('show');
           if (sResult && sResult.length) {
             const invoiceItems = sResult[0].retItems;
             for (const item of invoiceItems) {
