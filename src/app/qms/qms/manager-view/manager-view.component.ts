@@ -35,6 +35,7 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
       ratingCount: '0',
       hideFeedbackForm: true,
       hideInnerTable: true,
+      eventType: 'none',
       hideFeedBackSubmitted: true,
     },
     children: []
@@ -361,9 +362,9 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
     const filterObject = Object.assign({}, this.filterObj);
     filterObject.userId = feedback.userId;
     filterObject.managerView = true;
-    filterObject.ratingType = event;
     // show hide inner table
-    feedback.hideInnerTable = !feedback.hideInnerTable;
+    feedback.hideInnerTable = feedback.eventType === event ? !feedback.hideInnerTable : false;
+    filterObject.ratingType = feedback.eventType = event;
     filterObject.collapseMangerView = feedback.hideInnerTable ? true : false;
     feedbackTableRef.applyFilters(filterObject);
     filterObject.manager = false;
