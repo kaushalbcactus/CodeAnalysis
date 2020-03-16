@@ -31,6 +31,11 @@
                     (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"
                     (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" [maxSelectedLabels]="1">
                 </p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'EvaluatorSkill'" [style]="{'width':'100%'}" [options]="UFColArray.EvaluatorSkill"
+                    defaultLabel="Evaluator SKill" (onChange)="uf.filter($event.value, col.field, 'in')"
+                    (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"
+                    (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" [maxSelectedLabels]="1">
+                </p-multiSelect>
                 <p-multiSelect *ngSwitchCase="'Rating'" [style]="{'width':'100%'}" [options]="UFColArray.Rating"
                     defaultLabel="Rating" (onChange)="uf.filter($event.value, col.field, 'in')"
                     (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"

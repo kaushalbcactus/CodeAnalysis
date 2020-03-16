@@ -87,7 +87,7 @@ export class PmconstantService {
       + 'ID,DeliverableType,SubDeliverable,TA,Molecule,ProjectCode,Status,Milestone,WBJID,StatusReportDesc,NextSCDate,PrimaryPOC,Description',
     expand: 'PrimaryResMembers/Id,PrimaryResMembers/Title,AllDeliveryResources/Id,AllDeliveryResources/Title,'
       + 'AllOperationresources/Id,AllOperationresources/Title,PrimaryResMembers/Id,PrimaryResMembers/Title',
-    filter: '((AllOperationresources/Id eq ' + this.global.currentUser.userId + ') and (Status eq \'Unallocated\'))',
+    filter: '((AllOperationresources/Id eq {{UserID}}) and (Status eq \'Unallocated\'))',
     orderby: 'ProjectCode asc',
     top: '4500'
   };
@@ -97,7 +97,7 @@ export class PmconstantService {
       + 'ID,DeliverableType,SubDeliverable,TA,Molecule,ProjectCode,Status,Milestone,WBJID,StatusReportDesc,NextSCDate,PrimaryPOC,Description',
     expand: 'PrimaryResMembers/Id,PrimaryResMembers/Title,AllDeliveryResources/Id,AllDeliveryResources/Title,'
       + 'AllOperationresources/Id,AllOperationresources/Title,PrimaryResMembers/Id,PrimaryResMembers/Title',
-    filter: '((AllOperationresources/Id eq ' + this.global.currentUser.userId + ') and '
+    filter: '((AllOperationresources/Id eq {{UserID}}) and '
       + ' (Status eq \'On Hold\' or Status eq \'In Discussion\'))',
     orderby: 'ProjectCode asc',
     top: '4500'
@@ -132,7 +132,7 @@ export class PmconstantService {
         + 'DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title,'
         + 'PrimaryResMembers/Id,PrimaryResMembers/Title,Editor/Title',
       // tslint:disable-next-line:max-line-length
-      filter: '(Status ne \'Closed\') and (Status ne \'Cancelled\') and (AllOperationresources/Id eq ' + this.global.currentUser.userId + ')',
+      filter: '(Status ne \'Closed\') and (Status ne \'Cancelled\') and (AllOperationresources/Id eq {{UserID}})',
       orderby: 'Modified desc',
       top: 4500
     },
@@ -149,7 +149,7 @@ export class PmconstantService {
         + 'DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title,'
         + 'PrimaryResMembers/Id,PrimaryResMembers/Title',
       // tslint:disable-next-line:max-line-length
-      filter: '(Status ne \'Closed\') and (Status ne \'Cancelled\') and (AllOperationresources/Id eq ' + this.global.currentUser.userId + ' or AllDeliveryResources/Id eq ' + this.global.currentUser.userId + ')',
+      filter: '(Status ne \'Closed\') and (Status ne \'Cancelled\') and (AllOperationresources/Id eq {{UserID}} or AllDeliveryResources/Id eq {{UserID}})',
       orderby: 'Modified desc',
       top: 4500
     },
@@ -165,7 +165,7 @@ export class PmconstantService {
       expand: 'Author/Id,Author/Title, CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title,'
         + 'DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title,'
         + 'PrimaryResMembers/Id,PrimaryResMembers/Title',
-      filter: 'ProjectCode eq \'{{projectCode}}\' and (Status eq \'Closed\' or Status eq \'Cancelled\') and (AllOperationresources/Id eq ' + this.global.currentUser.userId + ')',
+      filter: 'ProjectCode eq \'{{projectCode}}\' and (Status eq \'Closed\' or Status eq \'Cancelled\') and (AllOperationresources/Id eq {{UserID}})',
       orderby: 'Modified desc',
       top: 4500
     },
@@ -217,7 +217,7 @@ export class PmconstantService {
         + 'DeliveryLevel1/ID, DeliveryLevel1/Title,Editor/Title,'
         + 'DeliveryLevel2/ID, DeliveryLevel2/Title, BD/ID, BD/Title',
       // tslint:disable-next-line:max-line-length
-      filter: '(Status ne \'Closed\') and (Status ne \'Cancelled\') and (AllResources/Id eq ' + this.global.currentUser.userId + ')',
+      filter: '(Status ne \'Closed\') and (Status ne \'Cancelled\') and (AllResources/Id eq {{UserID}})',
       orderby: 'Modified desc',
       top: 4500
     },
@@ -563,7 +563,7 @@ export class PmconstantService {
       filter: 'ProjectNumber eq \'{{projectCode}}\' and Status eq \'Active\''
     },
     GET_SCHEDULE_LIST_ITEM_BY_PROJECT_CODE: {
-      select: 'ID,Title,Milestone,Status,Task,ProjectCode',
+      select: 'ID,Title,Milestone,Status,Task,ProjectCode,TimeSpent',
       filter: 'ProjectCode eq \'{{projectCode}}\''
     },
     GET_EARLY_TASK_COMPLETED: {
@@ -601,7 +601,9 @@ export class PmconstantService {
     CLOSE_PROJECT: 'Close Project',
     CANCEL_PROJECT: 'Cancel Project',
     APPROVED: 'Approved',
-    REJECTED: 'Rejected'
+    REJECTED: 'Rejected',
+    ON_HOLD: 'On Hold',
+    OFF_HOLD: 'Off Hold'
   };
   public PROJECT_BUDGET_DECREASE_REASON = {
     SCOPE_REDUCE: 'Scope reduction',

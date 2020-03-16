@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, ViewChild, ElementRef, ViewEncapsulation, SimpleChange, ApplicationRef, NgZone } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, ViewEncapsulation, ApplicationRef, NgZone } from '@angular/core';
 import { SPOperationService } from '../../../Services/spoperation.service';
 import { ConstantsService } from '../../../Services/constants.service';
 import { CommonService } from '../../../Services/common.service';
@@ -21,6 +21,8 @@ import { PlatformLocation, LocationStrategy } from '@angular/common';
 })
 export class ManagerViewComponent implements OnInit, OnDestroy {
   @ViewChild('userFeedbackRef', { static: false }) userFeedbackRef: UserFeedbackComponent;
+  ratingHeaderLength = 'Large';
+  feedbackForMe = [];
   feedbacksColumns = [];
   feedbacksTableColumns = [];
   innerTable = [];
@@ -82,23 +84,9 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
   };
   constructor(private spService: SPOperationService, private globalConstant: ConstantsService, private messageService: MessageService,
     private common: CommonService, private data: DataService, private router: Router, private global: GlobalService,
-    private qmsConstant: QMSConstantsService,
-    private platformLocation: PlatformLocation,
-    private locationStrategy: LocationStrategy,
-    private readonly _router: Router,
-    _applicationRef: ApplicationRef,
-    zone: NgZone
+    private qmsConstant: QMSConstantsService, private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy, private readonly _router: Router, _applicationRef: ApplicationRef, zone: NgZone
   ) {
-    // this.router.routeReuseStrategy.shouldReuseRoute = function () {
-    //   return false;
-    // }
-    // this.navigationSubscription = this.router.events.subscribe((e: any) => {
-    //   // If it is a NavigationEnd event re-initalise the component
-    //   if (e instanceof NavigationEnd) {
-    //     this.initialiseManagerView();
-    //   }
-    // });
-
     // Browser back button disabled & bookmark issue solution
     history.pushState(null, null, window.location.href);
     platformLocation.onPopState(() => {
@@ -112,10 +100,6 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
   async ngOnInit() {
     this.initialiseManagerView();
   }
-  
-  ngOnChanges(changes: SimpleChange) {
-    console.log(changes);
-  }
 
   initialiseManagerView() {
     this.feedbacksColumns = [
@@ -123,7 +107,7 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
     ];
     this.feedbacksTableColumns = [
       { field: 'userName', header: 'Resource', visibility: true, exportable: true },
-      { field: 'averageRating', header: 'Average Rating', visibility: true, exportable: true },
+      // { field: 'averageRating', header: 'Average Rating', visibility: true, exportable: true },
     ];
 
     this.innerTable = [
@@ -131,6 +115,7 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
       { field: 'userFeedback', header: 'Task', subfield: 'Task', exportable: true },
       { field: 'userFeedback', header: 'Type', subfield: 'Type', exportable: true },
       { field: 'userFeedback', header: 'Feedback By', subfield: 'Feedbackby', exportable: true },
+      { field: 'userFeedback', header: 'Evaluator Skill', subfield: 'Rating', exportable: true },
       { field: 'userFeedback', header: 'Rating', subfield: 'Rating', exportable: true },
       { field: 'userFeedback', header: 'Comments', subfield: 'Comments', exportable: true },
       { field: 'Parameters', header: 'Parameters', visibility: false, exportable: true },
@@ -226,8 +211,10 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
       const obj = JSON.parse(JSON.stringify(this.resource));
       obj.data.userName = element.UserName.Title;
       obj.data.userId = element.UserName.ID;
-      obj.data.averageRating = element.averageRating;
-      obj.data.ratingCount = element.ratingCount;
+      obj.data.feedbackForMe = element.feedbackForMe;
+      obj.data.evaluatorSkill = element.EvaluatorSkill;
+      // obj.data.averageRating = element.averageRating;
+      // obj.data.ratingCount = element.ratingCount;
       arrFormattedData.push(obj);
     });
     return arrFormattedData;
@@ -285,7 +272,7 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
     return await this.getResourceObject(updatedResources);
   }
 
-  
+
 
   getScorecard(assignedToID, topCount, startDate, endDate) {
     const batchURL = [];
@@ -300,6 +287,7 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
       .replace('{{TopCount}}', '' + topCount)
       .replace('{{startDate}}', startDate)
       .replace('{{endDate}}', endDate);
+    getScorecardData.url = getScorecardData.url.replace('{{RatingType}}', '');
     // tslint:disable: max-line-length
     // tslint:disable-next-line: quotemark
     getScorecardData.url = topCount < 4500 ? getScorecardData.url.replace("{{FeedbackTypeFilter}}", "and FeedbackType eq '" + this.globalConstant.FeedbackType.taskRating + "'") :
@@ -322,9 +310,10 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
     for (const key in arrResourceScoreCards) {
       if (arrResourceScoreCards.hasOwnProperty(key)) {
         const element = arrResourceScoreCards[key];
-        const averageRating = this.getAverageRating(element);
-        resources[key].averageRating = averageRating.rating;
-        resources[key].ratingCount = averageRating.count;
+        resources[key].feedbackForMe = element;
+        // const averageRating = this.getAverageRating(element);
+        // resources[key].averageRating = averageRating.rating;
+        // resources[key].ratingCount = averageRating.count;
       }
     }
     return resources;
@@ -368,10 +357,11 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
     this.hideLoader = false;
   }
 
-  getResourceScorecard(feedbackTableRef, feedback) {
+  getResourceScorecard(event, feedbackTableRef, feedback) {
     const filterObject = Object.assign({}, this.filterObj);
     filterObject.userId = feedback.userId;
     filterObject.managerView = true;
+    filterObject.ratingType = event;
     // show hide inner table
     feedback.hideInnerTable = !feedback.hideInnerTable;
     filterObject.collapseMangerView = feedback.hideInnerTable ? true : false;
@@ -404,7 +394,9 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
     this.initialiseManagerView();
   }
 
-
+  callUserFeedbackTable(obj) {
+    this.feedbackTable.applyArrayFilter(obj);
+  }
 
   /// Download Manager View
   downloadExcel() {

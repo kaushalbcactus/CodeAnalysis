@@ -422,7 +422,8 @@ export class ConstantsService {
     CANCEL: 'Cancel',
     APPROVED_PROJECT: 'ApproveProject',
     BUDGET_REDUCTION: 'ApproveProjectBudget',
-    BUDGET_APPROVAL: 'OutcomeBudgetApproval'
+    BUDGET_APPROVAL: 'OutcomeBudgetApproval',
+    ON_HOLD: 'Hold'
   };
   public invoiceList = {
     status: {

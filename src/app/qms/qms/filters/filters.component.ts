@@ -16,14 +16,6 @@ export class FiltersComponent implements OnInit {
   @Output() callApplyFilter = new EventEmitter<any>();
   value: Date[] = [new Date(new Date().setMonth(new Date().getMonth() - 6)), new Date()];
   filter;
-  // DateRange picker options
-  // myDateRangePickerOptions: IMyDrpOptions = {
-  //   dateFormat: 'dd.mm.yyyy',
-  //   disableUntil: { year: new Date().getFullYear() - 2, month: 12, day: 31 },
-  //   showClearBtn: false
-  // };
-  // selectedValue: {label: 'year', value: 2019};
-
   // Filter Object to be passed to filter data
   public filterObj: any = {
     isDateFilter: false,
@@ -122,8 +114,6 @@ export class FiltersComponent implements OnInit {
   filterByDrafts(filterBy, yearFilter, quarterFilter) {
     // Clear all filter by their reference
     this.filterObj.dateRange = '';
-    // yearFilter.handleClearClick();
-    // this.filterObj.yearSelected = new Date().getFullYear();
     if (filterBy) {
       this.filterObj.filterSelectedValue = filterBy;
       switch (filterBy.value) {

@@ -30,6 +30,10 @@ export class QMSConstantsService {
     getMailTemplate: {
       select: 'Content',
       filter: "Title eq '{{templateName}}'"
+    },
+    getMilestoneTasks: {
+      select: 'Title, DefaultSkill, ScorecardRatingAllowed',
+      filter: "Status eq 'Active'",
     }
   };
   public reviewerComponent = {
@@ -41,7 +45,7 @@ export class QMSConstantsService {
       top: '{{TopCount}}'
     },
     prevOfReviewTasksUrl: {
-      select: 'ID, Title, SubMilestones, ProjectCode, Status, Milestone, AssignedTo/ID, AssignedTo/Title, Actual_x0020_End_x0020_Date, PrevTasks, NextTasks, Rated',
+      select: 'ID, Title, Task, SubMilestones, ProjectCode, Status, Milestone, AssignedTo/ID, AssignedTo/Title, Actual_x0020_End_x0020_Date, PrevTasks, NextTasks, Rated',
       expand: 'AssignedTo/ID, AssignedTo/Title',
       filter: "Title eq '{{PrevTaskTitle}}' and Rated eq 0",
       top: '1'
@@ -82,9 +86,9 @@ export class QMSConstantsService {
         top: '1'
       },
       getScorecard: {
-        select: 'ID,Title,SubMilestones, Comments,Created, AssignedTo/ID, AssignedTo/Title, Author/ID, Author/Title, DocumentsUrl, FeedbackType, SubmissionDate, AverageRating',
+        select: 'ID,Title,SubMilestones, Comments,Created, AssignedTo/ID, AssignedTo/Title, Author/ID, Author/Title, DocumentsUrl, FeedbackType, SubmissionDate, AverageRating, EvaluatorSkill',
         expand: 'AssignedTo, Author',
-        filter: "AssignedTo/ID eq '{{AssignedTo}}' {{FeedbackTypeFilter}} and Created ge '{{startDate}}' and Created le '{{endDate}}' and  Validity ne 0",
+        filter: "AssignedTo/ID eq '{{AssignedTo}}' {{RatingType}} {{FeedbackTypeFilter}} and Created ge '{{startDate}}' and Created le '{{endDate}}' and  Validity ne 0",
         top: '{{TopCount}}',
         orderby: 'Created desc'
       },

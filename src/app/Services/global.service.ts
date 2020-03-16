@@ -209,6 +209,7 @@ export class GlobalService {
       Status: '',
       PrevStatus: '',
       ProjectFolder: '',
+      projectType: ''
     },
     oMilestones: [],
     oTasks: {},

@@ -68,6 +68,8 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         endDate: '',
     };
 
+    min2Years = new Date();
+
     @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
     @ViewChild('popupMenu', { static: false }) popupMenu;
     @ViewChild('pi', { static: true }) paidInvTable: Table;
@@ -351,6 +353,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
     // Get Proformas InvoiceItemList
     outstandingInv: any = [];
     async getRequiredData() {
+        this.min2Years = new Date(new Date().setFullYear(new Date().getFullYear() - 2));
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         const obj = Object.assign({}, this.fdConstantsService.fdComponent.paidInvoices);
         obj.filter = obj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);

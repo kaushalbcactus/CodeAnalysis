@@ -94,7 +94,7 @@ export class NonStandardprojectComponent implements OnInit {
     // const batchGuid = this.spService.generateUUID();
     const oCurrentDate = new Date();
     let sYear = oCurrentDate.getFullYear();
-    sYear = oCurrentDate.getMonth() > 2 ? sYear + 1 : sYear;
+    //sYear = oCurrentDate.getMonth() > 2 ? sYear + 1 : sYear;
 
     const projectPerYearObj = Object.assign({}, this.queryConfig);
     projectPerYearObj.url = this.spService.getReadURL(this.constants.listNames.ProjectPerYear.name, this.pmConstant.TIMELINE_QUERY.PROJECT_PER_YEAR);

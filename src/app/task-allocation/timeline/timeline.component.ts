@@ -104,6 +104,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     ta: [],
     deliverable: [],
     account: [],
+    projectType: ''
   };
   public queryConfig = {
     data: null,
@@ -480,7 +481,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
               }
 
 
-              // Gantt Chart Sub Object 
+              // Gantt Chart Sub Object
               if (milestone.Title === milestoneTask.Milestone) {
                 if (milestoneTask.Status !== 'Deleted') {
                   let GanttTaskObj = {
@@ -673,7 +674,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                 }
               }
 
-              // Gantt Chart Sub Object 
+              // Gantt Chart Sub Object
 
               if (milestone.Title === milestoneTask.Milestone) {
                 if (milestoneTask.Status !== 'Deleted') {
@@ -947,7 +948,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
               }
             }
 
-            // Gantt Chart Sub Object 
+            // Gantt Chart Sub Object
 
             if (milestone.Title === milestoneTask.Milestone) {
               if (milestoneTask.Status !== 'Deleted') {
@@ -1073,7 +1074,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         }
       }
 
-      ////// Assign users 
+      ////// Assign users
 
       if (this.projectDetails === undefined) {
         this.assignUsers(allRetrievedTasks);
@@ -1113,7 +1114,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
 
   // *************************************************************************************************************************************
-  // Switch between Gantt chart and Tree table View  
+  // Switch between Gantt chart and Tree table View
   // *************************************************************************************************************************************
 
   public async assignUsers(allRetrievedTasks) {
@@ -2094,7 +2095,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     const startDate = nodeData.pUserStart;
     const endDate = nodeData.pUserEnd;
     var workingHours = this.workingHoursBetweenDates(startDate, endDate);
-    // Check if prev node slot then consider startdate of slot 
+    // Check if prev node slot then consider startdate of slot
     const prevNodeStartDate = ((prevNodeData.slotType === 'Slot' && nodeData.parentSlot) ?
       // || (prevNodeData.slotType === 'Slot' && prevNodeData.clickedInput && prevNodeData.clickedInput === 'start' && nodeData.parentSlot) ?
       new Date(prevNodeData.pStart) : new Date(prevNodeData.pEnd));
@@ -2375,10 +2376,10 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   /**
    * Cascading slot subtasks if start date of slot is changed
-   * @param sentPrevNode 
-   * @param element 
-   * @param subMilestonePosition 
-   * @param selectedMil 
+   * @param sentPrevNode
+   * @param element
+   * @param subMilestonePosition
+   * @param selectedMil
    */
   async compareSlotSubTasksTimeline(sentPrevNode1, subMilestonePosition, selectedMil) {
     // fetch slot based on submilestone presnt or not
@@ -2391,7 +2392,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     }
     // const sentPrevNode = subMilestonePosition === 0 ?  :
     //   this.milestoneData[selectedMil].children[subMilestonePosition - 1].children.find(st => st.data.pName === sentPrevNode1.pName);
-      
+
     let slotFirstTask = sentPrevNode ? sentPrevNode.children ? sentPrevNode.children.filter(st => !st.data.previousTask) : [] : [];
     // cascade if slot start date is more than first subtask in slot
     if (slotFirstTask.length) {
@@ -2419,12 +2420,12 @@ export class TimelineComponent implements OnInit, OnDestroy {
             }
           });
           if (sentPrevNode.data.status !== 'In Progress' && slotFirstTask[0].data.AssignedTo.ID && slotFirstTask[0].data.AssignedTo.ID !== -1) {
-            // All task of slot will be allocated at once so if first task is assigned to resource then check for resource and new task date availability 
+            // All task of slot will be allocated at once so if first task is assigned to resource then check for resource and new task date availability
             await this.checkTaskResourceAvailability(sentPrevNode, subMilestonePosition, selectedMil, this.sharedObject.oTaskAllocation.oResources);
           }
         }
       } else if (sentPrevNode.data.status !== 'In Progress' && slotFirstTask[0].data.AssignedTo.EMail) {
-        // All task of slot will be allocated at once so if first task is assigned to resource then check for resource and new task date availability 
+        // All task of slot will be allocated at once so if first task is assigned to resource then check for resource and new task date availability
         await this.checkTaskResourceAvailability(sentPrevNode, subMilestonePosition, selectedMil, this.sharedObject.oTaskAllocation.oResources);
       }
 
@@ -2433,9 +2434,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   /**
    * Deallocation / Reallocation logic
-   * @param slot 
-   * @param subMilestonePosition 
-   * @param selectedMil 
+   * @param slot
+   * @param subMilestonePosition
+   * @param selectedMil
    */
   async checkTaskResourceAvailability(slot, subMilestonePosition, selectedMil, oResources) {
     let deallocateSlot = false;
@@ -4029,7 +4030,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
             return false;
           }
           let validateAllocation = true;
-          // checkTasks = checkTasks.filter(t => t.IsCentrallyAllocated === 'No');
+          checkTasks = checkTasks.filter(t => t.slotType === 'Task');
           checkTasks.forEach(element => {
             const title = element.AssignedTo ? element.AssignedTo.Title : null;
             if (!title) {

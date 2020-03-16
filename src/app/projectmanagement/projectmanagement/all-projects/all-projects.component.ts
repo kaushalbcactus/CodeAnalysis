@@ -4,7 +4,7 @@ import { CommonService } from 'src/app/Services/common.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { PmconstantService } from '../../services/pmconstant.service';
 import { PMObjectService } from '../../services/pmobject.service';
-import { MenuItem, MessageService, DialogService, SelectItem, ConfirmationService, SortEvent } from 'primeng';
+import { MenuItem, MessageService, DialogService, SelectItem, ConfirmationService, SortEvent, DynamicDialogRef } from 'primeng';
 import { PMCommonService } from '../../services/pmcommon.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 // import { CommunicationComponent } from '../communication/communication.component';
@@ -20,6 +20,7 @@ import { ViewUploadDocumentDialogComponent } from 'src/app/shared/view-upload-do
 import { runInThisContext } from 'vm';
 import { CsFinanceAuditDialogComponent } from './cs-finance-audit-dialog/cs-finance-audit-dialog.component';
 import { audit } from 'rxjs/operators';
+import { InvoiceLineitemsComponent } from './invoice-lineitems/invoice-lineitems.component';
 
 declare var $;
 @Component({
@@ -314,6 +315,14 @@ export class AllProjectsComponent implements OnInit {
         {
           label: 'Cancel Project', command: (event) =>
             this.changeProjectStatus(this.selectedProjectObj, this.pmConstant.ACTION.CANCEL_PROJECT)
+        },
+        {
+          label: 'On Hold', command: (event) =>
+            this.InvoiceLineItemsPopup(this.selectedProjectObj, this.constants.projectStatus.OnHold)
+        },
+        {
+          label: 'Off Hold', command: (event) =>
+            this.InvoiceLineItemsPopup(this.selectedProjectObj, this.constants.projectStatus.Unallocated)
         }]
       },
       {
@@ -549,6 +558,7 @@ export class AllProjectsComponent implements OnInit {
         projObj.ReferenceCount = task.ReferenceCount ? task.ReferenceCount : 0;
         projObj.AnnotationBinder = task.AnnotationBinder ? task.AnnotationBinder : 'No';
         projObj.PrimaryResources = this.commonService.returnText(task.PrimaryResMembers.results);
+        projObj.PrimaryResourcesId = this.commonService.getResourceId((task.PrimaryResMembers.results));
         switch (projObj.Status) {
           case this.constants.projectStatus.InDiscussion:
             projObj.isRedIndicator = true;
@@ -839,7 +849,6 @@ export class AllProjectsComponent implements OnInit {
     menu.model[1].items.map(c => c.visible = true);
     menu.model[2].items.map(c => c.visible = true);
 
-
     if (route.indexOf('myDashboard') > -1) {
       menu.model[0].visible = false;
       menu.model[1].visible = false;
@@ -851,16 +860,28 @@ export class AllProjectsComponent implements OnInit {
           menu.model[0].items[1].visible = false;
           menu.model[0].items[2].visible = false;
           menu.model[0].items[3].visible = false;
+          menu.model[0].items[5].visible = false;
+          menu.model[0].items[6].visible = false;
           break;
         case this.constants.projectStatus.Unallocated:
         case this.constants.projectStatus.InProgress:
         case this.constants.projectStatus.ReadyForClient:
-        case this.constants.projectStatus.OnHold:
         case this.constants.projectStatus.AuthorReview:
           menu.model[0].items[0].visible = false;
           menu.model[0].items[2].visible = false;
           menu.model[0].items[3].visible = false;
+          menu.model[0].items[6].visible = false;
           break;
+
+        case this.constants.projectStatus.OnHold:
+          menu.model[0].items[0].visible = false;
+          menu.model[0].items[1].visible = false;
+          menu.model[0].items[2].visible = false;
+          menu.model[0].items[3].visible = false;
+          menu.model[0].items[4].visible = false;
+          menu.model[0].items[5].visible = false;
+          break
+
         case this.constants.projectStatus.AuditInProgress:
           menu.model[0].visible = false;
           // menu.model[0].items[0].visible = false;
@@ -869,14 +890,18 @@ export class AllProjectsComponent implements OnInit {
           // menu.model[0].items[4].visible = false;
           break;
         case this.constants.projectStatus.PendingClosure:
-          // menu.model[0].visible = false;
-          menu.model[0].items[0].visible = false;
-          menu.model[0].items[1].visible = false;
-          menu.model[0].items[2].visible = false;
-          menu.model[0].items[4].visible = false;
-          menu.model[1].items[1].visible = false;
+          menu.model[0].visible = false;
+          // menu.model[0].items[0].visible = false;
+          // menu.model[0].items[1].visible = false;
+          // menu.model[0].items[2].visible = false;
+          // menu.model[0].items[4].visible = false;
+          // menu.model[1].items[1].visible = false;
+          // menu.model[0].items[5].visible = false;
+          // menu.model[0].items[6].visible = false;
           break;
         case this.constants.projectStatus.Closed:
+          menu.model[0].visible = false;
+          break;
         case this.constants.projectStatus.Cancelled:
           menu.model[0].visible = false;
           menu.model[1].items[1].visible = false;
@@ -895,6 +920,29 @@ export class AllProjectsComponent implements OnInit {
       }
     }
 
+  }
+
+  InvoiceLineItemsPopup(selectedProjectObj, setStatus) {
+    var projObj: any = selectedProjectObj;
+    const ref = this.dialogService.open(InvoiceLineitemsComponent, {
+      data: {
+        projectObj: projObj,
+        Status: setStatus
+      },
+      header: 'Are you sure you want to change the Status of Project - ' + selectedProjectObj.ProjectCode + ''
+        + ' from ' + selectedProjectObj.Status + ' to ' + setStatus + '?',
+      contentStyle: { width: '100%', height: '100% !important' },
+      width: '100%'
+    });
+    ref.onClose.subscribe(obj => {
+      if (obj) {
+        if (obj.status == this.constants.projectStatus.Unallocated) {
+          this.changeProjectStatusOffHoldtoUnallocated(selectedProjectObj, obj.invoiceLineItems)
+        } else {
+          this.changeProjectStatusOnHold(selectedProjectObj)
+        }
+      }
+    });
   }
   /**
    * This method is called to change the project status based on current project status.
@@ -1739,6 +1787,162 @@ export class AllProjectsComponent implements OnInit {
     }, this.pmConstant.TIME_OUT);
   }
 
+  async changeProjectStatusOnHold(selectedProjectObj) {
+    console.log(selectedProjectObj)
+    const batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    const scheduleFilter = Object.assign({}, this.pmConstant.QUERY.GET_SCHEDULE_LIST_ITEM_BY_PROJECT_CODE);
+    scheduleFilter.filter = scheduleFilter.filter.replace(/{{projectCode}}/gi, selectedProjectObj.ProjectCode);
+    this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetSchedulesByProjCode');
+    const tasks = await this.spServices.readItems(this.constants.listNames.Schedules.name, scheduleFilter);
+
+    const filterTasks = tasks.filter(e => e.Task !== 'Select one' && e.Task !== "Client Review")
+
+    const scNotStartedUpdateData = {
+      __metadata: {
+        type: this.constants.listNames.Schedules.type
+      },
+      Status: this.constants.STATUS.DELETED,
+      NextTasks: '',
+      PrevTasks: '',
+    };
+
+    const scInProgressUpdateData = {
+      __metadata: {
+        type: this.constants.listNames.Schedules.type
+      },
+      Status: this.constants.STATUS.AUTO_CLOSED,
+      ActualEndDate: new Date(),
+      DueDate: new Date(),
+      ExpectedTime: '',
+      NextTasks: '',
+    };
+
+    const piOnHoldUpdateData = {
+      __metadata: {
+        type: this.constants.listNames.ProjectInformation.type
+      },
+      Status: this.constants.projectStatus.OnHold,
+      PrevStatus: selectedProjectObj.Status
+    };
+
+    const piUpdate = Object.assign({}, options);
+    piUpdate.data = piOnHoldUpdateData;
+    piUpdate.listName = this.constants.listNames.ProjectInformation.name;
+    piUpdate.type = 'PATCH';
+    piUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name,
+      selectedProjectObj.ID);
+    batchURL.push(piUpdate);
+
+    filterTasks.forEach(element => {
+      if (element.Status == this.constants.STATUS.NOT_STARTED) {
+        const scheduleStatusUpdate = Object.assign({}, options);
+        scheduleStatusUpdate.data = scNotStartedUpdateData;
+        scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
+        scheduleStatusUpdate.type = 'PATCH';
+        scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
+          element.ID);
+        batchURL.push(scheduleStatusUpdate);
+      } else if (element.Status == this.constants.STATUS.IN_PROGRESS) {
+        const scheduleStatusUpdate = Object.assign({}, options);
+        scInProgressUpdateData.ExpectedTime = element.TimeSpent;
+        scheduleStatusUpdate.data = scInProgressUpdateData;
+        scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
+        scheduleStatusUpdate.type = 'PATCH';
+        scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
+          element.ID);
+        batchURL.push(scheduleStatusUpdate);
+      }
+    });
+
+
+    console.log(batchURL)
+
+    if (batchURL.length) {
+      this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'setProjectOnHold');
+      await this.spServices.executeBatch(batchURL);
+      this.messageService.add({
+        key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
+        detail: 'Project - ' + selectedProjectObj.ProjectCode + ' Updated Successfully.'
+      });
+      this.sendEmailBasedOnStatus(this.constants.projectStatus.OnHold, selectedProjectObj);
+    }
+
+    setTimeout(() => {
+      if (this.router.url === '/projectMgmt/allProjects') {
+        this.pmObject.allProjectItems = [];
+        this.reloadAllProject();
+      } else {
+        this.router.navigate(['/projectMgmt/allProjects']);
+      }
+    }, this.pmConstant.TIME_OUT);
+  }
+
+  async changeProjectStatusOffHoldtoUnallocated(selectedProjectObj, invoiceLineItems) {
+    console.log(selectedProjectObj)
+    const batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    const piUdateData: any = {
+      __metadata: {
+        type: this.constants.listNames.ProjectInformation.type
+      },
+      Status: this.constants.projectStatus.Unallocated,
+      PrevStatus: selectedProjectObj.Status,
+    };
+
+
+    invoiceLineItems.forEach(element => {
+      const lineItemsData: any = {
+        __metadata: { type: this.constants.listNames.InvoiceLineItems.type },
+        ScheduledDate: element.date,
+      };
+
+      const invoiceUpdate = Object.assign({}, options);
+      invoiceUpdate.url = this.spServices.getItemURL(this.constants.listNames.InvoiceLineItems.name, element.Id);
+      invoiceUpdate.data = lineItemsData;
+      invoiceUpdate.type = 'PATCH';
+      invoiceUpdate.listName = this.constants.listNames.InvoiceLineItems.name;
+      batchURL.push(invoiceUpdate);
+    })
+
+    const piUpdate = Object.assign({}, options);
+    piUpdate.data = piUdateData;
+    piUpdate.listName = this.constants.listNames.ProjectInformation.name;
+    piUpdate.type = 'PATCH';
+    piUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, selectedProjectObj.ID);
+    batchURL.push(piUpdate);
+
+    console.log(batchURL)
+
+    if (batchURL.length) {
+      this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'undoOnHold');
+      await this.spServices.executeBatch(batchURL);
+      this.messageService.add({
+        key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
+        detail: 'Project - ' + selectedProjectObj.ProjectCode + ' Updated Successfully.'
+      });
+    }
+
+    setTimeout(() => {
+      if (this.router.url === '/projectMgmt/allProjects') {
+        this.pmObject.allProjectItems = [];
+        this.reloadAllProject();
+      } else {
+        this.router.navigate(['/projectMgmt/allProjects']);
+      }
+    }, this.pmConstant.TIME_OUT);
+  }
+
 
   getTaskObject(batchURL, options, task, data) {
     const taskObj = Object.assign({}, options);
@@ -2215,42 +2419,59 @@ export class AllProjectsComponent implements OnInit {
     const queryText = val;
     const projectCode = selectedProjectObj.ProjectCode;
     let arrayTo = [];
-    const arrayCC = [];
+    let arrayCC = [];
     let alterID = '';
     if (selectedProjectObj.ShortTitle) {
       alterID = '(' + selectedProjectObj.ShortTitle + ')';
     }
-    let mailSubject = projectCode + ' : ' + val;
+    let mailSubject = projectCode + alterID + ' : ' + header;
     const objEmailBody = [];
     let tempArray = [];
     const cm1IdArray = [];
+    const delivery1Id = [];
+    const primaryRes = [];
     selectedProjectObj.CMLevel1ID.forEach(element => {
       cm1IdArray.push(element.ID);
     });
-    tempArray = tempArray.concat(cm1IdArray, selectedProjectObj.CMLevel2ID);
-    arrayTo = this.pmCommonService.getEmailId(tempArray);
-    mailSubject = projectCode + alterID + ' : ' + header;
-    objEmailBody.push({ key: '@@Val1@@', value: projectCode });
-    if (status !== this.constants.projectStatus.SentToAMForApproval) {
-      objEmailBody.push({ key: '@@Val2@@', value: selectedProjectObj.ClientLegalEntity });
-      objEmailBody.push({ key: '@@Val3@@', value: 'All' });
-    }
-    if (status === this.constants.projectStatus.SentToAMForApproval) {
-      objEmailBody.push({ key: '@@Val2@@', value: selectedProjectObj.Title });
-      objEmailBody.push({ key: '@@Val3@@', value: selectedProjectObj.DeliverableType });
-      objEmailBody.push({ key: '@@Val4@@', value: selectedProjectObj.Client });
-      objEmailBody.push({ key: '@@Val5@@', value: selectedProjectObj.PrimaryPOCText });
-      objEmailBody.push({ key: '@@Val8@@', value: selectedProjectObj.PrimaryPOCText });
-    }
-    if (status !== this.constants.projectStatus.Unallocated) {
-      const hrs = await this.updateUsedHrs();
+    selectedProjectObj.DeliveryLevel1ID.forEach(element => {
+      delivery1Id.push(element.ID);
+    });
+    selectedProjectObj.PrimaryResourcesId.forEach(element => {
+      primaryRes.push(element.Id);
+    });
+    if (status == this.constants.projectStatus.OnHold) {
+      arrayCC = arrayCC.concat(cm1IdArray, selectedProjectObj.CMLevel2ID);
+      arrayCC = this.pmCommonService.getEmailId(arrayCC);
+      arrayTo = arrayTo.concat(delivery1Id, selectedProjectObj.DeliveryLevel2ID, primaryRes)
+      arrayTo = this.pmCommonService.getEmailId(arrayTo);
+    } else {
+      tempArray = tempArray.concat(cm1IdArray, selectedProjectObj.CMLevel2ID);
+      arrayTo = this.pmCommonService.getEmailId(tempArray);
+      objEmailBody.push({ key: '@@Val1@@', value: projectCode });
+      if (status !== this.constants.projectStatus.SentToAMForApproval) {
+        objEmailBody.push({ key: '@@Val2@@', value: selectedProjectObj.ClientLegalEntity });
+        objEmailBody.push({ key: '@@Val3@@', value: 'All' });
+      }
       if (status === this.constants.projectStatus.SentToAMForApproval) {
-        objEmailBody.push({ key: '@@Val6@@', value: hrs });
-      } else {
-        objEmailBody.push({ key: '@@Val5@@', value: hrs });
+        objEmailBody.push({ key: '@@Val2@@', value: selectedProjectObj.Title });
+        objEmailBody.push({ key: '@@Val3@@', value: selectedProjectObj.DeliverableType });
+        objEmailBody.push({ key: '@@Val4@@', value: selectedProjectObj.Client });
+        objEmailBody.push({ key: '@@Val5@@', value: selectedProjectObj.PrimaryPOCText });
+        objEmailBody.push({ key: '@@Val8@@', value: selectedProjectObj.PrimaryPOCText });
+      }
+      if (status !== this.constants.projectStatus.Unallocated) {
+        const hrs = await this.updateUsedHrs();
+        if (status === this.constants.projectStatus.SentToAMForApproval) {
+          objEmailBody.push({ key: '@@Val6@@', value: hrs });
+        } else {
+          objEmailBody.push({ key: '@@Val5@@', value: hrs });
+        }
       }
     }
     arrayCC.push(this.pmObject.currLoginInfo.Email);
+    arrayTo = Array.from(new Set(arrayTo));
+    arrayCC = Array.from(new Set(arrayCC));
+
     this.pmCommonService.getTemplate(queryText, objEmailBody, mailSubject, arrayTo, arrayCC);
   }
   /**
@@ -2274,6 +2495,10 @@ export class AllProjectsComponent implements OnInit {
       case this.constants.projectStatus.SentToAMForApproval:
         this.sendNotificationMail(this.constants.EMAIL_TEMPLATE_NAME.APPROVED_PROJECT,
           'Approve project for billing', selectedProjectObj, status);
+        break;
+      case this.constants.projectStatus.OnHold:
+        this.sendNotificationMail(this.constants.EMAIL_TEMPLATE_NAME.ON_HOLD,
+          'On Hold', selectedProjectObj, status);
         break;
     }
   }
@@ -2324,6 +2549,7 @@ export class AllProjectsComponent implements OnInit {
         arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
       } else {
         const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.USER_SPECIFIC_SOW);
+        sowFilter.filter = sowFilter.filter.replace('{{UserID}}', this.globalObject.currentUser.userId.toString());
         this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetSow');
         arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
       }
@@ -2737,6 +2963,7 @@ export class AllProjectsComponent implements OnInit {
       projectInfoFilter = Object.assign({}, this.pmConstant.PM_QUERY.PROJECT_INFORMATION_BY_PROJECTCODE_ALL);
     } else {
       projectInfoFilter = Object.assign({}, this.pmConstant.PM_QUERY.PROJECT_INFORMATION_BY_PROJECTCODE);
+      projectInfoFilter.filter = projectInfoFilter.filter.replace('{{UserID}}', this.globalObject.currentUser.userId.toString());
     }
 
     projectInfoFilter.filter = projectInfoFilter.filter.replace(/{{projectCode}}/gi,
