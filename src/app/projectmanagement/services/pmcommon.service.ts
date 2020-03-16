@@ -923,6 +923,7 @@ export class PMCommonService {
     this.pmObject.addProject.FinanceManagement.ClientLegalEntity = '';
     this.pmObject.addProject.FinanceManagement.selectedFile = '';
     this.pmObject.addProject.FinanceManagement.isBudgetRateAdded = false;
+    this.pmObject.addProject.FinanceManagement.POArray = [];
     this.pmObject.addProject.SOWSelect.GlobalFilterValue = '';
 
   }
