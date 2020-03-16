@@ -1,6 +1,5 @@
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { DynamicDialogConfig, DynamicDialogRef, MessageService } from 'primeng';
-import { runInThisContext } from 'vm';
 
 @Component({
   selector: 'app-audit-project-dialog',
