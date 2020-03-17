@@ -1774,7 +1774,6 @@ export class AllProjectsComponent implements OnInit {
   }
 
   async changeProjectStatusOnHold(selectedProjectObj, invoiceLineItems) {
-    console.log(selectedProjectObj)
     const batchURL = [];
     const options = {
       data: null,
@@ -1787,7 +1786,7 @@ export class AllProjectsComponent implements OnInit {
     this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetSchedulesByProjCode');
     const tasks = await this.spServices.readItems(this.constants.listNames.Schedules.name, scheduleFilter);
 
-    const filterTasks = tasks.filter(e => e.Task !== 'Select one' && e.Task !== "Client Review")
+    const filterTasks = tasks.filter(e => e.Task !== 'Select one')
 
     const scNotStartedUpdateData = {
       __metadata: {
@@ -1803,10 +1802,17 @@ export class AllProjectsComponent implements OnInit {
         type: this.constants.listNames.Schedules.type
       },
       Status: this.constants.STATUS.AUTO_CLOSED,
-      ActualEndDate: new Date(),
+      Actual_x0020_End_x0020_Date: new Date(),
       DueDate: new Date(),
       ExpectedTime: '',
       NextTasks: '',
+    };
+
+    const scCRUpdateData = {
+      __metadata: {
+        type: this.constants.listNames.Schedules.type
+      },
+      PrevTasks: '',
     };
 
     const piOnHoldUpdateData = {
@@ -1857,11 +1863,18 @@ export class AllProjectsComponent implements OnInit {
         scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
           element.ID);
         batchURL.push(scheduleStatusUpdate);
+      } else if (element.Status == "Client Review") {
+        const scheduleStatusUpdate = Object.assign({}, options);
+        scheduleStatusUpdate.data = scCRUpdateData;
+        scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
+        scheduleStatusUpdate.type = 'PATCH';
+        scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
+          element.ID);
+        batchURL.push(scheduleStatusUpdate);
       }
     });
 
-
-    console.log(batchURL)
+    // console.log(batchURL)
 
     if (batchURL.length) {
       this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'setProjectOnHold');
@@ -1884,7 +1897,6 @@ export class AllProjectsComponent implements OnInit {
   }
 
   async changeProjectStatusOffHoldtoUnallocated(selectedProjectObj, invoiceLineItems) {
-    console.log(selectedProjectObj)
     const batchURL = [];
     const options = {
       data: null,
@@ -1922,7 +1934,7 @@ export class AllProjectsComponent implements OnInit {
     piUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, selectedProjectObj.ID);
     batchURL.push(piUpdate);
 
-    console.log(batchURL)
+    // console.log(batchURL)
 
     if (batchURL.length) {
       this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'undoOnHold');
