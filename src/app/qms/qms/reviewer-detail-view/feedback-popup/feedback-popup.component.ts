@@ -128,15 +128,15 @@ export class FeedbackPopupComponent implements OnInit {
   }
 
   validateScorecard() {
+    const emptyScorecard = this.scorecardTasks.tasks.filter(t => !t.ignoreFeedback && t.selectedTemplate.averageRating <= 0);
     const milestone = this.scorecardTasks.currentTask.Milestone ? this.scorecardTasks.currentTask.Milestone : this.scorecardTasks.currentTask.milestone;
-    if (milestone === 'Draft 1') {
+    if (milestone === 'Draft 1' && emptyScorecard.length) {
       this.messageService.add({
         key: 'custom', severity: 'warn', summary: 'Warning Message', life: 10000,
         detail: 'Rating Draft 1 milestone task is mandatory.'
       });
       return false;
     }
-    const emptyScorecard = this.scorecardTasks.tasks.filter(t => !t.ignoreFeedback && t.selectedTemplate.averageRating <= 0);
     if (emptyScorecard.length) {
       const tasksNames = emptyScorecard.map(s => s.task);
       const taskString = tasksNames.join(',');
@@ -172,9 +172,9 @@ export class FeedbackPopupComponent implements OnInit {
         this.closeFeedback();
         if (Object.keys(this.scorecardTasks.currentTask).length > 0) {
           switch (this.scorecardTasks.currentTask.parent) {
-            case 'Dashboard':
-              this.popupClosed.emit(this.scorecardTasks.currentTask);
-              break;
+            // case 'Dashboard':
+            //   this.popupClosed.emit(this.scorecardTasks.currentTask);
+            //   break;
             case 'Retrospective':
               this.bindTableEvent.emit(this.global.oReviewerPendingTasks);
               break;
@@ -190,6 +190,9 @@ export class FeedbackPopupComponent implements OnInit {
         }
         this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'Rating updated!' });
       }
+    }
+    if (this.scorecardTasks.currentTask.parent === 'Dashboard') {
+      this.popupClosed.emit(this.scorecardTasks.currentTask);
     }
   }
 
