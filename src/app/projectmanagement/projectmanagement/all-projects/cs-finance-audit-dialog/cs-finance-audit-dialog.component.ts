@@ -211,12 +211,20 @@ export class CsFinanceAuditDialogComponent implements OnInit {
       debugger;
 
       const addRollingProjectArray = [
-        { checked: false, parameter: 'All necessary project details updated', comments: '' },
-        { checked: false, parameter: 'All files uploaded', comments: '' },
-        { checked: false, parameter: 'All tasks completed and hrs updated', comments: '' },
-        { checked: false, parameter: 'Invoicing is complete', comments: '' },
-        { checked: false, parameter: 'Budget hours updated', comments: '' },
+        { checked: false, parameter: 'All project attributes are correct', comments: '' },
+        { checked: false, parameter: 'Final documents uploaded for all the tasks', comments: '' },
+        { checked: false, parameter: 'Is the project budget and budget hours correct?', comments: '' },
+        { checked: false, parameter: 'Has ER been fully accrued?', comments: '' },
+        { checked: false, parameter: 'Is the pub support status updated to submitted?', comments: '' },
       ];
+
+      // const addRollingProjectArray = [
+      //   { checked: false, parameter: 'All necessary project details updated', comments: '' },
+      //   { checked: false, parameter: 'All files uploaded', comments: '' },
+      //   { checked: false, parameter: 'All tasks completed and hrs updated', comments: '' },
+      //   { checked: false, parameter: 'Invoicing is complete', comments: '' },
+      //   { checked: false, parameter: 'Budget hours updated', comments: '' },
+      // ];
       // this.pmObject.isAuditRollingVisible = true;
       const ref = this.dialogService.open(AuditProjectDialogComponent, {
         header: ' Audit Projects',
@@ -357,24 +365,25 @@ export class CsFinanceAuditDialogComponent implements OnInit {
 
         UniqueInvalidExpenses = [].concat(UniqueInvalidBilledExpenses, UniqueInvalidNonBilledExpenses).filter((item, index) => [].concat(UniqueInvalidBilledExpenses, UniqueInvalidNonBilledExpenses).indexOf(item) === index);
       }
+      const errorMessage = [];
       if (UniqueInvalidExpenses.length > 0 || UniqueInvalidInvoices.length > 0) {
         if (UniqueInvalidInvoices.length > 0) {
-          this.messageService.add({
+          errorMessage.push({
             key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
             detail: UniqueInvalidInvoices.join(', ') + ' line items are not Confirmed.'
           });
-
         }
 
         if (UniqueInvalidExpenses.length > 0) {
-          this.messageService.add({
+          errorMessage.push({
             key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
             detail: UniqueInvalidExpenses.join(', ') + ' expense are not scheduled / confirmed.'
-          });
+          })
         }
+        this.messageService.addAll(errorMessage);
         this.modalloaderenable = false;
         this.buttonloader = false;
-        this.csref.close(this.projectUpdated);
+        // this.csref.close(this.projectUpdated);
       }
       else {
 
