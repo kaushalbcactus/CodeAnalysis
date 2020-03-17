@@ -205,7 +205,7 @@ export class UserFeedbackComponent implements OnInit, AfterViewChecked {
         Title: element.Title ? element.Title : '',
         Type: element.FeedbackType ? element.FeedbackType : '',
         Feedbackby: element.Author.Title ? element.Author.Title : '',
-        EvaluatorSkill: element.EvaluatorSkill !== undefined ? element.EvaluatorSkill === '' ? 'Reviewer' : element.EvaluatorSkill : '',
+        EvaluatorSkill: element.EvaluatorSkill !== undefined || element.EvaluatorSkill !== null ? element.EvaluatorSkill === '' ? 'Reviewer' : element.EvaluatorSkill : '',
         Rating: element.AverageRating ? element.AverageRating : '',
         Comments: element.Comments ? element.Comments : '',
         Parameters: element.ParameterRating ? element.ParameterRating : '',

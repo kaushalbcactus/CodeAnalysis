@@ -81,7 +81,6 @@ export class DragDropComponent implements OnInit {
     private constants: ConstantsService,
     private taskAllocationService: TaskAllocationConstantsService,
     private messageService: MessageService,
-    private taskCommonService: TaskAllocationCommonService,
     private commonService: CommonService) { }
 
   ngOnInit() {
@@ -183,6 +182,9 @@ export class DragDropComponent implements OnInit {
               });
               this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links = [...links];
             }
+          }
+          else{
+            this.milestoneIndex++;
           }
         }
       });
