@@ -22,17 +22,17 @@ export interface IScorecard {
   reviewTaskDocUrl: string;
   reviewTask: string;
   selectedTemplate: {
-    Id: number,
+    ID: number,
     Title: string,
     tooltip: string,
-    templateMatrix: Array<{
-      question: string,
-      questionId: number,
-      rating: number,
-      tooltip: string
-    }>,
-    averageRating: number
   };
+  templateMatrix: Array<{
+    question: string,
+    questionId: number,
+    rating: number,
+    tooltip: string
+  }>;
+  averageRating: number;
   feedbackComment: string;
   ignoreFeedback: boolean;
 }
