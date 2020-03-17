@@ -183,9 +183,6 @@ export class DragDropComponent implements OnInit {
               this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links = [...links];
             }
           }
-          else{
-            // this.milestoneIndex++;
-          }
         }
       });
       this.milestoneIndex = -1;

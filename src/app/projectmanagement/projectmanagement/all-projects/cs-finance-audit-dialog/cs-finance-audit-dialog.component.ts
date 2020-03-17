@@ -344,6 +344,8 @@ export class CsFinanceAuditDialogComponent implements OnInit {
         dbInvoiceLineItems = [].concat(...dbExpenseInvoiceArray.filter(c => c.listName === 'InvoiceLineItems').map(c => c.retItems));
         dbExpenseLineItems = [].concat(...dbExpenseInvoiceArray.filter(c => c.listName === 'SpendingInfo').map(c => c.retItems));
       }
+
+      debugger
       let UniqueInvalidInvoices = [];
       if (dbInvoiceLineItems) {
         if (dbInvoiceLineItems.filter(c => c.Status !== 'Approved')) {
@@ -360,7 +362,7 @@ export class CsFinanceAuditDialogComponent implements OnInit {
         }
         const AllNonBillable = dbExpenseLineItems.filter(c => c.Category === 'Non Billable');
         if (AllNonBillable) {
-          UniqueInvalidNonBilledExpenses = AllBillable.filter(c => c.Status.indexOf('Approved') === -1 && c.Status !== 'Rejected' && c.Status !== 'Cancelled') ? AllBillable.filter(c => c.Status.indexOf('Approved') === -1 && c.Status !== 'Rejected' && c.Status !== 'Cancelled').map(c => c.Title).filter((item, index) => AllBillable.filter(c => c.Status.indexOf('Approved') === -1 && c.Status !== 'Rejected' && c.Status !== 'Cancelled').map(c => c.Title).indexOf(item) === index) : [];
+          UniqueInvalidNonBilledExpenses = AllNonBillable.filter(c => c.Status.indexOf('Approved') === -1 && c.Status !== 'Rejected' && c.Status !== 'Cancelled') ? AllNonBillable.filter(c => c.Status.indexOf('Approved') === -1 && c.Status !== 'Rejected' && c.Status !== 'Cancelled').map(c => c.Title).filter((item, index) => AllNonBillable.filter(c => c.Status.indexOf('Approved') === -1 && c.Status !== 'Rejected' && c.Status !== 'Cancelled').map(c => c.Title).indexOf(item) === index) : [];
         }
 
         UniqueInvalidExpenses = [].concat(UniqueInvalidBilledExpenses, UniqueInvalidNonBilledExpenses).filter((item, index) => [].concat(UniqueInvalidBilledExpenses, UniqueInvalidNonBilledExpenses).indexOf(item) === index);
@@ -370,7 +372,7 @@ export class CsFinanceAuditDialogComponent implements OnInit {
         if (UniqueInvalidInvoices.length > 0) {
           errorMessage.push({
             key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
-            detail: UniqueInvalidInvoices.join(', ') + ' line items are not Confirmed.'
+            detail: UniqueInvalidInvoices.join(', ') + ' line items are not approved.'
           });
         }
 
