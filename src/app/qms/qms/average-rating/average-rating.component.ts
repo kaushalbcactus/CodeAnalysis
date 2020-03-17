@@ -13,7 +13,7 @@ export class AverageRatingComponent implements OnInit, OnChanges {
   @Output() filter = new EventEmitter();
   // @Output() avgRatings: EventEmitter<IAverageRatings> = new EventEmitter();
   public ratingTypes = {
-    Write: 'Write', Edit: 'Edit', Quality: 'Quality', Graphics: 'Graphics', Reviewer: ''
+    Write: 'Write', Edit: 'Edit', Quality: 'QC', Graphics: 'Graphics', Reviewer: ''
   };
   cols: any[];
   public averageRatings = [];

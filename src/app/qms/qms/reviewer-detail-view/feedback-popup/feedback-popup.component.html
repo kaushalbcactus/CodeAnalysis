@@ -20,7 +20,7 @@
     >
     <p-header>
       <span>{{task.submilestones ? task.task + '-' + task.submilestones : task.task}}</span>
-      <span *ngIf="task?.milestone !== 'Draft 1' || scorecardTasks?.currentTask?.parent === 'Dashboard'" title="Ignore Feedback" class="ignoreIcon"><p-inputSwitch (onChange)="onIgnoreClicked(task, $event)" [(ngModel)]="task.ignoreFeedback"></p-inputSwitch></span>
+      <span *ngIf="task?.milestone !== 'Draft 1' && scorecardTasks.tasks.length > 1" title="Ignore Feedback" class="ignoreIcon"><p-inputSwitch (onChange)="onIgnoreClicked(task, $event)" [(ngModel)]="task.ignoreFeedback"></p-inputSwitch></span>
 
     </p-header>
       <div class="ratework-popup">
@@ -127,7 +127,7 @@
   <div class="footer">
     <div>
       <button
-       *ngIf="this.scorecardTasks.currentTask?.Milestone !== 'Draft 1'"
+       *ngIf="scorecardTasks.tasks.length === 1"
         type="button"
         class="btn btn-light button cancel-rating"
         (click)="cancel()"
