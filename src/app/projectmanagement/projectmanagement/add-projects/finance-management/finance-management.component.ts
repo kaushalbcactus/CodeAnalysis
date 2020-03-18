@@ -17,6 +17,8 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
   isPOTableHidden = true;
   budgetHoursSection = false;
   isManageFinanceLoaderHidden = false;
+  isFinanceLoaderHidden = false;
+  isFinanceTableHidden = true;
   budgetTotal = 0;
   budgetNet = 0;
   budgetOOP = 0;
@@ -42,9 +44,9 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
   ngOnInit() {
     this.loadFinanceManagementInit();
   }
-  async loadFinanceManagementInit() {
-    await this.pmCommon.setBilledBy();
-    setTimeout(() => {
+  loadFinanceManagementInit() {
+    setTimeout(async () => {
+      await this.pmCommon.setBilledBy();
       const sow = this.pmObject.allSOWItems.filter(objt => objt.SOWCode === this.pmObject.addProject.SOWSelect.SOWCode);
       if (sow && sow.length) {
         this.clientLegalEntity = sow[0].ClientLegalEntity;
@@ -54,8 +56,6 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
         this.billedBy = this.pmObject.addProject.FinanceManagement.BilledBy;
       }
       this.setHeaderColumn();
-      // this.poData = [];
-      // this.budgetData = [];
       this.budgethours = this.pmObject.addProject.Timeline.Standard.IsStandard ?
         this.pmObject.addProject.Timeline.Standard.StandardProjectBugetHours :
         this.pmObject.addProject.Timeline.NonStandard.ProjectBudgetHours;
@@ -67,6 +67,8 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
       if (currency && currency.length) {
         this.pmObject.addProject.FinanceManagement.Currency = currency[0].Currency;
       }
+      this.isFinanceLoaderHidden = true;
+      this.isFinanceTableHidden = false;
     }, this.pmConstant.TIME_OUT);
   }
   ngOnChanges(changes: SimpleChanges) {

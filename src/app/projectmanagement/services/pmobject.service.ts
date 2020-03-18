@@ -252,7 +252,12 @@ export class PMObjectService {
       SOWBoxLink: '',
       ConferenceJournal: '',
       Authors: '',
-      Comments: ''
+      Comments: '',
+      AnnotationBinder: false,
+      SlideCount: 0,
+      PageCount: 0,
+      ReferenceCount: 0
+
     },
     Timeline: {
       Standard: {

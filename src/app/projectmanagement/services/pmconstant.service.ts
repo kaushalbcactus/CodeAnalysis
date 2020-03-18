@@ -12,7 +12,8 @@ export class PmconstantService {
     CMLevel1: 'CM L1',
     CMLevel2: 'CM L2',
     DELIVERY_LEVEL_1: 'Delivery L1',
-    DELIVERY_LEVEL_2: 'Delivery L2'
+    DELIVERY_LEVEL_2: 'Delivery L2',
+    BUSINESS_DEVELOPMENT: 'Business Development',
   };
   public RESOURCES_CATEGORY = {
     BUSINESS_DEVELOPMENT: 'Business Development',
@@ -66,13 +67,26 @@ export class PmconstantService {
     filter: 'Title eq \'{0}\''
   };
 
+  public milestoneOptions = {
+    select: 'ID,Title,ProjectCode,Milestone,SubMilestones',
+    filter: "ProjectCode eq '{{projectCode}}' and Title eq '{{milestone}}'",
+    top: 4200
+  };
+
+  public projectOptions = {
+    select: 'ID,Title,Task,Status,NextTasks,ExpectedTime,PrevTasks,Milestone,SubMilestones,DisableCascade, ParentSlot,FileSystemObjectType',
+    filter: "ProjectCode eq '{{projectCode}}'",
+    top: 4500
+  };
+
+
   public pInfoPendingAllocationIndiviualViewOptions = {
     select: 'PubSupportStatus,PrimaryResMembers/Id,PrimaryResMembers/Title,AllDeliveryResources/Id,'
       + 'AllDeliveryResources/Title,AllOperationresources/Id,AllOperationresources/Title,ClientLegalEntity,Title,'
       + 'ID,DeliverableType,SubDeliverable,TA,Molecule,ProjectCode,Status,Milestone,WBJID,StatusReportDesc,NextSCDate,PrimaryPOC,Description',
     expand: 'PrimaryResMembers/Id,PrimaryResMembers/Title,AllDeliveryResources/Id,AllDeliveryResources/Title,'
       + 'AllOperationresources/Id,AllOperationresources/Title,PrimaryResMembers/Id,PrimaryResMembers/Title',
-    filter: '((AllOperationresources/Id eq ' + this.global.currentUser.userId + ') and (Status eq \'Unallocated\'))',
+    filter: '((AllOperationresources/Id eq {{UserID}}) and (Status eq \'Unallocated\'))',
     orderby: 'ProjectCode asc',
     top: '4500'
   };
@@ -82,7 +96,7 @@ export class PmconstantService {
       + 'ID,DeliverableType,SubDeliverable,TA,Molecule,ProjectCode,Status,Milestone,WBJID,StatusReportDesc,NextSCDate,PrimaryPOC,Description',
     expand: 'PrimaryResMembers/Id,PrimaryResMembers/Title,AllDeliveryResources/Id,AllDeliveryResources/Title,'
       + 'AllOperationresources/Id,AllOperationresources/Title,PrimaryResMembers/Id,PrimaryResMembers/Title',
-    filter: '((AllOperationresources/Id eq ' + this.global.currentUser.userId + ') and '
+    filter: '((AllOperationresources/Id eq {{UserID}}) and '
       + ' (Status eq \'On Hold\' or Status eq \'In Discussion\'))',
     orderby: 'ProjectCode asc',
     top: '4500'
@@ -95,7 +109,7 @@ export class PmconstantService {
         // tslint:disable-next-line:max-line-length
         + 'Description, ConferenceJournal, Comments, PO, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
         + 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID,'
-        + 'DeliveryLevel2/Title, BusinessVertical, BillingEntity, SOWLink, PubSupportStatus, IsStandard, StandardService,'
+        + 'DeliveryLevel2/Title, BusinessVertical, BillingEntity, SOWLink, PubSupportStatus, IsStandard, StandardService,SlideCount,PageCount,ReferenceCount,AnnotationBinder,'
         + 'PrimaryResMembers/Id,PrimaryResMembers/Title,Editor/Title',
       expand: 'Author/Id,Author/Title, CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title,'
         + 'DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title,'
@@ -111,13 +125,13 @@ export class PmconstantService {
         // tslint:disable-next-line:max-line-length
         + 'Description, ConferenceJournal, Comments, PO, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
         + 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID,'
-        + 'DeliveryLevel2/Title, BusinessVertical, BillingEntity, SOWLink, PubSupportStatus, IsStandard, StandardService,'
+        + 'DeliveryLevel2/Title, BusinessVertical, BillingEntity, SOWLink, PubSupportStatus, IsStandard, StandardService,SlideCount,PageCount,ReferenceCount,AnnotationBinder,'
         + 'PrimaryResMembers/Id,PrimaryResMembers/Title,Editor/Title',
       expand: 'Author/Id,Author/Title, CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title,'
         + 'DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title,'
         + 'PrimaryResMembers/Id,PrimaryResMembers/Title,Editor/Title',
       // tslint:disable-next-line:max-line-length
-      filter: '(Status ne \'Closed\') and (Status ne \'Cancelled\') and (AllOperationresources/Id eq ' + this.global.currentUser.userId + ')',
+      filter: '(Status ne \'Closed\') and (Status ne \'Cancelled\') and (AllOperationresources/Id eq {{UserID}})',
       orderby: 'Modified desc',
       top: 4500
     },
@@ -128,13 +142,13 @@ export class PmconstantService {
         // tslint:disable-next-line:max-line-length
         + 'Description, ConferenceJournal, Comments, PO, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
         + 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID,'
-        + 'DeliveryLevel2/Title, BusinessVertical, BillingEntity, SOWLink, PubSupportStatus, IsStandard, StandardService,'
+        + 'DeliveryLevel2/Title, BusinessVertical, BillingEntity, SOWLink, PubSupportStatus, IsStandard, StandardService,SlideCount,PageCount,ReferenceCount,AnnotationBinder,'
         + 'PrimaryResMembers/Id,PrimaryResMembers/Title',
       expand: 'Author/Id,Author/Title, CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title,'
         + 'DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title,'
         + 'PrimaryResMembers/Id,PrimaryResMembers/Title',
       // tslint:disable-next-line:max-line-length
-      filter: '(Status ne \'Closed\') and (Status ne \'Cancelled\') and (AllOperationresources/Id eq ' + this.global.currentUser.userId + ' or AllDeliveryResources/Id eq ' + this.global.currentUser.userId + ')',
+      filter: '(Status ne \'Closed\') and (Status ne \'Cancelled\') and (AllOperationresources/Id eq {{UserID}} or AllDeliveryResources/Id eq {{UserID}})',
       orderby: 'Modified desc',
       top: 4500
     },
@@ -145,12 +159,12 @@ export class PmconstantService {
         // tslint:disable-next-line:max-line-length
         + 'Description, ConferenceJournal, Comments, PO, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
         + 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID,'
-        + 'DeliveryLevel2/Title, BusinessVertical, BillingEntity, SOWLink, PubSupportStatus, IsStandard, StandardService,'
+        + 'DeliveryLevel2/Title, BusinessVertical, BillingEntity, SOWLink, PubSupportStatus, IsStandard, StandardService,SlideCount,PageCount,ReferenceCount,AnnotationBinder,'
         + 'PrimaryResMembers/Id,PrimaryResMembers/Title',
       expand: 'Author/Id,Author/Title, CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title,'
         + 'DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title,'
         + 'PrimaryResMembers/Id,PrimaryResMembers/Title',
-      filter: 'ProjectCode eq \'{{projectCode}}\' and (Status eq \'Closed\' or Status eq \'Cancelled\') and (AllOperationresources/Id eq ' + this.global.currentUser.userId + ')',
+      filter: 'ProjectCode eq \'{{projectCode}}\' and (Status eq \'Closed\' or Status eq \'Cancelled\') and (AllOperationresources/Id eq {{UserID}})',
       orderby: 'Modified desc',
       top: 4500
     },
@@ -161,7 +175,7 @@ export class PmconstantService {
         // tslint:disable-next-line:max-line-length
         + 'Description, ConferenceJournal, Comments, PO, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
         + 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID,'
-        + 'DeliveryLevel2/Title, BusinessVertical, BillingEntity, SOWLink, PubSupportStatus, IsStandard, StandardService,'
+        + 'DeliveryLevel2/Title, BusinessVertical, BillingEntity, SOWLink, PubSupportStatus, IsStandard, StandardService,SlideCount,PageCount,ReferenceCount,AnnotationBinder,'
         + 'PrimaryResMembers/Id,PrimaryResMembers/Title,Editor/Title',
       expand: 'Author/Id,Author/Title, CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title,'
         + 'DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title,'
@@ -202,7 +216,7 @@ export class PmconstantService {
         + 'DeliveryLevel1/ID, DeliveryLevel1/Title,Editor/Title,'
         + 'DeliveryLevel2/ID, DeliveryLevel2/Title, BD/ID, BD/Title',
       // tslint:disable-next-line:max-line-length
-      filter: '(Status ne \'Closed\') and (Status ne \'Cancelled\') and (AllResources/Id eq ' + this.global.currentUser.userId + ')',
+      filter: '(Status ne \'Closed\') and (Status ne \'Cancelled\') and (AllResources/Id eq {{UserID}})',
       orderby: 'Modified desc',
       top: 4500
     },
@@ -527,7 +541,7 @@ export class PmconstantService {
       filter: 'ID eq \'{{proformaLookup}}\''
     },
     SCHEDULE_LIST_BY_PROJECTCODE: {
-      select: 'ID, Title, Status,TimeSpent',
+      select: 'ID, Title, Task,TimeSpent, Status,SubMilestones,Milestone',
       filter: 'ProjectCode eq \'{{projectCode}}\'',
       top: 4900
     },
@@ -596,3 +610,5 @@ export class PmconstantService {
   public MONTH_NAMES = ['January', 'February', 'March', 'April', 'May',
     'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 }
+
+

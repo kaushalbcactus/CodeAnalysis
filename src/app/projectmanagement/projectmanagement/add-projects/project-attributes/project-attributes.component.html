@@ -32,7 +32,8 @@
             <div class="ui-grid-col-4">
                 <p-dropdown formControlName="practiceArea"
                     [options]="pmObject.oProjectCreation.oProjectInfo.practiceArea" placeholder="Please Select"
-                    [showClear]="true" [filter]="true" resetFilterOnHide="true"></p-dropdown>
+                    [showClear]="true" [filter]="true" resetFilterOnHide="true" (onChange)="EnableDisableCountFields()">
+                </p-dropdown>
                 <div class="error"
                     *ngIf="!addProjectAttributesForm.controls['practiceArea'].valid&&addProjectAttributesForm.controls['practiceArea'].touched">
                     Practice Area is required</div>
@@ -153,6 +154,42 @@
                     Active Delivery 2 is required</div>
             </div>
         </div>
+        <div class="ui-grid-row mt-20" *ngIf="enableCountFields">
+            <div class="ui-grid-col-2"><span class="compulsory">*</span>Reference Count</div>
+            <div class="ui-grid-col-2">
+                <input formControlName="ReferenceCount" type="number" placeholder="Reference Count" pInputText>
+                <!-- <div class="error"
+                *ngIf="!addProjectAttributesForm.controls['ReferenceCount'].valid&&addProjectAttributesForm.controls['ReferenceCount'].touched">
+                Please enter amount.</div> -->
+            </div>
+            <div class="ui-grid-col-1"><span class="compulsory">*</span>Slide Count</div>
+            <div class="ui-grid-col-2">
+                <input formControlName="SlideCount" type="number" placeholder="Slide Count" pInputText>
+                <!-- <div class="error" *ngIf="addProjectAttributesForm.controls['SlideCount'].hasError('required')">
+                    Slide Count should be greater than 0.
+                </div> -->
+            </div>
+            <div class="ui-grid-col-1"><span class="compulsory">*</span>Page Count</div>
+            <div class="ui-grid-col-2">
+                <input formControlName="PageCount" type="number" placeholder="Page Count" pInputText>
+                <!-- <div class="error"
+                    *ngIf="!addProjectAttributesForm.controls['PageCount'].valid&&addProjectAttributesForm.controls['PageCount'].touched">
+                    Please enter amount.</div> -->
+
+                <!-- <div class="error" *ngIf="addProjectAttributesForm.controls['PageCount'].hasError('required')">
+                    Page Count should be greater than 0.
+                </div> -->
+            </div>
+            <div class="ui-grid-col-1" style="width:12%"><span class="compulsory">*</span>Annotation/Binder</div>
+            <div class="ui-grid-col-1" style="width: 4%;">
+                <p-checkbox formControlName="AnnotationBinder" binary="true" label="Yes" inputId="y"></p-checkbox>
+            </div>
+
+
+        </div>
+        <div class="error" style="text-align: center;padding: 10px 0px 0px 0px;" *ngIf="CountError"> {{errorType}} count should not be negative.</div>
+
+
         <div class="ui-grid-row mt-20">
             <div class="ui-grid-col-2"><span class="compulsory">*</span>Project Title</div>
             <div class="ui-grid-col-6">
@@ -217,17 +254,17 @@
     </form>
     <div *ngIf="!showEditSave">
         <div class="mt-20" style="float: left">
-            <p-button class="mr-5" (click)="goToSow()" type="button" styleClass="pmBtn"  label="Back"></p-button>
+            <p-button class="mr-5" (click)="goToSow()" type="button" styleClass="pmBtn" label="Back"></p-button>
         </div>
         <div class="mt-20" style="float: right;">
-            <p-button class="mr-5" type="button" styleClass="pmBtn" 
+            <p-button class="mr-5" type="button" styleClass="pmBtn"
                 (click)="goToTimeline(addProjectAttributesForm.value)" label="Continue To Timeline">
             </p-button>
         </div>
     </div>
     <p-footer>
         <div *ngIf="showEditSave" style="float: right;">
-            <p-button type="button" styleClass="pmBtn"  (click)="saveEditProject()" label="Save"></p-button>
+            <p-button type="button" styleClass="pmBtn" (click)="saveEditProject()" label="Save"></p-button>
         </div>
     </p-footer>
 </div>
@@ -250,9 +287,9 @@
                 </div>
             </div>
             <div class="mt-20" style="float: right;">
-                <p-button type="button" styleClass="pmBtn"  class="mr-5" (click)="addMoleculeToList()" label="Add">
+                <p-button type="button" styleClass="pmBtn" class="mr-5" (click)="addMoleculeToList()" label="Add">
                 </p-button>
-                <p-button type="button" styleClass="pmBtn"  class="mr-5" (click)="resetMoleculeAdd()" label="Cancel">
+                <p-button type="button" styleClass="pmBtn" class="mr-5" (click)="resetMoleculeAdd()" label="Cancel">
                 </p-button>
             </div>
         </form>

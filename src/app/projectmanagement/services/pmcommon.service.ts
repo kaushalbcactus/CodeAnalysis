@@ -374,31 +374,34 @@ export class PMCommonService {
           case this.pmConstant.resourCatConstant.DELIVERY_LEVEL_2:
             this.pmObject.oProjectCreation.Resources.deliveryLevel2.push(element.UserName);
             break;
-        }
-        if (element && element.Categories && element.Categories.results && element.Categories.results.length) {
-          const category = element.Categories.results;
-          if (category.indexOf(this.pmConstant.RESOURCES_CATEGORY.BUSINESS_DEVELOPMENT) > -1) {
+          case this.pmConstant.resourCatConstant.BUSINESS_DEVELOPMENT:
             this.pmObject.oProjectCreation.Resources.businessDevelopment.push(element.UserName);
-          }
-          if (category.indexOf(this.pmConstant.RESOURCES_CATEGORY.WRITER) > -1) {
-            this.pmObject.oProjectCreation.Resources.writers.push(element.UserName);
-          }
-          if (category.indexOf(this.pmConstant.RESOURCES_CATEGORY.REVIEWER) > -1) {
-            this.pmObject.oProjectCreation.Resources.reviewers.push(element.UserName);
-          }
-          if (category.indexOf(this.pmConstant.RESOURCES_CATEGORY.QUALITY_CHECK) > -1) {
-            this.pmObject.oProjectCreation.Resources.qc.push(element.UserName);
-          }
-          if (category.indexOf(this.pmConstant.RESOURCES_CATEGORY.EDITOR) > -1) {
-            this.pmObject.oProjectCreation.Resources.editors.push(element.UserName);
-          }
-          if (category.indexOf(this.pmConstant.RESOURCES_CATEGORY.GRAPHICS) > -1) {
-            this.pmObject.oProjectCreation.Resources.graphics.push(element.UserName);
-          }
-          if (category.indexOf(this.pmConstant.RESOURCES_CATEGORY.PUBLICATION_SUPPORT) > -1) {
-            this.pmObject.oProjectCreation.Resources.pubSupport.push(element.UserName);
-          }
+            break;
         }
+        // if (element && element.Categories && element.Categories.results && element.Categories.results.length) {
+        //   const category = element.Categories.results;
+        //   if (category.indexOf(this.pmConstant.RESOURCES_CATEGORY.BUSINESS_DEVELOPMENT) > -1) {
+        //     this.pmObject.oProjectCreation.Resources.businessDevelopment.push(element.UserName);
+        //   }
+        //   if (category.indexOf(this.pmConstant.RESOURCES_CATEGORY.WRITER) > -1) {
+        //     this.pmObject.oProjectCreation.Resources.writers.push(element.UserName);
+        //   }
+        //   if (category.indexOf(this.pmConstant.RESOURCES_CATEGORY.REVIEWER) > -1) {
+        //     this.pmObject.oProjectCreation.Resources.reviewers.push(element.UserName);
+        //   }
+        //   if (category.indexOf(this.pmConstant.RESOURCES_CATEGORY.QUALITY_CHECK) > -1) {
+        //     this.pmObject.oProjectCreation.Resources.qc.push(element.UserName);
+        //   }
+        //   if (category.indexOf(this.pmConstant.RESOURCES_CATEGORY.EDITOR) > -1) {
+        //     this.pmObject.oProjectCreation.Resources.editors.push(element.UserName);
+        //   }
+        //   if (category.indexOf(this.pmConstant.RESOURCES_CATEGORY.GRAPHICS) > -1) {
+        //     this.pmObject.oProjectCreation.Resources.graphics.push(element.UserName);
+        //   }
+        //   if (category.indexOf(this.pmConstant.RESOURCES_CATEGORY.PUBLICATION_SUPPORT) > -1) {
+        //     this.pmObject.oProjectCreation.Resources.pubSupport.push(element.UserName);
+        //   }
+        // }
       });
     }
   }
@@ -627,7 +630,11 @@ export class PMCommonService {
       ConferenceJournal: addObj.ProjectAttributes.ConferenceJournal ? addObj.ProjectAttributes.ConferenceJournal : '',
       Comments: addObj.ProjectAttributes.Comments ? addObj.ProjectAttributes.Comments : '',
       PubSupportStatus: addObj.ProjectAttributes.PUBSupportStatus ? addObj.ProjectAttributes.PUBSupportStatus : '',
-      SOWLink: addObj.FinanceManagement.SOWFileURL ? addObj.FinanceManagement.SOWFileURL : ''
+      SOWLink: addObj.FinanceManagement.SOWFileURL ? addObj.FinanceManagement.SOWFileURL : '',
+      SlideCount: addObj.ProjectAttributes.SlideCount,
+      PageCount: addObj.ProjectAttributes.PageCount,
+      ReferenceCount: addObj.ProjectAttributes.ReferenceCount,
+      AnnotationBinder: addObj.ProjectAttributes.AnnotationBinder === true ? 'Yes' : 'No'
     };
     if (isCreate) {
       data.SOWCode = addObj.SOWSelect.SOWCode;
@@ -823,6 +830,7 @@ export class PMCommonService {
     return tempArray;
   }
   async getProjects(bPM) {
+
     let arrResults: any = [];
 
     const allProjects = localStorage.getItem('allProjects');
@@ -838,8 +846,10 @@ export class PMCommonService {
         let projectManageFilter: any;
         if (bPM) {
           projectManageFilter = Object.assign({}, this.pmConstant.PM_QUERY.USER_SPECIFIC_PROJECT_INFORMATION);
+          projectManageFilter.filter = projectManageFilter.filter.replace('{{UserID}}', this.globalObject.currentUser.userId.toString());
         } else {
           projectManageFilter = Object.assign({}, this.pmConstant.PM_QUERY.USER_SPECIFIC_PROJECT_INFORMATION_MY);
+          projectManageFilter.filter = projectManageFilter.filter.replace(/{{UserID}}/gi, this.globalObject.currentUser.userId.toString());
         }
         this.commonService.SetNewrelic('projectManagment', 'PmCommon-getProjects', 'readItems');
         arrResults = await this.spServices.readItems(this.constant.listNames.ProjectInformation.name, projectManageFilter);
@@ -877,6 +887,10 @@ export class PMCommonService {
     this.pmObject.addProject.ProjectAttributes.ConferenceJournal = '';
     this.pmObject.addProject.ProjectAttributes.Authors = '';
     this.pmObject.addProject.ProjectAttributes.Comments = '';
+    this.pmObject.addProject.ProjectAttributes.SlideCount = 0;
+    this.pmObject.addProject.ProjectAttributes.ReferenceCount = 0;
+    this.pmObject.addProject.ProjectAttributes.PageCount = 0;
+    this.pmObject.addProject.ProjectAttributes.AnnotationBinder = false;
     this.pmObject.addProject.Timeline.Standard.IsStandard = false;
     this.pmObject.addProject.Timeline.Standard.Service = {};
     this.pmObject.addProject.Timeline.Standard.Resource = {};
@@ -906,6 +920,7 @@ export class PMCommonService {
     this.pmObject.addProject.FinanceManagement.selectedFile = '';
     this.pmObject.addProject.FinanceManagement.isBudgetRateAdded = false;
     this.pmObject.addProject.SOWSelect.GlobalFilterValue = '';
+
   }
   async setBilledBy() {
     // this.pmObject.billedBy = [
@@ -1698,7 +1713,6 @@ export class PMCommonService {
       FileSystemObjectType: 1,
       ContentTypeId: '0x0120',
       SubMilestones: milestoneObj.strSubMilestone,
-      TaskPosition: '' + (milestoneObj.SwimlaneCount)
     };
     return data;
   }
@@ -1795,11 +1809,7 @@ export class PMCommonService {
     } else {
       data.IsCentrallyAllocated = 'No';
     }
-    if (milestoneTask.Task === this.pmConstant.task.CLIENT_REVIEW) {
-      data.TaskPosition = (milestoneObj.data.SwimlaneCount - 1) + ';#1';
-    } else {
-      data.TaskPosition = milestoneTask.TaskPosition;
-    }
+
     return data;
   }
   /**

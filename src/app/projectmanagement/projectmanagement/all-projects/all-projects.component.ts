@@ -48,7 +48,10 @@ export class AllProjectsComponent implements OnInit {
     { field: 'CreatedBy', header: 'Created By', visibility: false },
     { field: 'CreatedDateFormat', header: 'Created Date', visibility: false },
     { field: 'ModifiedBy', header: 'Modified By', visibility: false },
-    { field: 'ModifiedDateFormat', header: 'Modified Date', visibility: false },
+    { field: 'ReferenceCount', header: 'Reference Count', visibility: false },
+    { field: 'PageCount', header: 'Page Count', visibility: false },
+    { field: 'SlideCount', header: 'Slide Count', visibility: false },
+    { field: 'AnnotationBinder', header: 'Annotation/Binder', visibility: false },
 
     // { field: 'CreatedDate', header: 'Created Date', visibility: true, exportable: false }
   ];
@@ -134,6 +137,7 @@ export class AllProjectsComponent implements OnInit {
   projectExpenses: any;
   expenseColArray: any = [];
   showTable: boolean;
+  enableCountFields = false;
   constructor(
     public pmObject: PMObjectService,
     private datePipe: DatePipe,
@@ -517,6 +521,11 @@ export class AllProjectsComponent implements OnInit {
         projObj.StandardService = task.StandardService ? task.StandardService : '';
         projObj.Priority = task.Priority ? task.Priority : '';
         projObj.Authors = task.Authors ? task.Authors : '';
+
+        projObj.SlideCount = task.SlideCount ? task.SlideCount : 0;
+        projObj.PageCount = task.PageCount ? task.PageCount : 0;
+        projObj.ReferenceCount = task.ReferenceCount ? task.ReferenceCount : 0;
+        projObj.AnnotationBinder = task.AnnotationBinder ? task.AnnotationBinder : 'No';
         projObj.PrimaryResources = this.commonService.returnText(task.PrimaryResMembers.results);
         switch (projObj.Status) {
           case this.constants.projectStatus.InDiscussion:
@@ -792,7 +801,6 @@ export class AllProjectsComponent implements OnInit {
    * @param menu menu object.
    */
   storeRowData(rowData, menu) {
-
     this.selectedProjectObj = rowData;
     const status = this.selectedProjectObj.Status;
     const route = this.router.url;
@@ -870,6 +878,9 @@ export class AllProjectsComponent implements OnInit {
 
 
     if (result && result.length) {
+
+      const scheduleItems = result.find(c => c.listName === 'Schedules') ? result.find(c =>
+        c.listName === 'Schedules').retItems : [];
       switch (projectAction) {
         case this.pmConstant.ACTION.CONFIRM_PROJECT:
           this.confirmationService.confirm({
@@ -889,7 +900,7 @@ export class AllProjectsComponent implements OnInit {
             message: 'Are you sure you want to change the Status of Project - ' + selectedProjectObj.ProjectCode + ''
               + ' from ' + selectedProjectObj.Status + ' to ' + this.constants.projectStatus.AuditInProgress + '?',
             accept: () => {
-              this.changeProjectStatusAuditInProgress(selectedProjectObj);
+              this.changeProjectStatusAuditInProgress(selectedProjectObj, scheduleItems);
             }
           });
           break;
@@ -937,8 +948,7 @@ export class AllProjectsComponent implements OnInit {
           batchURL.push(inoviceGet);
           this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetInvoiceLineItem');
           const sResult = await this.spServices.executeBatch(batchURL);
-          const scheduleItems = result.find(c => c.listName === 'Schedules') ? result.find(c =>
-            c.listName === 'Schedules').retItems : [];
+
           if (sResult && sResult.length) {
             const invoiceItems = sResult[0].retItems;
             for (const item of invoiceItems) {
@@ -1510,7 +1520,7 @@ export class AllProjectsComponent implements OnInit {
       }
     }
   }
-  async changeProjectStatusAuditInProgress(selectedProjectObj) {
+  async changeProjectStatusAuditInProgress(selectedProjectObj, scheduleItems) {
     const projectFinanceID = this.toUpdateIds[1] && this.toUpdateIds[1].retItems && this.toUpdateIds[1].retItems.length ?
       this.toUpdateIds[1].retItems[0].ID : -1;
     const batchURL = [];
@@ -1532,6 +1542,56 @@ export class AllProjectsComponent implements OnInit {
       pinfoUdateData.Status = this.constants.projectStatus.AuditInProgress;
       pinfoUdateData.ProposeClosureDate = new Date();
     }
+
+    const objMilestone = Object.assign({}, this.pmConstant.projectOptions);
+    objMilestone.filter = objMilestone.filter.replace(/{{projectCode}}/gi,
+      selectedProjectObj.ProjectCode);
+    this.commonService.SetNewrelic('projectManagment', 'allprojects', 'fetchMilestone');
+    const response = await this.spServices.readItems(this.constants.listNames.Schedules.name, objMilestone);
+
+    const allTasks = response.length ? response : [];
+    if (allTasks.length > 0) {
+
+      const milestones = allTasks.filter(c => c.FileSystemObjectType === 1 && (c.Status === 'Not Confirmed' || c.Status === 'In Progress'));
+      console.log(milestones);
+
+      const allMilestoneTasks = allTasks.filter(c => c.FileSystemObjectType === 0 && (c.Status === 'Not Confirmed' || c.Status === 'In Progress' || c.Status === 'Not Started'));
+      console.log(allMilestoneTasks);
+
+      if (milestones) {
+        milestones.forEach(milestone => {
+          let modifiedSubMilestones = null;
+          let SubMilestonesObj = [];
+          if (milestone.SubMilestones) {
+            const SubMilestones = milestone.SubMilestones.split(';#');
+            if (SubMilestones) {
+              SubMilestones.forEach(element => {
+                const status = element.split(':')[2] === 'Not Started' || element.split(':')[2] === 'In Progress' ? 'Auto Closed' : element.split(':')[2];
+                if (status !== 'Not Confirmed') {
+                  SubMilestonesObj.push(element.split(':')[0] + ':' + element.split(':')[1] + ':' + status);
+                }
+              });
+              modifiedSubMilestones = SubMilestonesObj.length > 0 ? SubMilestonesObj.join(';#') : null;
+            }
+          }
+          const data = {
+            Status: milestone.Status === 'Not Confirmed' ? 'Deleted' : 'Auto Closed',
+            SubMilestones: modifiedSubMilestones,
+            __metadata: { type: this.constants.listNames.Schedules.type }
+          };
+          this.getTaskObject(batchURL, Object.assign({}, options), milestone, data);
+        });
+      }
+      if (allMilestoneTasks) {
+        allMilestoneTasks.forEach(task => {
+          const data = {
+            Status: task.Status === 'Not Confirmed' ? 'Deleted' : 'Auto Closed',
+            __metadata: { type: this.constants.listNames.Schedules.type }
+          };
+          this.getTaskObject(batchURL, Object.assign({}, options), task, data);
+        });
+      }
+    }
     const piInfoUpdate = Object.assign({}, options);
     piInfoUpdate.data = pinfoUdateData;
     piInfoUpdate.listName = this.constants.listNames.ProjectInformation.name;
@@ -1540,8 +1600,10 @@ export class AllProjectsComponent implements OnInit {
       this.selectedProjectObj.ID);
     batchURL.push(piInfoUpdate);
     // This function is used to calculate the hour spent for particular projects.
+
+    debugger;
     const hourSpent = await this.getTotalHours(this.selectedProjectObj.ProjectCode,
-      true);
+      true, scheduleItems);
     const projectFinaceData = {
       __metadata: {
         type: this.constants.listNames.ProjectFinances.type
@@ -1574,6 +1636,17 @@ export class AllProjectsComponent implements OnInit {
         this.router.navigate(['/projectMgmt/allProjects']);
       }
     }, this.pmConstant.TIME_OUT);
+  }
+
+
+  getTaskObject(batchURL, options, task, data) {
+    const taskObj = Object.assign({}, options);
+    taskObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, task.Id);
+    taskObj.data = data;
+    taskObj.listName = this.constants.listNames.Schedules.name;
+    taskObj.type = 'PATCH';
+    batchURL.push(taskObj);
+
   }
   async getGetIds(selectedProjectObj, projectAction) {
     const batchURL = [];
@@ -1666,12 +1739,20 @@ export class AllProjectsComponent implements OnInit {
    * This method is used to get the total hours spent based on project code.
    * @param projectCode pass projectCode as parameter.
    */
-  async getTotalHours(projectCode, isScheduleListStatusUpdated) {
+  async getTotalHours(projectCode, isScheduleListStatusUpdated, scheduleItems) {
     let totalSpentTime = 0;
-    const scheduleFilter = Object.assign({}, this.pmConstant.QUERY.GET_TIMESPENT);
-    scheduleFilter.filter = scheduleFilter.filter.replace(/{{projectCode}}/gi, projectCode);
-    this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetSchedulesbyProjectCode');
-    const sResult = await this.spServices.readItems(this.constants.listNames.Schedules.name, scheduleFilter);
+    let sResult = [];
+    if (scheduleItems.length === 0) {
+      const scheduleFilter = Object.assign({}, this.pmConstant.QUERY.GET_TIMESPENT);
+      scheduleFilter.filter = scheduleFilter.filter.replace(/{{projectCode}}/gi, projectCode);
+      this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetSchedulesbyProjectCode');
+      sResult = await this.spServices.readItems(this.constants.listNames.Schedules.name, scheduleFilter);
+    }
+    else {
+      sResult = scheduleItems;
+    }
+
+
     if (sResult && sResult.length > 0) {
       const batchURL = [];
       const options = {
@@ -1745,7 +1826,8 @@ export class AllProjectsComponent implements OnInit {
         const batchResults = await this.spServices.executeBatch(batchURL);
       }
     }
-    return this.convertMinsToHrsMins(totalSpentTime);
+    // return this.convertMinsToHrsMins(totalSpentTime);
+    return parseFloat((totalSpentTime / 60).toFixed(2));
   }
   timeToMins(time) {
     const b = time.split('.');
@@ -1795,6 +1877,12 @@ export class AllProjectsComponent implements OnInit {
     this.pmObject.addProject.ProjectAttributes.ConferenceJournal = proj.ConferenceJournal;
     this.pmObject.addProject.ProjectAttributes.Authors = proj.Authors;
     this.pmObject.addProject.ProjectAttributes.Comments = proj.Comments;
+
+    this.pmObject.addProject.ProjectAttributes.PageCount = proj.PageCount;
+    this.pmObject.addProject.ProjectAttributes.ReferenceCount = proj.ReferenceCount;
+    this.pmObject.addProject.ProjectAttributes.SlideCount = proj.SlideCount;
+    this.pmObject.addProject.ProjectAttributes.AnnotationBinder = proj.AnnotationBinder;
+
     this.pmObject.addProject.ProjectAttributes.ProjectTitle = proj.Title;
     this.pmObject.addProject.ProjectAttributes.EndUseofDeliverable = proj.Description;
     if (proj.IsStandard === 'Yes') {
@@ -1857,10 +1945,16 @@ export class AllProjectsComponent implements OnInit {
       }
     }
 
+
+
     this.projectViewDataArray.push(this.pmObject.addProject);
+    this.enableCountFields = this.pmObject.addProject.ProjectAttributes.PracticeArea.toLowerCase() === 'medcomm'
+      || this.pmObject.addProject.ProjectAttributes.PracticeArea.toLowerCase() === 'medinfo' ? true : false;
     console.log('Test');
     console.log(this.projectViewDataArray);
     this.pmObject.isProjectRightSideVisible = true;
+
+
   }
   goToAllocationPage(task) {
     window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +
@@ -1870,15 +1964,18 @@ export class AllProjectsComponent implements OnInit {
     const projObj: any = selectedProjectObj;
     projObj.isUpdate = true;
     const ref = this.dialogService.open(ManageFinanceComponent, {
-      header: 'Manage Finance - ' + selectedProjectObj.ProjectCode + '(' + selectedProjectObj.Title + ')',
       data: {
         projectObj: projObj
-      }
+      },
+      header: 'Manage Finance - ' + selectedProjectObj.ProjectCode + '(' + selectedProjectObj.Title + ')',
+      contentStyle: { width: '100%', height: '100% !important' },
+      width: '100%'
     });
     ref.onClose.subscribe(element => {
       this.pmCommonService.resetAddProject();
     });
   }
+
   communications(selectedProjectObj) {
     selectedProjectObj.IsSearchProject = true;
     const ref = this.dialogService.open(ViewUploadDocumentDialogComponent, {
@@ -1889,6 +1986,7 @@ export class AllProjectsComponent implements OnInit {
       this.pmCommonService.resetAddProject();
     });
   }
+
   projectTimeline(selectedProjectObj) {
     const ref = this.dialogService.open(ProjectTimelineComponent, {
       header: 'Project Timeline - ' + selectedProjectObj.ProjectCode + '(' + selectedProjectObj.Title + ')',
@@ -1900,6 +1998,7 @@ export class AllProjectsComponent implements OnInit {
       this.pmCommonService.resetAddProject();
     });
   }
+
   showTimeline(selectedProjectObj) {
     const route = this.router.url;
     if (route.indexOf('myDashboard') > -1) {
@@ -1908,6 +2007,7 @@ export class AllProjectsComponent implements OnInit {
       this.timeline.showTimeline(selectedProjectObj.ID, 'ProjectMgmt', 'Project');
     }
   }
+
   /**
    * This method is used to complete the audit.
    */
@@ -1969,6 +2069,7 @@ export class AllProjectsComponent implements OnInit {
       }, this.pmConstant.TIME_OUT);
     }
   }
+
   /**
    * This method is used to send email by using template.
    * @param val pass the template name.
@@ -2045,17 +2146,17 @@ export class AllProjectsComponent implements OnInit {
    * @returns Hours.Min total hours.
    */
   async updateUsedHrs() {
-    let totalHours = '';
+    let totalHours;
     const projectFinanceID = this.toUpdateIds[1] && this.toUpdateIds[1].retItems && this.toUpdateIds[1].retItems.length ?
       this.toUpdateIds[1].retItems[0].ID : -1;
     if (this.selectedProjectObj.ProjectCode) {
-      totalHours = await this.getTotalHours(this.selectedProjectObj.ProjectCode, false);
-      const pfUdpate = {
-        HoursSpent: totalHours
-      };
-      this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'updateProjectFiance');
-      const retResults = await this.spServices.updateItem(this.constants.listNames.ProjectFinances.name,
-        projectFinanceID, pfUdpate, this.constants.listNames.ProjectFinances.type);
+      totalHours = await this.getTotalHours(this.selectedProjectObj.ProjectCode, false, []);
+      // const pfUdpate = {
+      //   HoursSpent: totalHours
+      // };
+      // this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'updateProjectFiance');
+      // const retResults = await this.spServices.updateItem(this.constants.listNames.ProjectFinances.name,
+      //   projectFinanceID, pfUdpate, this.constants.listNames.ProjectFinances.type);
       return totalHours;
     }
   }
@@ -2092,6 +2193,7 @@ export class AllProjectsComponent implements OnInit {
         arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
       } else {
         const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.USER_SPECIFIC_SOW);
+        sowFilter.filter = sowFilter.filter.replace('{{UserID}}', this.globalObject.currentUser.userId.toString());
         this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetSow');
         arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
       }
@@ -2512,6 +2614,7 @@ export class AllProjectsComponent implements OnInit {
       projectInfoFilter = Object.assign({}, this.pmConstant.PM_QUERY.PROJECT_INFORMATION_BY_PROJECTCODE_ALL);
     } else {
       projectInfoFilter = Object.assign({}, this.pmConstant.PM_QUERY.PROJECT_INFORMATION_BY_PROJECTCODE);
+      projectInfoFilter.filter = projectInfoFilter.filter.replace('{{UserID}}', this.globalObject.currentUser.userId.toString());
     }
 
     projectInfoFilter.filter = projectInfoFilter.filter.replace(/{{projectCode}}/gi,
