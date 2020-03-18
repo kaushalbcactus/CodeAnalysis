@@ -1050,8 +1050,9 @@ export class MyDashboardConstantsService {
   async callQMSPopup(currentTask) {
     const qmsTasks = [];
     const batchUrl = [];
-    const previousTasks = currentTask.prevTaskDetails ? currentTask.prevTaskDetails : [];
+    let previousTasks = currentTask.prevTaskDetails ? currentTask.prevTaskDetails : [];
     if (previousTasks.length) {
+      previousTasks = previousTasks.filter(pt => pt.Status === 'Completed' || pt.Status === 'Auto Closed');
       const project = this.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === currentTask.ProjectCode);
       const folderUrl = project.ProjectFolder;
       const documentsUrl = '/Drafts/Internal/' + currentTask.Milestone;
