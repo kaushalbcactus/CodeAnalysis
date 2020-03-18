@@ -28,6 +28,8 @@ import { SharedModule } from '../shared/shared.module';
 import { AddEditUserProfileComponent } from './admin/user-profile/add-edit-user-profile/add-edit-user-profile.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { AddEditClientlegalentityDialogComponent } from './admin/client-masterdata/add-edit-clientlegalentity-dialog/add-edit-clientlegalentity-dialog.component';
+import { AddEditSubdivisionComponent } from './admin/client-masterdata/add-edit-subdivision/add-edit-subdivision.component';
+import { AddEditPocComponent } from './admin/client-masterdata/add-edit-poc/add-edit-poc.component';
 
 @NgModule({
   declarations: [
@@ -50,7 +52,9 @@ import { AddEditClientlegalentityDialogComponent } from './admin/client-masterda
     AddUserToProjectsComponent,
     GroupDescriptionComponent,
     AddEditUserProfileComponent,
-    AddEditClientlegalentityDialogComponent],
+    AddEditClientlegalentityDialogComponent,
+    AddEditSubdivisionComponent,
+    AddEditPocComponent],
   imports: [
     SharedModule,
     AdminRoutingModule,
@@ -60,7 +64,7 @@ import { AddEditClientlegalentityDialogComponent } from './admin/client-masterda
   ],
   providers: [
   ],
-  entryComponents : [AddEditUserProfileComponent, AddEditClientlegalentityDialogComponent]
+  entryComponents : [AddEditUserProfileComponent, AddEditClientlegalentityDialogComponent,AddEditSubdivisionComponent, AddEditPocComponent]
 
 })
 export class AdminModule { }
