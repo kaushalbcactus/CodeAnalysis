@@ -127,7 +127,7 @@
   <div class="footer">
     <div>
       <button
-       *ngIf="scorecardTasks.tasks.length === 1"
+       *ngIf="scorecardTasks?.currentTask?.Milestone !== 'Draft 1' && scorecardTasks.tasks.length === 1"
         type="button"
         class="btn btn-light button cancel-rating"
         (click)="cancel()"
