@@ -2075,10 +2075,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   getNewTaskName(milestoneTask, originalName) {
     let counter = 1;
-    let getItem = this.allTasks.filter(e => {
-      const taskName = e.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + e.Milestone + ' ', '');
-      return e.FileSystemObjectType === 0 && taskName === originalName && e.Milestone === milestoneTask.milestone;
-    });
+    let getItem = this.tempGanttchartData.filter(e => e.pName === originalName && e.milestone === milestoneTask.milestone);
     while (getItem.length) {
       counter++;
       originalName = milestoneTask.itemType + ' ' + counter;
@@ -2387,7 +2384,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   async compareSlotSubTasksTimeline(sentPrevNode1, subMilestonePosition, selectedMil) {
     // fetch slot based on submilestone presnt or not
     let sentPrevNode;
-    if (subMilestonePosition === 0) {
+    if(subMilestonePosition === 0) {
       sentPrevNode = this.milestoneData[selectedMil].children.find(st => st.data.pName === sentPrevNode1.pName)
     } else {
       const submilestone = this.milestoneData[selectedMil].children.find(sm => sm.data.pName === sentPrevNode1.submilestone);
