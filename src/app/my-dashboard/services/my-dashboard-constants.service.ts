@@ -1117,7 +1117,7 @@ export class MyDashboardConstantsService {
               reviewTask: {
                 ID: currentTask.ID,
                 Title: currentTask.Title ? currentTask.Title : currentTask.Title,
-                PrevTasks: currentTask.PrevTasks,
+                PrevTasks: currentTask.prevTaskDetails,
                 Rated: currentTask.Rated,
                 defaultSkill: currentTask.defaultSkill
               },
@@ -1131,112 +1131,6 @@ export class MyDashboardConstantsService {
       }
     }
     return qmsTasks;
-  }
-
-  async getPreviousTask(task) {
-    this.tasks = [];
-    // let nextTaskFilter = '';
-    let previousTaskFilter = '';
-    // let nextTasks;
-    let previousTasks;
-    // let currentTaskNextTask = task.NextTasks;
-    let currentTaskPrevTask = task.PrevTasks;
-
-    if (task.ParentSlot) {
-      const parentPreviousNextTask = Object.assign({}, this.mydashboardComponent.previousNextTaskParent);
-      parentPreviousNextTask.filter = parentPreviousNextTask.filter.replace('{{ParentSlotId}}', task.ParentSlot);
-      this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'GetNextPreviousTasks');
-      let parentTask = await this.spServices.readItems(this.constants.listNames.Schedules.name, parentPreviousNextTask);
-      parentTask = parentTask.length ? parentTask[0] : [];
-      // if (!currentTaskNextTask) {
-      //   currentTaskNextTask = parentNPTask.NextTasks;
-      // }
-      if (!currentTaskPrevTask) {
-        currentTaskPrevTask = parentTask.PrevTasks;
-      }
-    }
-
-    // if (currentTaskNextTask) {
-    //   nextTasks = currentTaskNextTask.split(';#');
-    //   nextTasks.forEach((value, i) => {
-    //     // tslint:disable-next-line: quotemark
-    //     nextTaskFilter += "(Title eq '" + value + "')";
-    //     nextTaskFilter += i < nextTasks.length - 1 ? ' or ' : '';
-    //   });
-    // }
-    if (currentTaskPrevTask) {
-      previousTasks = currentTaskPrevTask.split(';#');
-      previousTasks.forEach((value, i) => {
-        previousTaskFilter += '(Title eq \'' + value + '\')';
-        previousTaskFilter += i < previousTasks.length - 1 ? ' or ' : '';
-      });
-    }
-
-    const taskFilter = previousTaskFilter !== '' ? previousTaskFilter : '';
-
-    if (!taskFilter) {
-      return [];
-    }
-    const previousNextTask = Object.assign({}, this.mydashboardComponent.previousNextTask);
-    previousNextTask.filter = taskFilter;
-    this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'GetNextPreviousTasksFromSchedules');
-    this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, previousNextTask);
-
-    this.tasks = this.response.length ? this.response : [];
-
-
-    // if (currentTaskNextTask) {
-    //   this.tasks.filter(c => nextTasks.includes(c.Title)).map(c => c.TaskType = 'Next Task');
-    // }
-    if (currentTaskPrevTask) {
-      this.tasks.filter(c => previousTasks.includes(c.Title)).map(c => c.TaskType = 'Previous Task');
-    }
-
-    this.previousNextTaskChildRes = [];
-    for (const ele of this.tasks) {
-      if (ele.IsCentrallyAllocated === 'Yes') {
-        let previousNextTaskChild: any = [];
-        previousNextTaskChild = Object.assign({}, this.mydashboardComponent.nextPreviousTaskChild);
-        previousNextTaskChild.filter = previousNextTaskChild.filter.replace('{{ParentSlotId}}', ele.ID.toString());
-        this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'GetNextPreviousTasksFromParentSlot');
-        let res: any = await this.spServices.readItems(this.constants.listNames.Schedules.name, previousNextTaskChild);
-        if (res.hasError) {
-          this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: res.message.value });
-          return;
-        }
-        res = res.length ? res : [];
-        const taskBreak = [];
-        res.forEach(element => {
-          if (ele.TaskType === 'Previous Task') {
-            //   if (!element.PrevTasks) {
-            //     element.TaskType = ele.TaskType;
-            //     taskBreak.push(element);
-            //   }
-            // } else {
-            if (!element.NextTasks) {
-              element.TaskType = ele.TaskType;
-              taskBreak.push(element);
-            }
-          }
-
-        });
-        if (!taskBreak.length) {
-          this.previousNextTaskChildRes.push(ele);
-        } else {
-          this.previousNextTaskChildRes = this.previousNextTaskChildRes.concat(taskBreak);
-        }
-
-      } else if (ele.IsCentrallyAllocated === 'No') {
-        this.previousNextTaskChildRes.push(ele);
-      }
-    }
-
-    this.tasks = this.previousNextTaskChildRes.length ? this.previousNextTaskChildRes : this.tasks;
-    // console.log('previousNextTaskChildRes ', this.previousNextTaskChildRes);
-    this.tasks.map(c => c.StartDate = c.StartDate !== null ? this.datePipe.transform(c.StartDate, 'MMM d, y h:mm a') : '-');
-    this.tasks.map(c => c.DueDate = c.DueDate !== null ? this.datePipe.transform(c.DueDate, 'MMM d, y h:mm a') : '-');
-
-    return this.tasks;
   }
 
   getResourceSkill(task) {

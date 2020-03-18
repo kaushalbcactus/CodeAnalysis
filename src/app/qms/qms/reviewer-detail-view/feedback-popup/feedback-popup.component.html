@@ -66,7 +66,7 @@
               <td>
                 <div class="customer-detail popup">
                   <div class="cd-rating ">
-                    <span id="#">{{ task.selectedTemplate.averageRating }}</span>
+                    <span id="#">{{ task.averageRating }}</span>
                     <div class="star-white fa-star fa"></div>
                   </div>
                 </div>
@@ -82,7 +82,7 @@
         </table>
         <table class="table popup-rating-row scrollTable" id="templateMatrix">
           <tbody>
-            <tr *ngFor="let matrixObj of task.selectedTemplate.templateMatrix">
+            <tr *ngFor="let matrixObj of task.templateMatrix">
               <ng-container *ngIf="matrixObj.question !== ''">
                 <td [title]="matrixObj.tooltip">
                   {{ matrixObj.question }}
@@ -92,7 +92,7 @@
                     [(rate)]="matrixObj.rating"
                     min="0"
                     max="5"
-                    (rateChange)="updateRating(task.selectedTemplate)"
+                    (rateChange)="updateRating(task)"
                   >
                     <ng-template let-fill="fill" let-index="index">
                       <span class="star" [class.filled]="fill === 100"

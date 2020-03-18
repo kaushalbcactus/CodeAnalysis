@@ -6,6 +6,9 @@ import { QMSConstantsService } from '../../services/qmsconstants.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { IScorecard, IScorecardTemplate } from '../../../interfaces/qms';
 import { MessageService } from 'primeng';
+import { MyDashboardConstantsService } from 'src/app/my-dashboard/services/my-dashboard-constants.service';
+import { DatePipe } from '@angular/common';
+import { isArray } from 'util';
 
 @Component({
   selector: 'app-feedback-popup',
@@ -46,7 +49,9 @@ export class FeedbackPopupComponent implements OnInit {
     private qmsConstant: QMSConstantsService,
     public global: GlobalService,
     private common: CommonService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private dashbaordService: MyDashboardConstantsService,
+    private datePipe: DatePipe,
   ) {
   }
 
@@ -64,7 +69,6 @@ export class FeedbackPopupComponent implements OnInit {
     this.common.SetNewrelic('QMS', 'ReviewDetails-View-Feedbackpopup', 'GetTemplate');
     // tslint:disable: max-line-length
     const arrResult = await this.spService.readItems(this.constantsService.listNames.ScorecardTemplate.name, feedbackComponent.getTemplates);
-    // this.global.templateMatrix.templates = arrResult.length > 0 ? arrResult : [];
     const templates: IScorecardTemplate[] = arrResult.length > 0 ? arrResult : [];
     return templates;
   }
@@ -75,7 +79,6 @@ export class FeedbackPopupComponent implements OnInit {
    */
   async getTemplateMatrix(taskID) {
     const templateMatrix = [];
-    // const selectedTemplate = this.global.templateMatrix.selectedTemplate.Title;
     const selectedTask = this.scorecardTasks.tasks.find(t => t.taskID === taskID);
     const selectedTemplate = selectedTask ? selectedTask.selectedTemplate.Title : '';
     const feedbackComponent = JSON.parse(JSON.stringify(this.qmsConstant.feedbackPopupComponent));
@@ -94,21 +97,19 @@ export class FeedbackPopupComponent implements OnInit {
       };
       templateMatrix.push(obj);
     });
-    // this.global.templateMatrix.averageRating = 0;
-    // this.global.templateMatrix.selectedTemplateDetails = templateMatrix;
-    selectedTask.selectedTemplate.averageRating = 0;
-    selectedTask.selectedTemplate.templateMatrix = [...templateMatrix];
+    selectedTask.averageRating = 0;
+    selectedTask.templateMatrix = [...templateMatrix];
   }
 
   /**
    * Updates rating on global array of templates
    *
    */
-  updateRating(taskTemplate) {
-    const ratingTotal = taskTemplate.templateMatrix.reduce((a, b) => a + b.rating, 0);
-    const ratingCount = taskTemplate.templateMatrix.filter(r => r.rating !== 0).length;
+  updateRating(task) {
+    const ratingTotal = task.templateMatrix.reduce((a, b) => a + b.rating, 0);
+    const ratingCount = task.templateMatrix.filter(r => r.rating !== 0).length;
     const averageRating = ratingTotal / ratingCount;
-    taskTemplate.averageRating = +averageRating.toFixed(2);
+    task.averageRating = +averageRating.toFixed(2);
   }
 
   /**
@@ -119,24 +120,24 @@ export class FeedbackPopupComponent implements OnInit {
     const result = this.validateScorecard();
     if (result) {
       this.showLoader();
-      const scorecard = this.scorecardTasks.tasks.filter(t => !t.ignoreFeedback);
+      const prevTasks = this.scorecardTasks.tasks.filter(t => !t.ignoreFeedback);
       setTimeout(async () => {
-        await this.save(scorecard);
+        await this.save(prevTasks);
         this.constantsService.loader.isPSInnerLoaderHidden = true;
       }, 300);
     }
   }
 
   validateScorecard() {
+    const emptyScorecard = this.scorecardTasks.tasks.filter(t => !t.ignoreFeedback && t.averageRating <= 0);
     const milestone = this.scorecardTasks.currentTask.Milestone ? this.scorecardTasks.currentTask.Milestone : this.scorecardTasks.currentTask.milestone;
-    if (milestone === 'Draft 1') {
+    if (milestone === 'Draft 1' && emptyScorecard.length) {
       this.messageService.add({
         key: 'custom', severity: 'warn', summary: 'Warning Message', life: 10000,
         detail: 'Rating Draft 1 milestone task is mandatory.'
       });
       return false;
     }
-    const emptyScorecard = this.scorecardTasks.tasks.filter(t => !t.ignoreFeedback && t.selectedTemplate.averageRating <= 0);
     if (emptyScorecard.length) {
       const tasksNames = emptyScorecard.map(s => s.task);
       const taskString = tasksNames.join(',');
@@ -153,33 +154,33 @@ export class FeedbackPopupComponent implements OnInit {
    * Save feedback rating details to sharepoint list // Scorecard, ScorecardRatings, Schedules
    *
    */
-  async save(taskDetails) {
+  async save(previousTasks) {
     let firstBatchURL = [];
     // Insert new scorecard item to scorecard list
-    const firstPostRequestContent = this.addScorecardItem(taskDetails);
+    const firstPostRequestContent = this.addScorecardItem(previousTasks);
     // Insert Scorecard questions rating in scorecard rating list
     firstBatchURL = [...firstPostRequestContent];
     this.common.SetNewrelic('QMS', 'ReviewDetails-View-Feedbackpopup', 'SaveFeedbackRating');
     const items = await this.spService.executeBatch(firstBatchURL);
     if (items && items.length > 0) {
-      const scorecardMatrixContent = this.addScorecardMatrixItem(taskDetails, items);
+      const scorecardMatrixContent = this.addScorecardMatrixItem(previousTasks, items);
       let secondPostRequestContent = [];
-      const schedulesPostRequest = await this.updateSchedulesList(taskDetails);
+      const schedulesPostRequest = await this.updateSchedulesList(previousTasks);
       secondPostRequestContent = [...schedulesPostRequest, ...scorecardMatrixContent];
       this.common.SetNewrelic('QMS', 'ReviewDetails-View-Feedbackpopup', 'SaveFeedbackRating');
       const result = await this.spService.executeBatch(secondPostRequestContent);
       if (result) {
-        this.closeFeedback();
+        this.closeFeedback(previousTasks);
         if (Object.keys(this.scorecardTasks.currentTask).length > 0) {
           switch (this.scorecardTasks.currentTask.parent) {
-            case 'Dashboard':
-              this.popupClosed.emit(this.scorecardTasks.currentTask);
-              break;
+            // case 'Dashboard':
+            //   this.popupClosed.emit(this.scorecardTasks.currentTask);
+            //   break;
             case 'Retrospective':
               this.bindTableEvent.emit(this.global.oReviewerPendingTasks);
               break;
             case 'Reviewer':
-              taskDetails.forEach(task => {
+              previousTasks.forEach(task => {
                 const taskIndex = this.global.oReviewerPendingTasks.findIndex(item => item.taskTitle === task.task);
                 this.global.oReviewerPendingTasks.splice(taskIndex, 1);
               });
@@ -191,23 +192,26 @@ export class FeedbackPopupComponent implements OnInit {
         this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'Rating updated!' });
       }
     }
+    if (this.scorecardTasks.currentTask.parent === 'Dashboard') {
+      this.popupClosed.emit(this.scorecardTasks.currentTask);
+    }
   }
 
   /**
    * Adds item to scorecard list
    *
    */
-  addScorecardItem(taskDetails) {
+  addScorecardItem(previousTasks) {
     const batchURL = [];
     let scorecardDetails: {};
-    taskDetails.forEach(taskDetail => {
+    previousTasks.forEach(taskDetail => {
       scorecardDetails = {
         __metadata: { type: this.constantsService.listNames.Scorecard.type },
         Title: taskDetail.task,
         SubMilestones: taskDetail.submilestones,
         FeedbackType: 'Task Feedback',
         Comments: taskDetail.feedbackComment,
-        AverageRating: taskDetail.selectedTemplate.averageRating,
+        AverageRating: taskDetail.averageRating,
         AssignedToId: taskDetail.assignedToID,
         DocumentsUrl: taskDetail.documentUrl,
         ReviewerDocsUrl: taskDetail.reviewTaskDocUrl,
@@ -234,12 +238,12 @@ export class FeedbackPopupComponent implements OnInit {
    * Adds item to scorecard matrix
    *
    */
-  addScorecardMatrixItem(taskDetails, scorecardResponse) {
+  addScorecardMatrixItem(previousTasks, scorecardResponse) {
     const batchURL = [];
-    taskDetails.forEach(taskDetail => {
+    previousTasks.forEach(taskDetail => {
       const scorecardItem = scorecardResponse.find(scorecard => scorecard.retItems.Title === taskDetail.task);
       const scorecardID = scorecardItem ? scorecardItem.retItems.ID : -1;
-      taskDetail.selectedTemplate.templateMatrix.forEach(element => {
+      taskDetail.templateMatrix.forEach(element => {
         const scorecardRatingDetails = {
           __metadata: { type: this.constantsService.listNames.ScorecardRatings.type },
           Title: taskDetail.task,
@@ -287,16 +291,15 @@ export class FeedbackPopupComponent implements OnInit {
    * Updates schedules list item
    *
    */
-  async updateSchedulesList(taskDetails) {
+  async updateSchedulesList(previousTasks) {
     const batchURL = [];
-    for (const taskDetail of taskDetails) {
+    for (const taskDetail of previousTasks) {
       // update review task - Rated column true if all previous tasks are rated.
       // check if update done by QMS_Admin group user or reviewer
       // This will execute for reviewer
-      const prevTasks = taskDetail.reviewTask.PrevTasks ? taskDetail.reviewTask.PrevTasks.split(';#') : [];
-      const tasksReviewPending = await this.getPreviousTasks(prevTasks);
+      const prevTasks = Array.isArray(taskDetail.reviewTask.PrevTasks) ? taskDetail.reviewTask.PrevTasks : taskDetail.reviewTask.PrevTasks ? taskDetail.reviewTask.PrevTasks.split(';#') : [];
+      const tasksReviewPending = taskDetail.reviewTask.defaultSkill === 'Review' ? await this.getPrevTask(prevTasks) : [taskDetail];
       let updateIsRatedDetail = {};
-      const reviewPreNextTasks = tasksReviewPending.length > 0 ? tasksReviewPending[0].NextTasks.split(';#') : [];
       // Update review task rated 'yes' if this is last previous task not rated
       if (tasksReviewPending.length <= 1 && taskDetail.reviewTask) {
         const reviewTaskUpdateDetail = {
@@ -310,6 +313,7 @@ export class FeedbackPopupComponent implements OnInit {
         revTaskData.url = this.spService.getItemURL(this.constantsService.listNames.Schedules.name, taskDetail.reviewTask.ID);
         batchURL.push(revTaskData);
       }
+      const reviewPreNextTasks = tasksReviewPending.length > 0 ? tasksReviewPending[0].NextTasks ? tasksReviewPending[0].NextTasks.split(';#') : [] : [];
       if (prevTasks.length > 1 || reviewPreNextTasks.length > 1) {
         const taskUpdateDetail = {
           __metadata: { type: this.constantsService.listNames.Schedules.type },
@@ -337,15 +341,100 @@ export class FeedbackPopupComponent implements OnInit {
           Rated: true
         };
       }
-      // Update previous task of review task as Rated 'yes'
-      const curTaskRatedData = Object.assign({}, this.options);
-      curTaskRatedData.data = updateIsRatedDetail;
-      curTaskRatedData.listName = this.constantsService.listNames.Schedules.name;
-      curTaskRatedData.type = 'PATCH';
-      curTaskRatedData.url = this.spService.getItemURL(this.constantsService.listNames.Schedules.name, taskDetail.taskID);
-      batchURL.push(curTaskRatedData);
+      if (Object.keys(updateIsRatedDetail).length) {
+        // Update previous task of review task as Rated 'yes'
+        const curTaskRatedData = Object.assign({}, this.options);
+        curTaskRatedData.data = updateIsRatedDetail;
+        curTaskRatedData.listName = this.constantsService.listNames.Schedules.name;
+        curTaskRatedData.type = 'PATCH';
+        curTaskRatedData.url = this.spService.getItemURL(this.constantsService.listNames.Schedules.name, taskDetail.taskID);
+        batchURL.push(curTaskRatedData);
+      }
     }
     return batchURL;
+  }
+
+  async getPreviousTasks(task) {
+    let tasks = [];
+    // let nextTaskFilter = '';
+    let previousTaskFilter = '';
+    // let nextTasks;
+    let previousTasks;
+    // let currentTaskNextTask = task.NextTasks;
+    let currentTaskPrevTask = task.PrevTasks;
+
+    if (task.ParentSlot) {
+      const parentPreviousNextTask = Object.assign({}, this.dashbaordService.mydashboardComponent.previousNextTaskParent);
+      parentPreviousNextTask.filter = parentPreviousNextTask.filter.replace('{{ParentSlotId}}', task.ParentSlot);
+      this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'GetNextPreviousTasks');
+      let parentTask = await this.spService.readItems(this.constantsService.listNames.Schedules.name, parentPreviousNextTask);
+      parentTask = parentTask.length ? parentTask[0] : [];
+      if (!currentTaskPrevTask) {
+        currentTaskPrevTask = parentTask.PrevTasks;
+      }
+    }
+    if (currentTaskPrevTask) {
+      previousTasks = currentTaskPrevTask.split(';#');
+      previousTasks.forEach((value, i) => {
+        previousTaskFilter += '(Title eq \'' + value + '\')';
+        previousTaskFilter += i < previousTasks.length - 1 ? ' or ' : '';
+      });
+    }
+
+    const taskFilter = previousTaskFilter !== '' ? previousTaskFilter : '';
+
+    if (!taskFilter) {
+      return [];
+    }
+    const previousNextTask = Object.assign({}, this.dashbaordService.mydashboardComponent.previousNextTask);
+    previousNextTask.filter = taskFilter;
+    this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'GetNextPreviousTasksFromSchedules');
+    const response = await this.spService.readItems(this.constantsService.listNames.Schedules.name, previousNextTask);
+
+    tasks = response.length ? response : [];
+    if (currentTaskPrevTask) {
+      tasks.filter(c => !c.Rated && previousTasks.includes(c.Title)).map(c => c.TaskType = 'Previous Task');
+    }
+
+    let previousNextTaskChildRes = [];
+    for (const ele of tasks) {
+      if (ele.IsCentrallyAllocated === 'Yes') {
+        let previousNextTaskChild: any = [];
+        previousNextTaskChild = Object.assign({}, this.dashbaordService.mydashboardComponent.nextPreviousTaskChild);
+        previousNextTaskChild.filter = previousNextTaskChild.filter.replace('{{ParentSlotId}}', ele.ID.toString());
+        this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'GetNextPreviousTasksFromParentSlot');
+        let res: any = await this.spService.readItems(this.constantsService.listNames.Schedules.name, previousNextTaskChild);
+        if (res.hasError) {
+          this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: res.message.value });
+          return;
+        }
+        res = res.length ? res : [];
+        const taskBreak = [];
+        res.forEach(element => {
+          if (ele.TaskType === 'Previous Task' && !ele.Rated) {
+            if (!element.NextTasks) {
+              element.TaskType = ele.TaskType;
+              taskBreak.push(element);
+            }
+          }
+
+        });
+        if (!taskBreak.length) {
+          previousNextTaskChildRes.push(ele);
+        } else {
+          previousNextTaskChildRes = previousNextTaskChildRes.concat(taskBreak);
+        }
+
+      } else if (ele.IsCentrallyAllocated === 'No') {
+        previousNextTaskChildRes.push(ele);
+      }
+    }
+
+    tasks = previousNextTaskChildRes.length ? previousNextTaskChildRes : tasks;
+    tasks.map(c => c.StartDate = c.StartDate !== null ? this.datePipe.transform(c.StartDate, 'MMM d, y h:mm a') : '-');
+    tasks.map(c => c.DueDate = c.DueDate !== null ? this.datePipe.transform(c.DueDate, 'MMM d, y h:mm a') : '-');
+
+    return tasks;
   }
 
   /**
@@ -353,7 +442,7 @@ export class FeedbackPopupComponent implements OnInit {
    *
    * @returns true if rated 'No' previous tasks of review task present
    */
-  async getPreviousTasks(prevTasks) {
+  async getPrevTask(prevTasks) {
     const batchURL = [];
     prevTasks.forEach(element => {
       const prevTaskData = Object.assign({}, this.options);
@@ -374,8 +463,17 @@ export class FeedbackPopupComponent implements OnInit {
    * closing feedback popup and reset all entry
    *
    */
-  closeFeedback() {
-    this.scorecardTemplates.templateMatrix = [];
+  closeFeedback(tasks) {
+    this.scorecardTemplates.templates = [];
+    tasks.forEach(task => {
+      task.averageRating = 0;
+      task.templateMatrix = [];
+      task.selectedTemplate = {
+        ID: 0 as number,
+        Title: '' as string,
+        tooltip: '' as string
+      };
+    });
     this.display = false;
   }
 
@@ -383,7 +481,7 @@ export class FeedbackPopupComponent implements OnInit {
     if (Object.keys(this.scorecardTasks.currentTask).length > 0) {
       this.popupClosed.emit(this.scorecardTasks.currentTask);
     }
-    this.closeFeedback();
+    this.closeFeedback(this.scorecardTasks.tasks);
   }
   /**
    * Open modal dialog with large size
@@ -412,17 +510,17 @@ export class FeedbackPopupComponent implements OnInit {
           feedbackComment: '',
           ignoreFeedback: false,
           selectedTemplate: {
-            Id: 0 as number,
+            ID: 0 as number,
             Title: '' as string,
             tooltip: '' as string,
-            templateMatrix: [] as Array<{
-              question: string,
-              questionId: number,
-              rating: number,
-              tooltip: string
-            }>,
-            averageRating: 0,
-          }
+          },
+          templateMatrix: [] as Array<{
+            question: string,
+            questionId: number,
+            rating: number,
+            tooltip: string
+          }>,
+          averageRating: 0,
         };
         previousTasks.push(scorecard);
       }

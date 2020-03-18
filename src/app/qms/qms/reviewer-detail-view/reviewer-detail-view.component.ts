@@ -149,7 +149,7 @@ export class ReviewerDetailViewComponent implements OnInit {
     getReviewerTasks.url = this.spService.getReadURL(this.globalConstant.listNames.Schedules.name,
       this.qmsConstant.reviewerComponent.reviewerPendingTaskURL);
     getReviewerTasks.url = getReviewerTasks.url.replace('{{TopCount}}', '' + itemCount)
-                                               .replace('{{PrevMonthDate}}', lastMonthDateString);
+      .replace('{{PrevMonthDate}}', lastMonthDateString);
     getReviewerTasks.listName = this.globalConstant.listNames.Schedules.name;
     getReviewerTasks.type = 'GET';
     batchURL.push(getReviewerTasks);
@@ -158,10 +158,15 @@ export class ReviewerDetailViewComponent implements OnInit {
     // reviewerComponent.reviewerPendingTaskURL.filter = reviewerComponent.reviewerPendingTaskURL.filter.replace('{{PrevMonthDate}}', lastMonthDateString);
     this.commonService.SetNewrelic('QMS', 'ReviewDetails-View', 'getPendingRatedTasks');
     const arrResult = await this.spService.executeBatch(batchURL);
-    this.milestoneTasks = arrResult.length > 0 ? arrResult[0].retItems: [];
+    this.milestoneTasks = arrResult.length > 0 ? arrResult[0].retItems : [];
     const reviewerTasks = arrResult.length > 1 ? arrResult[1].retItems : [];
     // let arrReviewTasks = await this.spService.readItems(this.globalConstant.listNames.Schedules.name, reviewerComponent.reviewerPendingTaskURL);
     let arrReviewTasks = reviewerTasks.length > 0 ? reviewerTasks.filter(t => new Date(t.DueDate).getTime() >= filterDate.getTime()) : [];
+    arrReviewTasks = arrReviewTasks.map(t => {
+      const obj = Object.assign({}, t);
+      obj.defaultSkill = t.Task.indexOf('Review-') > -1 ? 'Review' : t.Task
+      return obj;
+    });
     // Get previous task project information - 2nd Query
     let projectInformation = await this.getProjectInformation(arrReviewTasks);
     projectInformation = [].concat(...projectInformation);
@@ -319,7 +324,7 @@ export class ReviewerDetailViewComponent implements OnInit {
           tasks.prevTasksDetail[index][0].reviewTask = tasks.reviewTasks[index];
           const milestoneTask = milestoneTasks.find(t => t.Title === tasks.reviewTasks[index].Task);
           tasks.prevTasksDetail[index][0].reviewTask.defaultSkill = tasks.reviewTasks[index].Task.indexOf('Review-') > -1 ?
-                                                                    'Review' : milestoneTask.DefaulSkill ? milestoneTask.DefaulSkill : '';
+            'Review' : milestoneTask.DefaulSkill ? milestoneTask.DefaulSkill : '';
         }
       }
     });
@@ -352,7 +357,7 @@ export class ReviewerDetailViewComponent implements OnInit {
         resourceID: element.resourceID,
         taskID: element.taskID,
         reviewTask: element.reviewTask,
-        defaultSkill : element.defaultSkill
+        defaultSkill: element.defaultSkill
       });
     });
     this.colFilters(this.ReviewerDetail);

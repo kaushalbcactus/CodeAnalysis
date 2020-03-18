@@ -183,9 +183,6 @@ export class DragDropComponent implements OnInit {
               this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links = [...links];
             }
           }
-          else{
-            this.milestoneIndex++;
-          }
         }
       });
       this.milestoneIndex = -1;
@@ -1277,6 +1274,7 @@ export class DragDropComponent implements OnInit {
     if (this.sharedObject.oTaskAllocation.arrTasks !== undefined) {
       MilTask = this.sharedObject.oTaskAllocation.arrTasks.find(c => c === event.taskType);
     }
+    this.milestoneIndex = this.milestoneIndex === -1 ? 0 : this.milestoneIndex;
     if (this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes.length > 0) {
       var node = {
         id: this.previoustaskeventdd !== undefined ? (parseInt(this.previoustaskeventdd.id) + 1).toString() : '1',
