@@ -30,7 +30,7 @@ export class AuditProjectDialogComponent implements OnInit {
   
   close() {
     this.ref.close();
-  }
+  }                                                                             
 
   onRowSelect(event) {
     event.data.checked = true;
@@ -45,7 +45,7 @@ export class AuditProjectDialogComponent implements OnInit {
   keyPress(event: any) {
     this.enableDisableConfirmButton();
   }
-
+                                             
 
 
   enableDisableConfirmButton() {

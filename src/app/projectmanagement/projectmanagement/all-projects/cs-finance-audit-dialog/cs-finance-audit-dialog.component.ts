@@ -89,12 +89,6 @@ export class CsFinanceAuditDialogComponent implements OnInit {
     this.dbProjectList = this.projectList.slice(0);
     this.AuditType = this.config.data.AuditListType;
     this.createColFieldValues(this.projectList);
-
-
-
-
-
-    // this.EmailTemplate = this.pmCommonService.getEmailTemplate(this.constants.EMAIL_TEMPLATE_NAME.AUDIT_PROJECT);
   }
 
 
@@ -160,7 +154,6 @@ export class CsFinanceAuditDialogComponent implements OnInit {
       }
     }
     this.cdr.detectChanges();
-
   }
 
   createColFieldValues(resArray) {
@@ -187,6 +180,9 @@ export class CsFinanceAuditDialogComponent implements OnInit {
     });
   }
 
+  // **************************************************************************************
+  // To Close dialog 
+  // **************************************************************************************
   cancel() {
     if (this.projectUpdated) {
       this.csref.close(this.projectUpdated);
@@ -197,6 +193,10 @@ export class CsFinanceAuditDialogComponent implements OnInit {
 
   }
 
+  // **************************************************************************************
+  // On row checkbox select for finance (maximum 10 rows are allowed)
+  // **************************************************************************************
+
   onRowSelect() {
     if (this.selectedProjects.length > 10 && this.AuditType === 'Finance') {
       this.messageService.add({
@@ -205,6 +205,10 @@ export class CsFinanceAuditDialogComponent implements OnInit {
       });
     }
   }
+
+  // **************************************************************************************
+  // Audit project button click
+  // **************************************************************************************
 
   async AuditProjects(AuditType) {
     if (AuditType === 'CS') {
@@ -218,14 +222,6 @@ export class CsFinanceAuditDialogComponent implements OnInit {
         { checked: false, parameter: 'Is the pub support status updated to submitted?', comments: '' },
       ];
 
-      // const addRollingProjectArray = [
-      //   { checked: false, parameter: 'All necessary project details updated', comments: '' },
-      //   { checked: false, parameter: 'All files uploaded', comments: '' },
-      //   { checked: false, parameter: 'All tasks completed and hrs updated', comments: '' },
-      //   { checked: false, parameter: 'Invoicing is complete', comments: '' },
-      //   { checked: false, parameter: 'Budget hours updated', comments: '' },
-      // ];
-      // this.pmObject.isAuditRollingVisible = true;
       const ref = this.dialogService.open(AuditProjectDialogComponent, {
         header: ' Audit Projects',
         width: '60vw',
@@ -235,46 +231,8 @@ export class CsFinanceAuditDialogComponent implements OnInit {
 
       ref.onClose.subscribe(async (Auditproj: any) => {
         if (Auditproj) {
-          // let batchResults = [];
-          // let batchURL = [];
-          // let finalArray = [];
-          // debugger;
-
 
           this.modalloaderenable = true;
-
-          // // let dbProjects = [];
-          // // this.selectedProjects.forEach(async element => {
-
-          // //   const projectSchedulesGet = Object.assign({}, this.options);
-          // //   const projectSchedulesFilter = Object.assign({}, this.pmConstant.QUERY.GET_TIMESPENT);
-          // //   projectSchedulesFilter.filter = projectSchedulesFilter.filter.replace(/{{projectCode}}/gi, element.ProjectCode);
-          // //   projectSchedulesGet.url = this.spServices.getReadURL(this.constants.listNames.Schedules.name,
-          // //     projectSchedulesFilter);
-          // //   projectSchedulesGet.type = 'GET';
-          // //   projectSchedulesGet.listName = this.constants.listNames.Schedules.name;
-          // //   batchURL.push(projectSchedulesGet);
-
-          // //   if (batchURL.length === 98) {
-          // //     this.commonService.SetNewrelic('projectManagment', 'cs-finance-auditdialog', 'GetSchedulesForCSAudit');
-          // //     batchResults = await this.spServices.executeBatch(batchURL);
-          // //     console.log(batchResults);
-          // //     finalArray = [...finalArray, ...batchResults];
-          // //     batchURL = [];
-          // //   }
-          // // });
-
-          // // if (batchURL.length) {
-          // //   this.commonService.SetNewrelic('projectManagment', 'cs-finance-auditdialog', 'GetSchedulesForCSAudit');
-          // //   batchResults = await this.spServices.executeBatch(batchURL);
-          // //   finalArray = [...finalArray, ...batchResults];
-          // // }
-
-          // // dbProjects
-
-          // // batchResults = [];
-          // // batchURL = [];
-          // // finalArray = [];
           const piUdpate = {
             AuditCheckList: Auditproj,
             Status: this.constants.projectStatus.PendingClosure,
@@ -282,56 +240,11 @@ export class CsFinanceAuditDialogComponent implements OnInit {
             __metadata: { type: this.constants.listNames.ProjectInformation.type }
           };
 
-
           await this.UpdateProjects(piUdpate);
-          // this.commonService.SetNewrelic('projectManagment', 'cs-finance-auditdialog', 'UpdateProjectCSAuditToFinanceAudit');
-          // this.selectedProjects.forEach(async element => {
-          //   const ProjectUpdate = Object.assign({}, this.options);
-          //   ProjectUpdate.data = piUdpate;
-          //   ProjectUpdate.listName = this.constants.listNames.ProjectInformation.name;
-          //   ProjectUpdate.type = 'PATCH';
-          //   ProjectUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, element.ID);
-          //   batchURL.push(ProjectUpdate);
-
-          //   // const sendEmailObj = this.CreateEmailObject(element);
-
-          //   // const createSendEmailObj = Object.assign({}, this.options);
-          //   // createSendEmailObj.url = this.spServices.getReadURL(this.constants.listNames.SendEmail.name, null);
-          //   // createSendEmailObj.data = sendEmailObj;
-          //   // createSendEmailObj.type = 'POST';
-          //   // createSendEmailObj.listName = this.constants.listNames.SendEmail.name;
-          //   // batchURL.push(createSendEmailObj);
-
-          //   if (batchURL.length === 99) {
-          //     this.commonService.SetNewrelic('projectManagment', 'cs-finance-auditdialog', 'UpdateProjectCSAuditToFinanceAudit');
-          //     batchResults = await this.spServices.executeBatch(batchURL);
-
-          //     finalArray = [...finalArray, ...batchResults];
-          //     batchURL = [];
-          //     this.projectUpdated = true;
-          //   }
-          // });
-          // if (batchURL.length) {
-          //   this.commonService.SetNewrelic('projectManagment', 'cs-finance-auditdialog', 'UpdateProjectCSAuditToFinanceAudit');
-          //   batchResults = await this.spServices.executeBatch(batchURL);
-          //   finalArray = [...finalArray, ...batchResults];
-          //   this.projectUpdated = true;
-          // }
-
-          // this.projectList = this.projectList.filter(c => !this.selectedProjects.includes(c));
-          // this.modalloaderenable = false;
-          // if (this.selectedProjects.length === this.dbProjectList.length || this.projectList.length === 0) {
-          //   this.csref.close(this.projectUpdated);
-          // }
-          // this.selectedProjects = [];
-
           this.messageService.add({
             key: 'custom', severity: 'success', summary: 'Success Message',
             detail: 'Selected Projects Updated Successfully.'
           });
-
-
-
         }
       });
     } else {
@@ -385,7 +298,6 @@ export class CsFinanceAuditDialogComponent implements OnInit {
         this.messageService.addAll(errorMessage);
         this.modalloaderenable = false;
         this.buttonloader = false;
-        // this.csref.close(this.projectUpdated);
       }
       else {
 
@@ -423,8 +335,9 @@ export class CsFinanceAuditDialogComponent implements OnInit {
 
     }
   }
-
-
+  // **************************************************************************************
+  // Update project on audit comment dialog
+  // **************************************************************************************
 
   async UpdateProjects(piUdpate) {
 
@@ -464,6 +377,10 @@ export class CsFinanceAuditDialogComponent implements OnInit {
     }
     this.selectedProjects = [];
   }
+
+  // **************************************************************************************
+  //  Get invoices of selected project for audit check
+  // **************************************************************************************
 
 
   async getInvoceExpense(selectedProjects) {
@@ -516,6 +433,10 @@ export class CsFinanceAuditDialogComponent implements OnInit {
     return finalArray;
   }
 
+  // **************************************************************************************
+  // header checkbox select for multiple select in  Finance Audit
+  // **************************************************************************************
+
 
   MultipleSelectRows(AuditType) {
     setTimeout(() => {
@@ -531,75 +452,4 @@ export class CsFinanceAuditDialogComponent implements OnInit {
       }
     }, 100);
   }
-
-
-  // CreateEmailObject(element) {
-  //   let tempArray = [];
-  //   const cm1IdArray = [];
-  //   element.CMLevel1ID.forEach(element => {
-  //     cm1IdArray.push(element.ID);
-  //   });
-  //   tempArray = tempArray.concat(cm1IdArray, element.CMLevel2ID);
-
-  //   var EmailTemplate = this.EmailTemplate.Content;
-  //   var objEmailBody = [];
-
-  //   objEmailBody.push({ key: '@@Val2@@', value: element.ClientLegalEntity });
-  //   objEmailBody.push({ key: '@@Val3@@', value: 'All' });
-
-  //   const hrs = await this.updateUsedHrs();
-
-
-  //   objEmailBody.push({ key: '@@Val5@@', value: hrs });
-
-
-  //   objEmailBody.forEach(obj => {
-  //     EmailTemplate = EmailTemplate.replace(RegExp(obj.key, 'gi'), obj.value);
-  //   });
-
-  //   EmailTemplate = EmailTemplate.replace(RegExp("'", 'gi'), '');
-  //   EmailTemplate = EmailTemplate.replace(/\\/g, '\\\\');
-
-
-  //   return {
-  //     __metadata: { type: this.constants.listNames.SendEmail.type },
-  //     Title: element.ShortTitle ? element.ProjectCode + '(' + element.ShortTitle + ') : Propose closure for project' : element.ProjectCode + ' : Propose closure for project',
-  //     MailBody: EmailTemplate,
-  //     Subject: element.ShortTitle ? element.ProjectCode + '(' + element.ShortTitle + ') : Propose closure for project' : element.ProjectCode + ' : Propose closure for project',
-  //     ToEmailId: this.pmCommonService.getEmailId(tempArray),
-  //     FromEmailId: this.pmObject.currLoginInfo.Email,
-  //     CCEmailId: this.pmObject.currLoginInfo.Email
-  //   };
-  // }
-
-  // async updateUsedHrs() {
-  //   let totalHours;
-  //   const projectFinanceIDs = this.config.data.projectFinanceIDs;
-  //   if (this.selectedProjectObj.ProjectCode) {
-  //     totalHours = await this.getTotalHours(this.selectedProjectObj.ProjectCode, false, []);
-  //     return totalHours;
-  //   }
-  // }
-
-  // async auditComplete() {
-
-
-  //     const piUdpate = {
-  //       AuditCheckList: formValue.html(),
-  //       Status: this.constants.projectStatus.PendingClosure,
-  //       PrevStatus: this.selectedProjectObj.Status,
-  //     };
-  //     this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'UpdateProjectInfo');
-  //     const retResults = await this.spServices.updateItem(this.constants.listNames.ProjectInformation.name,
-  //       this.selectedProjectObj.ID, piUdpate, this.constants.listNames.ProjectInformation.type);
-  //     this.checkList.addRollingProjectError = false;
-  //     this.pmObject.isAuditRollingVisible = false;
-  //     this.sendEmailBasedOnStatus(this.constants.projectStatus.PendingClosure, this.selectedProjectObj);
-  //     this.messageService.add({
-  //       key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
-  //       detail: 'Project - ' + this.selectedProjectObj.ProjectCode + ' Updated Successfully.'
-  //     });
-
-
-
 }
