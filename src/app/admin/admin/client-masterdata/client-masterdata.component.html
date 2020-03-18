@@ -219,7 +219,7 @@
         <a (click)="downloadExcel(sd)" class="download-worksheet td-none"><i class="fa fa-fw fa-file-excel-o"
                 aria-hidden="true"></i>
         </a>
-        <button styleClass="pBtnRight" pButton type="button" class="adminBtn" icon="pi pi-plus-circle" label="Add New Sub-Division" *ngIf="isUserSPMCA" (click)="showAddSubDivision()">
+        <button styleClass="pBtnRight" pButton type="button" class="adminBtn" icon="pi pi-plus-circle" label="Add New Sub-Division" *ngIf="isUserSPMCA" (click)="addEditSubDivision('Add SubDivision', null)">
         </button>
     </div>
     <div class="clearBoth"></div>
@@ -286,55 +286,14 @@
     </div>
 </p-dialog>
 
-<p-dialog [(visible)]="showaddSubDivision" [modal]="true" appendTo="body" [style]="{width: '1000px', height: '500px'}">
+<!-- <p-dialog [(visible)]="showaddSubDivision" [modal]="true" appendTo="body" [style]="{width: '1000px', height: '500px'}">
     <p-header *ngIf="!showeditSubDivision">
         Add SubDivision
     </p-header>
     <p-header *ngIf="showeditSubDivision">
         Edit SubDivision
     </p-header>
-    <form [formGroup]='subDivisionform'>
-        <div class="p-grid mt-20">
-            <div class="p-col-2 mr-10"><span class="compulsory">*</span>Sub-Division Name</div>
-            <div class="p-col-4">
-                <input class="mr-5" type="text" size="60" formControlName="subDivision_Name" placeholder="Sub-Division Name" pInputText inputPatteren>
-                <div class="error" *ngIf="cmObject.isSubDivisionFormSubmit && subDivisionform.controls.subDivision_Name.errors">
-                    <div *ngIf="subDivisionform.controls.subDivision_Name.errors.required">
-                        Sub-Division Name is required</div>
-                    <!-- <div *ngIf="subDivisionform.controls.subDivision_Name.errors.pattern">
-                        Special characters are allowed between alphabets. Allowed special characters are '-' and '_'.
-                    </div> -->
-                </div>
-            </div>
-        </div>
-        <div class="p-grid mt-20">
-            <div class="p-col-2 mr-10">Distribution List</div>
-            <div class="p-col-4">
-                <input class="mr-5" type="text" size="60" formControlName="distributionList" placeholder="Distribution List" (focusout)="validateEmailId()" pInputText>
-                <div class="error" *ngIf="cmObject.isSubDivisionFormSubmit && subDivisionform.controls.distributionList.errors">
-                    <div *ngIf="subDivisionform.controls.distributionList.errors.email">Distribution List must be a valid email address</div>
-                </div>
-            </div>
-        </div>
-        <div class="p-grid mt-20">
-            <div class="p-col-2 mr-10">Delivery Level 1</div>
-            <div class="p-col-4">
-                <p-multiSelect [style]="{'width':'100%'}" [options]="adminObject.dropdown.DeliveryLevel1Array" defaultLabel="Select Delivery Level 1" formControlName="deliveryLevel1" (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true"
-                    (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-            </div>
-        </div>
-        <div class="p-grid mt-20">
-            <div class="p-col-2 mr-10">CM Level 1</div>
-            <div class="p-col-4">
-                <p-multiSelect [style]="{'width':'100%'}" [options]="adminObject.dropdown.CMLevel1Array" defaultLabel="Select CM Level 1" formControlName="cmLevel1" (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true"
-                    (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-            </div>
-        </div>
-    </form>
-    <p-footer>
-        <button pButton label="{{buttonLabel}}" type="button" (click)="saveSubdivision()"></button>
-    </p-footer>
-</p-dialog>
+</p-dialog> -->
 
 <!-- POC Dialog -->
 
@@ -343,7 +302,7 @@
         <a (click)="downloadExcel(poc)" class="download-worksheet td-none"><i class="fa fa-fw fa-file-excel-o"
                 aria-hidden="true"></i>
         </a>
-        <button pButton styleClass="pBtnRight" type="button" class="adminBtn" icon="pi pi-plus-circle" label="Add New POC" *ngIf="isUserSPMCA" (click)="showAddPOC()"></button>
+        <button pButton styleClass="pBtnRight" type="button" class="adminBtn" icon="pi pi-plus-circle" label="Add New POC" *ngIf="isUserSPMCA" (click)="addEditPOC('Add Point Of Contact', null)"></button>
     </div>
     <div class="clearBoth"></div>
     <p-header>
@@ -421,123 +380,17 @@
     </div>
 </p-dialog>
 
-<p-dialog [(visible)]="showaddPOC" [modal]="true" appendTo="body" [contentStyle]="{'max-height':'500px', 'top':'0px'}" [style]="{width: '90%'}">
+<!-- <p-dialog [(visible)]="showaddPOC" [modal]="true" appendTo="body" [contentStyle]="{'max-height':'500px', 'top':'0px'}" [style]="{width: '90%'}">
     <p-header *ngIf="!showeditPOC">
         Add Point Of Contact
     </p-header>
     <p-header *ngIf="showeditPOC">
         Edit Point Of Contact
     </p-header>
-    <form [formGroup]='pocForm'>
-        <div class="p-grid mt-20">
-            <div class="p-col-3 mr-10"><span class="compulsory">*</span>First Name</div>
-            <div class="p-col-4">
-                <input class="mr-5" type="text" size="60" formControlName="fname" placeholder="First Name" pInputText inputPatteren>
-                <div class="error" *ngIf="cmObject.isPOCFormSubmit && pocForm.controls.fname.errors">
-                    <div *ngIf="pocForm.controls.fname.errors.required">
-                        First Name is required</div>
-                </div>
-            </div>
-        </div>
-        <div class="p-grid mt-20">
-            <div class="p-col-3 mr-10"><span class="compulsory">*</span>Last Name</div>
-            <div class="p-col-4">
-                <input class="mr-5" type="text" size="60" formControlName="lname" placeholder="Last Name" pInputText>
-                <div class="error" *ngIf="cmObject.isPOCFormSubmit && pocForm.controls.lname.errors">
-                    <div *ngIf="pocForm.controls.lname.errors.required">
-                        Last Name is required</div>
-                </div>
-            </div>
-        </div>
-        <div class="p-grid mt-20">
-            <div class="p-col-3 mr-10">Designation</div>
-            <div class="p-col-4">
-                <input class="mr-5" type="text" size="60" formControlName="designation" placeholder="Designation" pInputText>
-                <div class="error" *ngIf="cmObject.isPOCFormSubmit && pocForm.controls.designation.errors">
-                    <div *ngIf="pocForm.controls.designation.errors.required">
-                        Designation is required</div>
-                </div>
-            </div>
-        </div>
-        <div class="p-grid mt-20">
-            <div class="p-col-3 mr-10"><span class="compulsory">*</span>Email</div>
-            <div class="p-col-4">
-                <input class="mr-5" type="text" size="60" formControlName="email" placeholder="Email" pInputText>
-                <div class="error" *ngIf="cmObject.isPOCFormSubmit && pocForm.controls.email.errors">
-                    <div *ngIf="pocForm.controls.email.errors.required">
-                        Email is required</div>
-                </div>
-                <div class="error" *ngIf="cmObject.isPOCFormSubmit && pocForm.controls.email.errors">
-                    <div *ngIf="pocForm.controls.email.errors.email">Email must be a valid email address</div>
-                </div>
-            </div>
-        </div>
-        <div class="p-grid mt-20">
-            <div class="p-col-3 mr-10">Phone No.</div>
-            <div class="p-col-4">
-                <input class="mr-5" type="text" size="60" formControlName="phone" placeholder="Phone No" pInputText>
-            </div>
-        </div>
-        <div class="p-grid mt-20">
-            <div class="p-col-3 mr-10">Address</div>
-            <div class="p-col-4">
-                <input class="mr-5" type="text" size="60" formControlName="address1" placeholder="Address" pInputText>
-                <input class="mr-5 mt-5" class="mt-10" type="text" size="60" formControlName="address2" placeholder="Address" pInputText>
-                <input class="mr-5" class="mt-10" type="text" size="60" formControlName="address3" placeholder="Address" pInputText>
-                <input class="mr-5" class="mt-10" type="text" size="60" formControlName="address4" placeholder="Address" pInputText>
-            </div>
-        </div>
-        <div class="p-grid mt-20">
-            <div class="p-col-3 mr-10">Department</div>
-            <div class="p-col-4">
-                <input class="mr-5" type="text" size="60" formControlName="department" placeholder="Department" pInputText>
-            </div>
-        </div>
-        <div class="p-grid mt-20">
-            <div class="p-col-3 mr-10"><span class="compulsory">*</span>Referral Source</div>
-            <div class="p-col-4">
-                <p-dropdown [options]="adminObject.dropdown.POCRefferalSourceArray" placeholder="Select Referral Source" formControlName="referralSource" filter="true" resetFilterOnHide="true">
-                </p-dropdown>
-                <div class="error" *ngIf="cmObject.isPOCFormSubmit && pocForm.controls.referralSource.errors">
-                    <div *ngIf="pocForm.controls.referralSource.errors.required">
-                        Referral Source is required</div>
-                </div>
-            </div>
-        </div>
-        <div class="p-grid mt-20">
-            <div class="p-col-3 mr-10">Relationship Strength</div>
-            <div class="p-col-4">
-                <p-dropdown [options]="adminObject.dropdown.POCRelationshipArray" placeholder="Select Relationship" formControlName="relationshipStrength" filter="true" resetFilterOnHide="true">
-                </p-dropdown>
-            </div>
-        </div>
-        <div class="p-grid mt-20">
-            <div class="p-col-3 mr-10">Engagement Plan</div>
-            <div class="p-col-4">
-                <textarea [rows]="5" [cols]="60" formControlName="engagementPlan" placeholder="Engagement Plan" pInputTextarea></textarea>
-            </div>
-        </div>
-        <div class="p-grid mt-20">
-            <div class="p-col-3 mr-10">Comments</div>
-            <div class="p-col-4">
-                <textarea [rows]="5" [cols]="60" formControlName="comments" placeholder="Comments" pInputTextarea></textarea>
-            </div>
-        </div>
-        <div class="p-grid mt-20">
-            <div class="p-col-3 mr-10"><span class="compulsory">*</span>Project Contacts Type</div>
-            <div class="p-col-4">
-                <p-dropdown [options]="adminObject.dropdown.POCProjectContactTypesArray" placeholder="Select Project Contacts Type" formControlName="contactsType" resetFilterOnHide="true" filter="true"></p-dropdown>
-                <div class="error" *ngIf="cmObject.isPOCFormSubmit && pocForm.controls.contactsType.errors">
-                    <div *ngIf="pocForm.controls.contactsType.errors.required">
-                        Project Contacts Type is required</div>
-                </div>
-            </div>
-        </div>
-    </form>
     <p-footer>
         <button pButton label="{{buttonLabel}}" type="button" class="adminBtn" (click)="savePOC()"></button>
     </p-footer>
-</p-dialog>
+</p-dialog> -->
 
 <!-- PO Dialog -->
 
