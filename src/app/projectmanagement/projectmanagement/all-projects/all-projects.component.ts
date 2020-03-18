@@ -1823,7 +1823,7 @@ export class AllProjectsComponent implements OnInit {
       PrevStatus: selectedProjectObj.Status
     };
 
-    invoiceLineItems.forEach(element=>{
+    invoiceLineItems.forEach(element => {
       const lineItemsData: any = {
         __metadata: { type: this.constants.listNames.InvoiceLineItems.type },
         ScheduledDate: element.date,
@@ -1846,24 +1846,7 @@ export class AllProjectsComponent implements OnInit {
     batchURL.push(piUpdate);
 
     filterTasks.forEach(element => {
-      if (element.Status == this.constants.STATUS.NOT_STARTED) {
-        const scheduleStatusUpdate = Object.assign({}, options);
-        scheduleStatusUpdate.data = scNotStartedUpdateData;
-        scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
-        scheduleStatusUpdate.type = 'PATCH';
-        scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
-          element.ID);
-        batchURL.push(scheduleStatusUpdate);
-      } else if (element.Status == this.constants.STATUS.IN_PROGRESS) {
-        const scheduleStatusUpdate = Object.assign({}, options);
-        scInProgressUpdateData.ExpectedTime = element.TimeSpent;
-        scheduleStatusUpdate.data = scInProgressUpdateData;
-        scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
-        scheduleStatusUpdate.type = 'PATCH';
-        scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
-          element.ID);
-        batchURL.push(scheduleStatusUpdate);
-      } else if (element.Status == "Client Review") {
+      if (element.Task == "Client Review") {
         const scheduleStatusUpdate = Object.assign({}, options);
         scheduleStatusUpdate.data = scCRUpdateData;
         scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
@@ -1871,6 +1854,25 @@ export class AllProjectsComponent implements OnInit {
         scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
           element.ID);
         batchURL.push(scheduleStatusUpdate);
+      } else {
+        if (element.Status == this.constants.STATUS.NOT_STARTED) {
+          const scheduleStatusUpdate = Object.assign({}, options);
+          scheduleStatusUpdate.data = scNotStartedUpdateData;
+          scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
+          scheduleStatusUpdate.type = 'PATCH';
+          scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
+            element.ID);
+          batchURL.push(scheduleStatusUpdate);
+        } else if (element.Status == this.constants.STATUS.IN_PROGRESS) {
+          const scheduleStatusUpdate = Object.assign({}, options);
+          scInProgressUpdateData.ExpectedTime = element.TimeSpent;
+          scheduleStatusUpdate.data = scInProgressUpdateData;
+          scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
+          scheduleStatusUpdate.type = 'PATCH';
+          scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
+            element.ID);
+          batchURL.push(scheduleStatusUpdate);
+        }
       }
     });
 
@@ -3091,12 +3093,12 @@ export class AllProjectsComponent implements OnInit {
 
     csref.onClose.subscribe((allprojObj: any) => {
       if (allprojObj) {
-          if (this.router.url === '/projectMgmt/allProjects') {
-            this.pmObject.allProjectItems = [];
-            this.reloadAllProject();
-          } else {
-            this.router.navigate(['/projectMgmt/allProjects']);
-          }
+        if (this.router.url === '/projectMgmt/allProjects') {
+          this.pmObject.allProjectItems = [];
+          this.reloadAllProject();
+        } else {
+          this.router.navigate(['/projectMgmt/allProjects']);
+        }
       }
 
       this.FinanceButton = false;
