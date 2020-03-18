@@ -1,7 +1,7 @@
 
 import { Component, OnInit, ViewChild, ViewEncapsulation, OnDestroy, HostListener, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
 import { MessageService, Message, SelectItem } from 'primeng/api';
-import { Calendar, DataTable } from 'primeng/primeng';
+import { Calendar, Table } from 'primeng';
 import { ConfirmationService } from 'primeng/api';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -109,8 +109,8 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     // List of Subscribers
     private subscription: Subscription = new Subscription();
 
-    @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
-    @ViewChild('db', { static: false }) deliverableTable: DataTable;
+    @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
+    @ViewChild('db', { static: false }) deliverableTable: Table;
     // Project Info
     projectInfoData: any = [];
 
@@ -358,6 +358,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         if (!isManager) {
             obj.filter = obj.filter.replace('{{UserID}}', this.globalService.currentUser.userId.toString());
         }
+        this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-DeliverableBased', 'GetInvoiceLineItem');
         const res = await this.spServices.readItems(this.constantService.listNames.InvoiceLineItems.name, obj);
         // const invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.InvoiceLineItems.name + '', obj);
         // // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
@@ -640,8 +641,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
 
     // Go to Project Details Page
     goToProjectDetails(data: any) {
-        console.log(data);
-        window.open(this.globalService.sharePointPageObject.webAbsoluteUrl + '/projectmanagement#/projectMgmt/allProjects?ProjectCode=' + data.ProjectCode);
+        window.open(this.globalService.sharePointPageObject.webAbsoluteUrl + '/dashboard#/projectMgmt?ProjectCode=' + data.ProjectCode);
     }
 
     updateInvoice() {
@@ -711,6 +711,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             iliObj.data = iliData;
             batchUrl.push(iliObj);
             this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
+            this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-DeliverableBased', 'updateInvoiceLineItem');
             this.submitForm(batchUrl, type);
 
         } else if (type === 'editInvoice') {
@@ -731,6 +732,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             iliObj.type = 'PATCH';
             iliObj.data = iliData;
             batchUrl.push(iliObj);
+            this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-DeliverableBased', 'updateInvoiceLineItem');
             this.submitForm(batchUrl, type);
             this.cancelFormSub('editDeliverable');
         }
@@ -758,6 +760,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     async getApproveExpenseMailContent(type) {
         const objMail = Object.assign({}, this.fdConstantsService.fdComponent.mailContent);
         objMail.filter = objMail.filter.replace('{{MailType}}', type);
+        this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-DeliverableBased', 'GetEmailTemplate');
         const res = await this.spServices.readItems(this.constantService.listNames.MailContent.name, objMail);
         this.mailContentRes = res.length ? res : [];
     }
@@ -829,6 +832,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         const ccUser = this.getCCList();
         // ccUser.push(this.currentUserInfoData.Email);
         const tos = this.getTosList();
+        this.commonService.SetNewrelic('Finance-Dashboard', 'deliverableBased-invoiceConfirmMail', 'SendMail');
         this.spServices.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
         this.reFetchData();
     }

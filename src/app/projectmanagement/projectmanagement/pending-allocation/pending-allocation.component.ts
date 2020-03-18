@@ -79,7 +79,7 @@ export class PendingAllocationComponent implements OnInit {
     // milestoneArray: [],
     // statusArray: []
   };
-  @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
+  @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
   @ViewChild('paTableRef', { static: false }) paTableRef: Table;
   constructor(
     public globalObject: GlobalService,
@@ -266,7 +266,7 @@ export class PendingAllocationComponent implements OnInit {
 
   goToAllocationPage(task) {
     window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +
-      '/allocation#/taskAllocation?ProjectCode=' + task.ProjectCode, '_blank');
+      '/dashboard#/taskAllocation?ProjectCode=' + task.ProjectCode, '_blank');
   }
   goToProjectManagement(task) {
     // window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +

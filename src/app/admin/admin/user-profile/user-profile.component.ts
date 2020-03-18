@@ -12,7 +12,6 @@ import { AdminObjectService } from '../../services/admin-object.service';
 import { Router } from '@angular/router';
 import { CommonService } from 'src/app/Services/common.service';
 import { GlobalService } from 'src/app/Services/global.service';
-import { DataTable } from 'primeng/primeng';
 import { Table } from 'primeng/table';
 @Component({
   selector: 'app-user-profile',
@@ -89,7 +88,7 @@ export class UserProfileComponent implements OnInit {
   userProfileColArray = {
     User: [],
     LastUpdated: [],
-    LastUpdatedBy: [],
+    LastModifiedBy: [],
     PrimarySkill: [],
     Bucket: [],
     PracticeArea: [],
@@ -140,7 +139,9 @@ export class UserProfileComponent implements OnInit {
   };
   filteredCountriesMultiple: any[];
   showTable = true;
-  
+
+  isOptionFilter: boolean;
+  @ViewChild('up', { static: false }) userProfileTable: Table;
   /**
    * Construct a method to create an instance of required component.
    *
@@ -173,7 +174,7 @@ export class UserProfileComponent implements OnInit {
     private applicationRef: ApplicationRef,
     private common: CommonService,
     private globalObject: GlobalService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {
     // Browser back button disabled & bookmark issue solution
     history.pushState(null, null, window.location.href);
@@ -193,6 +194,8 @@ export class UserProfileComponent implements OnInit {
    *
    */
   async ngOnInit() {
+    this.showTable = true;
+    this.constants.loader.isPSInnerLoaderHidden = true;
     this.initialAddUserForm();
     this.minPastMonth = new Date(new Date().setDate(new Date().getDate() - 30));
     const currentYear = new Date();
@@ -207,7 +210,7 @@ export class UserProfileComponent implements OnInit {
       { field: 'GoLiveDate', header: 'Go Live Date', visibility: true },
       { field: 'LastUpdated', header: 'Last Updated', visibility: false, exportable: false },
       { field: 'LastUpdatedFormat', header: 'Last Updated Date', visibility: false },
-      { field: 'LastUpdatedBy', header: 'Last Updated By', visibility: false },
+      { field: 'LastModifiedBy', header: 'Last Updated By', visibility: false },
     ];
     this.auditHistoryColumns = [
       { field: 'User', header: 'User' },
@@ -371,6 +374,7 @@ export class UserProfileComponent implements OnInit {
     // resCatFilter.filter = resCatFilter.filter.replace(/{{isActive}}/gi,
     //   this.adminConstants.LOGICAL_FIELD.YES);
 
+    this.common.SetNewrelic('admin', 'admin-UserProfile', 'GetResourceCategorization');
     const sResult = await this.spServices.readItems(this.constants.listNames.ResourceCategorization.name, resCatFilter);
     const tempResult = [];
     this.showTable = true;
@@ -411,7 +415,7 @@ export class UserProfileComponent implements OnInit {
         userObj.User = item.UserName.Title;
         userObj.LastUpdated = new Date(new Date(item.Modified).toDateString());
         userObj.LastUpdatedFormat = this.datePipe.transform(new Date(item.Modified), 'MMM dd, yyyy');
-        userObj.LastUpdatedBy = item.Editor.Title;
+        userObj.LastModifiedBy = item.Editor.Title;
         userObj.IsActive = item.IsActive;
         userObj.DisplayText = item.Manager.Title;
         userObj.DateofExit = item.DateofExit;
@@ -657,7 +661,21 @@ export class UserProfileComponent implements OnInit {
       }
     }
   }
+
+  updateOptionValues(obj) {
+    if (obj.filteredValue.length) {
+      const filterCol = Object.entries(obj.filters);
+      if (filterCol.length >= 1) {
+        this.userProfileTable.restoringFilter;
+        obj.filter('', filterCol[0][0], 'contains')
+      }
+    }
+  }
+
   onChangeSelect() {
+    // this.updateOptionValues(this.userProfileTable);
+    // console.log('this.userProfileTable ', this.userProfileTable);
+    this.colFilters([]);
     if (this.selectedOption === this.adminConstants.LOGICAL_FIELD.INACTIVE) {
       this.showTable = false;
       this.showUserInput = true;
@@ -682,6 +700,7 @@ export class UserProfileComponent implements OnInit {
     resCatFilter.filter = resCatFilter.filter.replace(/{{isActive}}/gi,
       this.adminConstants.LOGICAL_FIELD.NO);
     resCatFilter.filter = resCatFilter.filter + ' and startswith(UserNameText,\'' + this.providedUser + '\') ';
+    this.common.SetNewrelic('admin', 'admin-UserProfile', 'GetResourceCategorization');
     const sResult = await this.spServices.readItems(this.constants.listNames.ResourceCategorization.name, resCatFilter);
     const tempResult = [];
     if (sResult && sResult.length) {
@@ -721,7 +740,7 @@ export class UserProfileComponent implements OnInit {
         userObj.User = item.UserName.Title;
         userObj.LastUpdated = new Date(new Date(item.Modified).toDateString());
         userObj.LastUpdatedFormat = this.datePipe.transform(new Date(item.Modified), 'MMM dd, yyyy');
-        userObj.LastUpdatedBy = item.Editor.Title;
+        userObj.LastModifiedBy = item.Editor.Title;
         userObj.IsActive = item.IsActive;
         userObj.DisplayText = item.Manager.Title;
         userObj.DateofExit = item.DateofExit;
@@ -959,6 +978,7 @@ export class UserProfileComponent implements OnInit {
     taGet.type = 'GET';
     taGet.listName = this.constants.listNames.TA.name;
     batchURL.push(taGet);
+    this.common.SetNewrelic('admin', 'admin-UserProfile', 'GetTADeliverableTypeCLEMilestoneTasksSkillMasterRCTimeZoneBusinessVerticle');
     const result = await this.spServices.executeBatch(batchURL);
     // console.log(result);
     return result;
@@ -1026,8 +1046,8 @@ export class UserProfileComponent implements OnInit {
       };
       return b;
     });
-    this.userProfileColArray.LastUpdatedBy = this.common.sortData(this.adminCommonService.uniqueArrayObj(colData.map(a => {
-      const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b;
+    this.userProfileColArray.LastModifiedBy = this.common.sortData(this.adminCommonService.uniqueArrayObj(colData.map(a => {
+      const b = { label: a.LastModifiedBy, value: a.LastModifiedBy }; return b;
     })));
   }
   colFilters1(colData) {
@@ -1150,6 +1170,7 @@ export class UserProfileComponent implements OnInit {
         batchURL.push(managerIdGet);
       }
       if (batchURL.length) {
+        this.common.SetNewrelic('admin', 'admin-UserProfile', 'GetUserInformation');
         IdResults = await this.spServices.executeBatch(batchURL);
       }
       if (IdResults && IdResults.length) {
@@ -1202,6 +1223,7 @@ export class UserProfileComponent implements OnInit {
   async createOrUpdateItem(formValue, IdResults, isEdit) {
     if (isEdit) {
       const data = await this.getResourceData(formValue, IdResults, this.showeditUser);
+      this.common.SetNewrelic('admin', 'admin-UserProfile', 'updateResourceCategorization');
       await this.spServices.updateItem(this.constants.listNames.ResourceCategorization.name,
         this.currUserObj.ID, data, this.constants.listNames.ResourceCategorization.type);
       this.adminObject.isMainLoaderHidden = true;
@@ -1213,6 +1235,7 @@ export class UserProfileComponent implements OnInit {
       this.showModal = false;
     } else {
       const data = await this.getResourceData(formValue, IdResults, this.showeditUser);
+      this.common.SetNewrelic('admin', 'admin-UserProfile', 'CreateResourceCategorization');
       const result = await this.spServices.createItem(this.constants.listNames.ResourceCategorization.name,
         data, this.constants.listNames.ResourceCategorization.type);
       this.adminObject.isMainLoaderHidden = true;
@@ -1247,6 +1270,7 @@ export class UserProfileComponent implements OnInit {
     const resGet = Object.assign({}, this.adminConstants.QUERY.GET_RESOURCE_CATEGERIZATION_BY_ID);
     resGet.filter = resGet.filter.replace(/{{isActive}}/gi,
       this.adminConstants.LOGICAL_FIELD.YES).replace(/{{Id}}/gi, ID);
+    this.common.SetNewrelic('admin', 'admin-UserProfile', 'GetResourceCategorization');
     const result = await this.spServices.readItems(this.constants.listNames.ResourceCategorization.name, resGet);
     if (result && result.length) {
       const item = result[0];
@@ -1283,7 +1307,7 @@ export class UserProfileComponent implements OnInit {
       userObj.Manager = item.Manager.Title;
       userObj.User = item.UserName.Title;
       userObj.LastUpdated = item.Modified;
-      userObj.LastUpdatedBy = item.Editor.Title;
+      userObj.LastModifiedBy = item.Editor.Title;
       userObj.IsActive = item.IsActive;
       userObj.DisplayText = item.Manager.Title;
       userObj.DateofExit = item.DateofExit;
@@ -1412,6 +1436,7 @@ export class UserProfileComponent implements OnInit {
       managerCreate.listName = this.constants.Groups.SYNC_USER_TO_USER_INFORMATION_LIST;
       batchURL.push(managerCreate);
     }
+    this.common.SetNewrelic('admin', 'admin-UserProfile', 'GetUserInformation');
     const sResult = await this.spServices.executeBatch(batchURL);
     if (sResult && sResult.length) {
       // console.log(sResult);
@@ -2086,7 +2111,32 @@ export class UserProfileComponent implements OnInit {
       }
     });
   }
-  downloadExcel(up) {
-    up.exportCSV();
+
+  downloadExcel() {
+    this.userProfileTable.exportCSV();
   }
+
+  optionFilter(event: any) {
+    if (event.target.value) {
+      this.isOptionFilter = false;
+    }
+  }
+
+  ngAfterViewChecked() {
+    if (this.userProfileData.length && this.isOptionFilter) {
+      const obj = {
+        tableData: this.userProfileTable,
+        colFields: this.userProfileColArray
+      };
+      if (obj.tableData.filteredValue) {
+        this.common.updateOptionValues(obj);
+      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+        this.colFilters(obj.tableData.value);
+        this.isOptionFilter = false;
+      }
+      this.cdr.detectChanges();
+    }
+  }
+
+
 }

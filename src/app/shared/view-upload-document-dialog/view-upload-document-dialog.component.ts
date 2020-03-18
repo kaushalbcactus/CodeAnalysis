@@ -1,11 +1,12 @@
 import { Component, OnInit, EventEmitter, Output, Input, SimpleChanges, OnDestroy } from '@angular/core';
-import { MenuItem, DynamicDialogConfig, MessageService } from 'primeng/api';
-import { DatePipe } from '@angular/common';
+import { MenuItem, DynamicDialogConfig, MessageService } from 'primeng';
+import { DatePipe, CommonModule } from '@angular/common';
 import { ConstantsService } from 'src/app/Services/constants.service';
 
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { MyDashboardConstantsService } from 'src/app/my-dashboard/services/my-dashboard-constants.service';
+import { CommonService } from 'src/app/Services/common.service';
 
 
 
@@ -50,7 +51,8 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     private spServices: SPOperationService,
     public sharedObject: GlobalService,
     private datePipe: DatePipe,
-    private spOperations: SPOperationService) { }
+    private spOperations: SPOperationService,
+    private commonService: CommonService) { }
 
   items: MenuItem[];
   activeItem: MenuItem;
@@ -127,63 +129,6 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
   }
-  // *************************************************************************************************************************************
-  //  onchange call when modal open
-  // *************************************************************************************************************************************
-
-  // ngOnChanges(changes: SimpleChanges) {
-  //   this.loaderenable=true;
-  //   this.DocumentArray = [];
-  //   this.data = this.config.data === undefined ? this.taskData : this.config.data;
-  //   if (this.data !== undefined) {
-
-  //     this.status = this.data.status;
-  //     this.selectedTask = this.config.data === undefined ? this.taskData :  this.data.task;
-
-  //   }
-
-  //   if (this.selectedTask.PrevTasks) {
-  //     this.items = [
-  //       { label: 'For ' + this.selectedTask.Task, icon: 'fa fa-tasks', command: (e) => this.onChange(e) },
-  //       { label: 'My Drafts', icon: 'fa fa-envelope-open', command: (e) => this.onChange(e) },
-  //       { label: 'Source Docs', icon: 'fa fa-folder-open', command: (e) => this.onChange(e) },
-  //       { label: 'References', icon: 'fa fa-fw fa-book', command: (e) => this.onChange(e) },
-  //       { label: 'Meeting Notes & Client Comments', icon: 'fa fa-comments-o', command: (e) => this.onChange(e) },
-  //       { label: 'Emails', icon: 'fa fa-envelope', command: (e) => this.onChange(e) }];
-  //     this.activeItem = this.items[1];
-  //     this.prevTask = this.items[0].label;
-  //     this.selectedTab = 'My Drafts';
-  //   }
-  //   else {
-  //     this.items = [
-
-  //       { label: 'My Drafts', icon: 'fa fa-envelope-open', command: (e) => this.onChange(e) },
-  //       { label: 'Source Docs', icon: 'fa fa-folder-open', command: (e) => this.onChange(e) },
-  //       { label: 'References', icon: 'fa fa-fw fa-book', command: (e) => this.onChange(e) },
-  //       { label: 'Meeting Notes & Client Comments', icon: 'fa fa-comments-o', command: (e) => this.onChange(e) },
-  //       { label: 'Emails', icon: 'fa fa-envelope', command: (e) => this.onChange(e) }];
-  //     this.activeItem = this.items[0];
-
-  //     this.selectedTab = 'My Drafts';
-  //   }
-
-
-
-  //   this.dbcols = [
-  //     { field: 'Name', header: 'Document Name' },
-  //     { field: 'taskName', header: 'Task Name' },
-  //     { field: 'status', header: 'Status' },
-  //     { field: 'modifiedUserName', header: 'Modified By' },
-  //     { field: 'ModifiedDateString', header: 'Modified Date' },
-  //   ];
-
-
-  //   this.getDocuments(this.selectedTask);
-  //   this.loaderenable = true;
-
-
-
-  // }
 
 
   // **************************************************************************************************************************************
@@ -239,15 +184,13 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   // **************************************************************************************************************************************
 
   async getCurrentTaskProjectInformation(ProjectCode) {
-    // this.batchContents = new Array();
-    // const batchGuid = this.spServices.generateUUID();
+
     const project = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.projectInfo);
     project.filter = project.filter.replace(/{{projectCode}}/gi, ProjectCode);
+    this.commonService.SetNewrelic('Shared', 'viewUpladDoc', 'getProjInfobyProjectCode');
     const arrResult = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, project);
     this.sharedObject.DashboardData.ProjectInformation = arrResult.length ? arrResult[0] : {};
-    // const projectUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', project);
-    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, projectUrl);
-    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+
   }
 
   // **************************************************************************************************************************************
@@ -276,6 +219,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     let completeFolderRelativeUrl = '';
     const folderUrl = this.ProjectInformation.ProjectFolder;
     completeFolderRelativeUrl = folderUrl + documentsUrl;
+    this.commonService.SetNewrelic('Shared', 'viewUpladDoc', 'getDocumentsByTabType');
     this.response = await this.spServices.readFiles(completeFolderRelativeUrl);
 
     this.allDocuments = this.response.length ? this.response : [];
@@ -342,6 +286,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       // const url = this.sharedObject.sharePointPageObject.serverRelativeUrl + '/_api/Web/GetUserById(' + element + ')';
       // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, url);
     });
+    this.commonService.SetNewrelic('Shared', 'viewUpladDoc', 'getUsersById');
     this.response = await this.spServices.executeBatch(batchUrl);
     this.response = this.response.length ? this.response.map(a => a.retItems) : [];
     // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
@@ -362,34 +307,21 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
         __metadata: { type: 'SP.ListItem' },
         Status: this.selectedTask.Task + ' Complete'
       };
-      // const batchGuid = this.spServices.generateUUID();
-      // const batchContents = new Array();
-      // const changeSetId = this.spServices.generateUUID();
       const batchUrl = [];
-      // var arrDocNames = this.selectedDocuments.map(c=> c = c.fileUrl.split('/')[7]);
       this.selectedDocuments.forEach(async element => {
         if (element.status.indexOf('Complete') === -1) {
           this.loaderenable = true;
           bSelectedNewFiles = true;
           const listName = element.ServerRelativeUrl.split('/')[3];
-          // const endPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl +
-          //   // tslint:disable-next-line: quotemark
-          //   "/_api/web/lists/getbytitle('" + listName + "')/items(" + +(element.ListItemAllFields.ID) +
-          //   // tslint:disable-next-line: quotemark
-          //   ")";
-          // var test = await  this.updateDocumentProperties(true,element);
           const updateObj = Object.assign({}, this.queryConfig);
           updateObj.url = this.spServices.getItemURL(listName, +element.ListItemAllFields.ID);
           updateObj.data = objPost;
           updateObj.listName = listName;
           updateObj.type = 'PATCH';
           batchUrl.push(updateObj);
-          // await this.spServices.updateItem(listName, +element.ListItemAllFields.ID, objPost);
-          // this.spServices.getChangeSetBodySC(batchContents, changeSetId, endPoint, JSON.stringify(objPost), false);
         }
       });
       if (bSelectedNewFiles) {
-
         const jsonData = {
           __metadata: { type: 'SP.Data.SchedulesListItem' },
           FinalDocSubmit: true
@@ -400,25 +332,12 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
         taskObj.listName = this.constants.listNames.Schedules.name;
         taskObj.type = 'PATCH';
         batchUrl.push(taskObj);
-
-        // const endPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl +
-        //   // tslint:disable-next-line: quotemark
-        //   "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name +
-        //   // tslint:disable-next-line: quotemark
-        //   "')/items(" + (this.selectedTask.ID) + ')';
-        // this.spServices.getChangeSetBodySC(batchContents, changeSetId, endPoint, JSON.stringify(jsonData), false);
         this.selectedTask.FinalDocSubmit = true;
-        // batchContents.push('--changeset_' + changeSetId + '--');
-        // const batchBody = batchContents.join('\r\n');
-        // const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
-        // batchBodyContent.push('--batch_' + batchGuid + '--');
-        // const batchBodyContents = batchBodyContent.join('\r\n');
-
-        // const response = this.spServices.executeBatchPostRequestByRestAPI(batchGuid, batchBodyContents);
+        this.commonService.SetNewrelic('Shared', 'viewUpladDoc', 'UpdateSchedules');
         const response = await this.spServices.executeBatch(batchUrl);
         this.selectedDocuments = [];
         if (this.enableNotification) {
-          this.SendEmailNotification(this.selectedTask);
+          await this.SendEmailNotification(this.selectedTask);
         }
         this.loadDraftDocs(this.selectedTab);
 
@@ -451,13 +370,16 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   downloadFile() {
     if (this.selectedDocuments.length > 0) {
       if (this.selectedTask.DisplayTitle) {
+        this.commonService.SetNewrelic('Shared', 'downloadFile-DisplayTitle', 'createZip');
         this.spServices.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), this.selectedTask.DisplayTitle);
       } else if (this.selectedTask.ProjectName) {
+        this.commonService.SetNewrelic('Shared', 'downloadFile-ProjectName', 'createZip');
         this.spServices.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl),
           this.selectedTask.ProjectName + ' ' + this.selectedTask.Milestone + ' ' + this.selectedTask.Task);
       } else {
         const downloadName = this.selectedTask.WBJID ? this.selectedTask.ProjectCode + ' (' +
           this.selectedTask.WBJID + ' )' : this.selectedTask.ProjectCode;
+        this.commonService.SetNewrelic('Shared', 'downloadFile', 'createZip');
         this.spServices.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), downloadName);
       }
 
@@ -539,6 +461,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
               // tslint:disable-next-line: quotemark
               "&@TargetFileName='" + fileObj.name + "'&$expand=ListItemAllFields";
 
+            this.commonService.SetNewrelic('Shared', 'viewUpladDocDialog', 'uploadDocuments');
             const res = await this.spOperations.uploadFile(filePathUrl, fileObj.reader.result);
             uploadedFiles.push(res);
             if (readers.length === uploadedFiles.length) {
@@ -586,18 +509,9 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       taskObj.listName = listName;
       taskObj.type = 'PATCH';
       batchUrl.push(taskObj);
-      // const endPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl +
-      //   // tslint:disable-next-line: quotemark
-      //   "/_api/web/lists/getbytitle('" + listName + "')/items(" + +(element.ListItemAllFields.ID) + ")";
-      // this.spServices.getChangeSetBodySC(batchContents, changeSetId, endPoint, JSON.stringify(objPost), false);
+
     });
-    // batchContents.push('--changeset_' + changeSetId + '--');
-    // const batchBody = batchContents.join('\r\n');
-    // const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
-    // batchBodyContent.push('--batch_' + batchGuid + '--');
-    // const batchBodyContents = batchBodyContent.join('\r\n');
-    // const response = this.spServices.executeBatchPostRequestByRestAPI(batchGuid, batchBodyContents);
-    // const responseInLines = response.split('\n');
+    this.commonService.SetNewrelic('Shared', 'viewUpladDoc', 'linkDocToProject');
     await this.spServices.executeBatch(batchUrl);
     this.loadDraftDocs(this.selectedTab);
     this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Document updated successfully.' });
@@ -610,41 +524,45 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     const mailSubject = 'New File Uploaded.';
 
     // ClosedTaskNotification
+    if (task.NextTasks) {
+      const nts = task.NextTasks.split(';#');
+      nts.forEach(async nextTask => {
+        const npInfo = await this.myDashboardConstantsService.getNextPreviousTask(task);
+        const iterator = npInfo.find(item => item.Title === nextTask);
+        const ArrayTo = [];
+        const objEmailBody = [];
+        objEmailBody.push({
+          key: '@@Val1@@', //  Next  Task Assign To
+          value: iterator.AssignedTo ? iterator.AssignedTo.Title : ''
+        });
+        objEmailBody.push({
+          key: '@@Val2@@', // Current Task Name
+          value: task.Title
+        });
+        objEmailBody.push({
+          key: '@@Val21@@', // Current Task Assign To
+          value: task.AssignedTo ? task.AssignedTo.Title : ''
+        });
+        objEmailBody.push({
+          key: '@@Val3@@', // Next Task Name
+          value: iterator.Title
+        });
+        objEmailBody.push({
+          key: '@@Val31@@', //  Next  Task Assign To
+          value: iterator.AssignedTo ? iterator.AssignedTo.Title : ''
+        });
 
-    task.nextTasks.forEach(nextTask => {
-      const ArrayTo = [];
-      const objEmailBody = [];
-      objEmailBody.push({
-        'key': '@@Val1@@', //  Next  Task Assign To
-        'value': nextTask.AssignedTo ? nextTask.AssignedTo.Title : ''
-      });
-      objEmailBody.push({
-        'key': '@@Val2@@', // Current Task Name
-        'value': task.Title
-      });
-      objEmailBody.push({
-        'key': '@@Val21@@', // Current Task Assign To
-        'value': task.AssignedTo ? task.AssignedTo.Title : ''
-      });
-      objEmailBody.push({
-        'key': '@@Val3@@', // Next Task Name
-        'value': nextTask.Title
-      });
-      objEmailBody.push({
-        'key': '@@Val31@@', //  Next  Task Assign To
-        'value': nextTask.AssignedTo ? nextTask.AssignedTo.Title : ''
-      });
+        let mailBody = this.Emailtemplate;
 
-      let mailBody = this.Emailtemplate;
+        for (const data of objEmailBody) {
+          mailBody = mailBody.replace(RegExp(data.key, 'gi'), data.value);
+        }
+        this.commonService.SetNewrelic('Shared', 'viewUpladDoc', 'SendMails');
+        // Send  email
+        this.spServices.sendMail(iterator.AssignedTo.EMail, task.AssignedTo.EMail, mailSubject, mailBody, task.AssignedTo.EMail);
 
-      for (const data of objEmailBody) {
-        mailBody = mailBody.replace(RegExp(data.key, 'gi'), data.value);
-      }
-
-      // Send  email
-      this.spServices.sendMail(nextTask.AssignedTo.EMail, task.AssignedTo.EMail, mailSubject, mailBody, task.AssignedTo.EMail);
-
-    });
+      });
+    }
 
   }
 
@@ -669,6 +587,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     mailTemplateGet.listName = this.constants.listNames.MailContent.name;
     batchURL.push(mailTemplateGet);
 
+    this.commonService.SetNewrelic('Shared', 'viewUpladDoc', 'getEmailTemplate');
     const arrResults = await this.spServices.executeBatch(batchURL);
 
     if (arrResults[0].retItems) {

@@ -6,6 +6,7 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { PlatformLocation, LocationStrategy } from '@angular/common';
 import { Router } from '@angular/router';
+import { CommonService } from 'src/app/Services/common.service';
 
 @Component({
   selector: 'app-scorecards',
@@ -61,13 +62,17 @@ export class ScorecardsComponent implements OnInit {
   resourceColumns: [{}];
   navigationSubscription;
   value: Date[] = [new Date(new Date().setMonth(new Date().getMonth() - 6)), new Date()];
-  @ViewChild(FeedbackBymeComponent, { static: true }) feedbackTable: FeedbackBymeComponent;
-  constructor(private qmsConstant: QMSConstantsService, private globalConstant: ConstantsService,
-    private spService: SPOperationService, private global: GlobalService,
+  @ViewChild(FeedbackBymeComponent, { static: false }) feedbackTable: FeedbackBymeComponent;
+  constructor(
+    private qmsConstant: QMSConstantsService,
+    private globalConstant: ConstantsService,
+    private spService: SPOperationService,
+    private global: GlobalService,
     private platformLocation: PlatformLocation,
     private locationStrategy: LocationStrategy,
     private readonly _router: Router,
     _applicationRef: ApplicationRef,
+    private commonService: CommonService,
     zone: NgZone
   ) {
 
@@ -80,7 +85,7 @@ export class ScorecardsComponent implements OnInit {
     this.navigationSubscription = _router.events.subscribe((uri) => {
       zone.run(() => _applicationRef.tick());
     });
-    
+
   }
 
   ngOnDestroy() {
@@ -90,7 +95,8 @@ export class ScorecardsComponent implements OnInit {
   }
 
   async ngOnInit() {
-    if(!this.global.currentUser.groups.length) {
+    if (!this.global.currentUser.groups.length) {
+      this.commonService.SetNewrelic('QMS', 'admin-scorecards', 'getUserInfo');
       const result = await this.spService.getUserInfo(this.global.currentUser.userId);
       this.global.currentUser.groups = result.Groups.results ? result.Groups.results : [];
     }
@@ -106,6 +112,7 @@ export class ScorecardsComponent implements OnInit {
         // Fetch all active resources
         const adminComponent = JSON.parse(JSON.stringify(this.qmsConstant.AdminViewComponent));
         adminComponent.getResources.top = adminComponent.getResources.top.replace('{{TopCount}}', '4500');
+        this.commonService.SetNewrelic('QMS', 'scoreCard', 'CurrentUserInfo');
         const arrResult = await this.spService.readItems(this.globalConstant.listNames.ResourceCategorization.name,
           adminComponent.getResources);
         this.resources = arrResult.length > 0 ? arrResult : [];
@@ -156,6 +163,7 @@ export class ScorecardsComponent implements OnInit {
     resources.forEach(element => {
       batchURL = [...batchURL, ...this.getScorecard(element.UserName.ID, topCount, startDate, endDate)];
     });
+    this.commonService.SetNewrelic('QMS', 'scoreCard', 'getResourceRatingDetail');
     arrResourceScoreCards = await this.spService.executeBatch(batchURL);
     arrResourceScoreCards = arrResourceScoreCards.length > 0 ? arrResourceScoreCards.map(s => s.retItems) : [];
     for (const key in arrResourceScoreCards) {

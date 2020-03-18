@@ -1,23 +1,28 @@
 <div class="ui-g">
     <div class="ui-g-12 ui-fluid ui-md-4">
-        <p-calendar [(ngModel)]="rangeDates" selectionMode="range" [readonlyInput]="true" dateFormat="M dd, yy" placeholder="Select Start & End Date" showButtonBar="true" (onClose)="SelectedDateRange()" (onClearClick)="setDefault()"></p-calendar>
+        <p-calendar [(ngModel)]="rangeDates" selectionMode="range" [readonlyInput]="true" dateFormat="M dd, yy"
+            placeholder="Select Start & End Date" showButtonBar="true" (onClose)="SelectedDateRange()"
+            (onClearClick)="setDefault()"></p-calendar>
     </div>
 
     <div class="ui-g-12 ui-md-8 f-right">
         <!-- <button type="button" pButton label="Export" (click)="fdDataShareServie.convertToExcelFile(pi)"></button> -->
-        <i style="font-size: 1.8em;cursor: pointer;" (click)=" fdDataShareServie.convertToExcelFile(pi)" title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
+        <i style="font-size: 1.8em;cursor: pointer;" (click)=" fdDataShareServie.convertToExcelFile(pi)"
+            title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
     </div>
     <div style="clear: both;"></div>
 </div>
 <div class="financeTable">
-    <p-table #pi [columns]="outstandingInCols" [value]="paidInvoicesRes" [paginator]="true" [rows]="10" [(selection)]="selectedRowData" [(selection)]="selectedRowData" selectionMode="" (onRowSelect)="onRowSelect($event)" exportFilename="Paid_Invoices" (click)="onTableClick()">
+    <p-table #pi [columns]="outstandingInCols" [value]="paidInvoicesRes" [paginator]="true" [rows]="10"
+        [(selection)]="selectedRowData" [(selection)]="selectedRowData" selectionMode=""
+        (onRowSelect)="onRowSelect($event)" exportFilename="Paid_Invoices" (click)="onTableClick()">
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th>S.No</th>
                 <th style="width: 2.25em">
                     <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
                 </th>
-                <th *ngFor="let col of columns" [pSortableColumn]="col.field" pResizableColumn pReorderableColumn [hidden]="!col.visibility">
+                <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
                     {{col.header}}
                     <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
                 </th>
@@ -26,30 +31,61 @@
             <tr>
                 <th></th>
                 <th></th>
-                <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility" style="overflow: visible;">
+                <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility"
+                    style="overflow: visible;">
                     <ng-container *ngIf="col.field">
-                        <td></td>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'InvoiceStatus'" [options]="outInvoiceColArray.InvoiceStatus" defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="pi.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'InvoiceNumber'" [options]="outInvoiceColArray.InvoiceNumber" defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="pi.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'PONumber'" [options]="outInvoiceColArray.PONumber" defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="pi.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'POValues'" [options]="outInvoiceColArray.POValues" defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="pi.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'ClientLegalEntity'" [options]="outInvoiceColArray.ClientLegalEntity" defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="pi.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'InvoiceDate'" [options]="outInvoiceColArray.InvoiceDate" defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="pi.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Amount'" [options]="outInvoiceColArray.Amount" defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="pi.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Currency'" [options]="outInvoiceColArray.Currency" defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="pi.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'POC'" [options]="outInvoiceColArray.POC" defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="pi.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'ModifiedBy'" [options]="outInvoiceColArray.ModifiedBy" defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="pi.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
-                    </ng-container>
+                <td></td>
+                <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                    *ngSwitchCase="'InvoiceStatus'" [options]="outInvoiceColArray.InvoiceStatus" defaultLabel="All"
+                    [maxSelectedLabels]="1" (onChange)="pi.filter($event.value, col.field, 'in')"
+                    (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                </p-multiSelect>
+                <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                    *ngSwitchCase="'InvoiceNumber'" [options]="outInvoiceColArray.InvoiceNumber" defaultLabel="All"
+                    [maxSelectedLabels]="1" (onChange)="pi.filter($event.value, col.field, 'in')"
+                    (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                </p-multiSelect>
+                <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                    *ngSwitchCase="'PONumber'" [options]="outInvoiceColArray.PONumber" defaultLabel="All"
+                    [maxSelectedLabels]="1" (onChange)="pi.filter($event.value, col.field, 'in')"
+                    (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                </p-multiSelect>
+                <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                    *ngSwitchCase="'POValues'" [options]="outInvoiceColArray.POValues" defaultLabel="All"
+                    [maxSelectedLabels]="1" (onChange)="pi.filter($event.value, col.field, 'in')"
+                    (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                </p-multiSelect>
+                <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                    *ngSwitchCase="'ClientLegalEntity'" [options]="outInvoiceColArray.ClientLegalEntity"
+                    defaultLabel="All" [maxSelectedLabels]="1" (onChange)="pi.filter($event.value, col.field, 'in')"
+                    (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                </p-multiSelect>
+                <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                    *ngSwitchCase="'InvoiceDate'" [options]="outInvoiceColArray.InvoiceDate" defaultLabel="All"
+                    [maxSelectedLabels]="1" (onChange)="pi.filter($event.value, col.field, 'in')"
+                    (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                </p-multiSelect>
+                <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                    *ngSwitchCase="'Amount'" [options]="outInvoiceColArray.Amount" defaultLabel="All"
+                    [maxSelectedLabels]="1" (onChange)="pi.filter($event.value, col.field, 'in')"
+                    (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                </p-multiSelect>
+                <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                    *ngSwitchCase="'Currency'" [options]="outInvoiceColArray.Currency" defaultLabel="All"
+                    [maxSelectedLabels]="1" (onChange)="pi.filter($event.value, col.field, 'in')"
+                    (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                </p-multiSelect>
+                <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'POC'"
+                    [options]="outInvoiceColArray.POC" defaultLabel="All" [maxSelectedLabels]="1"
+                    (onChange)="pi.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                    (onPanelShow)="isOptionFilter=true;">
+                </p-multiSelect>
+                <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                    *ngSwitchCase="'ModifiedBy'" [options]="outInvoiceColArray.ModifiedBy" defaultLabel="All"
+                    [maxSelectedLabels]="1" (onChange)="pi.filter($event.value, col.field, 'in')"
+                    (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                </p-multiSelect>
+                </ng-container>
                 </th>
             </tr>
         </ng-template>
@@ -62,7 +98,8 @@
                     <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
                 </td>
                 <td *ngFor="let col of columns;index as i" class="ui-resizable-column" [hidden]="!col.visibility">
-                    <ng-container *ngIf="col.field != 'InvoiceNumber' &&  col.field != '' && col.field != 'InvoiceDate'">
+                    <ng-container
+                        *ngIf="col.field != 'InvoiceNumber' &&  col.field != '' && col.field != 'InvoiceDate'">
                         {{rowData[col.field]}}
                     </ng-container>
                     <ng-container *ngIf="col.field == 'InvoiceDate'">
@@ -77,9 +114,11 @@
 
                     <ng-container *ngIf="col.field == ''">
                         <div>
-                            <p-menu #popupMenu [popup]="true" [model]="items" styleClass="borderMenu" (onHide)="pmenuOnHide()" (onShow)="pmenuonShow()">
+                            <p-menu #popupMenu [popup]="true" [model]="items" styleClass="borderMenu"
+                                (onHide)="pmenuOnHide()" (onShow)="pmenuonShow()">
                             </p-menu>
-                            <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;" (click)="openPopup(rowData, popupMenu);popupMenu.show($event);"></i>
+                            <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
+                                (click)="openPopup(rowData, popupMenu);popupMenu.show($event);"></i>
                         </div>
                     </ng-container>
                 </td>
@@ -103,24 +142,29 @@
 <!-- Context Menu End -->
 
 <!-- Payment Resolved -->
-<p-dialog header="Payment Resolved" [(visible)]="paymentResovedModal" [modal]="true" [draggable]="false" [responsive]="true" [style]="{'width': '30%', 'top':'0px'}" [maximizable]="false" [baseZIndex]="10000" (onHide)="cancelFormSub('paymentResoved')">
+<p-dialog header="Payment Resolved" [(visible)]="paymentResovedModal" [modal]="true" [draggable]="false"
+    [responsive]="true" [style]="{'width': '30%', 'top':'0px'}" [maximizable]="false" [baseZIndex]="10000"
+    (onHide)="cancelFormSub('paymentResoved')">
     <form id="myform" [formGroup]="paymentResoved_form">
         <div class="ui-g">
             <div class="ui-g-6">
                 Uplaod File
             </div>
             <div class="ui-g-6">
-                <input type="file" name="myfile" class="form-control" id="myfile" (change)="onFileChange($event)" #fileInput formControlName="file" />
+                <input type="file" name="myfile" class="form-control" id="myfile" (change)="onFileChange($event)"
+                    #fileInput formControlName="file" />
                 <div *ngIf="formSubmit.isSubmit && isValidPaymentResovedForm.file.errors">
-                    <div *ngIf="isValidPaymentResovedForm.file.errors.required" style="color:red;">Please Select file & try again.
+                    <div *ngIf="isValidPaymentResovedForm.file.errors.required" style="color:red;">Please Select file &
+                        try again.
                     </div>
                 </div>
             </div>
         </div>
     </form>
     <p-footer>
-        <button pButton type="button" label="Save" [disabled]="submitBtn.isClicked" (click)="onSubmit('paymentResoved')"></button>
-        <button pButton type="button" label="Cancel" (click)="cancelFormSub('paymentResoved')"></button>
+        <button pButton type="button" class="fdBtn" label="Save" [disabled]="submitBtn.isClicked"
+            (click)="onSubmit('paymentResoved')"></button>
+        <button pButton type="button" class="fdBtn" label="Cancel" (click)="cancelFormSub('paymentResoved')"></button>
     </p-footer>
 </p-dialog>
 
@@ -164,30 +208,37 @@
 </p-dialog> -->
 
 <!-- Replace Invoice -->
-<p-dialog header="Replace Invoice" [(visible)]="replaceInvoiceModal" [modal]="true" [draggable]="false" [responsive]="true" [style]="{'width': '30%', 'top':'0px'}" [maximizable]="false" [baseZIndex]="10000" (onHide)="cancelFormSub('replaceInvoice')">
+<p-dialog header="Replace Invoice" [(visible)]="replaceInvoiceModal" [modal]="true" [draggable]="false"
+    [responsive]="true" [style]="{'width': '30%', 'top':'0px'}" [maximizable]="false" [baseZIndex]="10000"
+    (onHide)="cancelFormSub('replaceInvoice')">
     <form id="myform" [formGroup]="replaceInvoice_form">
         <div class="ui-g">
             <div class="ui-g-6">
                 Uplaod File
             </div>
             <div class="ui-g-6">
-                <input type="file" name="myfile" class="form-control" id="myfile" (change)="onFileChange($event)" #fileInput formControlName="file" />
+                <input type="file" name="myfile" class="form-control" id="myfile" (change)="onFileChange($event)"
+                    #fileInput formControlName="file" />
                 <div *ngIf="formSubmit.isSubmit && isValidReplaceInvoiceForm.file.errors">
-                    <div *ngIf="isValidReplaceInvoiceForm.file.errors.required" style="color:red;">Please Select file & try again.
+                    <div *ngIf="isValidReplaceInvoiceForm.file.errors.required" style="color:red;">Please Select file &
+                        try again.
                     </div>
                 </div>
             </div>
         </div>
     </form>
     <p-footer>
-        <button pButton type="button" label="Save" [disabled]="submitBtn.isClicked" (click)="onSubmit('replaceInvoice')"></button>
-        <button pButton type="button" label="Cancel" (click)="cancelFormSub('replaceInvoice')"></button>
+        <button pButton type="button" class="fdBtn" label="Save" [disabled]="submitBtn.isClicked"
+            (click)="onSubmit('replaceInvoice')"></button>
+        <button pButton type="button" class="fdBtn" label="Cancel" (click)="cancelFormSub('replaceInvoice')"></button>
     </p-footer>
 
 </p-dialog>
 
 <!-- Mark as Credit or Debit Note Modal -->
-<p-dialog header="Mark as Credit or Debit Note" [(visible)]="creditOrDebitModal" [modal]="true" [draggable]="false" [responsive]="true" [style]="{'width': '40%', 'top':'0px'}" [maximizable]="false" [baseZIndex]="10000" (onHide)="cancelFormSub('creditDebit')">
+<p-dialog header="Mark as Credit or Debit Note" [(visible)]="creditOrDebitModal" [modal]="true" [draggable]="false"
+    [responsive]="true" [style]="{'width': '40%', 'top':'0px'}" [maximizable]="false" [baseZIndex]="10000"
+    (onHide)="cancelFormSub('creditDebit')">
 
     <form id="myform" [formGroup]="creditOrDebitNote_form">
         <div class="ui-g">
@@ -195,15 +246,18 @@
             <div class="ui-g-6">
                 <input id="disabled-input" type="text" pInputText formControlName="Number" />
                 <div *ngIf="formSubmit.isSubmit && isValidCreditDebitNoteForm.Number.errors">
-                    <div *ngIf="isValidCreditDebitNoteForm.Number.errors.required" style="color:red;">Please provide Number.</div>
+                    <div *ngIf="isValidCreditDebitNoteForm.Number.errors.required" style="color:red;">Please provide
+                        Number.</div>
                 </div>
             </div>
 
             <div class="ui-g-6">Uplaod File</div>
             <div class="ui-g-6">
-                <input type="file" name="myfile" class="form-control" id="myfile" (change)="onFileChange($event)" #fileInput formControlName="file" />
+                <input type="file" name="myfile" class="form-control" id="myfile" (change)="onFileChange($event)"
+                    #fileInput formControlName="file" />
                 <div *ngIf="formSubmit.isSubmit && isValidCreditDebitNoteForm.file.errors">
-                    <div *ngIf="isValidCreditDebitNoteForm.file.errors.required" style="color:red;">Please Select file & try again.
+                    <div *ngIf="isValidCreditDebitNoteForm.file.errors.required" style="color:red;">Please Select file &
+                        try again.
                     </div>
                 </div>
             </div>
@@ -212,7 +266,8 @@
             <div class="ui-g-6">
                 <input id="disabled-input" type="text" pInputText formControlName="Amount" />
                 <div *ngIf="formSubmit.isSubmit && isValidCreditDebitNoteForm.Amount.errors">
-                    <div *ngIf="isValidCreditDebitNoteForm.Amount.errors.required" style="color:red;">Please provide Amount.</div>
+                    <div *ngIf="isValidCreditDebitNoteForm.Amount.errors.required" style="color:red;">Please provide
+                        Amount.</div>
                 </div>
             </div>
 
@@ -220,15 +275,18 @@
             <div class="ui-g-6">
                 <input id="disabled-input" type="text" pInputText formControlName="Type" />
                 <div *ngIf="formSubmit.isSubmit && isValidCreditDebitNoteForm.Type.errors">
-                    <div *ngIf="isValidCreditDebitNoteForm.Type.errors.required" style="color:red;">Please provide Type.</div>
+                    <div *ngIf="isValidCreditDebitNoteForm.Type.errors.required" style="color:red;">Please provide Type.
+                    </div>
                 </div>
             </div>
 
             <div class="ui-g-6">Comments</div>
             <div class="ui-g-6">
-                <textarea [rows]="4" [cols]="30" pInputTextarea autoResize="autoResize" formControlName="Comments"></textarea>
+                <textarea [rows]="4" [cols]="30" pInputTextarea autoResize="autoResize"
+                    formControlName="Comments"></textarea>
                 <div *ngIf="formSubmit.isSubmit && isValidCreditDebitNoteForm.Comments.errors">
-                    <div *ngIf="isValidCreditDebitNoteForm.Comments.errors.required" style="color:red;">Please provide Comments.</div>
+                    <div *ngIf="isValidCreditDebitNoteForm.Comments.errors.required" style="color:red;">Please provide
+                        Comments.</div>
                 </div>
             </div>
 
@@ -236,8 +294,9 @@
     </form>
 
     <p-footer>
-        <button pButton type="button" label="Confirm" [disabled]="submitBtn.isClicked" (click)="onSubmit('creditDebit')"></button>
-        <button pButton type="button" label="Cancel" (click)="cancelFormSub('creditDebit')"></button>
+        <button pButton type="button" class="fdBtn" label="Confirm" [disabled]="submitBtn.isClicked"
+            (click)="onSubmit('creditDebit')"></button>
+        <button pButton type="button" class="fdBtn" label="Cancel" (click)="cancelFormSub('creditDebit')"></button>
     </p-footer>
 </p-dialog>
 <app-timeline-history #timelineRef></app-timeline-history>

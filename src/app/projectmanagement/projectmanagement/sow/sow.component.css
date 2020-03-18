@@ -153,3 +153,7 @@ body .ui-table .ui-table-tbody>tr>td {
 .ui-table-wrapper th:nth-child(7) {
     width: 8em !important;
 }
+
+.btnRight{
+    float:right;
+}

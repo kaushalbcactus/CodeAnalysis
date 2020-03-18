@@ -11,13 +11,12 @@ import { Router } from '@angular/router';
 import { removeSummaryDuplicates } from '@angular/compiler';
 import { GlobalService } from 'src/app/Services/global.service';
 import { CommonService } from 'src/app/Services/common.service';
-import { DataTable } from 'primeng/primeng';
+import { Table } from 'primeng';
 
 @Component({
   selector: 'app-client-masterdata',
   templateUrl: './client-masterdata.component.html',
-  styleUrls: ['./client-masterdata.component.css'],
-  encapsulation: ViewEncapsulation.None
+  styleUrls: ['./client-masterdata.component.css']
 })
 /**
  * A class that uses ngPrime to display the data in table.
@@ -70,12 +69,12 @@ export class ClientMasterdataComponent implements OnInit {
      * This is used to initialize the Client form.
      */
     this.addClient = frmbuilder.group({
-      name: ['', [Validators.required, Validators.pattern(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL_WITHSPACE)]],
+      name: ['', Validators.required],
       acronym: ['', [Validators.required, Validators.maxLength(5),
       Validators.pattern(this.adminConstants.REG_EXPRESSION.THREE_UPPERCASE_TWO_NUMBER)]],
       group: ['', Validators.required],
       distributionList: [''],
-      invoiceName: ['', [Validators.required, Validators.pattern(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL_WITHSPACE)]],
+      invoiceName: ['', [Validators.required]],
       realization: ['', [Validators.required, this.adminCommonService.checkPositiveNumber]],
       market: ['', Validators.required],
       billingEntry: ['', Validators.required],
@@ -99,7 +98,7 @@ export class ClientMasterdataComponent implements OnInit {
      * This is used to initialize the subDivision form.
      */
     this.subDivisionform = frmbuilder.group({
-      subDivision_Name: ['', [Validators.required, Validators.pattern(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL_WITHSPACE)]],
+      subDivision_Name: ['', [Validators.required]],
       distributionList: [''],
       cmLevel1: [''],
       deliveryLevel1: [''],
@@ -221,7 +220,7 @@ export class ClientMasterdataComponent implements OnInit {
     Market: [],
     InvoiceName: [],
     LastUpdated: [],
-    LastUpdatedBy: []
+    LastModifiedBy: []
   };
 
   auditHistoryArray = {
@@ -315,13 +314,20 @@ export class ClientMasterdataComponent implements OnInit {
     AmountTax: 0,
     AmountOOP: 0
   };
+
+  @ViewChild('cmd', { static: false }) clientMasterTable: Table;
+
+  cleNameInputPattern = /[^a-zA-Z0-9\s_-]*/g;
+
+
+  isOptionFilter: boolean;
   /**
    * This is used to initialize the PO form.
    */
   initAddPOForm() {
     this.PoForm = this.frmbuilder.group({
       poNumber: ['', [Validators.required, Validators.pattern(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL_NUMERIC)]],
-      poName: ['', [Validators.required, Validators.pattern(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL_WITHSPACE)]],
+      poName: ['', [Validators.required]],
       currency: ['', Validators.required],
       poExpiryDate: ['', Validators.required],
       poc: ['', Validators.required],
@@ -428,6 +434,7 @@ export class ClientMasterdataComponent implements OnInit {
       }
     }
     // const getClientLegalInfo = Object.assign({}, this.adminConstants.QUERY.GET_ALL_CLIENT_LEGAL_ENTITY_BY_ACTIVE);
+    this.common.SetNewrelic('admin', 'admin-clientMaster', 'getCLE');
     const results = await this.spServices.readItems(this.constantsService.listNames.ClientLegalEntity.name, getClientLegalInfo);
     if (results && results.length) {
       this.resultResponse.ClientLegalEntityArray = results;
@@ -498,7 +505,7 @@ export class ClientMasterdataComponent implements OnInit {
       };
       return b;
     });
-    this.clientMasterDataColArray.LastUpdatedBy = this.common.sortData(this.adminCommonService.uniqueArrayObj(
+    this.clientMasterDataColArray.LastModifiedBy = this.common.sortData(this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; })));
 
     this.clientMasterDataColArray.BillingEntity = this.common.sortData(this.adminCommonService.uniqueArrayObj(colData.map(a => {
@@ -643,6 +650,7 @@ export class ClientMasterdataComponent implements OnInit {
     bucketGet.listName = this.constantsService.listNames.FocusGroup.name;
     batchURL.push(bucketGet);
 
+    this.common.SetNewrelic('admin', 'admin-clientMaster', 'getClientGroupCLETimeZoneBillingEntityRCFocousGroupCurrency');
     const sResults = await this.spServices.executeBatch(batchURL);
     return sResults;
 
@@ -852,6 +860,7 @@ export class ClientMasterdataComponent implements OnInit {
       this.constantsService.loader.isPSInnerLoaderHidden = false;
       const clientData = await this.getClientData();
       if (!this.showEditClient) {
+        this.common.SetNewrelic('admin', 'admin-clientMaster', 'CreateCLE');
         const results = await this.spServices.createItem(this.constantsService.listNames.ClientLegalEntity.name,
           clientData, this.constantsService.listNames.ClientLegalEntity.type);
         if (!results.hasOwnProperty('hasError') && !results.hasError) {
@@ -864,6 +873,7 @@ export class ClientMasterdataComponent implements OnInit {
         }
       }
       if (this.showEditClient) {
+        this.common.SetNewrelic('admin', 'admin-clientMaster', 'UpdateCLE');
         const results = await this.spServices.updateItem(this.constantsService.listNames.ClientLegalEntity.name, this.currClientObj.ID,
           clientData, this.constantsService.listNames.ClientLegalEntity.type);
         if (this.currClientObj.Bucket !== this.addClient.value.bucket) {
@@ -903,6 +913,7 @@ export class ClientMasterdataComponent implements OnInit {
       Bucket: this.addClient.value.bucket,
       StartDate: !this.showEditClient ? new Date() : this.addClient.value.bucketEffectiveDate
     };
+    this.common.SetNewrelic('admin', 'admin-clientMaster', 'CreateCLEBucketMapping');
     const results = await this.spServices.createItem(this.constantsService.listNames.CLEBucketMapping.name,
       data, this.constantsService.listNames.CLEBucketMapping.type);
   }
@@ -921,12 +932,14 @@ export class ClientMasterdataComponent implements OnInit {
     const cleMappingGet = Object.assign({}, this.adminConstants.QUERY.GET_CLE_MAPPING_BY_ID);
     cleMappingGet.filter = cleMappingGet.filter.replace(/{{clientLegalEntity}}/gi,
       this.currClientObj.ClientLegalEntity);
+    this.common.SetNewrelic('admin', 'admin-clientMaster', 'GetCLEBucketMapping');
     const result = await this.spServices.readItems(this.constantsService.listNames.CLEBucketMapping.name, cleMappingGet);
     if (result && result.length) {
       const tempDate = this.addClient.value.bucketEffectiveDate;
       const updateItem = {
         EndDate: new Date(new Date(tempDate).setDate(new Date(tempDate).getDate() - 1))
       };
+      this.common.SetNewrelic('admin', 'admin-clientMaster', 'UpdateCLEBucketMapping');
       const updateResult = await this.spServices.updateItem(this.constantsService.listNames.CLEBucketMapping.name, result[0].ID,
         updateItem, this.constantsService.listNames.CLEBucketMapping.type);
       this.createCLEMapping();
@@ -948,6 +961,7 @@ export class ClientMasterdataComponent implements OnInit {
     const resGet = Object.assign({}, this.adminConstants.QUERY.GET_CLIENT_LEGAL_ENTITY_BY_ID);
     resGet.filter = resGet.filter.replace(/{{isActive}}/gi,
       this.adminConstants.LOGICAL_FIELD.YES).replace(/{{Id}}/gi, ID);
+    this.common.SetNewrelic('admin', 'admin-clientMaster', 'GetCLE');
     const result = await this.spServices.readItems(this.constantsService.listNames.ClientLegalEntity.name, resGet);
     if (result && result.length) {
       const item = result[0];
@@ -1001,7 +1015,7 @@ export class ClientMasterdataComponent implements OnInit {
    */
   getClientData() {
     const data: any = {
-      ListName: this.addClient.value.name,
+      ListName: this.addClient.value.name ? this.addClient.value.name.replace(/[^a-zA-Z]/g, "").substring(0, 20) : '',
       ClientGroup: this.addClient.value.group,
       InvoiceName: this.addClient.value.invoiceName,
       Realization: + this.addClient.value.realization,
@@ -1150,6 +1164,7 @@ export class ClientMasterdataComponent implements OnInit {
    */
   async confirmUpdate(data, updateData, listName, type, itemName) {
     this.constantsService.loader.isPSInnerLoaderHidden = false;
+    this.common.SetNewrelic('admin', 'admin-clientMaster', 'UpdateCLE');
     const result = await this.spServices.updateItem(listName, data.ID, updateData, type);
     switch (itemName) {
       case this.adminConstants.DELETE_LIST_ITEM.CLIENT_LEGAL_ENTITY:
@@ -1208,6 +1223,7 @@ export class ClientMasterdataComponent implements OnInit {
     getSubDivisionInfo.filter = getSubDivisionInfo.filter
       .replace(/{{isActive}}/gi, this.adminConstants.LOGICAL_FIELD.YES)
       .replace(/{{clientLegalEntity}}/gi, this.currClientObj.ClientLegalEntity);
+    this.common.SetNewrelic('admin', 'admin-clientMaster', 'GetClientSubdivision');
     const results = await this.spServices.readItems(this.constantsService.listNames.ClientSubdivision.name, getSubDivisionInfo);
     if (results && results.length) {
       results.forEach(item => {
@@ -1298,6 +1314,7 @@ export class ClientMasterdataComponent implements OnInit {
       const getResourceCat = Object.assign({}, this.adminConstants.QUERY.GET_RESOURCE_CATEGERIZATION_ORDER_BY_USERNAME);
       getResourceCat.filter = getResourceCat.filter.replace(/{{isActive}}/gi,
         this.adminConstants.LOGICAL_FIELD.YES);
+      this.common.SetNewrelic('admin', 'admin-clientMaster', 'GetRC');
       const result = await this.spServices.readItems(this.constantsService.listNames.ResourceCategorization.name, getResourceCat);
       this.separateResourceCat(result);
     }
@@ -1334,6 +1351,7 @@ export class ClientMasterdataComponent implements OnInit {
       this.constantsService.loader.isPSInnerLoaderHidden = false;
       const subDivisionData = await this.getSubDivisionData();
       if (!this.showeditSubDivision) {
+        this.common.SetNewrelic('admin', 'admin-clientMaster', 'createClientSubdivision');
         const results = await this.spServices.createItem(this.constantsService.listNames.ClientSubdivision.name,
           subDivisionData, this.constantsService.listNames.ClientSubdivision.type);
         if (!results.hasOwnProperty('hasError') && !results.hasError) {
@@ -1345,6 +1363,7 @@ export class ClientMasterdataComponent implements OnInit {
         }
       }
       if (this.showeditSubDivision) {
+        this.common.SetNewrelic('admin', 'admin-clientMaster', 'updateClientSubdivision');
         const results = await this.spServices.updateItem(this.constantsService.listNames.ClientSubdivision.name, this.currSubDivisionObj.ID,
           subDivisionData, this.constantsService.listNames.ClientSubdivision.type);
         this.messageService.add({
@@ -1398,6 +1417,7 @@ export class ClientMasterdataComponent implements OnInit {
       .replace(/{{isActive}}/gi, this.adminConstants.LOGICAL_FIELD.YES)
       .replace(/{{clientLegalEntity}}/gi, this.currClientObj.ClientLegalEntity)
       .replace(/{{Id}}/gi, ID);
+    this.common.SetNewrelic('admin', 'admin-clientMaster', 'getClientSubdivision');
     const result = await this.spServices.readItems(this.constantsService.listNames.ClientSubdivision.name, subDivisionGet);
     if (result && result.length) {
       const item = result[0];
@@ -1518,6 +1538,7 @@ export class ClientMasterdataComponent implements OnInit {
     getPocInfo.filter = getPocInfo.filter
       .replace(/{{active}}/gi, this.adminConstants.LOGICAL_FIELD.ACTIVE)
       .replace(/{{clientLegalEntity}}/gi, this.currClientObj.ClientLegalEntity);
+    this.common.SetNewrelic('admin', 'admin-clientMaster', 'getProjectContacts');
     const results = await this.spServices.readItems(this.constantsService.listNames.ProjectContacts.name, getPocInfo);
     if (results && results.length) {
       results.forEach(item => {
@@ -1717,6 +1738,7 @@ export class ClientMasterdataComponent implements OnInit {
     projectContactsGet.type = 'GET';
     projectContactsGet.listName = this.constantsService.listNames.ProjectContacts.name;
     batchURL.push(projectContactsGet);
+    this.common.SetNewrelic('admin', 'admin-clientMaster', 'getProjectContacts');
     const sResults = await this.spServices.executeBatch(batchURL);
     return sResults;
   }
@@ -1772,6 +1794,7 @@ export class ClientMasterdataComponent implements OnInit {
       this.constantsService.loader.isPSInnerLoaderHidden = false;
       const pocData = await this.getPOCData();
       if (!this.showeditPOC) {
+        this.common.SetNewrelic('admin', 'admin-clientMaster', 'CreateProjectContacts');
         const results = await this.spServices.createItem(this.constantsService.listNames.ProjectContacts.name,
           pocData, this.constantsService.listNames.ProjectContacts.type);
         if (!results.hasOwnProperty('hasError') && !results.hasError) {
@@ -1783,6 +1806,7 @@ export class ClientMasterdataComponent implements OnInit {
         }
       }
       if (this.showeditPOC) {
+        this.common.SetNewrelic('admin', 'admin-clientMaster', 'updateProjectContacts');
         const results = await this.spServices.updateItem(this.constantsService.listNames.ProjectContacts.name, this.currPOCObj.ID,
           pocData, this.constantsService.listNames.ProjectContacts.type);
         this.messageService.add({
@@ -1850,6 +1874,7 @@ export class ClientMasterdataComponent implements OnInit {
       .replace(/{{active}}/gi, this.adminConstants.LOGICAL_FIELD.ACTIVE)
       .replace(/{{clientLegalEntity}}/gi, this.currClientObj.ClientLegalEntity)
       .replace(/{{Id}}/gi, ID);
+    this.common.SetNewrelic('admin', 'admin-clientMaster', 'getProjectContacts');
     const result = await this.spServices.readItems(this.constantsService.listNames.ProjectContacts.name, pocGet);
     if (result && result.length) {
       const item = result[0];
@@ -1968,6 +1993,7 @@ export class ClientMasterdataComponent implements OnInit {
     getPOInfo.filter = getPOInfo.filter
       .replace(/{{active}}/gi, this.adminConstants.LOGICAL_FIELD.ACTIVE)
       .replace(/{{clientLegalEntity}}/gi, this.currClientObj.ClientLegalEntity);
+    this.common.SetNewrelic('admin', 'admin-clientMaster', 'getPO');
     const results = await this.spServices.readItems(this.constantsService.listNames.PO.name, getPOInfo);
     if (results && results.length) {
       results.forEach(item => {
@@ -2241,6 +2267,7 @@ export class ClientMasterdataComponent implements OnInit {
       batchURL.push(currencyGet);
     }
     if (batchURL.length) {
+      this.common.SetNewrelic('admin', 'admin-clientMaster', 'getProjectContactsTAMoleculeListNameRCCurrencyPO');
       const result = await this.spServices.executeBatch(batchURL);
       return result;
     } else {
@@ -2330,16 +2357,19 @@ export class ClientMasterdataComponent implements OnInit {
       const libraryName = this.currClientObj.ListName;
       const folderPath: string = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + libraryName + '/' + docFolder;
       this.filePathUrl = await this.spServices.getFileUploadUrl(folderPath, this.selectedFile.name, true);
+      this.common.SetNewrelic('Admin-ClientMasterData', 'SavePO', 'UploadFile');
       const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
       console.log(res);
       if (this.selectedFile && !res.hasOwnProperty('hasError')) {
         // write the logic of create new PO.
         const poData = await this.getPOData();
         if (!this.showeditPO) {
+          this.common.SetNewrelic('admin', 'client-masterdata', 'savePO');
           const results = await this.spServices.createItem(this.constantsService.listNames.PO.name,
             poData, this.constantsService.listNames.PO.type);
           if (!results.hasOwnProperty('hasError') && !results.hasError) {
             const poBreakUPData = await this.getPOBudgetBreakUPData(results);
+            this.common.SetNewrelic('admin', 'admin-clientMaster', 'createPOBudgetreakup');
             const poBreakUPResult = await this.spServices.createItem(this.constantsService.listNames.POBudgetBreakup.name,
               poBreakUPData, this.constantsService.listNames.POBudgetBreakup.type);
             if (!poBreakUPResult.hasOwnProperty('hasError') && !poBreakUPResult.hasError) {
@@ -2352,6 +2382,7 @@ export class ClientMasterdataComponent implements OnInit {
           }
         }
         if (this.showeditPO) {
+          this.common.SetNewrelic('admin', 'admin-clientMaster', 'updatePO');
           const results = await this.spServices.updateItem(this.constantsService.listNames.PO.name, this.currPOObj.ID,
             poData, this.constantsService.listNames.PO.type);
           this.messageService.add({
@@ -2471,6 +2502,7 @@ export class ClientMasterdataComponent implements OnInit {
       .replace(/{{active}}/gi, this.adminConstants.LOGICAL_FIELD.ACTIVE)
       .replace(/{{clientLegalEntity}}/gi, this.currClientObj.ClientLegalEntity)
       .replace(/{{Id}}/gi, ID);
+    this.common.SetNewrelic('admin', 'admin-clientMaster', 'getPO');
     const result = await this.spServices.readItems(this.constantsService.listNames.PO.name, poGet);
     if (result && result.length) {
       const item = result[0];
@@ -2813,6 +2845,7 @@ export class ClientMasterdataComponent implements OnInit {
     createPOBudgetBreakupObj.type = 'POST';
     createPOBudgetBreakupObj.listName = this.constantsService.listNames.POBudgetBreakup.name;
     batchURL.push(createPOBudgetBreakupObj);
+    this.common.SetNewrelic('admin', 'admin-clientMaster', 'getPOPOBudgetBreakup');
     await this.spServices.executeBatch(batchURL);
   }
   /**
@@ -3012,5 +3045,28 @@ export class ClientMasterdataComponent implements OnInit {
   downloadExcel(cmd) {
     cmd.exportCSV();
   }
-}
 
+  optionFilter(event: any) {
+    if (event.target.value) {
+      this.isOptionFilter = false;
+    }
+  }
+
+  // tslint:disable-next-line: use-life-cycle-interface
+  ngAfterViewChecked() {
+    if (this.clientMasterDataRows.length && this.isOptionFilter) {
+      const obj = {
+        tableData: this.clientMasterTable,
+        colFields: this.clientMasterDataColArray
+      };
+      if (obj.tableData.filteredValue) {
+        this.common.updateOptionValues(obj);
+      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+        this.colFilters(obj.tableData.value);
+        this.isOptionFilter = false;
+      }
+      this.cdr.detectChanges();
+    }
+  }
+
+}

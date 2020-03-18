@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewEncapsulation, ViewChild, OnDestroy, HostListener, ChangeDetectorRef, ApplicationRef, NgZone } from '@angular/core';
 import { Message, ConfirmationService, MessageService, SelectItem } from 'primeng/api';
-import { Calendar, DataTable } from 'primeng/primeng';
+import { Calendar, Table } from 'primeng';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -108,10 +108,10 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         type: '',
         listName: ''
     };
-    @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
-    @ViewChild('editorRef', { static: true }) editorRef: EditorComponent;
+    @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
+    @ViewChild('editorRef', { static: false }) editorRef: EditorComponent;
 
-    @ViewChild('cnf', { static: false }) confirmTable: DataTable;
+    @ViewChild('cnf', { static: false }) confirmTable: Table;
     // List of Subscribers
     private subscription: Subscription = new Subscription();
     // Project Info
@@ -373,6 +373,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         // this.fdConstantsService.fdComponent.invoiceLineItems);
         // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
         const invoiceObj = Object.assign({}, this.fdConstantsService.fdComponent.invoiceLineItems);
+        this.commonService.SetNewrelic('Finance-Dashboard', 'confirmed-GetInvoiceLineItem', 'readItems');
         const res = await this.spServices.readItems(this.constantService.listNames.InvoiceLineItems.name, invoiceObj);
         // let endPoints = [invoicesQuery];
         // let userBatchBody = '';
@@ -413,13 +414,15 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         // console.log('this.purchaseOrders ', this.purchaseOrders);
         // console.log('this.confirmedPOList ', this.confirmedPOList);
         if (this.selectedDDPO.hasOwnProperty('value')) {
-            this.selectedPurchaseNumber = this.purchaseOrders ? this.purchaseOrders.find(item => item.Id === this.selectedDDPO.value.ID) : '';
+            this.selectedPurchaseNumber = this.purchaseOrders ? this.purchaseOrders.find(item => item.Id ===
+                this.selectedDDPO.value.ID) : '';
             this.onChange(this.selectedDDPO);
         }
         // console.log('this.selectedPurchaseNumber ', this.selectedPurchaseNumber);
     }
 
     searchPOId(poId, myArray) {
+        // tslint:disable-next-line: prefer-for-of
         for (let i = 0; i < myArray.length; i++) {
             if (myArray[i].ID === poId) {
                 if (this.confirmedPOList.indexOf(myArray[i]) === -1) {
@@ -753,8 +756,10 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
     addProforma() {
         if (!this.selectedPurchaseNumber) {
-            this.messageService.add({ key: 'confirmInfoToast', severity: 'info', summary: 'Info message',
-             detail: 'Please select Purchase order Number & try again.', life: 2000 });
+            this.messageService.add({
+                key: 'confirmInfoToast', severity: 'info', summary: 'Info message',
+                detail: 'Please select Purchase order Number & try again.', life: 2000
+            });
         } else {
             if (this.selectedAllRowData.length) {
                 for (let i = 0; i < this.selectedAllRowData.length; i++) {
@@ -762,8 +767,10 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
 
                     const scheduleType = this.selectedAllRowData[0].ScheduleType;
                     if (element.ScheduleType !== scheduleType) {
-                        this.messageService.add({ key: 'confirmInfoToast', severity: 'info', summary: 'Info message',
-                         detail: 'Please select same Schedule type & try again.', life: 2000 });
+                        this.messageService.add({
+                            key: 'confirmInfoToast', severity: 'info', summary: 'Info message',
+                            detail: 'Please select same Schedule type & try again.', life: 2000
+                        });
                         return;
                     }
                 }
@@ -798,13 +805,17 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                     this.generateProformaNumber(cle);
                     this.getPOCNamesForEditInv(cle);
                 } else {
-                    this.messageService.add({ key: 'confirmInfoToast', severity: 'info', summary: 'Info message',
-                     detail: 'Proforma cant be generated on Expired PO', life: 2000 });
+                    this.messageService.add({
+                        key: 'confirmInfoToast', severity: 'info', summary: 'Info message',
+                        detail: 'Proforma cant be generated on Expired PO', life: 2000
+                    });
                 }
 
             } else {
-                this.messageService.add({ key: 'confirmInfoToast', severity: 'info', summary: 'Info message',
-                 detail: 'Please select one of Row Item & try again.', life: 2000 });
+                this.messageService.add({
+                    key: 'confirmInfoToast', severity: 'info', summary: 'Info message',
+                    detail: 'Please select one of Row Item & try again.', life: 2000
+                });
             }
         }
     }
@@ -914,6 +925,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     async getPFByPC() {
         const pfobj = Object.assign({}, this.fdConstantsService.fdComponent.projectFinances);
         pfobj.filter = pfobj.filter.replace('{{ProjectCode}}', this.selectedRowItem.ProjectCode);
+        this.commonService.SetNewrelic('Finance-Dashboard', 'confirmed-GetPFbyPC', 'readItems');
         let response = await this.spServices.readItems(this.constantService.listNames.ProjectFinances.name, pfobj);
         response = response.length ? response[0] : {};
         // let obj = [{
@@ -1060,6 +1072,8 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 prfObj.data = prfData;
                 innerBatchUrl.push(prfObj);
             });
+
+            this.commonService.SetNewrelic('Finance-Dashboard', 'confirmed', 'AddProforma');
             await this.spServices.executeBatch(innerBatchUrl);
             const projectAppendix = await this.createProjectAppendix(this.selectedAllRowData);
             await this.fdDataShareServie.callProformaCreation(retCall[0], this.cleData, this.projectContactsData,
@@ -1068,7 +1082,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             this.isPSInnerLoaderHidden = true;
             this.reFetchData();
             this.messageService.add({
-                key: 'custom',  severity: 'success', summary: 'Proforma Added',
+                key: 'custom', severity: 'success', summary: 'Proforma Added',
                 detail: 'Proforma Number: ' + this.addToProforma_form.getRawValue().ProformaNumber, life: 20000
             });
 
@@ -1127,6 +1141,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 getPIData.type = 'GET';
                 batchURL.push(getPIData);
             });
+            this.commonService.SetNewrelic('Finance-Dashboard', 'confirmed', 'GetPIbyProjectCode');
 
             retProjects = await this.spServices.executeBatch(batchURL);
             const mappedProjects = retProjects.map(obj => obj.retItems.length ? obj.retItems[0] : []);
@@ -1224,7 +1239,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             }
         }
     }
-    
+
     optionFilter(event: any) {
         if (event.target.value) {
             this.isOptionFilter = false;

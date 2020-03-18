@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChildren, QueryList, ViewChild } from '@angular/core';
 import { SelectItem } from 'primeng/api';
-import { MultiSelect, MessageService } from 'primeng/primeng';
+import { MultiSelect, MessageService } from 'primeng';
 import { FormBuilder, Validators } from '@angular/forms';
 import { GlobalService } from '../Services/global.service';
 import { SPOperationService } from '../Services/spoperation.service';
@@ -19,7 +19,7 @@ import { UsercapacityComponent } from '../shared/usercapacity/usercapacity.compo
 export class CapacityDashboardComponent implements OnInit {
   rangeDates: Date[];
   @ViewChildren('cmp') components: QueryList<MultiSelect>;
-  @ViewChild('InitialUserCapacity', { static: true }) userCapacity: UsercapacityComponent;
+  @ViewChild('InitialUserCapacity', { static: false }) userCapacity: UsercapacityComponent;
   AlldbResources: any;
   Resources: [];
   Skills: [];
@@ -46,6 +46,8 @@ export class CapacityDashboardComponent implements OnInit {
   });
 
   ngOnInit() {
+    this.sharedObject.currentTitle = 'Capacity Dashboard';
+
     this.GetResources();
   }
 
@@ -75,6 +77,8 @@ export class CapacityDashboardComponent implements OnInit {
     resourcesGet.type = 'GET';
     resourcesGet.listName = this.constants.listNames.ResourceCategorization.name;
     batchURL.push(resourcesGet);
+
+    this.commonService.SetNewrelic('CapacityDashboard', 'CapacityDashboard', 'GetResourceCategorization');
 
     const arrResults = await this.spServices.executeBatch(batchURL);
 
@@ -200,25 +204,7 @@ export class CapacityDashboardComponent implements OnInit {
     } else if (arrayType === 'resource') {
 
     } else {
-      // this.Buckets = this.commonService.sortData(this.sharedObject.unique(this.AlldbResources.filter(c => c.Bucket !== null).map(
-      //   o => new Object({ label: o.Bucket, value: o.Bucket })), ['label']));
 
-      // this.PracticeAreas = this.commonService.sortData(this.sharedObject.unique
-      //   (this.AlldbResources.filter(c => c.Practice_x0020_Area !== null).map(o => new Object({
-      //     label: o.Practice_x0020_Area,
-      //     value: o.Practice_x0020_Area,
-      //   })), ['label']));
-
-      // this.Skills = this.commonService.sortData(this.sharedObject.unique
-      //   (this.AlldbResources.filter(c => c.PrimarySkill !== null).map(o => new Object({
-      //     label: o.PrimarySkill,
-      //     value: o.PrimarySkill
-      //   })), ['label']));
-
-      // this.Resources = this.AlldbResources.filter(c => c.UserName.Title !== null)
-      //   .map(o => new Object({ label: o.UserName.Title, value: o }));
-
-      //this.searchCapacityForm.patchValue({ resources: null });
       this.searchCapacityForm.patchValue({ bucket: [], practicearea: [], skill: [], resources: [] });
     }
 

@@ -5,6 +5,7 @@ import { SPOperationService } from '../../Services/spoperation.service';
 import { CAGlobalService } from './caglobal.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { GlobalService } from 'src/app/Services/global.service';
+import { CommonService } from 'src/app/Services/common.service';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +24,8 @@ export class CACommonService {
     private spServices: SPOperationService,
     private datePipe: DatePipe,
     private caGlobalService: CAGlobalService,
-    private globalService: GlobalService) { }
+    private globalService: GlobalService,
+    private commonService: CommonService) { }
   /**
      * This method is used to convert 24 hour format to 12 hours.
      * @param date
@@ -183,30 +185,30 @@ export class CACommonService {
     sDate = sDates + ' ' + sHrs + ':' + sMins + ':00 ' + sAMPM;
     return sDate;
   }
-  /**
-   * This method is used to send the email to particualr user with subject and body.
-   * @param to
-   * @param from
-   * @param cc
-   * @param templateName
-   * @param objEmailBody
-   * @param mailSubject
-   */
-  async triggerMail(to, from, cc, templateName, objEmailBody, mailSubject) {
-    const mailContent = this.globalConstantService.listNames.MailContent.name;
-    const mailQuery = this.caConstantService.mailContent;
-    mailQuery.filter = mailQuery.filter.replace('{0}', templateName);
-    //tslint:disable
-    // tslint:enable
-    const body = await this.spServices.readItems(mailContent, mailQuery);
-    // let mailBody = JSON.parse(body._body).d.results[0].Content;
-    let mailBody = body.length ? body[0].Content : [];
-    for (const data of objEmailBody) {
-      mailBody = mailBody.replace(RegExp(data.key, 'gi'), data.value);
-    }
-    //  cc = [fromEmail];
-    this.spServices.sendMail(to, from, mailSubject, mailBody, cc);
-  }
+  // /**
+  //  * This method is used to send the email to particualr user with subject and body.
+  //  * @param to
+  //  * @param from
+  //  * @param cc
+  //  * @param templateName
+  //  * @param objEmailBody
+  //  * @param mailSubject
+  //  */
+  // async triggerMail(to, from, cc, templateName, objEmailBody, mailSubject) {
+  //   const mailContent = this.globalConstantService.listNames.MailContent.name;
+  //   const mailQuery = this.caConstantService.mailContent;
+  //   mailQuery.filter = mailQuery.filter.replace('{0}', templateName);
+  //   //tslint:disable
+  //   // tslint:enable
+  //   const body = await this.spServices.readItems(mailContent, mailQuery);
+  //   // let mailBody = JSON.parse(body._body).d.results[0].Content;
+  //   let mailBody = body.length ? body[0].Content : [];
+  //   for (const data of objEmailBody) {
+  //     mailBody = mailBody.replace(RegExp(data.key, 'gi'), data.value);
+  //   }
+  //   //  cc = [fromEmail];
+  //   this.spServices.sendMail(to, from, mailSubject, mailBody, cc);
+  // }
   /**
    * This method is to give the unique value with seperator.
    * @param sVal
@@ -289,6 +291,7 @@ export class CACommonService {
     const Project = Object.assign({}, this.caConstantService.projectQueryOptions);
     Project.filterByCode = Project.filterByCode.replace(/{{projectCode}}/gi, projectCode);
     Project.filter = Project.filterByCode;
+    this.commonService.SetNewrelic('CA', 'cacommon-getProjectDetailsByCode', 'readItems');
     const arrResults = await this.spServices.readItems(this.globalConstantService.listNames.ProjectInformation.name, Project);
     // const projectEndPoint = this.spServices.getReadURL('' + projectInformationList + '', Project);
     // this.spServices.getBatchBodyGet(batchContents, batchGuid, projectEndPoint);
@@ -408,6 +411,8 @@ export class CACommonService {
     // batchContents.push('--batch_' + batchGuid + '--');
     // const userBatchBody = batchContents.join('\r\n');
     // const arrResults = await this.spServices.executeGetBatchRequest(batchGuid, userBatchBody);
+
+    this.commonService.SetNewrelic('caCommon', 'CA', 'GetMilestoneSchedules');
     const arrResults = await this.spServices.executeBatch(batchUrl);
     for (const count in arrTasks) {
       arrTasks[count].MilestoneTasks = arrResults[count].retItems;
@@ -893,6 +898,7 @@ export class CACommonService {
     const projectObj = Object.assign({}, this.caConstantService.projectQueryOptions);
     projectObj.filterByCode = projectObj.filterByCode.replace(/{{projectCode}}/gi, task.projectCode);
     projectObj.filter = projectObj.filterByCode;
+    this.commonService.SetNewrelic('CA', 'cacommon-ResourceAllocation', 'readItems');
     const arrResults = await this.spServices.readItems(this.globalConstantService.listNames.ProjectInformation.name, projectObj);
     const project = arrResults.length > 0 ? arrResults[0] : {}
     // const project = await this.getProjectDetailsByCode(projectInformationList, task.projectCode);
@@ -971,6 +977,7 @@ export class CACommonService {
     const projectObj = Object.assign({}, this.caConstantService.projectQueryOptions);
     projectObj.filterByCode = projectObj.filterByCode.replace(/{{projectCode}}/gi, task.projectCode);
     projectObj.filter = projectObj.filterByCode;
+    this.commonService.SetNewrelic('CA', 'cacommon-ResourceAllocation', 'readItems');
     const arrResults = await this.spServices.readItems(this.globalConstantService.listNames.ProjectInformation.name, projectObj);
     const project = arrResults.length > 0 ? arrResults[0] : {}
     // const project = await this.getProjectDetailsByCode(projectInformationList, task.projectCode);
@@ -1066,6 +1073,7 @@ export class CACommonService {
       tasksObj.listName = this.globalConstantService.listNames.MilestoneTasks.name;
       tasksObj.type = 'GET';
       batchUrl.push(tasksObj);
+      this.commonService.SetNewrelic('caCommon', 'CA', 'GetTaskBySlotType');
       const arrResult = await this.spServices.executeBatch(batchUrl);
       const response = arrResult.length ? arrResult[0].retItems : [];
       this.alldbConstantTasks = response;
@@ -1095,6 +1103,7 @@ export class CACommonService {
     tasksObj.listName = this.globalConstantService.listNames.Schedules.name;
     tasksObj.type = 'GET';
     batchUrl.push(tasksObj);
+    this.commonService.SetNewrelic('caCommon', 'CA', 'GetSlotTaskBySlotId');
     const arrResult = await this.spServices.executeBatch(batchUrl);
     response = arrResult.length ? arrResult[0].retItems : [];
 

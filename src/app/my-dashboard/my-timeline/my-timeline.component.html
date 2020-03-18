@@ -1,4 +1,14 @@
 <!--**************************************************************************************************
+//  loader for event fetch
+************************************************************************************************** -->
+
+<div *ngIf="CalendarLoader">
+    <div id="CalendarInnerLoader"></div>
+    <div id="CalendarInnerLoaderText">Loading...</div>
+</div>
+
+
+<!--**************************************************************************************************
 //  Plus icon to add booking
 ************************************************************************************************** -->
 
@@ -73,14 +83,6 @@
 
     <p-dropdown [style]="{'min-width':'10.5em'}" appendTo="body" [options]="taskTypes" (onChange)="onTaskTypeChange()" [(ngModel)]="selectedType" optionLabel="name"></p-dropdown>
     <div #apeendMenuTest> </div>
-</div>
-<!--**************************************************************************************************
-//  loader for event fetch
-************************************************************************************************** -->
-
-<div *ngIf="CalendarLoader">
-    <div id="CalendarInnerLoader"></div>
-    <div id="CalendarInnerLoaderText">Loading...</div>
 </div>
 
 <!--**************************************************************************************************
@@ -365,4 +367,4 @@
 </p-dialog>
 
 
-<app-feedback-popup #feedbackPopup></app-feedback-popup>
+<app-feedback-popup #feedbackPopup (popupClosed)='saveTask($event)'></app-feedback-popup>

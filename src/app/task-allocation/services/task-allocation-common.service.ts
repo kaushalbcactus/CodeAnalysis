@@ -12,8 +12,8 @@ export class TaskAllocationCommonService {
     resources = resources.filter(e=>e.TAVisibility === 'Yes');
     const prjDetails = this.sharedObject.oTaskAllocation.oProjectDetails;
     const cmL1 = prjDetails.cmLevel1.results ? prjDetails.cmLevel1.results : [];
-    const cmL2 = prjDetails.cmLevel2 ? prjDetails.cmLevel2 : [];
-    const cm = [...cmL1, ...cmL2].filter(function (item, i, ar) { return ar.indexOf(item) === i; });
+    const cmL2 = prjDetails.cmLevel2 ? prjDetails.cmLevel2 : {};
+    const cm = [...cmL1, cmL2].filter(function (item, i, ar) { return ar.indexOf(item) === i; });
     const filteredResources = [];
     if (task.IsCentrallyAllocated === 'Yes') {
       const oCentralGroup = {

@@ -1,6 +1,7 @@
 
 import { NgModule } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
+import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { FormsModule } from '@angular/forms';
 
 import { MyDashboardComponent } from './my-dashboard.component';
@@ -9,13 +10,12 @@ import { SearchProjectsComponent } from './search-projects/search-projects.compo
 import { MyDashoardRoutingModule } from './my-dashoard-routing.module';
 import { PrimengModule } from '../primeng/primeng.module';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { AddEditCommentComponent } from './add-edit-comment-dialog/add-edit-comment-dialog.component';
 import { TimeSpentDialogComponent } from './time-spent-dialog/time-spent-dialog.component';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
 import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
-import { ConfirmationService, DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng/api';
+import { ConfirmationService, DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 import { MyCurrentCompletedTasksComponent } from './my-current-completed-tasks/my-current-completed-tasks.component';
 import { PreviosNextTasksDialogComponent } from './previos-next-tasks-dialog/previos-next-tasks-dialog.component';
 import { CustomMaterialModule } from '../shared/material.module';
@@ -27,7 +27,7 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgxGraphModule } from '@swimlane/ngx-graph';
 import { DndModule } from 'ngx-drag-drop';
 
-import { TreeTableModule, RatingModule } from 'primeng/primeng';
+import { TreeTableModule, RatingModule } from 'primeng';
 import { NgGanttEditorModule } from 'ng-gantt';
 import { ProjectmanagementModule } from '../projectmanagement/projectmanagement.module';
 import { TaskAllocationModule } from '../task-allocation/task-allocation.module';
@@ -62,8 +62,10 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     ProjectDraftsComponent,
     MyprojectsComponent,
     DisplayProjectsComponent,
-    CreateTaskComponent],
+    CreateTaskComponent,
+  ],
   imports: [
+    NgxMaterialTimepickerModule,
     SharedModule,
     ViewUploadDocumentModule,
     CommonModule,
@@ -71,7 +73,6 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     MyDashoardRoutingModule,
     FlexLayoutModule,
     PrimengModule,
-    NgxMaterialTimepickerModule,
     PerfectScrollbarModule,
     CustomMaterialModule,
     NgxAutoScrollModule,

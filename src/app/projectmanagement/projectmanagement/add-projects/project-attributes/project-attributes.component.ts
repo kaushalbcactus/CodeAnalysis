@@ -1,15 +1,16 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { SelectItemGroup } from 'primeng/components/common/selectitemgroup';
+import { SelectItemGroup } from 'primeng';
 import { FormGroup, Validators, FormControl, FormBuilder } from '@angular/forms';
-import { SelectItem } from 'primeng/components/common/selectitem';
+import { SelectItem } from 'primeng';
 import { PMObjectService } from 'src/app/projectmanagement/services/pmobject.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { PmconstantService } from 'src/app/projectmanagement/services/pmconstant.service';
-import { DynamicDialogConfig, MessageService, DynamicDialogRef } from 'primeng/api';
+import { DynamicDialogConfig, MessageService, DynamicDialogRef } from 'primeng';
 import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.service';
 import { Router } from '@angular/router';
 import { DataService } from 'src/app/Services/data.service';
+import { CommonService } from 'src/app/Services/common.service';
 @Component({
   selector: 'app-project-attributes',
   templateUrl: './project-attributes.component.html',
@@ -48,7 +49,8 @@ export class ProjectAttributesComponent implements OnInit {
     private messageService: MessageService,
     private dynamicDialogRef: DynamicDialogRef,
     private router: Router,
-    private dataService: DataService
+    private dataService: DataService,
+    private commonService : CommonService
   ) { }
   async ngOnInit() {
     this.initForm();
@@ -226,6 +228,7 @@ export class ProjectAttributesComponent implements OnInit {
       top: 4900
     };
     // tslint:disable-next-line:max-line-length
+    this.commonService.SetNewrelic('projectManagment', 'addproj-projectAttributes', 'GetClientSubdivision');
     const result = await this.spServices.readItems(this.constant.listNames.ClientSubdivision.name, queryOptions);
     if (result && result.length) {
       result.forEach(element => {
@@ -436,6 +439,7 @@ export class ProjectAttributesComponent implements OnInit {
         await this.pmCommonService.submitFile(this.selectedFile, this.fileReader);
       }
       const projectInfo = this.pmCommonService.getProjectData(this.pmObject.addProject, false);
+      this.commonService.SetNewrelic('projectManagment', 'addproj-projectAttributes', 'UpdateProjectInformation');
       await this.spServices.updateItem(this.constant.listNames.ProjectInformation.name, this.projObj.ID, projectInfo,
         this.constant.listNames.ProjectInformation.type);
       this.pmObject.isMainLoaderHidden = true;
@@ -515,7 +519,7 @@ export class ProjectAttributesComponent implements OnInit {
       moleculeItemCreate.type = 'POST';
       moleculeItemCreate.listName = this.constant.listNames.Molecules.name;
       batchURL.push(moleculeItemCreate);
-
+      this.commonService.SetNewrelic('projectManagment', 'addproj-projectAttributes', 'GetMolecules');
       await this.spServices.executeBatch(batchURL);
 
       this.messageService.add({

@@ -11,7 +11,7 @@ import { EditorComponent } from 'src/app/finance-dashboard/PDFEditing/editor/edi
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
 import { Subscription } from 'rxjs';
 import { CommonService } from 'src/app/Services/common.service';
-import { DataTable } from 'primeng/primeng';
+import { Table } from 'primeng/table';
 import { Router } from '@angular/router';
 
 @Component({
@@ -66,11 +66,11 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     pageNumber: number = 0;
     // Loader
     isPSInnerLoaderHidden: boolean = false;
-    @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
-    @ViewChild('editorRef', { static: true }) editorRef: EditorComponent;
+    @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
+    @ViewChild('editorRef', { static: false }) editorRef: EditorComponent;
     @ViewChild('replaceInvoiceFile', { static: false }) replaceInvoiceFile: ElementRef;
     @ViewChild('paymentResolvedFile', { static: false }) paymentResolvedFile: ElementRef;
-    @ViewChild('outi', { static: false }) outInvTable: DataTable;
+    @ViewChild('outi', { static: false }) outInvTable: Table;
 
     // List of Subscribers 
     private subscription: Subscription = new Subscription();
@@ -298,6 +298,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         this.loggedInUserInfo = [];
         this.loggedInUserGroup = [];
         //let curruentUsrInfo = await this.spServices.getCurrentUser();
+        this.commonService.SetNewrelic('Finance-Dashboard', 'outstanding-invoice', 'getUserInfo');
         let currentUsrInfo = await this.spServices.getUserInfo(userId);
         this.loggedInUserInfo = currentUsrInfo.Groups.results;
         this.loggedInUserInfo.forEach(element => {
@@ -321,6 +322,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         //      '', this.fdConstantsService.fdComponent.invoicesForNonManger);
         // }
         const outInvObj = Object.assign({}, this.fdConstantsService.fdComponent.invoicesForMangerIT);
+        this.commonService.SetNewrelic('Finance-Dashboard', 'outstanding-invoices', 'invoicesForMangerIT');
         const res = await this.spServices.readItems(this.constantService.listNames.OutInvoices.name, outInvObj);
         // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
 
@@ -727,6 +729,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
 
     async uploadFileData() {
         const batchUrl = [];
+        this.commonService.SetNewrelic('Finance-Dashboard', 'outstanding-invoices', 'uploadFile');
         const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
         // console.log('selectedFile uploaded .', res.ServerRelativeUrl);
         if (res) {
@@ -761,6 +764,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     }
 
     async uploadPaymentFileData(type: string) {
+        this.commonService.SetNewrelic('Finance-Dashboard', 'outstanding-invoices-payment-resolved', 'uploadFile');
         const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
         const batchUrl = [];
         // console.log('selectedFile uploaded .', res.ServerRelativeUrl);
@@ -881,6 +885,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             // console.log('form is submitting ..... & Form data is ', this.creditOrDebitNote_form.value);
             // sts = type === 'Mark as Sent to Client' ? 'Sent' : 'Rejected'
             this.isPSInnerLoaderHidden = false;
+            this.commonService.SetNewrelic('Finance-Dashboard', 'outstanding-invoices-creditdebit', 'uploadFile');
             const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
             if (res) {
                 // console.log('selectedFile uploaded .', res);
@@ -912,6 +917,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             //         requestPost: false
             //     }
             // ]
+            this.commonService.SetNewrelic('Finance-Dashboard', 'outstanding-invoices', 'submitForm');
             this.submitForm(batchUrl, type);
         }
     }
@@ -961,7 +967,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         //         requestPost: false
         //     },
         // ];
-
+        this.commonService.SetNewrelic('Finance-Dashboard', 'outstanding-invoices', 'submitDebitCreditNoteForm');
         this.submitForm(batchUrl, type);
     }
 

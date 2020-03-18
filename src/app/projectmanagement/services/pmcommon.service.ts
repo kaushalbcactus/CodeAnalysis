@@ -266,6 +266,7 @@ export class PMCommonService {
 
   async getUserProperties(): Promise<any> {
     if (this.pmObject.projectContactsItems.length === 0) {
+      this.commonService.SetNewrelic('Project-Management', 'pmcommon', 'getUserInfo');
       const userProp = await this.spServices.getUserInfo(this.globalObject.currentUser.userId);
       this.pmObject.currLoginInfo = userProp;
       if (userProp && userProp.Groups && userProp.Groups.results && userProp.Groups.results.length) {
@@ -497,6 +498,7 @@ export class PMCommonService {
     projectContactsEndPoint.type = 'GET';
     projectContactsEndPoint.listName = this.constant.listNames.ProjectContacts.name;
     batchURL.push(projectContactsEndPoint);
+    this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'getTARCProConactsSubDeliverablesProjTypeMoleculeCLEBusinessVerticleBillingEntity');
     const arrResults = await this.spServices.executeBatch(batchURL);
     return arrResults;
   }
@@ -536,11 +538,13 @@ export class PMCommonService {
     const contentFilter = Object.assign({}, this.pmConstant.SOW_QUERY.CONTENT_QUERY);
     // tslint:disable-next-line:max-line-length
     contentFilter.filter = contentFilter.filter.replace(/{{templateName}}/gi, templateName);
+    this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetMailContent');
     const body = await this.spServices.readItems(this.constant.listNames.MailContent.name, contentFilter);
     let mailBody = body[0].Content;
     objEmailBody.forEach(element => {
       mailBody = mailBody.replace(RegExp(element.key, 'gi'), element.value);
     });
+    this.commonService.SetNewrelic('ProjectManagement', 'pmcommon', 'SendMail');
     this.spServices.sendMail(arrayTo.join(','), this.pmObject.currLoginInfo.Email, mailSubject, mailBody,
       cc.join(','));
   }
@@ -723,6 +727,7 @@ export class PMCommonService {
     }
     const folderPath: string = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + libraryName + '/' + docFolder;
     const filePathUrl = await this.spServices.getFileUploadUrl(folderPath, selectedFile.name, true);
+    this.commonService.SetNewrelic('projectmanagement', 'pmcommon-submitFile', 'uploadFile');
     const res = await this.spServices.uploadFile(filePathUrl, fileReader.result);
     if (res.hasOwnProperty('ServerRelativeUrl') && res.hasOwnProperty('Name') && !res.hasOwnProperty('hasError')) {
       this.pmObject.addProject.FinanceManagement.SOWFileURL = res.ServerRelativeUrl;
@@ -827,6 +832,7 @@ export class PMCommonService {
     } else {
       if (this.pmObject.userRights.isMangers || this.pmObject.userRights.isHaveProjectFullAccess) {
         const projectManageFilter = Object.assign({}, this.pmConstant.PM_QUERY.ALL_PROJECT_INFORMATION);
+        this.commonService.SetNewrelic('projectManagment', 'PmCommon-FullAccess', 'GetProjectInfo');
         arrResults = await this.spServices.readItems(this.constant.listNames.ProjectInformation.name, projectManageFilter);
       } else {
         let projectManageFilter: any;
@@ -835,7 +841,7 @@ export class PMCommonService {
         } else {
           projectManageFilter = Object.assign({}, this.pmConstant.PM_QUERY.USER_SPECIFIC_PROJECT_INFORMATION_MY);
         }
-
+        this.commonService.SetNewrelic('projectManagment', 'PmCommon-getProjects', 'readItems');
         arrResults = await this.spServices.readItems(this.constant.listNames.ProjectInformation.name, projectManageFilter);
       }
     }
@@ -911,6 +917,7 @@ export class PMCommonService {
     const contentFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.GET_PROJECT_TYPE);
     // tslint:disable-next-line:max-line-length
     contentFilter.filter = contentFilter.filter.replace(/{{isActive}}/gi, 'Yes');
+    this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetProjType');
     const sResults = await this.spServices.readItems(this.constant.listNames.ProjectType.name, contentFilter);
     if (sResults && sResults.length) {
       const tempResult = [];
@@ -951,6 +958,7 @@ export class PMCommonService {
     const contentFilter = Object.assign({}, this.pmConstant.TIMELINE_QUERY.PROJECT_PER_YEAR);
     // tslint:disable-next-line:max-line-length
     contentFilter.filter = contentFilter.filter.replace(/{{Id}}/gi, sYear.toString());
+    this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetProjectPerYear');
     const sResults = await this.spServices.readItems(this.constant.listNames.ProjectPerYear.name, contentFilter);
     if (sResults && sResults.length) {
       currenValue = parseInt(sResults[0].Count, 10);
@@ -1084,6 +1092,7 @@ export class PMCommonService {
         });
       }
     }
+    this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetSchedulesProjInfoPoInvoicesProFinanceBreakupInvoiceLineItem');
     const res = await this.spServices.executeBatch(batchURL);
     console.log(res);
     if (res && res.length) {
@@ -1424,6 +1433,7 @@ export class PMCommonService {
           counter += 1;
           batchURL.push(crCreate);
           if (batchURL.length === 99) {
+            this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetProjectBudgetBreakupSchedules');
             batchResults = await this.spServices.executeBatch(batchURL);
             console.log(batchResults);
             finalArray = [...finalArray, ...batchResults];
@@ -1432,10 +1442,12 @@ export class PMCommonService {
         }
       }
       if (batchURL.length) {
+        this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetProjectBudgetBreakupSchedules');
         batchResults = await this.spServices.executeBatch(batchURL);
         finalArray = [...finalArray, ...batchResults];
       }
     } else {
+      this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetProjectBudgetBreakupSchedules');
       batchResults = await this.spServices.executeBatch(batchURL);
       finalArray = [...finalArray, ...batchResults];
     }
@@ -1499,6 +1511,7 @@ export class PMCommonService {
             batchURL.push(moveTaskObj);
           }
           if (batchURL.length === 99) {
+            this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetSchedules');
             batchResults = await this.spServices.executeBatch(batchURL);
             console.log(batchResults);
             finalArray = [...finalArray, ...batchResults];
@@ -1507,6 +1520,7 @@ export class PMCommonService {
         }
       }
       if (batchURL.length) {
+        this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetSchedules');
         batchResults = await this.spServices.executeBatch(batchURL);
         console.log(batchResults);
         finalArray = [...finalArray, ...batchResults];
@@ -1583,6 +1597,7 @@ export class PMCommonService {
       batchURL.push(taskTrainingCreate);
     });
     if (batchURL.length) {
+      this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetSchedules');
       const results = await this.spServices.executeBatch(batchURL);
       return results;
     }
@@ -1837,6 +1852,7 @@ export class PMCommonService {
           projectFinanceGet.listName = this.constant.listNames.ProjectFinances.name;
           batchURL.push(projectFinanceGet);
           if (batchURL.length === 99) {
+            this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetProjectFinance');
             batchResults = await this.spServices.executeBatch(batchURL);
             finalArray = [...finalArray, ...batchResults];
             batchURL = [];
@@ -1844,6 +1860,7 @@ export class PMCommonService {
         }
       }
       if (batchURL.length) {
+        this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetProjectFinance');
         batchResults = await this.spServices.executeBatch(batchURL);
         finalArray = [...finalArray, ...batchResults];
       }

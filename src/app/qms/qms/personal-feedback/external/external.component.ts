@@ -8,7 +8,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { QMSConstantsService } from '../../services/qmsconstants.service';
 import { QMSCommonService } from '../../services/qmscommon.service';
-import { DataTable } from 'primeng/primeng';
+import { Table } from 'primeng/table';
 
 @Component({
   selector: 'app-external',
@@ -42,7 +42,7 @@ export class ExternalComponent implements OnDestroy {
     BusinessImpact: []
   };
 
-  @ViewChild('qc', { static: false }) pfTable: DataTable;
+  @ViewChild('qc', { static: true }) pfTable: Table;
   constructor(
     private spService: SPOperationService,
     private datepipe: DatePipe,
@@ -154,6 +154,7 @@ export class ExternalComponent implements OnDestroy {
     qcComponent.getQC.top = qcComponent.getQC.top.replace('{{TopCount}}', '' + topCount);
     qcComponent.getQC.filter = qcComponent.getQC.filter.replace('{{startDate}}', startDate)
       .replace('{{endDate}}', endDate);
+    this.commonService.SetNewrelic('QMS', 'personalfeedback-external-getQCItems', 'readItems');
     let qcs = await this.spService.readItems(this.globalConstant.listNames.QualityComplaints.name,
       qcComponent.getQC);
     qcs = qcs.length > 0 ? qcs.sort((a, b) => new Date(a.SentDate).getTime() - new Date(b.SentDate).getTime()) : [];

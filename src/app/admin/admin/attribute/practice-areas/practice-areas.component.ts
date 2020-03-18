@@ -1,4 +1,4 @@
-import { Component, OnInit, ApplicationRef, NgZone } from '@angular/core';
+import { Component, OnInit, ApplicationRef, NgZone, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { DatePipe, PlatformLocation } from '@angular/common';
 import { MessageService, Message, ConfirmationService } from 'primeng/api';
 import { AdminCommonService } from 'src/app/admin/services/admin-common.service';
@@ -8,6 +8,7 @@ import { ConstantsService } from 'src/app/Services/constants.service';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
 import { Router } from '@angular/router';
 import { CommonService } from 'src/app/Services/common.service';
+import { Table } from 'primeng';
 
 @Component({
   selector: 'app-practice-areas',
@@ -34,7 +35,7 @@ export class PracticeAreasComponent implements OnInit {
   practiceAreaColArray = {
     PracticeArea: [],
     LastUpdated: [],
-    LastUpdatedBy: []
+    LastModifiedBy: []
   };
   auditHistoryArray = {
     Action: [],
@@ -46,6 +47,10 @@ export class PracticeAreasComponent implements OnInit {
     { label: 'Delete', command: (e) => this.delete() }
   ];
   msgs: Message[] = [];
+
+  isOptionFilter: boolean;
+  @ViewChild('pa', { static: false }) paTable: Table;
+
   /**
    * Construct a method to create an instance of required component.
    *
@@ -76,7 +81,8 @@ export class PracticeAreasComponent implements OnInit {
     private router: Router,
     private applicationRef: ApplicationRef,
     private zone: NgZone,
-    private common: CommonService
+    private common: CommonService,
+    private cdr: ChangeDetectorRef
   ) {
     // Browser back button disabled & bookmark issue solution
     history.pushState(null, null, window.location.href);
@@ -101,7 +107,7 @@ export class PracticeAreasComponent implements OnInit {
       { field: 'PracticeArea', header: 'Practice Area', visibility: true },
       { field: 'LastUpdated', header: 'Last Updated', visibility: true, exportable: false },
       { field: 'LastUpdatedFormat', header: 'Last Updated', visibility: false },
-      { field: 'LastUpdatedBy', header: 'Last Updated By', visibility: true },
+      { field: 'LastModifiedBy', header: 'Last Updated By', visibility: true },
     ];
     this.loadPractiveArea();
   }
@@ -120,6 +126,7 @@ export class PracticeAreasComponent implements OnInit {
     const getPracticeAreaInfo = Object.assign({}, this.adminConstants.QUERY.GET_PRACTICE_AREA_BY_ACTIVE);
     getPracticeAreaInfo.filter = getPracticeAreaInfo.filter.replace(/{{isActive}}/gi,
       this.adminConstants.LOGICAL_FIELD.YES);
+    this.common.SetNewrelic('admin', 'admin-attribute-practice-areas', 'getBusinessVerticals');
     const results = await this.spServices.readItems(this.constants.listNames.BusinessVerticals.name, getPracticeAreaInfo);
     if (results && results.length) {
       results.forEach(item => {
@@ -128,7 +135,7 @@ export class PracticeAreasComponent implements OnInit {
         obj.PracticeArea = item.Title;
         obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
         obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd, yyyy');
-        obj.LastUpdatedBy = item.Editor.Title;
+        obj.LastModifiedBy = item.Editor.Title;
         tempArray.push(obj);
       });
       this.practiceAreaRows = tempArray;
@@ -165,8 +172,8 @@ export class PracticeAreasComponent implements OnInit {
       };
       return b;
     });
-    this.practiceAreaColArray.LastUpdatedBy = this.common.sortData(this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; })));
+    this.practiceAreaColArray.LastModifiedBy = this.common.sortData(this.adminCommonService.uniqueArrayObj(
+      colData.map(a => { const b = { label: a.LastModifiedBy, value: a.LastModifiedBy }; return b; })));
   }
   /**
    * Construct a method to add the new Project Type into `BusinessVerticals` list.
@@ -210,6 +217,7 @@ export class PracticeAreasComponent implements OnInit {
     const data = {
       Title: this.practiceArea
     };
+    this.common.SetNewrelic('admin', 'admin-attribute-practice-areas', 'createBusinessVerticals');
     const result = await this.spServices.createItem(this.constants.listNames.BusinessVerticals.name, data,
       this.constants.listNames.BusinessVerticals.type);
     console.log(result);
@@ -257,6 +265,7 @@ export class PracticeAreasComponent implements OnInit {
    */
   async confirmUpdate(data, updateData, listName, type) {
     this.adminObject.isMainLoaderHidden = false;
+    this.common.SetNewrelic('admin', 'admin-attribute-practice-areas', 'updateBusinessVerticals');
     const result = await this.spServices.updateItem(listName, data.ID, updateData, type);
     this.messageService.add({
       key: 'adminCustom', severity: 'success', sticky: true,
@@ -278,8 +287,32 @@ export class PracticeAreasComponent implements OnInit {
     this.currPracticeAreaObj = rowData;
     console.log(rowData);
   }
+
   downloadExcel(pa) {
     pa.exportCSV();
+  }
+
+  optionFilter(event: any) {
+    if (event.target.value) {
+      this.isOptionFilter = false;
+    }
+  }
+
+
+  ngAfterViewChecked() {
+    if (this.practiceAreaRows.length && this.isOptionFilter) {
+      const obj = {
+        tableData: this.paTable,
+        colFields: this.practiceAreaColArray
+      };
+      if (obj.tableData.filteredValue) {
+        this.common.updateOptionValues(obj);
+      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+        this.colFilters(obj.tableData.value);
+        this.isOptionFilter = false;
+      }
+      this.cdr.detectChanges();
+    }
   }
 
 }

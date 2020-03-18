@@ -11,7 +11,7 @@ import { CommonService } from '../../../../Services/common.service';
 import { DataService } from '../../../../Services/data.service';
 import { QMSConstantsService } from '../../services/qmsconstants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
-import { DataTable } from 'primeng/primeng';
+import { Table } from 'primeng/table';
 
 @Component({
   selector: 'app-positive-feedback',
@@ -37,7 +37,7 @@ export class PositiveFeedbackComponent implements OnInit, OnDestroy {
     Resources: []
   };
   public displayedCDColumns: string[] = ['ID', 'Title', 'SentDate', 'SentBy', 'Resources'];
-  @ViewChild('pf', { static: false }) pfTable: DataTable;
+  @ViewChild('pf', { static: false }) pfTable: Table;
   // tslint:disable: max-line-length
   constructor(
     private router: Router,
@@ -128,6 +128,7 @@ export class PositiveFeedbackComponent implements OnInit, OnDestroy {
     pfComponent.getPF.top = pfComponent.getPF.top.replace('{{TopCount}}', '' + topCount);
     pfComponent.getPF.filter = pfComponent.getPF.filter.replace('{{startDate}}', startDate)
       .replace('{{endDate}}', endDate);
+    this.commonService.SetNewrelic('QMS', 'personalFeedback-positiveFeedback', 'getPFItems');
     const arrResult = await this.spService.readItems(this.globalConstant.listNames.PositiveFeedbacks.name, pfComponent.getPF);
     this.global.templateMatrix.templates = arrResult.length > 0 ? arrResult : [];
     const arrPFs = arrResult.length > 0 ? this.appendPropertyTOObject(arrResult) : [];

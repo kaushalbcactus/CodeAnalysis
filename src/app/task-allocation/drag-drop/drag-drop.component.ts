@@ -1,11 +1,12 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { DynamicDialogRef, DynamicDialogConfig, MessageService, ConfirmationService } from 'primeng/api';
+import { DynamicDialogRef, DynamicDialogConfig, MessageService, ConfirmationService } from 'primeng';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { TaskAllocationConstantsService } from '../services/task-allocation-constants.service';
 import * as shape from 'd3-shape';
 import { TaskAllocationCommonService } from '../services/task-allocation-common.service';
+import { CommonService } from 'src/app/Services/common.service';
 declare var $: any;
 @Component({
   selector: 'app-drag-drop',
@@ -80,7 +81,8 @@ export class DragDropComponent implements OnInit {
     private constants: ConstantsService,
     private taskAllocationService: TaskAllocationConstantsService,
     private messageService: MessageService,
-    private taskCommonService: TaskAllocationCommonService) { }
+    private taskCommonService: TaskAllocationCommonService,
+    private commonService: CommonService) { }
 
   ngOnInit() {
     this.initialLoad = true;
@@ -479,7 +481,7 @@ export class DragDropComponent implements OnInit {
     const milestoneTasks = this.AlldbRecords.find(c => c.milestone.Title === nodeLabel) ? this.AlldbRecords.find(c => c.milestone.Title === nodeLabel).tasks : []
     let milestoneTaskProcess = [];
     milestoneTasks.forEach(task => {
-      const TaskType = task.replace(/[0-9]/g, '').replace(/\s+$/, '');
+      const TaskType = task.replace(/[0-9]/g, '').replace(/\s+$/, '') === 'SC' ? 'Send to client' : task.replace(/[0-9]/g, '').replace(/\s+$/, '');
       if (milestoneTaskProcess.length > 0 && milestoneTaskProcess.find(c => c.type === TaskType)) {
         milestoneTaskProcess.find(c => c.type === TaskType).tasks.push(task);
       }
@@ -710,6 +712,7 @@ export class DragDropComponent implements OnInit {
     tasksObj.listName = this.constants.listNames.MilestoneTasks.name;
     tasksObj.type = 'GET';
     batchUrl.push(tasksObj);
+    this.commonService.SetNewrelic('TaskAllocation', 'Drag-Drop', 'GetMilestoneSubmilestoneAndTasks');
     const arrResult = await this.spServices.executeBatch(batchUrl);
     this.response = arrResult.length ? arrResult.map(a => a.retItems) : [];
     this.sharedObject.oTaskAllocation.arrMilestones = this.response[0].map(c => c.Title);
@@ -1209,8 +1212,6 @@ export class DragDropComponent implements OnInit {
     else {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warn Message', detail: 'Only Client Review  can be added to default sub milestone.' });
     }
-
-
 
     this.resizeGraph = 'task';
     this.GraphResize();

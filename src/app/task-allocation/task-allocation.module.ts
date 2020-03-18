@@ -8,13 +8,12 @@ import { CustomMaterialModule } from '../shared/material.module';
 import { TimelineComponent } from './timeline/timeline.component';
 import { NgGanttEditorModule } from 'ng-gantt';
 import { TreeTableModule } from 'primeng/treetable';
-import { ConfirmationService, DynamicDialogConfig, DynamicDialogRef } from 'primeng/api';
+import { ConfirmationService, DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 import { PrimengModule } from '../primeng/primeng.module';
 import { DragDropComponent } from './drag-drop/drag-drop.component';
 import { DndModule } from 'ngx-drag-drop';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgxGraphModule } from '@swimlane/ngx-graph';
-import { StickyModule } from 'ng2-sticky-kit';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { TaskDetailsDialogComponent } from './task-details-dialog/task-details-dialog.component';
 import { ResourcesComponent } from './resources/resources.component';
@@ -37,7 +36,6 @@ import { CascadeDialogComponent } from './cascade-dialog/cascade-dialog.componen
     DndModule,
     NgxGraphModule,
     NgxChartsModule,
-    StickyModule,
     NgxMaterialTimepickerModule,
     UserCapacityModule
   ],

@@ -1,4 +1,4 @@
-import { Component, OnInit, ApplicationRef, NgZone } from '@angular/core';
+import { Component, OnInit, ApplicationRef, NgZone, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { DatePipe, PlatformLocation } from '@angular/common';
 import { MessageService, ConfirmationService, Message } from 'primeng/api';
 import { AdminCommonService } from 'src/app/admin/services/admin-common.service';
@@ -8,6 +8,7 @@ import { ConstantsService } from 'src/app/Services/constants.service';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
 import { Router } from '@angular/router';
 import { CommonService } from 'src/app/Services/common.service';
+import { Table } from 'primeng';
 
 @Component({
   selector: 'app-project-types',
@@ -31,7 +32,7 @@ export class ProjectTypesComponent implements OnInit {
   projectTypeColArray = {
     ProjectType: [],
     LastUpdated: [],
-    LastUpdatedBy: []
+    LastModifiededBy: []
   };
   auditHistoryArray = {
     Action: [],
@@ -42,6 +43,11 @@ export class ProjectTypesComponent implements OnInit {
     { label: 'Delete', command: (e) => this.delete() }
   ];
   msgs: Message[] = [];
+
+  isOptionFilter: boolean;
+  @ViewChild('pt', { static: false }) ptTable: Table;
+
+
   /**
    * Construct a method to create an instance of required component.
    *
@@ -72,7 +78,8 @@ export class ProjectTypesComponent implements OnInit {
     private router: Router,
     private applicationRef: ApplicationRef,
     private zone: NgZone,
-    private common: CommonService
+    private common: CommonService,
+    private cdr: ChangeDetectorRef
   ) {
     // Browser back button disabled & bookmark issue solution
     history.pushState(null, null, window.location.href);
@@ -96,7 +103,7 @@ export class ProjectTypesComponent implements OnInit {
       // { field: 'Sr', header: 'Sr.No.' },
       { field: 'ProjectType', header: 'Project Type', visibility: true },
       { field: 'LastUpdated', header: 'Last Updated', visibility: true, exportable: false },
-      { field: 'LastUpdatedBy', header: 'Last Updated By', visibility: true },
+      { field: 'LastModifiededBy', header: 'Last Updated By', visibility: true },
       { field: 'LastUpdatedFormat', header: 'Last Updated Date', visibility: false }
     ];
     this.loadProjectTypeTable();
@@ -116,6 +123,7 @@ export class ProjectTypesComponent implements OnInit {
     const getProjectTypeInfo = Object.assign({}, this.adminConstants.QUERY.GET_PROJECT_TYPE_BY_ACTIVE);
     getProjectTypeInfo.filter = getProjectTypeInfo.filter.replace(/{{isActive}}/gi,
       this.adminConstants.LOGICAL_FIELD.YES);
+    this.common.SetNewrelic('admin', 'admin-attribute-projectTypes', 'getProjectType');
     const results = await this.spServices.readItems(this.constants.listNames.ProjectType.name, getProjectTypeInfo);
     if (results && results.length) {
       results.forEach(item => {
@@ -124,7 +132,7 @@ export class ProjectTypesComponent implements OnInit {
         obj.ProjectType = item.Title;
         obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
         obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd, yyyy');
-        obj.LastUpdatedBy = item.Editor.Title;
+        obj.LastModifiededBy = item.Editor.Title;
         tempArray.push(obj);
       });
       this.projectTypeRows = tempArray;
@@ -161,8 +169,8 @@ export class ProjectTypesComponent implements OnInit {
       };
       return b;
     });
-    this.projectTypeColArray.LastUpdatedBy = this.common.sortData(this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; })));
+    this.projectTypeColArray.LastModifiededBy = this.common.sortData(this.adminCommonService.uniqueArrayObj(
+      colData.map(a => { const b = { label: a.LastModifiededBy, value: a.LastModifiededBy }; return b; })));
   }
   /**
    * Construct a method to add the new Project Type into `ProjectType` list.
@@ -206,6 +214,7 @@ export class ProjectTypesComponent implements OnInit {
     const data = {
       Title: this.projectType
     };
+    this.common.SetNewrelic('admin', 'admin-attribute-projectTypes', 'createProjectType');
     const result = await this.spServices.createItem(this.constants.listNames.ProjectType.name, data,
       this.constants.listNames.ProjectType.type);
     console.log(result);
@@ -252,6 +261,7 @@ export class ProjectTypesComponent implements OnInit {
    */
   async confirmUpdate(data, updateData, listName, type) {
     this.adminObject.isMainLoaderHidden = false;
+    this.common.SetNewrelic('admin', 'admin-attribute-projectTypes', 'updateProjectType');
     const result = await this.spServices.updateItem(listName, data.ID, updateData, type);
     this.messageService.add({
       key: 'adminCustom', severity: 'success', sticky: true,
@@ -273,8 +283,32 @@ export class ProjectTypesComponent implements OnInit {
     this.currProjectTypeObj = rowData;
     console.log(rowData);
   }
+
   downloadExcel(pt) {
     pt.exportCSV();
+  }
+
+  optionFilter(event: any) {
+    if (event.target.value) {
+      this.isOptionFilter = false;
+    }
+  }
+
+
+  ngAfterViewChecked() {
+    if (this.projectTypeRows.length && this.isOptionFilter) {
+      const obj = {
+        tableData: this.ptTable,
+        colFields: this.projectTypeColArray
+      };
+      if (obj.tableData.filteredValue) {
+        this.common.updateOptionValues(obj);
+      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+        this.colFilters(obj.tableData.value);
+        this.isOptionFilter = false;
+      }
+      this.cdr.detectChanges();
+    }
   }
 }
 

@@ -1,9 +1,10 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { DynamicDialogRef, MessageService, DynamicDialogConfig } from 'primeng/api';
+import { DynamicDialogRef, MessageService, DynamicDialogConfig } from 'primeng';
 import { PubsuportConstantsService } from '../../Services/pubsuport-constants.service';
 import { SPOperationService } from '../../../Services/spoperation.service';
 import { ConstantsService } from '../../../Services/constants.service';
+import { CommonService } from 'src/app/Services/common.service';
 
 @Component({
     selector: 'app-create-conference',
@@ -35,6 +36,7 @@ export class CreateConferenceComponent implements OnInit {
         private constantService: ConstantsService,
         private messageService: MessageService,
         public config: DynamicDialogConfig,
+        private common: CommonService
 
     ) { }
 
@@ -65,7 +67,7 @@ export class CreateConferenceComponent implements OnInit {
             type: 'GET',
             listName: this.constantService.listNames.Journal.name
         }];
-
+        this.common.SetNewrelic('PubSupport', 'create-conference', 'getConferenceList');
         const result = await this.spOperationsService.executeBatch(data);
         const res = result[0].retItems;
         if (res.hasError) {
@@ -127,6 +129,8 @@ export class CreateConferenceComponent implements OnInit {
     }
 
     async submitForm(data) {
+
+        this.common.SetNewrelic('PubSupport', 'create-conference', 'CreateConference');
         const res = await this.spOperationsService.executeBatch(data);
         if (res) {
             this.psConstantService.pubsupportComponent.isPSInnerLoaderHidden = true;

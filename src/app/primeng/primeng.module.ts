@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { TreeTableModule } from 'primeng/treetable';
-import { DataTableModule } from 'primeng/datatable';
+// import { DataTableModule } from 'primeng/datatable';
 import { FieldsetModule } from 'primeng/fieldset';
 import { MenuModule } from 'primeng/menu';
 import { CardModule } from 'primeng/card';
@@ -12,11 +12,11 @@ import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { DropdownModule } from 'primeng/dropdown';
-import { MessageService, ConfirmationService, DialogService } from 'primeng/api';
+import { MessageService, ConfirmationService } from 'primeng/api';
 import { TabViewModule } from 'primeng/tabview';
 import {
   MenubarModule, OverlayPanelModule, InputTextareaModule, InputTextModule, AutoComplete, TieredMenuModule
-} from 'primeng/primeng';
+} from 'primeng';
 import { DragDropModule } from 'primeng/dragdrop';
 import { CalendarModule } from 'primeng/calendar';
 import { RadioButtonModule } from 'primeng/radiobutton';
@@ -30,7 +30,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { FileUploadModule } from 'primeng/fileupload';
 import { SidebarModule } from 'primeng/sidebar';
-import { DynamicDialogModule } from 'primeng/dynamicdialog';
+import { DynamicDialogModule, DialogService } from 'primeng/dynamicdialog';
 import { FullCalendarModule } from 'primeng/fullcalendar';
 import { ListboxModule } from 'primeng/listbox';
 import { AutoCompleteModule } from 'primeng/autocomplete';
@@ -49,7 +49,7 @@ import { InputSwitchModule } from 'primeng/inputswitch';
     AutoCompleteModule,
     DynamicDialogModule,
     TreeTableModule,
-    DataTableModule,
+    // DataTableModule,
     FieldsetModule,
     DialogModule,
     MenuModule,

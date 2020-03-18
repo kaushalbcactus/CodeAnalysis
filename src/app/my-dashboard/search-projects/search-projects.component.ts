@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, HostListener, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, HostListener, ApplicationRef, NgZone, ChangeDetectorRef, EmbeddedViewRef, ComponentRef } from '@angular/core';
 import { MessageService, MenuItem } from 'primeng/api';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
@@ -8,10 +8,10 @@ import { ProjectDraftsComponent } from './project-drafts/project-drafts.componen
 import { TimelineComponent } from 'src/app/task-allocation/timeline/timeline.component';
 import { Router } from '@angular/router';
 import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
-import { TimelineHistoryComponent } from './../../timeline/timeline-history/timeline-history.component';
 import { CommonService } from 'src/app/Services/common.service';
 import { ViewUploadDocumentDialogComponent } from 'src/app/shared/view-upload-document-dialog/view-upload-document-dialog.component';
 import { Table } from 'primeng/table';
+import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
 
 @Component({
   selector: 'app-search-projects',
@@ -20,18 +20,17 @@ import { Table } from 'primeng/table';
 })
 export class SearchProjectsComponent implements OnInit, OnDestroy {
 
-  @ViewChild(ProjectDraftsComponent, { static: true })
+  @ViewChild(ProjectDraftsComponent, { static: false })
   projectDraftsComponent: ProjectDraftsComponent;
 
-  @ViewChild(TimelineComponent, { static: true })
+  @ViewChild(TimelineComponent, { static: false })
   timelineComponent: TimelineComponent;
 
-  @ViewChild(ViewUploadDocumentDialogComponent, { static: true })
+  @ViewChild(ViewUploadDocumentDialogComponent, { static: false })
   viewUploadDocumentDialogComponent: ViewUploadDocumentDialogComponent;
 
-  @ViewChild('timelineRef', { static: true })
+  @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
   @ViewChild('project', { static: false }) project: Table;
-  timeline: TimelineHistoryComponent;
 
   selectedDate: DateObj;
   ProjectTitle: any = '';
@@ -86,6 +85,8 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     listName: ''
   };
 
+  dialogComponentRef: ComponentRef<TimelineHistoryComponent>
+
   constructor(
     public messageService: MessageService,
     private constants: ConstantsService,
@@ -98,8 +99,8 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private platformLocation: PlatformLocation,
     private locationStrategy: LocationStrategy,
-    _applicationRef: ApplicationRef,
-    zone: NgZone,
+    private _applicationRef: ApplicationRef,
+    zone: NgZone
   ) {
 
     // Browser back button disabled & bookmark issue solution
@@ -136,7 +137,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     ];
   }
 
-
+  
   // *************************************************************************************************************************************
   // hide popup menu on production
   // *************************************************************************************************************************************
@@ -298,6 +299,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
       // const ProjectUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', Project);
       // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, ProjectUrl);
       // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+      this.commonService.SetNewrelic('MyDashboard', 'SearchProject', 'GetProjectInfoByProjectCode');
       this.response = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, Project);
       if (this.response.length > 0) {
         this.ProjectList = this.response;
@@ -410,6 +412,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     batchUrl.push(ProjectResources);
 
     // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    this.commonService.SetNewrelic('MyDashboard', 'SearchProject', 'GetProjectResourcesByProjectCode');
     const result = await this.spServices.executeBatch(batchUrl);
     const prjResInfo = result.length > 0 ? result[0].retItems : [];
     const prjResReponse = result.length > 1 ? result[1].retItems : [];
@@ -469,6 +472,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
 
   ngAfterViewChecked() {
     if (this.ProjectList && this.isOptionFilter) {
+      console.log('this.timeline ', this.timeline);
       const obj = {
         tableData: this.project,
         colFields: this.ProjectColArray

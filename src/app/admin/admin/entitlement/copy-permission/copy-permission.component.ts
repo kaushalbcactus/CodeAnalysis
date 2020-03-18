@@ -6,6 +6,7 @@ import { AdminObjectService } from 'src/app/admin/services/admin-object.service'
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { PlatformLocation } from '@angular/common';
 import { Router } from '@angular/router';
+import { CommonService } from 'src/app/Services/common.service';
 
 @Component({
   selector: 'app-copy-permission',
@@ -63,7 +64,8 @@ export class CopyPermissionComponent implements OnInit {
     private platformLocation: PlatformLocation,
     private router: Router,
     private applicationRef: ApplicationRef,
-    private zone: NgZone
+    private zone: NgZone,
+    private common: CommonService
   ) {
     // Browser back button disabled & bookmark issue solution
     history.pushState(null, null, window.location.href);
@@ -151,6 +153,7 @@ export class CopyPermissionComponent implements OnInit {
     userGet.type = 'GET';
     userGet.listName = this.constants.listNames.ResourceCategorization.name;
     batchURL.push(userGet);
+    this.common.SetNewrelic('admin', 'admin-entitlement-copyPermission', 'GetRC');
     const result = await this.spServices.executeBatch(batchURL);
     console.log(result);
     return result;
@@ -337,6 +340,7 @@ export class CopyPermissionComponent implements OnInit {
         });
       }
       if (batchURL.length) {
+        this.common.SetNewrelic('admin', 'admin-entitlement-copyPermission', 'AddorRemoveUserFromGroupByLoginName');
         const result = await this.spServices.executeBatch(batchURL);
         if (result && result.length && action === this.adminConstants.ACTION.ADD) {
           this.viewArray.finalResultArray = this.permission.addGroups.concat(this.permission.destinationGroups);
@@ -457,6 +461,7 @@ export class CopyPermissionComponent implements OnInit {
     }
     const tempSourceArray = [];
     if (batchURL && batchURL.length) {
+      this.common.SetNewrelic('admin', 'admin-entitlement-copyPermission', 'getSourceUsersGroups');
       const sResults = await this.spServices.executeBatch(batchURL);
       if (sResults && sResults.length) {
         sResults.forEach((element, index) => {
@@ -500,6 +505,7 @@ export class CopyPermissionComponent implements OnInit {
    */
   async getDestinationUserGroups(destinationUserId) {
     const tempSourceArray = [];
+    this.common.SetNewrelic('Admin', 'CopyPermission', 'getUserInfo');
     const result = await this.spServices.getUserInfo(destinationUserId);
     console.log(result);
     if (result && result.hasOwnProperty('LoginName')) {

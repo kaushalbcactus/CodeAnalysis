@@ -7,6 +7,7 @@ import { AdminObjectService } from 'src/app/admin/services/admin-object.service'
 import { AdminCommonService } from 'src/app/admin/services/admin-common.service';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
+import { CommonService } from 'src/app/Services/common.service';
 
 @Component({
   selector: 'app-user-role-mapping',
@@ -61,6 +62,7 @@ export class UserRoleMappingComponent implements OnInit {
     private adminCommonService: AdminCommonService,
     private platformLocation: PlatformLocation,
     private router: Router,
+    private common : CommonService,
     private applicationRef: ApplicationRef,
     private zone: NgZone
   ) {
@@ -166,6 +168,7 @@ export class UserRoleMappingComponent implements OnInit {
     groupGet.type = 'GET';
     groupGet.listName = 'Groups';
     batchURL.push(groupGet);
+    this.common.SetNewrelic('admin', 'admin-entitlement-UserRole', 'GetResourceCategorization');
     const result = await this.spServices.executeBatch(batchURL);
     console.log(result);
     return result;
@@ -197,6 +200,7 @@ export class UserRoleMappingComponent implements OnInit {
    *
    */
   async highlightGroups(userId) {
+    this.common.SetNewrelic('Admin', 'entitlement-user-role-mapping', 'getUserInfo');
     this.userInfo = await this.spServices.getUserInfo(userId);
     this.userExistGroupArray = [];
     if (this.userInfo && this.userInfo.hasOwnProperty('Groups')) {
@@ -313,6 +317,7 @@ export class UserRoleMappingComponent implements OnInit {
       batchURL.push(userRemove);
     });
     if (batchURL.length) {
+      this.common.SetNewrelic('admin', 'admin-entitlement-UserRole', 'GetUsersByName');
       const sResult = await this.spServices.executeBatch(batchURL);
       if (sResult && sResult.length) {
         this.adminObject.isMainLoaderHidden = true;

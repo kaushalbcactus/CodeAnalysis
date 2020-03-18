@@ -4,6 +4,7 @@ import { ConstantsService } from 'src/app/Services/constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { SPCommonService } from 'src/app/Services/spcommon.service';
 import { QMSConstantsService } from '../qms/services/qmsconstants.service';
+import { CommonService } from 'src/app/Services/common.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +17,7 @@ export class QmsAuthService {
     private spService: SPOperationService,
     private spcommon: SPCommonService,
     private qmsConstant: QMSConstantsService,
+    private common: CommonService
   ) { }
 
   public options = {
@@ -55,6 +57,8 @@ export class QmsAuthService {
     // 4th Batch Request
     batchUrl = [...batchUrl, ...this.getCurrentResourceGroups()];
     // 5th Batch Request
+
+    this.common.SetNewrelic('QMSAuth', 'qms-auth', 'GetReviewPendingTasksAndCurrentUserInfo');
     let result = await this.spService.executeBatch(batchUrl);
     result = result.length > 0 ? result : [];
     this.global.allResources = result[0].retItems.length ? result[0].retItems : [];
@@ -79,7 +83,7 @@ export class QmsAuthService {
         { label: 'Pending Feedback', routerLink: ['pendingFeedback'], value: 'PendingFeedback' }
       );
     }
-    
+
     // this.navLinks.push({ routerLink: ['/qms/clientFeedback'], label: 'Client Feedback', value: 'clientFeedback' });
     this.qmsConstant.qmsTab.list.push(
       { label: 'Client Feedback', routerLink: ['clientFeedback'], value: 'clientFeedback' }

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { LeaveCalendarRoutingModule } from './leave-calendar-routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PrimengModule } from '../primeng/primeng.module';
-import { DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng/api';
+import { DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { LeaveCalendarComponent } from './leave-calendar.component';
 
 

@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { DynamicDialogConfig, DynamicDialogRef, MessageService } from 'primeng/api';
+import { DynamicDialogConfig, DynamicDialogRef, MessageService } from 'primeng';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
 import { DatePipe } from '@angular/common';
 import { GlobalService } from 'src/app/Services/global.service';
-import { eraseStyles } from '@angular/animations/browser/src/util';
+import { CommonService } from 'src/app/Services/common.service';
 
 @Component({
   selector: 'app-block-time-dialog',
@@ -18,7 +18,7 @@ export class BlockTimeDialogComponent implements OnInit {
   batchContents: any[];
   response: any[];
   SelectedClientLegalEntity: string;
-  modalloaderenable = true; 
+  modalloaderenable = true;
   ClientLegalEntities: { label: string; value: string; }[];
   cars: { label: string; value: string; }[];
   starttime: any;
@@ -57,7 +57,8 @@ export class BlockTimeDialogComponent implements OnInit {
     private myDashboardConstantsService: MyDashboardConstantsService,
     private spServices: SPOperationService,
     private datePipe: DatePipe,
-    public sharedObject: GlobalService) { }
+    public sharedObject: GlobalService,
+    private common: CommonService) { }
 
   async ngOnInit() {
 
@@ -103,6 +104,7 @@ export class BlockTimeDialogComponent implements OnInit {
   //  Get all clients name
   // *************************************************************************************************
   async getAllClients() {
+    this.common.SetNewrelic('MyDashboard', 'BlockTimeDialogComponent', 'getAllClients');
     this.ClientLegalEntities = await this.myDashboardConstantsService.getAllClients();
     this.modalloaderenable = false;
   }
@@ -281,14 +283,14 @@ export class BlockTimeDialogComponent implements OnInit {
 
     const leavesGet = Object.assign({}, options);
     leavesGet.url = this.spServices.getReadURL(this.constants.listNames.LeaveCalendar.name,
-                           this.myDashboardConstantsService.mydashboardComponent.LeaveCalendar);
+      this.myDashboardConstantsService.mydashboardComponent.LeaveCalendar);
     leavesGet.url = leavesGet.url.replace(/{{currentUser}}/gi,
       this.sharedObject.currentUser.userId.toString()).replace(/{{startDateString}}/gi,
         EventDate).replace(/{{endDateString}}/gi, EndDate);
     leavesGet.type = 'GET';
     leavesGet.listName = this.constants.listNames.LeaveCalendar.name;
     batchURL.push(leavesGet);
-
+    this.common.SetNewrelic('MyDashboard', 'BlockTimeDialogComponent', 'ValidateLeave');
     const arrResults = await this.spServices.executeBatch(batchURL);
 
     if (arrResults) {

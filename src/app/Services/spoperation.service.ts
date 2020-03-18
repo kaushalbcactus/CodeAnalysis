@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import * as JSZip from 'jszip';
 import * as FileSaver from 'file-saver';
-import { Http, Response, Headers, RequestOptions, ResponseContentType } from '@angular/http';
+// import { Http, Response, Headers, RequestOptions, ResponseContentType } from '@angular/http';
 import { throwError, Observable } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { ConstantsService } from './constants.service';
@@ -17,14 +17,14 @@ export class SPOperationService {
   jsonHeader = 'application/json; odata=verbose';
   headersOld = new Headers({ 'Content-Type': this.jsonHeader, Accept: this.jsonHeader });
   headers = { 'Content-Type': this.jsonHeader, Accept: this.jsonHeader };
-  options = new RequestOptions({ headers: this.headersOld });
+  // options = new RequestOptions({ headers: this.headersOld });
   baseUrl: string;
   baseArchiveUrl: string;
   apiUrl: string;
   apiArchiveUrl: string;
   currentUser: string;
   login: string;
-  constructor(private http: Http, private globalServices: GlobalService,
+  constructor(private globalServices: GlobalService,
     private httpClient: HttpClient, private constants: ConstantsService) { this.setBaseUrl(null); }
 
   setBaseUrl(webUrl?: string) {
@@ -96,6 +96,8 @@ export class SPOperationService {
       FromEmailId: ffrom,
       CCEmailId: cc
     };
+
+    
     const result = await this.createItem(this.constants.listNames.SendEmail.name, data,
       this.constants.listNames.SendEmail.type);
     return this.parseRetSingle(result);

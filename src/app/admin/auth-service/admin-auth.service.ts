@@ -4,6 +4,7 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { AdminConstantService } from '../services/admin-constant.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { MessageService } from 'primeng/api';
+import { CommonService } from 'src/app/Services/common.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,11 +16,13 @@ export class AdminAuthService {
     private spOperationsServices: SPOperationService,
     private adminConstantService: AdminConstantService,
     private constantsService: ConstantsService,
-    public messageService: MessageService
+    public messageService: MessageService,
+    public commonService: CommonService
   ) { }
 
   async getUserRole() {
     this.constantsService.loader.isPSInnerLoaderHidden = false;
+    this.commonService.SetNewrelic('Admin', 'admin-auth', 'getUserInfo');
     this.globalObject.userInfo = await this.spOperationsServices.getUserInfo(this.globalObject.currentUser.userId);
     console.log('this.globalObject.userInfo ', this.globalObject.userInfo);
     if (this.globalObject.userInfo.Groups.results.length) {
@@ -43,11 +46,6 @@ export class AdminAuthService {
           { label: 'Entitlement', routerLink: ['entitlement'] }
         )
 
-        // { routerLink: ['/admin/entitlement/userRoleMapping'], label: 'User to Role Mapping', value: 'UserToRoleMapping' },
-        // { routerLink: ['/admin/entitlement/roleUserMapping'], label: 'Role to User Mapping', value: 'RoleToUserMapping' },
-        // { routerLink: ['/admin/entitlement/copyPermission'], label: 'Copy Permission', value: 'Copy Permission' },
-        // { routerLink: ['/admin/entitlement/addUserToSow'], label: 'Add User To Sow', value: 'AddUserToSow' },
-        // { routerLink: ['/admin/entitlement/addUserToProjects'], label: 'Add User To Projects', value: 'AddUserToProjects' }
         this.adminConstantService.EntitleMentMenu.List = [];
         if (groups.indexOf('Entitlement_Admin') > -1) {
           this.adminConstantService.userRole.SPMEA = true;
@@ -93,7 +91,7 @@ export class AdminAuthService {
 
       }
 
-      this.constantsService.loader.isPSInnerLoaderHidden = true;
+      // this.constantsService.loader.isPSInnerLoaderHidden = true;
       return true;
     } else {
       return false;

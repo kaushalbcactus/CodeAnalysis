@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { DynamicDialogConfig, DynamicDialogRef, MessageService } from 'primeng/api';
+import { DynamicDialogConfig, DynamicDialogRef, MessageService } from 'primeng';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { MyDashboardConstantsService } from 'src/app/my-dashboard/services/my-dashboard-constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { DatePipe } from '@angular/common';
 import { GlobalService } from 'src/app/Services/global.service';
+import { CommonService } from 'src/app/Services/common.service';
 
 @Component({
   selector: 'app-task-details-dialog',
@@ -45,7 +46,8 @@ export class TaskDetailsDialogComponent implements OnInit {
     private datePipe: DatePipe,
     public sharedObject: GlobalService,
     public messageService: MessageService,
-    ) { }
+    public commonService: CommonService
+  ) { }
 
   ngOnInit() {
 
@@ -70,11 +72,7 @@ export class TaskDetailsDialogComponent implements OnInit {
   // **************************************************************************************************
   async getComments(taskId) {
 
-    // this.batchContents = new Array();
-    // const batchGuid = this.spServices.generateUUID();
-
-    // const Comment = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.TaskDetails);
-    // Comment.filter = Comment.filter.replace(/{{taskId}}/gi, taskId);
+    this.commonService.SetNewrelic('TaskAllocation', 'task-detailsDialog', 'getCommentByTaskId');
     const response = await this.spServices.readItem(this.constants.listNames.Schedules.name, taskId);
     // const CommentUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', Comment);
     // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, CommentUrl);
@@ -107,6 +105,7 @@ export class TaskDetailsDialogComponent implements OnInit {
     // const batchGuid = this.spServices.generateUUID();
     const project = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.projectInfo);
     project.filter = project.filter.replace(/{{projectCode}}/gi, ProjectCode);
+    this.commonService.SetNewrelic('TaskAllocation', 'task-detailsDialog', 'GetProjInfoByProjCode');
     const response = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, project);
     // const projectUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', project);
     // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, projectUrl);
@@ -141,6 +140,7 @@ export class TaskDetailsDialogComponent implements OnInit {
     // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
 
     // this.allDocuments = this.response[0];
+    this.commonService.SetNewrelic('TaskAllocation', 'task-detailsDialog', 'GetDocumentsByType');
     const arrResult = await this.spServices.readFiles(completeFolderRelativeUrl);
     this.response = arrResult.length ? arrResult : [];
     this.allDocuments = this.response;
@@ -199,6 +199,8 @@ export class TaskDetailsDialogComponent implements OnInit {
       // const url = this.sharedObject.sharePointPageObject.serverRelativeUrl + '/_api/Web/GetUserById(' + element + ')';
       // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, url);
     });
+
+    this.commonService.SetNewrelic('TaskAllocation', 'task-detailsDialog', 'GetUsrsbyIds');
     this.response = await this.spServices.executeBatch(batchUrl);
     this.response = this.response.length ? this.response.map(a => a.retItems) : [];
     // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
@@ -210,6 +212,7 @@ export class TaskDetailsDialogComponent implements OnInit {
 
   downloadFile() {
     if (this.selectedDocuments.length > 0) {
+      this.commonService.SetNewrelic('task-allocation', 'downloadFile', 'createZip');
       this.spServices.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), this.currentTask.Title);
     } else {
       this.messageService.add({

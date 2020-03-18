@@ -1,10 +1,11 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
-import { DynamicDialogConfig, MessageService, MenuItem } from 'primeng/api';
+import { DynamicDialogConfig, MessageService, MenuItem } from 'primeng';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { MyDashboardConstantsService } from '../../services/my-dashboard-constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { DatePipe } from '@angular/common';
+import { CommonService } from 'src/app/Services/common.service';
 
 @Component({
   selector: 'app-project-drafts',
@@ -47,6 +48,7 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
     private spServices: SPOperationService,
     public sharedObject: GlobalService,
     private datePipe: DatePipe,
+    private commonService: CommonService
     ) { }
 
   items: MenuItem[];
@@ -122,7 +124,7 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
 
     const project = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.projectInfo);
     project.filter = project.filter.replace(/{{projectCode}}/gi, ProjectCode);
-
+    this.commonService.SetNewrelic('MyDashboard', 'SearchProjetc-ProjectDraft', 'GetProjectInfoByProjectCode');
     this.response = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, project);
     this.sharedObject.DashboardData.ProjectInformation = this.response.length > 0 ? this.response[0] : {};
 
@@ -158,6 +160,7 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
 
     // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, Url);
     // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    this.commonService.SetNewrelic('MyDashboard', 'SearchProjetc-ProjectDraft', 'GetDocumentsByTab');
     this.response = await this.spServices.readFiles(completeFolderRelativeUrl);
 
     this.allDocuments = this.response.length > 0 ? this.response : [];
@@ -223,7 +226,7 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
       // const url = this.sharedObject.sharePointPageObject.serverRelativeUrl + '/_api/Web/GetUserById(' + element + ')';
       // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, url);
     });
-
+    this.commonService.SetNewrelic('MyDashboard', 'SearchProjetc-ProjectDraft', 'GetUsersByIds');
     // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
     this.response = await this.spServices.executeBatch(batchURL);
     this.response = this.response.length > 0 ? this.response.map(c => c.retItems) : [];
@@ -238,7 +241,7 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
   downloadFile() {
 
     if (this.selectedDocuments.length > 0) {
-
+      this.commonService.SetNewrelic('MyDashboard', 'searchproject-project-drafts', 'createZip');
       this.spServices.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), this.selectedTab);
     } else {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select Files.', life: 4000 });

@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
+declare const newrelic;
+
 @Injectable({
   providedIn: 'root'
 })
@@ -21,12 +23,12 @@ export class CommonService {
     //  + data +
     // '\r\n\r\n--------------------------cef5a1b691b954b0--';
     const httpHeaders = new HttpHeaders({
-      Authentication : this.authToken,
-      Accept : '*/*',
+      Authentication: this.authToken,
+      Accept: '*/*',
       // 'Content-Type' : 'multipart/form-data' // ; boundary=--------------------------cef5a1b691b954b0',
       // Expect : '100-continue'
     });
-  
+
     return this.http.post(this.url, fd, {
       headers: httpHeaders,
     });
@@ -37,10 +39,10 @@ export class CommonService {
     const httpOptions = {
 
       headers: new HttpHeaders({
-      'Content-Type': 'application/json;charset=utf-8',
-      Accept: 'application/json; odata=verbose',
+        'Content-Type': 'application/json;charset=utf-8',
+        Accept: 'application/json; odata=verbose',
       })
-      };
+    };
     // console.log(obj);
     obj.Code = 'AM601-0109-0128';
     obj.WebUrl = '/sites/medcomdev';
@@ -52,8 +54,16 @@ export class CommonService {
     // }
     console.log(obj);
     return this.http.post('https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF',
-     JSON.stringify(obj), httpOptions);
+      JSON.stringify(obj), httpOptions);
     // return this.http.get('https://cactusspofinance.cactusglobal.com/PROD/Services/FinanceDashboard.svc/AddProforma/2157');
 
+  }
+
+  SetNewrelic(moduleType, routeType, value) {
+    if (typeof newrelic === 'object') {
+      newrelic.setCustomAttribute('spModuleType', moduleType);
+      newrelic.setCustomAttribute('spRouteType', routeType);
+      newrelic.setCustomAttribute('spCallType', value);
+    }
   }
 }

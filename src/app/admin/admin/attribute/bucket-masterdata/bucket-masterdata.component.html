@@ -7,7 +7,7 @@
       </span>
     </div>
     <div class="p-col-2">
-      <p-button label="Add" type="button" (click)="addBucketData()"></p-button>
+      <button pButton class="adminBtn" label="Add" type="button" (click)="addBucketData()"></button>
     </div>
   </div>
 </div>
@@ -36,18 +36,20 @@
         <th *ngFor="let col of columns" [ngSwitch]="col.field" [hidden]="!col.visibility">
           <p-multiSelect *ngSwitchCase="'Bucket'" [style]="{'width':'100%'}" [options]="bucketDataColArray.Bucket"
             defaultLabel="Bucket" (onChange)="bmd.filter($event.value, col.field, 'in')"
-            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"
+            (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
           <p-multiSelect *ngSwitchCase="'Client'" [style]="{'width':'100%'}" [options]="bucketDataColArray.Client"
             defaultLabel="Client" (onChange)="bmd.filter($event.value, col.field, 'contains')"
-            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"
+            (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
           <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}"
             [options]="bucketDataColArray.LastUpdated" defaultLabel="LastUpdated"
             (onChange)="bmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-            filter="true" resetFilterOnHide="true"></p-multiSelect>
-          <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}"
-            [options]="bucketDataColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy"
+            filter="true" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+          <p-multiSelect *ngSwitchCase="'LastModifiedBy'" [style]="{'width':'100%'}"
+            [options]="bucketDataColArray.LastModifiedBy" defaultLabel="LastUpdatedBy"
             (onChange)="bmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-            filter="true" resetFilterOnHide="true"></p-multiSelect>
+            filter="true" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
         </th>
         <th></th>
       </tr>
@@ -65,7 +67,7 @@
           {{rowData.LastUpdated | date:'MMM dd, yyyy'}}
         </td>
         <td>
-          {{rowData.LastUpdatedBy}}
+          {{rowData.LastModifiedBy}}
         </td>
         <td>
           <div>
@@ -182,7 +184,7 @@
             {{rowData.Title}}
           </td>
           <td>
-            <p-calendar [(ngModel)]="rowData.EffectiveDate" [minDate]="min30Days" [showIcon]="true"
+            <p-calendar  styleClass="pCalendarBtn" [(ngModel)]="rowData.EffectiveDate" [minDate]="min30Days" [showIcon]="true"
               [maxDate]="minDateValue"   [showOnFocus]="false"   [monthNavigator]="true" [readonlyInput]="true">
             </p-calendar>
           </td>

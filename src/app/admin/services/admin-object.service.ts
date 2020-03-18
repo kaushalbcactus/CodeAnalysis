@@ -47,7 +47,7 @@ export class AdminObjectService {
     User: '',
     LastUpdated: new Date(),
     LastUpdatedFormat: '',
-    LastUpdatedBy: '',
+    LastModifiedBy: '',
     Manager: '',
     IsActive: 'Yes',
     DisplayText: '',
@@ -102,7 +102,7 @@ export class AdminObjectService {
     RowClientsArray: [],
     ClientsArray: [],
     LastUpdated: new Date(),
-    LastUpdatedBy: '',
+    LastModifiedBy: '',
     LastUpdatedFormat: '',
   };
   public bucketClientObj = {
@@ -115,7 +115,7 @@ export class AdminObjectService {
     ID: 0,
     ProjectType: '',
     LastUpdated: new Date(),
-    LastUpdatedBy: '',
+    LastModifiededBy: '',
     LastUpdatedFormat: '',
   };
   public deliverableTypeObj = {
@@ -123,21 +123,21 @@ export class AdminObjectService {
     DeliverableType: '',
     Acronym: '',
     LastUpdated: new Date(),
-    LastUpdatedBy: '',
+    LastModifiedBy: '',
     LastUpdatedFormat: '',
   };
   public taObj = {
     ID: 0,
     TherapeuticArea: '',
     LastUpdated: new Date(),
-    LastUpdatedBy: '',
+    LastModifiedBy: '',
     LastUpdatedFormat: '',
   };
   public practiveAreaObj = {
     ID: 0,
     PracticeArea: '',
     LastUpdated: new Date(),
-    LastUpdatedBy: '',
+    LastModifiedBy: '',
     LastUpdatedFormat: '',
   };
   public clientObj = {

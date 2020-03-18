@@ -11,7 +11,7 @@ import { PMObjectService } from '../../services/pmobject.service';
 import { MenuItem } from 'primeng/api';
 import { PMCommonService } from '../../services/pmcommon.service';
 import { Router } from '@angular/router';
-import { DataTable } from 'primeng/primeng';
+import { Table } from 'primeng/table';
 
 declare var $;
 @Component({
@@ -50,7 +50,7 @@ export class SendToClientComponent implements OnInit {
     { field: 'PreviousTaskUser' },
     { field: 'PreviousTaskStatus' }];
   @ViewChild('sendToClientTableRef', { static: true }) sct: ElementRef;
-  @ViewChild('sendToClientTableRef', { static: false }) sendToClientTableRef: DataTable;
+  @ViewChild('sendToClientTableRef', { static: false }) sendToClientTableRef: Table;
   // tslint:disable-next-line:variable-name
   private _success = new Subject<string>();
   // tslint:disable-next-line:variable-name
@@ -186,12 +186,13 @@ export class SendToClientComponent implements OnInit {
     // }
     const fileName = task.ProjectCode + ' - ' + task.Milestone;
     // this.spServices.downloadMultipleFiles(tempArray, fileName);
+    this.commonService.SetNewrelic('projectmanagement', 'sendtoclient', 'createZip');
     this.spServices.createZip(tempArray.map(c => c.url), fileName);
     // }, 500);
   }
   goToAllocationPage(task) {
     window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +
-      '/allocation#/taskAllocation?ProjectCode=' + task.ProjectCode, '_blank');
+      '/dashboard#/taskAllocation?ProjectCode=' + task.ProjectCode, '_blank');
   }
 
   goToProjectManagement(task) {
@@ -209,6 +210,7 @@ export class SendToClientComponent implements OnInit {
   async closeTaskWithStatus(task, options, unt) {
     const isActionRequired = await this.commonService.checkTaskStatus(task);
     if (isActionRequired) {
+      this.commonService.SetNewrelic('projectManagment', 'sendToClient', 'UpdateSchedules');
       await this.spOperations.updateItem(this.Constant.listNames.Schedules.name, task.ID, options, this.Constant.listNames.Schedules.type);
 
       // check whether next task is null or not.
@@ -216,11 +218,13 @@ export class SendToClientComponent implements OnInit {
       if (task.NextTasks) {
         const projectInfoOptions = { Status: 'Author Review' };
         const projectID = this.pmObject.allProjectItems.filter(item => item.ProjectCode === task.ProjectCode);
+        this.commonService.SetNewrelic('projectManagment', 'sendToClient', 'UpdateProjectInfo');
         await this.spOperations.updateItem(this.Constant.listNames.ProjectInformation.name, projectID[0].ID, projectInfoOptions,
           this.Constant.listNames.ProjectInformation.type);
         const nextOptions = { PreviousTaskClosureDate: new Date() };
         const nextTask = this.scArrays.nextTaskArray.filter(item => item.Title === task.NextTasks);
         if (nextTask && nextTask.length) {
+          this.commonService.SetNewrelic('projectManagment', 'sendToClient', 'UpdateSchedules');
           await this.spOperations.updateItem(this.Constant.listNames.Schedules.name, nextTask[0].ID, nextOptions,
             this.Constant.listNames.Schedules.type);
         }
@@ -320,7 +324,7 @@ export class SendToClientComponent implements OnInit {
       top: 4200
     };
 
-
+    this.commonService.SetNewrelic('projectManagment', 'sendToClient', 'GetSchedules');
     this.scArrays.taskItems = await this.spServices.readItems(this.Constant.listNames.Schedules.name, queryOptions);
     const projectCodeTempArray = [];
     const shortTitleTempArray = [];
@@ -405,6 +409,7 @@ export class SendToClientComponent implements OnInit {
         tempSendToClientArray.push(scObj);
       }
       let counter = 0;
+      this.commonService.SetNewrelic('projectManagment', 'sendToClient', 'GetSchedules');
       let arrResults = await this.spServices.executeBatch(batchUrl);
       arrResults = arrResults.length > 0 ? arrResults.map(a => a.retItems) : [];
       for (const taskItem of tempSendToClientArray) {

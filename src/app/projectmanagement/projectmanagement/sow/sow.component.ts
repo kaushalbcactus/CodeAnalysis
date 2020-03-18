@@ -4,13 +4,15 @@ import { CommonService } from 'src/app/Services/common.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { PmconstantService } from '../../services/pmconstant.service';
 import { PMObjectService } from '../../services/pmobject.service';
-import { MenuItem, DialogService } from 'primeng/api';
+import { MenuItem, DialogService } from 'primeng';
 import { DataService } from 'src/app/Services/data.service';
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { Router } from '@angular/router';
 import { PMCommonService } from '../../services/pmcommon.service';
 import { Table } from 'primeng/table';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 declare var $;
 @Component({
@@ -123,18 +125,20 @@ export class SOWComponent implements OnInit, OnDestroy {
   sowViewDataArray = [];
   subscription;
   showProjectLink = false;
-  @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
+  @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
   @ViewChild('allProjectRef', { static: true }) allProjectRef: Table;
   step: number;
   ProjectArray = [];
   totalRevenueBudget = 0;
   totalOOPBudget = 0;
   loaderenable = false;
+  private _destroy$ = new Subject();
+
   constructor(
     public pmObject: PMObjectService,
     private datePipe: DatePipe,
     private commonService: CommonService,
-    private pmConstant: PmconstantService,
+    public pmConstant: PmconstantService,
     private dataService: DataService,
     public dialogService: DialogService,
     private spServices: SPOperationService,
@@ -208,8 +212,9 @@ export class SOWComponent implements OnInit, OnDestroy {
         command: (task) => this.timeline.showTimeline(this.pmObject.selectedSOWTask.ID, 'ProjectMgmt', 'SOW')
       }
     ];
-    this.subscription = this.dataService.on('reload-EditSOW').subscribe(() => this.loadSOWInit());
+    this.subscription = this.dataService.on('reload-EditSOW').pipe(takeUntil(this._destroy$)).subscribe(() => this.loadSOWInit());
   }
+
   ngOnDestroy() {
     this.subscription.unsubscribe();
   }
@@ -240,6 +245,7 @@ export class SOWComponent implements OnInit, OnDestroy {
       currSelectedSOW = this.pmObject.selectedSOWTask;
       const sowItemFilter = Object.assign({}, this.pmConstant.SOW_QUERY.SOW_BY_ID);
       sowItemFilter.filter = sowItemFilter.filter.replace(/{{Id}}/gi, currSelectedSOW.ID);
+      this.commonService.SetNewrelic('projectManagment', 'sow', 'GetSow');
       const sowItemResult = await this.spServices.readItems(this.constants.listNames.SOW.name, sowItemFilter);
       if (sowItemResult && sowItemResult.length) {
         this.pmCommonService.setGlobalVariable(sowItemResult[0]);
@@ -282,9 +288,11 @@ export class SOWComponent implements OnInit, OnDestroy {
       || this.pmObject.userRights.isHaveSOWFullAccess
       || this.pmObject.userRights.isHaveSOWBudgetManager) {
       const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.ALL_SOW);
+      this.commonService.SetNewrelic('projectManagment', 'sow', 'GetSow');
       arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
     } else {
       const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.USER_SPECIFIC_SOW);
+      this.commonService.SetNewrelic('projectManagment', 'sow', 'GetSow');
       arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
     }
     if (arrResults && arrResults.length) {
@@ -515,6 +523,7 @@ export class SOWComponent implements OnInit, OnDestroy {
     }
 
     this.ProjectArray = [];
+    this.commonService.SetNewrelic('projectManagment', 'sow', 'GetProjectInformation');
     const sResults = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, projectInformationFilter);
     this.ProjectArray = sResults;
     //  const budgetArray = await this.getBudget(sResults);

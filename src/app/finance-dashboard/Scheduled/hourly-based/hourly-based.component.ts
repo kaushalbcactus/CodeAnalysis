@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, OnDestroy, HostListener, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
 import { Message, ConfirmationService, MessageService } from 'primeng/api';
-import { Calendar, DataTable } from 'primeng/primeng';
+import { Calendar, Table } from 'primeng';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -102,8 +102,8 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     private subscription: Subscription = new Subscription();
 
     minScheduleDate: Date = new Date();
-    @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
-    @ViewChild('hb', { static: false }) hourlyTable: DataTable;
+    @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
+    @ViewChild('hb', { static: false }) hourlyTable: Table;
     // Purchase Order Number
     purchaseOrdersList: any = [];
 
@@ -320,6 +320,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
             prjObj.type = 'GET';
             batchUrl.push(prjObj);
         });
+        this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-hourlyBased', 'getPFbyProjectCode');
         const res = await this.spServices.executeBatch(batchUrl);
         const arrResults = res.length ? res.map(a => a.retItems) : [];
         this.formatData(arrResults);
@@ -413,6 +414,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         // Get Finance Brekup List
         const pfbObj = Object.assign({}, this.fdConstantsService.fdComponent.projectFinanceBreakupForPO);
         pfbObj.filter = pfbObj.filter.replace('{{ProjectCode}}', pf.ProjectCode);
+        this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-hourlyBased', 'GetPoNO');
         const res = await this.spServices.readItems(this.constantService.listNames.ProjectFinanceBreakup.name, pfbObj);
         // const res = await this.getProjectBudgetBreakup(endPoints, 'poDetails');
         const poByPfb = res.length ? res[0] : { POLookup: '' };
@@ -544,7 +546,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     // Go to Project Details Page
     goToProjectDetails(data: any) {
         console.log(data);
-        window.open(this.globalService.sharePointPageObject.webAbsoluteUrl + '/projectmanagement#/projectMgmt/allProjects?ProjectCode=' + data.ProjectCode);
+        window.open(this.globalService.sharePointPageObject.webAbsoluteUrl + '/dashboard#/projectMgmt/allProjects?ProjectCode=' + data.ProjectCode);
     }
 
     updateInvoice() {
@@ -594,6 +596,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         sowObj.listName = this.constantService.listNames.SOW.name;
         sowObj.type = 'GET';
         batchUrl.push(sowObj);
+        this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-hourlyBased', 'getPFBPFBBSow');
         this.getProjectBudgetBreakup(batchUrl);
         const last3Days = this.commonService.getLastWorkingDay(3, new Date());
         this.minScheduleDate = last3Days;
@@ -833,7 +836,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                 });
                 item.Status = 'Audit In Progress';
                 this.projectInfoData.splice(projIndex, 1, item);
-
+                this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-hourlyBased', 'updatePOPBBPFBSow');
                 this.submitForm(batchUrl, 'confirmInvoice');
             } else {
                 this.messageService.add({
@@ -894,6 +897,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                 HoursSpent: this.editHourly_form.value.HoursSpent
             };
             pfData['__metadata'] = { type: 'SP.Data.ProjectFinancesListItem' };
+            this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-hourlyBased', 'updatePFLItem');
             await this.spServices.updateItem(this.constantService.listNames.ProjectFinances.name, +this.selectedRowItem.PFID,
                 pfData, this.constantService.listNames.ProjectFinances.type);
             // this.submitForm(data, type);
@@ -962,6 +966,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
             type: 'GET',
             listName: this.constantService.listNames.MailContent.name
         }];
+        this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-hourlyBased', 'getEmailTemplates');
         const res = await this.spServices.executeBatch(obj);
         this.mailContentRes = res;
         console.log('Approve Mail Content res ', this.mailContentRes);
@@ -1041,12 +1046,14 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         pcmailContent = this.replaceContent(pcmailContent, "@@Val1@@", this.selectedRowItem.ProjectCode);
         pcmailContent = this.replaceContent(pcmailContent, "@@Val2@@", this.selectedRowItem.ClientLegalEntity);
         pcmailContent = this.replaceContent(pcmailContent, "@@Val5@@", this.selectedRowItem.HoursSpent);
-        pcmailContent = this.replaceContent(pcmailContent, "@@Val6@@", sharepointPageObject.webAbsoluteUrl + '/fd');
+        pcmailContent = this.replaceContent(pcmailContent, "@@Val6@@", sharepointPageObject.webAbsoluteUrl + '/dashboard#/financeDashboard');
 
         // var ccUser = [];
         // ccUser.push(this.currentUserInfoData.Email);
         // let tos = this.getTosList();
+        this.commonService.SetNewrelic('Finance-Dashboard', 'HourlyBased-invoiceTeam', 'SendMail');
         this.spServices.sendMail(this.getTosList('i').join(','), this.currentUserInfoData.Email, mailSubject, mailContent, this.getCCList('i').join(','));
+        this.commonService.SetNewrelic('Finance-Dashboard', 'HourlyBased-proposeClosure', 'SendMail');
         this.spServices.sendMail(this.getTosList('pc').join(','), this.currentUserInfoData.Email, pcmailSubject, pcmailContent, this.getCCList('pc').join(','));
         this.confirmationModal = false;
         this.reFetchData('confirm');

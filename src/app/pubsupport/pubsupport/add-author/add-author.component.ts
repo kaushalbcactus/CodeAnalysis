@@ -3,10 +3,11 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { PubsuportConstantsService } from '../../Services/pubsuport-constants.service';
-import { MessageService, DialogService, ConfirmationService } from 'primeng/api';
+import { MessageService } from 'primeng';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
+import { CommonService } from 'src/app/Services/common.service';
 
 @Component({
     selector: 'app-add-author',
@@ -43,6 +44,7 @@ export class AddAuthorComponent implements OnInit {
         public pubsupportService: PubsuportConstantsService,
         private messageService: MessageService,
         private router: Router,
+        private common: CommonService
     ) { }
 
     ngOnInit() {
@@ -112,6 +114,8 @@ export class AddAuthorComponent implements OnInit {
     }
 
     async submit(dataEndpointArray, type: string) {
+
+        this.common.SetNewrelic('PubSupport', 'add-author', 'AddAuthor');
         const result = await this.spOperationsService.executeBatch(dataEndpointArray);
         let res: any = {};
         if (result.length) {
@@ -127,15 +131,7 @@ export class AddAuthorComponent implements OnInit {
             this.addAuthorModal = false;
             this.add_author_form.reset();
             this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
-            this.reload();
         }
-    }
-
-    reload() {
-        setTimeout(() => {
-            this.router.navigated = false;
-            this.router.navigate([this.router.url]);
-        }, 200);
     }
 
     // tslint:disable-next-line: use-life-cycle-interface

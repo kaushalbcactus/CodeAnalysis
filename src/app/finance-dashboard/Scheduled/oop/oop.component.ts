@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, OnDestroy, HostListener, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
 import { Message, ConfirmationService, SelectItem, MessageService } from 'primeng/api';
-import { Calendar, DataTable } from 'primeng/primeng';
+import { Calendar, Table } from 'primeng';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { formatDate, DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { FDDataShareService } from '../../fdServices/fd-shareData.service';
@@ -106,8 +106,8 @@ export class OopComponent implements OnInit, OnDestroy {
         type: '',
         listName: ''
     };
-    @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
-    @ViewChild('oop', { static: false }) oopTable: DataTable;
+    @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
+    @ViewChild('oop', { static: false }) oopTable: Table;
 
     // Project Info 
     projectInfoData: any = [];
@@ -305,6 +305,7 @@ export class OopComponent implements OnInit, OnDestroy {
         if (!isManager) {
             obj.filter = obj.filter.replace('{{UserID}}', this.globalService.currentUser.userId.toString());
         }
+        this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-oop', 'GetInvoiceLineItem');
         const res = await this.spServices.readItems(this.constantService.listNames.InvoiceLineItems.name, obj);
         const arrResults = res.length ? res : [];
         this.isPSInnerLoaderHidden = true;
@@ -576,9 +577,8 @@ export class OopComponent implements OnInit, OnDestroy {
 
     // Go to Project Details Page
     goToProjectDetails(data: any) {
-        console.log(data);
         window.open(this.globalService.sharePointPageObject.webAbsoluteUrl
-            + '/projectmanagement#/projectMgmt/allProjects?ProjectCode=' + data.ProjectCode);
+            + '/dashboard#/projectMgmt?ProjectCode=' + data.ProjectCode);
     }
 
     // Update Form
@@ -654,6 +654,7 @@ export class OopComponent implements OnInit, OnDestroy {
             invObj.type = 'PATCH';
             invObj.data = iliData;
             batchUrl.push(invObj);
+            this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-oop', 'UpdateInvoiceLineItem');
             this.submitForm(batchUrl, type);
         } else if (type === 'editDeliverable') {
             // console.log('form is submitting .....', this.editOop_form.value);
@@ -673,6 +674,7 @@ export class OopComponent implements OnInit, OnDestroy {
             invObj.type = 'PATCH';
             invObj.data = iliData;
             batchUrl.push(invObj);
+            this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-oop', 'UpdateInvoiceLineItem');
             this.submitForm(batchUrl, type);
         }
     }
@@ -700,6 +702,7 @@ export class OopComponent implements OnInit, OnDestroy {
         // const mailContentEndpoint = this.fdConstantsService.fdComponent.mailContent;
         const objMailContent = Object.assign({}, this.fdConstantsService.fdComponent.mailContent);
         objMailContent.filter = objMailContent.filter.replace('{{MailType}}', type);
+        this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-oop', 'GetEmailTemplate');
         const res = await this.spServices.readItems(this.constantService.listNames.MailContent.name, objMailContent);
         this.mailContentRes = res.length ? res[0] : {};
     }
@@ -722,6 +725,7 @@ export class OopComponent implements OnInit, OnDestroy {
 
         const ccUser = this.getCCList();
         const tos = this.getTosList();
+        this.commonService.SetNewrelic('Finance-Dashboard', 'oop-CreateExpense', 'SendMail');
         this.spOperationsService.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
         this.reFetchData();
     }

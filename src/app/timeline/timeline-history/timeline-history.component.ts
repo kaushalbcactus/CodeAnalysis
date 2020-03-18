@@ -3,7 +3,7 @@ import { Component, OnInit, ElementRef, ViewChild, ChangeDetectorRef } from '@an
 import { SPCommonService } from '../../Services/spcommon.service';
 import { TimelineConstantsService } from './../services/timeline-constants.service';
 import { DatePipe } from '@angular/common';
-import { LazyLoadEvent, DataTable } from 'primeng/primeng';
+import { LazyLoadEvent} from 'primeng/primeng';
 import { SPOperationService } from '../../Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { CommonService } from 'src/app/Services/common.service';
@@ -79,7 +79,7 @@ export class TimelineHistoryComponent implements OnInit {
   public hideLoader = true;
   public datesValues = '';
 
-  @ViewChild('timelineTable', { static: true }) timelineTable: DataTable;
+  @ViewChild('timelineTable', { static: true }) timelineTable: Table;
 
   constructor(
     private spStandardService: SPOperationService,
@@ -137,7 +137,7 @@ export class TimelineHistoryComponent implements OnInit {
     getCLEItemData.listName = this.globalConstant.listNames.ClientLegalEntity.name;
     getCLEItemData.type = 'GET';
     batchURL.push(getCLEItemData);
-
+    this.commonService.SetNewrelic('Timeline', 'timeline-history', 'getProjectCotactPoCLE');
     const arrResult = await this.spStandardService.executeBatch(batchURL);
     const arrProjectContacts = arrResult.length > 0 ? arrResult[0] : [];
     const arrPOs = arrResult.length > 1 ? arrResult[1] : [];
@@ -575,7 +575,7 @@ export class TimelineHistoryComponent implements OnInit {
     const getInvLineItemDataVer = this.getBatchRequest(this.globalConstant.listNames.InvoiceLineItems.name, 'filterItem',
       this.constant.financeDashboard.invoice.getInvoiceLineItems, arrInvLineItemReplace, moduleName);
     batchURL.push(getInvLineItemDataVer);
-
+    this.commonService.SetNewrelic('Timeline', 'timeline-history', 'getInvoiceVersions');
     const arrResult = await this.spStandardService.executeBatch(batchURL);
     let invoiceVersions = arrResult.length > 0 ? arrResult[0].retItems : [];
     const proforma = arrResult.length > 1 ? arrResult[1] : [];
@@ -605,7 +605,7 @@ export class TimelineHistoryComponent implements OnInit {
     const getInvLineItemDataVer = this.getBatchRequest(this.globalConstant.listNames.InvoiceLineItems.name, 'filterItem',
       this.constant.financeDashboard.proforma.getInvoiceLineItems, arrInvLineItemReplace, moduleName);
     batchURL.push(getInvLineItemDataVer);
-
+    this.commonService.SetNewrelic('Timeline', 'timeline-history', 'getProforma');
     const arrResult = await this.spStandardService.executeBatch(batchURL);
     let proformaVersions = arrResult.length > 0 ? arrResult[0].retItems : [];
     const invoiceLineItems = arrResult.length > 1 ? arrResult[1] : [];
@@ -629,7 +629,7 @@ export class TimelineHistoryComponent implements OnInit {
     const getInvLineItemDataVer = this.getBatchRequest(this.globalConstant.listNames.InvoiceLineItems.name, 'versions',
       this.constant.financeDashboard.invoiceLineItem.getInvoiceLineItemsVersion, arrInvLineItemReplace, moduleName, invLineItemId);
     batchURL.push(getInvLineItemDataVer);
-
+    this.commonService.SetNewrelic('Timeline', 'timeline-history', 'getInvoiceLineItems');
     const arrResult = await this.spStandardService.executeBatch(batchURL);
     let invLineItemVersions = arrResult.length > 0 ? arrResult[0].retItems : [];
     invLineItemVersions = invLineItemVersions.map(version => ({ ...version, projects: this.projectCodes }));
@@ -647,6 +647,7 @@ export class TimelineHistoryComponent implements OnInit {
       this.constant.financeDashboard.project.getProjectVersions, arrPrjReplace, moduleName, itemID);
     batchURL.push(getPrjDataVer);
 
+    this.commonService.SetNewrelic('Timeline', 'timeline-history', 'getFDProjectVersions');
     const arrResult = await this.spStandardService.executeBatch(batchURL);
     let projectVersions = arrResult.length > 0 ? arrResult[0].retItems : [];
     // copy project code value from Project code to title property for standard use across code
@@ -673,7 +674,7 @@ export class TimelineHistoryComponent implements OnInit {
     const getPFDataVer = this.getBatchRequest(this.globalConstant.listNames.ProjectFinances.name, 'versions',
       this.constant.financeDashboard.projectFinance.getProjectFinanceVersions, arrPrjFinanceReplace, moduleName, itemID);
     batchURL.push(getPFDataVer);
-
+    this.commonService.SetNewrelic('Timeline', 'timeline-history', 'getFDProjectFinanceVersions');
     const arrResult = await this.spStandardService.executeBatch(batchURL);
     const projectFinanceVersions = arrResult.length > 0 ? arrResult[0].retItems : [];
     return [projectFinanceVersions];
@@ -1264,11 +1265,12 @@ export class TimelineHistoryComponent implements OnInit {
         batchURL.push(getPrjFinanceData);
       }
       const getDocuments = Object.assign({}, this.options);
+      this.commonService.SetNewrelic('timeline', 'timeline-history-getProjectVersions', 'getSubFolderFilesURL');
       getDocuments.url = this.spStandardService.getSubFolderFilesURL(projectVersions[0].ProjectFolder, 3);
       getDocuments.listName = moduleName + '_Documents';
       getDocuments.type = 'GET';
       batchURL.push(getDocuments);
-
+      this.commonService.SetNewrelic('Timeline', 'timeline-history', 'getProjectVersions');
       const arrResult = await this.spStandardService.executeBatch(batchURL);
       if (type !== 'ProjectMgmt_ProjectFromDashboard') {
         prjBudgetBreakup = arrResult.length > 0 ? arrResult[0] : {};
@@ -1302,7 +1304,7 @@ export class TimelineHistoryComponent implements OnInit {
     const getPFDataVer = this.getBatchRequest(this.globalConstant.listNames.ProjectFinances.name, 'versions',
       this.constant.projectManagement.projectFinance.getProjectFinanceVersions, arrPrjFinanceReplace, moduleName, itemID);
     batchURL.push(getPFDataVer);
-
+    this.commonService.SetNewrelic('Timeline', 'timeline-history', 'getProjectFinanceVersions');
     const arrResult = await this.spStandardService.executeBatch(batchURL);
     const projectFinanceVersions = arrResult.length > 0 ? arrResult[0].retItems : [];
     return [projectFinanceVersions];
@@ -1341,7 +1343,7 @@ export class TimelineHistoryComponent implements OnInit {
     const getPBBDataVer = this.getBatchRequest(this.globalConstant.listNames.ProjectBudgetBreakup.name, 'versions',
       this.constant.projectManagement.projectBudgetBreakup.getVersions, arrPBBReplace, moduleName, itemID);
     batchProjectURL.push(getPBBDataVer);
-
+    this.commonService.SetNewrelic('Timeline', 'timeline-history', 'getProjectBudgetVersions');
     const arrPrjResult = await this.spStandardService.executeBatch(batchProjectURL);
     const prjBreakupVersions = arrPrjResult.length > 0 ? arrPrjResult[0].retItems : [];
     return [prjBreakupVersions];
@@ -1354,6 +1356,7 @@ export class TimelineHistoryComponent implements OnInit {
     const getPFBDataVer = this.getBatchRequest(this.globalConstant.listNames.ProjectFinanceBreakup.name, 'versions',
       this.constant.projectManagement.projectFinanceBreakup.getVersions, arrPFBReplace, moduleName, itemID);
     batchProjectURL.push(getPFBDataVer);
+    this.commonService.SetNewrelic('Timeline', 'timeline-history', 'getProjectFinanceBreakupVersions');
     const arrPrjResult = await this.spStandardService.executeBatch(batchProjectURL);
     const prjFinanceBreakupVersions = arrPrjResult.length > 0 ? arrPrjResult[0].retItems : [];
     return [prjFinanceBreakupVersions];
@@ -1834,7 +1837,7 @@ export class TimelineHistoryComponent implements OnInit {
       const getSOWBudgetBreakupData = this.getBatchRequest(this.globalConstant.listNames.SOWBudgetBreakup.name, 'filterItem',
         this.constant.projectManagement.sowBudgetBreakup.getSOWBudgetBreakupInfo, arrSowBBReplace, moduleName);
       batchURL.push(getSOWBudgetBreakupData);
-
+      this.commonService.SetNewrelic('Timeline', 'timeline-history', 'getSowVersions');
       const arrResult = await this.spStandardService.executeBatch(batchURL);
       sowBudgetBreakup = arrResult.length > 0 ? arrResult[0] : [];
     }
@@ -1848,6 +1851,7 @@ export class TimelineHistoryComponent implements OnInit {
     const getSowDataVer = this.getBatchRequest(this.globalConstant.listNames.SOWBudgetBreakup.name, 'versions',
       this.constant.projectManagement.sowBudgetBreakup.getVersions, arrSowReplace, moduleName, itemID);
     batchSowBBURL.push(getSowDataVer);
+    this.commonService.SetNewrelic('Timeline', 'timeline-history', 'getSowBudgetBreakupVersions');
     const arrSowResult = await this.spStandardService.executeBatch(batchSowBBURL);
     const sowBBVersions = arrSowResult.length > 0 ? arrSowResult[0].retItems : [];
     const arrReturnResult = [sowBBVersions];

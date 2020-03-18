@@ -8,7 +8,8 @@ import { GlobalService } from 'src/app/Services/global.service';
 import { AdminConstantService } from './admin-constant.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
-import { ControlContainer } from '@angular/forms/public_api';
+import { ControlContainer } from '@angular/forms/forms';
+import { CommonService } from 'src/app/Services/common.service';
 const PEOPLE_PICKER_URL =
   '_api/SP.UI.ApplicationPages.ClientPeoplePickerWebServiceInterface.ClientPeoplePickerSearchUser';
 @Injectable({
@@ -20,6 +21,7 @@ export class AdminCommonService {
     private globalObject: GlobalService,
     private adminConstants: AdminConstantService,
     private spServices: SPOperationService,
+    private commonService: CommonService,
     private constants: ConstantsService
   ) { }
   public getUserSuggestions(query: PeoplePickerQuery): Observable<any> {
@@ -104,6 +106,7 @@ export class AdminCommonService {
     userGet.type = 'GET';
     userGet.listName = this.constants.listNames.ResourceCategorization.name;
     batchURL.push(userGet);
+    this.commonService.SetNewrelic('admin', 'admin-commonService', 'GetResourceCategorization');
     const result = await this.spServices.executeBatch(batchURL);
     console.log(result);
     return result;
@@ -133,6 +136,8 @@ export class AdminCommonService {
     // if (userObj.Role && userObj.Role === this.adminConstants.FILTER.DELIVERY_LEVEL_2) {
     //   cleGet.filter = 'DeliveryLevel2/ID eq ' + userObj.UserName.ID + '';
     // }
+
+    this.commonService.SetNewrelic('admin', 'commonService-GetClientLegalEntity', 'readItems');
     const results = await this.spServices.readItems(this.constants.listNames.ClientLegalEntity.name, cleGet);
     return results;
   }

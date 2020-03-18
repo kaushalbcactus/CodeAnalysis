@@ -11,7 +11,7 @@ import { MenuItem } from 'primeng/api';
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
 import { PMCommonService } from '../../services/pmcommon.service';
 import { Router } from '@angular/router';
-import { DataTable } from 'primeng/primeng';
+import { Table } from 'primeng/table';
 import { PlatformLocation, LocationStrategy } from '@angular/common';
 declare var $: any;
 @Component({
@@ -22,7 +22,7 @@ declare var $: any;
 })
 export class InactiveComponent implements OnInit {
   tempClick: any;
-  @ViewChild('iapTableRef', { static: false }) iapTableRef: DataTable;
+  @ViewChild('iapTableRef', { static: false }) iapTableRef: Table;
 
   displayedColumns: any[] = [
     { field: 'ProjectCode', header: 'Project Code' },
@@ -108,7 +108,7 @@ export class InactiveComponent implements OnInit {
     });
 
   }
-  @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
+  @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
   ngOnInit() {
     this.isIAPInnerLoaderHidden = false;
     this.isIAPFilterHidden = false;
@@ -258,7 +258,7 @@ export class InactiveComponent implements OnInit {
 
   goToAllocationPage(task) {
     window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +
-      '/allocation#/taskAllocation?ProjectCode=' + task.ProjectCode, '_blank');
+      '/dashboard#/taskAllocation?ProjectCode=' + task.ProjectCode, '_blank');
   }
   goToProjectManagement(task) {
     // window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +

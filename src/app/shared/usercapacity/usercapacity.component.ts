@@ -1,13 +1,14 @@
 import { Component, OnInit, ElementRef, HostListener, ChangeDetectorRef } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { DatePipe, CommonModule } from '@angular/common';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
-import { DynamicDialogConfig, MessageService, DialogService } from 'primeng/api';
+import { DynamicDialogConfig, MessageService, DialogService } from 'primeng';
 import { CAGlobalService } from 'src/app/ca/caservices/caglobal.service';
 import { CACommonService } from 'src/app/ca/caservices/cacommon.service';
 import { SharedConstantsService } from '../services/shared-constants.service';
 import { MilestoneTasksDialogComponent } from './milestone-tasks-dialog/milestone-tasks-dialog.component';
+import { CommonService } from 'src/app/Services/common.service';
 
 @Component({
   selector: 'app-usercapacity',
@@ -49,7 +50,8 @@ export class UsercapacityComponent implements OnInit {
     private messageService: MessageService,
     private sharedConstant: SharedConstantsService,
     private cdRef: ChangeDetectorRef,
-    public dialogService: DialogService) {
+    public dialogService: DialogService,
+    private common: CommonService) {
     this.elRef = elRef;
   }
 
@@ -196,6 +198,7 @@ export class UsercapacityComponent implements OnInit {
             this.fetchData(oUser, startDateString, endDateString, batchUrl);
 
             if (batchUrl.length === 99) {
+              this.common.SetNewrelic('Shared', 'UserCapacity', 'fetchTaskByUsers');
               batchResults = await this.spService.executeBatch(batchUrl);
               console.log(batchResults);
               tempFinalArray = [...tempFinalArray, ...batchResults];
@@ -207,6 +210,7 @@ export class UsercapacityComponent implements OnInit {
       }
     }
     if (batchUrl.length) {
+      this.common.SetNewrelic('Shared', 'UserCapacity', 'fetchTaskByUsers');
       batchResults = await this.spService.executeBatch(batchUrl);
       tempFinalArray = [...tempFinalArray, ...batchResults];
     }
@@ -252,6 +256,7 @@ export class UsercapacityComponent implements OnInit {
 
 
         if (batchURL.length === 99) {
+          this.common.SetNewrelic('Shared', 'UserCapacity', 'fetchTaskByUsers');
           batchResults = await this.spService.executeBatch(batchURL);
           console.log(batchResults);
           finalArray = [...finalArray, ...batchResults];
@@ -267,6 +272,7 @@ export class UsercapacityComponent implements OnInit {
         batchURL.push(leaveGet);
 
         if (batchURL.length === 99) {
+          this.common.SetNewrelic('Shared', 'UserCapacity', 'getLeavesbyUserIdAndSDED');
           batchResults = await this.spService.executeBatch(batchURL);
           console.log(batchResults);
           finalArray = [...finalArray, ...batchResults];
@@ -289,6 +295,7 @@ export class UsercapacityComponent implements OnInit {
 
 
     if (batchURL.length) {
+      this.common.SetNewrelic('Shared', 'UserCapacity', 'getLeavesbyUserIdAndSDEDAndAHbyUserID');
       batchResults = await this.spService.executeBatch(batchURL);
       finalArray = [...finalArray, ...batchResults];
     }
@@ -671,6 +678,7 @@ export class UsercapacityComponent implements OnInit {
         // batchContents.push('--batch_' + batchGuid + '--');
         // const sBatchData = batchContents.join('\r\n');
         // const arrResults = this.executeBatchRequest(batchUrl);
+        this.common.SetNewrelic('Shared', 'UserCapacity', 'getProInfoByPCAndTaskByPCandMilestone');
         let arrResults = await this.spService.executeBatch(batchUrl);
         arrResults = arrResults.length ? arrResults.map(a => a.retItems) : [];
         let nCount = 0;
@@ -814,19 +822,7 @@ export class UsercapacityComponent implements OnInit {
     ref.onClose.subscribe(async (tasks: any) => {
     });
   }
-  // open(content, tasks, task) {
-  //   this.modalReference = this.modalService.open(content, { size: 'lg' });
-  //   const selectedTask = tasks.filter(function(obj) {
-  //     return obj.title === task.title;
-  //   });
-  //   this.clickedTaskTitle = task.title;
-  //   this.milestoneTasks = selectedTask[0].milestoneTasks;
-  // }
-
-  // cancelScope() {
-  //   this.modalReference.close();
-  //   $('#txtScope').html('');
-  // }
+ 
 
   collpaseTable(objt) {
     const oCollpase = $(objt).closest('.TaskPerDayRow');

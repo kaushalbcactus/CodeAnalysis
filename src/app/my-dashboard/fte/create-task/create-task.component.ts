@@ -53,7 +53,7 @@ export class CreateTaskComponent implements OnInit {
   maxDate: Date;
   minDateValue: Date;
 
-  yearsRange = new Date().getFullYear() - 1+ ':' + (new Date().getFullYear() + 10);
+  yearsRange = new Date().getFullYear() - 1 + ':' + (new Date().getFullYear() + 10);
   defaultStartTime: any;
 
   subMilestonesArrayFormat: any = [];
@@ -140,6 +140,7 @@ export class CreateTaskComponent implements OnInit {
     pInfoObj.listName = this.constantsService.listNames.ProjectInformation.name;
     pInfoObj.type = 'GET';
     batchUrl.push(pInfoObj);
+    this.commonService.SetNewrelic('MyDashboard', 'fteCreateTask', 'getFTEProjects');
     const res = await this.spOperationsService.executeBatch(batchUrl);
     this.fteProjectArrayList = res.length ? res[0].retItems : [];
 
@@ -163,7 +164,7 @@ export class CreateTaskComponent implements OnInit {
         console.log('Value ', value);
         this.milestonesList = [];
         this.create_task_form.patchValue({
-          SubMilestones : ''
+          SubMilestones: ''
         });
         if (this.fteProjectsList.length >= 2) {
           this.setMilestones(value);
@@ -193,21 +194,23 @@ export class CreateTaskComponent implements OnInit {
 
   setMilestones(items: any) {
     const formatedMilestones = items.Milestones ? items.Milestones.split(';#') : [];
-    const milestone = items.Milestone;
-    const milestoneInd = formatedMilestones.indexOf(milestone);
-    const array = [];
-    if (milestoneInd) {
-      array.push({ label: formatedMilestones[milestoneInd - 1], value: formatedMilestones[milestoneInd - 1] });
-      array.push({ label: formatedMilestones[milestoneInd], value: formatedMilestones[milestoneInd] });
-    } else {
-      const element = formatedMilestones[milestoneInd];
-      array.push({ label: element, value: element });
+    if (items.Milestone) {
+      const milestone = items.Milestone;
+      const milestoneInd = formatedMilestones.indexOf(milestone);
+      const array = [];
+      if (milestoneInd) {
+        array.push({ label: formatedMilestones[milestoneInd - 1], value: formatedMilestones[milestoneInd - 1] });
+        array.push({ label: formatedMilestones[milestoneInd], value: formatedMilestones[milestoneInd] });
+      } else {
+        const element = formatedMilestones[milestoneInd];
+        array.push({ label: element, value: element });
+      }
+      this.milestonesList = array;
+      this.create_task_form.patchValue({
+        Milestones: this.milestonesList[milestoneInd ? 1 : 0]
+      });
+      this.updateSDate();
     }
-    this.milestonesList = array;
-    this.create_task_form.patchValue({
-      Milestones: this.milestonesList[milestoneInd ? 1 : 0]
-    });
-    this.updateSDate();
     // this.getTaskList(this.create_task_form.value.ProjectCode, this.create_task_form.value.Milestones);
   }
 
@@ -243,7 +246,7 @@ export class CreateTaskComponent implements OnInit {
     taskObj.listName = this.constantsService.listNames.Schedules.name;
     taskObj.type = 'GET';
     batchUrl.push(taskObj);
-
+    this.commonService.SetNewrelic('MyDashboard', 'fteCreateTask', 'getSubmilestones');
     const res = await this.spOperationsService.executeBatch(batchUrl);
     this.subMilestonesArrayList = res.length ? res[0].retItems : [];
     this.taskArrayList = res.length ? res[1].retItems : [];
@@ -418,6 +421,7 @@ export class CreateTaskComponent implements OnInit {
         moveItemObj.type = 'POST';
         batchUrl = [];
         batchUrl.push(moveItemObj);
+        this.commonService.SetNewrelic('MyDashboard', 'fteCreateTask', 'CreateTask');
         const moveToMilestoneRes: any = await this.spOperationsService.executeBatch(batchUrl);
         console.log('res ', moveToMilestoneRes);
         this.messageService.add({ key: 'successCT', severity: 'success', summary: 'Success message', detail: 'Task created.' });

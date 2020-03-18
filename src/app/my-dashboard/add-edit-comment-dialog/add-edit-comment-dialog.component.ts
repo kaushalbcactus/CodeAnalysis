@@ -1,9 +1,10 @@
 import { Component, OnInit, Input, SimpleChanges } from '@angular/core';
-import DecoupledEditor from '../../../../node_modules/@ckeditor/ckeditor5-build-decoupled-document';
-import { DynamicDialogConfig, DynamicDialogRef, MessageService } from 'primeng/api';
+import DecoupledEditor from '@ckeditor/ckeditor5-build-decoupled-document';
+import { DynamicDialogConfig, DynamicDialogRef, MessageService } from 'primeng';
 import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
+import { CommonService } from 'src/app/Services/common.service';
 @Component({
   selector: 'app-add-edit-comment-dialog',
   templateUrl: './add-edit-comment-dialog.component.html',
@@ -22,7 +23,7 @@ export class AddEditCommentComponent implements OnInit {
   commentsdb: any = [];
   previousComment: string = null;
   MarkComplete: any;
-  disableComment: boolean = false;
+  disableComment = false;
   @Input() taskData: any;
   constructor(
     public config: DynamicDialogConfig,
@@ -30,7 +31,8 @@ export class AddEditCommentComponent implements OnInit {
     public messageService: MessageService,
     private constants: ConstantsService,
     private myDashboardConstantsService: MyDashboardConstantsService,
-    private spServices: SPOperationService) { }
+    private spServices: SPOperationService,
+    private common: CommonService) { }
 
   ngOnInit() {
     this.data = this.config.data === undefined ? this.taskData : this.config.data;
@@ -38,15 +40,13 @@ export class AddEditCommentComponent implements OnInit {
       this.MarkComplete = this.data.MarkComplete;
       this.modalloaderenable = true;
       if (this.MarkComplete) {
-        //call when click on mark complete and comment not present
+
         this.modalloaderenable = false;
         this.onload();
-      }
-      else {
+      } else {
         if (this.config.data === undefined) {
           this.getComments(this.data, true);
-        }
-        else {
+        } else {
           this.getComments(this.data.task, true);
         }
 
@@ -81,16 +81,18 @@ export class AddEditCommentComponent implements OnInit {
 
 
 
-  //*********************************************************************************************************
+  // *********************************************************************************************************
   //  Get Comment on load
-  //*********************************************************************************************************
+  // *********************************************************************************************************
 
 
   async getComments(task, firstLoad) {
 
-    let objComment = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.Comments);
+    const objComment = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.Comments);
     // Comment.filter = Comment.filter.replace(/{{taskID}}/gi, task.ID);
-    this.response  = await this.spServices.readItem(this.constants.listNames.Schedules.name, task.ID, objComment);
+
+    this.common.SetNewrelic('MyDashboard', 'AddEditCommentDialog', 'getComments');
+    this.response = await this.spServices.readItem(this.constants.listNames.Schedules.name, task.ID, objComment);
 
     // this.batchContents = new Array();
     // const batchGuid = this.spServices.generateUUID();
@@ -117,12 +119,12 @@ export class AddEditCommentComponent implements OnInit {
 
 
     this.modalloaderenable = false;
-  };
+  }
 
 
-  //*********************************************************************************************************
+  // *********************************************************************************************************
   //  Cancel task comment
-  //*********************************************************************************************************
+  // *********************************************************************************************************
   cancelComment() {
     this.editor.setData('');
     if (this.config.data !== undefined) {
@@ -131,7 +133,7 @@ export class AddEditCommentComponent implements OnInit {
     }
   }
 
-  //*********************************************************************************************************
+  // *********************************************************************************************************
   //  save / Update task comment
   // ********************************************************************************************************
 
@@ -139,44 +141,43 @@ export class AddEditCommentComponent implements OnInit {
     const commentObj = {
       comment: this.previousComment !== null ? this.previousComment + this.editor.getData() : this.editor.getData(),
       IsMarkComplete: IsMarkComplete
-    }
+    };
     if (IsMarkComplete) {
       this.ref.close(commentObj);
-    }
-    else {
-      if (this.editor.getData() !== "") {
+    } else {
+      if (this.editor.getData() !== '') {
         this.modalloaderenable = true;
         this.commentsdb = [];
         if (this.config.data) {
           this.ref.close(commentObj);
-        }
-        else {
+        } else {
           const data = {
             TaskComments: commentObj.comment
-          }
+          };
           this.editor.setData('');
-          await this.spServices.updateItem(this.constants.listNames.Schedules.name, this.data.ID, data, "SP.Data.SchedulesListItem");
+          this.common.SetNewrelic('MyDashboard', 'AddEditCommentDialog', 'SaveComment');
+          await this.spServices.updateItem(this.constants.listNames.Schedules.name, this.data.ID, data, 'SP.Data.SchedulesListItem');
           this.messageService.add({ key: 'custom-comment', severity: 'success', summary: 'Success Message', detail: 'Comment saved successfully' });
 
           this.getComments(this.data, false);
         }
 
-      }
-      else {
-        this.messageService.add({ key: 'custom-comment', severity: 'warn', summary: 'Warning Message', detail: 'Please enter the comment' });
+      } else {
+        this.messageService.add({ key: 'custom-comment', severity: 'warn',
+         summary: 'Warning Message', detail: 'Please enter the comment' });
       }
     }
   }
 
-  //*********************************************************************************************************
+  // *********************************************************************************************************
   //  Get all comments of milestones
   // ***********************************************************************************************************
   async fetchCommentsForMilestone(oCurrentTask) {
-    
-    let milestone = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.Milestone);
-    milestone.filter = milestone.filter.replace(/{{ProjectCode}}/gi, oCurrentTask.ProjectCode).replace(/{{Milestone}}/gi, oCurrentTask.Milestone);
 
-    this.response  = await this.spServices.readItems(this.constants.listNames.Schedules.name, milestone);
+    const milestone = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.Milestone);
+    milestone.filter = milestone.filter.replace(/{{ProjectCode}}/gi, oCurrentTask.ProjectCode).replace(/{{Milestone}}/gi, oCurrentTask.Milestone);
+    this.common.SetNewrelic('MyDashboard', 'AddEditCommentDialog', 'fetchMilestoneComments');
+    this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, milestone);
 
     // this.batchContents = new Array();
     // const batchGuid = this.spServices.generateUUID();
@@ -196,11 +197,10 @@ export class AddEditCommentComponent implements OnInit {
       if (this.commentsdb.find(c => c.ID === this.currentTask.ID) !== undefined) {
         this.previousComment = this.commentsdb.find(c => c.ID === this.currentTask.ID).TaskComments;
       }
-    }
-    else {
+    } else {
       this.commentsdb = [];
     }
 
-  };
-  
+  }
+
 }

@@ -32,19 +32,9 @@ legend {
     text-align: center !important;
 } */
 
-  /* Loadder ICON  */
+  
 
-  @-webkit-keyframes spin {
-    0% { -webkit-transform: rotate(0deg); }
-    100% { -webkit-transform: rotate(360deg); }
-  }
-  
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-  
-  #mainLoader, #scInnerLoader{
+  /* #mainLoader, #scInnerLoader{
     border: 10px solid #f3f3f3;
     border-radius: 50%;
     border-top: 10px solid red;
@@ -74,13 +64,98 @@ legend {
     text-transform: uppercase;
     top: 0;
     margin-bottom: 1%;
+  } */
+
+  .layout-topbar{
+    background-color: #C53E3E;
+    box-sizing: border-box;
+    display: block;
+    padding: 0;
+    height: 46px;
+    box-sizing: border-box;
+    width: 100%;
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,.3); 
   }
 
-  .tableLoader{
-    position: fixed; /* or absolute */
-    /* top: 20%;
-    left: 50%; */
-    z-index: 9999;
-    background-color: rgba(255, 255, 255, 0.7);
-    height: 70%;
-  }
+ .logo img {
+  height: 32px;
+  padding-right: 5px;
+}
+.container .row {
+  padding-top: 60px;
+}
+
+.img-bg {
+  background-color: white;
+  padding: 7px 0px;
+}
+
+.title {
+  display: inline-block;
+  padding: 12px;
+  color: white;
+}
+
+.title h6 {
+  font-size: 18px;
+}
+
+.sidebar-icon {
+  cursor: pointer;
+  font-size: 25px;
+    padding-top: 5px;
+    float: left;
+    padding-left: 10px;
+}
+
+.help-icon {
+  font-size: 40px;
+  padding-top: 3px;
+  padding-left: 10px;
+  float: right;
+  text-decoration: none;
+  color: white;
+}
+
+.topbar-menu {
+  color: white;
+  float: right;
+}
+
+.btn-menu {
+  margin-top: 6px;
+  background-color: #C53E3E  !important;
+  border: 1px solid #C53E3E  !important;
+}
+
+.ui-button:enabled:focus {
+  box-shadow: none;
+  outline: 0 none;
+  outline-offset: none;
+}
+
+/* .topbar-menu span {
+  float: left;
+  padding-top: 11px;
+  font-size: 16px;
+} */
+
+.sidenav a {
+  padding: 8px 8px 8px 8px;
+  text-decoration: none;
+  font-size: 15px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+}
+
+.sidenav a:hover {
+  color: #f1f1f1;
+}
+.routerOutlet {
+  padding: 10px;
+  margin-top:20px;
+}
+.sidenav .logo {
+  margin-bottom: 14px;
+}

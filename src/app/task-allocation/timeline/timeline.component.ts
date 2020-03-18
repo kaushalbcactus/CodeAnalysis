@@ -5,7 +5,7 @@ import { GlobalService } from 'src/app/Services/global.service';
 import { TaskAllocationConstantsService } from '../services/task-allocation-constants.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { GanttEditorComponent, GanttEditorOptions } from 'ng-gantt';
-import { TreeNode, MessageService, DialogService, ConfirmationService, DynamicDialogRef } from 'primeng/api';
+import { TreeNode, MessageService, DialogService, ConfirmationService, DynamicDialogRef } from 'primeng';
 import { MenuItem } from 'primeng/api';
 import { DragDropComponent } from '../drag-drop/drag-drop.component';
 import { TaskDetailsDialogComponent } from '../task-details-dialog/task-details-dialog.component';
@@ -31,7 +31,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   public GanttchartData = [];
   tempGanttchartData = [];
   public noTaskError = 'No milestones found.';
-  @ViewChild('gantteditor', { static: true }) gantteditor: GanttEditorComponent;
+  @ViewChild('gantteditor', { static: false }) gantteditor: GanttEditorComponent;
   @ViewChild('reallocationMailTableID', { static: false }) reallocateTable: ElementRef;
   Today = new Date();
   tempComment;
@@ -171,14 +171,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
       this.projectDetails.projectCode = this.projectDetails.ProjectCode;
       this.oProjectDetails.projectCode = this.projectDetails.projectCode;
       this.onPopupload();
-
     }
-
-
-
     this.sharedObject.currentUser.timeZone = this.commonService.getCurrentUserTimeZone();
     this.editorOptions = {
-
       vCaptionType: 'Complete',  // Set to Show Caption : None,Caption,Resource,Duration,Complete,
       vDayColWidth: 36,
       vWeekColWidth: 150,
@@ -196,7 +191,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
       vAdditionalHeaders: null,
     };
   }
-
   ngOnDestroy() {
   }
 
@@ -207,6 +201,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
 
   public async callReloadRes() {
+
+    this.commonService.SetNewrelic('TaskAllocation', 'Timeline', 'GetProjectResources');
     await this.commonService.getProjectResources(this.oProjectDetails.projectCode, false, false);
   }
 
@@ -241,6 +237,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
     let milestoneSubmilestones = [];
     let milestoneCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.milestone);
     milestoneCall.filter = milestoneCall.filter.replace(/{{projectCode}}/gi, this.oProjectDetails.projectCode);
+
+    this.commonService.SetNewrelic('TaskAllocation', 'task-detailsDialog', 'GetMilestonesByProjectCode');
     const response = await this.spServices.readItems(this.constants.listNames.Schedules.name, milestoneCall);
     this.allTasks = response.length ? response : [];
     let allRetrievedTasks = [];
@@ -2011,13 +2009,10 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
       milestoneTask.ActiveCA = this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestoneTask.milestone ? 'No' : milestoneTask.ActiveCA;
       milestoneTask.itemType = milestoneTask.itemType.replace(/Slot/g, '');
-      // const taskCount = milestoneTask.pName.match(/\d+$/) ? ' ' + milestoneTask.pName.match(/\d+$/)[0] : '';
-      // let newName = taskCount ? milestoneTask.itemType + taskCount : milestoneTask.itemType;
       let newName = '';
-      // const counter = taskCount ? +taskCount : 1;
       if (milestoneTask.IsCentrallyAllocated === 'Yes') {
         newName = milestoneTask.itemType;
-        newName = this.getNewTaskName(milestoneTask, subMilestone, newName);
+        newName = this.getNewTaskName(milestoneTask, newName);
         milestoneTask.IsCentrallyAllocated = 'No';
       } else {
         newName = milestoneTask.pName;
@@ -2049,11 +2044,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
       milestoneTask.IsCentrallyAllocated = 'Yes';
       milestoneTask.ActiveCA = this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestoneTask.milestone ? 'Yes' : milestoneTask.ActiveCA;
       milestoneTask.itemType = milestoneTask.itemType + 'Slot';
-      // const taskCount = milestoneTask.pName.match(/\d+$/) ? ' ' + milestoneTask.pName.match(/\d+$/)[0] : '';
-      // let newName = milestoneTask.itemType + taskCount;
-      // const counter = taskCount ? +taskCount : 1;
       let newName = milestoneTask.itemType;
-      newName = this.getNewTaskName(milestoneTask, subMilestone, newName);
+      newName = this.getNewTaskName(milestoneTask, newName);
       if (milestoneTask.nextTask) {
         const nextTasks = milestoneTask.nextTask.split(';');
         nextTasks.forEach(task => {
@@ -2080,13 +2072,13 @@ export class TimelineComponent implements OnInit, OnDestroy {
     }
   }
 
-  getNewTaskName(milestoneTask, subMilestone, originalName) {
+  getNewTaskName(milestoneTask, originalName) {
     let counter = 1;
-    let getItem = subMilestone.children.filter(e => e.data.pName === originalName);
+    let getItem = this.tempGanttchartData.filter(e => e.pName === originalName && e.milestone === milestoneTask.milestone);
     while (getItem.length) {
       counter++;
       originalName = milestoneTask.itemType + ' ' + counter;
-      getItem = subMilestone.children.filter(e => e.data.pName === originalName);
+      getItem = this.tempGanttchartData.filter(e => e.pName === originalName);
     }
 
     return originalName;
@@ -2967,7 +2959,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     const task = addTaskItems.filter(c => c.milestone === this.oProjectDetails.currentMilestone);
 
     updatedCurrentMilestone = mile && task && task.length ? true : false;
-
+    this.commonService.SetNewrelic('TaskAllocation', 'Timeline', 'SaveTasksMilestones');
     const responseInLines = await this.executeBulkRequests(updatedCurrentMilestone, restructureMilstoneStr,
       updatedResources, batchUrl);
     if (responseInLines.length > 0) {
@@ -3017,6 +3009,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
         counter = counter + 1;
       }
+      this.commonService.SetNewrelic('TaskAllocation', 'Timeline', 'MoveTasksAfterCreate');
       await this.spServices.executeBatch(respBatchUrl);
     }
     for (const mail of this.reallocationMailArray) {
@@ -3025,6 +3018,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     for (const mail of this.deallocationMailArray) {
       await this.sendCentralTaskMail(mail.project, mail.slot.data, mail.subject, mail.template);
     }
+    this.commonService.SetNewrelic('TaskAllocation', 'timeline-getProjectResources', 'setMilestone');
     await this.commonService.getProjectResources(this.oProjectDetails.projectCode, false, false);
     this.getMilestones(false);
 
@@ -3226,6 +3220,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     updatePrjObj.type = 'PATCH';
     updatePrjObj.data = updateProjectRes;
     batchUrl.push(updatePrjObj);
+    this.commonService.SetNewrelic('TaskAllocation', 'Timeline', 'updateProjectInfo');
     let response = await this.spServices.executeBatch(batchUrl);
     response = response.length ? response.map(a => a.retItems) : [];
     return response;
@@ -3249,6 +3244,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       }
       const to = arrayTo.join(',').trim();
       if (to) {
+        this.commonService.SetNewrelic('TaskAllocation', 'Timeline', 'sendMails');
         await this.spServices.sendMail(to, fromUser.email, mailSubject, objEmailBody);
       }
     }
@@ -3268,6 +3264,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     for (const user of users) {
       arrayTo.push(user.Email);
     }
+    this.commonService.SetNewrelic('TaskAllocation', 'Timeline', 'sendCentralTaskMail');
     await this.spServices.sendMail(arrayTo.join(','), fromUser.email, mailSubject, objEmailBody);
   }
 
@@ -3281,6 +3278,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     for (const user of users) {
       arrayTo.push(user.Email);
     }
+    this.commonService.SetNewrelic('TaskAllocation', 'Timeline', 'sendReallocationCentralTaskMail');
     await this.spServices.sendMail(arrayTo.join(','), fromUser.email, mailSubject, objEmailBody);
   }
 
@@ -3291,6 +3289,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   async getsendEmailObjBody(milestoneTask, projectDetails, EmailType, templateName) {
     const mailObj = Object.assign({}, this.taskAllocationService.common.getMailTemplate);
     mailObj.filter = mailObj.filter.replace('{{templateName}}', templateName);
+    this.commonService.SetNewrelic('TaskAllocation', 'timeline-getsendEmailObjBody', 'readItems');
     const templateData = await this.spServices.readItems(this.constants.listNames.MailContent.name,
       mailObj);
     let mailContent = templateData.length > 0 ? templateData[0].Content : [];
@@ -3308,6 +3307,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   async getReallocateEmailObjBody(data, slot, templateName) {
     const mailObj = Object.assign({}, this.taskAllocationService.common.getMailTemplate);
     mailObj.filter = mailObj.filter.replace('{{templateName}}', templateName);
+    this.commonService.SetNewrelic('TaskAllocation', 'timeline-getReallocateEmailObjBody', 'readItems');
     const templateData = await this.spServices.readItems(this.constants.listNames.MailContent.name,
       mailObj);
     let mailContent = templateData.length > 0 ? templateData[0].Content : [];
@@ -3898,6 +3898,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     notificationObj.type = 'GET';
     batchUrl.push(notificationObj);
 
+    this.commonService.SetNewrelic('TaskAllocation', 'Timeline', 'SetAsNextMilestone');
     const response = await this.spServices.executeBatch(batchUrl);
     if (response.length) {
       const notificationBatchUrl = [];
@@ -3914,8 +3915,11 @@ export class TimelineComponent implements OnInit, OnDestroy {
         notificationUpdateObj.type = 'PATCH';
         notificationBatchUrl.push(notificationUpdateObj);
       });
+
+      this.commonService.SetNewrelic('TaskAllocation', 'Timeline', 'SendEarlyTaskCompletionNotification');
       await this.spServices.executeBatch(notificationBatchUrl);
     }
+    this.commonService.SetNewrelic('TaskAllocation', 'timeline-getProjectResources', 'setAsNextMilestone');
     await this.commonService.getProjectResources(this.oProjectDetails.projectCode, false, false);
     this.getMilestones(false);
   }
@@ -3998,7 +4002,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
           } else {
             checkTasks = milestoneTasks;
           }
-          checkTasks = checkTasks.filter(t => !t.parentSlot && t.IsCentrallyAllocated === 'No');
+          checkTasks = checkTasks.filter(t => !t.parentSlot);
           // tslint:disable
           const checkTaskAllocatedTime = checkTasks.filter(e => (e.budgetHours === '' || +e.budgetHours === 0)
             && e.itemType !== 'Send to client' && e.itemType !== 'Client Review' && e.itemType !== 'Follow up' && e.status !== 'Completed');
@@ -4012,7 +4016,20 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
             return false;
           }
+          const compareDates = checkTasks.filter(e => (e.pEnd <= e.pStart && e.tat === false
+            && e.itemType !== 'Send to client' && e.itemType !== 'Client Review' &&
+            e.itemType !== 'Follow up' && e.status !== 'Completed'));
+          if (compareDates.length > 0) {
+
+            this.messageService.add({
+              key: 'custom', severity: 'warn', summary: 'Warning Message',
+              detail: 'End date should be greater than start date of ' + milestone.data.pName + ' - ' + compareDates[0].pName
+            });
+
+            return false;
+          }
           let validateAllocation = true;
+          // checkTasks = checkTasks.filter(t => t.IsCentrallyAllocated === 'No');
           checkTasks.forEach(element => {
             const title = element.AssignedTo ? element.AssignedTo.Title : null;
             if (!title) {
@@ -4027,20 +4044,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
             return false;
           }
-
-          const compareDates = checkTasks.filter(e => (e.pEnd <= e.pStart && e.tat === false
-            && e.itemType !== 'Send to client' && e.itemType !== 'Client Review' &&
-            e.itemType !== 'Follow up' && e.status !== 'Completed'));
-          if (compareDates.length > 0) {
-
-            this.messageService.add({
-              key: 'custom', severity: 'warn', summary: 'Warning Message',
-              detail: 'End date should be greater than start date of ' + milestone.data.pName + ' - ' + compareDates[0].pName
-            });
-
-            return false;
-          }
-
           const errorPresnet = this.validateTaskDates(checkTasks);
           if (errorPresnet) {
             return false;

@@ -61,6 +61,8 @@ export class EditorComponent implements OnInit {
         private globalObject: GlobalService,
         private spOperationsServices: SPOperationService,
         private constantsService: ConstantsService,
+        
+
     ) { }
 
     ngOnInit() {
@@ -2926,6 +2928,7 @@ export class EditorComponent implements OnInit {
         this.fdConstantsService.fdComponent.selectedEditObject.Type = "Proforma";
         ///// Call service 
         const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
+        this.common.SetNewrelic('Finance-Dashboard', 'pdfEditing-CreateUSProforma', 'executeJS');
         await this.spOperationsServices.executeJS(pdfService, pdfContent);
     }
 
@@ -2943,6 +2946,7 @@ export class EditorComponent implements OnInit {
         this.fdConstantsService.fdComponent.selectedEditObject.ListName = "AAA01";
         this.fdConstantsService.fdComponent.selectedEditObject.Type = "Proforma";
         ///// Call service 
+        this.common.SetNewrelic('Finance-Dashboard', 'pdfEditing-CreateJapanProforma', 'executeJS');
         const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
         await this.spOperationsServices.executeJS(pdfService, pdfContent);
     }
@@ -2960,6 +2964,7 @@ export class EditorComponent implements OnInit {
         this.fdConstantsService.fdComponent.selectedEditObject.ListName = "AAA01";
         this.fdConstantsService.fdComponent.selectedEditObject.Type = "Proforma";
         ///// Call service 
+        this.common.SetNewrelic('Finance-Dashboard', 'pdfEditing-CreateIndiaProforma', 'executeJS');
         const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
         await this.spOperationsServices.executeJS(pdfService, pdfContent);
     }
@@ -2973,6 +2978,7 @@ export class EditorComponent implements OnInit {
         const id = '3250';
         const prfObj = Object.assign({}, this.fdConstantsService.fdComponent.proformaForUser);
         prfObj.filter = prfObj.filter.replace('{{ItemID}}', id);
+        this.common.SetNewrelic('Finance-Dashboard', 'PDFEditing-editor', 'generateExistingProforma');
         const res = await this.spOperationsServices.readItems(this.constantsService.listNames.Proforma.name, prfObj);
         const arrResults = res.length ? res : [];
         if (arrResults.length) {
@@ -3052,6 +3058,7 @@ export class EditorComponent implements OnInit {
         // const res = await this.spOperationsServices.getFDData(batchGuid, userBatchBody);// .subscribe(res => {
         const iliObj = Object.assign({}, this.fdConstantsService.fdComponent.invoiceLineItem);
         iliObj.filter = iliObj.filter.replace('{{ProformaLookup}}', id);
+        this.common.SetNewrelic('Finance-Dashboard', 'PDFEditing-editor', 'readInviceLineItem');
         const res = await this.spOperationsServices.readItems(this.constantsService.listNames.InvoiceLineItems.name, iliObj);
         const arrResults = res.length ? res : [];
         // if (arrResults.length) {

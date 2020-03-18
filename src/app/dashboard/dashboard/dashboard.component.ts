@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { GlobalService } from '../../Services/global.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -7,9 +8,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DashboardComponent implements OnInit {
   // value: number = 30;
-  constructor() { }
+  constructor(public globalService: GlobalService) { }
 
   ngOnInit() {
+    this.globalService.currentTitle = "Dashboard"
   }
 
 }

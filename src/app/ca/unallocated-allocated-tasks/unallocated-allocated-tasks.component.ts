@@ -10,7 +10,7 @@ import { Table } from 'primeng/table';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { CommonService } from 'src/app/Services/common.service';
-import { DialogService, MessageService, MenuItem, SelectItem } from 'primeng/primeng';
+import { DialogService, MessageService, MenuItem, SelectItem } from 'primeng';
 import { CaDragdropComponent } from '../ca-dragdrop/ca-dragdrop.component';
 import { async } from '@angular/core/testing';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
@@ -40,7 +40,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   tempClick: any;
   multiselectClick: any;
   loaderenable = true;
-  @ViewChild('taskTable', { static: true }) taskTable: Table;
+  @ViewChild('taskTable', { static: false }) taskTable: Table;
   TableBlock: Table;
   taskMenu: MenuItem[];
   selectedTab = 'unallocated';
@@ -163,6 +163,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     { field: 'AssignedTo' }
   ];
   ngOnInit() {
+    this.globalService.currentTitle = 'Central Allocation';
     this.caGlobal.loading = true;
     this.caGlobal.totalRecords = 0;
     this.modalloaderenable = false;
@@ -208,6 +209,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     if (!this.selectedTab) {
       mainQuery.filter += mainQuery.filterSlot;
     }
+
+    this.commonService.SetNewrelic('caCommon', 'CA', 'GetRCPISchedules' + this.selectedTab);
     const arrResults = await this.caCommonService.getItems(mainQuery);
     this.resourceList = arrResults[0];
     this.projects = arrResults[1];
@@ -380,6 +383,9 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         const setResourcesExtn = $.extend(true, [], task.resources);
         const startTime = new Date(new Date(task.StartTime).setHours(0, 0, 0, 0));
         const endTime = new Date(new Date(task.EndTime).setHours(23, 59, 59, 0));
+
+        this.commonService.SetNewrelic('unallocated-allocated', 'CA', 'checkUserCapacity');
+
         const oCapacity = await this.usercapacityComponent.applyFilterReturn(startTime, endTime,
           setResourcesExtn);
         task.capacity = oCapacity;
@@ -559,159 +565,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     // rowData.PreviousAssignedUser = rowData.AssignedTo;
   }
 
-  // ****************************************************************************************************
-  // Save Task
-  // *****************************************************************************************************
-
-
-  // async saveTask(task, unt) {
-  //   if (!this.selectOpened && task.allocatedResource !== '') {
-  //     if (!this.selectOpened && task.allocatedResource) {
-  //       const currentScheduleTask = await this.spServices.readItem(this.scheduleList, task.id);
-  //       if (currentScheduleTask) {
-  //         if (new Date(task.startDate).getTime() === new Date(currentScheduleTask.StartDate).getTime() &&
-  //           new Date(task.dueDate).getTime() === new Date(currentScheduleTask.DueDate).getTime()) {
-  //           const indexRes = this.resourceList.findIndex(item => item.UserName.ID === task.allocatedResource.UserName.ID);
-  //           let resourceTimeZone = this.resourceList[indexRes].TimeZone.Title;
-  //           resourceTimeZone = resourceTimeZone ? resourceTimeZone : '5.5';
-  //           if (parseFloat(task.timezone) === parseFloat(resourceTimeZone)) {
-  //             this.messageService.add({
-  //               severity: 'info', summary: 'Info Message',
-  //               detail: 'Updating Task..'
-  //             });
-  //             setTimeout(() => {
-  //               this.completeEqualTask(task, unt, false);
-  //             }, 500);
-  //           } else {
-  //             const newStartTime = this.caCommonService.calcTimeForDifferentTimeZone(task.startDate, task.timezone, resourceTimeZone);
-  //             const newEndTime = this.caCommonService.calcTimeForDifferentTimeZone(task.dueDate, task.timezone, resourceTimeZone);
-  //             // tslint:disable-next-line: quotemark
-  //             if (window.confirm("Task '" + task.title + "' will be allocated to " + this.resourceList
-  //             // tslint:disable-next-line: max-line-length
-  //             [indexRes].UserName.Title + 'from' + this.datePipe.transform(newStartTime, 'MMM dd yyyy hh:mm:ss aa') + ' to ' + this.datePipe.transform(newEndTime, 'MMM dd yyyy hh:mm:ss aa') + ' in his/her timezone. Do you want to continue ?')) {
-  //               this.messageService.add({
-  //                 severity: 'info', summary: 'Info Message',
-  //                 detail: 'Updating Task..'
-  //               });
-  //               task.newStartDate = newStartTime;
-  //               task.newDueDate = newEndTime;
-  //               task.userTimeZone = resourceTimeZone;
-  //               setTimeout(() => {
-  //                 this.completeEqualTask(task, unt, true);
-  //               }, 500);
-  //             } else {
-  //               this.onClear(task);
-  //             }
-  //           }
-  //         } else {
-  //           this.messageService.add({
-  //             severity: 'info', summary: 'Info Message',
-  //             detail: 'Start and EndDate is not matched for this ' + task.title + '. Hence page is refreshed in 30 sec.'
-  //           });
-  //           setTimeout(() => {
-  //             location.reload();
-  //           }, 3000);
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
-  // tslint:disable
-
-  // ****************************************************************************************************
-  //  Complete Task
-  // *****************************************************************************************************
-
-
-  // async completeEqualTask(task, unt, istimeZoneUpdate) {
-  //   // tslint:disable-next-line: object-literal-key-quotes
-  //   const options = { 'AssignedToId': task.allocatedResource.UserName.ID, 'CentralAllocationDone': 'Yes' };
-  //   // tslint:disable-next-line: object-literal-key-quotes
-  //   const timezoneOptions = { 'AssignedToId': task.allocatedResource.UserName.ID, 'CentralAllocationDone': 'Yes', 'TimeZone': task.userTimeZone };
-  //   //// Save task and remove task from list 
-  //   if (istimeZoneUpdate) {
-  //     await this.spServices.updateItem(this.scheduleList, task.id, timezoneOptions, this.globalConstant.listNames.Schedules.type)
-  //     // this.spServices.update(this.scheduleList, task.id, timezoneOptions, 'SP.Data.SchedulesListItem');
-  //   } else {
-  //     await this.spServices.updateItem(this.scheduleList, task.id, options, this.globalConstant.listNames.Schedules.type)
-  //     // this.spServices.update(this.scheduleList, task.id, options, 'SP.Data.SchedulesListItem');
-  //   }
-
-  //   await this.caCommonService.ResourceAllocation(task, this.projectInformationList);
-  //   const indexRes = this.resourceList.findIndex(item => item.UserName.ID === task.allocatedResource.UserName.ID);
-  //   const mailSubject = task.projectCode + '(' + task.projectName + ')' + ': Task created';
-  //   const objEmailBody = [];
-  //   objEmailBody.push({
-  //     'key': '@@Val3@@',
-  //     'value': this.resourceList[indexRes].UserName.Title
-  //   });
-  //   objEmailBody.push({
-  //     'key': '@@Val1@@', // Project Code
-  //     'value': task.projectCode
-  //   });
-  //   objEmailBody.push({
-  //     'key': '@@Val2@@', // Task Name
-  //     'value': task.SubMilestones && task.SubMilestones !== 'Default' ? task.title + ' - ' + task.SubMilestones : task.title
-  //   });
-  //   objEmailBody.push({
-  //     'key': '@@Val4@@', // Task Type
-  //     'value': task.task
-  //   });
-  //   objEmailBody.push({
-  //     'key': '@@Val5@@', // Milestone
-  //     'value': task.milestone
-  //   });
-  //   if (istimeZoneUpdate) {
-  //     objEmailBody.push({
-  //       'key': '@@Val6@@', // new Start Date
-  //       'value': this.datePipe.transform(task.newStartDate, 'MMM dd yyyy hh:mm:ss aa')
-  //     });
-  //     objEmailBody.push({
-  //       'key': '@@Val7@@', // new End Date
-  //       'value': this.datePipe.transform(task.newDueDate, 'MMM dd yyyy hh:mm:ss aa')
-  //     });
-  //   } else {
-  //     objEmailBody.push({
-  //       'key': '@@Val6@@', // Start Date
-  //       'value': this.datePipe.transform(task.startDate, 'MMM dd yyyy hh:mm:ss aa')
-  //     });
-  //     objEmailBody.push({
-  //       'key': '@@Val7@@', // End Date
-  //       'value': this.datePipe.transform(task.dueDate, 'MMM dd yyyy hh:mm:ss aa')
-  //     });
-  //   }
-  //   objEmailBody.push({
-  //     'key': '@@Val9@@', // Scope
-  //     'value': task.TaskScope ? task.TaskScope : ''
-  //   });
-  //   //// Send allocation email
-  //   this.caCommonService.triggerMail(this.resourceList[indexRes].UserName.EMail, this.globalService.currentUser.email,
-  //     '', 'TaskCreation', objEmailBody, mailSubject);
-
-  //   this.messageService.add({
-  //     severity: 'success', summary: 'Success Message',
-  //     detail: task.title + ' allocated to ' + this.resourceList[indexRes].UserName.Title
-  //   });
-  //   const index = this.completeTaskArray.findIndex(item => item.id === task.id);
-  //   // this.completeTaskArray.splice(index,1);
-  //   if (this.selectedTab === 'allocated') {
-  //     this.completeTaskArray[index].isEditEnabled = true;
-  //     this.completeTaskArray[index].assignedTo = this.resourceList[indexRes].UserName.Title;
-  //     this.completeTaskArray[index].isAllocatedSelectHidden = true;
-  //     this.completeTaskArray[index].isAssignedToHidden = false;
-  //     this.completeTaskArray[index].editImageUrl = this.globalService.imageSrcURL.editImageURL;
-  //   } else {
-  //     this.completeTaskArray.splice(index, 1);
-  //     this.caGlobal.loading = true;
-  //   }
-  //   if (unt) {
-  //     this.caGlobal.loading = true;
-  //     this.caCommonService.filterAction(unt.sortField, unt.sortOrder, unt.filters.hasOwnProperty('global') ?
-  //       unt.filters.global.value : null, unt.filters, unt.first, unt.rows,
-  //       this.completeTaskArray, this.filterColumns);
-  //   }
-  // }
-
+  
   // *************************************************************************************************
   //  Get Email Body
   // **************************************************************************************************
@@ -727,6 +581,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         const userEmail = user.EMail;
         arrayTo.push(userEmail);
       }
+      this.commonService.SetNewrelic('CA', 'unallocated-allocated-tasks', 'SendMail');
       this.spServices.sendMail(arrayTo.join(','), fromUser, mailSubject, objEmailBody);
     }
   }
@@ -760,6 +615,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
     const mailObj = this.caConstant.getMailTemplate;
     mailObj.filter = mailObj.filter.replace('{{templateName}}', templateName);
+    this.commonService.SetNewrelic('unallocated-allocated', 'CA-GetMailContent', 'readItems');
     const templateData = await this.spServices.readItems(this.globalConstant.listNames.MailContent.name,
       mailObj);
     mailContent = templateData.length > 0 ? templateData[0].Content : [];
@@ -770,105 +626,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     return mailContent.replace(new RegExp(key, 'g'), value);
   }
 
-  // ****************************************************************************************************
-  // Delete Task 
-  // *****************************************************************************************************
-
-  // async deleteTask(task, unt) {
-  //   this.confirmationService.confirm({
-  //     message: 'Do you want to delete this task?',
-  //     header: 'Delete Confirmation',
-  //     icon: 'pi pi-info-circle',
-  //     accept: () => {
-  //       this.messageService.add({
-  //         key: 'tc', severity: 'warn', sticky: true,
-  //         summary: 'Info Message', detail: 'Deleting Task...'
-  //       });
-  //       setTimeout(() => {
-  //         const nextTasks = [];
-  //         task.mileStoneTask.forEach(milTask => {
-  //           let taskArr = [];
-  //           taskArr = milTask.PrevTasks ? milTask.PrevTasks.split(";#") : [];
-  //           if (taskArr.indexOf(task.title) > -1) {
-  //             nextTasks.push(milTask);
-  //           }
-  //         });
-  //         const prevTasks = [];
-  //         task.mileStoneTask.forEach(milTask => {
-  //           let taskArr = [];
-  //           taskArr = milTask.NextTasks ? milTask.NextTasks.split(";#") : [];
-  //           if (taskArr.indexOf(task.title) > -1) {
-  //             prevTasks.push(milTask);
-  //           }
-  //         });
-  //         this.performDelete(task, nextTasks, prevTasks, unt);
-  //         this.messageService.clear('tc');
-  //       }, 500);
-  //     },
-  //     reject: () => {
-  //       this.messageService.add({
-  //         severity: 'warn', sticky: true,
-  //         summary: 'Info Message', detail: 'You have rejected'
-  //       });
-  //     }
-  //   });
-  // }
-
-
-  // ****************************************************************************************************
-  // This method will update the scheduled list which Status Deleted.
-  // This method will also updates the Next and previous task.
-  // *****************************************************************************************************
-
-  // async performDelete(task, nextTasks, prevTasks, unt) {
-  //   if (task) {
-  //     const options = { 'NextTasks': '', 'PrevTasks': '', 'Status': 'Deleted' }
-  //     await this.spServices.updateItem(this.scheduleList, task.id, options, this.globalConstant.listNames.Schedules.type);
-  //   }
-  //   if (prevTasks) {
-  //     for (const tempTask of prevTasks) {
-  //       let sUpdateVal = tempTask.NextTasks ? tempTask.NextTasks.replace(task.title, task.NextTasks) : '';
-  //       sUpdateVal = this.caCommonService.getUniqueValues(sUpdateVal, ";#");
-  //       const options = { 'NextTasks': sUpdateVal }
-  //       await this.spServices.updateItem(this.scheduleList, tempTask.Id, options, this.globalConstant.listNames.Schedules.type);
-  //     }
-  //   }
-  //   if (nextTasks) {
-  //     for (const tempTask of
-  //       nextTasks) {
-  //       let sUpdateVal = tempTask.PrevTasks ? tempTask.PrevTasks.replace(task.title, task.PrevTasks) : '';
-  //       sUpdateVal = this.caCommonService.getUniqueValues(sUpdateVal, ";#");
-  //       const options = { 'PrevTasks': sUpdateVal }
-  //       await this.spServices.updateItem(this.scheduleList, tempTask.Id, options, this.globalConstant.listNames.Schedules.type);
-  //     }
-  //   }
-
-  //   this.messageService.add({
-  //     severity: 'success', summary: 'Success Message',
-  //     detail: task.title + ' deleted Sucessfully '
-  //   });
-
-  //   const index = this.completeTaskArray.findIndex(item => item.id === task.id);
-  //   this.completeTaskArray.splice(index, 1);
-  //   let tempTaskArray = [];
-  //   const queryObj = {
-  //     projectCode: task.projectCode,
-  //     milestone: task.milestone
-  //   }
-  //   tempTaskArray.push(queryObj);
-  //   const arrMilestoneTasks = await this.caCommonService.getMilestoneSchedules(this.scheduleList, tempTaskArray);
-  //   for (const compTask of this.completeTaskArray) {
-  //     const index = arrMilestoneTasks[0].MilestoneTasks.findIndex(item => item.ID === compTask.id);
-  //     if (index > -1) {
-  //       compTask.PrevTasks = arrMilestoneTasks[0].MilestoneTasks[index].PrevTasks ? arrMilestoneTasks[0].MilestoneTasks[index].PrevTasks : '';
-  //       compTask.NextTasks = arrMilestoneTasks[0].MilestoneTasks[index].NextTasks ? arrMilestoneTasks[0].MilestoneTasks[index].NextTasks : '';
-  //     }
-  //     this.caCommonService.getMiscDates(compTask, arrMilestoneTasks);
-  //   }
-  //   this.caCommonService.filterAction(unt.sortField, unt.sortOrder, unt.filters.hasOwnProperty("global") ? unt.filters.global.value : null, unt.filters, unt.first, unt.rows
-  //     , this.completeTaskArray, this.filterColumns);
-  // }
-  // tslint:enable
+ 
   // ****************************************************************************************************
   // hide popup menu on production
   // *****************************************************************************************************
@@ -900,30 +658,6 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   }
 
 
-  // @HostListener('document:click', ['$event'])
-  // clickoutmultiselect(event) {
-  //   
-  //   if (event.target.className === 'ui-multiselect-label ui-corner-all') {
-  //     if (this.multiselectClick) {
-  //       this.multiselectClick.style.display = 'none';
-  //       if (this.multiselectClick !== event.target.parentElement.parentElement.children[3]) {
-  //         this.multiselectClick = event.target.parentElement.parentElement.children[3];
-  //         this.multiselectClick.style.display = '';
-  //       } else {
-  //         this.multiselectClick = undefined;
-  //       }
-  //     } else {
-  //       this.multiselectClick = event.target.parentElement.parentElement.children[3];
-  //       this.multiselectClick.style.display = '';
-  //     }
-
-  //   } else {
-  //     if (this.multiselectClick) {
-  //       this.multiselectClick.style.display = 'none';
-  //       this.multiselectClick = undefined;
-  //     }
-  //   }
-  // }
 
   isOptionFilter: boolean;
   optionFilter(event: any) {
@@ -1001,6 +735,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
                 tasksObj.listName = this.globalConstant.listNames.MilestoneSubTaskMatrix.name;
                 tasksObj.type = 'GET';
                 batchUrl.push(tasksObj);
+                this.commonService.SetNewrelic('unallocated-allocated', 'CA', 'AddRowMilestoneSubTaskMatrix');
                 const arrResult = await this.spServices.executeBatch(batchUrl);
                 const response = arrResult.length ? arrResult[0].retItems : [];
                 this.BudgetHoursTask = response;
@@ -1044,22 +779,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         RowData.subTaskloaderenable = false;
         this.disableSave = false;
       }
-      //        else {
-      // debugger;
-      //         if (!RowData.SlotTasks) {
-
-      //           RowData.SlotTasks = [];
-      //           const tasks = await this.GetAllConstantTasks(RowData.Task);
-      //           RowData.TaskName = tasks.length > 0 ? tasks[0] : RowData.TaskName;
-      //           const obj = await this.GetTask(RowData, false);
-
-
-      //           obj.isEditEnabled = true;
-      //           obj.edited = true;
-      //           RowData.SlotTasks.push(obj);
-      //           RowData.subTaskloaderenable = false;
-      //         }
-      //       }
+     
     });
 
   }
@@ -1280,6 +1000,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     const setResourcesExtn = $.extend(true, [], task.resources);
     const startTime = new Date(new Date(task.StartTime).setHours(0, 0, 0, 0));
     const endTime = new Date(new Date(task.EndTime).setHours(23, 59, 59, 0));
+    this.commonService.SetNewrelic('unallocated-allocated', 'CA', 'fetchUserBasedOnCapacity');
     const oCapacity = await this.usercapacityComponent.applyFilterReturn(startTime, endTime,
       setResourcesExtn);
     task.capacity = oCapacity;
@@ -1670,6 +1391,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
             tasksObj.listName = this.globalConstant.listNames.projectInfo.name;
             tasksObj.type = 'GET';
             batchUrl.push(tasksObj);
+            this.commonService.SetNewrelic('unallocated-allocated', 'CA', 'GetProjectInfoByProjectCode');
             const arrResult = await this.spServices.executeBatch(batchUrl);
             const oProjectDetails = arrResult.length ? arrResult[0].retItems[0] : [];
             const arrEditorsIds = this.getIDFromItem(oProjectDetails.Editors);
@@ -1866,6 +1588,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         batchUrl.push(taskObj);
       }
     }
+    this.commonService.SetNewrelic('unallocated-allocated', 'CA', 'SaveTasks');
     const responseInLines = await this.executeBulkRequests(UpdateProjectInfo, batchUrl);
     if (responseInLines.length > 0) {
       let counter = 0;
@@ -1884,6 +1607,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           moveItemObj.url = url; // this.spServices.getMoveURL(fileUrl, moveFileUrl);
           moveItemObj.listName = 'Move Item';
           moveItemObj.type = 'POST';
+
           respBatchUrl.push(moveItemObj);
         } else {
           break;
@@ -1891,6 +1615,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
         counter = counter + 1;
       }
+      this.commonService.SetNewrelic('unallocated-allocated', 'CA', 'MoveSaveTask');
       await this.spServices.executeBatch(respBatchUrl);
     }
     this.messageService.clear();

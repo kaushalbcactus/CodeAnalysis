@@ -189,7 +189,7 @@ export class MyDashboardConstantsService {
       select: "ID,Title,Status,StartDate,DueDate,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,Comments,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,TATStatus,Entity,SubMilestones",
       orderby: "DueDate asc",
       filter: "AssignedTo eq  {{userId}} and (Task ne 'Send to client') and (Task ne 'Follow up') and (Task ne 'Client Review') and  (Task ne 'Time Booking') and (Task ne 'Blocking') and ",
-      filterNotCompleted: "(Status ne 'Completed') and (Status ne 'Not Confirmed') and (Status ne 'Deleted') and (Status ne 'Abandon') and (Status ne 'Hold Request') and (Status ne 'Abandon Request') and (Status ne 'Hold') and (Status ne 'Project on Hold')",
+      filterNotCompleted: "(Status ne 'Completed') and (Status ne 'Not Confirmed') and (Status ne 'Deleted') and (Status ne 'Abandon') and (Status ne 'Hold Request') and (Status ne 'Abandon Request') and (Status ne 'Hold') and (Status ne 'Project on Hold') and (Status ne 'Auto Closed')",
       filterPlanned: "(Status eq 'Not Confirmed')",
       filterCompleted: "(Task ne 'Adhoc') and ((Status eq 'Completed' ) or (Status eq 'Auto Closed'))",
       filterAdhoc: "(Task eq 'Adhoc' and ProjectCode eq 'Adhoc' and Status eq 'Completed')",
@@ -306,6 +306,7 @@ export class MyDashboardConstantsService {
     if (task.ParentSlot) {
       const parentPreviousNextTask = Object.assign({}, this.mydashboardComponent.previousNextTaskParent);
       parentPreviousNextTask.filter = parentPreviousNextTask.filter.replace('{{ParentSlotId}}', task.ParentSlot);
+      this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'GetNextPreviousTasks');
       const parentNPTasks = await this.spServices.readItems(this.constants.listNames.Schedules.name, parentPreviousNextTask);
       console.log(parentNPTasks);
       const parentNPTask = parentNPTasks.length ? parentNPTasks[0] : [];
@@ -342,6 +343,7 @@ export class MyDashboardConstantsService {
     }
     const previousNextTask = Object.assign({}, this.mydashboardComponent.previousNextTask);
     previousNextTask.filter = taskFilter;
+    this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'GetNextPreviousTasksFromSchedules');
     this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, previousNextTask);
 
     this.tasks = this.response.length ? this.response : [];
@@ -360,6 +362,7 @@ export class MyDashboardConstantsService {
         let previousNextTaskChild: any = [];
         previousNextTaskChild = Object.assign({}, this.mydashboardComponent.nextPreviousTaskChild);
         previousNextTaskChild.filter = previousNextTaskChild.filter.replace('{{ParentSlotId}}', ele.ID.toString());
+        this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'GetNextPreviousTasksFromParentSlot');
         let res: any = await this.spServices.readItems(this.constants.listNames.Schedules.name, previousNextTaskChild);
         if (res.hasError) {
           this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: res.message.value });
@@ -417,9 +420,9 @@ export class MyDashboardConstantsService {
 
 
 
-  // *************************************************************************************************************************************
+  // *******************************************************************************************************
   //  get Previous Task Status
-  // *************************************************************************************************************************************
+  // *******************************************************************************************************
 
 
   async getPrevTaskStatus(task) {
@@ -427,6 +430,7 @@ export class MyDashboardConstantsService {
     const currentTask = Object.assign({}, this.mydashboardComponent.previousTaskStatus);
     currentTask.filter = currentTask.filter.replace(/{{taskId}}/gi, task.ID)
       .replace(/{{userID}}/gi, this.sharedObject.currentUser.userId.toString());
+    this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'GetNextPreviousTasksStatus');
     this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, currentTask);
     for (const element of this.response) {
       if (element.AllowCompletion === 'No') {
@@ -449,9 +453,9 @@ export class MyDashboardConstantsService {
   }
 
 
-  // **************************************************************************************************************************************
+  // *******************************************************************************************************
   //  Complete Task
-  // **************************************************************************************************************************************
+  // ********************************************************************************************************
 
 
   async CompleteTask(task) {
@@ -525,6 +529,8 @@ export class MyDashboardConstantsService {
       });
 
     }
+
+    this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'getCurrentAndParentTask');
     const currentParentTasks = await this.spServices.executeBatch(batchURL);
     const parentTaskProp = { Status: 'In Progress', ActiveCA: 'Yes', __metadata: { type: this.constants.listNames.Schedules.type } };
     const parentTaskRes = currentParentTasks.length ? currentParentTasks[0].retItems[0] : null;
@@ -554,6 +560,7 @@ export class MyDashboardConstantsService {
               type: 'POST',
               listName: this.constants.listNames.EarlyTaskComplete.name
             });
+            this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'EarlyTaskNotification');
             const res = await this.spServices.executeBatch(batchURL);
           }
           parentTaskProp.Status = 'Completed';
@@ -567,7 +574,7 @@ export class MyDashboardConstantsService {
         } else {
           return false;
         }
-      } else if (currentTaskRes.PrevTasks  && currentTaskRes.NextTasks ) {
+      } else if (currentTaskRes.PrevTasks && currentTaskRes.NextTasks) {
         if (parentTaskRes.Status !== 'In Progress' && parentTaskRes.Status !== 'Completed') {
           parentTaskProp.Status = 'In Progress';
         } else {
@@ -588,6 +595,7 @@ export class MyDashboardConstantsService {
       type: 'PATCH',
       listName: this.constants.listNames.Schedules.name
     });
+    this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'UpdateSlot');
     await this.spServices.executeBatch(postbatchURL);
   }
 
@@ -601,6 +609,7 @@ export class MyDashboardConstantsService {
     const documentsUrl = "/Drafts/Internal/" + task.Milestone;
     let completeFolderRelativeUrl = '';
     completeFolderRelativeUrl = this.projectInfo.ProjectFolder + documentsUrl;
+    this.common.SetNewrelic('MyDashboard', 'my-dashboard-constants', 'readFiles');
     this.response = await this.spServices.readFiles(completeFolderRelativeUrl);
     this.allDocuments = this.response.length > 0 ? this.response : [];
     this.allDocuments.map(c => c.isFileMarkedAsFinal = c.ListItemAllFields.Status.split(" ").splice(-1)[0] === "Complete" ? true : false);
@@ -615,10 +624,8 @@ export class MyDashboardConstantsService {
     // const batchGuid = this.spServices.generateUUID();
     const project = Object.assign({}, this.mydashboardComponent.projectInfo);
     project.filter = project.filter.replace(/{{projectCode}}/gi, ProjectCode);
+    this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'getCurrentTaskProjectInformation');
     this.response = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, project);
-    // const projectUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', project);
-    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, projectUrl);
-    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
     return this.response.length > 0 ? this.response[0] : {};
   }
 
@@ -718,6 +725,8 @@ export class MyDashboardConstantsService {
       // this.spServices.getBatchBodyGet(batchContents, batchGuid, jcReqUrl);
     }
     // this.response = await this.spServices.getDataByApi(batchGuid, batchContents);
+
+    this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'ckeckSubmissionDetails');
     const arrResult = await this.spServices.executeBatch(batchUrl);
     this.response = arrResult.length > 0 ? arrResult.map(a => a.retItems) : [];
     this.jcSubId = undefined;
@@ -753,16 +762,12 @@ export class MyDashboardConstantsService {
   }
 
 
-  // **************************************************************************************************************************************
+  // ********************************************************************************************************
   // Save Task 
-  // **************************************************************************************************************************************
+  // *****************************************************************************************************
 
   async saveTask(task, isJcIdFound) {
 
-
-    // const batchGuid = this.spServices.generateUUID();
-    // var batchContents = new Array();
-    // const changeSetId = this.spServices.generateUUID();
     const batchUrl = [];
     let data = {
       __metadata: { type: 'SP.Data.SchedulesListItem' },
@@ -771,6 +776,8 @@ export class MyDashboardConstantsService {
       Status: task.Status,
       TaskComments: task.TaskComments,
     };
+
+
     const newdata = task.IsCentrallyAllocated === 'Yes' ? { ...data, ActiveCA: 'No' } : { ...data };
     const taskObj = Object.assign({}, this.queryConfig);
     taskObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +task.ID);
@@ -778,14 +785,13 @@ export class MyDashboardConstantsService {
     taskObj.listName = this.constants.listNames.Schedules.name;
     taskObj.type = 'PATCH';
     batchUrl.push(taskObj);
-    // const endPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items(" + +(task.ID) + ")";
-    // this.spServices.getChangeSetBodySC(batchContents, changeSetId, endPoint, JSON.stringify(newdata), false);
+
     if (isJcIdFound) {
       let docUrl = '';
       const count = this.DocumentArray.length;
       this.DocumentArray.forEach((value, i) => {
         docUrl += value.ServerRelativeUrl;
-        docUrl += i < count - 1 ? ";#" : '';
+        docUrl += i < count - 1 ? ';#' : '';
       });
       if (task.Task === 'Submission Pkg') {
         const jcSubmissionData = {
@@ -798,9 +804,6 @@ export class MyDashboardConstantsService {
         jcSubObj.listName = this.constants.listNames.JCSubmission.name;
         jcSubObj.type = 'PATCH';
         batchUrl.push(jcSubObj);
-
-        // const SubPackPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.JCSubmission.name + "')/items(" + +(this.jcSubId) + ")";
-        // this.spServices.getChangeSetBodySC(batchContents, changeSetId, SubPackPoint, JSON.stringify(jcSubmissionObj), false);
 
       } else if (task.Task === 'Galley') {
         const jcSubmissionData = {
@@ -816,10 +819,7 @@ export class MyDashboardConstantsService {
         jcSubObj.listName = this.constants.listNames.jcGalley.name;
         jcSubObj.type = 'POST';
         batchUrl.push(jcSubObj);
-        // const GallyPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.jcGalley.name + "')/items";
-        // this.spServices.getChangeSetBodySC(batchContents, changeSetId, GallyPoint, JSON.stringify(jcSubmissionObj), true);
-        //--------------------------------------- new Url--------------------------------------------------//
-        // const jcendPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.JCSubmission.name + "')/items(" + +(this.jcSubId) + ")";
+
         const jcSubData = {
           __metadata: { type: 'SP.Data.JCSubmissionListItem' },
           Status: 'Galleyed'
@@ -830,10 +830,7 @@ export class MyDashboardConstantsService {
         jcObj.listName = this.constants.listNames.JCSubmission.name;
         jcObj.type = 'PATCH';
         batchUrl.push(jcObj);
-        // this.spServices.getChangeSetBodySC(batchContents, changeSetId, jcendPoint, JSON.stringify(jcSubObj), false);
 
-        //--------------------------------------- new Url--------------------------------------------------//
-        // const jcConendPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.JournalConf.name + "')/items(" + +(this.jcId) + ")";
         const jcConData = {
           __metadata: { type: 'SP.Data.JournalConferenceListItem' },
           Status: 'Galleyed'
@@ -845,9 +842,6 @@ export class MyDashboardConstantsService {
         jcConObj.type = 'PATCH';
         batchUrl.push(jcConObj);
 
-        // this.spServices.getChangeSetBodySC(batchContents, changeSetId, jcConendPoint, JSON.stringify(jcConObj), false);
-        //--------------------------------------- new Url--------------------------------------------------//
-        // const ProjetcInfoPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.ProjectInformation.name + "')/items(" + +(this.projectInfo.ID) + ")";
         const projectInfoData = {
           __metadata: { type: 'SP.Data.ProjectInformationListItem' },
           PubSupportStatus: 'Galleyed'
@@ -858,11 +852,8 @@ export class MyDashboardConstantsService {
         projectInfoObj.listName = this.constants.listNames.ProjectInformation.name;
         projectInfoObj.type = 'PATCH';
         batchUrl.push(projectInfoObj);
-        // this.spServices.getChangeSetBodySC(batchContents, changeSetId, ProjetcInfoPoint, JSON.stringify(projectInfoObj), false);
 
-
-      }
-      else if (task.Task === 'Submit') {
+      } else if (task.Task === 'Submit') {
         const jcSubmissionData = {
           __metadata: { type: 'SP.Data.JCSubmissionListItem' },
           Status: 'Submitted',
@@ -875,10 +866,7 @@ export class MyDashboardConstantsService {
         jcSubmissionObj.listName = this.constants.listNames.JCSubmission.name;
         jcSubmissionObj.type = 'PATCH';
         batchUrl.push(jcSubmissionObj);
-        // const SubmitPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.JCSubmission.name + "')/items(" + +(this.jcSubId) + ")";
-        // this.spServices.getChangeSetBodySC(batchContents, changeSetId, SubmitPoint, JSON.stringify(jcSubmissionObj), false);
-        //--------------------------------------- new Url--------------------------------------------------//
-        // const jcConendPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.JournalConf.name + "')/items(" + +(this.jcId) + ")";
+
         const jcConData = {
           __metadata: { type: 'SP.Data.JournalConferenceListItem' },
           Status: 'Submitted'
@@ -889,9 +877,7 @@ export class MyDashboardConstantsService {
         jcConObj.listName = this.constants.listNames.JournalConf.name;
         jcConObj.type = 'PATCH';
         batchUrl.push(jcConObj);
-        // this.spServices.getChangeSetBodySC(batchContents, changeSetId, jcConendPoint, JSON.stringify(jcConObj), false);
-        //--------------------------------------- new Url--------------------------------------------------//
-        // const ProjetcInfoPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.ProjectInformation.name + "')/items(" + +(this.projectInfo.ID) + ")";
+
         const projectInfoData = {
           __metadata: { type: 'SP.Data.ProjectInformationListItem' },
           PubSupportStatus: 'Submitted',
@@ -903,12 +889,10 @@ export class MyDashboardConstantsService {
         projectInfoObj.listName = this.constants.listNames.ProjectInformation.name;
         projectInfoObj.type = 'PATCH';
         batchUrl.push(projectInfoObj);
-        // this.spServices.getChangeSetBodySC(batchContents, changeSetId, ProjetcInfoPoint, JSON.stringify(projectInfoObj), false);
-
 
       } else if (task.Task === 'Journal Selection') {
 
-        // const ProjetcInfoPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.ProjectInformation.name + "')/items(" + +(this.projectInfo.ID) + ")";
+
         const projectInfoData = {
           __metadata: { type: 'SP.Data.ProjectInformationListItem' },
           JournalSelectionURL: docUrl,
@@ -920,13 +904,10 @@ export class MyDashboardConstantsService {
         projectInfoObj.listName = this.constants.listNames.ProjectInformation.name;
         projectInfoObj.type = 'PATCH';
         batchUrl.push(projectInfoObj);
-        // this.spServices.getChangeSetBodySC(batchContents, changeSetId, ProjetcInfoPoint, JSON.stringify(projectInfoObj), false);
+
+      } else if (task.Task === 'Journal Requirement') {
 
 
-      }
-      else if (task.Task === 'Journal Requirement') {
-
-        // const jcConendPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.JournalConf.name + "')/items(" + +(this.jcId) + ")";
         const jcConData = {
           __metadata: { type: 'SP.Data.JournalConferenceListItem' },
           JournalRequirementDate: new Date().toISOString(),
@@ -938,8 +919,6 @@ export class MyDashboardConstantsService {
         jcConObj.listName = this.constants.listNames.JournalConf.name;
         jcConObj.type = 'PATCH';
         batchUrl.push(jcConObj);
-        // this.spServices.getChangeSetBodySC(batchContents, changeSetId, jcConendPoint, JSON.stringify(jcConObj), false);
-
 
       }
     }
@@ -1057,17 +1036,9 @@ export class MyDashboardConstantsService {
 
     });
 
-
-
-    // batchContents.push('--changeset_' + changeSetId + '--');
-    // const batchBody = batchContents.join('\r\n');
-    // const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
-    // batchBodyContent.push('--batch_' + batchGuid + '--');
-    // const batchBodyContents = batchBodyContent.join('\r\n');
-    // const response = await this.spServices.executeBatchPostRequestByRestAPI(batchGuid, batchBodyContents);
+    this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'SaveTask');
     await this.spServices.executeBatch(batchUrl);
     return undefined;
-    // this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: task.Title + 'Task completed sucessfully.' });
   }
 
 
@@ -1084,6 +1055,7 @@ export class MyDashboardConstantsService {
 
     // this.Emailtemplate = response[0][0];
 
+    this.common.SetNewrelic('MyDashboard', 'MyDashboard', 'GetEmailTemplate');
     const common = this.mydashboardComponent.common;
     common.getMailTemplate.filter = common.getMailTemplate.filter.replace('{{templateName}}', 'NextTaskTemplate');
     const templateData = await this.spServices.readItems(this.constants.listNames.MailContent.name,
@@ -1100,16 +1072,10 @@ export class MyDashboardConstantsService {
 
   async getAllClients() {
 
+
     let ClientLegalEntities = Object.assign({}, this.mydashboardComponent.ClientLegalEntities);
+    this.common.SetNewrelic('MyDashboard', 'MyDashboardConstants-getAllClients', 'readItems');
     this.response = await this.spServices.readItems(this.constants.listNames.ClientLegalEntity.name, ClientLegalEntities);
-
-    // this.batchContents = new Array();
-    // const batchGuid = this.spServices.generateUUID();
-
-    // let ClientLegalEntities = Object.assign({}, this.mydashboardComponent.ClientLegalEntities);
-    // const ClientLegalEntitiesUrl = this.spServices.getReadURL('' + this.constants.listNames.ClientLegalEntity.name + '', ClientLegalEntities);
-    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, ClientLegalEntitiesUrl);
-    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
 
 
     const tempClientLegalEntities = this.response.map(c => c.Title);
@@ -1213,6 +1179,7 @@ export class MyDashboardConstantsService {
 
     const tempArray = [];
     const reviewDocArray = [];
+
     const documents = await this.common.getTaskDocument(folderUrl, documentsUrl);
     for (const doc in documents) {
       if (currentTaskElement.PrevTasks.indexOf(documents[doc].ListItemAllFields.TaskName) > -1 && documents[doc].ListItemAllFields.Status.indexOf('Complete') > -1) {
@@ -1225,9 +1192,10 @@ export class MyDashboardConstantsService {
         reviewDocArray.push(reviewDocuments[document].ServerRelativeUrl);
       }
     }
-    if (newValue.length === 1 && tempArray.length) {
+    if (newValue.length === 1) {
       const taskObj = Object.assign({}, this.mydashboardComponent.TaskDetails);
       taskObj.filter = previousTaskFilter;
+      this.common.SetNewrelic('MyDashboard', 'MyDashboardConstants-callQMSPopup', 'readItems');
       const previousItems = await this.spServices.readItems(this.constants.listNames.Schedules.name, taskObj);
       const obj = {
         documentURL: tempArray,
@@ -1244,6 +1212,7 @@ export class MyDashboardConstantsService {
         taskTitle: previousItems[0].Title,
         taskID: previousItems[0].ID,
         reviewTaskDocUrl: reviewDocArray,
+        currentTask: currentTaskElement
       };
       qmsObj.openPopup(obj);
     }

@@ -11,7 +11,7 @@ import { PMObjectService } from '../../services/pmobject.service';
 import { MenuItem } from 'primeng/api';
 import { PMCommonService } from '../../services/pmcommon.service';
 import { Router } from '@angular/router';
-import { DataTable } from 'primeng/primeng';
+import { Table } from 'primeng/table';
 
 declare var $;
 @Component({
@@ -50,7 +50,7 @@ export class ClientReviewComponent implements OnInit {
     { field: 'Milestone' },
     { field: 'DeliveryDate' }];
   @ViewChild('crTableRef', { static: true }) crRef: ElementRef;
-  @ViewChild('crTableRef', { static: true }) crTableRef: DataTable;
+  @ViewChild('crTableRef', { static: true }) crTableRef: Table;
 
   // tslint:disable-next-line:variable-name
   private _success = new Subject<string>();
@@ -227,6 +227,7 @@ export class ClientReviewComponent implements OnInit {
       filter: currentFilter,
       top: 4200
     };
+    this.commonService.SetNewrelic('projectManagment', 'client-review', 'GetSchedules');
     this.crArrays.taskItems = await this.spServices.readItems(this.Constant.listNames.Schedules.name, queryOptions);
     const projectCodeTempArray = [];
     const shortTitleTempArray = [];
@@ -320,6 +321,12 @@ export class ClientReviewComponent implements OnInit {
           batchUrl.length = 0;
         }
       }
+      // batchContents.push('--batch_' + batchGuid + '--');
+      // const userBatchBody = batchContents.join('\r\n');
+      // const arrResults = await this.spServices.executeGetBatchRequest(batchGuid, userBatchBody);
+      this.commonService.SetNewrelic('projectManagment', 'client-review', 'GetSchedules');
+
+      // let arrResults = await this.spServices.executeBatch(batchUrl);
       const remainingResults = await this.spServices.executeBatch(batchUrl);
       arrResults = [...arrResults, ...remainingResults];
       arrResults = arrResults.length > 0 ? arrResults.map(a => a.retItems) : [];
@@ -407,7 +414,7 @@ export class ClientReviewComponent implements OnInit {
   }
   goToAllocationPage(task) {
     window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +
-      '/allocation#/taskAllocation?ProjectCode=' + task.ProjectCode, '_blank');
+      '/dashboard#/taskAllocation?ProjectCode=' + task.ProjectCode, '_blank');
   }
   goToProjectManagement(task) {
     this.pmObject.columnFilter.ProjectCode = [task.ProjectCode];
@@ -424,6 +431,7 @@ export class ClientReviewComponent implements OnInit {
   async closeTaskWithStatus(task, options, unt) {
     const isActionRequired = await this.commonService.checkTaskStatus(task);
     if (isActionRequired) {
+      this.commonService.SetNewrelic('projectManagment', 'client-review', 'UpdateSchedules');
       await this.spOperations.updateItem(this.Constant.listNames.Schedules.name, task.ID, options, this.Constant.listNames.Schedules.type);
       const projectInfoOptions = { Status: 'Unallocated' };
       const projectID = this.pmObject.allProjectItems.filter(item => item.ProjectCode === task.ProjectCode);

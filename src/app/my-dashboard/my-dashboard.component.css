@@ -19,6 +19,11 @@
   top: inherit  !important;
   }  */
 
+body .ui-button {
+    color: #333333;
+    background-color: #c53e3e !important;
+    border: 1px solid #C53E3D !important;
+}
 
 
 #scInnerLoader{
@@ -100,4 +105,3 @@
   top: 0 ;
  
 }
-

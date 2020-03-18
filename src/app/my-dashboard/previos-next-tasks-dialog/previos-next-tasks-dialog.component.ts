@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DynamicDialogConfig } from 'primeng/api';
+import { DynamicDialogConfig } from 'primeng';
 
 @Component({
   selector: 'app-previos-next-tasks-dialog',

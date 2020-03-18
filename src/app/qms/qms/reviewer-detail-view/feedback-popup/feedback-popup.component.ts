@@ -3,6 +3,7 @@ import { ConstantsService } from '../../../../Services/constants.service';
 import { GlobalService } from '../../../../Services/global.service';
 import { SPOperationService } from '../../../../Services/spoperation.service';
 import { QMSConstantsService } from '../../services/qmsconstants.service';
+import { CommonService } from 'src/app/Services/common.service';
 declare var qmsFeedback: any;
 @Component({
   selector: 'app-feedback-popup',
@@ -13,7 +14,8 @@ export class FeedbackPopupComponent implements OnInit {
 
   @Output() bindTableEvent = new EventEmitter<{}>();
   @Output() setSuccessMessage = new EventEmitter<{}>();
-  @ViewChild('popupContent', {static: true}) popupContent: ElementRef;
+  @Output() popupClosed = new EventEmitter<{}>();
+  @ViewChild('popupContent', { static: true }) popupContent: ElementRef;
   public popupByJS = false;
   public deliveryDashboardSharedObj = {};
   public hidePopupLoader = true;
@@ -25,12 +27,18 @@ export class FeedbackPopupComponent implements OnInit {
     type: '',
     listName: ''
   };
-  constructor(private spService: SPOperationService, private globalConstant: ConstantsService, private qmsConstant: QMSConstantsService,
-              public global: GlobalService) {
+  constructor(
+    private spService: SPOperationService,
+    private constantsService: ConstantsService,
+    private qmsConstant: QMSConstantsService,
+    public global: GlobalService,
+    private common: CommonService
+  ) {
   }
+
   ngOnInit() {
   }
-//#region ForRatingPopup
+  //#region ForRatingPopup
 
   /**
    * Get active scorecard templates on click of provide rating button
@@ -39,7 +47,8 @@ export class FeedbackPopupComponent implements OnInit {
   async getTemplates() {
     const feedbackComponent = JSON.parse(JSON.stringify(this.qmsConstant.feedbackPopupComponent));
     feedbackComponent.getTemplates.top = feedbackComponent.getTemplates.top.replace('{{TopCount}}', '4500');
-    const arrResult = await this.spService.readItems(this.globalConstant.listNames.ScorecardTemplate.name,
+    this.common.SetNewrelic('QMS', 'ReviewDetails-View-Feedbackpopup', 'GetTemplate');
+    const arrResult = await this.spService.readItems(this.constantsService.listNames.ScorecardTemplate.name,
       feedbackComponent.getTemplates);
     this.global.templateMatrix.templates = arrResult.length > 0 ? arrResult : [];
   }
@@ -53,11 +62,12 @@ export class FeedbackPopupComponent implements OnInit {
     const selectedTemplate = this.global.templateMatrix.selectedTemplate.Title;
     // tslint:disable-next-line
 
-    const feedbackComponent =  JSON.parse(JSON.stringify(this.qmsConstant.feedbackPopupComponent));
+    const feedbackComponent = JSON.parse(JSON.stringify(this.qmsConstant.feedbackPopupComponent));
     feedbackComponent.getTemplateMatrix.top = feedbackComponent.getTemplateMatrix.top.replace('{{TopCount}}', '' + 100);
     // tslint:disable: max-line-length
     feedbackComponent.getTemplateMatrix.filter = feedbackComponent.getTemplateMatrix.filter.replace('{{selectedTemplate}}', selectedTemplate);
-    let arrResults = await this.spService.readItems(this.globalConstant.listNames.ScorecardMatrix.name, feedbackComponent.getTemplateMatrix);
+    this.common.SetNewrelic('QMS', 'ReviewDetails-View-Feedbackpopup', 'getTemplateMatrix');
+    let arrResults = await this.spService.readItems(this.constantsService.listNames.ScorecardMatrix.name, feedbackComponent.getTemplateMatrix);
     arrResults = arrResults.length > 0 ? arrResults : [];
     arrResults.forEach(element => {
       const obj = {
@@ -117,6 +127,7 @@ export class FeedbackPopupComponent implements OnInit {
     const scorecardMatrixContent = this.addScorecardMatrixItem(taskDetails);
     // form single array of object eg:- {'endPoint': endpoint, 'data': scorecardDetails, 'isPostMethod': true}
     firstBatchURL = [...firstPostRequestContent, ...scorecardMatrixContent];
+    this.common.SetNewrelic('QMS', 'ReviewDetails-View-Feedbackpopup', 'SaveFeedbackRating');
     const items = await this.spService.executeBatch(firstBatchURL);
     if (items && items.length > 0) {
       // splitting scorecard item and scorecard rating items as 1 scorecoard item is created
@@ -130,6 +141,7 @@ export class FeedbackPopupComponent implements OnInit {
         // Update scorecardMatrix list item with scorecard lookup id
         const scorecardMatrixItem = this.updateScorecardMatrixItem(scorecardItem, scorecardRatingItems);
         secondPostRequestContent = [...schedulesPostRequest, ...scorecardMatrixItem];
+        this.common.SetNewrelic('QMS', 'ReviewDetails-View-Feedbackpopup', 'SaveFeedbackRating');
         const result = await this.spService.executeBatch(secondPostRequestContent);
         if (result) {
           this.closeFeedback();
@@ -141,11 +153,11 @@ export class FeedbackPopupComponent implements OnInit {
           } else {
             this.bindTableEvent.emit(taskDetails);
           }
-          this.setSuccessMessage.emit({type: 'success', msg: 'Success', detail: 'Rating updated for ' + taskDetails.task + '!'});
+          this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'Rating updated for ' + taskDetails.task + '!' });
         }
       }
+    }
   }
-}
 
   /**
    * Adds item to scorecard list
@@ -156,7 +168,7 @@ export class FeedbackPopupComponent implements OnInit {
     let scorecardDetails = {};
     if (taskDetails.taskCompletionDate) {
       scorecardDetails = {
-        __metadata: { type: this.globalConstant.listNames.Scorecard.type },
+        __metadata: { type: this.constantsService.listNames.Scorecard.type },
         Title: taskDetails.task,
         SubMilestones: taskDetails.submilestones,
         FeedbackType: 'Task Feedback',
@@ -170,7 +182,7 @@ export class FeedbackPopupComponent implements OnInit {
       };
     } else {
       scorecardDetails = {
-        __metadata: { type: this.globalConstant.listNames.Scorecard.type },
+        __metadata: { type: this.constantsService.listNames.Scorecard.type },
         Title: taskDetails.task,
         SubMilestones: taskDetails.submilestones,
         FeedbackType: 'Task Feedback',
@@ -183,8 +195,8 @@ export class FeedbackPopupComponent implements OnInit {
       };
     }
     const scorecardItemData = Object.assign({}, this.options);
-    scorecardItemData.url = this.spService.getReadURL(this.globalConstant.listNames.Scorecard.name);
-    scorecardItemData.listName = this.globalConstant.listNames.Scorecard.name;
+    scorecardItemData.url = this.spService.getReadURL(this.constantsService.listNames.Scorecard.name);
+    scorecardItemData.listName = this.constantsService.listNames.Scorecard.name;
     scorecardItemData.data = scorecardDetails;
     scorecardItemData.type = 'POST';
     batchURL.push(scorecardItemData);
@@ -199,15 +211,15 @@ export class FeedbackPopupComponent implements OnInit {
     const batchURL = [];
     taskDetail.selectedTemplateDetails.forEach(element => {
       const scorecardRatingDetails = {
-        __metadata: { type: this.globalConstant.listNames.ScorecardRatings.type },
+        __metadata: { type: this.constantsService.listNames.ScorecardRatings.type },
         Title: taskDetail.task,
         Rating: element.rating,
         ScorecardTemplateId: taskDetail.selectedTemplate.ID,
         ParameterId: element.questionId,
       };
       const scorecardRatingItemData = Object.assign({}, this.options);
-      scorecardRatingItemData.url = this.spService.getReadURL(this.globalConstant.listNames.ScorecardRatings.name);
-      scorecardRatingItemData.listName = this.globalConstant.listNames.ScorecardRatings.name;
+      scorecardRatingItemData.url = this.spService.getReadURL(this.constantsService.listNames.ScorecardRatings.name);
+      scorecardRatingItemData.listName = this.constantsService.listNames.ScorecardRatings.name;
       scorecardRatingItemData.data = scorecardRatingDetails;
       scorecardRatingItemData.type = 'POST';
       batchURL.push(scorecardRatingItemData);
@@ -225,15 +237,15 @@ export class FeedbackPopupComponent implements OnInit {
     const batchURL = [];
     scorecardRatingItems.forEach(element => {
       const scorecardRatingDetails = {
-        __metadata: { type: this.globalConstant.listNames.ScorecardRatings.type },
+        __metadata: { type: this.constantsService.listNames.ScorecardRatings.type },
         ScorecardId: scorecardID
       };
 
       const revTaskData = Object.assign({}, this.options);
       revTaskData.data = scorecardRatingDetails;
-      revTaskData.listName = this.globalConstant.listNames.ScorecardRatings.name;
+      revTaskData.listName = this.constantsService.listNames.ScorecardRatings.name;
       revTaskData.type = 'PATCH';
-      revTaskData.url = this.spService.getItemURL(this.globalConstant.listNames.ScorecardRatings.name, element.retItems.ID);
+      revTaskData.url = this.spService.getItemURL(this.constantsService.listNames.ScorecardRatings.name, element.retItems.ID);
       batchURL.push(revTaskData);
     });
     return batchURL;
@@ -255,49 +267,49 @@ export class FeedbackPopupComponent implements OnInit {
     // Update review task rated 'yes' if this is last previous task not rated
     if (tasksReviewPending.length <= 1 && taskDetail.reviewTask) {
       const reviewTaskUpdateDetail = {
-        __metadata: { type: this.globalConstant.listNames.Schedules.type },
+        __metadata: { type: this.constantsService.listNames.Schedules.type },
         IsRated: true // for review task
       };
       const revTaskData = Object.assign({}, this.options);
       revTaskData.data = reviewTaskUpdateDetail;
-      revTaskData.listName = this.globalConstant.listNames.Schedules.name;
+      revTaskData.listName = this.constantsService.listNames.Schedules.name;
       revTaskData.type = 'PATCH';
-      revTaskData.url = this.spService.getItemURL(this.globalConstant.listNames.Schedules.name, taskDetail.reviewTask.ID);
+      revTaskData.url = this.spService.getItemURL(this.constantsService.listNames.Schedules.name, taskDetail.reviewTask.ID);
       batchURL.push(revTaskData);
     }
     if (prevTasks.length > 1 || reviewPreNextTasks.length > 1) {
       const taskUpdateDetail = {
-        __metadata: { type: this.globalConstant.listNames.Schedules.type },
+        __metadata: { type: this.constantsService.listNames.Schedules.type },
         Rated: true, // for previous task
         // IsRated: true // for review task
       };
       // Update previous task of review task as Rated 'yes'
       const curTaskData = Object.assign({}, this.options);
       curTaskData.data = taskUpdateDetail;
-      curTaskData.listName = this.globalConstant.listNames.Schedules.name;
+      curTaskData.listName = this.constantsService.listNames.Schedules.name;
       curTaskData.type = 'PATCH';
-      curTaskData.url = this.spService.getItemURL(this.globalConstant.listNames.Schedules.name, taskDetail.taskID);
+      curTaskData.url = this.spService.getItemURL(this.constantsService.listNames.Schedules.name, taskDetail.taskID);
       batchURL.push(curTaskData);
       // below if will execute for admin view since review task will be '' for admin
     } else if (prevTasks.length === 1 && taskDetail.reviewTask) {
       updateIsRatedDetail = {
-        __metadata: { type: this.globalConstant.listNames.Schedules.type },
-         Rated: true,
+        __metadata: { type: this.constantsService.listNames.Schedules.type },
+        Rated: true,
         // IsRated: true
       };
     } else if (!taskDetail.reviewTask) {
       /// Below will be updated for Admin users
       updateIsRatedDetail = {
-        __metadata: { type: this.globalConstant.listNames.Schedules.type },
+        __metadata: { type: this.constantsService.listNames.Schedules.type },
         Rated: true
       };
     }
     // Update previous task of review task as Rated 'yes'
     const curTaskRatedData = Object.assign({}, this.options);
     curTaskRatedData.data = updateIsRatedDetail;
-    curTaskRatedData.listName = this.globalConstant.listNames.Schedules.name;
+    curTaskRatedData.listName = this.constantsService.listNames.Schedules.name;
     curTaskRatedData.type = 'PATCH';
-    curTaskRatedData.url = this.spService.getItemURL(this.globalConstant.listNames.Schedules.name, taskDetail.taskID);
+    curTaskRatedData.url = this.spService.getItemURL(this.constantsService.listNames.Schedules.name, taskDetail.taskID);
     batchURL.push(curTaskRatedData);
     return batchURL;
   }
@@ -311,13 +323,14 @@ export class FeedbackPopupComponent implements OnInit {
     const batchURL = [];
     prevTasks.forEach(element => {
       const prevTaskData = Object.assign({}, this.options);
-      prevTaskData.url = this.spService.getReadURL(this.globalConstant.listNames.Schedules.name,
+      prevTaskData.url = this.spService.getReadURL(this.constantsService.listNames.Schedules.name,
         this.qmsConstant.feedbackPopupComponent.notRatedPrevTasks);
       prevTaskData.url = prevTaskData.url.replace('{{PrevTaskTitle}}', element);
-      prevTaskData.listName = this.globalConstant.listNames.Schedules.name;
+      prevTaskData.listName = this.constantsService.listNames.Schedules.name;
       prevTaskData.type = 'GET';
       batchURL.push(prevTaskData);
     });
+    this.common.SetNewrelic('QMS', 'ReviewDetails-View-Feedbackpopup', 'GetPreviousTasks');
     let arrResults = await this.spService.executeBatch(batchURL);
     arrResults = arrResults.length ? arrResults[0].retItems : [];
     const tasks = [].concat(...arrResults);
@@ -328,13 +341,11 @@ export class FeedbackPopupComponent implements OnInit {
    *
    */
   closeFeedback() {
-    if (this.popupByJS) {
-      qmsFeedback.complete(this.deliveryDashboardSharedObj);
-    } else {
-      this.global.templateMatrix = JSON.parse(JSON.stringify(this.global.templateMatrix_copy));
-      // this.modalService.dismissAll();
-      this.display = false;
+    if (Object.keys(this.global.templateMatrix.currentTask).length > 0) {
+      this.popupClosed.emit(this.global.templateMatrix.currentTask);
     }
+    this.global.templateMatrix = JSON.parse(JSON.stringify(this.global.templateMatrix_copy));
+    this.display = false;
   }
 
   /**
@@ -343,29 +354,34 @@ export class FeedbackPopupComponent implements OnInit {
    * @param content - content dispalyed within popup which is defined in HTML
    */
   openPopup(element: any) {
-    this.display = true;
-    this.popupByJS = false;
-    this.getTemplates();
-    this.global.templateMatrix.task = element.title  ? element.title : element.taskTitle;
-    this.global.templateMatrix.submilestones = element.subMilestones;
-    this.global.templateMatrix.taskID = element.taskID;
-    this.global.templateMatrix.assignedToID = element.resourceID;
-    this.global.templateMatrix.assignedTo = element.resource;
-    this.global.templateMatrix.taskCompletionDate = element.taskCompletionDate;
-    this.global.templateMatrix.documentUrl = element.documentURL.length > 0 ? element.documentURL.join(';#') : '';
-    this.global.templateMatrix.reviewTaskDocUrl = element.reviewTaskDocUrl.length > 0 ?
-                                                  element.reviewTaskDocUrl.join(';#') : '';
-    this.global.templateMatrix.reviewTask = element.reviewTask ? element.reviewTask : '';
+    if (element.documentURL.length > 0) {
+      this.display = true;
+      this.getTemplates();
+      this.global.templateMatrix.task = element.title ? element.title : element.taskTitle;
+      this.global.templateMatrix.submilestones = element.subMilestones;
+      this.global.templateMatrix.taskID = element.taskID;
+      this.global.templateMatrix.assignedToID = element.resourceID;
+      this.global.templateMatrix.assignedTo = element.resource;
+      this.global.templateMatrix.taskCompletionDate = element.taskCompletionDate;
+      this.global.templateMatrix.documentUrl = element.documentURL.length > 0 ? element.documentURL.join(';#') : '';
+      this.global.templateMatrix.reviewTaskDocUrl = element.reviewTaskDocUrl.length > 0 ?
+        element.reviewTaskDocUrl.join(';#') : '';
+      this.global.templateMatrix.reviewTask = element.reviewTask ? element.reviewTask : '';
+      this.global.templateMatrix.currentTask = element.currentTask ? element.currentTask : '';
+    } else {
+      this.global.templateMatrix.currentTask = element.currentTask ? element.currentTask : '';
+      this.closeFeedback();
+    }
   }
 
- // #endregion ForRatingPopup
+  // #endregion ForRatingPopup
   showTable() {
     this.hidePopupTable = false;
-    this.hidePopupLoader = true;
+    this.constantsService.loader.isPSInnerLoaderHidden = true;
   }
 
   showLoader() {
     this.hidePopupTable = true;
-    this.hidePopupLoader = false;
+    this.constantsService.loader.isPSInnerLoaderHidden = false;
   }
 }

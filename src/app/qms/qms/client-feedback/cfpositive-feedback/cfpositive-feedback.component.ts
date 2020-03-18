@@ -10,9 +10,9 @@ import { Subject } from 'rxjs/internal/Subject';
 import { SPOperationService } from '../../../../Services/spoperation.service';
 import { FilterComponent } from '../filter/filter.component';
 import { MenuItem, MessageService } from 'primeng/api';
-import { PopupComponent } from './popup/popup.component'
+import { PopupComponent } from './popup/popup.component';
 import { QMSConstantsService } from '../../services/qmsconstants.service';
-import { DataTable } from 'primeng/primeng';
+import { Table } from 'primeng/table';
 import { CommonService } from 'src/app/Services/common.service';
 @Component({
   selector: 'app-cfpositive-feedback',
@@ -20,27 +20,6 @@ import { CommonService } from 'src/app/Services/common.service';
   styleUrls: ['./cfpositive-feedback.component.css']
 })
 export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
-  tempClick: any;
-  CFColumns = [];
-  CFRows = [];
-  items: MenuItem[];
-  private cfPFNavigationSubscription;
-
-  @ViewChild('positveFilter', { static: true }) filter: FilterComponent;
-  @ViewChild('PFPopup', { static: true }) PFPopup: PopupComponent;
-  @ViewChild('cfp', { static: false }) cfpositiveTable: DataTable;
-
-  public hideLoader = true;
-  public hideTable = false;
-  public pfs = [];
-  public CFPositiveColArray = {
-    ID: [],
-    Title: [],
-    SentDate: [],
-    SentBy: [],
-    Status: [],
-    Resources: []
-  };
   constructor(
     private router: Router,
     private globalConstant: ConstantsService,
@@ -58,11 +37,11 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
     private readonly _router: Router,
     _applicationRef: ApplicationRef,
     zone: NgZone
-    ) {
-      // this.router.routeReuseStrategy.shouldReuseRoute = function () {
-      //   return false;
-      // }
-    
+  ) {
+    // this.router.routeReuseStrategy.shouldReuseRoute = function () {
+    //   return false;
+    // }
+
     // Browser back button disabled & bookmark issue solution
     history.pushState(null, null, window.location.href);
     platformLocation.onPopState(() => {
@@ -73,6 +52,30 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
       zone.run(() => _applicationRef.tick());
     });
   }
+  tempClick: any;
+  CFColumns = [];
+  CFRows = [];
+  items: MenuItem[];
+  private cfPFNavigationSubscription;
+
+  @ViewChild('positveFilter', { static: false }) filter: FilterComponent;
+  @ViewChild('PFPopup', { static: false }) PFPopup: PopupComponent;
+  @ViewChild('cfp', { static: false }) cfpositiveTable: Table;
+
+  public hideLoader = true;
+  public hideTable = false;
+  public pfs = [];
+  public CFPositiveColArray = {
+    ID: [],
+    Title: [],
+    SentDate: [],
+    SentBy: [],
+    Status: [],
+    Resources: []
+  };
+
+
+  isOptionFilter: boolean;
 
   async ngOnInit() {
     this.initialiseCFPositive();
@@ -98,6 +101,7 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
       { field: 'SentDate', header: 'Sent Date' },
       { field: 'SentBy', header: 'Sent By' },
       { field: 'Resources', header: 'Resources' },
+      { field: '', header: '' },
     ];
     setTimeout(async () => {
       this.pfs = await this.getPFItems();
@@ -138,6 +142,7 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
    */
   protected async getPFItems(filterObj?): Promise<[]> {
     const pfComponent = JSON.parse(JSON.stringify(this.qmsConstant.ClientFeedback.PositiveFeedbackComponent));
+    this.commonService.SetNewrelic('QMS', 'cfpositive-feedback', 'getGroupInfo');
     const result = await this.spService.getGroupInfo(this.globalConstant.Groups.PFAdmin);
     this.global.pfAdmins = result.results ? result.results : [];
     this.global.currentUser.isPFAdmin = this.global.pfAdmins.find(t => t.Id === this.global.currentUser.userId) ? true : false;
@@ -166,6 +171,8 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
         .replace('{{endDate}}', endDate);
       pfUrl = pfComponent.getPF;
     }
+
+    this.commonService.SetNewrelic('QMS', 'ClientFeedBack-cfposition', 'getPFItems');
     const arrResult = await this.spService.readItems(this.globalConstant.listNames.PositiveFeedbacks.name, pfUrl);
     const arrPFs = arrResult.length > 0 ? this.appendPropertyTOObject(arrResult) : [];
     return arrPFs;
@@ -246,6 +253,8 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
    * @param cdDetails- detals that needs to be updated
    */
   savePF(pfDetails, pf) {
+
+    this.commonService.SetNewrelic('QMS', 'ClientFeedBack-cfposition', 'savePF');
     this.spService.updateItem(this.globalConstant.listNames.PositiveFeedbacks.name, pf.ID, pfDetails);
 
     this.showToastMsg({ type: 'success', msg: 'Success', detail: 'Positive Feedback sent by ' + pf.SentBy.Title + ' is ' + pf.Status + '.' });
@@ -267,7 +276,7 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
     const pfItem = this.pfs.filter(p => p.ID === +pf.pfID);
     if (pfItem.length > 0) {
       pfItem[0].Title = pf.projectCode ? pf.projectCode : pfItem[0].Title;
-      pfItem[0].resources = pf.resources.results ? pf.resources.results.map(a => a.Title) : pf.resources ? pf.resources : '';
+      pfItem[0].resources = pf.resources.results ? pf.resources.results.map(a => a.Title).join(',') : pf.resources ? pf.resources : '';
       pfItem[0].Status = pf.Status ? pf.Status : pfItem[0].Status;
     }
     this.bindTable(this.pfs);
@@ -309,8 +318,6 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
     }
   }
 
-
-  isOptionFilter: boolean;
   optionFilter(event: any) {
     if (event.target.value) {
       this.isOptionFilter = false;
@@ -319,11 +326,11 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
 
   ngAfterViewChecked() {
     if (this.CFRows.length && this.isOptionFilter) {
-      let obj = {
+      const obj = {
         tableData: this.cfpositiveTable,
         colFields: this.CFPositiveColArray,
         // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
-      }
+      };
       if (obj.tableData.filteredValue) {
         this.commonService.updateOptionValues(obj);
       } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {

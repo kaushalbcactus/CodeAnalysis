@@ -10,7 +10,7 @@ import { CommonService } from '../../../Services/common.service';
 import { FDDataShareService } from '../../fdServices/fd-shareData.service';
 import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { Subscription } from 'rxjs';
-import { DataTable } from 'primeng/primeng';
+import { Table } from 'primeng/table';
 import { Router } from '@angular/router';
 
 @Component({
@@ -36,7 +36,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         private readonly _router: Router,
         _applicationRef: ApplicationRef,
         zone: NgZone,
-        ) {
+    ) {
         this.subscription.add(this.fdDataShareServie.getDateRange().subscribe(date => {
             this.DateRange = date;
             console.log('this.DateRange ', this.DateRange);
@@ -100,12 +100,12 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         url: '',
         type: '',
         listName: ''
-      };
+    };
     // List of Subscribers
     private subscription: Subscription = new Subscription();
 
     @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
-    @ViewChild('ab', { static: false }) approvedBTable: DataTable;
+    @ViewChild('ab', { static: false }) approvedBTable: Table;
 
     // Project Info
     projectInfoData: any = [];
@@ -259,6 +259,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
             }
         }));
     }
+
     projectContacts() {
         this.subscription.add(this.fdDataShareServie.defaultPCData.subscribe((res) => {
             if (res) {
@@ -368,13 +369,14 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         if (groups.indexOf('Invoice_Team') > -1 || groups.indexOf('Managers') > -1 || groups.indexOf('ExpenseApprovers') > -1) {
             speInfoObj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfoForBillable);
             speInfoObj.filter = speInfoObj.filter.replace('{{StartDate}}', this.DateRange.startDate)
-                                                 .replace('{{EndDate}}', this.DateRange.endDate);
+                .replace('{{EndDate}}', this.DateRange.endDate);
         } else {
             speInfoObj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfoForBillableCS);
             speInfoObj.filter = speInfoObj.filter.replace('{{StartDate}}', this.DateRange.startDate)
-                                                 .replace('{{EndDate}}', this.DateRange.endDate)
-                                                 .replace('{{UserID}}', this.globalService.currentUser.userId.toString());
+                .replace('{{EndDate}}', this.DateRange.endDate)
+                .replace('{{UserID}}', this.globalService.currentUser.userId.toString());
         }
+        this.commonService.SetNewrelic('Finance-Dashboard', 'Expenditure-approvedBillable', 'GetSpendingInfo');
         const res = await this.spServices.readItems(this.constantService.listNames.SpendingInfo.name, speInfoObj);
         const arrResults = res.length ? res : [];
         this.formatData(arrResults);
@@ -540,8 +542,10 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         this.listOfPOCs = [];
 
         if (!this.selectedAllRowsItem.length) {
-            this.messageService.add({ key: 'approvedToast', severity: 'info', summary: 'Info message',
-             detail: 'Please select at least 1 Projects & try again', life: 4000 });
+            this.messageService.add({
+                key: 'approvedToast', severity: 'info', summary: 'Info message',
+                detail: 'Please select at least 1 Projects & try again', life: 4000
+            });
             return;
         }
         // if (this.pcFound) {
@@ -562,14 +566,18 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                     this.setValInScheduleOop(this.selectedAllRowsItem);
                     this.scheduleOopModal = true;
                 } else {
-                    this.messageService.add({ key: 'approvedToast', severity: 'info', summary: 'Info message',
-                     detail: 'Please select only those Projects whose scheduling is pending', life: 4000 });
+                    this.messageService.add({
+                        key: 'approvedToast', severity: 'info', summary: 'Info message',
+                        detail: 'Please select only those Projects whose scheduling is pending', life: 4000
+                    });
                 }
 
             } else {
                 this.scheduleOopModal = false;
-                this.messageService.add({ key: 'approvedToast', severity: 'info', summary: 'Info message',
-                 detail: 'Please select same Projects', life: 4000 });
+                this.messageService.add({
+                    key: 'approvedToast', severity: 'info', summary: 'Info message',
+                    detail: 'Please select same Projects', life: 4000
+                });
             }
 
 
@@ -581,13 +589,17 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                 if (sts) {
                     this.markAsPaymentModal = true;
                 } else {
-                    this.messageService.add({ key: 'approvedToast', severity: 'info', summary: 'Info message',
-                     detail: 'Please select only those Projects whose payment is pending', life: 4000 });
+                    this.messageService.add({
+                        key: 'approvedToast', severity: 'info', summary: 'Info message',
+                        detail: 'Please select only those Projects whose payment is pending', life: 4000
+                    });
                 }
             } else {
                 this.scheduleOopModal = false;
-                this.messageService.add({ key: 'approvedToast', severity: 'info', summary: 'Info message',
-                 detail: 'Please select same Vendor/Freelance name', life: 4000 });
+                this.messageService.add({
+                    key: 'approvedToast', severity: 'info', summary: 'Info message',
+                    detail: 'Please select same Vendor/Freelance name', life: 4000
+                });
             }
         }
 
@@ -753,7 +765,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         // PF
         const pfObj = Object.assign({}, this.queryConfig);
         pfObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectFinances.name,
-                                               this.fdConstantsService.fdComponent.projectFinances);
+            this.fdConstantsService.fdComponent.projectFinances);
         pfObj.url = pfObj.url.replace('{{ProjectCode}}', this.scheduleOopInvoice_form.getRawValue().ProjectCode);
         pfObj.listName = this.constantService.listNames.ProjectFinances.name;
         pfObj.type = 'GET';
@@ -769,9 +781,9 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         // PFB
         const pfbObj = Object.assign({}, this.queryConfig);
         pfbObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectFinanceBreakup.name,
-                                               this.fdConstantsService.fdComponent.projectFinanceBreakupFromPO);
+            this.fdConstantsService.fdComponent.projectFinanceBreakupFromPO);
         pfbObj.url = pfbObj.url.replace('{{ProjectCode}}', this.scheduleOopInvoice_form.getRawValue().ProjectCode)
-                             .replace('{{PO}}', this.poItem.Id);
+            .replace('{{PO}}', this.poItem.Id);
         pfbObj.listName = this.constantService.listNames.ProjectFinanceBreakup.name;
         pfbObj.type = 'GET';
         batchUrl.push(pfbObj);
@@ -785,7 +797,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         // PBB
         const pbbObj = Object.assign({}, this.queryConfig);
         pbbObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectBudgetBreakup.name,
-                                               this.fdConstantsService.fdComponent.projectBudgetBreakup);
+            this.fdConstantsService.fdComponent.projectBudgetBreakup);
         pbbObj.url = pbbObj.url.replace('{{ProjectCode}}', this.scheduleOopInvoice_form.getRawValue().ProjectCode);
         pbbObj.listName = this.constantService.listNames.ProjectBudgetBreakup.name;
         pbbObj.type = 'GET';
@@ -810,6 +822,8 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         // userBatchBody = batchContents.join('\r\n');
         // let arrResults: any = [];
         // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
+
+        this.commonService.SetNewrelic('Finance-Dashboard', 'approved-billable', 'GetPFPFBPBB');
         const res = await this.spServices.executeBatch(batchUrl);
         const arrResults = res.length ? res.map(a => a.retItems) : [];
         if (arrResults.length) {
@@ -959,6 +973,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     }
 
     async uploadFileData(type: string) {
+        this.commonService.SetNewrelic('Finance-Dashboard', 'approve-billable', 'UploadFile');
         const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
         if (res.ServerRelativeUrl) {
             this.fileUploadedUrl = res.ServerRelativeUrl;
@@ -989,8 +1004,10 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         } else if (res.hasError) {
             this.isPSInnerLoaderHidden = true;
             this.submitBtn.isClicked = false;
-            this.messageService.add({ key: 'approvedToast', severity: 'error', summary: 'Error message',
-             detail: 'File not uploaded,Folder / ' + res.message.value + '', life: 3000 });
+            this.messageService.add({
+                key: 'approvedToast', severity: 'error', summary: 'Error message',
+                detail: 'File not uploaded,Folder / ' + res.message.value + '', life: 3000
+            });
         }
     }
 
@@ -1104,6 +1121,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         // const batchBodyContent = this.spServices.getBatchBodyPost(batchBody, batchGuid, changeSetId);
         // batchBodyContent.push('--batch_' + batchGuid + '--');
         // const sBatchData = batchBodyContent.join('\r\n');
+        this.commonService.SetNewrelic('Finance-Dashboard', 'approve-billable', 'formSubmitForSelectedRow');
         const res = await this.spServices.executeBatch(dataEndpointArray);
         // await this.spServices.getData(batchGuid, sBatchData).subscribe(res => {
 
@@ -1114,13 +1132,17 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         if (type === 'scheduledOOP') {
             this.updateStsToBilled(arrResults);
         } else if (type === 'updateScheduledOopLineItem') {
-            this.messageService.add({ key: 'approvedToast', severity: 'success',
-             summary: 'Success message', detail: 'OOP Invoice is Scheduled.', life: 2000 });
+            this.messageService.add({
+                key: 'approvedToast', severity: 'success',
+                summary: 'Success message', detail: 'OOP Invoice is Scheduled.', life: 2000
+            });
             this.scheduleOopModal = false;
             this.reFetchData();
         } else if (type === 'markAsPayment_form') {
-            this.messageService.add({ key: 'approvedToast', severity: 'success',
-             summary: 'Success message', detail: 'Payment marked.', life: 2000 });
+            this.messageService.add({
+                key: 'approvedToast', severity: 'success',
+                summary: 'Success message', detail: 'Payment marked.', life: 2000
+            });
             this.isPSInnerLoaderHidden = true;
             this.markAsPaymentModal = false;
             this.reFetchData();
@@ -1198,7 +1220,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
             const obj = {
                 tableData: this.approvedBTable,
                 colFields: this.appBillableColArray
-         };
+            };
             if (obj.tableData.filteredValue) {
                 this.commonService.updateOptionValues(obj);
             } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {

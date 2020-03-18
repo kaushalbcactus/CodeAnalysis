@@ -13,7 +13,7 @@ import { Router, NavigationEnd } from '@angular/router';
 // import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { MenuItem, MessageService } from 'primeng/api';
 import { ActionsPopupComponent } from './actions-popup/actions-popup.component';
-import { DataTable } from 'primeng/primeng';
+import { Table } from 'primeng/table';
 
 @Component({
   selector: 'app-cd',
@@ -23,8 +23,8 @@ import { DataTable } from 'primeng/primeng';
 export class CDComponent implements OnInit, OnDestroy {
   // @ViewChild(MatSort) cdSort: MatSort;
   @ViewChild('popupLoader', { static: true }) popupLoader: ElementRef;
-  @ViewChild('CDPopup', { static: true }) CDPopup: ActionsPopupComponent;
-  @ViewChild('cd', { static: false }) cdTable: DataTable;
+  @ViewChild('CDPopup', { static: false }) CDPopup: ActionsPopupComponent;
+  @ViewChild('cd', { static: false }) cdTable: Table;
 
   // public successMessage: string;
   CDColumns = [];
@@ -106,6 +106,7 @@ export class CDComponent implements OnInit, OnDestroy {
       { field: 'Accountable', header: 'Accountble' },
       { field: 'Segregation', header: 'Segregation' },
       { field: 'BusinessImpact', header: 'Business Imapact' },
+      { field: '', header: '' },
     ];
     // this.initializeMsg();
     setTimeout(async () => {
@@ -149,6 +150,7 @@ export class CDComponent implements OnInit, OnDestroy {
    */
   protected async getQCItems(filterObj?): Promise<[]> {
     const qcComponent = JSON.parse(JSON.stringify(this.qmsConstant.ClientFeedback.ClientDissatisfactionComponent));
+    this.commonService.SetNewrelic('QMS', 'CD', 'getGroupInfo');
     const result = await this.spService.getGroupInfo(this.globalConstant.Groups.CDAdmin);
     this.global.cdAdmins = result.results ? result.results : [];
     this.global.currentUser.isCDAdmin = this.global.cdAdmins.find(t => t.Id === this.global.currentUser.userId) ? true : false;
@@ -191,6 +193,7 @@ export class CDComponent implements OnInit, OnDestroy {
       }
       qcUrl = qcComponent.getQC;
     }
+    this.commonService.SetNewrelic('QMS', 'ClientFeedback-cd-getQCItems', 'readItems');
     const arrResult = await this.spService.readItems(this.globalConstant.listNames.QualityComplaints.name, qcUrl);
     const arrQCs = arrResult.length > 0 ? this.appendPropertyTOObject(arrResult) : [];
     return arrQCs;
