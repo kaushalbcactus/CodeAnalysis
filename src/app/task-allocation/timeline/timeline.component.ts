@@ -73,6 +73,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   ];
 
   public allTasks = [];
+  public allRestructureTasks = [];
   batchContents = new Array();
   private editorOptions: GanttEditorOptions;
   public GanttChartView = false;
@@ -1898,7 +1899,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
         this.milestoneData = [];
         this.milestoneData.push.apply(this.milestoneData, updatedtempmilestoneData);
-
+        this.allRestructureTasks = allReturnedTasks;
         this.assignUsers(allReturnedTasks);
         this.loaderenable = false;
         this.milestoneData = [...this.milestoneData];
@@ -2075,14 +2076,39 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   getNewTaskName(milestoneTask, originalName) {
     let counter = 1;
-    let getItem = this.tempGanttchartData.filter(e => e.pName === originalName && e.milestone === milestoneTask.milestone);
-    while (getItem.length) {
+    // let getItem = this.allRestructureTasks.filter(e => e.pName === originalName && e.milestone === milestoneTask.milestone);
+    // if (!getItem.length) {
+    //   getItem = this.allTasks.filter(e => {
+    //     const taskName = e.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + e.Milestone + ' ', '');
+    //     return e.FileSystemObjectType === 0 && taskName === originalName && e.Milestone === milestoneTask.milestone;
+    //   });
+    // }
+    let tasks = this.checkNameExists([], milestoneTask, originalName);
+    while (tasks.length) {
       counter++;
       originalName = milestoneTask.itemType + ' ' + counter;
-      getItem = this.tempGanttchartData.filter(e => e.pName === originalName);
+      tasks = this.checkNameExists([], milestoneTask, originalName);
+      // getItem = this.allRestructureTasks.filter(e => e.pName === originalName && e.milestone === milestoneTask.milestone);
+      // if (!getItem.length) {
+      //   getItem = this.allTasks.filter(e => {
+      //     const taskName = e.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + e.Milestone + ' ', '');
+      //     return e.FileSystemObjectType === 0 && taskName === originalName && e.Milestone === milestoneTask.milestone;
+      //   });
+      // }
     }
 
     return originalName;
+  }
+
+  checkNameExists(tasks, milestoneTask, originalName) {
+    tasks = this.allRestructureTasks.filter(e => e.pName === originalName && e.milestone === milestoneTask.milestone);
+    if (!tasks.length) {
+      tasks = this.allTasks.filter(e => {
+        const taskName = e.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + e.Milestone + ' ', '');
+        return e.FileSystemObjectType === 0 && taskName === originalName && e.Milestone === milestoneTask.milestone;
+      });
+    }
+    return tasks;
   }
   // *************************************************************************************************
   // Date changes Cascading (Task Date Change)
@@ -2384,7 +2410,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   async compareSlotSubTasksTimeline(sentPrevNode1, subMilestonePosition, selectedMil) {
     // fetch slot based on submilestone presnt or not
     let sentPrevNode;
-    if(subMilestonePosition === 0) {
+    if (subMilestonePosition === 0) {
       sentPrevNode = this.milestoneData[selectedMil].children.find(st => st.data.pName === sentPrevNode1.pName)
     } else {
       const submilestone = this.milestoneData[selectedMil].children.find(sm => sm.data.pName === sentPrevNode1.submilestone);
