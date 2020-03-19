@@ -2087,7 +2087,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     while (tasks.length) {
       counter++;
       originalName = milestoneTask.itemType + ' ' + counter;
-      tasks = this.checkNameExists([], milestoneTask, originalName);
+      tasks = this.checkNameExists(tasks, milestoneTask, originalName);
       // getItem = this.allRestructureTasks.filter(e => e.pName === originalName && e.milestone === milestoneTask.milestone);
       // if (!getItem.length) {
       //   getItem = this.allTasks.filter(e => {

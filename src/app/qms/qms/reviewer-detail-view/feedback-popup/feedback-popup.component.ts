@@ -301,7 +301,7 @@ export class FeedbackPopupComponent implements OnInit {
       const tasksReviewPending = taskDetail.reviewTask.defaultSkill === 'Review' ? await this.getPrevTask(prevTasks) : [taskDetail];
       let updateIsRatedDetail = {};
       // Update review task rated 'yes' if this is last previous task not rated
-      if (tasksReviewPending.length <= 1 && taskDetail.reviewTask) {
+      if (tasksReviewPending.length <= 1 && taskDetail.reviewTask.ID) {
         const reviewTaskUpdateDetail = {
           __metadata: { type: this.constantsService.listNames.Schedules.type },
           IsRated: true // for review task
@@ -334,7 +334,7 @@ export class FeedbackPopupComponent implements OnInit {
           Rated: true,
           // IsRated: true
         };
-      } else if (!taskDetail.reviewTask) {
+      } else if (!taskDetail.reviewTask.ID) {
         /// Below will be updated for Admin users
         updateIsRatedDetail = {
           __metadata: { type: this.constantsService.listNames.Schedules.type },
