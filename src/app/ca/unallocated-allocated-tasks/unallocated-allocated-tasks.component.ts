@@ -14,6 +14,7 @@ import { DialogService, MessageService, MenuItem, SelectItem } from 'primeng';
 import { CaDragdropComponent } from '../ca-dragdrop/ca-dragdrop.component';
 import { async } from '@angular/core/testing';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
+import { exists } from 'fs';
 
 @Component({
   selector: 'app-unallocated-allocated-tasks',
@@ -565,7 +566,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     // rowData.PreviousAssignedUser = rowData.AssignedTo;
   }
 
-  
+
   // *************************************************************************************************
   //  Get Email Body
   // **************************************************************************************************
@@ -626,7 +627,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     return mailContent.replace(new RegExp(key, 'g'), value);
   }
 
- 
+
   // ****************************************************************************************************
   // hide popup menu on production
   // *****************************************************************************************************
@@ -779,7 +780,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         RowData.subTaskloaderenable = false;
         this.disableSave = false;
       }
-     
+
     });
 
   }
@@ -1224,26 +1225,54 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     this.disableSave = true;
     const isValid = await this.validate();
 
-    if (isValid) {
-      this.loaderenable = true;
-      setTimeout(() => {
+    // if (isValid) {
+    //   this.loaderenable = true;
+    //   setTimeout(() => {
 
-        this.messageService.add({
-          key: 'tc', severity: 'warn', sticky: true,
-          summary: 'Info Message', detail: 'Updating...'
-        });
-        this.generateSaveTasks(unt);
-      }, 300);
-    }
-    else {
-      this.disableSave = false;
-    }
+    //     this.messageService.add({
+    //       key: 'tc', severity: 'warn', sticky: true,
+    //       summary: 'Info Message', detail: 'Updating...'
+    //     });
+    //     this.generateSaveTasks(unt);
+    //   }, 300);
+    // }
+    // else {
+    //   this.disableSave = false;
+    // }
 
   }
 
 
   async validate() {
+
     const EditedSlots = this.completeTaskArray.filter(c => c.editMode === true);
+
+    const batchUrl = [];
+    let UniqueProjectCodeArray = [];
+    let dbAllProjectTasks = [];
+    const ProjectCodeArray = EditedSlots.map(c => c.ProjectCode);
+    if (ProjectCodeArray) {
+      UniqueProjectCodeArray = ProjectCodeArray.filter((item, index) => ProjectCodeArray.indexOf(item) === index);
+    }
+    if (UniqueProjectCodeArray.length) {
+      UniqueProjectCodeArray.forEach(element => {
+        const projectObj = Object.assign({}, this.queryConfig);
+        projectObj.url = this.spServices.getReadURL(this.globalConstant.listNames.Schedules.name,
+          this.caConstant.tasks);
+        projectObj.url = projectObj.url.replace(/{{ProjectCode}}/gi, element);
+        projectObj.listName = this.globalConstant.listNames.Schedules.name;
+        projectObj.type = 'GET';
+        batchUrl.push(projectObj);
+      });
+
+      if (batchUrl.length) {
+        this.commonService.SetNewrelic('CA', 'unallocated-allocatedtask', 'getProjectTasks');
+        const result = await this.spServices.executeBatch(batchUrl);
+        if (result) {
+          dbAllProjectTasks = [].concat(...result.map(c => c.retItems));
+        }
+      }
+    }
 
     for (const slot of EditedSlots) {
       if (slot.SlotTasks) {
@@ -1316,6 +1345,22 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           });
           return false;
         }
+
+        // check for task already exists new (Maxwell)
+        const dbProjectTasks = dbAllProjectTasks.filter(c => c.ProjectCode === slot.ProjectCode).map(c => $.trim(c.Title.replace(c.ProjectCode + '', '').replace(c.Milestone + '', '')));
+        if (slot.SlotTasks.filter(c => c.Id === undefined)) {
+          const ExisitingTasks = slot.SlotTasks.filter(c => c.Id === undefined).map(c => c.TaskName).filter(c => dbProjectTasks.includes(c))
+
+          if (ExisitingTasks.length > 0) {
+            this.messageService.add({
+              key: 'custom', severity: 'warn', summary: 'Warning Message',
+              // tslint:disable-next-line: max-line-length
+              detail: ExisitingTasks.join(', ') + ' task of ' + slot.ProjectCode + '-' + slot.Milestone + ' is already exist.'
+            });
+            return false;
+          }
+        }
+
       }
     }
     return true;

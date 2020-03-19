@@ -212,8 +212,6 @@ export class CsFinanceAuditDialogComponent implements OnInit {
 
   async AuditProjects(AuditType) {
     if (AuditType === 'CS') {
-      debugger;
-
       const addRollingProjectArray = [
         { checked: false, parameter: 'All project attributes are correct', comments: '' },
         { checked: false, parameter: 'Final documents uploaded for all the tasks', comments: '' },
@@ -258,7 +256,6 @@ export class CsFinanceAuditDialogComponent implements OnInit {
         dbExpenseLineItems = [].concat(...dbExpenseInvoiceArray.filter(c => c.listName === 'SpendingInfo').map(c => c.retItems));
       }
 
-      debugger
       let UniqueInvalidInvoices = [];
       if (dbInvoiceLineItems) {
         if (dbInvoiceLineItems.filter(c => c.Status !== 'Approved')) {
