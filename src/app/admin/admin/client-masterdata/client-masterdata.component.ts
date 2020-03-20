@@ -795,14 +795,14 @@ export class ClientMasterdataComponent implements OnInit {
       ];
     }
   }
-   /**
-   * Construct a method to remove the item from table.
-   *
-   * @description
-   *
-   * This method mark the point of Contact as `Status='Inactive'` in `ProjectContact` list so that it is not visible in table.
-   *
-   */
+  /**
+  * Construct a method to remove the item from table.
+  *
+  * @description
+  *
+  * This method mark the point of Contact as `Status='Inactive'` in `ProjectContact` list so that it is not visible in table.
+  *
+  */
   deletePOC() {
     console.log(this.currPOCObj);
     this.confirmationService.confirm({
@@ -2098,6 +2098,238 @@ export class ClientMasterdataComponent implements OnInit {
     return data;
   }
 
+  // **************************************************************************************************
+  // Sub division Details start
+  // **************************************************************************************************
+
+  async saveSubdivision(subDivisionDetails) {
+    // write the save logic using rest api.
+    const subDivisionData = await this.getSubDivisionData(subDivisionDetails);
+    if (!this.showeditSubDivision) {
+      this.common.SetNewrelic('admin', 'admin-clientMaster', 'createClientSubdivision');
+      const results = await this.spServices.createItem(this.constantsService.listNames.ClientSubdivision.name,
+        subDivisionData, this.constantsService.listNames.ClientSubdivision.type);
+      if (!results.hasOwnProperty('hasError') && !results.hasError) {
+        this.messageService.add({
+          key: 'adminCustom', severity: 'success', summary: 'Success Message',
+          detail: 'The subdivision ' + subDivisionDetails.value.subDivision_Name + ' is created successfully.'
+        });
+        await this.loadRecentSubDivisionRecords(results.ID, this.showeditSubDivision);
+      }
+    }
+    if (this.showeditSubDivision) {
+      this.common.SetNewrelic('admin', 'admin-clientMaster', 'updateClientSubdivision');
+      const results = await this.spServices.updateItem(this.constantsService.listNames.ClientSubdivision.name, this.currSubDivisionObj.ID,
+        subDivisionData, this.constantsService.listNames.ClientSubdivision.type);
+      this.messageService.add({
+        key: 'adminCustom', severity: 'success',
+        summary: 'Success Message', detail: 'The subdivision ' + this.currSubDivisionObj.SubDivision + ' is updated successfully.'
+      });
+      await this.loadRecentSubDivisionRecords(this.currSubDivisionObj.ID, this.showeditSubDivision);
+    }
+  }
+
+  /**
+* Construct a method to create an object of clientSubsdivision.
+*
+* @description
+*
+* This method is used to create an object of clientSubDivision.
+*
+* @return It will return an object of clientSubDivision.
+*/
+  getSubDivisionData(subDivisionDetails) {
+    const data: any = {};
+    if (!this.showeditSubDivision) {
+      data.Title = subDivisionDetails.value.subDivision_Name;
+      data.ClientLegalEntity = this.currClientObj.ClientLegalEntity;
+    }
+    data.DeliveryLevel1Id = subDivisionDetails.value.deliveryLevel1 ? { results: subDivisionDetails.value.deliveryLevel1 } :
+      { results: [] };
+    data.CMLevel1Id = subDivisionDetails.value.cmLevel1 ? { results: subDivisionDetails.value.cmLevel1 } : { results: [] };
+    data.DistributionList = subDivisionDetails.value.distributionList ? subDivisionDetails.value.distributionList : '';
+    return data;
+  }
+
+  /**
+   * Construct a method to load the newly created item into the table without refreshing the whole page.
+   * @param item ID the item which is created or updated recently.
+   *
+   * @param isUpdate Pass the isUpdate as true/false for update and create item respectively.
+   *
+   * @description
+   *
+   * This method will load newly created item or updated item as first row in the table;
+   *  Pass `false` to add the new created item at position 0 in the array.
+   *  Pass `true` to replace the item in the array
+   */
+  async loadRecentSubDivisionRecords(ID, isUpdate) {
+    const subDivisionGet = Object.assign({}, this.adminConstants.QUERY.GET_SUB_DIVISION_BY_ID);
+    subDivisionGet.filter = subDivisionGet.filter
+      .replace(/{{isActive}}/gi, this.adminConstants.LOGICAL_FIELD.YES)
+      .replace(/{{clientLegalEntity}}/gi, this.currClientObj.ClientLegalEntity)
+      .replace(/{{Id}}/gi, ID);
+    this.common.SetNewrelic('admin', 'admin-clientMaster', 'getClientSubdivision');
+    const result = await this.spServices.readItems(this.constantsService.listNames.ClientSubdivision.name, subDivisionGet);
+    if (result && result.length) {
+      const item = result[0];
+      const obj = Object.assign({}, this.adminObject.subDivisionObj);
+      obj.ID = item.ID;
+      obj.SubDivision = item.Title;
+      obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
+      obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd ,yyyy');
+      obj.LastUpdatedBy = item.Editor.Title;
+      obj.IsActive = item.IsActive;
+      obj.CMLevel1 = item.CMLevel1;
+      obj.DeliveryLevel1 = item.DeliveryLevel1;
+      obj.DistributionList = item.DistributionList;
+      obj.ClientLegalEntity = item.ClientLegalEntity;
+      // If Create - add the new created item at position 0 in the array.
+      // If Edit - Replace the item in the array and position at 0 in the array.
+      if (isUpdate) {
+        const index = this.subDivisionDetailsRows.findIndex(x => x.ID === obj.ID);
+        this.subDivisionDetailsRows.splice(index, 1);
+        this.subDivisionDetailsRows.unshift(obj);
+      } else {
+        this.subDivisionDetailsRows.unshift(obj);
+      }
+      this.subDivisionFilters(this.subDivisionDetailsRows);
+    }
+  }
+
+
+  // **************************************************************************************************
+  // Sub division Details end
+  // **************************************************************************************************
+
+
+  // **************************************************************************************************
+  // POC Details start
+  // **************************************************************************************************
+
+  async savePOC(pocDetails){
+
+      // write the save logic using rest api.
+      const pocData = await this.getPOCData(pocDetails);
+      if (!this.showeditPOC) {
+        this.common.SetNewrelic('admin', 'admin-clientMaster', 'CreateProjectContacts');
+        const results = await this.spServices.createItem(this.constantsService.listNames.ProjectContacts.name,
+          pocData, this.constantsService.listNames.ProjectContacts.type);
+        if (!results.hasOwnProperty('hasError') && !results.hasError) {
+          this.messageService.add({
+            key: 'adminCustom', severity: 'success', summary: 'Success Message',
+            detail: 'The Poc ' + pocDetails.value.fname + ' ' + pocDetails.value.lname + ' is created successfully.'
+          });
+          await this.loadRecentPOCRecords(results.ID, this.showeditPOC);
+        }
+      }
+      if (this.showeditPOC) {
+        this.common.SetNewrelic('admin', 'admin-clientMaster', 'updateProjectContacts');
+        const results = await this.spServices.updateItem(this.constantsService.listNames.ProjectContacts.name, this.currPOCObj.ID,
+          pocData, this.constantsService.listNames.ProjectContacts.type);
+        this.messageService.add({
+          key: 'adminCustom', severity: 'success',
+          summary: 'Success Message', detail: 'The Poc ' + pocDetails.value.fname + ' ' + pocDetails.value.lname +
+            ' is updated successfully.'
+        });
+        await this.loadRecentPOCRecords(this.currPOCObj.ID, this.showeditPOC);
+      }
+  }
+  /**
+   * Construct a method to create an object of `ProjectContacts`.
+   *
+   * @description
+   *
+   * This method is used to create an object of `ProjectContacts`.
+   *
+   * @return It will return an object of `ProjectContacts`.
+   */
+  getPOCData(pocDetails) {
+    const data: any = {
+      FName: pocDetails.value.fname,
+      LName: pocDetails.value.lname,
+      Designation: pocDetails.value.designation,
+      EmailAddress: pocDetails.value.email,
+      ReferralSource: pocDetails.value.referralSource,
+      Status: this.adminConstants.LOGICAL_FIELD.ACTIVE,
+      ProjectContactsType: pocDetails.value.contactsType,
+      ClientLegalEntity: this.currClientObj.ClientLegalEntity,
+      Title: this.currClientObj.ClientLegalEntity,
+      FullName: pocDetails.value.fname + ' ' + pocDetails.value.lname
+    };
+    data.Phone = pocDetails.value.phone ? pocDetails.value.phone : '';
+    const ap1 = pocDetails.value.address1 ? pocDetails.value.address1 : '';
+    const ap2 = pocDetails.value.address2 ? pocDetails.value.address2 : '';
+    const ap3 = pocDetails.value.address3 ? pocDetails.value.address3 : '';
+    const ap4 = pocDetails.value.address4 ? pocDetails.value.address4 : '';
+    data.Address = ap1 + ';#' + ap2 + ';#' + ap3 + ';#' + ap4;
+    data.Department = pocDetails.value.department ? pocDetails.value.department : '';
+    data.RelationshipStrength = pocDetails.value.relationshipStrength ? pocDetails.value.relationshipStrength : '';
+    data.EngagementPlan = pocDetails.value.engagementPlan ? pocDetails.value.engagementPlan : '';
+    data.Comments = pocDetails.value.comments ? pocDetails.value.comments : '';
+    return data;
+  }
+
+  /**
+   * Construct a method to load the newly created item into the table without refreshing the whole page.
+   * @param item ID the item which is created or updated recently.
+   *
+   * @param isUpdate Pass the isUpdate as true/false for update and create item respectively.
+   *
+   * @description
+   *
+   * This method will load newly created item or updated item as first row in the table;
+   *  Pass `false` to add the new created item at position 0 in the array.
+   *  Pass `true` to replace the item in the array
+   */
+  async loadRecentPOCRecords(ID, isUpdate) {
+    const pocGet = Object.assign({}, this.adminConstants.QUERY.GET_POC_BY_ID);
+    pocGet.filter = pocGet.filter
+      .replace(/{{active}}/gi, this.adminConstants.LOGICAL_FIELD.ACTIVE)
+      .replace(/{{clientLegalEntity}}/gi, this.currClientObj.ClientLegalEntity)
+      .replace(/{{Id}}/gi, ID);
+    this.common.SetNewrelic('admin', 'admin-clientMaster', 'getProjectContacts');
+    const result = await this.spServices.readItems(this.constantsService.listNames.ProjectContacts.name, pocGet);
+    if (result && result.length) {
+      const item = result[0];
+      const obj = Object.assign({}, this.adminObject.pocObj);
+      obj.ID = item.ID;
+      obj.Title = item.Title ? item.Title : '';
+      obj.ClientLegalEntity = item.ClientLegalEntity;
+      obj.FName = item.FName;
+      obj.LName = item.LName;
+      obj.EmailAddress = item.EmailAddress;
+      obj.Designation = item.Designation;
+      obj.Phone = item.Phone ? item.Phone : '';
+      obj.Address = item.Address ? item.Address : '';
+      obj.FullName = item.FullName ? item.FullName : '';
+      obj.Department = item.Department ? item.Department : '';
+      obj.ReferralSource = item.ReferralSource;
+      obj.Status = item.Status;
+      obj.RelationshipStrength = item.RelationshipStrength ? item.RelationshipStrength : '';
+      obj.EngagementPlan = item.EngagementPlan ? item.EngagementPlan : '';
+      obj.Comments = item.Comments ? item.Comments : '';
+      obj.ProjectContactsType = item.ProjectContactsType;
+      obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
+      obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd ,yyyy');
+      obj.LastUpdatedBy = item.Editor.Title;
+      // If Create - add the new created item at position 0 in the array.
+      // If Edit - Replace the item in the array and position at 0 in the array.
+      if (isUpdate) {
+        const index = this.POCRows.findIndex(x => x.ID === obj.ID);
+        this.POCRows.splice(index, 1);
+        this.POCRows.unshift(obj);
+      } else {
+        this.POCRows.unshift(obj);
+      }
+      this.POCFilters(this.POCRows);
+    }
+  }
+
+
+  // **************************************************************************************************
+  // POC Details end
+  // **************************************************************************************************
 
 
   addEditClentLegalEntity(title, ClientObject) {
@@ -2122,45 +2354,49 @@ export class ClientMasterdataComponent implements OnInit {
     });
   }
 
+
+
+
   addEditSubDivision(title, SubDivisionObject) {
 
+    this.showeditSubDivision = SubDivisionObject ? true : false;
     const ref = this.dialogService.open(AddEditSubdivisionComponent, {
       header: title,
-      width: '92vw',
+      width: '70vw',
       data: {
         SubDivisionObject: SubDivisionObject,
         subDivisionDetailsRows: this.subDivisionDetailsRows,
         currClientObj: this.currClientObj
       },
-      contentStyle: { 'max-height': '82vh', 'overflow-y': 'auto' },
+      contentStyle: { 'overflow-y': 'visible' },
       closable: false,
     });
 
-    ref.onClose.subscribe((clientDetails: any) => {
-      // if (clientDetails) {
-      //   this.saveClient(clientDetails);
-      // }
+    ref.onClose.subscribe((subDivisionDetails: any) => {
+      if (subDivisionDetails) {
+        this.saveSubdivision(subDivisionDetails);
+      }
     });
   }
 
   addEditPOC(title, pocObject) {
-
+    this.showeditPOC = pocObject ? true : false;
     const ref = this.dialogService.open(AddEditPocComponent, {
       header: title,
       width: '92vw',
       data: {
-       PocObject: pocObject,
-       PocRows: this.POCRows,
-       currClientObj: this.currClientObj
+        PocObject: pocObject,
+        PocRows: this.POCRows,
+        currClientObj: this.currClientObj
       },
-      contentStyle: { 'max-height': '82vh', 'overflow-y': 'auto' },
+      contentStyle: { 'max-height': '75vh', 'overflow-y': 'auto' },
       closable: false,
     });
 
-    ref.onClose.subscribe((clientDetails: any) => {
-      // if (clientDetails) {
-      //   this.saveClient(clientDetails);
-      // }
+    ref.onClose.subscribe((pocDetails: any) => {
+      if (pocDetails) {
+        this.savePOC(pocDetails);
+      }
     });
   }
 }
