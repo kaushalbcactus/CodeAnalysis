@@ -144,7 +144,7 @@ export class FeedbackPopupComponent implements OnInit {
       const taskString = tasksNames.join(',');
       this.messageService.add({
         key: 'custom', severity: 'warn', summary: 'Warning Message', life: 10000,
-        detail: 'Please provide comments for tasks ' + taskString + 'as rating is less than 3'
+        detail: 'Please provide comments for tasks ' + taskString + ' as rating is less than 3'
       });
       return false;
     }
