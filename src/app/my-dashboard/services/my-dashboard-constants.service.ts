@@ -1095,7 +1095,7 @@ export class MyDashboardConstantsService {
           const reviewer = 'Reviewer';
           let arrPrevTaskDocUrl = documents.filter(d => d.ListItemAllFields.TaskName === previousTask.Title && d.ListItemAllFields.Status.indexOf('Complete') > -1);
           arrPrevTaskDocUrl = arrPrevTaskDocUrl.length ? arrPrevTaskDocUrl.map(d => d.ServerRelativeUrl) : '';
-          let arrReviewDocUrl =  documents.filter(d => d.ListItemAllFields.TaskName === currentTask.Title && d.ListItemAllFields.Status.indexOf('Complete') > -1);
+          let arrReviewDocUrl = documents.filter(d => d.ListItemAllFields.TaskName === currentTask.Title && d.ListItemAllFields.Status.indexOf('Complete') > -1);
           arrReviewDocUrl = arrReviewDocUrl ? arrReviewDocUrl.map(d => d.ServerRelativeUrl) : '';
           previousTask.skill = this.getResourceSkill(previousTask);
           previousTask.isResourceEQG = arrEQGSkills.findIndex(t => previousTask.skill.includes(t)) > -1 ? true : false;
@@ -1156,7 +1156,21 @@ export class MyDashboardConstantsService {
     }
     return tempDate;
   }
-
+  getBusinessDays(date, days) {
+    let tempminDateValue = null;
+    const dayCount = days;
+    let tempDate = new Date(date);
+    while (days > 0) {
+      tempDate = new Date(tempDate.setDate(tempDate.getDate() + 1));
+      if (tempDate.getDay() !== 6 && tempDate.getDay() !== 0) {
+        days -= 1;
+        if (dayCount - 3 <= days) {
+          tempminDateValue = tempDate;
+        }
+      }
+    }
+    return tempminDateValue;
+  }
 }
 
 

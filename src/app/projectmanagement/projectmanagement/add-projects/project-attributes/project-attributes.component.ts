@@ -11,6 +11,7 @@ import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.ser
 import { Router } from '@angular/router';
 import { DataService } from 'src/app/Services/data.service';
 import { CommonService } from 'src/app/Services/common.service';
+import { MyDashboardConstantsService } from 'src/app/my-dashboard/services/my-dashboard-constants.service';
 @Component({
   selector: 'app-project-attributes',
   templateUrl: './project-attributes.component.html',
@@ -53,7 +54,8 @@ export class ProjectAttributesComponent implements OnInit {
     private dynamicDialogRef: DynamicDialogRef,
     private router: Router,
     private dataService: DataService,
-    private commonService: CommonService
+    private commonService: CommonService,
+    private myDashboardConstantsService: MyDashboardConstantsService
   ) { }
   async ngOnInit() {
     this.initForm();
@@ -468,6 +470,16 @@ export class ProjectAttributesComponent implements OnInit {
    * @param projObj Pass the projObj as parameter.
    */
   editProject(projObj) {
+    if (projObj.Status !== 'In Discussion') {
+      const actualStartDate = projObj.ActualStartDate ? new Date(projObj.ActualStartDate) : new Date();
+      const newDate = new Date(actualStartDate.getFullYear(), actualStartDate.getMonth() + 1, 1);
+      const date = this.myDashboardConstantsService.getBusinessDays(newDate, 3);
+      if (new Date() >= new Date(date)) {
+        this.addProjectAttributesForm.get('practiceArea').disable();
+      } else {
+        this.addProjectAttributesForm.get('practiceArea').enable();
+      }
+    }
     this.pmObject.addProject.ProjectAttributes.ClientLegalEntity = projObj.ClientLegalEntity;
     this.pmObject.addProject.ProjectAttributes.SubDivision = projObj.SubDivision;
     this.pmObject.addProject.ProjectAttributes.BillingEntity = projObj.BillingEntity;
@@ -522,9 +534,9 @@ export class ProjectAttributesComponent implements OnInit {
     this.pmObject.addProject.ProjectAttributes.Comments = projObj.Comments;
     this.pmObject.addProject.ProjectAttributes.SlideCount = projObj.SlideCount;
     // tslint:disable-next-line: max-line-length
-    this.pmObject.addProject.ProjectAttributes.ReferenceCount = projObj.ReferenceCount; 
+    this.pmObject.addProject.ProjectAttributes.ReferenceCount = projObj.ReferenceCount;
     this.pmObject.addProject.ProjectAttributes.PageCount = projObj.PageCount;
-     this.pmObject.addProject.ProjectAttributes.AnnotationBinder = projObj.AnnotationBinder ? projObj.AnnotationBinder === 'Yes' ? true : false : false;
+    this.pmObject.addProject.ProjectAttributes.AnnotationBinder = projObj.AnnotationBinder ? projObj.AnnotationBinder === 'Yes' ? true : false : false;
 
     this.enableCountFields = this.pmObject.addProject.ProjectAttributes.PracticeArea.toLowerCase()
       === 'medcomm' || this.pmObject.addProject.ProjectAttributes.PracticeArea.toLowerCase()
