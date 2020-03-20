@@ -177,7 +177,7 @@ export class FeedbackPopupComponent implements OnInit {
             //   this.popupClosed.emit(this.scorecardTasks.currentTask);
             //   break;
             case 'Retrospective':
-              this.bindTableEvent.emit(this.global.oReviewerPendingTasks);
+              this.bindTableEvent.emit(previousTasks[0]);
               break;
             case 'Reviewer':
               previousTasks.forEach(task => {
