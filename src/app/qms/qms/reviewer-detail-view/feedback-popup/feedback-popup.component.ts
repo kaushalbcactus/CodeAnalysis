@@ -138,6 +138,16 @@ export class FeedbackPopupComponent implements OnInit {
       });
       return false;
     }
+    const emptyCommentSC = this.scorecardTasks.tasks.filter(t => !t.feedbackComment.length && t.averageRating < 3);
+    if (emptyCommentSC.length) {
+      const tasksNames = emptyCommentSC.map(s => s.task);
+      const taskString = tasksNames.join(',');
+      this.messageService.add({
+        key: 'custom', severity: 'warn', summary: 'Warning Message', life: 10000,
+        detail: 'Please provide comments for tasks ' + taskString + 'as rating is less than 3'
+      });
+      return false;
+    }
     if (emptyScorecard.length) {
       const tasksNames = emptyScorecard.map(s => s.task);
       const taskString = tasksNames.join(',');
