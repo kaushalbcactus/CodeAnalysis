@@ -1865,9 +1865,10 @@ export class AllProjectsComponent implements OnInit {
           batchURL.push(scheduleStatusUpdate);
         } else if (element.Status == this.constants.STATUS.IN_PROGRESS) {
           const scheduleStatusUpdate = Object.assign({}, options);
-          scInProgressUpdateData.ExpectedTime = element.TimeSpent;
-          scInProgressUpdateData.DueDate = new Date(element.DueDate) > new Date() ? new Date(element.DueDate) : new Date(); 
-          scheduleStatusUpdate.data = scInProgressUpdateData;
+          const scInProgressUpdateDataNew = Object.assign({}, scInProgressUpdateData);
+          scInProgressUpdateDataNew.ExpectedTime = element.TimeSpent;
+          scInProgressUpdateDataNew.DueDate = new Date(element.DueDate) < new Date() ? new Date(element.DueDate) : new Date(); 
+          scheduleStatusUpdate.data = scInProgressUpdateDataNew;
           scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
           scheduleStatusUpdate.type = 'PATCH';
           scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
