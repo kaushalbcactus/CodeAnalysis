@@ -61,7 +61,7 @@ export class EditorComponent implements OnInit {
         private globalObject: GlobalService,
         private spOperationsServices: SPOperationService,
         private constantsService: ConstantsService,
-        
+
 
     ) { }
 
@@ -130,7 +130,7 @@ export class EditorComponent implements OnInit {
             <table>
                 <tr>
                     <td style="font-size: 14px;text-align: center;">
-                        This is a computer generated proforma and does not require any stamp or signature 
+                        This is a computer generated proforma and does not require any stamp or signature
                     </td>
                 </tr>
             </table>
@@ -232,7 +232,7 @@ export class EditorComponent implements OnInit {
             </tbody>
         </table>
         <div class="invoice-table proformaDetail">
-    
+
         <div id="invoiceDetail" style="margin-bottom: 20px;">
             <table border="0" cellspacing="0" cellpadding="0">
             <thead>
@@ -333,7 +333,7 @@ export class EditorComponent implements OnInit {
                         DV code
                     </th>
                     <th>
-                        Cactus SP Code
+                      Cactus Project Code
                     </th>
                     <th>
                         Project Title
@@ -509,7 +509,7 @@ export class EditorComponent implements OnInit {
                         DV code
                     </th>
                     <th>
-                        Cactus SP Code
+                        Cactus Project Code
                     </th>
                     <th>
                         Project Title
@@ -632,7 +632,7 @@ export class EditorComponent implements OnInit {
             <tr>
                 <td>
                     <p>
-                        <strong> Purchase Order number : </strong> [[PurchaseOrderNumber]] 
+                        <strong> Purchase Order number : </strong> [[PurchaseOrderNumber]]
                     </p>
                 </td>
             </tr>
@@ -740,7 +740,7 @@ export class EditorComponent implements OnInit {
                     <img src="stamp.png">
                 </td>
             </tr> -->
-    
+
             <tr>
                 <td>
                     <p style="font-size:15px;margin-top: 60px">
@@ -765,7 +765,7 @@ export class EditorComponent implements OnInit {
                         代表取締役 湯浅 誠</p>
                 </td>
             </tr>
-    
+
         </table>
         </div>
         [[Appendix]]
@@ -954,25 +954,25 @@ export class EditorComponent implements OnInit {
                     #header {
                         font-family: Verdana !important;
                     }
-                    
+
                     #header p {
                         margin: 0;
                         line-height: 1.5;
                     }
-                    
+
                     #header table {
                         border-collapse: collapse;
                         background: #fff;
                         width: 100%;
                         margin: 0px;
                     }
-                    
+
                     #header .logo-img {
-                        width: 200px; 
-                        height: auto; 
+                        width: 200px;
+                        height: auto;
                         margin: auto
                     }
-                    
+
                     .header-left {
                         width: 50%;
                         padding-left: 40px;
@@ -982,46 +982,46 @@ export class EditorComponent implements OnInit {
                         margin: 0;
                         text-align: left;
                     }
-                    
+
                     .header-left label {
                         font-size: 26px;
                         font-weight: 500
                     }
-                    
+
                     .header-right {
                         width: 10%;
                         text-align: right;
                         display: table-cell;
                     }
-                    
+
                     .header-right-label {
                         margin-right: 40px;
                         float: right;
                     }
-                    
+
                     .header-right p,
                     .header-right-label p {
                         font-weight: bold;
                     }
-                    
+
                     .header-center {
                         font-size: 22px;
                         font-weight: 500;
                     }
-                    
+
                     #header div table tbody tr {
                         background: #c5d3e5
                     }
-                    
+
                     #header label {
                         text-transform: uppercase;
                     }
-                    
+
                     #header .header-left span {
                         width: 115px !important;
                         display: inline-block;
                     }
-                    
+
                     #header .header-left.indHeader span {
                         width: 145px !important;
                     }
@@ -1044,38 +1044,38 @@ export class EditorComponent implements OnInit {
                     background-color: #fff;
                     font-family: Verdana !important;
                 }
-                
+
                 #footer {
                     font-family: Verdana !important;
                 }
-                
+
                 #footer p {
                     margin: 0;
                     line-height: 1.5;
                 }
-                
+
                 #footer table {
                     border-collapse: collapse;
                     width: 100%;
                     margin: 0px;
                 }
-                
+
                 .footer-table {
                     background: #c5d3e5;
                     text-align: center;
                     font-size: 15px;
                     line-height: 24px;
                 }
-                
+
                 .footer-table a {
                     text-decoration: none;
                     color: blue;
                 }
-                
+
                 footer table:first-child {
                     margin-top: 10px
                 }
-                
+
                 footer table:first-child tr td {
                     font-size: 14px;
                     text-align: center;
@@ -1086,7 +1086,7 @@ export class EditorComponent implements OnInit {
                 }
                 footer table:last-child {
                     margin-top: 8px !important;
-                } 
+                }
                 footer table:last-child tr td {
                     padding: 5px;
                 }
@@ -1108,19 +1108,19 @@ export class EditorComponent implements OnInit {
                         background-color: #fff;
                         font-family: Verdana !important;
                     }
-                    
+
                     #main_content table {
                         border-collapse: collapse;
                         background: #fff;
                         width: 100%;
                         margin: 0px;
                     }
-                    
+
                     #main_content p {
                         margin: 0;
                         line-height: 1.5;
                     }
-                    
+
                     .table-heading {
                         width: 100%;
                         text-align: center;
@@ -1130,38 +1130,38 @@ export class EditorComponent implements OnInit {
                         color: #000;
                         padding: 10px;
                     }
-                    
+
                     .contact_details p,
                     .contact_details_japan p {
                         padding-top: 3px;
                         padding-bottom: 3px;
                     }
-                    
+
                     .contact_details-table figure:first-child {
                         width: 47%;
                         margin: 0px !important;
                         display: inline-block;
                         vertical-align: top;
                     }
-                    
+
                     ;
                     .contact_details-table figure:nth-child(3) table {
                         width: 100%;
                     }
-                    
+
                     .referenceDetail figure,
                     .appendix figure,
                     .contact_details-table figure,
                     figure {
                         display: contents;
                     }
-                    
+
                     .contact_details-table table:first-child p {
                         margin: 0;
                         line-height: 24px;
                         font-size: 16px;
                     }
-                    
+
                     .contact_details-table table:first-child tr td {
                         margin: 0;
                         line-height: 24px;
@@ -1169,93 +1169,93 @@ export class EditorComponent implements OnInit {
                         border: none !important;
                         padding: 5px;
                     }
-                    
+
                     #main_content p span {
                         display: inline-flex;
                     }
-                    
+
                     .contact-detail-table-left {
                         width: 50%;
                         float: left;
                         margin-bottom: 20px;
                     }
-                    
+
                     .contact-detail-table-left p,
                     .contact-detail-table-right p {
                         margin: 0;
                         line-height: 24px;
                         font-size: 15px;
                     }
-                    
+
                     .contact-detail-table-right {
                         float: right;
                         text-align: left;
                         width: 50%;
                     }
-                    
+
                     .purchaseOrder p {
                         height: 25px;
                         font-size: 16px;
                     }
-                    
+
                     .referenceDetail {
                         height: 50px;
                         font-size: 16px;
                     }
-                    
+
                     .referenceDetail table {
                         width: 94%;
                     }
-                    
+
                     .contact-detail-table {
                         padding-left: 30px;
                     }
-                    
+
                     .contact-detail-table p {
                         margin: 0;
                         line-height: 24px;
                         font-size: 16px;
                     }
-                    
+
                     #main_content ul {
                         line-height: 26px;
                         padding-left: 20px;
                         list-style: unset;
                     }
-                    
+
                     .paymentDetails,
                     .column-flex {
                         display: inline-flex;
                     }
-                    
+
                     .invoice-table {
                         border-collapse: collapse;
                         width: 100%;
                     }
-                    
+
                     .invoice-table td {
                         border: 1px solid #000 !important;
                         padding: 0;
                         vertical-align: middle;
                     }
-                    
+
                     .invoice-table th {
                         border: 1px solid #000 !important;
                         padding: 0;
                         vertical-align: middle;
                     }
-                    
+
                     .invoice-table table thead tr {
                         text-align: center;
                         font-size: 16px;
                         font-weight: bold;
                     }
-                    
+
                     .invoice-table table thead tr th {
                         padding: 10px 12px;
                         text-align: center
                     }
-                    
+
                     .invoice-table table tbody tr td {
                         text-align: left;
                         font-size: 16px;
@@ -1263,37 +1263,37 @@ export class EditorComponent implements OnInit {
                         border: 1px solid #000 !important;
                         vertical-align: middle;
                     }
-                    
+
                     .invoice-table table tfoot tr td {
                         text-align: center;
                         font-size: 16px;
                         padding: 16px 10px;
                         font-weight: bold;
                     }
-                    
+
                     .invoice-table table tbody tr:last-child td:last-child {
                         font-weight: bold;
                     }
-                    
+
                     .invoice-table table tbody tr td:last-child {
                         font-weight: bold;
                         width: 17%;
                         text-align: right;
                     }
-                    
+
                     .invoice-table table tbody tr td:first-child {
                         text-align: left;
                         width: 15%
                     }
-                    
+
                     .appendix table tbody tr:last-child td {
                         font-weight: normal;
                     }
-                    
+
                     .appendix table tbody tr td:last-child {
                         font-weight: bold;
                     }
-                    
+
                     .signature-table {
                         float: right;
                         text-align: right;
@@ -1302,34 +1302,34 @@ export class EditorComponent implements OnInit {
                         background-repeat: no-repeat !important;
                         background-position: right !important;
                     }
-                    
+
                     .signature-table p {
                         margin: 0;
                         line-height: 24px;
                     }
-                    
+
                     .paymentInstructions label {
                         font-size: 16px;
                         font-weight: bold;
                         display: table;
                         margin-top: 20px;
                     }
-                    
+
                     .proformaDetail table tbody tr td {
                         text-align: left;
                         padding: 16px 10px;
                     }
-                    
+
                     .proformaDetail table tbody tr:last-child td:nth-child(2) {
                         text-align: center;
                         font-weight: bold;
                     }
-                    
+
                     .indiaPurchase td:first-child p strong {
                         width: 235px;
                         display: inline-block;
                     }
-                    
+
                     #contact_details table tbody tr td p strong,
                     #contact_details p strong,
                     #contact_details table tbody tr td strong,
@@ -1338,73 +1338,73 @@ export class EditorComponent implements OnInit {
                         width: 150px;
                         font-size: 16px;
                     }
-                    
+
                     #contact_details table tbody tr td p+p {
                         padding-left: 150px;
                     }
-                    
+
                     .indContact #contact_details figure:first-child table tbody tr td p strong,
                     .indContact #contact_details figure:last-child table tbody tr td p strong,
                     .indContact #contact_details figure:first-child table tbody tr td strong,
                     .indContact #contact_details figure:last-child table tbody tr td strong {
                         width: 160px;
                     }
-                    
+
                     .indContact #contact_details figure:nth-child(2) table tbody tr td p strong,
                     .indContact #contact_details figure:nth-child(2) table tbody tr td strong {
                         width: 125px;
                     }
-                    
+
                     .indContact #contact_details figure:nth-child(2) table tbody tr td a {
                         margin-left: -5px;
                     }
-                    
+
                     .indContact #contact_details figure:last-child {
                         margin-left: 3px !important;
                     }
-                    
+
                     .indContact #contact_details figure:last-child table tbody tr td p+p {
                         padding-left: 160px;
                     }
-                    
+
                     .indContact figure {
                         margin: 0px !important;
                         vertical-align: top;
                         display: inline-block;
                     }
-                    
+
                     .usContact figure:last-child {
                         width: 44% !important;
                         display: inline-block;
                         margin: 0px;
                         vertical-align: top;
                     }
-                    
+
                     .indContact figure:first-child {
                         width: 50% !important;
                     }
-                    
+
                     .indContact figure:nth-child(2) {
                         width: 44% !important;
                     }
-                    
+
                     .indContact figure:last-child {
                         width: 100% !important;
                     }
-                    
+
                     .invoice-table table,
                     #appendix figure {
                         width: 100% !important;
                         margin: 0px !important;
                     }
-                    
+
                     #appendix.col4 table tr th:first-child,
                     #appendix.col4 table tr td:first-child,
                     .col4 #appendix table tr th:first-child,
                     .col4 #appendix table tr td:first-child  {
                         width: 18%;
                     }
-                    
+
                     #appendix.col4 table tr th:nth-child(2),
                     #appendix.col4 table tr td:nth-child(2),
                     .col4 #appendix table tr th:nth-child(2),
@@ -1417,14 +1417,14 @@ export class EditorComponent implements OnInit {
                     .col4 #appendix table tr td:last-child {
                         width: 17%;
                     }
-                    
+
                     #appendix.col3 table tr th:first-child,
                     #appendix.col3 table tr td:first-child,
                     .col3 #appendix table tr th:first-child,
                     .col3 #appendix table tr td:first-child {
                         width: 17%;
                     }
-                    
+
                     #appendix.col3 table tr th:last-child,
                     #appendix.col3 table tr td:last-child,
                     .col3 #appendix table tr th:last-child,
@@ -1460,7 +1460,7 @@ export class EditorComponent implements OnInit {
                         width: 17%;
                     }
 
-                    
+
                     #appendix figure img {
                         width: 100%;
                     }
@@ -1540,7 +1540,7 @@ export class EditorComponent implements OnInit {
                 </tr>
             </tbody>
         </table>
-    
+
         <div class="contact_details-table">
             <div id="contact_details">
             <figure class="table"><table>
@@ -1563,7 +1563,7 @@ export class EditorComponent implements OnInit {
             <tr>
                 <td>
                     <p><strong>Client GST no : </strong>
-    
+
                 </td>
             </tr>
             </tbody>
@@ -1600,7 +1600,7 @@ export class EditorComponent implements OnInit {
             </table></figure>
             </div>
         </div>
-    
+
         <table style="margin: 15px 0">
             <tbody>
                 <tr>
@@ -1608,7 +1608,7 @@ export class EditorComponent implements OnInit {
                 </tr>
             </tbody>
         </table>
-    
+
         <div id="referenceDetail" class="referenceDetail">
             <table >
                 <tbody>
@@ -1632,8 +1632,8 @@ export class EditorComponent implements OnInit {
                 </tbody>
             </table>
         </div>
-    
-    
+
+
         <table style="margin: 15px 0">
             <tbody>
                 <tr>
@@ -1643,7 +1643,7 @@ export class EditorComponent implements OnInit {
                 </tr>
             </tbody>
         </table>
-    
+
         <div class="invoice-table proformaDetail">
             <div id="invoiceDetail" style="margin-bottom: 20px;">
                 <table border="0" cellspacing="0" cellpadding="0">
@@ -1703,7 +1703,7 @@ export class EditorComponent implements OnInit {
                 <p style="font-size: 15px;font-weight: 600; display: [[ShowAsteriskMessage]]">* Please refer to Appendix 1 for additional details</p>
             </div>
         </div>
-    
+
         <tbody>
             <tr>
                 <td>
@@ -1713,7 +1713,7 @@ export class EditorComponent implements OnInit {
                 </td>
             </tr>
         </tbody>
-    
+
         <tbody>
             <tr>
                 <td style="font-size:14px">
@@ -1754,7 +1754,7 @@ export class EditorComponent implements OnInit {
             </tr>
         </tbody>
         </table>
-    
+
         <div class="invoice-table appendix">
             <div class="col4">
             <div id="appendix"> <figure>
@@ -1857,12 +1857,12 @@ export class EditorComponent implements OnInit {
             <tr>
                 <td>
                     <p><strong>Client GST no : </strong>
-    
+
                 </td>
             </tr>
         </tbody>  </table></figure>
         <figure class="table"><table>
-        
+
         <tbody>
             <tr>
                 <td>
@@ -1978,7 +1978,7 @@ export class EditorComponent implements OnInit {
                 [[CurrencySymbol]] [[CentralTax]]
             </td>
         </tr>
-        
+
         <tr>
             <td></td>
             <td colspan="2" style="text-align: center;font-weight: bold; font-size: 16px;">
@@ -2014,7 +2014,7 @@ export class EditorComponent implements OnInit {
                 <th>
                     Short Title
                 </th>
-                
+
                 <th>
                     Project Code
                 </th>
@@ -2040,7 +2040,7 @@ export class EditorComponent implements OnInit {
     <td>
         [[Title]]
     </td>
-    
+
     <td style="font-weight: bold;">
         [[CurrencySymbol]] [[Amount]]
     </td>
@@ -2926,7 +2926,7 @@ export class EditorComponent implements OnInit {
         this.fdConstantsService.fdComponent.selectedEditObject.Code = "TestingOnQAUS";
         this.fdConstantsService.fdComponent.selectedEditObject.ListName = "AAA01";
         this.fdConstantsService.fdComponent.selectedEditObject.Type = "Proforma";
-        ///// Call service 
+        ///// Call service
         const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
         this.common.SetNewrelic('Finance-Dashboard', 'pdfEditing-CreateUSProforma', 'executeJS');
         await this.spOperationsServices.executeJS(pdfService, pdfContent);
@@ -2945,7 +2945,7 @@ export class EditorComponent implements OnInit {
         this.fdConstantsService.fdComponent.selectedEditObject.Code = "TestingOnQAJapan";
         this.fdConstantsService.fdComponent.selectedEditObject.ListName = "AAA01";
         this.fdConstantsService.fdComponent.selectedEditObject.Type = "Proforma";
-        ///// Call service 
+        ///// Call service
         this.common.SetNewrelic('Finance-Dashboard', 'pdfEditing-CreateJapanProforma', 'executeJS');
         const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
         await this.spOperationsServices.executeJS(pdfService, pdfContent);
@@ -2963,7 +2963,7 @@ export class EditorComponent implements OnInit {
         this.fdConstantsService.fdComponent.selectedEditObject.Code = "TestingOnQAIndia";
         this.fdConstantsService.fdComponent.selectedEditObject.ListName = "AAA01";
         this.fdConstantsService.fdComponent.selectedEditObject.Type = "Proforma";
-        ///// Call service 
+        ///// Call service
         this.common.SetNewrelic('Finance-Dashboard', 'pdfEditing-CreateIndiaProforma', 'executeJS');
         const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
         await this.spOperationsServices.executeJS(pdfService, pdfContent);
@@ -3067,7 +3067,7 @@ export class EditorComponent implements OnInit {
 
     }
 
-    // Project Info 
+    // Project Info
     projectInfoData: any = [];
     async projectInfo() {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
