@@ -472,8 +472,8 @@ export class ProjectAttributesComponent implements OnInit {
    * @param projObj Pass the projObj as parameter.
    */
   editProject(projObj) {
-    if (projObj.Status !== 'In Discussion') {
-      const actualStartDate = projObj.ActualStartDate ? new Date(projObj.ActualStartDate) : new Date();
+    if (projObj.ActualStartDate) {
+      const actualStartDate = new Date(projObj.ActualStartDate);
       const newDate = new Date(actualStartDate.getFullYear(), actualStartDate.getMonth() + 1, 1);
       const date = this.myDashboardConstantsService.getBusinessDays(newDate, 3);
       if (new Date(this.datePipe.transform(new Date(), 'yyyy-MM-dd')).getTime() >

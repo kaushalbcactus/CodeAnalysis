@@ -786,7 +786,7 @@ export class EditorComponent implements OnInit {
         <thead>
             <tr style="text-align: center; font-size: 16px; font-weight: bold;">
                 <th>
-                    Project Code
+                    Cactus Project Code
                 </th>
                 <th>
                     Title
@@ -918,7 +918,7 @@ export class EditorComponent implements OnInit {
         <thead>
             <tr style="text-align: center; font-size: 16px; font-weight: bold;">
                 <th>
-                    Project Code
+                    Cactus Project Code
                 </th>
                 <th>
                     Title
@@ -1765,7 +1765,7 @@ export class EditorComponent implements OnInit {
                     Short Title
                 </th>
                 <th>
-                    Project Code
+                    Cactus Project Code
                 </th>
                 <th>
                     Title
@@ -2016,7 +2016,7 @@ export class EditorComponent implements OnInit {
                 </th>
 
                 <th>
-                    Project Code
+                    Cactus Project Code
                 </th>
                 <th style="width: 50%;">
                     Title
