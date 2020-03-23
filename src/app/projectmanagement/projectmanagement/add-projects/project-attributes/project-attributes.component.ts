@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 import { DataService } from 'src/app/Services/data.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { MyDashboardConstantsService } from 'src/app/my-dashboard/services/my-dashboard-constants.service';
+import { DatePipe } from '@angular/common';
 @Component({
   selector: 'app-project-attributes',
   templateUrl: './project-attributes.component.html',
@@ -41,7 +42,7 @@ export class ProjectAttributesComponent implements OnInit {
   formSubmit = false;
   enableCountFields = false;
   CountError = false;
-  errorType: string = '';
+  errorType = '';
   constructor(
     private frmbuilder: FormBuilder,
     public pmObject: PMObjectService,
@@ -55,7 +56,8 @@ export class ProjectAttributesComponent implements OnInit {
     private router: Router,
     private dataService: DataService,
     private commonService: CommonService,
-    private myDashboardConstantsService: MyDashboardConstantsService
+    private myDashboardConstantsService: MyDashboardConstantsService,
+    private datePipe: DatePipe
   ) { }
   async ngOnInit() {
     this.initForm();
@@ -474,7 +476,8 @@ export class ProjectAttributesComponent implements OnInit {
       const actualStartDate = projObj.ActualStartDate ? new Date(projObj.ActualStartDate) : new Date();
       const newDate = new Date(actualStartDate.getFullYear(), actualStartDate.getMonth() + 1, 1);
       const date = this.myDashboardConstantsService.getBusinessDays(newDate, 3);
-      if (new Date() >= new Date(date)) {
+      if (new Date(this.datePipe.transform(new Date(), 'yyyy-MM-dd')).getTime() >
+        new Date(this.datePipe.transform(date, 'yyyy-MM-dd')).getTime()) {
         this.addProjectAttributesForm.get('practiceArea').disable();
       } else {
         this.addProjectAttributesForm.get('practiceArea').enable();
