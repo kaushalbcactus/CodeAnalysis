@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { ConstantsService } from '../../../../Services/constants.service';
 import { GlobalService } from '../../../../Services/global.service';
 import { SPOperationService } from '../../../../Services/spoperation.service';
@@ -26,7 +26,7 @@ export class FeedbackPopupComponent implements OnInit {
   public popupByJS = false;
   public hidePopupLoader = true;
   public hidePopupTable = false;
-  public activeIndex = -1;
+  public activeIndex = 0;
   display = false;
   public options = {
     data: null,
@@ -52,6 +52,7 @@ export class FeedbackPopupComponent implements OnInit {
     private messageService: MessageService,
     private dashbaordService: MyDashboardConstantsService,
     private datePipe: DatePipe,
+    private cdr: ChangeDetectorRef,
   ) {
   }
 
@@ -536,8 +537,10 @@ export class FeedbackPopupComponent implements OnInit {
       }
       this.scorecardTasks.tasks = [...previousTasks];
       this.showTable();
+      this.activeIndex = 0;
+      this.cdr.detectChanges();
     }, 300);
-    this.activeIndex = 0;
+
   }
 
   // #endregion ForRatingPopup
