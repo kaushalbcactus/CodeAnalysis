@@ -138,7 +138,7 @@ export class FeedbackPopupComponent implements OnInit {
       });
       return false;
     }
-    const emptyCommentSC = this.scorecardTasks.tasks.filter(t => !t.feedbackComment.length && t.averageRating < 3);
+    const emptyCommentSC = this.scorecardTasks.tasks.filter(t => !t.ignoreFeedback && !t.feedbackComment.length && t.averageRating < 3);
     if (emptyCommentSC.length) {
       const tasksNames = emptyCommentSC.map(s => s.task);
       const taskString = tasksNames.join(',');
