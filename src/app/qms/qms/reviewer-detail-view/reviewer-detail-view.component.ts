@@ -303,7 +303,7 @@ export class ReviewerDetailViewComponent implements OnInit {
       for (const prevTaskTitle of prevTasks) {
         let preTasks = tasks.prevTasksDetail.filter(t => t[0] && t[0].Title === prevTaskTitle);
         // check if there are multiple next task of prev tasks
-        preTasks = preTasks.length > 0 ? preTasks[0][0].NextTasks.split(';#') : [];
+        preTasks = preTasks.length > 0 ? preTasks[0].length > 0 ?  preTasks[0][0].NextTasks ? preTasks[0][0].NextTasks.split(';#') : []: []: [];
         if (preTasks.length !== 1) {
           identifyMultipleTasksFlag = true;
         }
