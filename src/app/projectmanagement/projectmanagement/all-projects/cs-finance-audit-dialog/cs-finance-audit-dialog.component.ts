@@ -142,7 +142,7 @@ export class CsFinanceAuditDialogComponent implements OnInit {
   }
 
   ngAfterViewChecked() {
-    
+
     if (this.projectList.length && this.isOptionFilter) {
       let obj = {
         tableData: this.allProjectRef,
@@ -195,7 +195,7 @@ export class CsFinanceAuditDialogComponent implements OnInit {
 
   }
 
-   
+
 
   // **************************************************************************************
   // On row checkbox select for finance (maximum 10 rows are allowed)
@@ -216,7 +216,7 @@ export class CsFinanceAuditDialogComponent implements OnInit {
 
   async AuditProjects(AuditType) {
     if (AuditType === 'CS') {
-    
+
       const addRollingProjectArray = [
         { checked: false, parameter: 'All project attributes are correct', comments: '' },
         { checked: false, parameter: 'Final documents uploaded for all the tasks', comments: '' },
@@ -345,7 +345,7 @@ export class CsFinanceAuditDialogComponent implements OnInit {
     let batchResults = [];
     let batchURL = [];
     let finalArray = [];
-     debugger
+    debugger
     this.selectedProjects.forEach(async element => {
       const ProjectUpdate = Object.assign({}, this.options);
       ProjectUpdate.data = piUdpate;
@@ -375,7 +375,7 @@ export class CsFinanceAuditDialogComponent implements OnInit {
 
     this.createColFieldValues(this.projectList);
 
-    if(this.allProjectRef.filteredValue){
+    if (this.allProjectRef.filteredValue) {
       this.updateTableFilterOption();
     }
     this.modalloaderenable = false;
@@ -448,12 +448,16 @@ export class CsFinanceAuditDialogComponent implements OnInit {
   MultipleSelectRows(AuditType) {
     setTimeout(() => {
       if (AuditType === 'Finance') {
-
+        debugger
         if (this.allProjectRef.filteredValue) {
-          this.selectedProjects = this.allProjectRef.filteredValue.slice(this.allProjectRef.first, this.allProjectRef.first + 10)
+          if (this.allProjectRef.filteredValue.length > 10) {
+            this.selectedProjects = this.allProjectRef.filteredValue.slice(this.allProjectRef.first, this.allProjectRef.first + 10)
+          }
         }
         else {
-          this.selectedProjects = this.projectList.slice(this.allProjectRef.first, this.allProjectRef.first + 10)
+          if (this.projectList.length > 10) {
+            this.selectedProjects = this.projectList.slice(this.allProjectRef.first, this.allProjectRef.first + 10)
+          }
         }
 
       }
@@ -462,7 +466,7 @@ export class CsFinanceAuditDialogComponent implements OnInit {
 
 
 
-  updateTableFilterOption(){
+  updateTableFilterOption() {
     if (this.allProjectRef.filters.ProjectCode) {
       this.columnFilter.ProjectCode = this.allProjects.ProjectCode.map(c => c.value).filter(c => this.allProjectRef.filters.ProjectCode.value.includes(c));
       this.allProjectRef.filter(this.columnFilter.ProjectCode, 'ProjectCode', 'in')
@@ -500,7 +504,7 @@ export class CsFinanceAuditDialogComponent implements OnInit {
       this.columnFilter.Molecule = this.allProjects.Molecule.map(c => c.value).filter(c => this.allProjectRef.filters.Molecule.value.includes(c));
       this.allProjectRef.filter(this.columnFilter.Molecule, 'Molecule', 'in')
     }
-    
+
   }
 
 }
