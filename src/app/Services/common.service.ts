@@ -6,7 +6,7 @@ import { ConstantsService } from './constants.service';
 import { PmconstantService } from '../projectmanagement/services/pmconstant.service';
 import { PMObjectService } from '../projectmanagement/services/pmobject.service';
 import { DatePipe } from '@angular/common';
-import { Table } from 'primeng';
+import { Table, DialogService } from 'primeng';
 declare var $;
 
 declare const newrelic;
@@ -32,7 +32,8 @@ export class CommonService {
         private pmConstant: PmconstantService, public sharedObject: GlobalService,
         public taskAllocationService: TaskAllocationConstantsService,
         private datePipe: DatePipe,
-        public common: CommonService
+        public common: CommonService,
+        public dialogService: DialogService
     ) { }
 
     tableToExcel = (function () {
@@ -450,7 +451,7 @@ export class CommonService {
         }
         return arrItem;
     }
-    
+
     async checkTaskStatus(task) {
         this.SetNewrelic('Service', 'Common-Service', 'readItem');
         const currentTask = await this.spServices.readItem(this.constants.listNames.Schedules.name, task.ID);
@@ -464,7 +465,7 @@ export class CommonService {
         }
         return isActionRequired;
     }
-    
+
     setIframeHeight() {
         setTimeout(() => {
             const height = $('.custom-table-container').height();
@@ -877,7 +878,5 @@ export class CommonService {
             newrelic.setCustomAttribute('spCallType', value);
         }
     }
-
-
 
 }

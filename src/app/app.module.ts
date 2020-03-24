@@ -20,7 +20,6 @@ import { PrimengModule } from './primeng/primeng.module';
   imports: [
     BrowserModule,
     CommonModule,
-    // FileUploadModule,
     FormsModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,

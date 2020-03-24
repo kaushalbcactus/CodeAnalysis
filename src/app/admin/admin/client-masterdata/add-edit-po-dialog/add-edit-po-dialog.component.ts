@@ -134,8 +134,8 @@ export class AddEditPoDialogComponent implements OnInit {
       poBuyingEntity: this.currPOObj.BuyingEntity
     });
     this.showeditPO = true;
-    this.modalloaderenable=false;
-    
+    this.modalloaderenable = false;
+
   }
 
 
@@ -360,11 +360,11 @@ export class AddEditPoDialogComponent implements OnInit {
     this.adminObject.po.tax = 0;
     this.adminObject.po.total = 0;
     // if (!this.showaddBudget) {
-      this.adminObject.po.revenue = +(this.PoForm.value.revenue).toFixed(2);
-      this.adminObject.po.oop = this.PoForm.value.oop ? +(this.PoForm.value.oop).toFixed(2) : 0;
-      this.adminObject.po.tax = this.PoForm.value.tax ? +(this.PoForm.value.tax).toFixed(2) : 0;
-      this.adminObject.po.total = +(this.adminObject.po.revenue + this.adminObject.po.oop + this.adminObject.po.tax).toFixed(2);
-      this.PoForm.get('total').setValue(this.adminObject.po.total);
+    this.adminObject.po.revenue = +(this.PoForm.value.revenue).toFixed(2);
+    this.adminObject.po.oop = this.PoForm.value.oop ? +(this.PoForm.value.oop).toFixed(2) : 0;
+    this.adminObject.po.tax = this.PoForm.value.tax ? +(this.PoForm.value.tax).toFixed(2) : 0;
+    this.adminObject.po.total = +(this.adminObject.po.revenue + this.adminObject.po.oop + this.adminObject.po.tax).toFixed(2);
+    this.PoForm.get('total').setValue(this.adminObject.po.total);
     // }
     // if (this.showaddBudget) {
     //   this.adminObject.po.revenue = +(this.changeBudgetForm.value.revenue).toFixed(2);
@@ -376,7 +376,7 @@ export class AddEditPoDialogComponent implements OnInit {
   }
 
 
-  
+
 
   cancel() {
     this.ref.close();
@@ -394,31 +394,29 @@ export class AddEditPoDialogComponent implements OnInit {
           return false;
         }
       }
-      const data={
-        poDetails : this.PoForm,
-        selectedFile : this.selectedFile
+      const data = {
+        poDetails: this.PoForm,
+        selectedFile: this.selectedFile
       }
       this.ref.close(data);
-
-
     } else {
       this.isPOFormSubmit = true;
     }
   }
 
 
-    /**
-   * Construct a method to trigger whenever we change the file for file upload.
-   *
-   * @description
-   *
-   * This method will trigger whenever we change the file for file upload and save the file into
-   * `selectedFile` variable.
-   */
+  /**
+ * Construct a method to trigger whenever we change the file for file upload.
+ *
+ * @description
+ *
+ * This method will trigger whenever we change the file for file upload and save the file into
+ * `selectedFile` variable.
+ */
   onFileChange(event) {
     this.selectedFile = null;
     if (event.target.files && event.target.files.length > 0) {
-      this.selectedFile = event.target.files[0];
+      this.selectedFile = event.target.files;
     }
   }
 

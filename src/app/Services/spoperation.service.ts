@@ -48,6 +48,7 @@ export class SPOperationService {
   }
 
   getHeaders(bAddContext, returnOp) {
+    debugger;
     const headerCopy: any = Object.assign({}, this.headers);
     if (bAddContext) {
       const context: any = document.getElementById('__REQUESTDIGEST');
@@ -524,7 +525,10 @@ export class SPOperationService {
         const obj: any = res.error;
         obj.hasError = true;
         return obj;
-      } else {
+      } else if(res.valueOf('odata')){
+        debugger;
+         return res;
+      }else {
         return {
           hasError: true,
           comments: res
@@ -801,6 +805,14 @@ export class SPOperationService {
         FileSaver.saveAs(content, name);
       }
     });
+  }
+
+  async executePostForFileUpload(url, data, requestHeaders) {
+    const res = await this.httpClient.post(url, data, requestHeaders).toPromise().catch((err: HttpErrorResponse) => {
+      const error = err.error;
+      return error;
+    });
+    return this.parseRetSingle(res);
   }
 
 

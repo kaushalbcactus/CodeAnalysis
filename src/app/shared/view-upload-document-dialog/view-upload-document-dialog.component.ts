@@ -463,6 +463,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
 
             this.commonService.SetNewrelic('Shared', 'viewUpladDocDialog', 'uploadDocuments');
             const res = await this.spOperations.uploadFile(filePathUrl, fileObj.reader.result);
+            debugger;
             uploadedFiles.push(res);
             if (readers.length === uploadedFiles.length) {
               if (this.selectedTab === 'My Drafts') {
