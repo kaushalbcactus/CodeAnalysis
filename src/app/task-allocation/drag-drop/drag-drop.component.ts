@@ -114,9 +114,13 @@ export class DragDropComponent implements OnInit {
           links = this.loadLinks(element.data, links).splice(0);
           this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links = [...links];
         }
+        if (element.data.type === 'milestone') {
+          this.milestoneIndex++;
+          links = [];
+        }
         if (element.children !== undefined) {
           if (element.children.length > 0) {
-            this.milestoneIndex++;
+            
             // tslint:disable-next-line: no-shadowed-variable
             element.children.forEach(element => {
               const temp1 = {

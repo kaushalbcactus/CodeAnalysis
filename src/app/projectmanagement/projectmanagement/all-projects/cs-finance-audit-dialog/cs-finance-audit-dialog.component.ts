@@ -93,20 +93,21 @@ export class CsFinanceAuditDialogComponent implements OnInit {
 
 
   ngAfterViewInit() {
+
     if (this.config.data.tableData.filters.ProjectCode) {
-      this.columnFilter.ProjectCode = this.config.data.tableData.filters.ProjectCode.value;
+      this.columnFilter.ProjectCode = this.allProjects.ProjectCode.map(c => c.value).filter(c => this.config.data.tableData.filters.ProjectCode.value.includes(c));
       this.allProjectRef.filter(this.columnFilter.ProjectCode, 'ProjectCode', 'in')
     }
     if (this.config.data.tableData.filters.SOWCode) {
-      this.columnFilter.SOWCode = this.config.data.tableData.filters.SOWCode.value;
+      this.columnFilter.SOWCode = this.allProjects.SOWCode.map(c => c.value).filter(c => this.config.data.tableData.filters.SOWCode.value.includes(c));
       this.allProjectRef.filter(this.columnFilter.SOWCode, 'SOWCode', 'in')
     }
     if (this.config.data.tableData.filters.ShortTitle) {
-      this.columnFilter.ShortTitle = this.config.data.tableData.filters.ShortTitle.value;
+      this.columnFilter.ShortTitle = this.allProjects.ShortTitle.map(c => c.value).filter(c => this.config.data.tableData.filters.ShortTitle.value.includes(c));
       this.allProjectRef.filter(this.columnFilter.ShortTitle, 'ShortTitle', 'in')
     }
     if (this.config.data.tableData.filters.ClientLegalEntity) {
-      this.columnFilter.ClientLegalEntity = this.config.data.tableData.filters.ClientLegalEntity.value;
+      this.columnFilter.ClientLegalEntity = this.allProjects.ClientLegalEntity.map(c => c.value).filter(c => this.config.data.tableData.filters.ClientLegalEntity.value.includes(c));
       this.allProjectRef.filter(this.columnFilter.ClientLegalEntity, 'ClientLegalEntity', 'in')
     }
     if (this.config.data.tableData.filters.ProjectType) {
@@ -122,11 +123,12 @@ export class CsFinanceAuditDialogComponent implements OnInit {
       this.allProjectRef.filter(this.columnFilter.PrimaryResources, 'PrimaryResources', 'in')
     }
     if (this.config.data.tableData.filters.TA) {
-      this.columnFilter.TA = this.config.data.tableData.filters.TA.value;
+      this.columnFilter.TA = this.allProjects.TA.map(c => c.value).filter(c => this.config.data.tableData.filters.TA.value.includes(c));
       this.allProjectRef.filter(this.columnFilter.TA, 'TA', 'in')
     }
     if (this.config.data.tableData.filters.Molecule) {
-      this.columnFilter.Molecule = this.config.data.tableData.filters.Molecule.value;
+
+      this.columnFilter.Molecule = this.allProjects.Molecule.map(c => c.value).filter(c => this.config.data.tableData.filters.Molecule.value.includes(c));
       this.allProjectRef.filter(this.columnFilter.Molecule, 'Molecule', 'in')
     }
     this.modalloaderenable = false;
@@ -193,6 +195,8 @@ export class CsFinanceAuditDialogComponent implements OnInit {
 
   }
 
+
+
   // **************************************************************************************
   // On row checkbox select for finance (maximum 10 rows are allowed)
   // **************************************************************************************
@@ -255,7 +259,6 @@ export class CsFinanceAuditDialogComponent implements OnInit {
         dbInvoiceLineItems = [].concat(...dbExpenseInvoiceArray.filter(c => c.listName === 'InvoiceLineItems').map(c => c.retItems));
         dbExpenseLineItems = [].concat(...dbExpenseInvoiceArray.filter(c => c.listName === 'SpendingInfo').map(c => c.retItems));
       }
-
       let UniqueInvalidInvoices = [];
       if (dbInvoiceLineItems) {
         if (dbInvoiceLineItems.filter(c => c.Status !== 'Approved')) {
@@ -341,7 +344,7 @@ export class CsFinanceAuditDialogComponent implements OnInit {
     let batchResults = [];
     let batchURL = [];
     let finalArray = [];
-
+    debugger
     this.selectedProjects.forEach(async element => {
       const ProjectUpdate = Object.assign({}, this.options);
       ProjectUpdate.data = piUdpate;
@@ -368,6 +371,12 @@ export class CsFinanceAuditDialogComponent implements OnInit {
 
 
     this.projectList = this.projectList.filter(c => !this.selectedProjects.includes(c));
+
+    this.createColFieldValues(this.projectList);
+
+    if (this.allProjectRef.filteredValue) {
+      this.updateTableFilterOption();
+    }
     this.modalloaderenable = false;
     if (this.selectedProjects.length === this.dbProjectList.length || this.projectList.length === 0) {
       this.csref.close(this.projectUpdated);
@@ -438,15 +447,63 @@ export class CsFinanceAuditDialogComponent implements OnInit {
   MultipleSelectRows(AuditType) {
     setTimeout(() => {
       if (AuditType === 'Finance') {
-
+        debugger
         if (this.allProjectRef.filteredValue) {
-          this.selectedProjects = this.allProjectRef.filteredValue.slice(this.allProjectRef.first, this.allProjectRef.first + 10)
+          if (this.allProjectRef.filteredValue.length > 10) {
+            this.selectedProjects = this.allProjectRef.filteredValue.slice(this.allProjectRef.first, this.allProjectRef.first + 10)
+          }
         }
         else {
-          this.selectedProjects = this.projectList.slice(this.allProjectRef.first, this.allProjectRef.first + 10)
+          if (this.projectList.length > 10) {
+            this.selectedProjects = this.projectList.slice(this.allProjectRef.first, this.allProjectRef.first + 10)
+          }
         }
 
       }
     }, 100);
   }
+
+
+
+  updateTableFilterOption() {
+    if (this.allProjectRef.filters.ProjectCode) {
+      this.columnFilter.ProjectCode = this.allProjects.ProjectCode.map(c => c.value).filter(c => this.allProjectRef.filters.ProjectCode.value.includes(c));
+      this.allProjectRef.filter(this.columnFilter.ProjectCode, 'ProjectCode', 'in')
+    }
+    if (this.allProjectRef.filters.SOWCode) {
+      this.columnFilter.SOWCode = this.allProjects.SOWCode.map(c => c.value).filter(c => this.allProjectRef.filters.SOWCode.value.includes(c));
+      this.allProjectRef.filter(this.columnFilter.SOWCode, 'SOWCode', 'in')
+    }
+    if (this.allProjectRef.filters.ShortTitle) {
+      this.columnFilter.ShortTitle = this.allProjects.ShortTitle.map(c => c.value).filter(c => this.allProjectRef.filters.ShortTitle.value.includes(c));
+      this.allProjectRef.filter(this.columnFilter.ShortTitle, 'ShortTitle', 'in')
+    }
+    if (this.allProjectRef.filters.ClientLegalEntity) {
+      this.columnFilter.ClientLegalEntity = this.allProjects.ClientLegalEntity.map(c => c.value).filter(c => this.allProjectRef.filters.ClientLegalEntity.value.includes(c));
+      this.allProjectRef.filter(this.columnFilter.ClientLegalEntity, 'ClientLegalEntity', 'in')
+    }
+    if (this.allProjectRef.filters.ProjectType) {
+      this.columnFilter.ProjectType = this.allProjects.ProjectType.map(c => c.value).filter(c => this.allProjectRef.filters.ProjectType.value.includes(c));
+      this.allProjectRef.filter(this.columnFilter.ProjectType, 'ProjectType', 'in')
+    }
+    if (this.allProjectRef.filters.POC) {
+      this.columnFilter.POC = this.allProjects.POC.map(c => c.value).filter(c => this.allProjectRef.filters.POC.value.includes(c));
+      this.allProjectRef.filter(this.columnFilter.POC, 'POC', 'in');
+    }
+    if (this.allProjectRef.filters.PrimaryResources) {
+      this.columnFilter.PrimaryResources = this.allProjectRef.filters.PrimaryResources.value;
+      this.allProjectRef.filter(this.columnFilter.PrimaryResources, 'PrimaryResources', 'in')
+    }
+    if (this.allProjectRef.filters.TA) {
+      this.columnFilter.TA = this.allProjects.TA.map(c => c.value).filter(c => this.allProjectRef.filters.TA.value.includes(c));
+      this.allProjectRef.filter(this.columnFilter.TA, 'TA', 'in')
+    }
+    if (this.allProjectRef.filters.Molecule) {
+
+      this.columnFilter.Molecule = this.allProjects.Molecule.map(c => c.value).filter(c => this.allProjectRef.filters.Molecule.value.includes(c));
+      this.allProjectRef.filter(this.columnFilter.Molecule, 'Molecule', 'in')
+    }
+
+  }
+
 }

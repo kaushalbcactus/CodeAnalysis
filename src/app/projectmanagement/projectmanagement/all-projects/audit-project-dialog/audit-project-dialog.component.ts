@@ -27,12 +27,13 @@ export class AuditProjectDialogComponent implements OnInit {
     this.addRollingProjectArray = this.config.data;
   }
 
-  
+
   close() {
     this.ref.close();
-  }                                                                             
+  }
 
   onRowSelect(event) {
+
     event.data.checked = true;
     this.enableDisableConfirmButton();
   }
@@ -45,15 +46,23 @@ export class AuditProjectDialogComponent implements OnInit {
   keyPress(event: any) {
     this.enableDisableConfirmButton();
   }
-                                             
+
 
 
   enableDisableConfirmButton() {
 
+    // const AuditArray = JSON.parse(JSON.stringify(this.addRollingProjectArray))
+
+    // const unselectedArray = AuditArray.filter(c=> this.selectedOptions.includes(c))
     if (this.selectedOptions.length === this.addRollingProjectArray.length) {
+      this.addRollingProjectArray.map(c => c.checked = true);
       this.enableConfirm = true;
     }
     else {
+
+      if (this.selectedOptions.length === 0) {
+        this.addRollingProjectArray.map(c => c.checked = false);
+      }
       const tempObj = this.addRollingProjectArray.filter(c => c.comments === '');
       if (tempObj) {
         this.enableConfirm = tempObj.filter(c => c.checked === false).length > 0 ? false : true;
