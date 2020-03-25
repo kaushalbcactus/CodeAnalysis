@@ -11,7 +11,6 @@ import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.ser
 import { Router } from '@angular/router';
 import { DataService } from 'src/app/Services/data.service';
 import { CommonService } from 'src/app/Services/common.service';
-import { MyDashboardConstantsService } from 'src/app/my-dashboard/services/my-dashboard-constants.service';
 import { DatePipe } from '@angular/common';
 @Component({
   selector: 'app-project-attributes',
@@ -56,7 +55,6 @@ export class ProjectAttributesComponent implements OnInit {
     private router: Router,
     private dataService: DataService,
     private commonService: CommonService,
-    private myDashboardConstantsService: MyDashboardConstantsService,
     private datePipe: DatePipe
   ) { }
   async ngOnInit() {
@@ -475,7 +473,7 @@ export class ProjectAttributesComponent implements OnInit {
     if (projObj.ActualStartDate) {
       const actualStartDate = new Date(projObj.ActualStartDate);
       const newDate = new Date(actualStartDate.getFullYear(), actualStartDate.getMonth() + 1, 1);
-      const date = this.myDashboardConstantsService.getBusinessDays(newDate, 3);
+      const date = this.commonService.getBusinessDays(newDate, 3);
       if (new Date(this.datePipe.transform(new Date(), 'yyyy-MM-dd')).getTime() >
         new Date(this.datePipe.transform(date, 'yyyy-MM-dd')).getTime()) {
         this.addProjectAttributesForm.get('practiceArea').disable();

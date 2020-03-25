@@ -12,9 +12,8 @@ import { ActivatedRoute } from '@angular/router';
 import { CommonService } from 'src/app/Services/common.service';
 import { DialogService, MessageService, MenuItem, SelectItem } from 'primeng';
 import { CaDragdropComponent } from '../ca-dragdrop/ca-dragdrop.component';
-import { async } from '@angular/core/testing';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
-import { exists } from 'fs';
+
 
 @Component({
   selector: 'app-unallocated-allocated-tasks',

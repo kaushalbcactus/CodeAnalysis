@@ -878,6 +878,22 @@ export class CommonService {
         }
     }
 
+    getBusinessDays(date, days) {
+        let tempminDateValue = null;
+        const dayCount = days;
+        let tempDate = new Date(date);
+        while (days > 0) {
+          tempDate = new Date(tempDate.setDate(tempDate.getDate() + 1));
+          if (tempDate.getDay() !== 6 && tempDate.getDay() !== 0) {
+            days -= 1;
+            if (dayCount - 3 <= days) {
+              tempminDateValue = tempDate;
+            }
+          }
+        }
+        return tempminDateValue;
+      }
+
 
 
 }
