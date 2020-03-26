@@ -12,7 +12,6 @@ import { Router } from '@angular/router';
 import { DataService } from 'src/app/Services/data.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { DatePipe } from '@angular/common';
-import { MyDashboardConstantsService } from 'src/app/my-dashboard/services/my-dashboard-constants.service';
 @Component({
   selector: 'app-project-attributes',
   templateUrl: './project-attributes.component.html',
@@ -57,7 +56,6 @@ export class ProjectAttributesComponent implements OnInit {
     private dataService: DataService,
     private commonService: CommonService,
     private datePipe: DatePipe,
-    private dashboardService: MyDashboardConstantsService
   ) { }
   async ngOnInit() {
     this.initForm();
@@ -474,7 +472,7 @@ export class ProjectAttributesComponent implements OnInit {
   editProject(projObj) {
     if (projObj.ActualStartDate) {
       const actualStartDate = new Date(projObj.ActualStartDate);
-      const allowedDate = this.dashboardService.CalculateminstartDateValue(new Date(), 3);
+      const allowedDate = this.commonService.CalculateminstartDateValue(new Date(), 3);
       if (actualStartDate.getFullYear() === allowedDate.getFullYear() &&
         actualStartDate.getMonth() === allowedDate.getMonth()) {
         this.addProjectAttributesForm.get('practiceArea').enable();
