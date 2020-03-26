@@ -473,8 +473,8 @@ export class ProjectAttributesComponent implements OnInit {
     if (projObj.ActualStartDate) {
       const actualStartDate = new Date(projObj.ActualStartDate);
       const allowedDate = this.commonService.CalculateminstartDateValue(new Date(), 3);
-      if (actualStartDate.getFullYear() === allowedDate.getFullYear() &&
-        actualStartDate.getMonth() === allowedDate.getMonth()) {
+      if (actualStartDate.getFullYear() >= allowedDate.getFullYear() &&
+        actualStartDate.getMonth() >= allowedDate.getMonth()) {
         this.addProjectAttributesForm.get('practiceArea').enable();
       } else {
         this.addProjectAttributesForm.get('practiceArea').disable();
