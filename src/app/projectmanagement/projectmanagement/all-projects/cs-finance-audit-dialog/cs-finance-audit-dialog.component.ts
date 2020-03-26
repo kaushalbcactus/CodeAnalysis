@@ -221,8 +221,8 @@ export class CsFinanceAuditDialogComponent implements OnInit {
         { checked: false, parameter: 'All project attributes are correct', comments: '' },
         { checked: false, parameter: 'Final documents uploaded for all the tasks', comments: '' },
         { checked: false, parameter: 'Is the project budget and budget hours correct?', comments: '' },
-        { checked: false, parameter: 'Has ER been fully accrued?', comments: '' },
         { checked: false, parameter: 'Is the pub support status updated to submitted?', comments: '' },
+        { checked: false, parameter: 'Has ER been fully accrued before proposing closure?', comments: '' },
       ];
 
       const ref = this.dialogService.open(AuditProjectDialogComponent, {
@@ -286,14 +286,14 @@ export class CsFinanceAuditDialogComponent implements OnInit {
         if (UniqueInvalidInvoices.length > 0) {
           errorMessage.push({
             key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
-            detail: UniqueInvalidInvoices.join(', ') + ' line items are not approved.'
+            detail: UniqueInvalidInvoices.join(', ') + ' line items are not invoiced.'
           });
         }
 
         if (UniqueInvalidExpenses.length > 0) {
           errorMessage.push({
             key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
-            detail: UniqueInvalidExpenses.join(', ') + ' expense are not scheduled / confirmed.'
+            detail: UniqueInvalidExpenses.join(', ') + ' expense are not invoiced.'
           })
         }
         this.messageService.addAll(errorMessage);
