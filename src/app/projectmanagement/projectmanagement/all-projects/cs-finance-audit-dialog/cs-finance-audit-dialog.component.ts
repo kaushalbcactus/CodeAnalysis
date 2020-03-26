@@ -217,11 +217,11 @@ export class CsFinanceAuditDialogComponent implements OnInit {
   async AuditProjects(AuditType) {
     if (AuditType === 'CS') {
       const addRollingProjectArray = [
-        { checked: false, parameter: 'All project attributes are correct', comments: '' },
-        { checked: false, parameter: 'Final documents uploaded for all the tasks', comments: '' },
-        { checked: false, parameter: 'Is the project budget and budget hours correct?', comments: '' },
-        { checked: false, parameter: 'Is the pub support status updated to submitted?', comments: '' },
-        { checked: false, parameter: 'Has ER been fully accrued before proposing closure?', comments: '' },
+        { checked: false, parameter: 'All project attributes are correct', comments: '', hideCheckBox : false },
+        { checked: false, parameter: 'Final documents uploaded for all the tasks', comments: '', hideCheckBox : false },
+        { checked: false, parameter: 'Is the project budget and budget hours correct?', comments: '', hideCheckBox : false },
+        { checked: false, parameter: 'Is the pub support status updated to submitted?', comments: '', hideCheckBox : false },
+        { checked: false, parameter: 'Has ER been fully accrued before proposing closure?', comments: 'Select One', hideCheckBox : true },
       ];
 
       const ref = this.dialogService.open(AuditProjectDialogComponent, {
@@ -302,8 +302,8 @@ export class CsFinanceAuditDialogComponent implements OnInit {
       else {
 
         const addRollingProjectArray = [
-          { checked: false, parameter: 'All invoices are generated', comments: '' },
-          { checked: false, parameter: 'All expenses are billed', comments: '' },
+          { checked: false, parameter: 'All invoices are generated', comments: '', hideCheckBox : false },
+          { checked: false, parameter: 'All expenses are billed', comments: '', hideCheckBox : false },
         ];
         this.modalloaderenable = false;
         this.buttonloader = false;
