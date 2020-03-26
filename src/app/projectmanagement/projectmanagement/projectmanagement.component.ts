@@ -378,53 +378,17 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.pmObject.addSOW.isSOWCodeDisabled = false;
       this.pmObject.addSOW.isStatusDisabled = true;
       if (this.selectedFile) {
-        // fileUploadResult = await this.submitFile();
+        fileUploadResult = await this.submitFile();
+      }
 
-        const tempFiles = [new Object({ name: this.selectedFile[0].name, file: this.selectedFile[0] })];
-        const docFolder = 'Finance/SOW';
-        let libraryName = '';
-        const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
-          x.Title === this.pmObject.addSOW.ClientLegalEntity);
-        if (clientInfo && clientInfo.length) {
-          this.currClientLegalEntityObj = clientInfo;
-          libraryName = clientInfo[0].ListName;
+      if (!fileUploadResult.hasOwnProperty('hasError')) {
+        if (!this.pmObject.addSOW.ID) {
+          await this.createUpdateSOW(false, this.pmObject.addSOW);
         }
-        const ref = this.dialogService.open(FileUploadProgressDialogComponent, {
-          header: 'File Uploading',
-          width: '70vw',
-          data: {
-            Files: tempFiles,
-            libraryName: this.globalObject.sharePointPageObject.webRelativeUrl + '/' + libraryName + '/' + docFolder,
-            overwrite: true,
-          },
-          contentStyle: { 'overflow-y': 'visible', 'background-color': '#f4f3ef' },
-          closable: false,
-        });
+        if (this.pmObject.addSOW.ID) {
+          await this.createUpdateSOW(true, this.pmObject.addSOW);
+        }
 
-        return ref.onClose.subscribe(async (uploadedfile: any) => {
-          if (uploadedfile) {
-            if (this.selectedFile.length > 0 && this.selectedFile.length === uploadedfile.length) {
-              if (!uploadedfile[0].hasOwnProperty('hasError')) {
-                if (!this.pmObject.addSOW.ID) {
-                  await this.createUpdateSOW(false, this.pmObject.addSOW);
-                }
-                if (this.pmObject.addSOW.ID) {
-                  await this.createUpdateSOW(true, this.pmObject.addSOW);
-                }
-
-              }
-              else {
-                if (!this.pmObject.addSOW.ID) {
-                  await this.createUpdateSOW(false, this.pmObject.addSOW);
-                }
-                if (this.pmObject.addSOW.ID) {
-                  await this.createUpdateSOW(true, this.pmObject.addSOW);
-                }
-              }
-              this.selectedFile = null;
-            }
-          }
-        });
       }
       else {
         if (!this.pmObject.addSOW.ID) {
@@ -434,6 +398,62 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
           await this.createUpdateSOW(true, this.pmObject.addSOW);
         }
       }
+      this.selectedFile = null;
+
+      //   const tempFiles = [new Object({ name: this.selectedFile[0].name, file: this.selectedFile[0] })];
+      //   const docFolder = 'Finance/SOW';
+      //   let libraryName = '';
+      //   const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
+      //     x.Title === this.pmObject.addSOW.ClientLegalEntity);
+      //   if (clientInfo && clientInfo.length) {
+      //     this.currClientLegalEntityObj = clientInfo;
+      //     libraryName = clientInfo[0].ListName;
+      //   }
+      //   const ref = this.dialogService.open(FileUploadProgressDialogComponent, {
+      //     header: 'File Uploading',
+      //     width: '70vw',
+      //     data: {
+      //       Files: tempFiles,
+      //       libraryName: this.globalObject.sharePointPageObject.webRelativeUrl + '/' + libraryName + '/' + docFolder,
+      //       overwrite: true,
+      //     },
+      //     contentStyle: { 'overflow-y': 'visible', 'background-color': '#f4f3ef' },
+      //     closable: false,
+      //   });
+
+      //   return ref.onClose.subscribe(async (uploadedfile: any) => {
+      //     if (uploadedfile) {
+      //       if (this.selectedFile.length > 0 && this.selectedFile.length === uploadedfile.length) {
+      //         if (!uploadedfile[0].hasOwnProperty('hasError')) {
+      //           if (!this.pmObject.addSOW.ID) {
+      //             await this.createUpdateSOW(false, this.pmObject.addSOW);
+      //           }
+      //           if (this.pmObject.addSOW.ID) {
+      //             await this.createUpdateSOW(true, this.pmObject.addSOW);
+      //           }
+
+      //         }
+      //         else {
+      //           if (!this.pmObject.addSOW.ID) {
+      //             await this.createUpdateSOW(false, this.pmObject.addSOW);
+      //           }
+      //           if (this.pmObject.addSOW.ID) {
+      //             await this.createUpdateSOW(true, this.pmObject.addSOW);
+      //           }
+      //         }
+      //         this.selectedFile = null;
+      //       }
+      //     }
+      //   });
+      // }
+      // else {
+      //   if (!this.pmObject.addSOW.ID) {
+      //     await this.createUpdateSOW(false, this.pmObject.addSOW);
+      //   }
+      //   if (this.pmObject.addSOW.ID) {
+      //     await this.createUpdateSOW(true, this.pmObject.addSOW);
+      //   }
+      // }
 
     } else {
       this.validateAllFormFields(this.addSowForm);
@@ -477,28 +497,28 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
   /**
    * This method is used to upload the file on finance/sow.
    */
-  // async submitFile() {
-  //   const docFolder = 'Finance/SOW';
-  //   let libraryName = '';
-  //   const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
-  //     x.Title === this.pmObject.addSOW.ClientLegalEntity);
-  //   if (clientInfo && clientInfo.length) {
-  //     this.currClientLegalEntityObj = clientInfo;
-  //     libraryName = clientInfo[0].ListName;
-  //   }
-  //   const folderPath: string = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + libraryName + '/' + docFolder;
-  //   this.filePathUrl = await this.spServices.getFileUploadUrl(folderPath, this.selectedFile.name, true);
-  //   this.commonService.SetNewrelic('ProjectManagement', 'projectmanagement-submitFile', 'uploadFile');
-  //   const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
-  //   console.log(res);
-  //   // Added by kaushal on 12-07-2019
-  //   if (res.hasOwnProperty('ServerRelativeUrl') && res.hasOwnProperty('Name')) { // && !res.hasOwnProperty('hasError')
-  //     this.pmObject.addSOW.SOWFileURL = res.ServerRelativeUrl;
-  //     this.pmObject.addSOW.SOWFileName = res.Name;
-  //     this.pmObject.addSOW.SOWDocProperties = res;
-  //   }
-  //   return res;
-  // }
+  async submitFile() {
+    const docFolder = 'Finance/SOW';
+    let libraryName = '';
+    const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
+      x.Title === this.pmObject.addSOW.ClientLegalEntity);
+    if (clientInfo && clientInfo.length) {
+      this.currClientLegalEntityObj = clientInfo;
+      libraryName = clientInfo[0].ListName;
+    }
+    const folderPath: string = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + libraryName + '/' + docFolder;
+    this.filePathUrl = await this.spServices.getFileUploadUrl(folderPath, this.selectedFile.name, true);
+    this.commonService.SetNewrelic('ProjectManagement', 'projectmanagement-submitFile', 'uploadFile');
+    const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
+    console.log(res);
+    // Added by kaushal on 12-07-2019
+    if (res.hasOwnProperty('ServerRelativeUrl') && res.hasOwnProperty('Name')) { // && !res.hasOwnProperty('hasError')
+      this.pmObject.addSOW.SOWFileURL = res.ServerRelativeUrl;
+      this.pmObject.addSOW.SOWFileName = res.Name;
+      this.pmObject.addSOW.SOWDocProperties = res;
+    }
+    return res;
+  }
   /**
    * This method get called when we change the file.
    * @param event Pass the file properties as a parameter.

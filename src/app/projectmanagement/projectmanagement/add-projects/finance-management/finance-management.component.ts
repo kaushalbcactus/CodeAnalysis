@@ -178,10 +178,10 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
    */
   onFileChange(event) {
     this.pmObject.addProject.FinanceManagement.selectedFile = null;
-    // this.pmObject.fileReader = new FileReader();
+    this.pmObject.fileReader = new FileReader();
     if (event.target.files && event.target.files.length > 0) {
-      this.pmObject.addProject.FinanceManagement.selectedFile = event.target.files;
-      // this.pmObject.fileReader.readAsArrayBuffer(this.pmObject.addProject.FinanceManagement.selectedFile);
+      this.pmObject.addProject.FinanceManagement.selectedFile = event.target.files[0];
+      this.pmObject.fileReader.readAsArrayBuffer(this.pmObject.addProject.FinanceManagement.selectedFile);
     }
   }
   onBilledByChanged() {

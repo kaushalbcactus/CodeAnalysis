@@ -583,44 +583,62 @@ export class ProjectAttributesComponent implements OnInit {
       this.pmObject.isMainLoaderHidden = false;
       this.setFormFieldValue();
       if (this.selectedFile) {
-        // await this.pmCommonService.submitFile(this.selectedFile, this.fileReader);
-        const docFolder = 'Finance/SOW';
-        let libraryName = '';
-        const tempFiles = [new Object({ name: this.selectedFile[0].name, file: this.selectedFile[0] })];
-        const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
-          x.Title === this.pmObject.addProject.ProjectAttributes.ClientLegalEntity);
-        if (clientInfo && clientInfo.length) {
-          libraryName = clientInfo[0].ListName;
+        await this.pmCommonService.submitFile(this.selectedFile, this.fileReader);
+      }
+      const projectInfo = this.pmCommonService.getProjectData(this.pmObject.addProject, false);
+      this.commonService.SetNewrelic('projectManagment', 'addproj-projectAttributes', 'UpdateProjectInformation');
+      await this.spServices.updateItem(this.constant.listNames.ProjectInformation.name, this.projObj.ID, projectInfo,
+        this.constant.listNames.ProjectInformation.type);
+      this.pmObject.isMainLoaderHidden = true;
+      this.messageService.add({
+        key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
+        detail: 'Project Updated Successfully for the projectcode - ' + this.projObj.ProjectCode
+      });
+      setTimeout(() => {
+        this.dynamicDialogRef.close();
+        if (this.router.url === '/projectMgmt/allProjects') {
+          this.dataService.publish('reload-project');
+        } else {
+          this.router.navigate(['/projectMgmt/allProjects']);
         }
-        const ref = this.dialogService.open(FileUploadProgressDialogComponent, {
-          header: 'File Uploading',
-          width: '70vw',
-          data: {
-            Files: tempFiles,
-            libraryName: this.globalObject.sharePointPageObject.webRelativeUrl + '/' + libraryName + '/' + docFolder,
-            overwrite: true,
-          },
-          contentStyle: { 'overflow-y': 'visible', 'background-color': '#f4f3ef' },
-          closable: false,
-        });
+      }, this.pmConstant.TIME_OUT);
+      //   const docFolder = 'Finance/SOW';
+      //   let libraryName = '';
+      //   const tempFiles = [new Object({ name: this.selectedFile[0].name, file: this.selectedFile[0] })];
+      //   const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
+      //     x.Title === this.pmObject.addProject.ProjectAttributes.ClientLegalEntity);
+      //   if (clientInfo && clientInfo.length) {
+      //     libraryName = clientInfo[0].ListName;
+      //   }
+      //   const ref = this.dialogService.open(FileUploadProgressDialogComponent, {
+      //     header: 'File Uploading',
+      //     width: '70vw',
+      //     data: {
+      //       Files: tempFiles,
+      //       libraryName: this.globalObject.sharePointPageObject.webRelativeUrl + '/' + libraryName + '/' + docFolder,
+      //       overwrite: true,
+      //     },
+      //     contentStyle: { 'overflow-y': 'visible', 'background-color': '#f4f3ef' },
+      //     closable: false,
+      //   });
 
-        return ref.onClose.subscribe(async (uploadedfile: any) => {
-          if (uploadedfile) {
-            if (this.selectedFile.length > 0 && this.selectedFile.length === uploadedfile.length) {
-              if (uploadedfile[0].hasOwnProperty('ServerRelativeUrl') && uploadedfile[0].hasOwnProperty('Name') && !uploadedfile[0].hasOwnProperty('hasError')) {
-                this.pmObject.addProject.FinanceManagement.SOWFileURL = uploadedfile[0].ServerRelativeUrl;
-                this.pmObject.addProject.FinanceManagement.SOWFileName = uploadedfile[0].Name;
-                this.pmObject.addProject.FinanceManagement.SOWFileProp = uploadedfile[0];
+      //   return ref.onClose.subscribe(async (uploadedfile: any) => {
+      //     if (uploadedfile) {
+      //       if (this.selectedFile.length > 0 && this.selectedFile.length === uploadedfile.length) {
+      //         if (uploadedfile[0].hasOwnProperty('ServerRelativeUrl') && uploadedfile[0].hasOwnProperty('Name') && !uploadedfile[0].hasOwnProperty('hasError')) {
+      //           this.pmObject.addProject.FinanceManagement.SOWFileURL = uploadedfile[0].ServerRelativeUrl;
+      //           this.pmObject.addProject.FinanceManagement.SOWFileName = uploadedfile[0].Name;
+      //           this.pmObject.addProject.FinanceManagement.SOWFileProp = uploadedfile[0];
 
-                this.saveProjectObj();
-              }
-            }
-          }
-        });
-      }
-      else {
-        this.saveProjectObj()
-      }
+      //           this.saveProjectObj();
+      //         }
+      //       }
+      //     }
+      //   });
+      // }
+      // else {
+      //   this.saveProjectObj()
+      // }
 
     } else {
       this.validateAllFormFields(this.addProjectAttributesForm);
