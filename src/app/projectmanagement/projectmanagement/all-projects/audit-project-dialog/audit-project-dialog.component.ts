@@ -54,22 +54,22 @@ export class AuditProjectDialogComponent implements OnInit {
     // const AuditArray = JSON.parse(JSON.stringify(this.addRollingProjectArray))
 
     // const unselectedArray = AuditArray.filter(c=> this.selectedOptions.includes(c))
-    if (this.selectedOptions.length === this.addRollingProjectArray.length) {
-      this.addRollingProjectArray.map(c => c.checked = true);
+    // if (this.selectedOptions.length === this.addRollingProjectArray.length) {
+    //   this.addRollingProjectArray.map(c => c.checked = true);
+    //   this.enableConfirm = true;
+    // }
+    // else {
+
+    if (this.selectedOptions.length === 0) {
+      this.addRollingProjectArray.map(c => c.checked = false);
+    }
+    const tempObj = this.addRollingProjectArray.filter(c => c.comments === '' || c.comments === 'Select One');
+    if (tempObj) {
+      this.enableConfirm = tempObj.filter(c => c.checked === false).length > 0 ? false : true;
+    } else {
       this.enableConfirm = true;
     }
-    else {
-
-      if (this.selectedOptions.length === 0) {
-        this.addRollingProjectArray.map(c => c.checked = false);
-      }
-      const tempObj = this.addRollingProjectArray.filter(c => c.comments === '');
-      if (tempObj) {
-        this.enableConfirm = tempObj.filter(c => c.checked === false).length > 0 ? false : true;
-      } else {
-        this.enableConfirm = true;
-      }
-    }
+    // }
   }
 
   ConfirmAudit() {
