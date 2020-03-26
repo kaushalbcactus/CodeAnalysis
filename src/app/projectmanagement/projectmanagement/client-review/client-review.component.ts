@@ -12,6 +12,8 @@ import { MenuItem } from 'primeng/api';
 import { PMCommonService } from '../../services/pmcommon.service';
 import { Router } from '@angular/router';
 import { Table } from 'primeng/table';
+import { ViewUploadDocumentDialogComponent } from 'src/app/shared/view-upload-document-dialog/view-upload-document-dialog.component';
+import { DialogService } from 'primeng';
 
 declare var $;
 @Component({
@@ -67,6 +69,11 @@ export class ClientReviewComponent implements OnInit {
   crHideNoDataMessage = true;
   queryStartDate = new Date();
   queryEndDate = new Date();
+  selectedOption: any = '';
+  overAllValues = [
+    { name: 'Not Started', value: 'Not Started' },
+    { name: 'Closed', value: 'Closed' }
+  ];
   public crArrays = {
     taskItems: [],
     ProjectCode: [],
@@ -88,10 +95,12 @@ export class ClientReviewComponent implements OnInit {
     // milestoneArray: [],
     // deliveryDateArray: [],
     nextTaskArray: [],
-    previousTaskArray: []
+    previousTaskArray: [],
+
   };
   constructor(
     public globalObject: GlobalService,
+    private dialogService: DialogService,
     private commonService: CommonService,
     private Constant: ConstantsService,
     private spServices: SPOperationService,
@@ -420,6 +429,7 @@ export class ClientReviewComponent implements OnInit {
     this.pmObject.columnFilter.ProjectCode = [task.ProjectCode];
     this.router.navigate(['/projectMgmt/allProjects']);
   }
+
   closeTask(task) {
     if (task.PreviousTaskStatus === 'Completed') {
       this.closeTaskWithStatus(task, this.crRef);
@@ -431,51 +441,67 @@ export class ClientReviewComponent implements OnInit {
     const isActionRequired = await this.commonService.checkTaskStatus(task);
     if (isActionRequired) {
 
-      const objMilestone = Object.assign({}, this.pmConstant.milestoneOptions);
-      objMilestone.filter = objMilestone.filter.replace(/{{projectCode}}/gi,
-        task.ProjectCode).replace(/{{milestone}}/gi,
-          task.Milestone);
-      this.commonService.SetNewrelic('projectManagment', 'client-review', 'fetchMilestone');
-      const response = await this.spServices.readItems(this.Constant.listNames.Schedules.name, objMilestone);
+      const ref = this.dialogService.open(ViewUploadDocumentDialogComponent, {
+        data: {
+          task,
+        },
+        header: task.Title,
+        width: '60vw',
+        contentStyle: { 'min-height': '30vh', 'max-height': '90vh', 'overflow-y': 'auto' }
+      });
+      ref.onClose.subscribe(async (documents: any) => {
+        if (documents) {
 
-      let batchUrl = [];
-      // update Task
-      const taskObj = Object.assign({}, this.options);
-      taskObj.url = this.spServices.getItemURL(this.Constant.listNames.Schedules.name, task.ID);
-      taskObj.data = { Status: 'Completed', __metadata: { type: this.Constant.listNames.Schedules.type } };
-      taskObj.listName = this.Constant.listNames.Schedules.name;
-      taskObj.type = 'PATCH';
-      batchUrl.push(taskObj);
+          debugger;
+          this.isCRInnerLoaderHidden = false;
+          const objMilestone = Object.assign({}, this.pmConstant.milestoneOptions);
+          objMilestone.filter = objMilestone.filter.replace(/{{projectCode}}/gi,
+            task.ProjectCode).replace(/{{milestone}}/gi,
+              task.Milestone);
+          this.commonService.SetNewrelic('projectManagment', 'client-review', 'fetchMilestone');
+          const response = await this.spServices.readItems(this.Constant.listNames.Schedules.name, objMilestone);
 
-      // update Milestone
-      if (response.length > 0) {
-        const milestoneObj = Object.assign({}, this.options);
-        milestoneObj.url = this.spServices.getItemURL(this.Constant.listNames.Schedules.name, response[0].Id);
-        milestoneObj.data = { Status: 'Completed', __metadata: { type: this.Constant.listNames.Schedules.type } };
-        milestoneObj.listName = this.Constant.listNames.Schedules.name;
-        milestoneObj.type = 'PATCH';
-        batchUrl.push(milestoneObj);
-      }
+          let batchUrl = [];
+          // update Task
+          const taskObj = Object.assign({}, this.options);
+          taskObj.url = this.spServices.getItemURL(this.Constant.listNames.Schedules.name, task.ID);
+          taskObj.data = { Status: 'Completed', __metadata: { type: this.Constant.listNames.Schedules.type } };
+          taskObj.listName = this.Constant.listNames.Schedules.name;
+          taskObj.type = 'PATCH';
+          batchUrl.push(taskObj);
 
-      //  update ProjectInformation
-      const projectID = this.pmObject.allProjectItems.filter(item => item.ProjectCode === task.ProjectCode);
-      const projectInfoObj = Object.assign({}, this.options);
-      projectInfoObj.url = this.spServices.getItemURL(this.Constant.listNames.ProjectInformation.name, projectID[0].ID);
-      projectInfoObj.data = { Status: 'Unallocated', __metadata: { type: this.Constant.listNames.ProjectInformation.type } };
-      projectInfoObj.listName = this.Constant.listNames.ProjectInformation.name;
-      projectInfoObj.type = 'PATCH';
-      batchUrl.push(projectInfoObj);
-      this.commonService.SetNewrelic('projectManagment', 'client-review', 'UpdateSchedules&PM');
-      await this.spServices.executeBatch(batchUrl);
+          // update Milestone
+          if (response.length > 0) {
+            const milestoneObj = Object.assign({}, this.options);
+            milestoneObj.url = this.spServices.getItemURL(this.Constant.listNames.Schedules.name, response[0].Id);
+            milestoneObj.data = { Status: 'Completed', __metadata: { type: this.Constant.listNames.Schedules.type } };
+            milestoneObj.listName = this.Constant.listNames.Schedules.name;
+            milestoneObj.type = 'PATCH';
+            batchUrl.push(milestoneObj);
+          }
 
-      this.changeSuccessMessage(task.Title + ' is completed Sucessfully');
-      const index = this.pmObject.clientReviewArray.findIndex(item => item.ID === task.ID);
-      this.pmObject.clientReviewArray.splice(index, 1);
-      this.pmObject.loading.ClientReview = true;
-      this.pmObject.countObj.crCount = this.pmObject.countObj.crCount - 1;
-      this.commonService.filterAction(unt.sortField, unt.sortOrder,
-        unt.filters.hasOwnProperty('global') ? unt.filters.global.value : null, unt.filters, unt.first, unt.rows,
-        this.pmObject.clientReviewArray, this.filterColumns, this.pmConstant.filterAction.CLIENT_REVIEW);
+          //  update ProjectInformation
+          const projectID = this.pmObject.allProjectItems.filter(item => item.ProjectCode === task.ProjectCode);
+          const projectInfoObj = Object.assign({}, this.options);
+          projectInfoObj.url = this.spServices.getItemURL(this.Constant.listNames.ProjectInformation.name, projectID[0].ID);
+          projectInfoObj.data = { Status: 'Unallocated', __metadata: { type: this.Constant.listNames.ProjectInformation.type } };
+          projectInfoObj.listName = this.Constant.listNames.ProjectInformation.name;
+          projectInfoObj.type = 'PATCH';
+          batchUrl.push(projectInfoObj);
+          this.commonService.SetNewrelic('projectManagment', 'client-review', 'UpdateSchedules&PM');
+          await this.spServices.executeBatch(batchUrl);
+
+          this.isCRInnerLoaderHidden = true;
+          this.changeSuccessMessage(task.Title + ' is completed Sucessfully');
+          const index = this.pmObject.clientReviewArray.findIndex(item => item.ID === task.ID);
+          this.pmObject.clientReviewArray.splice(index, 1);
+          this.pmObject.loading.ClientReview = true;
+          this.pmObject.countObj.crCount = this.pmObject.countObj.crCount - 1;
+          this.commonService.filterAction(unt.sortField, unt.sortOrder,
+            unt.filters.hasOwnProperty('global') ? unt.filters.global.value : null, unt.filters, unt.first, unt.rows,
+            this.pmObject.clientReviewArray, this.filterColumns, this.pmConstant.filterAction.CLIENT_REVIEW);
+        }
+      });
     } else {
       this.changeSuccessMessage('' + task.Title + ' is already completed or closed or auto closed. Hence record is refreshed in 30 sec.');
       setTimeout(() => {
@@ -502,8 +528,10 @@ export class ClientReviewComponent implements OnInit {
     const crArray = this.pmObject.clientReviewArray;
     this.commonService.lazyLoadTask(event, crArray, this.filterColumns, this.pmConstant.filterAction.CLIENT_REVIEW);
   }
-  storeRowData(rowData) {
+  storeRowData(rowData, menu) {
     this.selectedCRTask = rowData;
+    menu.model[2].visible = this.selectedOption.name === 'Closed' ? false : true;
+
   }
   @HostListener('document:click', ['$event'])
   clickout(event) {
@@ -551,6 +579,24 @@ export class ClientReviewComponent implements OnInit {
       }
     }
     this.cdr.detectChanges();
+  }
+
+  onChangeSelect(event) {
+    this.isCRInnerLoaderHidden = false;
+    if (this.selectedOption.name === 'Not Started') {
+
+      this.getCRClient();
+    } else {
+      const startDate = new Date(this.queryStartDate.getFullYear(), this.queryStartDate.getMonth() - 1, 1);
+      const endDate = new Date(this.queryEndDate.setHours(23, 59, 59, 0));
+      const startDateString = new Date(this.commonService.formatDate(startDate) + ' 00:00:00').toISOString();
+      const endDateString = new Date(this.commonService.formatDate(endDate) + ' 23:59:00').toISOString();
+      const currentFilter = '((StartDate ge \'' + startDateString + '\' or StartDate le \'' + endDateString
+        + '\') and (DueDate ge \'' + startDateString + '\' and DueDate le \'' + endDateString
+        + '\')) and (Status eq \'Completed\') and (Task eq \'Client Review\')'
+        + ' and PreviousTaskClosureDate ne null and AssignedTo eq ' + this.globalObject.currentUser.userId + '';
+      this.getCR(currentFilter);
+    }
   }
 
 }

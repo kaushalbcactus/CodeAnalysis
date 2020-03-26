@@ -15,6 +15,7 @@ export class FileUploadProgressDialogComponent implements OnInit {
   size = 0;
   unit = "";
   promises = [];
+  overwrite: any;
   constructor(
     public config: DynamicDialogConfig,
     public dialogref: DynamicDialogRef,
@@ -25,15 +26,17 @@ export class FileUploadProgressDialogComponent implements OnInit {
   ngOnInit() {
 
     this.Files = this.config.data.Files;
+    this.overwrite = this.config.data.overwrite;
     this.uploadFiles();
   }
 
   async uploadFiles() {
     let Fileuploadcount = 0;
+    let uploadedFiles =[];
     const fSExt = new Array('Bytes', 'KB', 'MB', 'GB');
     for (let index = 0; index < this.Files.length; index++) {
 
-      const size = this.Files[index].size;
+      const size = this.Files[index].file.size;
 
       if (size < 1000) {
         this.size = size;
@@ -53,24 +56,26 @@ export class FileUploadProgressDialogComponent implements OnInit {
         percentage: 0,
         size: this.size.toFixed(2) + " " + this.unit,
       }));
-      this.fileUpload(this.Files[index], this.config.data.libraryName + '/' + this.config.data.docFolder, this.Files[index].name).then(addFileToFolder => {
+      this.fileUpload(this.Files[index].file, this.config.data.libraryName, this.Files[index].name, this.overwrite).then(uploadedFile => {
         Fileuploadcount++;
-        debugger;
-        console.log(addFileToFolder);
+        console.log(uploadedFile);
+
+        uploadedFiles.push(uploadedFile)
+
         if (Fileuploadcount === this.Files.length) {
-            this.dialogref.close(Fileuploadcount);
+          this.dialogref.close(uploadedFiles);
         }
       }).catch(error => {
         console.log("Error while uploading" + error)
-          this.dialogref.close(Fileuploadcount);
+        this.dialogref.close(uploadedFiles);
       });
     }
   }
 
 
-  fileUpload(file: any, documentLibrary: string, fileName: string) {
+  fileUpload(file: any, documentLibrary: string, fileName: string, overwriteValue:boolean) {
     return new Promise((resolve, reject) => {
-      this.createDummyFile(fileName, documentLibrary).then(result => {
+      this.createDummyFile(fileName, documentLibrary, overwriteValue).then(result => {
         let fr = new FileReader();
         let offset = 0;
         // the total file size in bytes...    
@@ -109,12 +114,13 @@ export class FileUploadProgressDialogComponent implements OnInit {
 
   }
 
-  createDummyFile(fileName, libraryName) {
+  createDummyFile(fileName, libraryName, overwriteValue) {
     return new Promise((resolve, reject) => {
+
       // Construct the endpoint - The GetList method is available for SharePoint Online only.    
-      var serverRelativeUrlToFolder = "decodedurl='" + this.globalService.sharePointPageObject.webAbsoluteUrl + "/" + libraryName + "'";
-      var endpoint = this.globalService.sharePointPageObject.webAbsoluteUrl + "/_api/Web/GetFolderByServerRelativePath(" + serverRelativeUrlToFolder + ")/files" + "/add(overwrite=true, url='" + fileName + "')"
-      
+      var serverRelativeUrlToFolder = "decodedurl='" + libraryName + "'";
+      var endpoint = this.globalService.sharePointPageObject.webRelativeUrl + "/_api/Web/GetFolderByServerRelativePath(" + serverRelativeUrlToFolder + ")/files" + "/add(overwrite=" + overwriteValue + ", url='" + fileName + "')?$expand=ListItemAllFields"
+
       const headers = {
         "accept": "application/json;odata=verbose"
       };
@@ -135,8 +141,8 @@ export class FileUploadProgressDialogComponent implements OnInit {
     return new Promise((resolve, reject) => {
       let offset = chunk.offset === 0 ? '' : ',fileOffset=' + chunk.offset;
       //parameterising the components of this endpoint avoids the max url length problem in SP (Querystring parameters are not included in this length)    
-      let endpoint = this.globalService.sharePointPageObject.webAbsoluteUrl + "/_api/web/getfilebyserverrelativeurl('" + this.globalService.sharePointPageObject.webAbsoluteUrl + "/" + libraryPath + "/" + fileName + "')/" + chunk.method + "(uploadId=guid'" + id + "'" + offset + ")";
-      
+      let endpoint = this.globalService.sharePointPageObject.webRelativeUrl + "/_api/web/getfilebyserverrelativeurl('"+ libraryPath + "/" + fileName + "')/" + chunk.method + "(uploadId=guid'" + id + "'" + offset + ")?$expand=ListItemAllFields";
+
       const headers = {
         "Accept": "application/json; odata=verbose",
         "Content-Type": "application/octet-stream"

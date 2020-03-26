@@ -68,7 +68,7 @@ export class MyDashboardConstantsService {
       orderby: 'DueDate asc',
       filter: 'AssignedTo eq  {{userId}} and (Task ne \'Send to client\') and (Task ne \'Follow up\') and (Task ne \'Client Review\') and (Task ne \'Time Booking\') and (Task ne \'Blocking\') and ',
       filterStatus: '(Status ne \'Completed\') and (Status ne \'Auto Closed\')  and (Status ne \'Deleted\') and (Status ne \'Abandon\') and (Status ne \'Hold Request\') and (Status ne \'Abandon Request\') and (Status ne \'Hold\') and (Status ne \'Project on Hold\')',
-      filterCompleted: '(Status eq \'Completed\' or Status eq \'Auto Closed\') and (Task ne \'Adhoc\')',
+      filterCompleted: '(Status eqStatus eq \'Completed\' or Status eq \'Auto Closed\') and (Task ne \'Adhoc\')',
       filterDate: 'and((StartDate ge \'{{startDateString}}\' and StartDate le \'{{endDateString}}\') or (DueDate ge \'{{startDateString}}\' and DueDate le \'{{endDateString}}\') or (StartDate le \'{{startDateString}}\' and DueDate ge \'{{endDateString}}\'))',
       expand: 'AssignedTo/Title'
 
@@ -257,6 +257,12 @@ export class MyDashboardConstantsService {
       expand: 'CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title',
       filter: 'ID eq {{projectId}}',
     },
+
+
+    ClientReviewSchedules: {
+      select: 'ID,Title,Status,Task,Milestone,Start_x0020_Date_x0020_Text,End_x0020_Date_x0020_Text,ProjectCode',
+      filter: 'ProjectCode eq \'{{projectCode}}\' and Task eq \'Client Review\' and Status eq \'Completed\''
+    }
 
   };
 

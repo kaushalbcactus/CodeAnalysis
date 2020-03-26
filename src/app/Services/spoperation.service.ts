@@ -48,7 +48,6 @@ export class SPOperationService {
   }
 
   getHeaders(bAddContext, returnOp) {
-    debugger;
     const headerCopy: any = Object.assign({}, this.headers);
     if (bAddContext) {
       const context: any = document.getElementById('__REQUESTDIGEST');
@@ -526,7 +525,6 @@ export class SPOperationService {
         obj.hasError = true;
         return obj;
       } else if(res.valueOf('odata')){
-        debugger;
          return res;
       }else {
         return {

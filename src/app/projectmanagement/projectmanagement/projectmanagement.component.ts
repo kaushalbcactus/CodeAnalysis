@@ -10,6 +10,8 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DataService } from 'src/app/Services/data.service';
 import { CommonService } from 'src/app/Services/common.service';
+import { FileUploadProgressDialogComponent } from 'src/app/shared/file-upload-progress-dialog/file-upload-progress-dialog.component';
+import { DialogService } from 'primeng';
 @Component({
   selector: 'app-projectmanagement',
   templateUrl: './projectmanagement.component.html',
@@ -54,6 +56,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     private frmbuilder: FormBuilder,
     public messageService: MessageService,
     public pmService: PMCommonService,
+    public dialogService: DialogService,
     private router: Router,
     private dataService: DataService,
     private commonService: CommonService,
@@ -194,7 +197,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    */
   onChangeClientLegalEntity() {
     if (this.addSowForm.value.clientLegalEntity) {
-    this.pmObject.addSOW.ClientLegalEntity = this.addSowForm.value.clientLegalEntity;
+      this.pmObject.addSOW.ClientLegalEntity = this.addSowForm.value.clientLegalEntity;
     }
     if (this.pmObject.addSOW.ClientLegalEntity) {
       this.sowDropDown.POC = [];
@@ -298,15 +301,15 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.addSowForm.get('total').setValue(this.pmObject.addSOW.Budget.Net +
       this.pmObject.addSOW.Budget.OOP + this.pmObject.addSOW.Budget.Tax);
 
-      if(!this.addSowForm.value.net) {
-        this.addSowForm.get('net').setValue(0);
-      }
-      if(!this.addSowForm.value.oop) {
-        this.addSowForm.get('oop').setValue(0);
-      }
-      if(!this.addSowForm.value.tax) {
-        this.addSowForm.get('tax').setValue(0);
-      }
+    if (!this.addSowForm.value.net) {
+      this.addSowForm.get('net').setValue(0);
+    }
+    if (!this.addSowForm.value.oop) {
+      this.addSowForm.get('oop').setValue(0);
+    }
+    if (!this.addSowForm.value.tax) {
+      this.addSowForm.get('tax').setValue(0);
+    }
   }
   /***
    * This method is used to add the sow
@@ -372,19 +375,58 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.pmObject.addSOW.AllOperationId.push(this.pmObject.addSOW.CM2);
       this.pmObject.addSOW.AllOperationId.push(this.pmObject.addSOW.DeliveryOptional);
       let fileUploadResult = {};
-      if (this.selectedFile) {
-        fileUploadResult = await this.submitFile();
-      }
       this.pmObject.addSOW.isSOWCodeDisabled = false;
       this.pmObject.addSOW.isStatusDisabled = true;
-      if (this.selectedFile && !fileUploadResult.hasOwnProperty('hasError')) {
-        if (!this.pmObject.addSOW.ID) {
-          await this.createUpdateSOW(false, this.pmObject.addSOW);
+      if (this.selectedFile) {
+        // fileUploadResult = await this.submitFile();
+
+        const tempFiles = [new Object({ name: this.selectedFile[0].name, file: this.selectedFile[0] })];
+        const docFolder = 'Finance/SOW';
+        let libraryName = '';
+        const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
+          x.Title === this.pmObject.addSOW.ClientLegalEntity);
+        if (clientInfo && clientInfo.length) {
+          this.currClientLegalEntityObj = clientInfo;
+          libraryName = clientInfo[0].ListName;
         }
-        if (this.pmObject.addSOW.ID) {
-          await this.createUpdateSOW(true, this.pmObject.addSOW);
-        }
-      } else {
+        const ref = this.dialogService.open(FileUploadProgressDialogComponent, {
+          header: 'File Uploading',
+          width: '70vw',
+          data: {
+            Files: tempFiles,
+            libraryName: this.globalObject.sharePointPageObject.webRelativeUrl + '/' + libraryName + '/' + docFolder,
+            overwrite: true,
+          },
+          contentStyle: { 'overflow-y': 'visible', 'background-color': '#f4f3ef' },
+          closable: false,
+        });
+
+        return ref.onClose.subscribe(async (uploadedfile: any) => {
+          if (uploadedfile) {
+            if (this.selectedFile.length > 0 && this.selectedFile.length === uploadedfile.length) {
+              if (!uploadedfile[0].hasOwnProperty('hasError')) {
+                if (!this.pmObject.addSOW.ID) {
+                  await this.createUpdateSOW(false, this.pmObject.addSOW);
+                }
+                if (this.pmObject.addSOW.ID) {
+                  await this.createUpdateSOW(true, this.pmObject.addSOW);
+                }
+
+              }
+              else {
+                if (!this.pmObject.addSOW.ID) {
+                  await this.createUpdateSOW(false, this.pmObject.addSOW);
+                }
+                if (this.pmObject.addSOW.ID) {
+                  await this.createUpdateSOW(true, this.pmObject.addSOW);
+                }
+              }
+              this.selectedFile = null;
+            }
+          }
+        });
+      }
+      else {
         if (!this.pmObject.addSOW.ID) {
           await this.createUpdateSOW(false, this.pmObject.addSOW);
         }
@@ -392,7 +434,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
           await this.createUpdateSOW(true, this.pmObject.addSOW);
         }
       }
-      this.selectedFile = null;
+
     } else {
       this.validateAllFormFields(this.addSowForm);
     }
@@ -435,28 +477,28 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
   /**
    * This method is used to upload the file on finance/sow.
    */
-  async submitFile() {
-    const docFolder = 'Finance/SOW';
-    let libraryName = '';
-    const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
-      x.Title === this.pmObject.addSOW.ClientLegalEntity);
-    if (clientInfo && clientInfo.length) {
-      this.currClientLegalEntityObj = clientInfo;
-      libraryName = clientInfo[0].ListName;
-    }
-    const folderPath: string = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + libraryName + '/' + docFolder;
-    this.filePathUrl = await this.spServices.getFileUploadUrl(folderPath, this.selectedFile.name, true);
-    this.commonService.SetNewrelic('ProjectManagement', 'projectmanagement-submitFile', 'uploadFile');
-    const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
-    console.log(res);
-    // Added by kaushal on 12-07-2019
-    if (res.hasOwnProperty('ServerRelativeUrl') && res.hasOwnProperty('Name')) { // && !res.hasOwnProperty('hasError')
-      this.pmObject.addSOW.SOWFileURL = res.ServerRelativeUrl;
-      this.pmObject.addSOW.SOWFileName = res.Name;
-      this.pmObject.addSOW.SOWDocProperties = res;
-    }
-    return res;
-  }
+  // async submitFile() {
+  //   const docFolder = 'Finance/SOW';
+  //   let libraryName = '';
+  //   const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
+  //     x.Title === this.pmObject.addSOW.ClientLegalEntity);
+  //   if (clientInfo && clientInfo.length) {
+  //     this.currClientLegalEntityObj = clientInfo;
+  //     libraryName = clientInfo[0].ListName;
+  //   }
+  //   const folderPath: string = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + libraryName + '/' + docFolder;
+  //   this.filePathUrl = await this.spServices.getFileUploadUrl(folderPath, this.selectedFile.name, true);
+  //   this.commonService.SetNewrelic('ProjectManagement', 'projectmanagement-submitFile', 'uploadFile');
+  //   const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
+  //   console.log(res);
+  //   // Added by kaushal on 12-07-2019
+  //   if (res.hasOwnProperty('ServerRelativeUrl') && res.hasOwnProperty('Name')) { // && !res.hasOwnProperty('hasError')
+  //     this.pmObject.addSOW.SOWFileURL = res.ServerRelativeUrl;
+  //     this.pmObject.addSOW.SOWFileName = res.Name;
+  //     this.pmObject.addSOW.SOWDocProperties = res;
+  //   }
+  //   return res;
+  // }
   /**
    * This method get called when we change the file.
    * @param event Pass the file properties as a parameter.
@@ -956,80 +998,47 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       }
 
       if (this.selectedFile) {
-        await this.submitFile();
+        const tempFiles = [new Object({ name: this.selectedFile[0].name, file: this.selectedFile[0] })];
+        const docFolder = 'Finance/SOW';
+        let libraryName = '';
+        const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
+          x.Title === this.pmObject.addSOW.ClientLegalEntity);
+        if (clientInfo && clientInfo.length) {
+          this.currClientLegalEntityObj = clientInfo;
+          libraryName = clientInfo[0].ListName;
+        }
+        const ref = this.dialogService.open(FileUploadProgressDialogComponent, {
+          header: 'File Uploading',
+          width: '70vw',
+          data: {
+            Files: tempFiles,
+            libraryName: this.globalObject.sharePointPageObject.webRelativeUrl + '/' + libraryName + '/' + docFolder,
+            overwrite: true,
+          },
+          contentStyle: { 'overflow-y': 'visible', 'background-color': '#f4f3ef' },
+          closable: false,
+        });
+
+        return ref.onClose.subscribe(async (uploadedfile: any) => {
+          if (uploadedfile) {
+            if (this.selectedFile.length > 0 && this.selectedFile.length === uploadedfile.length) {
+              if (uploadedfile[0].hasOwnProperty('ServerRelativeUrl') && uploadedfile[0].hasOwnProperty('Name') && !uploadedfile[0].hasOwnProperty('hasError')) {
+                this.pmObject.addProject.FinanceManagement.SOWFileURL = uploadedfile[0].ServerRelativeUrl;
+                this.pmObject.addProject.FinanceManagement.SOWFileName = uploadedfile[0].Name;
+                this.pmObject.addProject.FinanceManagement.SOWFileProp = uploadedfile[0];
+
+                this.saveAdditionDataBudget(currSelectedSOW, sowItemResult, today);
+              }
+            }
+          }
+        });
+      } else {
+        this.saveAdditionDataBudget(currSelectedSOW, sowItemResult, today);
       }
 
-      const batchURL = [];
-      const options = {
-        data: null,
-        url: '',
-        type: '',
-        listName: ''
-      };
 
 
-      // Assign form value to global variable
-      this.pmObject.addSOW.Addendum.TotalBudget = this.addAdditionalBudgetForm.value.addTotal;
-      this.pmObject.addSOW.Addendum.NetBudget = this.addAdditionalBudgetForm.value.addNet;
-      this.pmObject.addSOW.Addendum.OOPBudget = this.addAdditionalBudgetForm.value.addOOP ? this.addAdditionalBudgetForm.value.addOOP : 0;
-      this.pmObject.addSOW.Addendum.TaxBudget = this.addAdditionalBudgetForm.value.addTax ? this.addAdditionalBudgetForm.value.addTax : 0;
-      // create sow obj for update the sow list.
-      const updateSOWObj = {
-        TotalBudget: this.pmObject.addSOW.Addendum.TotalBudget + this.pmObject.addSOW.Budget.Total,
-        NetBudget: this.pmObject.addSOW.Addendum.NetBudget + this.pmObject.addSOW.Budget.Net,
-        OOPBudget: this.pmObject.addSOW.Addendum.OOPBudget + this.pmObject.addSOW.Budget.OOP,
-        TaxBudget: this.pmObject.addSOW.Addendum.TaxBudget + this.pmObject.addSOW.Budget.Tax,
-        SOWLink: this.pmObject.addSOW.SOWFileURL,
-        __metadata: {
-          type: this.constant.listNames.SOW.type
-        }
-      };
-      // create budgetbreakup obj for create new item in SOWBudgetBreakup list.
-      const newBudgetSOWObj = {
-        TotalBudget: this.pmObject.addSOW.Addendum.TotalBudget + this.pmObject.addSOW.Budget.Total,
-        NetBudget: this.pmObject.addSOW.Addendum.NetBudget + this.pmObject.addSOW.Budget.Net,
-        OOPBudget: this.pmObject.addSOW.Addendum.OOPBudget + this.pmObject.addSOW.Budget.OOP,
-        TaxBudget: this.pmObject.addSOW.Addendum.TaxBudget + this.pmObject.addSOW.Budget.Tax,
-        AddendumTotalBudget: this.pmObject.addSOW.Addendum.TotalBudget,
-        AddendumNetBudget: this.pmObject.addSOW.Addendum.NetBudget,
-        AddendumOOPBudget: this.pmObject.addSOW.Addendum.OOPBudget,
-        AddendumTaxBudget: this.pmObject.addSOW.Addendum.TaxBudget,
-        Currency: this.pmObject.addSOW.Currency,
-        SOWCode: this.pmObject.addSOW.SOWCode,
-        Status: this.pmObject.addSOW.Status,
-        InternalReviewStartDate: today,
-        ClientReviewStartDate: today,
-        ClientReviewCompletionDate: today,
-        InternalReviewCompletionDate: today,
-        __metadata: {
-          type: this.constant.listNames.SOWBudgetBreakup.type
-        }
-      };
-      const updateSowData = Object.assign({}, options);
-      updateSowData.data = updateSOWObj;
-      updateSowData.listName = this.constant.listNames.SOW.name;
-      updateSowData.type = 'PATCH';
-      updateSowData.url = this.spServices.getItemURL(this.constant.listNames.SOW.name, currSelectedSOW.ID);
-      batchURL.push(updateSowData);
 
-      const insertSOWBudgetBreakup = Object.assign({}, options);
-      insertSOWBudgetBreakup.data = newBudgetSOWObj;
-      insertSOWBudgetBreakup.listName = this.constant.listNames.SOWBudgetBreakup.name;
-      insertSOWBudgetBreakup.type = 'POST';
-      insertSOWBudgetBreakup.url = this.spServices.getReadURL(this.constant.listNames.SOWBudgetBreakup.name, null);
-      batchURL.push(insertSOWBudgetBreakup);
-      this.commonService.SetNewrelic('projectManagment', 'projectManagement', 'GetSowSowBudBreakup');
-      const res = await this.spServices.executeBatch(batchURL);
-      if (sowItemResult && sowItemResult.length) {
-        this.updateBudgetEmail(this.pmObject.addSOW);
-        this.pmObject.isMainLoaderHidden = true;
-        this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Budget updated Successfully.' });
-        console.log(res);
-        setTimeout(() => {
-          this.closeAdditonalPop();
-        }, this.pmConstant.TIME_OUT);
-      }
-      this.selectedFile = null;
     } else {
       this.validateAllFormFields(this.addAdditionalBudgetForm);
       if (!this.selectedFile) {
@@ -1041,7 +1050,83 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       }
 
     }
-    
+
+  }
+
+  async saveAdditionDataBudget(currSelectedSOW, sowItemResult, today) {
+
+    const batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+
+
+    // Assign form value to global variable
+    this.pmObject.addSOW.Addendum.TotalBudget = this.addAdditionalBudgetForm.value.addTotal;
+    this.pmObject.addSOW.Addendum.NetBudget = this.addAdditionalBudgetForm.value.addNet;
+    this.pmObject.addSOW.Addendum.OOPBudget = this.addAdditionalBudgetForm.value.addOOP ? this.addAdditionalBudgetForm.value.addOOP : 0;
+    this.pmObject.addSOW.Addendum.TaxBudget = this.addAdditionalBudgetForm.value.addTax ? this.addAdditionalBudgetForm.value.addTax : 0;
+    // create sow obj for update the sow list.
+    const updateSOWObj = {
+      TotalBudget: this.pmObject.addSOW.Addendum.TotalBudget + this.pmObject.addSOW.Budget.Total,
+      NetBudget: this.pmObject.addSOW.Addendum.NetBudget + this.pmObject.addSOW.Budget.Net,
+      OOPBudget: this.pmObject.addSOW.Addendum.OOPBudget + this.pmObject.addSOW.Budget.OOP,
+      TaxBudget: this.pmObject.addSOW.Addendum.TaxBudget + this.pmObject.addSOW.Budget.Tax,
+      SOWLink: this.pmObject.addSOW.SOWFileURL,
+      __metadata: {
+        type: this.constant.listNames.SOW.type
+      }
+    };
+    // create budgetbreakup obj for create new item in SOWBudgetBreakup list.
+    const newBudgetSOWObj = {
+      TotalBudget: this.pmObject.addSOW.Addendum.TotalBudget + this.pmObject.addSOW.Budget.Total,
+      NetBudget: this.pmObject.addSOW.Addendum.NetBudget + this.pmObject.addSOW.Budget.Net,
+      OOPBudget: this.pmObject.addSOW.Addendum.OOPBudget + this.pmObject.addSOW.Budget.OOP,
+      TaxBudget: this.pmObject.addSOW.Addendum.TaxBudget + this.pmObject.addSOW.Budget.Tax,
+      AddendumTotalBudget: this.pmObject.addSOW.Addendum.TotalBudget,
+      AddendumNetBudget: this.pmObject.addSOW.Addendum.NetBudget,
+      AddendumOOPBudget: this.pmObject.addSOW.Addendum.OOPBudget,
+      AddendumTaxBudget: this.pmObject.addSOW.Addendum.TaxBudget,
+      Currency: this.pmObject.addSOW.Currency,
+      SOWCode: this.pmObject.addSOW.SOWCode,
+      Status: this.pmObject.addSOW.Status,
+      InternalReviewStartDate: today,
+      ClientReviewStartDate: today,
+      ClientReviewCompletionDate: today,
+      InternalReviewCompletionDate: today,
+      __metadata: {
+        type: this.constant.listNames.SOWBudgetBreakup.type
+      }
+    };
+    const updateSowData = Object.assign({}, options);
+    updateSowData.data = updateSOWObj;
+    updateSowData.listName = this.constant.listNames.SOW.name;
+    updateSowData.type = 'PATCH';
+    updateSowData.url = this.spServices.getItemURL(this.constant.listNames.SOW.name, currSelectedSOW.ID);
+    batchURL.push(updateSowData);
+
+    const insertSOWBudgetBreakup = Object.assign({}, options);
+    insertSOWBudgetBreakup.data = newBudgetSOWObj;
+    insertSOWBudgetBreakup.listName = this.constant.listNames.SOWBudgetBreakup.name;
+    insertSOWBudgetBreakup.type = 'POST';
+    insertSOWBudgetBreakup.url = this.spServices.getReadURL(this.constant.listNames.SOWBudgetBreakup.name, null);
+    batchURL.push(insertSOWBudgetBreakup);
+    this.commonService.SetNewrelic('projectManagment', 'projectManagement', 'GetSowSowBudBreakup');
+    const res = await this.spServices.executeBatch(batchURL);
+    if (sowItemResult && sowItemResult.length) {
+      this.updateBudgetEmail(this.pmObject.addSOW);
+      this.pmObject.isMainLoaderHidden = true;
+      this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Budget updated Successfully.' });
+      console.log(res);
+      setTimeout(() => {
+        this.closeAdditonalPop();
+      }, this.pmConstant.TIME_OUT);
+    }
+    this.selectedFile = null;
+
   }
   /**
    * This method is used to get the edit SOWObj value based on selected sow.

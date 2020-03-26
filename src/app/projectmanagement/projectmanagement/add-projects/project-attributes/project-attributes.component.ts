@@ -1,5 +1,5 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { SelectItemGroup } from 'primeng';
+import { SelectItemGroup, DialogService } from 'primeng';
 import { FormGroup, Validators, FormControl, FormBuilder } from '@angular/forms';
 import { SelectItem } from 'primeng';
 import { PMObjectService } from 'src/app/projectmanagement/services/pmobject.service';
@@ -13,6 +13,8 @@ import { DataService } from 'src/app/Services/data.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { MyDashboardConstantsService } from 'src/app/my-dashboard/services/my-dashboard-constants.service';
 import { DatePipe } from '@angular/common';
+import { FileUploadProgressDialogComponent } from 'src/app/shared/file-upload-progress-dialog/file-upload-progress-dialog.component';
+import { GlobalService } from 'src/app/Services/global.service';
 @Component({
   selector: 'app-project-attributes',
   templateUrl: './project-attributes.component.html',
@@ -49,6 +51,8 @@ export class ProjectAttributesComponent implements OnInit {
     private spServices: SPOperationService,
     private constant: ConstantsService,
     private pmConstant: PmconstantService,
+    private dialogService: DialogService,
+    private globalObject: GlobalService,
     private config: DynamicDialogConfig,
     private pmCommonService: PMCommonService,
     private messageService: MessageService,
@@ -579,39 +583,80 @@ export class ProjectAttributesComponent implements OnInit {
       this.pmObject.isMainLoaderHidden = false;
       this.setFormFieldValue();
       if (this.selectedFile) {
-        await this.pmCommonService.submitFile(this.selectedFile, this.fileReader);
-      }
-      const projectInfo = this.pmCommonService.getProjectData(this.pmObject.addProject, false);
-      this.commonService.SetNewrelic('projectManagment', 'addproj-projectAttributes', 'UpdateProjectInformation');
-      await this.spServices.updateItem(this.constant.listNames.ProjectInformation.name, this.projObj.ID, projectInfo,
-        this.constant.listNames.ProjectInformation.type);
-      this.pmObject.isMainLoaderHidden = true;
-      this.messageService.add({
-        key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
-        detail: 'Project Updated Successfully for the projectcode - ' + this.projObj.ProjectCode
-      });
-      setTimeout(() => {
-        this.dynamicDialogRef.close();
-        if (this.router.url === '/projectMgmt/allProjects') {
-          this.dataService.publish('reload-project');
-        } else {
-          this.router.navigate(['/projectMgmt/allProjects']);
+        // await this.pmCommonService.submitFile(this.selectedFile, this.fileReader);
+        const docFolder = 'Finance/SOW';
+        let libraryName = '';
+        const tempFiles = [new Object({ name: this.selectedFile[0].name, file: this.selectedFile[0] })];
+        const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
+          x.Title === this.pmObject.addProject.ProjectAttributes.ClientLegalEntity);
+        if (clientInfo && clientInfo.length) {
+          libraryName = clientInfo[0].ListName;
         }
-      }, this.pmConstant.TIME_OUT);
+        const ref = this.dialogService.open(FileUploadProgressDialogComponent, {
+          header: 'File Uploading',
+          width: '70vw',
+          data: {
+            Files: tempFiles,
+            libraryName: this.globalObject.sharePointPageObject.webRelativeUrl + '/' + libraryName + '/' + docFolder,
+            overwrite: true,
+          },
+          contentStyle: { 'overflow-y': 'visible', 'background-color': '#f4f3ef' },
+          closable: false,
+        });
+
+        return ref.onClose.subscribe(async (uploadedfile: any) => {
+          if (uploadedfile) {
+            if (this.selectedFile.length > 0 && this.selectedFile.length === uploadedfile.length) {
+              if (uploadedfile[0].hasOwnProperty('ServerRelativeUrl') && uploadedfile[0].hasOwnProperty('Name') && !uploadedfile[0].hasOwnProperty('hasError')) {
+                this.pmObject.addProject.FinanceManagement.SOWFileURL = uploadedfile[0].ServerRelativeUrl;
+                this.pmObject.addProject.FinanceManagement.SOWFileName = uploadedfile[0].Name;
+                this.pmObject.addProject.FinanceManagement.SOWFileProp = uploadedfile[0];
+
+                this.saveProjectObj();
+              }
+            }
+          }
+        });
+      }
+      else {
+        this.saveProjectObj()
+      }
+
     } else {
       this.validateAllFormFields(this.addProjectAttributesForm);
     }
   }
+
+  async saveProjectObj() {
+
+    const projectInfo = this.pmCommonService.getProjectData(this.pmObject.addProject, false);
+    this.commonService.SetNewrelic('projectManagment', 'addproj-projectAttributes', 'UpdateProjectInformation');
+    await this.spServices.updateItem(this.constant.listNames.ProjectInformation.name, this.projObj.ID, projectInfo,
+      this.constant.listNames.ProjectInformation.type);
+    this.pmObject.isMainLoaderHidden = true;
+    this.messageService.add({
+      key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
+      detail: 'Project Updated Successfully for the projectcode - ' + this.projObj.ProjectCode
+    });
+    setTimeout(() => {
+      this.dynamicDialogRef.close();
+      if (this.router.url === '/projectMgmt/allProjects') {
+        this.dataService.publish('reload-project');
+      } else {
+        this.router.navigate(['/projectMgmt/allProjects']);
+      }
+    }, this.pmConstant.TIME_OUT);
+  };
   /**
    * This method is called when file is selected
    * @param event file
    */
   onFileChange(event) {
     this.selectedFile = null;
-    this.fileReader = new FileReader();
+    // this.fileReader = new FileReader();
     if (event.target.files && event.target.files.length > 0) {
-      this.selectedFile = event.target.files[0];
-      this.fileReader.readAsArrayBuffer(this.selectedFile);
+      this.selectedFile = event.target.files;
+      // this.fileReader.readAsArrayBuffer(this.selectedFile);
     }
   }
   /**

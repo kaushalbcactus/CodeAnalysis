@@ -2102,7 +2102,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
     nodeData.pUserStart = this.commonService.calcTimeForDifferentTimeZone(prevNodeStartDate,
       this.sharedObject.currentUser.timeZone, nodeData.assignedUserTimeZone);
     // const chkDate = nodeData.pUserStart.getHours() >= 19 && (nodeData.pUserStart.getHours() <= 23 && nodeData.pUserStart.getMinutes() < 60)
-    nodeData.pUserStart = nodeData.pUserStart.getHours() >= 19 || nodeData.pUserStart.getHours() < 9 || prevNodeData.itemType === 'Client Review' || nodeData.itemType === 'Client Review' ?
+    // nodeData.pUserStart = nodeData.pUserStart.getHours() >= 19 || nodeData.pUserStart.getHours() < 9 || prevNodeData.itemType === 'Client Review' || nodeData.itemType === 'Client Review' ?
+    // new change cascade maxwell
+    nodeData.pUserStart = nodeData.pUserStart.getHours() >= 19 || nodeData.pUserStart.getHours() < 9 ?
       this.checkStartDate(new Date(nodeData.pUserStart.getFullYear(), nodeData.pUserStart.getMonth(), (nodeData.pUserStart.getDate() + 1), 9, 0)) :
       nodeData.pUserStart;
     nodeData.pUserEnd = this.checkEndDate(nodeData.pUserStart, workingHours);
@@ -4051,7 +4053,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
           }
         }
 
-        if (previousNode !== undefined && previousNode.status !== "Completed" && new Date(previousNode.pEnd) >= new Date(milestone.data.pStart)) {
+        if (previousNode !== undefined && previousNode.status !== "Completed" && new Date(previousNode.pEnd) > new Date(milestone.data.pStart)) {
           let errormessage = previousNode.milestone + ' Client Review';
           if (previousNode.pName !== 'Client Review') {
             errormessage = previousNode.pName;
@@ -4141,7 +4143,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
       'status': 'Not Saved',
       'budgetHours': 0,
       'allowStart': false,
-      'tat': task.taskType === 'Client Review' ? true : false,
+      // 'tat': task.taskType === 'Client Review' ? true : false,
+      'tat': false,
       'tatVal': 0,
       'milestoneStatus': className = 'gtaskred' ? 'Not Saved' : null,
       'type': 'task',

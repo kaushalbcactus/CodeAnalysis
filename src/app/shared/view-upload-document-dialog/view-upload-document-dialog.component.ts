@@ -1,5 +1,5 @@
 import { Component, OnInit, EventEmitter, Output, Input, SimpleChanges, OnDestroy } from '@angular/core';
-import { MenuItem, DynamicDialogConfig, MessageService } from 'primeng';
+import { MenuItem, DynamicDialogConfig, MessageService, DynamicDialogRef, ConfirmationService, DialogService } from 'primeng';
 import { DatePipe, CommonModule } from '@angular/common';
 import { ConstantsService } from 'src/app/Services/constants.service';
 
@@ -7,13 +7,16 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { MyDashboardConstantsService } from 'src/app/my-dashboard/services/my-dashboard-constants.service';
 import { CommonService } from 'src/app/Services/common.service';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
+import { FileUploadProgressDialogComponent } from '../file-upload-progress-dialog/file-upload-progress-dialog.component';
 
 
 
 @Component({
   selector: 'app-view-upload-document-dialog',
   templateUrl: './view-upload-document-dialog.component.html',
-  styleUrls: ['./view-upload-document-dialog.component.css']
+  styleUrls: ['./view-upload-document-dialog.component.css'],
+  providers: [DialogService],
 })
 export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   selectedTab: string;
@@ -26,6 +29,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   ProjectInformation: any;
   tempObject: any;
   allDocuments: any;
+  ModifiedSelectedTaskName = '';
   DocumentArray: any = [];
   loaderenable: boolean;
   dbcols: { field: string; header: string; }[];
@@ -43,14 +47,17 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     listName: ''
   };
   @Input() taskData: any;
+  events: any;
   constructor(
     public config: DynamicDialogConfig,
+    public ref: DynamicDialogRef,
     public messageService: MessageService,
     private constants: ConstantsService,
     private myDashboardConstantsService: MyDashboardConstantsService,
     private spServices: SPOperationService,
     public sharedObject: GlobalService,
     private datePipe: DatePipe,
+    public dialogService: DialogService,
     private spOperations: SPOperationService,
     private commonService: CommonService) { }
 
@@ -74,8 +81,13 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     slotPTasks.forEach((element, i) => {
       this.selectedTask.PrevTasks += element.Title;
       this.selectedTask.PrevTasks += i < slotPTasks.length - 1 ? ';#' : '';
+
+
     });
     // }
+    this.ModifiedSelectedTaskName = this.selectedTask.Title.replace(this.selectedTask.ProjectCode, '').replace(this.selectedTask.Milestone, '').trim();
+
+    this.selectedTask.Task = this.ModifiedSelectedTaskName === 'Client Review' ? 'Client Review' : this.selectedTask.Task
 
     if (this.selectedTask.PrevTasks) {
       this.items = [
@@ -83,7 +95,8 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
         { label: 'My Drafts', icon: 'fa fa-envelope-open', command: (e) => this.onChange(e) },
         { label: 'Source Docs', icon: 'fa fa-folder-open', command: (e) => this.onChange(e) },
         { label: 'References', icon: 'fa fa-fw fa-book', command: (e) => this.onChange(e) },
-        { label: 'Meeting Notes & Client Comments', icon: 'fa fa-comments-o', command: (e) => this.onChange(e) },
+        { label: 'Client Comments', icon: 'fa fa-comments-o', command: (e) => this.onChange(e) },
+        { label: 'Meeting Notes', icon: 'fa fa-file-text-o', command: (e) => this.onChange(e) },
         { label: 'Emails', icon: 'fa fa-envelope', command: (e) => this.onChange(e) }];
       this.activeItem = this.items[1];
       this.prevTask = this.items[0].label;
@@ -93,25 +106,30 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
         this.items = [
           { label: 'Source Docs', icon: 'fa fa-folder-open', command: (e) => this.onChange(e) },
           { label: 'References', icon: 'fa fa-fw fa-book', command: (e) => this.onChange(e) },
-          { label: 'Meeting Notes & Client Comments', icon: 'fa fa-comments-o', command: (e) => this.onChange(e) },
+          // { label: 'Meeting Notes & Client Comments', icon: 'fa fa-comments-o', command: (e) => this.onChange(e) },
+          { label: 'Client Comments', icon: 'fa fa-comments-o', command: (e) => this.onChange(e) },
+          { label: 'Meeting Notes', icon: 'fa fa-file-text-o', command: (e) => this.onChange(e) },
           { label: 'Emails', icon: 'fa fa-envelope', command: (e) => this.onChange(e) }];
         this.activeItem = this.items[0];
         this.selectedTab = 'Source Docs';
       } else {
-        this.items = [
-
-          { label: 'My Drafts', icon: 'fa fa-envelope-open', command: (e) => this.onChange(e) },
-          { label: 'Source Docs', icon: 'fa fa-folder-open', command: (e) => this.onChange(e) },
-          { label: 'References', icon: 'fa fa-fw fa-book', command: (e) => this.onChange(e) },
-          { label: 'Meeting Notes & Client Comments', icon: 'fa fa-comments-o', command: (e) => this.onChange(e) },
-          { label: 'Emails', icon: 'fa fa-envelope', command: (e) => this.onChange(e) }];
+        if (this.ModifiedSelectedTaskName === 'Client Review') {
+          this.items = [
+            { label: 'My Drafts', icon: 'fa fa-envelope-open', command: (e) => this.onChange(e) }];
+        }
+        else {
+          this.items = [
+            { label: 'My Drafts', icon: 'fa fa-envelope-open', command: (e) => this.onChange(e) },
+            { label: 'Source Docs', icon: 'fa fa-folder-open', command: (e) => this.onChange(e) },
+            { label: 'References', icon: 'fa fa-fw fa-book', command: (e) => this.onChange(e) },
+            { label: 'Client Comments', icon: 'fa fa-comments-o', command: (e) => this.onChange(e) },
+            { label: 'Meeting Notes', icon: 'fa fa-file-text-o', command: (e) => this.onChange(e) },
+            { label: 'Emails', icon: 'fa fa-envelope', command: (e) => this.onChange(e) }];
+        }
         this.activeItem = this.items[0];
         this.selectedTab = 'My Drafts';
       }
     }
-
-
-
 
     this.dbcols = [
       { field: 'Name', header: 'Document Name' },
@@ -123,17 +141,15 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
 
     this.getDocuments(this.selectedTask);
     this.loaderenable = true;
-
-
   }
 
   ngOnDestroy() {
   }
 
 
-  // **************************************************************************************************************************************
+  // *****************************************************************************************************
   //  Switch tab on click
-  // **************************************************************************************************************************************
+  // *****************************************************************************************************
 
   onChange(event) {
 
@@ -160,9 +176,9 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
 
 
 
-  // **************************************************************************************************************************************
+  // ****************************************************************************************************
   //  Get Documents On tab switch
-  // **************************************************************************************************************************************
+  // ****************************************************************************************************
   async getDocuments(task) {
     const header = this.dbcols.slice(0);
     header.splice(1, 1);
@@ -179,9 +195,9 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     }
   }
 
-  // **************************************************************************************************************************************
+  // ***************************************************************************************************
   //  Get  current project information
-  // **************************************************************************************************************************************
+  // ***************************************************************************************************
 
   async getCurrentTaskProjectInformation(ProjectCode) {
 
@@ -201,31 +217,98 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
 
 
     this.DocumentArray = [];
-
+    let completedCRList = []
     let documentsUrl = '';
 
-    if (selectedTab === 'Source Docs') {
-      documentsUrl = '/Source Documents';
-    } else if (selectedTab === 'References') {
-      documentsUrl = '/References';
-    } else if (selectedTab === 'Meeting Notes & Client Comments') {
-      documentsUrl = '/Communications';
-    } else if (selectedTab === 'Emails') {
-      documentsUrl = '/Emails';
-    } else {
-      documentsUrl = '/Drafts/Internal/' + this.selectedTask.Milestone;
+    // if (selectedTab === 'Source Docs') {
+    //   documentsUrl = '/Source Documents';
+    // } else if (selectedTab === 'References') {
+    //   documentsUrl = '/References';
+    // } else if (selectedTab === 'Meeting Notes') {
+    //   documentsUrl = '/Communications';
+    // } else if (selectedTab === 'Emails') {
+    //   documentsUrl = '/Emails';
+    // } else {
+    //   documentsUrl = '/Drafts/Internal/' + this.selectedTask.Milestone;
+    // }
+
+    switch (selectedTab) {
+      case 'Source Docs':
+        documentsUrl = '/Source Documents';
+        break;
+      case 'References':
+        documentsUrl = '/References';
+        break;
+      case 'Meeting Notes':
+        documentsUrl = '/Communications';
+        break;
+      case 'Emails':
+        documentsUrl = '/Emails';
+        break;
+      default:
+        documentsUrl = '/Drafts/Internal/' + this.selectedTask.Milestone;
+    }
+    const folderUrl = this.ProjectInformation.ProjectFolder;
+    let completeFolderRelativeUrl = '';
+    if (selectedTab === 'Client Comments') {
+      const options = {
+        data: null,
+        url: '',
+        type: '',
+        listName: ''
+      };
+      let batchURL = [];
+      const scheduleGet = Object.assign({}, options);
+      const scheduleFilter = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ClientReviewSchedules);
+      scheduleFilter.filter = scheduleFilter.filter
+        .replace(/{{projectCode}}/gi, this.selectedTask.ProjectCode);
+      scheduleGet.url = this.spServices.getReadURL(this.constants.listNames.Schedules.name,
+        scheduleFilter);
+      scheduleGet.type = 'GET';
+      scheduleGet.listName = this.constants.listNames.Schedules.name;
+      batchURL.push(scheduleGet);
+      const completedCRArray = await this.spServices.executeBatch(batchURL);
+
+      debugger;
+      if (completedCRArray[0].retItems) {
+        completedCRList = completedCRArray.map(c => c.retItems[0])
+        const dbMilestones = this.ProjectInformation.Milestones.split(';#');
+        const Milestones = completedCRList.filter(c => dbMilestones.includes(c.Milestone)) ? completedCRList.filter(c => dbMilestones.includes(c.Milestone)).map(c => c.Milestone) : [];
+
+        if (Milestones) {
+          batchURL = [];
+          Milestones.forEach(element => {
+            documentsUrl = '/Drafts/Internal/' + element;
+            completeFolderRelativeUrl = folderUrl + documentsUrl;
+            const documentGet = Object.assign({}, options);
+            documentGet.url = this.spServices.getFilesFromFoldersURL(completeFolderRelativeUrl);
+            documentGet.type = 'GET';
+            documentGet.listName = 'TaskDocuments'
+            batchURL.push(documentGet);
+          });
+
+          const FolderDocuments = await this.spServices.executeBatch(batchURL);
+
+          if (FolderDocuments) {
+            this.allDocuments = [].concat(...FolderDocuments.map(c => c.retItems));
+          }
+        }
+      }
+    }
+    else {
+      completeFolderRelativeUrl = folderUrl + documentsUrl;
+      this.commonService.SetNewrelic('Shared', 'viewUpladDoc', 'getDocumentsByTabType');
+      this.response = await this.spServices.readFiles(completeFolderRelativeUrl);
+      this.allDocuments = this.response.length ? this.response : [];
     }
 
-    let completeFolderRelativeUrl = '';
-    const folderUrl = this.ProjectInformation.ProjectFolder;
-    completeFolderRelativeUrl = folderUrl + documentsUrl;
-    this.commonService.SetNewrelic('Shared', 'viewUpladDoc', 'getDocumentsByTabType');
-    this.response = await this.spServices.readFiles(completeFolderRelativeUrl);
 
-    this.allDocuments = this.response.length ? this.response : [];
 
     if (this.selectedTab === 'My Drafts') {
       this.DocumentArray = this.allDocuments.filter(c => c.ListItemAllFields.TaskName === this.selectedTask.Title);
+    } else if (this.selectedTab === 'Client Comments' && completedCRList) {
+      const CRTaskTitles = completedCRList.map(c => c.Title);
+      this.DocumentArray = this.allDocuments.filter(c => CRTaskTitles.includes(c.ListItemAllFields.TaskName));
     } else if (this.selectedTab === this.prevTask) {
       const previouTasks = this.selectedTask.PrevTasks.indexOf(';#') > -1 ?
         this.selectedTask.PrevTasks.split(';#') : [this.selectedTask.PrevTasks];
@@ -246,13 +329,12 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     if (Ids.length > 0) {
       users = await this.getUsers(Ids);
     }
-
-
     this.loaderenable = false;
     this.DocumentArray.map(c => c.taskName = c.ListItemAllFields.TaskName != null ? c.ListItemAllFields.TaskName : '');
     this.DocumentArray.map(c => c.modifiedUserName = users.find(d => d.Id ===
       c.ListItemAllFields.EditorId) !== undefined ? users.find(d => d.Id === c.ListItemAllFields.EditorId).Title : '');
     this.DocumentArray.map(c => c.status = c.ListItemAllFields.Status !== null ? c.ListItemAllFields.Status : '');
+    debugger;
     this.DocumentArray.map(c => c.isFileMarkedAsFinal = c.status.split(' ').splice(-1)[0] === 'Complete' ? true : false);
     this.DocumentArray.map(c => c.ModifiedDateString = this.datePipe.transform(c.ListItemAllFields.Modified, 'MMM d, y, h:mm a'));
 
@@ -339,7 +421,13 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
         if (this.enableNotification) {
           await this.SendEmailNotification(this.selectedTask);
         }
-        this.loadDraftDocs(this.selectedTab);
+        if (this.ModifiedSelectedTaskName === 'Client Review' && this.selectedTab === 'My Drafts') {
+          this.ref.close(true);
+        }
+        else {
+          this.loadDraftDocs(this.selectedTab);
+        }
+
 
       }
       if (!bSelectedNewFiles) {
@@ -391,6 +479,29 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   // **************************************************************************************************************************************
   //   upload documents
   // **************************************************************************************************************************************
+
+
+
+
+  uploadDocs(event, type) {
+    if (this.ModifiedSelectedTaskName === 'Client Review' && this.selectedTab === 'My Drafts') {
+      const confirmref = this.dialogService.open(ConfirmationDialogComponent, {
+        header: 'Confirmation',
+        data: 'Are you sure that you want to close current task with selected documents?',
+        closable: false
+      });
+      confirmref.onClose.subscribe((Confirmation: any) => {
+        if (Confirmation) {
+          this.uploadDocuments(event, type);
+        }
+      });
+    }
+    else {
+      this.uploadDocuments(event, type);
+    }
+  }
+
+
   async uploadDocuments(event, type) {
 
     if (event.files.length) {
@@ -409,7 +520,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
           docFolder = 'Communications';
           // sVal = 'meeting notes';
           break;
-        case 'Meeting Notes & Client Comments':
+        case 'Meeting Notes':
           docFolder = 'Communications';
           // sVal = 'meeting notes & comments';
           break;
@@ -418,11 +529,11 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
           //  sVal = 'current task documents';
           break;
       }
-      const uploadedFiles = [];
       const readers = [];
       let bUpload = true;
       event.files.forEach(async element => {
 
+        let file = element;
         let filename = element.name;
         const sNewFileName = filename.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
         if (filename !== sNewFileName) {
@@ -433,41 +544,33 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
           filename = filename.split(/\.(?=[^\.]+$)/)[0] + '.' + this.datePipe.transform(new Date(),
             'ddMMyyyyhhmmss') + '.' + filename.split(/\.(?=[^\.]+$)/)[1];
         }
-
-
-        const fileReader = new FileReader();
-        fileReader.readAsArrayBuffer(element);
         const fileObj = {
-          reader: fileReader,
+          file: file,
           name: filename
         };
 
         readers.push(fileObj);
-
         existingFiles.push(filename.toLowerCase());
       });
       if (bUpload) {
-        this.messageService.add({ key: 'custom', severity: 'info', summary: 'Info Message', detail: 'Uploading....' });
-        this.loaderenable = true;
-        readers.forEach(async element => {
-          const fileObj = element;
-          fileObj.reader.onload = async (readerEvt) => {
+        const ref = this.dialogService.open(FileUploadProgressDialogComponent, {
+          header: 'File Uploading',
+          width: '70vw',
+          data: {
+            Files: readers,
+            libraryName: this.ProjectInformation.ProjectFolder + "/" +  docFolder,
+            overwrite: false,
+          },
+          contentStyle: { 'max-height': '82vh', 'overflow-y': 'auto', 'background-color': '#f4f3ef' },
+          closable: false,
+        });
 
-            const filePathUrl = this.sharedObject.sharePointPageObject.serverRelativeUrl +
-              // tslint:disable-next-line: quotemark
-              "/_api/web/GetFolderByServerRelativeUrl('" + this.ProjectInformation.ProjectFolder + "/"
-              // tslint:disable-next-line: quotemark
-              + docFolder + "')/Files/add(url=@TargetFileName,overwrite='false')?" +
-              // tslint:disable-next-line: quotemark
-              "&@TargetFileName='" + fileObj.name + "'&$expand=ListItemAllFields";
-
-            this.commonService.SetNewrelic('Shared', 'viewUpladDocDialog', 'uploadDocuments');
-            const res = await this.spOperations.uploadFile(filePathUrl, fileObj.reader.result);
-            debugger;
-            uploadedFiles.push(res);
-            if (readers.length === uploadedFiles.length) {
+        return ref.onClose.subscribe(async (uploadedfiles: any) => {
+          if (uploadedfiles) {
+            if (event.files.length > 0 && event.files.length === uploadedfiles.length) {
+              this.loaderenable = true;
               if (this.selectedTab === 'My Drafts') {
-                this.LinkDocumentToProject(uploadedFiles);
+                this.LinkDocumentToProject(uploadedfiles);
               } else {
                 this.loadDraftDocs(this.selectedTab);
                 this.messageService.add({
@@ -476,7 +579,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
                 });
               }
             }
-          };
+          }
         });
       } else {
         this.messageService.add({
@@ -498,9 +601,6 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       Status: '-',
       TaskName: this.selectedTask.Title
     };
-    // const batchGuid = this.spServices.generateUUID();
-    // const batchContents = new Array();
-    // const changeSetId = this.spServices.generateUUID();
     const batchUrl = [];
     uploadedFiles.forEach(async element => {
       const listName = element.ServerRelativeUrl.split('/')[3];
@@ -514,8 +614,18 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     });
     this.commonService.SetNewrelic('Shared', 'viewUpladDoc', 'linkDocToProject');
     await this.spServices.executeBatch(batchUrl);
-    this.loadDraftDocs(this.selectedTab);
-    this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Document updated successfully.' });
+
+    if (this.ModifiedSelectedTaskName === 'Client Review' && this.selectedTab === 'My Drafts') {
+      this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Documents uploaded successfully.' });
+      this.selectedDocuments = uploadedFiles;
+      this.selectedDocuments.map(c => c.status = '-');
+      this.markAsFinal();
+    }
+    else {
+      this.loadDraftDocs(this.selectedTab);
+      this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Document updated successfully.' });
+    }
+
   }
 
 
