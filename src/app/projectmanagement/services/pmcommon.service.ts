@@ -1023,6 +1023,8 @@ export class PMCommonService {
         }
       }
 
+      await this.addUpdateProject();
+
     }
   }
   /**

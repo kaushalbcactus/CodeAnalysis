@@ -502,94 +502,94 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   }
 
 
-  async uploadDocuments(event, type) {
+  // async uploadDocuments(event, type) {
 
-    if (event.files.length) {
-      let docFolder;
-      const existingFiles = this.allDocuments.map(c => c.Name.toLowerCase());
-      switch (type) {
-        case 'Source Docs':
-          docFolder = 'Source Documents';
-          //  sVal = 'source documents';
-          break;
-        case 'References':
-          docFolder = 'References';
-          //  sVal = 'references';
-          break;
-        case 'meetingNotes':
-          docFolder = 'Communications';
-          // sVal = 'meeting notes';
-          break;
-        case 'Meeting Notes':
-          docFolder = 'Communications';
-          // sVal = 'meeting notes & comments';
-          break;
-        default:
-          docFolder = 'Drafts/Internal/' + this.selectedTask.Milestone;
-          //  sVal = 'current task documents';
-          break;
-      }
-      const readers = [];
-      let bUpload = true;
-      event.files.forEach(async element => {
+  //   if (event.files.length) {
+  //     let docFolder;
+  //     const existingFiles = this.allDocuments.map(c => c.Name.toLowerCase());
+  //     switch (type) {
+  //       case 'Source Docs':
+  //         docFolder = 'Source Documents';
+  //         //  sVal = 'source documents';
+  //         break;
+  //       case 'References':
+  //         docFolder = 'References';
+  //         //  sVal = 'references';
+  //         break;
+  //       case 'meetingNotes':
+  //         docFolder = 'Communications';
+  //         // sVal = 'meeting notes';
+  //         break;
+  //       case 'Meeting Notes':
+  //         docFolder = 'Communications';
+  //         // sVal = 'meeting notes & comments';
+  //         break;
+  //       default:
+  //         docFolder = 'Drafts/Internal/' + this.selectedTask.Milestone;
+  //         //  sVal = 'current task documents';
+  //         break;
+  //     }
+  //     const readers = [];
+  //     let bUpload = true;
+  //     event.files.forEach(async element => {
 
-        let file = element;
-        let filename = element.name;
-        const sNewFileName = filename.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
-        if (filename !== sNewFileName) {
-          bUpload = false;
-          return;
-        }
-        if (existingFiles.includes(element.name.toLowerCase())) {
-          filename = filename.split(/\.(?=[^\.]+$)/)[0] + '.' + this.datePipe.transform(new Date(),
-            'ddMMyyyyhhmmss') + '.' + filename.split(/\.(?=[^\.]+$)/)[1];
-        }
-        const fileObj = {
-          file: file,
-          name: filename
-        };
+  //       let file = element;
+  //       let filename = element.name;
+  //       const sNewFileName = filename.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
+  //       if (filename !== sNewFileName) {
+  //         bUpload = false;
+  //         return;
+  //       }
+  //       if (existingFiles.includes(element.name.toLowerCase())) {
+  //         filename = filename.split(/\.(?=[^\.]+$)/)[0] + '.' + this.datePipe.transform(new Date(),
+  //           'ddMMyyyyhhmmss') + '.' + filename.split(/\.(?=[^\.]+$)/)[1];
+  //       }
+  //       const fileObj = {
+  //         file: file,
+  //         name: filename
+  //       };
 
-        readers.push(fileObj);
-        existingFiles.push(filename.toLowerCase());
-      });
-      if (bUpload) {
-        const ref = this.dialogService.open(FileUploadProgressDialogComponent, {
-          header: 'File Uploading',
-          width: '70vw',
-          data: {
-            Files: readers,
-            libraryName: this.ProjectInformation.ProjectFolder + "/" +  docFolder,
-            overwrite: false,
-          },
-          contentStyle: { 'max-height': '82vh', 'overflow-y': 'auto', 'background-color': '#f4f3ef' },
-          closable: false,
-        });
+  //       readers.push(fileObj);
+  //       existingFiles.push(filename.toLowerCase());
+  //     });
+  //     if (bUpload) {
+  //       const ref = this.dialogService.open(FileUploadProgressDialogComponent, {
+  //         header: 'File Uploading',
+  //         width: '70vw',
+  //         data: {
+  //           Files: readers,
+  //           libraryName: this.ProjectInformation.ProjectFolder + "/" +  docFolder,
+  //           overwrite: false,
+  //         },
+  //         contentStyle: { 'max-height': '82vh', 'overflow-y': 'auto', 'background-color': '#f4f3ef' },
+  //         closable: false,
+  //       });
 
-        return ref.onClose.subscribe(async (uploadedfiles: any) => {
-          if (uploadedfiles) {
-            if (event.files.length > 0 && event.files.length === uploadedfiles.length) {
-              this.loaderenable = true;
-              if (this.selectedTab === 'My Drafts') {
-                this.LinkDocumentToProject(uploadedfiles);
-              } else {
-                this.loadDraftDocs(this.selectedTab);
-                this.messageService.add({
-                  key: 'custom', severity: 'success',
-                  summary: 'Success Message', detail: 'Document updated successfully.'
-                });
-              }
-            }
-          }
-        });
-      } else {
-        this.messageService.add({
-          key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
-          // tslint:disable-next-line: max-line-length
-          detail: 'There are certain files with special characters. Please rename them. List of special characters ~ # % & * { } \ : / + < > ? " @ \''
-        });
-      }
-    }
-  }
+  //       return ref.onClose.subscribe(async (uploadedfiles: any) => {
+  //         if (uploadedfiles) {
+  //           if (event.files.length > 0 && event.files.length === uploadedfiles.length) {
+  //             this.loaderenable = true;
+  //             if (this.selectedTab === 'My Drafts') {
+  //               this.LinkDocumentToProject(uploadedfiles);
+  //             } else {
+  //               this.loadDraftDocs(this.selectedTab);
+  //               this.messageService.add({
+  //                 key: 'custom', severity: 'success',
+  //                 summary: 'Success Message', detail: 'Document updated successfully.'
+  //               });
+  //             }
+  //           }
+  //         }
+  //       });
+  //     } else {
+  //       this.messageService.add({
+  //         key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
+  //         // tslint:disable-next-line: max-line-length
+  //         detail: 'There are certain files with special characters. Please rename them. List of special characters ~ # % & * { } \ : / + < > ? " @ \''
+  //       });
+  //     }
+  //   }
+  // }
 
   // ************************************************************************************************
   //   link uploaded documents to projects
