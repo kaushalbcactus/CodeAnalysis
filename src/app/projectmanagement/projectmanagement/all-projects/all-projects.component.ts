@@ -1890,7 +1890,7 @@ export class AllProjectsComponent implements OnInit {
         key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
         detail: 'Project - ' + selectedProjectObj.ProjectCode + ' Updated Successfully.'
       });
-      //this.sendEmailBasedOnStatus(this.constants.projectStatus.OnHold, selectedProjectObj);
+      this.sendEmailBasedOnStatus(this.constants.projectStatus.OnHold, selectedProjectObj);
     }
 
     setTimeout(() => {
