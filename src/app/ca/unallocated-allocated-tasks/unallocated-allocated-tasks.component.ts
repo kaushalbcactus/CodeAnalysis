@@ -1224,20 +1224,20 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     this.disableSave = true;
     const isValid = await this.validate();
 
-    // if (isValid) {
-    //   this.loaderenable = true;
-    //   setTimeout(() => {
+    if (isValid) {
+      this.loaderenable = true;
+      setTimeout(() => {
 
-    //     this.messageService.add({
-    //       key: 'tc', severity: 'warn', sticky: true,
-    //       summary: 'Info Message', detail: 'Updating...'
-    //     });
-    //     this.generateSaveTasks(unt);
-    //   }, 300);
-    // }
-    // else {
-    //   this.disableSave = false;
-    // }
+        this.messageService.add({
+          key: 'tc', severity: 'warn', sticky: true,
+          summary: 'Info Message', detail: 'Updating...'
+        });
+        this.generateSaveTasks(unt);
+      }, 300);
+    }
+    else {
+      this.disableSave = false;
+    }
 
   }
 
