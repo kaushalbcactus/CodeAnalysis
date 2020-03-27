@@ -1846,36 +1846,39 @@ export class AllProjectsComponent implements OnInit {
     batchURL.push(piUpdate);
 
     filterTasks.forEach(element => {
-      if (element.Task == "Client Review") {
-        const scheduleStatusUpdate = Object.assign({}, options);
-        scheduleStatusUpdate.data = scCRUpdateData;
-        scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
-        scheduleStatusUpdate.type = 'PATCH';
-        scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
-          element.ID);
-        batchURL.push(scheduleStatusUpdate);
-      } else {
-        if (element.Status == this.constants.STATUS.NOT_STARTED) {
+      if(element.IsCentrallyAllocated == 'No') {
+        if (element.Task == "Client Review") {
           const scheduleStatusUpdate = Object.assign({}, options);
-          scheduleStatusUpdate.data = scNotStartedUpdateData;
+          scheduleStatusUpdate.data = scCRUpdateData;
           scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
           scheduleStatusUpdate.type = 'PATCH';
           scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
             element.ID);
           batchURL.push(scheduleStatusUpdate);
-        } else if (element.Status == this.constants.STATUS.IN_PROGRESS) {
-          const scheduleStatusUpdate = Object.assign({}, options);
-          const scInProgressUpdateDataNew = Object.assign({}, scInProgressUpdateData);
-          scInProgressUpdateDataNew.ExpectedTime = element.TimeSpent;
-          scInProgressUpdateDataNew.DueDate = new Date(element.DueDate) < new Date() ? new Date(element.DueDate) : new Date(); 
-          scheduleStatusUpdate.data = scInProgressUpdateDataNew;
-          scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
-          scheduleStatusUpdate.type = 'PATCH';
-          scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
-            element.ID);
-          batchURL.push(scheduleStatusUpdate);
+        } else {
+          if (element.Status == this.constants.STATUS.NOT_STARTED) {
+            const scheduleStatusUpdate = Object.assign({}, options);
+            scheduleStatusUpdate.data = scNotStartedUpdateData;
+            scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
+            scheduleStatusUpdate.type = 'PATCH';
+            scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
+              element.ID);
+            batchURL.push(scheduleStatusUpdate);
+          } else if (element.Status == this.constants.STATUS.IN_PROGRESS) {
+            const scheduleStatusUpdate = Object.assign({}, options);
+            const scInProgressUpdateDataNew = Object.assign({}, scInProgressUpdateData);
+            scInProgressUpdateDataNew.ExpectedTime = element.TimeSpent;
+            scInProgressUpdateDataNew.DueDate = new Date(element.DueDate) < new Date() ? new Date(element.DueDate) : new Date(); 
+            scheduleStatusUpdate.data = scInProgressUpdateDataNew;
+            scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
+            scheduleStatusUpdate.type = 'PATCH';
+            scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
+              element.ID);
+            batchURL.push(scheduleStatusUpdate);
+          }
         }
       }
+      
     });
 
     // console.log(batchURL)
@@ -1887,7 +1890,7 @@ export class AllProjectsComponent implements OnInit {
         key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
         detail: 'Project - ' + selectedProjectObj.ProjectCode + ' Updated Successfully.'
       });
-      this.sendEmailBasedOnStatus(this.constants.projectStatus.OnHold, selectedProjectObj);
+      //this.sendEmailBasedOnStatus(this.constants.projectStatus.OnHold, selectedProjectObj);
     }
 
     setTimeout(() => {
