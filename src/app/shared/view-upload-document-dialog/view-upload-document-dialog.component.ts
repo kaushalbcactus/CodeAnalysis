@@ -591,6 +591,102 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   //   }
   // }
 
+  async uploadDocuments(event, type) {
+
+    if (event.files.length) {
+      let docFolder;
+      const existingFiles = this.allDocuments.map(c => c.Name.toLowerCase());
+      switch (type) {
+        case 'Source Docs':
+          docFolder = 'Source Documents';
+          //  sVal = 'source documents';
+          break;
+        case 'References':
+          docFolder = 'References';
+          //  sVal = 'references';
+          break;
+        case 'meetingNotes':
+          docFolder = 'Communications';
+          // sVal = 'meeting notes';
+          break;
+        case 'Meeting Notes & Client Comments':
+          docFolder = 'Communications';
+          // sVal = 'meeting notes & comments';
+          break;
+        default:
+          docFolder = 'Drafts/Internal/' + this.selectedTask.Milestone;
+          //  sVal = 'current task documents';
+          break;
+      }
+      const uploadedFiles = [];
+      const readers = [];
+      let bUpload = true;
+      event.files.forEach(async element => {
+
+        let filename = element.name;
+        const sNewFileName = filename.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
+        if (filename !== sNewFileName) {
+          bUpload = false;
+          return;
+        }
+        if (existingFiles.includes(element.name.toLowerCase())) {
+          filename = filename.split(/\.(?=[^\.]+$)/)[0] + '.' + this.datePipe.transform(new Date(),
+            'ddMMyyyyhhmmss') + '.' + filename.split(/\.(?=[^\.]+$)/)[1];
+        }
+
+
+        const fileReader = new FileReader();
+        fileReader.readAsArrayBuffer(element);
+        const fileObj = {
+          reader: fileReader,
+          name: filename
+        };
+
+        readers.push(fileObj);
+
+        existingFiles.push(filename.toLowerCase());
+      });
+      if (bUpload) {
+        this.messageService.add({ key: 'custom', severity: 'info', summary: 'Info Message', detail: 'Uploading....' });
+        this.loaderenable = true;
+        readers.forEach(async element => {
+          const fileObj = element;
+          fileObj.reader.onload = async (readerEvt) => {
+
+            const filePathUrl = this.sharedObject.sharePointPageObject.serverRelativeUrl +
+              // tslint:disable-next-line: quotemark
+              "/_api/web/GetFolderByServerRelativeUrl('" + this.ProjectInformation.ProjectFolder + "/"
+              // tslint:disable-next-line: quotemark
+              + docFolder + "')/Files/add(url=@TargetFileName,overwrite='false')?" +
+              // tslint:disable-next-line: quotemark
+              "&@TargetFileName='" + fileObj.name + "'&$expand=ListItemAllFields";
+
+            this.commonService.SetNewrelic('Shared', 'viewUpladDocDialog', 'uploadDocuments');
+            const res = await this.spOperations.uploadFile(filePathUrl, fileObj.reader.result);
+            uploadedFiles.push(res);
+            if (readers.length === uploadedFiles.length) {
+              if (this.selectedTab === 'My Drafts') {
+                this.LinkDocumentToProject(uploadedFiles);
+              } else {
+                this.loadDraftDocs(this.selectedTab);
+                this.messageService.add({
+                  key: 'custom', severity: 'success',
+                  summary: 'Success Message', detail: 'Document updated successfully.'
+                });
+              }
+            }
+          };
+        });
+      } else {
+        this.messageService.add({
+          key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
+          // tslint:disable-next-line: max-line-length
+          detail: 'There are certain files with special characters. Please rename them. List of special characters ~ # % & * { } \ : / + < > ? " @ \''
+        });
+      }
+    }
+  }
+
   // ************************************************************************************************
   //   link uploaded documents to projects
   // ************************************************************************************************
