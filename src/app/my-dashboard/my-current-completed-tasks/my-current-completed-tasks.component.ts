@@ -157,13 +157,15 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     if (this.TabName === 'MyCompletedTask') {
       this.taskMenu = [
         { label: 'View / Upload Documents', icon: 'pi pi-fw pi-upload', command: (e) => this.getAddUpdateDocument(data) },
-        { label: 'View / Add Comment', icon: 'pi pi-fw pi-comment', command: (e) => this.getAddUpdateComment(data, false) }
+        { label: 'View / Add Comment', icon: 'pi pi-fw pi-comment', command: (e) => this.getAddUpdateComment(data, false) },
+        { label: 'Project Scope', icon: 'pi pi-fw pi-file', command: (e) => this.goToProjectScope(data) }
       ];
     } else {
       this.taskMenu = [
         { label: 'View / Upload Documents', icon: 'pi pi-fw pi-upload', command: (e) => this.getAddUpdateDocument(data) },
         { label: 'View / Add Comment', icon: 'pi pi-fw pi-comment', command: (e) => this.getAddUpdateComment(data, false) },
         { label: 'Mark Complete', icon: 'pi pi-fw pi-check', command: (e) => this.checkCompleteTask(data) },
+        { label: 'Project Scope', icon: 'pi pi-fw pi-file', command: (e) => this.goToProjectScope(data) }
       ];
     }
   }
@@ -676,5 +678,19 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     }
   }
 
+
+
+
+  // **************************************************************************************************
+  //  Project Scope load in new tab
+  // **************************************************************************************************
+
+
+  async goToProjectScope(task) {
+
+    const ProjectInformation = await this.myDashboardConstantsService.getCurrentTaskProjectInformation(task.ProjectCode);
+    
+    window.open(ProjectInformation.ProjectFolder + '/Miscellaneous/' + task.ProjectCode + '_scope.docx?web=1', '_blank');
+  }
 
 }

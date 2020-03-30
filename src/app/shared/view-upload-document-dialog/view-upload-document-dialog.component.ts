@@ -269,7 +269,6 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       batchURL.push(scheduleGet);
       const completedCRArray = await this.spServices.executeBatch(batchURL);
 
-      debugger;
       if (completedCRArray[0].retItems) {
         completedCRList = completedCRArray.map(c => c.retItems[0])
         const dbMilestones = this.ProjectInformation.Milestones.split(';#');
@@ -321,8 +320,6 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       }
 
     }
-
-
     const Ids = this.DocumentArray.map(c => c.DocIds = c.ListItemAllFields.EditorId).filter((el, i, a) => i === a.indexOf(el));
 
     let users;
@@ -334,7 +331,6 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     this.DocumentArray.map(c => c.modifiedUserName = users.find(d => d.Id ===
       c.ListItemAllFields.EditorId) !== undefined ? users.find(d => d.Id === c.ListItemAllFields.EditorId).Title : '');
     this.DocumentArray.map(c => c.status = c.ListItemAllFields.Status !== null ? c.ListItemAllFields.Status : '');
-    debugger;
     this.DocumentArray.map(c => c.isFileMarkedAsFinal = c.status.split(' ').splice(-1)[0] === 'Complete' ? true : false);
     this.DocumentArray.map(c => c.ModifiedDateString = this.datePipe.transform(c.ListItemAllFields.Modified, 'MMM d, y, h:mm a'));
 

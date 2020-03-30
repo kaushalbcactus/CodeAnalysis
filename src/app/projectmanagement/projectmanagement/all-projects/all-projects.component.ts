@@ -331,6 +331,7 @@ export class AllProjectsComponent implements OnInit {
           { label: 'Communications', command: (event) => this.communications(this.selectedProjectObj) },
           { label: 'Timeline', command: (event) => this.projectTimeline(this.selectedProjectObj) },
           { label: 'Go to Allocation', command: (event) => this.goToAllocationPage(this.selectedProjectObj) },
+          { label: 'Project Scope', command: (event) => this.goToProjectScope(this.selectedProjectObj) },
         ]
       },
       {
@@ -2306,6 +2307,12 @@ export class AllProjectsComponent implements OnInit {
 
 
   }
+
+  goToProjectScope(task) {
+    window.open(task.ProjectFolder + '/Miscellaneous/' + task.ProjectCode +'_scope.docx?web=1' , '_blank');
+  }
+
+
   goToAllocationPage(task) {
     window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +
       '/dashboard#/taskAllocation?ProjectCode=' + task.ProjectCode, '_blank');
@@ -2360,7 +2367,7 @@ export class AllProjectsComponent implements OnInit {
     }
   }
 
- 
+
   /**
    * This method is used to send email by using template.
    * @param val pass the template name.

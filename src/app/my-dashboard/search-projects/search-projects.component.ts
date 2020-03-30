@@ -491,6 +491,15 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
   }
 
 
+   // **************************************************************************************************
+  //  Project Scope load in new tab
+  // **************************************************************************************************
+
+
+  async goToProjectScope(project) {
+    window.open(project.ProjectFolder + '/Miscellaneous/' + project.ProjectCode + '_scope.docx?web=1', '_blank');
+  }
+
 }
 
 

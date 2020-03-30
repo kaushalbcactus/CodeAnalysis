@@ -890,5 +890,19 @@ export class MyTimelineComponent implements OnInit {
     }
   }
 
+
+
+
+  // **************************************************************************************************
+  //  Project Scope load in new tab
+  // **************************************************************************************************
+
+
+  async goToProjectScope(task) {
+
+    const ProjectInformation = await this.myDashboardConstantsService.getCurrentTaskProjectInformation(task.ProjectCode);
+    window.open(ProjectInformation.ProjectFolder + '/Miscellaneous/' + task.ProjectCode + '_scope.docx?web=1', '_blank');
+  }
+
 }
 

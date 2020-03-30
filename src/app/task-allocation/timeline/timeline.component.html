@@ -246,10 +246,10 @@
                         <!-- TaT -->
                         <td style="text-align: center">
                             <span *ngIf="rowData.type ==='milestone' || rowData.type ==='submilestone'">{{rowData.tatVal}}</span>
-                            <span *ngIf="!rowData.editMode && rowData.type ==='task' ">{{rowData.tat === true ? 'Yes' :'No'}}</span>
+                            <span *ngIf="!rowData.editMode && rowData.type ==='task' && rowData.itemType !=='Client Review' && rowData.itemType !=='Send to client' ">{{rowData.tat === true ? 'Yes' :'No'}}</span>
                             <p-checkbox *ngIf="rowData.editMode && rowData.type === 'task' 
-                            && rowData.pName !=='Client Review' && rowData.pName !=='SC' && (rowData.IsCentrallyAllocated !== 'Yes' || rowData.slotType === 'Both' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.pName.indexOf('Slot') < 0))" (onChange)="ChangeEndDate($event, rowData)"
-                                [(ngModel)]="rowData.pName ==='Client Review' ? 'Yes' : rowData.tat" binary="true">
+                            && rowData.itemType !=='Client Review' && rowData.itemType !=='Send to client' && (rowData.IsCentrallyAllocated !== 'Yes' || rowData.slotType === 'Both' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.pName.indexOf('Slot') < 0))"
+                                (onChange)="ChangeEndDate($event, rowData)" [(ngModel)]="rowData.pName ==='Client Review' ? 'Yes' : rowData.tat" binary="true">
                             </p-checkbox>
                         </td>
 

@@ -713,6 +713,8 @@ export class StandardprojectComponent implements OnInit {
       // if (index < orginalMilestone.length - 1) {
       //   this.pmObject.addProject.Timeline.Standard.Milestones += ';#';
       // }
+
+      
       StartDate = this.setClientReview(milestoneObj, true);
       if (index < orginalMilestone.length) {
         index++;
@@ -869,6 +871,7 @@ export class StandardprojectComponent implements OnInit {
         ngPrimetaskObj.data.EndDate = ngPrimemilestoneObj.data.clientReviewEndDate;
         ngPrimetaskObj.data.EndDatePart = this.getDatePart(ngPrimetaskObj.data.EndDate);
         ngPrimetaskObj.data.EndTimePart = this.getTimePart(ngPrimetaskObj.data.EndDate);
+        ngPrimetaskObj.data.showTime = true;
         ngPrimetaskObj.data.minEndDateValue = ngPrimetaskObj.data.StartDate;
         ngPrimetaskObj.data.MileId = ngPrimemilestoneObj.data.MileId + ';#' + this.pmConstant.task.CLIENT_REVIEW;
         ngPrimetaskObj.data.AssignedTo = this.userProperties.Title;
@@ -1007,7 +1010,7 @@ export class StandardprojectComponent implements OnInit {
           taskObj.PreviousTask = milestoneTask[index].PreviousTask;
           taskObj.data.Skill = milestoneTask[index].Skill;
           taskObj.data.TaskDays = milestoneTask[index].TaskDays;
-          taskObj.data.UseTaskDays = milestoneTask[index].UseTaskDays;
+          taskObj.data.UseTaskDays = milestoneTask[index].TaskName.Title === 'Send to client' ? 'No': milestoneTask[index].UseTaskDays;
           taskObj.data.Title = milestoneTask[index].Title;
           taskObj.data.Name = taskObj.data.TaskName;
           taskObj.data.isStartDateDisabled = false;
@@ -1028,8 +1031,12 @@ export class StandardprojectComponent implements OnInit {
               taskObj.data.AssignedTo = this.userProperties.Title;
               startdate = this.setDefaultAMHours(milestoneObj.data.StartDate);
             }
-            if (taskObj.data.UseTaskDays !== this.pmConstant.task.USE_TASK_DAYS) {
+            if (taskObj.data.UseTaskDays !== this.pmConstant.task.USE_TASK_DAYS || milestoneTask[index].TaskName.Title === 'Send to client' ) {
               taskObj.data.showTime = true;
+              if(milestoneTask[index].TaskName.Title === 'Send to client'){
+                taskObj.data.Days = taskObj.data.TaskDays;
+              }
+            
             }
             taskObj.data.showHyperLink = true;
             if (daysHours !== "") {
@@ -1073,7 +1080,10 @@ export class StandardprojectComponent implements OnInit {
               taskObj.data.AssignedTo = this.userProperties.Title;
               taskObj.isHoursDisabled = true;
             }
-            if (taskObj.data.UseTaskDays !== this.pmConstant.task.USE_TASK_DAYS) {
+            if (taskObj.data.UseTaskDays !== this.pmConstant.task.USE_TASK_DAYS || milestoneTask[index].TaskName.Title === 'Send to client') {
+              if(milestoneTask[index].TaskName.Title === 'Send to client'){
+                taskObj.data.Days = taskObj.data.TaskDays;
+              }
               taskObj.data.showTime = true;
             }
           }

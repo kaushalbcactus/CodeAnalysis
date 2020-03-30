@@ -392,13 +392,13 @@ export class AddEditUserProfileComponent implements OnInit {
       maxHrsDateControl.setValidators([Validators.required]);
       maxHrsDateControl.updateValueAndValidity();
       this.date.isMaxHrsDateActive = true;
-      this.addUser.get('MaxHrsEffectiveDate').setValue(new Date());
-      this.addUser.get('MaxHrsEffectiveDate').enable();
+      this.addUser.get('maxHrsEffectiveDate').setValue(new Date());
+      this.addUser.get('maxHrsEffectiveDate').enable();
     } else if (this.showeditUser && this.currUserObj.MaxHrs === this.addUser.value.maxHrs) {
       this.date.isMaxHrsDateActive = true;
       const userObj = this.currUserObj;
-      this.addUser.get('MaxHrsEffectiveDate').setValue(this.currUserObj.MaxHrsEffectiveDate ? new Date(this.currUserObj.MaxHrsEffectiveDate) : new Date());
-      this.addUser.get('MaxHrsEffectiveDate').disable();
+      this.addUser.get('maxHrsEffectiveDate').setValue(this.currUserObj.MaxHrsEffectiveDate ? new Date(this.currUserObj.MaxHrsEffectiveDate) : new Date());
+      this.addUser.get('maxHrsEffectiveDate').disable();
     } else {
       maxHrsDateControl.clearValidators();
       this.date.isMaxHrsDateActive = false;

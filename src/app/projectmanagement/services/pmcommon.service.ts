@@ -1805,7 +1805,7 @@ export class PMCommonService {
       ExpectedTime: '' + milestoneTask.Hours,
       TimeZone: '' + milestoneTask.assignedUserTimeZone,
       AllowCompletion: 'No',
-      TATStatus: milestoneTask.UseTaskDays,
+      TATStatus: milestoneTask.Task === 'Client Review' ? 'No' : milestoneTask.UseTaskDays,
       TATBusinessDays: milestoneTask.TaskDays,
       Status: this.constant.STATUS.NOT_CONFIRMED,
       SubMilestones: milestoneTask.SubMilestone,

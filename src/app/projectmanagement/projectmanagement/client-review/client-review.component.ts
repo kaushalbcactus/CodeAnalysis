@@ -452,7 +452,6 @@ export class ClientReviewComponent implements OnInit {
       ref.onClose.subscribe(async (documents: any) => {
         if (documents) {
 
-          debugger;
           this.isCRInnerLoaderHidden = false;
           const objMilestone = Object.assign({}, this.pmConstant.milestoneOptions);
           objMilestone.filter = objMilestone.filter.replace(/{{projectCode}}/gi,
