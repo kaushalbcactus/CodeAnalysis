@@ -22,9 +22,8 @@ position="bottom-center"></p-toast>
     >
     <p-header>
       <span>{{task.submilestones ? task.task + '-' + task.submilestones : task.task}}</span>
-      <span *ngIf="scorecardTasks.tasks.length > 1" title="Ignore Feedback" class="ignoreIcon"><p-inputSwitch (onChange)="onIgnoreClicked(task, $event)" [(ngModel)]="task.ignoreFeedback"></p-inputSwitch></span>
-      <!-- task?.milestone !== 'Draft 1' &&  -->
-      <!-- Remove button for 'Draft 1' -->
+      <span *ngIf="task?.milestone !== 'Draft 1' && scorecardTasks.tasks.length > 1" title="Ignore Feedback" class="ignoreIcon"><p-inputSwitch (onChange)="onIgnoreClicked(task, $event)" [(ngModel)]="task.ignoreFeedback"></p-inputSwitch></span>
+
     </p-header>
       <div class="ratework-popup">
         <table class="table popup-rating-row" id="templates">
@@ -129,9 +128,8 @@ position="bottom-center"></p-toast>
   </p-accordion>
   <div class="footer">
     <div>
-      <!-- To hide cancel -->
-      <!-- *ngIf="scorecardTasks?.currentTask?.Milestone !== 'Draft 1' && scorecardTasks.tasks.length === 1" -->
       <button
+       *ngIf="scorecardTasks?.currentTask?.Milestone !== 'Draft 1' && scorecardTasks.tasks.length === 1"
         type="button"
         class="btn btn-light button cancel-rating"
         (click)="cancel()"

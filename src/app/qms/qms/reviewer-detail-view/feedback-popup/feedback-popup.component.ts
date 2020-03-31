@@ -131,14 +131,14 @@ export class FeedbackPopupComponent implements OnInit {
 
   validateScorecard() {
     const emptyScorecard = this.scorecardTasks.tasks.filter(t => !t.ignoreFeedback && t.averageRating <= 0);
-    //const milestone = this.scorecardTasks.currentTask.Milestone ? this.scorecardTasks.currentTask.Milestone : this.scorecardTasks.currentTask.milestone;
-    // if (milestone === 'Draft 1' && emptyScorecard.length) {
-    //   this.messageService.add({
-    //     key: 'custom', severity: 'warn', summary: 'Warning Message', life: 10000,
-    //     detail: 'Rating Draft 1 milestone task is mandatory.'
-    //   });
-    //   return false;
-    // }
+    const milestone = this.scorecardTasks.currentTask.Milestone ? this.scorecardTasks.currentTask.Milestone : this.scorecardTasks.currentTask.milestone;
+    if (milestone === 'Draft 1' && emptyScorecard.length) {
+      this.messageService.add({
+        key: 'custom', severity: 'warn', summary: 'Warning Message', life: 10000,
+        detail: 'Rating Draft 1 milestone task is mandatory.'
+      });
+      return false;
+    }
     const emptyCommentSC = this.scorecardTasks.tasks.filter(t => !t.ignoreFeedback && !t.feedbackComment.length && t.averageRating < 3);
     if (emptyCommentSC.length) {
       const tasksNames = emptyCommentSC.map(s => s.task);
