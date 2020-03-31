@@ -1,0 +1,23 @@
+<p-table [columns]="cols" [value]="allocation">
+  <ng-template pTemplate="header" let-columns>
+    <tr>
+      <th *ngFor="let col of columns">
+        {{ col.header }}
+      </th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-rowData let-columns="columns">
+    <tr>
+      <td *ngFor="let col of columns">
+        {{ rowData["Date"] }}
+      </td>
+      <td *ngFor="let col of columns">
+        <p-slider [(ngModel)]="rowData['Allocation']" [step]="10"></p-slider>
+      </td>
+      <td *ngFor="let col of columns">
+        {{ rowData["Allocation"] }}
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+<div></div>

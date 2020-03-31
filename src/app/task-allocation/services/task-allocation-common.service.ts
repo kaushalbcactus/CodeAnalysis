@@ -259,7 +259,7 @@ export class TaskAllocationCommonService {
 
     converteddateObject.convertedStartDate = this.commonService.calcTimeForDifferentTimeZone(new Date(task.StartDate),
       this.sharedObject.currentUser.timeZone, task.assignedUserTimeZone);
-    
+
     converteddateObject.jsLocalStartDate = this.commonService.calcTimeForDifferentTimeZone(converteddateObject.convertedStartDate,
         task.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
 
@@ -268,7 +268,7 @@ export class TaskAllocationCommonService {
 
     converteddateObject.jsLocalEndDate = this.commonService.calcTimeForDifferentTimeZone(converteddateObject.convertedEndDate,
       task.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
-    
+
     return converteddateObject
   }
 
@@ -323,7 +323,7 @@ export class TaskAllocationCommonService {
       'nextTask': data.type == 'task' ? this.fetchTaskName(data.NextTasks, this.sharedObject.oTaskAllocation.oProjectDetails.projectCode, data.Milestone) : '',
       'previousTask': data.type == 'task' ? this.fetchTaskName(data.PrevTasks, this.sharedObject.oTaskAllocation.oProjectDetails.projectCode, data.Milestone) : '',
       'budgetHours': data.type == 'task' ? data.ExpectedTime : data.ExpectedTime ? data.ExpectedTime.toString() : '0',
-      'spentTime': data.Task == 'Client Review' ? '' : data.type == 'task' ? this.commonService.ajax_addHrsMins([hrsMinObject]) : '0:0',
+      'spentTime': data.Task == 'Client Review' ? '' : data.type == 'task' ? this.commonService.addHrsMins([hrsMinObject]) : '0:0',
       'allowStart': data.type == 'task' ? data.AllowCompletion === true || data.AllowCompletion === 'Yes' ? true : false : false,
       'tat': data.type == 'submilestone' ? false :data.type == 'task' ? data.TATStatus === true || data.TATStatus === 'Yes' ? true : false : true,
       'tatVal': data.type == 'submilestone' ? 0 : data.type == 'task' ? this.commonService.calcBusinessDays(convertedDate.jsLocalStartDate, convertedDate.jsLocalEndDate) : this.commonService.calcBusinessDays(new Date(data.Actual_x0020_Start_x0020_Date), new Date(data.Actual_x0020_End_x0020_Date)),

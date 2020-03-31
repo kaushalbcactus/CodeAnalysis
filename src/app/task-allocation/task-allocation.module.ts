@@ -22,10 +22,11 @@ import { UsercapacityComponent } from '../shared/usercapacity/usercapacity.compo
 import { CascadeDialogComponent } from './cascade-dialog/cascade-dialog.component';
 import { GanttChartModule } from '../shared/gantt-chart/gantt-chart.module';
 import { GanttChartComponent } from '../shared/gantt-chart/gantt-chart.component';
+import { DailyAllocationComponent } from './daily-allocation/daily-allocation.component';
 
 @NgModule({
   declarations: [TaskAllocationComponent, TimelineComponent, DragDropComponent,
-     TaskDetailsDialogComponent, ResourcesComponent, CascadeDialogComponent],
+     TaskDetailsDialogComponent, ResourcesComponent, CascadeDialogComponent, DailyAllocationComponent],
   imports: [
     CommonModule,
     TaskAllocationRoutingModule,
@@ -47,7 +48,7 @@ import { GanttChartComponent } from '../shared/gantt-chart/gantt-chart.component
     TimelineComponent
   ],
   providers: [DatePipe, DynamicDialogConfig, DynamicDialogRef, ConfirmationService],
-  entryComponents: [UsercapacityComponent, DragDropComponent, TaskDetailsDialogComponent, GanttChartComponent]
+  entryComponents: [UsercapacityComponent, DragDropComponent, TaskDetailsDialogComponent, GanttChartComponent, DailyAllocationComponent]
   // providers: [TaskAllocationAPI]
 })
 export class TaskAllocationModule { }

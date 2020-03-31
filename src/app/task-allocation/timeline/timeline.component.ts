@@ -14,16 +14,18 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { UsercapacityComponent } from 'src/app/shared/usercapacity/usercapacity.component';
 import { CascadeDialogComponent } from '../cascade-dialog/cascade-dialog.component';
 import { TaskAllocationCommonService } from '../services/task-allocation-common.service';
-import { GanttChartComponent } from '../../shared/gantt-chart/gantt-chart.component'
+import { GanttChartComponent } from '../../shared/gantt-chart/gantt-chart.component';
 import { SelectItem } from 'primeng/api';
-
+import { gantt, Gantt } from '../../dhtmlx-gantt/codebase/source/dhtmlxgantt';
+import { DailyAllocationComponent } from '../daily-allocation/daily-allocation.component';
+import { IDailyAllocationTask } from '../interface/allocation';
 
 
 @Component({
   selector: 'app-timeline',
   templateUrl: './timeline.component.html',
   styleUrls: ['./timeline.component.css'],
-  providers: [MessageService, DialogService, DragDropComponent, UsercapacityComponent, DynamicDialogRef],
+  providers: [MessageService, DialogService, DragDropComponent, UsercapacityComponent, DynamicDialogRef, DailyAllocationComponent],
   encapsulation: ViewEncapsulation.None
 })
 export class TimelineComponent implements OnInit, OnDestroy {
@@ -116,6 +118,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     ta: [],
     deliverable: [],
     account: [],
+    projectType: ''
   };
   public queryConfig = {
     data: null,
@@ -172,7 +175,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
     private confirmationService: ConfirmationService,
     private taskAllocateCommonService: TaskAllocationCommonService,
     private usercapacityComponent: UsercapacityComponent,
-    private resolver: ComponentFactoryResolver
+    private resolver: ComponentFactoryResolver,
+    private dailyAllocation: DailyAllocationComponent
   ) {
 
   }
@@ -408,7 +412,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                 if (milestoneTask.TimeSpent == null) {
                   projectAvailableHours.push(+milestoneTask.ExpectedTime);
                 } else {
-                  const mHoursSpentTask = this.commonService.ajax_addHrsMins([hrsMinObject]);
+                  const mHoursSpentTask = this.commonService.addHrsMins([hrsMinObject]);
                   const taskTotalMins = this.commonService.calculateTotalMins(mHoursSpentTask);
                   const convertedHoursMins = this.commonService.convertFromHrsMins(+taskTotalMins);
                   projectAvailableHours.push(+convertedHoursMins);
@@ -420,7 +424,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
               }
 
 
-              // Gantt Chart Sub Object 
+              // Gantt Chart Sub Object
               if (milestone.Title === milestoneTask.Milestone) {
                 if (milestoneTask.Status !== 'Deleted') {
                   milestoneTask.type = 'task';
@@ -535,7 +539,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                 if (milestoneTask.TimeSpent == null) {
                   projectAvailableHours.push(+milestoneTask.ExpectedTime);
                 } else {
-                  const mHoursSpentTask = this.commonService.ajax_addHrsMins([hrsMinObject]);
+                  const mHoursSpentTask = this.commonService.addHrsMins([hrsMinObject]);
                   const taskTotalMins = this.commonService.calculateTotalMins(mHoursSpentTask);
                   const convertedHoursMins = this.commonService.convertFromHrsMins(+taskTotalMins);
                   projectAvailableHours.push(+convertedHoursMins);
@@ -546,7 +550,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                 }
               }
 
-              // Gantt Chart Sub Object 
+              // Gantt Chart Sub Object
 
               if (milestone.Title === milestoneTask.Milestone) {
                 if (milestoneTask.Status !== 'Deleted') {
@@ -591,7 +595,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
           const milestoneTemp = this.GanttchartData.find(c => c.id === milestone.Id);
           if (milestoneTemp) {
-            milestoneTemp.spentTime = milestoneHoursSpent.length > 0 ? this.commonService.ajax_addHrsMins(milestoneHoursSpent) : '0:0';
+            milestoneTemp.spentTime = milestoneHoursSpent.length > 0 ? this.commonService.addHrsMins(milestoneHoursSpent) : '0:0';
             const tempmilestone = {
               'data': milestoneTemp,
               'expanded': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? true : false,
@@ -680,7 +684,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
               if (milestoneTask.TimeSpent == null) {
                 projectAvailableHours.push(+milestoneTask.ExpectedTime);
               } else {
-                const mHoursSpentTask = this.commonService.ajax_addHrsMins([hrsMinObject]);
+                const mHoursSpentTask = this.commonService.addHrsMins([hrsMinObject]);
                 const taskTotalMins = this.commonService.calculateTotalMins(mHoursSpentTask);
                 const convertedHoursMins = this.commonService.convertFromHrsMins(+taskTotalMins);
                 projectAvailableHours.push(+convertedHoursMins);
@@ -691,7 +695,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
               }
             }
 
-            // Gantt Chart Sub Object 
+            // Gantt Chart Sub Object
 
             if (milestone.Title === milestoneTask.Milestone) {
               if (milestoneTask.Status !== 'Deleted') {
@@ -742,7 +746,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
           }
           var milestoneTemp = this.GanttchartData.find(c => c.id === milestone.Id);
           if (milestoneTemp) {
-            milestoneTemp.spentTime = milestoneHoursSpent.length > 0 ? this.commonService.ajax_addHrsMins(milestoneHoursSpent) : '0:0';
+            milestoneTemp.spentTime = milestoneHoursSpent.length > 0 ? this.commonService.addHrsMins(milestoneHoursSpent) : '0:0';
 
             const tempmilestone = {
               'data': milestoneTemp,
@@ -763,7 +767,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         }
       }
 
-      ////// Assign users 
+      ////// Assign users
 
       if (this.projectDetails === undefined) {
         this.assignUsers(allRetrievedTasks);
@@ -784,7 +788,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     this.GanttChartView = true;
     this.visualgraph = false;
     this.milestoneDataCopy = JSON.parse(JSON.stringify(this.milestoneData));
-    this.oProjectDetails.hoursSpent = this.commonService.convertToHrs(projectHoursSpent.length > 0 ? this.commonService.ajax_addHrsMins(projectHoursSpent) : '0:0');
+    this.oProjectDetails.hoursSpent = this.commonService.convertToHrs(projectHoursSpent.length > 0 ? this.commonService.addHrsMins(projectHoursSpent) : '0:0');
     this.oProjectDetails.hoursSpent = parseFloat(this.oProjectDetails.hoursSpent.toFixed(2));
     this.oProjectDetails.allocatedHours = projectHoursAllocated.reduce((a, b) => a + b, 0).toFixed(2);
     this.oProjectDetails.spentHours = projectAvailableHours.reduce((a, b) => a + b, 0).toFixed(2);
@@ -803,7 +807,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
 
   // *************************************************************************************************************************************
-  // Switch between Gantt chart and Tree table View  
+  // Switch between Gantt chart and Tree table View
   // *************************************************************************************************************************************
 
   public async assignUsers(allRetrievedTasks) {
@@ -1041,7 +1045,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       this.updatedTasks = tasks;
     }
 
-    // specific task drag 
+    // specific task drag
     gantt.attachEvent("onBeforeTaskDrag", function (id, mode, e) {
       var task: any = gantt.getTask(id)
       task.edited = true;
@@ -1361,7 +1365,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       this.taskMenu = [
         { label: 'Edit', icon: 'pi pi-pencil', command: (event) => this.editTask(data, rowNode) },
       ];
-
+      this.taskMenu.push({ label: 'View Allocation', icon: 'pi pi-pencil', command: (event) => this.viewAllocation(data) });
       if (data.itemType !== 'Client Review' && data.itemType !== 'Send to client') {
         this.taskMenu.push({ label: 'Scope', icon: 'pi pi-comment', command: (event) => this.openComment(data, rowNode) });
 
@@ -1789,20 +1793,29 @@ export class TimelineComponent implements OnInit, OnDestroy {
   // User changes Cascading (User change )
   // *************************************************************************************************************************************
 
-  assignedToUserChanged(milestoneTask) {
+  async assignedToUserChanged(milestoneTask) {
     if (milestoneTask.AssignedTo) {
       this.updateNextPreviousTasks(milestoneTask);
       milestoneTask.assignedUserChanged = true;
       if (milestoneTask.AssignedTo.hasOwnProperty('ID') && milestoneTask.AssignedTo.ID) {
         milestoneTask.skillLevel = this.taskAllocateCommonService.getSkillName(milestoneTask.AssignedTo.SkillText);
         const previousUserTimeZone = milestoneTask.assignedUserTimeZone;
-        const AssignedUserTimeZone = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
+        const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
           return milestoneTask.AssignedTo.ID === objt.UserName.ID;
         });
-
-        milestoneTask.assignedUserTimeZone = AssignedUserTimeZone && AssignedUserTimeZone.length > 0
-          ? AssignedUserTimeZone[0].TimeZone.Title ?
-            AssignedUserTimeZone[0].TimeZone.Title : '+5.5' : '+5.5';
+        const checkDailyAllocate = await this.dailyAllocation.checkDailyAllocation(
+          {
+            ID: milestoneTask.id,
+            task: milestoneTask.taskFullName,
+            startDate: milestoneTask.start_date,
+            endDate: milestoneTask.end_date,
+            budgetHrs: milestoneTask.budgetHours,
+            resourceId: resource
+          } as IDailyAllocationTask);
+        console.log(checkDailyAllocate);
+        milestoneTask.assignedUserTimeZone = resource && resource.length > 0
+          ? resource[0].TimeZone.Title ?
+            resource[0].TimeZone.Title : '+5.5' : '+5.5';
 
         milestoneTask.pUserStart = this.commonService.calcTimeForDifferentTimeZone(milestoneTask.pUserStart,
           previousUserTimeZone, milestoneTask.assignedUserTimeZone);
@@ -1939,7 +1952,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     const startDate = nodeData.pUserStart;
     const endDate = nodeData.pUserEnd;
     var workingHours = this.workingHoursBetweenDates(startDate, endDate);
-    // Check if prev node slot then consider startdate of slot 
+    // Check if prev node slot then consider startdate of slot
     const prevNodeStartDate = ((prevNodeData.slotType === 'Slot' && nodeData.parentSlot) ?
       // || (prevNodeData.slotType === 'Slot' && prevNodeData.clickedInput && prevNodeData.clickedInput === 'start' && nodeData.parentSlot) ?
       new Date(prevNodeData.start_date) : new Date(prevNodeData.end_date));
@@ -2222,10 +2235,10 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   /**
    * Cascading slot subtasks if start date of slot is changed
-   * @param sentPrevNode 
-   * @param element 
-   * @param subMilestonePosition 
-   * @param selectedMil 
+   * @param sentPrevNode
+   * @param element
+   * @param subMilestonePosition
+   * @param selectedMil
    */
   async compareSlotSubTasksTimeline(sentPrevNode1, subMilestonePosition, selectedMil) {
     // fetch slot based on submilestone presnt or not
@@ -2246,32 +2259,18 @@ export class TimelineComponent implements OnInit, OnDestroy {
       if (!sentPrevNode1.clickedInput || (sentPrevNode1.clickedInput && sentPrevNode1.clickedInput === 'start')) {
         let slotFirstTaskSorted = this.sortByDate(slotFirstTask, 'pUserStart', 'asc');
         if (sentPrevNode.data.start_date > slotFirstTaskSorted[0].data.start_date) {
-          //let childIndex = 0;
-          // for (const subTask of sentPrevNode.children) {
-          //   if (!subTask.data.DisableCascade) {
-          //     // If first subtask then cascade based on slot start date and subtask start date
-          //     if (!subTask.data.previousTask) {
-          //       this.cascadeNextTask(sentPrevNode, subTask, subMilestonePosition, selectedMil);
-          //     }
-          //     // If next task present then cascade based on first task end date and next subtask
-          //     if (subTask.data.nextTask) {
-          //       this.cascadeNode(subTask, sentPrevNode.children[childIndex + 1]);
-          //     }
-          //   }
-          //   childIndex++;
-          // }
           slotFirstTaskSorted.forEach(element => {
             if (!element.data.DisableCascade && element.data.status !== 'In Progress') {
               this.cascadeNextTask(sentPrevNode, element, subMilestonePosition, selectedMil);
             }
           });
           if (slotFirstTask[0].data.AssignedTo.ID && slotFirstTask[0].data.AssignedTo.ID !== -1) {
-            // All task of slot will be allocated at once so if first task is assigned to resource then check for resource and new task date availability 
+            // All task of slot will be allocated at once so if first task is assigned to resource then check for resource and new task date availability
             await this.checkTaskResourceAvailability(sentPrevNode, subMilestonePosition, selectedMil, this.sharedObject.oTaskAllocation.oResources);
           }
         }
       } else if (slotFirstTask[0].data.AssignedTo.EMail) {
-        // All task of slot will be allocated at once so if first task is assigned to resource then check for resource and new task date availability 
+        // All task of slot will be allocated at once so if first task is assigned to resource then check for resource and new task date availability
         await this.checkTaskResourceAvailability(sentPrevNode, subMilestonePosition, selectedMil, this.sharedObject.oTaskAllocation.oResources);
       }
 
@@ -2280,9 +2279,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   /**
    * Deallocation / Reallocation logic
-   * @param slot 
-   * @param subMilestonePosition 
-   * @param selectedMil 
+   * @param slot
+   * @param subMilestonePosition
+   * @param selectedMil
    */
   async checkTaskResourceAvailability(slot, subMilestonePosition, selectedMil, oResources) {
     let deallocateSlot = false;
@@ -2301,15 +2300,15 @@ export class TimelineComponent implements OnInit, OnDestroy {
         let retTask = [];
         const resource = oResources.filter(r => r.UserName.ID === assignedUserId);
         const oCapacity = await this.usercapacityComponent.applyFilterReturn(task.data.pUserStart, task.data.pUserEnd,
-          resource);
+          resource, []);
 
 
         let retRes = oCapacity.arrUserDetails.length ? oCapacity.arrUserDetails[0] : [];
         retTask = retRes.tasks;
         const breakAvailable = retRes.displayTotalUnAllocated.split(":");
-
-        let availableHours = parseFloat(breakAvailable[0]) + parseFloat((parseFloat(breakAvailable[1]) / 60).toFixed(2)); //  parseFloat(retRes.displayTotalUnAllocated.replace(':', '.'));
+        let availableHours = parseFloat(breakAvailable[0]) + parseFloat((parseFloat(breakAvailable[1]) / 60).toFixed(2));
         const allocatedHours = parseFloat(task.data.budgetHours);
+        // For same task included in result so adding expected hours for same task
         const retTaskInd = retTask.find(t => t.ID === task.data.id);
         if (retTaskInd) {
           availableHours = availableHours + allocatedHours;
@@ -4086,8 +4085,30 @@ export class TimelineComponent implements OnInit, OnDestroy {
     return index; // or item.id
   }
 
-}
+  viewAllocation(milestoneTask): void {
+    milestoneTask.resources = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
+      return objt.UserName.ID === milestoneTask.AssignedTo.ID;
+    });
 
+    const ref = this.dialogService.open(DailyAllocationComponent, {
+      data: {
+        ID: milestoneTask.id,
+        task: milestoneTask.taskFullName,
+        startDate: milestoneTask.start_date,
+        endDate: milestoneTask.end_date,
+        budgetHrs: milestoneTask.budgetHours,
+        resourceId: milestoneTask.resources
+      } as IDailyAllocationTask,
+      width: '90vw',
+
+      header: milestoneTask.submilestone ? milestoneTask.milestone + ' ' + milestoneTask.title
+        + ' ( ' + milestoneTask.submilestone + ' )' : milestoneTask.milestone + ' ' + milestoneTask.title,
+      contentStyle: { 'max-height': '90vh', 'overflow-y': 'auto' }
+    });
+    ref.onClose.subscribe((UserCapacity: any) => {
+    });
+  }
+}
 
 export interface MilestoneTreeNode {
   data?: any;

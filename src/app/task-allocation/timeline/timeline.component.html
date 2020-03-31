@@ -327,7 +327,7 @@
                                 *ngIf="rowData.type==='task' && !rowData.editMode">{{rowData.DisableCascade === true  ? 'Yes':'No'}}</span>
 
                             <p-inputSwitch
-                                *ngIf="rowData.editMode && rowData.type==='task' && rowData.itemType !== 'Client Review'" 
+                                *ngIf="rowData.editMode && rowData.type==='task' && rowData.itemType !== 'Client Review'"
                                 [(ngModel)]="rowData.DisableCascade"></p-inputSwitch>
 
                             <!-- {{rowData.DisableCascade}} -->
@@ -337,7 +337,7 @@
 
                         <!-- Menu option -->
                         <td [style.backgroundColor]="rowData.color">
-                         
+
                             <button
                                 *ngIf="rowData.type === 'task' && rowData.milestoneStatus !== 'Completed' && (rowData.status !== 'Completed' && rowData.status !=='Abandon' && rowData.status !=='Auto Closed' && rowData.status !=='Hold' && rowData.status !== 'Not Saved') && !changeInRestructure"
                                 [hidden]="rowData.editMode === false" type="button"
