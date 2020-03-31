@@ -22,6 +22,7 @@ export class CsFinanceAuditDialogComponent implements OnInit {
   projectUpdated = false;
   @ViewChild('allProjectRef', { static: false }) allProjectRef: Table;
   projectList: any;
+  checked = false;
   public allProjects = {
     SOWCode: [],
     ProjectCode: [],
@@ -203,11 +204,30 @@ export class CsFinanceAuditDialogComponent implements OnInit {
 
   onRowSelect() {
     if (this.selectedProjects.length > 10 && this.AuditType === 'Finance') {
+
       this.messageService.add({
         key: 'custom', severity: 'error', summary: 'Error Message',
         detail: 'Maximum 10 projects allowed for audit.'
       });
     }
+    else if (this.AuditType === 'Finance') {
+      if (this.selectedProjects.length === 10) {
+        this.checked = true;
+      }
+      else {
+        false
+      }
+    }
+  }
+
+  onRowUnselect() {
+    if(this.selectedProjects.length >= 10 && this.AuditType === 'Finance'){
+      this.checked = true;
+    }
+    else{
+      this.checked=false;
+    }
+   
   }
 
   // **************************************************************************************
@@ -217,11 +237,11 @@ export class CsFinanceAuditDialogComponent implements OnInit {
   async AuditProjects(AuditType) {
     if (AuditType === 'CS') {
       const addRollingProjectArray = [
-        { checked: false, parameter: 'All project attributes are correct', comments: '', hideCheckBox : false },
-        { checked: false, parameter: 'Final documents uploaded for all the tasks', comments: '', hideCheckBox : false },
-        { checked: false, parameter: 'Is the project budget and budget hours correct?', comments: '', hideCheckBox : false },
-        { checked: false, parameter: 'Is the pub support status updated to submitted?', comments: '', hideCheckBox : false },
-        { checked: false, parameter: 'Has ER been fully accrued before proposing closure?', comments: 'Select One', hideCheckBox : true },
+        { checked: false, parameter: 'All project attributes are correct', comments: '', hideCheckBox: false },
+        { checked: false, parameter: 'Final documents uploaded for all the tasks', comments: '', hideCheckBox: false },
+        { checked: false, parameter: 'Is the project budget and budget hours correct?', comments: '', hideCheckBox: false },
+        { checked: false, parameter: 'Is the pub support status updated to submitted?', comments: '', hideCheckBox: false },
+        { checked: false, parameter: 'Has ER been fully accrued before proposing closure?', comments: 'Select One', hideCheckBox: true },
       ];
 
       const ref = this.dialogService.open(AuditProjectDialogComponent, {
@@ -302,8 +322,8 @@ export class CsFinanceAuditDialogComponent implements OnInit {
       else {
 
         const addRollingProjectArray = [
-          { checked: false, parameter: 'All invoices are generated', comments: '', hideCheckBox : false },
-          { checked: false, parameter: 'All expenses are billed', comments: '', hideCheckBox : false },
+          { checked: false, parameter: 'All invoices are generated', comments: '', hideCheckBox: false },
+          { checked: false, parameter: 'All expenses are billed', comments: '', hideCheckBox: false },
         ];
         this.modalloaderenable = false;
         this.buttonloader = false;
@@ -449,13 +469,24 @@ export class CsFinanceAuditDialogComponent implements OnInit {
       if (AuditType === 'Finance') {
         debugger
         if (this.allProjectRef.filteredValue) {
-          if (this.allProjectRef.filteredValue.length > 10) {
+          if (this.allProjectRef.filteredValue.length > 10 && !this.checked) {
             this.selectedProjects = this.allProjectRef.filteredValue.slice(this.allProjectRef.first, this.allProjectRef.first + 10)
+            this.checked = true;
           }
+          else if (this.checked === true) {
+            this.selectedProjects = [];
+            this.checked = false;
+          }
+
         }
         else {
-          if (this.projectList.length > 10) {
+          if (this.projectList.length > 10 && !this.checked) {
             this.selectedProjects = this.projectList.slice(this.allProjectRef.first, this.allProjectRef.first + 10)
+            this.checked = true;
+          }
+          else if (this.checked === true) {
+            this.selectedProjects = [];
+            this.checked = false;
           }
         }
 
