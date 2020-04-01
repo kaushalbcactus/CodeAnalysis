@@ -971,60 +971,76 @@ export class PMCommonService {
       this.pmObject.billedBy = tempResult;
     }
   }
+  // async validateAndSave() {
+  //   this.pmObject.isMainLoaderHidden = false;
+  //   const newProjectCode = await this.verifyAndUpdateProjectCode();
+  //   this.pmObject.addProject.ProjectAttributes.ProjectCode = newProjectCode;
+  //   if (newProjectCode) {
+  //     if (this.pmObject.addProject.FinanceManagement.selectedFile) {
+
+
+  //     //   const docFolder = 'Finance/SOW';
+  //     //   let libraryName = '';
+  //     //   const tempFiles = [new Object({ name: this.pmObject.addProject.FinanceManagement.selectedFile[0].name, file: this.pmObject.addProject.FinanceManagement.selectedFile[0] })];
+  //     //   const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
+  //     //     x.Title === this.pmObject.addProject.ProjectAttributes.ClientLegalEntity);
+  //     //   if (clientInfo && clientInfo.length) {
+  //     //     libraryName = clientInfo[0].ListName;
+  //     //   }
+  //     //   const ref = this.dialogService.open(FileUploadProgressDialogComponent, {
+  //     //     header: 'File Uploading',
+  //     //     width: '70vw',
+  //     //     data: {
+  //     //       Files: tempFiles,
+  //     //       libraryName: this.globalObject.sharePointPageObject.webRelativeUrl + '/' + libraryName + '/' + docFolder,
+  //     //       overwrite: true,
+  //     //     },
+  //     //     contentStyle: { 'overflow-y': 'visible', 'background-color': '#f4f3ef' },
+  //     //     closable: false,
+  //     //   });
+
+  //     //   return ref.onClose.subscribe(async (uploadedfile: any) => {
+  //     //     if (uploadedfile) {
+  //     //       if (this.pmObject.addProject.FinanceManagement.selectedFile.length > 0 && this.pmObject.addProject.FinanceManagement.selectedFile.length === uploadedfile.length) {
+  //     //         if (uploadedfile[0].hasOwnProperty('ServerRelativeUrl')) {
+  //     //           this.pmObject.addSOW.isSOWCodeDisabled = false;
+  //     //           this.pmObject.addSOW.isStatusDisabled = true;
+  //     //         }
+  //     //         await this.addUpdateProject();
+  //     //       }
+  //     //     }
+  //     //   });
+  //     // }
+  //     // else {
+  //     //   await this.addUpdateProject();
+  //     // }
+
+
+  //       const fileUploadResult = await this.submitFile(this.pmObject.addProject.FinanceManagement.selectedFile, this.pmObject.fileReader);
+  //       if (fileUploadResult.hasOwnProperty('ServerRelativeUrl')) {
+  //         this.pmObject.addSOW.isSOWCodeDisabled = false;
+  //         this.pmObject.addSOW.isStatusDisabled = true;
+  //       }
+  //     }
+
+  //     await this.addUpdateProject();
+
+  //   }
+  // }
+
   async validateAndSave() {
     this.pmObject.isMainLoaderHidden = false;
     const newProjectCode = await this.verifyAndUpdateProjectCode();
     this.pmObject.addProject.ProjectAttributes.ProjectCode = newProjectCode;
     if (newProjectCode) {
       if (this.pmObject.addProject.FinanceManagement.selectedFile) {
-
-
-      //   const docFolder = 'Finance/SOW';
-      //   let libraryName = '';
-      //   const tempFiles = [new Object({ name: this.pmObject.addProject.FinanceManagement.selectedFile[0].name, file: this.pmObject.addProject.FinanceManagement.selectedFile[0] })];
-      //   const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
-      //     x.Title === this.pmObject.addProject.ProjectAttributes.ClientLegalEntity);
-      //   if (clientInfo && clientInfo.length) {
-      //     libraryName = clientInfo[0].ListName;
-      //   }
-      //   const ref = this.dialogService.open(FileUploadProgressDialogComponent, {
-      //     header: 'File Uploading',
-      //     width: '70vw',
-      //     data: {
-      //       Files: tempFiles,
-      //       libraryName: this.globalObject.sharePointPageObject.webRelativeUrl + '/' + libraryName + '/' + docFolder,
-      //       overwrite: true,
-      //     },
-      //     contentStyle: { 'overflow-y': 'visible', 'background-color': '#f4f3ef' },
-      //     closable: false,
-      //   });
-
-      //   return ref.onClose.subscribe(async (uploadedfile: any) => {
-      //     if (uploadedfile) {
-      //       if (this.pmObject.addProject.FinanceManagement.selectedFile.length > 0 && this.pmObject.addProject.FinanceManagement.selectedFile.length === uploadedfile.length) {
-      //         if (uploadedfile[0].hasOwnProperty('ServerRelativeUrl')) {
-      //           this.pmObject.addSOW.isSOWCodeDisabled = false;
-      //           this.pmObject.addSOW.isStatusDisabled = true;
-      //         }
-      //         await this.addUpdateProject();
-      //       }
-      //     }
-      //   });
-      // }
-      // else {
-      //   await this.addUpdateProject();
-      // }
-
-
         const fileUploadResult = await this.submitFile(this.pmObject.addProject.FinanceManagement.selectedFile, this.pmObject.fileReader);
         if (fileUploadResult.hasOwnProperty('ServerRelativeUrl')) {
           this.pmObject.addSOW.isSOWCodeDisabled = false;
           this.pmObject.addSOW.isStatusDisabled = true;
         }
       }
-
       await this.addUpdateProject();
-
     }
   }
   /**
@@ -1114,6 +1130,7 @@ export class PMCommonService {
     batchURL.push(projectCreate);
     counter += 1;
 
+    debugger
      // Add data to ProjectScope call ##17
      const projectScopeData = this.getProjectScopeData(projectInformationData);
      const projectScopeCreate = Object.assign({}, options);
@@ -1188,6 +1205,7 @@ export class PMCommonService {
       }
     }
     this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetSchedulesProjInfoPoInvoicesProFinanceBreakupInvoiceLineItem');
+    debugger
     const res = await this.spServices.executeBatch(batchURL);
     console.log(res);
     if (res && res.length) {
