@@ -137,7 +137,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     ];
   }
 
-  
+
   // *************************************************************************************************************************************
   // hide popup menu on production
   // *************************************************************************************************************************************
@@ -491,13 +491,20 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
   }
 
 
-   // **************************************************************************************************
-  //  Project Scope load in new tab
   // **************************************************************************************************
-
-
+  //   This function is used to open or download project scope 
+  // **************************************************************************************************
   async goToProjectScope(project) {
-    window.open(project.ProjectFolder + '/Miscellaneous/' + project.ProjectCode + '_scope.docx?web=1', '_blank');
+    const response = await this.commonService.goToProjectScope(project, project.Status);
+    if (response === 'No Document Found.') {
+      this.messageService.add({
+        key: 'custom', severity: 'error', summary: 'Error Message',
+        detail: project.ProjectCode + ' - Project Scope not found.'
+      });
+    }
+    else {
+      window.open(response);
+    }
   }
 
 }

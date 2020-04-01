@@ -893,15 +893,22 @@ export class MyTimelineComponent implements OnInit {
 
 
 
-  // **************************************************************************************************
-  //  Project Scope load in new tab
-  // **************************************************************************************************
 
-
+  // **************************************************************************************************
+  //   This function is used to open or download project scope 
+  // **************************************************************************************************
   async goToProjectScope(task) {
-
     const ProjectInformation = await this.myDashboardConstantsService.getCurrentTaskProjectInformation(task.ProjectCode);
-    window.open(ProjectInformation.ProjectFolder + '/Miscellaneous/' + task.ProjectCode + '_scope.docx?web=1', '_blank');
+    const response = await this.commonService.goToProjectScope(ProjectInformation, ProjectInformation.Status);
+    if (response === 'No Document Found.') {
+      this.messageService.add({
+        key: 'custom', severity: 'error', summary: 'Error Message',
+        detail: task.ProjectCode + ' - Project Scope not found.'
+      });
+    }
+    else {
+      window.open(response);
+    }
   }
 
 }
