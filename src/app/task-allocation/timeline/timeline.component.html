@@ -199,7 +199,7 @@
                                     [yearNavigator]="true" (onClose)="DateChangePart(rowData,'start')" appendTo="body"
                                     [inputStyle]="{'width': '78%', 'min-width': '78%','padding':'0px','border':'none'}">
                                 </p-calendar>
-                                <input [disabled]="rowData.tat" readonly [ngxTimepicker]="picker"
+                                <input [disabled]="rowData.tat && rowData.itemType !=='Client Review'" readonly [ngxTimepicker]="picker"
                                     [(ngModel)]="rowData.pUserStartTimePart" class="timePicker">
                                 <ngx-material-timepicker-toggle [for]="picker"></ngx-material-timepicker-toggle>
                                 <ngx-material-timepicker [preventOverlayClick]="true"
@@ -233,7 +233,7 @@
                                     [yearNavigator]="true" (onClose)="DateChangePart(rowData,'end')" appendTo="body"
                                     [inputStyle]="{'width': '78%', 'min-width': '78%','padding':'0px','border':'none'}">
                                 </p-calendar>
-                                <input #inputDate [disabled]="rowData.tat" readonly [ngxTimepicker]="picker"
+                                <input #inputDate [disabled]="rowData.tat && rowData.itemType !=='Client Review'" readonly [ngxTimepicker]="picker"
                                     [min]="rowData.pUserStartDatePart === rowData.pUserEndDatePart ? rowData.pUserStartTimePart :'12:00 am'"
                                     [(ngModel)]="rowData.pUserEndTimePart" class="timePicker">
                                 <ngx-material-timepicker-toggle [for]="picker"></ngx-material-timepicker-toggle>

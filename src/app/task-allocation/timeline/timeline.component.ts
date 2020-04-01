@@ -2193,7 +2193,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
 
   changeDateOfEditedTask(node, type) {
-    node.pUserStart = node.tat === true ?
+    node.pUserStart = node.tat === true && node.itemType !=='Client Review' ?
       new Date(node.pUserStart.getFullYear(), node.pUserStart.getMonth(), node.pUserStart.getDate(), 9, 0) : node.pUserStart;
     node.pUserEnd = type === 'start' && node.pUserStart > node.pUserEnd ? (node.tat === true ?
       new Date(node.pUserStart.getFullYear(), node.pUserStart.getMonth(),
