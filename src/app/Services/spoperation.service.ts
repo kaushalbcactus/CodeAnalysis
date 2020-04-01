@@ -524,9 +524,9 @@ export class SPOperationService {
         const obj: any = res.error;
         obj.hasError = true;
         return obj;
-      } else if(res.valueOf('odata')){
-         return res;
-      }else {
+      } else if (res.valueOf('odata')) {
+        return res;
+      } else {
         return {
           hasError: true,
           comments: res
@@ -814,6 +814,14 @@ export class SPOperationService {
   }
 
 
+
+  // check if file exist 
+  async checkFileExist(url:string) {
+    const res = await this.httpClient.get<Response>(url).toPromise().catch((err: HttpErrorResponse) => {
+      return err;
+    });
+    return res;
+  }
 
   // postJson(endpointUrl, payload, success, failure) {
   //   $.ajax({

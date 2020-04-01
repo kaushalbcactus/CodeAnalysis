@@ -879,4 +879,73 @@ export class CommonService {
         }
     }
 
+    async goToProjectScope(task, Status) {
+        let response = '';
+        if (Status === 'Closed' || Status === 'Cancelled') {
+            const res = await this.spServices.checkFileExist(task.ProjectFolder + '/Miscellaneous/' + task.ProjectCode + '_scope.docx')
+            if (res.hasOwnProperty('status')) {
+                if (res.status === 404) {
+                    response = "No Document Found."
+                }
+                else {
+                    response = task.ProjectFolder + '/Miscellaneous/' + task.ProjectCode + '_scope.docx', '_blank';
+                }
+            }
+        }
+        else {
+            response = task.ProjectFolder + '/Miscellaneous/' + task.ProjectCode + '_scope.docx?web=1', '_blank';
+        }
+        return response;
+
+
+
+
+        // const res = await this.spServices.checkFileExist(task.ProjectFolder + '/Miscellaneous/' + task.ProjectCode + '_scope.docx')
+
+        // if (res.hasOwnProperty('status')) {
+        //     if (res.status === 404) {
+
+        //         const data = {
+        //             Title: task.ProjectCode,
+        //             ProjectFolder: task.ProjectFolder
+        //         };
+        //         this.SetNewrelic('projectManagment', 'allProj-allprojects', 'projectScope');
+        //         const result = await this.spServices.createItem(this.constants.listNames.ProjectScope.name, data, this.constants.listNames.ProjectScope.type);
+
+        //         debugger;
+        //         if (!result.hasOwnProperty('hasError') && !result.hasError) {
+        //             setTimeout(async () => {
+
+        //                 const response = this.spServices.checkFileUploaded(result.ProjectFolder + '/Miscellaneous/' + result.Title + '_scope.docx');
+        //                 debugger;
+        //                 if (response)
+
+
+        //                     loaderView.nativeElement.classList.remove('show');
+        //                 spannerView.nativeElement.classList.remove('show');
+        //                 window.open(result.ProjectFolder + '/Miscellaneous/' + result.Title + '_scope.docx?web=1', '_blank');
+        //                 this.SetNewrelic('projectManagment', 'allProj-allprojects', 'updateprojectScope');
+        //                 const retResults = await this.spServices.updateItem(this.constants.listNames.ProjectScope.name, result.ID, { IsCreated: 'Yes' }, this.constants.listNames.ProjectScope.type);
+        //             }, 3000);
+        //         }
+        //         else {
+        //             loaderView.nativeElement.classList.remove('show');
+        //             spannerView.nativeElement.classList.remove('show');
+        //         }
+
+        //     } else {
+        //         loaderView.nativeElement.classList.remove('show');
+        //         spannerView.nativeElement.classList.remove('show');
+
+        //         window.open(task.ProjectFolder + '/Miscellaneous/' + task.ProjectCode + '_scope.docx?web=1', '_blank');
+        //     }
+        // }
+        // else {
+        //     loaderView.nativeElement.classList.remove('show');
+        //     spannerView.nativeElement.classList.remove('show');
+
+        //     window.open(task.ProjectFolder + '/Miscellaneous/' + task.ProjectCode + '_scope.docx?web=1', '_blank');
+        // }
+    }
+
 }

@@ -1113,7 +1113,17 @@ export class PMCommonService {
     projectCreate.listName = this.constant.listNames.ProjectInformation.name;
     batchURL.push(projectCreate);
     counter += 1;
-    // Add data to ProjectFinances call ##17
+
+     // Add data to ProjectScope call ##17
+     const projectScopeData = this.getProjectScopeData(projectInformationData);
+     const projectScopeCreate = Object.assign({}, options);
+     projectScopeCreate.url = this.spServices.getReadURL(this.constant.listNames.ProjectScope.name, null);
+     projectScopeCreate.data = projectScopeData;
+     projectScopeCreate.type = 'POST';
+     projectScopeCreate.listName = this.constant.listNames.ProjectScope.name;
+     batchURL.push(projectScopeCreate);
+     counter += 1;
+    // Add data to ProjectFinances call ##18
     const projectFinanceData = this.getProjectFinancesData();
     const projectFinanceCreate = Object.assign({}, options);
     projectFinanceCreate.url = this.spServices.getReadURL(this.constant.listNames.ProjectFinances.name, null);
@@ -1122,7 +1132,7 @@ export class PMCommonService {
     projectFinanceCreate.listName = this.constant.listNames.ProjectFinances.name;
     batchURL.push(projectFinanceCreate);
     counter += 1;
-    // Add data to projectFinanceBreakup call ##18
+    // Add data to projectFinanceBreakup call ##19
     const projectFinanceBreakArray = this.getProjectFinanceBreakupData();
     projectFinanceBreakArray.forEach(element => {
       const projectFinanceBreakupCreate = Object.assign({}, options);
@@ -1135,7 +1145,7 @@ export class PMCommonService {
     });
     if (this.pmObject.addProject.ProjectAttributes.BilledBy === this.pmConstant.PROJECT_TYPE.DELIVERABLE.value ||
       this.pmObject.addProject.ProjectAttributes.BilledBy === this.pmConstant.PROJECT_TYPE.FTE.value) {
-      //  Add data to  InvoiceLineItem call ## 19
+      //  Add data to  InvoiceLineItem call ## 20
       const invoiceLineItemArray = this.getInvoiceLineItemData();
       invoiceLineItemArray.forEach(element => {
         const createForderObj: any = Object.assign({}, options);
@@ -1146,7 +1156,7 @@ export class PMCommonService {
         batchURL.push(createForderObj);
         counter += 1;
       });
-      // Add data to  SOWItem call ## 20
+      // Add data to  SOWItem call ## 21
       const sowItemData = this.getSowItemData(projectFinanceData);
       const selectSOWItem: any = this.pmObject.addProject.SOWSelect.SOWSelectedItem;
       const sowItemCreate = Object.assign({}, options);
@@ -1156,7 +1166,7 @@ export class PMCommonService {
       sowItemCreate.listName = this.constant.listNames.SOW.name;
       batchURL.push(sowItemCreate);
       counter += 1;
-      // Add data to POItem call ## 21
+      // Add data to POItem call ## 22
       const poItemArray = this.getPoItemData(projectFinanceBreakArray);
       poItemArray.forEach(element => {
         const poItemCreate = Object.assign({}, options);
@@ -1209,6 +1219,22 @@ export class PMCommonService {
       listName + '/' + projectCode + '/Publication Support/Published Papers'
     ];
     return arrFolders;
+  }
+
+
+  /**
+   * This function is used to set the projectScope object
+   */
+  getProjectScopeData(ProjectInfo){
+
+    const data: any = {
+      __metadata: { type: this.constant.listNames.ProjectScope.type },
+      Title: ProjectInfo.ProjectCode,
+      ProjectFolder: ProjectInfo.ProjectFolder,
+      
+    };
+   
+    return data;
   }
   /**
    * This function is used to set the projectfinanaces object

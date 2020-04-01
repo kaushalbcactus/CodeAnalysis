@@ -149,6 +149,7 @@ export class AllProjectsComponent implements OnInit {
   CSButton = false;
   CSButtonEnable = false;
   FinanceButtonEnable = false;
+  res: void;
   constructor(
     public pmObject: PMObjectService,
     private datePipe: DatePipe,
@@ -2304,12 +2305,27 @@ export class AllProjectsComponent implements OnInit {
     console.log('Test');
     console.log(this.projectViewDataArray);
     this.pmObject.isProjectRightSideVisible = true;
-
-
   }
 
-  goToProjectScope(task) {
-    window.open(task.ProjectFolder + '/Miscellaneous/' + task.ProjectCode +'_scope.docx?web=1' , '_blank');
+
+  // **************************************************************************************************
+  //   This function is used to open or download project scope 
+  // **************************************************************************************************
+  async goToProjectScope(task) {
+    this.loaderView.nativeElement.classList.add('show');
+    this.spannerView.nativeElement.classList.add('show');
+    const response = await this.commonService.goToProjectScope(task, task.Status);
+    if (response === 'No Document Found.') {
+      this.messageService.add({
+        key: 'custom', severity: 'error', summary: 'Error Message',
+        detail: task.ProjectCode + ' - Project Scope not found.'
+      });
+    }
+    else {
+      window.open(response);
+    }
+    this.loaderView.nativeElement.classList.remove('show');
+    this.spannerView.nativeElement.classList.remove('show');
   }
 
 

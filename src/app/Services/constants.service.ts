@@ -25,6 +25,10 @@ export class ConstantsService {
       name: 'ProjectRelatedInvoices',
       type: 'SP.Data.ProjectRelatedInvoicesListItem'
     },
+    ProjectScope: {
+      name: 'ProjectScope',
+      type: 'SP.Data.ProjectScopeListItem'
+    },
     InvoiceDetails: {
       name: 'InvoiceDetails',
       type: 'SP.Data.InvoiceDetailsListItem'

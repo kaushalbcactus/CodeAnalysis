@@ -8,7 +8,7 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { PmconstantService } from '../../services/pmconstant.service';
 import { PMObjectService } from '../../services/pmobject.service';
-import { MenuItem } from 'primeng/api';
+import { MenuItem, MessageService } from 'primeng/api';
 import { PMCommonService } from '../../services/pmcommon.service';
 import { Router } from '@angular/router';
 import { Table } from 'primeng/table';
@@ -113,6 +113,7 @@ export class ClientReviewComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private platformLocation: PlatformLocation,
     private locationStrategy: LocationStrategy,
+    private messageService: MessageService,
     _applicationRef: ApplicationRef,
     zone: NgZone,
   ) {
@@ -434,13 +435,20 @@ export class ClientReviewComponent implements OnInit {
     if (task.PreviousTaskStatus === 'Completed') {
       this.closeTaskWithStatus(task, this.crRef);
     } else {
-      this.changeErrorMessage('Previous task should be Completed or Auto Closed');
+
+      this.messageService.add({
+        key: 'custom', severity: 'warn', summary: 'Warning Message',
+        detail: 'Previous task should be Completed or Auto Closed'
+      });
+
+
+      // this.changeErrorMessage('Previous task should be Completed or Auto Closed');
     }
   }
   async closeTaskWithStatus(task, unt) {
     const isActionRequired = await this.commonService.checkTaskStatus(task);
     if (isActionRequired) {
-
+   
       const ref = this.dialogService.open(ViewUploadDocumentDialogComponent, {
         data: {
           task,
@@ -529,7 +537,7 @@ export class ClientReviewComponent implements OnInit {
   }
   storeRowData(rowData, menu) {
     this.selectedCRTask = rowData;
-    menu.model[2].visible = this.selectedOption.name === 'Closed' ? false : true;
+     menu.model[2].visible = this.selectedOption.name === 'Closed' ? false : true;
 
   }
   @HostListener('document:click', ['$event'])

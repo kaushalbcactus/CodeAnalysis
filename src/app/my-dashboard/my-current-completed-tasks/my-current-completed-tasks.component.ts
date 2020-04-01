@@ -689,8 +689,14 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
   async goToProjectScope(task) {
 
     const ProjectInformation = await this.myDashboardConstantsService.getCurrentTaskProjectInformation(task.ProjectCode);
-    
-    window.open(ProjectInformation.ProjectFolder + '/Miscellaneous/' + task.ProjectCode + '_scope.docx?web=1', '_blank');
+     debugger;
+    const res = this.spOperations.getFile(ProjectInformation.ProjectFolder + '/Miscellaneous/' + task.ProjectCode + '_scope.docx')
+
+    if(res){
+
+    }
+
+    // window.open(ProjectInformation.ProjectFolder + '/Miscellaneous/' + task.ProjectCode + '_scope.docx?web=1', '_blank');
   }
 
 }
