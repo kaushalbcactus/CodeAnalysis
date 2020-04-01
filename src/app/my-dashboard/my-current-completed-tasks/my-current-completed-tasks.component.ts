@@ -678,25 +678,22 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     }
   }
 
-
-
-
   // **************************************************************************************************
-  //  Project Scope load in new tab
+  //   This function is used to open or download project scope 
   // **************************************************************************************************
-
-
   async goToProjectScope(task) {
-
     const ProjectInformation = await this.myDashboardConstantsService.getCurrentTaskProjectInformation(task.ProjectCode);
-     debugger;
-    const res = this.spOperations.getFile(ProjectInformation.ProjectFolder + '/Miscellaneous/' + task.ProjectCode + '_scope.docx')
-
-    if(res){
-
+    const response = await this.commonService.goToProjectScope(ProjectInformation, ProjectInformation.Status);
+    if (response === 'No Document Found.') {
+      this.messageService.add({
+        key: 'custom', severity: 'error', summary: 'Error Message',
+        detail: task.ProjectCode + ' - Project Scope not found.'
+      });
     }
-
-    // window.open(ProjectInformation.ProjectFolder + '/Miscellaneous/' + task.ProjectCode + '_scope.docx?web=1', '_blank');
+    else {
+      window.open(response);
+    }
   }
+
 
 }

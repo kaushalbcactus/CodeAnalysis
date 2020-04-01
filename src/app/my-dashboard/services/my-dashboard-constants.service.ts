@@ -68,7 +68,7 @@ export class MyDashboardConstantsService {
       orderby: 'DueDate asc',
       filter: 'AssignedTo eq  {{userId}} and (Task ne \'Send to client\') and (Task ne \'Follow up\') and (Task ne \'Client Review\') and (Task ne \'Time Booking\') and (Task ne \'Blocking\') and ',
       filterStatus: '(Status ne \'Completed\') and (Status ne \'Auto Closed\')  and (Status ne \'Deleted\') and (Status ne \'Abandon\') and (Status ne \'Hold Request\') and (Status ne \'Abandon Request\') and (Status ne \'Hold\') and (Status ne \'Project on Hold\')',
-      filterCompleted: '(Status eqStatus eq \'Completed\' or Status eq \'Auto Closed\') and (Task ne \'Adhoc\')',
+      filterCompleted: '(Status eq \'Completed\' or Status eq \'Auto Closed\') and (Task ne \'Adhoc\')',
       filterDate: 'and((StartDate ge \'{{startDateString}}\' and StartDate le \'{{endDateString}}\') or (DueDate ge \'{{startDateString}}\' and DueDate le \'{{endDateString}}\') or (StartDate le \'{{startDateString}}\' and DueDate ge \'{{endDateString}}\'))',
       expand: 'AssignedTo/Title'
 
