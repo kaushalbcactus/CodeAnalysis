@@ -632,7 +632,7 @@ export class CommonService {
 
 
     /*****************************************************************
-   
+
     Call Api to Get Project Resources
    *******************************************************************/
 
@@ -743,7 +743,7 @@ export class CommonService {
     }
 
     // ***********************************************************************************************************************************
-    // Get Project Data 
+    // Get Project Data
     // ***********************************************************************************************************************************
 
     public setLevel1Email(prjObj) {
@@ -896,56 +896,71 @@ export class CommonService {
             response = task.ProjectFolder + '/Miscellaneous/' + task.ProjectCode + '_scope.docx?web=1', '_blank';
         }
         return response;
-
-
-
-
-        // const res = await this.spServices.checkFileExist(task.ProjectFolder + '/Miscellaneous/' + task.ProjectCode + '_scope.docx')
-
-        // if (res.hasOwnProperty('status')) {
-        //     if (res.status === 404) {
-
-        //         const data = {
-        //             Title: task.ProjectCode,
-        //             ProjectFolder: task.ProjectFolder
-        //         };
-        //         this.SetNewrelic('projectManagment', 'allProj-allprojects', 'projectScope');
-        //         const result = await this.spServices.createItem(this.constants.listNames.ProjectScope.name, data, this.constants.listNames.ProjectScope.type);
-
-        //         debugger;
-        //         if (!result.hasOwnProperty('hasError') && !result.hasError) {
-        //             setTimeout(async () => {
-
-        //                 const response = this.spServices.checkFileUploaded(result.ProjectFolder + '/Miscellaneous/' + result.Title + '_scope.docx');
-        //                 debugger;
-        //                 if (response)
-
-
-        //                     loaderView.nativeElement.classList.remove('show');
-        //                 spannerView.nativeElement.classList.remove('show');
-        //                 window.open(result.ProjectFolder + '/Miscellaneous/' + result.Title + '_scope.docx?web=1', '_blank');
-        //                 this.SetNewrelic('projectManagment', 'allProj-allprojects', 'updateprojectScope');
-        //                 const retResults = await this.spServices.updateItem(this.constants.listNames.ProjectScope.name, result.ID, { IsCreated: 'Yes' }, this.constants.listNames.ProjectScope.type);
-        //             }, 3000);
-        //         }
-        //         else {
-        //             loaderView.nativeElement.classList.remove('show');
-        //             spannerView.nativeElement.classList.remove('show');
-        //         }
-
-        //     } else {
-        //         loaderView.nativeElement.classList.remove('show');
-        //         spannerView.nativeElement.classList.remove('show');
-
-        //         window.open(task.ProjectFolder + '/Miscellaneous/' + task.ProjectCode + '_scope.docx?web=1', '_blank');
-        //     }
-        // }
-        // else {
-        //     loaderView.nativeElement.classList.remove('show');
-        //     spannerView.nativeElement.classList.remove('show');
-
-        //     window.open(task.ProjectFolder + '/Miscellaneous/' + task.ProjectCode + '_scope.docx?web=1', '_blank');
-        // }
     }
+
+    CalculateminstartDateValue(date, days) {
+        let tempminDateValue = null;
+        const dayCount = days;
+        let tempDate = new Date(date);
+        while (days > 0) {
+            tempDate = new Date(tempDate.setDate(tempDate.getDate() - 1));
+            if (tempDate.getDay() !== 6 && tempDate.getDay() !== 0) {
+                days -= 1;
+                if (dayCount - 3 <= days) {
+                    tempminDateValue = tempDate;
+                }
+            }
+        }
+        return tempminDateValue;
+    }
+
+
+    // const res = await this.spServices.checkFileExist(task.ProjectFolder + '/Miscellaneous/' + task.ProjectCode + '_scope.docx')
+
+    // if (res.hasOwnProperty('status')) {
+    //     if (res.status === 404) {
+
+    //         const data = {
+    //             Title: task.ProjectCode,
+    //             ProjectFolder: task.ProjectFolder
+    //         };
+    //         this.SetNewrelic('projectManagment', 'allProj-allprojects', 'projectScope');
+    //         const result = await this.spServices.createItem(this.constants.listNames.ProjectScope.name, data, this.constants.listNames.ProjectScope.type);
+
+    //         debugger;
+    //         if (!result.hasOwnProperty('hasError') && !result.hasError) {
+    //             setTimeout(async () => {
+
+    //                 const response = this.spServices.checkFileUploaded(result.ProjectFolder + '/Miscellaneous/' + result.Title + '_scope.docx');
+    //                 debugger;
+    //                 if (response)
+
+
+    //                     loaderView.nativeElement.classList.remove('show');
+    //                 spannerView.nativeElement.classList.remove('show');
+    //                 window.open(result.ProjectFolder + '/Miscellaneous/' + result.Title + '_scope.docx?web=1', '_blank');
+    //                 this.SetNewrelic('projectManagment', 'allProj-allprojects', 'updateprojectScope');
+    //                 const retResults = await this.spServices.updateItem(this.constants.listNames.ProjectScope.name, result.ID, { IsCreated: 'Yes' }, this.constants.listNames.ProjectScope.type);
+    //             }, 3000);
+    //         }
+    //         else {
+    //             loaderView.nativeElement.classList.remove('show');
+    //             spannerView.nativeElement.classList.remove('show');
+    //         }
+
+    //     } else {
+    //         loaderView.nativeElement.classList.remove('show');
+    //         spannerView.nativeElement.classList.remove('show');
+
+    //         window.open(task.ProjectFolder + '/Miscellaneous/' + task.ProjectCode + '_scope.docx?web=1', '_blank');
+    //     }
+    // }
+    // else {
+    //     loaderView.nativeElement.classList.remove('show');
+    //     spannerView.nativeElement.classList.remove('show');
+
+    //     window.open(task.ProjectFolder + '/Miscellaneous/' + task.ProjectCode + '_scope.docx?web=1', '_blank');
+    // }
+
 
 }

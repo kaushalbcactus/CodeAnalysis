@@ -563,7 +563,7 @@ export class PmconstantService {
       filter: 'ProjectNumber eq \'{{projectCode}}\' and Status eq \'Active\''
     },
     GET_SCHEDULE_LIST_ITEM_BY_PROJECT_CODE: {
-      select: 'ID,Title,Milestone,Status,Task,ProjectCode,TimeSpent',
+      select: 'ID,Title,Milestone,Status,Task,ProjectCode,TimeSpent,DueDate,IsCentrallyAllocated',
       filter: 'ProjectCode eq \'{{projectCode}}\''
     },
     GET_EARLY_TASK_COMPLETED: {

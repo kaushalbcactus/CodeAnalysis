@@ -28,6 +28,7 @@ export class InvoiceLineitemsComponent implements OnInit {
     pocText: '',
     Id: 0,
   };
+  minDateValue = new Date();
   constructor(private dialogService: DialogService,
     private config: DynamicDialogConfig,
     private ref: DynamicDialogRef,

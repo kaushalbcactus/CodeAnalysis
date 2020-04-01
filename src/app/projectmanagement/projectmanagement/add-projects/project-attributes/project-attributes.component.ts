@@ -11,7 +11,6 @@ import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.ser
 import { Router } from '@angular/router';
 import { DataService } from 'src/app/Services/data.service';
 import { CommonService } from 'src/app/Services/common.service';
-import { MyDashboardConstantsService } from 'src/app/my-dashboard/services/my-dashboard-constants.service';
 import { DatePipe } from '@angular/common';
 import { FileUploadProgressDialogComponent } from 'src/app/shared/file-upload-progress-dialog/file-upload-progress-dialog.component';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -60,8 +59,7 @@ export class ProjectAttributesComponent implements OnInit {
     private router: Router,
     private dataService: DataService,
     private commonService: CommonService,
-    private myDashboardConstantsService: MyDashboardConstantsService,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
   ) { }
   async ngOnInit() {
     this.initForm();
@@ -476,15 +474,14 @@ export class ProjectAttributesComponent implements OnInit {
    * @param projObj Pass the projObj as parameter.
    */
   editProject(projObj) {
-    if (projObj.Status !== 'In Discussion') {
-      const actualStartDate = projObj.ActualStartDate ? new Date(projObj.ActualStartDate) : new Date();
-      const newDate = new Date(actualStartDate.getFullYear(), actualStartDate.getMonth() + 1, 1);
-      const date = this.myDashboardConstantsService.getBusinessDays(newDate, 3);
-      if (new Date(this.datePipe.transform(new Date(), 'yyyy-MM-dd')).getTime() >
-        new Date(this.datePipe.transform(date, 'yyyy-MM-dd')).getTime()) {
-        this.addProjectAttributesForm.get('practiceArea').disable();
-      } else {
+    if (projObj.ActualStartDate) {
+      const actualStartDate = new Date(projObj.ActualStartDate);
+      const allowedDate = this.commonService.CalculateminstartDateValue(new Date(), 3);
+      if (actualStartDate.getFullYear() >= allowedDate.getFullYear() &&
+        actualStartDate.getMonth() >= allowedDate.getMonth()) {
         this.addProjectAttributesForm.get('practiceArea').enable();
+      } else {
+        this.addProjectAttributesForm.get('practiceArea').disable();
       }
     }
     this.pmObject.addProject.ProjectAttributes.ClientLegalEntity = projObj.ClientLegalEntity;
@@ -500,7 +497,7 @@ export class ProjectAttributesComponent implements OnInit {
     this.pmObject.addProject.ProjectAttributes.Molecule = projObj.Molecule;
     this.pmObject.addProject.ProjectAttributes.TherapeuticArea = projObj.TA;
     this.pmObject.addProject.ProjectAttributes.Indication = projObj.Indication;
-    this.pmObject.addProject.ProjectAttributes.PUBSupportRequired = projObj.IsPubSupport === "Yes" ? true : false;
+    this.pmObject.addProject.ProjectAttributes.PUBSupportRequired = projObj.IsPubSupport === 'Yes' ? true : false;
     this.pmObject.addProject.ProjectAttributes.PUBSupportStatus = projObj.PubSupportStatus;
     const poc2Array = [];
     if (this.pmObject.addProject.ProjectAttributes.BilledBy === this.pmConstant.PROJECT_TYPE.DELIVERABLE.value ||

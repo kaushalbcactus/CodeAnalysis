@@ -1,4 +1,6 @@
 <!-- Modal Dialog for Rating Feedback-->
+<p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom" [hideTransitionOptions]="'0ms'"
+position="bottom-center"></p-toast>
 <p-dialog
   popupContent
   [(visible)]="display"
@@ -127,7 +129,7 @@
   <div class="footer">
     <div>
       <button
-       *ngIf="scorecardTasks.tasks.length === 1"
+       *ngIf="scorecardTasks?.currentTask?.Milestone !== 'Draft 1' && scorecardTasks.tasks.length === 1"
         type="button"
         class="btn btn-light button cancel-rating"
         (click)="cancel()"

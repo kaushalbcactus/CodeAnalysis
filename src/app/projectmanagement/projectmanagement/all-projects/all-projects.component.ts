@@ -1788,7 +1788,7 @@ export class AllProjectsComponent implements OnInit {
     this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetSchedulesByProjCode');
     const tasks = await this.spServices.readItems(this.constants.listNames.Schedules.name, scheduleFilter);
 
-    const filterTasks = tasks.filter(e => e.Task !== 'Select one')
+    const filterTasks = tasks.filter(e => e.Task !== 'Select one' && e.Milestone == this.selectedProjectObj.Milestone)
 
     const scNotStartedUpdateData = {
       __metadata: {
@@ -1848,34 +1848,39 @@ export class AllProjectsComponent implements OnInit {
     batchURL.push(piUpdate);
 
     filterTasks.forEach(element => {
-      if (element.Task == "Client Review") {
-        const scheduleStatusUpdate = Object.assign({}, options);
-        scheduleStatusUpdate.data = scCRUpdateData;
-        scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
-        scheduleStatusUpdate.type = 'PATCH';
-        scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
-          element.ID);
-        batchURL.push(scheduleStatusUpdate);
-      } else {
-        if (element.Status == this.constants.STATUS.NOT_STARTED) {
+      if(element.IsCentrallyAllocated == 'No') {
+        if (element.Task == "Client Review") {
           const scheduleStatusUpdate = Object.assign({}, options);
-          scheduleStatusUpdate.data = scNotStartedUpdateData;
+          scheduleStatusUpdate.data = scCRUpdateData;
           scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
           scheduleStatusUpdate.type = 'PATCH';
           scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
             element.ID);
           batchURL.push(scheduleStatusUpdate);
-        } else if (element.Status == this.constants.STATUS.IN_PROGRESS) {
-          const scheduleStatusUpdate = Object.assign({}, options);
-          scInProgressUpdateData.ExpectedTime = element.TimeSpent;
-          scheduleStatusUpdate.data = scInProgressUpdateData;
-          scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
-          scheduleStatusUpdate.type = 'PATCH';
-          scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
-            element.ID);
-          batchURL.push(scheduleStatusUpdate);
+        } else {
+          if (element.Status == this.constants.STATUS.NOT_STARTED) {
+            const scheduleStatusUpdate = Object.assign({}, options);
+            scheduleStatusUpdate.data = scNotStartedUpdateData;
+            scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
+            scheduleStatusUpdate.type = 'PATCH';
+            scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
+              element.ID);
+            batchURL.push(scheduleStatusUpdate);
+          } else if (element.Status == this.constants.STATUS.IN_PROGRESS) {
+            const scheduleStatusUpdate = Object.assign({}, options);
+            const scInProgressUpdateDataNew = Object.assign({}, scInProgressUpdateData);
+            scInProgressUpdateDataNew.ExpectedTime = element.TimeSpent;
+            scInProgressUpdateDataNew.DueDate = new Date(element.DueDate) < new Date() ? new Date(element.DueDate) : new Date(); 
+            scheduleStatusUpdate.data = scInProgressUpdateDataNew;
+            scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
+            scheduleStatusUpdate.type = 'PATCH';
+            scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
+              element.ID);
+            batchURL.push(scheduleStatusUpdate);
+          }
         }
       }
+      
     });
 
     // console.log(batchURL)

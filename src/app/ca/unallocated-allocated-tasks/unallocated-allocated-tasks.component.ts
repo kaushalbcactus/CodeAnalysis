@@ -12,9 +12,8 @@ import { ActivatedRoute } from '@angular/router';
 import { CommonService } from 'src/app/Services/common.service';
 import { DialogService, MessageService, MenuItem, SelectItem } from 'primeng';
 import { CaDragdropComponent } from '../ca-dragdrop/ca-dragdrop.component';
-import { async } from '@angular/core/testing';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
-import { exists } from 'fs';
+
 
 @Component({
   selector: 'app-unallocated-allocated-tasks',
@@ -219,7 +218,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
     if (this.schedulesItems && this.schedulesItems.length) {
       for (const task of this.schedulesItems) {
-        this.caCommonService.getCaProperties(taskCounter, schedulesItemFetch, task, this.projects,
+         this.caCommonService.getCaProperties(taskCounter, schedulesItemFetch, task, this.projects,
           this.resourceList, this.completeTaskArray, acTempArrays);
       }
 
@@ -1347,9 +1346,11 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         }
 
         // check for task already exists new (Maxwell)
-        const dbProjectTasks = dbAllProjectTasks.filter(c => c.ProjectCode === slot.ProjectCode).map(c => $.trim(c.Title.replace(c.ProjectCode + '', '').replace(c.Milestone + '', '')));
+
+        debugger;
+        const dbProjectTasks = dbAllProjectTasks.filter(c => c.ProjectCode === slot.ProjectCode && c.Milestone === slot.Milestone).map(c => $.trim(c.Title.replace(c.ProjectCode + '', '').replace(c.Milestone + '', '')));
         if (slot.SlotTasks.filter(c => c.Id === undefined)) {
-          const ExisitingTasks = slot.SlotTasks.filter(c => c.Id === undefined).map(c => c.TaskName).filter(c => dbProjectTasks.includes(c))
+          const ExisitingTasks = slot.SlotTasks.filter(c => c.Status === 'Not Saved').map(c => c.TaskName).filter(c => dbProjectTasks.includes(c))
 
           if (ExisitingTasks.length > 0) {
             this.messageService.add({

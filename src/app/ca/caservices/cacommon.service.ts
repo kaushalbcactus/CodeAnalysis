@@ -585,7 +585,7 @@ export class CACommonService {
   async getScheduleItems(localSchedulItemFetch, items) {
     const arrMilestoneTasks = await this.getMilestoneSchedules(this.globalConstantService.listNames.Schedules.name, localSchedulItemFetch);
     for (const task of items) {
-      this.getMiscDates(task, arrMilestoneTasks);
+      await this.getMiscDates(task, arrMilestoneTasks);
     }
   }
 
@@ -700,7 +700,7 @@ export class CACommonService {
    * @param task 
    * @param arrMilestoneTasks 
    */
-  getMiscDates(task, arrMilestoneTasks) {
+  async getMiscDates(task, arrMilestoneTasks) {
 
     task.ProjectTask = arrMilestoneTasks;
     task.MilestoneAllTasks = [];
@@ -710,25 +710,25 @@ export class CACommonService {
       task.MilestoneTasks = milTasks;
       task.mileStoneTask = milTasks;
       const nextTasks = [];
-      milTasks.forEach(milTask => {
+
+      for(let i=0; i< milTasks.length ; i++)
+      {
         let taskArr = [];
-
-        taskArr = milTask.PrevTasks ? milTask.PrevTasks.split(";#") : [];
+        taskArr = milTasks[i].PrevTasks ? milTasks[i].PrevTasks.split(";#") : [];
         if (taskArr.indexOf(task.Title) > -1) {
-          nextTasks.push(milTask);
+          nextTasks.push(milTasks[i]);
         }
-        const TaskType = milTask.Task;
-        const TaskName = $.trim(milTask.Title.replace(milTask.ProjectCode + '', '').replace(milTask.Milestone + '', ''));
+        const TaskType = milTasks[i].Task;
+        const TaskName = $.trim(milTasks[i].Title.replace(milTasks[i].ProjectCode + '', '').replace(milTasks[i].Milestone + '', ''));
 
-          if (task.MilestoneAllTasks.length > 0 && task.MilestoneAllTasks.find(c => c.type === TaskType && c.milestone === milTask.Milestone)) {
+          if (task.MilestoneAllTasks.length > 0 && task.MilestoneAllTasks.find(c => c.type === TaskType && c.milestone === milTasks[i].Milestone)) {
             task.MilestoneAllTasks.find(c => c.type === TaskType).tasks.push(TaskName);
           }
           else {
-            task.MilestoneAllTasks.push({ type: TaskType, milestone: milTask.Milestone, tasks: [TaskName] });
+            task.MilestoneAllTasks.push({ type: TaskType, milestone: milTasks[i].Milestone, tasks: [TaskName] });
           }
-        
-
-      });
+      }
+     
       if (nextTasks.length) {
         nextTasks.sort(function (a, b) {
           return a.StartDate - b.StartDate;

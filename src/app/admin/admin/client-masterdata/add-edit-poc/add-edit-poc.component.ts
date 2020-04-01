@@ -19,7 +19,6 @@ export class AddEditPocComponent implements OnInit {
   showeditPOC: boolean = false;
   buttonLabel: string;
   isPOCFormSubmit: boolean;
-  showaddPOC: boolean;
   modalloaderenable = true;
   currPOCObj: any;
   currClientObj: any;
@@ -84,7 +83,6 @@ export class AddEditPocComponent implements OnInit {
     await this.loadPOCDropdown();
     this.showeditPOC = false;
     this.buttonLabel = 'Submit';
-    this.showaddPOC = true;
     this.isPOCFormSubmit = false;
     this.modalloaderenable = false;
   }
@@ -223,7 +221,6 @@ export class AddEditPocComponent implements OnInit {
    */
   async savePOC() {
     if (this.pocForm.valid) {
-      console.log(this.pocForm.value);
       if (!this.showeditPOC) {
         if (this.POCRows.some(a =>
           a.EmailAddress.toLowerCase() === this.pocForm.value.email.toLowerCase())) {
@@ -234,127 +231,17 @@ export class AddEditPocComponent implements OnInit {
           return false;
         }
       }
-      // write the save logic using rest api.
-      const pocData = await this.getPOCData();
-      if (!this.showeditPOC) {
-        this.common.SetNewrelic('admin', 'admin-clientMaster', 'CreateProjectContacts');
-        const results = await this.spServices.createItem(this.constantsService.listNames.ProjectContacts.name,
-          pocData, this.constantsService.listNames.ProjectContacts.type);
-        if (!results.hasOwnProperty('hasError') && !results.hasError) {
-          this.messageService.add({
-            key: 'adminCustom', severity: 'success', summary: 'Success Message',
-            detail: 'The Poc ' + this.pocForm.value.fname + ' ' + this.pocForm.value.lname + ' is created successfully.'
-          });
-          await this.loadRecentPOCRecords(results.ID, this.showeditPOC);
-        }
-      }
-      if (this.showeditPOC) {
-        this.common.SetNewrelic('admin', 'admin-clientMaster', 'updateProjectContacts');
-        const results = await this.spServices.updateItem(this.constantsService.listNames.ProjectContacts.name, this.currPOCObj.ID,
-          pocData, this.constantsService.listNames.ProjectContacts.type);
-        this.messageService.add({
-          key: 'adminCustom', severity: 'success',
-          summary: 'Success Message', detail: 'The Poc ' + this.pocForm.value.fname + ' ' + this.pocForm.value.lname +
-            ' is updated successfully.'
-        });
-        await this.loadRecentPOCRecords(this.currPOCObj.ID, this.showeditPOC);
-      }
-      this.showaddPOC = false;
+    
+      this.ref.close(this.pocForm)
+  
     } else {
       this.isPOCFormSubmit = true;
     }
   }
 
-  /**
-   * Construct a method to create an object of `ProjectContacts`.
-   *
-   * @description
-   *
-   * This method is used to create an object of `ProjectContacts`.
-   *
-   * @return It will return an object of `ProjectContacts`.
-   */
-  getPOCData() {
-    const data: any = {
-      FName: this.pocForm.value.fname,
-      LName: this.pocForm.value.lname,
-      Designation: this.pocForm.value.designation,
-      EmailAddress: this.pocForm.value.email,
-      ReferralSource: this.pocForm.value.referralSource,
-      Status: this.adminConstants.LOGICAL_FIELD.ACTIVE,
-      ProjectContactsType: this.pocForm.value.contactsType,
-      ClientLegalEntity: this.currClientObj.ClientLegalEntity,
-      Title: this.currClientObj.ClientLegalEntity,
-      FullName: this.pocForm.value.fname + ' ' + this.pocForm.value.lname
-    };
-    data.Phone = this.pocForm.value.phone ? this.pocForm.value.phone : '';
-    const ap1 = this.pocForm.value.address1 ? this.pocForm.value.address1 : '';
-    const ap2 = this.pocForm.value.address2 ? this.pocForm.value.address2 : '';
-    const ap3 = this.pocForm.value.address3 ? this.pocForm.value.address3 : '';
-    const ap4 = this.pocForm.value.address4 ? this.pocForm.value.address4 : '';
-    data.Address = ap1 + ';#' + ap2 + ';#' + ap3 + ';#' + ap4;
-    data.Department = this.pocForm.value.department ? this.pocForm.value.department : '';
-    data.RelationshipStrength = this.pocForm.value.relationshipStrength ? this.pocForm.value.relationshipStrength : '';
-    data.EngagementPlan = this.pocForm.value.engagementPlan ? this.pocForm.value.engagementPlan : '';
-    data.Comments = this.pocForm.value.comments ? this.pocForm.value.comments : '';
-    return data;
-  }
+  
 
-  /**
-   * Construct a method to load the newly created item into the table without refreshing the whole page.
-   * @param item ID the item which is created or updated recently.
-   *
-   * @param isUpdate Pass the isUpdate as true/false for update and create item respectively.
-   *
-   * @description
-   *
-   * This method will load newly created item or updated item as first row in the table;
-   *  Pass `false` to add the new created item at position 0 in the array.
-   *  Pass `true` to replace the item in the array
-   */
-  async loadRecentPOCRecords(ID, isUpdate) {
-    const pocGet = Object.assign({}, this.adminConstants.QUERY.GET_POC_BY_ID);
-    pocGet.filter = pocGet.filter
-      .replace(/{{active}}/gi, this.adminConstants.LOGICAL_FIELD.ACTIVE)
-      .replace(/{{clientLegalEntity}}/gi, this.currClientObj.ClientLegalEntity)
-      .replace(/{{Id}}/gi, ID);
-    this.common.SetNewrelic('admin', 'admin-clientMaster', 'getProjectContacts');
-    const result = await this.spServices.readItems(this.constantsService.listNames.ProjectContacts.name, pocGet);
-    if (result && result.length) {
-      const item = result[0];
-      const obj = Object.assign({}, this.adminObject.pocObj);
-      obj.ID = item.ID;
-      obj.Title = item.Title ? item.Title : '';
-      obj.ClientLegalEntity = item.ClientLegalEntity;
-      obj.FName = item.FName;
-      obj.LName = item.LName;
-      obj.EmailAddress = item.EmailAddress;
-      obj.Designation = item.Designation;
-      obj.Phone = item.Phone ? item.Phone : '';
-      obj.Address = item.Address ? item.Address : '';
-      obj.FullName = item.FullName ? item.FullName : '';
-      obj.Department = item.Department ? item.Department : '';
-      obj.ReferralSource = item.ReferralSource;
-      obj.Status = item.Status;
-      obj.RelationshipStrength = item.RelationshipStrength ? item.RelationshipStrength : '';
-      obj.EngagementPlan = item.EngagementPlan ? item.EngagementPlan : '';
-      obj.Comments = item.Comments ? item.Comments : '';
-      obj.ProjectContactsType = item.ProjectContactsType;
-      obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
-      obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd ,yyyy');
-      obj.LastUpdatedBy = item.Editor.Title;
-      // If Create - add the new created item at position 0 in the array.
-      // If Edit - Replace the item in the array and position at 0 in the array.
-      if (isUpdate) {
-        const index = this.POCRows.findIndex(x => x.ID === obj.ID);
-        this.POCRows.splice(index, 1);
-        this.POCRows.unshift(obj);
-      } else {
-        this.POCRows.unshift(obj);
-      }
-      this.POCFilters(this.POCRows);
-    }
-  }
+  
 
   /**
    * Construct a method to map the array values into particular column dropdown.

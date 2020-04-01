@@ -1225,7 +1225,7 @@ export class PMCommonService {
       listName + '/' + projectCode + '/Communications',
       listName + '/' + projectCode + '/Drafts',
       listName + '/' + projectCode + '/Emails',
-      listName + '/' + projectCode + '/Graphics',
+  //    listName + '/' + projectCode + '/Graphics',
       listName + '/' + projectCode + '/Miscellaneous',
       listName + '/' + projectCode + '/Publication Support',
       listName + '/' + projectCode + '/References',
