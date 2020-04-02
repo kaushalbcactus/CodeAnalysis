@@ -1365,12 +1365,13 @@ export class TimelineComponent implements OnInit, OnDestroy {
       this.taskMenu = [
         { label: 'Edit', icon: 'pi pi-pencil', command: (event) => this.editTask(data, rowNode) },
       ];
-      this.taskMenu.push({ label: 'View Allocation', icon: 'pi pi-pencil', command: (event) => this.viewAllocation(data) });
+
       if (data.itemType !== 'Client Review' && data.itemType !== 'Send to client') {
         this.taskMenu.push({ label: 'Scope', icon: 'pi pi-comment', command: (event) => this.openComment(data, rowNode) });
 
         if (data.AssignedTo.ID !== undefined && data.AssignedTo.ID > -1 && data.user !== 'QC' && data.user !== 'Edit') {
-          this.taskMenu.push({ label: 'User Capacity', icon: 'pi pi-camera', command: (event) => this.getUserCapacity(data) });
+          this.taskMenu.push({ label: 'User Capacity', icon: 'pi pi-camera', command: (event) => this.getUserCapacity(data) },
+          { label: 'View Allocation', icon: 'pi pi-pencil', command: (event) => this.viewAllocation(data) });
         }
       }
     }
@@ -2923,7 +2924,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
         IsCentrallyAllocated: milestoneTask.slotType === 'Both' && milestoneTask.AssignedTo.ID ? 'No' : milestoneTask.IsCentrallyAllocated,
         CentralAllocationDone: milestoneTask.CentralAllocationDone,
         ActiveCA: milestoneTask.ActiveCA,
-        DisableCascade: milestoneTask.DisableCascade === true ? 'Yes' : 'No'
+        DisableCascade: milestoneTask.DisableCascade === true ? 'Yes' : 'No',
+        AllocationPerDay: milestoneTask.allocationPerDay ? milestoneTask.allocationPerDay : ''
       };
       url = this.spServices.getReadURL(this.constants.listNames.Schedules.name);
       data = addData;
@@ -2949,6 +2951,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         DisableCascade: milestoneTask.DisableCascade === true ? 'Yes' : 'No',
         PreviousAssignedUserId: milestoneTask.previousAssignedUser ? milestoneTask.previousAssignedUser : -1,
         SubMilestones: milestoneTask.submilestone,
+        AllocationPerDay: milestoneTask.allocationPerDay ? milestoneTask.allocationPerDay : ''
       };
       url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +milestoneTask.id);
       data = updateData;
@@ -2977,17 +2980,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   setMilestoneForAddUpdate(sentMilestone, bAdd) {
     let currentMilestone = sentMilestone.data;
-    // let newCurrentMilestoneName = null;
-    // if (currentMilestone.isCurrent && currentMilestone.status === 'Deleted') {
-    //   const currentMilestoneName = currentMilestone.title.indexOf(' (') ? currentMilestone.title.split(' (')[0] : currentMilestone.title;
-    //   const newCurrentMilestoneIndex = this.oProjectDetails.allOldMilestones.findIndex(t => t === currentMilestoneName);
-    //   newCurrentMilestoneName = newCurrentMilestoneIndex > 0 ? this.oProjectDetails.allOldMilestones[newCurrentMilestoneIndex - 1] : '';
-    //   const newCurrentMilestone = this.milestoneData.find((obj) => {
-    //     return obj.data.title === newCurrentMilestoneName;
-    //   });
-    //   newCurrentMilestone.data.isCurrent = true;
-    //   newCurrentMilestone.data.title = newCurrentMilestone.data.title + ' (Current)';
-    // }
     let url = '';
     let data = {};
     currentMilestone.submilestone = this.getSubMilestoneStatus(sentMilestone, '').join(';#');
@@ -4004,7 +3996,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
       'ActiveCA': task.ActiveCA,
       'assignedUserTimeZone': '5.5',
       'DisableCascade': task.DisableCascade && task.DisableCascade === 'Yes' ? true : false,
-      'taskFullName': this.oProjectDetails.projectCode + ' ' + milestone.label + ' ' + task.label
+      'taskFullName': this.oProjectDetails.projectCode + ' ' + milestone.label + ' ' + task.label,
+      'allocationPerDay': task.allocationPerDay ? task.allocationPerDay : ''
     };
   }
 
@@ -4097,7 +4090,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         startDate: milestoneTask.start_date,
         endDate: milestoneTask.end_date,
         budgetHrs: milestoneTask.budgetHours,
-        resourceId: milestoneTask.resources
+        resourceId: milestoneTask.resources,
       } as IDailyAllocationTask,
       width: '90vw',
 
@@ -4105,7 +4098,13 @@ export class TimelineComponent implements OnInit, OnDestroy {
         + ' ( ' + milestoneTask.submilestone + ' )' : milestoneTask.milestone + ' ' + milestoneTask.title,
       contentStyle: { 'max-height': '90vh', 'overflow-y': 'auto' }
     });
-    ref.onClose.subscribe((UserCapacity: any) => {
+    ref.onClose.subscribe((strAllocationPerDay: string) => {
+      const milestoneData: MilestoneTreeNode = this.milestoneData.find(m => m.data.taskFullName === milestoneTask.milestone);
+      const milestoneTasks: any[] = this.getTasksFromMilestones(milestoneData, false, true);
+      const task = milestoneTasks.find(t => t.id === milestoneTask.id);
+      task.allocationPerDay = strAllocationPerDay;
+      milestoneData.data.edited = true;
+      task.edited = true;
     });
   }
 }

@@ -1,3 +1,19 @@
 .budgetHr:focus {
   box-shadow: none;
 }
+/* .pBtnSave {
+  background-color: #db1721!important;
+  border: 1px solid #db1721!important;
+}
+
+.pBtnSave:enabled:hover {
+  background-color: #b3171f!important;
+  border: 1px solid #b3171f!important;
+} */
+.footer {
+  text-align: right;
+  margin-top: 10px;
+}
+body .ui-slider .ui-slider-range{
+  background-color: #b3171f!important;
+}
