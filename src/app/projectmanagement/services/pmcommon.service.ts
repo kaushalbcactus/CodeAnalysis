@@ -1390,7 +1390,7 @@ export class PMCommonService {
           // create the milestone folder.
           const milestoneFolderBody = {
             __metadata: { type: 'SP.Folder' },
-            ServerRelativeUrl: response[11].listName + '/' + milestoneObj.data.Name
+            ServerRelativeUrl: response[10].listName + '/' + milestoneObj.data.Name
           };
           const createForderObj = Object.assign({}, options);
           createForderObj.data = milestoneFolderBody;
@@ -1582,7 +1582,7 @@ export class PMCommonService {
       // create the milestone folder.
       const milestoneFolderBody = {
         __metadata: { type: 'SP.Folder' },
-        ServerRelativeUrl: response[11].listName + '/' + element.monthName
+        ServerRelativeUrl: response[10].listName + '/' + element.monthName
       };
       const createForderObj = Object.assign({}, options);
       createForderObj.data = milestoneFolderBody;
