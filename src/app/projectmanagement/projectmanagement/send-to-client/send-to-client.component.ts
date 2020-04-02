@@ -454,7 +454,7 @@ export class SendToClientComponent implements OnInit {
         const arrRes = arrResults[counter];
 
         // tslint:disable-next-line:only-arrow-functions
-        const prevTask = arrRes.filter((previousTaskElement) => {
+        let prevTask = arrRes.filter((previousTaskElement) => {
           return previousTaskElement.Title === taskItem.PreviousTask;
         });
         // tslint:disable-next-line:only-arrow-functions
@@ -463,14 +463,15 @@ export class SendToClientComponent implements OnInit {
         });
         counter++;
         if (prevTask.length) {
-          // if (prevTask[0].IsCentrallyAllocated === 'Yes') {
-          //   const preTaskObj = Object.assign({}, this.pmConstant.subtaskOptions);
-          //   preTaskObj.filter = preTaskObj.filter.replace('{0}', prevTask[0].ID);
-          //   const previousTask = await this.spServices.readItems(this.Constant.listNames.Schedules.name, preTaskObj);
-          //   prevTask = previousTask.length ? previousTask : prevTask;
-          // }
+          if (prevTask[0].IsCentrallyAllocated === 'Yes') {
+            const preTaskObj = Object.assign({}, this.pmConstant.subtaskOptions);
+            preTaskObj.filter = preTaskObj.filter.replace('{0}', prevTask[0].ID);
+            const previousTask = await this.spServices.readItems(this.Constant.listNames.Schedules.name, preTaskObj);
+            prevTask = previousTask.length ? previousTask : prevTask;
+          }
           this.scArrays.previousTaskArray.push(prevTask[0]);
           taskItem.PreviousTaskStatus = prevTask[0].Status;
+          taskItem.PreviousTask = prevTask[0].Title;
           taskItem.PreviousTaskUser = prevTask[0].AssignedTo ? prevTask[0].AssignedTo.Title : '';
           previousTaskOwnerTempArray.push({ label: taskItem.PreviousTaskUser, value: taskItem.PreviousTaskUser });
           previousTaskStatusTempArray.push({ label: taskItem.PreviousTaskStatus, value: taskItem.PreviousTaskStatus });
