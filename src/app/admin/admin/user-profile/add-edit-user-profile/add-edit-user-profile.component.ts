@@ -241,6 +241,7 @@ export class AddEditUserProfileComponent implements OnInit {
         this.addUser.get('managerEffectiveDate').disable();
       } else {
         managerEffectiveDateControl.clearValidators();
+        managerEffectiveDateControl.updateValueAndValidity();
         this.date.isManagerEffectiveDateActive = false;
       }
     }
@@ -261,6 +262,7 @@ export class AddEditUserProfileComponent implements OnInit {
       this.addUser.get('bucketEffectiveDate').disable();
     } else {
       bucketDateControl.clearValidators();
+      bucketDateControl.updateValueAndValidity();
       this.date.isBucketDateActive = false;
     }
   }
@@ -290,6 +292,7 @@ export class AddEditUserProfileComponent implements OnInit {
       this.addUser.get('practiceAreaEffectiveDate').disable();
     } else {
       practiceAreaEffectiveDateControl.clearValidators();
+      practiceAreaEffectiveDateControl.updateValueAndValidity();
       this.date.isPracticeEffectiveDateActive = false;
     }
   }
@@ -317,6 +320,7 @@ export class AddEditUserProfileComponent implements OnInit {
       this.addUser.get('timeZoneEffectiveDate').disable();
     } else {
       timeZoneEffectiveDateControl.clearValidators();
+      timeZoneEffectiveDateControl.updateValueAndValidity();
       this.date.isTimeZoneEffectiveDateActive = false;
     }
   }
@@ -363,8 +367,10 @@ export class AddEditUserProfileComponent implements OnInit {
       const userObj = this.currUserObj;
       this.addUser.get('fTEEffectiveDate').setValue(null);
       isFTEEffectiveDateControl.clearValidators();
+      isFTEEffectiveDateControl.updateValueAndValidity();
       this.date.isFTEEffectiveDateActive = false;
       accountControl.clearValidators();
+      accountControl.updateValueAndValidity();
       this.addUser.get('account').setValue(null);
     }  else if (!this.showeditUser && this.addUser.value.isFTE === 'Yes') {
       isFTEEffectiveDateControl.setValidators([Validators.required]);
@@ -379,9 +385,11 @@ export class AddEditUserProfileComponent implements OnInit {
     else {
       this.addUser.get('fTEEffectiveDate').setValue(null);
       isFTEEffectiveDateControl.clearValidators();
+      isFTEEffectiveDateControl.updateValueAndValidity();
       this.date.isFTEEffectiveDateActive = false;
       this.addUser.get('account').setValue(null);
       accountControl.clearValidators();
+      accountControl.updateValueAndValidity();
     }
 
   }
@@ -402,6 +410,7 @@ export class AddEditUserProfileComponent implements OnInit {
     } else {
       maxHrsDateControl.clearValidators();
       this.date.isMaxHrsDateActive = false;
+      maxHrsDateControl.updateValueAndValidity();
     }
   }
 
@@ -642,6 +651,7 @@ export class AddEditUserProfileComponent implements OnInit {
     } else {
       primarySkillEffectiveDateControl.clearValidators();
       this.date.isPrimarySkillEffectiveDateActive = false;
+      primarySkillEffectiveDateControl.updateValueAndValidity();
     }
   }
   /**
@@ -667,6 +677,7 @@ export class AddEditUserProfileComponent implements OnInit {
       this.addUser.get('skillLevelEffectiveDate').disable();
     } else {
       skillLevelEffectiveDateControl.clearValidators();
+      skillLevelEffectiveDateControl.updateValueAndValidity();
       this.date.isSkillLevelEffectiveDateActive = false;
     }
   }
@@ -686,6 +697,7 @@ export class AddEditUserProfileComponent implements OnInit {
         dateofexitControl.updateValueAndValidity();
       } else {
         dateofexitControl.clearValidators();
+        dateofexitControl.updateValueAndValidity();
       }
     }
   }
@@ -1115,7 +1127,6 @@ export class AddEditUserProfileComponent implements OnInit {
   }
 
   SaveUserDetails(UserDetails) {
-
     if (UserDetails.valid) {
       // console.log(addUserForm.value);
       /**
