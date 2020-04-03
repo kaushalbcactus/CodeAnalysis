@@ -701,3 +701,12 @@ body .ui-dropdown-panel .ui-dropdown-filter-container .ui-dropdown-filter-icon {
   .mr-20 {
       margin-right: 20px;
   }
+
+  .mt-20 {
+      margin-top: 20px;
+  }
+
+  .saveTaskButton {
+      background-color: #db1721 !important;
+      border: 1px solid #db1721 !important;
+  }

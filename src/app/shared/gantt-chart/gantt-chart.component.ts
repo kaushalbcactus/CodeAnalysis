@@ -1,11 +1,10 @@
-import { Component, OnInit, ViewChild, ElementRef, OnChanges, Input } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, OnChanges, Input, NgZone } from '@angular/core';
 import { gantt, Gantt } from '../../dhtmlx-gantt/codebase/source/dhtmlxgantt';
 // import { gantt, Gantt } from '../../dhtmlx-gantt/codebase/dhtmlxganttmin';
 import '../../dhtmlx-gantt/codebase/ext/dhtmlxgantt_tooltip';
 import '../../dhtmlx-gantt/codebase/ext/dhtmlxgantt_marker';
 
 import '../../dhtmlx-gantt/codebase/ext/api';
-// import "http://export.dhtmlx.com/gantt/api.js";
 
 @Component({
   selector: 'app-gantt-chart',
@@ -222,9 +221,9 @@ export class GanttChartComponent implements OnInit {
             if (!task.user) return "";
             return task.user
           }
-        },
-        { name: "start_date", width: 150 },
-        { name: "end_date", width: 150 },
+        }
+        // { name: "start_date", width: 150 },
+        // { name: "end_date", width: 150 },
       ]
     };
 
@@ -320,6 +319,10 @@ export class GanttChartComponent implements OnInit {
       initItem: function (item) {
         item.id = item.key || gantt.uid();
         return item;
+        // item.parent = item.parent || gantt.config.root_id;
+        // item[gantt.config.resource_property] = item.parent;
+        // item.open = true;
+        // return item;
       }
     });
 
@@ -459,31 +462,33 @@ export class GanttChartComponent implements OnInit {
     };
 
 
-    gantt.attachEvent("onTaskDrag", function(id, mode, task, original){
-      var modes = gantt.config.drag_mode;
-      if(mode == modes.move){
-        var diff = task.start_date - original.start_date;
-        gantt.eachSuccessor(function(child){
-          console.log(child)
-          child.start_date = new Date(+child.start_date + diff);
-          child.end_date = new Date(+child.end_date + diff);
-          gantt.refreshTask(child.id, true);
-        },id );
-      }
-      return true;
-    });
+    // if(gantt.ext.zoom.getCurrentLevel() < 3) {
+    // gantt.attachEvent("onTaskDrag", function(id, mode, task, original){
+      
+    //   var modes = gantt.config.drag_mode;
+    //   if(mode == modes.move){
+    //     var diff = task.start_date - original.start_date;
+    //     gantt.eachSuccessor(function(child){
+    //       child.start_date = new Date(+child.start_date + diff);
+    //       child.end_date = new Date(+child.end_date + diff);
+    //       gantt.refreshTask(child.id, true);
+    //     },id );
+    //   }
+    //   return true;
+    // });
+    // }
 
-    gantt.attachEvent("onAfterTaskDrag", function(id, mode, e){
-      var modes = gantt.config.drag_mode;
-      if(mode == modes.move ){
-        gantt.eachSuccessor(function(child){
-          // console.log(child)
-          child.start_date = gantt.roundDate(child.start_date);
-          child.end_date = gantt.calculateEndDate(child.start_date, child.duration);
-          gantt.updateTask(child.id);
-        },id );
-      }
-    });
+    // gantt.attachEvent("onAfterTaskDrag", function(id, mode, e){
+    //   var modes = gantt.config.drag_mode;
+    //   if(mode == modes.move ){
+    //     gantt.eachSuccessor(function(child){
+    //       // console.log(child)
+    //       child.start_date = gantt.roundDate(child.start_date);
+    //       child.end_date = gantt.calculateEndDate(child.start_date, child.duration);
+    //       gantt.updateTask(child.id);
+    //     },id );
+    //   }
+    // });
 
     resourcesStore.parse(resource);
 
@@ -491,7 +496,8 @@ export class GanttChartComponent implements OnInit {
 
     // gantt.config.order_branch = true;
     // gantt.config.order_branch_free = true;
-    gantt.config.drag_project = true; 
+
+    // gantt.config.drag_project = true; 
     gantt.config.fit_tasks = true;
 
     this.ganttParseObject = data;
@@ -562,7 +568,6 @@ export class GanttChartComponent implements OnInit {
       }, 1000);
     }
   }
-
-
-
+  
+  
 }

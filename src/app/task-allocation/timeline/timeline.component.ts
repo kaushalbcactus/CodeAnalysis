@@ -1,4 +1,7 @@
-import { Component, OnInit, ViewChild, Output, EventEmitter, ViewEncapsulation, Input, OnDestroy, HostListener, ElementRef, ComponentFactoryResolver, ComponentRef, ComponentFactory, ViewContainerRef } from '@angular/core';
+import {
+  Component, OnInit, ViewChild, Output, EventEmitter, ViewEncapsulation, Input, OnDestroy, HostListener, ElementRef, ComponentFactoryResolver,
+  ComponentRef, ComponentFactory, ViewContainerRef, NgZone, AfterViewInit
+} from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -17,6 +20,8 @@ import { TaskAllocationCommonService } from '../services/task-allocation-common.
 import { GanttChartComponent } from '../../shared/gantt-chart/gantt-chart.component';
 import { SelectItem } from 'primeng/api';
 import { gantt, Gantt } from '../../dhtmlx-gantt/codebase/source/dhtmlxgantt';
+import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+declare let dhtmlXMenuObject: any;
 import { DailyAllocationComponent } from '../daily-allocation/daily-allocation.component';
 import { IDailyAllocationTask } from '../interface/allocation';
 
@@ -28,7 +33,7 @@ import { IDailyAllocationTask } from '../interface/allocation';
   providers: [MessageService, DialogService, DragDropComponent, UsercapacityComponent, DynamicDialogRef, DailyAllocationComponent],
   encapsulation: ViewEncapsulation.None
 })
-export class TimelineComponent implements OnInit, OnDestroy {
+export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit {
 
   scales: SelectItem[];
   selectedScale: any;
@@ -89,7 +94,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   public allTasks = [];
   batchContents = new Array();
   private editorOptions: GanttEditorOptions;
-  public GanttChartView = false;
+  public GanttChartView = true;
   public visualgraph = true;
   public webImageURL = '/sites/medcomcdn/PublishingImages';
   public oProjectDetails = {
@@ -163,6 +168,10 @@ export class TimelineComponent implements OnInit, OnDestroy {
   deallocationMailArray = [];
   deletedMilestones = [];
   deletedTasks = [];
+  ganttEditTask = false;
+  editTaskForm: FormGroup;
+  assignedUsers = [];
+
   constructor(
     private constants: ConstantsService,
     public sharedObject: GlobalService,
@@ -176,8 +185,21 @@ export class TimelineComponent implements OnInit, OnDestroy {
     private taskAllocateCommonService: TaskAllocationCommonService,
     private usercapacityComponent: UsercapacityComponent,
     private resolver: ComponentFactoryResolver,
+    private zone: NgZone, private fb: FormBuilder,
     private dailyAllocation: DailyAllocationComponent
   ) {
+
+    this.editTaskForm = this.fb.group({
+      budgetHrs: ['', Validators.required],
+      startDate: ['', Validators.required],
+      endDate: ['', Validators.required],
+      tat: ['', Validators.required],
+      disableCascade: ['', Validators.required],
+      resource: ['', Validators.required],
+      startDateTimePart: ['', Validators.required],
+      endDateTimePart: ['', Validators.required]
+    })
+    // window['angularComponentReference'] = { component: this, zone: this.zone, timelineComponentFn: (id) => this.openPopupOnGanttTask(id), }
 
   }
 
@@ -222,6 +244,11 @@ export class TimelineComponent implements OnInit, OnDestroy {
       vFormatArr: ['Day', 'Week', 'Month', 'Quarter'],
       vAdditionalHeaders: null,
     };
+    this.editTaskForm.get('tat').setValue(false);
+    this.editTaskForm.get('disableCascade').setValue(false);
+  }
+
+  ngAfterViewInit() {
   }
 
   ngOnDestroy() {
@@ -778,7 +805,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       this.tempmilestoneData = [];
       this.tempGanttchartData = JSON.parse(JSON.stringify(this.GanttchartData));
       this.tempmilestoneData = JSON.parse(JSON.stringify(this.milestoneData));
-
+      this.showGanttChart();
       this.loaderenable = false;
     }
     else {
@@ -786,7 +813,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     }
 
     this.GanttChartView = true;
-    this.visualgraph = false;
+    this.visualgraph = true;
     this.milestoneDataCopy = JSON.parse(JSON.stringify(this.milestoneData));
     this.oProjectDetails.hoursSpent = this.commonService.convertToHrs(projectHoursSpent.length > 0 ? this.commonService.addHrsMins(projectHoursSpent) : '0:0');
     this.oProjectDetails.hoursSpent = parseFloat(this.oProjectDetails.hoursSpent.toFixed(2));
@@ -797,6 +824,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     this.oProjectDetails.availableHours = +(+this.oProjectDetails.budgetHours - +this.oProjectDetails.spentHours).toFixed(2);
     this.disableSave = false;
     if (!bFirstLoad) {
+      this.showGanttChart();
       setTimeout(() => {
         this.changeInRestructure = false;
         this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Tasks Saved Successfully' });
@@ -888,193 +916,451 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
 
   showVisualRepresentation() {
-    if (this.visualgraph === true) {
-      this.visualgraph = false;
-      this.ganttChart.remove();
-    } else {
-      this.selectedScale = { label: 'Day Scale', value: '1' }
+    if (this.visualgraph === false) {
       this.visualgraph = true;
-      this.linkArray = [];
-      var task: any;
+      this.showGanttChart();
+    } else {
+      this.ganttChart.remove();
+      this.visualgraph = false;
+    }
+  }
 
-      var milestones = this.GanttchartData.filter(e => e.type == 'milestone')
-      const indexes = this.GanttchartData.reduce((r, e, i) => {
-        e.itemType == 'Client Review' && r.push(i);
-        return r;
-      }, []);
+  showGanttChart() {
+    this.selectedScale = { label: 'Day Scale', value: '1' }
+    this.linkArray = [];
+    var task: any;
 
-      var submilestones = this.GanttchartData.filter(item => item.type == 'submilestone')
+    var milestones = this.GanttchartData.filter(e => e.type == 'milestone')
+    const indexes = this.GanttchartData.reduce((r, e, i) => {
+      e.itemType == 'Client Review' && r.push(i);
+      return r;
+    }, []);
 
-      this.GanttchartData.forEach((item) => {
-        submilestones.forEach((subMile) => {
-          if (item.submilestone === subMile.title) {
-            item.parent = subMile.id;
-          }
-        })
+    var submilestones = this.GanttchartData.filter(item => item.type == 'submilestone')
+
+    this.GanttchartData.forEach((item) => {
+      submilestones.forEach((subMile) => {
+        if (item.submilestone === subMile.title) {
+          item.parent = subMile.id;
+        }
+      })
+    })
+
+
+    this.GanttchartData.forEach((item, index) => {
+
+      indexes.forEach((i) => {
+        var clientReview = this.GanttchartData[i]
+        var nextMilestone = this.GanttchartData[i + 1]
+        if (i !== this.GanttchartData.length - 1 && !(this.linkArray.find(e => e.source == clientReview.id && e.target == nextMilestone.id))) {
+          this.linkArray.push({
+            "name": clientReview.title,
+            "source": clientReview.id,
+            "target": nextMilestone.id,
+            "nextTask": clientReview.nextTask,
+            "type": 0,
+          })
+        }
       })
 
-
-      this.GanttchartData.forEach((item, index) => {
-
-        indexes.forEach((i) => {
-          var clientReview = this.GanttchartData[i]
-          var nextMilestone = this.GanttchartData[i + 1]
-          if (i !== this.GanttchartData.length - 1 && !(this.linkArray.find(e => e.source == clientReview.id && e.target == nextMilestone.id))) {
+      task = this.fetchTask(item)
+      if (task.length) {
+        task.forEach((e) => {
+          if (e.milestone === item.milestone && item.nextTask !== 'Client Review') {
             this.linkArray.push({
-              "name": clientReview.title,
-              "source": clientReview.id,
-              "target": nextMilestone.id,
-              "nextTask": clientReview.nextTask,
+              "name": item.title,
+              "source": item.id,
+              "target": e.id,
+              "nextTask": item.nextTask,
               "type": 0,
             })
-          }
-        })
-
-        task = this.fetchTask(item)
-        if (task.length) {
-          task.forEach((e) => {
-            if (e.milestone === item.milestone && item.nextTask !== 'Client Review') {
-              this.linkArray.push({
-                "name": item.title,
-                "source": item.id,
-                "target": e.id,
-                "nextTask": item.nextTask,
-                "type": 0,
-              })
-            } else if (e.type == 'task' && e.itemType == 'Client Review') {
-              milestones.forEach((m) => {
-                if (e.milestone === m.title.replace(' (Current)', '') && !(this.linkArray.find(e => e.name == m.title))) {
-                  this.linkArray.push({
-                    "name": m.title,
-                    "source": m.id,
-                    "target": e.id,
-                    "nextTask": e.nextTask,
-                    "type": 0,
-                  })
-                }
-              })
-            }
-          })
-        }
-      })
-
-      milestones.forEach((e) => {
-        var i = this.GanttchartData.indexOf(e)
-        var milestone = this.GanttchartData[i]
-        var nextTask = this.GanttchartData[i + 1]
-        if (milestone.title.replace(' (Current)', '') == nextTask.milestone) {
-          this.linkArray.push({
-            "name": nextTask.milestone,
-            "source": milestone.id,
-            "target": nextTask.id,
-            "type": 1,
-          })
-        }
-      })
-
-      this.GanttchartData.forEach((item, index) => {
-        if (item.AssignedTo) {
-          if (item.AssignedTo.ID >= 0) {
-            this.resource.push({
-              "key": item.AssignedTo.ID,
-              "Name": item.AssignedTo.Name,
-              "label": item.AssignedTo.Title,
-              "Email": item.AssignedTo.EMail
+          } else if (e.type == 'task' && e.itemType == 'Client Review') {
+            milestones.forEach((m) => {
+              if (e.milestone === m.title.replace(' (Current)', '') && !(this.linkArray.find(e => e.name == m.title))) {
+                this.linkArray.push({
+                  "name": m.title,
+                  "source": m.id,
+                  "target": e.id,
+                  "nextTask": e.nextTask,
+                  "type": 0,
+                })
+              }
             })
           }
+        })
+      }
+    })
+
+    milestones.forEach((e) => {
+      var i = this.GanttchartData.indexOf(e)
+      var milestone = this.GanttchartData[i]
+      var nextTask = this.GanttchartData[i + 1]
+      if (milestone.title.replace(' (Current)', '') == nextTask.milestone) {
+        this.linkArray.push({
+          "name": nextTask.milestone,
+          "source": milestone.id,
+          "target": nextTask.id,
+          "type": 1,
+        })
+      }
+    })
+
+    this.GanttchartData.forEach((item, index) => {
+      if (item.AssignedTo) {
+        if (item.AssignedTo.ID >= 0) {
+          this.resource.push({
+            "key": item.AssignedTo.ID,
+            "Name": item.AssignedTo.Name,
+            "label": item.AssignedTo.Title,
+            "Email": item.AssignedTo.EMail
+          })
         }
-      })
+      }
+    })
 
-      this.resource = this.resource.filter(function (a) {
-        var key = a.label;
-        if (!this[key]) {
-          this[key] = true;
-          return true;
-        }
-      }, Object.create(null));
+    this.resource = this.resource.filter(function (a) {
+      var key = a.label;
+      if (!this[key]) {
+        this[key] = true;
+        return true;
+      }
+    }, Object.create(null));
 
-      console.log(this.GanttchartData)
+    console.log(this.GanttchartData)
 
-      console.log(this.linkArray)
+    console.log(this.linkArray)
 
 
-      this.taskAllocateCommonService.ganttParseObject.data = this.GanttchartData;
-      this.taskAllocateCommonService.ganttParseObject.links = this.linkArray;
+    this.taskAllocateCommonService.ganttParseObject.data = this.GanttchartData;
+    this.taskAllocateCommonService.ganttParseObject.links = this.linkArray;
 
-      // this.max_date = new Date(Math.max.apply(null, this.allTasks.map(function(e){
-      //   return new Date(e.StartDate)
-      // })))
-
-      // this.min_date = new Date(Math.min.apply(null, this.allTasks.map(function(e){
-      //   return new Date(e.DueDate)
-      // })))
-
-      // this.min_date = new Date(2019, 11, 1)
-      // this.max_date = new Date(2020, 10, 1)
-
-      this.loadComponent();
-    }
+    this.loadComponent();
   }
 
   fetchTask(task) {
     return this.GanttchartData.filter(e => e.title === task.nextTask);
   }
 
+  // createComponent() {
+
+  // }
 
   loadComponent() {
-    gantt.serverList("res_id", this.resource);
     this.ganttChart.clear();
     this.ganttChart.remove();
     const factory = this.resolver.resolveComponentFactory(GanttChartComponent);
     this.ganttComponentRef = this.ganttChart.createComponent(factory);
-    this.ganttComponentRef.instance.isLoaderHidden = true;
+    // this.ganttChart.clear();
+    // this.ganttChart.remove();
+    gantt.serverList("res_id", this.resource);
+    this.ganttComponentRef.instance.isLoaderHidden = false;
     gantt.init(this.ganttComponentRef.instance.ganttContainer.nativeElement);
     gantt.clearAll();
     this.ganttComponentRef.instance.onLoad(this.taskAllocateCommonService.ganttParseObject, this.resource);
     this.setScale({ label: 'Day Scale', value: '1' });
 
-
-    var editedTasks = (task) => {
-      if (task.slotType == 'Slot') {
-        task.pUserStartDatePart = this.getDatePart(task.start_date);
-        task.pUserStartTimePart = this.getTimePart(task.start_date);
-        task.pUserEndDatePart = this.getDatePart(task.end_date);
-        task.pUserEndTimePart = this.getTimePart(task.end_date);
+    var openPopupOnGanttTask = (id) => {
+      var tasks = this.GanttchartData.filter(e => e.type !== 'milestone')
+      var filteredTasks = tasks.find(e => e.id == id)
+      if (filteredTasks) {
+        if (gantt.ext.zoom.getCurrentLevel() < 3) {
+          this.editTaskModal(id)
+          return true;
+        } else {
+          return false;
+        }
       }
-      var tasks: any = gantt.serialize();
-      this.updatedTasks = tasks;
     }
 
-    // specific task drag
-    gantt.attachEvent("onBeforeTaskDrag", function (id, mode, e) {
-      var task: any = gantt.getTask(id)
-      task.edited = true;
-      if (task.status == 'Not Confirmed') {
-        editedTasks(task)
-        return true;
-      } else if (task.parentSlot != '') {
-        task.edited = false;
+    var menus: any = [
+      { "id": "budgetHrs", "text": "Budget Hours", "enabled": true },
+      { "id": "startDate", "text": "Start Date and Time", "enabled": true },
+      { "id": "endDate", "text": "End Date and Time", "enabled": true },
+      { "id": "tatON", "text": "TAT ON", "enabled": true },
+      { "id": "tatOFF", "text": "TAT OFF", "enabled": true },
+      { "id": "disableCascadeON", "text": "Disable Cascade ON", "enabled": true },
+      { "id": "disableCascadeOFF", "text": "Disable Cascade OFF", "enabled": true },
+      { "id": "filesandcomments", "text": "Files And Comments", "enabled": true },
+      { "id": "capacity", "text": "Show Capacity", "enabled": true }
+
+    ]
+
+    // var newMenus: any = menus;
+    var menu = new dhtmlXMenuObject();
+    menu.renderAsContextMenu();
+    menu.setSkin("dhx_terrace");
+    menu.loadStruct(menus);
+
+    menu.hideItem(menus[3].id);
+    menu.hideItem(menus[4].id);
+    menu.hideItem(menus[5].id);
+    menu.hideItem(menus[6].id);
+
+    var currentTaskId;
+
+    function showMenus(task) {
+      if (task.tat && task.DisableCascade) {
+        menu.hideItem(menus[3].id);
+        menu.showItem(menus[4].id);
+        menu.hideItem(menus[5].id);
+        menu.showItem(menus[6].id);
+      } else if (task.tat && !task.DisableCascade) {
+        menu.hideItem(menus[3].id);
+        menu.showItem(menus[4].id);
+        menu.showItem(menus[5].id);
+        menu.hideItem(menus[6].id);
+      } else if (!task.tat && task.DisableCascade) {
+        menu.showItem(menus[3].id);
+        menu.hideItem(menus[4].id);
+        menu.hideItem(menus[5].id);
+        menu.showItem(menus[6].id);
+      } else if (!task.tat && !task.DisableCascade) {
+        menu.showItem(menus[3].id);
+        menu.hideItem(menus[4].id);
+        menu.showItem(menus[5].id);
+        menu.hideItem(menus[6].id);
+
+      }
+    }
+
+    gantt.attachEvent("onContextMenu", (taskId, linkId, event) => {
+      if (gantt.ext.zoom.getCurrentLevel() < 3) {
+        if (taskId) {
+          var task = gantt.getTask(taskId);
+          showMenus(task);
+          menu.loadStruct(menus);
+          currentTaskId = taskId;
+          var x = event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft,
+            y = event.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+
+          if (task.type == "task" && task.status == 'Not Confirmed') {
+            menu.showContextMenu(x, y);
+          } else if (linkId) {
+            menu.showContextMenu(x, y);
+          }
+
+          if (task || linkId) {
+            return false;
+          }
+
+          return true;
+        }
+      } else {
         return false;
       }
     });
 
-    console.log(gantt.serialize());
+    gantt.attachEvent("onBeforeTaskDrag", function (id, mode, e) {
+      var task = gantt.getTask(id)
+
+      if (gantt.ext.zoom.getCurrentLevel() < 3) {
+        if (task.status == 'Completed' || task.status == "Auto Closed" || task.type == 'milestone') {
+          return false;
+        } else {
+          return true;
+        }
+      } else {
+        return false;
+      }
+    });
+
+    menu.attachEvent("onClick", (id, zoneId, cas) => {
+      var task = gantt.getTask(currentTaskId);
+      switch (id) {
+        case 'tatON':
+          task.tat = true;
+          task.edited = true;
+          this.updateMilestoneData()
+          this.notificationMessage()
+          break;
+        case 'tatOFF':
+          task.tat = false;
+          task.edited = true;
+          this.updateMilestoneData()
+          this.notificationMessage()
+          break;
+        case 'disableCascadeON':
+          task.DisableCascade = true;
+          task.edited = true;
+          this.updateMilestoneData()
+          this.notificationMessage()
+          break;
+        case 'disableCascadeOFF':
+          task.DisableCascade = false;
+          task.edited = true;
+          this.updateMilestoneData()
+          this.notificationMessage()
+          break;
+        case 'capacity':
+          this.showCapacity(task)
+          break;
+        default:
+          openPopupOnGanttTask(currentTaskId);
+          break;
+      }
+    });
+
+    gantt.attachEvent("onTaskClick", function (id, e) {
+      if (e.target.className == "gantt_tree_content") {
+      }
+      return true;
+    });
+
+    gantt.attachEvent("onAfterTaskDrag", function (id, mode, e) {
+      var task = gantt.getTask(id)
+      if (task.status == 'Not Confirmed' || task.type == 'milestone') {
+        openPopupOnGanttTask(id);
+        return true;
+      } else {
+        return false;
+      }
+    });
   }
 
+  notificationMessage() {
+    this.messageService.add({ key: 'gantt-message', severity: 'success', summary: 'Success Message', detail: 'Task Updated Successfully' });
+  }
 
-  save() {
-    if (this.updatedTasks) {
-      this.updatedTasks.data.forEach((item) => {
-        this.milestoneData.forEach((task) => {
-          if (task.data.type === 'milestone') {
-            if (task.data.id === item.id) {
-              task.data.edited = true;
-            }
+  editTaskModal(id) {
+    this.updatedTasks = {};
+    this.ganttEditTask = true;
+    var task = gantt.getTask(id);
+    this.updatedTasks = task;
+    console.log(task)
+    this.assignedUsers = task.assignedUsers
+
+    task.assignedUsers.forEach(element => {
+
+      if (element.items.find(e => e.value.ID === task.AssignedTo.ID)) {
+        task.AssignedTo = element.items.find(e => e.value.ID === task.AssignedTo.ID).value;
+      }
+    });
+
+    this.editTaskForm.patchValue({
+      budgetHrs: task.budgetHours,
+      startDate: task.pUserStart,
+      endDate: task.pUserEnd,
+      tat: task.tat,
+      disableCascade: task.DisableCascade,
+      resource: task.AssignedTo,
+      startDateTimePart: task.pUserStartTimePart,
+      endDateTimePart: task.pUserEndTimePart,
+    })
+    console.log(this.editTaskForm.value)
+  }
+
+  saveTask() {
+    if (this.editTaskForm.valid) {
+      console.log(this.updatedTasks);
+      var allTasks = gantt.serialize();
+
+      allTasks.data.forEach((task) => {
+        if (task.id == this.updatedTasks.id) {
+          task.pUserStart = new Date(this.datepipe.transform(this.editTaskForm.value.startDate, 'MMM d, y') + ' ' + this.editTaskForm.value.startDateTimePart);
+          task.pUserEnd = new Date(this.datepipe.transform(this.editTaskForm.value.endDate, 'MMM d, y') + ' ' + this.editTaskForm.value.endDateTimePart);
+          task.pUserStartDatePart = this.getDatePart(this.editTaskForm.value.startDate);
+          task.pUserStartTimePart = this.editTaskForm.value.startDateTimePart;
+          task.pUserEndDatePart = this.getDatePart(this.editTaskForm.value.endDate);
+          task.pUserEndTimePart = this.editTaskForm.value.endDateTimePart;
+          task.start_date = new Date(this.datepipe.transform(this.editTaskForm.value.startDate, 'MMM d, y') + ' ' + this.editTaskForm.value.startDateTimePart);
+          task.end_date = new Date(this.datepipe.transform(this.editTaskForm.value.endDate, 'MMM d, y') + ' ' + this.editTaskForm.value.endDateTimePart);
+          task.budgetHours = this.editTaskForm.value.budgetHrs;
+          task.tat = this.editTaskForm.value.tat;
+          task.res_id = this.editTaskForm.value.resource;
+          task.AssignedTo = this.editTaskForm.value.resource;
+          task.DisableCascade = this.editTaskForm.value.disableCascade;
+          task.edited = true;
+        }
+      })
+
+      allTasks.data.forEach((task) => {
+        if (task.type == "milestone") {
+          if (task.title.replace(' (Current)', '') == this.updatedTasks.milestone) {
+            task.edited = true;
+          }
+        }
+      })
+
+      this.taskAllocateCommonService.ganttParseObject = allTasks;
+      this.notificationMessage();
+
+      allTasks = allTasks.data.filter(e => e.edited == true);
+
+      console.log(allTasks);
+      allTasks.forEach((task) => {
+        this.milestoneData.forEach((item: any) => {
+          if (task.id == item.data.id) {
+            item.data.edited = true;
+          } else if (item.children) {
+            item.children.forEach((child: any) => {
+              if (task.id == child.data.id) {
+                child.data = task;
+              }
+            })
           }
         })
-      })
+      });
+      console.log(this.milestoneData);
+
+      this.ganttEditTask = false;
+
+      this.loadComponent()
     }
-    this.saveTasks();
+  }
+
+  updateMilestoneData() {
+
+    var allTasks = this.ganttAllTasks();
+
+    var tasks = allTasks.data.filter(e => e.edited == true && e.type == 'task');
+
+    allTasks.data.forEach((task) => {
+      tasks.forEach((item) => {
+        if (task.type == "milestone") {
+          if (task.title.replace(' (Current)', '') == item.milestone) {
+            task.edited = true;
+          }
+        }
+      })
+    })
+
+    allTasks = allTasks.data.filter(e => e.edited == true);
+
+    allTasks.forEach((task) => {
+      this.milestoneData.forEach((item: any) => {
+        if (task.id == item.data.id) {
+          item.data.edited = true;
+        } else if (item.children) {
+          item.children.forEach((child: any) => {
+            if (task.id == child.data.id) {
+              child.data = task;
+            }
+          })
+        }
+      })
+    });
+  }
+
+  showCapacity(task) {
+
+  }
+
+  ganttAllTasks() {
+    return gantt.serialize();
+  }
+
+  close() {
+    this.ganttEditTask = false;
+    var allTasks = gantt.serialize();
+
+    allTasks.data.forEach((task) => {
+      if (task.id == this.updatedTasks.id && task.edited == false) {
+        task.start_date = task.pUserStart;
+        task.end_date = task.pUserEnd;
+      }
+    })
+    this.taskAllocateCommonService.ganttParseObject = allTasks;
+    this.loadComponent();
   }
 
   setScale(scale) {

@@ -6478,7 +6478,8 @@ module.exports = function () {
         show_chart: true,
         show_grid: true,
         min_duration: 60 * 60 * 1000,
-        date_format: "%d-%m-%Y %h:%i",
+        date_format: "%d %M %Y %H:%i:%s",
+        // date_format: "%D %M %d %Y %H %i %s",
         xml_date: undefined,
         start_on_monday: true,
         server_utc: false,
@@ -12390,7 +12391,7 @@ module.exports = function(gantt){
                             if (o.isArray(e[l][u]))
                                 if (e[l][u].length > 0) f = i(e[l][u]), d = o.arrayMap(e[l][u], function(e, n) {
                                     var r;
-                                    return r = e && "object" == typeof e ? e.resource_id : e, (e = a[r]).label || e.text
+                                    return r = e && "object" == typeof e ? e.ID : e, (e = a[r]).label || e.text
                                 }).sort().join(s);
                                 else {
                                     if (c) continue;
@@ -14626,7 +14627,16 @@ module.exports = function(gantt) {
 			var rawLinks = gantt.getLinks();
 			for (var i = 0; i < rawLinks.length; i++) {
 				links.push(this.serializeLink(rawLinks[i]));
-			}
+            }
+            
+            tasks.forEach((task)=>{
+                task.pUserStart = new Date(task.pUserStart);
+                task.pUserEnd = new Date(task.pUserEnd);
+                task.pUserStartDatePart = new Date(task.pUserStartDatePart);
+                task.pUserEndDatePart = new Date(task.pUserEndDatePart);
+                task.start_date = new Date(task.start_date);
+                task.end_date = new Date(task.end_date);
+            })
 
 			return {
 				data: tasks,
@@ -16029,7 +16039,7 @@ function createResourceMethods(gantt){
 						resourceValue = task[property];
 					}
 					helpers.forEach(resourceValue, function(value) {
-						if (resourceHash[resourceHashFunction(value)] || (value && resourceHash[resourceHashFunction(value.resource_id)])) {
+						if (resourceHash[resourceHashFunction(value)] || (value && resourceHash[resourceHashFunction(value.ID)])) {
 							res.push(task);
 						}
 					});
@@ -16477,8 +16487,8 @@ function createResourceMethods(gantt){
 			owners = [owners];
 		}
 		for (var i = 0; i < owners.length; i++) {
-			if (owners[i].resource_id == resourceId) {
-				result.push({task_id: task.id, resource_id:owners[i].resource_id, value:owners[i].value});
+			if (owners[i].ID == resourceId) {
+				result.push({task_id: task.id, resource_id:owners[i].ID, value:owners[i].value});
 			}
 		}
 	}
@@ -22713,7 +22723,8 @@ var createMouseHandler = (function(domHelpers) {
 
 				if (id !== null && gantt.getTask(id)) {
 					if (res && gantt.config.details_on_dblclick) {
-						// gantt.showLightbox(id);
+                        // gantt.showLightbox(id);
+                        // window.angularComponentReference.zone.run(() => { window.angularComponentReference.timelineComponentFn(id); });  
 					}
 				}
 			}
