@@ -185,7 +185,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit {
     private taskAllocateCommonService: TaskAllocationCommonService,
     private usercapacityComponent: UsercapacityComponent,
     private resolver: ComponentFactoryResolver,
-    private zone: NgZone, private fb: FormBuilder
+    private zone: NgZone, private fb: FormBuilder,
     private dailyAllocation: DailyAllocationComponent
   ) {
 
