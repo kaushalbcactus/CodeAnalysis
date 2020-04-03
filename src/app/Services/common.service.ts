@@ -6,7 +6,7 @@ import { ConstantsService } from './constants.service';
 import { PmconstantService } from '../projectmanagement/services/pmconstant.service';
 import { PMObjectService } from '../projectmanagement/services/pmobject.service';
 import { DatePipe } from '@angular/common';
-import { Table, DialogService } from 'primeng';
+import { Table } from 'primeng';
 declare var $;
 
 declare const newrelic;
@@ -32,8 +32,7 @@ export class CommonService {
         private pmConstant: PmconstantService, public sharedObject: GlobalService,
         public taskAllocationService: TaskAllocationConstantsService,
         private datePipe: DatePipe,
-        public common: CommonService,
-        public dialogService: DialogService
+        public common: CommonService
     ) { }
 
     tableToExcel = (function () {
@@ -914,53 +913,6 @@ export class CommonService {
         return tempminDateValue;
     }
 
-
-    // const res = await this.spServices.checkFileExist(task.ProjectFolder + '/Miscellaneous/' + task.ProjectCode + '_scope.docx')
-
-    // if (res.hasOwnProperty('status')) {
-    //     if (res.status === 404) {
-
-    //         const data = {
-    //             Title: task.ProjectCode,
-    //             ProjectFolder: task.ProjectFolder
-    //         };
-    //         this.SetNewrelic('projectManagment', 'allProj-allprojects', 'projectScope');
-    //         const result = await this.spServices.createItem(this.constants.listNames.ProjectScope.name, data, this.constants.listNames.ProjectScope.type);
-
-    //         debugger;
-    //         if (!result.hasOwnProperty('hasError') && !result.hasError) {
-    //             setTimeout(async () => {
-
-    //                 const response = this.spServices.checkFileUploaded(result.ProjectFolder + '/Miscellaneous/' + result.Title + '_scope.docx');
-    //                 debugger;
-    //                 if (response)
-
-
-    //                     loaderView.nativeElement.classList.remove('show');
-    //                 spannerView.nativeElement.classList.remove('show');
-    //                 window.open(result.ProjectFolder + '/Miscellaneous/' + result.Title + '_scope.docx?web=1', '_blank');
-    //                 this.SetNewrelic('projectManagment', 'allProj-allprojects', 'updateprojectScope');
-    //                 const retResults = await this.spServices.updateItem(this.constants.listNames.ProjectScope.name, result.ID, { IsCreated: 'Yes' }, this.constants.listNames.ProjectScope.type);
-    //             }, 3000);
-    //         }
-    //         else {
-    //             loaderView.nativeElement.classList.remove('show');
-    //             spannerView.nativeElement.classList.remove('show');
-    //         }
-
-    //     } else {
-    //         loaderView.nativeElement.classList.remove('show');
-    //         spannerView.nativeElement.classList.remove('show');
-
-    //         window.open(task.ProjectFolder + '/Miscellaneous/' + task.ProjectCode + '_scope.docx?web=1', '_blank');
-    //     }
-    // }
-    // else {
-    //     loaderView.nativeElement.classList.remove('show');
-    //     spannerView.nativeElement.classList.remove('show');
-
-    //     window.open(task.ProjectFolder + '/Miscellaneous/' + task.ProjectCode + '_scope.docx?web=1', '_blank');
-    // }
 
 
 }

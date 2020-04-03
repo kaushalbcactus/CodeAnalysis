@@ -39,7 +39,6 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { AuditProjectDialogComponent } from './projectmanagement/all-projects/audit-project-dialog/audit-project-dialog.component';
 import { InvoiceLineitemsComponent } from './projectmanagement/all-projects/invoice-lineitems/invoice-lineitems.component';
 import { ConfirmationDialogComponent } from '../shared/confirmation-dialog/confirmation-dialog.component';
-import { FileUploadProgressDialogComponent } from '../shared/file-upload-progress-dialog/file-upload-progress-dialog.component';
 
 @NgModule({
   declarations: [
@@ -99,8 +98,7 @@ import { FileUploadProgressDialogComponent } from '../shared/file-upload-progres
     CsFinanceAuditDialogComponent,
     AuditProjectDialogComponent,
     InvoiceLineitemsComponent,
-    ConfirmationDialogComponent,
-    FileUploadProgressDialogComponent
+    ConfirmationDialogComponent
   ]
 })
 export class ProjectmanagementModule { }

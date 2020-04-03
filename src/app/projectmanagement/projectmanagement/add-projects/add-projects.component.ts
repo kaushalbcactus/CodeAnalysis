@@ -69,7 +69,6 @@ export class AddProjectsComponent implements OnInit {
    * @param event The value is either true of false.
    */
   receiveData(event) {
-    debugger;
     this.isMangageFinanceVisible = event;
   }
   getBudgetOutputData(event) {

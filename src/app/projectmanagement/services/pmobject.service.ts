@@ -316,7 +316,7 @@ export class PMObjectService {
       Rate: 0,
       ClientLegalEntity: '',
       BilledBy: '',
-      selectedFile: null,
+      selectedFile: '',
       isBudgetRateAdded: false
     }
   };

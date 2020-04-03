@@ -17,7 +17,6 @@ import { AddEditSubdivisionComponent } from './add-edit-subdivision/add-edit-sub
 import { AddEditPocComponent } from './add-edit-poc/add-edit-poc.component';
 import { AddEditPoDialogComponent } from './add-edit-po-dialog/add-edit-po-dialog.component';
 import { ChangeBudgetDialogComponent } from './change-budget-dialog/change-budget-dialog.component';
-import { FileUploadProgressDialogComponent } from 'src/app/shared/file-upload-progress-dialog/file-upload-progress-dialog.component';
 
 @Component({
   selector: 'app-client-masterdata',
@@ -897,6 +896,7 @@ export class ClientMasterdataComponent implements OnInit {
    */
   poMenu(data) {
     this.currPOObj = data;
+    debugger;
     if (this.isUserSPMCA || this.isUserPO) {
       this.poItems = [
         { label: 'Change Budget', command: (e) => this.changeBudgetDialog(data) },
@@ -1540,8 +1540,8 @@ export class ClientMasterdataComponent implements OnInit {
     this.constantsService.loader.isPSInnerLoaderHidden = false;
 
     this.fileReader = new FileReader();
-    if (selectedFile[0]) {
-      this.fileReader.readAsArrayBuffer(selectedFile[0]);
+    if(selectedFile){
+      this.fileReader.readAsArrayBuffer(selectedFile);
     }
     const docFolder = this.adminConstants.FOLDER_LOCATION.PO;
     const libraryName = this.currClientObj.ListName;
@@ -1585,72 +1585,6 @@ export class ClientMasterdataComponent implements OnInit {
       this.constantsService.loader.isPSInnerLoaderHidden = true;
     }
   }
-  // async savePO(poDetails, selectedFile) {
-
-  //   const tempFiles = [new Object({ name: selectedFile[0].name, file: selectedFile[0] })];
-  //   this.common.SetNewrelic('Admin-ClientMasterData', 'SavePO', 'UploadFile');
-  //   const ref = this.dialogService.open(FileUploadProgressDialogComponent, {
-  //     header: 'File Uploading',
-  //     width: '70vw',
-  //     data: {
-  //       Files: tempFiles,
-  //       libraryName: this.globalObject.sharePointPageObject.webRelativeUrl + '/' + this.currClientObj.ListName + '/' + this.adminConstants.FOLDER_LOCATION.PO,
-  //       overwrite: true,
-
-  //     },
-  //     contentStyle: { 'overflow-y': 'visible', 'background-color': '#f4f3ef' },
-  //     closable: false,
-  //   });
-
-  //   return ref.onClose.subscribe(async (uploadedfile: any) => {
-  //     if (uploadedfile) {
-  //       if (selectedFile.length > 0 && selectedFile.length === uploadedfile.length) {
-  //         this.modalloaderenable = true;
-  //         this.messageService.add({
-  //           key: 'adminCustom', severity: 'success',
-  //           summary: 'Success Message', detail: 'File uploaded sucessfully.'
-  //         });
-
-  //         const poData = await this.getPOData(poDetails, selectedFile[0]);
-  //         if (!this.showeditPO) {
-  //           this.common.SetNewrelic('admin', 'client-masterdata', 'savePO');
-  //           const results = await this.spServices.createItem(this.constantsService.listNames.PO.name,
-  //             poData, this.constantsService.listNames.PO.type);
-  //           if (!results.hasOwnProperty('hasError') && !results.hasError) {
-  //             const poBreakUPData = await this.getPOBudgetBreakUPData(results, poDetails);
-  //             this.common.SetNewrelic('admin', 'admin-clientMaster', 'createPOBudgetreakup');
-  //             const poBreakUPResult = await this.spServices.createItem(this.constantsService.listNames.POBudgetBreakup.name,
-  //               poBreakUPData, this.constantsService.listNames.POBudgetBreakup.type);
-  //             if (!poBreakUPResult.hasOwnProperty('hasError') && !poBreakUPResult.hasError) {
-  //               this.messageService.add({
-  //                 key: 'adminCustom', severity: 'success', summary: 'Success Message',
-  //                 detail: 'The Po ' + poDetails.value.poNumber + ' is created successfully.'
-  //               });
-  //             }
-  //             await this.loadRecentPORecords(results.ID, this.adminConstants.ACTION.ADD);
-  //           }
-  //         }
-  //         if (this.showeditPO) {
-  //           this.common.SetNewrelic('admin', 'admin-clientMaster', 'updatePO');
-  //           const results = await this.spServices.updateItem(this.constantsService.listNames.PO.name, this.currPOObj.ID,
-  //             poData, this.constantsService.listNames.PO.type);
-  //           this.messageService.add({
-  //             key: 'adminCustom', severity: 'success',
-  //             summary: 'Success Message', detail: 'The Po ' + this.currPOObj.PoNumber + ' is updated successfully.'
-  //           });
-  //           await this.loadRecentPORecords(this.currPOObj.ID, this.adminConstants.ACTION.EDIT);
-  //         }
-  //       }
-  //       else {
-  //         this.messageService.add({
-  //           key: 'adminCustom', severity: 'error',
-  //           summary: 'Error Message', detail: 'Error while uploading file.'
-  //         });
-  //       }
-  //     }
-
-  //   });
-  // }
   /**
    * Construct a method to create an object of `PO`.
    *
