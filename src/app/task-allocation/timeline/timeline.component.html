@@ -426,8 +426,9 @@
         <div fxLayout="row" fxLayoutAlign=" start center"
             [ngClass]="projectDetails  ? 'VisualRepresentationpopup':'VisualRepresentation'"
             [hidden]="visualgraph === false" style="width:100%">
-            <p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="gantt-message" position="bottom-center">
-                </p-toast>
+            <p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="gantt-message"
+                position="bottom-center">
+            </p-toast>
             <!-- <ng-gantt style="width:100%;" *ngIf='visualgraph' [options]="editorOptions" [data]="GanttchartData"
                 #gantteditor></ng-gantt> -->
             <div style="width:100%">
@@ -537,7 +538,7 @@
 </div>
 
 <p-dialog [(visible)]="ganttEditTask" [modal]="true" [draggable]="false" [responsive]="true"
-    [style]="{height: '50%' , 'width': '60%', 'top':'0px'}">
+    [style]="{height: '50%' , 'width': '60%', 'top':'0px'}" [closeOnEscape]="false" [closable]="false">
     <p-header>
         Edit Task
     </p-header>
@@ -587,9 +588,9 @@
                 Resource
             </div>
             <div class="p-col-4">
-                <p-dropdown [style]="{'width':'100%'}" [options]="assignedUsers" [panelStyle]="{minWidth:'15em' }"
-                    placeholder="Select Resource" [showClear]="true" [group]="true" filter="true"
-                    formControlName="resource" resetFilterOnHide="true">
+                <p-dropdown appendTo="body" [style]="{'width':'100%'}" [options]="assignedUsers"
+                    [panelStyle]="{minWidth:'15em' }" placeholder="Select Resource" [showClear]="true" [group]="true"
+                    filter="true" formControlName="resource" resetFilterOnHide="true">
                     <ng-template let-group pTemplate="group">
                         <span style="margin-left:.25em">{{group.label}}</span>
                     </ng-template>
@@ -637,4 +638,6 @@
     </p-footer>
 </p-dialog>
 
-
+<div [hidden]="!userCapacityEnable">
+    <app-usercapacity #userCapacity></app-usercapacity>
+</div>

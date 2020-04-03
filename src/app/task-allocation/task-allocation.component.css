@@ -131,3 +131,7 @@ button {
     margin: auto;
     width: 98%;
 }
+
+mat-expansion-panel app-timeline{
+    display: inline !important;
+}
