@@ -15,7 +15,7 @@
         {{ rowData["Date"]  |  date:' d MMM, y' }}
       </td>
       <td>
-        <p-slider [(ngModel)]="rowData.Allocation.value" [step]="0.25" [max]="rowData.Allocation.maxHrs" (onChange)="checkAllocation($event, rowData.Allocation)"></p-slider>
+        <p-slider [(ngModel)]="rowData.Allocation.value" [step]="0.25" [max]="rowData.Allocation.maxHrs" (onSlideEnd)="checkAllocation($event, rowData)"></p-slider>
       </td>
       <td>
         <input type="number" class="form-control budgetHr" min="0" value="0"

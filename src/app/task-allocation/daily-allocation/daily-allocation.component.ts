@@ -13,7 +13,6 @@ import { DatePipe } from '@angular/common';
 export class DailyAllocationComponent implements OnInit {
   public cols: any[];
   public newAllocation: any[];
-  public milestoneTask: IDailyAllocationTask;
   constructor(private usercapacityComponent: UsercapacityComponent, private popupData: DynamicDialogConfig,
               private common: CommonService, private datePipe: DatePipe, public popupConfig: DynamicDialogRef) { }
 
@@ -24,28 +23,21 @@ export class DailyAllocationComponent implements OnInit {
     ];
     this.newAllocation = [];
     const allocationData: IDailyAllocationTask = this.popupData.data;
-    this.milestoneTask = allocationData;
-    const isDailyAllocationValid = await this.checkDailyAllocation(allocationData);
+    const resource = await this.getResourceCapacity(allocationData);
+    const isDailyAllocationValid = this.checkDailyAllocation(resource, allocationData.budgetHrs);
     if (!isDailyAllocationValid) {
       await this.equalSplitAllocation(allocationData);
     }
     console.log(this.newAllocation);
   }
 
-  async getResourceCapacity(task: IDailyAllocationTask) {
-    const oCapacity = await this.usercapacityComponent.applyFilterReturn(task.startDate, task.endDate, task.resourceId, [task]);
-    const resource = oCapacity.arrUserDetails.length ? oCapacity.arrUserDetails[0] : {};
-    return resource;
-  }
-
-  async checkDailyAllocation(task: IDailyAllocationTask): Promise<boolean> {
-    const resource = await this.getResourceCapacity(task);
+  checkDailyAllocation(resource, budgetHrs: string): boolean {
     const maxLimit = resource.maxHrs + 2;
     let maxAvailableHrs = resource.maxHrs;
     let remainingBudgetHrs: string;
     let extraHrs = '0:0';
     while (maxAvailableHrs <= maxLimit) {
-      remainingBudgetHrs = '' + task.budgetHrs;
+      remainingBudgetHrs = '' + budgetHrs;
       remainingBudgetHrs = this.checkResourceAvailability(resource, extraHrs, remainingBudgetHrs);
       if (remainingBudgetHrs.indexOf('-') > -1) {
         extraHrs = this.common.addHrsMins([extraHrs, '0:30']);
@@ -57,11 +49,10 @@ export class DailyAllocationComponent implements OnInit {
     return remainingBudgetHrs.indexOf('-') < 0 ? true : false;
   }
 
-  getDailyAvailableHours(resourceAvailableHrs: string, budgetHrs: string): string {
-    let budgetHours: string = budgetHrs.indexOf(':') < 0 ? this.common.convertToHrsMins(budgetHrs) : budgetHrs;
-    budgetHours = budgetHours.indexOf('-') > -1 ? budgetHours.replace('-', '') : budgetHours;
-    const newBudgetHrs: string = this.common.subtractHrsMins(resourceAvailableHrs, budgetHours, true);
-    return newBudgetHrs;
+  async getResourceCapacity(task: IDailyAllocationTask) {
+    const oCapacity = await this.usercapacityComponent.applyFilterReturn(task.startDate, task.endDate, task.resourceId, [task]);
+    const resource = oCapacity.arrUserDetails.length ? oCapacity.arrUserDetails[0] : {};
+    return resource;
   }
 
   checkResourceAvailability(resource, extraHrs, taskBudgetHrs): string {
@@ -83,23 +74,32 @@ export class DailyAllocationComponent implements OnInit {
       };
       if (flag) {
         let availableHrs = detail.availableHrs.indexOf('-') > -1 ? '0:0' : detail.availableHrs;
-        availableHrs = this.common.addHrsMins([availableHrs, extraHrs]);
+        availableHrs = detail.mandatoryHrs ? availableHrs : this.common.addHrsMins([availableHrs, extraHrs]);
         newBudgetHrs = this.getDailyAvailableHours(availableHrs, taskBudgetHrs);
+        const totalAllocatedMins = this.common.calculateTotalMins(detail.totalTimeAllocatedPerDay);
+        const numtotalAllocated = this.common.convertFromHrsMins(totalAllocatedMins);
+        obj.Allocation.maxHrs = resourceSliderMaxHrs - numtotalAllocated;
         if (newBudgetHrs.indexOf('-') > -1) {
-          const allocatedMins = this.common.calculateTotalMins(extraHrs);
-          obj.Allocation.value = resource.maxHrs + this.common.convertFromHrsMins(allocatedMins);
+          const availableMins = this.common.calculateTotalMins(availableHrs);
+          const numAvailableHrs = this.common.convertFromHrsMins(availableMins);
+          obj.Allocation.value = numAvailableHrs;
           taskBudgetHrs = newBudgetHrs;
         } else {
           const budgetHrs = taskBudgetHrs.indexOf('-') > -1 ? taskBudgetHrs.replace('-', '') : taskBudgetHrs;
-          let totalHrs = this.common.addHrsMins([detail.totalTimeAllocatedPerDay, budgetHrs]);
-          totalHrs = totalHrs.indexOf('-') > -1 ? totalHrs.replace('-', '') : totalHrs;
-          totalMins = this.common.calculateTotalMins(totalHrs);
+          totalMins = this.common.calculateTotalMins(budgetHrs);
           obj.Allocation.value = this.common.convertFromHrsMins(totalMins);
           flag = false;
         }
       }
       this.newAllocation.push(obj);
     }
+    return newBudgetHrs;
+  }
+
+  getDailyAvailableHours(resourceAvailableHrs: string, budgetHrs: string): string {
+    let budgetHours: string = budgetHrs.indexOf(':') < 0 ? this.common.convertToHrsMins(budgetHrs) : budgetHrs;
+    budgetHours = budgetHours.indexOf('-') > -1 ? budgetHours.replace('-', '') : budgetHours;
+    const newBudgetHrs: string = this.common.subtractHrsMins(resourceAvailableHrs, budgetHours, true);
     return newBudgetHrs;
   }
 
@@ -112,8 +112,8 @@ export class DailyAllocationComponent implements OnInit {
     const resourceSliderMaxHrs = resource.maxHrs + 4;
     const resourceDailyDetails = resource.dates;
     for (const detail of resourceDailyDetails) {
-      const totalMins = this.common.calculateTotalMins(detail.totalTimeAllocatedPerDay);
-      const totalHrs = this.common.convertFromHrsMins(totalMins) + allocationPerDay;
+      // const totalMins = this.common.calculateTotalMins(detail.totalTimeAllocatedPerDay);
+      const totalHrs = allocationPerDay; // this.common.convertFromHrsMins(totalMins) + allocationPerDay;
       const obj = {
         Date: detail.date,
         Allocation: {
@@ -126,18 +126,23 @@ export class DailyAllocationComponent implements OnInit {
     }
   }
 
-  saveAllocation() {
+  saveAllocation(): void {
     let allocationPerDay = '';
     this.newAllocation.forEach(element => {
       allocationPerDay = allocationPerDay + this.datePipe.transform(element.Date, 'EE, MMM d, y') + ':' +
-                         this.common.convertToHrsMins('' + element.Allocation.value) + '\n';
+        this.common.convertToHrsMins('' + element.Allocation.value) + '\n';
     });
     this.popupConfig.close(allocationPerDay);
   }
 
-  checkAllocation(event, allocation) {
-    if (event.value < allocation.minHrs) {
-      allocation.value = allocation.minHrs;
-    }
+  async checkAllocation(event, changedDate) {
+    const objDate = this.popupData.data;
+    const strChangedValue = this.common.convertToHrsMins('' + event.value);
+    const resource = await this.getResourceCapacity(objDate);
+    const resourceDailyAllocation = resource.dates;
+    const resourceChangedDate = resourceDailyAllocation.find(d => d.date.getTime() === changedDate.Date.getTime());
+    resourceChangedDate.availableHrs = strChangedValue;
+    resourceChangedDate.mandatoryHrs = true;
+    this.checkDailyAllocation(resource, objDate.budgetHrs);
   }
 }
