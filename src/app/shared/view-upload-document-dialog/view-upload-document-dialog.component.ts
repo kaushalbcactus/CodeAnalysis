@@ -523,7 +523,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
           docFolder = 'Communications';
           // sVal = 'meeting notes';
           break;
-        case 'Meeting Notes & Client Comments':
+        case 'Meeting Notes':
           docFolder = 'Communications';
           // sVal = 'meeting notes & comments';
           break;
