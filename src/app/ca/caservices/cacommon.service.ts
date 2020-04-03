@@ -582,8 +582,8 @@ export class CACommonService {
    * @param localSchedulItemFetch 
    * @param items 
    */
-  async getScheduleItems(localSchedulItemFetch, items) {
-    const arrMilestoneTasks = await this.getMilestoneSchedules(this.globalConstantService.listNames.Schedules.name, localSchedulItemFetch);
+  async getScheduleItems(items, arrMilestoneTasks) {
+    // const arrMilestoneTasks = await this.getMilestoneSchedules(this.globalConstantService.listNames.Schedules.name, localSchedulItemFetch);
     for (const task of items) {
       await this.getMiscDates(task, arrMilestoneTasks);
     }
@@ -703,7 +703,7 @@ export class CACommonService {
   async getMiscDates(task, arrMilestoneTasks) {
 
     task.ProjectTask = arrMilestoneTasks;
-    task.MilestoneAllTasks = [];
+    // task.MilestoneAllTasks = [];
     const oReturnedProjectMil = arrMilestoneTasks.filter(function (milTask) { return (milTask.projectCode === task.ProjectCode && milTask.milestone === task.Milestone) });
     if (oReturnedProjectMil && oReturnedProjectMil.length) {
       const milTasks = oReturnedProjectMil[0].MilestoneTasks;
@@ -718,15 +718,6 @@ export class CACommonService {
         if (taskArr.indexOf(task.Title) > -1) {
           nextTasks.push(milTasks[i]);
         }
-        const TaskType = milTasks[i].Task;
-        const TaskName = $.trim(milTasks[i].Title.replace(milTasks[i].ProjectCode + '', '').replace(milTasks[i].Milestone + '', ''));
-
-          if (task.MilestoneAllTasks.length > 0 && task.MilestoneAllTasks.find(c => c.type === TaskType && c.milestone === milTasks[i].Milestone)) {
-            task.MilestoneAllTasks.find(c => c.type === TaskType  && c.milestone === milTasks[i].Milestone).tasks.push(TaskName);
-          }
-          else {
-            task.MilestoneAllTasks.push({ type: TaskType, milestone: milTasks[i].Milestone, tasks: [TaskName] });
-          }
       }
      
       if (nextTasks.length) {
