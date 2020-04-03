@@ -19,19 +19,6 @@ import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
   selector: 'app-unallocated-allocated-tasks',
   templateUrl: './unallocated-allocated-tasks.component.html',
   styleUrls: ['./unallocated-allocated-tasks.component.css'],
-  //   animations: [
-  //     trigger('rowExpansionTrigger', [
-  //         state('void', style({
-  //             transform: 'translateX(-10%)',
-  //             opacity: 0
-  //         })),
-  //         state('active', style({
-  //             transform: 'translateX(0)',
-  //             opacity: 1
-  //         })),
-  //         transition('* <=> *', animate('400ms cubic-bezier(0.86, 0, 0.07, 1)'))
-  //     ])
-  // ],
   providers: [UsercapacityComponent]
 })
 export class UnallocatedAllocatedTasksComponent implements OnInit {
@@ -806,17 +793,6 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       });
       return alltasks;
     }
-
-    // const TaskType = milTasks[i].Task;
-    // const TaskName = $.trim(milTasks[i].Title.replace(milTasks[i].ProjectCode + '', '').replace(milTasks[i].Milestone + '', ''));
-
-    //   if (task.MilestoneAllTasks.length > 0 && task.MilestoneAllTasks.find(c => c.type === TaskType && c.milestone === milTasks[i].Milestone)) {
-    //     task.MilestoneAllTasks.find(c => c.type === TaskType).tasks.push(TaskName);
-    //   }
-    //   else {
-    //     task.MilestoneAllTasks.push({ type: TaskType, milestone: milTasks[i].Milestone, tasks: [TaskName] });
-    //   }
-
   }
 
 
