@@ -151,7 +151,7 @@ export class ManageFinanceComponent implements OnInit {
   tagExistingInvSection = false;
   updateInvoices = [];
   hideRemoveButton = false;
-
+  disableAddBudget = false;
   @Output() maximizeDialog = new EventEmitter<any>();
 
   constructor(
@@ -199,6 +199,9 @@ export class ManageFinanceComponent implements OnInit {
     if (this.config && this.config.hasOwnProperty('data')) {
       setTimeout(async () => {
         this.projObj = this.config.data.projectObj;
+        if (this.projObj.Status === 'Pending Closure' && this.projObj.ProjectType.substr(this.projObj.ProjectType.lastIndexOf('-') + 1) === 'Writing') {
+          this.disableAddBudget= true;
+        }
         this.isPOEdit = true;
         // this.setBudget();
         this.projectType = this.projObj.ProjectType;
@@ -352,12 +355,12 @@ export class ManageFinanceComponent implements OnInit {
     if (this.existBudgetArray && this.existBudgetArray.length) {
       unassignedObj.total = this.updatedBudget + this.existBudgetArray.retItems[0].Budget;
       unassignedObj.revenue = this.updatedBudget + this.existBudgetArray.retItems[0].RevenueBudget;
-      unassignedObj.oop = tempbudgetObject.oop;
+      unassignedObj.oop = 0;
       unassignedObj.tax = 0;
     } else {
       unassignedObj.total = this.updatedBudget;
       unassignedObj.revenue = this.updatedBudget;
-      unassignedObj.oop = tempbudgetObject.oop;
+      unassignedObj.oop = 0;
       unassignedObj.tax = 0;
     }
     this.unassignedBudget = [];
@@ -1090,6 +1093,8 @@ export class ManageFinanceComponent implements OnInit {
       this.poData.forEach((poInfoObj) => {
         // tslint:disable-next-line:no-shadowed-variable
         poInfoObj.poInfo.forEach(element => {
+          element.revenue = element.revenue ? element.revenue : 0;
+          element.scRevenue = element.scRevenue ? element.scRevenue : 0;
           if (element.revenue !== element.scRevenue) {
             isValid = false;
           }
@@ -1401,7 +1406,6 @@ export class ManageFinanceComponent implements OnInit {
               || this.projectStatus === this.constant.projectStatus.InProgress
               || this.projectStatus === this.constant.projectStatus.ReadyForClient
               || this.projectStatus === this.constant.projectStatus.AuditInProgress
-              || this.projectStatus === this.constant.projectStatus.OnHold
               || this.projectStatus === this.constant.projectStatus.AuthorReview
               || this.projectStatus === this.constant.projectStatus.PendingClosure) {
               invoiceObj.isInvoiceItemConfirm = this.lineItemConfirmAllowed(invoiceObj);

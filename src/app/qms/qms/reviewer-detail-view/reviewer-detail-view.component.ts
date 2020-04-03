@@ -21,7 +21,7 @@ export class ReviewerDetailViewComponent implements OnInit {
   ReviewerDetail: any = [];
   ReviewerDetailColumns: any[];
   public currentUser = this.global.currentUser;
-
+  public milestoneTasks = [];
   // For Reviewer pending tasks table
   @Output() myEvent = new EventEmitter<string>();
   @ViewChild(FeedbackPopupComponent, { static: false }) popup: FeedbackPopupComponent;
@@ -129,6 +129,7 @@ export class ReviewerDetailViewComponent implements OnInit {
    *
    */
   async getPendingRatedTasks(itemCount: number) {
+    const batchURL = [];
     const today = new Date();
     today.setMonth(today.getMonth() - 1);
     today.setHours(0, 0, 0, 0);
@@ -137,17 +138,40 @@ export class ReviewerDetailViewComponent implements OnInit {
     today.setDate(today.getDate() - 1);
     const lastMonthDateString = this.datepipe.transform(today, 'yyyy-MM-ddTHH:mm:ss.000') + 'Z';
     // Get Current user review tasks for past 30 days - 1st Query
-    const reviewerComponent = JSON.parse(JSON.stringify(this.qmsConstant.reviewerComponent));
-    reviewerComponent.reviewerPendingTaskURL.top = reviewerComponent.reviewerPendingTaskURL.top.replace('{{TopCount}}', '' + itemCount);
-    reviewerComponent.reviewerPendingTaskURL.filter = reviewerComponent.reviewerPendingTaskURL.filter.replace('{{PrevMonthDate}}', lastMonthDateString);
+    const getMilestoneTasks = Object.assign({}, this.options);
+    getMilestoneTasks.url = this.spService.getReadURL(this.globalConstant.listNames.MilestoneTasks.name,
+      this.qmsConstant.common.getMilestoneTasks);
+    getMilestoneTasks.listName = this.globalConstant.listNames.MilestoneTasks.name;
+    getMilestoneTasks.type = 'GET';
+    batchURL.push(getMilestoneTasks);
+
+    const getReviewerTasks = Object.assign({}, this.options);
+    getReviewerTasks.url = this.spService.getReadURL(this.globalConstant.listNames.Schedules.name,
+      this.qmsConstant.reviewerComponent.reviewerPendingTaskURL);
+    getReviewerTasks.url = getReviewerTasks.url.replace('{{TopCount}}', '' + itemCount)
+      .replace('{{PrevMonthDate}}', lastMonthDateString);
+    getReviewerTasks.listName = this.globalConstant.listNames.Schedules.name;
+    getReviewerTasks.type = 'GET';
+    batchURL.push(getReviewerTasks);
+    // const reviewerComponent = JSON.parse(JSON.stringify(this.qmsConstant.reviewerComponent));
+    // reviewerComponent.reviewerPendingTaskURL.top = reviewerComponent.reviewerPendingTaskURL.top.replace('{{TopCount}}', '' + itemCount);
+    // reviewerComponent.reviewerPendingTaskURL.filter = reviewerComponent.reviewerPendingTaskURL.filter.replace('{{PrevMonthDate}}', lastMonthDateString);
     this.commonService.SetNewrelic('QMS', 'ReviewDetails-View', 'getPendingRatedTasks');
-    let arrReviewTasks = await this.spService.readItems(this.globalConstant.listNames.Schedules.name, reviewerComponent.reviewerPendingTaskURL);
-    arrReviewTasks = arrReviewTasks.length > 0 ? arrReviewTasks.filter(t => new Date(t.DueDate).getTime() >= filterDate.getTime()) : [];
+    const arrResult = await this.spService.executeBatch(batchURL);
+    this.milestoneTasks = arrResult.length > 0 ? arrResult[0].retItems : [];
+    const reviewerTasks = arrResult.length > 1 ? arrResult[1].retItems : [];
+    // let arrReviewTasks = await this.spService.readItems(this.globalConstant.listNames.Schedules.name, reviewerComponent.reviewerPendingTaskURL);
+    let arrReviewTasks = reviewerTasks.length > 0 ? reviewerTasks.filter(t => new Date(t.DueDate).getTime() >= filterDate.getTime()) : [];
+    arrReviewTasks = arrReviewTasks.map(t => {
+      const obj = Object.assign({}, t);
+      obj.defaultSkill = t.Task.indexOf('Review-') > -1 ? 'Review' : t.Task
+      return obj;
+    });
     // Get previous task project information - 2nd Query
     let projectInformation = await this.getProjectInformation(arrReviewTasks);
     projectInformation = [].concat(...projectInformation);
     // Get previous task of above tasks and not rated - 3rd Query
-    const prevTasksDetail = await this.getPreviousTasksDetails(arrReviewTasks);
+    const prevTasksDetail = await this.getPreviousTasksDetails(arrReviewTasks, this.milestoneTasks);
     // Get all tasks documents from tasks milestone - 4th Query
     const allTasksDocuments = await this.qmsCommon.getAllTaskDocuments(prevTasksDetail, projectInformation);
     const reviewerPendingTasks = [];
@@ -161,6 +185,7 @@ export class ReviewerDetailViewComponent implements OnInit {
           resource: element.AssignedTo ? element.AssignedTo.Title : '',
           resourceID: element.AssignedTo ? element.AssignedTo.ID : '',
           taskTitle: element.Title ? element.Title : '',
+          milestone: element.Milestone ? element.Milestone : '',
           SubMilestones: element.SubMilestones ? element.SubMilestones : '',
           taskID: element.ID ? element.ID : '',
           taskCompletionDate: taskDate,
@@ -268,7 +293,7 @@ export class ReviewerDetailViewComponent implements OnInit {
    *
    * @returns [] of previous tasks review tasks which are not rated
    */
-  async getPreviousTasksDetails(arrReviewTasks) {
+  async getPreviousTasksDetails(arrReviewTasks, milestoneTasks) {
     let prevTasksDetails = [];
     const tasks = await this.getPreviousTasks(arrReviewTasks);
     arrReviewTasks.forEach(task => {
@@ -278,7 +303,7 @@ export class ReviewerDetailViewComponent implements OnInit {
       for (const prevTaskTitle of prevTasks) {
         let preTasks = tasks.prevTasksDetail.filter(t => t[0] && t[0].Title === prevTaskTitle);
         // check if there are multiple next task of prev tasks
-        preTasks = preTasks.length > 0 ? preTasks[0][0].NextTasks.split(';#') : [];
+        preTasks = preTasks.length > 0 ? preTasks[0].length > 0 ?  preTasks[0][0].NextTasks ? preTasks[0][0].NextTasks.split(';#') : []: []: [];
         if (preTasks.length !== 1) {
           identifyMultipleTasksFlag = true;
         }
@@ -297,6 +322,9 @@ export class ReviewerDetailViewComponent implements OnInit {
       for (let index = 0; index < tasks.prevTasksDetail.length; index++) {
         if (tasks.prevTasksDetail[index].length > 0) {
           tasks.prevTasksDetail[index][0].reviewTask = tasks.reviewTasks[index];
+          const milestoneTask = milestoneTasks.find(t => t.Title === tasks.reviewTasks[index].Task);
+          tasks.prevTasksDetail[index][0].reviewTask.defaultSkill = tasks.reviewTasks[index].Task.indexOf('Review-') > -1 ?
+            'Review' : milestoneTask.DefaulSkill ? milestoneTask.DefaulSkill : '';
         }
       }
     });
@@ -328,7 +356,8 @@ export class ReviewerDetailViewComponent implements OnInit {
         formattedCompletionDate: element.formattedCompletionDate ? element.formattedCompletionDate : '',
         resourceID: element.resourceID,
         taskID: element.taskID,
-        reviewTask: element.reviewTask
+        reviewTask: element.reviewTask,
+        defaultSkill: element.defaultSkill
       });
     });
     this.colFilters(this.ReviewerDetail);

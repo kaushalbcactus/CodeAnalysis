@@ -28,45 +28,50 @@
 
 
 <p-treeTable [value]="resourceRows" [columns]="resourceColumns">
-    <ng-template pTemplate="header" let-columns>
+    <ng-template pTemplate="header" let-rowNode let-columns>
         <tr [ttRow]="rowNode">
-            <th *ngFor="let col of columns" [hidden]="!col.visibility">
+            <th *ngFor="let col of columns" [hidden]="!col.visibility" style="width:25%">
                 {{col.header}}
             </th>
-            <th>Average Rating</th>
-            <th></th>
+            <th style="width:75%">Average Rating</th>
+            <!-- <th></th> -->
         </tr>
     </ng-template>
     <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
         <tr>
-            <td *ngFor="let col of columns; let i = index" [hidden]="!col.visibility"
-                (click)="getResourceDetail(rowData, rowNode)">
+            <td *ngFor="let col of columns; let i = index" [hidden]="!col.visibility">
                 <p-treeTableToggler [rowNode]="rowNode" *ngIf="i == 0"></p-treeTableToggler>
                 {{rowData[col.field]}}
             </td>
-            <td class="hoverClick" title="View internal feedback"
+            <!-- <td class="hoverClick" title="View internal feedback"
                 (click)="getResourceScorecard(userFeedbackRef, rowData)">
                 <div class="cd-rating">
                     <span id="ratenow1">{{rowData['averageRating']}}</span>
                     <div class="star-white fa-star fa"></div>
                 </div>
                 <small>based on {{rowData['ratingCount']}} ratings</small>
+            </td> -->
+            <td>
+              <div>
+                <app-average-rating [tasks]="rowData.feedbackForMe" [headerLength]="ratingHeaderLength" (filter)="getResourceScorecard($event,userFeedbackRef, rowData)"></app-average-rating>
+              </div>
             </td>
-            <td class="commentsTextArea">
-             
-            </td>
+            <!-- <td class="commentsTextArea">
+
+            </td> -->
         </tr>
         <tr [hidden]="rowData['hideInnerTable']">
-            <td colspan=3>
+            <td colspan=2>
                 <div id="feedbackTable">
-                <app-feedback-byme #userFeedbackRef (feedbackData)="getFeedbackData($event,rowData)"></app-feedback-byme>
+                <!-- <app-feedback-byme #userFeedbackRef (feedbackData)="getFeedbackData($event,rowData)"></app-feedback-byme> -->
+                <app-user-feedback #userFeedbackRef ></app-user-feedback>
                 </div>
             </td>
     </tr>
     </ng-template>
     <ng-template pTemplate="emptymessage" let-columns="columns">
         <tr>
-            <td [attr.colspan]="3">
+            <td [attr.colspan]="2">
                 Please select Task Type and Resource
             </td>
         </tr>

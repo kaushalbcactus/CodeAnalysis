@@ -1,501 +1,475 @@
 <p class="error" *ngIf="error">{{errorMsg}}</p>
 <div>
-  <p-accordion [activeIndex]="index">
-    <p-accordionTab [selected]="true">
-      <p-header class="financeHeader">
-        <div class="ui-grid-row">
-          <div class="ui-grid-col-2">
-            Budget
-          </div>
-          <ng-container *ngFor="let budget of budgetData">
-            <div class="ui-grid-col-2">
-              {{budget.total}}
+    <p-accordion [activeIndex]="index">
+        <p-accordionTab [selected]="true">
+            <p-header class="financeHeader">
+                <div class="ui-grid-row">
+                    <div class="ui-grid-col-2">
+                        Budget
+                    </div>
+                    <ng-container *ngFor="let budget of budgetData">
+                        <div class="ui-grid-col-2">
+                            {{budget.total}}
+                        </div>
+                        <div class="ui-grid-col-2">
+                            {{budget.revenue}}
+                        </div>
+                        <div class="ui-grid-col-2">
+                            {{budget.oop}}
+                        </div>
+                        <div class="ui-grid-col-2">
+                            {{budget.tax}}
+                        </div>
+                    </ng-container>
+                </div>
+            </p-header>
+            <div>
+                <p>SOW number: {{sowNumber}}</p>
             </div>
-            <div class="ui-grid-col-2">
-              {{budget.revenue}}
+            <div class="hourlyTable" *ngIf="showHourly">
+                <div class="ui-grid-row">
+                    <div class="ui-grid-col-1">
+                        Rate
+                    </div>
+                    <div class="ui-grid-col-1 mr-5">
+                        <input [disabled]="isHourlyRateDisabled" [(ngModel)]="hourlyRate" type="number" style="width:100%" pInputText>
+                    </div>
+                    <div class="ui-grid-col-2">
+                        Overnight Request
+                    </div>
+                    <div class="ui-grid-col-2">
+                        <p-dropdown [disabled]="isHourlyOverNightDisabled" [options]="overNightRequest" [(ngModel)]="selectedOverNightRequest" placeholder="Please Select" [showClear]="true">
+                        </p-dropdown>
+                    </div>
+                    <div class="ui-grid-col-2">
+                        Budget Hours
+                    </div>
+                    <div class="ui-grid-col-1 mr-5">
+                        <input [attr.disabled]=true [(ngModel)]="hourlyBudgetHours" type="number" style="width:100%" pInputText>
+                    </div>
+                    <div class="ui-grid-col-2">
+                        <p-button type="button" styleClass="pmBtn" class="mr-5" [hidden]="isAddRateButtonHidden" label="Add Rate to Project" (click)="addRateToProject();">
+                        </p-button>
+                    </div>
+                </div>
             </div>
-            <div class="ui-grid-col-2">
-              {{budget.oop}}
-            </div>
-            <div class="ui-grid-col-2">
-              {{budget.tax}}
-            </div>
-          </ng-container>
-        </div>
-      </p-header>
-      <div>
-        <p>SOW number: {{sowNumber}}</p>
-      </div>
-      <div class="hourlyTable" *ngIf="showHourly">
-        <div class="ui-grid-row">
-          <div class="ui-grid-col-1">
-            Rate
-          </div>
-          <div class="ui-grid-col-1 mr-5">
-            <input [disabled]="isHourlyRateDisabled" [(ngModel)]="hourlyRate" type="number" style="width:100%"
-              pInputText>
-          </div>
-          <div class="ui-grid-col-2">
-            Overnight Request
-          </div>
-          <div class="ui-grid-col-2">
-            <p-dropdown [disabled]="isHourlyOverNightDisabled" [options]="overNightRequest"
-              [(ngModel)]="selectedOverNightRequest" placeholder="Please Select" [showClear]="true">
-            </p-dropdown>
-          </div>
-          <div class="ui-grid-col-2">
-            Budget Hours
-          </div>
-          <div class="ui-grid-col-1 mr-5">
-            <input [attr.disabled]=true [(ngModel)]="hourlyBudgetHours" type="number" style="width:100%" pInputText>
-          </div>
-          <div class="ui-grid-col-2">
-            <p-button type="button" styleClass="pmBtn" class="mr-5" [hidden]="isAddRateButtonHidden"
-              label="Add Rate to Project" (click)="addRateToProject();">
-            </p-button>
-          </div>
-        </div>
-      </div>
-      <p-table [value]="budgetData">
-        <ng-template pTemplate="header">
-          <tr>
-            <th></th>
-            <th>Total</th>
-            <th>Revenue</th>
-            <th>OOP</th>
-            <th>Tax</th>
-            <th>Budget Hours</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-rowData>
-          <tr>
-            <td>Current</td>
-            <td>{{rowData.total}}</td>
-            <td>{{rowData.revenue}}</td>
-            <td>{{rowData.oop}}</td>
-            <td>{{rowData.tax}}</td>
-            <td>{{rowData.budget_hours}}</td>
-          </tr>
-          <tr>
-            <td>
-              <p-button class="mt-20" [hidden]="isAddBudgetButtonHidden" label="Add Budget"
-                (click)="addBudgetToProject()" type="button" styleClass="pmBtn">
-              </p-button>
-            </td>
-            <td><input [attr.disabled]=true type="number" style="width:100%" pInputText></td>
-            <td><input [disabled]="isrevenueFieldDisabled" [(ngModel)]="updatedBudget" type="number" style="width:100%"
-                pInputText></td>
-            <td><input [attr.disabled]=true type="number" style="width:100%" pInputText></td>
-            <td><input [attr.disabled]=true type="number" style="width:100%" pInputText></td>
-            <td><input [disabled]="isBudgetHoursDisabled" [(ngModel)]="budgetHours" type="number" style="width:100%"
-                pInputText></td>
-          </tr>
-        </ng-template>
-      </p-table>
-    </p-accordionTab>
-    <p-accordionTab>
-      <p-header class="financeHeader">
-        <div class="ui-grid-row">
-          <div class="ui-grid-col-2">
-            PO
-          </div>
-          <div class="ui-grid-col-2">
-            {{poHeader.total}}
-          </div>
-          <div class="ui-grid-col-2">
-            {{poHeader.revenue}}
-          </div>
-          <div class="ui-grid-col-2">
-            {{poHeader.oop}}
-          </div>
-          <div class="ui-grid-col-2">
-            {{poHeader.tax}}
-          </div>
-        </div>
-      </p-header>
-      <div class="ui-grid-row">
-        <div class="ui-grid-col-4">
-          PO List
-        </div>
-        <div [hidden]="isAddToProjectHidden" class="ui-grid-col-4">
-          <p-dropdown filter="true" [options]="poList" placeholder="Select Po" [(ngModel)]="selectedPo"
-            resetFilterOnHide="true"></p-dropdown>
-        </div>
-        <div [hidden]="isAddToProjectHidden" class="ui-grid-col-4">
-          <p-button type="button" styleClass="pmBtn" class="mr-5" label="Add Po" appendTo="body"
-            (click)="addPoToProject()">
-          </p-button>
-        </div>
-      </div>
-      <div *ngIf="showPo">
-        <ng-container *ngFor="let poObj of poData">
-          <p-card *ngIf="poObj.poInfo[0].status !== 'Deleted'">
-            <p-table [value]=poObj.poInfo>
-              <ng-template pTemplate="header">
-                <tr>
-                  <th>Number-Name</th>
-                  <th>Total</th>
-                  <th>Revenue</th>
-                  <th>OOP</th>
-                  <th>Tax</th>
-                </tr>
-              </ng-template>
-              <ng-template pTemplate="body" let-rowData>
-                <tr>
-                  <td>{{rowData.poValue}}</td>
-                  <td>{{rowData.total}}</td>
-                  <td>{{rowData.revenue}}</td>
-                  <td>{{rowData.oop}}</td>
-                  <td>{{rowData.tax}}</td>
-                </tr>
-                <tr>
-                  <td>{{rowData.scValue}}</td>
-                  <td>{{rowData.scTotal}}</td>
-                  <td>{{rowData.scRevenue}}</td>
-                  <td>{{rowData.scOOP}}</td>
-                  <td>{{rowData.scTax}}</td>
-                </tr>
-                <tr>
-                  <td>
-                    <span *ngIf="rowData.showDelete"><i title="Delete PO from Project" class="pi pi-trash"
-                        style="font-size:2em;cursor: pointer;" (click)="removePO(poObj)"></i></span>
-                    <span *ngIf="rowData.showAdd"><i title="Reserve budget from PO" class="pi pi-plus-circle"
-                        style="font-size:2em;cursor: pointer;" (click)="schedulePo(poObj)"></i></span>
-                    <span *ngIf="rowData.showInvoice"><i title="Schedule Invoices on the PO" class="pi pi-file"
-                        style="font-size:2em;cursor: pointer;" (click)="createScheduleInvoice(poObj)"></i></span>
-                  </td>
-                  <td><input [(ngModel)]="rowData.poTotal" [attr.disabled]=true type="number" style="width:100%"
-                      pInputText>
-                  </td>
-                  <td><input [(ngModel)]="rowData.poRevenue" [disabled]="isPoRevenueDisabled" type="number"
-                      style="width:100%" pInputText></td>
-                  <td><input [(ngModel)]="rowData.poOOP" [attr.disabled]=true type="number" style="width:100%"
-                      pInputText>
-                  </td>
-                  <td><input [(ngModel)]="rowData.poTax" [attr.disabled]=true type="number" style="width:100%"
-                      pInputText>
-                  </td>
-                </tr>
-              </ng-template>
+            <p-table [value]="budgetData">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th></th>
+                        <th>Total</th>
+                        <th>Revenue</th>
+                        <th>OOP</th>
+                        <th>Tax</th>
+                        <th>Budget Hours</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-rowData>
+                    <tr>
+                        <td>Current</td>
+                        <td>{{rowData.total}}</td>
+                        <td>{{rowData.revenue}}</td>
+                        <td>{{rowData.oop}}</td>
+                        <td>{{rowData.tax}}</td>
+                        <td>{{rowData.budget_hours}}</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p-button class="mt-20" [hidden]="isAddBudgetButtonHidden || disableAddBudget" label="Add Budget" (click)="addBudgetToProject()" type="button" styleClass="pmBtn">
+                            </p-button>
+                        </td>
+                        <td><input [attr.disabled]=true type="number" style="width:100%" pInputText></td>
+                        <td><input [disabled]="isrevenueFieldDisabled" [(ngModel)]="updatedBudget" type="number" style="width:100%" pInputText></td>
+                        <td><input [attr.disabled]=true type="number" style="width:100%" pInputText></td>
+                        <td><input [attr.disabled]=true type="number" style="width:100%" pInputText></td>
+                        <td><input [disabled]="isBudgetHoursDisabled" [(ngModel)]="budgetHours" type="number" style="width:100%" pInputText></td>
+                    </tr>
+                </ng-template>
             </p-table>
-            <!-- <div>PO Information</div> -->
-            <p-table [value]=poObj.poInfoData>
-              <ng-template pTemplate="header">
-                <tr>
-                  <th>Inv Number</th>
-                  <th>Prf Number</th>
-                  <th>Date</th>
-                  <th>Amount</th>
-                  <th>Type</th>
-                  <th>Status</th>
-                  <th>POC</th>
-                  <th>Address</th>
-                  <th></th>
-                </tr>
-              </ng-template>
-              <ng-template pTemplate="body" let-rowData>
-                <tr>
-                  <td>
-                    <span *ngIf="rowData.inv_number && rowData.invUrl">
+        </p-accordionTab>
+        <p-accordionTab>
+            <p-header class="financeHeader">
+                <div class="ui-grid-row">
+                    <div class="ui-grid-col-2">
+                        PO
+                    </div>
+                    <div class="ui-grid-col-2">
+                        {{poHeader.total}}
+                    </div>
+                    <div class="ui-grid-col-2">
+                        {{poHeader.revenue}}
+                    </div>
+                    <div class="ui-grid-col-2">
+                        {{poHeader.oop}}
+                    </div>
+                    <div class="ui-grid-col-2">
+                        {{poHeader.tax}}
+                    </div>
+                </div>
+            </p-header>
+            <div class="ui-grid-row">
+                <div class="ui-grid-col-4">
+                    PO List
+                </div>
+                <div [hidden]="isAddToProjectHidden" class="ui-grid-col-4">
+                    <p-dropdown filter="true" [options]="poList" placeholder="Select Po" [(ngModel)]="selectedPo" resetFilterOnHide="true"></p-dropdown>
+                </div>
+                <div [hidden]="isAddToProjectHidden" class="ui-grid-col-4">
+                    <p-button type="button" styleClass="pmBtn" class="mr-5" label="Add Po" appendTo="body" (click)="addPoToProject()">
+                    </p-button>
+                </div>
+            </div>
+            <div *ngIf="showPo">
+                <ng-container *ngFor="let poObj of poData">
+                    <p-card *ngIf="poObj.poInfo[0].status !== 'Deleted'">
+                        <p-table [value]=poObj.poInfo>
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th>Number-Name</th>
+                                    <th>Total</th>
+                                    <th>Revenue</th>
+                                    <th>OOP</th>
+                                    <th>Tax</th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-rowData>
+                                <tr>
+                                    <td>{{rowData.poValue}}</td>
+                                    <td>{{rowData.total}}</td>
+                                    <td>{{rowData.revenue}}</td>
+                                    <td>{{rowData.oop}}</td>
+                                    <td>{{rowData.tax}}</td>
+                                </tr>
+                                <tr>
+                                    <td>{{rowData.scValue}}</td>
+                                    <td>{{rowData.scTotal}}</td>
+                                    <td>{{rowData.scRevenue}}</td>
+                                    <td>{{rowData.scOOP}}</td>
+                                    <td>{{rowData.scTax}}</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span *ngIf="rowData.showDelete"><i title="Delete PO from Project" class="pi pi-trash"
+                        style="font-size:2em;cursor: pointer;" (click)="removePO(poObj)"></i></span>
+                                        <span *ngIf="rowData.showAdd"><i title="Reserve budget from PO" class="pi pi-plus-circle"
+                        style="font-size:2em;cursor: pointer;" (click)="schedulePo(poObj)"></i></span>
+                                        <span *ngIf="rowData.showInvoice"><i title="Schedule Invoices on the PO" class="pi pi-file"
+                        style="font-size:2em;cursor: pointer;" (click)="createScheduleInvoice(poObj)"></i></span>
+                                    </td>
+                                    <td><input [(ngModel)]="rowData.poTotal" [attr.disabled]=true type="number" style="width:100%" pInputText>
+                                    </td>
+                                    <td><input [(ngModel)]="rowData.poRevenue" [disabled]="isPoRevenueDisabled" type="number" style="width:100%" pInputText></td>
+                                    <td><input [(ngModel)]="rowData.poOOP" [attr.disabled]=true type="number" style="width:100%" pInputText>
+                                    </td>
+                                    <td><input [(ngModel)]="rowData.poTax" [attr.disabled]=true type="number" style="width:100%" pInputText>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                        <!-- <div>PO Information</div> -->
+                        <p-table [value]=poObj.poInfoData>
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th>Inv Number</th>
+                                    <th>Prf Number</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>POC</th>
+                                    <th>Address</th>
+                                    <th></th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-rowData>
+                                <tr>
+                                    <td>
+                                        <span *ngIf="rowData.inv_number && rowData.invUrl">
                       <a [href]="rowData.invUrl" target="_blank"> {{rowData.inv_number}}</a>
                     </span>
-                    <span *ngIf="rowData.inv_number && !rowData.invUrl">
+                                        <span *ngIf="rowData.inv_number && !rowData.invUrl">
                       {{rowData.inv_number}}
                     </span>
-                  </td>
-                  <td>
-                    <span *ngIf="rowData.prf_number && rowData.prfUrl">
+                                    </td>
+                                    <td>
+                                        <span *ngIf="rowData.prf_number && rowData.prfUrl">
                       <a [href]="rowData.prfUrl" target="_blank"> {{rowData.prf_number}}</a>
                     </span>
-                    <span *ngIf="rowData.prf_number && !rowData.prfUrl">
+                                        <span *ngIf="rowData.prf_number && !rowData.prfUrl">
                       {{rowData.prf_number}}
                     </span>
-                  </td>
-                  <td>{{rowData.date | date:'MMM dd, yyyy'}}</td>
-                  <td>{{rowData.amount}}</td>
-                  <td>{{rowData.type}}</td>
-                  <td>{{rowData.status}}</td>
-                  <td>{{rowData.pocText}}</td>
-                  <td>{{rowData.address}}</td>
-                  <td>
-                    <i *ngIf="rowData.isInvoiceItemConfirm"  class="pi pi-check"  style="font-size:2em;cursor: pointer;"
-                      (click)="confirmInvoiceItem(rowData)"></i>
-                    <i *ngIf="rowData.isInvoiceItemEdit"  class="pi pi-pencil"  style="font-size:2em;cursor: pointer;"
-                      (click)="editInvoiceItem(rowData)"></i>
-                  </td>
-                </tr>
-              </ng-template>
+                                    </td>
+                                    <td>{{rowData.date | date:'MMM dd, yyyy'}}</td>
+                                    <td>{{rowData.amount}}</td>
+                                    <td>{{rowData.type}}</td>
+                                    <td>{{rowData.status}}</td>
+                                    <td>{{rowData.pocText}}</td>
+                                    <td>{{rowData.address}}</td>
+                                    <td>
+                                        <i *ngIf="rowData.isInvoiceItemConfirm"  class="pi pi-check"  style="font-size:2em;cursor: pointer;" (click)="confirmInvoiceItem(rowData)"></i>
+                                        <i *ngIf="rowData.isInvoiceItemEdit"  class="pi pi-pencil"  style="font-size:2em;cursor: pointer;" (click)="editInvoiceItem(rowData)"></i>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </p-card>
+                </ng-container>
+            </div>
+        </p-accordionTab>
+        <p-accordionTab>
+            <p-header class="financeHeader">
+                <div class="ui-grid-row">
+                    <div class="ui-grid-col-2">
+                        Unassigned
+                    </div>
+                    <ng-container *ngFor="let budget of unassignedBudget">
+                        <div class="ui-grid-col-2">
+                            {{budget.total}}
+                        </div>
+                        <div class="ui-grid-col-2">
+                            {{budget.revenue}}
+                        </div>
+                        <div class="ui-grid-col-2">
+                            {{budget.oop}}
+                        </div>
+                        <div class="ui-grid-col-2">
+                            {{budget.tax}}
+                        </div>
+                    </ng-container>
+                </div>
+            </p-header>
+            <p-table *ngIf="showUnAssigned" [value]="unassignedBudget">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th></th>
+                        <th>Total</th>
+                        <th>Revenue</th>
+                        <th>OOP</th>
+                        <th>Tax</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-rowData>
+                    <tr>
+                        <td>Unassigned</td>
+                        <td>{{rowData.total}}</td>
+                        <td>{{rowData.revenue}}</td>
+                        <td>{{rowData.oop}}</td>
+                        <td>{{rowData.tax}}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5">
+                            <p-button [hidden]="hideRemoveButton || disableAddBudget" class="mt-20" label="Reduce project budget" (click)="removeUnassigned()" type="button" styleClass="pmBtn">
+                            </p-button>
+                            <div [hidden]="!hideRemoveButton">
+                                Budget reduction approval pending. Please either approve or reject the request.
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
             </p-table>
-          </p-card>
-        </ng-container>
-      </div>
-    </p-accordionTab>
-    <p-accordionTab>
-      <p-header class="financeHeader">
-        <div class="ui-grid-row">
-          <div class="ui-grid-col-2">
-            Unassigned
-          </div>
-          <ng-container *ngFor="let budget of unassignedBudget">
-            <div class="ui-grid-col-2">
-              {{budget.total}}
-            </div>
-            <div class="ui-grid-col-2">
-              {{budget.revenue}}
-            </div>
-            <div class="ui-grid-col-2">
-              {{budget.oop}}
-            </div>
-            <div class="ui-grid-col-2">
-              {{budget.tax}}
-            </div>
-          </ng-container>
-        </div>
-      </p-header>
-      <p-table *ngIf="showUnAssigned" [value]="unassignedBudget">
-        <ng-template pTemplate="header">
-          <tr>
-            <th></th>
-            <th>Total</th>
-            <th>Revenue</th>
-            <th>OOP</th>
-            <th>Tax</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-rowData>
-          <tr>
-            <td>Unassigned</td>
-            <td>{{rowData.total}}</td>
-            <td>{{rowData.revenue}}</td>
-            <td>{{rowData.oop}}</td>
-            <td>{{rowData.tax}}</td>
-          </tr>
-          <tr>
-            <td colspan="5">
-              <p-button [hidden]="hideRemoveButton" class="mt-20" label="Reduce project budget"
-                (click)="removeUnassigned()" type="button" styleClass="pmBtn">
-              </p-button>
-              <div [hidden]="!hideRemoveButton">
-                Budget reduction approval pending. Please either approve or reject the request.
-              </div>
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
 
-    </p-accordionTab>
-  </p-accordion>
-  <div *ngIf="!isPOEdit">
-    <div class="ui-grid-row mt-20" style="float:right">
-      <p-button *ngIf="showSave" type="button" styleClass="pmBtn" (click)="savePo()" label="Save"></p-button>
-      <!-- <p-button class="mr-5" type="button" styleClass="pmBtn"  label="Cancel"></p-button> -->
+        </p-accordionTab>
+    </p-accordion>
+    <div class="col-grid" *ngIf="!isPOEdit">
+        <div class="p-col-12">
+            <p-button *ngIf="showSave" type="button"  styleClass="pmBtn" (click)="savePo()" label="Save"></p-button>
+            <!-- <p-button class="mr-5" type="button" styleClass="pmBtn"  label="Cancel"></p-button> -->
+        </div>
     </div>
-  </div>
-  <div *ngIf="isPOEdit">
-    <div class="ui-grid-row mt-20" style="float:right">
-      <p-button *ngIf="showSave" type="button" styleClass="pmBtn" (click)="saveUpdatePO()" label="Save"></p-button>
+    <div class="col-grid" *ngIf="isPOEdit">
+        <div class="p-col-12">
+            <p-button *ngIf="showSave" type="button"  styleClass="pmBtn" (click)="saveUpdatePO()" label="Save"></p-button>
+        </div>
     </div>
-  </div>
 </div>
 <p-dialog [header]="invoiceHeader" appendTo='body' [(visible)]="showAddInvoiceDetails" [style]="{width: '500px'}">
-  <form [formGroup]='addPOForm'>
-    <div class="ui-grid-row mt-20">
-      <div class="ui-grid-col-3">Date</div>
-      <p-calendar  class="pcalendarClass" formControlName="poDate" [disabledDays]="[0,6]"   [readonlyInput]="true"  
-        dateFormat="M dd, yy"   appendTo="body"   hideOnDateTimeSelect="true"   [required]="true"   [showIcon]="true"  
-        [showOnFocus]="false"   [monthNavigator]="true"   [yearNavigator]="true"     yearRange="{{pmObject.yearRange}}"
-        [inputStyle]="{'width': '80%', 'min-width': '80%'}"  inputStyleClass="ngPrime-red">
-      </p-calendar>
-      <div class="error" *ngIf="!addPOForm.controls['poDate'].valid&&addPOForm.controls['poDate'].touched">
-        Please select date.</div>
-    </div>
-    <div class="ui-grid-row mt-20">
-      <div class="ui-grid-col-3">Amount</div>
-      <input class="mr-5" type="number" size="30" formControlName="amount" placeholder="Amount" pInputText>
-      <div class="error" *ngIf="!addPOForm.controls['amount'].valid&&addPOForm.controls['amount'].touched">
-        Please enter amount.</div>
-    </div>
-    <div class="ui-grid-row mt-20">
-      <div class="ui-grid-col-3">Client POC</div>
-      <p-dropdown [options]="primaryPoc" filter="true" formControlName="primarypoc" placeholder="Select POC"
-        resetFilterOnHide="true">
-      </p-dropdown>
-      <div class="error" *ngIf="!addPOForm.controls['primarypoc'].valid&&addPOForm.controls['primarypoc'].touched">
-        Please select poc.</div>
-    </div>
-    <div class="ui-grid-row mt-20">
-      <div class="ui-grid-col-3">Address</div>
-      <p-dropdown [options]="address" formControlName="address" placeholder="Select Address"></p-dropdown>
-      <div class="error" *ngIf="!addPOForm.controls['address'].valid&&addPOForm.controls['address'].touched">
-        Please select address</div>
-    </div>
-    <div class="error" *ngIf="addInvoiceError">{{addInvoiceErrorMsg}}</div>
-  </form>
-  <p-footer>
-    <button type="button" pButton styleClass="pmBtn" (click)="addInvoiceDetails()" value="Post Data"
-      label="Save"></button>
-    <button type="button" pButton styleClass="pmBtn" (click)="showAddInvoiceDetails=false" label="Cancel">
+    <form [formGroup]='addPOForm'>
+        <div class="ui-grid-row mt-20">
+            <div class="ui-grid-col-3">Date</div>
+            <p-calendar  class="pcalendarClass" formControlName="poDate" [disabledDays]="[0,6]"   [readonlyInput]="true"   dateFormat="M dd, yy"   appendTo="body"   hideOnDateTimeSelect="true"   [required]="true"   [showIcon]="true"   [showOnFocus]="false"   [monthNavigator]="true"
+                  [yearNavigator]="true"     yearRange="{{pmObject.yearRange}}" [inputStyle]="{'width': '80%', 'min-width': '80%'}"  inputStyleClass="ngPrime-red">
+                </p-calendar>
+                <div class="error" *ngIf="!addPOForm.controls['poDate'].valid&&addPOForm.controls['poDate'].touched">
+                    Please select date.</div>
+        </div>
+        <div class="ui-grid-row mt-20">
+            <div class="ui-grid-col-3">Amount</div>
+            <input class="mr-5" type="number" size="30" formControlName="amount" placeholder="Amount" pInputText>
+            <div class="error" *ngIf="!addPOForm.controls['amount'].valid&&addPOForm.controls['amount'].touched">
+                Please enter amount.</div>
+        </div>
+        <div class="ui-grid-row mt-20">
+            <div class="ui-grid-col-3">Client POC</div>
+            <p-dropdown [options]="primaryPoc" filter="true" formControlName="primarypoc" placeholder="Select POC" resetFilterOnHide="true">
+            </p-dropdown>
+            <div class="error" *ngIf="!addPOForm.controls['primarypoc'].valid&&addPOForm.controls['primarypoc'].touched">
+                Please select poc.</div>
+        </div>
+        <div class="ui-grid-row mt-20">
+            <div class="ui-grid-col-3">Address</div>
+            <p-dropdown [options]="address" formControlName="address" placeholder="Select Address"></p-dropdown>
+            <div class="error" *ngIf="!addPOForm.controls['address'].valid&&addPOForm.controls['address'].touched">
+                Please select address</div>
+        </div>
+        <div class="error" *ngIf="addInvoiceError">{{addInvoiceErrorMsg}}</div>
+    </form>
+    <p-footer>
+        <button type="button" pButton styleClass="pmBtn" (click)="addInvoiceDetails()" value="Post Data" label="Save"></button>
+        <button type="button" pButton styleClass="pmBtn" (click)="showAddInvoiceDetails=false" label="Cancel">
     </button>
-  </p-footer>
+    </p-footer>
 </p-dialog>
 
 <p-dialog [(visible)]="showBudgetIncrease" appendTo='body' [style]="{width: '500px'}">
-  <p-header>
-    Budget Increment Popup
-  </p-header>
-  <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
-    <div class="ui-grid-col-12">
-      Please select the reason and provide comments for budget increase.
+    <p-header>
+        Budget Increment Popup
+    </p-header>
+    <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
+        <div class="ui-grid-col-12">
+            Please select the reason and provide comments for budget increase.
+        </div>
     </div>
-  </div>
-  <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
-    <div class="ui-grid-col-4"><span class="compulsory">*</span>Reason Type</div>
-    <div class="ui-grid-col-4">
-      <p-dropdown [(ngModel)]="selectedReasonType" [options]="budgetIncreaseArray" placeholder="Please Select"
-        [showClear]="true" [filter]="true" resetFilterOnHide="true"></p-dropdown>
+    <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
+        <div class="ui-grid-col-4"><span class="compulsory">*</span>Reason Type</div>
+        <div class="ui-grid-col-4">
+            <p-dropdown [(ngModel)]="selectedReasonType" [options]="budgetIncreaseArray" placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true"></p-dropdown>
+        </div>
     </div>
-  </div>
-  <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
-    <div class="ui-grid-col-4"><span class="compulsory">*</span>Reason</div>
-    <div class="ui-grid-col-4">
-      <div class="floatLeft">
-        <textarea [(ngModel)]="selectedReason" rows="3" cols="30"></textarea>
-      </div>
+    <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
+        <div class="ui-grid-col-4"><span class="compulsory">*</span>Reason</div>
+        <div class="ui-grid-col-4">
+            <div class="floatLeft">
+                <textarea [(ngModel)]="selectedReason" rows="3" cols="30"></textarea>
+            </div>
+        </div>
     </div>
-  </div>
-  <p-footer>
-    <p-button type="button" styleClass="pmBtn" (click)="increaseBudget()" label="Confirm"></p-button>
-    <p-button type="button" styleClass="pmBtn" (click)="showBudgetIncrease=false" label="Cancel">
-    </p-button>
-  </p-footer>
+    <p-footer>
+        <p-button type="button" styleClass="pmBtn" (click)="increaseBudget()" label="Confirm"></p-button>
+        <p-button type="button" styleClass="pmBtn" (click)="showBudgetIncrease=false" label="Cancel">
+        </p-button>
+    </p-footer>
 </p-dialog>
 
 <p-dialog *ngIf="showReduction" [(visible)]="showReduction" appendTo='body' [style]="{width: '500px'}">
-  <p-header>
-    Budget Reduction Popup
-  </p-header>
-  <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
-    <div class="ui-grid-col-12">
-      Are you sure you want to remove the un-assigned budget from the project ?
+    <p-header>
+        Budget Reduction Popup
+    </p-header>
+    <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
+        <div class="ui-grid-col-12">
+            Are you sure you want to remove the un-assigned budget from the project ?
+        </div>
     </div>
-  </div>
-  <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
-    <div class="ui-grid-col-12">
-      Note: If the project is already confirmed then an approval will be sent to CM Level 2 for approving the budget
-      reduction.
+    <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
+        <div class="ui-grid-col-12">
+            Note: If the project is already confirmed then an approval will be sent to CM Level 2 for approving the budget reduction.
+        </div>
     </div>
-  </div>
-  <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
-    <div class="ui-grid-col-4"><span class="compulsory">*</span>Reason Type</div>
-    <div class="ui-grid-col-4">
-      <p-dropdown [(ngModel)]="selectedReasonType" [options]="budgetDecreaseArray" placeholder="Please Select"
-        [showClear]="true" [filter]="true" resetFilterOnHide="true"></p-dropdown>
+    <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
+        <div class="ui-grid-col-4"><span class="compulsory">*</span>Reason Type</div>
+        <div class="ui-grid-col-4">
+            <p-dropdown [(ngModel)]="selectedReasonType" [options]="budgetDecreaseArray" placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true"></p-dropdown>
+        </div>
     </div>
-  </div>
-  <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
-    <div class="ui-grid-col-4"><span class="compulsory">*</span>Reason</div>
-    <div class="ui-grid-col-4">
-      <div class="floatLeft">
-        <textarea [(ngModel)]="selectedReason" rows="3" cols="30"></textarea>
-      </div>
+    <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
+        <div class="ui-grid-col-4"><span class="compulsory">*</span>Reason</div>
+        <div class="ui-grid-col-4">
+            <div class="floatLeft">
+                <textarea [(ngModel)]="selectedReason" rows="3" cols="30"></textarea>
+            </div>
+        </div>
     </div>
-  </div>
-  <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
-    <!-- <div class="ui-grid-col-12"> -->
-    <div class="ui-grid-col-4"><span>Reduce budget hours from </span><span>{{budgetData[0].budget_hours}}</span> to
-    </div>
-    <div class="ui-grid-col-4">
-      <input class="mr-5" type="number" [(ngModel)]="newBudgetHrs" size="30" placeholder="New budget hrs" pInputText>
-    </div>
+    <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
+        <!-- <div class="ui-grid-col-12"> -->
+        <div class="ui-grid-col-4"><span>Reduce budget hours from </span><span>{{budgetData[0].budget_hours}}</span> to
+        </div>
+        <div class="ui-grid-col-4">
+            <input class="mr-5" type="number" [(ngModel)]="newBudgetHrs" size="30" placeholder="New budget hrs" pInputText>
+        </div>
 
-    <!-- </div> -->
-    <!-- <div class="ui-grid-col-4">
+        <!-- </div> -->
+        <!-- <div class="ui-grid-col-4">
           <div class="floatLeft">
             <textarea [(ngModel)]="selectedReason" rows="3" cols="30"></textarea>
           </div>
         </div> -->
-  </div>
-  <p-footer>
-    <p-button type="button" styleClass="pmBtn" (click)="reduceBudget()" label="Confirm"></p-button>
-    <p-button type="button" styleClass="pmBtn" (click)="showReduction=false" label="Cancel">
-    </p-button>
-  </p-footer>
+    </div>
+    <p-footer>
+        <p-button type="button" styleClass="pmBtn" (click)="reduceBudget()" label="Confirm"></p-button>
+        <p-button type="button" styleClass="pmBtn" (click)="showReduction=false" label="Cancel">
+        </p-button>
+    </p-footer>
 </p-dialog>
 
-<p-dialog *ngIf="relatedInvoiceLinkingPopup" [(visible)]="relatedInvoiceLinkingPopup" appendTo='body'
-  [style]="{width: '500px'}">
-  <p-header>
-    Advance invoice tagging decision
-  </p-header>
-  <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
-    <div class="ui-grid-col-12">
-      There is an advance invoice existing on this PO. Do you want to tag the project to that invoice or create a new
-      schedule
-      ?
+<p-dialog *ngIf="relatedInvoiceLinkingPopup" [(visible)]="relatedInvoiceLinkingPopup" appendTo='body' [style]="{width: '500px'}">
+    <p-header>
+        Advance invoice tagging decision
+    </p-header>
+    <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
+        <div class="ui-grid-col-12">
+            There is an advance invoice existing on this PO. Do you want to tag the project to that invoice or create a new schedule ?
+        </div>
     </div>
-  </div>
-  <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
-    <div class="ui-grid-col-12">
-      Note: Ideally the project should be tagged to the advance invoice rather than scheduling new invoice on the PO.
+    <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
+        <div class="ui-grid-col-12">
+            Note: Ideally the project should be tagged to the advance invoice rather than scheduling new invoice on the PO.
+        </div>
     </div>
-  </div>
-  <p-footer>
-    <button type="button" class="pmBtn" pButton (click)="tagExistingInv()" label="Tag to existing"></button>
-    <button type="button" class="pmBtn" pButton (click)="scheduleNew()" label="Schedule New Invoice"></button>
-    <button type="button" class="pmBtn" pButton (click)="relatedInvoiceLinkingPopup=false" label="Cancel"></button>
-  </p-footer>
+    <p-footer>
+        <button type="button" class="pmBtn" pButton (click)="tagExistingInv()" label="Tag to existing"></button>
+        <button type="button" class="pmBtn" pButton (click)="scheduleNew()" label="Schedule New Invoice"></button>
+        <button type="button" class="pmBtn" pButton (click)="relatedInvoiceLinkingPopup=false" label="Cancel"></button>
+    </p-footer>
 </p-dialog>
 
 <p-dialog *ngIf="tagExistingInvSection" [(visible)]="tagExistingInvSection" appendTo='body' [style]="{width: '500px'}">
-  <p-header>
-    Tag Existing Invoice
-  </p-header>
+    <p-header>
+        Tag Existing Invoice
+    </p-header>
 
-  <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
-    <div class="ui-grid-col-4"><span class="compulsory">*</span>Invoice List</div>
-    <div class="ui-grid-col-4">
-      <div class="floatLeft">
-        <p-dropdown [(ngModel)]="advanceInvID" (onChange)="setInvData($event)" [options]="advanceInvArray"
-          placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true"></p-dropdown>
-      </div>
+    <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
+        <div class="ui-grid-col-4"><span class="compulsory">*</span>Invoice List</div>
+        <div class="ui-grid-col-4">
+            <div class="floatLeft">
+                <p-dropdown [(ngModel)]="advanceInvID" (onChange)="setInvData($event)" [options]="advanceInvArray" placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true"></p-dropdown>
+            </div>
+        </div>
     </div>
-  </div>
-  <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
-    <div class="ui-grid-col-4"><span class="compulsory">*</span>Inv Date</div>
-    <div class="ui-grid-col-4">
-      <div class="floatLeft">
-        <input disabled [(ngModel)]="existingInvDate" type="text" style="width:100%" pInputText>
-      </div>
+    <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
+        <div class="ui-grid-col-4"><span class="compulsory">*</span>Inv Date</div>
+        <div class="ui-grid-col-4">
+            <div class="floatLeft">
+                <input disabled [(ngModel)]="existingInvDate" type="text" style="width:100%" pInputText>
+            </div>
+        </div>
     </div>
-  </div>
-  <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
-    <div class="ui-grid-col-4"><span class="compulsory">*</span>Inv Amount</div>
-    <div class="ui-grid-col-4">
-      <div class="floatLeft">
-        <input disabled [(ngModel)]="existingInvAmount" type="number" style="width:100%" pInputText>
-      </div>
+    <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
+        <div class="ui-grid-col-4"><span class="compulsory">*</span>Inv Amount</div>
+        <div class="ui-grid-col-4">
+            <div class="floatLeft">
+                <input disabled [(ngModel)]="existingInvAmount" type="number" style="width:100%" pInputText>
+            </div>
+        </div>
     </div>
-  </div>
-  <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
-    <div class="ui-grid-col-4"><span class="compulsory">*</span>Balance Amount</div>
-    <div class="ui-grid-col-4">
-      <div class="floatLeft">
-        <input disabled [(ngModel)]="invBalance" type="number" style="width:100%" pInputText>
-      </div>
+    <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
+        <div class="ui-grid-col-4"><span class="compulsory">*</span>Balance Amount</div>
+        <div class="ui-grid-col-4">
+            <div class="floatLeft">
+                <input disabled [(ngModel)]="invBalance" type="number" style="width:100%" pInputText>
+            </div>
+        </div>
     </div>
-  </div>
-  <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
-    <div class="ui-grid-col-4"><span class="compulsory">*</span>Tag Amount</div>
-    <div class="ui-grid-col-4">
-      <div class="floatLeft">
-        <input [(ngModel)]="newInvAmount" type="number" style="width:100%" pInputText>
-      </div>
+    <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
+        <div class="ui-grid-col-4"><span class="compulsory">*</span>Tag Amount</div>
+        <div class="ui-grid-col-4">
+            <div class="floatLeft">
+                <input [(ngModel)]="newInvAmount" type="number" style="width:100%" pInputText>
+            </div>
+        </div>
     </div>
-  </div>
-  <p-footer>
-    <p-button type="button" styleClass="pmBtn" (click)="tagToInv()" label="Tag to invoice"></p-button>
-    <p-button type="button" styleClass="pmBtn" (click)="tagExistingInvSection=false" label="Cancel"></p-button>
-  </p-footer>
+    <p-footer>
+        <p-button type="button" styleClass="pmBtn" (click)="tagToInv()" label="Tag to invoice"></p-button>
+        <p-button type="button" styleClass="pmBtn" (click)="tagExistingInvSection=false" label="Cancel"></p-button>
+    </p-footer>
 </p-dialog>
 
 

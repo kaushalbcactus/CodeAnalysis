@@ -1,19 +1,21 @@
 <div id="managerContent">
   <app-filters (callApplyFilter)="reloadPage($event)"></app-filters>
-  <a (click)="downloadExcel()" class="download-worksheet td-none"><i class="fa fa-download"
-      aria-hidden="true"></i>
-    Download worksheet</a>
+  <div class="downloadbutton download-worksheet">
+    <a class="refreshButton hoverClick " (click)="initialiseManagerView()"> <i class="fa fa-refresh" aria-hidden="true"></i> </a>
+    <a class="hoverClick"(click)="downloadExcel()"> <i class="fa fa-download" aria-hidden="true"></i> </a>
+  </div>
+
   <div class="clear"></div>
 
   <p-toast position="top-right"></p-toast>
   <p-treeTable [value]="feedbacksRows" [columns]="feedbacksColumns" [hidden] = "hideTable">
-    <ng-template pTemplate="header" let-columns>
+    <ng-template pTemplate="header" let-columns let-rowNode>
       <tr [ttRow]="rowNode">
-        <th *ngFor="let col of columns" [hidden]="!col.visibility">
+        <th *ngFor="let col of columns" [hidden]="!col.visibility" style="width:20%">
           {{col.header}}
         </th>
-        <th>Average Rating</th>
-        <th></th>
+        <th style="width:55%">Average Rating</th>
+        <th style="width:25%"></th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
@@ -22,12 +24,15 @@
           <p-treeTableToggler  [id]="rowNode.node.data.userId" [rowNode]="rowNode" *ngIf="i == 0"></p-treeTableToggler>
           {{rowData[col.field]}}
         </td>
-        <td class="hoverClick" title="View internal feedback" (click)="getResourceScorecard(userFeedbackRef, rowData)">
-          <div class="cd-rating">
+        <td>
+          <!-- <div class="cd-rating">
             <span id="ratenow1">{{rowData['averageRating']}}</span>
             <div class="star-white fa-star fa"></div>
           </div>
-          <small>based on {{rowData['ratingCount']}} ratings</small>
+          <small>based on {{rowData['ratingCount']}} ratings</small> -->
+          <div>
+            <app-average-rating [tasks]="rowData.feedbackForMe" [headerLength]="ratingHeaderLength" (filter)="getResourceScorecard($event,userFeedbackRef, rowData)"></app-average-rating>
+          </div>
         </td>
         <td class="commentsTextArea">
           <a class="download-worksheet td-none button"
@@ -83,10 +88,13 @@
             <ng-container *ngIf="col.field != '' && col.field == 'userName'">
               {{rowData[col.field]}}
             </ng-container>
-            <ng-container *ngIf="col.field == 'averageRating'">
+            <!-- <ng-container *ngIf="col.field == 'averageRating'">
               <span id="ratenow1">{{rowData[col.field]}}</span>
               <small> based on {{rowData['ratingCount']}} ratings</small>
-            </ng-container>
+            </ng-container> -->
+            <!-- <ng-container *ngIf="col.field == 'averageRating'">
+              <app-average-rating [tasks]="rowData.feedbackForMe" [headerLength]="ratingHeaderLength" (filter)="getResourceScorecard($event,userFeedbackRef, rowData)"></app-average-rating>
+            </ng-container> -->
           </td>
           <td *ngIf="rowData['userFeedback'].length > 0">
             <p-table [columns]="innerTable" [value]="rowData['userFeedback']">
@@ -113,6 +121,9 @@
               {{  rowData1.Feedbackby }}
             </td>
             <td>
+              {{  rowData1.EvaluatorSkill }}
+            </td>
+            <td>
               {{  rowData1.Rating }}
             </td>
             <td>
@@ -134,127 +145,6 @@
     </p-table>
   </div>
 </div>
-
-<!-- <table id="downloadManagerTable" [hidden]="true" class="user-tabular-data-screen-3" cellpadding="0" cellspacing="0">
-  <thead>
-    <tr>
-      <th>Resource</th>
-      <th></th>
-      <th>Average Rating</th>
-    </tr>
-  </thead>
-  <tbody *ngFor="let feedback of internalFeedbacks">
-    <tr>
-      <th>{{feedback.resource.userName}}</th>
-      <td></td>
-      <td>{{feedback.averageRating}} based on {{feedback.ratingCount}} ratings</td>
-    </tr>
-    <tr>
-      <th colspan=2> Internal Feedback </th>
-    </tr>
-    <tr>
-      <td colspan=2>
-        <table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Task</th>
-              <th>Type</th>
-              <th>Feedback By</th>
-              <th>Rating</th>
-              <th>Comments</th>
-              <th>Parameters</th>
-              <th>Score</th>
-            </tr>
-          </thead>
-          <tbody *ngFor="let element of feedback.arrScorecard">
-            <tr>
-              <td>
-                {{element.Created | date : 'd MMM, yyyy'}}
-              </td>
-              <td>
-                {{element.Title}}
-              </td>
-              <td>
-                {{element.FeedbackType}}
-              </td>
-              <td>
-                {{element.Author.Title}}
-              </td>
-              <td>
-                {{element.AverageRating}}
-              </td>
-              <td>
-                {{element.Comments}}
-              </td>
-              <td [innerHTML]="element.ParameterRating">
-              </td>
-              <td [innerHTML]="element.Value">
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </td>
-    </tr>
-    <tr>
-      <th colspan=2> Client Dissatisfaction</th>
-    </tr>
-    <tr>
-      <td colspan=2>
-        <table>
-          <thead>
-            <tr>
-              <th>Complaint ID</th>
-              <th>Project Code</th>
-              <th>Sent Date</th>
-              <th>Sent By</th>
-              <th>Status</th>
-              <th>Accountable</th>
-              <th>CD Category </th>
-              <th>Business Impact</th>
-              <th>Comments</th>
-              <th>Root Cause Analysis</th>
-              <th>Corrective Actions</th>
-              <th>Preventive Actions</th>
-            </tr>
-          </thead>
-          <tbody *ngFor="let element of feedback.externalQC">
-            <tr>
-              <td>
-                {{element.ID}}
-              </td>
-              <td>
-                {{element.Title}}
-              </td>
-              <td>
-                {{element.SentDate | date : 'd MMM, yyyy'}}
-              </td>
-              <td>
-                {{element.SentBy.Title }}
-              </td>
-              <td>
-                {{element.Status}}
-              </td>
-              <td>
-                {{element.Category}}
-              </td>
-              <td>
-                {{element.SeverityLevel}}
-              </td>
-              <td> {{element.BusinessImpact}} </td>
-              <td> {{element.Comments}} </td>
-              <td> {{element.RootCauseAnalysis}} </td>
-              <td> {{element.CorrectiveActions}} </td>
-              <td> {{element.PreventiveActions}} </td>
-            </tr>
-          </tbody>
-        </table>
-      </td>
-    </tr>
-    <tr></tr>
-  </tbody>
-</table> -->
-
 
 <ng-template #popupContent let-modal>
   <div class="modal-body">

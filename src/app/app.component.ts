@@ -98,7 +98,7 @@ export class AppComponent implements OnDestroy {
     this.globalService.currentUser.userId = window.location.href.indexOf('localhost') > -1 ? 9 : _spPageContextInfo.userId;
     this.globalService.currentUser.email = window.location.href.indexOf('localhost') > -1 ?
       'sneha.danduk@cactusglobal.com' : _spPageContextInfo.userEmail;
-    this.globalService.currentUser.title = window.location.href.indexOf('localhost') > -1 ? 'Sneha' : _spPageContextInfo.userDisplayName;
+    this.globalService.currentUser.title = window.location.href.indexOf('localhost') > -1 ? 'Ashish' : _spPageContextInfo.userDisplayName;
     this.spService.setBaseUrl(null);
     this.common.SetNewrelic('RootApp', 'initSPLoggedInUser', 'getUserInfo');
     const currentUserInfo = await this.spService.getUserInfo(this.globalService.currentUser.userId);

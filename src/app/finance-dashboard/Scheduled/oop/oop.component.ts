@@ -522,8 +522,12 @@ export class OopComponent implements OnInit, OnDestroy {
         const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
         const last3Days = this.commonService.getLastWorkingDay(3, new Date());
         const todaysDateTimeZero = new Date();
+        const projectData = this.projectInfoData.find(e => e.ProjectCode === data.ProjectCode);
         todaysDateTimeZero.setHours(0, 0, 0, 0);
-        if (date >= last3Days && date < lastDay && retPO && new Date(retPO.POExpiryDate) >= todaysDateTimeZero) {
+        if (date >= last3Days && date < lastDay && retPO && new Date(retPO.POExpiryDate) >= todaysDateTimeZero && 
+        (projectData && projectData.Status !== this.constantService.projectList.status.InDiscussion &&
+            projectData.Status !== this.constantService.projectList.status.AwaitingCancelApproval && 
+            projectData.Status !== this.constantService.projectList.status.OnHold)) {
             // if (date > last3Days && retPO && new Date(retPO.POExpiryDate) >= new Date()) {
             this.items.push({ label: 'Confirm Invoice', command: (e) => this.openMenuContent(e, data) });
         } else {

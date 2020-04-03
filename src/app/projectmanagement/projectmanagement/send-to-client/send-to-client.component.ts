@@ -199,7 +199,7 @@ export class SendToClientComponent implements OnInit {
   async closeTaskWithStatus(task, options, unt) {
     const isActionRequired = await this.commonService.checkTaskStatus(task);
     if (isActionRequired) {
-      debugger;
+    
       let batchUrl = [];
 
       if (task.SubMilestones) {

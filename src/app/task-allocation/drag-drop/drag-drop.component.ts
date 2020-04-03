@@ -81,7 +81,6 @@ export class DragDropComponent implements OnInit {
     private constants: ConstantsService,
     private taskAllocationService: TaskAllocationConstantsService,
     private messageService: MessageService,
-    private taskCommonService: TaskAllocationCommonService,
     private commonService: CommonService) { }
 
   ngOnInit() {
@@ -115,9 +114,13 @@ export class DragDropComponent implements OnInit {
           links = this.loadLinks(element.data, links).splice(0);
           this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links = [...links];
         }
+        if (element.data.type === 'milestone') {
+          this.milestoneIndex++;
+          links = [];
+        }
         if (element.children !== undefined) {
           if (element.children.length > 0) {
-            this.milestoneIndex++;
+            
             // tslint:disable-next-line: no-shadowed-variable
             element.children.forEach(element => {
               const temp1 = {
@@ -1275,6 +1278,7 @@ export class DragDropComponent implements OnInit {
     if (this.sharedObject.oTaskAllocation.arrTasks !== undefined) {
       MilTask = this.sharedObject.oTaskAllocation.arrTasks.find(c => c === event.taskType);
     }
+    this.milestoneIndex = this.milestoneIndex === -1 ? 0 : this.milestoneIndex;
     if (this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes.length > 0) {
       var node = {
         id: this.previoustaskeventdd !== undefined ? (parseInt(this.previoustaskeventdd.id) + 1).toString() : '1',

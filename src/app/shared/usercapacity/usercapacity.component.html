@@ -26,10 +26,10 @@
                 {{date | date : "d MMM"}}
             </th>
             <th class="unallocated">
-                Total Un-Allocated
+                Total Un-Allocated / Bench
             </th>
             <th class="allocated">
-                Total Allocated / Total Spent
+                Total Allocated / Spent
             </th>
         </tr>
     </thead>
@@ -164,6 +164,7 @@
                                                 </div>
                                             </td>
                                             <td class="unallocated" [ngStyle]="{'vertical-align':verticalAlign}">
+                                                <div class="center">{{user.Bench}}</div>
                                             </td>
                                             <td class="allocated" [ngStyle]="{'vertical-align':verticalAlign}">
                                                 <div class="center">{{user.TotalTimeSpent}}</div>
@@ -197,7 +198,10 @@
                                                                 End Date
                                                             </td>
                                                             <td>
-                                                                Time Spent Per Day
+                                                                -
+                                                            </td>
+                                                            <td>
+                                                               Current Day (Total Spent)
                                                             </td>
                                                             <td>
                                                                 Status
@@ -225,7 +229,7 @@
                                                             <td>
                                                                 <span>{{task.EndDate | date : "dd MMM yy h:mm a" || '--'}}</span>
                                                             </td>
-
+                                                            <td></td>
                                                             <td>
                                                                 <span>{{task.TimeSpentPerDay}}
                                                                         ({{task.TotalTimeSpent}})</span>

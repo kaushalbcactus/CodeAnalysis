@@ -69,8 +69,6 @@
     height: 70px !important;
 }
 
-
-/* 
-::ng-deep #capacityTable {
-    width: 100% !important;
-} */
+.topCardPosition > .ui-card {
+    margin-top: -25px;
+}

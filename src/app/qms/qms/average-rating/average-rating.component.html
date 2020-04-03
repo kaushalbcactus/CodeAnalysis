@@ -1,0 +1,63 @@
+<p-table [columns]="cols" [value]="averageRatings">
+  <ng-template pTemplate="header" let-columns>
+    <tr>
+      <th>Main</th>
+      <th colspan=4>Auxiliary</th>
+    </tr>
+    <tr>
+      <th *ngFor="let col of columns">
+        {{ col.header }}
+      </th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-rowData>
+
+    <tr>
+      <td
+        [id]="rowData.reviewer.name"
+        class="avgrating"
+        pTooltip="Based out of {{ rowData.reviewer.count }} ratings"
+        tooltipPosition="bottom"
+        (click)="filterResult(rowData.reviewer.value)"
+      >
+        {{ rowData.reviewer.rating }}
+      </td>
+      <td
+        [id]="rowData.writer.name"
+        class="avgrating"
+        pTooltip="Based out of {{ rowData.writer.count }} ratings"
+        tooltipPosition="bottom"
+        (click)="filterResult(rowData.writer.value)"
+      >
+        {{ rowData.writer.rating }}
+      </td>
+      <td
+        [id]="rowData.editor.name"
+        class="avgrating"
+        pTooltip="Based out of {{ rowData.editor.count }} ratings"
+        tooltipPosition="bottom"
+        (click)="filterResult(rowData.editor.value)"
+      >
+        {{ rowData.editor.rating }}
+      </td>
+      <td
+        [id]="rowData.quality.name"
+        class="avgrating"
+        pTooltip="Based out of {{ rowData.quality.count }} ratings"
+        tooltipPosition="bottom"
+        (click)="filterResult(rowData.quality.value)"
+      >
+        {{ rowData.quality.rating }}
+      </td>
+      <td
+        [id]="rowData.graphics.name"
+        class="avgrating"
+        pTooltip="Based out of {{ rowData.graphics.count }} ratings"
+        tooltipPosition="bottom"
+        (click)="filterResult(rowData.graphics.value)"
+      >
+        {{ rowData.graphics.rating }}
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

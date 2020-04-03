@@ -14,6 +14,7 @@ export class PmconstantService {
     DELIVERY_LEVEL_1: 'Delivery L1',
     DELIVERY_LEVEL_2: 'Delivery L2',
     BUSINESS_DEVELOPMENT: 'Business Development',
+    FINANCE :'Finance'
   };
   public RESOURCES_CATEGORY = {
     BUSINESS_DEVELOPMENT: 'Business Development',
@@ -224,6 +225,7 @@ export class PmconstantService {
       select: 'Content',
       filter: 'Title eq \'{{templateName}}\''
     },
+    
     SOW_BUDGET_BREAKUP: {
       select: 'ID',
       filter: 'SOWCode eq \'{{SOWCodeStr}}\''
@@ -561,7 +563,7 @@ export class PmconstantService {
       filter: 'ProjectNumber eq \'{{projectCode}}\' and Status eq \'Active\''
     },
     GET_SCHEDULE_LIST_ITEM_BY_PROJECT_CODE: {
-      select: 'ID,Title,Milestone,Status,Task,ProjectCode',
+      select: 'ID,Title,Milestone,Status,Task,ProjectCode,TimeSpent,DueDate,IsCentrallyAllocated',
       filter: 'ProjectCode eq \'{{projectCode}}\''
     },
     GET_EARLY_TASK_COMPLETED: {
@@ -599,7 +601,9 @@ export class PmconstantService {
     CLOSE_PROJECT: 'Close Project',
     CANCEL_PROJECT: 'Cancel Project',
     APPROVED: 'Approved',
-    REJECTED: 'Rejected'
+    REJECTED: 'Rejected',
+    ON_HOLD: 'On Hold',
+    OFF_HOLD: 'Off Hold'
   };
   public PROJECT_BUDGET_DECREASE_REASON = {
     SCOPE_REDUCE: 'Scope reduction',

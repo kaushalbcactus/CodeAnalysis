@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewChild, Output, EventEmitter, ChangeDetectorRef, AfterViewChecked } from '@angular/core';
 import { SPOperationService } from '../../../Services/spoperation.service';
 import { ConstantsService } from '../../../Services/constants.service';
 import { GlobalService } from '../../../Services/global.service';
@@ -13,16 +13,18 @@ import { Table } from 'primeng/table';
   templateUrl: './user-feedback.component.html',
   styleUrls: ['./user-feedback.component.css']
 })
-export class UserFeedbackComponent implements OnInit {
+export class UserFeedbackComponent implements OnInit, AfterViewChecked {
   // Initialize for sort
   UFColumns: any[];
   UFRows: any = [];
+  originalScorecard = [];
   ref;
   // @ViewChild('uf', { static: false }) uf: Table;
   @Output() setAverageRating = new EventEmitter<string>();
   @Output() feedbackData = new EventEmitter<any>();
   @ViewChild('uf', { static: false }) userFeedbackTable: Table;
 
+  isOptionFilter: boolean;
   public hideTable = false;
   public hideLoader = true;
   UFColArray = {
@@ -30,6 +32,7 @@ export class UserFeedbackComponent implements OnInit {
     Task: [],
     Type: [],
     Feedbackby: [],
+    EvaluatorSkill: [],
     Rating: [],
     Comments: []
   };
@@ -42,11 +45,10 @@ export class UserFeedbackComponent implements OnInit {
   };
   // Initialize columns for table
   // tslint:disable-next-line
-  public displayedColumns: string[] = ['Created', 'Title', 'FeedbackType', 'Author', 'AverageRating', 'Comments', 'ParameterRating', 'Value'];
+  public displayedColumns: string[] = ['Created', 'Title', 'FeedbackType', 'Author', 'EvalutorSkill', 'AverageRating', 'Comments', 'ParameterRating', 'Value'];
   constructor(private spService: SPOperationService, private globalConstant: ConstantsService, private qmsConstant: QMSConstantsService,
     public global: GlobalService, private datepipe: DatePipe, public commonService: CommonService,
-    private qmsCommon: QMSCommonService,
-    private cdr: ChangeDetectorRef,
+    private qmsCommon: QMSCommonService, private cdr: ChangeDetectorRef,
   ) { }
 
   ngOnInit() {
@@ -55,6 +57,7 @@ export class UserFeedbackComponent implements OnInit {
       { field: 'Task', header: 'Task', visibility: true, exportable: true },
       { field: 'Type', header: 'Type', visibility: true, exportable: true },
       { field: 'Feedbackby', header: 'Feedback By', visibility: true, exportable: true },
+      { field: 'EvaluatorSkill', header: 'Evaluator Skill', visibility: true, exportable: true },
       { field: 'Rating', header: 'Rating', visibility: true, exportable: true },
       { field: 'Comments', header: 'Comments', visibility: true, exportable: true },
       { field: 'Parameters', header: 'Parameters', visibility: false, exportable: true },
@@ -69,7 +72,8 @@ export class UserFeedbackComponent implements OnInit {
         label: this.datepipe.transform(a.Created, 'MMM d, yyyy'),
         value: a.Created ? new Date(this.datepipe.transform(a.Created, 'MMM d, yyyy')) : '',
         filterValue: new Date(a.Created)
-      }; return b;
+      };
+      return b;
     }));
     this.UFColArray.Task = this.qmsCommon.uniqueArrayObj(colData.map(a => {
       const b = {
@@ -80,6 +84,7 @@ export class UserFeedbackComponent implements OnInit {
       return b;
     }));
     this.UFColArray.Type = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.FeedbackType, value: a.FeedbackType, filterValue: a.FeedbackType }; return b; }));
+    this.UFColArray.EvaluatorSkill = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.EvaluatorSkill, value: a.EvaluatorSkill, filterValue: a.EvaluatorSkill }; return b; }));
     this.UFColArray.Feedbackby = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Author.Title, value: a.Author.Title, filterValue: a.Author.Title }; return b; }));
     this.UFColArray.Rating = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.AverageRating, value: +a.AverageRating, filterValue: a.AverageRating }; return b; }));
     this.UFColArray.Comments = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Comments, value: a.Comments, filterValue: a.Comments }; return b; }));
@@ -105,6 +110,11 @@ export class UserFeedbackComponent implements OnInit {
     personalFeedbackComponent.getScorecard.filter = personalFeedbackComponent.getScorecard.filter.replace('{{AssignedTo}}', assignedToID)
       .replace('{{startDate}}', startDate)
       .replace('{{endDate}}', endDate);
+    // tslint:disable: quotemark
+    personalFeedbackComponent.getScorecard.filter = filterObj.ratingType !== undefined ? filterObj.ratingType === '' ?
+    personalFeedbackComponent.getScorecard.filter.replace("{{RatingType}}", "and (EvaluatorSkill eq null or EvaluatorSkill eq 'Review')") :
+      personalFeedbackComponent.getScorecard.filter.replace("{{RatingType}}", "and EvaluatorSkill eq '" + filterObj.ratingType + "'") :
+      personalFeedbackComponent.getScorecard.filter.replace("{{RatingType}}", "");
     personalFeedbackComponent.getScorecard.filter = topCount < 4500 ?
       // tslint:disable-next-line: quotemark
       personalFeedbackComponent.getScorecard.filter.replace("{{FeedbackTypeFilter}}", "and FeedbackType eq '" + this.globalConstant.FeedbackType.taskRating + "'") :
@@ -195,14 +205,15 @@ export class UserFeedbackComponent implements OnInit {
         Title: element.Title ? element.Title : '',
         Type: element.FeedbackType ? element.FeedbackType : '',
         Feedbackby: element.Author.Title ? element.Author.Title : '',
+        EvaluatorSkill: element.EvaluatorSkill !== undefined || element.EvaluatorSkill !== null ? element.EvaluatorSkill === '' ? 'Reviewer' : element.EvaluatorSkill : '',
         Rating: element.AverageRating ? element.AverageRating : '',
         Comments: element.Comments ? element.Comments : '',
         Parameters: element.ParameterRating ? element.ParameterRating : '',
         Score: element.Value ? element.Value : ''
       });
     });
+    this.originalScorecard = [...this.UFRows];
     this.feedbackData.emit(this.UFRows);
-    console.log('this.UFRows ', this.UFRows);
     this.ref = this.userFeedbackTable;
   }
 
@@ -219,30 +230,40 @@ export class UserFeedbackComponent implements OnInit {
    * @param  filterObj - Emitted  from filter component => Internal => UserFeedbackComponent
    *
    */
-  applyFilters(filterObj) {
+  async applyFilters(filterObj) {
     this.hideTable = true;
     this.hideLoader = false;
-    setTimeout(async () => {
-      let arrScorecard = [];
-      if (!filterObj.collapseMangerView) {
-        if (filterObj.isDateFilter) {
-          const startDate = new Date(filterObj.startDate).toISOString();
-          const endDate = new Date(filterObj.endDate).toISOString();
-          filterObj.count = 4500;
-          arrScorecard = await this.getScorecardItems(filterObj, startDate, endDate);
-        } else {
-          arrScorecard = await this.getScorecardItems(filterObj, '', '');
-        }
+    // setTimeout(async () => {
+    let arrScorecard = [];
+    if (!filterObj.collapseMangerView) {
+      if (filterObj.isDateFilter) {
+        const startDate = new Date(filterObj.startDate).toISOString();
+        const endDate = new Date(filterObj.endDate).toISOString();
+        filterObj.count = 4500;
+        arrScorecard = await this.getScorecardItems(filterObj, startDate, endDate);
+      } else {
+        arrScorecard = await this.getScorecardItems(filterObj, '', '');
       }
-      this.bindTable(arrScorecard);
-      this.colFilters(arrScorecard);
-      this.hideTable = false;
-      this.hideLoader = true;
-    }, 500);
+    }
+    this.bindTable(arrScorecard);
+    this.colFilters(arrScorecard);
+    this.hideTable = false;
+    this.hideLoader = true;
+    // }, 500);
   }
 
+  async applyArrayFilter(filter) {
+    let newScorecard = [];
+    if (filter === '') {
+      newScorecard = this.originalScorecard.filter(sc => sc.EvaluatorSkill === null || sc.EvaluatorSkill === '' || sc.EvaluatorSkill === 'Review');
+    } else {
+      newScorecard = this.originalScorecard.filter(sc => sc.EvaluatorSkill === filter);
+    }
+    // this.bindTable(newScorecard);
+    this.UFRows = [...newScorecard];
+    this.colFilters(newScorecard);
+  }
 
-  isOptionFilter: boolean;
   optionFilter(event: any) {
     if (event.target.value) {
       this.isOptionFilter = false;
@@ -256,11 +277,11 @@ export class UserFeedbackComponent implements OnInit {
   ngAfterViewChecked() {
     // console.log('In after view checked ', this.UFColArray);
     if (this.UFRows.length && this.isOptionFilter) {
-      let obj = {
+      const obj = {
         tableData: this.userFeedbackTable,
         colFields: this.UFColArray,
         // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
-      }
+      };
       if (obj.tableData.filteredValue) {
         this.commonService.updateOptionValues(obj);
         // this.colFilters(obj.tableData.filteredValue);

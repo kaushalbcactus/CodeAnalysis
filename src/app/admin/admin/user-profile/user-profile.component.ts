@@ -1,8 +1,6 @@
 import { Component, OnInit, NgZone, ApplicationRef, ViewEncapsulation, ViewChild, ChangeDetectorRef, ViewChildren } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { DatePipe, PlatformLocation } from '@angular/common';
-import { PeoplePickerUser } from '../../peoplePickerModel/people-picker.response';
-import { PeoplePickerQuery } from '../../peoplePickerModel/people-picker.query';
 import { AdminCommonService } from '../../services/admin-common.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { AdminConstantService } from '../../services/admin-constant.service';
@@ -13,6 +11,8 @@ import { Router } from '@angular/router';
 import { CommonService } from 'src/app/Services/common.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { Table } from 'primeng/table';
+import { AddEditUserProfileComponent } from './add-edit-user-profile/add-edit-user-profile.component';
+import { DialogService } from 'primeng';
 @Component({
   selector: 'app-user-profile',
   templateUrl: './user-profile.component.html',
@@ -30,13 +30,13 @@ import { Table } from 'primeng/table';
  */
 export class UserProfileComponent implements OnInit {
   isUserSPMUPA: boolean;
+  editUser: FormGroup;
   userProfileColumns = [];
   userProfileData = [];
   auditHistoryColumns = [];
   auditHistoryRows = [];
   userProfileViewDataArray = [];
-  minPastMonth;
-  yearRange: any;
+
   showModal = false;
   showeditUser = false;
   isUserProfileRightSideVisible = false;
@@ -46,45 +46,16 @@ export class UserProfileComponent implements OnInit {
   providedUser = '';
   selectedOption = '';
   pMenuItems = [];
+  addUser: FormGroup;
   upObject = {
     isFormSubmit: false,
     isEditFormSubmit: false
   };
-  addUser: FormGroup;
-  editUser: FormGroup;
+
   currUserObj: any;
-  /**
-   * This field contains an array for each drop down value which present on the form.
-   */
-  public adminDropDown = {
-    bucketArray: [],
-    practiceAreaArray: [],
-    timeZoneArray: [],
-    inCapacityArray: [],
-    pooledArray: [],
-    primarySkillArray: [],
-    skillLevelArray: [],
-    roleArray: [],
-    taskArray: [],
-    accountArray: [],
-    deliverableArray: [],
-    deliverableExclusionArray: [],
-    taArray: [],
-    taExclusionArray: [],
-    isActiveArray: []
-  };
+
   // This declaration is used to check which effective date is need to be shown when one
   // of the field is changed.
-  public date = {
-    isManagerEffectiveDateActive: false,
-    isPracticeEffectiveDateActive: false,
-    isTimeZoneEffectiveDateActive: false,
-    isPrimarySkillEffectiveDateActive: false,
-    isSkillLevelEffectiveDateActive: false,
-    isDateExit: false,
-    isBucketDateActive: false,
-    isMaxHrsDateActive: false
-  };
   userProfileColArray = {
     User: [],
     LastUpdated: [],
@@ -103,40 +74,7 @@ export class UserProfileComponent implements OnInit {
     Details: []
   };
   minEffectiveDate = new Date();
-  public users: PeoplePickerUser[];
-  public multipleUsers: PeoplePickerUser[];
-  spuser: PeoplePickerUser;
-  spusers: PeoplePickerUser[];
-  /**
-   * PrincipalSource: What sources you wish to search.
-   * Choices are
-   * 1. All - 15
-   * 2. Membership Provider - 4
-   * 3. RoleProvider - 8
-   * 4. UserInfoList - 1
-   * 5. Windows - 2.
-   * These values can be combined.
-   *
-   * PrincipalType: Controls the type of entities that are returned in the results.
-   * Choices are
-   * 1. All - 15
-   * 2. Distribution List - 2
-   * 3. Security Groups - 4
-   * 4. SharePoint Groups – 8
-   * 5. User – 1. These values can be combined.
-   * For more details - http://sharepointfieldnotes.blogspot.com/2014/06/sharepoint-2013-clientpeoplepicker.html
-   */
-  peoplePickerQuery: PeoplePickerQuery = {
-    queryParams: {
-      QueryString: '',
-      MaximumEntitySuggestions: 10,
-      AllowEmailAddresses: true,
-      AllowOnlyEmailAddresses: false,
-      PrincipalSource: 15,
-      PrincipalType: 1,
-      SharePointGroupID: 0
-    }
-  };
+
   filteredCountriesMultiple: any[];
   showTable = true;
 
@@ -161,7 +99,6 @@ export class UserProfileComponent implements OnInit {
    */
   constructor(
     private datePipe: DatePipe,
-    private fb: FormBuilder,
     private adminCommonService: AdminCommonService,
     private constants: ConstantsService,
     private adminConstants: AdminConstantService,
@@ -175,6 +112,7 @@ export class UserProfileComponent implements OnInit {
     private common: CommonService,
     private globalObject: GlobalService,
     private cdr: ChangeDetectorRef,
+    public dialogService: DialogService
   ) {
     // Browser back button disabled & bookmark issue solution
     history.pushState(null, null, window.location.href);
@@ -196,10 +134,8 @@ export class UserProfileComponent implements OnInit {
   async ngOnInit() {
     this.showTable = true;
     this.constants.loader.isPSInnerLoaderHidden = true;
-    this.initialAddUserForm();
-    this.minPastMonth = new Date(new Date().setDate(new Date().getDate() - 30));
-    const currentYear = new Date();
-    this.yearRange = (currentYear.getFullYear() - 10) + ':' + (currentYear.getFullYear() + 10);
+
+
     this.userProfileColumns = [
       { field: 'User', header: 'User', visibility: true },
       { field: 'PrimarySkill', header: 'Primary Skill', visibility: true },
@@ -227,119 +163,21 @@ export class UserProfileComponent implements OnInit {
         Details: ''
       }
     ];
+    this.userFilterOptions = [
+      {
+        label: this.adminConstants.LOGICAL_FIELD.ACTIVE,
+        value: this.adminConstants.LOGICAL_FIELD.ACTIVE
+      },
+      {
+        label: this.adminConstants.LOGICAL_FIELD.INACTIVE,
+        value: this.adminConstants.LOGICAL_FIELD.INACTIVE
+      }
+    ];
     await this.loadUserTable();
     this.colFilters1(this.auditHistoryRows);
-    this.loadDropDownValue();
   }
-  /**
-   * Construct a REST_API Call request for getting data from `Resource Categerization` list
-   * based on filter `IsActive ='Yes'`.
-   * @description
-   *
-   * Once the response return from REST Call, Iterate through each item and store into the
-   * `userProfileData` array to display the result into Ng Prime table.
-   */
-  
-  // Initial form Fields
-  initialAddUserForm() {
-    this.addUser = this.fb.group({
-      username: ['', Validators.required],
-      account: ['', null],
-      bucket: ['', Validators.required],
-      dateofexit: ['', null],
-      dateofjoin: [new Date(), Validators.required],
-      deliverableExclusion: ['', null],
-      deliverable: ['', null],
-      designation: ['', Validators.required],
-      liveDate: [new Date(), Validators.required],
-      inCapacity: ['', Validators.required],
-      isActive: ['', null],
-      manager: ['', Validators.required],
-      maxHrs: ['', [Validators.required, Validators.max(12), Validators.min(1)]],
-      // '^((?:[1-9]|1[0-9]|2[0-3])(?:\.\d[05]0?)(?:\.\d{1,2})?|24?)$'
-      // maxHrs: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.max(24)]],
-      pooled: ['', Validators.required],
-      primarySkill: ['', Validators.required],
-      readyTo: ['', null],
-      role: ['', null],
-      skillLevel: ['', Validators.required],
-      ta: ['', null],
-      taExclusion: ['', null],
-      task: ['', Validators.required],
-      timeZone: ['', Validators.required],
-      practiceArea: ['', Validators.required],
-      BucketDate: [new Date(), null],
-      MaxHrsDate: [new Date(), null],
-      managerEffectiveDate: [new Date(), null],
-      practiceAreaEffectiveDate: ['', null],
-      timeZoneEffectiveDate: ['', null],
-      primarySkillEffectiveDate: ['', null],
-      skillLevelEffectiveDate: ['', null],
-      workSunday: [{ value: '', disabled: true }, null],
-      workMonday: ['', null],
-      workTuesday: ['', null],
-      workWednessday: ['', null],
-      workThursday: ['', null],
-      workFriday: ['', null],
-      workSaturday: [{ value: '', disabled: true }, null],
-    });
-  }
-  /**
-   * Construct a method to set the conditional validators when form edited.
-   * @description
-   *
-   * Conditional validation will check the following field while perform edit operation.
-   * 1. If `Practice Area` field values changes then `Practive Area Effective Date` becomes compulsary field.
-   * 2. If `Manager` field values changes then `Manager Effective Date` becomes compulsary field.
-   * 3. If `TimeZone` field values changes then `TimeZone Effective Date` becomes compulsary field.
-   * 4. If `Primary Skill` field values changes then `Primary Skill Effective Date` becomes compulsary field.
-   * 5. If `Skill Level` field values changes then `Skill Level Effective Date` becomes compulsary field.
-   * 6. If `Is Active` field values changes to `No` then `Date of Exit` becomes compulsary field.
-   *
-   */
-  setUserCategoryValidators() {
-    const managerEffectiveDateControl = this.addUser.get('managerEffectiveDate');
-    const practiceAreaEffectiveDateControl = this.addUser.get('practiceAreaEffectiveDate');
-    const timeZoneEffectiveDateControl = this.addUser.get('timeZoneEffectiveDate');
-    const primarySkillEffectiveDateControl = this.addUser.get('primarySkillEffectiveDate');
-    const skillLevelEffectiveDateControl = this.addUser.get('skillLevelEffectiveDate');
-    const dateofexitControl = this.addUser.get('dateofexit');
-    this.addUser.get('manager').valueChanges
-      .subscribe(manager => {
-        if (this.date.isManagerEffectiveDateActive) {
-          managerEffectiveDateControl.setValidators([Validators.required]);
-          managerEffectiveDateControl.updateValueAndValidity();
-        }
-      });
-    this.addUser.get('practiceArea').valueChanges
-      .subscribe(practiceArea => {
-        if (this.date.isPracticeEffectiveDateActive) {
-          practiceAreaEffectiveDateControl.setValidators([Validators.required]);
-          practiceAreaEffectiveDateControl.updateValueAndValidity();
-        }
-      });
-    this.addUser.get('timeZone').valueChanges
-      .subscribe(practiceArea => {
-        if (this.date.isTimeZoneEffectiveDateActive) {
-          timeZoneEffectiveDateControl.setValidators([Validators.required]);
-          timeZoneEffectiveDateControl.updateValueAndValidity();
-        }
-      });
-    this.addUser.get('primarySkill').valueChanges
-      .subscribe(practiceArea => {
-        if (this.date.isPrimarySkillEffectiveDateActive) {
-          primarySkillEffectiveDateControl.setValidators([Validators.required]);
-          primarySkillEffectiveDateControl.updateValueAndValidity();
-        }
-      });
-    this.addUser.get('skillLevel').valueChanges
-      .subscribe(practiceArea => {
-        if (this.date.isSkillLevelEffectiveDateActive) {
-          skillLevelEffectiveDateControl.setValidators([Validators.required]);
-          skillLevelEffectiveDateControl.updateValueAndValidity();
-        }
-      });
-  }
+
+
   /**
    * Construct a REST_API Call request for getting data from `Resource Categerization` list
    * based on filter `IsActive ='Yes'`.
@@ -393,8 +231,14 @@ export class UserProfileComponent implements OnInit {
         userObj.GoLiveDate = this.datePipe.transform(item.GoLiveDate, 'MMM dd, yyyy');
         userObj.Designation = item.Designation;
         userObj.InCapacity = item.InCapacity;
+        userObj.TAVisibility = item.TAVisibility;
+        userObj.CAVisibility = item.CAVisibility;
+        userObj.IsFTE = item.IsFTE;
+        userObj.FTEEffectiveDate = item.FTEEffectiveDate;
         userObj.Pooled = item.Pooled;
         userObj.MaxHrs = item.MaxHrs;
+        userObj.MaxHrsEffectiveDate = item.MaxHrsEffectiveDate;
+        userObj.BucketEffectiveDate = item.BucketEffectiveDate;
         userObj.PrimarySkill = item.PrimarySkill;
         userObj.SkillLevel = item.SkillLevel;
         userObj.Role = item.Role;
@@ -477,190 +321,13 @@ export class UserProfileComponent implements OnInit {
         }
         tempResult.push(userObj);
       }
-      this.addUser.get('isActive').enable();
+      // this.addUser.get('isActive').enable();
     }
     this.userProfileData = tempResult;
     this.adminObject.isMainLoaderHidden = true;
     this.colFilters(this.userProfileData);
   }
-  /**
-   * Construct a request for getting single people picker value.
-   * @param event The event parameters contains the query which required for fetching single people picker value.
-   */
-  filterSPUserSingle(event) {
-    this.filterSPUsers(event.query, 'single');
-  }
-  /**
-   * Construct a request for getting multiple people picker value.
-   * @param event The event parameters contains the query which required for fetching multiple people picker value.
-   */
-  filterSPUserMultiple(event) {
-    this.filterSPUsers(event.query, 'multiple');
-  }
-  /**
-   * construct a request for getting the people picker data based on query and type.
-   * @param query The query parameter contains the query which is required for fetching single/mutliple people picker value.
-   * @param type The type parameter provides additional field whether you want to fetch single or multiple people picker value.
-   *
-   * @description
-   * If type `single` is passed, only single people will be added.
-   * If type `multiple` is passed, multiple people can be added.
-   *
-   * @return An `JSON` of the response, with the response body of type ClientPeoplePickerSearchUser will return.
-   *
-   */
-  filterSPUsers(query, type) {
-    this.peoplePickerQuery = Object.assign({
-      queryParams: {
-        QueryString: query,
-        MaximumEntitySuggestions: 10,
-        AllowEmailAddresses: true,
-        AllowOnlyEmailAddresses: false,
-        PrincipalSource: 15,
-        PrincipalType: 1,
-        SharePointGroupID: 0
-      }
-    });
-    this.adminCommonService
-      .getUserSuggestions(this.peoplePickerQuery)
-      .subscribe((result: any) => {
-        if (type === 'single') {
-          this.users = [];
-          const allUsers: PeoplePickerUser[] = JSON.parse(
-            result.d.ClientPeoplePickerSearchUser
-          );
-          allUsers.forEach(user => {
-            this.users = [...this.users, user];
-          });
-        } else {
-          this.multipleUsers = [];
-          const allUsers: PeoplePickerUser[] = JSON.parse(
-            result.d.ClientPeoplePickerSearchUser
-          );
-          allUsers.forEach(user => {
-            this.multipleUsers = [...this.multipleUsers, user];
-          });
-        }
-      });
-  }
-  /**
-   * Construct a request for calling the batches request and load the dropdown values.
-   * @description
-   * Once the batch request completed and returns the value.
-   * It will iterate all the batch array to cater the request in dropdown format and
-   * pushing the data to a particular dropdown array.
-   */
-  async loadDropDownValue() {
-    const dropdownResults = await this.getInitData();
-    if (dropdownResults && dropdownResults.length) {
-      /**
-       * call dropdown initialize method to make dropdown null.
-       */
-      this.initializeDropdownArray();
-      // user filter dropdown
-      this.userFilterOptions = [
-        {
-          label: this.adminConstants.LOGICAL_FIELD.ACTIVE,
-          value: this.adminConstants.LOGICAL_FIELD.ACTIVE
-        },
-        {
-          label: this.adminConstants.LOGICAL_FIELD.INACTIVE,
-          value: this.adminConstants.LOGICAL_FIELD.INACTIVE
-        }
-      ];
-      // console.log(this.userFilterOptions);
-      // load bucket dropdown.
-      const bucketResults = dropdownResults[0].retItems;
-      if (bucketResults && bucketResults.length) {
-        bucketResults.forEach(element => {
-          this.adminDropDown.bucketArray.push({ label: element.Title, value: element.Title });
-        });
-      }
-      // load practice Area dropdown
-      const practiceResults = dropdownResults[1].retItems;
-      if (practiceResults && practiceResults.length) {
-        practiceResults.forEach(element => {
-          this.adminDropDown.practiceAreaArray.push({ label: element.Title, value: element.Title });
-        });
-      }
-      // load Timezone dropdown
-      const timeZoneResults = dropdownResults[2].retItems;
-      if (timeZoneResults && timeZoneResults.length) {
-        timeZoneResults.forEach(element => {
-          this.adminDropDown.timeZoneArray.push({ label: element.TimeZoneName, value: element.ID });
-        });
-      }
-      // load Incapacity dropdown
-      let inCapacityResults = dropdownResults[3].retItems;
-      if (inCapacityResults && inCapacityResults.length) {
-        inCapacityResults = inCapacityResults[0].Choices.results;
-        inCapacityResults.forEach(element => {
-          this.adminDropDown.inCapacityArray.push({ label: element, value: element });
-        });
-      }
-      // load pooled dropdown
-      let pooledResults = dropdownResults[4].retItems;
-      if (pooledResults && pooledResults.length) {
-        pooledResults = pooledResults[0].Choices.results;
-        pooledResults.forEach(element => {
-          this.adminDropDown.pooledArray.push({ label: element, value: element });
-        });
-      }
-      // load primary skill dropdown
-      let primarySkillResults = dropdownResults[5].retItems;
-      if (primarySkillResults && primarySkillResults.length) {
-        primarySkillResults = primarySkillResults[0].Choices.results;
-        primarySkillResults.forEach(element => {
-          this.adminDropDown.primarySkillArray.push({ label: element, value: element });
-        });
-      }
-      // load role dropdown
-      let roleResults = dropdownResults[6].retItems;
-      if (roleResults && roleResults.length) {
-        roleResults = roleResults[0].Choices.results;
-        roleResults.forEach(element => {
-          this.adminDropDown.roleArray.push({ label: element, value: element });
-        });
-      }
-      // load skill level dropdown
-      const skillLevelResults = dropdownResults[7].retItems;
-      if (skillLevelResults && skillLevelResults.length) {
-        skillLevelResults.forEach(element => {
-          this.adminDropDown.skillLevelArray.push({ label: element.Title, value: element.ID });
-        });
-      }
-      // load task dropdown
-      const taskResults = dropdownResults[8].retItems;
-      if (taskResults && taskResults.length) {
-        taskResults.forEach(element => {
-          this.adminDropDown.taskArray.push({ label: element.Title, value: element.ID });
-        });
-      }
-      // load account dropdown
-      const accountResults = dropdownResults[9].retItems;
-      if (accountResults && accountResults.length) {
-        accountResults.forEach(element => {
-          this.adminDropDown.accountArray.push({ label: element.Title, value: element.ID });
-        });
-      }
-      // load deliverable && deliverableExclusion dropdown
-      const deliverableResults = dropdownResults[10].retItems;
-      if (deliverableResults && deliverableResults.length) {
-        deliverableResults.forEach(element => {
-          this.adminDropDown.deliverableArray.push({ label: element.Title, value: element.ID });
-          this.adminDropDown.deliverableExclusionArray.push({ label: element.Title, value: element.ID });
-        });
-      }
-      // load TA && TAExclusion dropdown
-      const taResults = dropdownResults[11].retItems;
-      if (taResults && taResults.length) {
-        taResults.forEach(element => {
-          this.adminDropDown.taArray.push({ label: element.Title, value: element.ID });
-          this.adminDropDown.taExclusionArray.push({ label: element.Title, value: element.ID });
-        });
-      }
-    }
-  }
+
 
   updateOptionValues(obj) {
     if (obj.filteredValue.length) {
@@ -735,6 +402,8 @@ export class UserProfileComponent implements OnInit {
         userObj.ManagerEffectiveDate = item.ManagerEffectiveDate;
         userObj.PrimarySkillEffectiveDate = item.PrimarySkillEffectiveDate;
         userObj.SkillLevelEffectiveDate = item.SkillLevelEffectiveDate;
+        userObj.MaxHrsEffectiveDate = item.MaxHrsEffectiveDate;
+        userObj.BucketEffectiveDate = item.BucketEffectiveDate;
         userObj.ID = item.ID;
         userObj.Manager = item.Manager.Title;
         userObj.User = item.UserName.Title;
@@ -801,7 +470,7 @@ export class UserProfileComponent implements OnInit {
           }
         }
         if (userObj.IsActive === this.adminConstants.LOGICAL_FIELD.NO) {
-          this.addUser.get('isActive').disable();
+          //  this.addUser.get('isActive').disable();
         }
         tempResult.push(userObj);
       }
@@ -809,180 +478,8 @@ export class UserProfileComponent implements OnInit {
     this.userProfileData = tempResult;
     this.colFilters(this.userProfileData);
   }
-  /**
-   * Construct a method to initialize the dropdown array to null.
-   */
-  initializeDropdownArray() {
-    this.adminDropDown.accountArray = [];
-    this.adminDropDown.bucketArray = [];
-    this.adminDropDown.deliverableArray = [];
-    this.adminDropDown.deliverableExclusionArray = [];
-    this.adminDropDown.inCapacityArray = [];
-    this.adminDropDown.pooledArray = [];
-    this.adminDropDown.practiceAreaArray = [];
-    this.adminDropDown.primarySkillArray = [];
-    this.adminDropDown.roleArray = [];
-    this.adminDropDown.skillLevelArray = [];
-    this.adminDropDown.taArray = [];
-    this.adminDropDown.taExclusionArray = [];
-    this.adminDropDown.timeZoneArray = [];
-  }
-  /**
-   * construct a request to SharePoint based API using REST-CALL to provide the result based on query.
-   * This method will prepare the `Batch` request to get the data based on query.
-   *
-   * @description
-   * It will prepare the request as per following Sequence.
-   * 1. Bucket          - Get data from `FocusGroup` list based on filter `IsActive='Yes'`.
-   * 2. Practice Area   - Get data from `FocusGroup` list.
-   * 3. TimeZones       - Get data from `TimeZones` list.
-   * 4. InCapacity      - Get data for ChoiceField `InCapacity` from ResourceCategorization list.
-   * 5. Pooled          - Get data for ChoiceField `Pooled` from ResourceCategorization list.
-   * 6. Primary Skill   - Get data for ChoiceField `Primary Skill` from ResourceCategorization list.
-   * 7. Role            - Get data for ChoiceField `Role` from ResourceCategorization list.
-   * 8. Skill Level     - Get data from `SkillMaster` list.
-   * 9. Task            - Get data from `MilestoneTasks` list based on filter `Status='Active'`.
-   * 10. Account        - Get data from `ClientLegalEntity` list.
-   * 11. Deliverable    - Get data from `DeliverableType` list based on filter `Active='Yes'`
-   * 12. TA             - Get data from `TA` list based on filter `Active='Yes'`.
-   *
-   * @return An Array of the response in `JSON` format in above sequence.
-   */
-  async getInitData() {
-    const batchURL = [];
-    const options = {
-      data: null,
-      url: '',
-      type: '',
-      listName: ''
-    };
 
-    // Get Bucket value  from FocusGroup list ##0;
-    const bucketGet = Object.assign({}, options);
-    const bucketFilter = Object.assign({}, this.adminConstants.QUERY.GET_BUCKET);
-    bucketGet.url = this.spServices.getReadURL(this.constants.listNames.FocusGroup.name,
-      bucketFilter);
-    bucketGet.type = 'GET';
-    bucketGet.listName = this.constants.listNames.FocusGroup.name;
-    batchURL.push(bucketGet);
 
-    // Get Practice Area from BusinessVerticals list ##1;
-    const practiceAreaGet = Object.assign({}, options);
-    const practiceAreaFilter = Object.assign({}, this.adminConstants.QUERY.GET_PRACTICE_AREA);
-    practiceAreaGet.url = this.spServices.getReadURL(this.constants.listNames.BusinessVerticals.name,
-      practiceAreaFilter);
-    practiceAreaGet.type = 'GET';
-    practiceAreaGet.listName = this.constants.listNames.BusinessVerticals.name;
-    batchURL.push(practiceAreaGet);
-
-    // Get TimeZones from TimeZones list ##2
-    const timezonesGet = Object.assign({}, options);
-    const timeZonesFilter = Object.assign({}, this.adminConstants.QUERY.GET_TIMEZONES);
-    timezonesGet.url = this.spServices.getReadURL(this.constants.listNames.TimeZones.name,
-      timeZonesFilter);
-    timezonesGet.type = 'GET';
-    timezonesGet.listName = this.constants.listNames.TimeZones.name;
-    batchURL.push(timezonesGet);
-
-    // Get InCapacity from ResourceCategorization list ##3
-    const inCapacityGet = Object.assign({}, options);
-    const inCapaCityFilter = Object.assign({}, this.adminConstants.QUERY.GET_CHOICEFIELD);
-    inCapaCityFilter.filter = inCapaCityFilter.filter.replace(/{{choiceField}}/gi,
-      this.adminConstants.CHOICE_FIELD_NAME.INCAPACITY);
-    inCapacityGet.url = this.spServices.getChoiceFieldUrl(this.constants.listNames.ResourceCategorization.name,
-      inCapaCityFilter);
-    inCapacityGet.type = 'GET';
-    inCapacityGet.listName = this.constants.listNames.ResourceCategorization.name;
-    batchURL.push(inCapacityGet);
-
-    // Get Pooled from ResourceCategorization list ##4
-    const pooledGet = Object.assign({}, options);
-    const pooledFilter = Object.assign({}, this.adminConstants.QUERY.GET_CHOICEFIELD);
-    pooledFilter.filter = pooledFilter.filter.replace(/{{choiceField}}/gi,
-      this.adminConstants.CHOICE_FIELD_NAME.POOLED);
-    pooledGet.url = this.spServices.getChoiceFieldUrl(this.constants.listNames.ResourceCategorization.name,
-      pooledFilter);
-    pooledGet.type = 'GET';
-    pooledGet.listName = this.constants.listNames.ResourceCategorization.name;
-    batchURL.push(pooledGet);
-
-    // Get Primary Skill from ResourceCategorization list ##5
-    const primarySkillGet = Object.assign({}, options);
-    const primarySkillFilter = Object.assign({}, this.adminConstants.QUERY.GET_CHOICEFIELD);
-    primarySkillFilter.filter = primarySkillFilter.filter.replace(/{{choiceField}}/gi,
-      this.adminConstants.CHOICE_FIELD_NAME.PRIMARYSKILL);
-    primarySkillGet.url = this.spServices.getChoiceFieldUrl(this.constants.listNames.ResourceCategorization.name,
-      primarySkillFilter);
-    primarySkillGet.type = 'GET';
-    primarySkillGet.listName = this.constants.listNames.ResourceCategorization.name;
-    batchURL.push(primarySkillGet);
-
-    // Get Roles from ResourceCategorization list ##6
-    const rolesGet = Object.assign({}, options);
-    const rolesFilter = Object.assign({}, this.adminConstants.QUERY.GET_CHOICEFIELD);
-    rolesFilter.filter = rolesFilter.filter.replace(/{{choiceField}}/gi,
-      this.adminConstants.CHOICE_FIELD_NAME.ROLE);
-    rolesGet.url = this.spServices.getChoiceFieldUrl(this.constants.listNames.ResourceCategorization.name,
-      rolesFilter);
-    rolesGet.type = 'GET';
-    rolesGet.listName = this.constants.listNames.ResourceCategorization.name;
-    batchURL.push(rolesGet);
-
-    // Get Skill Level from SkillMaster list ##7
-    const skillMasterGet = Object.assign({}, options);
-    const skillMasterFilter = Object.assign({}, this.adminConstants.QUERY.GET_SKILL_MASTER);
-    skillMasterGet.url = this.spServices.getReadURL(this.constants.listNames.SkillMaster.name,
-      skillMasterFilter);
-    skillMasterGet.type = 'GET';
-    skillMasterGet.listName = this.constants.listNames.SkillMaster.name;
-    batchURL.push(skillMasterGet);
-
-    // Get task from MilestoneTasks list ##8
-    const taskGet = Object.assign({}, options);
-    const taskFilter = Object.assign({}, this.adminConstants.QUERY.GET_TASK);
-    taskFilter.filter = taskFilter.filter.replace(/{{status}}/gi,
-      this.adminConstants.LOGICAL_FIELD.ACTIVE);
-    taskGet.url = this.spServices.getReadURL(this.constants.listNames.MilestoneTasks.name,
-      taskFilter);
-    taskGet.type = 'GET';
-    taskGet.listName = this.constants.listNames.MilestoneTasks.name;
-    batchURL.push(taskGet);
-
-    // Get account from ClientLegalEntity list ##9
-    const accountGet = Object.assign({}, options);
-    const accountFilter = Object.assign({}, this.adminConstants.QUERY.GET_ACCOUNT);
-    accountGet.url = this.spServices.getReadURL(this.constants.listNames.ClientLegalEntity.name,
-      accountFilter);
-    accountGet.type = 'GET';
-    accountGet.listName = this.constants.listNames.ClientLegalEntity.name;
-    batchURL.push(accountGet);
-
-    // Get Deliverable from DeliverableType list ##10
-    const deliverableGet = Object.assign({}, options);
-    const deliverableFilter = Object.assign({}, this.adminConstants.QUERY.GET_DELIVERABLE);
-    deliverableFilter.filter = deliverableFilter.filter.replace(/{{isActive}}/gi,
-      this.adminConstants.LOGICAL_FIELD.YES);
-    deliverableGet.url = this.spServices.getReadURL(this.constants.listNames.DeliverableType.name,
-      deliverableFilter);
-    deliverableGet.type = 'GET';
-    deliverableGet.listName = this.constants.listNames.DeliverableType.name;
-    batchURL.push(deliverableGet);
-
-    // Get TA from TA list ##11
-    const taGet = Object.assign({}, options);
-    const taFilter = Object.assign({}, this.adminConstants.QUERY.GET_TA);
-    taFilter.filter = taFilter.filter.replace(/{{isActive}}/gi,
-      this.adminConstants.LOGICAL_FIELD.YES);
-    taGet.url = this.spServices.getReadURL(this.constants.listNames.TA.name,
-      taFilter);
-    taGet.type = 'GET';
-    taGet.listName = this.constants.listNames.TA.name;
-    batchURL.push(taGet);
-    this.common.SetNewrelic('admin', 'admin-UserProfile', 'GetTADeliverableTypeCLEMilestoneTasksSkillMasterRCTimeZoneBusinessVerticle');
-    const result = await this.spServices.executeBatch(batchURL);
-    // console.log(result);
-    return result;
-  }
   /**
    * construct a request to add value into multiselect dropdown in a table.
    *
@@ -1072,7 +569,7 @@ export class UserProfileComponent implements OnInit {
 
   // Reset when p-dialog close reset form value
   cancelFormSub() {
-    this.addUser.reset();
+    // this.addUser.reset();
   }
   /**
    * Construct a method for saving and updating the user details to `Resource Categerization` List.
@@ -1095,124 +592,97 @@ export class UserProfileComponent implements OnInit {
    *
    * @param addUserForm The addUserForm as parameters which is required for fetching the form value.
    */
-  async saveUser(addUserForm) {
-    if (addUserForm.valid) {
-      // console.log(addUserForm.value);
-      /**
-       * Need to validate if username and manager is properly selected or entered.
-       */
-      if (addUserForm.value.username && !addUserForm.value.username.hasOwnProperty('EntityData')) {
-        this.messageService.add({
-          key: 'adminCustom', severity: 'error',
-          summary: 'Error Message', detail: 'Please select proper username name.'
-        });
-        return false;
-      }
-      if (addUserForm.value.manager && !addUserForm.value.manager.hasOwnProperty('EntityData')) {
-        this.messageService.add({
-          key: 'adminCustom', severity: 'error',
-          summary: 'Error Message', detail: 'Please select proper manager name.'
-        });
-        return false;
-      }
-      if (new Date(addUserForm.value.dateofjoin) > new Date(addUserForm.value.liveDate)) {
-        this.messageService.add({
-          key: 'adminCustom', severity: 'error',
-          summary: 'Error Message', detail: 'Date of joining cannot be greater than go live date.'
-        });
-        return false;
-      }
-      this.adminObject.isMainLoaderHidden = false;
-      // This method is used to save all the addform value into global object.
-      this.setValueInGlobalObject(addUserForm.value, true);
-      /**
-       * @description
-       * Add logic of save the data to Resource Categerization list.
-       * In order to add username and manager name to `Resource Categerization list`, we should have
-       * userId and manager Id.
-       * To get the manager and userId we have to make rest call.
-       */
-      let IdResults = [];
-      const batchURL = [];
-      const options = {
-        data: null,
-        url: '',
-        type: '',
-        listName: ''
-      };
-      // Not required to get the username Id in case of Edit user
+  async saveUser(addUserForm, date) {
+
+    this.adminObject.isMainLoaderHidden = false;
+    // This method is used to save all the addform value into global object.
+    this.setValueInGlobalObject(addUserForm.value, true);
+    /**
+     * @description
+     * Add logic of save the data to Resource Categerization list.
+     * In order to add username and manager name to `Resource Categerization list`, we should have
+     * userId and manager Id.
+     * To get the manager and userId we have to make rest call.
+     */
+    let IdResults = [];
+    const batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    // Not required to get the username Id in case of Edit user
+    if (!this.showeditUser) {
+      const userEmailId = addUserForm.value.username.EntityData.Email;
+      this.adminObject.addUser.UserNameEmail = userEmailId;
+      // Get userId from  UserInformationList based on filter EMail eq \'{{emailId}}\' ##0;
+      const userIdGet = Object.assign({}, options);
+      const userIdFilter = Object.assign({}, this.adminConstants.QUERY.GET_USER_INFORMATION);
+      userIdFilter.filter = userIdFilter.filter.replace(/{{emailId}}/gi,
+        userEmailId);
+      userIdGet.url = this.spServices.getReadURL(this.constants.listNames.UserInformationList.name,
+        userIdFilter);
+      userIdGet.type = 'GET';
+      userIdGet.listName = this.constants.listNames.UserInformationList.name;
+      batchURL.push(userIdGet);
+    }
+    // If Manager is not changed no need to get the ID of manager.
+    if (!addUserForm.value.manager.EntityData.hasOwnProperty('ID')) {
+      const managerEmailId = addUserForm.value.manager.EntityData.Email;
+      // Get managerId from  UserInformationList based on filter EMail eq \'{{emailId}}\' ##1;
+      const managerIdGet = Object.assign({}, options);
+      const managerIdFilter = Object.assign({}, this.adminConstants.QUERY.GET_USER_INFORMATION);
+      managerIdFilter.filter = managerIdFilter.filter.replace(/{{emailId}}/gi,
+        managerEmailId);
+      managerIdGet.url = this.spServices.getReadURL(this.constants.listNames.UserInformationList.name,
+        managerIdFilter);
+      managerIdGet.type = 'GET';
+      managerIdGet.listName = this.constants.listNames.UserInformationList.name;
+      batchURL.push(managerIdGet);
+    }
+    if (batchURL.length) {
+      this.common.SetNewrelic('admin', 'admin-UserProfile', 'GetUserInformation');
+      IdResults = await this.spServices.executeBatch(batchURL);
+    }
+    if (IdResults && IdResults.length) {
       if (!this.showeditUser) {
-        const userEmailId = addUserForm.value.username.EntityData.Email;
-        this.adminObject.addUser.UserNameEmail = userEmailId;
-        // Get userId from  UserInformationList based on filter EMail eq \'{{emailId}}\' ##0;
-        const userIdGet = Object.assign({}, options);
-        const userIdFilter = Object.assign({}, this.adminConstants.QUERY.GET_USER_INFORMATION);
-        userIdFilter.filter = userIdFilter.filter.replace(/{{emailId}}/gi,
-          userEmailId);
-        userIdGet.url = this.spServices.getReadURL(this.constants.listNames.UserInformationList.name,
-          userIdFilter);
-        userIdGet.type = 'GET';
-        userIdGet.listName = this.constants.listNames.UserInformationList.name;
-        batchURL.push(userIdGet);
-      }
-      // If Manager is not changed no need to get the ID of manager.
-      if (!addUserForm.value.manager.EntityData.hasOwnProperty('ID')) {
-        const managerEmailId = addUserForm.value.manager.EntityData.Email;
-        // Get managerId from  UserInformationList based on filter EMail eq \'{{emailId}}\' ##1;
-        const managerIdGet = Object.assign({}, options);
-        const managerIdFilter = Object.assign({}, this.adminConstants.QUERY.GET_USER_INFORMATION);
-        managerIdFilter.filter = managerIdFilter.filter.replace(/{{emailId}}/gi,
-          managerEmailId);
-        managerIdGet.url = this.spServices.getReadURL(this.constants.listNames.UserInformationList.name,
-          managerIdFilter);
-        managerIdGet.type = 'GET';
-        managerIdGet.listName = this.constants.listNames.UserInformationList.name;
-        batchURL.push(managerIdGet);
-      }
-      if (batchURL.length) {
-        this.common.SetNewrelic('admin', 'admin-UserProfile', 'GetUserInformation');
-        IdResults = await this.spServices.executeBatch(batchURL);
-      }
-      if (IdResults && IdResults.length) {
-        if (!this.showeditUser) {
-          // We need to check if UserNameId and ManagerId return from `User List Information`.
-          // If we not add them to temporary group `SyncUserToUserInfomartionList` to get thier Id.
-          if (IdResults[0] && IdResults[0].retItems.length && IdResults[1] && IdResults[1].retItems.length) {
-            await this.createOrUpdateItem(addUserForm.value, IdResults, this.showeditUser);
-          } else {
-            const sResult = await this.addUserToGroup(addUserForm.value.username.Key, addUserForm.value.manager.Key);
-            if (sResult && sResult.length) {
-              const userId = sResult[0].retItems.Id;
-              const managerId = sResult[1].retItems.Id;
-              addUserForm.value.username.EntityData.ID = userId;
-              addUserForm.value.manager.EntityData.ID = managerId;
-              await this.createOrUpdateItem(addUserForm.value, IdResults, this.showeditUser);
-            }
+        // We need to check if UserNameId and ManagerId return from `User List Information`.
+        // If we not add them to temporary group `SyncUserToUserInfomartionList` to get thier Id.
+        if (IdResults[0] && IdResults[0].retItems.length && IdResults[1] && IdResults[1].retItems.length) {
+          await this.createOrUpdateItem(addUserForm.value, IdResults, this.showeditUser, date);
+        } else {
+          const sResult = await this.addUserToGroup(addUserForm.value.username.Key, addUserForm.value.manager.Key);
+          if (sResult && sResult.length) {
+            const userId = sResult[0].retItems.Id;
+            const managerId = sResult[1].retItems.Id;
+            addUserForm.value.username.EntityData.ID = userId;
+            addUserForm.value.manager.EntityData.ID = managerId;
+            await this.createOrUpdateItem(addUserForm.value, IdResults, this.showeditUser, date);
           }
         }
-        // We need to check if ManagerId return from `User List Information`.
-        // This will get called when user update the manager name.
-        if (this.showeditUser) {
-          if (IdResults[0] && IdResults[0].retItems.length) {
-            this.createOrUpdateItem(addUserForm.value, IdResults, this.showeditUser);
-          } else {
-            const sResult = await this.addUserToGroup(null, addUserForm.value.manager.Key);
-            if (sResult && sResult.length) {
-              const managerId = sResult[0].retItems.Id;
-              addUserForm.value.manager.EntityData.ID = managerId;
-              await this.createOrUpdateItem(addUserForm.value, IdResults, this.showeditUser);
-            }
+      }
+      // We need to check if ManagerId return from `User List Information`.
+      // This will get called when user update the manager name.
+      if (this.showeditUser) {
+        if (IdResults[0] && IdResults[0].retItems.length) {
+          this.createOrUpdateItem(addUserForm.value, IdResults, this.showeditUser, date);
+        } else {
+          const sResult = await this.addUserToGroup(null, addUserForm.value.manager.Key);
+          if (sResult && sResult.length) {
+            const managerId = sResult[0].retItems.Id;
+            addUserForm.value.manager.EntityData.ID = managerId;
+            await this.createOrUpdateItem(addUserForm.value, IdResults, this.showeditUser, date);
           }
-        }
-      } else {
-        // This will get called when user doesn't update the manager name.
-        if (this.showeditUser) {
-          this.createOrUpdateItem(addUserForm.value, IdResults, this.showeditUser);
         }
       }
     } else {
-      this.upObject.isFormSubmit = true;
+      // This will get called when user doesn't update the manager name.
+      if (this.showeditUser) {
+        this.createOrUpdateItem(addUserForm.value, IdResults, this.showeditUser, date);
+      }
     }
+
   }
   /**
    * Construct a method to add or update the item to `ResourceCategorization` list
@@ -1220,9 +690,9 @@ export class UserProfileComponent implements OnInit {
    * @param IdResults Pass the `IdResults` an array which contains Id of user and manager.
    * @param isEdit Pass the `isEdit` as parameter to `true` if want to update or else `false` for create.
    */
-  async createOrUpdateItem(formValue, IdResults, isEdit) {
+  async createOrUpdateItem(formValue, IdResults, isEdit, date) {
     if (isEdit) {
-      const data = await this.getResourceData(formValue, IdResults, this.showeditUser);
+      const data = await this.getResourceData(formValue, IdResults, this.showeditUser, date);
       this.common.SetNewrelic('admin', 'admin-UserProfile', 'updateResourceCategorization');
       await this.spServices.updateItem(this.constants.listNames.ResourceCategorization.name,
         this.currUserObj.ID, data, this.constants.listNames.ResourceCategorization.type);
@@ -1234,11 +704,12 @@ export class UserProfileComponent implements OnInit {
       await this.loadRecentRecords(this.currUserObj.ID, this.showeditUser);
       this.showModal = false;
     } else {
-      const data = await this.getResourceData(formValue, IdResults, this.showeditUser);
+      const data = await this.getResourceData(formValue, IdResults, this.showeditUser, date);
       this.common.SetNewrelic('admin', 'admin-UserProfile', 'CreateResourceCategorization');
       const result = await this.spServices.createItem(this.constants.listNames.ResourceCategorization.name,
         data, this.constants.listNames.ResourceCategorization.type);
       this.adminObject.isMainLoaderHidden = true;
+
       if (result.hasOwnProperty('hasError') && result.hasError && result.message.value.includes('duplicate')) {
         this.messageService.add({
           key: 'adminCustom', severity: 'error', sticky: true,
@@ -1286,6 +757,12 @@ export class UserProfileComponent implements OnInit {
       userObj.GoLiveDate = this.datePipe.transform(item.GoLiveDate, 'MMM dd, yyyy');
       userObj.Designation = item.Designation;
       userObj.InCapacity = item.InCapacity;
+      userObj.IsFTE = item.IsFTE;
+      userObj.FTEEffectiveDate = item.FTEEffectiveDate;
+      userObj.MaxHrsEffectiveDate = item.MaxHrsEffectiveDate;
+      userObj.BucketEffectiveDate = item.BucketEffectiveDate;
+      userObj.TAVisibility = item.TAVisibility;
+      userObj.CAVisibility = item.CAVisibility;
       userObj.Pooled = item.Pooled;
       userObj.MaxHrs = item.MaxHrs;
       userObj.PrimarySkill = item.PrimarySkill;
@@ -1367,7 +844,7 @@ export class UserProfileComponent implements OnInit {
           userObj.TaskText = tasks.results.map(x => x.Title).join(', ');
         }
       }
-      this.addUser.get('isActive').enable();
+      // this.addUser.get('isActive').enable();
       // If Create - add the new created item at position 0 in the array.
       // If Edit - Replace the item in the array and position at 0 in the array.
       if (isUpdate) {
@@ -1486,6 +963,10 @@ export class UserProfileComponent implements OnInit {
     this.adminObject.addUser.ManagerEffectiveDate = isCreate && resObject.managerEffectiveDate ?
       resObject.managerEffectiveDate : resObject.ManagerEffectiveDate;
     this.adminObject.addUser.ID = !isCreate ? resObject.ID : 0;
+    this.adminObject.addUser.BucketEffectiveDate = isCreate && resObject.bucketEffectiveDate ?
+      resObject.bucketEffectiveDate : resObject.BucketEffectiveDate;
+    this.adminObject.addUser.MaxHrsEffectiveDate = isCreate && resObject.maxHrsEffectiveDate ?
+      resObject.maxHrsEffectiveDate : resObject.MaxHrsEffectiveDate;
   }
   /**
    * Construct a method to get the proper object for `Resource Categerization list` to save the data.
@@ -1498,7 +979,7 @@ export class UserProfileComponent implements OnInit {
    *
    * @return An Object of `Resource Categerization list` required to insert and update item.
    */
-  getResourceData(formObj, IdResults, isEdit) {
+  getResourceData(formObj, IdResults, isEdit, date) {
     // Extract userId and managerId
     let userId = 0;
     let managerId = 0;
@@ -1524,16 +1005,20 @@ export class UserProfileComponent implements OnInit {
       DateOfJoining: this.datePipe.transform(formObj.dateofjoin, 'MMM dd, yyyy'),
       GoLiveDate: formObj.liveDate,
       Designation: formObj.designation,
+      IsFTE: formObj.isFTE,
+      TAVisibility: formObj.taVisibility,
+      CAVisibility: formObj.caVisibility,
       InCapacity: formObj.inCapacity,
       Pooled: formObj.pooled,
       MaxHrs: +formObj.maxHrs,
       PrimarySkill: formObj.primarySkill,
       SkillLevelId: formObj.skillLevel,
-      BucketEffectiveDate: formObj.BucketDate,
-      MaxHrsEffectiveDate: formObj.MaxHrsDate,
-      TasksId: {
-        results: formObj.task
-      },
+      TasksId: { results: formObj.task },
+      DeliverablesId: formObj.deliverable && formObj.deliverable.length > 0 ? { results: formObj.deliverable } : { results: [] },
+      DeliverableExclusionId: formObj.deliverableExclusion && formObj.deliverableExclusion.length > 0 ?
+        { results: formObj.deliverableExclusion } : { results: [] },
+      TAId: formObj.ta && formObj.ta.length > 0 ? { results: formObj.ta } : { results: [] },
+      TAExclusionId: formObj.taExclusion && formObj.taExclusion.length > 0 ? { results: formObj.taExclusion } : { results: [] },
       WorkingSunday: formObj.workSunday ? this.adminConstants.LOGICAL_FIELD.YES : this.adminConstants.LOGICAL_FIELD.NO,
       WorkingMonday: formObj.workMonday ? this.adminConstants.LOGICAL_FIELD.YES : this.adminConstants.LOGICAL_FIELD.NO,
       WorkingTuesday: formObj.workTuesday ? this.adminConstants.LOGICAL_FIELD.YES : this.adminConstants.LOGICAL_FIELD.NO,
@@ -1552,27 +1037,13 @@ export class UserProfileComponent implements OnInit {
       data.AccountId = {
         results: formObj.account
       };
-    }
-    if (formObj.deliverable && formObj.deliverable.length) {
-      data.DeliverablesId = {
-        results: formObj.deliverable
+    } else if (formObj.account && formObj.isFTE === 'Yes') {
+      data.AccountId = {
+        results: [formObj.account]
       };
     }
-    if (formObj.deliverableExclusion && formObj.deliverableExclusion.length) {
-      data.DeliverableExclusionId = {
-        results: formObj.deliverableExclusion
-      };
-    }
-    if (formObj.ta && formObj.ta.length) {
-      data.TAId = {
-        results: formObj.ta
-      };
-    }
-    if (formObj.taExclusion && formObj.taExclusion.length) {
-      data.TAExclusionId = {
-        results: formObj.taExclusion
-      };
-    }
+
+
     if (!isEdit) {
       data.UserNameId = userId;
       data.UserNameText = userText;
@@ -1601,295 +1072,37 @@ export class UserProfileComponent implements OnInit {
         }
         data.DateofExit = formObj.dateofexit;
       }
-      if (this.date.isTimeZoneEffectiveDateActive && formObj.timeZoneEffectiveDate) {
+      if (date.isTimeZoneEffectiveDateActive && formObj.timeZoneEffectiveDate) {
         data.TimeZoneEffectiveDate = formObj.timeZoneEffectiveDate;
       }
-      if (this.date.isSkillLevelEffectiveDateActive && formObj.skillLevelEffectiveDate) {
+      if (date.isSkillLevelEffectiveDateActive && formObj.skillLevelEffectiveDate) {
         data.SkillLevelEffectiveDate = formObj.skillLevelEffectiveDate;
       }
-      if (this.date.isPrimarySkillEffectiveDateActive && formObj.primarySkillEffectiveDate) {
+      if (date.isPrimarySkillEffectiveDateActive && formObj.primarySkillEffectiveDate) {
         data.PrimarySkillEffectiveDate = formObj.primarySkillEffectiveDate;
       }
-      if (this.date.isPracticeEffectiveDateActive && formObj.practiceAreaEffectiveDate) {
+      if (date.isPracticeEffectiveDateActive && formObj.practiceAreaEffectiveDate) {
         data.PracticeAreaEffectiveDate = formObj.practiceAreaEffectiveDate;
       }
-      if (this.date.isManagerEffectiveDateActive && formObj.managerEffectiveDate) {
+      if (date.isManagerEffectiveDateActive && formObj.managerEffectiveDate) {
         data.ManagerEffectiveDate = formObj.managerEffectiveDate;
+      }
+      if (date.isBucketDateActive && formObj.bucketEffectiveDate) {
+        data.BucketEffectiveDate = formObj.bucketEffectiveDate;
+      }
+      if (date.isMaxHrsDateActive && formObj.maxHrsEffectiveDate) {
+        data.MaxHrsEffectiveDate = formObj.maxHrsEffectiveDate;
+      }
+
+      if (date.isFTEEffectiveDateActive && formObj.fTEEffectiveDate && formObj.isFTE === 'Yes') {
+        data.FTEEffectiveDate = formObj.fTEEffectiveDate;
+      } else if (formObj.isFTE === 'No') {
+        data.FTEEffectiveDate = null;
       }
     }
     return data;
   }
-  /**
-   * Construct a method to trigger whenever `Manager` field value changes.
-   *
-   * @description
-   *
-   * If changed value in manger field is not same as previous value then
-   * `Manager Effective Date` field will be visible and it's became mandatory field.
-   */
-  onManagerChange() {
-    if (this.addUser.value.manager && !this.addUser.value.manager.hasOwnProperty('EntityData')) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error',
-        summary: 'Error Message', detail: 'Please select proper manager name.'
-      });
-    } else {
-      const managerEffectiveDateControl = this.addUser.get('managerEffectiveDate');
-      if (this.showeditUser && this.currUserObj.ManagerEmail !== this.addUser.value.manager.EntityData.Email) {
-        managerEffectiveDateControl.setValidators([Validators.required]);
-        managerEffectiveDateControl.updateValueAndValidity();
-        this.date.isManagerEffectiveDateActive = true;
-        this.addUser.get('managerEffectiveDate').setValue(null);
-        this.addUser.get('managerEffectiveDate').enable();
-      } else if (this.showeditUser && this.currUserObj.ManagerEmail === this.addUser.value.manager.EntityData.Email) {
-        this.date.isManagerEffectiveDateActive = true;
-        const userObj = this.currUserObj;
-        this.addUser.get('managerEffectiveDate').setValue(new Date(userObj.ManagerEffectiveDate));
-        this.addUser.get('managerEffectiveDate').disable();
-      } else {
-        managerEffectiveDateControl.clearValidators();
-        this.date.isManagerEffectiveDateActive = false;
-      }
-    }
-  }
 
-  onBucketChange() {
-    const bucketDateControl = this.addUser.get('BucketDate');
-    if (this.showeditUser && this.currUserObj.Bucket !== this.addUser.value.bucket) {
-      bucketDateControl.setValidators([Validators.required]);
-      bucketDateControl.updateValueAndValidity();
-      this.date.isBucketDateActive = true;
-      this.addUser.get('BucketDate').setValue(new Date());
-      this.addUser.get('BucketDate').enable();
-    } else if (this.showeditUser && this.currUserObj.Bucket === this.addUser.value.bucket) {
-      this.date.isBucketDateActive = true;
-      const userObj = this.currUserObj;
-      this.addUser.get('BucketDate').setValue(this.currUserObj.BucketEffectiveDate ? new Date(this.currUserObj.BucketEffectiveDate) : new Date());
-      this.addUser.get('BucketDate').disable();
-    } else {
-      bucketDateControl.clearValidators();
-      this.date.isBucketDateActive = false;
-    }
-  }
-
-
-  /**
-   * Construct a method to trigger whenever `Practice Area` field value changes.
-   *
-   * @description
-   *
-   * If changed value in Practice Area field is not same as previous value then
-   * `Practice Area Effective Date` field will be visible and it's became mandatory field.
-   */
-  onPracticeAreaChange() {
-    // console.log('this.addUser.value.practiceArea ', this.addUser.value.practiceArea);
-    const practiceAreaEffectiveDateControl = this.addUser.get('practiceAreaEffectiveDate');
-    if (this.showeditUser && this.currUserObj.PracticeArea !== this.addUser.value.practiceArea) {
-      practiceAreaEffectiveDateControl.setValidators([Validators.required]);
-      practiceAreaEffectiveDateControl.updateValueAndValidity();
-      this.date.isPracticeEffectiveDateActive = true;
-      this.addUser.get('practiceAreaEffectiveDate').setValue(null);
-      this.addUser.get('practiceAreaEffectiveDate').enable();
-    } else if (this.showeditUser && this.currUserObj.PracticeArea === this.addUser.value.practiceArea) {
-      this.date.isPracticeEffectiveDateActive = true;
-      const userObj = this.currUserObj;
-      this.addUser.get('practiceAreaEffectiveDate').setValue(userObj.PracticeAreaEffectiveDate ? new Date(userObj.PracticeAreaEffectiveDate) : new Date());
-      this.addUser.get('practiceAreaEffectiveDate').disable();
-    } else {
-      practiceAreaEffectiveDateControl.clearValidators();
-      this.date.isPracticeEffectiveDateActive = false;
-    }
-  }
-  /**
-   * Construct a method to trigger whenever `Timezone` field value changes.
-   *
-   * @description
-   *
-   * If changed value in Timezone field is not same as previous value then
-   * `Timezone Effective Date` field will be visible and it's became mandatory field.
-   */
-  onTimezoneChange() {
-    const timeZoneEffectiveDateControl = this.addUser.get('timeZoneEffectiveDate');
-    this.minEffectiveDate = this.addUser.value.dateofjoin ? new Date(this.addUser.value.dateofjoin) : new Date();
-    if (this.showeditUser && this.currUserObj.TimeZone.ID !== this.addUser.value.timeZone) {
-      timeZoneEffectiveDateControl.setValidators([Validators.required]);
-      timeZoneEffectiveDateControl.updateValueAndValidity();
-      this.date.isTimeZoneEffectiveDateActive = true;
-      this.addUser.get('timeZoneEffectiveDate').setValue(null);
-      this.addUser.get('timeZoneEffectiveDate').enable();
-    } else if (this.showeditUser && this.currUserObj.TimeZone.ID === this.addUser.value.timeZone) {
-      this.date.isTimeZoneEffectiveDateActive = true;
-      const userObj = this.currUserObj;
-      this.addUser.get('timeZoneEffectiveDate').setValue(userObj.TimeZoneEffectiveDate ? new Date(userObj.TimeZoneEffectiveDate) : new Date());
-      this.addUser.get('timeZoneEffectiveDate').disable();
-    } else {
-      timeZoneEffectiveDateControl.clearValidators();
-      this.date.isTimeZoneEffectiveDateActive = false;
-    }
-  }
-
-  onCloseDateOfJoining() {
-    if (this.editUser) {
-      if (this.addUser.value.dateofjoin > this.addUser.value.BucketDate) {
-        this.addUser.patchValue({ BucketDate: this.addUser.value.dateofjoin });
-      }
-      if (this.addUser.value.dateofjoin > this.addUser.value.timeZoneEffectiveDate) {
-        this.addUser.patchValue({ timeZoneEffectiveDate: this.addUser.value.dateofjoin });
-      }
-      if (this.addUser.value.dateofjoin > this.addUser.value.liveDate) {
-        this.addUser.patchValue({ liveDate: this.addUser.value.dateofjoin });
-      }
-      if (this.addUser.value.dateofjoin > this.addUser.value.MaxHrsDate) {
-        this.addUser.patchValue({ MaxHrsDate: this.addUser.value.dateofjoin });
-      }
-      if (this.addUser.value.dateofjoin > this.addUser.value.primarySkillEffectiveDate) {
-        this.addUser.patchValue({ primarySkillEffectiveDate: this.addUser.value.dateofjoin });
-      }
-
-      if (this.addUser.value.dateofjoin > this.addUser.value.dateofexit) {
-        this.addUser.patchValue({ dateofexit: this.addUser.value.dateofjoin });
-      }
-    }
-  }
-
-  onMaxHrsChange() {
-    const maxHrsDateControl = this.addUser.get('MaxHrsDate');
-    if (this.showeditUser && this.currUserObj.MaxHrs !== this.addUser.value.maxHrs) {
-      maxHrsDateControl.setValidators([Validators.required]);
-      maxHrsDateControl.updateValueAndValidity();
-      this.date.isMaxHrsDateActive = true;
-      this.addUser.get('MaxHrsDate').setValue(new Date());
-      this.addUser.get('MaxHrsDate').enable();
-    } else if (this.showeditUser && this.currUserObj.MaxHrs === this.addUser.value.maxHrs) {
-      this.date.isMaxHrsDateActive = true;
-      const userObj = this.currUserObj;
-      this.addUser.get('MaxHrsDate').setValue(this.currUserObj.MaxHrsEffectiveDate ? new Date(this.currUserObj.MaxHrsEffectiveDate) : new Date());
-      this.addUser.get('MaxHrsDate').disable();
-    } else {
-      maxHrsDateControl.clearValidators();
-      this.date.isMaxHrsDateActive = false;
-    }
-  }
-
-  /**
-   * Construct a method to trigger whenever `Primary Skill` field value changes.
-   *
-   * @description
-   *
-   * If changed value in Primary Skill field is not same as previous value then
-   * `Primary Skill Effective Date` field will be visible and it's became mandatory field.
-   */
-  onPrimarySkillChange() {
-    const primarySkillEffectiveDateControl = this.addUser.get('primarySkillEffectiveDate');
-    if (this.showeditUser && this.currUserObj.PrimarySkill !== this.addUser.value.primarySkill) {
-      primarySkillEffectiveDateControl.setValidators([Validators.required]);
-      primarySkillEffectiveDateControl.updateValueAndValidity();
-      this.date.isPrimarySkillEffectiveDateActive = true;
-      this.addUser.get('primarySkillEffectiveDate').setValue(null);
-      this.addUser.get('primarySkillEffectiveDate').enable();
-    } else if (this.showeditUser && this.currUserObj.PrimarySkill === this.addUser.value.primarySkill) {
-      this.date.isPrimarySkillEffectiveDateActive = true;
-      const userObj = this.currUserObj;
-      this.addUser.get('primarySkillEffectiveDate').setValue(new Date(userObj.PrimarySkillEffectiveDate));
-      this.addUser.get('primarySkillEffectiveDate').disable();
-    } else {
-      primarySkillEffectiveDateControl.clearValidators();
-      this.date.isPrimarySkillEffectiveDateActive = false;
-    }
-  }
-  /**
-   * Construct a method to trigger whenever `Skill Level` field value changes.
-   *
-   * @description
-   *
-   * If changed value in Skill Level field is not same as previous value then
-   * `Skill Level Effective Date` field will be visible and it's became mandatory field.
-   */
-  onSkillLevelChange() {
-    const skillLevelEffectiveDateControl = this.addUser.get('skillLevelEffectiveDate');
-    if (this.showeditUser && this.currUserObj.SkillLevel.ID !== this.addUser.value.skillLevel) {
-      skillLevelEffectiveDateControl.setValidators([Validators.required]);
-      skillLevelEffectiveDateControl.updateValueAndValidity();
-      this.date.isSkillLevelEffectiveDateActive = true;
-      this.addUser.get('skillLevelEffectiveDate').setValue(null);
-      this.addUser.get('skillLevelEffectiveDate').enable();
-    } else if (this.showeditUser && this.currUserObj.SkillLevel.ID === this.addUser.value.skillLevel) {
-      this.date.isSkillLevelEffectiveDateActive = true;
-      const userObj = this.currUserObj;
-      this.addUser.get('skillLevelEffectiveDate').setValue(new Date(userObj.SkillLevelEffectiveDate));
-      this.addUser.get('skillLevelEffectiveDate').disable();
-    } else {
-      skillLevelEffectiveDateControl.clearValidators();
-      this.date.isSkillLevelEffectiveDateActive = false;
-    }
-  }
-  /**
-   * Construct a method to trigger whenever `Is Active` field value changes.
-   *
-   * @description
-   *
-   * If changed value in Is Active field is `No` then
-   * `Date of Exit` field will be visible and it's became mandatory field.
-   */
-  onIsActiveChange() {
-    if (this.showeditUser) {
-      const dateofexitControl = this.addUser.get('dateofexit');
-      if (this.addUser.value.isActive === this.adminConstants.LOGICAL_FIELD.NO) {
-        dateofexitControl.setValidators([Validators.required]);
-        dateofexitControl.updateValueAndValidity();
-      } else {
-        dateofexitControl.clearValidators();
-      }
-    }
-  }
-  /**
-   * Construct a method to trigger whenever `Deliverable` field value changes.
-   *
-   * @description
-   *
-   * The options selected in `Deliverable` field , that options will not in `Deliverable Exclusion` field.
-   */
-  onDeliverableChange() {
-    const deliverableIdArray = this.addUser.value.deliverable;
-    const filterdeliverableArray = this.adminDropDown.deliverableArray.filter(x => !deliverableIdArray.includes(x.value));
-    this.adminDropDown.deliverableExclusionArray = filterdeliverableArray;
-  }
-  /**
-   * Construct a method to trigger whenever `TA` field value changes.
-   *
-   * @description
-   *
-   * The options selected in `TA` field, that options will not available in `TA Exclusion` field.
-   */
-  onTAChange() {
-    const taIdArray = this.addUser.value.ta;
-    const filtertaArray = this.adminDropDown.taArray.filter(x => !taIdArray.includes(x.value));
-    this.adminDropDown.taExclusionArray = filtertaArray;
-  }
-  /**
-   * Construct a method to show the add user form.
-   */
-  showAddUserModal() {
-    this.initialAddUserForm();
-    // this.userProfileData = this.adminConstants.LOGICAL_FIELD.ACTIVE;
-    this.date.isManagerEffectiveDateActive = false;
-    this.date.isPracticeEffectiveDateActive = false;
-    this.date.isPrimarySkillEffectiveDateActive = false;
-    this.date.isSkillLevelEffectiveDateActive = false;
-    this.date.isTimeZoneEffectiveDateActive = false;
-    this.date.isBucketDateActive = false;
-    this.date.isMaxHrsDateActive = false;
-    this.addUser.get('workMonday').setValue(true);
-    this.addUser.get('workTuesday').setValue(true);
-    this.addUser.get('workWednessday').setValue(true);
-    this.addUser.get('workThursday').setValue(true);
-    this.addUser.get('workFriday').setValue(true);
-    this.upObject.isFormSubmit = false;
-    this.showeditUser = false;
-    this.customLabel = 'Submit';
-    this.addUser.controls.username.enable();
-    this.showModal = true;
-  }
   /**
    * Construct a method to store current selected row data into variable `currUserObj`.
    *
@@ -1902,7 +1115,7 @@ export class UserProfileComponent implements OnInit {
   storeRowData(rowData) {
     this.currUserObj = rowData;
     this.pMenuItems = [
-      { label: 'Edit', command: (e) => this.showEditUserModal() },
+      { label: 'Edit', command: (e) => this.addEditUserProfile('Edit User', rowData) },
       { label: 'View', command: (e) => this.showRightViewUserModal() }
     ];
     // Remove Edit User option from Menu item
@@ -1910,193 +1123,14 @@ export class UserProfileComponent implements OnInit {
       this.pMenuItems.shift();
     }
   }
-  /**
-   * Construct a method to show the edit user form.
-   *
-   * @description
-   * This method have following functionalies.
-   *
-   * 1. It will not allowed user to change the User Name.
-   * 2. It will prepulate the field with value for editting the field.
-   * 3. If user changes the value of `Manger`,` Practice Area`, `Time Zone`, `Primary Skill` and `Skill level` field then
-   * `Manager Effective Date`, `Practice Area Effective Date`, `Time Zone Effective Date`, `Primary Skill Effective Date`
-   * and `Skill Level Effective Date` will become mandatory field respectively.
-   * 4. If user changes the value of `IsActive` field from `Yes` to `No` then `Date of Exit` field become mandatory.
-   */
-  async showEditUserModal() {
-    this.addUser.reset();
-    this.date.isManagerEffectiveDateActive = false;
-    this.date.isPracticeEffectiveDateActive = false;
-    this.date.isPrimarySkillEffectiveDateActive = false;
-    this.date.isSkillLevelEffectiveDateActive = false;
-    this.date.isTimeZoneEffectiveDateActive = false;
-    this.date.isBucketDateActive = false;
-    this.date.isMaxHrsDateActive = false;
-    const userObj = this.currUserObj;
-    this.customLabel = 'Update';
-    this.addUser.controls.username.disable();
-    // set the value into the form.
-    await this.setUserFormField(userObj);
-    // this.setUserCategoryValidators();
-    this.showModal = true;
-    this.showeditUser = true;
-    this.upObject.isFormSubmit = false;
-  }
-  /**
-   * Construct a method to set the value into form field
-   * load the dropdown value of `IsActive` field
-   * @param userObj The userObj as paramater which is required for setting the form field value.
-   */
-  setUserFormField(userObj) {
-    this.adminDropDown.isActiveArray = [
-      { label: this.adminConstants.LOGICAL_FIELD.YES, value: this.adminConstants.LOGICAL_FIELD.YES },
-      { label: this.adminConstants.LOGICAL_FIELD.NO, value: this.adminConstants.LOGICAL_FIELD.NO }
-    ];
-    this.addUser.get('username').patchValue({ DisplayText: userObj.User }, { emitEvent: false });
-    this.addUser.get('manager').patchValue({
-      DisplayText: userObj.Manager,
-      EntityData: { Email: userObj.ManagerEmail, ID: userObj.ManagerId }
-    }, { emitEvent: false });
 
-    this.addUser.patchValue({
-      bucket: userObj.Bucket,
-      // practiceArea: userObj.PracticeArea,
-      timeZone: userObj.TimeZone.ID,
-      liveDate: userObj.GoLiveDate ? new Date(userObj.GoLiveDate) : new Date(),
-      dateofjoin: userObj.DateOfJoining ? new Date(userObj.DateOfJoining) : new Date(),
-      inCapacity: userObj.InCapacity,
-      designation: userObj.Designation,
-      pooled: userObj.Pooled,
-      maxHrs: userObj.MaxHrs,
-      primarySkill: userObj.PrimarySkill,
-      skillLevel: userObj.SkillLevel.ID,
-      role: userObj.Role,
-      readyTo: userObj.ReadyTo,
-    });
-
-    // this.addUser.get('bucket').setValue(userObj.Bucket);
-
-    // this.addUser.get('practiceArea').setValue();
-    // this.addUser.get('timeZone').setValue();
-    // this.addUser.get('liveDate').setValue();
-    // this.addUser.get('dateofjoin').setValue();
-    // this.addUser.get('inCapacity').setValue();
-    // this.addUser.get('designation').setValue();
-    // this.addUser.get('pooled').setValue();
-    // this.addUser.get('maxHrs').setValue();
-    // this.addUser.get('primarySkill').setValue();
-    // this.addUser.get('skillLevel').setValue();
-    // this.addUser.get('role').setValue();
-    // this.addUser.get('readyTo').setValue();
-    // Get the lookup Id's in order to display it in multiselect.
-    // To get the Id's call getId from common services.
-
-    // Convert Practice area(;#) to array
-    const paArray = userObj.PracticeArea ? userObj.PracticeArea.split(',') : [];
-    if (paArray.length) {
-      const val = [];
-      paArray.forEach(element => {
-        val.push(element);
-      });
-
-      this.addUser.patchValue({
-        practiceArea: val
-      });
-      // this.addUser.get('practiceArea').setValue(val);
-      // this.addUser.value.practiceArea.updateValueAndValidity();
-    }
-
-    if (userObj.Task.results && userObj.Task.results.length) {
-      const tempTaskArray = this.adminCommonService.getIds(userObj.Task.results);
-      // this.addUser.get('task').setValue(tempTaskArray);
-      this.addUser.patchValue({
-        task: tempTaskArray
-      });
-    }
-    if (userObj.Account.results && userObj.Account.results.length) {
-      const tempAccountArray = this.adminCommonService.getIds(userObj.Account.results);
-      this.addUser.get('account').setValue(tempAccountArray);
-    }
-    if (userObj.Deliverable.results && userObj.Deliverable.results.length) {
-      const tempDeliverableArray = this.adminCommonService.getIds(userObj.Deliverable.results);
-      this.addUser.get('deliverable').setValue(tempDeliverableArray);
-    }
-    if (userObj.DeliverableExclusion.results && userObj.DeliverableExclusion.results.length) {
-      const tempDeliverableExclusionArray = this.adminCommonService.getIds(userObj.DeliverableExclusion.results);
-      this.addUser.get('deliverableExclusion').setValue(tempDeliverableExclusionArray);
-    }
-    if (userObj.TA.results && userObj.TA.results.length) {
-      const tempTAArray = this.adminCommonService.getIds(userObj.TA.results);
-      this.addUser.get('ta').setValue(tempTAArray);
-    }
-    if (userObj.TAExclusion.results && userObj.TAExclusion.results.length) {
-      const tempTAExclusionArray = this.adminCommonService.getIds(userObj.TAExclusion.results);
-      this.addUser.get('taExclusion').setValue(tempTAExclusionArray);
-    }
-    this.addUser.get('isActive').setValue(userObj.IsActive);
-    if (userObj.ManagerEffectiveDate) {
-      this.date.isManagerEffectiveDateActive = true;
-      this.addUser.get('managerEffectiveDate').setValue(userObj.ManagerEffectiveDate ? new Date(userObj.ManagerEffectiveDate) : new Date());
-      this.addUser.get('managerEffectiveDate').disable();
-    }
-    if (userObj.PracticeAreaEffectiveDate) {
-      this.date.isPracticeEffectiveDateActive = true;
-      this.addUser.get('practiceAreaEffectiveDate').setValue(userObj.PracticeAreaEffectiveDate ?
-        new Date(userObj.PracticeAreaEffectiveDate) : new Date());
-      this.addUser.get('practiceAreaEffectiveDate').disable();
-    }
-    if (userObj.TimeZoneEffectiveDate) {
-      this.date.isTimeZoneEffectiveDateActive = true;
-      this.addUser.get('timeZoneEffectiveDate').setValue(userObj.TimeZoneEffectiveDate ?
-        new Date(userObj.TimeZoneEffectiveDate) : new Date());
-      this.addUser.get('timeZoneEffectiveDate').disable();
-    }
-    if (userObj.PrimarySkillEffectiveDate) {
-      this.date.isPrimarySkillEffectiveDateActive = true;
-      this.addUser.get('primarySkillEffectiveDate').setValue(userObj.PrimarySkillEffectiveDate ?
-        new Date(userObj.PrimarySkillEffectiveDate) : new Date());
-      this.addUser.get('primarySkillEffectiveDate').disable();
-    }
-    if (userObj.SkillLevelEffectiveDate) {
-      this.date.isSkillLevelEffectiveDateActive = true;
-      this.addUser.get('skillLevelEffectiveDate').setValue(userObj.SkillLevelEffectiveDate ?
-        new Date(userObj.SkillLevelEffectiveDate) : new Date());
-      this.addUser.get('skillLevelEffectiveDate').disable();
-    }
-    if (userObj.DateofExit) {
-      this.showeditUser = true;
-      this.date.isDateExit = true;
-      this.addUser.get('dateofexit').setValue(userObj.DateofExit ? new Date(userObj.DateofExit) : new Date());
-    }
-    if (userObj.WorkingSunday === this.adminConstants.LOGICAL_FIELD.YES) {
-      this.addUser.get('workSunday').setValue(true);
-    }
-    if (userObj.WorkingMonday === this.adminConstants.LOGICAL_FIELD.YES) {
-      this.addUser.get('workMonday').setValue(true);
-    }
-    if (userObj.WorkingTuesday === this.adminConstants.LOGICAL_FIELD.YES) {
-      this.addUser.get('workTuesday').setValue(true);
-    }
-    if (userObj.WorkingWednesday === this.adminConstants.LOGICAL_FIELD.YES) {
-      this.addUser.get('workWednessday').setValue(true);
-    }
-    if (userObj.WorkingThursday === this.adminConstants.LOGICAL_FIELD.YES) {
-      this.addUser.get('workThursday').setValue(true);
-    }
-    if (userObj.WorkingFriday === this.adminConstants.LOGICAL_FIELD.YES) {
-      this.addUser.get('workFriday').setValue(true);
-    }
-    if (userObj.WorkingSaturday === this.adminConstants.LOGICAL_FIELD.YES) {
-      this.addUser.get('workSaturday').setValue(true);
-    }
-  }
   /**
    * Construct a method to show the user details in
    *  righ overlay panel.
    */
   showRightViewUserModal() {
     this.userProfileViewDataArray = [];
-    this.addUser.reset();
+    // this.addUser.reset();
     const userObj = this.currUserObj;
     this.userProfileViewDataArray.push(userObj);
     this.isUserProfileRightSideVisible = true;
@@ -2139,4 +1173,24 @@ export class UserProfileComponent implements OnInit {
   }
 
 
+  addEditUserProfile(title, UserObject) {
+
+    this.showeditUser = UserObject ? true : false;
+    const ref = this.dialogService.open(AddEditUserProfileComponent, {
+      header: title,
+      width: '92vw',
+      data: UserObject,
+      contentStyle: { 'max-height': '72vh', 'overflow-y': 'auto' },
+      closable: false,
+    });
+
+    ref.onClose.subscribe((userDetailsObj: any) => {
+      if (userDetailsObj) {
+        if (!this.showeditUser) {
+          userDetailsObj.userDetails.get('isActive').setValue('Yes');
+        }
+        this.saveUser(userDetailsObj.userDetails, userDetailsObj.date);
+      }
+    });
+  }
 }

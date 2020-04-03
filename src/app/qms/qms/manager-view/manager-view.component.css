@@ -16,3 +16,10 @@
 ::ng-deep .commentsTextArea{
   padding-top: 20px!important;
 }
+::ng-deep .downloadbutton {
+  float: right;
+  display: inline-block;
+}
+::ng-deep a.refreshButton{
+  margin-right: 14px;
+}

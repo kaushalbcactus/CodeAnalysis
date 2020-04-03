@@ -285,7 +285,7 @@ export class MyTimelineComponent implements OnInit {
     this.getEvents(this.firstLoad, null, null);
   }
 
-  // Execute below function only when create task 
+  // Execute below function only when create task
 
   setCalendarView(firstLoad, gotoDate, startDate, endDate) {
     setTimeout(() => {
@@ -394,7 +394,7 @@ export class MyTimelineComponent implements OnInit {
 
 
   // *************************************************************************************************************************************
-  //  convert date into string 
+  //  convert date into string
   // *************************************************************************************************************************************
 
   async getStartEndDates(startDate, endDate) {
@@ -407,7 +407,7 @@ export class MyTimelineComponent implements OnInit {
     return filterDates;
   }
   // *************************************************************************************************************************************
-  //   to get event on button click 
+  //   to get event on button click
   // *************************************************************************************************************************************
 
   bindEvents() {
@@ -459,7 +459,7 @@ export class MyTimelineComponent implements OnInit {
 
 
   // *************************************************************************************************************************************
-  //   to get event on title click 
+  //   to get event on title click
   // *************************************************************************************************************************************
 
 
@@ -491,6 +491,7 @@ export class MyTimelineComponent implements OnInit {
       if (this.task.Task !== 'Adhoc') {
         this.tasks = await this.myDashboardConstantsService.getNextPreviousTask(this.task);
         this.task.nextTasks = this.tasks ? this.tasks.filter(c => c.TaskType === 'Next Task') : [];
+        this.task.prevTaskDetails = this.tasks ? this.tasks.filter(c => c.TaskType === 'Previous Task') : [];
       }
 
       this.task.emailNotificationEnable = emailEnable;
@@ -549,7 +550,7 @@ export class MyTimelineComponent implements OnInit {
   }
 
   // *************************************************************************************************************************************
-  //  dialog for time booking 
+  //  dialog for time booking
   // *************************************************************************************************************************************
   async loadBlockTimeDialog(event, task) {
     const ref = this.dialogService.open(BlockTimeDialogComponent, {
@@ -567,7 +568,7 @@ export class MyTimelineComponent implements OnInit {
 
         this.CalendarLoader = true;
         if (event === 'Leave') {
-          // update leaves table based on leaves 
+          // update leaves table based on leaves
           const dbAvailableHours = await this.getAvailableHours(blockTimeobj, 'apply');
 
           const batchURL = [];
@@ -668,23 +669,8 @@ export class MyTimelineComponent implements OnInit {
 
     this.CalendarLoader = true;
     if (this.step !== 0) {
-      // let TaskDetails = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.TaskDetails);
-      // TaskDetails.filter = TaskDetails.filter.replace(/{{taskId}}/gi, this.task.ID);
-
-      // this.response  = await this.spServices.readItems(this.constants.listNames.Schedules.name, TaskDetails);
       this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'GetTask');
       this.response = await this.spServices.readItem(this.constants.listNames.Schedules.name, +this.task.ID);
-
-      // this.batchContents = new Array();
-      // const batchGuid = this.spServices.generateUUID();
-
-      // let TaskDetails = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.TaskDetails);
-      // TaskDetails.filter = TaskDetails.filter.replace(/{{taskId}}/gi, this.task.ID);
-
-      // const TaskDetailsUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', TaskDetails);
-      // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, TaskDetailsUrl);
-      // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-
       this.task = this.response;
       this.task.AssignedTo = this.sharedObject.currentUser.title;
       this.task.TimeSpent = this.task.TimeSpent ? "00:00" : this.task.TimeSpent.replace('.', ':');
@@ -717,8 +703,10 @@ export class MyTimelineComponent implements OnInit {
             header: 'Confirmation',
             icon: 'pi pi-exclamation-triangle',
             accept: async () => {
-              if (task.PrevTasks && task.PrevTasks.indexOf(';#') === -1 && task.Task.indexOf('Review-') > -1) {
-                this.myDashboardConstantsService.callQMSPopup(task, this.feedbackPopupComponent);
+              task.parent = 'Dashboard';
+              const qmsTasks = await this.myDashboardConstantsService.callQMSPopup(task);
+              if (qmsTasks.length) {
+                this.feedbackPopupComponent.openPopup(qmsTasks, task);
               } else {
                 this.saveTask(task);
               }
