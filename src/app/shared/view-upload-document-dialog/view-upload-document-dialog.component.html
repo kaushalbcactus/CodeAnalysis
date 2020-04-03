@@ -13,7 +13,7 @@
 
 
 <p-fileUpload [style]="{'margin-top':'1vh'}" *ngIf="!loaderenable && (selectedTab === 'My Drafts' || selectedTab ==='Source Docs' || selectedTab ==='References' || selectedTab ==='Meeting Notes')" customUpload="true" (uploadHandler)="uploadDocs($event,selectedTab)"
-    multiple="multiple" maxFileSize="100000000">
+    multiple="multiple" maxFileSize="500000000">
 </p-fileUpload>
 
 <p-tabPanel [header]="item.label" [hidden]="loaderenable" *ngFor="let item of items; let i = index" [selected]="item.label === selectedTab">

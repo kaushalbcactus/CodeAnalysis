@@ -41,6 +41,7 @@ import { SharedModule } from '../shared/shared.module';
 import { ViewUploadDocumentDialogComponent } from '../shared/view-upload-document-dialog/view-upload-document-dialog.component';
 import { ViewUploadDocumentModule } from '../shared/view-upload-document-dialog/view-upload-document.module';
 import { CreateTaskComponent } from './fte/create-task/create-task.component';
+import { FileUploadProgressDialogComponent } from '../shared/file-upload-progress-dialog/file-upload-progress-dialog.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
@@ -100,7 +101,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     BlockTimeDialogComponent,
     ProjectDraftsComponent,
     ViewUploadDocumentDialogComponent,
-    CreateTaskComponent
+    CreateTaskComponent,
+    FileUploadProgressDialogComponent
   ]
 })
 export class MyDashboardModule { }

@@ -416,7 +416,7 @@ export class AddEditPoDialogComponent implements OnInit {
   onFileChange(event) {
     this.selectedFile = null;
     if (event.target.files && event.target.files.length > 0) {
-      this.selectedFile = event.target.files[0];
+      this.selectedFile = event.target.files;
     }
   }
 

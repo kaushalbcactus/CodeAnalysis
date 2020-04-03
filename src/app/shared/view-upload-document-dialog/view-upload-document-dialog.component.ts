@@ -8,6 +8,7 @@ import { GlobalService } from 'src/app/Services/global.service';
 import { MyDashboardConstantsService } from 'src/app/my-dashboard/services/my-dashboard-constants.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
+import { FileUploadProgressDialogComponent } from '../file-upload-progress-dialog/file-upload-progress-dialog.component';
 
 
 @Component({

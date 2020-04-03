@@ -33,6 +33,7 @@ import { AddEditPocComponent } from './admin/client-masterdata/add-edit-poc/add-
 import { AddEditPoDialogComponent } from './admin/client-masterdata/add-edit-po-dialog/add-edit-po-dialog.component';
 import { ChangeBudgetDialogComponent } from './admin/client-masterdata/change-budget-dialog/change-budget-dialog.component';
 import { CustomMaterialModule } from '../shared/material.module';
+import { FileUploadProgressDialogComponent } from '../shared/file-upload-progress-dialog/file-upload-progress-dialog.component';
 
 @NgModule({
   declarations: [
@@ -70,7 +71,7 @@ import { CustomMaterialModule } from '../shared/material.module';
   ],
   providers: [
   ],
-  entryComponents : [AddEditUserProfileComponent, AddEditClientlegalentityDialogComponent,AddEditSubdivisionComponent, AddEditPocComponent,AddEditPoDialogComponent,ChangeBudgetDialogComponent]
+  entryComponents : [AddEditUserProfileComponent, AddEditClientlegalentityDialogComponent,AddEditSubdivisionComponent, AddEditPocComponent,AddEditPoDialogComponent,ChangeBudgetDialogComponent,FileUploadProgressDialogComponent]
 
 })
 export class AdminModule { }
