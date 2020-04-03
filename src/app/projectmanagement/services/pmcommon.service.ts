@@ -1054,8 +1054,8 @@ export class PMCommonService {
     const codeValue = codeSplit[2];
     const year = codeValue.substring(0, 2);
     const oCurrentDate = new Date();
-    let sYear = oCurrentDate.getFullYear();
-    sYear = oCurrentDate.getMonth() > 2 ? sYear + 1 : sYear;
+    const sYear = oCurrentDate.getFullYear();
+    // sYear = oCurrentDate.getMonth() > 2 ? sYear + 1 : sYear;
     const contentFilter = Object.assign({}, this.pmConstant.TIMELINE_QUERY.PROJECT_PER_YEAR);
     // tslint:disable-next-line:max-line-length
     contentFilter.filter = contentFilter.filter.replace(/{{Id}}/gi, sYear.toString());
@@ -1499,7 +1499,7 @@ export class PMCommonService {
           // create the milestone folder.
           const milestoneFolderBody = {
             __metadata: { type: 'SP.Folder' },
-            ServerRelativeUrl: response[11].listName + '/' + milestoneObj.data.Name
+            ServerRelativeUrl: response[10].listName + '/' + milestoneObj.data.Name
           };
           const createForderObj = Object.assign({}, options);
           createForderObj.data = milestoneFolderBody;
@@ -1691,7 +1691,7 @@ export class PMCommonService {
       // create the milestone folder.
       const milestoneFolderBody = {
         __metadata: { type: 'SP.Folder' },
-        ServerRelativeUrl: response[11].listName + '/' + element.monthName
+        ServerRelativeUrl: response[10].listName + '/' + element.monthName
       };
       const createForderObj = Object.assign({}, options);
       createForderObj.data = milestoneFolderBody;
