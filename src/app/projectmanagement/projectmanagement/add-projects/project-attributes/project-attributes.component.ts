@@ -11,6 +11,7 @@ import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.ser
 import { Router } from '@angular/router';
 import { DataService } from 'src/app/Services/data.service';
 import { CommonService } from 'src/app/Services/common.service';
+import { DatePipe } from '@angular/common';
 @Component({
   selector: 'app-project-attributes',
   templateUrl: './project-attributes.component.html',
@@ -40,7 +41,7 @@ export class ProjectAttributesComponent implements OnInit {
   formSubmit = false;
   enableCountFields = false;
   CountError = false;
-  errorType: string = '';
+  errorType = '';
   constructor(
     private frmbuilder: FormBuilder,
     public pmObject: PMObjectService,
@@ -53,7 +54,8 @@ export class ProjectAttributesComponent implements OnInit {
     private dynamicDialogRef: DynamicDialogRef,
     private router: Router,
     private dataService: DataService,
-    private commonService: CommonService
+    private commonService: CommonService,
+    private datePipe: DatePipe,
   ) { }
   async ngOnInit() {
     this.initForm();
@@ -468,6 +470,16 @@ export class ProjectAttributesComponent implements OnInit {
    * @param projObj Pass the projObj as parameter.
    */
   editProject(projObj) {
+    if (projObj.ActualStartDate) {
+      const actualStartDate = new Date(projObj.ActualStartDate);
+      const allowedDate = this.commonService.CalculateminstartDateValue(new Date(), 3);
+      if (actualStartDate.getFullYear() >= allowedDate.getFullYear() &&
+        actualStartDate.getMonth() >= allowedDate.getMonth()) {
+        this.addProjectAttributesForm.get('practiceArea').enable();
+      } else {
+        this.addProjectAttributesForm.get('practiceArea').disable();
+      }
+    }
     this.pmObject.addProject.ProjectAttributes.ClientLegalEntity = projObj.ClientLegalEntity;
     this.pmObject.addProject.ProjectAttributes.SubDivision = projObj.SubDivision;
     this.pmObject.addProject.ProjectAttributes.BillingEntity = projObj.BillingEntity;
@@ -481,7 +493,7 @@ export class ProjectAttributesComponent implements OnInit {
     this.pmObject.addProject.ProjectAttributes.Molecule = projObj.Molecule;
     this.pmObject.addProject.ProjectAttributes.TherapeuticArea = projObj.TA;
     this.pmObject.addProject.ProjectAttributes.Indication = projObj.Indication;
-    this.pmObject.addProject.ProjectAttributes.PUBSupportRequired = projObj.IsPubSupport === "Yes" ? true : false;
+    this.pmObject.addProject.ProjectAttributes.PUBSupportRequired = projObj.IsPubSupport === 'Yes' ? true : false;
     this.pmObject.addProject.ProjectAttributes.PUBSupportStatus = projObj.PubSupportStatus;
     const poc2Array = [];
     if (this.pmObject.addProject.ProjectAttributes.BilledBy === this.pmConstant.PROJECT_TYPE.DELIVERABLE.value ||
@@ -522,9 +534,9 @@ export class ProjectAttributesComponent implements OnInit {
     this.pmObject.addProject.ProjectAttributes.Comments = projObj.Comments;
     this.pmObject.addProject.ProjectAttributes.SlideCount = projObj.SlideCount;
     // tslint:disable-next-line: max-line-length
-    this.pmObject.addProject.ProjectAttributes.ReferenceCount = projObj.ReferenceCount; 
+    this.pmObject.addProject.ProjectAttributes.ReferenceCount = projObj.ReferenceCount;
     this.pmObject.addProject.ProjectAttributes.PageCount = projObj.PageCount;
-     this.pmObject.addProject.ProjectAttributes.AnnotationBinder = projObj.AnnotationBinder ? projObj.AnnotationBinder === 'Yes' ? true : false : false;
+    this.pmObject.addProject.ProjectAttributes.AnnotationBinder = projObj.AnnotationBinder ? projObj.AnnotationBinder === 'Yes' ? true : false : false;
 
     this.enableCountFields = this.pmObject.addProject.ProjectAttributes.PracticeArea.toLowerCase()
       === 'medcomm' || this.pmObject.addProject.ProjectAttributes.PracticeArea.toLowerCase()

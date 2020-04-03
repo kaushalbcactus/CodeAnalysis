@@ -2365,70 +2365,7 @@ export class AllProjectsComponent implements OnInit {
     }
   }
 
-  /**
-   * This method is used to complete the audit.
-   */
-  async auditComplete() {
-
-    debugger;
-    const formValue = $('.audit-rolling-section');
-    const oInput = $('.audit-rolling-section .formContentChecklist input');
-    const oContent = $('.audit-rolling-section .formContentChecklist td:nth-child(2)');
-    const oTextArea = $('.audit-rolling-section .formContentChecklist  textarea');
-    let bFlag = true;
-    const arrData = [];
-    const nCount = oInput.length;
-    for (const index in oInput) {
-      if (index < nCount) {
-        const bChecked = oInput[index].checked;
-        const contentIndex = +index * 2;
-        let sData = $(oContent[contentIndex]).html();
-        if (sData) {
-          sData = sData.trim();
-        }
-        const sComment = oTextArea[index].value.trim();
-        if (bChecked || sComment) {
-          const oParam: any = {};
-          oParam.checked = bChecked;
-          oParam.data = sData;
-          oParam.comment = sComment;
-          arrData.push(oParam);
-        } else {
-          bFlag = false;
-          break;
-        }
-      }
-    }
-    if (!bFlag) {
-      this.checkList.addRollingProjectError = true;
-      this.checkList.addRollingProjectErrorMsg = this.pmConstant.ERROR.AUDIT_COMPLETE_ERROR;
-    } else {
-      const piUdpate = {
-        AuditCheckList: formValue.html(),
-        Status: this.constants.projectStatus.PendingClosure,
-        PrevStatus: this.selectedProjectObj.Status,
-      };
-      this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'UpdateProjectInfo');
-      const retResults = await this.spServices.updateItem(this.constants.listNames.ProjectInformation.name,
-        this.selectedProjectObj.ID, piUdpate, this.constants.listNames.ProjectInformation.type);
-      this.checkList.addRollingProjectError = false;
-      this.pmObject.isAuditRollingVisible = false;
-      this.sendEmailBasedOnStatus(this.constants.projectStatus.PendingClosure, this.selectedProjectObj);
-      this.messageService.add({
-        key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
-        detail: 'Project - ' + this.selectedProjectObj.ProjectCode + ' Updated Successfully.'
-      });
-      setTimeout(() => {
-        if (this.router.url === '/projectMgmt/allProjects') {
-          this.pmObject.allProjectItems = [];
-          this.reloadAllProject();
-        } else {
-          this.router.navigate(['/projectMgmt/allProjects']);
-        }
-      }, this.pmConstant.TIME_OUT);
-    }
-  }
-
+ 
   /**
    * This method is used to send email by using template.
    * @param val pass the template name.

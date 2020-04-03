@@ -450,7 +450,7 @@ export class CommonService {
         }
         return arrItem;
     }
-    
+
     async checkTaskStatus(task) {
         this.SetNewrelic('Service', 'Common-Service', 'readItem');
         const currentTask = await this.spServices.readItem(this.constants.listNames.Schedules.name, task.ID);
@@ -464,7 +464,7 @@ export class CommonService {
         }
         return isActionRequired;
     }
-    
+
     setIframeHeight() {
         setTimeout(() => {
             const height = $('.custom-table-container').height();
@@ -631,7 +631,7 @@ export class CommonService {
 
 
     /*****************************************************************
-   
+
     Call Api to Get Project Resources
    *******************************************************************/
 
@@ -742,7 +742,7 @@ export class CommonService {
     }
 
     // ***********************************************************************************************************************************
-    // Get Project Data 
+    // Get Project Data
     // ***********************************************************************************************************************************
 
     public setLevel1Email(prjObj) {
@@ -876,6 +876,22 @@ export class CommonService {
             newrelic.setCustomAttribute('spRouteType', routeType);
             newrelic.setCustomAttribute('spCallType', value);
         }
+    }
+
+    CalculateminstartDateValue(date, days) {
+      let tempminDateValue = null;
+      const dayCount = days;
+      let tempDate = new Date(date);
+      while (days > 0) {
+        tempDate = new Date(tempDate.setDate(tempDate.getDate() - 1));
+        if (tempDate.getDay() !== 6 && tempDate.getDay() !== 0) {
+          days -= 1;
+          if (dayCount - 3 <= days) {
+            tempminDateValue = tempDate;
+          }
+        }
+      }
+      return tempminDateValue;
     }
 
 

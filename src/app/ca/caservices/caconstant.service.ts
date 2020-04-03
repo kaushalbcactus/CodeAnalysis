@@ -87,6 +87,13 @@ export class CAConstantService {
     top: 4500
   };
 
+  public tasks = {
+    select: 'ID,Title,Task,Status,ParentSlot,ProjectCode,Milestone',
+    orderby: 'StartDate asc',
+    filter: "ProjectCode eq '{{projectCode}}' and Task ne 'Select one'",
+    top: 4500
+  };
+
 
   public getMailTemplate = {
     select: 'Content',

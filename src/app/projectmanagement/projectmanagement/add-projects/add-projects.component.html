@@ -2,12 +2,11 @@
 <app-select-sow *ngIf="pmObject.activeIndex==0"></app-select-sow>
 <app-project-attributes *ngIf="pmObject.activeIndex ==2"></app-project-attributes>
 <app-addtimeline *ngIf="pmObject.activeIndex==3"></app-addtimeline>
-<app-finance-management *ngIf="pmObject.activeIndex==1" [manageData]="financeManageData"
-   (dataEvent)="receiveData($event)"></app-finance-management>
-<p-dialog [(visible)]="isMangageFinanceVisible" #pfm appendTo='body' [modal]="true" [style]="{width: '100%'}">
-   <p-header>
-      Project Finance Management
-   </p-header>
-   <app-manage-finance *ngIf="isMangageFinanceVisible" (budgetOutputData)="getBudgetOutputData($event)" (maximizeDialog)="showDialogMaximized()">
-   </app-manage-finance>
+<app-finance-management *ngIf="pmObject.activeIndex==1" [manageData]="financeManageData" (dataEvent)="receiveData($event)"></app-finance-management>
+<p-dialog [(visible)]="isMangageFinanceVisible" #pfm appendTo='body' [modal]="true" [contentStyle]="{'min-height':'70vh'}" [style]="{'width':'100vw'}" [positionTop]="30">
+    <p-header>
+        Project Finance Management
+    </p-header>
+    <app-manage-finance *ngIf="isMangageFinanceVisible" (budgetOutputData)="getBudgetOutputData($event)" (maximizeDialog)="showDialogMaximized()">
+    </app-manage-finance>
 </p-dialog>
