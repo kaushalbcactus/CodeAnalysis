@@ -479,36 +479,41 @@ export class CommonService {
 
 
 
-    ajax_addHrsMins(arrayTotalTimeSpent) {
+    addHrsMins(arrayTotalTimeSpent): string {
         let totalTime = '';
-        let totalHrs: any = 0;
-        let totalMins: any = 0;
+        let totalHrs = 0;
+        let totalMins = 0;
         for (const i in arrayTotalTimeSpent) {
             if (arrayTotalTimeSpent.hasOwnProperty(i)) {
-                totalHrs = +(totalHrs) + +(arrayTotalTimeSpent[i].timeHrs);
-                totalMins = +(totalMins) + +(arrayTotalTimeSpent[i].timeMins);
+              const hrsPart = arrayTotalTimeSpent[i].timeHrs ? +(arrayTotalTimeSpent[i].timeHrs) : +arrayTotalTimeSpent[i].split(':') [0];
+              const minsPart = arrayTotalTimeSpent[i].timeMins !== undefined ? +(arrayTotalTimeSpent[i].timeMins) :
+                               arrayTotalTimeSpent[i].indexOf(':') > -1 ? +arrayTotalTimeSpent[i].split(':')[1] : 0;
+                totalHrs = +(totalHrs) + hrsPart;
+                totalMins = +(totalMins) + minsPart;
                 if (totalMins >= 60) {
                     totalHrs++;
                     totalMins = totalMins - 60;
                 }
             }
         }
-        totalMins = totalMins < 10 ? '0' + totalMins : totalMins;
-        totalTime = totalHrs + ':' + totalMins;
+        const totalMinutes = totalMins < 10 ? '0' + totalMins : totalMins;
+        totalTime = totalHrs + ':' + totalMinutes;
         return totalTime;
     }
 
-    calculateTotalMins(hrsMins) {
+    calculateTotalMins(hrsMins: string): number {
         let totalMinutes = 0;
+        const negative: boolean = hrsMins.indexOf('-') > -1 ? true : false;
         if (hrsMins != null && hrsMins.indexOf(':') > -1) {
-            totalMinutes = (+(hrsMins.toString().split(':')[0]) * 60) + +(hrsMins.toString().split(':')[1]);
+          const hrs = negative ? -(+(hrsMins.toString().split(':')[0]) * 60) : (+(hrsMins.toString().split(':')[0]) * 60);
+            totalMinutes = hrs + +(hrsMins.toString().split(':')[1]);
         } else if (hrsMins != null && hrsMins.indexOf(':') === -1) {
             totalMinutes = +(hrsMins) * 60;
         }
-        return totalMinutes;
+        return negative ? -totalMinutes : totalMinutes;
     }
 
-    convertFromHrsMins(mins) {
+    convertFromHrsMins(mins): number {
         const h = Math.floor(mins / 60);
         let m = mins % 60;
         m = +(m / 60);
@@ -587,7 +592,7 @@ export class CommonService {
         return sHours + ":" + sMinutes;
     }
 
-    ajax_subtractHrsMins(elem1, elem2) {
+    subtractHrsMins(elem1: string, elem2: string, considerNegative: boolean): string {
         let result = 0;
         let negative = false;
         let total = 0;
@@ -598,7 +603,7 @@ export class CommonService {
         const totalMinsElem2 = elem2.indexOf('.') > -1 ? +(elem2.split('.')[0]) * 60 + +(elem2.split('.')[1]) :
             +(elem2.split(':')[0]) * 60 + +(elem2.split(':')[1]);
         if (totalMinsElem2 > totalMinsElem1) {
-            negative = true;
+            negative = considerNegative ? true : false;
             total = totalMinsElem2 - totalMinsElem1;
         } else {
             negative = false;
@@ -615,7 +620,7 @@ export class CommonService {
 
 
     /*****************************************************************
-   
+
     Call Api to Get Project Resources
    *******************************************************************/
 
@@ -667,7 +672,7 @@ export class CommonService {
             grpResourceObj.type = 'GET';
             batchUrl.push(grpResourceObj);
         }
-       
+
         const arrResult = await this.spServices.executeBatch(batchUrl);
         this.response = arrResult.length > 0 ? arrResult.map(a => a.retItems) : [];
         if (this.response.length > 0) {
@@ -733,7 +738,7 @@ export class CommonService {
     }
 
     // ***********************************************************************************************************************************
-    // Get Project Data 
+    // Get Project Data
     // ***********************************************************************************************************************************
 
     public setLevel1Email(prjObj) {
@@ -872,5 +877,9 @@ export class CommonService {
     }
 
 
+    roundToPrecision(x, precision) {
+      const y = +x + (precision === undefined ? 0.5 : precision / 2);
+      return y - (y % (precision === undefined ? 1 : +precision));
+    }
 
 }

@@ -9,8 +9,8 @@ import { CACommonService } from 'src/app/ca/caservices/cacommon.service';
 import { SharedConstantsService } from '../services/shared-constants.service';
 import { MilestoneTasksDialogComponent } from './milestone-tasks-dialog/milestone-tasks-dialog.component';
 import { CommonService } from 'src/app/Services/common.service';
-import { GanttChartComponent } from '../../shared/gantt-chart/gantt-chart.component'
-
+import { GanttChartComponent } from '../../shared/gantt-chart/gantt-chart.component';
+import { gantt, Gantt } from '../../dhtmlx-gantt/codebase/source/dhtmlxgantt';
 
 @Component({
   selector: 'app-usercapacity',
@@ -93,7 +93,7 @@ export class UsercapacityComponent implements OnInit {
 
     let setResourcesExtn = $.extend(true, [], data.task.resources);
 
-    const oCapacity = await this.applyFilterReturn(data.startTime, data.endTime, setResourcesExtn);
+    const oCapacity = await this.applyFilterReturn(data.startTime, data.endTime, setResourcesExtn, []);
     const tempUserDetailsArray = [];
 
     if (data.task.selectedResources) {
@@ -155,7 +155,7 @@ export class UsercapacityComponent implements OnInit {
     return objDates;
   }
 
-  async applyFilter(startDate, endDate, selectedUsers) {
+  async applyFilter(startDate, endDate, selectedUsers, excludeTasks) {
     const oCapacity = {
       arrUserDetails: [],
       arrDateRange: [],
@@ -178,8 +178,8 @@ export class UsercapacityComponent implements OnInit {
     obj.arrDateFormat = this.getDates(startDate, endDate).dateArray;
     oCapacity.arrDateRange = obj.arrDateRange;
     oCapacity.arrDateFormat = obj.arrDateFormat;
-    const batchGuid = this.spService.generateUUID();
-    let batchContents = new Array();
+    // const batchGuid = this.spService.generateUUID();
+    // let batchContents = new Array();
     let batchUrl = [];
     for (const userIndex in selectedUsers) {
       if (selectedUsers.hasOwnProperty(userIndex)) {
@@ -235,7 +235,7 @@ export class UsercapacityComponent implements OnInit {
 
     for (const indexUser in oCapacity.arrUserDetails) {
       if (oCapacity.arrUserDetails.hasOwnProperty(indexUser)) {
-        oCapacity.arrUserDetails[indexUser].tasks = this.fetchTasks(oCapacity.arrUserDetails[indexUser], arruserResults[indexUser]);
+        oCapacity.arrUserDetails[indexUser].tasks = this.fetchTasks(oCapacity.arrUserDetails[indexUser], arruserResults[indexUser], excludeTasks);
 
         if (oCapacity.arrUserDetails[indexUser].tasks && oCapacity.arrUserDetails[indexUser].tasks.length) {
           oCapacity.arrUserDetails[indexUser].tasks.sort((a, b) => {
@@ -291,10 +291,6 @@ export class UsercapacityComponent implements OnInit {
         availableHrsGet.type = 'GET';
         availableHrsGet.listName = this.globalConstantService.listNames.AvailableHours.name;
         batchURL.push(availableHrsGet);
-
-
-
-
       }
     }
 
@@ -304,14 +300,6 @@ export class UsercapacityComponent implements OnInit {
       batchResults = await this.spService.executeBatch(batchURL);
       finalArray = [...finalArray, ...batchResults];
     }
-    // } else {
-    //   batchResults = await this.spServices.executeBatch(batchURL);
-    //   finalArray = [...finalArray, ...batchResults];
-    // }
-
-
-
-    // let arrResults = await this.spService.executeBatch(batchURL);
     finalArray = finalArray.length ? finalArray : [];
     if (finalArray) {
 
@@ -328,16 +316,16 @@ export class UsercapacityComponent implements OnInit {
     return oCapacity;
   }
 
-  applyFilterReturn(startDate, endDate, selectedUsers) {
-    return this.applyFilter(startDate, endDate, selectedUsers);
+  applyFilterReturn(startDate, endDate, selectedUsers, excludeTasks) {
+    return this.applyFilter(startDate, endDate, selectedUsers, excludeTasks);
   }
 
-  async applyFilterGlobal(startDate, endDate, selectedUsers) {
-    this.globalService.oCapacity = await this.applyFilter(startDate, endDate, selectedUsers);
+  async applyFilterGlobal(startDate, endDate, selectedUsers, excludeTasks) {
+    this.globalService.oCapacity = await this.applyFilter(startDate, endDate, selectedUsers, excludeTasks);
 
   }
-  async applyFilterLocal(startDate, endDate, selectedUsers, Module) {
-    this.oCapacity = await this.applyFilter(startDate, endDate, selectedUsers);
+  async applyFilterLocal(startDate, endDate, selectedUsers, Module, excludeTasks) {
+    this.oCapacity = await this.applyFilter(startDate, endDate, selectedUsers, excludeTasks);
 
     if (Module) {
       if (Module === 'PM') {
@@ -350,12 +338,6 @@ export class UsercapacityComponent implements OnInit {
   fetchData(oUser, startDateString, endDateString, batchUrl) {
 
     const selectedUserID = oUser.uid;
-    // tslint:disable
-    // const endpoint = this.globalService.sharePointPageObject.webAbsoluteUrl
-    //   + "/_api/web/lists/getbytitle('" + this.Schedules + "')/items?$select=ID,Milestone,SubMilestones,Task,Status,Title,TimeSpent,ExpectedTime,StartDate,DueDate,TimeZone&$top=4500&$filter=(AssignedTo/Id eq " + selectedUserID + ") and(" +
-    //   "(StartDate ge '" + startDateString + "' and StartDate le '" + endDateString + "') or (DueDate ge '" + startDateString + "' and DueDate le '" + endDateString + "') or (StartDate le '" + startDateString + "' and DueDate ge '" + endDateString + "')" +
-    //   ") and Status ne 'Abandon' and Status ne 'Deleted'&$orderby=StartDate";
-    // tslint:enable
     const invObj = Object.assign({}, this.queryConfig);
     // tslint:disable-next-line: max-line-length
     invObj.url = this.spService.getReadURL(this.globalConstantService.listNames.Schedules.name, this.sharedConstant.userCapacity.fetchTasks);
@@ -365,39 +347,31 @@ export class UsercapacityComponent implements OnInit {
     invObj.type = 'GET';
     batchUrl.push(invObj);
     return batchUrl;
-    // return this.spService.getBatchBodyGet(batchContents, batchGuid, endpoint);
   }
 
   async executeBatchRequest(batchUrl) {
-    // const arrResults = [];
-    // const response = this.spService.executeBatchPostRequestByRestAPI(batchGuid, sBatchData);
     const response = await this.spService.executeBatch(batchUrl);
     const arrResults = response.length ? response.map(a => a.retItems) : [];
-    // const responseInLines = response.split('\n');
-    // for (let currentLine = 0; currentLine < responseInLines.length; currentLine++) {
-    //   try {
-    //     const tryParseJson = JSON.parse(responseInLines[currentLine]);
-    //     arrResults.push(tryParseJson.d.results);
-    //   } catch (e) {
-
-    //   }
-    // }
     return arrResults;
   }
   // tslint:disable
-  fetchTasks(oUser, tasks) {
+  fetchTasks(oUser, tasks, excludeTasks) {
+    const filteredTasks = [];
     for (const index in tasks) {
       if (tasks.hasOwnProperty(index)) {
-        tasks[index].TotalAllocated = tasks[index].Task !== 'Adhoc' ?
-          this.commonservice.convertToHrsMins('' + tasks[index].ExpectedTime).replace('.', ':')
-          : tasks[index].TimeSpent.replace('.', ':');
-        const sTimeZone = tasks[index].TimeZone === null ? '+5.5' : tasks[index].TimeZone;
-        const currentUserTimeZone = (new Date()).getTimezoneOffset() / 60 * -1;
-        tasks[index].StartDate = this.commonservice.calcTimeForDifferentTimeZone(new Date(tasks[index].StartDate), currentUserTimeZone, sTimeZone);
-        tasks[index].DueDate = this.commonservice.calcTimeForDifferentTimeZone(new Date(tasks[index].DueDate), currentUserTimeZone, sTimeZone);
+        if (!excludeTasks.find(t => tasks[index].ID && t.ID === tasks[index].ID)) {
+          tasks[index].TotalAllocated = tasks[index].Task !== 'Adhoc' ?
+            this.commonservice.convertToHrsMins('' + tasks[index].ExpectedTime).replace('.', ':')
+            : tasks[index].TimeSpent.replace('.', ':');
+          const sTimeZone = tasks[index].TimeZone === null ? '+5.5' : tasks[index].TimeZone;
+          const currentUserTimeZone = (new Date()).getTimezoneOffset() / 60 * -1;
+          tasks[index].StartDate = this.commonservice.calcTimeForDifferentTimeZone(new Date(tasks[index].StartDate), currentUserTimeZone, sTimeZone);
+          tasks[index].DueDate = this.commonservice.calcTimeForDifferentTimeZone(new Date(tasks[index].DueDate), currentUserTimeZone, sTimeZone);
+          filteredTasks.push(tasks[index]);
+        }
       }
     }
-    return tasks;
+    return filteredTasks;
   }
 
   async calculateAvailableHours(availableHrs) {
@@ -841,7 +815,7 @@ export class UsercapacityComponent implements OnInit {
     ref.onClose.subscribe(async (tasks: any) => {
     });
   }
- 
+
 
   collpaseTable(objt) {
     const oCollpase = $(objt).closest('.TaskPerDayRow');

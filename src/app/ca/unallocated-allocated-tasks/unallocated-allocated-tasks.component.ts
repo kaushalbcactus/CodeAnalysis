@@ -387,7 +387,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         this.commonService.SetNewrelic('unallocated-allocated', 'CA', 'checkUserCapacity');
 
         const oCapacity = await this.usercapacityComponent.applyFilterReturn(startTime, endTime,
-          setResourcesExtn);
+          setResourcesExtn, []);
         task.capacity = oCapacity;
         const setResources = $.extend(true, [], task.resources);
         for (const resource of setResources) {
@@ -565,7 +565,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     // rowData.PreviousAssignedUser = rowData.AssignedTo;
   }
 
-  
+
   // *************************************************************************************************
   //  Get Email Body
   // **************************************************************************************************
@@ -625,7 +625,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     return mailContent.replace(new RegExp(key, 'g'), value);
   }
 
- 
+
   // ****************************************************************************************************
   // hide popup menu on production
   // *****************************************************************************************************
@@ -779,7 +779,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         RowData.subTaskloaderenable = false;
         this.disableSave = false;
       }
-     
+
     });
 
   }
@@ -961,7 +961,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     taskObj.UserStart = task.startDate ? new Date(task.startDate) : new Date(task.StartDate);
     taskObj.UserEnd = task.dueDate ? new Date(task.dueDate) : new Date(task.DueDate);
     taskObj.ProjectName = task.ProjectName;
-    taskObj.SpentTime = this.commonService.ajax_addHrsMins([hrsMinObject]);
+    taskObj.SpentTime = this.commonService.addHrsMins([hrsMinObject]);
     taskObj.UserStartDatePart = this.getDatePart(convertedStartDate);
     taskObj.UserStartTimePart = this.getTimePart(convertedStartDate);
     taskObj.UserEndDatePart = this.getDatePart(convertedEndDate);
@@ -1005,7 +1005,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     const endTime = new Date(new Date(task.EndTime).setHours(23, 59, 59, 0));
     this.commonService.SetNewrelic('unallocated-allocated', 'CA', 'fetchUserBasedOnCapacity');
     const oCapacity = await this.usercapacityComponent.applyFilterReturn(startTime, endTime,
-      setResourcesExtn);
+      setResourcesExtn, []);
     task.capacity = oCapacity;
     const setResources = $.extend(true, [], task.resources);
     for (const resource of setResources) {
