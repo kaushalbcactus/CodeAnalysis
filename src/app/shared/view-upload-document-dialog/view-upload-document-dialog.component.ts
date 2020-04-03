@@ -218,18 +218,6 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     let completedCRList = []
     let documentsUrl = '';
 
-    // if (selectedTab === 'Source Docs') {
-    //   documentsUrl = '/Source Documents';
-    // } else if (selectedTab === 'References') {
-    //   documentsUrl = '/References';
-    // } else if (selectedTab === 'Meeting Notes') {
-    //   documentsUrl = '/Communications';
-    // } else if (selectedTab === 'Emails') {
-    //   documentsUrl = '/Emails';
-    // } else {
-    //   documentsUrl = '/Drafts/Internal/' + this.selectedTask.Milestone;
-    // }
-
     switch (selectedTab) {
       case 'Source Docs':
         documentsUrl = '/Source Documents';
@@ -250,26 +238,12 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     let completeFolderRelativeUrl = '';
     if (selectedTab === 'Client Comments') {
 
-
       const schedulesInfo = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ClientReviewSchedules);
       schedulesInfo.filter = schedulesInfo.filter
         .replace(/{{projectCode}}/gi, this.selectedTask.ProjectCode);
       this.commonService.SetNewrelic('Shared', 'view-uploadDocumentDialog', 'GetCRDocuments');
       const results = await this.spServices.readItems(this.constants.listNames.Schedules.name, schedulesInfo);
-      debugger;
-
-
-      // const scheduleGet = Object.assign({}, options);
-      // const scheduleFilter = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ClientReviewSchedules);
-      // scheduleFilter.filter = scheduleFilter.filter
-      //   .replace(/{{projectCode}}/gi, this.selectedTask.ProjectCode);
-      // scheduleGet.url = this.spServices.getReadURL(this.constants.listNames.Schedules.name,
-      //   scheduleFilter);
-      // scheduleGet.type = 'GET';
-      // scheduleGet.listName = this.constants.listNames.Schedules.name;
-      // batchURL.push(scheduleGet);
-      // const completedCRArray = await this.spServices.executeBatch(batchURL);
-
+     
       if (results) {
         completedCRList = results.length > 0 ? results : [];
         const dbMilestones = this.ProjectInformation.Milestones.split(';#');
@@ -283,7 +257,6 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
             listName: ''
           };
           let batchURL = [];
-
           Milestones.forEach(element => {
             documentsUrl = '/Drafts/Internal/' + element;
             completeFolderRelativeUrl = folderUrl + documentsUrl;
@@ -293,9 +266,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
             documentGet.listName = 'TaskDocuments'
             batchURL.push(documentGet);
           });
-
           const FolderDocuments = await this.spServices.executeBatch(batchURL);
-
           if (FolderDocuments) {
             this.allDocuments = [].concat(...FolderDocuments.map(c => c.retItems));
           }
@@ -505,6 +476,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     }
   }
 
+  
   async uploadDocuments(event, type) {
 
     if (event.files.length) {
@@ -513,30 +485,25 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       switch (type) {
         case 'Source Docs':
           docFolder = 'Source Documents';
-          //  sVal = 'source documents';
           break;
         case 'References':
           docFolder = 'References';
-          //  sVal = 'references';
           break;
         case 'meetingNotes':
           docFolder = 'Communications';
-          // sVal = 'meeting notes';
           break;
-        case 'Meeting Notes & Client Comments':
+        case 'Meeting Notes':
           docFolder = 'Communications';
-          // sVal = 'meeting notes & comments';
           break;
         default:
           docFolder = 'Drafts/Internal/' + this.selectedTask.Milestone;
-          //  sVal = 'current task documents';
           break;
       }
-      const uploadedFiles = [];
       const readers = [];
       let bUpload = true;
       event.files.forEach(async element => {
 
+        let file = element;
         let filename = element.name;
         const sNewFileName = filename.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
         if (filename !== sNewFileName) {
@@ -547,40 +514,33 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
           filename = filename.split(/\.(?=[^\.]+$)/)[0] + '.' + this.datePipe.transform(new Date(),
             'ddMMyyyyhhmmss') + '.' + filename.split(/\.(?=[^\.]+$)/)[1];
         }
-
-
-        const fileReader = new FileReader();
-        fileReader.readAsArrayBuffer(element);
         const fileObj = {
-          reader: fileReader,
+          file: file,
           name: filename
         };
 
         readers.push(fileObj);
-
         existingFiles.push(filename.toLowerCase());
       });
       if (bUpload) {
-        this.messageService.add({ key: 'custom', severity: 'info', summary: 'Info Message', detail: 'Uploading....' });
-        this.loaderenable = true;
-        readers.forEach(async element => {
-          const fileObj = element;
-          fileObj.reader.onload = async (readerEvt) => {
+        const ref = this.dialogService.open(FileUploadProgressDialogComponent, {
+          header: 'File Uploading',
+          width: '70vw',
+          data: {
+            Files: readers,
+            libraryName: this.ProjectInformation.ProjectFolder + "/" +  docFolder,
+            overwrite: false,
+          },
+          contentStyle: { 'max-height': '82vh', 'overflow-y': 'auto', 'background-color': '#f4f3ef' },
+          closable: false,
+        });
 
-            const filePathUrl = this.sharedObject.sharePointPageObject.serverRelativeUrl +
-              // tslint:disable-next-line: quotemark
-              "/_api/web/GetFolderByServerRelativeUrl('" + this.ProjectInformation.ProjectFolder + "/"
-              // tslint:disable-next-line: quotemark
-              + docFolder + "')/Files/add(url=@TargetFileName,overwrite='false')?" +
-              // tslint:disable-next-line: quotemark
-              "&@TargetFileName='" + fileObj.name + "'&$expand=ListItemAllFields";
-
-            this.commonService.SetNewrelic('Shared', 'viewUpladDocDialog', 'uploadDocuments');
-            const res = await this.spOperations.uploadFile(filePathUrl, fileObj.reader.result);
-            uploadedFiles.push(res);
-            if (readers.length === uploadedFiles.length) {
+        return ref.onClose.subscribe(async (uploadedfiles: any) => {
+          if (uploadedfiles) {
+            if (event.files.length > 0 && event.files.length === uploadedfiles.length) {
+              this.loaderenable = true;
               if (this.selectedTab === 'My Drafts') {
-                this.LinkDocumentToProject(uploadedFiles);
+                this.LinkDocumentToProject(uploadedfiles);
               } else {
                 this.loadDraftDocs(this.selectedTab);
                 this.messageService.add({
@@ -589,7 +549,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
                 });
               }
             }
-          };
+          }
         });
       } else {
         this.messageService.add({
