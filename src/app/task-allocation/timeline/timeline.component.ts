@@ -1689,10 +1689,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit {
 
       if (data.itemType !== 'Client Review' && data.itemType !== 'Send to client') {
         this.taskMenu.push({ label: 'Scope', icon: 'pi pi-comment', command: (event) => this.openComment(data, rowNode) });
-
         if (data.AssignedTo.ID !== undefined && data.AssignedTo.ID > -1 && data.user !== 'QC' && data.user !== 'Edit') {
           this.taskMenu.push({ label: 'User Capacity', icon: 'pi pi-camera', command: (event) => this.getUserCapacity(data) },
-            { label: 'View Allocation', icon: 'pi pi-pencil', command: (event) => this.viewAllocation(data) });
+          { label: 'View Allocation', icon: 'pi pi-sliders-h', command: (event) => this.viewAllocation(data) });
         }
       }
     }
@@ -2125,15 +2124,16 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit {
         const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
           return milestoneTask.AssignedTo.ID === objt.UserName.ID;
         });
-        const checkDailyAllocate = await this.dailyAllocation.checkDailyAllocation(
-          {
-            ID: milestoneTask.id,
-            task: milestoneTask.taskFullName,
-            startDate: milestoneTask.start_date,
-            endDate: milestoneTask.end_date,
-            budgetHrs: milestoneTask.budgetHours,
-            resourceId: resource
-          } as IDailyAllocationTask);
+        const allocationData: IDailyAllocationTask =  {
+          ID: milestoneTask.id,
+          task: milestoneTask.taskFullName,
+          startDate: milestoneTask.start_date,
+          endDate: milestoneTask.end_date,
+          budgetHrs: milestoneTask.budgetHours,
+          resourceId: resource
+        };
+        const resourceCapacity = await this.dailyAllocation.getResourceCapacity(allocationData);
+        const checkDailyAllocate = this.dailyAllocation.checkDailyAllocation(resourceCapacity, allocationData.budgetHrs);
         console.log(checkDailyAllocate);
         milestoneTask.assignedUserTimeZone = resource && resource.length > 0
           ? resource[0].TimeZone.Title ?
