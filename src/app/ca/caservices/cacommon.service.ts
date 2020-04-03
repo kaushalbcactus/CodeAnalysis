@@ -722,7 +722,7 @@ export class CACommonService {
         const TaskName = $.trim(milTasks[i].Title.replace(milTasks[i].ProjectCode + '', '').replace(milTasks[i].Milestone + '', ''));
 
           if (task.MilestoneAllTasks.length > 0 && task.MilestoneAllTasks.find(c => c.type === TaskType && c.milestone === milTasks[i].Milestone)) {
-            task.MilestoneAllTasks.find(c => c.type === TaskType).tasks.push(TaskName);
+            task.MilestoneAllTasks.find(c => c.type === TaskType  && c.milestone === milTasks[i].Milestone).tasks.push(TaskName);
           }
           else {
             task.MilestoneAllTasks.push({ type: TaskType, milestone: milTasks[i].Milestone, tasks: [TaskName] });
