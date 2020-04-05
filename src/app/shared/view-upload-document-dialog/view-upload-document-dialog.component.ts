@@ -249,32 +249,16 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     const folderUrl = this.ProjectInformation.ProjectFolder;
     let completeFolderRelativeUrl = '';
     if (selectedTab === 'Client Comments') {
-
-
       const schedulesInfo = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ClientReviewSchedules);
       schedulesInfo.filter = schedulesInfo.filter
         .replace(/{{projectCode}}/gi, this.selectedTask.ProjectCode);
       this.commonService.SetNewrelic('Shared', 'view-uploadDocumentDialog', 'GetCRDocuments');
       const results = await this.spServices.readItems(this.constants.listNames.Schedules.name, schedulesInfo);
-      debugger;
-
-
-      // const scheduleGet = Object.assign({}, options);
-      // const scheduleFilter = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ClientReviewSchedules);
-      // scheduleFilter.filter = scheduleFilter.filter
-      //   .replace(/{{projectCode}}/gi, this.selectedTask.ProjectCode);
-      // scheduleGet.url = this.spServices.getReadURL(this.constants.listNames.Schedules.name,
-      //   scheduleFilter);
-      // scheduleGet.type = 'GET';
-      // scheduleGet.listName = this.constants.listNames.Schedules.name;
-      // batchURL.push(scheduleGet);
-      // const completedCRArray = await this.spServices.executeBatch(batchURL);
 
       if (results) {
         completedCRList = results.length > 0 ? results : [];
         const dbMilestones = this.ProjectInformation.Milestones.split(';#');
         const Milestones = completedCRList.filter(c => dbMilestones.includes(c.Milestone)) ? completedCRList.filter(c => dbMilestones.includes(c.Milestone)).map(c => c.Milestone) : [];
-
         if (Milestones) {
           const options = {
             data: null,
@@ -308,8 +292,6 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       this.response = await this.spServices.readFiles(completeFolderRelativeUrl);
       this.allDocuments = this.response.length ? this.response : [];
     }
-
-
 
     if (this.selectedTab === 'My Drafts') {
       this.DocumentArray = this.allDocuments.filter(c => c.ListItemAllFields.TaskName === this.selectedTask.Title);
