@@ -194,6 +194,7 @@ export class SendToClientComponent implements OnInit {
       const options = { Status: 'Completed', Actual_x0020_Start_x0020_Date: new Date(), Actual_x0020_End_x0020_Date: new Date(), __metadata: { type: this.Constant.listNames.Schedules.type } };
       this.closeTaskWithStatus(task, options, this.sct);
     } else {
+      
       this.changeErrorMessage('Previous task should be Completed or Auto Closed');
     }
   }

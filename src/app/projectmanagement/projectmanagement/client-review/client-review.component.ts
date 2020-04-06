@@ -448,7 +448,7 @@ export class ClientReviewComponent implements OnInit {
   async closeTaskWithStatus(task, unt) {
     const isActionRequired = await this.commonService.checkTaskStatus(task);
     if (isActionRequired) {
-   
+
       const ref = this.dialogService.open(ViewUploadDocumentDialogComponent, {
         data: {
           task,
@@ -537,7 +537,7 @@ export class ClientReviewComponent implements OnInit {
   }
   storeRowData(rowData, menu) {
     this.selectedCRTask = rowData;
-     menu.model[2].visible = this.selectedOption.name === 'Closed' ? false : true;
+    menu.model[2].visible = this.selectedOption.name === 'Closed' ? false : true;
 
   }
   @HostListener('document:click', ['$event'])
@@ -591,17 +591,18 @@ export class ClientReviewComponent implements OnInit {
   onChangeSelect(event) {
     this.isCRInnerLoaderHidden = false;
     if (this.selectedOption.name === 'Not Started') {
-
       this.getCRClient();
     } else {
-      const startDate = new Date(this.queryStartDate.getFullYear(), this.queryStartDate.getMonth() - 1, 1);
+      debugger;
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 30);
       const endDate = new Date(this.queryEndDate.setHours(23, 59, 59, 0));
       const startDateString = new Date(this.commonService.formatDate(startDate) + ' 00:00:00').toISOString();
       const endDateString = new Date(this.commonService.formatDate(endDate) + ' 23:59:00').toISOString();
-      const currentFilter = '((StartDate ge \'' + startDateString + '\' or StartDate le \'' + endDateString
+      const currentFilter = ' AssignedTo eq ' + this.globalObject.currentUser.userId + ' and  ((StartDate ge \'' + startDateString + '\' or StartDate le \'' + endDateString
         + '\') and (DueDate ge \'' + startDateString + '\' and DueDate le \'' + endDateString
         + '\')) and (Status eq \'Completed\') and (Task eq \'Client Review\')'
-        + ' and PreviousTaskClosureDate ne null and AssignedTo eq ' + this.globalObject.currentUser.userId + '';
+        + ' and PreviousTaskClosureDate ne null';
       this.getCR(currentFilter);
     }
   }
