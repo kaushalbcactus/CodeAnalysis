@@ -1,5 +1,6 @@
 import {
-  Component, OnInit, ViewChild, Output, EventEmitter, ViewEncapsulation, Input, OnDestroy, HostListener, ElementRef, ComponentFactoryResolver,
+  Component, OnInit, ViewChild, Output, EventEmitter,
+  ViewEncapsulation, Input, OnDestroy, HostListener, ElementRef, ComponentFactoryResolver,
   ComponentRef, ComponentFactory, ViewContainerRef, NgZone, AfterViewInit
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
@@ -23,7 +24,7 @@ import { gantt, Gantt } from '../../dhtmlx-gantt/codebase/source/dhtmlxgantt';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 declare let dhtmlXMenuObject: any;
 import { DailyAllocationComponent } from '../daily-allocation/daily-allocation.component';
-import { IDailyAllocationTask } from '../interface/allocation';
+import { IDailyAllocationTask, IMilestoneTask } from '../interface/allocation';
 
 
 @Component({
@@ -198,9 +199,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit {
       resource: ['', Validators.required],
       startDateTimePart: ['', Validators.required],
       endDateTimePart: ['', Validators.required]
-    })
-    // window['angularComponentReference'] = { component: this, zone: this.zone, timelineComponentFn: (id) => this.openPopupOnGanttTask(id), }
-
+    });
   }
 
   ngOnInit() {
@@ -440,8 +439,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit {
                   projectAvailableHours.push(+milestoneTask.ExpectedTime);
                 } else {
                   const mHoursSpentTask = this.commonService.addHrsMins([hrsMinObject]);
-                  const taskTotalMins = this.commonService.calculateTotalMins(mHoursSpentTask);
-                  const convertedHoursMins = this.commonService.convertFromHrsMins(+taskTotalMins);
+                  // const taskTotalMins = this.commonService.calculateTotalMins(mHoursSpentTask);
+                  const convertedHoursMins = this.commonService.convertFromHrsMins(mHoursSpentTask);
                   projectAvailableHours.push(+convertedHoursMins);
                 }
               } else if (milestoneTask.Status !== 'Deleted' && milestoneTask.Status !== 'Abandon') {
@@ -567,8 +566,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit {
                   projectAvailableHours.push(+milestoneTask.ExpectedTime);
                 } else {
                   const mHoursSpentTask = this.commonService.addHrsMins([hrsMinObject]);
-                  const taskTotalMins = this.commonService.calculateTotalMins(mHoursSpentTask);
-                  const convertedHoursMins = this.commonService.convertFromHrsMins(+taskTotalMins);
+                  // const taskTotalMins = this.commonService.calculateTotalMins(mHoursSpentTask);
+                  const convertedHoursMins = this.commonService.convertFromHrsMins(mHoursSpentTask);
                   projectAvailableHours.push(+convertedHoursMins);
                 }
               } else if (milestoneTask.Status !== 'Deleted' && milestoneTask.Status !== 'Abandon') {
@@ -712,8 +711,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit {
                 projectAvailableHours.push(+milestoneTask.ExpectedTime);
               } else {
                 const mHoursSpentTask = this.commonService.addHrsMins([hrsMinObject]);
-                const taskTotalMins = this.commonService.calculateTotalMins(mHoursSpentTask);
-                const convertedHoursMins = this.commonService.convertFromHrsMins(+taskTotalMins);
+                // const taskTotalMins = this.commonService.calculateTotalMins(mHoursSpentTask);
+                const convertedHoursMins = this.commonService.convertFromHrsMins(mHoursSpentTask);
                 projectAvailableHours.push(+convertedHoursMins);
               }
             } else if (milestoneTask.Status !== 'Deleted' && milestoneTask.Status !== 'Abandon') {
@@ -1656,7 +1655,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit {
         this.taskMenu.push({ label: 'Scope', icon: 'pi pi-comment', command: (event) => this.openComment(data, rowNode) });
         if (data.AssignedTo.ID !== undefined && data.AssignedTo.ID > -1 && data.user !== 'QC' && data.user !== 'Edit') {
           this.taskMenu.push({ label: 'User Capacity', icon: 'pi pi-camera', command: (event) => this.getUserCapacity(data) },
-          { label: 'View Allocation', icon: 'pi pi-sliders-h', command: (event) => this.viewAllocation(data) });
+            { label: 'View Allocation', icon: 'pi pi-sliders-h', command: (event) => this.viewAllocation(data) });
         }
       }
     }
@@ -1698,9 +1697,13 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
 
-  modelChanged(event) {
+  async modelChanged(event) {
     event.editMode = true;
     event.edited = true;
+    const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
+      return event.AssignedTo.ID === objt.UserName.ID;
+    });
+    await this.dailyAllocateTask(resource, event);
   }
 
   // **************************************************************************************************
@@ -2089,17 +2092,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit {
         const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
           return milestoneTask.AssignedTo.ID === objt.UserName.ID;
         });
-        const allocationData: IDailyAllocationTask =  {
-          ID: milestoneTask.id,
-          task: milestoneTask.taskFullName,
-          startDate: milestoneTask.start_date,
-          endDate: milestoneTask.end_date,
-          budgetHrs: milestoneTask.budgetHours,
-          resourceId: resource
-        };
-        const resourceCapacity = await this.dailyAllocation.getResourceCapacity(allocationData);
-        const checkDailyAllocate = this.dailyAllocation.checkDailyAllocation(resourceCapacity, allocationData.budgetHrs);
-        console.log(checkDailyAllocate);
+        await this.dailyAllocateTask(resource, milestoneTask);
         milestoneTask.assignedUserTimeZone = resource && resource.length > 0
           ? resource[0].TimeZone.Title ?
             resource[0].TimeZone.Title : '+5.5' : '+5.5';
@@ -2133,6 +2126,24 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  async dailyAllocateTask(resource, milestoneTask) {
+    const eqgTasks = ['Edit', 'Quality', 'Graphics', 'Client Review', 'Send to client'];
+    if (!eqgTasks.find(t => t === milestoneTask.itemType)) {
+      const allocationData: IDailyAllocationTask = {
+        ID: milestoneTask.id,
+        task: milestoneTask.taskFullName,
+        startDate: milestoneTask.start_date,
+        endDate: milestoneTask.end_date,
+        budgetHrs: milestoneTask.budgetHours,
+        resource,
+        strAllocation: ''
+      };
+      const resourceCapacity = await this.dailyAllocation.getResourceCapacity(allocationData);
+      const strAllocation = await this.dailyAllocation.initialize(resourceCapacity, allocationData);
+      this.setAllocationPerDay(strAllocation, milestoneTask);
+    }
+  }
+
   /**
    * Update next previous task of submit/galley(Slot type as Both) slot based on skill/user
    * @param milestoneTask - task whose assigned user changed
@@ -2148,10 +2159,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit {
 
       milestoneTask.ActiveCA = this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestoneTask.milestone ? 'No' : milestoneTask.ActiveCA;
       milestoneTask.itemType = milestoneTask.itemType.replace(/Slot/g, '');
-      // const taskCount = milestoneTask.title.match(/\d+$/) ? ' ' + milestoneTask.title.match(/\d+$/)[0] : '';
-      // let newName = taskCount ? milestoneTask.itemType + taskCount : milestoneTask.itemType;
       let newName = '';
-      // const counter = taskCount ? +taskCount : 1;
       if (milestoneTask.IsCentrallyAllocated === 'Yes') {
         newName = milestoneTask.itemType;
         newName = this.getNewTaskName(milestoneTask, subMilestone, newName);
@@ -2186,9 +2194,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit {
       milestoneTask.IsCentrallyAllocated = 'Yes';
       milestoneTask.ActiveCA = this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestoneTask.milestone ? 'Yes' : milestoneTask.ActiveCA;
       milestoneTask.itemType = milestoneTask.itemType + 'Slot';
-      // const taskCount = milestoneTask.title.match(/\d+$/) ? ' ' + milestoneTask.title.match(/\d+$/)[0] : '';
-      // let newName = milestoneTask.itemType + taskCount;
-      // const counter = taskCount ? +taskCount : 1;
       let newName = milestoneTask.itemType;
       newName = this.getNewTaskName(milestoneTask, subMilestone, newName);
       if (milestoneTask.nextTask) {
@@ -2379,8 +2384,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit {
     this.deallocationMailArray.length = 0;
     Node.pUserStart = new Date(this.datepipe.transform(Node.pUserStartDatePart, 'MMM d, y') + ' ' + Node.pUserStartTimePart);
     Node.pUserEnd = new Date(this.datepipe.transform(Node.pUserEndDatePart, 'MMM d, y') + ' ' + Node.pUserEndTimePart);
-    // Node.start_date = Node.pUserStart;
-    // Node.end_date =  Node.pUserEnd;
+    const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
+      return Node.AssignedTo.ID === objt.UserName.ID;
+    });
+    this.dailyAllocateTask(resource, Node);
     this.DateChange(Node, type);
   }
   // tslint:disable
@@ -4376,22 +4383,27 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit {
         startDate: milestoneTask.start_date,
         endDate: milestoneTask.end_date,
         budgetHrs: milestoneTask.budgetHours,
-        resourceId: milestoneTask.resources,
+        resource: milestoneTask.resources,
+        strAllocation: milestoneTask.allocationPerDay
       } as IDailyAllocationTask,
       width: '90vw',
 
       header: milestoneTask.submilestone ? milestoneTask.milestone + ' ' + milestoneTask.title
         + ' ( ' + milestoneTask.submilestone + ' )' : milestoneTask.milestone + ' ' + milestoneTask.title,
-      contentStyle: { 'max-height': '90vh', 'overflow-y': 'auto' }
+      contentStyle: { 'max-height': '90vh', 'overflow-y': 'auto' },
+      closable: false
     });
     ref.onClose.subscribe((strAllocationPerDay: string) => {
-      const milestoneData: MilestoneTreeNode = this.milestoneData.find(m => m.data.taskFullName === milestoneTask.milestone);
-      const milestoneTasks: any[] = this.getTasksFromMilestones(milestoneData, false, true);
-      const task = milestoneTasks.find(t => t.id === milestoneTask.id);
-      task.allocationPerDay = strAllocationPerDay;
-      milestoneData.data.edited = true;
-      task.edited = true;
+      this.setAllocationPerDay(strAllocationPerDay, milestoneTask);
     });
+  }
+  setAllocationPerDay(strAllocationPerDay: string, milestoneTask: IMilestoneTask) {
+    const milestoneData: MilestoneTreeNode = this.milestoneData.find(m => m.data.taskFullName === milestoneTask.milestone);
+    const milestoneTasks: any[] = this.getTasksFromMilestones(milestoneData, false, true);
+    const task = milestoneTasks.find(t => t.id === milestoneTask.id);
+    task.allocationPerDay = strAllocationPerDay;
+    milestoneData.data.edited = true;
+    task.edited = true;
   }
 }
 

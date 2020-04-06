@@ -208,7 +208,7 @@
                                 *ngIf="(rowData.type !=='milestone' && rowData.type !=='submilestone' && rowData.editMode && (rowData.itemType !== 'Client Review' &&  rowData.itemType !== 'Send to client')) || ((rowData.status ==='In Progress' || rowData.status ==='Not Started' || rowData.status ==='Not Confirmed' || rowData.status ==='Not Saved') && rowData.type === 'milestone')"
                                 required="required"
                                 style="border:none;border-radius: 0px;height: 25px;text-align: center;padding:0px;"
-                                [id]="rowData.id" (ngModelChange)="modelChanged(rowData)"
+                                [id]="rowData.id" (change)="modelChanged(rowData)"
                                 [(ngModel)]="rowData.budgetHours">
                         </td>
 
@@ -637,4 +637,6 @@
     </p-footer>
 </p-dialog>
 
-
+<p-overlayPanel #op2 [showCloseIcon]="true" [dismissable]="false">
+  <app-daily-allocation></app-daily-allocation>
+</p-overlayPanel>

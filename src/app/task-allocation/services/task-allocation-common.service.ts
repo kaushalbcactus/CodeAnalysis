@@ -17,7 +17,7 @@ export class TaskAllocationCommonService {
 
   getResourceByMatrix(task, allTasks) {
     let resources = this.sharedObject.oTaskAllocation.oResources;
-    resources = resources.filter(e=>e.TAVisibility === 'Yes');
+    resources = resources.filter(e => e.TAVisibility === 'Yes');
     const prjDetails = this.sharedObject.oTaskAllocation.oProjectDetails;
     const cmL1 = prjDetails.cmLevel1.results ? prjDetails.cmLevel1.results : [];
     const cmL2 = prjDetails.cmLevel2 ? prjDetails.cmLevel2 : {};
@@ -261,7 +261,7 @@ export class TaskAllocationCommonService {
       this.sharedObject.currentUser.timeZone, task.assignedUserTimeZone);
 
     converteddateObject.jsLocalStartDate = this.commonService.calcTimeForDifferentTimeZone(converteddateObject.convertedStartDate,
-        task.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
+      task.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
 
     converteddateObject.convertedEndDate = this.commonService.calcTimeForDifferentTimeZone(new Date(task.DueDate),
       this.sharedObject.currentUser.timeZone, task.assignedUserTimeZone);
@@ -272,7 +272,7 @@ export class TaskAllocationCommonService {
     return converteddateObject
   }
 
-  milestoneObject(milestone,task?) {
+  milestoneObject(milestone, task?) {
     milestone.start_date = task ? new Date(task.start_date) : new Date(milestone.start_date);
     milestone.end_date = task ? new Date(task.end_date) : new Date(milestone.end_date);
     milestone.pUserStart = task ? new Date(task.pUserStart) : new Date(milestone.pUserStart);
@@ -301,13 +301,13 @@ export class TaskAllocationCommonService {
     var dbSubMilestones: Array<any> = milestoneSubmilestones.length > 0 ? milestoneSubmilestones.map(o => new Object({ subMile: o.split(':')[0], position: o.split(':')[1], status: o.split(':')[2] })) : [];
 
     let convertedDate = this.convertDate(data)
-
+    // tslint:disable: object-literal-key-quotes
     let ganttObject = {
       'pUserStart': data.type == 'submilestone' ? null : data.type == 'task' ? new Date(convertedDate.convertedStartDate) : new Date(data.startDate !== "" ? data.startDate.date.year + "/" + (data.startDate.date.month < 10 ? "0" + data.startDate.date.month : data.startDate.date.month) + "/" + (data.startDate.date.day < 10 ? "0" + data.startDate.date.day : data.startDate.date.day) : ''),
       'pUserEnd': data.type == 'submilestone' ? null : data.type == 'task' ? new Date(convertedDate.convertedEndDate) : new Date(data.endDate !== "" ? data.endDate.date.year + "/" + (data.endDate.date.month < 10 ? "0" + data.endDate.date.month : data.endDate.date.month) + "/" + (data.endDate.date.day < 10 ? "0" + data.endDate.date.day : data.endDate.date.day) : ''),
       'pUserStartDatePart': data.type == 'submilestone' ? '' : data.type == 'task' ? this.getDatePart(convertedDate.convertedStartDate) : this.getDate(data.startDate),
       'pUserStartTimePart': data.type == 'task' ? this.getTimePart(convertedDate.convertedStartDate) : '',
-      'pUserEndDatePart':  data.type == 'submilestone' ? '' : data.type == 'task' ? this.getDatePart(convertedDate.convertedEndDate) : this.getDate(data.endDate),
+      'pUserEndDatePart': data.type == 'submilestone' ? '' : data.type == 'task' ? this.getDatePart(convertedDate.convertedEndDate) : this.getDate(data.endDate),
       'pUserEndTimePart': data.type == 'task' ? this.getTimePart(convertedDate.convertedEndDate) : '',
       'status': data.Status,
       'id': data.Id,
@@ -319,24 +319,24 @@ export class TaskAllocationCommonService {
       'user': data.AssignedTo ? data.AssignedTo.Title !== undefined ? data.AssignedTo.Title : '' : '  ',
       'open': data.type == 'task' ? data.IsCentrallyAllocated === 'Yes' ? 0 : 1 : this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === data.Title ? 1 : 0,
       'parent': data.type == 'submilestone' ? milestone.Id : data.type == 'task' ? data.Task === 'Client Review' ? 0 : data.ParentSlot ? data.ParentSlot : milestone.Id : 0,
-      'res_id': data.type == 'task' ? data.AssignedTo ? data.AssignedTo : '': '',
-      'owner_id': data.type == 'task' ? data.AssignedTo ? data.AssignedTo.ID : '': '',
+      'res_id': data.type == 'task' ? data.AssignedTo ? data.AssignedTo : '' : '',
+      'owner_id': data.type == 'task' ? data.AssignedTo ? data.AssignedTo.ID : '' : '',
       'nextTask': data.type == 'task' ? this.fetchTaskName(data.NextTasks, this.sharedObject.oTaskAllocation.oProjectDetails.projectCode, data.Milestone) : '',
       'previousTask': data.type == 'task' ? this.fetchTaskName(data.PrevTasks, this.sharedObject.oTaskAllocation.oProjectDetails.projectCode, data.Milestone) : '',
       'budgetHours': data.type == 'task' ? data.ExpectedTime : data.ExpectedTime ? data.ExpectedTime.toString() : '0',
       'spentTime': data.Task == 'Client Review' ? '' : data.type == 'task' ? this.commonService.addHrsMins([hrsMinObject]) : '0:0',
       'allowStart': data.type == 'task' ? data.AllowCompletion === true || data.AllowCompletion === 'Yes' ? true : false : false,
-      'tat': data.type == 'submilestone' ? false :data.type == 'task' ? data.TATStatus === true || data.TATStatus === 'Yes' ? true : false : true,
+      'tat': data.type == 'submilestone' ? false : data.type == 'task' ? data.TATStatus === true || data.TATStatus === 'Yes' ? true : false : true,
       'tatVal': data.type == 'submilestone' ? 0 : data.type == 'task' ? this.commonService.calcBusinessDays(convertedDate.jsLocalStartDate, convertedDate.jsLocalEndDate) : this.commonService.calcBusinessDays(new Date(data.Actual_x0020_Start_x0020_Date), new Date(data.Actual_x0020_End_x0020_Date)),
       'milestoneStatus': (data.type == 'task' || data.type == 'submilestone') ? milestone.Status : '',
       'type': data.type,
       'editMode': false,
-      'scope': data.type == 'task' ? data.Comments :null,
+      'scope': data.type == 'task' ? data.Comments : null,
       'isCurrent': data.type == 'task' ? this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? true : false : data.type == 'submilestone' ? milestoneObj.isCurrent && NextSubMilestone.position === data.position && NextSubMilestone.status === data.status ? true : false : this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === data.Title ? true : false,
       'isNext': data.type == 'submilestone' ? milestoneObj.isNext && NextSubMilestone.position === data.position && NextSubMilestone.status === data.status ? true : false : this.sharedObject.oTaskAllocation.oProjectDetails.nextMilestone === data.Title ? true : false,
       'isFuture': data.type == 'submilestone' ? false : this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones !== undefined ? this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones.indexOf(data.Title)
-      > -1 ? true : false : false,
-      'assignedUsers': data.type == 'task' ?  data.assignedUsers : '',
+        > -1 ? true : false : false,
+      'assignedUsers': data.type == 'task' ? data.assignedUsers : '',
       'AssignedTo': data.type == 'task' ? data.AssignedTo.ID ? data.AssignedTo : '' : '',
       'userCapacityEnable': false,
       'position': data.position,
@@ -356,7 +356,8 @@ export class TaskAllocationCommonService {
       'DisableCascade': (data.DisableCascade && data.DisableCascade === 'Yes') ? true : false,
       'deallocateSlot': false,
       'taskFullName': data.Title,
-      'subMilestonePresent': dbSubMilestones.length > 0 ? true : false
+      'subMilestonePresent': dbSubMilestones.length > 0 ? true : false,
+      'allocationPerDay' : data.AllocationPerDay ? data.AllocationPerDay : ''
     }
 
     return ganttObject;

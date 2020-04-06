@@ -14,6 +14,9 @@
   text-align: right;
   margin-top: 10px;
 }
-body .ui-slider .ui-slider-range{
+.ui-slider .ui-slider-range{
   background-color: #b3171f!important;
+}
+.pBtnCancel {
+  margin-right: 10px;
 }
