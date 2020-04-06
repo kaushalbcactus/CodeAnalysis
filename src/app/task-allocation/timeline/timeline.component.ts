@@ -46,6 +46,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('gantteditor', { static: true }) gantteditor: GanttEditorComponent;
   @ViewChild('reallocationMailTableID', { static: false }) reallocateTable: ElementRef;
   @ViewChild('ganttcontainer', { read: ViewContainerRef, static: false }) ganttChart: ViewContainerRef;
+  @ViewChild('userCapacity', { static: false }) userCapacity: UsercapacityComponent;
   Today = new Date();
   tempComment;
   minDateValue = new Date();
@@ -921,6 +922,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit {
     } else {
       this.ganttChart.remove();
       this.visualgraph = false;
+      this.userCapacityEnable = false;
     }
   }
 
@@ -1094,6 +1096,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit {
     menu.hideItem(menus[4].id);
     menu.hideItem(menus[5].id);
     menu.hideItem(menus[6].id);
+    menu.showItem(menus[7].id);
+    menu.showItem(menus[8].id);
+
+
 
     var currentTaskId;
 
@@ -1118,7 +1124,17 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit {
         menu.hideItem(menus[4].id);
         menu.showItem(menus[5].id);
         menu.hideItem(menus[6].id);
+      }
 
+      if (task.slotType == "Slot") {
+        menu.hideItem(menus[7].id);
+        menu.hideItem(menus[8].id);
+      } else if (task.itemType == "Send to client" || task.itemType == "Client Review") {
+        menu.showItem(menus[7].id);
+        menu.hideItem(menus[8].id);
+      } else {
+        menu.showItem(menus[7].id);
+        menu.showItem(menus[8].id);
       }
     }
 
@@ -1190,8 +1206,11 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit {
           this.updateMilestoneData()
           this.notificationMessage()
           break;
+        case 'filesandcomments':
+          this.ViewTaskDetails(task);
+          break;
         case 'capacity':
-          this.showCapacity(task)
+          this.getUserCapacity(task);
           break;
         default:
           openPopupOnGanttTask(currentTaskId);
@@ -1199,8 +1218,12 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     });
 
-    gantt.attachEvent("onTaskClick", function (id, e) {
-      if (e.target.className == "gantt_tree_content") {
+    gantt.attachEvent("onTaskClick", (id, e) => {
+      var task = gantt.getTask(id);
+      // if (task.itemType !== "Send to client" || task.itemType !== "Client Review") {
+        if (e.target.className === "gantt_tree_content") {
+          this.onResourceClick(task);
+        // }
       }
       return true;
     });
@@ -1218,6 +1241,22 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit {
 
   notificationMessage() {
     this.messageService.add({ key: 'gantt-message', severity: 'success', summary: 'Success Message', detail: 'Task Updated Successfully' });
+  }
+
+  onResourceClick(task) {
+    task.resources = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
+      return objt.UserName.ID === task.AssignedTo.ID;
+    });
+
+    var data: any = {
+      task: task,
+      startTime: task.pUserStart,
+      endTime: task.pUserEnd,
+    }
+
+    this.userCapacity.loaderenable = true;
+    this.userCapacityEnable = true;
+    this.userCapacity.Onload(data)
   }
 
   editTaskModal(id) {
@@ -1338,10 +1377,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       })
     });
-  }
-
-  showCapacity(task) {
-
   }
 
   ganttAllTasks() {
@@ -4261,7 +4296,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit {
       'parent': task.taskType === 'Client Review' ? 0 : milestone.Id,
       'res_id': '',
       'budgetHours': 0,
-      'allowStart': false,
+      'allowStart': true,
       'tat': task.taskType === 'Client Review' ? true : false,
       'tatVal': 0,
       'milestoneStatus': className = 'gtaskred' ? 'Not Saved' : null,
