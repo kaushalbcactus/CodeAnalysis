@@ -2632,6 +2632,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     else if (nodeData.type === 'milestone') {
       if (new Date(prevNodeEndDate) >= new Date(nodeData.pStart)) {
         const firstTask = nextNode.children[0].data;
+        nodeData.edited = true;
         const allTasks = this.getTasksFromMilestones(nextNode, false, false);
         let allParallelTasks = [];
         if (firstTask.type === 'task') {

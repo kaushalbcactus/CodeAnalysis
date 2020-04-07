@@ -675,7 +675,9 @@ export class MyTimelineComponent implements OnInit {
       this.task.AssignedTo = this.sharedObject.currentUser.title;
       this.task.TimeSpent = this.task.TimeSpent ? "00:00" : this.task.TimeSpent.replace('.', ':');
       const data = this.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === this.task.ProjectCode);
-
+      this.tasks = await this.myDashboardConstantsService.getNextPreviousTask(this.task);
+      this.task.nextTasks = this.tasks ? this.tasks.filter(c => c.TaskType === 'Next Task') : [];
+      this.task.prevTaskDetails = this.tasks ? this.tasks.filter(c => c.TaskType === 'Previous Task') : [];
       if (data !== undefined) {
         this.task.ProjectName = data.WBJID !== null ? this.task.ProjectCode + '(' + data.WBJID + ')' : this.task.ProjectCode;
       } else {
