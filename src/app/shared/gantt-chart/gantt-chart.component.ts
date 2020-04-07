@@ -26,7 +26,7 @@ export class GanttChartComponent implements OnInit {
   tasks = {}
 
   ngOnInit() {
-    this.isLoaderHidden = false;
+    // this.isLoaderHidden = false;
     // this.onLoad(data,this.resource)
   }
 
