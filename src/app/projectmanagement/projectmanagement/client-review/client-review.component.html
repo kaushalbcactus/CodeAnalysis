@@ -20,6 +20,11 @@
         <div id="scInnerLoader"></div>
         <div id="scInnerLoaderText">Loading...</div>
     </div>
+
+
+
+
+
     <div class="box excelIcon">
 
         <p-dropdown [options]="overAllValues" [(ngModel)]="selectedOption" styleClass="custom-dropDown" optionLabel="name" (onChange)="onChangeSelect($event)"></p-dropdown>
@@ -30,6 +35,16 @@
     <div class="noDataMessage" [hidden]='crHideNoDataMessage'>
         No Tasks Found.
     </div>
+
+
+    <div #loader class="overlay"></div>
+    <div #spanner class="spanner">
+        <div class="loader"></div>
+        <p>Please wait...</p>
+    </div>
+
+
+
     <div class="crTable table100 slaExist ver4 m-b-110" [hidden]="isCRTableHidden">
         <p-table #crTableRef [columns]="displayedColumns" [value]="pmObject.clientReviewArray" [paginator]="true" [rows]="10" selectionMode="" exportFilename="Client Review">
             <ng-template pTemplate="header" let-columns>

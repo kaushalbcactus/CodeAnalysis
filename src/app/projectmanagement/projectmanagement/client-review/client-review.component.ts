@@ -53,13 +53,9 @@ export class ClientReviewComponent implements OnInit {
     { field: 'DeliveryDate' }];
   @ViewChild('crTableRef', { static: true }) crRef: ElementRef;
   @ViewChild('crTableRef', { static: true }) crTableRef: Table;
+  @ViewChild("loader", { static: false }) loaderView: ElementRef;
+  @ViewChild("spanner", { static: false }) spannerView: ElementRef;
 
-  // tslint:disable-next-line:variable-name
-  private _success = new Subject<string>();
-  // tslint:disable-next-line:variable-name
-  private _error = new Subject<string>();
-  public crSuccessMessage: string;
-  public crErrorMessage: string;
   public selectedCRTask;
   popItems: MenuItem[];
   public crContextMenuOptions = [];
@@ -86,14 +82,6 @@ export class ClientReviewComponent implements OnInit {
     PreviousTaskUser: [],
     PreviousTaskStatus: [],
     DeliveryDate: [],
-    // projectCodeArray: [],
-    // shortTitleArray: [],
-    // clientLegalEntityArray: [],
-    // POCArray: [],
-    // deliveryTypeArray: [],
-    // dueDateArray: [],
-    // milestoneArray: [],
-    // deliveryDateArray: [],
     nextTaskArray: [],
     previousTaskArray: [],
 
@@ -145,18 +133,8 @@ export class ClientReviewComponent implements OnInit {
       { label: 'Close', command: (event) => this.closeTask(this.selectedCRTask) }
     ];
     this.pmObject.sendToClientArray = [];
-    this._success.subscribe((message) => this.crSuccessMessage = message);
-    this._success.pipe(
-      debounceTime(5000)
-    ).subscribe(() => this.crSuccessMessage = null);
-    this._error.subscribe((message) => this.crErrorMessage = message);
-    this._error.pipe(
-      debounceTime(5000)
-    ).subscribe(() => this.crErrorMessage = null);
-    setTimeout(() => {
-      this.crHideNoDataMessage = true;
-      this.getCRClient();
-    }, this.pmConstant.TIME_OUT);
+    this.crHideNoDataMessage = true;
+    this.getCRClient();
   }
   getCRClient() {
     const filter = 'AssignedTo eq ' + this.globalObject.currentUser.userId
@@ -433,6 +411,8 @@ export class ClientReviewComponent implements OnInit {
 
   closeTask(task) {
     if (task.PreviousTaskStatus === 'Completed') {
+      this.loaderView.nativeElement.classList.add('show');
+      this.spannerView.nativeElement.classList.add('show');
       this.closeTaskWithStatus(task, this.crRef);
     } else {
 
@@ -499,29 +479,40 @@ export class ClientReviewComponent implements OnInit {
           await this.spServices.executeBatch(batchUrl);
 
           this.isCRInnerLoaderHidden = true;
-          this.changeSuccessMessage(task.Title + ' is completed Sucessfully');
+          this.messageService.add({
+            key: 'custom', severity: 'success', sticky: true,
+            summary: 'Success Message', detail: task.Title + ' is completed Sucessfully'
+          });
+
           const index = this.pmObject.clientReviewArray.findIndex(item => item.ID === task.ID);
           this.pmObject.clientReviewArray.splice(index, 1);
+          this.loaderView.nativeElement.classList.remove('show');
+          this.spannerView.nativeElement.classList.remove('show');
           this.pmObject.loading.ClientReview = true;
           this.pmObject.countObj.crCount = this.pmObject.countObj.crCount - 1;
           this.commonService.filterAction(unt.sortField, unt.sortOrder,
             unt.filters.hasOwnProperty('global') ? unt.filters.global.value : null, unt.filters, unt.first, unt.rows,
             this.pmObject.clientReviewArray, this.filterColumns, this.pmConstant.filterAction.CLIENT_REVIEW);
         }
+        else {
+          this.loaderView.nativeElement.classList.remove('show');
+          this.spannerView.nativeElement.classList.remove('show');
+        }
       });
     } else {
-      this.changeSuccessMessage('' + task.Title + ' is already completed or closed or auto closed. Hence record is refreshed in 30 sec.');
+      this.loaderView.nativeElement.classList.remove('show');
+      this.spannerView.nativeElement.classList.remove('show');
+      this.messageService.add({
+        key: 'custom', severity: 'success', sticky: true,
+        summary: 'Success Message', detail: task.Title + ' is already completed or closed or auto closed. Hence record is refreshed in 30 sec.'
+      });
+
       setTimeout(() => {
         this.ngOnInit();
       }, 3000);
     }
   }
-  public changeSuccessMessage(message) {
-    this._success.next(message);
-  }
-  public changeErrorMessage(message) {
-    this._error.next(message);
-  }
+
   crContextMenuEvent(node, contextMenu) {
     if (node) {
       if (node.data.PreviousTaskStatus === 'Completed') {
