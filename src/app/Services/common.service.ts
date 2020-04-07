@@ -513,9 +513,10 @@ export class CommonService {
         return negative ? -totalMinutes : totalMinutes;
     }
 
-    convertFromHrsMins(mins): number {
-        const h = Math.floor(mins / 60);
-        let m = mins % 60;
+    convertFromHrsMins(hrsmins: string): number {
+        const totalMins = this.calculateTotalMins(hrsmins);
+        const h = Math.floor(totalMins / 60);
+        let m = totalMins % 60;
         m = +(m / 60);
         const totalHrs = h < 10 ? '0' + h : h;
         return +totalHrs + +m;
