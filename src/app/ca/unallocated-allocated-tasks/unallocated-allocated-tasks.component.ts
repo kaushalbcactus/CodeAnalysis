@@ -791,65 +791,61 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   }
 
 
-  async getMilestoneTasks(task) {
-
-    let alltasks = [];
-    if (this.arrMilestoneTasks.find(c => c.projectCode === task.ProjectCode && c.milestone === task.Milestone)) {
-      const dbMilestoneTasks = this.arrMilestoneTasks.find(c => c.projectCode === task.ProjectCode && c.milestone === task.Milestone).MilestoneTasks;
-
-      for (let i = 0; i < dbMilestoneTasks.length; i++) {
-
-        const TaskType = dbMilestoneTasks[i].Task;
-        const TaskName = $.trim(dbMilestoneTasks[i].Title.replace(dbMilestoneTasks[i].ProjectCode + '', '').replace(dbMilestoneTasks[i].Milestone + '', ''));
-
-        if (alltasks.length > 0 && alltasks.find(c => c.type === TaskType && c.milestone === dbMilestoneTasks[i].Milestone)) {
-          alltasks.find(c => c.type === TaskType).tasks.push(TaskName);
-        }
-        else {
-          alltasks.push({ type: TaskType, milestone: dbMilestoneTasks[i].Milestone, tasks: [TaskName] });
-        }
-
-      }
-      return alltasks;
-    }
-
-    // const TaskType = milTasks[i].Task;
-    // const TaskName = $.trim(milTasks[i].Title.replace(milTasks[i].ProjectCode + '', '').replace(milTasks[i].Milestone + '', ''));
-
-    //   if (task.MilestoneAllTasks.length > 0 && task.MilestoneAllTasks.find(c => c.type === TaskType && c.milestone === milTasks[i].Milestone)) {
-    //     task.MilestoneAllTasks.find(c => c.type === TaskType).tasks.push(TaskName);
-    //   }
-    //   else {
-    //     task.MilestoneAllTasks.push({ type: TaskType, milestone: milTasks[i].Milestone, tasks: [TaskName] });
-    //   }
-
-  }
-
-
   // async getMilestoneTasks(task) {
 
   //   let alltasks = [];
-
-  //   debugger;
   //   if (this.arrMilestoneTasks.find(c => c.projectCode === task.ProjectCode && c.milestone === task.Milestone)) {
   //     const dbMilestoneTasks = this.arrMilestoneTasks.find(c => c.projectCode === task.ProjectCode && c.milestone === task.Milestone).MilestoneTasks;
 
-  //     alltasks = Array.from(new Set(dbMilestoneTasks.map(s => s.Task))).map(task => {
-  //       return {
-  //         type: task,
-  //         milestone: dbMilestoneTasks.find(s => s.Task === task).Milestone,
-  //         tasks: []
-  //         // tasks: dbMilestoneTasks.filter(s => s.Task === task).map(c => $.trim(c.Title.replace(c.ProjectCode + '', '').replace(c.Milestone + '', '')))
-  //       };
-  //     });
+  //     for (let i = 0; i < dbMilestoneTasks.length; i++) {
 
-  //     for (let i = 0; i < alltasks.length; i++) {
-  //       alltasks[i].tasks = dbMilestoneTasks.filter(c => c.Task === alltasks[i].type && c.Milestone === alltasks[i].milestone).map(c => $.trim(c.Title.replace(c.ProjectCode + '', '').replace(c.Milestone + '', '')))
+  //       const TaskType = dbMilestoneTasks[i].Task;
+  //       const TaskName = $.trim(dbMilestoneTasks[i].Title.replace(dbMilestoneTasks[i].ProjectCode + '', '').replace(dbMilestoneTasks[i].Milestone + '', ''));
+
+  //       if (alltasks.length > 0 && alltasks.find(c => c.type === TaskType && c.milestone === dbMilestoneTasks[i].Milestone)) {
+  //         alltasks.find(c => c.type === TaskType).tasks.push(TaskName);
+  //       }
+  //       else {
+  //         alltasks.push({ type: TaskType, milestone: dbMilestoneTasks[i].Milestone, tasks: [TaskName] });
+  //       }
+
   //     }
-
   //     return alltasks;
   //   }
+
+  //   // const TaskType = milTasks[i].Task;
+  //   // const TaskName = $.trim(milTasks[i].Title.replace(milTasks[i].ProjectCode + '', '').replace(milTasks[i].Milestone + '', ''));
+
+  //   //   if (task.MilestoneAllTasks.length > 0 && task.MilestoneAllTasks.find(c => c.type === TaskType && c.milestone === milTasks[i].Milestone)) {
+  //   //     task.MilestoneAllTasks.find(c => c.type === TaskType).tasks.push(TaskName);
+  //   //   }
+  //   //   else {
+  //   //     task.MilestoneAllTasks.push({ type: TaskType, milestone: milTasks[i].Milestone, tasks: [TaskName] });
+  //   //   }
+
   // }
+
+
+  async getMilestoneTasks(task) {
+
+    let alltasks = [];
+
+    debugger;
+    if (this.arrMilestoneTasks.find(c => c.projectCode === task.ProjectCode && c.milestone === task.Milestone)) {
+      let dbMilestoneTasks = this.arrMilestoneTasks.find(c => c.projectCode === task.ProjectCode && c.milestone === task.Milestone).MilestoneTasks;
+      dbMilestoneTasks = dbMilestoneTasks.filter(c => c.Milestone === task.Milestone);
+      alltasks = Array.from(new Set(dbMilestoneTasks.map(s => s.Task))).map(task => {
+        return {
+          type: task,
+          milestone: dbMilestoneTasks.find(s => s.Task === task).Milestone,
+          //tasks: []
+          tasks: dbMilestoneTasks.filter(s => s.Task === task).map(c => $.trim(c.Title.replace(c.ProjectCode + '', '').replace(c.Milestone + '', '')))
+        };
+      });
+
+      return alltasks;
+    }
+  }
 
 
 
