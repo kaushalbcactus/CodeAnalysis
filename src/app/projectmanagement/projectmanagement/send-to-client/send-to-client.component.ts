@@ -257,6 +257,7 @@ export class SendToClientComponent implements OnInit {
       const index = this.pmObject.sendToClientArray.findIndex(item => item.ID === task.ID);
       this.pmObject.sendToClientArray.splice(index, 1);
       this.pmObject.loading.SendToClient = true;
+      debugger;
       this.pmObject.countObj.scCount = this.pmObject.countObj.scCount - 1;
       this.commonService.filterAction(unt.sortField, unt.sortOrder,
         unt.filters.hasOwnProperty('global') ? unt.filters.global.value : null, unt.filters, unt.first, unt.rows,
