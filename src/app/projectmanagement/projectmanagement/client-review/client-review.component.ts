@@ -490,9 +490,7 @@ export class ClientReviewComponent implements OnInit {
           this.spannerView.nativeElement.classList.remove('show');
           this.pmObject.loading.ClientReview = true;
           this.pmObject.countObj.crCount = this.pmObject.countObj.crCount - 1;
-          this.commonService.filterAction(unt.sortField, unt.sortOrder,
-            unt.filters.hasOwnProperty('global') ? unt.filters.global.value : null, unt.filters, unt.first, unt.rows,
-            this.pmObject.clientReviewArray, this.filterColumns, this.pmConstant.filterAction.CLIENT_REVIEW);
+          this.pmObject.clientReviewArray = [...this.pmObject.clientReviewArray];
         }
         else {
           this.loaderView.nativeElement.classList.remove('show');

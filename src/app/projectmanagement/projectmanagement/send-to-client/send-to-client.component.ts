@@ -183,70 +183,70 @@ export class SendToClientComponent implements OnInit {
     const isActionRequired = await this.commonService.checkTaskStatus(task);
     if (isActionRequired) {
 
-      let batchUrl = [];
+      // let batchUrl = [];
 
-      if (task.SubMilestones) {
-        const objMilestone = Object.assign({}, this.pmConstant.milestoneOptions);
-        objMilestone.filter = objMilestone.filter.replace(/{{projectCode}}/gi,
-          task.ProjectCode).replace(/{{milestone}}/gi,
-            task.Milestone);
-        this.commonService.SetNewrelic('projectManagment', 'send to Client', 'fetchMilestone');
-        const response = await this.spServices.readItems(this.Constant.listNames.Schedules.name, objMilestone);
+      // if (task.SubMilestones) {
+      //   const objMilestone = Object.assign({}, this.pmConstant.milestoneOptions);
+      //   objMilestone.filter = objMilestone.filter.replace(/{{projectCode}}/gi,
+      //     task.ProjectCode).replace(/{{milestone}}/gi,
+      //       task.Milestone);
+      //   this.commonService.SetNewrelic('projectManagment', 'send to Client', 'fetchMilestone');
+      //   const response = await this.spServices.readItems(this.Constant.listNames.Schedules.name, objMilestone);
 
-        if (response.length > 0) {
+      //   if (response.length > 0) {
 
-          const SubMilestonesObj = [];
-          let modifiedSubMilestones = null;
-          const SubMilestones = response[0].SubMilestones.split(';#');
-          if (SubMilestones) {
-            SubMilestones.forEach(element => {
-              if (element.split(':')[0] === task.SubMilestones) {
-                SubMilestonesObj.push(element.split(':')[0] + ':' + element.split(':')[1] + ':Completed');
-              }
-              else {
-                SubMilestonesObj.push(element);
-              }
-            });
-            modifiedSubMilestones = SubMilestonesObj.length > 1 ? SubMilestonesObj.join(';#') : SubMilestonesObj.toString();
-          }
-          const milestoneObj = Object.assign({}, this.options);
-          milestoneObj.url = this.spServices.getItemURL(this.Constant.listNames.Schedules.name, response[0].Id);
-          milestoneObj.data = { SubMilestones: modifiedSubMilestones, __metadata: { type: this.Constant.listNames.Schedules.type } };
-          milestoneObj.listName = this.Constant.listNames.Schedules.name;
-          milestoneObj.type = 'PATCH';
-          batchUrl.push(milestoneObj);
-        }
-      }
+      //     const SubMilestonesObj = [];
+      //     let modifiedSubMilestones = null;
+      //     const SubMilestones = response[0].SubMilestones.split(';#');
+      //     if (SubMilestones) {
+      //       SubMilestones.forEach(element => {
+      //         if (element.split(':')[0] === task.SubMilestones) {
+      //           SubMilestonesObj.push(element.split(':')[0] + ':' + element.split(':')[1] + ':Completed');
+      //         }
+      //         else {
+      //           SubMilestonesObj.push(element);
+      //         }
+      //       });
+      //       modifiedSubMilestones = SubMilestonesObj.length > 1 ? SubMilestonesObj.join(';#') : SubMilestonesObj.toString();
+      //     }
+      //     const milestoneObj = Object.assign({}, this.options);
+      //     milestoneObj.url = this.spServices.getItemURL(this.Constant.listNames.Schedules.name, response[0].Id);
+      //     milestoneObj.data = { SubMilestones: modifiedSubMilestones, __metadata: { type: this.Constant.listNames.Schedules.type } };
+      //     milestoneObj.listName = this.Constant.listNames.Schedules.name;
+      //     milestoneObj.type = 'PATCH';
+      //     batchUrl.push(milestoneObj);
+      //   }
+      // }
 
-      // update Task
-      const taskObj = Object.assign({}, this.options);
-      taskObj.url = this.spServices.getItemURL(this.Constant.listNames.Schedules.name, task.ID);
-      taskObj.data = options;
-      taskObj.listName = this.Constant.listNames.Schedules.name;
-      taskObj.type = 'PATCH';
-      batchUrl.push(taskObj);
+      // // update Task
+      // const taskObj = Object.assign({}, this.options);
+      // taskObj.url = this.spServices.getItemURL(this.Constant.listNames.Schedules.name, task.ID);
+      // taskObj.data = options;
+      // taskObj.listName = this.Constant.listNames.Schedules.name;
+      // taskObj.type = 'PATCH';
+      // batchUrl.push(taskObj);
 
-      if (task.NextTasks) {
-        const projectID = this.pmObject.allProjectItems.filter(item => item.ProjectCode === task.ProjectCode);
-        const projectObj = Object.assign({}, this.options);
-        projectObj.url = this.spServices.getItemURL(this.Constant.listNames.ProjectInformation.name, projectID[0].ID);
-        projectObj.data = { Status: 'Author Review', __metadata: { type: this.Constant.listNames.ProjectInformation.type } };
-        projectObj.listName = this.Constant.listNames.ProjectInformation.name;
-        projectObj.type = 'PATCH';
-        batchUrl.push(projectObj);
+      // if (task.NextTasks) {
+      //   const projectID = this.pmObject.allProjectItems.filter(item => item.ProjectCode === task.ProjectCode);
+      //   const projectObj = Object.assign({}, this.options);
+      //   projectObj.url = this.spServices.getItemURL(this.Constant.listNames.ProjectInformation.name, projectID[0].ID);
+      //   projectObj.data = { Status: 'Author Review', __metadata: { type: this.Constant.listNames.ProjectInformation.type } };
+      //   projectObj.listName = this.Constant.listNames.ProjectInformation.name;
+      //   projectObj.type = 'PATCH';
+      //   batchUrl.push(projectObj);
 
-        const nextTask = this.scArrays.nextTaskArray.filter(item => item.Title === task.NextTasks);
-        if (nextTask && nextTask.length) {
+      //   const nextTask = this.scArrays.nextTaskArray.filter(item => item.Title === task.NextTasks);
+      //   if (nextTask && nextTask.length) {
 
-          const taskObj = Object.assign({}, this.options);
-          taskObj.url = this.spServices.getItemURL(this.Constant.listNames.Schedules.name, nextTask[0].ID);
-          taskObj.data = { PreviousTaskClosureDate: new Date(), __metadata: { type: this.Constant.listNames.Schedules.type } };;
-          taskObj.listName = this.Constant.listNames.Schedules.name;
-          taskObj.type = 'PATCH';
-          batchUrl.push(taskObj);
-        }
-      }
-      await this.spServices.executeBatch(batchUrl);
+      //     const taskObj = Object.assign({}, this.options);
+      //     taskObj.url = this.spServices.getItemURL(this.Constant.listNames.Schedules.name, nextTask[0].ID);
+      //     taskObj.data = { PreviousTaskClosureDate: new Date(), __metadata: { type: this.Constant.listNames.Schedules.type } };;
+      //     taskObj.listName = this.Constant.listNames.Schedules.name;
+      //     taskObj.type = 'PATCH';
+      //     batchUrl.push(taskObj);
+      //   }
+      // }
+      // await this.spServices.executeBatch(batchUrl);
       this.messageService.add({
         key: 'custom', severity: 'success', sticky: true,
         summary: 'Success Message', detail: task.Title + ' is completed Sucessfully'
@@ -256,12 +256,8 @@ export class SendToClientComponent implements OnInit {
       this.spannerView.nativeElement.classList.remove('show');
       const index = this.pmObject.sendToClientArray.findIndex(item => item.ID === task.ID);
       this.pmObject.sendToClientArray.splice(index, 1);
-      this.pmObject.loading.SendToClient = true;
-      debugger;
+      this.pmObject.sendToClientArray =[...this.pmObject.sendToClientArray];
       this.pmObject.countObj.scCount = this.pmObject.countObj.scCount - 1;
-      this.commonService.filterAction(unt.sortField, unt.sortOrder,
-        unt.filters.hasOwnProperty('global') ? unt.filters.global.value : null, unt.filters, unt.first, unt.rows,
-        this.pmObject.sendToClientArray, this.filterColumns, this.pmConstant.filterAction.SEND_TO_CLIENT);
     } else {
 
       this.loaderView.nativeElement.classList.remove('show');
