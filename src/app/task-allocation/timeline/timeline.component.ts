@@ -191,7 +191,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     private resolver: ComponentFactoryResolver,
     private zone: NgZone, private fb: FormBuilder,
     private dailyAllocation: DailyAllocationComponent,
-    private cdRef: ChangeDetectorRef
+    private cdRef: ChangeDetectorRef,
+    private myElement: ElementRef
   ) {
 
     this.editTaskForm = this.fb.group({
@@ -1253,9 +1254,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     gantt.attachEvent("onTaskClick", (id, e) => {
       var task = gantt.getTask(id);
       if (task.itemType !== "Send to client" && task.itemType !== "Client Review") {
-      if (e.target.className === "gantt_tree_content" && e.target.parentElement.className == "gantt_cell gantt_last_cell") {
-        this.onResourceClick(task);
-      }
+        if (e.target.className === "gantt_tree_content" && e.target.parentElement.className == "gantt_cell gantt_last_cell") {
+          this.onResourceClick(task);
+        }
       }
       return true;
     });
@@ -1284,9 +1285,33 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
   onResourceClick(task) {
-    task.resources = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
-      return objt.UserName.ID === task.AssignedTo.ID;
+    // task.resources = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
+    //   return objt.UserName.ID === task.AssignedTo.ID;
+    // });
+
+    var resources = [];
+    task.assignedUsers.forEach((c) => {
+      c.items.forEach((item) => {
+        this.sharedObject.oTaskAllocation.oResources.forEach((objt) => {
+          if (objt.UserName.ID === item.value.ID) {
+            resources.push(objt)
+          }
+        })
+      })
     });
+
+    task.resources = resources;
+
+    let startDate = new Date(new Date(task.start_date).setDate(new Date(task.start_date).getDate() - 1))
+    if (startDate.getDay() === 6 || startDate.getDay() === 0) {
+      startDate = new Date(new Date(startDate).setDate(new Date(startDate).getDate() - 2))
+    }
+    let endDate = new Date(new Date(task.end_date).setDate(new Date(task.end_date).getDate() + 1));
+    if (endDate.getDay() === 6 || endDate.getDay() === 0) {
+      endDate = new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 2));
+    }
+    const startTime = new Date(new Date(startDate).setHours(0, 0, 0, 0));
+    const endTime = new Date(new Date(endDate).setHours(23, 59, 59, 0));
 
     this.userCapacity.clear();
     this.userCapacity.remove();
@@ -1294,14 +1319,17 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.userCapacityRef = this.userCapacity.createComponent(factory);
 
     var data: any = {
-      task: task,
-      startTime: task.pUserStart,
-      endTime: task.pUserEnd,
+      task,
+      startTime,
+      endTime,
     }
 
     this.userCapacityRef.instance.loaderenable = true;
     this.userCapacityRef.instance.Onload(data)
     this.userCapacityEnable = true;
+
+    var element = document.getElementById("userCapacity1");
+    element.scrollIntoView();
   }
 
   editTaskModal(id) {

@@ -710,3 +710,7 @@ body .ui-dropdown-panel .ui-dropdown-filter-container .ui-dropdown-filter-icon {
       background-color: #db1721 !important;
       border: 1px solid #db1721 !important;
   }
+
+  .mt-50{
+      margin-top: 50px;
+  }
