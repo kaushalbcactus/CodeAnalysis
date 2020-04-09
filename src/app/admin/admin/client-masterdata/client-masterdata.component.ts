@@ -896,7 +896,6 @@ export class ClientMasterdataComponent implements OnInit {
    */
   poMenu(data) {
     this.currPOObj = data;
-    debugger;
     if (this.isUserSPMCA || this.isUserPO) {
       this.poItems = [
         { label: 'Change Budget', command: (e) => this.changeBudgetDialog(data) },

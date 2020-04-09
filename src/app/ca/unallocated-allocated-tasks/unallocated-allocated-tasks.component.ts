@@ -816,8 +816,6 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   async getMilestoneTasks(task) {
 
     let alltasks = [];
-
-    debugger;
     if (this.arrMilestoneTasks.find(c => c.projectCode === task.ProjectCode && c.milestone === task.Milestone)) {
       let dbMilestoneTasks = this.arrMilestoneTasks.find(c => c.projectCode === task.ProjectCode && c.milestone === task.Milestone).MilestoneTasks;
       dbMilestoneTasks = dbMilestoneTasks.filter(c => c.Milestone === task.Milestone);
@@ -1399,7 +1397,6 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
         // check for task already exists new (Maxwell)
 
-        debugger;
         const dbProjectTasks = dbAllProjectTasks.filter(c => c.ProjectCode === slot.ProjectCode && c.Milestone === slot.Milestone).map(c => $.trim(c.Title.replace(c.ProjectCode + '', '').replace(c.Milestone + '', '')));
         if (slot.SlotTasks.filter(c => c.Id === undefined)) {
           const ExisitingTasks = slot.SlotTasks.filter(c => c.Status === 'Not Saved').map(c => c.TaskName).filter(c => dbProjectTasks.includes(c))

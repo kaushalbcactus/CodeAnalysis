@@ -219,7 +219,6 @@ export class ClientReviewComponent implements OnInit {
     this.commonService.SetNewrelic('projectManagment', 'client-review', 'GetSchedules');
     this.crArrays.taskItems = await this.spServices.readItems(this.Constant.listNames.Schedules.name, queryOptions);
 
-    debugger;
     const projectCodeTempArray = [];
     const shortTitleTempArray = [];
     const clientLegalEntityTempArray = [];
@@ -586,7 +585,6 @@ export class ClientReviewComponent implements OnInit {
     if (this.selectedOption.name === 'Not Started') {
       this.getCRClient();
     } else {
-      debugger;
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - 30);
       const endDate = new Date(this.queryEndDate.setHours(23, 59, 59, 0));

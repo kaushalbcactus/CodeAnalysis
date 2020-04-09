@@ -1053,7 +1053,6 @@ export class PMCommonService {
     batchURL.push(projectCreate);
     counter += 1;
 
-    debugger
      // Add data to ProjectScope call ##17
      const projectScopeData = this.getProjectScopeData(projectInformationData);
      const projectScopeCreate = Object.assign({}, options);
@@ -1128,7 +1127,6 @@ export class PMCommonService {
       }
     }
     this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetSchedulesProjInfoPoInvoicesProFinanceBreakupInvoiceLineItem');
-    debugger
     const res = await this.spServices.executeBatch(batchURL);
     console.log(res);
     if (res && res.length) {

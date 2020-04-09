@@ -62,7 +62,6 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   items: MenuItem[];
   activeItem: MenuItem;
   async ngOnInit() {
-      debugger;
     this.loaderenable = true;
     this.DocumentArray = [];
     this.data = Object.keys(this.config.data ? this.config.data : this.config).length ? this.config.data : this.taskData;
@@ -155,7 +154,6 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     this.selectedDocuments = [];
     this.DocumentArray = [];
     this.selectedTab = event.item.label;
-    debugger;
     const header = this.dbcols.slice(0);
     if (this.selectedTab !== 'My Drafts') {
       if (this.selectedTab === this.prevTask) {
@@ -179,7 +177,6 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   //  Get Documents On tab switch
   // ****************************************************************************************************
   async getDocuments(task) {
-    debugger;
     const header = this.dbcols.slice(0);
     header.splice(1, 1);
     this.cols = header;
