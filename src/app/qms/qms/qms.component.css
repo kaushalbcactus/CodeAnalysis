@@ -16,57 +16,7 @@
 }
 
 
-/** Loader **/
 
-::ng-deep #mainLoader {
-    border: 10px solid #f3f3f3;
-    border-radius: 50%;
-    border-top: 10px solid red;
-    border-bottom: 10px solid red;
-    width: 100px;
-    height: 100px;
-    -webkit-animation: spin 2s linear infinite;
-    animation: spin 2s linear infinite;
-    margin: 0 auto;
-    position: relative;
-    top: 50%;
-    transform: translateY(-50%);
-    margin-top: 1%;
-}
-
-::ng-deep #mainLoaderText {
-    -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
-    -o-animation: loading-text-opacity 2s linear 0s infinite normal;
-    -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
-    animation: loading-text-opacity 2s linear 0s infinite normal;
-    color: black;
-    font-family: "Helvetica Neue, "Helvetica", ""arial";
-    font-size: 10px;
-    font-weight: bold;
-    opacity: 0.5;
-    text-align: center;
-    text-transform: uppercase;
-    top: 0;
-    margin-bottom: 1%;
-}
-
-@-webkit-keyframes spin {
-    0% {
-        -webkit-transform: rotate(0deg);
-    }
-    100% {
-        -webkit-transform: rotate(360deg);
-    }
-}
-
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
-}
 
 
 /** CSS Fix by Ashish **/
@@ -180,4 +130,15 @@ body .ui-button:enabled:hover {
 
 ::ng-deep .ui-datepicker:not(.ui-datepicker-inline) {
     top: 35px !important;
+}
+::ng-deep .download {
+  margin-right: 6px;
+  margin-top: 10px;
+}
+::ng-deep .downloadbutton {
+  float: right!important;
+  display: inline-block!important;
+}
+::ng-deep a.refreshButton{
+  margin-right: 14px!important;
 }

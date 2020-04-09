@@ -505,6 +505,7 @@ export class CopyPermissionComponent implements OnInit {
    */
   async getDestinationUserGroups(destinationUserId) {
     const tempSourceArray = [];
+    this.common.SetNewrelic('Admin', 'CopyPermission', 'getUserInfo');
     const result = await this.spServices.getUserInfo(destinationUserId);
     console.log(result);
     if (result && result.hasOwnProperty('LoginName')) {

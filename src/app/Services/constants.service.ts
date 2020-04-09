@@ -25,6 +25,10 @@ export class ConstantsService {
       name: 'ProjectRelatedInvoices',
       type: 'SP.Data.ProjectRelatedInvoicesListItem'
     },
+    ProjectScope: {
+      name: 'ProjectScope',
+      type: 'SP.Data.ProjectScopeListItem'
+    },
     InvoiceDetails: {
       name: 'InvoiceDetails',
       type: 'SP.Data.InvoiceDetailsListItem'
@@ -311,7 +315,7 @@ export class ConstantsService {
       name: 'CLEBucketMapping',
       type: 'SP.Data.CLEBucketMappingListItem'
     },
-    EarlyTaskCompleteNotifications : {
+    EarlyTaskCompleteNotifications: {
       name: 'EarlyTaskCompleteNotifications',
       type: 'SP.Data.EarlyTaskCompleteNotificationsListItem'
     },
@@ -333,10 +337,12 @@ export class ConstantsService {
     Galleyed: 'Galleyed',
     Published: 'Published',
     AuditInProgress: 'Audit In Progress',
+    NewAuditInProgress : 'CS Audit',
     Closed: 'Closed',
     Cancelled: 'Cancelled',
     AwaitingCancelApproval: 'Awaiting Cancel Approval',
     PendingClosure: 'Pending Closure',
+    NewPendingClosure : 'Finance Audit',
     SentToAMForApproval: 'Sent to AM for Approval'
   };
 
@@ -349,6 +355,7 @@ export class ConstantsService {
     PFAdmin: 'PF_Admin',
     MANAGERS: 'Managers',
     PROJECT_FULL_ACCESS: 'Project-FullAccess',
+    INVOICE_TEAM: 'Invoice_Team',
     SOW_FULL_ACCESS: 'SOW-Full Access',
     SOW_CREATION_MANAGERS: 'SOW Creation Managers',
     SYNC_USER_TO_USER_INFORMATION_LIST: 'SyncUserToUserInformationList'
@@ -419,7 +426,8 @@ export class ConstantsService {
     CANCEL: 'Cancel',
     APPROVED_PROJECT: 'ApproveProject',
     BUDGET_REDUCTION: 'ApproveProjectBudget',
-    BUDGET_APPROVAL: 'OutcomeBudgetApproval'
+    BUDGET_APPROVAL: 'OutcomeBudgetApproval',
+    ON_HOLD: 'Hold'
   };
   public invoiceList = {
     status: {

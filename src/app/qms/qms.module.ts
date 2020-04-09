@@ -32,6 +32,7 @@ import { PopupComponent } from './qms/client-feedback/cfpositive-feedback/popup/
 import { FeedbackBymeComponent } from './qms/personal-feedback/feedback-byme/feedback-byme.component';
 import { ScorecardsComponent } from './qms/admin/scorecards/scorecards.component';
 import { AdminComponent } from './qms/admin/admin.component';
+import { AverageRatingComponent } from './qms/average-rating/average-rating.component';
 
 @NgModule({
   declarations: [
@@ -54,7 +55,8 @@ import { AdminComponent } from './qms/admin/admin.component';
     FeedbackBymeComponent,
     ScorecardsComponent,
     AdminComponent,
-    ReviewerDetailViewComponent
+    ReviewerDetailViewComponent,
+    AverageRatingComponent,
   ],
   imports: [
     CommonModule,

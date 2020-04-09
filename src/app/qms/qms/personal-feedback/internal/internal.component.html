@@ -1,22 +1,37 @@
 <div class="userdetails">
-  <div class='customer-detail'>
-     Name:
-    <div id="cd-name">{{global.currentUser.title}}</div>
+  <div class="customer-detail">
+    Name:
+    <div id="cd-name">{{ global.currentUser.title }}</div>
   </div>
-  <div class='customer-detail'>
+  <div class="customer-detail">
     Designation:
-    <div id="cd-designation">{{global.currentUser.designation}}</div>
+    <div id="cd-designation">{{ global.currentUser.designation }}</div>
   </div>
-  <div class='customer-detail'>
+  <!-- <div class='customer-detail'>
     Average Rating:
     <div class="cd-rating">
       <span id="ratenow">{{globalInternalFeedback.averageRating}}</span>
       <div class="star-white fa-star fa"></div>
     </div>
-  </div>
-  <a (click)="downloadExcel(feedbackTable.ref)" class="download-worksheet td-none"><i class="fa fa-download" aria-hidden="true"></i> Download worksheet</a>
-</div>
-<!-- Custom event from userfeedback component to set average rating of user-->
-<app-user-feedback (setAverageRating)="setAverageRating($event)"></app-user-feedback>
+  </div> -->
+  <div class="downloadbutton download-worksheet">
+    <a class="refreshButton hoverClick " (click)="callUserFeedbackTable('All')"> <i class="fa fa-refresh" aria-hidden="true"></i> </a>
+    <a class="hoverClick"(click)="downloadExcel(feedbackTable.ref)"> <i class="fa fa-download" aria-hidden="true"></i> </a>
+    <!-- <a
 
+      class="download-worksheet td-none"
+      ><i class="fa fa-download" aria-hidden="true"></i> Download worksheet</a
+    > -->
+  </div>
+</div>
+<div>
+  <app-average-rating
+    [tasks]="feedbackForMe"
+    (filter)="callUserFeedbackTable($event)"
+  ></app-average-rating>
+</div>
+<div class="feedbackTable">
+  <!-- Custom event from userfeedback component to set average rating of user-->
+  <app-user-feedback></app-user-feedback>
+</div>
 <p-toast position="bottom-center" key="qmsAuth"></p-toast>

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, OnDestroy, ApplicationRef, NgZone } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, ApplicationRef, NgZone, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { GlobalService } from '../../../../Services/global.service';
 import { UserFeedbackComponent } from '../../user-feedback/user-feedback.component';
 import { CommonService } from '../../../../Services/common.service';
@@ -9,6 +9,7 @@ import { QMSConstantsService } from '../../services/qmsconstants.service';
 import { MessageService } from 'primeng/api';
 import { QMSCommonService } from '../../services/qmscommon.service';
 
+
 @Component({
   selector: 'app-internal',
   templateUrl: './internal.component.html',
@@ -16,17 +17,21 @@ import { QMSCommonService } from '../../services/qmscommon.service';
 })
 export class InternalComponent implements OnInit, OnDestroy {
   // Initialize UserFeedComponent as child component
+  // @Output() feedbackForMe = new EventEmitter<any[]>();
+  public feedbackForMe;
   @ViewChild(UserFeedbackComponent, { static: true }) feedbackTable: UserFeedbackComponent;
   public globalInternalFeedback = this.global.personalFeedback.internal;
+  public internalTasks = [];
   private filterObj = {};
   public sub; navigationSubscription;
+  public ratingHeaderLength = 'Long';
   constructor(
     public global: GlobalService,
     public common: CommonService,
     private data: DataService,
     private router: Router,
     private qmsConstatsService: QMSConstantsService,
-    private qmsCommon : QMSCommonService,
+    private qmsCommon: QMSCommonService,
     private messageService: MessageService,
     private platformLocation: PlatformLocation,
     private locationStrategy: LocationStrategy,
@@ -34,9 +39,6 @@ export class InternalComponent implements OnInit, OnDestroy {
     _applicationRef: ApplicationRef,
     zone: NgZone
   ) {
-    // this.router.routeReuseStrategy.shouldReuseRoute = function () {
-    //   return false;
-    // }
     history.pushState(null, null, window.location.href);
     platformLocation.onPopState(() => {
       history.pushState(null, null, window.location.href);
@@ -45,16 +47,18 @@ export class InternalComponent implements OnInit, OnDestroy {
     this.navigationSubscription = this.router.events.subscribe((e: any) => {
       zone.run(() => _applicationRef.tick());
     });
-
+    // tslint:disable: max-line-length
     if ((this.qmsConstatsService.qmsToastMsg.hideManager || this.qmsConstatsService.qmsToastMsg.hideAdmin || this.qmsConstatsService.qmsToastMsg.hideReviewerTaskPending)) {
       this.showToastMsg();
     }
   }
 
-  initialisePFInternal() {
+  async initialisePFInternal() {
     // Set default values and re-fetch any data you need.
     this.data.filterObj.subscribe(filter => this.filterObj = filter);
-    this.feedbackTable.applyFilters(this.filterObj);
+    await this.feedbackTable.applyFilters(this.filterObj);
+    this.internalTasks = this.feedbackTable.UFRows;
+    this.feedbackForMe = this.internalTasks;
     this.global.personalFeedback.internal.assignedTo = {
       ID: this.global.currentUser.userId,
       title: this.global.currentUser.title,
@@ -74,6 +78,7 @@ export class InternalComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.qmsCommon.selectedComponent = this;
     this.initialisePFInternal();
+
   }
 
   showToastMsg() {
@@ -95,8 +100,13 @@ export class InternalComponent implements OnInit, OnDestroy {
    * @param obj - Filter Object
    *
    */
-  callUserFeedbackTable(obj) {
-    this.feedbackTable.applyFilters(obj);
+    callUserFeedbackTable(obj) {
+    if (obj === 'All') {
+      this.initialisePFInternal();
+    } else {
+      this.feedbackTable.applyArrayFilter(obj);
+    }
+
   }
 
   /**
@@ -109,6 +119,10 @@ export class InternalComponent implements OnInit, OnDestroy {
     this.globalInternalFeedback.averageRating = averageRating;
   }
 
+  // setTask(event) {
+  //   this.internalTasks = event;
+  //   this.feedbackForMe.emit(this.internalTasks);
+  // }
   downloadExcel(uf) {
     uf.exportCSV();
   }

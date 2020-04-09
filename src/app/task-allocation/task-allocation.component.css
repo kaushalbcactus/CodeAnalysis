@@ -135,3 +135,6 @@ button {
 mat-expansion-panel app-timeline{
     display: inline !important;
 }
+.searchPrj {
+    border: 0px!important;
+}

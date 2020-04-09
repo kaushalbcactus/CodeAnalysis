@@ -7,6 +7,7 @@ import { SPOperationService } from './Services/spoperation.service';
 import { MenuItem } from 'primeng/api';
 import { Title } from '@angular/platform-browser';
 import { filter, map } from 'rxjs/operators';
+import { CommonService } from './Services/common.service';
 // import { Environment } from '../environments/environment.prod';
 declare const _spPageContextInfo;
 declare const newrelic;
@@ -18,9 +19,9 @@ declare const newrelic;
 })
 export class AppComponent implements OnDestroy {
   title = 'Medcom SPA';
-  display = false;
   items: MenuItem[];
   leftNavigation = [];
+  visibleSidebar: boolean;
   // tslint:disable-next-line:variable-name
   constructor(
     public globalService: GlobalService,
@@ -30,18 +31,20 @@ export class AppComponent implements OnDestroy {
     public constantsService: ConstantsService,
     private spService: SPOperationService,
     private titleService: Title,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private common: CommonService
   ) { }
   // tslint:disable-next-line:use-life-cycle-interface
   ngOnInit() {
+    this.visibleSidebar = false;
     const appTitle = this.titleService.getTitle();
     this.router
       .events.pipe(
         filter(event => event instanceof NavigationEnd),
         map(() => {
           const child = this.activatedRoute.firstChild;
-          if (child.snapshot.data['title']) {
-            return child.snapshot.data['title'];
+          if (child.snapshot.data.title) {
+            return child.snapshot.data.title;
           }
           return appTitle;
         })
@@ -62,35 +65,42 @@ export class AppComponent implements OnDestroy {
       items: [
         { label: 'Site Contents', url: this.globalService.sharePointPageObject.webRelativeUrl + '/_layouts/15/viewlsts.aspx' }
       ]
-    }]
+    }];
+  }
+
+  goToEmpDashboard() {
+    this.visibleSidebar = false;
+    if (!this.router.url.includes('/myDashboard/my-current-tasks')) {
+      this.router.navigate(['/myDashboard']);
+    }
   }
 
   initSPPageObject() {
     this.globalService.sharePointPageObject.publicCdn = window.location.href.indexOf('localhost') > -1
       ? '/sites/medcomcdn/PublishingImages/Images' : '/sites/medcomcdn/PublishingImages/Images';
-    this.globalService.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomdev'
+    this.globalService.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/Medcomqa'
       : _spPageContextInfo.webAbsoluteUrl;
-    this.globalService.sharePointPageObject.webRelativeUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomdev'
+    this.globalService.sharePointPageObject.webRelativeUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/Medcomqa'
       : _spPageContextInfo.siteServerRelativeUrl;
     this.globalService.sharePointPageObject.serverRelativeUrl = this.globalService.sharePointPageObject.webRelativeUrl;
     this.globalService.sharePointPageObject.rootsite = window.origin;
-    this.globalService.url = window.location.href.indexOf('localhost') > -1 ? '#' : this.globalService.sharePointPageObject.webRelativeUrl + "/dashboard#";
+    this.globalService.url = window.location.href.indexOf('localhost') > -1 ? '#' : this.globalService.sharePointPageObject.webRelativeUrl + '/dashboard#';
 
     this.leftNavigation = [
       { title: 'My Dashboard', href: this.globalService.url + '/myDashboard', visible: true },
       { title: 'QMS', href: this.globalService.url + '/qms', visible: true },
       { title: 'Leave Calendar', href: this.globalService.url + '/leaveCalendar', visible: true },
       { title: 'Publication Support', href: this.globalService.url + '/pubSupport', visible: true },
-    ]
-
+    ];
   }
 
   async initSPLoggedInUser() {
     this.globalService.currentUser.userId = window.location.href.indexOf('localhost') > -1 ? 79 : _spPageContextInfo.userId;
     this.globalService.currentUser.email = window.location.href.indexOf('localhost') > -1 ?
       'sneha.danduk@cactusglobal.com' : _spPageContextInfo.userEmail;
-    this.globalService.currentUser.title = window.location.href.indexOf('localhost') > -1 ? 'Rahul' : _spPageContextInfo.userDisplayName;
+    this.globalService.currentUser.title = window.location.href.indexOf('localhost') > -1 ? 'Ashish' : _spPageContextInfo.userDisplayName;
     this.spService.setBaseUrl(null);
+    this.common.SetNewrelic('RootApp', 'initSPLoggedInUser', 'getUserInfo');
     const currentUserInfo = await this.spService.getUserInfo(this.globalService.currentUser.userId);
     this.linkAccessForUsers(currentUserInfo.Groups);
     console.log(currentUserInfo);
@@ -119,7 +129,7 @@ export class AppComponent implements OnDestroy {
         this.leftNavigation.push({ title: 'Finance Dashboard', href: this.globalService.url + '/financeDashboard', visible: true });
       }
       if (currentUserGroups.find(g => g === 'Managers' || g === 'AttributeManagement Members')) {
-        this.leftNavigation.push({ title: 'Attr Management', href: this.globalService.url + '/attribute', visible: true });
+        this.leftNavigation.push({ title: 'Attr Management', href: this.globalService.sharePointPageObject.webRelativeUrl + '/attribute', visible: true });
       }
       if (currentUserGroups.find(g => g === 'Managers' || g === 'AttributeManagement Members')) {
         this.leftNavigation.push({ title: 'Admin', href: this.globalService.url + '/admin', visible: true });

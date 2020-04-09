@@ -1265,6 +1265,7 @@ export class TimelineHistoryComponent implements OnInit {
         batchURL.push(getPrjFinanceData);
       }
       const getDocuments = Object.assign({}, this.options);
+      this.commonService.SetNewrelic('timeline', 'timeline-history-getProjectVersions', 'getSubFolderFilesURL');
       getDocuments.url = this.spStandardService.getSubFolderFilesURL(projectVersions[0].ProjectFolder, 3);
       getDocuments.listName = moduleName + '_Documents';
       getDocuments.type = 'GET';

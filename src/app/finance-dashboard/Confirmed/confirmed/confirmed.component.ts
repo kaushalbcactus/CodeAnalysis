@@ -108,8 +108,8 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         type: '',
         listName: ''
     };
-    @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
-    @ViewChild('editorRef', { static: true }) editorRef: EditorComponent;
+    @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
+    @ViewChild('editorRef', { static: false }) editorRef: EditorComponent;
 
     @ViewChild('cnf', { static: false }) confirmTable: Table;
     // List of Subscribers
@@ -373,7 +373,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         // this.fdConstantsService.fdComponent.invoiceLineItems);
         // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
         const invoiceObj = Object.assign({}, this.fdConstantsService.fdComponent.invoiceLineItems);
-        this.commonService.SetNewrelic('Finance-Dashboard', 'confirmed', 'GetInvoiceLineItem');
+        this.commonService.SetNewrelic('Finance-Dashboard', 'confirmed-GetInvoiceLineItem', 'readItems');
         const res = await this.spServices.readItems(this.constantService.listNames.InvoiceLineItems.name, invoiceObj);
         // let endPoints = [invoicesQuery];
         // let userBatchBody = '';
@@ -925,7 +925,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     async getPFByPC() {
         const pfobj = Object.assign({}, this.fdConstantsService.fdComponent.projectFinances);
         pfobj.filter = pfobj.filter.replace('{{ProjectCode}}', this.selectedRowItem.ProjectCode);
-        this.commonService.SetNewrelic('Finance-Dashboard', 'confirmed', 'GetPFbyPC');
+        this.commonService.SetNewrelic('Finance-Dashboard', 'confirmed-GetPFbyPC', 'readItems');
         let response = await this.spServices.readItems(this.constantService.listNames.ProjectFinances.name, pfobj);
         response = response.length ? response[0] : {};
         // let obj = [{

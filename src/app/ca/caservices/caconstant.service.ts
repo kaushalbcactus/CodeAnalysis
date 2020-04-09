@@ -36,7 +36,7 @@ export class CAConstantService {
   public scheduleMilestoneQueryOptions = {
     select: 'ID,Title,TimeZone,Task,Status,NextTasks,PrevTasks,ProjectCode,Milestone,SubMilestones,TaskComments,StartDate,DueDate,AssignedTo/ID, AssignedTo/Title',
     expand: 'AssignedTo/ID, AssignedTo/Title',
-    filter: "((ProjectCode eq '{0}' and Milestone eq '{1}') or (ProjectCode eq '{2}' and Status eq 'Completed' and (Task eq 'QC' or Task eq 'Review-QC' or Task eq 'Inco-QC' or Task eq 'Edit' or Task eq 'Review-Edit' or Task eq 'Inco-Edit' or Task eq 'Graphics' or Task eq 'Review-Graphics' or Task eq 'Inco-Graphics')))",
+    filter: "((ProjectCode eq '{0}' and Milestone eq '{1}') or (ProjectCode eq '{2}' and (Status eq 'Completed' or Status eq 'Auto Closed') and (Task eq 'QC' or Task eq 'Review-QC' or Task eq 'Inco-QC' or Task eq 'Edit' or Task eq 'Review-Edit' or Task eq 'Inco-Edit' or Task eq 'Graphics' or Task eq 'Review-Graphics' or Task eq 'Inco-Graphics')))",
     top: 4200
   };
 
@@ -84,6 +84,13 @@ export class CAConstantService {
     select: 'ID,ProjectCode, QC/ID,QC/Name,QC/Title, Editors/ID,Editors/Name,Editors/Title,PSMembers/ID,PSMembers/Name,PSMembers/Title, GraphicsMembers/ID,GraphicsMembers/Name,GraphicsMembers/Title, AllDeliveryResources/ID, AllDeliveryResources/Name, AllDeliveryResources/Title',
     expand: 'QC/ID,QC/Name,QC/Title, Editors/ID,Editors/Name,Editors/Title,PSMembers/ID,PSMembers/Name,PSMembers/Title, GraphicsMembers/ID,GraphicsMembers/Name,GraphicsMembers/Title, AllDeliveryResources/ID,AllDeliveryResources/Name,AllDeliveryResources/Title',
     filter: "ProjectCode eq '{{ProjectCode}}'",
+    top: 4500
+  };
+
+  public tasks = {
+    select: 'ID,Title,Task,Status,ParentSlot,ProjectCode,Milestone',
+    orderby: 'StartDate asc',
+    filter: "ProjectCode eq '{{projectCode}}' and Task ne 'Select one'",
     top: 4500
   };
 

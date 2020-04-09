@@ -79,7 +79,7 @@ export class PendingAllocationComponent implements OnInit {
     // milestoneArray: [],
     // statusArray: []
   };
-  @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
+  @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
   @ViewChild('paTableRef', { static: false }) paTableRef: Table;
   constructor(
     public globalObject: GlobalService,
@@ -127,18 +127,8 @@ export class PendingAllocationComponent implements OnInit {
       }
     ];
     this.pmObject.sendToClientArray = [];
-    this._success.subscribe((message) => this.paSuccessMessage = message);
-    this._success.pipe(
-      debounceTime(5000)
-    ).subscribe(() => this.paSuccessMessage = null);
-    this._error.subscribe((message) => this.paErrorMessage = message);
-    this._error.pipe(
-      debounceTime(5000)
-    ).subscribe(() => this.paErrorMessage = null);
-    setTimeout(() => {
-      this.paHideNoDataMessage = true;
-      this.getPendingProjects();
-    }, this.pmConstant.TIME_OUT);
+    this.paHideNoDataMessage = true;
+    this.getPendingProjects();
   }
   getPendingProjects() {
     this.fetchPendingProjects();

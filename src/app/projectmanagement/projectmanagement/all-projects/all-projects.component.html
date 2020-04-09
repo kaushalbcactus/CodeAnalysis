@@ -2,118 +2,145 @@
     <mat-icon style="font-size: 2.8em; 
     cursor: pointer;
     margin: 0px 15px 0px 0px;" [hidden]="hideExcelWithBudget" title="Export To Excel with Budget & Currency" (click)="convertToExcelFile(allProjectRef)"> local_atm</mat-icon>
-    <!-- <i style="font-size: 1.8em;cursor: pointer;padding: 0px 15px 0px 0px;" (click)="pmCommonService.convertToExcelFile(allProjectRef)" title="Export To Excel with Budget & Currency" class="fa fa-file-text-o"></i> -->
     <i style="font-size: 1.8em;cursor: pointer;vertical-align: top;
     margin: 7px 15px 0px 0px;" (click)="pmCommonService.convertToExcelFile(allProjectRef)" title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
-
-
 </div>
-<div [hidden]='!(showNavigateSOW && showFilterOptions)' class="top-right-title" style="margin: 5px 10px 10px 0px;">
-    <input class="mr-5" type="text" (keydown.enter)="searchClosedProject($event); $event.preventDefault()" (change)="searchClosedProject($event)" *ngIf="showProjectInput" id="projectCodeSelect" placeholder="Project Code" pInputText [(ngModel)]="providedProjectCode"
-    />
+<div [hidden]='!(showNavigateSOW && showFilterOptions)' class="top-right-title">
+
+    <button *ngIf="CSButtonEnable" pButton type="button" label="CS Audit" [ngClass]="CSButton ? 'selectedAudit':''" class="ui-button-raised ui-button-secondary" (click)="showAllCSFinanceAudit('CS')"></button>
+
+    <button *ngIf="FinanceButtonEnable" pButton type="button" label="Finance Audit" class="ui-button-raised ui-button-secondary" [ngClass]="FinanceButton ? 'selectedAudit':''" (click)="showAllCSFinanceAudit('Finance')"></button>
+
+    <input type="text" (keydown.enter)="searchClosedProject($event); $event.preventDefault()" (change)="searchClosedProject($event)" *ngIf="showProjectInput" id="projectCodeSelect" placeholder="Project Code" pInputText [(ngModel)]="providedProjectCode" />
     <p-dropdown [options]="overAllValues" [(ngModel)]="selectedOption" styleClass="custom-dropDown" optionLabel="name" (onChange)="onChangeSelect($event)"></p-dropdown>
+
+
 </div>
 
 
+
+<div #loader class="overlay"></div>
+<div #spanner class="spanner">
+    <div class="loader"></div>
+    <p>Please wait...</p>
+</div>
 
 <div [hidden]='isAllProjectLoaderHidden' style="padding: 15vw;">
     <div id="allProjectLoader"></div>
     <div id="allProjectLoaderText">Loading...</div>
 </div>
 <br>
-<div class="allProjects-section" [hidden]='isAllProjectTableHidden'>
+
+
+
+<div class="allProjects-section" [hidden]='isAllProjectTableHidden' style="margin-top: 20px;">
 
     <div class="tableLoader" *ngIf="ExcelDownloadenable">
         <div id="excelDownloadLoader"></div>
         <div id="excelDownloadLoadertext">Loading...</div>
     </div>
-    <p-table #allProjectRef [columns]="displayedColumns" [value]="pmObject.allProjectsArray" [paginator]="true" [rows]="10" selectionMode="" exportFilename="All Projects" [style]="{'font-size':'13px'}">
-        <ng-template pTemplate="header" let-columns>
-            <tr>
-                <th>S.No</th>
-                <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
-                    {{ col.header }}
-                    <p-sortIcon [field]="col.field"></p-sortIcon>
-                </th>
-                <th></th>
-            </tr>
-            <tr>
-                <th></th>
-                <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
-                    <input *ngSwitchCase="'PrimaryResources'" pInputText type="text" (input)="allProjectRef.filter($event.target.value, col.field, col.filterMatchMode)" (keydown.enter)="$event.preventDefault()">
-                    <p-multiSelect *ngSwitchCase="'SOWCode'" [options]="allProjects.SOWCode" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                    </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'ProjectCode'" [(ngModel)]="pmObject.columnFilter.ProjectCode" [options]="allProjects.ProjectCode" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                        resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                    </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'ShortTitle'" [options]="allProjects.ShortTitle" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                    </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="allProjects.ClientLegalEntity" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                    </p-multiSelect>
-                    <!-- <p-multiSelect *ngSwitchCase="'DeliverableType'" [options]="allProjects.deliveryTypeArray" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+    <div *ngIf="showTable">
+        <p-table #allProjectRef [columns]="displayedColumns" [value]="pmObject.allProjectsArray" [paginator]="true" [rows]="10" selectionMode="" exportFilename="All Projects" [style]="{'font-size':'13px'}">
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th>S.No</th>
+                    <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
+                        {{ col.header }}
+                        <p-sortIcon [field]="col.field"></p-sortIcon>
+                    </th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th></th>
+                    <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
+                        <input *ngSwitchCase="'PrimaryResources'" pInputText type="text" (input)="allProjectRef.filter($event.target.value, col.field, col.filterMatchMode)" (keydown.enter)="$event.preventDefault()">
+                        <p-multiSelect *ngSwitchCase="'SOWCode'" [options]="allProjects.SOWCode" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)"
+                            (onPanelShow)="isOptionFilter=true;">
+                        </p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'ProjectCode'" [(ngModel)]="pmObject.columnFilter.ProjectCode" [options]="allProjects.ProjectCode" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                            resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        </p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'ShortTitle'" [options]="allProjects.ShortTitle" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        </p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="allProjects.ClientLegalEntity" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        </p-multiSelect>
+                        <!-- <p-multiSelect *ngSwitchCase="'DeliverableType'" [options]="allProjects.deliveryTypeArray" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                     </p-multiSelect> -->
-                    <p-multiSelect *ngSwitchCase="'ProjectType'" [options]="allProjects.ProjectType" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                    </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'Status'" [options]="allProjects.Status" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                    </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'PrimaryResouces'" [options]="allProjects.PrimaryResources" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                    </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'POC'" [options]="allProjects.POC" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                    </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'TA'" [options]="allProjects.TA" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                    </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'Molecule'" [options]="allProjects.Molecule" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                    </p-multiSelect>
-                    <!-- <p-multiSelect *ngSwitchCase="'CreatedBy'" [options]="allProjects.createdByArray" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect *ngSwitchCase="'ProjectType'" [options]="allProjects.ProjectType" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        </p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'Status'" [options]="allProjects.Status" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)"
+                            (onPanelShow)="isOptionFilter=true;">
+                        </p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'PrimaryResouces'" [options]="allProjects.PrimaryResources" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        </p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'POC'" [options]="allProjects.POC" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)"
+                            (onPanelShow)="isOptionFilter=true;">
+                        </p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'TA'" [options]="allProjects.TA" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)"
+                            (onPanelShow)="isOptionFilter=true;">
+                        </p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'Molecule'" [options]="allProjects.Molecule" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)"
+                            (onPanelShow)="isOptionFilter=true;">
+                        </p-multiSelect>
+                        <!-- <p-multiSelect *ngSwitchCase="'CreatedBy'" [options]="allProjects.createdByArray" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'CreatedDate'" [options]="allProjects.createdDateArray" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                     </p-multiSelect> -->
-                </th>
-                <th></th>
-            </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-rowData let-task let-rowIndex="rowIndex">
-            <tr>
-                <td>{{rowIndex+1}}</td>
-                <td>
-                    <a *ngIf="showNavigateSOW" href="javascript:void(0)" (click)="navigateToSOW(task)">{{task.SOWCode}}</a>
-                    <span *ngIf="!showNavigateSOW">{{task.SOWCode}}</span>
-                </td>
-                <td>{{task.ProjectCode}}</td>
-                <td>{{task.ShortTitle}}</td>
-                <td>{{task.ClientLegalEntity}}</td>
-                <!-- <td>{{task.DeliverableType}}</td> -->
-                <td>{{task.ProjectType}}</td>
+                    </th>
+                    <th></th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-rowData let-task let-rowIndex="rowIndex">
+                <tr>
+                    <td>{{rowIndex+1}}</td>
+                    <td>
+                        <a *ngIf="showNavigateSOW" href="javascript:void(0)" (click)="navigateToSOW(task)">{{task.SOWCode}}</a>
+                        <span *ngIf="!showNavigateSOW">{{task.SOWCode}}</span>
+                    </td>
+                    <td>{{task.ProjectCode}}</td>
+                    <td>{{task.ShortTitle}}</td>
+                    <td>{{task.ClientLegalEntity}}</td>
+                    <!-- <td>{{task.DeliverableType}}</td> -->
+                    <td>{{task.ProjectType}}</td>
 
-                <td>{{task.PrimaryResources}}</td>
-                <td>{{task.POC}}</td>
-                <td>{{task.TA}}</td>
-                <td>{{task.Molecule}}</td>
-                <td [ngClass]="{'blueColor' : task.isBlueIndicator,'redColor': task.isRedIndicator,'greenColor': task.isGreenIndicator}">
-                    {{task.Status}}</td>
-                <!-- <td>{{task.CreatedBy}}</td>
+                    <td>{{task.PrimaryResources}}</td>
+                    <td>{{task.POC}}</td>
+                    <td>{{task.TA}}</td>
+                    <td>{{task.Molecule}}</td>
+                    <td [ngClass]="{'blueColor' : task.isBlueIndicator,'redColor': task.isRedIndicator,'greenColor': task.isGreenIndicator}">
+                        <ng-container [ngSwitch]="task.Status">
+                            <span *ngSwitchCase="'Audit In Progress'">CS Audit</span>
+                            <span *ngSwitchCase="'Pending Closure'">Finance Audit</span>
+                            <span *ngSwitchDefault>{{task.Status}}</span>
+                        </ng-container>
+                    </td>
+                    <!-- <td>{{task.CreatedBy}}</td>
                 <td>{{task.CreatedDate | date:'MMM dd yyyy hh:mm:ss aa'}}</td> -->
-                <td>
-                    <div>
+                    <td>
+                        <div>
 
-                        <!-- <button #btn type="button" pButton icon="pi pi-bars" label="Show" (click)="menu.toggle($event)"></button>
+                            <!-- <button #btn type="button" pButton icon="pi pi-bars" label="Show" (click)="menu.toggle($event)"></button>
                         <p-tieredMenu #menu [model]="popItems" [appendTo]="body" [popup]="true"></p-tieredMenu> -->
 
-                        <p-tieredMenu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu class="projectSlider" [model]="popItems" [popup]="true"></p-tieredMenu>
-                        <i class="pi pi-ellipsis-v"  style="font-size:2em;cursor: pointer;" (click)="storeRowData(rowData,menu); menu.show($event);"></i>
-                    </div>
-                </td>
-            </tr>
-        </ng-template>
-        <ng-template pTemplate="emptymessage" let-columns>
-            <tr>
-                <td style="text-align:center" [attr.colspan]="11">
-                    No project found
-                </td>
-            </tr>
-        </ng-template>
-    </p-table>
-
+                            <p-tieredMenu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu class="projectSlider" [model]="popItems" [popup]="true"></p-tieredMenu>
+                            <i class="pi pi-ellipsis-v"  style="font-size:2em;cursor: pointer;" (click)="storeRowData(rowData,menu); menu.show($event);"></i>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage" let-columns>
+                <tr>
+                    <td style="text-align:center" [attr.colspan]="11">
+                        No project found
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
 
 
     <div *ngIf="pmObject.isProjectRightSideVisible" class="ng-right-side-overlay">
@@ -168,7 +195,16 @@
                     </tr>
                     <tr>
                         <td [ngStyle]="{'color':'#d7181f'}">Project Status</td>
-                        <td>{{task.ProjectAttributes.ProjectStatus}}</td>
+                        <td>
+                            <ng-container [ngSwitch]="task.ProjectAttributes.ProjectStatus">
+
+                                <span *ngSwitchCase="'Audit In Progress'">CS Audit</span>
+                                <span *ngSwitchCase="'Pending Closure'">Finance Audit</span>
+                                <span *ngSwitchDefault>{{task.ProjectAttributes.ProjectStatus}}</span>
+                            </ng-container>
+
+
+                        </td>
                     </tr>
                     <tr>
                         <td [ngStyle]="{'color':'#d7181f'}">Client POC</td>
@@ -223,6 +259,22 @@
                     <tr>
                         <td [ngStyle]="{'color':'#d7181f'}">Comments</td>
                         <td>{{task.ProjectAttributes.Comments}}</td>
+                    </tr>
+                    <tr *ngIf="enableCountFields">
+                        <td [ngStyle]="{'color':'#d7181f'}">Reference Count </td>
+                        <td>{{task.ProjectAttributes.ReferenceCount}}</td>
+                    </tr>
+                    <tr *ngIf="enableCountFields">
+                        <td [ngStyle]="{'color':'#d7181f'}">Slide Count</td>
+                        <td>{{task.ProjectAttributes.SlideCount}}</td>
+                    </tr>
+                    <tr *ngIf="enableCountFields">
+                        <td [ngStyle]="{'color':'#d7181f'}">Page Count</td>
+                        <td>{{task.ProjectAttributes.PageCount}}</td>
+                    </tr>
+                    <tr *ngIf="enableCountFields">
+                        <td [ngStyle]="{'color':'#d7181f'}">Annotation/Binder </td>
+                        <td>{{task.ProjectAttributes.AnnotationBinder }}</td>
                     </tr>
                     <tr>
                         <td colspan="2" [ngStyle]="{'color':'#d7181f'}"></td>
@@ -330,50 +382,20 @@
             </p-table>
         </p-sidebar>
     </div>
-    <div *ngIf="pmObject.isAuditRollingVisible">
-        <p-dialog [(visible)]="pmObject.isAuditRollingVisible" [modal]="true" [style]="{width: '1300px'}">
-            <p-header>
-                Audit Project.
-            </p-header>
-            <p-table [value]="addRollingProjectArray" class="audit-rolling-section">
-                <ng-template pTemplate="header">
-                    <tr>
-                        <th></th>
-                        <th>Parameters</th>
-                        <th>Comments</th>
-                    </tr>
-                </ng-template>
-                <ng-template pTemplate="body" let-rowData let-task style="overflow: auto">
-                    <tr class="formContentChecklist">
-                        <td><input type="checkbox"></td>
-                        <td>{{task.parameter}}</td>
-                        <td><textarea rows="1" cols="30"></textarea></td>
-                    </tr>
-                </ng-template>
-                <ng-template pTemplate="footer">
-                    <tr *ngIf="checkList.addRollingProjectError">
-                        <td colspan="3" class="error">{{checkList.addRollingProjectErrorMsg}}</td>
-                    </tr>
-                </ng-template>
-            </p-table>
-            <p-footer>
-                <p-button type="button" class="mr-5" (click)="auditComplete()" label="Confirm"></p-button>
-                <p-button type="button" class="mr-5" (click)="closeDialog()" label="Cancel"></p-button>
-            </p-footer>
-        </p-dialog>
-    </div>
+
     <div *ngIf="pmObject.isMoveProjectToSOWVisible">
-        <p-dialog [(visible)]="pmObject.isMoveProjectToSOWVisible" [modal]="true" [style]="{width: '900px'}">
+        <p-dialog [(visible)]="pmObject.isMoveProjectToSOWVisible" [modal]="true" [style]="{width: '900px'}" [contentStyle]="{'max-height':'450px', 'height':'305px'}">
             <p-header>
                 Move Project To SOW
             </p-header>
             <div class="ui-grid-col-2">SOW Code</div>
             <div class="ui-grid-col-4">
-                <p-dropdown [(ngModel)]="newSelectedSOW" [options]="sowDropDownArray" placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true"></p-dropdown>
+                <p-dropdown [(ngModel)]="newSelectedSOW" appendTo="body" [options]="sowDropDownArray" placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true">
+                </p-dropdown>
             </div>
             <p-footer>
-                <p-button type="button" class="mr-5" (click)="performSOWMove()" label="Move"></p-button>
-                <p-button type="button" class="mr-5" (click)="closeMoveSOW()" label="Cancel"></p-button>
+                <button type="button" pButton class="mr-5" (click)="performSOWMove()" label="Move"></button>
+                <button type="button" pButton class="mr-5" (click)="closeMoveSOW()" label="Cancel"></button>
             </p-footer>
         </p-dialog>
     </div>
@@ -420,8 +442,7 @@
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th style="width: 4em;">S.No</th>
-                <th *ngFor="let col of columns" [ngStyle]="{'width': col.field === 'Status' ? '15em !important':(col.field === 'Category'|| col.field === 'ClientAmount'|| col.field === 'ClientCurrency') ? '11.5em !important':'' }" [pSortableColumn]="col.field" pResizableColumn
-                    pReorderableColumn [hidden]="!col.visibility">
+                <th *ngFor="let col of columns" [ngStyle]="{'width': col.field === 'Status' ? '15em !important':(col.field === 'Category'|| col.field === 'ClientAmount'|| col.field === 'ClientCurrency') ? '11.5em !important':'' }" [pSortableColumn]="col.field" [hidden]="!col.visibility">
                     {{col.header}}
                     <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
                 </th>
@@ -431,26 +452,35 @@
                 <th></th>
                 <th *ngFor="let col of columns" [ngSwitch]="col.field" [hidden]="!col.visibility" class="ui-fluid">
                     <ng-container *ngIf="col.field">
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" *ngSwitchCase="'RequestType'" [options]="expenseColArray.RequestType" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" *ngSwitchCase="'RequestType'" [options]="expenseColArray.RequestType" defaultLabel="All" [maxSelectedLabels]="1"
+                            (onChange)="dt2.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" *ngSwitchCase="'VendorName'" [options]="expenseColArray.VendorName" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" *ngSwitchCase="'VendorName'" [options]="expenseColArray.VendorName" defaultLabel="All" [maxSelectedLabels]="1"
+                            (onChange)="dt2.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" *ngSwitchCase="'Category'" [options]="expenseColArray.Category" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="dt2.filter($event.value, col.field, 'in')">
-                        </p-multiSelect>
-
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" *ngSwitchCase="'ExpenseType'" [options]="expenseColArray.ExpenseType" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="dt2.filter($event.value, col.field, 'in')">
-                        </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" *ngSwitchCase="'ClientAmount'" [options]="expenseColArray.ClientAmount" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="dt2.filter($event.value, col.field, 'in')">
-                        </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" *ngSwitchCase="'ClientCurrency'" [options]="expenseColArray.ClientCurrency" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" *ngSwitchCase="'Category'" [options]="expenseColArray.Category" defaultLabel="All" [maxSelectedLabels]="1"
+                            (onChange)="dt2.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
 
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" *ngSwitchCase="'Status'" [options]="expenseColArray.Status" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" *ngSwitchCase="'ExpenseType'" [options]="expenseColArray.ExpenseType" defaultLabel="All" [maxSelectedLabels]="1"
+                            (onChange)="dt2.filter($event.value, col.field, 'in')">
+                        </p-multiSelect>
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" *ngSwitchCase="'ClientAmount'" [options]="expenseColArray.ClientAmount" defaultLabel="All" [maxSelectedLabels]="1"
+                            (onChange)="dt2.filter($event.value, col.field, 'in')">
+                        </p-multiSelect>
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" *ngSwitchCase="'ClientCurrency'" [options]="expenseColArray.ClientCurrency" defaultLabel="All" [maxSelectedLabels]="1"
+                            (onChange)="dt2.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
 
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" *ngSwitchCase="'Modified'" [options]="expenseColArray.ModifiedDate" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" *ngSwitchCase="'Status'" [options]="expenseColArray.Status" defaultLabel="All" [maxSelectedLabels]="1"
+                            (onChange)="dt2.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" *ngSwitchCase="'ModifiedBy'" [options]="expenseColArray.ModifiedBy" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="dt2.filter($event.value, col.field, 'in')">
+
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" *ngSwitchCase="'Modified'" [options]="expenseColArray.ModifiedDate" defaultLabel="All" [maxSelectedLabels]="1"
+                            (onChange)="dt2.filter($event.value, col.field, 'in')">
+                        </p-multiSelect>
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" *ngSwitchCase="'ModifiedBy'" [options]="expenseColArray.ModifiedBy" defaultLabel="All" [maxSelectedLabels]="1"
+                            (onChange)="dt2.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
 
 

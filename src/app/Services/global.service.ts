@@ -53,7 +53,8 @@ export class GlobalService {
       ID: 0,
       Title: ''
     },
-    currentTask: {}
+    currentTask: {},
+    previousTasks: []
   };
 
   /**
@@ -85,7 +86,8 @@ export class GlobalService {
       ID: 0,
       Title: ''
     },
-    currentTask: {}
+    currentTask: {},
+    previousTasks: []
   };
 
   public personalFeedback = {
@@ -207,6 +209,7 @@ export class GlobalService {
       Status: '',
       PrevStatus: '',
       ProjectFolder: '',
+      projectType: ''
     },
     oMilestones: [],
     oTasks: {},
@@ -240,7 +243,6 @@ export class GlobalService {
       Task: '',
       TimeSpent: '',
       Title: '',
-      TaskPosition: '',
       allowStart: false,
       assignedUserTimeZone: '+5.5',
       assignedUsers: [],
@@ -300,7 +302,6 @@ export class GlobalService {
       Task: '',
       TimeSpent: '',
       Title: '',
-      TaskPosition: '',
       endDate: { date: { day: this.today.getDate(), month: this.today.getMonth() + 1, year: this.today.getFullYear() } },
       hoursSpent: '',
       isCurrentMilestone: false,
@@ -313,7 +314,6 @@ export class GlobalService {
       id: '',
       type: '',
       nSwimlanes: 1,
-      swimlaneCount: 1,
       editMilestone: true,
       color: '#000000',
     },

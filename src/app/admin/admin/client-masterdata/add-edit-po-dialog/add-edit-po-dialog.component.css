@@ -1,0 +1,52 @@
+::ng-deep .UserButton {
+    position: fixed !important;
+    width: 100% !important;
+    margin: -50px !important;
+}
+
+::ng-deep #saveClient {
+    background-color: #C53E3E !important;
+    border-color: #C53E3E !important;
+}
+
+::ng-deep button.ui-datepicker-trigger.ui-calendar-button {
+    padding: 2px !important;
+}
+
+::ng-deep .pCalendarBtn {
+    width: 100% !important;
+}
+
+::ng-deep .pCalendarBtn>input {
+    width: 89% !important;
+}
+
+#modalInnerLoader {
+    border: 5px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 5px solid red;
+    border-bottom: 5px solid red;
+    width: 100px;
+    height: 100px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    margin: 0 auto;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#modalInnerLoaderText {
+    -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
+    -o-animation: loading-text-opacity 2s linear 0s infinite normal;
+    -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
+    animation: loading-text-opacity 2s linear 0s infinite normal;
+    color: black;
+    font-family: "Helvetica Neue, "Helvetica", ""arial";
+    font-size: 10px;
+    font-weight: bold;
+    opacity: 0.5;
+    text-align: center;
+    text-transform: uppercase;
+    top: 0;
+}

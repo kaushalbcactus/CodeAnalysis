@@ -156,7 +156,7 @@ export class StandardprojectComponent implements OnInit {
     };
     const oCurrentDate = new Date();
     let sYear = oCurrentDate.getFullYear();
-    sYear = oCurrentDate.getMonth() > 2 ? sYear + 1 : sYear;
+    //sYear = oCurrentDate.getMonth() > 2 ? sYear + 1 : sYear;
     // Get ProjectPerYear
     const projectYearGet = Object.assign({}, options);
     const projectYearFilter = Object.assign({}, this.pmConstant.TIMELINE_QUERY.PROJECT_PER_YEAR);
@@ -319,7 +319,7 @@ export class StandardprojectComponent implements OnInit {
     })
     matchingStandard.length > 0 ? templateName = matchingStandard[0].Title : templateName = '';
     const standardMilestoneOptions = {
-      select: 'ID,Title,ClientReviewDays,Hours,MilestoneName,DisplayOrder,MilestoneDays,SwimlaneCount,Template/ID,Template/Title,SubMilestones',
+      select: 'ID,Title,ClientReviewDays,Hours,MilestoneName,DisplayOrder,MilestoneDays,Template/ID,Template/Title,SubMilestones',
       expand: 'Template/ID,Template/Title',
       filter: 'Template/Title eq \'' + templateName + '\''
     }
@@ -386,7 +386,7 @@ export class StandardprojectComponent implements OnInit {
     };
     milestoneArray.forEach((milestone) => {
       const standardMilestoneTaskOptions = {
-        select: 'ID,Title,Skill,Hours,TaskDays,UseTaskDays,TaskPosition,Milestones/ID,Milestones/Title,TaskName/ID,TaskName/Title,PreviousTask/ID,PreviousTask/Title,SubMilestones/ID,SubMilestones/Title',
+        select: 'ID,Title,Skill,Hours,TaskDays,UseTaskDays,Milestones/ID,Milestones/Title,TaskName/ID,TaskName/Title,PreviousTask/ID,PreviousTask/Title,SubMilestones/ID,SubMilestones/Title',
         expand: 'Milestones/ID,Milestones/Title,TaskName/ID,TaskName/Title,PreviousTask/ID,PreviousTask/Title,SubMilestones/ID,SubMilestones/Title',
         filter: 'Milestones/Title eq \'' + milestone.Title + '\''
       };
@@ -577,8 +577,8 @@ export class StandardprojectComponent implements OnInit {
     let sClientAcronym = clientLegalEntityObject[0].Acronym;
     let sDeliverableTypeCode = deliveryObject[0].Acronym;
     let oCurrentDate = new Date();
-    let sYear = oCurrentDate.getFullYear();
-    let sProjCode = oCurrentDate.getMonth() > 2 ? sYear + 1 : sYear;
+    let sProjCode = oCurrentDate.getFullYear();
+    // let sProjCode = oCurrentDate.getMonth() > 2 ? sYear + 1 : sYear;
     let sProjCount = this.pmObject.oProjectManagement.oProjectPerYear.toString();
     sProjCount = ("000" + sProjCount).slice(-4);
     if (sProjCode) {
@@ -695,7 +695,7 @@ export class StandardprojectComponent implements OnInit {
       milestoneObj.data.minEndDateValue = milestoneObj.data.StartDate;
       milestoneObj.data.ClientReviewDays = orginalMilestone[index].ClientReviewDays;
       milestoneObj.data.strSubMilestone = orginalMilestone[index].SubMilestones;
-      milestoneObj.data.SwimlaneCount = orginalMilestone[index].SwimlaneCount;
+
       milestoneObj.SubMilestones = this.getSubMilestones(orginalMilestone[index].SubMilestones);
       // check If submilestones is present or not
       if (milestoneObj.SubMilestones) {
@@ -713,6 +713,8 @@ export class StandardprojectComponent implements OnInit {
       // if (index < orginalMilestone.length - 1) {
       //   this.pmObject.addProject.Timeline.Standard.Milestones += ';#';
       // }
+
+      
       StartDate = this.setClientReview(milestoneObj, true);
       if (index < orginalMilestone.length) {
         index++;
@@ -869,6 +871,7 @@ export class StandardprojectComponent implements OnInit {
         ngPrimetaskObj.data.EndDate = ngPrimemilestoneObj.data.clientReviewEndDate;
         ngPrimetaskObj.data.EndDatePart = this.getDatePart(ngPrimetaskObj.data.EndDate);
         ngPrimetaskObj.data.EndTimePart = this.getTimePart(ngPrimetaskObj.data.EndDate);
+        ngPrimetaskObj.data.showTime = true;
         ngPrimetaskObj.data.minEndDateValue = ngPrimetaskObj.data.StartDate;
         ngPrimetaskObj.data.MileId = ngPrimemilestoneObj.data.MileId + ';#' + this.pmConstant.task.CLIENT_REVIEW;
         ngPrimetaskObj.data.AssignedTo = this.userProperties.Title;
@@ -1007,8 +1010,7 @@ export class StandardprojectComponent implements OnInit {
           taskObj.PreviousTask = milestoneTask[index].PreviousTask;
           taskObj.data.Skill = milestoneTask[index].Skill;
           taskObj.data.TaskDays = milestoneTask[index].TaskDays;
-          taskObj.data.UseTaskDays = milestoneTask[index].UseTaskDays;
-          taskObj.data.TaskPosition = milestoneTask[index].TaskPosition;
+          taskObj.data.UseTaskDays = milestoneTask[index].TaskName.Title === 'Send to client' ? 'No': milestoneTask[index].UseTaskDays;
           taskObj.data.Title = milestoneTask[index].Title;
           taskObj.data.Name = taskObj.data.TaskName;
           taskObj.data.isStartDateDisabled = false;
@@ -1029,8 +1031,12 @@ export class StandardprojectComponent implements OnInit {
               taskObj.data.AssignedTo = this.userProperties.Title;
               startdate = this.setDefaultAMHours(milestoneObj.data.StartDate);
             }
-            if (taskObj.data.UseTaskDays !== this.pmConstant.task.USE_TASK_DAYS) {
+            if (taskObj.data.UseTaskDays !== this.pmConstant.task.USE_TASK_DAYS || milestoneTask[index].TaskName.Title === 'Send to client' ) {
               taskObj.data.showTime = true;
+              if(milestoneTask[index].TaskName.Title === 'Send to client'){
+                taskObj.data.Days = taskObj.data.TaskDays;
+              }
+            
             }
             taskObj.data.showHyperLink = true;
             if (daysHours !== "") {
@@ -1074,7 +1080,10 @@ export class StandardprojectComponent implements OnInit {
               taskObj.data.AssignedTo = this.userProperties.Title;
               taskObj.isHoursDisabled = true;
             }
-            if (taskObj.data.UseTaskDays !== this.pmConstant.task.USE_TASK_DAYS) {
+            if (taskObj.data.UseTaskDays !== this.pmConstant.task.USE_TASK_DAYS || milestoneTask[index].TaskName.Title === 'Send to client') {
+              if(milestoneTask[index].TaskName.Title === 'Send to client'){
+                taskObj.data.Days = taskObj.data.TaskDays;
+              }
               taskObj.data.showTime = true;
             }
           }

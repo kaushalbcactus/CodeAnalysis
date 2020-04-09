@@ -83,7 +83,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
   thenBlock: Table;
   public loderenable = false;
 
-  @ViewChild('feedbackPopup', { static: true }) feedbackPopupComponent: FeedbackPopupComponent;
+  @ViewChild('feedbackPopup', { static: false }) feedbackPopupComponent: FeedbackPopupComponent;
   @ViewChild('taskId', { static: false }) taskId: Table;
   showCalender: boolean;
   selectedDate: any;
@@ -157,13 +157,15 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     if (this.TabName === 'MyCompletedTask') {
       this.taskMenu = [
         { label: 'View / Upload Documents', icon: 'pi pi-fw pi-upload', command: (e) => this.getAddUpdateDocument(data) },
-        { label: 'View / Add Comment', icon: 'pi pi-fw pi-comment', command: (e) => this.getAddUpdateComment(data, false) }
+        { label: 'View / Add Comment', icon: 'pi pi-fw pi-comment', command: (e) => this.getAddUpdateComment(data, false) },
+        { label: 'Project Scope', icon: 'pi pi-fw pi-file', command: (e) => this.goToProjectScope(data) }
       ];
     } else {
       this.taskMenu = [
         { label: 'View / Upload Documents', icon: 'pi pi-fw pi-upload', command: (e) => this.getAddUpdateDocument(data) },
         { label: 'View / Add Comment', icon: 'pi pi-fw pi-comment', command: (e) => this.getAddUpdateComment(data, false) },
         { label: 'Mark Complete', icon: 'pi pi-fw pi-check', command: (e) => this.checkCompleteTask(data) },
+        { label: 'Project Scope', icon: 'pi pi-fw pi-file', command: (e) => this.goToProjectScope(data) }
       ];
     }
   }
@@ -291,8 +293,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
 
     if (res.length > 0) {
       const data = [];
-      res.forEach(task => {
-
+      for (const task of res) {
         const TaskProject = this.sharedObject.DashboardData.ProjectCodes ?
           this.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === task.ProjectCode) : null;
         let DisplayTitle;
@@ -317,7 +318,9 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
             DisplayTitle = task.Title;
           }
         }
-
+        const nextPreviousTasks = await this.myDashboardConstantsService.getNextPreviousTask(task);
+        const nextTasks = nextPreviousTasks.length ? nextPreviousTasks.filter(c => c.TaskType === 'Next Task') : [];
+        const prevTasks = nextPreviousTasks.length ? nextPreviousTasks.filter(c => c.TaskType === 'Previous Task') : [];
         data.push({
           Id: task.Id,
           AssignedTo: task.AssignedTo,
@@ -341,6 +344,8 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
           Milestone: task.Milestone,
           NextTasks: task.NextTasks,
           PrevTasks: task.PrevTasks,
+          prevTaskDetails: prevTasks,
+          nextTaskDetails: nextTasks,
           ProjectCode: task.ProjectCode,
           Status: task.Status,
           SubMilestones: task.SubMilestones,
@@ -349,7 +354,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
           Title: task.Title,
           ParentSlot: task.ParentSlot
         });
-      });
+      }
       this.allTasks = data;
       this.initializeTableOptions();
 
@@ -429,7 +434,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     this.selectedindex = row;
     this.selectedType = type;
 
-    if (type === 'TaskName') { 
+    if (type === 'TaskName') {
       this.getNextPreviousTaskDialog(task);
     }
     if (type === 'TimeSpent') {
@@ -517,11 +522,13 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
       if (Commentobj) {
 
         if (Commentobj.IsMarkComplete) {
+          task.parent = 'Dashboard';
           task.TaskComments = Commentobj.comment;
           task.Status = 'Completed';
           this.commonService.SetNewrelic('MyCurrentCompletedTask', this.route.snapshot.data.type, 'CompleteTask');
-          if (task.PrevTasks && task.PrevTasks.indexOf(';#') === -1 && task.Task.indexOf('Review-') > -1) {
-            this.myDashboardConstantsService.callQMSPopup(task, this.feedbackPopupComponent);
+          const qmsTasks = await this.myDashboardConstantsService.callQMSPopup(task);
+          if (qmsTasks.length) {
+            this.feedbackPopupComponent.openPopup(qmsTasks, task);
           } else {
             this.saveTask(task);
           }
@@ -598,6 +605,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
 
   async checkCompleteTask(task) {
     const allowedStatus = ['Completed', 'AllowCompletion', 'Auto Closed'];
+    this.commonService.SetNewrelic('MyDashboard', 'MyCurrentCompletedTasks', 'readItem');
     const response = await this.spServices.readItem(this.constants.listNames.Schedules.name, task.ID);
     const stval = await this.myDashboardConstantsService.getPrevTaskStatus(task);
 
@@ -615,14 +623,12 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
           message: 'Are you sure that you want to proceed?',
           header: 'Confirmation',
           icon: 'pi pi-exclamation-triangle',
-          accept: () => {
-
-            // this.loaderenable = true;
-            // this.allTasks = [];
-            // this.callComplete(task);
+          accept: async () => {
+            task.parent = 'Dashboard';
             task.Status = 'Completed';
-            if (task.PrevTasks && task.PrevTasks.indexOf(';#') === -1 && task.Task.indexOf('Review-') > -1) {
-              this.myDashboardConstantsService.callQMSPopup(task, this.feedbackPopupComponent);
+            const qmsTasks = await this.myDashboardConstantsService.callQMSPopup(task);
+            if (qmsTasks.length) {
+              this.feedbackPopupComponent.openPopup(qmsTasks, task);
             } else {
               this.saveTask(task);
             }
@@ -641,26 +647,6 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
       });
     }
   }
-
-  // async callComplete(task) {
-  //   task.Status = 'Completed';
-  //   const response = await this.myDashboardConstantsService.CompleteTask(task);
-  //   if (response) {
-  //     this.loaderenable = false;
-  //     this.GetDatabyDateSelection(this.selectedTab, this.days);
-  //     this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: response });
-  //   } else {
-  //     this.messageService.add({
-  //       key: 'custom', severity: 'success', summary: 'Success Message',
-  //       detail: task.Title + ' - Task Updated Successfully.'
-  //     });
-  //     this.GetDatabyDateSelection(this.selectedTab, this.days);
-  //     if (task.PrevTasks && task.PrevTasks.indexOf(';#') === -1 && task.Task.indexOf('Review-') > -1) {
-  //       this.myDashboardConstantsService.callQMSPopup(task, this.feedbackPopupComponent);
-  //     }
-  //   }
-
-  // }
 
   optionFilter(event: any) {
     if (event.target.value) {
@@ -689,6 +675,23 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
   ngOnDestroy() {
     if (this.subscription) {
       this.subscription.unsubscribe();
+    }
+  }
+
+  // **************************************************************************************************
+  //   This function is used to open or download project scope 
+  // **************************************************************************************************
+  async goToProjectScope(task) {
+    const ProjectInformation = await this.myDashboardConstantsService.getCurrentTaskProjectInformation(task.ProjectCode);
+    const response = await this.commonService.goToProjectScope(ProjectInformation, ProjectInformation.Status);
+    if (response === 'No Document Found.') {
+      this.messageService.add({
+        key: 'custom', severity: 'error', summary: 'Error Message',
+        detail: task.ProjectCode + ' - Project Scope not found.'
+      });
+    }
+    else {
+      window.open(response);
     }
   }
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ApplicationRef, NgZone, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { SPOperationService } from '../../../../Services/spoperation.service';
 import { ConstantsService } from '../../../../Services/constants.service';
 import { Subject } from 'rxjs';
@@ -18,17 +18,14 @@ import { Router } from '@angular/router';
   templateUrl: './admin-view.component.html',
   styleUrls: ['./admin-view.component.css']
 })
-export class AdminViewComponent implements OnInit {
+export class AdminViewComponent implements OnInit, OnDestroy {
   public navLinks = [{ routerLink: ['/qms/adminView/retrospectiveFeedback'], label: 'Retrospective Feedback' },
   { routerLink: ['/qms/adminView/scorecards'], label: 'Scorecards' }
   ];
   ReviewerDetailColumns = [];
   ReviewerDetail = [];
   navigationSubscription;
-  // public successMessage: string;
-  // public alertMessage: string;
-  // private success = new Subject<string>();
-  // private alert = new Subject<string>();
+  milestoneTasks = [];
   public filterObj = {
     taskType: [
       { type: 'Write', value: 'Write' },
@@ -69,7 +66,7 @@ export class AdminViewComponent implements OnInit {
   };
 
   @ViewChild('admin', { static: false }) adminTable: Table;
-
+  showAdminTable: boolean;
   constructor(
 
     public commonService: CommonService,
@@ -102,7 +99,9 @@ export class AdminViewComponent implements OnInit {
   }
 
   async ngOnInit() {
+    this.showAdminTable = true;
     if (!this.global.currentUser.groups.length) {
+      this.commonService.SetNewrelic('QMS', 'admin-view', 'getUserInfo');
       const result = await this.spService.getUserInfo(this.global.currentUser.userId);
       this.global.currentUser.groups = result.Groups.results ? result.Groups.results : [];
     }
@@ -119,12 +118,30 @@ export class AdminViewComponent implements OnInit {
       setTimeout(async () => {
         this.filterObj.startDate = new Date(new Date().setMonth(new Date().getMonth() - 1));
         // Fetch all active resources
+        // const batchURL = [];
+        // const getResources = Object.assign({}, this.options);
+        // getResources.url = this.spService.getReadURL(this.globalConstant.listNames.ResourceCategorization.name,
+        //   this.qmsConstant.AdminViewComponent.getResources);
+        // getResources.url = getResources.url.replace('{{TopCount}}', '4500');
+        // getResources.listName = this.globalConstant.listNames.ResourceCategorization.name;
+        // getResources.type = 'GET';
+        // batchURL.push(getResources);
+
+        // const getMilestoneTasks = Object.assign({}, this.options);
+        // getMilestoneTasks.url = this.spService.getReadURL(this.globalConstant.listNames.MilestoneTasks.name,
+        //   this.qmsConstant.common.getMilestoneTasks);
+        // getMilestoneTasks.listName = this.globalConstant.listNames.MilestoneTasks.name;
+        // getMilestoneTasks.type = 'GET';
+        // batchURL.push(getMilestoneTasks);
         const adminComponent = JSON.parse(JSON.stringify(this.qmsConstant.AdminViewComponent));
         adminComponent.getResources.top = adminComponent.getResources.top.replace('{{TopCount}}', '4500');
         this.commonService.SetNewrelic('QMS', 'admin', 'getResourceDetails');
         const arrResult = await this.spService.readItems(this.globalConstant.listNames.ResourceCategorization.name,
           adminComponent.getResources);
         this.resources = arrResult.length > 0 ? arrResult : [];
+        // const arrResult = await this.spService.executeBatch(batchURL);
+        // this.resources = arrResult.length > 0 ? arrResult[0].retItems : [];
+        // this.milestoneTasks = arrResult.length > 1 ? arrResult[1].retItems : [];
         this.showTable();
       }, 500);
     }
@@ -176,6 +193,7 @@ export class AdminViewComponent implements OnInit {
       this.ReviewerDetail.push({
         taskTitle: element.taskTitle ? element.subMilestones ? element.taskTitle + ' - ' + element.subMilestones : element.taskTitle : '',
         title: element.taskTitle,
+        milestone: element.Milestone,
         subMilestones: element.subMilestones,
         taskCompletionDate: element.taskCompletionDate ? new Date(this.datepipe.transform(element.taskCompletionDate, 'MMM d, yyyy')) : '',
         rated: element.rated ? element.rated : '',
@@ -185,7 +203,10 @@ export class AdminViewComponent implements OnInit {
         formattedCompletionDate: element.formattedCompletionDate ? element.formattedCompletionDate : '',
         resource: element.resource,
         resourceID: element.resourceID,
-        taskID: element.taskID
+        taskID: element.taskID,
+        reviewTask: {
+          defaultSkill: 'Review'
+        }
       });
     });
     this.colFilters(this.ReviewerDetail);
@@ -199,11 +220,14 @@ export class AdminViewComponent implements OnInit {
    *
    */
   fetchResourcesTasks(element) {
+    this.showAdminTable = false;
+    this.isOptionFilter = false;
     if (element && !this.global.viewTabsPermission.hideAdmin) {
       this.showLoader();
       setTimeout(async () => {
         const tasks = await this.getResourceTasks(4500, element.value.UserName.ID);
         this.bindAdminView(tasks);
+        this.showAdminTable = true;
         this.showTable();
       }, 500);
     }
@@ -241,18 +265,20 @@ export class AdminViewComponent implements OnInit {
       const taskDocuments = this.qmsCommon.getTaskDocuments(documents, task.Title);
       const taskDate = task.Actual_x0020_End_x0020_Date ? new Date(task.Actual_x0020_End_x0020_Date) : '';
       const subMilestones = task.SubMilestones ? task.SubMilestones : '';
+      const milestones = task.Milestones ? task.Milestones : '';
       const obj = {
         resource: task.AssignedTo ? task.AssignedTo.Title : '',
         resourceID: task.AssignedTo ? task.AssignedTo.ID : '',
         taskTitle: task.Title ? task.Title : '',
         subMilestones,
+        milestones,
         taskID: task.ID ? task.ID : '',
         rated: task.Rated ? 'Yes' : 'No',
         taskCompletionDate: task.Actual_x0020_End_x0020_Date ? new Date(task.Actual_x0020_End_x0020_Date) : '',
         formattedCompletionDate: this.datepipe.transform(taskDate, 'MMM d, y'),
         reviewTaskDocUrl: '',
         documentURL: taskDocuments.documentUrl,
-        docUrlHtmlTag: taskDocuments.documentUrlHtmlTag
+        docUrlHtmlTag: taskDocuments.documentUrlHtmlTag,
       };
       tasks.push(obj);
     });
@@ -293,6 +319,8 @@ export class AdminViewComponent implements OnInit {
    *
    */
   filterResource() {
+    this.showAdminTable = false;
+    this.isOptionFilter = false;
     this.filterObj.selectedResource = null;
     this.filterObj.filteredResources = [];
     // tslint:disable

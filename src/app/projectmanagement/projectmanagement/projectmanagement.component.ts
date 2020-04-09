@@ -123,6 +123,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    * This method will display the add project section.
    */
   displayAddProject() {
+    this.pmService.resetAddProject();
     this.pmObject.isAddProjectVisible = true;
   }
   /**
@@ -192,9 +193,9 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    * This method is called when client legal entity value is changed.
    */
   onChangeClientLegalEntity() {
-    // if (!this.pmObject.addSOW.ClientLegalEntity) {
-    this.pmObject.addSOW.ClientLegalEntity = this.addSowForm.value.clientLegalEntity;
-    // }
+    if (this.addSowForm.value.clientLegalEntity) {
+      this.pmObject.addSOW.ClientLegalEntity = this.addSowForm.value.clientLegalEntity;
+    }
     if (this.pmObject.addSOW.ClientLegalEntity) {
       this.sowDropDown.POC = [];
       this.sowDropDown.POCOptional = [];
@@ -291,11 +292,21 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    * This method is use to set the SOW total.
    */
   setSOWTotal() {
-    this.pmObject.addSOW.Budget.Net = this.addSowForm.value.net;
+    this.pmObject.addSOW.Budget.Net = this.addSowForm.value.net ? this.addSowForm.value.net : 0;
     this.pmObject.addSOW.Budget.OOP = this.addSowForm.value.oop ? this.addSowForm.value.oop : 0;
     this.pmObject.addSOW.Budget.Tax = this.addSowForm.value.tax ? this.addSowForm.value.tax : 0;
     this.addSowForm.get('total').setValue(this.pmObject.addSOW.Budget.Net +
       this.pmObject.addSOW.Budget.OOP + this.pmObject.addSOW.Budget.Tax);
+
+    if (!this.addSowForm.value.net) {
+      this.addSowForm.get('net').setValue(0);
+    }
+    if (!this.addSowForm.value.oop) {
+      this.addSowForm.get('oop').setValue(0);
+    }
+    if (!this.addSowForm.value.tax) {
+      this.addSowForm.get('tax').setValue(0);
+    }
   }
   /***
    * This method is used to add the sow
@@ -381,11 +392,10 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
           await this.createUpdateSOW(true, this.pmObject.addSOW);
         }
       }
+      this.selectedFile = null;
     } else {
       this.validateAllFormFields(this.addSowForm);
     }
-
-    this.selectedFile = null;
   }
   /**
    * This method is used to set the field properties.
@@ -1019,6 +1029,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
           this.closeAdditonalPop();
         }, this.pmConstant.TIME_OUT);
       }
+      this.selectedFile = null;
     } else {
       this.validateAllFormFields(this.addAdditionalBudgetForm);
       if (!this.selectedFile) {
@@ -1030,7 +1041,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       }
 
     }
-    this.selectedFile = null;
+    
   }
   /**
    * This method is used to get the edit SOWObj value based on selected sow.

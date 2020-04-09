@@ -8,8 +8,7 @@
         <div id="cd-designation">{{global.currentUser.designation}}</div>
     </div>
     <a [hidden]="hideTable" (click)="downloadExcel(fb)" class="download-worksheet td-none"><i class="fa fa-download"
-            aria-hidden="true"></i>
-        Download worksheet</a>
+            aria-hidden="true"></i></a>
 </div>
 
 <p-table #fb [columns]="feedbackColumns" [value]="feedbackRows" [hidden]="hideTable">

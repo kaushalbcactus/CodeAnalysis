@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { MenuItem } from 'primeng';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MenuItem, Dialog } from 'primeng';
 import { PMObjectService } from '../../services/pmobject.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
@@ -15,6 +15,7 @@ export class AddProjectsComponent implements OnInit {
   public steps: MenuItem[];
   isMangageFinanceVisible = false;
   financeManageData;
+  @ViewChild('pfm', { static: false }) pfm: Dialog;
   constructor(
     public pmObject: PMObjectService,
     private spServices: SPOperationService,
@@ -26,6 +27,13 @@ export class AddProjectsComponent implements OnInit {
     this.setProjectSteps();
     this.projStep[0] = 0;
   }
+
+  showDialogMaximized() {
+    setTimeout(() => {
+      this.pfm.maximize();
+    }, 0);
+  }
+
   /**
    * This method is used to set up the steps for project management.
    */

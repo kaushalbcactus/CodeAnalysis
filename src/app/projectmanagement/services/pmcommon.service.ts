@@ -8,6 +8,7 @@ import { GlobalService } from 'src/app/Services/global.service';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { DataService } from 'src/app/Services/data.service';
+import { DialogService } from 'primeng';
 
 declare var $;
 @Injectable({
@@ -24,6 +25,7 @@ export class PMCommonService {
     private globalObject: GlobalService,
     public messageService: MessageService,
     private router: Router,
+    private dialogService: DialogService,
     private dataService: DataService
   ) {
   }
@@ -266,6 +268,7 @@ export class PMCommonService {
 
   async getUserProperties(): Promise<any> {
     if (this.pmObject.projectContactsItems.length === 0) {
+      this.commonService.SetNewrelic('Project-Management', 'pmcommon', 'getUserInfo');
       const userProp = await this.spServices.getUserInfo(this.globalObject.currentUser.userId);
       this.pmObject.currLoginInfo = userProp;
       if (userProp && userProp.Groups && userProp.Groups.results && userProp.Groups.results.length) {
@@ -277,6 +280,10 @@ export class PMCommonService {
               break;
             case this.constant.Groups.PROJECT_FULL_ACCESS:
               this.pmObject.userRights.isHaveProjectFullAccess = true;
+              this.pmObject.isUserAllowed = false;
+              break;
+            case this.constant.Groups.INVOICE_TEAM:
+              this.pmObject.userRights.isInvoiceTeam = true;
               this.pmObject.isUserAllowed = false;
               break;
             case this.constant.Groups.SOW_CREATION_MANAGERS:
@@ -373,31 +380,34 @@ export class PMCommonService {
           case this.pmConstant.resourCatConstant.DELIVERY_LEVEL_2:
             this.pmObject.oProjectCreation.Resources.deliveryLevel2.push(element.UserName);
             break;
-        }
-        if (element && element.Categories && element.Categories.results && element.Categories.results.length) {
-          const category = element.Categories.results;
-          if (category.indexOf(this.pmConstant.RESOURCES_CATEGORY.BUSINESS_DEVELOPMENT) > -1) {
+          case this.pmConstant.resourCatConstant.BUSINESS_DEVELOPMENT:
             this.pmObject.oProjectCreation.Resources.businessDevelopment.push(element.UserName);
-          }
-          if (category.indexOf(this.pmConstant.RESOURCES_CATEGORY.WRITER) > -1) {
-            this.pmObject.oProjectCreation.Resources.writers.push(element.UserName);
-          }
-          if (category.indexOf(this.pmConstant.RESOURCES_CATEGORY.REVIEWER) > -1) {
-            this.pmObject.oProjectCreation.Resources.reviewers.push(element.UserName);
-          }
-          if (category.indexOf(this.pmConstant.RESOURCES_CATEGORY.QUALITY_CHECK) > -1) {
-            this.pmObject.oProjectCreation.Resources.qc.push(element.UserName);
-          }
-          if (category.indexOf(this.pmConstant.RESOURCES_CATEGORY.EDITOR) > -1) {
-            this.pmObject.oProjectCreation.Resources.editors.push(element.UserName);
-          }
-          if (category.indexOf(this.pmConstant.RESOURCES_CATEGORY.GRAPHICS) > -1) {
-            this.pmObject.oProjectCreation.Resources.graphics.push(element.UserName);
-          }
-          if (category.indexOf(this.pmConstant.RESOURCES_CATEGORY.PUBLICATION_SUPPORT) > -1) {
-            this.pmObject.oProjectCreation.Resources.pubSupport.push(element.UserName);
-          }
+            break;
         }
+        // if (element && element.Categories && element.Categories.results && element.Categories.results.length) {
+        //   const category = element.Categories.results;
+        //   if (category.indexOf(this.pmConstant.RESOURCES_CATEGORY.BUSINESS_DEVELOPMENT) > -1) {
+        //     this.pmObject.oProjectCreation.Resources.businessDevelopment.push(element.UserName);
+        //   }
+        //   if (category.indexOf(this.pmConstant.RESOURCES_CATEGORY.WRITER) > -1) {
+        //     this.pmObject.oProjectCreation.Resources.writers.push(element.UserName);
+        //   }
+        //   if (category.indexOf(this.pmConstant.RESOURCES_CATEGORY.REVIEWER) > -1) {
+        //     this.pmObject.oProjectCreation.Resources.reviewers.push(element.UserName);
+        //   }
+        //   if (category.indexOf(this.pmConstant.RESOURCES_CATEGORY.QUALITY_CHECK) > -1) {
+        //     this.pmObject.oProjectCreation.Resources.qc.push(element.UserName);
+        //   }
+        //   if (category.indexOf(this.pmConstant.RESOURCES_CATEGORY.EDITOR) > -1) {
+        //     this.pmObject.oProjectCreation.Resources.editors.push(element.UserName);
+        //   }
+        //   if (category.indexOf(this.pmConstant.RESOURCES_CATEGORY.GRAPHICS) > -1) {
+        //     this.pmObject.oProjectCreation.Resources.graphics.push(element.UserName);
+        //   }
+        //   if (category.indexOf(this.pmConstant.RESOURCES_CATEGORY.PUBLICATION_SUPPORT) > -1) {
+        //     this.pmObject.oProjectCreation.Resources.pubSupport.push(element.UserName);
+        //   }
+        // }
       });
     }
   }
@@ -543,6 +553,7 @@ export class PMCommonService {
     objEmailBody.forEach(element => {
       mailBody = mailBody.replace(RegExp(element.key, 'gi'), element.value);
     });
+    this.commonService.SetNewrelic('ProjectManagement', 'pmcommon', 'SendMail');
     this.spServices.sendMail(arrayTo.join(','), this.pmObject.currLoginInfo.Email, mailSubject, mailBody,
       cc.join(','));
   }
@@ -625,7 +636,11 @@ export class PMCommonService {
       ConferenceJournal: addObj.ProjectAttributes.ConferenceJournal ? addObj.ProjectAttributes.ConferenceJournal : '',
       Comments: addObj.ProjectAttributes.Comments ? addObj.ProjectAttributes.Comments : '',
       PubSupportStatus: addObj.ProjectAttributes.PUBSupportStatus ? addObj.ProjectAttributes.PUBSupportStatus : '',
-      SOWLink: addObj.FinanceManagement.SOWFileURL ? addObj.FinanceManagement.SOWFileURL : ''
+      SOWLink: addObj.FinanceManagement.SOWFileURL ? addObj.FinanceManagement.SOWFileURL : '',
+      SlideCount: addObj.ProjectAttributes.SlideCount,
+      PageCount: addObj.ProjectAttributes.PageCount,
+      ReferenceCount: addObj.ProjectAttributes.ReferenceCount,
+      AnnotationBinder: addObj.ProjectAttributes.AnnotationBinder === true ? 'Yes' : 'No'
     };
     if (isCreate) {
       data.SOWCode = addObj.SOWSelect.SOWCode;
@@ -821,6 +836,7 @@ export class PMCommonService {
     return tempArray;
   }
   async getProjects(bPM) {
+
     let arrResults: any = [];
 
     const allProjects = localStorage.getItem('allProjects');
@@ -828,18 +844,20 @@ export class PMCommonService {
       arrResults = JSON.parse(allProjects);
       localStorage.removeItem('allProjects');
     } else {
-      if (this.pmObject.userRights.isMangers || this.pmObject.userRights.isHaveProjectFullAccess) {
+      if (this.pmObject.userRights.isMangers || this.pmObject.userRights.isHaveProjectFullAccess || this.pmObject.userRights.isInvoiceTeam) {
         const projectManageFilter = Object.assign({}, this.pmConstant.PM_QUERY.ALL_PROJECT_INFORMATION);
-        this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetProjectInfo');
+        this.commonService.SetNewrelic('projectManagment', 'PmCommon-FullAccess', 'GetProjectInfo');
         arrResults = await this.spServices.readItems(this.constant.listNames.ProjectInformation.name, projectManageFilter);
       } else {
         let projectManageFilter: any;
         if (bPM) {
           projectManageFilter = Object.assign({}, this.pmConstant.PM_QUERY.USER_SPECIFIC_PROJECT_INFORMATION);
+          projectManageFilter.filter = projectManageFilter.filter.replace('{{UserID}}', this.globalObject.currentUser.userId.toString());
         } else {
           projectManageFilter = Object.assign({}, this.pmConstant.PM_QUERY.USER_SPECIFIC_PROJECT_INFORMATION_MY);
+          projectManageFilter.filter = projectManageFilter.filter.replace(/{{UserID}}/gi, this.globalObject.currentUser.userId.toString());
         }
-
+        this.commonService.SetNewrelic('projectManagment', 'PmCommon-getProjects', 'readItems');
         arrResults = await this.spServices.readItems(this.constant.listNames.ProjectInformation.name, projectManageFilter);
       }
     }
@@ -875,6 +893,10 @@ export class PMCommonService {
     this.pmObject.addProject.ProjectAttributes.ConferenceJournal = '';
     this.pmObject.addProject.ProjectAttributes.Authors = '';
     this.pmObject.addProject.ProjectAttributes.Comments = '';
+    this.pmObject.addProject.ProjectAttributes.SlideCount = 0;
+    this.pmObject.addProject.ProjectAttributes.ReferenceCount = 0;
+    this.pmObject.addProject.ProjectAttributes.PageCount = 0;
+    this.pmObject.addProject.ProjectAttributes.AnnotationBinder = false;
     this.pmObject.addProject.Timeline.Standard.IsStandard = false;
     this.pmObject.addProject.Timeline.Standard.Service = {};
     this.pmObject.addProject.Timeline.Standard.Resource = {};
@@ -903,7 +925,9 @@ export class PMCommonService {
     this.pmObject.addProject.FinanceManagement.ClientLegalEntity = '';
     this.pmObject.addProject.FinanceManagement.selectedFile = '';
     this.pmObject.addProject.FinanceManagement.isBudgetRateAdded = false;
+    this.pmObject.addProject.FinanceManagement.POArray = [];
     this.pmObject.addProject.SOWSelect.GlobalFilterValue = '';
+
   }
   async setBilledBy() {
     // this.pmObject.billedBy = [
@@ -925,6 +949,8 @@ export class PMCommonService {
       this.pmObject.billedBy = tempResult;
     }
   }
+  
+
   async validateAndSave() {
     this.pmObject.isMainLoaderHidden = false;
     const newProjectCode = await this.verifyAndUpdateProjectCode();
@@ -951,8 +977,8 @@ export class PMCommonService {
     const codeValue = codeSplit[2];
     const year = codeValue.substring(0, 2);
     const oCurrentDate = new Date();
-    let sYear = oCurrentDate.getFullYear();
-    sYear = oCurrentDate.getMonth() > 2 ? sYear + 1 : sYear;
+    const sYear = oCurrentDate.getFullYear();
+    // sYear = oCurrentDate.getMonth() > 2 ? sYear + 1 : sYear;
     const contentFilter = Object.assign({}, this.pmConstant.TIMELINE_QUERY.PROJECT_PER_YEAR);
     // tslint:disable-next-line:max-line-length
     contentFilter.filter = contentFilter.filter.replace(/{{Id}}/gi, sYear.toString());
@@ -1026,7 +1052,17 @@ export class PMCommonService {
     projectCreate.listName = this.constant.listNames.ProjectInformation.name;
     batchURL.push(projectCreate);
     counter += 1;
-    // Add data to ProjectFinances call ##17
+
+     // Add data to ProjectScope call ##17
+     const projectScopeData = this.getProjectScopeData(projectInformationData);
+     const projectScopeCreate = Object.assign({}, options);
+     projectScopeCreate.url = this.spServices.getReadURL(this.constant.listNames.ProjectScope.name, null);
+     projectScopeCreate.data = projectScopeData;
+     projectScopeCreate.type = 'POST';
+     projectScopeCreate.listName = this.constant.listNames.ProjectScope.name;
+     batchURL.push(projectScopeCreate);
+     counter += 1;
+    // Add data to ProjectFinances call ##18
     const projectFinanceData = this.getProjectFinancesData();
     const projectFinanceCreate = Object.assign({}, options);
     projectFinanceCreate.url = this.spServices.getReadURL(this.constant.listNames.ProjectFinances.name, null);
@@ -1035,7 +1071,7 @@ export class PMCommonService {
     projectFinanceCreate.listName = this.constant.listNames.ProjectFinances.name;
     batchURL.push(projectFinanceCreate);
     counter += 1;
-    // Add data to projectFinanceBreakup call ##18
+    // Add data to projectFinanceBreakup call ##19
     const projectFinanceBreakArray = this.getProjectFinanceBreakupData();
     projectFinanceBreakArray.forEach(element => {
       const projectFinanceBreakupCreate = Object.assign({}, options);
@@ -1048,7 +1084,7 @@ export class PMCommonService {
     });
     if (this.pmObject.addProject.ProjectAttributes.BilledBy === this.pmConstant.PROJECT_TYPE.DELIVERABLE.value ||
       this.pmObject.addProject.ProjectAttributes.BilledBy === this.pmConstant.PROJECT_TYPE.FTE.value) {
-      //  Add data to  InvoiceLineItem call ## 19
+      //  Add data to  InvoiceLineItem call ## 20
       const invoiceLineItemArray = this.getInvoiceLineItemData();
       invoiceLineItemArray.forEach(element => {
         const createForderObj: any = Object.assign({}, options);
@@ -1059,7 +1095,7 @@ export class PMCommonService {
         batchURL.push(createForderObj);
         counter += 1;
       });
-      // Add data to  SOWItem call ## 20
+      // Add data to  SOWItem call ## 21
       const sowItemData = this.getSowItemData(projectFinanceData);
       const selectSOWItem: any = this.pmObject.addProject.SOWSelect.SOWSelectedItem;
       const sowItemCreate = Object.assign({}, options);
@@ -1069,7 +1105,7 @@ export class PMCommonService {
       sowItemCreate.listName = this.constant.listNames.SOW.name;
       batchURL.push(sowItemCreate);
       counter += 1;
-      // Add data to POItem call ## 21
+      // Add data to POItem call ## 22
       const poItemArray = this.getPoItemData(projectFinanceBreakArray);
       poItemArray.forEach(element => {
         const poItemCreate = Object.assign({}, options);
@@ -1110,7 +1146,7 @@ export class PMCommonService {
       listName + '/' + projectCode + '/Communications',
       listName + '/' + projectCode + '/Drafts',
       listName + '/' + projectCode + '/Emails',
-      listName + '/' + projectCode + '/Graphics',
+  //    listName + '/' + projectCode + '/Graphics',
       listName + '/' + projectCode + '/Miscellaneous',
       listName + '/' + projectCode + '/Publication Support',
       listName + '/' + projectCode + '/References',
@@ -1122,6 +1158,22 @@ export class PMCommonService {
       listName + '/' + projectCode + '/Publication Support/Published Papers'
     ];
     return arrFolders;
+  }
+
+
+  /**
+   * This function is used to set the projectScope object
+   */
+  getProjectScopeData(ProjectInfo){
+
+    const data: any = {
+      __metadata: { type: this.constant.listNames.ProjectScope.type },
+      Title: ProjectInfo.ProjectCode,
+      ProjectFolder: ProjectInfo.ProjectFolder,
+      
+    };
+   
+    return data;
   }
   /**
    * This function is used to set the projectfinanaces object
@@ -1368,7 +1420,7 @@ export class PMCommonService {
           // create the milestone folder.
           const milestoneFolderBody = {
             __metadata: { type: 'SP.Folder' },
-            ServerRelativeUrl: response[11].listName + '/' + milestoneObj.data.Name
+            ServerRelativeUrl: response[10].listName + '/' + milestoneObj.data.Name
           };
           const createForderObj = Object.assign({}, options);
           createForderObj.data = milestoneFolderBody;
@@ -1560,7 +1612,7 @@ export class PMCommonService {
       // create the milestone folder.
       const milestoneFolderBody = {
         __metadata: { type: 'SP.Folder' },
-        ServerRelativeUrl: response[11].listName + '/' + element.monthName
+        ServerRelativeUrl: response[10].listName + '/' + element.monthName
       };
       const createForderObj = Object.assign({}, options);
       createForderObj.data = milestoneFolderBody;
@@ -1696,7 +1748,6 @@ export class PMCommonService {
       FileSystemObjectType: 1,
       ContentTypeId: '0x0120',
       SubMilestones: milestoneObj.strSubMilestone,
-      TaskPosition: '' + (milestoneObj.SwimlaneCount)
     };
     return data;
   }
@@ -1719,7 +1770,7 @@ export class PMCommonService {
       ExpectedTime: '' + milestoneTask.Hours,
       TimeZone: '' + milestoneTask.assignedUserTimeZone,
       AllowCompletion: 'No',
-      TATStatus: milestoneTask.UseTaskDays,
+      TATStatus: milestoneTask.Task === 'Client Review' ? 'No' : milestoneTask.UseTaskDays,
       TATBusinessDays: milestoneTask.TaskDays,
       Status: this.constant.STATUS.NOT_CONFIRMED,
       SubMilestones: milestoneTask.SubMilestone,
@@ -1793,11 +1844,7 @@ export class PMCommonService {
     } else {
       data.IsCentrallyAllocated = 'No';
     }
-    if (milestoneTask.Task === this.pmConstant.task.CLIENT_REVIEW) {
-      data.TaskPosition = (milestoneObj.data.SwimlaneCount - 1) + ';#1';
-    } else {
-      data.TaskPosition = milestoneTask.TaskPosition;
-    }
+
     return data;
   }
   /**
@@ -1920,4 +1967,80 @@ export class PMCommonService {
     }
     return months;
   }
+
+
+  async getEmailTemplate(TemplateName) {
+    this.commonService.SetNewrelic('ProjectManagement', 'PmCommon', 'GetEmailTemplate');
+    this.pmConstant.SOW_QUERY.CONTENT_QUERY.filter = this.pmConstant.SOW_QUERY.CONTENT_QUERY.filter.replace(/{{templateName}}/gi, TemplateName);
+    const templateData = await this.spServices.readItems(this.constant.listNames.MailContent.name,
+      this.pmConstant.SOW_QUERY.CONTENT_QUERY);
+    return templateData.length > 0 ? templateData[0] : [];
+  }
+
+
+  // SendEmail(){
+  //   var EmailTemplate = this.Emailtemplate.Content;
+  //   var objEmailBody = [];
+
+  //   objEmailBody.push({
+  //     "key": "@@Val1@@",
+  //     "value": task.ProjectCode
+  //   });
+  //   objEmailBody.push({
+  //     "key": "@@Val2@@",
+  //     "value": element.SubMilestones ? element.SubMilestones !== "Default" ? element.Title + " - " +
+  //       element.SubMilestones : element.Title : element.Title
+  //   });
+  //   objEmailBody.push({
+  //     "key": "@@Val3@@",
+  //     "value": element.AssignedTo.Title
+  //   });
+  //   objEmailBody.push({
+  //     "key": "@@Val4@@",
+  //     "value": element.Task
+  //   });
+  //   objEmailBody.push({
+  //     "key": "@@Val5@@",
+  //     "value": element.Milestone
+  //   });
+  //   objEmailBody.push({
+  //     "key": "@@Val6@@",
+  //     "value": element.StartDate
+  //   });
+  //   objEmailBody.push({
+  //     "key": "@@Val7@@",
+  //     "value": element.DueDate
+  //   });
+  //   objEmailBody.push({
+  //     "key": "@@Val8@@",
+  //     "value": task.TaskComments ? task.TaskComments : ''
+  //   });
+  //   objEmailBody.push({
+  //     "key": "@@Val0@@",
+  //     "value": element.ID
+  //   });
+
+  //   objEmailBody.forEach(obj => {
+  //     EmailTemplate = EmailTemplate.replace(RegExp(obj.key, 'gi'), obj.value);
+  //   });
+
+  //   EmailTemplate = EmailTemplate.replace(RegExp("'", 'gi'), '');
+  //   EmailTemplate = EmailTemplate.replace(/\\/g, '\\\\');
+  //   mailSubject = mailSubject.replace(RegExp("'", 'gi'), '');
+  //   const sendEmailObj = {
+  //     __metadata: { type: this.constants.listNames.SendEmail.type },
+  //     Title: mailSubject,
+  //     MailBody: EmailTemplate,
+  //     Subject: mailSubject,
+  //     ToEmailId: element.AssignedTo.EMail,
+  //     FromEmailId: this.sharedObject.currentUser.email,
+  //     CCEmailId: this.sharedObject.currentUser.email
+  //   };
+  //   const createSendEmailObj = Object.assign({}, this.queryConfig);
+  //   createSendEmailObj.url = this.spServices.getReadURL(this.constants.listNames.SendEmail.name, null);
+  //   createSendEmailObj.data = sendEmailObj;
+  //   createSendEmailObj.type = 'POST';
+  //   createSendEmailObj.listName = this.constants.listNames.SendEmail.name;
+  //   batchUrl.push(createSendEmailObj);
+  // }
 }

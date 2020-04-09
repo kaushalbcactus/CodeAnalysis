@@ -11,6 +11,9 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { Router } from '@angular/router';
 import { PMCommonService } from '../../services/pmcommon.service';
 import { Table } from 'primeng/table';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { GlobalService } from 'src/app/Services/global.service';
 
 declare var $;
 @Component({
@@ -123,24 +126,27 @@ export class SOWComponent implements OnInit, OnDestroy {
   sowViewDataArray = [];
   subscription;
   showProjectLink = false;
-  @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
+  @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
   @ViewChild('allProjectRef', { static: true }) allProjectRef: Table;
   step: number;
   ProjectArray = [];
   totalRevenueBudget = 0;
   totalOOPBudget = 0;
   loaderenable = false;
+  private _destroy$ = new Subject();
+
   constructor(
     public pmObject: PMObjectService,
     private datePipe: DatePipe,
     private commonService: CommonService,
-    private pmConstant: PmconstantService,
+    public pmConstant: PmconstantService,
     private dataService: DataService,
     public dialogService: DialogService,
     private spServices: SPOperationService,
     private constants: ConstantsService,
     private router: Router,
     public pmCommonService: PMCommonService,
+    private globalObject: GlobalService,
     private cdr: ChangeDetectorRef,
     private platformLocation: PlatformLocation,
     private locationStrategy: LocationStrategy,
@@ -208,8 +214,9 @@ export class SOWComponent implements OnInit, OnDestroy {
         command: (task) => this.timeline.showTimeline(this.pmObject.selectedSOWTask.ID, 'ProjectMgmt', 'SOW')
       }
     ];
-    this.subscription = this.dataService.on('reload-EditSOW').subscribe(() => this.loadSOWInit());
+    this.subscription = this.dataService.on('reload-EditSOW').pipe(takeUntil(this._destroy$)).subscribe(() => this.loadSOWInit());
   }
+
   ngOnDestroy() {
     this.subscription.unsubscribe();
   }
@@ -287,6 +294,7 @@ export class SOWComponent implements OnInit, OnDestroy {
       arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
     } else {
       const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.USER_SPECIFIC_SOW);
+      sowFilter.filter = sowFilter.filter.replace('{{UserID}}', this.globalObject.currentUser.userId.toString());
       this.commonService.SetNewrelic('projectManagment', 'sow', 'GetSow');
       arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
     }

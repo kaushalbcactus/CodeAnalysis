@@ -194,7 +194,7 @@ export class TaskAllocationComponent implements OnInit {
     const checkAccessCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.checkAccess);
     checkAccessCall.filter = checkAccessCall.filter.replace(/{{code}}/gi, code);
     this.commonService.SetNewrelic('TaskAllocation', 'task-allocation', 'checkIfAccessAllowedToUser');
-    const project = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name,  checkAccessCall);
+    const project = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, checkAccessCall);
     let arrayOperationResources;
     if (project.length > 0) {
       arrayOperationResources = project[0].AllOperationresources.results != null ? project[0].AllOperationresources.results : '';

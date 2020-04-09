@@ -47,7 +47,8 @@ testem.log
 Thumbs.db
 New folder/package.json
 New folder/package-lock.json
-
+*.package-lock.json
 #App ignore
 # git rm --cached  src/app/app.component.ts
 /src/app/app.component.ts
+src/app/app.component.ts

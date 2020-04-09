@@ -200,6 +200,7 @@ export class UserRoleMappingComponent implements OnInit {
    *
    */
   async highlightGroups(userId) {
+    this.common.SetNewrelic('Admin', 'entitlement-user-role-mapping', 'getUserInfo');
     this.userInfo = await this.spServices.getUserInfo(userId);
     this.userExistGroupArray = [];
     if (this.userInfo && this.userInfo.hasOwnProperty('Groups')) {

@@ -212,6 +212,7 @@ export class TaskDetailsDialogComponent implements OnInit {
 
   downloadFile() {
     if (this.selectedDocuments.length > 0) {
+      this.commonService.SetNewrelic('task-allocation', 'downloadFile', 'createZip');
       this.spServices.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), this.currentTask.Title);
     } else {
       this.messageService.add({

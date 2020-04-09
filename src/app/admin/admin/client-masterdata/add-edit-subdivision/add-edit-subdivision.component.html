@@ -1,0 +1,55 @@
+<div fxLayout="column" style="padding: 12vw;" fxLayoutAlign="center center" [hidden]="!modalloaderenable">
+    <div id="modalInnerLoader"></div>
+    <div id="modalInnerLoaderText">Loading...</div>
+</div>
+
+<div class='UserButton' fxLayout="row" fxLayoutAlign="end center" [hidden]="modalloaderenable">
+
+    <button pButton label="{{buttonLabel}}" type="button" icon="pi pi-save" id="saveClient" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="saveSubdivision()"></button>
+    <button type="button" pButton icon="pi pi-times" (click)="cancel();" label="Cancel" class="ui-button-secondary" style="background-color:ghostwhite;"></button>
+</div>
+
+<div fxLayout="row" *ngIf="!modalloaderenable" #scrollDown fxLayoutAlign="space-between start" fxLayoutGap="5px">
+    <form [formGroup]='subDivisionform' class="p-col">
+
+        <div class="p-grid">
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>Sub-Division Name</div>
+                <div class="p-col-8">
+                    <input type="text" style="width: 100%;" formControlName="subDivision_Name" placeholder="Sub-Division Name" pInputText>
+                    <div class="error" *ngIf="isSubDivisionFormSubmit && subDivisionform.controls.subDivision_Name.errors">
+                        <div *ngIf="subDivisionform.controls.subDivision_Name.errors.required">
+                            Sub-Division Name is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-grid p-col">
+                <div class="p-col-4">Distribution List</div>
+                <div class="p-col-8">
+                    <input type="text" style="width: 100%;" formControlName="distributionList" placeholder="Distribution List" (focusout)="validateEmailId()" pInputText>
+                    <div class="error" *ngIf="isSubDivisionFormSubmit && subDivisionform.controls.distributionList.errors">
+                        <div *ngIf="subDivisionform.controls.distributionList.errors.email">Distribution List must be a valid email address</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-grid">
+            <div class="p-grid p-col">
+                <div class="p-col-4">Delivery Level 1</div>
+                <div class="p-col-8">
+                    <p-multiSelect [style]="{'width':'100%'}" [options]="adminObject.dropdown.DeliveryLevel1Array" defaultLabel="Select Delivery Level 1" formControlName="deliveryLevel1" (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true"
+                        (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                </div>
+            </div>
+            <div class="p-grid p-col">
+                <div class="p-col-4">CM Level 1</div>
+                <div class="p-col-8">
+                    <p-multiSelect [style]="{'width':'100%'}" [options]="adminObject.dropdown.CMLevel1Array" defaultLabel="Select CM Level 1" formControlName="cmLevel1" (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true"
+                        (onPanelShow)="isOptionFilter=true;">
+                    </p-multiSelect>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

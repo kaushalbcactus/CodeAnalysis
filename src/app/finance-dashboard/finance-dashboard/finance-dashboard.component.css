@@ -79,7 +79,7 @@ body .ui-multiselect-panel .ui-multiselect-items .ui-multiselect-item.ui-state-h
     border: 1px solid #c53e3e !important;
 }
 
-body .ui-button {
+.fdBtn {
     background-color: #c53e3e !important;
     border: 1px solid #C53E3D !important;
 }
@@ -91,8 +91,17 @@ body .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active {
     color: #ffffff !important;
 }
 
-span.ui-button-text.ui-clickable {
+.fdBtn>span.ui-button-text.ui-clickable {
     color: #fff;
+}
+
+body .ui-button.ui-state-default.ui-button-secondary:enabled:focus, body .ui-buttonset.ui-button-secondary > .ui-button.ui-state-default:enabled:focus {
+    box-shadow: 0 0 0 0.2em #8dcdff;
+}
+
+.pCalendarBtn .ui-button{
+    background-color: #c53e3e !important;
+    border: 1px solid #C53E3D !important;
 }
 
 body .ui-table .ui-sortable-column.ui-state-highlight {

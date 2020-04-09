@@ -25,6 +25,14 @@ import { RulesComponent } from './admin/rules/rules.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { GroupDescriptionComponent } from './admin/entitlement/group-description/group-description.component';
 import { SharedModule } from '../shared/shared.module';
+import { AddEditUserProfileComponent } from './admin/user-profile/add-edit-user-profile/add-edit-user-profile.component';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { AddEditClientlegalentityDialogComponent } from './admin/client-masterdata/add-edit-clientlegalentity-dialog/add-edit-clientlegalentity-dialog.component';
+import { AddEditSubdivisionComponent } from './admin/client-masterdata/add-edit-subdivision/add-edit-subdivision.component';
+import { AddEditPocComponent } from './admin/client-masterdata/add-edit-poc/add-edit-poc.component';
+import { AddEditPoDialogComponent } from './admin/client-masterdata/add-edit-po-dialog/add-edit-po-dialog.component';
+import { ChangeBudgetDialogComponent } from './admin/client-masterdata/change-budget-dialog/change-budget-dialog.component';
+import { CustomMaterialModule } from '../shared/material.module';
 
 @NgModule({
   declarations: [
@@ -45,14 +53,24 @@ import { SharedModule } from '../shared/shared.module';
     CopyPermissionComponent,
     AddUserToSowComponent,
     AddUserToProjectsComponent,
-    GroupDescriptionComponent],
+    GroupDescriptionComponent,
+    AddEditUserProfileComponent,
+    AddEditClientlegalentityDialogComponent,
+    AddEditSubdivisionComponent,
+    AddEditPocComponent,
+    AddEditPoDialogComponent,
+    ChangeBudgetDialogComponent],
   imports: [
     SharedModule,
     AdminRoutingModule,
     PrimengModule,
     NgbModule,
+    FlexLayoutModule,
+    CustomMaterialModule
   ],
   providers: [
-  ]
+  ],
+  entryComponents : [AddEditUserProfileComponent, AddEditClientlegalentityDialogComponent,AddEditSubdivisionComponent, AddEditPocComponent,AddEditPoDialogComponent,ChangeBudgetDialogComponent]
+
 })
 export class AdminModule { }

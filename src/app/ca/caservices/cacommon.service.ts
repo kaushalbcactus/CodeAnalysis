@@ -291,6 +291,7 @@ export class CACommonService {
     const Project = Object.assign({}, this.caConstantService.projectQueryOptions);
     Project.filterByCode = Project.filterByCode.replace(/{{projectCode}}/gi, projectCode);
     Project.filter = Project.filterByCode;
+    this.commonService.SetNewrelic('CA', 'cacommon-getProjectDetailsByCode', 'readItems');
     const arrResults = await this.spServices.readItems(this.globalConstantService.listNames.ProjectInformation.name, Project);
     // const projectEndPoint = this.spServices.getReadURL('' + projectInformationList + '', Project);
     // this.spServices.getBatchBodyGet(batchContents, batchGuid, projectEndPoint);
@@ -581,10 +582,10 @@ export class CACommonService {
    * @param localSchedulItemFetch 
    * @param items 
    */
-  async getScheduleItems(localSchedulItemFetch, items) {
-    const arrMilestoneTasks = await this.getMilestoneSchedules(this.globalConstantService.listNames.Schedules.name, localSchedulItemFetch);
+  async getScheduleItems(items, arrMilestoneTasks) {
+    // const arrMilestoneTasks = await this.getMilestoneSchedules(this.globalConstantService.listNames.Schedules.name, localSchedulItemFetch);
     for (const task of items) {
-      this.getMiscDates(task, arrMilestoneTasks);
+      await this.getMiscDates(task, arrMilestoneTasks);
     }
   }
 
@@ -699,35 +700,26 @@ export class CACommonService {
    * @param task 
    * @param arrMilestoneTasks 
    */
-  getMiscDates(task, arrMilestoneTasks) {
+  async getMiscDates(task, arrMilestoneTasks) {
 
     task.ProjectTask = arrMilestoneTasks;
-    task.MilestoneAllTasks = [];
+    // task.MilestoneAllTasks = [];
     const oReturnedProjectMil = arrMilestoneTasks.filter(function (milTask) { return (milTask.projectCode === task.ProjectCode && milTask.milestone === task.Milestone) });
     if (oReturnedProjectMil && oReturnedProjectMil.length) {
       const milTasks = oReturnedProjectMil[0].MilestoneTasks;
       task.MilestoneTasks = milTasks;
       task.mileStoneTask = milTasks;
       const nextTasks = [];
-      milTasks.forEach(milTask => {
+
+      for(let i=0; i< milTasks.length ; i++)
+      {
         let taskArr = [];
-
-        taskArr = milTask.PrevTasks ? milTask.PrevTasks.split(";#") : [];
+        taskArr = milTasks[i].PrevTasks ? milTasks[i].PrevTasks.split(";#") : [];
         if (taskArr.indexOf(task.Title) > -1) {
-          nextTasks.push(milTask);
+          nextTasks.push(milTasks[i]);
         }
-        const TaskType = milTask.Task;
-        const TaskName = $.trim(milTask.Title.replace(milTask.ProjectCode + '', '').replace(milTask.Milestone + '', ''));
-
-          if (task.MilestoneAllTasks.length > 0 && task.MilestoneAllTasks.find(c => c.type === TaskType && c.milestone === milTask.Milestone)) {
-            task.MilestoneAllTasks.find(c => c.type === TaskType).tasks.push(TaskName);
-          }
-          else {
-            task.MilestoneAllTasks.push({ type: TaskType, milestone: milTask.Milestone, tasks: [TaskName] });
-          }
-        
-
-      });
+      }
+     
       if (nextTasks.length) {
         nextTasks.sort(function (a, b) {
           return a.StartDate - b.StartDate;
@@ -897,6 +889,7 @@ export class CACommonService {
     const projectObj = Object.assign({}, this.caConstantService.projectQueryOptions);
     projectObj.filterByCode = projectObj.filterByCode.replace(/{{projectCode}}/gi, task.projectCode);
     projectObj.filter = projectObj.filterByCode;
+    this.commonService.SetNewrelic('CA', 'cacommon-ResourceAllocation', 'readItems');
     const arrResults = await this.spServices.readItems(this.globalConstantService.listNames.ProjectInformation.name, projectObj);
     const project = arrResults.length > 0 ? arrResults[0] : {}
     // const project = await this.getProjectDetailsByCode(projectInformationList, task.projectCode);
@@ -975,6 +968,7 @@ export class CACommonService {
     const projectObj = Object.assign({}, this.caConstantService.projectQueryOptions);
     projectObj.filterByCode = projectObj.filterByCode.replace(/{{projectCode}}/gi, task.projectCode);
     projectObj.filter = projectObj.filterByCode;
+    this.commonService.SetNewrelic('CA', 'cacommon-ResourceAllocation', 'readItems');
     const arrResults = await this.spServices.readItems(this.globalConstantService.listNames.ProjectInformation.name, projectObj);
     const project = arrResults.length > 0 ? arrResults[0] : {}
     // const project = await this.getProjectDetailsByCode(projectInformationList, task.projectCode);

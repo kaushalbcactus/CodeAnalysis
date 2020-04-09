@@ -1,4 +1,14 @@
 <!--**************************************************************************************************
+//  loader for event fetch
+************************************************************************************************** -->
+
+<div *ngIf="CalendarLoader">
+    <div id="CalendarInnerLoader"></div>
+    <div id="CalendarInnerLoaderText">Loading...</div>
+</div>
+
+
+<!--**************************************************************************************************
 //  Plus icon to add booking
 ************************************************************************************************** -->
 
@@ -73,14 +83,6 @@
 
     <p-dropdown [style]="{'min-width':'10.5em'}" appendTo="body" [options]="taskTypes" (onChange)="onTaskTypeChange()" [(ngModel)]="selectedType" optionLabel="name"></p-dropdown>
     <div #apeendMenuTest> </div>
-</div>
-<!--**************************************************************************************************
-//  loader for event fetch
-************************************************************************************************** -->
-
-<div *ngIf="CalendarLoader">
-    <div id="CalendarInnerLoader"></div>
-    <div id="CalendarInnerLoaderText">Loading...</div>
 </div>
 
 <!--**************************************************************************************************
@@ -178,8 +180,12 @@
                         <tr>
                             <th>Project Name:</th>
                             <td>{{task.ProjectName}}</td>
-                            <th>Assigned To:</th>
-                            <td>{{task.AssignedTo.Title}}</td>
+                            <th rowspan="2">Assigned To:</th>
+                            <td rowspan="2">{{task.AssignedTo.Title}}</td>
+                        </tr>
+                        <tr>
+                            <th>Project Scope:</th>
+                            <td><a style="cursor: pointer;color: #b11e1e;" (click)="goToProjectScope(task)"> {{task.ProjectCode}}_Scope.docx </a> </td>
                         </tr>
                         <tr>
                             <th>Start Date:</th>

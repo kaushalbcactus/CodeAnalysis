@@ -6,6 +6,7 @@ import { ConstantsService } from './constants.service';
 import { PmconstantService } from '../projectmanagement/services/pmconstant.service';
 import { PMObjectService } from '../projectmanagement/services/pmobject.service';
 import { DatePipe } from '@angular/common';
+import { Table } from 'primeng';
 declare var $;
 
 declare const newrelic;
@@ -24,12 +25,14 @@ export class CommonService {
     };
     batchContents = new Array();
     public sharedTaskAllocateObj = this.sharedObject.oTaskAllocation;
+    public tableObj: any;
     constructor(private pmObject: PMObjectService,
         private spServices: SPOperationService,
         private constants: ConstantsService,
         private pmConstant: PmconstantService, public sharedObject: GlobalService,
         public taskAllocationService: TaskAllocationConstantsService,
         private datePipe: DatePipe,
+        public common: CommonService
     ) { }
 
     tableToExcel = (function () {
@@ -404,6 +407,7 @@ export class CommonService {
     }
     async getTaskDocument(folderUrl, documentUrl) {
         let completeFolderRelativeUrl = folderUrl + documentUrl;
+        this.SetNewrelic('Services', 'Common-getTaskDocuments', 'readFiles');
         let documents = await this.spServices.readFiles(completeFolderRelativeUrl);
         if (documents.length) {
             documents = documents.sort(function (a, b) {
@@ -431,7 +435,24 @@ export class CommonService {
         }
         return sReturn;
     }
+
+    getResourceId(arr) {
+        let sReturn = {};
+        let arrItem = [];
+        if (arr) {
+            $.each(arr, function (index, value1) {
+                sReturn = {
+                    Id: value1.Id,
+                    Title: value1.Title
+                }
+                arrItem.push(sReturn);
+            });
+        }
+        return arrItem;
+    }
+
     async checkTaskStatus(task) {
+        this.SetNewrelic('Service', 'Common-Service', 'readItem');
         const currentTask = await this.spServices.readItem(this.constants.listNames.Schedules.name, task.ID);
         let isActionRequired: boolean;
         if (currentTask) {
@@ -443,6 +464,7 @@ export class CommonService {
         }
         return isActionRequired;
     }
+
     setIframeHeight() {
         setTimeout(() => {
             const height = $('.custom-table-container').height();
@@ -476,8 +498,6 @@ export class CommonService {
         iDateDiff -= iAdjust;                            // take into account both days on weekend
         return (iDateDiff + 1);                         // add 1 because dates are inclusive
     }
-
-
 
     addHrsMins(arrayTotalTimeSpent): string {
         let totalTime = '';
@@ -547,8 +567,6 @@ export class CommonService {
         return currentsystemOffset;
     }
 
-
-
     ajax_checkIfCurrentUserInArray(array, currentUserID) {
         let item = '';
         if (array.length > 0) {
@@ -558,8 +576,6 @@ export class CommonService {
         }
         return item;
     }
-
-
 
     convertToHrsMins(hours) {
         if (hours != null) {
@@ -627,10 +643,6 @@ export class CommonService {
 
     async getProjectResources(projectCode, bFirstCall, bSaveRes) {
 
-
-        // this.batchContents = new Array();
-        // const batchGuid = this.spServices.generateUUID();
-        // let projectResource = '';
         const batchUrl = [];
 
         // ***********************************************************************************************************************************
@@ -718,9 +730,6 @@ export class CommonService {
                     this.batchContents = new Array();
                     let clCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.ClientLegal);
                     clCall.filter = clCall.filter.replace(/{{ProjectDetailsaccount}}/gi, this.sharedTaskAllocateObj.oProjectDetails.account);
-                    // const clientLegalurl = this.spServices.getReadURL('' + this.constants.listNames.ClientLegalEntity.name + '', clCall);
-                    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, clientLegalurl);
-                    // var Data = await this.spServices.getDataByApi(batchGuid, this.batchContents);
                     const data = await this.spServices.readItems(this.constants.listNames.ClientLegalEntity.name, clCall);
                     if (data.length > 0) {
                         this.sharedTaskAllocateObj.oLegalEntity = data;
@@ -812,7 +821,6 @@ export class CommonService {
         return sortedDates;
     }
 
-    public tableObj: any;
     // Filter multiselct option
     updateOptionValues(obj) {
         this.tableObj = obj;
@@ -854,7 +862,6 @@ export class CommonService {
                 tempArr.push({ label: element, value: element });
             }
         }
-        // console.log(tempArr);
         this.tableObj.colFields[colName] = [...tempArr];
     }
 
@@ -869,12 +876,47 @@ export class CommonService {
     }
 
 
-    SetNewrelic(moduleType,routeType,value) {
+    SetNewrelic(moduleType, routeType, value) {
         if (typeof newrelic === 'object') {
             newrelic.setCustomAttribute('spModuleType', moduleType);
             newrelic.setCustomAttribute('spRouteType', routeType);
             newrelic.setCustomAttribute('spCallType', value);
         }
+    }
+
+    async goToProjectScope(task, Status) {
+        let response = '';
+        if (Status === 'Closed' || Status === 'Cancelled') {
+            const res = await this.spServices.checkFileExist(task.ProjectFolder + '/Miscellaneous/' + task.ProjectCode + '_scope.docx')
+            if (res.hasOwnProperty('status')) {
+                if (res.status === 404) {
+                    response = "No Document Found."
+                }
+                else {
+                    response = task.ProjectFolder + '/Miscellaneous/' + task.ProjectCode + '_scope.docx', '_blank';
+                }
+            }
+        }
+        else {
+            response = task.ProjectFolder + '/Miscellaneous/' + task.ProjectCode + '_scope.docx?web=1', '_blank';
+        }
+        return response;
+    }
+
+    CalculateminstartDateValue(date, days) {
+        let tempminDateValue = null;
+        const dayCount = days;
+        let tempDate = new Date(date);
+        while (days > 0) {
+            tempDate = new Date(tempDate.setDate(tempDate.getDate() - 1));
+            if (tempDate.getDay() !== 6 && tempDate.getDay() !== 0) {
+                days -= 1;
+                if (dayCount - 3 <= days) {
+                    tempminDateValue = tempDate;
+                }
+            }
+        }
+        return tempminDateValue;
     }
 
 

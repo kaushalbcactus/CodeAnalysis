@@ -20,13 +20,13 @@ import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/time
 })
 export class SearchProjectsComponent implements OnInit, OnDestroy {
 
-  @ViewChild(ProjectDraftsComponent, { static: true })
+  @ViewChild(ProjectDraftsComponent, { static: false })
   projectDraftsComponent: ProjectDraftsComponent;
 
-  @ViewChild(TimelineComponent, { static: true })
+  @ViewChild(TimelineComponent, { static: false })
   timelineComponent: TimelineComponent;
 
-  @ViewChild(ViewUploadDocumentDialogComponent, { static: true })
+  @ViewChild(ViewUploadDocumentDialogComponent, { static: false })
   viewUploadDocumentDialogComponent: ViewUploadDocumentDialogComponent;
 
   @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
@@ -137,7 +137,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     ];
   }
 
-  
+
   // *************************************************************************************************************************************
   // hide popup menu on production
   // *************************************************************************************************************************************
@@ -490,6 +490,22 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
   }
 
+
+  // **************************************************************************************************
+  //   This function is used to open or download project scope 
+  // **************************************************************************************************
+  async goToProjectScope(project) {
+    const response = await this.commonService.goToProjectScope(project, project.Status);
+    if (response === 'No Document Found.') {
+      this.messageService.add({
+        key: 'custom', severity: 'error', summary: 'Error Message',
+        detail: project.ProjectCode + ' - Project Scope not found.'
+      });
+    }
+    else {
+      window.open(response);
+    }
+  }
 
 }
 

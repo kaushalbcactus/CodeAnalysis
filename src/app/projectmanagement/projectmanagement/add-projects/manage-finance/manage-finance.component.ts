@@ -151,6 +151,9 @@ export class ManageFinanceComponent implements OnInit {
   tagExistingInvSection = false;
   updateInvoices = [];
   hideRemoveButton = false;
+  disableAddBudget = false;
+  @Output() maximizeDialog = new EventEmitter<any>();
+
   constructor(
     private frmbuilder: FormBuilder,
     public pmObject: PMObjectService,
@@ -176,7 +179,8 @@ export class ManageFinanceComponent implements OnInit {
   ngOnInit() {
     this.reInitializePopup();
   }
-  reInitializePopup() {
+
+  async reInitializePopup() {
     this.poList = [];
     this.pmObject.addProject.FinanceManagement.POListArray = [];
     this.pmObject.addProject.FinanceManagement.POArray = [];
@@ -193,22 +197,30 @@ export class ManageFinanceComponent implements OnInit {
       { label: 'No', value: 'No' }
     ];
     if (this.config && this.config.hasOwnProperty('data')) {
-      setTimeout(() => {
+      setTimeout(async () => {
         this.projObj = this.config.data.projectObj;
+        if (this.projObj.Status === 'Pending Closure' && this.projObj.ProjectType.substr(this.projObj.ProjectType.lastIndexOf('-') + 1) === 'Writing') {
+          this.disableAddBudget= true;
+        }
         this.isPOEdit = true;
         // this.setBudget();
         this.projectType = this.projObj.ProjectType;
         this.projectStatus = this.projObj.Status;
-        this.editManageFinances(this.projObj);
+        await this.editManageFinances(this.projObj);
       }, this.pmConstant.TIME_OUT);
     } else {
       this.projObj = undefined;
       this.isPOEdit = false;
       this.projectType = this.pmObject.addProject.ProjectAttributes.BilledBy;
       this.projectStatus = this.constant.projectList.status.InDiscussion;
-      this.setBudget();
+      await this.setBudget();
     }
+
+    // if (this.poData && this.poData.length >= 2) {
+    //   this.maximizeDialog.next(); // Maxmize finance dialog
+    // }
   }
+
 
   /**
    * This method is used to get required data before loading the page.
@@ -343,12 +355,12 @@ export class ManageFinanceComponent implements OnInit {
     if (this.existBudgetArray && this.existBudgetArray.length) {
       unassignedObj.total = this.updatedBudget + this.existBudgetArray.retItems[0].Budget;
       unassignedObj.revenue = this.updatedBudget + this.existBudgetArray.retItems[0].RevenueBudget;
-      unassignedObj.oop = tempbudgetObject.oop;
+      unassignedObj.oop = 0;
       unassignedObj.tax = 0;
     } else {
       unassignedObj.total = this.updatedBudget;
       unassignedObj.revenue = this.updatedBudget;
-      unassignedObj.oop = tempbudgetObject.oop;
+      unassignedObj.oop = 0;
       unassignedObj.tax = 0;
     }
     this.unassignedBudget = [];
@@ -381,6 +393,7 @@ export class ManageFinanceComponent implements OnInit {
   }
 
   async getTosList() {
+    this.commonService.SetNewrelic('Project-Management', 'manage-finance-getTosList', 'getGroupInfo');
     const approvers = await this.spServices.getGroupInfo('ExpenseApprovers');
     let arrayTo = [];
     if (approvers.results) {
@@ -654,6 +667,9 @@ export class ManageFinanceComponent implements OnInit {
         this.error = true;
         this.errorMsg = this.pmConstant.ERROR.PO_ALREADY_EXIST;
       } else {
+        if (this.poData && this.poData.length) {
+          this.maximizeDialog.next(); // Maxmize finance dialog
+        }
         this.showPo = true;
         this.error = false;
         const tempPOObj = $.extend(true, {}, this.poObj);
@@ -1077,6 +1093,8 @@ export class ManageFinanceComponent implements OnInit {
       this.poData.forEach((poInfoObj) => {
         // tslint:disable-next-line:no-shadowed-variable
         poInfoObj.poInfo.forEach(element => {
+          element.revenue = element.revenue ? element.revenue : 0;
+          element.scRevenue = element.scRevenue ? element.scRevenue : 0;
           if (element.revenue !== element.scRevenue) {
             isValid = false;
           }
@@ -1170,6 +1188,7 @@ export class ManageFinanceComponent implements OnInit {
     this.pmObject.addProject.FinanceManagement.UnassignedArray = this.unassignedBudget;
     this.budgetOutputData.emit(this.savePOArray);
     this.pmObject.addProject.FinanceManagement.isBudgetRateAdded = true;
+    this.pmObject.addProject.FinanceManagement.BilledBy = this.projectType;
   }
   async editManageFinances(projObj) {
     this.hideRemoveButton = false;
@@ -1193,7 +1212,12 @@ export class ManageFinanceComponent implements OnInit {
       this.isAddRateButtonHidden = true;
       this.isHourlyRateDisabled = true;
       this.isHourlyOverNightDisabled = true;
+      // this.isAddBudgetButtonHidden = true;
+    } else if (this.projObj.ProjectType === this.pmConstant.PROJECT_TYPE.FTE.value) {
       this.isAddBudgetButtonHidden = true;
+      this.showHourly = false;
+      this.isrevenueFieldDisabled = true;
+      this.isPoRevenueDisabled = true;
     } else {
       this.showHourly = false;
       this.isrevenueFieldDisabled = false;
@@ -1382,7 +1406,6 @@ export class ManageFinanceComponent implements OnInit {
               || this.projectStatus === this.constant.projectStatus.InProgress
               || this.projectStatus === this.constant.projectStatus.ReadyForClient
               || this.projectStatus === this.constant.projectStatus.AuditInProgress
-              || this.projectStatus === this.constant.projectStatus.OnHold
               || this.projectStatus === this.constant.projectStatus.AuthorReview
               || this.projectStatus === this.constant.projectStatus.PendingClosure) {
               invoiceObj.isInvoiceItemConfirm = this.lineItemConfirmAllowed(invoiceObj);
@@ -1539,6 +1562,7 @@ export class ManageFinanceComponent implements OnInit {
     });
   }
   async commitInvoiceItem(rowData) {
+    this.commonService.SetNewrelic('Finance-Dashboard', 'manage-finance-commitInvoiceItem', 'getGroupInfo');
     const groupInfo = await this.spServices.getGroupInfo('Invoice_Team');
     const approvers = groupInfo.results;
     const arrayTo = [];

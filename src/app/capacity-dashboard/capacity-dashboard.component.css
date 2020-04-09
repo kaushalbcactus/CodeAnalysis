@@ -7,10 +7,6 @@
     float: left !important;
 }
 
-::ng-deep .ui-button-danger {
-    margin: 8px 0px 0px 0px !important;
-}
-
 ::ng-deep .ui-datepicker table td>a.ui-state-active,
 ::ng-deep .ui-datepicker table td>span.ui-state-active,
 ::ng-deep .ui-calendar-button,
@@ -19,6 +15,19 @@
     background-color: #C53E3E !important;
     color: #ffffff !important;
     border: 1px solid #C53E3E !important;
+}
+
+::ng-deep .evenrow {
+    padding: 0.5em 0em 0.5em 0em !important;
+}
+
+::ng-deep .ui-dropdown-item.ui-state-highlight {
+    background-color: #C53E3E !important;
+    color: #ffffff !important;
+}
+
+::ng-deep .oddrow {
+    padding: 0.5em 0.3em 0.5em 0.3em !important;
 }
 
 ::ng-deep button.ui-datepicker-trigger.ui-calendar-button span.ui-button-text.ui-clickable {
@@ -60,8 +69,6 @@
     height: 70px !important;
 }
 
-
-/* 
-::ng-deep #capacityTable {
-    width: 100% !important;
-} */
+.topCardPosition > .ui-card {
+    margin-top: -25px;
+}

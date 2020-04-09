@@ -24,7 +24,7 @@
 ::ng-deep .cancel-rating{background-color: #FAFAFA!important;padding: 12px 50px!important;color: #222222!important;border-radius: 4px!important;border: none!important;font-size: 16px!important;margin: 0px 6px!important;cursor: pointer!important}
 ::ng-deep .cancel-rating:hover{background-color: #D7D7D7;transition: 0.3s ease-in}
 ::ng-deep .ratework-popup{width: 100%;background: #fff;}
-::ng-deep .ratework-popup .popup-header{font-size: 34px;line-height: 42px;text-align: center;margin: 10px auto}
+::ng-deep .ratework-popup .popup-header{font-size: 34px;line-height: 42px;text-align: center;margin: 10px auto;}
 
 ::ng-deep .popup-con{padding: 30px}
 ::ng-deep .grey-default-c{color: #787878;margin: 0px auto 10px;text-align: left}
@@ -37,38 +37,6 @@
 ::ng-deep .cd-rating{background: #4faf54;color: #fff;padding: 0px 8px;border-radius: 3px;display: inline-block;margin-right: 3px}
 ::ng-deep .customer-detail{color: #777777;display: inline-block}
 ::ng-deep .star-white{color: #fff;margin-left: 2px;font-size: 14px !important}
-::ng-deep #popupLoader{
-  border: 10px solid #f3f3f3;
-  border-radius: 50%;
-  border-top: 10px solid red;
-  border-bottom: 10px solid red;
-  width: 100px;
-  height: 100px;
-  -webkit-animation: spin 2s linear infinite;
-  animation: spin 2s linear infinite;
-  margin: 0 auto;
-  position: relative;
-  top: 50%;
-  transform: translateY(-50%);
-  margin-top: 1%;
-}
-
-::ng-deep #popupLoaderText{
-  -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
-  -o-animation: loading-text-opacity 2s linear 0s infinite normal;
-  -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
-  animation: loading-text-opacity 2s linear 0s infinite normal;
-  color: black;
-  font-family: "Helvetica Neue, "Helvetica", ""arial";
-  font-size: 10px;
-  font-weight: bold;
-  opacity: 0.5;
-  text-align: center;
-  text-transform: uppercase;
-  top: 0;
-  margin-bottom: 1%;
-}
-
 @-webkit-keyframes spin {
   0% { -webkit-transform: rotate(0deg); }
   100% { -webkit-transform: rotate(360deg); }
@@ -78,3 +46,33 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+::ng-deep .ui-accordion .ui-accordion-header a .ui-accordion-toggle-icon {
+  color: #333333!important;
+}
+::ng-deep .ui-accordion .ui-accordion-header:not(.ui-state-disabled).ui-state-active a {
+  background-color: #f4f4f4!important;
+  color: #333333!important;
+  border: 1px solid #c8c8c8!important;
+}
+.header{
+  font-weight: 700 !important;
+  border-bottom: 0 none !important;
+}
+::ng-deep .ui-accordion .ui-accordion-content {
+  border: 0 !important;
+}
+.footer {
+  background-color: #ffffff;
+  color: #333333;
+  padding: 0.571em 1em;
+  margin: 0;
+  text-align: right;
+  position: relative;
+  top: -1px;
+}
+.ignoreIcon {
+  vertical-align: middle;
+  float: right;
+  margin-top: -4px;
+}
+

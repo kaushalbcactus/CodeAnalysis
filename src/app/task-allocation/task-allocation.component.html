@@ -3,7 +3,7 @@
         <mat-card-content>
             <form class="example-form" fxLayoutAlign="center center">
                 <mat-form-field style="width:80%;">
-                    <input matInput placeholder="Search Project" [formControl]="searchFormControl" (keydown)="SearchProject($event)">
+                    <input matInput placeholder="Search Project" class="searchPrj" [formControl]="searchFormControl" (keydown)="SearchProject($event)">
                     <button matSuffix mat-icon-button>
                   <mat-icon class="searchIcon" (click)=getProjectDetails() [style.color]=" !Searchenable ? '#b03f44'  :'#673AB7'" >search</mat-icon>
                 </button>

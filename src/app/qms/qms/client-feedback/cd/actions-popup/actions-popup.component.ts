@@ -6,8 +6,7 @@ import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { QMSConstantsService } from '../../../services/qmsconstants.service';
 import { MessageService } from 'primeng/api';
-import { PlatformLocation, LocationStrategy } from '@angular/common';
-import { Router } from '@angular/router';
+import { CommonService } from 'src/app/Services/common.service';
 
 @Component({
   selector: 'app-actions-popup',
@@ -56,13 +55,13 @@ export class ActionsPopupComponent implements OnInit {
     rejectionComments: '',
     newRejectionComments: '',
     isActive: true,
-    asd: {
+    ASD: {
       results: []
     },
-    cs: {
+    CS: {
       results: []
     },
-    tl: {
+    TL: {
       results: []
     },
     deliveryLevel1: {
@@ -104,26 +103,13 @@ export class ActionsPopupComponent implements OnInit {
   };
   public hideResourceLoader = true;
   constructor(private globalConstant: ConstantsService, private spService: SPOperationService,
-    private global: GlobalService, private qmsConstant: QMSConstantsService, private messageService: MessageService,
-    // private platformLocation: PlatformLocation,
-    // private locationStrategy: LocationStrategy,
-    // private readonly _router: Router,
+    private global: GlobalService,
+    private qmsConstant: QMSConstantsService,
+    private messageService: MessageService,
+    private commonService: CommonService,
     _applicationRef: ApplicationRef,
     zone: NgZone
   ) {
-
-
-    // // Browser back button disabled & bookmark issue solution
-    // history.pushState(null, null, window.location.href);
-    // platformLocation.onPopState(() => {
-    //   history.pushState(null, null, window.location.href);
-    // });
-
-    // _router.events.subscribe((uri) => {
-    //   zone.run(() => _applicationRef.tick());
-    // });
-
-
   }
 
   ngOnInit() {
@@ -204,14 +190,14 @@ export class ActionsPopupComponent implements OnInit {
     this.qc.deliveryLevel2 = content.ASD && content.ASD.results ? this.getResourceEmail(content.ASD.results) : this.qc.deliveryLevel2;
     this.qc.deliveryLevel1 = content.TL && content.TL.results ? this.getResourceEmail(content.TL.results) : this.qc.deliveryLevel1;
     this.qc.cm = content.CS && content.CS.results ? this.getResourceEmail(content.CS.results) : this.qc.cm;
-    if (this.qc.deliveryLevel2.ids.length <= 0) {
+    if (this.qc.deliveryLevel2 && this.qc.deliveryLevel2.ids.length <= 0) {
       this.qc.deliveryLevel2 = codeDetails.DeliveryLevel2 ? this.getResourceEmail([codeDetails.DeliveryLevel2]) : this.qc.deliveryLevel2;
     }
-    if (this.qc.deliveryLevel1.ids.length <= 0) {
+    if (this.qc.deliveryLevel1 && this.qc.deliveryLevel1.ids.length <= 0) {
       this.qc.deliveryLevel1 = codeDetails.DeliveryLevel1 && codeDetails.DeliveryLevel1.results ?
         this.getResourceEmail(codeDetails.DeliveryLevel1.results) : this.qc.deliveryLevel1;
     }
-    if (this.qc.cm.ids.length <= 0) {
+    if (this.qc.cm && this.qc.cm.ids.length <= 0) {
       this.qc.cm = codeDetails.CMLevel1 && codeDetails.CMLevel1.results ?
         this.getResourceEmail([...codeDetails.CMLevel1.results, ...[codeDetails.CMLevel2]]) : this.qc.cm;
     }
@@ -334,6 +320,7 @@ export class ActionsPopupComponent implements OnInit {
           validityMailContent = this.replaceContent(validityMailContent, '@@Val1@@',
             this.global.sharePointPageObject.webAbsoluteUrl + '/dashboard#/qms/clientFeedback/clientDissatisfaction');
           // tslint:disable: max-line-length
+          this.commonService.SetNewrelic('QMS', 'CD-Popup-closeCD-Admin', 'SendMail');
           this.spService.sendMail(strCDdAdminsEmail, this.global.currentUser.email, validityMailSubject, validityMailContent, this.global.currentUser.email);
         }
         if (oldStatus === this.globalConstant.cdStatus.Created) {
@@ -342,6 +329,7 @@ export class ActionsPopupComponent implements OnInit {
             const notifyMailSubject = this.qc.projectCode + '(#' + this.qc.qcID + '): Dissatisfaction';
             const strTo = this.qc.selectedSegregation === 'Internal' ? cd.Internal.resourcesEmail.join(',') : cd.External.resourcesEmail.join(',');
             notifyMailContent = this.replaceContent(notifyMailContent, '@@Val1@@', this.global.sharePointPageObject.webAbsoluteUrl + '/dashboard#/qms/personalFeedback/externalFeedback');
+            this.commonService.SetNewrelic('QMS', 'CD-Popup-closeCD', 'SendMail');
             this.spService.sendMail(strTo, this.global.currentUser.email, notifyMailSubject, notifyMailContent, this.global.currentUser.email);
           }
         }
@@ -412,6 +400,7 @@ export class ActionsPopupComponent implements OnInit {
           const rejectMailSubject = this.qc.projectCode + '(#' + this.qc.qcID + '): Dissatisfaction rejected';
           const strTo = this.qc.deliveryLevel2.emailIDs.join(',');
           rejectMailContent = this.replaceContent(rejectMailContent, "@@Val1@@", this.global.sharePointPageObject.webAbsoluteUrl + '/dashboard#/qms/clientFeedback/clientDissatisfaction');
+          this.commonService.SetNewrelic('QMS', 'CD-updateValidity', 'SendMail');
           this.spService.sendMail(strTo, this.global.currentUser.email, rejectMailSubject, rejectMailContent, this.global.currentUser.email);
         }
         this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD rejected for ' + this.qc.projectCode + '.' });
@@ -430,7 +419,7 @@ export class ActionsPopupComponent implements OnInit {
 
   /**
    * one way binding of rejection comments
-   * @param event 
+   * @param event
    */
   updateRejectionComments(event) {
     this.qc.newRejectionComments = event.currentTarget.value;
@@ -468,7 +457,7 @@ export class ActionsPopupComponent implements OnInit {
       const delivery2EMail = [this.qc.selectedTaggedItem.DeliveryLevel2.EMail ? this.qc.selectedTaggedItem.DeliveryLevel2.EMail : ''];
       const primaryResources = this.qc.selectedTaggedItem.PrimaryResMembers && this.qc.selectedTaggedItem.PrimaryResMembers.results ?
         this.qc.selectedTaggedItem.PrimaryResMembers.results.map(u => u.ID) : [];
-      // update quality complaint line item    
+      // update quality complaint line item
       const cdDetails = {
         __metadata: { type: this.globalConstant.listNames.QualityComplaints.type },
         Title: this.qc.selectedTaggedItem.Title,
@@ -481,10 +470,10 @@ export class ActionsPopupComponent implements OnInit {
       };
       // update projectcode property to bind cd component
       this.qc.projectCode = this.qc.selectedTaggedItem.Title;
-      this.qc.asd = this.qc.selectedTaggedItem.DeliveryLevel1;
-      this.qc.tl.results.push(this.qc.selectedTaggedItem.DeliveryLevel2);
+      this.qc.ASD = this.qc.selectedTaggedItem.DeliveryLevel1;
+      this.qc.TL.results.push(this.qc.selectedTaggedItem.DeliveryLevel2);
       const cm1 = this.qc.selectedTaggedItem.CMLevel1.results ? this.qc.selectedTaggedItem.CMLevel1.results : [];
-      this.qc.cs.results = [...cm1, this.qc.selectedTaggedItem.CMLevel2];
+      this.qc.CS.results = [...cm1, this.qc.selectedTaggedItem.CMLevel2];
       this.updateCD(cdDetails);
       // Send updated qc to CD component and update CD
       this.bindTableEvent.emit(this.qc);
@@ -495,6 +484,7 @@ export class ActionsPopupComponent implements OnInit {
         const createMailSubject = this.qc.projectCode + '(#' + this.qc.qcID + '): Dissatisfaction';
         const strTo = delivery2EMail.toString();
         createMailContent = this.replaceContent(createMailContent, "@@Val1@@", this.global.sharePointPageObject.webAbsoluteUrl + '/dashboard#/qms/clientFeedback/clientDissatisfaction');
+        this.commonService.SetNewrelic('QMS', 'CD-actions-popup-tag', 'SendMail');
         this.spService.sendMail(strTo, this.global.currentUser.email, createMailSubject, createMailContent, this.global.currentUser.email);
       }
       this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD Tagged Successfully!' });
@@ -521,6 +511,7 @@ export class ActionsPopupComponent implements OnInit {
     } else {
       const common = this.qmsConstant.common;
       common.getMailTemplate.filter = common.getMailTemplate.filter.replace('{{templateName}}', arrTemplateName);
+      this.commonService.SetNewrelic('QMS', 'cd-actionpopup-getMailContent', 'readItems');
       const templateData = await this.spService.readItems(this.globalConstant.listNames.MailContent.name,
         common.getMailTemplate);
       arrResult = templateData.length > 0 ? templateData : [];
@@ -539,6 +530,7 @@ export class ActionsPopupComponent implements OnInit {
       const group = this.qc.selectedGroup;
       const tagItemsUrl = group.value === 'Project' ? cdComponent.getOpenProjects : cdComponent.getClients;
       const tagListName = group.value === 'Project' ? this.globalConstant.listNames.ProjectInformation.name : this.globalConstant.listNames.ClientLegalEntity.name;
+      this.commonService.SetNewrelic('QMS', 'cd-actionpopup-getSelectedGroupItems', 'readItems');
       let items = await this.spService.readItems(tagListName, tagItemsUrl);
       items = items.length > 0 ? items : [];
       this.qc.tagGroupItems = [...items];
@@ -565,7 +557,7 @@ export class ActionsPopupComponent implements OnInit {
   }
 
   /**
-   * 
+   *
    * @param obj - QC item
    * @param array - array of resources
    * @param includeInEMail - should resources email to be added in email

@@ -112,14 +112,17 @@ export class FDDataShareService {
     }
 
     async getCurrentUserInfo() {
+        this.commonService.SetNewrelic('Finance-Dashboard', 'fd-shareData', 'getUserInfo');
         return await this.spServices.getUserInfo(this.globalObject.currentUser.userId);
     }
 
     async getGroupInfo() {
+        this.commonService.SetNewrelic('Finance-Dashboard', 'fd-shareData', 'getGroupInfo');
         return await this.spServices.getGroupInfo('ExpenseApprovers');
     }
 
     async getITInfo() {
+        this.commonService.SetNewrelic('Finance-Dashboard', 'fd-shareData', 'getGroupInfo');
         return await this.spServices.getGroupInfo('Invoice_Team');
     }
 
@@ -436,6 +439,7 @@ export class FDDataShareService {
             pdfContent.HtmlContent = JSON.stringify(objReturn);
 
             ///// Call service
+            this.commonService.SetNewrelic('Finance-Dashboard', 'fdsharedata-CallProformaCreation', 'executeJS');
             const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
             await this.spServices.executeJS(pdfService, pdfContent);
         }
@@ -452,6 +456,7 @@ export class FDDataShareService {
         pdfContent.HtmlContent = JSON.stringify(objReturn);
 
         ///// Call service
+        this.commonService.SetNewrelic('Finance-Dashboard', 'fd-shareData-callProformaInvoiceEdit', 'executeJS');
         const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
         await this.spServices.executeJS(pdfService, pdfContent);
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;

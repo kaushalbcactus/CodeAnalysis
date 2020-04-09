@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ElementRef, OnDestroy } from '@angular/core';
 import { FdConstantsService } from '../fdServices/fd-constants.service';
 import { GlobalService } from 'src/app/Services/global.service';
 
@@ -8,28 +8,25 @@ import { GlobalService } from 'src/app/Services/global.service';
     styleUrls: ['./finance-dashboard.component.css'],
     encapsulation: ViewEncapsulation.None
 })
-export class FinanceDashboardComponent implements OnInit {
+export class FinanceDashboardComponent implements OnInit, OnDestroy {
 
     // Loadder
-    isPSInnerLoaderHidden: boolean = false;
+    isPSInnerLoaderHidden: boolean;
 
     tabMenuList: any = [];
     constructor(
         public fdConstantsService: FdConstantsService,
-        public globalObject: GlobalService) {
+        public globalObject: GlobalService
+    ) {
     }
 
     ngOnInit() {
+        this.isPSInnerLoaderHidden = false;
         this.globalObject.currentTitle = 'Finance Dashboard';
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
-        // Tabs list
-        
-    }
-
-    ngAfterViewInit() {
     }
 
     ngOnDestroy() {
-        console.log("destroy");
+        console.log('in on destroy');
     }
 }

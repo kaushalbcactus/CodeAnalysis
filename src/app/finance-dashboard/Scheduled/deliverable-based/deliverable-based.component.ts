@@ -109,7 +109,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     // List of Subscribers
     private subscription: Subscription = new Subscription();
 
-    @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
+    @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
     @ViewChild('db', { static: false }) deliverableTable: Table;
     // Project Info
     projectInfoData: any = [];
@@ -589,7 +589,8 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         todaysDateTimeZero.setHours(0, 0, 0, 0);
         if (date >= last3Days && date < lastDay && retPO && new Date(retPO.POExpiryDate) >= todaysDateTimeZero &&
             (projectData && projectData.Status !== this.constantService.projectList.status.InDiscussion &&
-                projectData.Status !== this.constantService.projectList.status.AwaitingCancelApproval)) {
+                projectData.Status !== this.constantService.projectList.status.AwaitingCancelApproval && 
+                projectData.Status !== this.constantService.projectList.status.OnHold)) {
             this.items.push({ label: 'Confirm Invoice', command: (e) => this.openMenuContent(e, data) });
         } else {
             if (!(date >= last3Days && date <= lastDay)) {
@@ -641,8 +642,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
 
     // Go to Project Details Page
     goToProjectDetails(data: any) {
-        console.log(data);
-        window.open(this.globalService.sharePointPageObject.webAbsoluteUrl + '/dashboard#/projectMgmt/allProjects?ProjectCode=' + data.ProjectCode);
+        window.open(this.globalService.sharePointPageObject.webAbsoluteUrl + '/dashboard#/projectMgmt?ProjectCode=' + data.ProjectCode);
     }
 
     updateInvoice() {
@@ -833,6 +833,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         const ccUser = this.getCCList();
         // ccUser.push(this.currentUserInfoData.Email);
         const tos = this.getTosList();
+        this.commonService.SetNewrelic('Finance-Dashboard', 'deliverableBased-invoiceConfirmMail', 'SendMail');
         this.spServices.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
         this.reFetchData();
     }

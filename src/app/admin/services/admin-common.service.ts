@@ -137,7 +137,7 @@ export class AdminCommonService {
     //   cleGet.filter = 'DeliveryLevel2/ID eq ' + userObj.UserName.ID + '';
     // }
 
-    this.commonService.SetNewrelic('admin', 'admin-commonService', 'GetClientLegalEntity');
+    this.commonService.SetNewrelic('admin', 'commonService-GetClientLegalEntity', 'readItems');
     const results = await this.spServices.readItems(this.constants.listNames.ClientLegalEntity.name, cleGet);
     return results;
   }
@@ -249,4 +249,8 @@ export class AdminCommonService {
     }
     return null;
   }
+
+
+
+  
 }

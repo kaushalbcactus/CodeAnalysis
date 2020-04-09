@@ -1,4 +1,4 @@
-import { Component, OnInit, ApplicationRef, NgZone } from '@angular/core';
+import { Component, OnInit, ApplicationRef, NgZone, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { DatePipe, PlatformLocation } from '@angular/common';
 import { MessageService, Message, ConfirmationService } from 'primeng/api';
 import { AdminCommonService } from 'src/app/admin/services/admin-common.service';
@@ -8,6 +8,7 @@ import { ConstantsService } from 'src/app/Services/constants.service';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
 import { Router } from '@angular/router';
 import { CommonService } from 'src/app/Services/common.service';
+import { Table } from 'primeng';
 
 @Component({
   selector: 'app-deliverable-types',
@@ -35,7 +36,7 @@ export class DeliverableTypesComponent implements OnInit {
     DeliverableType: [],
     Acronym: [],
     LastUpdated: [],
-    LastUpdatedBy: []
+    LastModifiedBy: []
   };
   auditHistoryArray = {
     Action: [],
@@ -46,6 +47,10 @@ export class DeliverableTypesComponent implements OnInit {
   items = [
     { label: 'Delete', command: (e) => this.delete() }
   ];
+
+  isOptionFilter: boolean;
+  @ViewChild('dt', { static: false }) dtTable: Table;
+
   /**
    * Construct a method to create an instance of required component.
    *
@@ -76,7 +81,8 @@ export class DeliverableTypesComponent implements OnInit {
     private router: Router,
     private applicationRef: ApplicationRef,
     private zone: NgZone,
-    private common: CommonService
+    private common: CommonService,
+    private cdr: ChangeDetectorRef
   ) {
     // Browser back button disabled & bookmark issue solution
     history.pushState(null, null, window.location.href);
@@ -100,7 +106,7 @@ export class DeliverableTypesComponent implements OnInit {
       { field: 'DeliverableType', header: 'Deliverable Type', visibility: true },
       { field: 'Acronym', header: 'Acronym', visibility: true },
       { field: 'LastUpdated', header: 'Last Updated', visibility: true, exportable: false },
-      { field: 'LastUpdatedBy', header: 'Last Updated By', visibility: true },
+      { field: 'LastModifiedBy', header: 'Last Updated By', visibility: true },
       { field: 'LastUpdatedFormat', header: 'Last Updated Date', visibility: false }
     ];
     await this.loadDeliverableTypeTable();
@@ -131,7 +137,7 @@ export class DeliverableTypesComponent implements OnInit {
         obj.Acronym = item.Acronym;
         obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
         obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd, yyyy');
-        obj.LastUpdatedBy = item.Editor.Title;
+        obj.LastModifiedBy = item.Editor.Title;
         tempArray.push(obj);
       });
       this.deliverableTypesRows = tempArray;
@@ -170,8 +176,8 @@ export class DeliverableTypesComponent implements OnInit {
       };
       return b;
     });
-    this.deliverableTypesColArray.LastUpdatedBy = this.common.sortData(this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; })));
+    this.deliverableTypesColArray.LastModifiedBy = this.common.sortData(this.adminCommonService.uniqueArrayObj(
+      colData.map(a => { const b = { label: a.LastModifiedBy, value: a.LastModifiedBy }; return b; })));
   }
   /**
    * Construct a method to add the new Deliverable Type into `DeliverableType` list.
@@ -338,8 +344,31 @@ export class DeliverableTypesComponent implements OnInit {
     this.currDeliverableTypeObj = rowData;
     console.log(rowData);
   }
+
   downloadExcel(dt) {
     dt.exportCSV();
+  }
+
+  optionFilter(event: any) {
+    if (event.target.value) {
+      this.isOptionFilter = false;
+    }
+  }
+
+  ngAfterViewChecked() {
+    if (this.deliverableTypesRows.length && this.isOptionFilter) {
+      const obj = {
+        tableData: this.dtTable,
+        colFields: this.deliverableTypesColArray
+      };
+      if (obj.tableData.filteredValue) {
+        this.common.updateOptionValues(obj);
+      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+        this.colFilters(obj.tableData.value);
+        this.isOptionFilter = false;
+      }
+      this.cdr.detectChanges();
+    }
   }
 
 }

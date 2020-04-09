@@ -106,7 +106,7 @@ export class OopComponent implements OnInit, OnDestroy {
         type: '',
         listName: ''
     };
-    @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
+    @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
     @ViewChild('oop', { static: false }) oopTable: Table;
 
     // Project Info 
@@ -522,8 +522,12 @@ export class OopComponent implements OnInit, OnDestroy {
         const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
         const last3Days = this.commonService.getLastWorkingDay(3, new Date());
         const todaysDateTimeZero = new Date();
+        const projectData = this.projectInfoData.find(e => e.ProjectCode === data.ProjectCode);
         todaysDateTimeZero.setHours(0, 0, 0, 0);
-        if (date >= last3Days && date < lastDay && retPO && new Date(retPO.POExpiryDate) >= todaysDateTimeZero) {
+        if (date >= last3Days && date < lastDay && retPO && new Date(retPO.POExpiryDate) >= todaysDateTimeZero && 
+        (projectData && projectData.Status !== this.constantService.projectList.status.InDiscussion &&
+            projectData.Status !== this.constantService.projectList.status.AwaitingCancelApproval && 
+            projectData.Status !== this.constantService.projectList.status.OnHold)) {
             // if (date > last3Days && retPO && new Date(retPO.POExpiryDate) >= new Date()) {
             this.items.push({ label: 'Confirm Invoice', command: (e) => this.openMenuContent(e, data) });
         } else {
@@ -577,9 +581,8 @@ export class OopComponent implements OnInit, OnDestroy {
 
     // Go to Project Details Page
     goToProjectDetails(data: any) {
-        console.log(data);
         window.open(this.globalService.sharePointPageObject.webAbsoluteUrl
-            + '/projectmanagement#/projectMgmt/allProjects?ProjectCode=' + data.ProjectCode);
+            + '/dashboard#/projectMgmt?ProjectCode=' + data.ProjectCode);
     }
 
     // Update Form
@@ -726,6 +729,7 @@ export class OopComponent implements OnInit, OnDestroy {
 
         const ccUser = this.getCCList();
         const tos = this.getTosList();
+        this.commonService.SetNewrelic('Finance-Dashboard', 'oop-CreateExpense', 'SendMail');
         this.spOperationsService.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
         this.reFetchData();
     }

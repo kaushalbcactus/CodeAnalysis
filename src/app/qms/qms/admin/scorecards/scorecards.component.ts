@@ -14,6 +14,7 @@ import { CommonService } from 'src/app/Services/common.service';
   styleUrls: ['./scorecards.component.css']
 })
 export class ScorecardsComponent implements OnInit {
+  ratingHeaderLength = 'Short';
   scorecardsColumns = [];
   scorecardsRows = [];
   public filterObj = {
@@ -33,9 +34,10 @@ export class ScorecardsComponent implements OnInit {
     startDate: null,
     endDate: null,
     count: 10,
-    clickedResourceID: '',
+    userId: '',
     isDateFilter: true,
-    hideDateRange: true
+    hideDateRange: true,
+    ratingType: ''
   };
   public hideLoader = true;
   public hideTable = false;
@@ -62,7 +64,7 @@ export class ScorecardsComponent implements OnInit {
   resourceColumns: [{}];
   navigationSubscription;
   value: Date[] = [new Date(new Date().setMonth(new Date().getMonth() - 6)), new Date()];
-  @ViewChild(FeedbackBymeComponent, { static: true }) feedbackTable: FeedbackBymeComponent;
+  @ViewChild(FeedbackBymeComponent, { static: false }) feedbackTable: FeedbackBymeComponent;
   constructor(
     private qmsConstant: QMSConstantsService,
     private globalConstant: ConstantsService,
@@ -96,6 +98,7 @@ export class ScorecardsComponent implements OnInit {
 
   async ngOnInit() {
     if (!this.global.currentUser.groups.length) {
+      this.commonService.SetNewrelic('QMS', 'admin-scorecards', 'getUserInfo');
       const result = await this.spService.getUserInfo(this.global.currentUser.userId);
       this.global.currentUser.groups = result.Groups.results ? result.Groups.results : [];
     }
@@ -142,8 +145,9 @@ export class ScorecardsComponent implements OnInit {
       const obj = JSON.parse(JSON.stringify(this.resource));
       obj.data.userName = element.UserName.Title;
       obj.data.userId = element.UserName.ID;
-      obj.data.averageRating = element.averageRating;
-      obj.data.ratingCount = element.ratingCount;
+      obj.data.feedbackForMe = element.feedbackForMe;
+      // obj.data.averageRating = element.averageRating;
+      // obj.data.ratingCount = element.ratingCount;
       // obj.expanded = true;
       arrFormattedData.push(obj);
     });
@@ -168,9 +172,10 @@ export class ScorecardsComponent implements OnInit {
     for (const key in arrResourceScoreCards) {
       if (arrResourceScoreCards.hasOwnProperty(key)) {
         const element = arrResourceScoreCards[key];
-        const averageRating = this.getAverageRating(element);
-        resources[key].averageRating = averageRating.rating;
-        resources[key].ratingCount = averageRating.count;
+        resources[key].feedbackForMe = element;
+        // const averageRating = this.getAverageRating(element);
+        // resources[key].averageRating = averageRating.rating;
+        // resources[key].ratingCount = averageRating.count;
       }
     }
     return resources;
@@ -191,6 +196,7 @@ export class ScorecardsComponent implements OnInit {
       .replace('{{TopCount}}', '' + topCount)
       .replace('{{startDate}}', startDate)
       .replace('{{endDate}}', endDate);
+    getScorecardData.url = getScorecardData.url.replace('{{RatingType}}', '');
     // tslint:disable: max-line-length
     // tslint:disable-next-line: quotemark
     getScorecardData.url = topCount < 4500 ? getScorecardData.url.replace("{{FeedbackTypeFilter}}", "and FeedbackType eq '" + this.globalConstant.FeedbackType.taskRating + "'") :
@@ -212,9 +218,10 @@ export class ScorecardsComponent implements OnInit {
     return ratingObj;
   }
 
-  getResourceScorecard(feedbackTableRef, feedback) {
-    this.filterObj.clickedResourceID = feedback.userId;
+  getResourceScorecard(event, feedbackTableRef, feedback) {
+    this.filterObj.userId = feedback.userId;
     const filterObject = Object.assign({}, this.filterObj);
+    filterObject.ratingType = event;
     // show hide inner table
     feedback.hideInnerTable = !feedback.hideInnerTable;
     // display inner table

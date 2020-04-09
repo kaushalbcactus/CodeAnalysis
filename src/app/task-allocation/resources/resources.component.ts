@@ -163,7 +163,7 @@ export class ResourcesComponent implements OnInit {
     this.commonService.SetNewrelic('TaskAllocation', 'resources', 'SaveResources');
     await this.spService.updateItem(this.constants.listNames.ProjectInformation.name, project.projectID,
       oBj, 'SP.Data.ProjectInformationListItem');
-
+    this.commonService.SetNewrelic('TaskAllocation', 'resources-getProjectResources', 'saveResources');
     await this.commonService.getProjectResources(project.projectCode, true, false);
 
     this.loaderEnable = false;

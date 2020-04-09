@@ -52,6 +52,14 @@
     background-color: grey;
 }
 
+.colorgoLive {
+    background-color: #ccffcc;
+}
+
+.colortrainee {
+    background-color: #ffffff;
+}
+
 .colorAvailable {
     background-color: #55bf3b;
     cursor: pointer;
@@ -118,7 +126,7 @@
     background-color: transparent;
 }
 
-#TasksPerDay>thead>tr>td:first-child {
+#TasksPerDay>thead>tr>td:first-child, #spentTasksPerDay>thead>tr>td:first-child {
     background-color: #80808038;
     font-weight: bold;
 }
@@ -222,7 +230,8 @@
 
 .capacityBody>tr>td,
 .capacityBody>tr>td>table,
-.TaskPerDayRow>td {
+.TaskPerDayRow>td,
+.SpentTaskPerDayRow>td {
     border: 0px !important;
 }
 
@@ -232,20 +241,26 @@
     border: 1px solid #ddd;
 }
 
-.TaskPerDayRow>td {
+.TaskPerDayRow>td,
+.SpentTaskPerDayRow>td {
     padding: 0px !important;
 }
 
 #capacityTable>thead>tr>th:first-child,
 .capacityBody tr.UserTasksRow table tr:first-child>td:first-child {
     padding: 3px;
-    width: 6%;
+    /* width: 6%; */
 }
 
 .capacityBody #TasksPerDay>thead>tr>td,
+.capacityBody #spentTasksPerDay>thead>tr>td,
 #capacityTable>thead>tr>th,
 table#milestoneTasks thead td {
     font-weight: bold;
+}
+
+#TasksPerDay, #spentTasksPerDay {
+    border: none !important;
 }
 
 #capacityTable>thead>tr>th {
@@ -310,10 +325,7 @@ table#milestoneTasks td {
     width: 6%;
 }
 
-tr[class$="taskrow"]+tr
-/*.capacityBody tr.UserTasksRow table tr:last-child */
-
-{
+tr[class$="taskrow"]+tr {
     position: absolute;
     left: 0;
     z-index: 200;
@@ -321,12 +333,24 @@ tr[class$="taskrow"]+tr
     background-color: transparent;
 }
 
+
+/* tr[class$='spenttaskRow'] {
+    position: relative !important;
+} */
+
 tr[class$="taskrow"]+tr>td
 /* .capacityBody tr.UserTasksRow table tr:last-child > td */
 
 {
     border: none !important;
 }
+
+
+/* tr[class$='spenttaskRow']>td {
+    border-top: 0px !important;
+    padding: 3px !important;
+    border: 1px solid #ddd !important;
+} */
 
 .more,
 .less {
@@ -340,9 +364,25 @@ tr[class$="taskrow"]+tr>td
     display: none !important;
 }
 
+.capacityBody #TasksPerDay>thead>tr>td,
+.capacityBody #TasksPerDay>tbody>tr>td,
+.capacityBody #spentTasksPerDay>thead>tr>td,
+.capacityBody #spentTasksPerDay>tbody>tr>td {
+    width: 12%;
+}
+
 .capacityBody #TasksPerDay>thead>tr>td:last-child,
-.capacityBody #TasksPerDay>tbody>tr>td:last-child {
-    width: 100px;
+.capacityBody #TasksPerDay>tbody>tr>td:last-child,
+.capacityBody #spentTasksPerDay>thead>tr>td:last-child,
+.capacityBody #spentTasksPerDay>tbody>tr>td:last-child {
+    width: 6%;
+}
+
+.capacityBody #TasksPerDay>thead>tr>td:first-child,
+.capacityBody #TasksPerDay>tbody>tr>td:first-child,
+.capacityBody #spentTasksPerDay>thead>tr>td:first-child,
+.capacityBody #spentTasksPerDay>tbody>tr>td:first-child {
+    width: 34%; 
 }
 
 .capacityBody>tr>td,
@@ -354,6 +394,11 @@ tr[class$="taskrow"]+tr>td
 #capacityTable .unallocated,
 #capacityTable .allocated {
     font-size: 12px;
+}
+
+#capacityTable > .capacityBody{
+    max-height: calc(100vh - 355px);
+    display: block;
 }
 
 

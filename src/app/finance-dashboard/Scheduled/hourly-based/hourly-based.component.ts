@@ -102,7 +102,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     private subscription: Subscription = new Subscription();
 
     minScheduleDate: Date = new Date();
-    @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
+    @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
     @ViewChild('hb', { static: false }) hourlyTable: Table;
     // Purchase Order Number
     purchaseOrdersList: any = [];
@@ -1046,12 +1046,14 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         pcmailContent = this.replaceContent(pcmailContent, "@@Val1@@", this.selectedRowItem.ProjectCode);
         pcmailContent = this.replaceContent(pcmailContent, "@@Val2@@", this.selectedRowItem.ClientLegalEntity);
         pcmailContent = this.replaceContent(pcmailContent, "@@Val5@@", this.selectedRowItem.HoursSpent);
-        pcmailContent = this.replaceContent(pcmailContent, "@@Val6@@", sharepointPageObject.webAbsoluteUrl + '/fd');
+        pcmailContent = this.replaceContent(pcmailContent, "@@Val6@@", sharepointPageObject.webAbsoluteUrl + '/dashboard#/financeDashboard');
 
         // var ccUser = [];
         // ccUser.push(this.currentUserInfoData.Email);
         // let tos = this.getTosList();
+        this.commonService.SetNewrelic('Finance-Dashboard', 'HourlyBased-invoiceTeam', 'SendMail');
         this.spServices.sendMail(this.getTosList('i').join(','), this.currentUserInfoData.Email, mailSubject, mailContent, this.getCCList('i').join(','));
+        this.commonService.SetNewrelic('Finance-Dashboard', 'HourlyBased-proposeClosure', 'SendMail');
         this.spServices.sendMail(this.getTosList('pc').join(','), this.currentUserInfoData.Email, pcmailSubject, pcmailContent, this.getCCList('pc').join(','));
         this.confirmationModal = false;
         this.reFetchData('confirm');

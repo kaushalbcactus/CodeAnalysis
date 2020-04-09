@@ -93,6 +93,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   ];
 
   public allTasks = [];
+  public allRestructureTasks = [];
   batchContents = new Array();
   // private editorOptions: GanttEditorOptions;
   public GanttChartView = true;
@@ -222,7 +223,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       this.projectDetails.projectCode = this.projectDetails.ProjectCode;
       this.oProjectDetails.projectCode = this.projectDetails.projectCode;
       this.onPopupload();
-
     }
 
 
@@ -259,7 +259,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.cdRef.detach();
     this.cdRef.detectChanges();
   }
-
   ngOnDestroy() {
   }
 
@@ -2172,7 +2171,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
         this.milestoneData = [];
         this.milestoneData.push.apply(this.milestoneData, updatedtempmilestoneData);
-
+        this.allRestructureTasks = allReturnedTasks;
         this.assignUsers(allReturnedTasks);
         this.loaderenable = false;
         this.milestoneData = [...this.milestoneData];
@@ -2305,7 +2304,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       let newName = '';
       if (milestoneTask.IsCentrallyAllocated === 'Yes') {
         newName = milestoneTask.itemType;
-        newName = this.getNewTaskName(milestoneTask, subMilestone, newName);
+        newName = this.getNewTaskName(milestoneTask, newName);
         milestoneTask.IsCentrallyAllocated = 'No';
       } else {
         newName = milestoneTask.title;
@@ -2338,7 +2337,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       milestoneTask.ActiveCA = this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestoneTask.milestone ? 'Yes' : milestoneTask.ActiveCA;
       milestoneTask.itemType = milestoneTask.itemType + 'Slot';
       let newName = milestoneTask.itemType;
-      newName = this.getNewTaskName(milestoneTask, subMilestone, newName);
+      newName = this.getNewTaskName(milestoneTask, newName);
       if (milestoneTask.nextTask) {
         const nextTasks = milestoneTask.nextTask.split(';');
         nextTasks.forEach(task => {
@@ -2365,16 +2364,41 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     }
   }
 
-  getNewTaskName(milestoneTask, subMilestone, originalName) {
+  getNewTaskName(milestoneTask, originalName) {
     let counter = 1;
-    let getItem = subMilestone.children.filter(e => e.data.title === originalName);
-    while (getItem.length) {
+    // let getItem = this.allRestructureTasks.filter(e => e.pName === originalName && e.milestone === milestoneTask.milestone);
+    // if (!getItem.length) {
+    //   getItem = this.allTasks.filter(e => {
+    //     const taskName = e.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + e.Milestone + ' ', '');
+    //     return e.FileSystemObjectType === 0 && taskName === originalName && e.Milestone === milestoneTask.milestone;
+    //   });
+    // }
+    let tasks = this.checkNameExists([], milestoneTask, originalName);
+    while (tasks.length) {
       counter++;
       originalName = milestoneTask.itemType + ' ' + counter;
-      getItem = subMilestone.children.filter(e => e.data.title === originalName);
+      tasks = this.checkNameExists(tasks, milestoneTask, originalName);
+      // getItem = this.allRestructureTasks.filter(e => e.pName === originalName && e.milestone === milestoneTask.milestone);
+      // if (!getItem.length) {
+      //   getItem = this.allTasks.filter(e => {
+      //     const taskName = e.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + e.Milestone + ' ', '');
+      //     return e.FileSystemObjectType === 0 && taskName === originalName && e.Milestone === milestoneTask.milestone;
+      //   });
+      // }
     }
 
     return originalName;
+  }
+
+  checkNameExists(tasks, milestoneTask, originalName) {
+    tasks = this.allRestructureTasks.filter(e => e.pName === originalName && e.milestone === milestoneTask.milestone);
+    if (!tasks.length) {
+      tasks = this.allTasks.filter(e => {
+        const taskName = e.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + e.Milestone + ' ', '');
+        return e.FileSystemObjectType === 0 && taskName === originalName && e.Milestone === milestoneTask.milestone;
+      });
+    }
+    return tasks;
   }
   // *************************************************************************************************
   // Date changes Cascading (Task Date Change)
@@ -2394,7 +2418,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     nodeData.pUserStart = this.commonService.calcTimeForDifferentTimeZone(prevNodeStartDate,
       this.sharedObject.currentUser.timeZone, nodeData.assignedUserTimeZone);
     // const chkDate = nodeData.pUserStart.getHours() >= 19 && (nodeData.pUserStart.getHours() <= 23 && nodeData.pUserStart.getMinutes() < 60)
-    nodeData.pUserStart = nodeData.pUserStart.getHours() >= 19 || nodeData.pUserStart.getHours() < 9 || prevNodeData.itemType === 'Client Review' || nodeData.itemType === 'Client Review' ?
+    // nodeData.pUserStart = nodeData.pUserStart.getHours() >= 19 || nodeData.pUserStart.getHours() < 9 || prevNodeData.itemType === 'Client Review' || nodeData.itemType === 'Client Review' ?
+    // new change cascade maxwell
+    nodeData.pUserStart = nodeData.pUserStart.getHours() >= 19 || nodeData.pUserStart.getHours() < 9 ?
       this.checkStartDate(new Date(nodeData.pUserStart.getFullYear(), nodeData.pUserStart.getMonth(), (nodeData.pUserStart.getDate() + 1), 9, 0)) :
       nodeData.pUserStart;
     nodeData.pUserEnd = this.checkEndDate(nodeData.pUserStart, workingHours);
@@ -2416,15 +2442,17 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   // tslint:enable
 
   setStartAndEnd(node) {
-    node.data.end_date = node.children !== undefined && node.children.length > 0 ? this.sortDates(node, 'end') : node.data.end_date;
-    node.data.start_date = node.children !== undefined && node.children.length > 0 ? this.sortDates(node, 'start') : node.data.start_date;
-    node.data.pUserStart = node.data.start_date;
-    node.data.pUserEnd = node.data.end_date;
-    node.data.pUserStartDatePart = this.getDatePart(node.data.pUserStart);
-    node.data.pUserStartTimePart = this.getTimePart(node.data.pUserStart);
-    node.data.pUserEndDatePart = this.getDatePart(node.data.pUserEnd);
-    node.data.pUserEndTimePart = this.getTimePart(node.data.pUserEnd);
-    node.data.tatVal = this.commonService.calcBusinessDays(new Date(node.data.start_date), new Date(node.data.end_date));
+    if (node.data.status !== 'Completed') {
+      node.data.pEnd = node.children !== undefined && node.children.length > 0 ? this.sortDates(node, 'end') : node.data.pEnd;
+      node.data.pStart = node.children !== undefined && node.children.length > 0 ? this.sortDates(node, 'start') : node.data.pStart;
+      node.data.pUserStart = node.data.pStart;
+      node.data.pUserEnd = node.data.pEnd;
+      node.data.pUserStartDatePart = this.getDatePart(node.data.pUserStart);
+      node.data.pUserStartTimePart = this.getTimePart(node.data.pUserStart);
+      node.data.pUserEndDatePart = this.getDatePart(node.data.pUserEnd);
+      node.data.pUserEndTimePart = this.getTimePart(node.data.pUserEnd);
+      node.data.tatVal = this.commonService.calcBusinessDays(new Date(node.data.pStart), new Date(node.data.pEnd));
+    }
   }
 
   sortDates(node, type) {
@@ -2457,7 +2485,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
 
   changeDateOfEditedTask(node, type) {
-    node.pUserStart = node.tat === true ?
+    node.pUserStart = node.tat === true && node.itemType !== 'Client Review' ?
       new Date(node.pUserStart.getFullYear(), node.pUserStart.getMonth(), node.pUserStart.getDate(), 9, 0) : node.pUserStart;
     node.pUserEnd = type === 'start' && node.pUserStart > node.pUserEnd ? (node.tat === true ?
       new Date(node.pUserStart.getFullYear(), node.pUserStart.getMonth(),
@@ -2701,12 +2729,12 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
               this.cascadeNextTask(sentPrevNode, element, subMilestonePosition, selectedMil);
             }
           });
-          if (slotFirstTask[0].data.AssignedTo.ID && slotFirstTask[0].data.AssignedTo.ID !== -1) {
+          if (sentPrevNode.data.status !== 'In Progress' && slotFirstTask[0].data.AssignedTo.ID && slotFirstTask[0].data.AssignedTo.ID !== -1) {
             // All task of slot will be allocated at once so if first task is assigned to resource then check for resource and new task date availability
             await this.checkTaskResourceAvailability(sentPrevNode, subMilestonePosition, selectedMil, this.sharedObject.oTaskAllocation.oResources);
           }
         }
-      } else if (slotFirstTask[0].data.AssignedTo.EMail) {
+      } else if (sentPrevNode.data.status !== 'In Progress' && slotFirstTask[0].data.AssignedTo.EMail) {
         // All task of slot will be allocated at once so if first task is assigned to resource then check for resource and new task date availability
         await this.checkTaskResourceAvailability(sentPrevNode, subMilestonePosition, selectedMil, this.sharedObject.oTaskAllocation.oResources);
       }
@@ -2752,7 +2780,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         }
         if (availableHours >= allocatedHours) {
           // filter tasks based on dates and subtasks within same slot
-          retTask = retTask.filter(t => t.ID !== task.data.id);
+          retTask = retTask.filter(t => t.ID !== task.data.pID && t.Status !== 'Completed');
 
           retTask = retTask.filter((tsk) => {
             return ((task.data.pUserStart <= tsk.DueDate && task.data.pUserEnd >= tsk.DueDate)
@@ -2884,6 +2912,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     else if (nodeData.type === 'milestone') {
       if (new Date(prevNodeEndDate) >= new Date(nodeData.start_date)) {
         const firstTask = nextNode.children[0].data;
+        nodeData.edited = true;
         const allTasks = this.getTasksFromMilestones(nextNode, false, false);
         let allParallelTasks = [];
         if (firstTask.type === 'task') {
@@ -2902,7 +2931,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         }
         allParallelTasks.forEach(element => {
 
-          if (!element.data.DisableCascade && element.data.status !== 'In Progress') {
+          if (!element.DisableCascade && element.status !== 'In Progress') {
             this.cascadeNextTask(previousNode, element, element.submilestone ? 1 : 0, selectedMil + 1);
           }
         });
@@ -3304,6 +3333,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     for (const mail of this.deallocationMailArray) {
       await this.sendCentralTaskMail(mail.project, mail.slot.data, mail.subject, mail.template);
     }
+    this.commonService.SetNewrelic('TaskAllocation', 'timeline-getProjectResources', 'setMilestone');
     await this.commonService.getProjectResources(this.oProjectDetails.projectCode, false, false);
     this.getMilestones(false);
 
@@ -3565,6 +3595,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   async getsendEmailObjBody(milestoneTask, projectDetails, EmailType, templateName) {
     const mailObj = Object.assign({}, this.taskAllocationService.common.getMailTemplate);
     mailObj.filter = mailObj.filter.replace('{{templateName}}', templateName);
+    this.commonService.SetNewrelic('TaskAllocation', 'timeline-getsendEmailObjBody', 'readItems');
     const templateData = await this.spServices.readItems(this.constants.listNames.MailContent.name,
       mailObj);
     let mailContent = templateData.length > 0 ? templateData[0].Content : [];
@@ -3582,6 +3613,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   async getReallocateEmailObjBody(data, slot, templateName) {
     const mailObj = Object.assign({}, this.taskAllocationService.common.getMailTemplate);
     mailObj.filter = mailObj.filter.replace('{{templateName}}', templateName);
+    this.commonService.SetNewrelic('TaskAllocation', 'timeline-getReallocateEmailObjBody', 'readItems');
     const templateData = await this.spServices.readItems(this.constants.listNames.MailContent.name,
       mailObj);
     let mailContent = templateData.length > 0 ? templateData[0].Content : [];
@@ -4193,6 +4225,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       this.commonService.SetNewrelic('TaskAllocation', 'Timeline', 'SendEarlyTaskCompletionNotification');
       await this.spServices.executeBatch(notificationBatchUrl);
     }
+    this.commonService.SetNewrelic('TaskAllocation', 'timeline-getProjectResources', 'setAsNextMilestone');
     await this.commonService.getProjectResources(this.oProjectDetails.projectCode, false, false);
     this.getMilestones(false);
   }
@@ -4275,7 +4308,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           } else {
             checkTasks = milestoneTasks;
           }
-          checkTasks = checkTasks.filter(t => !t.parentSlot && t.IsCentrallyAllocated === 'No');
+          checkTasks = checkTasks.filter(t => !t.parentSlot);
           // tslint:disable
           const checkTaskAllocatedTime = checkTasks.filter(e => (e.budgetHours === '' || +e.budgetHours === 0)
             && e.itemType !== 'Send to client' && e.itemType !== 'Client Review' && e.itemType !== 'Follow up' && e.status !== 'Completed');
@@ -4289,7 +4322,20 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
             return false;
           }
+          const compareDates = checkTasks.filter(e => (e.pEnd <= e.pStart && e.tat === false
+            && e.itemType !== 'Send to client' && e.itemType !== 'Client Review' &&
+            e.itemType !== 'Follow up' && e.status !== 'Completed'));
+          if (compareDates.length > 0) {
+
+            this.messageService.add({
+              key: 'custom', severity: 'warn', summary: 'Warning Message',
+              detail: 'End date should be greater than start date of ' + milestone.data.pName + ' - ' + compareDates[0].pName
+            });
+
+            return false;
+          }
           let validateAllocation = true;
+          checkTasks = checkTasks.filter(t => t.slotType === 'Task');
           checkTasks.forEach(element => {
             const title = element.AssignedTo ? element.AssignedTo.Title : null;
             if (!title) {
@@ -4304,20 +4350,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
             return false;
           }
-
-          const compareDates = checkTasks.filter(e => (e.end_date <= e.start_date && e.tat === false
-            && e.itemType !== 'Send to client' && e.itemType !== 'Client Review' &&
-            e.itemType !== 'Follow up' && e.status !== 'Completed'));
-          if (compareDates.length > 0) {
-
-            this.messageService.add({
-              key: 'custom', severity: 'warn', summary: 'Warning Message',
-              detail: 'End date should be greater than start date of ' + milestone.data.title + ' - ' + compareDates[0].title
-            });
-
-            return false;
-          }
-
           const errorPresnet = this.validateTaskDates(checkTasks);
           if (errorPresnet) {
             return false;
@@ -4408,7 +4440,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       'res_id': '',
       'budgetHours': 0,
       'allowStart': true,
-      'tat': task.taskType === 'Client Review' ? true : false,
+      //'tat': task.taskType === 'Client Review' ? true : false,
+      //'allowStart': false,
+      // 'tat': task.taskType === 'Client Review' ? true : false,
+      'tat': false,
       'tatVal': 0,
       'milestoneStatus': className = 'gtaskred' ? 'Not Saved' : null,
       'type': 'task',

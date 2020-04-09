@@ -689,6 +689,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
     }
 
     async uploadFileData(type: string) {
+        this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'UploadFiles');
         const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
         if (res.ServerRelativeUrl) {
             this.fileUploadedUrl = res.ServerRelativeUrl ? res.ServerRelativeUrl : '';
@@ -806,6 +807,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 const speInfoObj = {
                     PayingEntity: this.approveExpense_form.value.PayingEntity.Title,
                     ApproverComments: this.approveExpense_form.value.ApproverComments,
+                    DateSpend: this.datePipe.transform(new Date(), 'MM/dd/yyyy'),
                     Status: 'Approved Payment Pending'
                 };
                 speInfoObj['__metadata'] = { type: 'SP.Data.SpendingInfoListItem' };

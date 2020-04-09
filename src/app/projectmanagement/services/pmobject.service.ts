@@ -122,6 +122,7 @@ export class PMObjectService {
     ShortTitle: '',
     ClientLegalEntity: '',
     DeliverableType: '',
+    SubDeliverable: '',
     ProjectType: '',
     Status: '',
     CreatedBy: '',
@@ -203,7 +204,8 @@ export class PMObjectService {
     isMangers: false,
     isHaveProjectFullAccess: false,
     isHaveSOWFullAccess: false,
-    isHaveSOWBudgetManager: false
+    isHaveSOWBudgetManager: false,
+    isInvoiceTeam: false
   };
   public isMainLoaderHidden = true;
   public activeIndex = 0;
@@ -251,7 +253,12 @@ export class PMObjectService {
       SOWBoxLink: '',
       ConferenceJournal: '',
       Authors: '',
-      Comments: ''
+      Comments: '',
+      AnnotationBinder: false,
+      SlideCount: 0,
+      PageCount: 0,
+      ReferenceCount: 0
+
     },
     Timeline: {
       Standard: {
