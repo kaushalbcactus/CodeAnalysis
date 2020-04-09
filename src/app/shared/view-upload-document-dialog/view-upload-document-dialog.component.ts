@@ -219,6 +219,18 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     let completedCRList = []
     let documentsUrl = '';
 
+    // if (selectedTab === 'Source Docs') {
+    //   documentsUrl = '/Source Documents';
+    // } else if (selectedTab === 'References') {
+    //   documentsUrl = '/References';
+    // } else if (selectedTab === 'Meeting Notes') {
+    //   documentsUrl = '/Communications';
+    // } else if (selectedTab === 'Emails') {
+    //   documentsUrl = '/Emails';
+    // } else {
+    //   documentsUrl = '/Drafts/Internal/' + this.selectedTask.Milestone;
+    // }
+
     switch (selectedTab) {
       case 'Source Docs':
         documentsUrl = '/Source Documents';
@@ -238,13 +250,11 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     const folderUrl = this.ProjectInformation.ProjectFolder;
     let completeFolderRelativeUrl = '';
     if (selectedTab === 'Client Comments') {
-
       const schedulesInfo = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ClientReviewSchedules);
       schedulesInfo.filter = schedulesInfo.filter
         .replace(/{{projectCode}}/gi, this.selectedTask.ProjectCode);
       this.commonService.SetNewrelic('Shared', 'view-uploadDocumentDialog', 'GetCRDocuments');
       const results = await this.spServices.readItems(this.constants.listNames.Schedules.name, schedulesInfo);
-     
       if (results) {
         completedCRList = results.length > 0 ? results : [];
         const dbMilestones = this.ProjectInformation.Milestones.split(';#');
@@ -258,6 +268,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
             listName: ''
           };
           let batchURL = [];
+
           Milestones.forEach(element => {
             documentsUrl = '/Drafts/Internal/' + element;
             completeFolderRelativeUrl = folderUrl + documentsUrl;
@@ -267,7 +278,9 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
             documentGet.listName = 'TaskDocuments'
             batchURL.push(documentGet);
           });
+
           const FolderDocuments = await this.spServices.executeBatch(batchURL);
+
           if (FolderDocuments) {
             this.allDocuments = [].concat(...FolderDocuments.map(c => c.retItems));
           }
@@ -477,7 +490,6 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     }
   }
 
-  
   async uploadDocuments(event, type) {
 
     if (event.files.length) {

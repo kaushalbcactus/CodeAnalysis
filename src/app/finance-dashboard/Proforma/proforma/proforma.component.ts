@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewEncapsulation, ViewChild, OnDestroy, HostListener, ElementRef, ApplicationRef, NgZone, TemplateRef, ChangeDetectorRef } from '@angular/core';
 import { Message, ConfirmationService, MessageService, SelectItem } from 'primeng/api';
-import { Calendar, Table } from 'primeng';
+import { Calendar, Table, DialogService } from 'primeng';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -13,6 +13,7 @@ import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/time
 import { EditorComponent } from 'src/app/finance-dashboard/PDFEditing/editor/editor.component';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
+import { FileUploadProgressDialogComponent } from 'src/app/shared/file-upload-progress-dialog/file-upload-progress-dialog.component';
 
 
 @Component({
@@ -81,6 +82,8 @@ export class ProformaComponent implements OnInit, OnDestroy {
 
     // List of Subscribers 
     private subscription: Subscription = new Subscription();
+    FolderName: string;
+    SelectedFile: any;
 
 
     constructor(
@@ -99,6 +102,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         private locationStrategy: LocationStrategy,
         private readonly _router: Router,
         _applicationRef: ApplicationRef,
+        public dialogService: DialogService,
         zone: NgZone,
     ) {
         // Browser back button disabled & bookmark issue solution
@@ -898,7 +902,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
     // Generate Invoice Number
     invoiceNumber: any;
     generateInvoiceNumber() {
-        if(!this.generateInvoiceInProgress) {
+        if (!this.generateInvoiceInProgress) {
             this.generateInvoiceInProgress = true;
             this.invoiceNumber = '';
             this.addUpdateRequired();
@@ -1245,6 +1249,12 @@ export class ProformaComponent implements OnInit, OnDestroy {
     selectedFile: any;
     filePathUrl: any;
     fileReader: any;
+
+    //*************************************************************************************************
+    // new File uplad function updated by Maxwell
+    // ************************************************************************************************
+
+
     onFileChange(event, folderName) {
         let existingFile = this.selectedRowItem.FileURL ? this.selectedRowItem.FileURL.split('/') : [];
         if (existingFile) {
@@ -1257,7 +1267,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 return;
             }
         }
-        this.fileReader = new FileReader();
+        // this.fileReader = new FileReader();
         if (event.target.files && event.target.files.length > 0) {
             this.selectedFile = event.target.files[0];
             const fileName = this.selectedFile.name;
@@ -1268,20 +1278,140 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 this.messageService.add({ key: 'proformaInfoToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
                 return false;
             }
-            this.fileReader.readAsArrayBuffer(this.selectedFile);
-            this.fileReader.onload = () => {
-                // console.log('selectedFile ', this.selectedFile);
-                // console.log('this.fileReader  ', this.fileReader.result);
-                let folderPath: string = '/Finance/Proforma/';
-                let cleListName = this.getCLEListNameFromCLE(this.selectedRowItem.ClientLegalEntity);
-                this.filePathUrl = this.spServices.getFileUploadUrl(this.globalService.sharePointPageObject.webRelativeUrl + '/' + cleListName + folderPath, this.selectedFile.name, true);
-                // this.filePathUrl = this.globalService.sharePointPageObject.webAbsoluteUrl + "/_api/web/GetFolderByServerRelativeUrl(" + "'" + cleListName + '' + folderPath + "'" + ")/Files/add(url=@TargetFileName,overwrite='true')?" +
-                // "&@TargetFileName='" + this.selectedFile.name + "'";
-                // this.uploadFileData('');
-            };
-
+            let cleListName = this.getCLEListNameFromCLE(this.selectedRowItem.ClientLegalEntity)
+            this.FolderName = cleListName + '/Finance/Proforma/';
+            this.SelectedFile.push(new Object({ name: this.selectedFile.name, file: this.selectedFile }));
         }
     }
+
+
+    async uploadFileData() {
+        const batchUrl = [];
+        this.commonService.SetNewrelic('Finance-Dashboard', 'Proforma', 'uploadFile');
+        const date = new Date();
+        const ref = this.dialogService.open(FileUploadProgressDialogComponent, {
+            header: 'File Uploading',
+            width: '70vw',
+            data: {
+                Files: this.SelectedFile,
+                libraryName: this.globalService.sharePointPageObject.webRelativeUrl + '/' + this.FolderName,
+                overwrite: true,
+            },
+            contentStyle: { 'overflow-y': 'visible', 'background-color': '#f4f3ef' },
+            closable: false,
+        });
+
+        return ref.onClose.subscribe(async (uploadedfile: any) => {
+            if (uploadedfile) {
+                if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
+                    if (uploadedfile[0].ServerRelativeUrl) {
+                        let prfData = {
+                            FileURL: uploadedfile[0].ServerRelativeUrl ? uploadedfile[0].ServerRelativeUrl : '',
+                            ProformaHtml: null
+                        }
+                        prfData['__metadata'] = { type: this.constantService.listNames.Proforma.type };
+                        const invObj = Object.assign({}, this.queryConfig);
+                        invObj.url = this.spServices.getItemURL(this.constantService.listNames.Proforma.name, +this.selectedRowItem.Id);
+                        invObj.listName = this.constantService.listNames.Proforma.name;
+                        invObj.type = 'PATCH';
+                        invObj.data = prfData;
+                        batchUrl.push(invObj);
+                        this.commonService.SetNewrelic('Finance-Dashboard', 'Proforma-proforma', 'uploadFileUpdateProforma');
+                        this.submitForm(batchUrl, 'replaceProforma');
+                    } else if (uploadedfile[0].hasOwnProperty('odata.error')) {
+
+                        this.submitBtn.isClicked = false;
+                        this.messageService.add({
+                            key: 'proformaInfoToast', severity: 'error', summary: 'Error message',
+                            detail: 'File not uploaded,Folder / File Not Found', life: 3000
+                        });
+                    }
+                }
+            }
+        });
+    }
+
+
+
+
+    //*************************************************************************************************
+    // commented old file upload function
+    // ************************************************************************************************
+
+
+    // onFileChange(event, folderName) {
+    //     let existingFile = this.selectedRowItem.FileURL ? this.selectedRowItem.FileURL.split('/') : [];
+    //     if (existingFile) {
+    //         let file = existingFile[existingFile.length - 1];
+    //         // let fileName = file.substr(0, file.indexOf('.'));
+    //         // console.log('fileName  ', file);
+    //         if (file === event.target.files[0].name) {
+    //             this.messageService.add({ key: 'proformaInfoToast', severity: 'info', summary: 'Info message', detail: 'This file name already exit.Please select another file name.', life: 4000 });
+    //             this.replaceProforma_form.reset();
+    //             return;
+    //         }
+    //     }
+    //     // this.fileReader = new FileReader();
+    //     if (event.target.files && event.target.files.length > 0) {
+    //         this.selectedFile = event.target.files[0];
+    //         const fileName = this.selectedFile.name;
+    //         const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
+    //         if (fileName !== sNewFileName) {
+    //             this.fileInput.nativeElement.value = '';
+    //             this.replaceProforma_form.get('file').setValue('');
+    //             this.messageService.add({ key: 'proformaInfoToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
+    //             return false;
+    //         }
+    //         this.fileReader.readAsArrayBuffer(this.selectedFile);
+    //         this.fileReader.onload = () => {
+    //             // console.log('selectedFile ', this.selectedFile);
+    //             // console.log('this.fileReader  ', this.fileReader.result);
+    //             let folderPath: string = '/Finance/Proforma/';
+    //             let cleListName = this.getCLEListNameFromCLE(this.selectedRowItem.ClientLegalEntity);
+    //             this.filePathUrl = this.spServices.getFileUploadUrl(this.globalService.sharePointPageObject.webRelativeUrl + '/' + cleListName + folderPath, this.selectedFile.name, true);
+
+    //         };
+
+    //     }
+    // }
+
+
+    // async uploadFileData() {
+    //     this.commonService.SetNewrelic('Finance-Dashboard', 'Proforma', 'uploadFile');
+    //     const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result)
+    //     // console.log('selectedFile uploaded .', res.ServerRelativeUrl);
+    //     const batchUrl = [];
+    //     if (res) {
+    //         // let fileUrl = res.ServerRelativeUrl;
+    //         let prfData = {
+    //             FileURL: res.ServerRelativeUrl ? res.ServerRelativeUrl : '',
+    //             ProformaHtml: null
+    //         }
+    //         prfData['__metadata'] = { type: 'SP.Data.ProformaListItem' };
+
+    //         const invObj = Object.assign({}, this.queryConfig);
+    //         invObj.url = this.spServices.getItemURL(this.constantService.listNames.Proforma.name, +this.selectedRowItem.Id);
+    //         invObj.listName = this.constantService.listNames.Proforma.name;
+    //         invObj.type = 'PATCH';
+    //         invObj.data = prfData;
+    //         batchUrl.push(invObj);
+
+    //         // const endpoint = this.fdConstantsService.fdComponent.addUpdateProforma.update.replace("{{Id}}", this.selectedRowItem.Id);
+    //         // let data = [
+    //         //     {
+    //         //         objData: obj,
+    //         //         endpoint: endpoint,
+    //         //         requestPost: false
+    //         //     }
+    //         // ];
+    //         this.commonService.SetNewrelic('Finance-Dashboard', 'Proforma-proforma', 'uploadFileUpdateProforma');
+    //         this.submitForm(batchUrl, 'replaceProforma');
+    //     } else if (res.hasError) {
+    //         this.isPSInnerLoaderHidden = true;
+    //         this.messageService.add({ key: 'proformaInfoToast', severity: 'info', summary: 'Info message', detail: 'File not uploaded,Folder / ' + res.message.value + '', life: 3000 })
+    //     }
+    // }
+
 
     getCLEListNameFromCLE(cleName) {
         let found = this.cleData.find((x) => {
@@ -1292,41 +1422,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
         return found ? found.ListName : ''
     }
 
-    async uploadFileData() {
-        this.commonService.SetNewrelic('Finance-Dashboard', 'Proforma', 'uploadFile');
-        const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result)
-        // console.log('selectedFile uploaded .', res.ServerRelativeUrl);
-        const batchUrl = [];
-        if (res) {
-            // let fileUrl = res.ServerRelativeUrl;
-            let prfData = {
-                FileURL: res.ServerRelativeUrl ? res.ServerRelativeUrl : '',
-                ProformaHtml: null
-            }
-            prfData['__metadata'] = { type: 'SP.Data.ProformaListItem' };
-
-            const invObj = Object.assign({}, this.queryConfig);
-            invObj.url = this.spServices.getItemURL(this.constantService.listNames.Proforma.name, +this.selectedRowItem.Id);
-            invObj.listName = this.constantService.listNames.Proforma.name;
-            invObj.type = 'PATCH';
-            invObj.data = prfData;
-            batchUrl.push(invObj);
-
-            // const endpoint = this.fdConstantsService.fdComponent.addUpdateProforma.update.replace("{{Id}}", this.selectedRowItem.Id);
-            // let data = [
-            //     {
-            //         objData: obj,
-            //         endpoint: endpoint,
-            //         requestPost: false
-            //     }
-            // ];
-            this.commonService.SetNewrelic('Finance-Dashboard', 'Proforma-proforma', 'uploadFileUpdateProforma');
-            this.submitForm(batchUrl, 'replaceProforma');
-        } else if (res.hasError) {
-            this.isPSInnerLoaderHidden = true;
-            this.messageService.add({ key: 'proformaInfoToast', severity: 'info', summary: 'Info message', detail: 'File not uploaded,Folder / ' + res.message.value + '', life: 3000 })
-        }
-    }
 
     createProforma() {
         this.minProformDate = this.commonService.getLastWorkingDay(3, new Date());

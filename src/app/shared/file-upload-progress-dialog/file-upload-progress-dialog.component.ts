@@ -58,7 +58,7 @@ export class FileUploadProgressDialogComponent implements OnInit {
       }));
       this.fileUpload(this.Files[index].file, this.config.data.libraryName, this.Files[index].name, this.overwrite).then(uploadedFile => {
         Fileuploadcount++;
-        console.log(uploadedFile);
+        
 
         uploadedFiles.push(uploadedFile)
 
@@ -159,9 +159,6 @@ export class FileUploadProgressDialogComponent implements OnInit {
       const isFinished = index === chunks.length - 1;
       index += 1;
       const percentageComplete = isFinished ? 100 : Math.round((index * chunkPercentage));
-
-      console.log("Percentage Completed:" + percentageComplete)
-
       this.filedisplayArray.find(c => c.fileName === fileName).percentage = percentageComplete;
       //More chunks to process before the file is finished, continue    
       if (index < chunks.length) {

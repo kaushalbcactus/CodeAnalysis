@@ -10,6 +10,7 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DataService } from 'src/app/Services/data.service';
 import { CommonService } from 'src/app/Services/common.service';
+import { DialogService } from 'primeng';
 @Component({
   selector: 'app-projectmanagement',
   templateUrl: './projectmanagement.component.html',
@@ -57,7 +58,8 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     private router: Router,
     private dataService: DataService,
     private commonService: CommonService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    public dialogService: DialogService,
   ) { }
   ngOnInit() {
     this.globalObject.currentTitle = 'Project Management';
@@ -308,6 +310,14 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.addSowForm.get('tax').setValue(0);
     }
   }
+
+
+
+  //*************************************************************************************************
+  // new File uplad function updated by Maxwell
+  // ************************************************************************************************
+
+
   /***
    * This method is used to add the sow
    */
@@ -397,6 +407,148 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.validateAllFormFields(this.addSowForm);
     }
   }
+
+  async submitFile() {
+    const docFolder = 'Finance/SOW';
+    let libraryName = '';
+    const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
+      x.Title === this.pmObject.addSOW.ClientLegalEntity);
+    if (clientInfo && clientInfo.length) {
+      this.currClientLegalEntityObj = clientInfo;
+      libraryName = clientInfo[0].ListName;
+    }
+    const folderPath: string = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + libraryName + '/' + docFolder;
+    this.filePathUrl = await this.spServices.getFileUploadUrl(folderPath, this.selectedFile.name, true);
+    this.commonService.SetNewrelic('ProjectManagement', 'projectmanagement-submitFile', 'uploadFile');
+    const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
+    console.log(res);
+    // Added by kaushal on 12-07-2019
+    if (res.hasOwnProperty('ServerRelativeUrl') && res.hasOwnProperty('Name')) { // && !res.hasOwnProperty('hasError')
+      this.pmObject.addSOW.SOWFileURL = res.ServerRelativeUrl;
+      this.pmObject.addSOW.SOWFileName = res.Name;
+      this.pmObject.addSOW.SOWDocProperties = res;
+    }
+    return res;
+  }
+
+
+  //*************************************************************************************************
+  // commented old file upload function
+  // ************************************************************************************************
+
+
+  // async createSOW() {
+
+  //   this.pmObject.isSOWFormSubmit = true;
+  //   if (this.addSowForm.valid) {
+  //     this.pmObject.isSOWFormSubmit = false;
+  //     if (!this.selectedFile && !this.pmObject.addSOW.ID) {
+  //       this.messageService.add({
+  //         key: 'custom', severity: 'error',
+  //         summary: 'Error Message', detail: 'Please select SOW document.'
+  //       });
+  //       return false;
+  //     }
+  //     // get all the value from form.
+  //     this.pmObject.addSOW.ClientLegalEntity = this.addSowForm.value.clientLegalEntity ? this.addSowForm.value.clientLegalEntity :
+  //       this.pmObject.addSOW.ClientLegalEntity;
+  //     this.pmObject.addSOW.SOWCode = this.addSowForm.value.sowCode ? this.addSowForm.value.sowCode + '-SOW' : this.pmObject.addSOW.SOWCode;
+  //     this.pmObject.addSOW.BillingEntity = this.addSowForm.value.cactusBillingEntity;
+  //     this.pmObject.addSOW.PracticeArea = this.addSowForm.value.practiceArea;
+  //     this.pmObject.addSOW.Poc = this.addSowForm.value.poc;
+  //     this.pmObject.addSOW.PocOptional = this.addSowForm.value.pocOptional;
+  //     this.pmObject.addSOW.SOWTitle = this.addSowForm.value.sowTitle;
+  //     this.pmObject.addSOW.SOWCreationDate = this.addSowForm.value.sowCreationDate ? this.addSowForm.value.sowCreationDate :
+  //       this.pmObject.addSOW.SOWCreationDate;
+  //     this.pmObject.addSOW.SOWExpiryDate = this.addSowForm.value.sowExpiryDate;
+  //     if (this.pmObject.addSOW.SOWCreationDate && this.pmObject.addSOW.SOWExpiryDate) {
+  //       const creationDate = new Date(this.pmObject.addSOW.SOWCreationDate);
+  //       const expirtyDate = new Date(this.pmObject.addSOW.SOWExpiryDate);
+  //       if (expirtyDate <= creationDate) {
+  //         this.messageService.add({
+  //           key: 'custom', severity: 'error',
+  //           summary: 'Error Message', detail: 'SOW expiry date should be greater than sow creation date.'
+  //         });
+  //         return;
+  //       }
+  //     }
+  //     this.pmObject.isMainLoaderHidden = false;
+  //     this.pmObject.addSOW.Status = this.addSowForm.value.status ? this.addSowForm.value.status : this.pmObject.addSOW.Status;
+  //     this.pmObject.addSOW.Comments = this.addSowForm.value.comments;
+  //     this.pmObject.addSOW.Currency = this.addSowForm.value.currency ? this.addSowForm.value.currency : this.pmObject.addSOW.Currency;
+  //     this.pmObject.addSOW.Budget.Total = this.addSowForm.value.total;
+  //     this.pmObject.addSOW.CM1 = this.addSowForm.value.cm;
+  //     this.pmObject.addSOW.CM2 = this.addSowForm.value.cm2;
+  //     this.pmObject.addSOW.DeliveryOptional = this.addSowForm.value.deliveryOptional;
+  //     this.pmObject.addSOW.Delivery = this.addSowForm.value.delivery;
+  //     this.pmObject.addSOW.SOWOwner = this.addSowForm.value.sowOwner;
+  //     // Add user to all operation field.
+  //     this.pmObject.addSOW.AllOperationId.push(this.pmObject.currLoginInfo.Id);
+  //     if (this.pmObject.addSOW.CM1 && this.pmObject.addSOW.CM1.length) {
+  //       this.pmObject.addSOW.CM1.forEach(element => {
+  //         this.pmObject.addSOW.AllOperationId.push(element);
+  //       });
+  //     }
+  //     if (this.pmObject.addSOW.Delivery && this.pmObject.addSOW.Delivery.length) {
+  //       this.pmObject.addSOW.Delivery.forEach(element => {
+  //         this.pmObject.addSOW.AllOperationId.push(element);
+  //       });
+  //     }
+  //     this.pmObject.addSOW.AllOperationId.push(this.pmObject.addSOW.SOWOwner);
+  //     this.pmObject.addSOW.AllOperationId.push(this.pmObject.addSOW.CM2);
+  //     this.pmObject.addSOW.AllOperationId.push(this.pmObject.addSOW.DeliveryOptional);
+  //     let fileUploadResult = {};
+  //     if (this.selectedFile) {
+  //       fileUploadResult = await this.submitFile();
+  //     }
+  //     this.pmObject.addSOW.isSOWCodeDisabled = false;
+  //     this.pmObject.addSOW.isStatusDisabled = true;
+  //     if (this.selectedFile && !fileUploadResult.hasOwnProperty('hasError')) {
+  //       if (!this.pmObject.addSOW.ID) {
+  //         await this.createUpdateSOW(false, this.pmObject.addSOW);
+  //       }
+  //       if (this.pmObject.addSOW.ID) {
+  //         await this.createUpdateSOW(true, this.pmObject.addSOW);
+  //       }
+  //     } else {
+  //       if (!this.pmObject.addSOW.ID) {
+  //         await this.createUpdateSOW(false, this.pmObject.addSOW);
+  //       }
+  //       if (this.pmObject.addSOW.ID) {
+  //         await this.createUpdateSOW(true, this.pmObject.addSOW);
+  //       }
+  //     }
+  //     this.selectedFile = null;
+  //   } else {
+  //     this.validateAllFormFields(this.addSowForm);
+  //   }
+  // }
+
+  /**
+  * This method is used to upload the file on finance/sow.
+  */
+  // async submitFile() {
+  //   const docFolder = 'Finance/SOW';
+  //   let libraryName = '';
+  //   const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
+  //     x.Title === this.pmObject.addSOW.ClientLegalEntity);
+  //   if (clientInfo && clientInfo.length) {
+  //     this.currClientLegalEntityObj = clientInfo;
+  //     libraryName = clientInfo[0].ListName;
+  //   }
+  //   const folderPath: string = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + libraryName + '/' + docFolder;
+  //   this.filePathUrl = await this.spServices.getFileUploadUrl(folderPath, this.selectedFile.name, true);
+  //   this.commonService.SetNewrelic('ProjectManagement', 'projectmanagement-submitFile', 'uploadFile');
+  //   const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
+  //   console.log(res);
+  //   // Added by kaushal on 12-07-2019
+  //   if (res.hasOwnProperty('ServerRelativeUrl') && res.hasOwnProperty('Name')) { // && !res.hasOwnProperty('hasError')
+  //     this.pmObject.addSOW.SOWFileURL = res.ServerRelativeUrl;
+  //     this.pmObject.addSOW.SOWFileName = res.Name;
+  //     this.pmObject.addSOW.SOWDocProperties = res;
+  //   }
+  //   return res;
+  // }
   /**
    * This method is used to set the field properties.
    */
@@ -432,45 +584,15 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     //   }
     // }
   }
-  /**
-   * This method is used to upload the file on finance/sow.
-   */
-  async submitFile() {
-    const docFolder = 'Finance/SOW';
-    let libraryName = '';
-    const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
-      x.Title === this.pmObject.addSOW.ClientLegalEntity);
-    if (clientInfo && clientInfo.length) {
-      this.currClientLegalEntityObj = clientInfo;
-      libraryName = clientInfo[0].ListName;
-    }
-    const folderPath: string = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + libraryName + '/' + docFolder;
-    this.filePathUrl = await this.spServices.getFileUploadUrl(folderPath, this.selectedFile.name, true);
-    this.commonService.SetNewrelic('ProjectManagement', 'projectmanagement-submitFile', 'uploadFile');
-    const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
-    console.log(res);
-    // Added by kaushal on 12-07-2019
-    if (res.hasOwnProperty('ServerRelativeUrl') && res.hasOwnProperty('Name')) { // && !res.hasOwnProperty('hasError')
-      this.pmObject.addSOW.SOWFileURL = res.ServerRelativeUrl;
-      this.pmObject.addSOW.SOWFileName = res.Name;
-      this.pmObject.addSOW.SOWDocProperties = res;
-    }
-    return res;
-  }
+
   /**
    * This method get called when we change the file.
    * @param event Pass the file properties as a parameter.
    */
   onFileChange(event) {
     this.selectedFile = null;
-    this.fileReader = new FileReader();
     if (event.target.files && event.target.files.length > 0) {
       this.selectedFile = event.target.files[0];
-      this.fileReader.readAsArrayBuffer(this.selectedFile);
-
-      // this.addSowForm.patchValue({
-      //   'sowDocuments': this.selectedFile ? this.selectedFile.name : ''
-      // })
     }
   }
   /**
@@ -1041,7 +1163,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       }
 
     }
-    
+
   }
   /**
    * This method is used to get the edit SOWObj value based on selected sow.

@@ -11,13 +11,18 @@ import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { CommonService } from 'src/app/Services/common.service';
 import { Subject, Observable, timer, Subscription } from 'rxjs';
+import { FileUploadProgressDialogComponent } from 'src/app/shared/file-upload-progress-dialog/file-upload-progress-dialog.component';
+import { DynamicDialogRef, DialogService } from 'primeng';
 
 @Component({
     selector: 'app-expenditure',
     templateUrl: './expenditure.component.html',
-    styleUrls: ['./expenditure.component.css']
+    styleUrls: ['./expenditure.component.css'],
+    providers:[DynamicDialogRef]
 })
 export class ExpenditureComponent implements OnInit, OnDestroy {
+    caFolderName: any;
+    FolderName: any;
 
     constructor(
         public messageService: MessageService,
@@ -31,6 +36,8 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         private datePipe: DatePipe,
         private router: Router,
         private commonService: CommonService,
+        public ref: DynamicDialogRef,
+        public dialogService: DialogService,
     ) { }
 
     get isValidExpenditureForm() {
@@ -144,10 +151,11 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
     filePathUrl: any;
     fileReader: any;
     fileUploadedUrl: any;
-
+    SelectedFile = [];
     // Upload Client Approval File
     selectedCAFile: any;
     cafilePathUrl: any;
+    caSelectedFile = [];
     cafileReader: any;
     caFileUploadedUrl: any;
 
@@ -726,7 +734,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
                 return;
             }
             // console.log('form is submitting ..... this.addExpenditure_form ', this.addExpenditure_form.value);
-            this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
+            // this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
             this.uploadFileData();
 
         } else if (type === 'createFreelancer') {
@@ -832,6 +840,40 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         console.log('finalAddEArray ', this.finalAddEArray);
     }
 
+    // onFileChange(event, folderName) {
+    //     console.log('Event ', event);
+    //     this.fileReader = new FileReader();
+    //     if (event.target.files && event.target.files.length > 0) {
+    //         this.selectedFile = event.target.files[0];
+    //         const fileName = this.selectedFile.name;
+    //         const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
+    //         if (fileName !== sNewFileName) {
+    //             this.fileInput.nativeElement.value = '';
+    //             this.addExpenditure_form.get('FileURL').setValue('');
+    //             this.messageService.add({
+    //                 key: 'expenseErrorToast', severity: 'error', summary: 'Error message',
+    //                 detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000
+    //             });
+    //             return false;
+    //         }
+    //         this.fileReader.readAsArrayBuffer(this.selectedFile);
+    //         this.fileReader.onload = () => {
+    //             console.log('selectedFile ', this.selectedFile);
+    //             console.log('this.fileReader  ', this.fileReader.result);
+    //             const date = new Date();
+
+    //             const folderPath: string = this.globalService.sharePointPageObject.webRelativeUrl + '/SpendingInfoFiles/'
+    //                 + folderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM') + '/';
+
+    //             this.filePathUrl = this.globalService.sharePointPageObject.webRelativeUrl + '/_api/web/GetFolderByServerRelativeUrl(' + '\'' + folderPath
+    //                 + '\'' + ')/Files/add(url=@TargetFileName,overwrite=\'true\')?' + '&@TargetFileName=\'' + this.selectedFile.name + '\'';
+    //         };
+
+    //     }
+    // }
+
+
+
     onFileChange(event, folderName) {
         console.log('Event ', event);
         this.fileReader = new FileReader();
@@ -848,44 +890,83 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
                 });
                 return false;
             }
-            this.fileReader.readAsArrayBuffer(this.selectedFile);
-            this.fileReader.onload = () => {
-                console.log('selectedFile ', this.selectedFile);
-                console.log('this.fileReader  ', this.fileReader.result);
-                const date = new Date();
 
-                const folderPath: string = this.globalService.sharePointPageObject.webRelativeUrl + '/SpendingInfoFiles/'
-                    + folderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM') + '/';
+            this.FolderName = folderName;
+            this.SelectedFile.push(new Object({ name: sNewFileName, file: this.selectedFile }));
 
-                this.filePathUrl = this.globalService.sharePointPageObject.webRelativeUrl + '/_api/web/GetFolderByServerRelativeUrl(' + '\'' + folderPath
-                    + '\'' + ')/Files/add(url=@TargetFileName,overwrite=\'true\')?' + '&@TargetFileName=\'' + this.selectedFile.name + '\'';
-                // this.uploadFileData('');
-                // this.nodeService.uploadFIle(this.filePathUrl, this.fileReader.result).subscribe(res => {
-                //     console.log('selectedFile uploaded .', res);
-                // })
-            };
+            // this.fileReader.readAsArrayBuffer(this.selectedFile);
+            // this.fileReader.onload = () => {
+            //     console.log('selectedFile ', this.selectedFile);
+            //     console.log('this.fileReader  ', this.fileReader.result);
+            //     const date = new Date();
+
+            //     const folderPath: string = this.globalService.sharePointPageObject.webRelativeUrl + '/SpendingInfoFiles/'
+            //         + folderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM') + '/';
+
+            //     this.filePathUrl = this.globalService.sharePointPageObject.webRelativeUrl + '/_api/web/GetFolderByServerRelativeUrl(' + '\'' + folderPath
+            //         + '\'' + ')/Files/add(url=@TargetFileName,overwrite=\'true\')?' + '&@TargetFileName=\'' + this.selectedFile.name + '\'';
+
+
+            // };
 
         }
     }
+
+
 
     async uploadFileData() {
+        const date = new Date();
         this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'FileUpolad');
-        const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
-        if (res.ServerRelativeUrl) {
-            this.fileUploadedUrl = res.ServerRelativeUrl;
-            this.uploadCAFileData();
-        } else if (res.hasError) {
-            this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
-            this.submitBtn.isClicked = false;
-            this.messageService.add({
-                key: 'expenseErrorToast', severity: 'error', summary: 'Error message',
-                detail: 'File not uploaded,Folder / ' + res.message.value + '', life: 3000
-            });
-        }
+        const ref = this.dialogService.open(FileUploadProgressDialogComponent, {
+            header: 'File Uploading',
+            width: '70vw',
+            data: {
+                Files: this.SelectedFile,
+                libraryName: this.globalService.sharePointPageObject.webRelativeUrl + '/SpendingInfoFiles/' + this.FolderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM'),
+                overwrite: true,
+            },
+            contentStyle: { 'overflow-y': 'visible', 'background-color': '#f4f3ef' },
+            closable: false,
+        });
+
+        return ref.onClose.subscribe(async (uploadedfile: any) => {
+            if (uploadedfile) {
+                if (this.caSelectedFile.length > 0 && this.caSelectedFile.length === uploadedfile.length) {
+                    if (uploadedfile[0].ServerRelativeUrl) {
+                        this.fileUploadedUrl = uploadedfile[0].ServerRelativeUrl;
+                        this.uploadCAFileData();
+                    } else if (uploadedfile[0].hasOwnProperty('odata.error')) {
+                        // this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
+                        this.submitBtn.isClicked = false;
+                        this.messageService.add({
+                            key: 'expenseErrorToast', severity: 'error', summary: 'Error message',
+                            detail: 'File not uploaded,Folder / File Not Found', life: 3000
+                        });
+                    }
+
+                }
+            }
+        });
+
+
+
+
+        // const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
+        // if (res.ServerRelativeUrl) {
+        //     this.fileUploadedUrl = res.ServerRelativeUrl;
+        //     this.uploadCAFileData();
+        // } else if (res.hasError) {
+        //     this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
+        //     this.submitBtn.isClicked = false;
+        //     this.messageService.add({
+        //         key: 'expenseErrorToast', severity: 'error', summary: 'Error message',
+        //         detail: 'File not uploaded,Folder / ' + res.message.value + '', life: 3000
+        //     });
+        // }
     }
     caOnFileChange(event, folderName) {
-        console.log('Event ', event);
-        this.cafileReader = new FileReader();
+        // console.log('Event ', event);
+        // this.cafileReader = new FileReader();
         if (event.target.files && event.target.files.length > 0) {
             this.selectedCAFile = event.target.files[0];
             const fileName = this.selectedCAFile.name;
@@ -899,32 +980,69 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
                 });
                 return false;
             }
-            this.cafileReader.readAsArrayBuffer(this.selectedCAFile);
-            this.cafileReader.onload = () => {
-                const date = new Date();
-                const folderPath: string = this.globalService.sharePointPageObject.webRelativeUrl + '/SpendingInfoFiles/' + folderName
-                    + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM') + '/';
-                // tslint:disable-next-line: max-line-length
-                this.cafilePathUrl = this.globalService.sharePointPageObject.webRelativeUrl + '/_api/web/GetFolderByServerRelativeUrl(' + '\'' +
-                    folderPath + '\'' + ')/Files/add(url=@TargetFileName,overwrite=\'true\')?' + '&@TargetFileName=\'' + this.selectedCAFile.name + '\'';
-            };
+            this.caFolderName = folderName;
+            this.caSelectedFile.push(new Object({ name: sNewFileName, file: this.selectedCAFile }));
+
+
+            // this.cafileReader.readAsArrayBuffer(this.selectedCAFile);
+            // this.cafileReader.onload = () => {
+            //     const date = new Date();
+            //     const folderPath: string = this.globalService.sharePointPageObject.webRelativeUrl + '/SpendingInfoFiles/' + folderName
+            //         + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM') + '/';
+            //     // tslint:disable-next-line: max-line-length
+            //     this.cafilePathUrl = this.globalService.sharePointPageObject.webRelativeUrl + '/_api/web/GetFolderByServerRelativeUrl(' + '\'' +
+            //         folderPath + '\'' + ')/Files/add(url=@TargetFileName,overwrite=\'true\')?' + '&@TargetFileName=\'' + this.selectedCAFile.name + '\'';
+            // };
         }
     }
 
     async uploadCAFileData() {
+        const date = new Date();
         this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'UploadCAFiles');
-        const res = await this.spServices.uploadFile(this.cafilePathUrl, this.cafileReader.result);
-        if (res.ServerRelativeUrl) {
-            this.caFileUploadedUrl = res.ServerRelativeUrl;
-            this.submitExpediture();
-        } else if (res.hasError) {
-            this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
-            this.submitBtn.isClicked = false;
-            this.messageService.add({
-                key: 'expenseErrorToast', severity: 'error', summary: 'Error message',
-                detail: 'File not uploaded,Folder / ' + res.message.value + '', life: 3000
-            });
-        }
+        const ref = this.dialogService.open(FileUploadProgressDialogComponent, {
+            header: 'File Uploading',
+            width: '70vw',
+            data: {
+                Files: this.caSelectedFile,
+                libraryName: this.globalService.sharePointPageObject.webRelativeUrl + '/SpendingInfoFiles/' + this.caFolderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM'),
+                overwrite: true,
+            },
+            contentStyle: { 'overflow-y': 'visible', 'background-color': '#f4f3ef' },
+            closable: false,
+        });
+
+        return ref.onClose.subscribe(async (uploadedfile: any) => {
+            if (uploadedfile) {
+                if (this.caSelectedFile.length > 0 && this.caSelectedFile.length === uploadedfile.length) {
+                    if (uploadedfile[0].ServerRelativeUrl) {
+                        this.caFileUploadedUrl = uploadedfile[0].ServerRelativeUrl;
+                        this.submitExpediture();
+                    } else if (uploadedfile[0].hasOwnProperty('odata.error')) {
+                        // this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
+                        this.submitBtn.isClicked = false;
+                        this.messageService.add({
+                            key: 'expenseErrorToast', severity: 'error', summary: 'Error message',
+                            detail: 'Approve File not uploaded,Folder / File Not Found', life: 3000
+                        });
+                    }
+
+                }
+            }
+        });
+        // 
+
+        // const res = await this.spServices.uploadFile(this.cafilePathUrl, this.cafileReader.result);
+        // if (res.ServerRelativeUrl) {
+        //     this.caFileUploadedUrl = res.ServerRelativeUrl;
+        //     this.submitExpediture();
+        // } else if (res.hasError) {
+        //     this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
+        //     this.submitBtn.isClicked = false;
+        //     this.messageService.add({
+        //         key: 'expenseErrorToast', severity: 'error', summary: 'Error message',
+        //         detail: 'File not uploaded,Folder / ' + res.message.value + '', life: 3000
+        //     });
+        // }
     }
     async submitForm(batchUrl, type: string) {
         let res = await this.spServices.executeBatch(batchUrl);

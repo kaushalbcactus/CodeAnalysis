@@ -31,6 +31,7 @@ import { IliTableAttributeComponent } from './Scheduled/ili-table-attribute/ili-
 import { PfTableAttributeComponent } from './Scheduled/pf-table-attribute/pf-table-attribute.component';
 import { ProTableAttributeComponent } from './Proforma/pro-table-attribute/pro-table-attribute.component';
 import { InvTableAttributeComponent } from './Outstanding-Invoices/inv-table-attribute/inv-table-attribute.component';
+import { FileUploadProgressDialogComponent } from '../shared/file-upload-progress-dialog/file-upload-progress-dialog.component';
 
 @NgModule({
   declarations: [
@@ -79,7 +80,8 @@ import { InvTableAttributeComponent } from './Outstanding-Invoices/inv-table-att
     PaidInvoicesComponent,
     SaveYourViewComponent,
     TableAttributeComponent,
-    EditorComponent
+    EditorComponent,
+    FileUploadProgressDialogComponent
   ],
   providers: [
     FDResolve,
