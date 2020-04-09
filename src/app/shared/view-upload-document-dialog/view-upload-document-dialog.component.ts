@@ -62,7 +62,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   items: MenuItem[];
   activeItem: MenuItem;
   async ngOnInit() {
-
+      debugger;
     this.loaderenable = true;
     this.DocumentArray = [];
     this.data = Object.keys(this.config.data ? this.config.data : this.config).length ? this.config.data : this.taskData;
@@ -155,11 +155,12 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     this.selectedDocuments = [];
     this.DocumentArray = [];
     this.selectedTab = event.item.label;
+    debugger;
     const header = this.dbcols.slice(0);
     if (this.selectedTab !== 'My Drafts') {
       if (this.selectedTab === this.prevTask) {
         header.splice(2, 1);
-      } else {
+      } else if(this.selectedTab === 'Client Comments'){}  else {
         header.splice(1, 2);
       }
     } else {
@@ -178,6 +179,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   //  Get Documents On tab switch
   // ****************************************************************************************************
   async getDocuments(task) {
+    debugger;
     const header = this.dbcols.slice(0);
     header.splice(1, 1);
     this.cols = header;
@@ -407,7 +409,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
         if (this.enableNotification) {
           await this.SendEmailNotification(this.selectedTask);
         }
-        if (this.ModifiedSelectedTaskName === 'Client Review' && this.selectedTab === 'My Drafts') {
+        if (this.ModifiedSelectedTaskName === 'Client Review' && this.selectedTask.Status !=='Completed' && this.selectedTab === 'My Drafts') {
           this.ref.close(true);
         }
         else {
@@ -470,7 +472,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
 
 
   uploadDocs(event, type) {
-    if (this.ModifiedSelectedTaskName === 'Client Review' && this.selectedTab === 'My Drafts') {
+    if (this.ModifiedSelectedTaskName === 'Client Review' && this.selectedTask.Status !=='Completed' && this.selectedTab === 'My Drafts') {
       const confirmref = this.dialogService.open(ConfirmationDialogComponent, {
         header: 'Confirmation',
         data: 'Are you sure that you want to close current task with selected documents?',

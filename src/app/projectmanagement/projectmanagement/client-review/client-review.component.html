@@ -99,7 +99,7 @@
                     <!-- <td [style.backgroundColor]="task.backgroundColor"> -->
                     <td>
                         <div>
-                            <p-menu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu [model]="popItems" [popup]="true">
+                            <p-menu [style]="{'width': '15em'}" [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu [model]="popItems" [popup]="true">
                             </p-menu>
                             <i class="pi pi-ellipsis-v"  style="font-size:2em;cursor: pointer;" (click)="storeRowData(rowData,menu); menu.show($event);"></i>
                         </div>

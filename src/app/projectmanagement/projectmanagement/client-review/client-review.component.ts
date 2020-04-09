@@ -130,7 +130,8 @@ export class ClientReviewComponent implements OnInit {
         label: 'Go to Project', target: '_blank',
         command: (event) => this.goToProjectManagement(this.selectedCRTask)
       },
-      { label: 'Close', command: (event) => this.closeTask(this.selectedCRTask) }
+      { label: 'Close', command: (event) => this.closeTask(this.selectedCRTask) },
+      { label: 'View / Upload Documents', command: (e) => this.getAddUpdateDocument(this.selectedCRTask) },
     ];
     this.pmObject.sendToClientArray = [];
     this.crHideNoDataMessage = true;
@@ -211,12 +212,14 @@ export class ClientReviewComponent implements OnInit {
 
   async getCR(currentFilter) {
     const queryOptions = {
-      select: 'ID,Title,ProjectCode,StartDate,DueDate,PreviousTaskClosureDate,Milestone,PrevTasks,NextTasks',
+      select: 'ID,Title,ProjectCode,StartDate,DueDate,PreviousTaskClosureDate,Milestone,PrevTasks,NextTasks,Status',
       filter: currentFilter,
       top: 4200
     };
     this.commonService.SetNewrelic('projectManagment', 'client-review', 'GetSchedules');
     this.crArrays.taskItems = await this.spServices.readItems(this.Constant.listNames.Schedules.name, queryOptions);
+
+    debugger;
     const projectCodeTempArray = [];
     const shortTitleTempArray = [];
     const clientLegalEntityTempArray = [];
@@ -249,7 +252,7 @@ export class ClientReviewComponent implements OnInit {
         crObj.ID = task.ID;
         crObj.Title = task.Title;
         crObj.ProjectCode = task.ProjectCode;
-
+        crObj.Status = task.Status;
         crObj.NextTasks = task.NextTasks;
         crObj.PreviousTask = task.PrevTasks;
         // tslint:disable-next-line:only-arrow-functions
@@ -527,6 +530,7 @@ export class ClientReviewComponent implements OnInit {
   storeRowData(rowData, menu) {
     this.selectedCRTask = rowData;
     menu.model[2].visible = this.selectedOption.name === 'Closed' ? false : true;
+    menu.model[3].visible = this.selectedOption.name === 'Closed' ? true : false;
 
   }
   @HostListener('document:click', ['$event'])
@@ -594,6 +598,24 @@ export class ClientReviewComponent implements OnInit {
         + ' and PreviousTaskClosureDate ne null';
       this.getCR(currentFilter);
     }
+  }
+
+
+  getAddUpdateDocument(task) {
+
+    const ref = this.dialogService.open(ViewUploadDocumentDialogComponent, {
+      data: {
+        task,
+      },
+      header: task.Title,
+      width: '60vw',
+      contentStyle: { 'min-height': '30vh', 'max-height': '90vh', 'overflow-y': 'auto' }
+    });
+    ref.onClose.subscribe(async (documents: any) => {
+      if (documents) {
+      }
+    });
+
   }
 
 }
