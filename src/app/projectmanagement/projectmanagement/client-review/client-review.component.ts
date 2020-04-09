@@ -130,8 +130,9 @@ export class ClientReviewComponent implements OnInit {
         label: 'Go to Project', target: '_blank',
         command: (event) => this.goToProjectManagement(this.selectedCRTask)
       },
-      { label: 'Close', command: (event) => this.closeTask(this.selectedCRTask) },
       { label: 'View / Upload Documents', command: (e) => this.getAddUpdateDocument(this.selectedCRTask) },
+      { label: 'Close', command: (event) => this.closeTask(this.selectedCRTask) },
+
     ];
     this.pmObject.sendToClientArray = [];
     this.crHideNoDataMessage = true;
@@ -434,6 +435,7 @@ export class ClientReviewComponent implements OnInit {
       const ref = this.dialogService.open(ViewUploadDocumentDialogComponent, {
         data: {
           task,
+          closeTaskEnable: true
         },
         header: task.Title,
         width: '60vw',
@@ -454,7 +456,7 @@ export class ClientReviewComponent implements OnInit {
           // update Task
           const taskObj = Object.assign({}, this.options);
           taskObj.url = this.spServices.getItemURL(this.Constant.listNames.Schedules.name, task.ID);
-          taskObj.data = { Status: 'Completed', __metadata: { type: this.Constant.listNames.Schedules.type } };
+          taskObj.data = { Status: 'Completed', Actual_x0020_Start_x0020_Date: new Date(), Actual_x0020_End_x0020_Date: new Date(), __metadata: { type: this.Constant.listNames.Schedules.type } };
           taskObj.listName = this.Constant.listNames.Schedules.name;
           taskObj.type = 'PATCH';
           batchUrl.push(taskObj);
@@ -528,10 +530,9 @@ export class ClientReviewComponent implements OnInit {
   }
   storeRowData(rowData, menu) {
     this.selectedCRTask = rowData;
-    menu.model[2].visible = this.selectedOption.name === 'Closed' ? false : true;
-    menu.model[3].visible = this.selectedOption.name === 'Closed' ? true : false;
-
+    menu.model[3].visible = this.selectedOption.name === 'Closed' ? false : true;
   }
+
   @HostListener('document:click', ['$event'])
   clickout(event) {
     if (event.target.className === "pi pi-ellipsis-v") {
@@ -590,10 +591,13 @@ export class ClientReviewComponent implements OnInit {
       const endDate = new Date(this.queryEndDate.setHours(23, 59, 59, 0));
       const startDateString = new Date(this.commonService.formatDate(startDate) + ' 00:00:00').toISOString();
       const endDateString = new Date(this.commonService.formatDate(endDate) + ' 23:59:00').toISOString();
-      const currentFilter = ' AssignedTo eq ' + this.globalObject.currentUser.userId + ' and  ((StartDate ge \'' + startDateString + '\' or StartDate le \'' + endDateString
+      const currentFilter = ' AssignedTo eq ' + this.globalObject.currentUser.userId + ' and (((StartDate ge \'' + startDateString + '\' or StartDate le \'' + endDateString
         + '\') and (DueDate ge \'' + startDateString + '\' and DueDate le \'' + endDateString
-        + '\')) and (Status eq \'Completed\') and (Task eq \'Client Review\')'
+        + '\')) or  ((Actual_x0020_Start_x0020_Date ge \'' + startDateString + '\' or Actual_x0020_Start_x0020_Date le \'' + endDateString
+        + '\') and (Actual_x0020_End_x0020_Date ge \'' + startDateString + '\' and Actual_x0020_End_x0020_Date le \'' + endDateString
+        + '\')))  and (Status eq \'Completed\') and (Task eq \'Client Review\')'
         + ' and PreviousTaskClosureDate ne null';
+
       this.getCR(currentFilter);
     }
   }
@@ -604,6 +608,7 @@ export class ClientReviewComponent implements OnInit {
     const ref = this.dialogService.open(ViewUploadDocumentDialogComponent, {
       data: {
         task,
+        closeTaskEnable: false
       },
       header: task.Title,
       width: '60vw',

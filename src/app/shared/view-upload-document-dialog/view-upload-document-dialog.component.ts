@@ -46,6 +46,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   };
   @Input() taskData: any;
   events: any;
+  closeCRTaskEnable =false;
   constructor(
     public config: DynamicDialogConfig,
     public ref: DynamicDialogRef,
@@ -85,6 +86,8 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     this.ModifiedSelectedTaskName = this.selectedTask.Title.replace(this.selectedTask.ProjectCode, '').replace(this.selectedTask.Milestone, '').trim();
 
     this.selectedTask.Task = this.ModifiedSelectedTaskName === 'Client Review' ? 'Client Review' : this.selectedTask.Task
+
+     this.closeCRTaskEnable = this.ModifiedSelectedTaskName  === 'Client Review' ? this.data.closeTaskEnable : false;
 
     if (this.selectedTask.PrevTasks) {
       this.items = [
@@ -316,6 +319,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       users = await this.getUsers(Ids);
     }
     this.loaderenable = false;
+    debugger;
     this.DocumentArray.map(c => c.taskName = c.ListItemAllFields.TaskName != null ? c.ListItemAllFields.TaskName : '');
     this.DocumentArray.map(c => c.modifiedUserName = users.find(d => d.Id ===
       c.ListItemAllFields.EditorId) !== undefined ? users.find(d => d.Id === c.ListItemAllFields.EditorId).Title : '');
@@ -406,7 +410,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
         if (this.enableNotification) {
           await this.SendEmailNotification(this.selectedTask);
         }
-        if (this.ModifiedSelectedTaskName === 'Client Review' && this.selectedTask.Status !=='Completed' && this.selectedTab === 'My Drafts') {
+        if (this.ModifiedSelectedTaskName === 'Client Review' && this.closeCRTaskEnable && this.selectedTab === 'My Drafts') {
           this.ref.close(true);
         }
         else {
@@ -469,7 +473,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
 
 
   uploadDocs(event, type) {
-    if (this.ModifiedSelectedTaskName === 'Client Review' && this.selectedTask.Status !=='Completed' && this.selectedTab === 'My Drafts') {
+    if (this.ModifiedSelectedTaskName === 'Client Review' && this.closeCRTaskEnable && this.selectedTab === 'My Drafts') {
       const confirmref = this.dialogService.open(ConfirmationDialogComponent, {
         header: 'Confirmation',
         data: 'Are you sure that you want to close current task with selected documents?',
