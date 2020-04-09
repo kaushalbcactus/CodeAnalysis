@@ -364,7 +364,6 @@ export class CsFinanceAuditDialogComponent implements OnInit {
     let batchResults = [];
     let batchURL = [];
     let finalArray = [];
-    debugger
     this.selectedProjects.forEach(async element => {
       const ProjectUpdate = Object.assign({}, this.options);
       ProjectUpdate.data = piUdpate;
@@ -467,7 +466,6 @@ export class CsFinanceAuditDialogComponent implements OnInit {
   MultipleSelectRows(AuditType) {
     setTimeout(() => {
       if (AuditType === 'Finance') {
-        debugger
         if (this.allProjectRef.filteredValue) {
           if (this.allProjectRef.filteredValue.length > 10 && !this.checked) {
             this.selectedProjects = this.allProjectRef.filteredValue.slice(this.allProjectRef.first, this.allProjectRef.first + 10)

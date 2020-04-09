@@ -303,8 +303,10 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
           'pID': milestone.Id,
           'pName': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? milestone.Title + " (Current)" : milestone.Title,
-          'pStart': milestone.startDate !== "" ? milestone.startDate.date.year + "/" + (milestone.startDate.date.month < 10 ? "0" + milestone.startDate.date.month : milestone.startDate.date.month) + "/" + (milestone.startDate.date.day < 10 ? "0" + milestone.startDate.date.day : milestone.startDate.date.day) : '',
-          'pEnd': milestone.endDate !== "" ? milestone.endDate.date.year + "/" + (milestone.endDate.date.month < 10 ? "0" + milestone.endDate.date.month : milestone.endDate.date.month) + "/" + (milestone.endDate.date.day < 10 ? "0" + milestone.endDate.date.day : milestone.endDate.date.day) : '',
+          // 'pStart': milestone.startDate !== "" ? milestone.startDate.date.year + "/" + (milestone.startDate.date.month < 10 ? "0" + milestone.startDate.date.month : milestone.startDate.date.month) + "/" + (milestone.startDate.date.day < 10 ? "0" + milestone.startDate.date.day : milestone.startDate.date.day) : '',
+          // 'pEnd': milestone.endDate !== "" ? milestone.endDate.date.year + "/" + (milestone.endDate.date.month < 10 ? "0" + milestone.endDate.date.month : milestone.endDate.date.month) + "/" + (milestone.endDate.date.day < 10 ? "0" + milestone.endDate.date.day : milestone.endDate.date.day) : '',
+          'pStart': milestone.StartDate !== "" ? new Date(milestone.StartDate) : '',
+          'pEnd': milestone.DueDate !== "" ? new Date(milestone.DueDate) : '',
           'pUserStart': milestone.startDate !== "" ? milestone.startDate.date.year + "/" + (milestone.startDate.date.month < 10 ? "0" + milestone.startDate.date.month : milestone.startDate.date.month) + "/" + (milestone.startDate.date.day < 10 ? "0" + milestone.startDate.date.day : milestone.startDate.date.day) : '',
           'pUserEnd': milestone.endDate !== "" ? milestone.endDate.date.year + "/" + (milestone.endDate.date.month < 10 ? "0" + milestone.endDate.date.month : milestone.endDate.date.month) + "/" + (milestone.endDate.date.day < 10 ? "0" + milestone.endDate.date.day : milestone.endDate.date.day) : '',
           'pUserStartDatePart': this.getDate(milestone.startDate),
@@ -2152,15 +2154,17 @@ export class TimelineComponent implements OnInit, OnDestroy {
   // tslint:enable
 
   setStartAndEnd(node) {
-    node.data.pEnd = node.children !== undefined && node.children.length > 0 ? this.sortDates(node, 'end') : node.data.pEnd;
-    node.data.pStart = node.children !== undefined && node.children.length > 0 ? this.sortDates(node, 'start') : node.data.pStart;
-    node.data.pUserStart = node.data.pStart;
-    node.data.pUserEnd = node.data.pEnd;
-    node.data.pUserStartDatePart = this.getDatePart(node.data.pUserStart);
-    node.data.pUserStartTimePart = this.getTimePart(node.data.pUserStart);
-    node.data.pUserEndDatePart = this.getDatePart(node.data.pUserEnd);
-    node.data.pUserEndTimePart = this.getTimePart(node.data.pUserEnd);
-    node.data.tatVal = this.commonService.calcBusinessDays(new Date(node.data.pStart), new Date(node.data.pEnd));
+    if (node.data.status !== 'Completed') {
+      node.data.pEnd = node.children !== undefined && node.children.length > 0 ? this.sortDates(node, 'end') : node.data.pEnd;
+      node.data.pStart = node.children !== undefined && node.children.length > 0 ? this.sortDates(node, 'start') : node.data.pStart;
+      node.data.pUserStart = node.data.pStart;
+      node.data.pUserEnd = node.data.pEnd;
+      node.data.pUserStartDatePart = this.getDatePart(node.data.pUserStart);
+      node.data.pUserStartTimePart = this.getTimePart(node.data.pUserStart);
+      node.data.pUserEndDatePart = this.getDatePart(node.data.pUserEnd);
+      node.data.pUserEndTimePart = this.getTimePart(node.data.pUserEnd);
+      node.data.tatVal = this.commonService.calcBusinessDays(new Date(node.data.pStart), new Date(node.data.pEnd));
+    }
   }
 
   sortDates(node, type) {
@@ -2193,7 +2197,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
 
   changeDateOfEditedTask(node, type) {
-    node.pUserStart = node.tat === true && node.itemType !=='Client Review' ?
+    node.pUserStart = node.tat === true && node.itemType !== 'Client Review' ?
       new Date(node.pUserStart.getFullYear(), node.pUserStart.getMonth(), node.pUserStart.getDate(), 9, 0) : node.pUserStart;
     node.pUserEnd = type === 'start' && node.pUserStart > node.pUserEnd ? (node.tat === true ?
       new Date(node.pUserStart.getFullYear(), node.pUserStart.getMonth(),
@@ -2630,6 +2634,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     else if (nodeData.type === 'milestone') {
       if (new Date(prevNodeEndDate) >= new Date(nodeData.pStart)) {
         const firstTask = nextNode.children[0].data;
+        nodeData.edited = true;
         const allTasks = this.getTasksFromMilestones(nextNode, false, false);
         let allParallelTasks = [];
         if (firstTask.type === 'task') {
@@ -2648,7 +2653,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         }
         allParallelTasks.forEach(element => {
 
-          if (!element.data.DisableCascade && element.data.status !== 'In Progress') {
+          if (!element.DisableCascade && element.status !== 'In Progress') {
             this.cascadeNextTask(previousNode, element, element.submilestone ? 1 : 0, selectedMil + 1);
           }
         });

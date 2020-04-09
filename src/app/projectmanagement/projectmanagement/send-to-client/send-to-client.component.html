@@ -2,6 +2,15 @@
     <!-- <ngb-alert *ngIf="successMessage" type="success" (close)="successMessage = null">{{ successMessage }}</ngb-alert>
     <ngb-alert *ngIf="errorMessage" type="danger" (close)="errorMessage = null">{{ errorMessage }}</ngb-alert> -->
 </div>
+
+<div #loader class="overlay"></div>
+<div #spanner class="spanner">
+    <div class="loader"></div>
+    <p>Please wait...</p>
+</div>
+
+
+
 <div style="padding:15%" [hidden]='isSCInnerLoaderHidden'>
     <div id="scInnerLoader"></div>
     <div id="scInnerLoaderText">Loading...</div>
@@ -43,21 +52,30 @@
                 </tr>
                 <tr>
                     <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
-                        <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="scArrays.ProjectCode" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="scArrays.ProjectCode" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'ShortTitle'" [options]="scArrays.ShortTitle" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect *ngSwitchCase="'ShortTitle'" [options]="scArrays.ShortTitle" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="scArrays.ClientLegalEntity" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="scArrays.ClientLegalEntity" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'POC'" [options]="scArrays.POC" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in') " (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'DeliverableType'" [options]="scArrays.DeliverableType" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect *ngSwitchCase="'POC'" [options]="scArrays.POC" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in') " (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)"
+                            (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'DeliverableType'" [options]="scArrays.DeliverableType" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'DueDate'" [options]="scArrays.DueDate" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'displayMilestone'" [options]="scArrays.displayMilestone" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect *ngSwitchCase="'DueDate'" [options]="scArrays.DueDate" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'displayMilestone'" [options]="scArrays.displayMilestone" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'PreviousTaskUser'" [options]="scArrays.PreviousTaskUser" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect *ngSwitchCase="'PreviousTaskUser'" [options]="scArrays.PreviousTaskUser" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'PreviousTaskStatus'" [options]="scArrays.PreviousTaskStatus" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect *ngSwitchCase="'PreviousTaskStatus'" [options]="scArrays.PreviousTaskStatus" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                     </th>
                     <th class="lastColumnWidth"></th>
@@ -90,3 +108,5 @@
         </p-table>
     </div>
 </div>
+
+<p-toast position="bottom-right" key="custom"></p-toast>

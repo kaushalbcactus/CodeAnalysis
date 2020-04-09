@@ -63,6 +63,7 @@ export class DragDropComponent implements OnInit {
   showSvg = false;
   alldbMilestones: any;
   AlldbRecords: any;
+  allmilestones =[];
   enableZoom: boolean = false;
   enablePaan: boolean = false;
   recentEventNode = undefined;
@@ -466,7 +467,11 @@ export class DragDropComponent implements OnInit {
     let nodeLabel = '';
     if (!event.id) {
       if (miletype === 'milestone') {
-        count = this.alldbMilestones.filter(function (node) { return new RegExp(event.data, 'g').test(node) }).length > 0 ? this.alldbMilestones.filter(function (node) { return new RegExp(event.data, 'g').test(node) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => parseInt(c)).length > 0 ? Math.max.apply(null, this.alldbMilestones.filter(function (node) { return new RegExp(event.data, 'g').test(node) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => parseInt(c))) : 1 : 0;
+
+        count =  this.allmilestones.length > 0 && this.allmilestones.find(c=> c.type === event.data) ?
+        this.allmilestones.find(c=> c.type === event.data).milestones.filter(function (node) { return new RegExp(event.data, 'g').test(node) }).length > 0 ? this.allmilestones.find(c=> c.type === event.data).milestones.filter(function (node) { return new RegExp(event.data, 'g').test(node) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => parseInt(c)).length > 0 ? Math.max.apply(null, this.allmilestones.find(c=> c.type === event.data).milestones.filter(function (node) { return new RegExp(event.data, 'g').test(node) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => parseInt(c))) : 1 : 0 : 0;
+
+        // count = this.alldbMilestones.filter(function (node) { return new RegExp(event.data, 'g').test(node) }).length > 0 ? this.alldbMilestones.filter(function (node) { return new RegExp(event.data, 'g').test(node) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => parseInt(c)).length > 0 ? Math.max.apply(null, this.alldbMilestones.filter(function (node) { return new RegExp(event.data, 'g').test(node) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => parseInt(c))) : 1 : 0;
       }
       else {
         count = this.milestonesGraph.nodes[this.milestoneIndex].allsubmilestones.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).length > 0 ? this.milestonesGraph.nodes[this.milestoneIndex].allsubmilestones.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => parseInt(c)).length > 0 ? Math.max.apply(null, this.milestonesGraph.nodes[this.milestoneIndex].allsubmilestones.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => parseInt(c))) : 1 : 0;
@@ -479,7 +484,15 @@ export class DragDropComponent implements OnInit {
     } else {
       nodeLabel = event.data;
     }
-    this.alldbMilestones.push(nodeLabel);
+ 
+    if(this.allmilestones.find(c=> c.type === event.data)){
+      this.allmilestones.find(c=> c.type === event.data).milestones.push(nodeLabel); 
+    }
+    else{
+      this.allmilestones.push(new Object({type : event.data , milestones:[nodeLabel]}))
+    }
+    
+    // this.alldbMilestones.push(nodeLabel);
 
     const milestoneTasks = this.AlldbRecords.find(c => c.milestone.Title === nodeLabel) ? this.AlldbRecords.find(c => c.milestone.Title === nodeLabel).tasks : []
     let milestoneTaskProcess = [];

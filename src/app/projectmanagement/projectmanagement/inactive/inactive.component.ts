@@ -45,10 +45,7 @@ export class InactiveComponent implements OnInit {
     { field: 'Molecule' },
     { field: 'Milestone' },
     { field: 'Status' }];
-  // tslint:disable-next-line:variable-name
-  private _success = new Subject<string>();
-  // tslint:disable-next-line:variable-name
-  private _error = new Subject<string>();
+
   public iapSuccessMessage: string;
   public iapErrorMessage: string;
   public selectedIAPTask;
@@ -127,18 +124,8 @@ export class InactiveComponent implements OnInit {
       }
     ];
     this.pmObject.sendToClientArray = [];
-    this._success.subscribe((message) => this.iapSuccessMessage = message);
-    this._success.pipe(
-      debounceTime(5000)
-    ).subscribe(() => this.iapSuccessMessage = null);
-    this._error.subscribe((message) => this.iapErrorMessage = message);
-    this._error.pipe(
-      debounceTime(5000)
-    ).subscribe(() => this.iapErrorMessage = null);
-    setTimeout(() => {
-      this.iapHideNoDataMessage = true;
-      this.getPendingProjects();
-    }, this.pmConstant.TIME_OUT);
+    this.iapHideNoDataMessage = true;
+    this.getPendingProjects();
   }
   getPendingProjects() {
     this.fetchPendingProjects();

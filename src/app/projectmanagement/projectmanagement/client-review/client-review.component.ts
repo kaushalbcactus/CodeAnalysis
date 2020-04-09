@@ -53,13 +53,9 @@ export class ClientReviewComponent implements OnInit {
     { field: 'DeliveryDate' }];
   @ViewChild('crTableRef', { static: true }) crRef: ElementRef;
   @ViewChild('crTableRef', { static: true }) crTableRef: Table;
+  @ViewChild("loader", { static: false }) loaderView: ElementRef;
+  @ViewChild("spanner", { static: false }) spannerView: ElementRef;
 
-  // tslint:disable-next-line:variable-name
-  private _success = new Subject<string>();
-  // tslint:disable-next-line:variable-name
-  private _error = new Subject<string>();
-  public crSuccessMessage: string;
-  public crErrorMessage: string;
   public selectedCRTask;
   popItems: MenuItem[];
   public crContextMenuOptions = [];
@@ -86,14 +82,6 @@ export class ClientReviewComponent implements OnInit {
     PreviousTaskUser: [],
     PreviousTaskStatus: [],
     DeliveryDate: [],
-    // projectCodeArray: [],
-    // shortTitleArray: [],
-    // clientLegalEntityArray: [],
-    // POCArray: [],
-    // deliveryTypeArray: [],
-    // dueDateArray: [],
-    // milestoneArray: [],
-    // deliveryDateArray: [],
     nextTaskArray: [],
     previousTaskArray: [],
 
@@ -142,21 +130,13 @@ export class ClientReviewComponent implements OnInit {
         label: 'Go to Project', target: '_blank',
         command: (event) => this.goToProjectManagement(this.selectedCRTask)
       },
-      { label: 'Close', command: (event) => this.closeTask(this.selectedCRTask) }
+      { label: 'View / Upload Documents', command: (e) => this.getAddUpdateDocument(this.selectedCRTask) },
+      { label: 'Close', command: (event) => this.closeTask(this.selectedCRTask) },
+
     ];
     this.pmObject.sendToClientArray = [];
-    this._success.subscribe((message) => this.crSuccessMessage = message);
-    this._success.pipe(
-      debounceTime(5000)
-    ).subscribe(() => this.crSuccessMessage = null);
-    this._error.subscribe((message) => this.crErrorMessage = message);
-    this._error.pipe(
-      debounceTime(5000)
-    ).subscribe(() => this.crErrorMessage = null);
-    setTimeout(() => {
-      this.crHideNoDataMessage = true;
-      this.getCRClient();
-    }, this.pmConstant.TIME_OUT);
+    this.crHideNoDataMessage = true;
+    this.getCRClient();
   }
   getCRClient() {
     const filter = 'AssignedTo eq ' + this.globalObject.currentUser.userId
@@ -233,12 +213,13 @@ export class ClientReviewComponent implements OnInit {
 
   async getCR(currentFilter) {
     const queryOptions = {
-      select: 'ID,Title,ProjectCode,StartDate,DueDate,PreviousTaskClosureDate,Milestone,PrevTasks,NextTasks',
+      select: 'ID,Title,ProjectCode,StartDate,DueDate,PreviousTaskClosureDate,Milestone,PrevTasks,NextTasks,Status',
       filter: currentFilter,
       top: 4200
     };
     this.commonService.SetNewrelic('projectManagment', 'client-review', 'GetSchedules');
     this.crArrays.taskItems = await this.spServices.readItems(this.Constant.listNames.Schedules.name, queryOptions);
+
     const projectCodeTempArray = [];
     const shortTitleTempArray = [];
     const clientLegalEntityTempArray = [];
@@ -271,7 +252,7 @@ export class ClientReviewComponent implements OnInit {
         crObj.ID = task.ID;
         crObj.Title = task.Title;
         crObj.ProjectCode = task.ProjectCode;
-
+        crObj.Status = task.Status;
         crObj.NextTasks = task.NextTasks;
         crObj.PreviousTask = task.PrevTasks;
         // tslint:disable-next-line:only-arrow-functions
@@ -433,6 +414,8 @@ export class ClientReviewComponent implements OnInit {
 
   closeTask(task) {
     if (task.PreviousTaskStatus === 'Completed') {
+      this.loaderView.nativeElement.classList.add('show');
+      this.spannerView.nativeElement.classList.add('show');
       this.closeTaskWithStatus(task, this.crRef);
     } else {
 
@@ -448,10 +431,11 @@ export class ClientReviewComponent implements OnInit {
   async closeTaskWithStatus(task, unt) {
     const isActionRequired = await this.commonService.checkTaskStatus(task);
     if (isActionRequired) {
-   
+
       const ref = this.dialogService.open(ViewUploadDocumentDialogComponent, {
         data: {
           task,
+          closeTaskEnable: true
         },
         header: task.Title,
         width: '60vw',
@@ -472,7 +456,7 @@ export class ClientReviewComponent implements OnInit {
           // update Task
           const taskObj = Object.assign({}, this.options);
           taskObj.url = this.spServices.getItemURL(this.Constant.listNames.Schedules.name, task.ID);
-          taskObj.data = { Status: 'Completed', __metadata: { type: this.Constant.listNames.Schedules.type } };
+          taskObj.data = { Status: 'Completed', Actual_x0020_Start_x0020_Date: new Date(), Actual_x0020_End_x0020_Date: new Date(), __metadata: { type: this.Constant.listNames.Schedules.type } };
           taskObj.listName = this.Constant.listNames.Schedules.name;
           taskObj.type = 'PATCH';
           batchUrl.push(taskObj);
@@ -499,29 +483,38 @@ export class ClientReviewComponent implements OnInit {
           await this.spServices.executeBatch(batchUrl);
 
           this.isCRInnerLoaderHidden = true;
-          this.changeSuccessMessage(task.Title + ' is completed Sucessfully');
+          this.messageService.add({
+            key: 'custom', severity: 'success', sticky: true,
+            summary: 'Success Message', detail: task.Title + ' is completed Sucessfully'
+          });
+
           const index = this.pmObject.clientReviewArray.findIndex(item => item.ID === task.ID);
           this.pmObject.clientReviewArray.splice(index, 1);
+          this.loaderView.nativeElement.classList.remove('show');
+          this.spannerView.nativeElement.classList.remove('show');
           this.pmObject.loading.ClientReview = true;
           this.pmObject.countObj.crCount = this.pmObject.countObj.crCount - 1;
-          this.commonService.filterAction(unt.sortField, unt.sortOrder,
-            unt.filters.hasOwnProperty('global') ? unt.filters.global.value : null, unt.filters, unt.first, unt.rows,
-            this.pmObject.clientReviewArray, this.filterColumns, this.pmConstant.filterAction.CLIENT_REVIEW);
+          this.pmObject.clientReviewArray = [...this.pmObject.clientReviewArray];
+        }
+        else {
+          this.loaderView.nativeElement.classList.remove('show');
+          this.spannerView.nativeElement.classList.remove('show');
         }
       });
     } else {
-      this.changeSuccessMessage('' + task.Title + ' is already completed or closed or auto closed. Hence record is refreshed in 30 sec.');
+      this.loaderView.nativeElement.classList.remove('show');
+      this.spannerView.nativeElement.classList.remove('show');
+      this.messageService.add({
+        key: 'custom', severity: 'success', sticky: true,
+        summary: 'Success Message', detail: task.Title + ' is already completed or closed or auto closed. Hence record is refreshed in 30 sec.'
+      });
+
       setTimeout(() => {
         this.ngOnInit();
       }, 3000);
     }
   }
-  public changeSuccessMessage(message) {
-    this._success.next(message);
-  }
-  public changeErrorMessage(message) {
-    this._error.next(message);
-  }
+
   crContextMenuEvent(node, contextMenu) {
     if (node) {
       if (node.data.PreviousTaskStatus === 'Completed') {
@@ -537,9 +530,9 @@ export class ClientReviewComponent implements OnInit {
   }
   storeRowData(rowData, menu) {
     this.selectedCRTask = rowData;
-     menu.model[2].visible = this.selectedOption.name === 'Closed' ? false : true;
-
+    menu.model[3].visible = this.selectedOption.name === 'Closed' ? false : true;
   }
+
   @HostListener('document:click', ['$event'])
   clickout(event) {
     if (event.target.className === "pi pi-ellipsis-v") {
@@ -591,19 +584,41 @@ export class ClientReviewComponent implements OnInit {
   onChangeSelect(event) {
     this.isCRInnerLoaderHidden = false;
     if (this.selectedOption.name === 'Not Started') {
-
       this.getCRClient();
     } else {
-      const startDate = new Date(this.queryStartDate.getFullYear(), this.queryStartDate.getMonth() - 1, 1);
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 30);
       const endDate = new Date(this.queryEndDate.setHours(23, 59, 59, 0));
       const startDateString = new Date(this.commonService.formatDate(startDate) + ' 00:00:00').toISOString();
       const endDateString = new Date(this.commonService.formatDate(endDate) + ' 23:59:00').toISOString();
-      const currentFilter = '((StartDate ge \'' + startDateString + '\' or StartDate le \'' + endDateString
+      const currentFilter = ' AssignedTo eq ' + this.globalObject.currentUser.userId + ' and (((StartDate ge \'' + startDateString + '\' or StartDate le \'' + endDateString
         + '\') and (DueDate ge \'' + startDateString + '\' and DueDate le \'' + endDateString
-        + '\')) and (Status eq \'Completed\') and (Task eq \'Client Review\')'
-        + ' and PreviousTaskClosureDate ne null and AssignedTo eq ' + this.globalObject.currentUser.userId + '';
+        + '\')) or  ((Actual_x0020_Start_x0020_Date ge \'' + startDateString + '\' or Actual_x0020_Start_x0020_Date le \'' + endDateString
+        + '\') and (Actual_x0020_End_x0020_Date ge \'' + startDateString + '\' and Actual_x0020_End_x0020_Date le \'' + endDateString
+        + '\')))  and (Status eq \'Completed\') and (Task eq \'Client Review\')'
+        + ' and PreviousTaskClosureDate ne null';
+
       this.getCR(currentFilter);
     }
+  }
+
+
+  getAddUpdateDocument(task) {
+
+    const ref = this.dialogService.open(ViewUploadDocumentDialogComponent, {
+      data: {
+        task,
+        closeTaskEnable: false
+      },
+      header: task.Title,
+      width: '60vw',
+      contentStyle: { 'min-height': '30vh', 'max-height': '90vh', 'overflow-y': 'auto' }
+    });
+    ref.onClose.subscribe(async (documents: any) => {
+      if (documents) {
+      }
+    });
+
   }
 
 }
