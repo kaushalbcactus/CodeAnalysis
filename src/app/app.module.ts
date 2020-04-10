@@ -27,7 +27,7 @@ import { PrimengModule } from './primeng/primeng.module';
     HttpClientModule,
     CommonModule,
     NgbModule,
-    PrimengModule
+    PrimengModule,
   ],
   declarations: [
     AppComponent,

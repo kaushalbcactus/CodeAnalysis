@@ -23,10 +23,11 @@ import { CascadeDialogComponent } from './cascade-dialog/cascade-dialog.componen
 import { GanttChartModule } from '../shared/gantt-chart/gantt-chart.module';
 import { GanttChartComponent } from '../shared/gantt-chart/gantt-chart.component';
 import { DailyAllocationComponent } from './daily-allocation/daily-allocation.component';
-
+import { NgsliderComponent } from './daily-allocation/ngslider/ngslider.component';
+import { Ng5SliderModule } from 'ng5-slider';
 @NgModule({
   declarations: [TaskAllocationComponent, TimelineComponent, DragDropComponent,
-     TaskDetailsDialogComponent, ResourcesComponent, CascadeDialogComponent, DailyAllocationComponent],
+     TaskDetailsDialogComponent, ResourcesComponent, CascadeDialogComponent, DailyAllocationComponent, NgsliderComponent],
   imports: [
     CommonModule,
     TaskAllocationRoutingModule,
@@ -42,13 +43,15 @@ import { DailyAllocationComponent } from './daily-allocation/daily-allocation.co
     NgxChartsModule,
     NgxMaterialTimepickerModule,
     UserCapacityModule,
-    GanttChartModule
+    GanttChartModule,
+    Ng5SliderModule
   ],
   exports: [
     TimelineComponent
   ],
   providers: [DatePipe, DynamicDialogConfig, DynamicDialogRef, ConfirmationService],
-  entryComponents: [UsercapacityComponent, DragDropComponent, TaskDetailsDialogComponent, GanttChartComponent, DailyAllocationComponent]
+  entryComponents: [UsercapacityComponent, DragDropComponent, TaskDetailsDialogComponent, GanttChartComponent,
+                    DailyAllocationComponent]
   // providers: [TaskAllocationAPI]
 })
 export class TaskAllocationModule { }

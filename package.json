@@ -44,6 +44,7 @@
         "jsgantt-improved": "^2.5.5",
         "luxon": "^1.21.3",
         "ng-gantt": "^2.5.5",
+        "ng5-slider": "^1.2.4",
         "ngx-auto-scroll": "^1.1.0",
         "ngx-drag-drop": "^2.0.0",
         "ngx-material-timepicker": "^3.1.0",

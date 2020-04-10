@@ -1,10 +1,16 @@
 <p-table [columns]="cols" [value]="newAllocation">
   <ng-template pTemplate="header" let-columns>
     <tr>
-      <th *ngFor="let col of columns">
-        {{ col.header }}
+      <th class="dateCol">
+        Date
       </th>
-      <th>
+      <th class="hrsCol">
+        Hours
+      </th>
+      <th class="minsCol">
+        Mins
+      </th>
+      <th class="valueCol">
         Value
       </th>
     </tr>
@@ -15,15 +21,22 @@
         {{ rowData["Date"] | date: " d MMM, y" }}
       </td>
       <td>
-        <p-slider
+        <app-ngslider (changedValue)="checkAllocation($event, rowData)" type="hrs" [value]="rowData.Allocation.valueHrs" [range]="rowData.Allocation.maxHrs"></app-ngslider>
+        <!-- <p-slider
           [(ngModel)]="rowData.Allocation.value"
           [step]="0.25"
           [max]="rowData.Allocation.maxHrs"
           (onSlideEnd)="checkAllocation($event, rowData)"
-        ></p-slider>
+        ></p-slider> -->
       </td>
       <td>
-        <input
+        <app-ngslider (changedValue)="checkAllocation($event, rowData)" type="mins" [value]="rowData.Allocation.valueMins" [range]="rowData.Allocation.maxMins"></app-ngslider>
+      </td>
+      <td>
+        <span>
+          {{rowData.Allocation.valueHrs + rowData.Allocation.valueMins}}
+        </span>
+        <!-- <input
           type="number"
           class="form-control budgetHr"
           min="0"
@@ -34,7 +47,7 @@
           [max]="rowData.Allocation.maxHrs"
           style="border:none;border-radius: 0px;height: 25px;text-align: center;padding:0px;"
           [(ngModel)]="rowData.Allocation.value"
-        />
+        /> -->
       </td>
     </tr>
   </ng-template>

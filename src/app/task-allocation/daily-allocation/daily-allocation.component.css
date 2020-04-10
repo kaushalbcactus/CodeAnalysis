@@ -20,3 +20,15 @@
 .pBtnCancel {
   margin-right: 10px;
 }
+.dateCol {
+  width: 10%;
+}
+.hrsCol {
+  width: 60%;
+}
+.minsCol {
+  width: 23%;
+}
+.valueCol {
+  width: 7%;
+}

@@ -289,15 +289,15 @@
                         <td style="text-align: center">
                             <span *ngIf="rowData.type ==='milestone' || rowData.type ==='submilestone'">{{rowData.tatVal}}</span>
                             <span *ngIf="!rowData.editMode && rowData.type ==='task' && rowData.itemType !=='Client Review' && rowData.itemType !=='Send to client' ">{{rowData.tat === true ? 'Yes' :'No'}}</span>
-                            
-                           
+
+
                             <p-inputSwitch
-                                *ngIf="rowData.editMode && rowData.type === 'task' 
+                                *ngIf="rowData.editMode && rowData.type === 'task'
                                 && rowData.itemType !=='Client Review' && rowData.itemType !=='Send to client' && (rowData.IsCentrallyAllocated !== 'Yes' || rowData.slotType === 'Both' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.pName.indexOf('Slot') < 0))"
                                 [disabled]=" rowData.title ==='Client Review'"
                                 (onChange)="ChangeEndDate($event, rowData)"
                                 [(ngModel)]="rowData.title ==='Client Review' ? 'Yes' : rowData.tat"></p-inputSwitch>
-                            <!-- <p-checkbox *ngIf="rowData.editMode && rowData.type === 'task' 
+                            <!-- <p-checkbox *ngIf="rowData.editMode && rowData.type === 'task'
                             && rowData.itemType !=='Client Review' && rowData.itemType !=='Send to client' && (rowData.IsCentrallyAllocated !== 'Yes' || rowData.slotType === 'Both' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.pName.indexOf('Slot') < 0))"
                                 (onChange)="ChangeEndDate($event, rowData)" [(ngModel)]="rowData.pName ==='Client Review' ? 'Yes' : rowData.tat" binary="true">
                             </p-checkbox> -->
@@ -404,7 +404,7 @@
            ********************************************************************************************************** -->
         <div fxLayout="row" fxLayoutAlign=" start center"
             [ngClass]="projectDetails  ? 'VisualRepresentationpopup':'VisualRepresentation'"
-            [hidden]="visualgraph === false && loderenable === false" style="width:100%">
+            [hidden]="visualgraph === false && loaderenable === false" style="width:100%">
             <p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="gantt-message"
                 position="bottom-center">
             </p-toast>
@@ -599,9 +599,9 @@
     </p-footer>
 </p-dialog>
 
-<p-overlayPanel #op2 [showCloseIcon]="true" [dismissable]="false">
+<!-- <p-overlayPanel #op2 [showCloseIcon]="true" [dismissable]="false">
   <app-daily-allocation></app-daily-allocation>
-</p-overlayPanel>
+</p-overlayPanel> -->
 <div id="userCapacity1" class="mt-50" [hidden]="!userCapacityEnable">
     <ng-template #userCapacity></ng-template>
 </div>
