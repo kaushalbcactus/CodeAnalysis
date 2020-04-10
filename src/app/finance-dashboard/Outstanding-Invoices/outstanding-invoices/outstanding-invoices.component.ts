@@ -683,6 +683,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         console.log("Event ", event);
         this.fileReader = new FileReader();
         if (event.target.files && event.target.files.length > 0) {
+            this.SelectedFile = [];
             this.selectedFile = event.target.files[0];
             const fileName = this.selectedFile.name;
             const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
@@ -716,6 +717,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         }
         this.fileReader = new FileReader();
         if (event.target.files && event.target.files.length > 0) {
+            this.SelectedFile = [];
             this.selectedFile = event.target.files[0];
             const fileName = this.selectedFile.name;
             const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
@@ -752,26 +754,32 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
                     if (uploadedfile[0].ServerRelativeUrl) {
                         let invData;
-                        if (type === 'replaceInvoice') {
-                            invData = {
-                                FileURL: uploadedfile[0].ServerRelativeUrl ? uploadedfile[0].ServerRelativeUrl : '',
-                                InvoiceHtml: null
+                        this.isPSInnerLoaderHidden = false;
+                        if (type === 'creditDebit') {
+                            this.submitDebitCreditNoteForm(type, uploadedfile[0].ServerRelativeUrl);
+                        }
+                        else {
+                            if (type === 'replaceInvoice') {
+                                invData = {
+                                    FileURL: uploadedfile[0].ServerRelativeUrl ? uploadedfile[0].ServerRelativeUrl : '',
+                                    InvoiceHtml: null
+                                }
                             }
+                            else if (type === 'paymentResoved') {
+                                invData = {
+                                    Status: 'Paid',
+                                    PaymentURL: uploadedfile[0].ServerRelativeUrl ? uploadedfile[0].ServerRelativeUrl : ''
+                                };
+                            }
+                            invData['__metadata'] = { type: this.constantService.listNames.Invoices.type };
+                            const invObj = Object.assign({}, this.queryConfig);
+                            invObj.url = this.spServices.getItemURL(this.constantService.listNames.Invoices.name, +this.selectedRowItem.Id);
+                            invObj.listName = this.constantService.listNames.Invoices.name;
+                            invObj.type = 'PATCH';
+                            invObj.data = invData;
+                            batchUrl.push(invObj);
+                            this.submitForm(batchUrl, type);
                         }
-                        else if (type === 'paymentResoved') {
-                            invData = {
-                                Status: 'Paid',
-                                PaymentURL: uploadedfile[0].ServerRelativeUrl ? uploadedfile[0].ServerRelativeUrl : ''
-                            };
-                        }
-                        invData['__metadata'] = { type: this.constantService.listNames.Invoices.type };
-                        const invObj = Object.assign({}, this.queryConfig);
-                        invObj.url = this.spServices.getItemURL(this.constantService.listNames.Invoices.name, +this.selectedRowItem.Id);
-                        invObj.listName = this.constantService.listNames.Invoices.name;
-                        invObj.type = 'PATCH';
-                        invObj.data = invData;
-                        batchUrl.push(invObj);
-                        this.submitForm(batchUrl, type);
                     } else if (uploadedfile[0].hasOwnProperty('odata.error')) {
 
                         this.submitBtn.isClicked = false;
@@ -964,7 +972,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             if (this.paymentResoved_form.invalid) {
                 return;
             }
-            this.isPSInnerLoaderHidden = false;
+
             this.submitBtn.isClicked = true;
             this.uploadFileData(type);
             // console.log('form is submitting ..... & Form data is ', this.paymentResoved_form.value);
@@ -980,7 +988,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 DisputeComments: this.disputeInvoice_form.value.DisputeComments
             };
             disputeData['__metadata'] = { type: this.constantService.listNames.Invoices.type };
-          
+
             const invObj = Object.assign({}, this.queryConfig);
             invObj.url = this.spServices.getItemURL(this.constantService.listNames.Invoices.name, +this.selectedRowItem.Id);
             invObj.listName = this.constantService.listNames.Invoices.name;
@@ -993,22 +1001,13 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 return;
             }
             // console.log('form is submitting ..... & Form data is ', this.replaceInvoice_form.value);
-            this.isPSInnerLoaderHidden = false;
             this.submitBtn.isClicked = true;
             this.uploadFileData(type);
         } else if (type === 'creditDebit') {
             if (this.creditOrDebitNote_form.invalid) {
                 return;
             }
-            // console.log('form is submitting ..... & Form data is ', this.creditOrDebitNote_form.value);
-            // sts = type === 'Mark as Sent to Client' ? 'Sent' : 'Rejected'
-            this.isPSInnerLoaderHidden = false;
-            this.commonService.SetNewrelic('Finance-Dashboard', 'outstanding-invoices-creditdebit', 'uploadFile');
-            const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
-            if (res) {
-                // console.log('selectedFile uploaded .', res);
-                this.submitDebitCreditNoteForm(type, res.ServerRelativeUrl);
-            }
+            this.uploadFileData(type);
         } else if (type === 'sentToAP') {
             this.isPSInnerLoaderHidden = false;
             this.submitBtn.isClicked = true;
@@ -1026,7 +1025,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             invObj.type = 'PATCH';
             invObj.data = invData;
             batchUrl.push(invObj);
-          
+
             this.commonService.SetNewrelic('Finance-Dashboard', 'outstanding-invoices', 'submitForm');
             this.submitForm(batchUrl, type);
         }
@@ -1046,7 +1045,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             OriginatedInvoiceLookup: this.selectedRowItem.Id,
             LinkedInvoiceLookup: this.selectedRowItem.Id
         }
-        debitCreditData['__metadata'] = { type: 'SP.Data.CreditAndDebitNoteListItem' };
+        debitCreditData['__metadata'] = { type: this.constantService.listNames.CreditAndDebit.type };
         const debCreditObj = Object.assign({}, this.queryConfig);
         debCreditObj.url = this.spServices.getReadURL(this.constantService.listNames.CreditAndDebit.name);
         debCreditObj.listName = this.constantService.listNames.CreditAndDebit.name;

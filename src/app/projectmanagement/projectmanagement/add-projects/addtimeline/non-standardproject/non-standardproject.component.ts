@@ -9,6 +9,9 @@ import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { DataService } from 'src/app/Services/data.service';
 import { CommonService } from 'src/app/Services/common.service';
+import { FileUploadProgressDialogComponent } from 'src/app/shared/file-upload-progress-dialog/file-upload-progress-dialog.component';
+import { GlobalService } from 'src/app/Services/global.service';
+import { DialogService } from 'primeng';
 declare var $;
 @Component({
   selector: 'app-non-standardproject',
@@ -26,7 +29,9 @@ export class NonStandardprojectComponent implements OnInit {
     private constants: ConstantsService,
     private timelineObject: AddTimelineComponent,
     private messageService: MessageService,
-    private commonService : CommonService,
+    private commonService: CommonService,
+    private dialogService:DialogService,
+    private globalObject : GlobalService,
     private router: Router,
     private dataService: DataService) { }
   public nonStandardDeliverableType = [];
@@ -375,7 +380,52 @@ export class NonStandardprojectComponent implements OnInit {
       this.pmObject.addProject.Timeline.NonStandard.ProposedEndDate = this.ngNonStandardProposedEndDate;
       this.pmObject.addProject.Timeline.NonStandard.ProjectBudgetHours = this.nonstandardProjectBudgetHrs;
       this.pmObject.addProject.FinanceManagement.BudgetHours = this.pmObject.addProject.Timeline.NonStandard.ProjectBudgetHours;
-      await this.pmCommonService.validateAndSave();
+
+      this.pmObject.isMainLoaderHidden = false;
+      const newProjectCode = await this.pmCommonService.verifyAndUpdateProjectCode();
+      this.pmObject.addProject.ProjectAttributes.ProjectCode = newProjectCode;
+      if (newProjectCode) {
+        if (this.pmObject.addProject.FinanceManagement.selectedFile) {
+          let SelectedFile=[];
+          this.pmObject.isMainLoaderHidden = true;
+          this.commonService.SetNewrelic('projectManagment', 'nonStdConfirm', 'UploadFiles');
+          const docFolder = 'Finance/SOW';
+          let libraryName = '';
+          const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
+            x.Title === this.pmObject.addProject.ProjectAttributes.ClientLegalEntity);
+          if (clientInfo && clientInfo.length) {
+            libraryName = clientInfo[0].ListName;
+          }
+          const FolderName=libraryName + '/' + docFolder;
+          SelectedFile.push(new Object({ name: this.pmObject.addProject.FinanceManagement.selectedFile.name, file: this.pmObject.addProject.FinanceManagement.selectedFile }));
+
+          const ref = this.dialogService.open(FileUploadProgressDialogComponent, {
+            header: 'File Uploading',
+            width: '70vw',
+            data: {
+              Files: SelectedFile,
+              libraryName: this.globalObject.sharePointPageObject.webRelativeUrl + '/' + FolderName,
+              overwrite: true,
+            },
+            contentStyle: { 'overflow-y': 'visible', 'background-color': '#f4f3ef' },
+            closable: false,
+          });
+
+          return ref.onClose.subscribe(async (uploadedfile: any) => {
+            if (uploadedfile) {
+              if (SelectedFile.length > 0 && SelectedFile.length === uploadedfile.length) {
+                if (uploadedfile[0].ServerRelativeUrl) {
+                  this.pmObject.addSOW.isSOWCodeDisabled = false;
+                  this.pmObject.addSOW.isStatusDisabled = true;
+                }
+              }
+            }
+          });
+        }
+        this.pmObject.isMainLoaderHidden = false;
+        await this.pmCommonService.addUpdateProject();
+      }
+
       this.messageService.add({
         key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
         detail: 'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode

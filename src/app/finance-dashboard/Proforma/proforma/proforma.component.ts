@@ -1269,6 +1269,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         }
         // this.fileReader = new FileReader();
         if (event.target.files && event.target.files.length > 0) {
+            this.SelectedFile =[];
             this.selectedFile = event.target.files[0];
             const fileName = this.selectedFile.name;
             const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
@@ -1305,6 +1306,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             if (uploadedfile) {
                 if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
                     if (uploadedfile[0].ServerRelativeUrl) {
+                        this.isPSInnerLoaderHidden = false;
                         let prfData = {
                             FileURL: uploadedfile[0].ServerRelativeUrl ? uploadedfile[0].ServerRelativeUrl : '',
                             ProformaHtml: null
@@ -1662,7 +1664,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             }
             // console.log('form is submitting ..... & Form data is ', this.replaceProforma_form.value);
             this.submitBtn.isClicked = true;
-            this.isPSInnerLoaderHidden = false;
+          
             this.uploadFileData();
 
         } else if (type === 'generateInvoice') {

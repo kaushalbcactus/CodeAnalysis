@@ -951,21 +951,21 @@ export class PMCommonService {
   }
   
 
-  async validateAndSave() {
-    this.pmObject.isMainLoaderHidden = false;
-    const newProjectCode = await this.verifyAndUpdateProjectCode();
-    this.pmObject.addProject.ProjectAttributes.ProjectCode = newProjectCode;
-    if (newProjectCode) {
-      if (this.pmObject.addProject.FinanceManagement.selectedFile) {
-        const fileUploadResult = await this.submitFile(this.pmObject.addProject.FinanceManagement.selectedFile, this.pmObject.fileReader);
-        if (fileUploadResult.hasOwnProperty('ServerRelativeUrl')) {
-          this.pmObject.addSOW.isSOWCodeDisabled = false;
-          this.pmObject.addSOW.isStatusDisabled = true;
-        }
-      }
-      await this.addUpdateProject();
-    }
-  }
+  // async validateAndSave() {
+  //   this.pmObject.isMainLoaderHidden = false;
+  //   const newProjectCode = await this.verifyAndUpdateProjectCode();
+  //   this.pmObject.addProject.ProjectAttributes.ProjectCode = newProjectCode;
+  //   if (newProjectCode) {
+  //     if (this.pmObject.addProject.FinanceManagement.selectedFile) {
+  //       const fileUploadResult = await this.submitFile(this.pmObject.addProject.FinanceManagement.selectedFile, this.pmObject.fileReader);
+  //       if (fileUploadResult.hasOwnProperty('ServerRelativeUrl')) {
+  //         this.pmObject.addSOW.isSOWCodeDisabled = false;
+  //         this.pmObject.addSOW.isStatusDisabled = true;
+  //       }
+  //     }
+  //     await this.addUpdateProject();
+  //   }
+  // }
   /**
    * This method is used to verify the project code.
    */

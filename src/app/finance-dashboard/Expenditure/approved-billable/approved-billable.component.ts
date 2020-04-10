@@ -22,7 +22,7 @@ import { DialogService } from 'primeng';
 })
 export class ApprovedBillableComponent implements OnInit, OnDestroy {
     FolderName: string;
-    SelectedFile: any;
+    SelectedFile = [];
 
     constructor(
         private messageService: MessageService,
@@ -962,8 +962,9 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     // ************************************************************************************************
 
     onFileChange(event, folderName: string) {
-        this.fileReader = new FileReader();
+      
         if (event.target.files && event.target.files.length > 0) {
+            this.SelectedFile =[];
             this.selectedFile = event.target.files[0];
             const fileName = this.selectedFile.name;
             const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
@@ -1001,6 +1002,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                     if (uploadedfile[0].ServerRelativeUrl) {
                         this.fileUploadedUrl = uploadedfile[0].ServerRelativeUrl;
                         if (this.fileUploadedUrl) {
+                            this.isPSInnerLoaderHidden = false;
                             const data = [];
                             for (let j = 0; j < this.selectedAllRowsItem.length; j++) {
                                 const element = this.selectedAllRowsItem[j];
@@ -1184,7 +1186,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
             if (this.markAsPayment_form.invalid) {
                 return;
             }
-            this.isPSInnerLoaderHidden = false;
+            // this.isPSInnerLoaderHidden = false;
             // console.log('form is submitting ..... for selected row Item i.e ', this.markAsPayment_form.value);
             this.uploadFileData(type);
         }

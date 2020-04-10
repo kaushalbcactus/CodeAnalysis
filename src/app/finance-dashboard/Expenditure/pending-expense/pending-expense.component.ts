@@ -677,6 +677,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
     // ************************************************************************************************
     onFileChange(event: { target: { files: string | any[]; }; }, folderName: string) {
         if (event.target.files && event.target.files.length > 0) {
+            this.SelectedFile =[];
             this.selectedFile = event.target.files[0];
             const fileName = this.selectedFile.name;
             const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
@@ -711,6 +712,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             if (uploadedfile) {
                 if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
                     if (uploadedfile[0].ServerRelativeUrl) {
+                        this.isPSInnerLoaderHidden = false;
                         this.fileUploadedUrl = uploadedfile[0].ServerRelativeUrl;
                         if (this.fileUploadedUrl) {
                             const batchUrl = [];
@@ -920,6 +922,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 this.submitForm(batchUrl, type);
                 return;
             }
+            this.isPSInnerLoaderHidden = true;
             this.uploadFileData(type);
         }
     }

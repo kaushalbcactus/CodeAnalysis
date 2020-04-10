@@ -1848,7 +1848,7 @@ export class AllProjectsComponent implements OnInit {
     batchURL.push(piUpdate);
 
     filterTasks.forEach(element => {
-      if(element.IsCentrallyAllocated == 'No') {
+      if (element.IsCentrallyAllocated == 'No') {
         if (element.Task == "Client Review") {
           const scheduleStatusUpdate = Object.assign({}, options);
           scheduleStatusUpdate.data = scCRUpdateData;
@@ -1870,7 +1870,7 @@ export class AllProjectsComponent implements OnInit {
             const scheduleStatusUpdate = Object.assign({}, options);
             const scInProgressUpdateDataNew = Object.assign({}, scInProgressUpdateData);
             scInProgressUpdateDataNew.ExpectedTime = element.TimeSpent;
-            scInProgressUpdateDataNew.DueDate = new Date(element.DueDate) < new Date() ? new Date(element.DueDate) : new Date(); 
+            scInProgressUpdateDataNew.DueDate = new Date(element.DueDate) < new Date() ? new Date(element.DueDate) : new Date();
             scheduleStatusUpdate.data = scInProgressUpdateDataNew;
             scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
             scheduleStatusUpdate.type = 'PATCH';
@@ -1880,7 +1880,7 @@ export class AllProjectsComponent implements OnInit {
           }
         }
       }
-      
+
     });
 
     // console.log(batchURL)
@@ -2504,7 +2504,9 @@ export class AllProjectsComponent implements OnInit {
       width: '90vw',
       data: {
         projectObj: projObj
-      }
+      },
+      contentStyle: { 'max-height': '85vh', 'overflow-y': 'auto' },
+      closable: false
     });
     ref.onClose.subscribe(element => {
       this.pmCommonService.resetAddProject();

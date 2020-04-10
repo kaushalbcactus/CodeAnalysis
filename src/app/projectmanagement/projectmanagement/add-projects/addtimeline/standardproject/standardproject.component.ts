@@ -13,6 +13,8 @@ import { DataService } from 'src/app/Services/data.service';
 import { UsercapacityComponent } from 'src/app/shared/usercapacity/usercapacity.component';
 import { async } from '@angular/core/testing';
 import { CommonService } from 'src/app/Services/common.service';
+import { FileUploadProgressDialogComponent } from 'src/app/shared/file-upload-progress-dialog/file-upload-progress-dialog.component';
+import { DialogService } from 'primeng';
 
 declare var $;
 @Component({
@@ -97,7 +99,8 @@ export class StandardprojectComponent implements OnInit {
     private sharedObject: GlobalService,
     public messageService: MessageService,
     private router: Router,
-    private commonService : CommonService,
+    private commonService: CommonService,
+    private dialogService: DialogService,
     private dataService: DataService) {
   }
 
@@ -714,7 +717,7 @@ export class StandardprojectComponent implements OnInit {
       //   this.pmObject.addProject.Timeline.Standard.Milestones += ';#';
       // }
 
-      
+
       StartDate = this.setClientReview(milestoneObj, true);
       if (index < orginalMilestone.length) {
         index++;
@@ -1010,7 +1013,7 @@ export class StandardprojectComponent implements OnInit {
           taskObj.PreviousTask = milestoneTask[index].PreviousTask;
           taskObj.data.Skill = milestoneTask[index].Skill;
           taskObj.data.TaskDays = milestoneTask[index].TaskDays;
-          taskObj.data.UseTaskDays = milestoneTask[index].TaskName.Title === 'Send to client' ? 'No': milestoneTask[index].UseTaskDays;
+          taskObj.data.UseTaskDays = milestoneTask[index].TaskName.Title === 'Send to client' ? 'No' : milestoneTask[index].UseTaskDays;
           taskObj.data.Title = milestoneTask[index].Title;
           taskObj.data.Name = taskObj.data.TaskName;
           taskObj.data.isStartDateDisabled = false;
@@ -1031,12 +1034,12 @@ export class StandardprojectComponent implements OnInit {
               taskObj.data.AssignedTo = this.userProperties.Title;
               startdate = this.setDefaultAMHours(milestoneObj.data.StartDate);
             }
-            if (taskObj.data.UseTaskDays !== this.pmConstant.task.USE_TASK_DAYS || milestoneTask[index].TaskName.Title === 'Send to client' ) {
+            if (taskObj.data.UseTaskDays !== this.pmConstant.task.USE_TASK_DAYS || milestoneTask[index].TaskName.Title === 'Send to client') {
               taskObj.data.showTime = true;
-              if(milestoneTask[index].TaskName.Title === 'Send to client'){
+              if (milestoneTask[index].TaskName.Title === 'Send to client') {
                 taskObj.data.Days = taskObj.data.TaskDays;
               }
-            
+
             }
             taskObj.data.showHyperLink = true;
             if (daysHours !== "") {
@@ -1081,7 +1084,7 @@ export class StandardprojectComponent implements OnInit {
               taskObj.isHoursDisabled = true;
             }
             if (taskObj.data.UseTaskDays !== this.pmConstant.task.USE_TASK_DAYS || milestoneTask[index].TaskName.Title === 'Send to client') {
-              if(milestoneTask[index].TaskName.Title === 'Send to client'){
+              if (milestoneTask[index].TaskName.Title === 'Send to client') {
                 taskObj.data.Days = taskObj.data.TaskDays;
               }
               taskObj.data.showTime = true;
@@ -2044,7 +2047,54 @@ export class StandardprojectComponent implements OnInit {
       this.pmObject.addProject.Timeline.Standard.StandardBudgetHrs = this.standardBudgetHrs;
       this.pmObject.addProject.Timeline.Standard.standardArray = this.standardFiles;
       this.pmObject.addProject.FinanceManagement.BudgetHours = this.pmObject.addProject.Timeline.Standard.StandardProjectBugetHours;
-      await this.pmCommonService.validateAndSave();
+      // await this.pmCommonService.validateAndSave();
+      // new code by maxwell file upload progress bar 
+
+      this.pmObject.isMainLoaderHidden = false;
+      const newProjectCode = await this.pmCommonService.verifyAndUpdateProjectCode();
+      this.pmObject.addProject.ProjectAttributes.ProjectCode = newProjectCode;
+      if (newProjectCode) {
+        if (this.pmObject.addProject.FinanceManagement.selectedFile) {
+          let SelectedFile = [];
+          this.pmObject.isMainLoaderHidden = true;
+          this.commonService.SetNewrelic('projectManagment', 'nonStdConfirm', 'UploadFiles');
+          const docFolder = 'Finance/SOW';
+          let libraryName = '';
+          const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
+            x.Title === this.pmObject.addProject.ProjectAttributes.ClientLegalEntity);
+          if (clientInfo && clientInfo.length) {
+            libraryName = clientInfo[0].ListName;
+          }
+          const FolderName = libraryName + '/' + docFolder;
+          SelectedFile.push(new Object({ name: this.pmObject.addProject.FinanceManagement.selectedFile.name, file: this.pmObject.addProject.FinanceManagement.selectedFile }));
+
+          const ref = this.dialogService.open(FileUploadProgressDialogComponent, {
+            header: 'File Uploading',
+            width: '70vw',
+            data: {
+              Files: SelectedFile,
+              libraryName: this.sharedObject.sharePointPageObject.webRelativeUrl + '/' + FolderName,
+              overwrite: true,
+            },
+            contentStyle: { 'overflow-y': 'visible', 'background-color': '#f4f3ef' },
+            closable: false,
+          });
+
+          return ref.onClose.subscribe(async (uploadedfile: any) => {
+            if (uploadedfile) {
+              if (SelectedFile.length > 0 && SelectedFile.length === uploadedfile.length) {
+                if (uploadedfile[0].ServerRelativeUrl) {
+                  this.pmObject.addSOW.isSOWCodeDisabled = false;
+                  this.pmObject.addSOW.isStatusDisabled = true;
+                }
+              }
+            }
+          });
+        }
+        this.pmObject.isMainLoaderHidden = false;
+        await this.pmCommonService.addUpdateProject();
+      }
+
       this.messageService.add({
         key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
         detail: 'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode

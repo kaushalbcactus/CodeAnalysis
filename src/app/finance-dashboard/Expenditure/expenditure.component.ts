@@ -878,6 +878,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         console.log('Event ', event);
         this.fileReader = new FileReader();
         if (event.target.files && event.target.files.length > 0) {
+            this.SelectedFile =[];
             this.selectedFile = event.target.files[0];
             const fileName = this.selectedFile.name;
             const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');

@@ -21,7 +21,7 @@ import { DialogService } from 'primeng';
 })
 export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
     FolderName: string;
-    SelectedFile: any;
+    SelectedFile =[];
 
     constructor(
         private messageService: MessageService,
@@ -492,7 +492,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
             if (this.markAsPayment_form.invalid) {
                 return;
             }
-            this.isPSInnerLoaderHidden = false;
+            // this.isPSInnerLoaderHidden = false;
             this.submitBtn.isClicked = true;
             console.log('form is submitting ..... for selected row Item i.e ', this.markAsPayment_form.value);
             this.uploadFileData(type);
@@ -505,6 +505,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
     onFileChange(event: { target: { files: string | any[]; }; }, folderName: string) {
         this.fileReader = new FileReader();
         if (event.target.files && event.target.files.length > 0) {
+            this.SelectedFile =[];
             this.selectedFile = event.target.files[0];
             const fileName = this.selectedFile.name;
             const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
@@ -539,8 +540,10 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
             if (uploadedfile) {
                 if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
                     if (uploadedfile[0].ServerRelativeUrl) {
+
                         this.fileUploadedUrl = uploadedfile[0].ServerRelativeUrl;
                         if (this.fileUploadedUrl) {
+                            this.isPSInnerLoaderHidden = false;
                             const batchUrl = [];
                             const speInfoData = {
                                 __metadata: { type: this.constantService.listNames.SpendingInfo.type },

@@ -25,9 +25,9 @@
                 <th style="width: 3em">
                     <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
                 </th>
-                <th [ngStyle]="{'line-height': isFirst ? '33px':'','width': isFirst ? '35%':''}" *ngFor="let col of columns; index as i; first as isFirst" [pSortableColumn]="col.field">
+                <th [ngStyle]="{'line-height': isFirst ? '33px':'','width': isFirst ? '35%':''}" *ngFor="let col of columns; index as i; first as isFirst" [pSortableColumnDisabled]="isFirst" [pSortableColumn]="col.field">
                     <span> {{col.header}}</span>
-                    <p-sortIcon [field]="col.field"></p-sortIcon>
+                    <p-sortIcon [field]="col.field" *ngIf="!isFirst"></p-sortIcon>
                     <button *ngIf="item.label ==='My Drafts' && ModifiedSelectedTaskName !=='Client Review' " style="float: right;margin-left: 7px;font-size: 12px;" [hidden]="col.header !=='Document Name'" [hidden]="col.header !=='Document Name'" pButton type="button" label="Mark final"
                         (click)="markAsFinal()" class="ui-button-danger"></button>
 
