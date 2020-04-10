@@ -359,18 +359,42 @@ export class TimeBookingDialogComponent implements OnInit {
       record.ProjectCode !== 'Adhoc' ? this.generateTimeSpent(milestoneTasks, obj) : this.generateAdhocTimeSpent(milestoneTasks, obj);
       this.UserMilestones.push(obj);
     });
-    const allProjectCodes = this.UserMilestones !== undefined ? this.UserMilestones.map(c => c.ProjectCode) : [];
-    const ProjectInformation = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.projectInfo);
-    let ProjectInformationFilter = '';
-    allProjectCodes.forEach((value, i) => {
-      // tslint:disable-next-line: quotemark
-      ProjectInformationFilter += "ProjectCode eq '" + value + "'";
-      ProjectInformationFilter += i < allProjectCodes.length - 1 ? ' or ' : '';
+    let allProjectCodes = this.UserMilestones !== undefined ? this.UserMilestones.map(c => c.ProjectCode) : [];
+    allProjectCodes = [...new Set(allProjectCodes)];
+    let finalArray = [];
+    let batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+
+    allProjectCodes.forEach(async (value, i) => {
+      const projectInfoGet = Object.assign({}, options);
+      const projectInfoFilter = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.projectInfo);
+      projectInfoFilter.filter = projectInfoFilter.filter.replace(/{{projectCode}}/gi, value);
+      projectInfoGet.url = this.spServices.getReadURL(this.constants.listNames.ProjectInformation.name,
+        projectInfoFilter);
+      projectInfoGet.type = 'GET';
+      projectInfoGet.listName = this.constants.listNames.ProjectInformation.name;
+      batchURL.push(projectInfoGet);
+      if (batchURL.length === 99) {
+        this.commonService.SetNewrelic('MyDashboard', 'time-bookingDialog', 'GetProjectInfoByProjectCodes');
+        const batchResults = await this.spServices.executeBatch(batchURL);
+        finalArray = [...finalArray, ...batchResults];
+        batchURL = [];
+      }
     });
-    ProjectInformation.filter = ProjectInformationFilter;
-    this.commonService.SetNewrelic('MyDashboard', 'time-bookingDialog', 'GetProjectInfoByProjectCodes');
-    this.response = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, ProjectInformation);
-    this.projetInformations = this.response.length > 0 ? this.response : [];
+    if (batchURL.length) {
+      this.commonService.SetNewrelic('MyDashboard', 'time-bookingDialog', 'GetProjectInfoByProjectCodes');
+      const batchResults = await this.spServices.executeBatch(batchURL);
+      finalArray = [...finalArray, ...batchResults];
+      // console.log(updateResults);
+    }
+
+    this.projetInformations = finalArray.length > 0 ? [].concat(...finalArray.map(c => c.retItems)) : [];
+
     if (this.UserMilestones !== undefined) {
       this.projetInformations.forEach(element => {
         this.UserMilestones.filter(c => c.ProjectCode === element.ProjectCode).map(c => c.Entity = element.ClientLegalEntity);
