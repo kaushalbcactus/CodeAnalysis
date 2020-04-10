@@ -320,7 +320,6 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       users = await this.getUsers(Ids);
     }
     this.loaderenable = false;
-    debugger;
     this.DocumentArray.map(c => c.taskName = c.ListItemAllFields.TaskName != null ? c.ListItemAllFields.TaskName : '');
     this.DocumentArray.map(c => c.modifiedUserName = users.find(d => d.Id ===
       c.ListItemAllFields.EditorId) !== undefined ? users.find(d => d.Id === c.ListItemAllFields.EditorId).Title : '');
