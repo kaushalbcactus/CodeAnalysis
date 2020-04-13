@@ -1553,8 +1553,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   // **************************************************************************************************************************************
 
   CancelChanges(milestone, type) {
-
-
+    milestone.allocationColor = '';
     this.userCapacityEnable = false;
     if (type === "discardAll") {
       this.loaderenable = false;

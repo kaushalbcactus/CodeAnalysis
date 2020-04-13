@@ -15,10 +15,12 @@ export class DailyAllocationComponent implements OnInit {
   public resourceCapacity: any;
   public newAllocation = [];
   public allocationType = '';
+  public hideTable = false;
+  public hideLoader = false;
   constructor(private usercapacityComponent: UsercapacityComponent, private popupData: DynamicDialogConfig,
     private common: CommonService, private datePipe: DatePipe, public popupConfig: DynamicDialogRef) { }
 
-  async ngOnInit() {
+  ngOnInit() {
     this.cols = [
       { field: 'Date', header: 'Date' },
       { field: 'Allocation', header: 'Hours' }
@@ -26,13 +28,17 @@ export class DailyAllocationComponent implements OnInit {
     const allocationData: IDailyAllocationTask = this.popupData.data;
     this.resourceCapacity = {};
     if (allocationData) {
-      this.resourceCapacity = await this.getResourceCapacity(allocationData);
-      this.initialize(this.resourceCapacity, allocationData);
+      this.showLoader();
+      setTimeout(async () => {
+        this.resourceCapacity = await this.getResourceCapacity(allocationData);
+        await this.initialize(this.resourceCapacity, allocationData);
+        this.hideTable = false;
+        this.showTable();
+      }, 300);
     }
   }
 
-  async initialize(resource, allocationData): Promise<{ allocationPerDay,
-    allocationAlert, allocationType}> {
+  async initialize(resource, allocationData): Promise<{ allocationPerDay, allocationAlert, allocationType }> {
     let objAllocation = {
       allocationPerDay: '',
       allocationAlert: false,
@@ -42,17 +48,25 @@ export class DailyAllocationComponent implements OnInit {
     if (allocationData.strAllocation && !allocationData.allocationType) {
       this.getAllocation(resource, allocationData.strAllocation);
     } else {
-      const isDailyAllocationValid = !allocationData.allocationType ? this.checkDailyAllocation(resource, allocationData.budgetHrs) : false;
-      if (!isDailyAllocationValid) {
-        await this.equalSplitAllocation(allocationData);
-        this.allocationType = objAllocation.allocationType = 'Equal Split';
-        this.popupData.header = this.popupData.header + '( Equal Split Allocation)';
-      } else {
-        this.popupData.header = this.popupData.header + '( Daily Allocation)';
-        this.allocationType = objAllocation.allocationType = 'Daily Allocation';
-      }
-      objAllocation = this.getAllocationPerDay(allocationData);
+      objAllocation = await this.performAllocation(resource, allocationData);
     }
+    return objAllocation;
+  }
+
+  async performAllocation(resource, allocationData) {
+    let objAllocation = {
+      allocationPerDay: '',
+      allocationAlert: false,
+      allocationType: ''
+    };
+    const isDailyAllocationValid = !allocationData.allocationType ? this.checkDailyAllocation(resource, allocationData.budgetHrs) : false;
+    if (!isDailyAllocationValid) {
+      await this.equalSplitAllocation(allocationData);
+      this.allocationType = objAllocation.allocationType = 'Equal Split';
+    } else {
+      this.allocationType = objAllocation.allocationType = 'Daily Allocation';
+    }
+    objAllocation = this.getAllocationPerDay(allocationData);
     return objAllocation;
   }
 
@@ -75,7 +89,7 @@ export class DailyAllocationComponent implements OnInit {
             valueHrs: this.getHrsMinsObj(hrsMins, false).hours,
             valueMins: this.getHrsMinsObj(hrsMins, false).mins,
             maxHrs: this.getHrsMinsObj(resourceSliderMaxHrs, true).hours,
-            maxMins: this.getHrsMinsObj(resourceSliderMaxHrs, true).mins
+            maxMins: 75
           }
         };
         this.newAllocation.push(obj);
@@ -95,8 +109,6 @@ export class DailyAllocationComponent implements OnInit {
   checkDailyAllocation(resource, budgetHrs: string): boolean {
     const maxLimit = resource.maxHrs + 2;
     let maxAvailableHrs = resource.maxHrs;
-    // const originalHeader = this.popupData.header;
-    // this.popupData.header = originalHeader + '( Equal Split Allocation)';
     let remainingBudgetHrs: string;
     let extraHrs = '0:0';
     while (maxAvailableHrs <= maxLimit) {
@@ -125,15 +137,13 @@ export class DailyAllocationComponent implements OnInit {
     this.newAllocation.length = 0;
     let flag = true;
     for (const detail of resourceDailyDetails) {
-      // const mins = detail.totalTimeAllocatedPerDay;
-      // const hrsMins = this.common.convertFromHrsMins(mins);
       const obj = {
         Date: detail.date,
         Allocation: {
           valueHrs: 0,
           valueMins: 0,
           maxHrs: this.getHrsMinsObj(resourceSliderMaxHrs, true).hours,
-          maxMins: this.getHrsMinsObj(resourceSliderMaxHrs, true).mins
+          maxMins: 75 // this.getHrsMinsObj(resourceSliderMaxHrs, true).mins,
         }
       };
       if (flag) {
@@ -142,7 +152,7 @@ export class DailyAllocationComponent implements OnInit {
         newBudgetHrs = this.getDailyAvailableHours(availableHrs, taskBudgetHrs);
         const numhrs = this.getResourceSliderMaxHrs(resourceSliderMaxHrs, detail);
         obj.Allocation.maxHrs = this.getHrsMinsObj(numhrs, true).hours;
-        obj.Allocation.maxMins = this.getHrsMinsObj(numhrs, true).mins;
+        obj.Allocation.maxMins = 75; // this.getHrsMinsObj(numhrs, true).mins;
         if (newBudgetHrs.indexOf('-') > -1) {
           const numAvailableHrs = this.common.convertFromHrsMins(availableHrs);
           obj.Allocation.valueHrs = this.getHrsMinsObj(numAvailableHrs, false).hours;
@@ -150,7 +160,6 @@ export class DailyAllocationComponent implements OnInit {
           taskBudgetHrs = newBudgetHrs;
         } else {
           const budgetHrs = taskBudgetHrs.indexOf('-') > -1 ? taskBudgetHrs.replace('-', '') : taskBudgetHrs;
-          // totalMins = this.common.calculateTotalMins(budgetHrs);
           const value = this.common.convertFromHrsMins(budgetHrs);
           obj.Allocation.valueHrs = this.getHrsMinsObj(value, false).hours;
           obj.Allocation.valueMins = this.getHrsMinsObj(value, false).mins;
@@ -164,7 +173,7 @@ export class DailyAllocationComponent implements OnInit {
 
   getResourceSliderMaxHrs(defaultResourceMaxHrs, day): number {
     const numtotalAllocated = this.common.convertFromHrsMins(day.totalTimeAllocatedPerDay);
-    return defaultResourceMaxHrs - numtotalAllocated;
+    return this.common.roundToPrecision(defaultResourceMaxHrs - numtotalAllocated, 0.5);
   }
 
   getDailyAvailableHours(resourceAvailableHrs: string, budgetHrs: string): string {
@@ -190,20 +199,17 @@ export class DailyAllocationComponent implements OnInit {
       const obj = {
         Date: detail.date,
         Allocation: {
-          // value: totalHrs,
-          // maxHrs: totalHrs < resourceSliderMaxHrs ? resourceSliderMaxHrs : totalHrs,
-
           valueHrs: this.getHrsMinsObj(totalHrs, false).hours,
           valueMins: this.getHrsMinsObj(totalHrs, false).mins,
           maxHrs: this.getHrsMinsObj(maximumHrs, true).hours,
-          maxMins: this.getHrsMinsObj(maximumHrs, true).mins
+          maxMins: 75 // this.getHrsMinsObj(maximumHrs, true).mins,
         }
       };
       this.newAllocation.push(obj);
     }
   }
 
-  getAllocationPerDay(allocationData): {allocationPerDay, allocationAlert, allocationType} {
+  getAllocationPerDay(allocationData): { allocationPerDay, allocationAlert, allocationType } {
     let allocationPerDay = '';
     this.newAllocation.forEach(element => {
       allocationPerDay = allocationPerDay + this.datePipe.transform(element.Date, 'EE,MMMd,y') + ':' +
@@ -225,23 +231,33 @@ export class DailyAllocationComponent implements OnInit {
     const allocationPerDay = objAllocation.allocationPerDay;
     const allocationAlert = objAllocation.allocationAlert;
     const allocationType = objAllocation.allocationType;
-    this.popupConfig.close({allocationPerDay, allocationAlert, allocationType});
+    this.popupConfig.close({ allocationPerDay, allocationAlert, allocationType });
   }
 
   async checkAllocation(event, changedDate) {
-    const objDate = this.popupData.data;
-    this.resourceCapacity = Object.keys(this.resourceCapacity).length ? this.resourceCapacity : await this.getResourceCapacity(objDate);
-    const resourceDailyAllocation = this.resourceCapacity.dates;
-    const resourceChangedDate = resourceDailyAllocation.find(d => d.date.getTime() === changedDate.Date.getTime());
-    const numHrsMins = event.type === 'hrs' ? +event.value + changedDate.Allocation.valueMins : // +oldAvailableMins
-      + +event.value + changedDate.Allocation.valueHrs; // +oldAvailableHrs
-    const strChangedValue = this.common.convertToHrsMins('' + numHrsMins);
-    resourceChangedDate.availableHrs = strChangedValue;
-    resourceChangedDate.mandatoryHrs = true;
-    this.checkDailyAllocation(this.resourceCapacity, objDate.budgetHrs);
+      const objData = this.popupData.data;
+      objData.allocationType = '';
+      this.resourceCapacity = Object.keys(this.resourceCapacity).length ? this.resourceCapacity : await this.getResourceCapacity(objData);
+      const resourceDailyAllocation = this.resourceCapacity.dates;
+      const resourceChangedDate = resourceDailyAllocation.find(d => d.date.getTime() === changedDate.Date.getTime());
+      const numHrsMins = event.type === 'hrs' ? +event.value + changedDate.Allocation.valueMins / 100 : // +oldAvailableMins
+        + +event.value + changedDate.Allocation.valueHrs; // +oldAvailableHrs
+      const strChangedValue = this.common.convertToHrsMins('' + numHrsMins);
+      resourceChangedDate.availableHrs = strChangedValue;
+      resourceChangedDate.mandatoryHrs = true;
+      await this.performAllocation(this.resourceCapacity, objData);
   }
 
+  showTable() {
+    this.hideLoader = true;
+    this.hideTable = false;
+  }
+
+  showLoader() {
+    this.hideLoader = false;
+    this.hideTable = true;
+  }
   async cancel() {
-    this.popupConfig.close({allocationPerDay: this.popupData.data.strAllocation, allocationAlert: false});
+    this.popupConfig.close({ allocationPerDay: this.popupData.data.strAllocation, allocationAlert: false });
   }
 }
