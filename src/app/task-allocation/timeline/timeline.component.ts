@@ -54,11 +54,15 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   task;
   errorMessage;
   milestoneDataCopy = [];
-  ganttObject: any = {}
-  resource = []
+  ganttObject: any = {};
+  resource = [];
   ganttComponentRef: any;
   updatedTasks: any;
   linkArray = [];
+  hoverRowData = {
+    allocationPerDay: '',
+    event: {}
+  };
   min_date;
   max_date;
   public colors = [
@@ -1796,7 +1800,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         this.taskMenu.push({ label: 'Scope', icon: 'pi pi-comment', command: (event) => this.openComment(data, rowNode) });
         if (data.AssignedTo.ID !== undefined && data.AssignedTo.ID > -1 && data.user !== 'QC' && data.user !== 'Edit') {
           this.taskMenu.push({ label: 'User Capacity', icon: 'pi pi-camera', command: (event) => this.getUserCapacity(data) },
-            { label: 'View Allocation', icon: 'pi pi-sliders-h', command: (event) => this.viewAllocation(data) });
+            { label: 'View Allocation', icon: 'pi pi-sliders-h', command: (event) => this.viewAllocation(data, '') },
+            { label: 'Equal Split', icon: 'pi pi-sliders-h', command: (event) => this.viewAllocation(data, 'Equal') });
         }
       }
     }
@@ -2274,15 +2279,19 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       const allocationData: IDailyAllocationTask = {
         ID: milestoneTask.id,
         task: milestoneTask.taskFullName,
-        startDate: milestoneTask.start_date,
-        endDate: milestoneTask.end_date,
+        startDate: milestoneTask.pUserStartDatePart,
+        endDate: milestoneTask.pUserEndDatePart,
         budgetHrs: milestoneTask.budgetHours,
         resource,
-        strAllocation: ''
+        strAllocation: '',
+        allocationType: ''
       };
       const resourceCapacity = await this.dailyAllocation.getResourceCapacity(allocationData);
-      const strAllocation = await this.dailyAllocation.initialize(resourceCapacity, allocationData);
-      this.setAllocationPerDay(strAllocation, milestoneTask);
+      const objDailyAllocation = await this.dailyAllocation.initialize(resourceCapacity, allocationData);
+      this.setAllocationPerDay(objDailyAllocation, milestoneTask);
+      if (objDailyAllocation.allocationAlert) {
+        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Resource is over allocated' });
+      }
     }
   }
 
@@ -4552,7 +4561,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     return index; // or item.id
   }
 
-  viewAllocation(milestoneTask): void {
+  viewAllocation(milestoneTask, allocationType): void {
     milestoneTask.resources = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
       return objt.UserName.ID === milestoneTask.AssignedTo.ID;
     });
@@ -4565,7 +4574,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         endDate: milestoneTask.end_date,
         budgetHrs: milestoneTask.budgetHours,
         resource: milestoneTask.resources,
-        strAllocation: milestoneTask.allocationPerDay
+        strAllocation: milestoneTask.allocationPerDay,
+        allocationType
       } as IDailyAllocationTask,
       width: '90vw',
 
@@ -4574,17 +4584,30 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       contentStyle: { 'max-height': '90vh', 'overflow-y': 'auto' },
       closable: false
     });
-    ref.onClose.subscribe((strAllocationPerDay: string) => {
-      this.setAllocationPerDay(strAllocationPerDay, milestoneTask);
+    ref.onClose.subscribe((allocation: any) => {
+      this.setAllocationPerDay(allocation, milestoneTask);
+      if (allocation.allocationAlert) {
+        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Resource is over allocated' });
+      }
     });
   }
-  setAllocationPerDay(strAllocationPerDay: string, milestoneTask: IMilestoneTask) {
+  setAllocationPerDay(allocation, milestoneTask: IMilestoneTask) {
     const milestoneData: MilestoneTreeNode = this.milestoneData.find(m => m.data.taskFullName === milestoneTask.milestone);
     const milestoneTasks: any[] = this.getTasksFromMilestones(milestoneData, false, true);
     const task = milestoneTasks.find(t => t.id === milestoneTask.id);
-    task.allocationPerDay = strAllocationPerDay;
+    task.allocationPerDay = allocation.allocationPerDay;
     milestoneData.data.edited = true;
     task.edited = true;
+    if (allocation.allocationType === 'Equal Split') {
+      task.allocationColor = 'indianred';
+    } else if (allocation.allocationType === 'Daily Allocation') {
+      task.allocationColor = 'rgb(160, 247, 142)';
+    }
+  }
+
+  showOverlayPanel(event, rowData, dailyAllocateOP) {
+    const allocationPerDay = rowData.allocationPerDay ? rowData.allocationPerDay : '';
+    dailyAllocateOP.showOverlay(event, allocationPerDay);
   }
 }
 

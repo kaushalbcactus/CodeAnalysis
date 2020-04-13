@@ -18,35 +18,26 @@ export class NgsliderComponent implements OnInit {
     step: 1,
     showTicks: true,
     showTicksValues: true,
+    getTickColor: (value: number): string => {
+      if ((value > this.rangeSlider - 4) && (this.type === 'hrs')) {
+        return 'orange';
+      }
+    }
   };
   constructor() { }
 
   ngOnInit() {
     const range = this.rangeSlider;
-    this.options.step = this.type === 'hrs' ? 1 : 0.25;
+    this.options.step = this.type === 'hrs' ? 1 : 25;
     this.options.ceil = range;
+    this.options.getTickColor(this.value);
     this.sliderValue = this.value;
   }
-
-  // getHrsSliderRange(range): any[] {
-  //   const sliderArray = [];
-  //   const strRange = '' + range;
-  //   const isMinsRange = strRange.indexOf('.') > -1 ? true : false;
-  //   let counter = 0;
-  //   while (counter <= range) {
-  //     const obj = {
-  //       value: counter
-  //     };
-  //     sliderArray.push(obj);
-  //     counter = isMinsRange ? counter + 0.25 : counter + 1;
-  //   }
-  //   return sliderArray;
-  // }
 
   emitValue(value) {
     this.changedValue.emit({
       type: this.type,
-      value
+      value: this.type === 'hrs' ? value : value / 100
     });
   }
 

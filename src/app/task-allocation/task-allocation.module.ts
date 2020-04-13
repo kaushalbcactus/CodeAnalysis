@@ -25,9 +25,10 @@ import { GanttChartComponent } from '../shared/gantt-chart/gantt-chart.component
 import { DailyAllocationComponent } from './daily-allocation/daily-allocation.component';
 import { NgsliderComponent } from './daily-allocation/ngslider/ngslider.component';
 import { Ng5SliderModule } from 'ng5-slider';
+import { DailyAllocationOverlayComponent } from './daily-allocation-overlay/daily-allocation-overlay.component';
 @NgModule({
   declarations: [TaskAllocationComponent, TimelineComponent, DragDropComponent,
-     TaskDetailsDialogComponent, ResourcesComponent, CascadeDialogComponent, DailyAllocationComponent, NgsliderComponent],
+     TaskDetailsDialogComponent, ResourcesComponent, CascadeDialogComponent, DailyAllocationComponent, NgsliderComponent, DailyAllocationOverlayComponent],
   imports: [
     CommonModule,
     TaskAllocationRoutingModule,

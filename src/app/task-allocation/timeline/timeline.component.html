@@ -103,6 +103,16 @@
                 </div> -->
             </div>
             <div>
+              <div class="input-color">
+                  <label>Equal Split Allocation</label>
+                  <div class="color-box" style="background-color: indianred;"></div>
+              </div>
+              <div class="input-color">
+                  <label>Daily Allocation Split</label>
+                  <div class="color-box" style="background-color: rgb(160, 247, 142)"></div>
+              </div>
+            </div>
+            <div>
                 <div *ngIf="changeInRestructure " class="input-color" fxLayoutAlign="end center"
                     style="margin-right: 10px;">
                     <button *ngIf="!projectDetails" mat-raised-button type="button"
@@ -158,13 +168,14 @@
 
                 <ng-template pTemplate="header">
                     <tr>
-                        <th style="width:30%"> </th>
+                        <th style="width:28%"> </th>
                         <th style="width:5%">Budget Hrs</th>
                         <th style="width:5%">Spent Hrs</th>
-                        <th style="width:15%">Start Date</th>
-                        <th style="width:15%">End Date</th>
+                        <th style="width:14%">Start Date</th>
+                        <th style="width:14%">End Date</th>
                         <th style="width:4%">TAT</th>
                         <th style="width:15%">Assign To</th>
+                        <th style="width:4%">Type</th>
                         <th style="width:5%">Allow Start</th>
                         <th style="width:5%">Disable Cascade</th>
                         <th style="width:3%"> </th>
@@ -197,9 +208,11 @@
                             </div>
                         </td>
                         <!-- Budget Hrs -->
-                        <td style="text-align: center;" *ngIf="!projectDetails">
+                        <td style="text-align: center;" *ngIf="!projectDetails" (mouseenter)="this.showOverlayPanel($event, rowData, dailyAllocateOP)"
+                        >
                             <span
-                                *ngIf="(rowData.type === 'milestone' && rowData.status !== 'Not Saved' && !rowData.isCurrent && !rowData.isFuture) || (rowData.type ==='task' && !rowData.editMode && rowData.itemType !== 'Client Review' && rowData.itemType !== 'Send to client')">{{rowData.budgetHours}}</span>
+                                *ngIf="(rowData.type === 'milestone' && rowData.status !== 'Not Saved' && !rowData.isCurrent && !rowData.isFuture) || (rowData.type ==='task' && !rowData.editMode && rowData.itemType !== 'Client Review' && rowData.itemType !== 'Send to client')"
+                                >{{rowData.budgetHours}}</span>
                             <input type="number" class="form-control budgetHr" required="required" min="0" value="0"
                                 onchange="validity.valid||(value='0');" step="0.25"
                                 *ngIf="(rowData.type !=='milestone' && rowData.type !=='submilestone' && rowData.editMode && (rowData.itemType !== 'Client Review' &&  rowData.itemType !== 'Send to client')) || ((rowData.status ==='In Progress' || rowData.status ==='Not Started' || rowData.status ==='Not Confirmed' || rowData.status ==='Not Saved') && rowData.type === 'milestone')"
@@ -210,7 +223,8 @@
                         </td>
 
                         <td style="text-align: center;" *ngIf="projectDetails">
-                            {{rowData.budgetHours}}
+                            <span>{{rowData.budgetHours}}</span>
+
                         </td>
                         <!-- spent Hrs -->
                         <td style="text-align: center;">{{rowData.spentTime}}</td>
@@ -222,15 +236,6 @@
                             <span [title]="rowData.pUserStart |  date:' d MMM, y, h:mm a'"
                                 *ngIf="(!rowData.editMode && rowData.type === 'task' &&  rowData.tat !== true  && rowData.itemType !=='Client Review') || (rowData.type === 'task' && rowData.editMode && rowData.status === 'In Progress')">{{rowData.start_date |  date:' d MMM, y, h:mm a' }}</span>
 
-                            <!-- <span *ngIf="rowData.editMode && rowData.type === 'task' && rowData.itemType ==='Client Review' ">
-                                <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserStartDatePart"
-                                    [disabledDays]="[0,6]" [readonlyInput]="true" dateFormat="dd M , yy"
-                                    yearRange="{{yearsRange}}" hideOnDateTimeSelect="true" [stepMinute]="15"
-                                    [showIcon]="true" [showOnFocus]="false" [monthNavigator]="true"
-                                    [yearNavigator]="true" (onClose)="DateChangePart(rowData,'start')" appendTo="body"
-                                    [inputStyle]="{'width': '78%', 'min-width': '78%','padding':'0px','border':'none'}">
-                                </p-calendar>
-                            </span> -->
                             <span *ngIf="rowData.editMode && rowData.type === 'task'  && rowData.status !== 'In Progress'">
                                 <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserStartDatePart"
                                     [disabledDays]="[0,6]" [readonlyInput]="true" dateFormat="dd M , yy"
@@ -256,16 +261,7 @@
                             <span [title]="rowData.pUserEnd |  date:' d MMM, y, h:mm a'"
                                 *ngIf="!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat !== true  && rowData.itemType !=='Client Review'">{{rowData.end_date |  date:' d MMM, y, h:mm a' }}</span>
 
-                            <!-- <span *ngIf="rowData.editMode && rowData.type === 'task' && rowData.itemType ==='Client Review' ">
-                                <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserEndDatePart"
-                                    [disabledDays]="[0,6]" [readonlyInput]="true" dateFormat="dd M , yy"
-                                    yearRange="{{yearsRange}}" hideOnDateTimeSelect="true" [stepMinute]="15"
-                                    [showIcon]="true" [showOnFocus]="false" [monthNavigator]="true"
-                                    [yearNavigator]="true" (onClose)="DateChangePart(rowData,'end')" appendTo="body"
-                                    [inputStyle]="{'width': '78%', 'min-width': '78%','padding':'0px','border':'none'}">
-                                </p-calendar>
 
-                            </span> -->
                             <span *ngIf="rowData.editMode && rowData.type === 'task'">
 
                                 <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserEndDatePart"
@@ -297,10 +293,6 @@
                                 [disabled]=" rowData.title ==='Client Review'"
                                 (onChange)="ChangeEndDate($event, rowData)"
                                 [(ngModel)]="rowData.title ==='Client Review' ? 'Yes' : rowData.tat"></p-inputSwitch>
-                            <!-- <p-checkbox *ngIf="rowData.editMode && rowData.type === 'task'
-                            && rowData.itemType !=='Client Review' && rowData.itemType !=='Send to client' && (rowData.IsCentrallyAllocated !== 'Yes' || rowData.slotType === 'Both' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.pName.indexOf('Slot') < 0))"
-                                (onChange)="ChangeEndDate($event, rowData)" [(ngModel)]="rowData.pName ==='Client Review' ? 'Yes' : rowData.tat" binary="true">
-                            </p-checkbox> -->
                         </td>
 
                         <!-- Assign To -->
@@ -322,14 +314,14 @@
                                 </ng-template>
                             </p-dropdown>
                         </td>
+                        <!--Daily Allocation Type-->
+                        <td [style.backgroundColor]="rowData?.allocationColor">
+                        </td>
                         <!-- Allow start -->
                         <td [ngStyle]="{'text-align': 'rowData.editMode' ? 'center':'left'}">
                             <span *ngIf="((rowData.editMode || !rowData.editMode) && rowData.type ==='milestone'  && rowData.type !=='submilestone') || (!rowData.editMode && rowData.type !=='milestone'  && rowData.type !=='submilestone' ) ">{{rowData.allowStart === true ? 'Yes':'No'}}</span>
-                            <!-- && (rowData.IsCentrallyAllocated !== 'Yes' || rowData.slotType === 'Both' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.pName.indexOf('Slot') < 0)) -->
                             <p-inputSwitch *ngIf="rowData.editMode && (rowData.type !== 'milestone' && rowData.type !=='submilestone') && (rowData.itemType !=='Client Review' && rowData.itemType !=='Send to client')" [(ngModel)]="rowData.allowStart"></p-inputSwitch>
-                            <!-- rowData.IsCentrallyAllocated !== 'Yes'" -->
-                            <!-- <p-checkbox *ngIf="rowData.editMode && (rowData.type !== 'milestone' && rowData.type !=='submilestone') && (rowData.pName !=='Client Review' && rowData.pName !=='SC')" [(ngModel)]="rowData.allowStart" binary="true"></p-checkbox> -->
-                        </td>
+                         </td>
                         <!-- Disable cascade -->
 
                         <td [ngStyle]="{'text-align': 'rowData.editMode' ? 'center':'left'}">
@@ -383,7 +375,7 @@
                 </ng-template>
 
             </p-treeTable>
-
+             <app-daily-allocation-overlay #dailyAllocateOP></app-daily-allocation-overlay>
             <!-- <p-contextMenu #milestones [hidden]="contextMenuvisible" appendTo="body" [model]="contextMenuOptions">
             </p-contextMenu> -->
 
@@ -598,10 +590,7 @@
         <button type="button" pButton (click)="close(true)" label="Cancel" class="ui-button-secondary"></button>
     </p-footer>
 </p-dialog>
-
-<!-- <p-overlayPanel #op2 [showCloseIcon]="true" [dismissable]="false">
-  <app-daily-allocation></app-daily-allocation>
-</p-overlayPanel> -->
 <div id="userCapacity1" class="mt-50" [hidden]="!userCapacityEnable">
     <ng-template #userCapacity></ng-template>
 </div>
+
