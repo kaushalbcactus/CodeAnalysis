@@ -121,10 +121,8 @@ export class FileUploadProgressDialogComponent implements OnInit {
       var serverRelativeUrlToFolder = "decodedurl='" + libraryName + "'";
       var endpoint = this.globalService.sharePointPageObject.webRelativeUrl + "/_api/Web/GetFolderByServerRelativePath(" + serverRelativeUrlToFolder + ")/files" + "/add(overwrite=" + overwriteValue + ", url='" + fileName + "')?$expand=ListItemAllFields"
 
-      const headers = {
-        "accept": "application/json;odata=verbose"
-      };
-      this.spoperationService.executePostForFileUpload(endpoint, this.convertDataBinaryString(2), headers).then(file => resolve(true)).catch(err => reject(err));
+      
+      this.spoperationService.executePostForFileUpload(endpoint, this.convertDataBinaryString(2), '').then(file => resolve(true)).catch(err => reject(err));
     });
   }
   // Base64 - this method converts the blob arrayBuffer into a binary string to send in the REST request    
