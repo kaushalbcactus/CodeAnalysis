@@ -14,7 +14,6 @@ import { Subject } from 'rxjs';
 import { AddAuthorComponent } from './add-author/add-author.component';
 import { AuthorDetailsComponent } from './author-details/author-details.component';
 import { CommonService } from 'src/app/Services/common.service';
-import { FileUploadProgressDialogComponent } from 'src/app/shared/file-upload-progress-dialog/file-upload-progress-dialog.component';
 
 @Component({
     selector: 'app-pubsupport',
@@ -1604,84 +1603,72 @@ export class PubsupportComponent implements OnInit {
 
     async uploadFileData(type: string) {
         this.common.SetNewrelic('PubSupport', 'pubsupport', 'UploadFile');
-        const ref = this.dialogService.open(FileUploadProgressDialogComponent, {
-            header: 'File Uploading',
-            width: '70vw',
-            data: {
-                Files: this.SelectedFile,
-                libraryName: this.globalObject.sharePointPageObject.webRelativeUrl + '/' + this.FolderName,
-                overwrite: true,
-            },
-            contentStyle: { 'overflow-y': 'visible', 'background-color': '#f4f3ef' },
-            closable: false,
-        });
 
-        return ref.onClose.subscribe(async (uploadedfile: any) => {
-            if (uploadedfile) {
-                if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
-                    if (uploadedfile[0].hasOwnProperty('odata.error')) {
-                        this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
-                        this.submitBtn.isClicked = false;
-                        this.messageService.add({
-                            key: 'myKey1', severity: 'error', summary: 'File not uploaded.',
-                            detail: 'Folder / File Not Found', life: 3000
+
+        this.common.UploadFilesProgress(this.SelectedFile, this.FolderName, true).then(uploadedfile => {
+            if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
+                if (uploadedfile[0].hasOwnProperty('odata.error')) {
+                    this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
+                    this.submitBtn.isClicked = false;
+                    this.messageService.add({
+                        key: 'myKey1', severity: 'error', summary: 'File not uploaded.',
+                        detail: 'Folder / File Not Found', life: 3000
+                    });
+                    return;
+                } else if (uploadedfile[0].ServerRelativeUrl && type !== 'updateAuthors') {
+
+                    if (type === 'updateJCRequirementModal') {
+                        const objData = {
+                            JournalRequirementResponse: uploadedfile[0].ServerRelativeUrl
+                        };
+                        objData['__metadata'] = { type: this.constantService.listNames.JournalConf.type };
+
+                        this.jc_jcSubId[0].retItems.forEach(element => {
+                            if (element) {
+                                this.jcId = element.ID;
+                            }
                         });
-                        return;
-                    } else if (uploadedfile[0].ServerRelativeUrl && type !== 'updateAuthors') {
 
-                        if (type === 'updateJCRequirementModal') {
-                            const objData = {
-                                JournalRequirementResponse: uploadedfile[0].ServerRelativeUrl
-                            };
-                            objData['__metadata'] = { type: this.constantService.listNames.JournalConf.type };
-
-                            this.jc_jcSubId[0].retItems.forEach(element => {
-                                if (element) {
-                                    this.jcId = element.ID;
-                                }
-                            });
-
-                            const endpoint = this.spOperationsService.getItemURL(this.constantService.listNames.JournalConf.name, this.jcId);
-                            let data = [];
-                            if (uploadedfile[0].ServerRelativeUrl) {
-                                data = [{
-                                    data: objData,
-                                    url: endpoint,
-                                    type: 'PATCH',
-                                    listName: this.constantService.listNames.JournalConf.name
-                                }];
-                            }
-                            this.submit(data, type);
+                        const endpoint = this.spOperationsService.getItemURL(this.constantService.listNames.JournalConf.name, this.jcId);
+                        let data = [];
+                        if (uploadedfile[0].ServerRelativeUrl) {
+                            data = [{
+                                data: objData,
+                                url: endpoint,
+                                type: 'PATCH',
+                                listName: this.constantService.listNames.JournalConf.name
+                            }];
                         }
-                        else {
-                            this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
-                            const arrayUpdateData = [];
-                            const data1 = this.updateProjectInfo(uploadedfile[0].ServerRelativeUrl, type);
-                            const data2 = this.updateJCSubmissionDetails(uploadedfile[0].ServerRelativeUrl, type);
-                            const data3 = this.updateJCDetails(uploadedfile[0].ServerRelativeUrl, type);
-                            let data4 = {};
-                            if (this.update_decision_details.value.Decision === 'Resubmit to same journal') {
-                                data4 = this.addJCSubmission();
-                            }
-                            if (type === 'galley') {
-                                data4 = this.addJCGalley(uploadedfile[0].ServerRelativeUrl);
-                            }
-                            arrayUpdateData.push(data1, data2, data3, data4);
-                            this.submit(arrayUpdateData, type);
-                        }
+                        this.submit(data, type);
                     }
-
-                    if (type === 'updateAuthors') {
-                        this.messageService.add({
-                            key: 'myKey1', severity: 'success', summary: 'Success message',
-                            detail: 'Author details updated.', life: 4000
-                        });
-                        this.updateAuthorModal_1 = false;
-                        this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
+                    else {
+                        this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
+                        const arrayUpdateData = [];
+                        const data1 = this.updateProjectInfo(uploadedfile[0].ServerRelativeUrl, type);
+                        const data2 = this.updateJCSubmissionDetails(uploadedfile[0].ServerRelativeUrl, type);
+                        const data3 = this.updateJCDetails(uploadedfile[0].ServerRelativeUrl, type);
+                        let data4 = {};
+                        if (this.update_decision_details.value.Decision === 'Resubmit to same journal') {
+                            data4 = this.addJCSubmission();
+                        }
+                        if (type === 'galley') {
+                            data4 = this.addJCGalley(uploadedfile[0].ServerRelativeUrl);
+                        }
+                        arrayUpdateData.push(data1, data2, data3, data4);
+                        this.submit(arrayUpdateData, type);
                     }
                 }
+
+                if (type === 'updateAuthors') {
+                    this.messageService.add({
+                        key: 'myKey1', severity: 'success', summary: 'Success message',
+                        detail: 'Author details updated.', life: 4000
+                    });
+                    this.updateAuthorModal_1 = false;
+                    this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
+                }
             }
-        });
+        })
     }
 
     async onSubmit(type: string) {

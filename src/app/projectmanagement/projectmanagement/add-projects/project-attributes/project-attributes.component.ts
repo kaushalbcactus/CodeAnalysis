@@ -12,7 +12,6 @@ import { Router } from '@angular/router';
 import { DataService } from 'src/app/Services/data.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { DatePipe } from '@angular/common';
-import { FileUploadProgressDialogComponent } from 'src/app/shared/file-upload-progress-dialog/file-upload-progress-dialog.component';
 import { GlobalService } from 'src/app/Services/global.service';
 @Component({
   selector: 'app-project-attributes',
@@ -597,43 +596,24 @@ export class ProjectAttributesComponent implements OnInit {
       this.pmObject.isMainLoaderHidden = false;
       this.setFormFieldValue();
       if (this.selectedFile) {
-        let SelectedFile= [];
-        const docFolder = 'Finance/SOW';
-        let libraryName = '';
-        const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
-          x.Title === this.pmObject.addProject.ProjectAttributes.ClientLegalEntity);
-        if (clientInfo && clientInfo.length) {
-          libraryName = clientInfo[0].ListName;
-        }
-        const FolderName=libraryName + '/' + docFolder;
+        let SelectedFile = [];
+
+        const FolderName = await this.pmCommonService.getFolderName();
         SelectedFile.push(new Object({ name: this.selectedFile.name, file: this.selectedFile }));
         this.commonService.SetNewrelic('projectManagment', 'addproj-projectAttributes', 'UpdateProjectInformationfileupload');
         this.pmObject.isMainLoaderHidden = true;
-        const ref = this.dialogService.open(FileUploadProgressDialogComponent, {
-          header: 'File Uploading',
-          width: '70vw',
-          data: {
-            Files: SelectedFile,
-            libraryName: this.globalObject.sharePointPageObject.webRelativeUrl + '/' + FolderName,
-            overwrite: true,
-          },
-          contentStyle: { 'overflow-y': 'visible', 'background-color': '#f4f3ef' },
-          closable: false,
-        });
 
-        return ref.onClose.subscribe(async (uploadedfile: any) => {
-          if (uploadedfile) {
-            if (SelectedFile.length > 0 && SelectedFile.length === uploadedfile.length) {
-              this.pmObject.isMainLoaderHidden = false;
-              if (uploadedfile[0].ServerRelativeUrl && uploadedfile[0].hasOwnProperty('Name') && !uploadedfile[0].hasOwnProperty('odata.error')) {
-                this.pmObject.addProject.FinanceManagement.SOWFileURL = uploadedfile[0].ServerRelativeUrl;
-                this.pmObject.addProject.FinanceManagement.SOWFileName = uploadedfile[0].Name;
-                this.pmObject.addProject.FinanceManagement.SOWFileProp = uploadedfile[0];
-              }
+        this.commonService.UploadFilesProgress(SelectedFile, FolderName, true).then(uploadedfile => {
+          if (SelectedFile.length > 0 && SelectedFile.length === uploadedfile.length) {
+            this.pmObject.isMainLoaderHidden = false;
+            if (uploadedfile[0].ServerRelativeUrl && uploadedfile[0].hasOwnProperty('Name') && !uploadedfile[0].hasOwnProperty('odata.error')) {
+              this.pmObject.addProject.FinanceManagement.SOWFileURL = uploadedfile[0].ServerRelativeUrl;
+              this.pmObject.addProject.FinanceManagement.SOWFileName = uploadedfile[0].Name;
+              this.pmObject.addProject.FinanceManagement.SOWFileProp = uploadedfile[0];
             }
           }
           this.continueSaveProject();
-        });
+        })
       }
       else {
         this.continueSaveProject();

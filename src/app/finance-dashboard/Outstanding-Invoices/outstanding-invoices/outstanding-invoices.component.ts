@@ -13,7 +13,6 @@ import { Subscription } from 'rxjs';
 import { CommonService } from 'src/app/Services/common.service';
 import { Table } from 'primeng/table';
 import { Router } from '@angular/router';
-import { FileUploadProgressDialogComponent } from 'src/app/shared/file-upload-progress-dialog/file-upload-progress-dialog.component';
 import { DialogService } from 'primeng';
 
 @Component({
@@ -736,57 +735,42 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     async uploadFileData(type) {
         const batchUrl = [];
         this.commonService.SetNewrelic('Finance-Dashboard', 'outstanding-invoices' + type, 'uploadFile');
-        const date = new Date();
-        const ref = this.dialogService.open(FileUploadProgressDialogComponent, {
-            header: 'File Uploading',
-            width: '70vw',
-            data: {
-                Files: this.SelectedFile,
-                libraryName: this.globalService.sharePointPageObject.webRelativeUrl + '/' + this.FolderName,
-                overwrite: true,
-            },
-            contentStyle: { 'overflow-y': 'visible', 'background-color': '#f4f3ef' },
-            closable: false,
-        });
 
-        return ref.onClose.subscribe(async (uploadedfile: any) => {
-            if (uploadedfile) {
-                if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
-                    if (uploadedfile[0].ServerRelativeUrl) {
-                        let invData;
-                        this.isPSInnerLoaderHidden = false;
-                        if (type === 'creditDebit') {
-                            this.submitDebitCreditNoteForm(type, uploadedfile[0].ServerRelativeUrl);
-                        }
-                        else {
-                            if (type === 'replaceInvoice') {
-                                invData = {
-                                    FileURL: uploadedfile[0].ServerRelativeUrl ? uploadedfile[0].ServerRelativeUrl : '',
-                                    InvoiceHtml: null
-                                }
+        this.commonService.UploadFilesProgress(this.SelectedFile, this.FolderName, true).then(async uploadedfile => {
+            if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
+                if (uploadedfile[0].hasOwnProperty('odata.error')) {
+                    this.submitBtn.isClicked = false;
+                    this.messageService.add({
+                        key: 'outstandingInfoToast', severity: 'error', summary: 'Error message',
+                        detail: 'File not uploaded,Folder / File Not Found', life: 3000
+                    });
+                } else if (uploadedfile[0].ServerRelativeUrl) {
+                    let invData;
+                    this.isPSInnerLoaderHidden = false;
+                    if (type === 'creditDebit') {
+                        this.submitDebitCreditNoteForm(type, uploadedfile[0].ServerRelativeUrl);
+                    }
+                    else {
+                        if (type === 'replaceInvoice') {
+                            invData = {
+                                FileURL: uploadedfile[0].ServerRelativeUrl ? uploadedfile[0].ServerRelativeUrl : '',
+                                InvoiceHtml: null
                             }
-                            else if (type === 'paymentResoved') {
-                                invData = {
-                                    Status: 'Paid',
-                                    PaymentURL: uploadedfile[0].ServerRelativeUrl ? uploadedfile[0].ServerRelativeUrl : ''
-                                };
-                            }
-                            invData['__metadata'] = { type: this.constantService.listNames.Invoices.type };
-                            const invObj = Object.assign({}, this.queryConfig);
-                            invObj.url = this.spServices.getItemURL(this.constantService.listNames.Invoices.name, +this.selectedRowItem.Id);
-                            invObj.listName = this.constantService.listNames.Invoices.name;
-                            invObj.type = 'PATCH';
-                            invObj.data = invData;
-                            batchUrl.push(invObj);
-                            this.submitForm(batchUrl, type);
                         }
-                    } else if (uploadedfile[0].hasOwnProperty('odata.error')) {
-
-                        this.submitBtn.isClicked = false;
-                        this.messageService.add({
-                            key: 'outstandingInfoToast', severity: 'error', summary: 'Error message',
-                            detail: 'File not uploaded,Folder / File Not Found', life: 3000
-                        });
+                        else if (type === 'paymentResoved') {
+                            invData = {
+                                Status: 'Paid',
+                                PaymentURL: uploadedfile[0].ServerRelativeUrl ? uploadedfile[0].ServerRelativeUrl : ''
+                            };
+                        }
+                        invData['__metadata'] = { type: this.constantService.listNames.Invoices.type };
+                        const invObj = Object.assign({}, this.queryConfig);
+                        invObj.url = this.spServices.getItemURL(this.constantService.listNames.Invoices.name, +this.selectedRowItem.Id);
+                        invObj.listName = this.constantService.listNames.Invoices.name;
+                        invObj.type = 'PATCH';
+                        invObj.data = invData;
+                        batchUrl.push(invObj);
+                        this.submitForm(batchUrl, type);
                     }
                 }
             }

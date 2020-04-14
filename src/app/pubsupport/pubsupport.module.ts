@@ -9,7 +9,6 @@ import { CreateConferenceComponent } from './pubsupport/create-conference/create
 import { CreateJournalComponent } from './pubsupport/create-journal/create-journal.component';
 import { AddAuthorComponent } from './pubsupport/add-author/add-author.component';
 import { AuthorDetailsComponent } from './pubsupport/author-details/author-details.component';
-import { FileUploadProgressDialogComponent } from '../shared/file-upload-progress-dialog/file-upload-progress-dialog.component';
 
 @NgModule({
   declarations: [PubsupportComponent, CreateConferenceComponent, CreateJournalComponent, AddAuthorComponent, AuthorDetailsComponent],
@@ -22,7 +21,7 @@ import { FileUploadProgressDialogComponent } from '../shared/file-upload-progres
     SharedModule,
     // FileUploadModule
   ],
-  entryComponents: [CreateConferenceComponent, CreateJournalComponent, AddAuthorComponent, AuthorDetailsComponent,FileUploadProgressDialogComponent],
+  entryComponents: [CreateConferenceComponent, CreateJournalComponent, AddAuthorComponent, AuthorDetailsComponent],
   providers: [DatePipe, TitleCasePipe]
 })
 export class PubsupportModule { }

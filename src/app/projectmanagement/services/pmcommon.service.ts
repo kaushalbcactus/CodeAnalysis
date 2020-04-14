@@ -949,7 +949,7 @@ export class PMCommonService {
       this.pmObject.billedBy = tempResult;
     }
   }
-  
+
 
   // async validateAndSave() {
   //   this.pmObject.isMainLoaderHidden = false;
@@ -1053,15 +1053,15 @@ export class PMCommonService {
     batchURL.push(projectCreate);
     counter += 1;
 
-     // Add data to ProjectScope call ##17
-     const projectScopeData = this.getProjectScopeData(projectInformationData);
-     const projectScopeCreate = Object.assign({}, options);
-     projectScopeCreate.url = this.spServices.getReadURL(this.constant.listNames.ProjectScope.name, null);
-     projectScopeCreate.data = projectScopeData;
-     projectScopeCreate.type = 'POST';
-     projectScopeCreate.listName = this.constant.listNames.ProjectScope.name;
-     batchURL.push(projectScopeCreate);
-     counter += 1;
+    // Add data to ProjectScope call ##17
+    const projectScopeData = this.getProjectScopeData(projectInformationData);
+    const projectScopeCreate = Object.assign({}, options);
+    projectScopeCreate.url = this.spServices.getReadURL(this.constant.listNames.ProjectScope.name, null);
+    projectScopeCreate.data = projectScopeData;
+    projectScopeCreate.type = 'POST';
+    projectScopeCreate.listName = this.constant.listNames.ProjectScope.name;
+    batchURL.push(projectScopeCreate);
+    counter += 1;
     // Add data to ProjectFinances call ##18
     const projectFinanceData = this.getProjectFinancesData();
     const projectFinanceCreate = Object.assign({}, options);
@@ -1146,7 +1146,7 @@ export class PMCommonService {
       listName + '/' + projectCode + '/Communications',
       listName + '/' + projectCode + '/Drafts',
       listName + '/' + projectCode + '/Emails',
-  //    listName + '/' + projectCode + '/Graphics',
+      //    listName + '/' + projectCode + '/Graphics',
       listName + '/' + projectCode + '/Miscellaneous',
       listName + '/' + projectCode + '/Publication Support',
       listName + '/' + projectCode + '/References',
@@ -1164,15 +1164,15 @@ export class PMCommonService {
   /**
    * This function is used to set the projectScope object
    */
-  getProjectScopeData(ProjectInfo){
+  getProjectScopeData(ProjectInfo) {
 
     const data: any = {
       __metadata: { type: this.constant.listNames.ProjectScope.type },
       Title: ProjectInfo.ProjectCode,
       ProjectFolder: ProjectInfo.ProjectFolder,
-      
+
     };
-   
+
     return data;
   }
   /**
@@ -1975,6 +1975,17 @@ export class PMCommonService {
     const templateData = await this.spServices.readItems(this.constant.listNames.MailContent.name,
       this.pmConstant.SOW_QUERY.CONTENT_QUERY);
     return templateData.length > 0 ? templateData[0] : [];
+  }
+
+  async getFolderName() {
+    const docFolder = 'Finance/SOW';
+    let libraryName = '';
+    const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
+      x.Title === this.pmObject.addProject.ProjectAttributes.ClientLegalEntity);
+    if (clientInfo && clientInfo.length) {
+      libraryName = clientInfo[0].ListName;
+    }
+    return libraryName + '/' + docFolder;
   }
 
 

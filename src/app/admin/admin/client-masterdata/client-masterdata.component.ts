@@ -17,7 +17,7 @@ import { AddEditSubdivisionComponent } from './add-edit-subdivision/add-edit-sub
 import { AddEditPocComponent } from './add-edit-poc/add-edit-poc.component';
 import { AddEditPoDialogComponent } from './add-edit-po-dialog/add-edit-po-dialog.component';
 import { ChangeBudgetDialogComponent } from './change-budget-dialog/change-budget-dialog.component';
-import { FileUploadProgressDialogComponent } from 'src/app/shared/file-upload-progress-dialog/file-upload-progress-dialog.component';
+
 
 @Component({
   selector: 'app-client-masterdata',
@@ -1533,32 +1533,19 @@ export class ClientMasterdataComponent implements OnInit {
     * 4. `POExpiryDate` cannot have less than today's date.
     *
     */
-   async savePO(poDetails, selectedFile) {
 
+
+  async savePO(poDetails, selectedFile) {
     const tempFiles = [new Object({ name: selectedFile[0].name, file: selectedFile[0] })];
     this.common.SetNewrelic('Admin-ClientMasterData', 'SavePO', 'UploadFile');
-    const ref = this.dialogService.open(FileUploadProgressDialogComponent, {
-      header: 'File Uploading',
-      width: '70vw',
-      data: {
-        Files: tempFiles,
-        libraryName: this.globalObject.sharePointPageObject.webRelativeUrl + '/' + this.currClientObj.ListName + '/' + this.adminConstants.FOLDER_LOCATION.PO,
-        overwrite: true,
-
-      },
-      contentStyle: { 'overflow-y': 'visible', 'background-color': '#f4f3ef' },
-      closable: false,
-    });
-
-    return ref.onClose.subscribe(async (uploadedfile: any) => {
-      if (uploadedfile) {
-        if (selectedFile.length > 0 && selectedFile.length === uploadedfile.length) {
+    this.common.UploadFilesProgress(tempFiles, this.currClientObj.ListName + '/' + this.adminConstants.FOLDER_LOCATION.PO, true).then(async uploadedfile => {
+      if (selectedFile.length > 0 && selectedFile.length === uploadedfile.length) {
+        if (!uploadedfile[0].hasOwnProperty('odata.error')) {
           this.modalloaderenable = true;
           this.messageService.add({
             key: 'adminCustom', severity: 'success',
             summary: 'Success Message', detail: 'File uploaded sucessfully.'
           });
-
           const poData = await this.getPOData(poDetails, selectedFile[0]);
           if (!this.showeditPO) {
             this.common.SetNewrelic('admin', 'client-masterdata', 'savePO');
@@ -1596,9 +1583,15 @@ export class ClientMasterdataComponent implements OnInit {
           });
         }
       }
-
+    }).catch(error => {
+      console.log("Error while uploading" + error)
+      this.messageService.add({
+        key: 'adminCustom', severity: 'error',
+        summary: 'Error Message', detail: 'Error while uploading file.'
+      });
     });
   }
+
   /**
    * Construct a method to create an object of `PO`.
    *

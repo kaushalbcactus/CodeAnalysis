@@ -13,7 +13,6 @@ import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/time
 import { EditorComponent } from 'src/app/finance-dashboard/PDFEditing/editor/editor.component';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
-import { FileUploadProgressDialogComponent } from 'src/app/shared/file-upload-progress-dialog/file-upload-progress-dialog.component';
 
 
 @Component({
@@ -1289,45 +1288,31 @@ export class ProformaComponent implements OnInit, OnDestroy {
     async uploadFileData() {
         const batchUrl = [];
         this.commonService.SetNewrelic('Finance-Dashboard', 'Proforma', 'uploadFile');
-        const date = new Date();
-        const ref = this.dialogService.open(FileUploadProgressDialogComponent, {
-            header: 'File Uploading',
-            width: '70vw',
-            data: {
-                Files: this.SelectedFile,
-                libraryName: this.globalService.sharePointPageObject.webRelativeUrl + '/' + this.FolderName,
-                overwrite: true,
-            },
-            contentStyle: { 'overflow-y': 'visible', 'background-color': '#f4f3ef' },
-            closable: false,
-        });
+       
 
-        return ref.onClose.subscribe(async (uploadedfile: any) => {
-            if (uploadedfile) {
-                if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
-                    if (uploadedfile[0].ServerRelativeUrl) {
-                        this.isPSInnerLoaderHidden = false;
-                        let prfData = {
-                            FileURL: uploadedfile[0].ServerRelativeUrl ? uploadedfile[0].ServerRelativeUrl : '',
-                            ProformaHtml: null
-                        }
-                        prfData['__metadata'] = { type: this.constantService.listNames.Proforma.type };
-                        const invObj = Object.assign({}, this.queryConfig);
-                        invObj.url = this.spServices.getItemURL(this.constantService.listNames.Proforma.name, +this.selectedRowItem.Id);
-                        invObj.listName = this.constantService.listNames.Proforma.name;
-                        invObj.type = 'PATCH';
-                        invObj.data = prfData;
-                        batchUrl.push(invObj);
-                        this.commonService.SetNewrelic('Finance-Dashboard', 'Proforma-proforma', 'uploadFileUpdateProforma');
-                        this.submitForm(batchUrl, 'replaceProforma');
-                    } else if (uploadedfile[0].hasOwnProperty('odata.error')) {
-
-                        this.submitBtn.isClicked = false;
+        this.commonService.UploadFilesProgress(this.SelectedFile, this.FolderName, true).then(async uploadedfile => {
+            if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
+                if (uploadedfile[0].hasOwnProperty('odata.error')) {
+                    this.submitBtn.isClicked = false;
                         this.messageService.add({
                             key: 'proformaInfoToast', severity: 'error', summary: 'Error message',
                             detail: 'File not uploaded,Folder / File Not Found', life: 3000
                         });
+                } else if (uploadedfile[0].ServerRelativeUrl) {
+                    this.isPSInnerLoaderHidden = false;
+                    let prfData = {
+                        FileURL: uploadedfile[0].ServerRelativeUrl ? uploadedfile[0].ServerRelativeUrl : '',
+                        ProformaHtml: null
                     }
+                    prfData['__metadata'] = { type: this.constantService.listNames.Proforma.type };
+                    const invObj = Object.assign({}, this.queryConfig);
+                    invObj.url = this.spServices.getItemURL(this.constantService.listNames.Proforma.name, +this.selectedRowItem.Id);
+                    invObj.listName = this.constantService.listNames.Proforma.name;
+                    invObj.type = 'PATCH';
+                    invObj.data = prfData;
+                    batchUrl.push(invObj);
+                    this.commonService.SetNewrelic('Finance-Dashboard', 'Proforma-proforma', 'uploadFileUpdateProforma');
+                    this.submitForm(batchUrl, 'replaceProforma');
                 }
             }
         });

@@ -13,7 +13,6 @@ import { DataService } from 'src/app/Services/data.service';
 import { UsercapacityComponent } from 'src/app/shared/usercapacity/usercapacity.component';
 import { async } from '@angular/core/testing';
 import { CommonService } from 'src/app/Services/common.service';
-import { FileUploadProgressDialogComponent } from 'src/app/shared/file-upload-progress-dialog/file-upload-progress-dialog.component';
 import { DialogService } from 'primeng';
 
 declare var $;
@@ -2058,58 +2057,57 @@ export class StandardprojectComponent implements OnInit {
           let SelectedFile = [];
           this.pmObject.isMainLoaderHidden = true;
           this.commonService.SetNewrelic('projectManagment', 'nonStdConfirm', 'UploadFiles');
-          const docFolder = 'Finance/SOW';
-          let libraryName = '';
-          const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
-            x.Title === this.pmObject.addProject.ProjectAttributes.ClientLegalEntity);
-          if (clientInfo && clientInfo.length) {
-            libraryName = clientInfo[0].ListName;
-          }
-          const FolderName = libraryName + '/' + docFolder;
+
+          const FolderName = await this.pmCommonService.getFolderName();
           SelectedFile.push(new Object({ name: this.pmObject.addProject.FinanceManagement.selectedFile.name, file: this.pmObject.addProject.FinanceManagement.selectedFile }));
-
-          const ref = this.dialogService.open(FileUploadProgressDialogComponent, {
-            header: 'File Uploading',
-            width: '70vw',
-            data: {
-              Files: SelectedFile,
-              libraryName: this.sharedObject.sharePointPageObject.webRelativeUrl + '/' + FolderName,
-              overwrite: true,
-            },
-            contentStyle: { 'overflow-y': 'visible', 'background-color': '#f4f3ef' },
-            closable: false,
-          });
-
-          return ref.onClose.subscribe(async (uploadedfile: any) => {
-            if (uploadedfile) {
-              if (SelectedFile.length > 0 && SelectedFile.length === uploadedfile.length) {
-                if (uploadedfile[0].ServerRelativeUrl) {
-                  this.pmObject.addSOW.isSOWCodeDisabled = false;
-                  this.pmObject.addSOW.isStatusDisabled = true;
-                }
+          this.commonService.UploadFilesProgress(SelectedFile, FolderName, true).then(async uploadedfile => {
+            if (SelectedFile.length > 0 && SelectedFile.length === uploadedfile.length) {
+              if (uploadedfile[0].ServerRelativeUrl) {
+                this.pmObject.addSOW.isSOWCodeDisabled = false;
+                this.pmObject.addSOW.isStatusDisabled = true;
               }
             }
+            this.pmObject.isMainLoaderHidden = false;
+            await this.pmCommonService.addUpdateProject();
+
+            this.messageService.add({
+              key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
+              detail: 'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode
+            });
+            setTimeout(() => {
+              this.pmObject.isAddProjectVisible = false;
+              if (this.router.url === '/projectMgmt/allProjects') {
+                this.dataService.publish('reload-project');
+              } else {
+                this.pmObject.allProjectItems = [];
+                this.router.navigate(['/projectMgmt/allProjects']);
+              }
+            }, this.pmConstant.TIME_OUT);
           });
         }
-        this.pmObject.isMainLoaderHidden = false;
-        await this.pmCommonService.addUpdateProject();
-      }
+        else {
 
-      this.messageService.add({
-        key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
-        detail: 'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode
-      });
-      setTimeout(() => {
-        this.pmObject.isAddProjectVisible = false;
-        if (this.router.url === '/projectMgmt/allProjects') {
-          this.dataService.publish('reload-project');
-        } else {
-          this.pmObject.allProjectItems = [];
-          this.router.navigate(['/projectMgmt/allProjects']);
+          await this.pmCommonService.addUpdateProject();
+          this.messageService.add({
+            key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
+            detail: 'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode
+          });
+          setTimeout(() => {
+            this.pmObject.isAddProjectVisible = false;
+            if (this.router.url === '/projectMgmt/allProjects') {
+              this.dataService.publish('reload-project');
+            } else {
+              this.pmObject.allProjectItems = [];
+              this.router.navigate(['/projectMgmt/allProjects']);
+            }
+          }, this.pmConstant.TIME_OUT);
         }
-      }, this.pmConstant.TIME_OUT);
+      }
     }
   }
+
+
+
   setFieldProperties() {
     if (this.pmObject.addProject.Timeline.Standard.IsStandard) {
       this.pmObject.isStandardChecked = true;

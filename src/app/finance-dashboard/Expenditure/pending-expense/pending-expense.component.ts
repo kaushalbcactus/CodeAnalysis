@@ -11,7 +11,6 @@ import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Table } from 'primeng/table';
-import { FileUploadProgressDialogComponent } from 'src/app/shared/file-upload-progress-dialog/file-upload-progress-dialog.component';
 import { DialogService } from 'primeng';
 
 @Component({
@@ -677,7 +676,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
     // ************************************************************************************************
     onFileChange(event: { target: { files: string | any[]; }; }, folderName: string) {
         if (event.target.files && event.target.files.length > 0) {
-            this.SelectedFile =[];
+            this.SelectedFile = [];
             this.selectedFile = event.target.files[0];
             const fileName = this.selectedFile.name;
             const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
@@ -696,55 +695,41 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
     async uploadFileData(type: string) {
         const date = new Date();
         this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure-PendingExpense', 'UploadFiles');
-        const ref = this.dialogService.open(FileUploadProgressDialogComponent, {
-            header: 'File Uploading',
-            width: '70vw',
-            data: {
-                Files: this.SelectedFile,
-                libraryName: this.globalService.sharePointPageObject.webRelativeUrl + '/SpendingInfoFiles/' + this.FolderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM'),
-                overwrite: true,
-            },
-            contentStyle: { 'overflow-y': 'visible', 'background-color': '#f4f3ef' },
-            closable: false,
-        });
 
-        return ref.onClose.subscribe(async (uploadedfile: any) => {
-            if (uploadedfile) {
-                if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
-                    if (uploadedfile[0].ServerRelativeUrl) {
-                        this.isPSInnerLoaderHidden = false;
-                        this.fileUploadedUrl = uploadedfile[0].ServerRelativeUrl;
-                        if (this.fileUploadedUrl) {
-                            const batchUrl = [];
-                            const speInfoObj = {
-                                PayingEntity: this.approveExpense_form.value.PayingEntity.Title,
-                                Number: this.approveExpense_form.value.Number,
-                                DateSpend: this.approveExpense_form.value.DateSpend,
-                                PaymentMode: this.approveExpense_form.value.PaymentMode.value,
-                                ApproverComments: this.approveExpense_form.value.ApproverComments,
-                                ApproverFileUrl: this.fileUploadedUrl,
-                                Status: 'Approved'
-                            };
-                            speInfoObj['__metadata'] = { type: this.constantService.listNames.SpendingInfo.type };
+        this.commonService.UploadFilesProgress(this.SelectedFile, 'SpendingInfoFiles/' + this.FolderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM'), true).then(async uploadedfile => {
+            if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
+                if (uploadedfile[0].hasOwnProperty('odata.error')) {
+                    this.submitBtn.isClicked = false;
+                    this.messageService.add({
+                        key: 'pendingExpenseToast', severity: 'error', summary: 'Error message',
+                        detail: 'File not uploaded,Folder / File Not Found', life: 3000
+                    });
+                } else if (uploadedfile[0].ServerRelativeUrl) {
+                    this.isPSInnerLoaderHidden = false;
+                    this.fileUploadedUrl = uploadedfile[0].ServerRelativeUrl;
+                    if (this.fileUploadedUrl) {
+                        const batchUrl = [];
+                        const speInfoObj = {
+                            PayingEntity: this.approveExpense_form.value.PayingEntity.Title,
+                            Number: this.approveExpense_form.value.Number,
+                            DateSpend: this.approveExpense_form.value.DateSpend,
+                            PaymentMode: this.approveExpense_form.value.PaymentMode.value,
+                            ApproverComments: this.approveExpense_form.value.ApproverComments,
+                            ApproverFileUrl: this.fileUploadedUrl,
+                            Status: 'Approved'
+                        };
+                        speInfoObj['__metadata'] = { type: this.constantService.listNames.SpendingInfo.type };
 
-                            for (let inv = 0; inv < this.selectedAllRowsItem.length; inv++) {
-                                const element = this.selectedAllRowsItem[inv];
-                                const expenseObj = Object.assign({}, this.queryConfig);
-                                expenseObj.url = this.spServices.getItemURL(this.constantService.listNames.SpendingInfo.name, +element.Id);
-                                expenseObj.listName = this.constantService.listNames.SpendingInfo.name;
-                                expenseObj.type = 'PATCH';
-                                expenseObj.data = speInfoObj;
-                                batchUrl.push(expenseObj);
-                            }
-                            this.submitForm(batchUrl, type);
+                        for (let inv = 0; inv < this.selectedAllRowsItem.length; inv++) {
+                            const element = this.selectedAllRowsItem[inv];
+                            const expenseObj = Object.assign({}, this.queryConfig);
+                            expenseObj.url = this.spServices.getItemURL(this.constantService.listNames.SpendingInfo.name, +element.Id);
+                            expenseObj.listName = this.constantService.listNames.SpendingInfo.name;
+                            expenseObj.type = 'PATCH';
+                            expenseObj.data = speInfoObj;
+                            batchUrl.push(expenseObj);
                         }
-                    } else if (uploadedfile[0].hasOwnProperty('odata.error')) {
-
-                        this.submitBtn.isClicked = false;
-                        this.messageService.add({
-                            key: 'pendingExpenseToast', severity: 'error', summary: 'Error message',
-                            detail: 'File not uploaded,Folder / File Not Found', life: 3000
-                        });
+                        this.submitForm(batchUrl, type);
                     }
                 }
             }

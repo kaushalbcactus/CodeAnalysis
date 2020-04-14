@@ -12,7 +12,6 @@ import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { Table } from 'primeng/table';
 import { Router } from '@angular/router';
-import { FileUploadProgressDialogComponent } from 'src/app/shared/file-upload-progress-dialog/file-upload-progress-dialog.component';
 import { DialogService } from 'primeng';
 
 @Component({
@@ -962,9 +961,9 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     // ************************************************************************************************
 
     onFileChange(event, folderName: string) {
-      
+
         if (event.target.files && event.target.files.length > 0) {
-            this.SelectedFile =[];
+            this.SelectedFile = [];
             this.selectedFile = event.target.files[0];
             const fileName = this.selectedFile.name;
             const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
@@ -981,58 +980,42 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     }
 
     async uploadFileData(type: string) {
-
         const date = new Date();
         this.commonService.SetNewrelic('Finance-Dashboard', 'approve-billable', 'UploadFile');
-        const ref = this.dialogService.open(FileUploadProgressDialogComponent, {
-            header: 'File Uploading',
-            width: '70vw',
-            data: {
-                Files: this.SelectedFile,
-                libraryName: this.globalService.sharePointPageObject.webRelativeUrl + '/SpendingInfoFiles/' + this.FolderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM'),
-                overwrite: true,
-            },
-            contentStyle: { 'overflow-y': 'visible', 'background-color': '#f4f3ef' },
-            closable: false,
-        });
-
-        return ref.onClose.subscribe(async (uploadedfile: any) => {
-            if (uploadedfile) {
-                if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
-                    if (uploadedfile[0].ServerRelativeUrl) {
-                        this.fileUploadedUrl = uploadedfile[0].ServerRelativeUrl;
-                        if (this.fileUploadedUrl) {
-                            this.isPSInnerLoaderHidden = false;
-                            const data = [];
-                            for (let j = 0; j < this.selectedAllRowsItem.length; j++) {
-                                const element = this.selectedAllRowsItem[j];
-                                const speInfoObj = {
-                                    // PayingEntity: this.markAsPayment_form.value.PayingEntity.Title,
-                                    Number: this.markAsPayment_form.value.Number,
-                                    DateSpend: this.markAsPayment_form.value.DateSpend,
-                                    PaymentMode: this.markAsPayment_form.value.PaymentMode.value,
-                                    // ApproverComments: this.markAsPayment_form.value.ApproverComments,
-                                    ApproverFileUrl: this.fileUploadedUrl,
-                                    Status: element.Status.replace(' Payment Pending', '')
-                                };
-                                speInfoObj['__metadata'] = { type: this.constantService.listNames.SpendingInfo.type };
-                                const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace('{{Id}}', element.Id);;
-                                data.push({
-                                    data: speInfoObj,
-                                    url: spEndpoint,
-                                    type: 'PATCH',
-                                    listName: this.constantService.listNames.SpendingInfo.name
-                                });
-                            }
-                            this.submitForm(data, type);
+        this.commonService.UploadFilesProgress(this.SelectedFile, 'SpendingInfoFiles/' + this.FolderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM'), true).then(async uploadedfile => {
+            if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
+                if (uploadedfile[0].hasOwnProperty('odata.error')) {
+                    this.submitBtn.isClicked = false;
+                    this.messageService.add({
+                        key: 'approvedToast', severity: 'error', summary: 'Error message',
+                        detail: 'File not uploaded,Folder / File Not Found', life: 3000
+                    });
+                } else if (uploadedfile[0].ServerRelativeUrl) {
+                    this.fileUploadedUrl = uploadedfile[0].ServerRelativeUrl;
+                    if (this.fileUploadedUrl) {
+                        this.isPSInnerLoaderHidden = false;
+                        const data = [];
+                        for (let j = 0; j < this.selectedAllRowsItem.length; j++) {
+                            const element = this.selectedAllRowsItem[j];
+                            const speInfoObj = {
+                                // PayingEntity: this.markAsPayment_form.value.PayingEntity.Title,
+                                Number: this.markAsPayment_form.value.Number,
+                                DateSpend: this.markAsPayment_form.value.DateSpend,
+                                PaymentMode: this.markAsPayment_form.value.PaymentMode.value,
+                                // ApproverComments: this.markAsPayment_form.value.ApproverComments,
+                                ApproverFileUrl: this.fileUploadedUrl,
+                                Status: element.Status.replace(' Payment Pending', '')
+                            };
+                            speInfoObj['__metadata'] = { type: this.constantService.listNames.SpendingInfo.type };
+                            const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace('{{Id}}', element.Id);;
+                            data.push({
+                                data: speInfoObj,
+                                url: spEndpoint,
+                                type: 'PATCH',
+                                listName: this.constantService.listNames.SpendingInfo.name
+                            });
                         }
-                    } else if (uploadedfile[0].hasOwnProperty('odata.error')) {
-
-                        this.submitBtn.isClicked = false;
-                        this.messageService.add({
-                            key: 'approvedToast', severity: 'error', summary: 'Error message',
-                            detail: 'File not uploaded,Folder / File Not Found', life: 3000
-                        });
+                        this.submitForm(data, type);
                     }
                 }
             }

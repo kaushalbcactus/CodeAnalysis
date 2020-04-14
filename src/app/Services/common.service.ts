@@ -6,7 +6,8 @@ import { ConstantsService } from './constants.service';
 import { PmconstantService } from '../projectmanagement/services/pmconstant.service';
 import { PMObjectService } from '../projectmanagement/services/pmobject.service';
 import { DatePipe } from '@angular/common';
-import { Table } from 'primeng';
+import { Table, DialogService } from 'primeng';
+import { FileUploadProgressDialogComponent } from '../shared/file-upload-progress-dialog/file-upload-progress-dialog.component';
 declare var $;
 
 declare const newrelic;
@@ -32,7 +33,8 @@ export class CommonService {
         private pmConstant: PmconstantService, public sharedObject: GlobalService,
         public taskAllocationService: TaskAllocationConstantsService,
         private datePipe: DatePipe,
-        public common: CommonService
+        public common: CommonService,
+        public dialogService: DialogService
     ) { }
 
     tableToExcel = (function () {
@@ -911,6 +913,26 @@ export class CommonService {
             }
         }
         return tempminDateValue;
+    }
+
+    UploadFilesProgress(tempFiles, libraryName, overwrite): Promise<any> {
+        return new Promise((resolve, reject) => {
+            const ref = this.dialogService.open(FileUploadProgressDialogComponent, {
+                header: 'File Uploading',
+                width: '70vw',
+                data: {
+                    Files: tempFiles,
+                    libraryName:  this.sharedObject.sharePointPageObject.webRelativeUrl +'/'+ libraryName,
+                    overwrite: overwrite,
+
+                },
+                contentStyle: { 'overflow-y': 'visible', 'background-color': '#f4f3ef' },
+                closable: false,
+            });
+            ref.onClose.subscribe((uploadedfile: any) => {
+                resolve(uploadedfile);
+            });
+        });
     }
 
 
