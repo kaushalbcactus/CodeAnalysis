@@ -45,7 +45,7 @@
                                         <tr class="{{user.uid}}taskrow" [ngStyle]="{'height':height,'width': '100%','display': 'inline-table','table-layout': 'fixed'}">
                                             <!-- <tr class="{{user.uid}}taskrow" [ngStyle]="{'display':'table-row', 'table-layout': 'fixed', 'height':height}"> -->
                                             <th [ngStyle]="{'vertical-align':verticalAlign, 'width':'6%',     'border-bottom': 'none' }">
-                                                <div style="cursor: pointer;" title="Joining Date :  {{user.JoiningDate | date :'EEE d MMM yyyy'}}&#013;Go Live Date : {{user.GoLiveDate | date :'EEE d MMM yyyy'}} ">{{user.userName}}
+                                                <div (click)="onResourceClick(user)" style="cursor: pointer;" title="Joining Date :  {{user.JoiningDate | date :'EEE d MMM yyyy'}}&#013;Go Live Date : {{user.GoLiveDate | date :'EEE d MMM yyyy'}} ">{{user.userName}}
                                                 </div>
                                                 <div style="color:#c53e3e;font-weight: 600;font-size: 13px;">Capacity </div>
                                                 <div class="{{user.uid}}more more" (click)="changeHeight(user,$event)" *ngIf="user.tasks.length > 3 && user.dates.length <= 10">More

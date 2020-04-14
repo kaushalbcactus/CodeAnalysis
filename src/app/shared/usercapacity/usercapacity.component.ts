@@ -46,6 +46,7 @@ export class UsercapacityComponent implements OnInit {
   displayCount: any;
   taskStatus = 'All';
   tableLoaderenable = false;
+  newResource: any;
   constructor(
     public datepipe: DatePipe, public config: DynamicDialogConfig,
     private spService: SPOperationService,
@@ -567,6 +568,12 @@ export class UsercapacityComponent implements OnInit {
     }
   }
 
+  async onResourceClick(user) {
+    console.log(user.uid)
+    this.globalService.userId = user.uid;
+
+  }
+
   fetchUserCapacity(oUser, startDate, endDate) {
 
     const totalAllocatedPerUser = 0, totalUnAllocatedPerUser = 0;
@@ -607,9 +614,27 @@ export class UsercapacityComponent implements OnInit {
               });
             }
             if (oUser.tasks[j].Task !== 'Adhoc') {
+              const arrHrsMin = []
               // tslint:disable
-              oUser.tasks[j].timeAllocatedPerDay = this.commonservice.convertToHrsMins('' + this.getPerDayTime(oUser.tasks[j].ExpectedTime !== null ?
-                oUser.tasks[j].ExpectedTime : '0', taskBusinessDays - arrLeaveDays.length));
+              if (oUser.tasks[j].AllocationPerDay) {
+                var allocationPerDay = oUser.tasks[j].AllocationPerDay.split(/:(.+)/)
+                allocationPerDay = allocationPerDay.filter(e => e.includes(':'))
+                allocationPerDay.forEach((i) => {
+                  const hrsMinObject = {
+                    timeHrs: '0',
+                    timeMins: '0'
+                  };
+                  hrsMinObject.timeHrs = i.replace('.', ':').split(':')[0];
+                  hrsMinObject.timeMins = i.replace('.', ':').split(':')[1];
+                  arrHrsMin.push(hrsMinObject)
+                })
+
+                oUser.tasks[j].timeAllocatedPerDay = arrHrsMin.length > 0 ? this.commonservice.ajax_addHrsMins(arrHrsMin) : '0:0';
+                // oUser.tasks[j].timeAllocatedPerDay = this.commonservice.convertToHrsMins('' + allocationPerDay);
+              } else {
+                oUser.tasks[j].timeAllocatedPerDay = this.commonservice.convertToHrsMins('' + this.getPerDayTime(oUser.tasks[j].ExpectedTime !== null ?
+                  oUser.tasks[j].ExpectedTime : '0', taskBusinessDays - arrLeaveDays.length));
+              }
               // tslint:enable
             } else {
               oUser.tasks[j].timeAllocatedPerDay = oUser.tasks[j].TimeSpent !== null ? '' + oUser.tasks[j].TimeSpent : '0.0';

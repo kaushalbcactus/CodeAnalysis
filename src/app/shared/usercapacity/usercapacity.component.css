@@ -411,3 +411,7 @@ tr[class$="taskrow"]+tr>td
     z-index: 990 !important;
     background: #f5f5f5 !important;
 } */
+
+.capacityBackground {
+    background: white;
+}

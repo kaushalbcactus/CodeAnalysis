@@ -62,10 +62,12 @@
                 <button class="mr-20" type="button" mat-raised-button>Show Timeline</button>
             </div>
             <div *ngIf='visualgraph'>
-                <button class="mr-20" type="button" mat-raised-button (click)="zoomIn()">Zoom In</button>
-                <button class="mr-20" type="button" mat-raised-button (click)="zoomOut()">Zoom Out</button>
-                <button class="mr-20" type="button" mat-raised-button (click)="ganttExportToExcel()">Export To
-                    Excel</button>
+                <button class="mr-20" type="button" mat-raised-button (click)="zoomIn()"><mat-icon>zoom_in</mat-icon></button>
+                <button class="mr-20" type="button" mat-raised-button (click)="zoomOut()"><mat-icon>zoom_out</mat-icon></button>
+                <!-- <button class="mr-20" type="button" mat-raised-button (click)="ganttExportToExcel()">Export To
+                    Excel</button> -->
+                    <i style="font-size: 1.8em;cursor: pointer;vertical-align: top;
+                    margin: 7px 15px 0px 0px;" (click)="ganttExportToExcel()" title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
                 <p-dropdown class="mr-20" #mySelect [options]="scales" [(ngModel)]="selectedScale"
                     (onChange)="setScale(mySelect.value)" optionLabel="label"></p-dropdown>
             </div>
@@ -492,91 +494,6 @@
     </table>
 </div>
 
-<p-dialog [(visible)]="ganttEditTask" [modal]="true" [draggable]="false" [responsive]="true"
-    [style]="{height: '50%' , 'width': '60%', 'top':'0px'}" [closeOnEscape]="false" [closable]="false">
-    <p-header>
-        Edit Task
-    </p-header>
-    <form [formGroup]="editTaskForm">
-        <div class="p-grid mt-20">
-            <div class="p-col-2">
-                Start Date
-            </div>
-            <div class="p-col-4">
-                <p-calendar formControlName="startDate" appendTo="body" dateFormat="M dd, yy" [disabledDays]="[0,6]"
-                    placeholder="Select Start Date"></p-calendar>
-            </div>
-            <div class="p-col-3">
-                <input readonly [ngxTimepicker]="startDateTimepicker" formControlName="startDateTimePart"
-                    class="timePicker">
-                <ngx-material-timepicker-toggle [for]="startDateTimepicker"></ngx-material-timepicker-toggle>
-                <ngx-material-timepicker [preventOverlayClick]="true" #startDateTimepicker
-                    [ngxMaterialTimepickerTheme]="darkTheme" [minutesGap]="15">
-                </ngx-material-timepicker>
-            </div>
-        </div>
-        <div class="p-grid mt-20">
-            <div class="p-col-2">
-                End Date
-            </div>
-            <div class="p-col-4">
-                <p-calendar formControlName="endDate" appendTo="body" dateFormat="M dd, yy" [disabledDays]="[0,6]"
-                    placeholder="Select End Date"></p-calendar>
-            </div>
-            <div class="p-col-3">
-                <input readonly [ngxTimepicker]="endDateTimepicker" formControlName="endDateTimePart"
-                    class="timePicker">
-                <ngx-material-timepicker-toggle [for]="endDateTimepicker"></ngx-material-timepicker-toggle>
-                <ngx-material-timepicker [preventOverlayClick]="true" #endDateTimepicker
-                    [ngxMaterialTimepickerTheme]="darkTheme" [minutesGap]="15">
-                </ngx-material-timepicker>
-            </div>
-        </div>
-        <div class="p-grid mt-20">
-            <div class="p-col-2">
-                Budget Hrs
-            </div>
-            <div class="p-col-4">
-                <input type="number" pInputText formControlName="budgetHrs" min="0" value="0" step="0.25">
-            </div>
-            <div class="p-col-2">
-                Resource
-            </div>
-            <div class="p-col-4">
-                <p-dropdown appendTo="body" [style]="{'width':'100%'}" [options]="assignedUsers"
-                    [panelStyle]="{minWidth:'15em' }" placeholder="Select Resource" [showClear]="true" [group]="true"
-                    filter="true" formControlName="resource" resetFilterOnHide="true">
-                    <ng-template let-group pTemplate="group">
-                        <span style="margin-left:.25em">{{group.label}}</span>
-                    </ng-template>
-                    <ng-template let-item pTemplate="item">
-                        <span style="margin-left:.25em">{{item.label}}</span>
-                    </ng-template>
-                </p-dropdown>
-            </div>
-        </div>
-        <div class="p-grid mt-20">
-            <div class="p-col-2">
-                Disable Cascade
-            </div>
-            <div class="p-col-4">
-                <p-inputSwitch formControlName="disableCascade"></p-inputSwitch>
-            </div>
-            <div class="p-col-2">
-                TAT
-            </div>
-            <div class="p-col-4">
-                <p-inputSwitch formControlName="tat"></p-inputSwitch>
-                <!-- <p-checkbox name="group1" formControlName="tat" binary="true" label="Yes" inputId="y"></p-checkbox> -->
-            </div>
-        </div>
-    </form>
-    <p-footer>
-        <button type="button" pButton (click)="saveTask(false)" label="Save" class="saveTaskButton"></button>
-        <button type="button" pButton (click)="close(false)" label="Cancel" class="ui-button-secondary"></button>
-    </p-footer>
-</p-dialog>
-
 <p-dialog [(visible)]="showBudgetHrs" [modal]="true" [draggable]="false" [responsive]="true"
     [style]="{height: '40%' , 'width': '30%', 'top':'0px'}" [closeOnEscape]="false" [closable]="false">
     <p-header>
@@ -594,14 +511,15 @@
 
     </form>
     <p-footer>
-        <button type="button" pButton (click)="saveTask(true)" label="Save" class="saveTaskButton"></button>
-        <button type="button" pButton (click)="close(true)" label="Cancel" class="ui-button-secondary"></button>
+        <button type="button" pButton (click)="saveTask(true,null)" label="Save" class="saveTaskButton"></button>
+        <button type="button" pButton (click)="close()" label="Cancel" class="ui-button-secondary"></button>
     </p-footer>
 </p-dialog>
 
 <p-overlayPanel #op2 [showCloseIcon]="true" [dismissable]="false">
   <app-daily-allocation></app-daily-allocation>
 </p-overlayPanel>
-<div id="userCapacity1" class="mt-50" [hidden]="!userCapacityEnable">
+<div id="userCapacity1" class="capacity" [hidden]="!userCapacityEnable">
+    <button type="button" pButton (click)="closeCapacity()" label="Cancel" class="ui-button-secondary"></button>
     <ng-template #userCapacity></ng-template>
 </div>

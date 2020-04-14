@@ -9,7 +9,7 @@ export class SharedConstantsService {
   // tslint:disable
   public userCapacity = {
     fetchTasks: {
-      select: 'ID,Milestone,ProjectCode,SubMilestones,Task,Status,Title,TimeSpent,ExpectedTime,StartDate,DueDate,TimeZone,ParentSlot',
+      select: 'ID,Milestone,ProjectCode,SubMilestones,Task,Status,Title,TimeSpent,ExpectedTime,StartDate,DueDate,TimeZone,ParentSlot,AllocationPerDay',
       filter: "(AssignedTo/Id eq {{userID}}) and(" +
         "(StartDate ge '{{startDateString}}' and StartDate le '{{endDateString}}')" +
         "or (DueDate ge '{{startDateString}}' and DueDate le '{{endDateString}}')" +

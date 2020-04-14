@@ -24,13 +24,14 @@ import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms'
 declare let dhtmlXMenuObject: any;
 import { DailyAllocationComponent } from '../daily-allocation/daily-allocation.component';
 import { IDailyAllocationTask, IMilestoneTask } from '../interface/allocation';
+import { GanttEdittaskComponent } from '../gantt-edittask/gantt-edittask.component';
 
 
 @Component({
   selector: 'app-timeline',
   templateUrl: './timeline.component.html',
   styleUrls: ['./timeline.component.css'],
-  providers: [MessageService, DialogService, DragDropComponent, UsercapacityComponent, DynamicDialogRef, DailyAllocationComponent],
+  providers: [MessageService, DialogService, DragDropComponent, UsercapacityComponent, DynamicDialogRef, DailyAllocationComponent, GanttEdittaskComponent],
   encapsulation: ViewEncapsulation.None
 })
 export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, AfterViewChecked {
@@ -170,8 +171,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   deallocationMailArray = [];
   deletedMilestones = [];
   deletedTasks = [];
-  ganttEditTask = false;
-  editTaskForm: FormGroup;
   assignedUsers = [];
   showBudgetHrs = false;
   budgetHrs = 0;
@@ -196,16 +195,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     private myElement: ElementRef
   ) {
 
-    this.editTaskForm = this.fb.group({
-      budgetHrs: ['', Validators.required],
-      startDate: ['', Validators.required],
-      endDate: ['', Validators.required],
-      tat: ['', Validators.required],
-      disableCascade: ['', Validators.required],
-      resource: ['', Validators.required],
-      startDateTimePart: ['', Validators.required],
-      endDateTimePart: ['', Validators.required]
-    });
   }
 
   ngOnInit() {
@@ -248,8 +237,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     //   vFormatArr: ['Day', 'Week', 'Month', 'Quarter'],
     //   vAdditionalHeaders: null,
     // };
-    this.editTaskForm.get('tat').setValue(false);
-    this.editTaskForm.get('disableCascade').setValue(false);
   }
 
   ngAfterViewInit() {
@@ -838,6 +825,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         this.changeInRestructure = false;
         this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Tasks Saved Successfully' });
       }, 300);
+    } else {
+      this.ganttAttachEvents();
     }
   }
 
@@ -1053,6 +1042,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     return this.GanttchartData.filter(e => e.title === task.nextTask);
   }
 
+  currentTaskId;
+
 
   loadComponent() {
     this.ganttChart.clear();
@@ -1069,23 +1060,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.setScale({ label: 'Day Scale', value: '1' });
     this.ganttComponentRef.instance.isLoaderHidden = false;
 
-    var openPopupOnGanttTask = (id) => {
-      // var tasks = this.GanttchartData.filter(e => e.type !== 'milestone')
-      var filteredTasks = this.GanttchartData.find(e => e.id == id)
-      if (gantt.ext.zoom.getCurrentLevel() < 3) {
-        if (filteredTasks.type == "task") {
-          this.editTaskModal(id)
-          return true;
-        } else if (filteredTasks.type == "milestone") {
-          this.changeBudgetHrs(id)
-          return true;
-        }
-      } else {
-        return false;
-      }
-    }
-
-    var menus: any = [
+    var menus = [
       { "id": "budgetHrs", "text": "Budget Hours", "enabled": true },
       { "id": "startDate", "text": "Start Date and Time", "enabled": true },
       { "id": "endDate", "text": "End Date and Time", "enabled": true },
@@ -1098,7 +1073,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
     ]
 
-    // var newMenus: any = menus;
     var menu = new dhtmlXMenuObject();
     menu.renderAsContextMenu();
     menu.setSkin("dhx_terrace");
@@ -1111,9 +1085,32 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     menu.showItem(menus[7].id);
     menu.showItem(menus[8].id);
 
+    gantt.attachEvent("onContextMenu", (taskId, linkId, event) => {
+      if (gantt.ext.zoom.getCurrentLevel() < 3) {
+        if (taskId) {
+          var task = gantt.getTask(taskId);
+          showMenus(task);
+          menu.loadStruct(menus);
+          this.currentTaskId = taskId;
+          var x = event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft,
+            y = event.clientY + document.body.scrollTop + document.documentElement.scrollTop;
 
+          if (task.status !== 'Completed' || task.status !== "Auto Closed") {
+            menu.showContextMenu(x, y);
+          } else if (linkId) {
+            menu.showContextMenu(x, y);
+          }
 
-    var currentTaskId;
+          if (task || linkId) {
+            return false;
+          }
+
+          return true;
+        }
+      } else {
+        return false;
+      }
+    });
 
     function showMenus(task) {
       if (task.type == "task") {
@@ -1146,7 +1143,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           menu.showItem(menus[5].id);
           menu.hideItem(menus[6].id);
         }
-
+  
         if (task.slotType == "Slot") {
           menu.hideItem(menus[7].id);
           menu.hideItem(menus[8].id);
@@ -1170,49 +1167,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       }
     }
 
-    gantt.attachEvent("onContextMenu", (taskId, linkId, event) => {
-      if (gantt.ext.zoom.getCurrentLevel() < 3) {
-        if (taskId) {
-          var task = gantt.getTask(taskId);
-          showMenus(task);
-          menu.loadStruct(menus);
-          currentTaskId = taskId;
-          var x = event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft,
-            y = event.clientY + document.body.scrollTop + document.documentElement.scrollTop;
-
-          if (task.status == 'Not Confirmed') {
-            menu.showContextMenu(x, y);
-          } else if (linkId) {
-            menu.showContextMenu(x, y);
-          }
-
-          if (task || linkId) {
-            return false;
-          }
-
-          return true;
-        }
-      } else {
-        return false;
-      }
-    });
-
-    gantt.attachEvent("onBeforeTaskDrag", function (id, mode, e) {
-      var task = gantt.getTask(id)
-
-      if (gantt.ext.zoom.getCurrentLevel() < 3) {
-        if (task.status == 'Completed' || task.status == "Auto Closed" || task.type == 'milestone') {
-          return false;
-        } else {
-          return true;
-        }
-      } else {
-        return false;
-      }
-    });
 
     menu.attachEvent("onClick", (id, zoneId, cas) => {
-      var task = gantt.getTask(currentTaskId);
+      var task = gantt.getTask(this.currentTaskId);
       switch (id) {
         case 'tatON':
           task.tat = true;
@@ -1245,8 +1202,25 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           this.getUserCapacity(task);
           break;
         default:
-          openPopupOnGanttTask(currentTaskId);
+          this.openPopupOnGanttTask(this.currentTaskId);
           break;
+      }
+    });
+
+  }
+
+  ganttAttachEvents() {
+    gantt.attachEvent("onBeforeTaskDrag", function (id, mode, e) {
+      var task = gantt.getTask(id)
+
+      if (gantt.ext.zoom.getCurrentLevel() < 3) {
+        if (task.status == 'Completed' || task.status == "Auto Closed") {
+          return false;
+        } else {
+          return true;
+        }
+      } else {
+        return false;
       }
     });
 
@@ -1260,15 +1234,32 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       return true;
     });
 
-    gantt.attachEvent("onAfterTaskDrag", function (id, mode, e) {
+    gantt.attachEvent("onAfterTaskDrag", (id, mode, e) => {
       var task = gantt.getTask(id)
-      if (task.status == 'Not Confirmed' || task.type == 'milestone') {
-        openPopupOnGanttTask(id);
+      if (task.status !== 'Completed' || task.type == 'milestone') {
+        this.openPopupOnGanttTask(id);
         return true;
       } else {
         return false;
       }
     });
+  }
+
+  openPopupOnGanttTask(id) {
+    // var tasks = this.GanttchartData.filter(e => e.type !== 'milestone')
+    var filteredTasks = this.taskAllocateCommonService.ganttParseObject.data.find(e => e.id == id)
+    if (gantt.ext.zoom.getCurrentLevel() < 3) {
+      if (filteredTasks.type == "task") {
+        var task = gantt.getTask(id);
+        this.editTaskModal(task)
+        return true;
+      } else if (filteredTasks.type == "milestone") {
+        this.changeBudgetHrs(id)
+        return true;
+      }
+    } else {
+      return false;
+    }
   }
 
   changeBudgetHrs(id) {
@@ -1316,6 +1307,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.userCapacity.remove();
     const factory = this.resolver.resolveComponentFactory(UsercapacityComponent);
     this.userCapacityRef = this.userCapacity.createComponent(factory);
+    this.userCapacityEnable = true;
 
     var data: any = {
       task,
@@ -1325,16 +1317,55 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
     this.userCapacityRef.instance.loaderenable = true;
     this.userCapacityRef.instance.Onload(data)
-    this.userCapacityEnable = true;
+    this.sharedObject.selectedTask = task;
 
-    var element = document.getElementById("userCapacity1");
-    element.scrollIntoView();
+    let clicked = true;
+    $(".gantt_tree_content").on('click', function(){
+      if(clicked)
+      {
+          clicked = false;
+          $(".capacity").css({"bottom": "200px","display": "block"});
+      }
+      else
+      {
+          clicked = true;
+          $(".capacity").css({"bottom": "0px", "display": "none"});
+      }
+  });
+   
   }
 
-  editTaskModal(id) {
+  closeCapacity() {
+    if(this.sharedObject.userId) {
+      this.sharedObject.selectedTask.assignedUsers.forEach(element => {
+
+        if (element.items.find(e => e.value.ID === this.sharedObject.userId)) {
+          this.sharedObject.selectedTask.AssignedTo = element.items.find(e => e.value.ID === this.sharedObject.userId).value;
+        }
+      });
+    }
+
+    this.sharedObject.selectedTask.owner_id = this.sharedObject.selectedTask.AssignedTo.ID;
+    this.sharedObject.selectedTask.res_id = this.sharedObject.selectedTask.AssignedTo;
+    this.sharedObject.selectedTask.user = this.sharedObject.selectedTask.AssignedTo.Title;
+
+    var allTasks = gantt.serialize();
+
+      allTasks.data.forEach((task) => {
+        if (task.id == this.sharedObject.selectedTask.id) {
+          task = this.sharedObject.selectedTask;
+        }
+      })
+
+      this.taskAllocateCommonService.ganttParseObject = allTasks;
+      this.loadComponent();
+
+
+
+  }
+
+  editTaskModal(task) {
     this.updatedTasks = {};
-    this.ganttEditTask = true;
-    var task = gantt.getTask(id);
     this.updatedTasks = task;
     console.log(task)
     this.assignedUsers = task.assignedUsers
@@ -1346,20 +1377,33 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       }
     });
 
-    this.editTaskForm.patchValue({
-      budgetHrs: task.budgetHours,
-      startDate: task.pUserStart,
-      endDate: task.pUserEnd,
-      tat: task.tat,
-      disableCascade: task.DisableCascade,
-      resource: task.AssignedTo,
-      startDateTimePart: task.pUserStartTimePart,
-      endDateTimePart: task.pUserEndTimePart,
-    })
-    console.log(this.editTaskForm.value)
+    var data = {
+      task,
+      assignedUsers: this.assignedUsers
+    }
+
+    this.editTaskComponent(data)
+
   }
 
-  saveTask(isBudgetHrs) {
+  editTaskComponent(data) {
+
+    const ref = this.dialogService.open(GanttEdittaskComponent, {
+      data: data,
+      width: '65vw',
+
+      header: 'Edit Task',
+      contentStyle: { 'max-height': '90vh', 'overflow': 'auto' },
+      closable: false
+    });
+    ref.onClose.subscribe((updateData: any) => {
+      this.saveTask(false, updateData)
+    });
+
+  }
+
+
+  async saveTask(isBudgetHrs, updatedDataObj) {
     if (isBudgetHrs) {
       console.log(this.updatedTasks);
       var allTasks = gantt.serialize();
@@ -1385,59 +1429,58 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       });
 
       this.showBudgetHrs = false;
+    } else if (updatedDataObj.reset) {
+      this.close();
     } else {
-      if (this.editTaskForm.valid) {
-        console.log(this.updatedTasks);
-        var allTasks = gantt.serialize();
+      var updatedTask = updatedDataObj.updatedTask
+      var allTasks: any = gantt.serialize();
 
-        allTasks.data.forEach((task) => {
-          if (task.id == this.updatedTasks.id) {
-            task.pUserStart = new Date(this.datepipe.transform(this.editTaskForm.value.startDate, 'MMM d, y') + ' ' + this.editTaskForm.value.startDateTimePart);
-            task.pUserEnd = new Date(this.datepipe.transform(this.editTaskForm.value.endDate, 'MMM d, y') + ' ' + this.editTaskForm.value.endDateTimePart);
-            task.pUserStartDatePart = this.getDatePart(this.editTaskForm.value.startDate);
-            task.pUserStartTimePart = this.editTaskForm.value.startDateTimePart;
-            task.pUserEndDatePart = this.getDatePart(this.editTaskForm.value.endDate);
-            task.pUserEndTimePart = this.editTaskForm.value.endDateTimePart;
-            task.start_date = new Date(this.datepipe.transform(this.editTaskForm.value.startDate, 'MMM d, y') + ' ' + this.editTaskForm.value.startDateTimePart);
-            task.end_date = new Date(this.datepipe.transform(this.editTaskForm.value.endDate, 'MMM d, y') + ' ' + this.editTaskForm.value.endDateTimePart);
-            task.budgetHours = this.editTaskForm.value.budgetHrs;
-            task.tat = this.editTaskForm.value.tat;
-            task.res_id = this.editTaskForm.value.resource;
-            task.AssignedTo = this.editTaskForm.value.resource;
-            task.DisableCascade = this.editTaskForm.value.disableCascade;
+      allTasks.data.forEach((task) => {
+        if (task.id == this.updatedTasks.id) {
+          task.pUserStart = new Date(this.datepipe.transform(updatedTask.value.startDate, 'MMM d, y') + ' ' + updatedTask.value.startDateTimePart);
+          task.pUserEnd = new Date(this.datepipe.transform(updatedTask.value.endDate, 'MMM d, y') + ' ' + updatedTask.value.endDateTimePart);
+          task.pUserStartDatePart = this.getDatePart(updatedTask.value.startDate);
+          task.pUserStartTimePart = updatedTask.value.startDateTimePart;
+          task.pUserEndDatePart = this.getDatePart(updatedTask.value.endDate);
+          task.pUserEndTimePart = updatedTask.value.endDateTimePart;
+          task.start_date = new Date(this.datepipe.transform(updatedTask.value.startDate, 'MMM d, y') + ' ' + updatedTask.value.startDateTimePart);
+          task.end_date = new Date(this.datepipe.transform(updatedTask.value.endDate, 'MMM d, y') + ' ' + updatedTask.value.endDateTimePart);
+          task.budgetHours = updatedTask.value.budgetHrs;
+          task.tat = updatedTask.value.tat;
+          task.res_id = updatedTask.value.resource;
+          task.AssignedTo = updatedTask.value.resource;
+          task.DisableCascade = updatedTask.value.disableCascade;
+          task.edited = true;
+        }
+      })
+
+      this.taskAllocateCommonService.ganttParseObject = allTasks;
+
+      allTasks.data.forEach((task) => {
+        if (task.type == "milestone") {
+          if (task.title.replace(' (Current)', '') == this.updatedTasks.milestone) {
             task.edited = true;
           }
-        })
+        }
+      })
 
-        allTasks.data.forEach((task) => {
-          if (task.type == "milestone") {
-            if (task.title.replace(' (Current)', '') == this.updatedTasks.milestone) {
-              task.edited = true;
-            }
+      allTasks = allTasks.data.filter(e => e.edited == true);
+
+      console.log(allTasks);
+      allTasks.forEach((task) => {
+        this.milestoneData.forEach((item: any) => {
+          if (task.id == item.data.id) {
+            item.data.edited = true;
+          } else if (item.children) {
+            item.children.forEach((child: any) => {
+              if (task.id == child.data.id) {
+                child.data = task;
+              }
+            })
           }
         })
-
-        allTasks = allTasks.data.filter(e => e.edited == true);
-
-        console.log(allTasks);
-        allTasks.forEach((task) => {
-          this.milestoneData.forEach((item: any) => {
-            if (task.id == item.data.id) {
-              item.data.edited = true;
-            } else if (item.children) {
-              item.children.forEach((child: any) => {
-                if (task.id == child.data.id) {
-                  child.data = task;
-                }
-              })
-            }
-          })
-        });
-        console.log(this.milestoneData);
-
-        this.ganttEditTask = false;
-
-      }
+      });
+      console.log(this.milestoneData);
     }
 
     this.notificationMessage();
@@ -1481,12 +1524,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     return gantt.serialize();
   }
 
-  close(isBudgetHrs) {
-    if (isBudgetHrs) {
-      this.showBudgetHrs = false;
-    } else {
-      this.ganttEditTask = false;
-    }
+  close() {
+    this.showBudgetHrs = false;
     var allTasks = gantt.serialize();
 
     allTasks.data.forEach((task) => {
