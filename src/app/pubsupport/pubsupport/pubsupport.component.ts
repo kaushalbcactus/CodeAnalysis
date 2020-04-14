@@ -1594,7 +1594,7 @@ export class PubsupportComponent implements OnInit {
                 folderPath = '/Publication Support/Forms';
                 this.update_author_form.removeControl('existingAuthorList');
             }
-            this.FolderName = folderPath;
+            this.FolderName = this.selectedProject.ProjectFolder + folderPath;
             this.SelectedFile.push(new Object({ name: this.selectedFile.name, file: this.selectedFile }));
             this.update_author_form.updateValueAndValidity();
         }
@@ -1606,6 +1606,8 @@ export class PubsupportComponent implements OnInit {
 
 
         this.common.UploadFilesProgress(this.SelectedFile, this.FolderName, true).then(uploadedfile => {
+
+            debugger;
             if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
                 if (uploadedfile[0].hasOwnProperty('odata.error')) {
                     this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;

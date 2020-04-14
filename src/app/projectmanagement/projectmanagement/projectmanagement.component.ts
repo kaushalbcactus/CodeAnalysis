@@ -357,7 +357,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
           return;
         }
       }
-      this.pmObject.isMainLoaderHidden = false;
+     
       this.pmObject.addSOW.Status = this.addSowForm.value.status ? this.addSowForm.value.status : this.pmObject.addSOW.Status;
       this.pmObject.addSOW.Comments = this.addSowForm.value.comments;
       this.pmObject.addSOW.Currency = this.addSowForm.value.currency ? this.addSowForm.value.currency : this.pmObject.addSOW.Currency;
@@ -389,6 +389,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
         this.getFileAndFolderName();
         this.commonService.SetNewrelic('ProjectManagement', 'projectmanagement-CreateSOW', 'uploadFile');
         this.commonService.UploadFilesProgress(this.SelectedFile, this.FolderName, true).then(async uploadedfile => {
+          this.pmObject.isMainLoaderHidden = false;
           if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
             if (uploadedfile[0].hasOwnProperty('ServerRelativeUrl') && uploadedfile[0].hasOwnProperty('Name')) {
               this.pmObject.addSOW.SOWFileURL = uploadedfile[0].ServerRelativeUrl;
@@ -408,6 +409,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
         });
       }
       else {
+        this.pmObject.isMainLoaderHidden = false;
         this.pmObject.addSOW.isSOWCodeDisabled = false;
         this.pmObject.addSOW.isStatusDisabled = true;
         if (!this.pmObject.addSOW.ID) {
