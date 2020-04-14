@@ -1594,7 +1594,7 @@ export class PubsupportComponent implements OnInit {
                 folderPath = '/Publication Support/Forms';
                 this.update_author_form.removeControl('existingAuthorList');
             }
-            this.FolderName = this.selectedProject.ProjectFolder + folderPath;
+            this.FolderName = this.selectedProject.ProjectFolder.replace(this.globalObject.sharePointPageObject.webRelativeUrl + '/','') + folderPath;
             this.SelectedFile.push(new Object({ name: this.selectedFile.name, file: this.selectedFile }));
             this.update_author_form.updateValueAndValidity();
         }
