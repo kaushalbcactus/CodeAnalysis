@@ -6,6 +6,7 @@ export interface IDailyAllocationTask {
   budgetHrs: string;
   resource: number;
   strAllocation: string;
+  allocationType: string;
 }
 
 export interface ICapacity {

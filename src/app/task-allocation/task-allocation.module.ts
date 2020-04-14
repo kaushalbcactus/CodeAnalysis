@@ -24,10 +24,13 @@ import { GanttChartModule } from '../shared/gantt-chart/gantt-chart.module';
 import { GanttChartComponent } from '../shared/gantt-chart/gantt-chart.component';
 import { DailyAllocationComponent } from './daily-allocation/daily-allocation.component';
 import { GanttEdittaskComponent } from './gantt-edittask/gantt-edittask.component';
+import { NgsliderComponent } from './daily-allocation/ngslider/ngslider.component';
+import { Ng5SliderModule } from 'ng5-slider';
+import { DailyAllocationOverlayComponent } from './daily-allocation-overlay/daily-allocation-overlay.component';
 
 @NgModule({
   declarations: [TaskAllocationComponent, TimelineComponent, DragDropComponent,
-     TaskDetailsDialogComponent, ResourcesComponent, CascadeDialogComponent, DailyAllocationComponent, GanttEdittaskComponent],
+     TaskDetailsDialogComponent, ResourcesComponent, CascadeDialogComponent, DailyAllocationComponent, NgsliderComponent, DailyAllocationOverlayComponent,GanttEdittaskComponent],
   imports: [
     CommonModule,
     TaskAllocationRoutingModule,
@@ -43,13 +46,15 @@ import { GanttEdittaskComponent } from './gantt-edittask/gantt-edittask.componen
     NgxChartsModule,
     NgxMaterialTimepickerModule,
     UserCapacityModule,
-    GanttChartModule
+    GanttChartModule,
+    Ng5SliderModule
   ],
   exports: [
     TimelineComponent
   ],
   providers: [DatePipe, DynamicDialogConfig, DynamicDialogRef, ConfirmationService],
-  entryComponents: [UsercapacityComponent, DragDropComponent, TaskDetailsDialogComponent, GanttChartComponent, DailyAllocationComponent, GanttEdittaskComponent]
+  entryComponents: [UsercapacityComponent, DragDropComponent, TaskDetailsDialogComponent, GanttChartComponent,
+                    DailyAllocationComponent,GanttEdittaskComponent]
   // providers: [TaskAllocationAPI]
 })
 export class TaskAllocationModule { }
