@@ -2063,6 +2063,9 @@ export class StandardprojectComponent implements OnInit {
           this.commonService.UploadFilesProgress(SelectedFile, FolderName, true).then(async uploadedfile => {
             if (SelectedFile.length > 0 && SelectedFile.length === uploadedfile.length) {
               if (uploadedfile[0].ServerRelativeUrl) {
+                this.pmObject.addProject.FinanceManagement.SOWFileURL = uploadedfile[0].ServerRelativeUrl;
+                this.pmObject.addProject.FinanceManagement.SOWFileName = uploadedfile[0].Name;
+                this.pmObject.addProject.FinanceManagement.SOWFileProp = uploadedfile[0];
                 this.pmObject.addSOW.isSOWCodeDisabled = false;
                 this.pmObject.addSOW.isStatusDisabled = true;
               }
