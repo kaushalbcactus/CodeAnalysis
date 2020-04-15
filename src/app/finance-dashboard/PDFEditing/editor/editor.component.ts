@@ -1728,12 +1728,11 @@ export class EditorComponent implements OnInit {
                         <li>
                             <strong>Payment by NEFT/RTGS
                             (Please note the transfer charges will be borne by you):</strong>
-                            <p>Bank name:  Citibank NA</p>
-                            <p style="display: inline-flex">Bank address: <span> Citibank N.A. Times Square IT Park branch, Wing B,
-                            Unit No. 1, Andheri-Kurla Road,Marol, Andheri (E), Mumbai – 400 059.</span></p>
-                            <p>Branch name: Andheri (E), Mumbai, India</p>
-                            <p>IFSC: CITI0100000</p>
-                            <p>Account #:  0256594118</p>
+                            <p>Bank name:  HSBC </p>
+                            <p style="display: inline-flex">Bank address: <span>  52/60, Mahatma Gandhi Road,Mumbai-400001 </span></p>
+                            <p>Branch name: Main Branch, Mumbai, India</p>
+                            <p>IFSC: HSBC0400002</p>
+                            <p>Account #:  006263446001</p>
                             <p>Beneficiary Name : Cactus Communications Pvt. Ltd.</p>
                             <p>Beneficiary Address : A/603, 6th Floor, Satellite Gazebo, Guru Hargovind Singh Marg, Andheri (East), Mumbai 400093, India </p>
                             <p>Recipient Phone : +91 22 67148888 </p>
