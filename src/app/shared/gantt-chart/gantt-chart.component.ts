@@ -19,7 +19,7 @@ export class GanttChartComponent implements OnInit {
   isLoaderHidden: any;
   constructor() { }
 
-  user = "res_id" //"user"
+  user = "AssignedTo" //"user"
   key = "key"
   label = "label"
   resource = []
@@ -173,7 +173,7 @@ export class GanttChartComponent implements OnInit {
 
 
     var renderResourceLine = function (resource, timeline) {
-      var tasks = gantt.getTaskBy("res_id", resource.id);
+      var tasks = gantt.getTaskBy("AssignedTo", resource.id);
       var timetable = calculateResourceLoad(tasks, timeline.getScale());
 
       var row = document.createElement("div");
@@ -249,7 +249,7 @@ export class GanttChartComponent implements OnInit {
         },
         {
           name: "workload", label: "Workload", template: function (resource) {
-            var tasks = gantt.getTaskBy("res_id", resource.id);
+            var tasks = gantt.getTaskBy("AssignedTo", resource.id);
             // var tasks = getResourceTasks(resource.id);
             var totalDuration = 0;
             tasks.forEach(function (task) {

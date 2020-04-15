@@ -10,8 +10,7 @@ export class GlobalService {
   public url: any;
   public userInfo: any;
   public oReviewerPendingTasks = [];
-  public userId;
-  public selectedTask;
+  public data;
   public oTask = {
     resource: '',
     taskTitle: '',

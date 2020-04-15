@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, HostListener, ChangeDetectorRef, ViewChild, ViewContainerRef, ComponentFactoryResolver } from '@angular/core';
+import { Component, OnInit, ElementRef, HostListener, ChangeDetectorRef, ViewChild, ViewContainerRef, ComponentFactoryResolver, Output, EventEmitter } from '@angular/core';
 import { DatePipe, CommonModule } from '@angular/common';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -46,7 +46,7 @@ export class UsercapacityComponent implements OnInit {
   displayCount: any;
   taskStatus = 'All';
   tableLoaderenable = false;
-  newResource: any;
+  @Output() resourceSelect = new EventEmitter<string>();
   constructor(
     public datepipe: DatePipe, public config: DynamicDialogConfig,
     private spService: SPOperationService,
@@ -569,9 +569,10 @@ export class UsercapacityComponent implements OnInit {
   }
 
   async onResourceClick(user) {
-    console.log(user.uid)
-    this.globalService.userId = user.uid;
-
+    // this.globalService.userId = user.uid;
+    this.resourceSelect.emit(user.uid)
+    // var capacity = await this.applyFilterReturn(this.globalService.data.startTime, this.globalService.data.endTime, this.globalService.data.task.resources, [])
+    // console.log(capacity);
   }
 
   fetchUserCapacity(oUser, startDate, endDate) {

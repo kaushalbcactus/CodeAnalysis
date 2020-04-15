@@ -46,12 +46,11 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   // @ViewChild('gantteditor', { static: true }) gantteditor: GanttEditorComponent;
   @ViewChild('reallocationMailTableID', { static: false }) reallocateTable: ElementRef;
   @ViewChild('ganttcontainer', { read: ViewContainerRef, static: false }) ganttChart: ViewContainerRef;
-  @ViewChild('userCapacity', { read: ViewContainerRef, static: false }) userCapacity: ViewContainerRef;
+  @ViewChild('userCapacity', { static: false }) userCapacity: UsercapacityComponent;
   Today = new Date();
   tempComment;
   minDateValue = new Date();
   yearsRange = new Date().getFullYear() - 1 + ':' + (new Date().getFullYear() + 10);
-  userCapacityEnable = false;
   task;
   errorMessage;
   milestoneDataCopy = [];
@@ -178,7 +177,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   assignedUsers = [];
   showBudgetHrs = false;
   budgetHrs = 0;
-  userCapacityRef: any;
+  selectedTask: any;
+  displayBody = false;
 
   constructor(
     private constants: ConstantsService,
@@ -924,9 +924,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     } else {
       this.ganttChart.remove();
       this.visualgraph = false;
-      this.userCapacity.clear();
-      this.userCapacity.remove();
-      this.userCapacityEnable = false;
     }
   }
 
@@ -1056,7 +1053,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.ganttComponentRef = this.ganttChart.createComponent(factory);
     // this.ganttChart.clear();
     // this.ganttChart.remove();
-    gantt.serverList("res_id", this.resource);
+    gantt.serverList("AssignedTo", this.resource);
     // this.ganttComponentRef.instance.isLoaderHidden = false;
     gantt.init(this.ganttComponentRef.instance.ganttContainer.nativeElement);
     gantt.clearAll();
@@ -1203,7 +1200,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           this.ViewTaskDetails(task);
           break;
         case 'capacity':
-          this.getUserCapacity(task);
+          this.showCapacity(task);
           break;
         default:
           this.openPopupOnGanttTask(this.currentTaskId);
@@ -1283,6 +1280,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     //   return objt.UserName.ID === task.AssignedTo.ID;
     // });
 
+    this.displayBody = true;
+
     var resources = [];
     task.assignedUsers.forEach((c) => {
       c.items.forEach((item) => {
@@ -1307,65 +1306,108 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     const startTime = new Date(new Date(startDate).setHours(0, 0, 0, 0));
     const endTime = new Date(new Date(endDate).setHours(23, 59, 59, 0));
 
-    this.userCapacity.clear();
-    this.userCapacity.remove();
-    const factory = this.resolver.resolveComponentFactory(UsercapacityComponent);
-    this.userCapacityRef = this.userCapacity.createComponent(factory);
-    this.userCapacityEnable = true;
-
     var data: any = {
       task,
       startTime,
       endTime,
     }
 
-    this.userCapacityRef.instance.loaderenable = true;
-    this.userCapacityRef.instance.Onload(data)
-    this.sharedObject.selectedTask = task;
+    this.userCapacity.loaderenable = true;
+    this.userCapacity.Onload(data)
+    this.selectedTask = task;
 
-    let clicked = true;
-    $(".gantt_tree_content").on('click', function(){
-      if(clicked)
-      {
-          clicked = false;
-          $(".capacity").css({"bottom": "200px","display": "block"});
-      }
-      else
-      {
-          clicked = true;
-          $(".capacity").css({"bottom": "0px", "display": "none"});
-      }
-  });
+    var capacity = this.usercapacityComponent.applyFilterReturn(startTime, endTime, task.resources, [])
+    console.log(capacity);
+    // this.sharedObject.data = data;
    
   }
 
-  closeCapacity() {
-    if(this.sharedObject.userId) {
-      this.sharedObject.selectedTask.assignedUsers.forEach(element => {
+  showCapacity(task) {
 
-        if (element.items.find(e => e.value.ID === this.sharedObject.userId)) {
-          this.sharedObject.selectedTask.AssignedTo = element.items.find(e => e.value.ID === this.sharedObject.userId).value;
+    var resources = [];
+    task.assignedUsers.forEach((c) => {
+      c.items.forEach((item) => {
+        this.sharedObject.oTaskAllocation.oResources.forEach((objt) => {
+          if (objt.UserName.ID === item.value.ID) {
+            resources.push(objt)
+          }
+        })
+      })
+    });
+
+    task.resources = resources;
+
+    let startDate = new Date(new Date(task.start_date).setDate(new Date(task.start_date).getDate() - 1))
+    if (startDate.getDay() === 6 || startDate.getDay() === 0) {
+      startDate = new Date(new Date(startDate).setDate(new Date(startDate).getDate() - 2))
+    }
+    let endDate = new Date(new Date(task.end_date).setDate(new Date(task.end_date).getDate() + 1));
+    if (endDate.getDay() === 6 || endDate.getDay() === 0) {
+      endDate = new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 2));
+    }
+    const startTime = new Date(new Date(startDate).setHours(0, 0, 0, 0));
+    const endTime = new Date(new Date(endDate).setHours(23, 59, 59, 0));
+
+    this.selectedTask = task;
+
+    const ref = this.dialogService.open(UsercapacityComponent, {
+      data: {
+        task,
+        startTime,
+        endTime,
+      },
+      width: '90vw',
+
+      header: task.milestone + ' ' + task.title,
+      contentStyle: { 'max-height': '90vh', 'overflow-y': 'auto' }
+    });
+    ref.onClose.subscribe((userCapacity: any) => {
+    });
+
+  }
+
+  confirmChangeResource(event) {
+     this.confirmationService.confirm({
+      header: 'Change Resource of Task',
+      icon: 'pi pi-exclamation-triangle',
+      message: 'Are you sure you want to change the Resource of Task ?',
+      accept: () => {
+        this.displayBody = false;
+        this.changeResource(event);
+      }
+    });
+  }
+
+  async changeResource(userId) {
+    if(userId) {
+      this.selectedTask.assignedUsers.forEach(element => {
+
+        if (element.items.find(e => e.value.ID === userId)) {
+          this.selectedTask.AssignedTo = element.items.find(e => e.value.ID === userId).value;
         }
       });
     }
 
-    this.sharedObject.selectedTask.owner_id = this.sharedObject.selectedTask.AssignedTo.ID;
-    this.sharedObject.selectedTask.res_id = this.sharedObject.selectedTask.AssignedTo;
-    this.sharedObject.selectedTask.user = this.sharedObject.selectedTask.AssignedTo.Title;
+    // this.selectedTask.owner_id = this.selectedTask.AssignedTo.ID;
+    // this.selectedTask.res_id = this.selectedTask.AssignedTo;
+    this.selectedTask.user = this.selectedTask.AssignedTo.Title;
 
     var allTasks = gantt.serialize();
-
+    let editedTask: any;
       allTasks.data.forEach((task) => {
-        if (task.id == this.sharedObject.selectedTask.id) {
-          task = this.sharedObject.selectedTask;
+        if (task.id == this.selectedTask.id) {
+          task = this.selectedTask;
+          task.edited = true;
+          editedTask = task;
         }
       })
 
       this.taskAllocateCommonService.ganttParseObject = allTasks;
-      this.loadComponent();
-
-
-
+      await this.loadComponent();
+      const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
+        return editedTask.AssignedTo.ID === objt.UserName.ID;
+      });
+      await this.dailyAllocateTask(resource, editedTask);
   }
 
   editTaskModal(task) {
@@ -1439,6 +1481,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       var updatedTask = updatedDataObj.updatedTask
       var allTasks: any = gantt.serialize();
 
+      let editedTask: any;
       allTasks.data.forEach((task) => {
         if (task.id == this.updatedTasks.id) {
           task.pUserStart = new Date(this.datepipe.transform(updatedTask.value.startDate, 'MMM d, y') + ' ' + updatedTask.value.startDateTimePart);
@@ -1451,12 +1494,18 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           task.end_date = new Date(this.datepipe.transform(updatedTask.value.endDate, 'MMM d, y') + ' ' + updatedTask.value.endDateTimePart);
           task.budgetHours = updatedTask.value.budgetHrs;
           task.tat = updatedTask.value.tat;
-          task.res_id = updatedTask.value.resource;
+          task.user = updatedTask.value.resource.Title;
           task.AssignedTo = updatedTask.value.resource;
           task.DisableCascade = updatedTask.value.disableCascade;
           task.edited = true;
+          editedTask = task;
         }
       })
+
+      const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
+        return editedTask.AssignedTo.ID === objt.UserName.ID;
+      });
+      await this.dailyAllocateTask(resource, editedTask);
 
       this.taskAllocateCommonService.ganttParseObject = allTasks;
 
@@ -1593,7 +1642,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   CancelChanges(milestone, type) {
     milestone.allocationColor = '';
-    this.userCapacityEnable = false;
     if (type === "discardAll") {
       this.loaderenable = false;
       this.changeInRestructure = false;
@@ -1934,7 +1982,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   // tslint:disable
   showRestructure() {
 
-    this.userCapacityEnable = false;
     this.loaderenable = true;
     const ref = this.dialogService.open(DragDropComponent, {
 
@@ -3077,7 +3124,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   saveTasks() {
     this.disableSave = true;
-    this.userCapacityEnable = false;
     if (this.milestoneData.length > 0) {
 
       const isValid = this.validate();

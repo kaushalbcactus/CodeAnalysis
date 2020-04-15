@@ -511,8 +511,7 @@
 <p-overlayPanel #op2 [showCloseIcon]="true" [dismissable]="false">
   <app-daily-allocation></app-daily-allocation>
 </p-overlayPanel>
-<div id="userCapacity1" class="capacity" [hidden]="!userCapacityEnable">
-    <button type="button" pButton (click)="closeCapacity()" label="Cancel" class="ui-button-secondary"></button>
-    <ng-template #userCapacity></ng-template>
-</div>
 
+<p-sidebar [(visible)]="displayBody" position="bottom" styleClass="ui-sidebar-lg" [showCloseIcon]="false" [closeOnEscape]="false">
+    <app-usercapacity #userCapacity (resourceSelect)="confirmChangeResource($event)"></app-usercapacity>
+</p-sidebar>

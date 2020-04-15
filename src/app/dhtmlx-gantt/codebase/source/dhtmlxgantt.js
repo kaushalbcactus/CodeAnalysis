@@ -16525,7 +16525,7 @@ module.exports = function(gantt){
 	gantt.getResourceAssignments = methods.getResourceAssignments;
 	gantt.$ui.layers.resourceRow = methods.renderLine;
 	gantt.$ui.layers.resourceHistogram = methods.renderHistogram;
-	gantt.config.resource_property = "res_id";
+	gantt.config.resource_property = "AssignedTo";
 	gantt.config.resource_store = "task";
 	gantt.config.resource_render_empty_cells = false;
 

@@ -714,29 +714,4 @@ body .ui-dropdown-panel .ui-dropdown-filter-container .ui-dropdown-filter-icon {
   .mt-50 {
     margin-top: 50px;
   }
-
-  /* .capacity{
-      position: absolute;
-      bottom: 0;
-      display: none;
-      padding: 0;
-      margin:0;
-      width: 97%;
-      height: 20px;
-  } */
-
-  .capacity {
-    position: relative;
-    bottom: 0px;
-    z-index: 5;
-    width: 100%;
-    display: none;
-    -webkit-transition: bottom 1s;
-    -moz-transition: bottom 1s;
-    -o-transition: bottom 1s;
-    transition: bottom 1s;
-  }
-
-  .capacity table {
-      background: white !important;
-  }
+  
