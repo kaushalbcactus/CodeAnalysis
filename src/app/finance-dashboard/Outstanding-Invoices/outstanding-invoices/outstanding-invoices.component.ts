@@ -693,7 +693,6 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 return false;
             }
             let cleListName = this.getCLEListNameFromCLE(this.selectedRowItem.ClientLegalEntity)
-            debugger;
             this.FolderName = cleListName + '/Finance/Invoice/' + folderName;
             this.SelectedFile.push(new Object({ name: this.selectedFile.name, file: this.selectedFile }));
         }
