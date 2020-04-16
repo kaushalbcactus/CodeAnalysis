@@ -285,9 +285,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
   // tslint:disable
   public async getMilestones(bFirstLoad) {
-    // this.ganttArray = [];
-    // this.linkArray = [];
-    // this.taskAllocateCommonService.ganttParseObject = {};
+    this.sharedObject.isResourceChange = false;
     this.GanttchartData = [];
     this.oProjectDetails = this.sharedObject.oTaskAllocation.oProjectDetails;
     const projectHoursSpent = [];
@@ -1036,6 +1034,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.taskAllocateCommonService.ganttParseObject.data = this.GanttchartData;
     this.taskAllocateCommonService.ganttParseObject.links = this.linkArray;
 
+    this.sharedObject.allocatedTask = this.taskAllocateCommonService.ganttParseObject.data.filter(e=> e.type !== 'milestone' && e.slotType !== 'Slot' && e.title !== 'Client Review' && e.itemType !== 'Send to client')
+    console.log(this.sharedObject.allocatedTask);
+
     this.loadComponent();
   }
 
@@ -1318,7 +1319,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
     var capacity = this.usercapacityComponent.applyFilterReturn(startTime, endTime, task.resources, [])
     console.log(capacity);
-    // this.sharedObject.data = data;
+
+    // this.usercapacityComponent.afterResourceChange(startTime, endTime , task)
+    this.sharedObject.data = data;
    
   }
 
@@ -1379,6 +1382,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
   async changeResource(userId) {
+    this.sharedObject.isResourceChange = true;
     if(userId) {
       this.selectedTask.assignedUsers.forEach(element => {
 
@@ -1610,12 +1614,13 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
   ganttExportToExcel() {
-    var export_columns = [];
-    for (var i = 0; i < gantt.config.columns.length; i++) {
-      if (!gantt.config.columns[i].hide)
-        export_columns.push({ id: gantt.config.columns[i].name, header: gantt.config.columns[i].label, width: 40 });
-    }
+    // var export_columns = [];
+    // for (var i = 0; i < gantt.config.columns.length; i++) {
+    //   if (!gantt.config.columns[i].hide)
+    //     export_columns.push({ id: gantt.config.columns[i].name, header: gantt.config.columns[i].label, width: 40 });
+    // }
 
+    // gantt.exportToExcel();
     gantt.exportToExcel({
       name: "Task Allocation.xlsx",
       columns: [
@@ -1630,6 +1635,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       // server:"https://export.dhtmlx.com/gantt",
       visual: true,
       cellColors: true,
+      // data:{}
       // data: this.taskAllocateCommonService.ganttParseObject.data
     })
   }
@@ -3721,7 +3727,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
   public generateSaveTasks() {
-
+    // this.sharedObject.isResourceChange = false;
     var listOfMilestones = [];
     var addedTasks = [], updatedTasks = [], addedMilestones = [], updatedMilestones = []
     for (var nCount = 0; nCount < this.milestoneData.length; nCount = nCount + 1) {

@@ -133,8 +133,16 @@ export class UsercapacityComponent implements OnInit {
       }
       oCapacity.arrUserDetails = tempUserDetailsArray;
     }
-    this.oCapacity = oCapacity;
+    if (this.globalService.isResourceChange) {
+     const capacity: any = this.afterResourceChange(this.globalService.data.startTime, this.globalService.data.endTime, this.globalService.data.task);
+     this.oCapacity = capacity.__zone_symbol__value;
+    } else {
+      this.globalService.oCapacity = oCapacity;
+      this.oCapacity = oCapacity;
+    }
+
     console.log(this.oCapacity)
+
 
     if (data.Module) {
       if (data.Module === 'PM') {
@@ -569,10 +577,41 @@ export class UsercapacityComponent implements OnInit {
   }
 
   async onResourceClick(user) {
-    // this.globalService.userId = user.uid;
     this.resourceSelect.emit(user.uid)
-    // var capacity = await this.applyFilterReturn(this.globalService.data.startTime, this.globalService.data.endTime, this.globalService.data.task.resources, [])
-    // console.log(capacity);
+  }
+
+  async afterResourceChange(startDate, endDate, task) {
+    var Task: any;
+    // if (task.owner_id !== task.AssignedTo.ID) {
+    if (this.globalService.oCapacity.arrUserDetails) {
+      this.globalService.oCapacity.arrUserDetails.forEach((e) => {
+        e.tasks.forEach((c) => {
+          if (c.Id == task.id) {
+            Task = c;
+          }
+        })
+      })
+      // }
+
+      this.globalService.oCapacity.arrUserDetails.forEach(e => e.tasks = e.tasks.filter(c => c.Id !== Task.Id))
+
+      this.globalService.oCapacity.arrUserDetails.forEach((e) => {
+        if (e.uid == task.AssignedTo.ID && e.tasks.indexOf(task) === -1) {
+          e.tasks.push(Task)
+        }
+      })
+
+      for (var index in this.globalService.oCapacity.arrUserDetails) {
+        if (this.globalService.oCapacity.arrUserDetails.hasOwnProperty(index)) {
+          // await this.fetchUserLeaveDetails(this.oCapacity, this.oCapacity.arrUserDetails[index], UserLeaves[index].retItems, UserAvailableHrs[index].retItems);
+          this.fetchUserCapacity(this.globalService.oCapacity.arrUserDetails[index], startDate, endDate);
+        }
+      }
+
+      console.log(this.globalService.oCapacity)
+      const capacity = this.globalService.oCapacity;
+      return capacity;
+    }
   }
 
   fetchUserCapacity(oUser, startDate, endDate) {
