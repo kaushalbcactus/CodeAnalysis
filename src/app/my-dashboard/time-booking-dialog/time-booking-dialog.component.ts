@@ -1,5 +1,5 @@
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
-import { DynamicDialogRef, DynamicDialogConfig, SelectItem, MessageService } from 'primeng';
+import { DynamicDialogRef, DynamicDialogConfig, SelectItem, MessageService, DialogService } from 'primeng';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -8,11 +8,13 @@ import { GlobalService } from 'src/app/Services/global.service';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
 import { Table } from 'primeng/table';
 import { CommonService } from 'src/app/Services/common.service';
+import { ViewUploadDocumentDialogComponent } from 'src/app/shared/view-upload-document-dialog/view-upload-document-dialog.component';
 
 @Component({
   selector: 'app-time-booking-dialog',
   templateUrl: './time-booking-dialog.component.html',
-  styleUrls: ['./time-booking-dialog.component.css']
+  styleUrls: ['./time-booking-dialog.component.css'],
+  providers: [DialogService]
 })
 export class TimeBookingDialogComponent implements OnInit {
 
@@ -63,7 +65,7 @@ export class TimeBookingDialogComponent implements OnInit {
   FinalTotal = '00:00';
   displayComment = false;
   displayFileUpload = false;
-  timebookingRow: any;
+
   constructor(
     public config: DynamicDialogConfig,
     public ref: DynamicDialogRef,
@@ -74,7 +76,8 @@ export class TimeBookingDialogComponent implements OnInit {
     private datePipe: DatePipe,
     public sharedObject: GlobalService,
     public spOperations: SPOperationService,
-    private commonService: CommonService
+    private commonService: CommonService,
+    private dialogService: DialogService,
   ) { }
 
 
@@ -670,13 +673,28 @@ export class TimeBookingDialogComponent implements OnInit {
   openDialog(rowData, type) {
     if (type === 'comments') {
       this.displayComment = true;
-      this.timebookingRow = rowData;
     } else {
-      this.displayFileUpload = true;
-      this.timebookingRow = {
-        ...rowData,
-        task: rowData
-      };
+      console.log(rowData);
+      const ref = this.dialogService.open(ViewUploadDocumentDialogComponent, {
+        data: {
+          task: rowData,
+        },
+        header: rowData.ProjectCode + ' - ' + rowData.Milestone,
+        width: '80vw',
+        contentStyle: { 'min-height': '30vh', 'max-height': '90vh', 'overflow-y': 'auto' }
+      });
+      ref.onClose.subscribe((uploadFile: any) => {
+        if (uploadFile) {
+
+        }
+
+      });
+
+      // this.displayFileUpload = true;
+      // this.timebookingRow = {
+      //   ...rowData,
+      //   task: rowData
+      // };
     }
   }
 

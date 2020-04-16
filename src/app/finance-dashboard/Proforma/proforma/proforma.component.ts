@@ -1279,7 +1279,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 return false;
             }
             let cleListName = this.getCLEListNameFromCLE(this.selectedRowItem.ClientLegalEntity)
-            this.FolderName = cleListName + '/Finance/Proforma/';
+            this.FolderName = cleListName + '/Finance/Proforma';
             this.SelectedFile.push(new Object({ name: this.selectedFile.name, file: this.selectedFile }));
         }
     }

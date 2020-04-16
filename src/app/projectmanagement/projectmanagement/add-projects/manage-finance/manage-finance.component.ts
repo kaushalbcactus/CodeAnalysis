@@ -1213,12 +1213,14 @@ export class ManageFinanceComponent implements OnInit {
       this.isHourlyRateDisabled = true;
       this.isHourlyOverNightDisabled = true;
       // this.isAddBudgetButtonHidden = true;
-    } else if (this.projObj.ProjectType === this.pmConstant.PROJECT_TYPE.FTE.value) {
-      this.isAddBudgetButtonHidden = true;
-      this.showHourly = false;
-      this.isrevenueFieldDisabled = true;
-      this.isPoRevenueDisabled = true;
-    } else {
+    } 
+    // else if (this.projObj.ProjectType === this.pmConstant.PROJECT_TYPE.FTE.value) {
+    //   this.isAddBudgetButtonHidden = true;
+    //   this.showHourly = false;
+    //   this.isrevenueFieldDisabled = true;
+    //   this.isPoRevenueDisabled = true;
+    // } 
+    else {
       this.showHourly = false;
       this.isrevenueFieldDisabled = false;
       this.isAddBudgetButtonHidden = false;
