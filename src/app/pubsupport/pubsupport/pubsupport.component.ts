@@ -1603,8 +1603,6 @@ export class PubsupportComponent implements OnInit {
 
     async uploadFileData(type: string) {
         this.common.SetNewrelic('PubSupport', 'pubsupport', 'UploadFile');
-
-
         this.common.UploadFilesProgress(this.SelectedFile, this.FolderName, true).then(uploadedfile => {
             if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
                 if (uploadedfile[0].hasOwnProperty('odata.error')) {
