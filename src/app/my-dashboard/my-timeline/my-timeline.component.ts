@@ -16,6 +16,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { CommonService } from 'src/app/Services/common.service';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
+import { ConfirmationDialogComponent } from 'src/app/shared/confirmation-dialog/confirmation-dialog.component';
 
 declare var Tooltip: any;
 
@@ -700,11 +701,12 @@ export class MyTimelineComponent implements OnInit {
       } else {
         this.CalendarLoader = false;
         if (task.Status === "Completed") {
-          this.confirmationService.confirm({
-            message: 'Are you sure that you want to proceed?',
+          const confirmref = this.dialogService.open(ConfirmationDialogComponent, {
             header: 'Confirmation',
-            icon: 'pi pi-exclamation-triangle',
-            accept: async () => {
+            data : 'Are you sure that you want to proceed?'
+          });
+          confirmref.onClose.subscribe(async (Confirmation: any) => {
+            if (Confirmation) {
               task.parent = 'Dashboard';
               const qmsTasks = await this.myDashboardConstantsService.callQMSPopup(task);
               if (qmsTasks.length) {
@@ -712,8 +714,7 @@ export class MyTimelineComponent implements OnInit {
               } else {
                 this.saveTask(task);
               }
-            },
-            reject: () => {
+            }else{
               task.Status = earlierStaus;
             }
           });
