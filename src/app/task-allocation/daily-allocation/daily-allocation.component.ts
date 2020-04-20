@@ -72,7 +72,7 @@ export class DailyAllocationComponent implements OnInit {
 
   getAllocation(resource, strAllocation): void {
     this.newAllocation.length = 0;
-    const sliderMaxHrs: number = resource.maxHrs ? resource.maxHrs + 4 : 0;
+    const sliderMaxHrs: number = resource.maxHrs ? resource.maxHrs + 3 : 0;
     const allocationDays = strAllocation.split(/\n/);
     allocationDays.forEach(day => {
       if (day) {
@@ -132,7 +132,7 @@ export class DailyAllocationComponent implements OnInit {
 
   checkResourceAvailability(resource, extraHrs, taskBudgetHrs): string {
     const resourceDailyDetails = resource.dates.filter(d => d.userCapacity !== 'Leave');
-    const resourceSliderMaxHrs = resource.maxHrs + 4;
+    const resourceSliderMaxHrs = resource.maxHrs + 3;
     let newBudgetHrs = '0';
     this.newAllocation.length = 0;
     let flag = true;
@@ -189,7 +189,7 @@ export class DailyAllocationComponent implements OnInit {
     const budgetHours = +allocationData.budgetHrs;
     const allocationPerDay = this.common.roundToPrecision(budgetHours / businessDays, 0.5);
     const resource = Object.keys(this.resourceCapacity).length ? this.resourceCapacity : await this.getResourceCapacity(allocationData);
-    const resourceSliderMaxHrs = resource.maxHrs + 4;
+    const resourceSliderMaxHrs = resource.maxHrs + 3;
     const resourceDailyDetails = resource.dates.filter(d => d.userCapacity !== 'Leave');
     let remainingBudgetHrs = budgetHours;
     for (const detail of resourceDailyDetails) {

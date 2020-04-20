@@ -20,7 +20,7 @@ export class NgsliderComponent implements OnInit {
     showTicks: true,
     showTicksValues: true,
     getTickColor: (value: number): string => {
-      if ((value > this.rangeSlider - 4) && (this.type === 'hrs')) {
+      if ((value > this.rangeSlider - 3) && (this.type === 'hrs')) {
         return 'orange';
       }
     }

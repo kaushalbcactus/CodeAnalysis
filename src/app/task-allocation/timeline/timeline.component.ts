@@ -2473,7 +2473,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   async dailyAllocateTask(resource, milestoneTask) {
     const eqgTasks = ['Edit', 'Quality', 'Graphics', 'Client Review', 'Send to client'];
-    if (!eqgTasks.find(t => t === milestoneTask.itemType)) {
+
+    if (!eqgTasks.find(t => t === milestoneTask.itemType) && milestoneTask.pUserStartDatePart &&
+         resource.length && milestoneTask.pUserEndDatePart && milestoneTask.budgetHours) {
       const allocationData: IDailyAllocationTask = {
         ID: milestoneTask.id,
         task: milestoneTask.taskFullName,
@@ -4789,7 +4791,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     });
   }
   setAllocationPerDay(allocation, milestoneTask: IMilestoneTask) {
-    const milestoneData: MilestoneTreeNode = this.milestoneData.find(m => m.data.taskFullName === milestoneTask.milestone);
+    const milestoneData: MilestoneTreeNode = this.milestoneData.find(m => m.data.title === milestoneTask.milestone);
     const milestoneTasks: any[] = this.getTasksFromMilestones(milestoneData, false, true);
     const task = milestoneTasks.find(t => t.id === milestoneTask.id);
     task.allocationPerDay = allocation.allocationPerDay;
