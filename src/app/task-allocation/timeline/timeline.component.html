@@ -291,7 +291,7 @@
 
                             <p-inputSwitch
                                 *ngIf="rowData.editMode && rowData.type === 'task'
-                                && rowData.itemType !=='Client Review' && rowData.itemType !=='Send to client' && (rowData.IsCentrallyAllocated !== 'Yes' || rowData.slotType === 'Both' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.pName.indexOf('Slot') < 0))"
+                                && rowData.itemType !=='Client Review' && rowData.itemType !=='Send to client' && (rowData.IsCentrallyAllocated !== 'Yes' || rowData.slotType === 'Both' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.title.indexOf('Slot') < 0))"
                                 [disabled]=" rowData.title ==='Client Review'"
                                 (onChange)="ChangeEndDate($event, rowData)"
                                 [(ngModel)]="rowData.title ==='Client Review' ? 'Yes' : rowData.tat"></p-inputSwitch>

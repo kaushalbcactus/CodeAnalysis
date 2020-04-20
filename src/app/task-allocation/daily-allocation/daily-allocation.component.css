@@ -1,22 +1,16 @@
 .budgetHr:focus {
   box-shadow: none;
 }
-/* .pBtnSave {
-  background-color: #db1721!important;
-  border: 1px solid #db1721!important;
+::ng-deep .footer .ui-button{
+  background-color: #c53e3e !important;
+  border: 1px solid #C53E3D !important;
 }
 
-.pBtnSave:enabled:hover {
-  background-color: #b3171f!important;
-  border: 1px solid #b3171f!important;
-} */
 .footer {
   text-align: right;
   margin-top: 10px;
 }
-.ui-slider .ui-slider-range{
-  background-color: #b3171f!important;
-}
+
 .pBtnCancel {
   margin-right: 10px;
 }
@@ -61,4 +55,11 @@
   text-transform: uppercase !important;
   top: 27% !important;
   position: relative;
+}
+::ng-deep .ng5-slider .ng5-slider-pointer  {
+  background-color: #ffffff !important;
+  border: 1px solid;
+}
+::ng-deep .ng5-slider .ng5-slider-pointer:after {
+  background: black !important;
 }

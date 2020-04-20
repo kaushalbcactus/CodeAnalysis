@@ -2,7 +2,7 @@
   <div id="dailyAllocationLoader"></div>
   <div id="dailyAllocationLoaderText">Loading...</div>
 </div>
-<div id="table" [hidden]="hideTable">
+<div id="mainContent" [hidden]="hideTable">
   <div
     fxLayout="row"
     fxLayoutAlign="space-between center"
@@ -14,7 +14,7 @@
       <div class="color-box" style="background-color: orange;"></div>
     </div>
   </div>
-  <div>
+  <div class="table">
     <p-table [columns]="cols" [value]="newAllocation">
       <ng-template pTemplate="header" let-columns>
         <tr>
