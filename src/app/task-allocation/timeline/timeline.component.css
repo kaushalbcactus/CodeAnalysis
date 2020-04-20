@@ -715,3 +715,6 @@ body .ui-dropdown-panel .ui-dropdown-filter-container .ui-dropdown-filter-icon {
     margin-top: 50px;
   }
   
+  .body .ui-dropdown {
+    min-width: 10.5em !important;
+  }

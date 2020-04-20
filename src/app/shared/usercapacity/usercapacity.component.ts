@@ -470,7 +470,7 @@ export class UsercapacityComponent implements OnInit {
     const filteredTasks = [];
     for (const index in tasks) {
       if (tasks.hasOwnProperty(index)) {
-        if (excludeTasks.length) {
+        if (excludeTasks && excludeTasks.length) {
           if (!excludeTasks.find(t => tasks[index].ID && t.ID === tasks[index].ID)) {
             tasks[index].TotalAllocated = tasks[index].Task !== 'Adhoc' ?
               this.commonservice.convertToHrsMins('' + tasks[index].ExpectedTime).replace('.', ':')
