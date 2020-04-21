@@ -926,4 +926,17 @@ export class CommonService {
       return y - (y % (precision === undefined ? 1 : +precision));
     }
 
+    convertTo24Hour(time) {
+      time = time.toUpperCase();
+      let hours = +(time.substr(0, 2));
+      if(time.indexOf('AM') != -1 && hours == 12) {
+          time = time.replace('12', '0');
+      }
+      if(time.indexOf('PM')  != -1 && hours < 12) {
+          const numTime = time.indexOf('0' + hours) > -1 ? time.replace('0' + hours, (hours + 12)) : time.replace(hours, (hours + 12));
+          time = '' + numTime;
+      }
+      return time.replace(/(AM|PM)/, '');
+  }
+
 }

@@ -261,7 +261,7 @@ export class MyDashboardConstantsService {
 
     ClientReviewSchedules: {
       select: 'ID,Title,Status,Task,Milestone,Start_x0020_Date_x0020_Text,End_x0020_Date_x0020_Text,ProjectCode',
-      filter: 'ProjectCode eq \'{{projectCode}}\' and Task eq \'Client Review\' and Status eq \'Completed\''
+      filter: 'ProjectCode eq \'{{projectCode}}\' and Task eq \'Client Review\' and (Status eq \'Completed\' or (Status eq \'Not Started\' and PreviousTaskClosureDate ne null))'
     }
 
   };
