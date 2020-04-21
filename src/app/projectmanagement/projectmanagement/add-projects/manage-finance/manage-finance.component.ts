@@ -1879,8 +1879,14 @@ export class ManageFinanceComponent implements OnInit {
           const selectedDateMonth = this.pmConstant.MONTH_NAMES[this.selectedProposedEndDate.getMonth()];
           for (let i = 0; i < months.length; i++) {
 
-            if (budgetType === 'IncreaseBudget') {
+            if (!Resources) {
+              let resouceCall = Object.assign({}, this.pmConstant.FINANCE_QUERY.GET_RESOUCEBYID);
+              resouceCall.filter = resouceCall.filter.replace(/{{Id}}/gi, this.projObj.PrimaryResourcesId[0].Id);
+              this.commonService.SetNewrelic('Project-Management', 'manage-finance', 'AddUpdatePO-GetResource');
+              Resources = await this.spServices.readItems(this.constant.listNames.ResourceCategorization.name, resouceCall);
+            }
 
+            if (budgetType === 'IncreaseBudget') {
               const milestone = response.find(c => c.FileSystemObjectType === 1 && c.Title === months[i].monthName)
               if (milestone) {
                 const milestoneUpdate = Object.assign({}, options);
@@ -1899,11 +1905,18 @@ export class ManageFinanceComponent implements OnInit {
                 milestoneTasks.forEach(task => {
                   const taskUpdate = Object.assign({}, options);
                   taskUpdate.url = this.spServices.getItemURL(this.constant.listNames.Schedules.name, task.Id);
+
                   taskUpdate.data = {
                     __metadata: { type: this.constant.listNames.Schedules.type },
-                    Actual_x0020_End_x0020_Date: months[i].monthEndDay,
                     DueDate: months[i].monthEndDay,
                   };
+
+                  if (task.Actual_x0020_End_x0020_Date && (task.Task === 'Training' || task.Task === 'Meeting')) {
+                    taskUpdate.data.Actual_x0020_End_x0020_Date = months[i].monthEndDay
+                  } else if (task.Task === 'Blocking') {
+                    const businessDay = this.commonService.calcBusinessDays(task.StartDate, months[i].monthEndDay);
+                    taskUpdate.data.ExpectedTime = '' + businessDay * Resources[0].MaxHrs;
+                  }
                   taskUpdate.type = 'PATCH';
                   taskUpdate.listName = this.constant.listNames.Schedules.name;
                   batchURL.push(taskUpdate);
@@ -1911,14 +1924,7 @@ export class ManageFinanceComponent implements OnInit {
               }
               else {
 
-                if (!Resources) {
 
-                  let resouceCall = Object.assign({}, this.pmConstant.FINANCE_QUERY.GET_RESOUCEBYID);
-                  resouceCall.filter = resouceCall.filter.replace(/{{Id}}/gi, this.projObj.PrimaryResourcesId[0].Id);
-                  this.commonService.SetNewrelic('Project-Management', 'manage-finance', 'AddUpdatePO-GetResource');
-                  Resources = await this.spServices.readItems(this.constant.listNames.ResourceCategorization.name, resouceCall);
-
-                }
                 const milestonedata = this.pmCommonService.getFTEMilestoneData(months[i], this.projObj.ProjectCode);
                 const milestoneCreate = Object.assign({}, options);
                 milestoneCreate.url = this.spServices.getReadURL(this.constant.listNames.Schedules.name, null);
@@ -1997,9 +2003,12 @@ export class ManageFinanceComponent implements OnInit {
                   taskUpdate.url = this.spServices.getItemURL(this.constant.listNames.Schedules.name, task.Id);
                   taskUpdate.data = {
                     __metadata: { type: this.constant.listNames.Schedules.type },
-                    Actual_x0020_End_x0020_Date: new Date(this.selectedProposedEndDate.setHours(23, 45)),
                     DueDate: new Date(this.selectedProposedEndDate.setHours(23, 45)),
                   };
+                  if (task.Task === 'Blocking') {
+                    const businessDay = this.commonService.calcBusinessDays(task.StartDate, months[i].monthEndDay);
+                    taskUpdate.data.ExpectedTime = '' + businessDay * Resources[0].MaxHrs;
+                  }
                   taskUpdate.type = 'PATCH';
                   taskUpdate.listName = this.constant.listNames.Schedules.name;
                   batchURL.push(taskUpdate);
