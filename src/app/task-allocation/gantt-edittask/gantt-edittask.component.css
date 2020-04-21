@@ -1,4 +1,26 @@
 .saveTaskButton {
+    margin-right: 10px;
     background-color: #db1721 !important;
     border: 1px solid #db1721 !important;
+}
+
+.viewAllocation {
+    background-color: #db1721 !important;
+    border: 1px solid #db1721 !important;
+}
+
+.footer {
+    text-align: right;
+    margin-top: 10px;
+}
+
+body .p-grid .ui-overlaypanel {
+    top: 185px !important;
+    left: 180px !important;
+}
+
+body .p-grid .ui-overlaypanel-shifted:after, .ui-overlaypanel-shifted:before {
+    left: 18px !important;
+    /* right: 260px; */
+    margin-left: -10px !important;
 }

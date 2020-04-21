@@ -1,19 +1,27 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
-import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef, DialogService, MessageService } from 'primeng';
 import { DatePipe } from '@angular/common';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
-import { TaskAllocationCommonService } from '../services/task-allocation-common.service';
+import { GlobalService } from 'src/app/Services/global.service';
+import { IDailyAllocationTask, IMilestoneTask } from '../interface/allocation';
+import { DailyAllocationComponent } from '../daily-allocation/daily-allocation.component';
+import { TimelineComponent } from '../timeline/timeline.component';
+import { DailyAllocationOverlayComponent } from '../daily-allocation-overlay/daily-allocation-overlay.component';
 
 @Component({
   selector: 'app-gantt-edittask',
   templateUrl: './gantt-edittask.component.html',
-  styleUrls: ['./gantt-edittask.component.css']
+  styleUrls: ['./gantt-edittask.component.css'],
+  providers: [MessageService, DialogService],
+  encapsulation: ViewEncapsulation.None
 })
 export class GanttEdittaskComponent implements OnInit {
   editTaskForm: FormGroup;
   task: any;
   assignedUsers: any;
+  // @ViewChild('dailyAllocateOP', { static: false }) dailyAllocateOP: DailyAllocationOverlayComponent;
+
 
   darkTheme: NgxMaterialTimepickerTheme = {
     container: {
@@ -34,7 +42,11 @@ export class GanttEdittaskComponent implements OnInit {
     private config: DynamicDialogConfig,
     public datepipe: DatePipe,
     public editTaskRef: DynamicDialogRef,
-    private taskAllocationCommonService: TaskAllocationCommonService) { 
+    private globalService: GlobalService,
+    private dialogService: DialogService,
+    private messageService: MessageService,
+    private timeline: TimelineComponent) {
+
     this.editTaskForm = this.fb.group({
       budgetHrs: ['', Validators.required],
       startDate: ['', Validators.required],
@@ -94,4 +106,38 @@ export class GanttEdittaskComponent implements OnInit {
     return new Date(this.datepipe.transform(newDate, 'MMM d, y'));
   }
 
+  showOverlayPanel(event, dailyAllocateOP) {
+    this.timeline.showOverlayPanel(event, this.task, dailyAllocateOP)
+  }
+
+  viewAllocation(allocationType) { 
+    this.task.resources = this.globalService.oTaskAllocation.oResources.filter((objt) => {
+      return objt.UserName.ID === this.task.AssignedTo.ID;
+    });
+
+    const ref = this.dialogService.open(DailyAllocationComponent, {
+      data: {
+        ID: this.task.id,
+        task: this.task.taskFullName,
+        startDate: this.task.start_date,
+        endDate: this.task.end_date,
+        budgetHrs: this.task.budgetHours,
+        resource: this.task.resources,
+        strAllocation: this.task.allocationPerDay,
+        allocationType
+      } as IDailyAllocationTask,
+      width: '90vw',
+
+      header: this.task.submilestone ? this.task.milestone + ' ' + this.task.title
+        + ' ( ' + this.task.submilestone + ' )' : this.task.milestone + ' ' + this.task.title,
+      contentStyle: { 'max-height': '90vh', 'overflow-y': 'auto' },
+      closable: false
+    });
+    ref.onClose.subscribe((allocation: any) => {
+      this.timeline.setAllocationPerDay(allocation, this.task);
+      if (allocation.allocationAlert) {
+        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Resource is over allocated' });
+      }
+    });
+  }
 }
