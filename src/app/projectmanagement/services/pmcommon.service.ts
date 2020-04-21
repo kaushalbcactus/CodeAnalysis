@@ -1609,6 +1609,7 @@ export class PMCommonService {
       milestoneCreate.type = 'POST';
       milestoneCreate.listName = this.constant.listNames.Schedules.name;
       batchURL.push(milestoneCreate);
+
       // create the milestone folder.
       const milestoneFolderBody = {
         __metadata: { type: 'SP.Folder' },
@@ -1669,7 +1670,7 @@ export class PMCommonService {
   }
   getFTETask(fteObj, projectCode, taskType) {
     const businessDay = this.commonService.calcBusinessDays(fteObj.monthStartDay, fteObj.monthEndDay);
-    const resourceObj: any = this.pmObject.addProject.Timeline.NonStandard.ResourceName;
+    const resourceObj: any = this.pmObject.addProject.Timeline.NonStandard.ResourceName.hasOwnProperty('UserName') ? this.pmObject.addProject.Timeline.NonStandard.ResourceName : fteObj.Resources.hasOwnProperty('UserName') ? fteObj.Resources : null;
     let data: any;
     if (taskType === this.pmConstant.task.BLOCKING) {
       data = {

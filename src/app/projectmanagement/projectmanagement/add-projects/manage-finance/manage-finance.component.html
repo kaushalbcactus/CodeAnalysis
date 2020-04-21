@@ -284,7 +284,7 @@
     </div>
     <div class="col-grid" *ngIf="isPOEdit">
         <div class="p-col-12">
-            <p-button *ngIf="showSave" type="button" styleClass="pmBtn" (click)="saveUpdatePO()" label="Save"></p-button>
+            <p-button *ngIf="showSave" type="button" styleClass="pmBtn" (click)="saveUpdatePO('IncreaseBudget')" label="Save"></p-button>
         </div>
     </div>
 </div>
@@ -349,6 +349,17 @@
             </div>
         </div>
     </div>
+    <div class="ui-grid-row mt-6" style="margin-bottom: 15px" *ngIf="projObj  && projObj.ProjectType === pmConstant.PROJECT_TYPE.FTE.value">
+        <div class="ui-grid-col-4"><span class="compulsory">*</span>Proposed End Date</div>
+        <div class="ui-grid-col-4">
+            <div class="floatLeft">
+                <p-calendar  class="pcalendarClass" [(ngModel)]="selectedProposedEndDate" [disabledDays]="[0,6]"   [readonlyInput]="true" [minDate]="dbProposedDate" [maxDate]="maxEndDate"   dateFormat="M dd, yy"   appendTo="body"   hideOnDateTimeSelect="true"   [required]="true"
+                      [showIcon]="true"   [showOnFocus]="false"   [monthNavigator]="true"   [yearNavigator]="true"     yearRange="{{pmObject.yearRange}}" [inputStyle]="{'width': '80%', 'min-width': '80%'}"  inputStyleClass="ngPrime-red">
+                    </p-calendar>
+
+            </div>
+        </div>
+    </div>
     <p-footer>
         <p-button type="button" styleClass="pmBtn" (click)="increaseBudget()" label="Confirm"></p-button>
         <p-button type="button" styleClass="pmBtn" (click)="showBudgetIncrease=false" label="Cancel">
@@ -398,6 +409,18 @@
             <textarea [(ngModel)]="selectedReason" rows="3" cols="30"></textarea>
           </div>
         </div> -->
+    </div>
+
+    <div class="ui-grid-row mt-6" style="margin-bottom: 15px" *ngIf="projObj  && projObj.ProjectType === pmConstant.PROJECT_TYPE.FTE.value">
+        <div class="ui-grid-col-4"><span class="compulsory">*</span>Proposed End Date</div>
+        <div class="ui-grid-col-4">
+            <div class="floatLeft">
+                <p-calendar  class="pcalendarClass" [(ngModel)]="selectedProposedEndDate" [disabledDays]="[0,6]"   [readonlyInput]="true" [minDate]="minDate" [maxDate]="dbProposedDate"   dateFormat="M dd, yy"   appendTo="body"   hideOnDateTimeSelect="true"   [required]="true"
+                      [showIcon]="true"   [showOnFocus]="false"   [monthNavigator]="true"   [yearNavigator]="true"     yearRange="{{pmObject.yearRange}}" [inputStyle]="{'width': '80%', 'min-width': '80%'}"  inputStyleClass="ngPrime-red">
+                    </p-calendar>
+
+            </div>
+        </div>
     </div>
     <p-footer>
         <p-button type="button" styleClass="pmBtn" (click)="reduceBudget()" label="Confirm"></p-button>

@@ -938,6 +938,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         // console.log('Event ', event);
         // this.cafileReader = new FileReader();
         if (event.target.files && event.target.files.length > 0) {
+            this.caSelectedFile = [];
             this.selectedCAFile = event.target.files[0];
             const fileName = this.selectedCAFile.name;
             const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
@@ -969,8 +970,8 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
     async uploadCAFileData() {
         const date = new Date();
         this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'UploadCAFiles');
-        this.commonService.UploadFilesProgress(this.SelectedFile, 'SpendingInfoFiles/' + this.caFolderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM'), true).then(async uploadedfile => {
-            if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
+        this.commonService.UploadFilesProgress(this.caSelectedFile, 'SpendingInfoFiles/' + this.caFolderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM'), true).then(async uploadedfile => {
+            if (this.caSelectedFile.length > 0 && this.caSelectedFile.length === uploadedfile.length) {
                 if (uploadedfile[0].hasOwnProperty('odata.error')) {
                     this.submitBtn.isClicked = false;
                     this.messageService.add({
@@ -983,20 +984,6 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
                 }
             }
         });
-        // 
-
-        // const res = await this.spServices.uploadFile(this.cafilePathUrl, this.cafileReader.result);
-        // if (res.ServerRelativeUrl) {
-        //     this.caFileUploadedUrl = res.ServerRelativeUrl;
-        //     this.submitExpediture();
-        // } else if (res.hasError) {
-        //     this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
-        //     this.submitBtn.isClicked = false;
-        //     this.messageService.add({
-        //         key: 'expenseErrorToast', severity: 'error', summary: 'Error message',
-        //         detail: 'File not uploaded,Folder / ' + res.message.value + '', life: 3000
-        //     });
-        // }
     }
     async submitForm(batchUrl, type: string) {
         let res = await this.spServices.executeBatch(batchUrl);

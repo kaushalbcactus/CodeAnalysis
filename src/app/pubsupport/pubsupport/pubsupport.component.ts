@@ -1763,7 +1763,6 @@ export class PubsupportComponent implements OnInit {
                 return;
             }
             this.submitBtn.isClicked = true;
-            this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
             this.uploadFileData('updateDecision');
 
         } else if (type === 'updatePublication') {
@@ -1774,7 +1773,6 @@ export class PubsupportComponent implements OnInit {
                 return;
             }
             this.submitBtn.isClicked = true;
-            this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
             this.uploadFileData('updatePublication');
 
         } else if (type === 'galley') {
@@ -1786,7 +1784,6 @@ export class PubsupportComponent implements OnInit {
             }
             this.submitBtn.isClicked = true;
             this.submitBtn.isSubmit = true;
-            this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
             this.uploadFileData('galley');
         }
     }
