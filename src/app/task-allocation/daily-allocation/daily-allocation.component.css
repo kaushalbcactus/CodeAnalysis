@@ -63,3 +63,6 @@
 ::ng-deep .ng5-slider .ng5-slider-pointer:after {
   background: black !important;
 }
+.timepicker {
+  margin-left: -10px;
+}

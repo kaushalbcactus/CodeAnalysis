@@ -171,14 +171,14 @@
                 <ng-template pTemplate="header">
                     <tr>
                         <th style="width:28%"> </th>
-                        <th style="width:5%">Budget Hrs</th>
-                        <th style="width:5%">Spent Hrs</th>
+                        <th style="width:7%">Budget Hrs</th>
+                        <th style="width:8%">Spent Hrs</th>
                         <th style="width:14%">Start Date</th>
                         <th style="width:14%">End Date</th>
                         <th style="width:4%">TAT</th>
                         <th style="width:15%">Assign To</th>
                         <th style="width:4%">Type</th>
-                        <th style="width:5%">Allow Start</th>
+                        <!-- <th style="width:5%">Allow Start</th> -->
                         <th style="width:5%">Disable Cascade</th>
                         <th style="width:3%"> </th>
                     </tr>
@@ -319,11 +319,11 @@
                         <!--Daily Allocation Type-->
                         <td [style.backgroundColor]="rowData?.allocationColor">
                         </td>
-                        <!-- Allow start -->
+                        <!-- Allow start
                         <td [ngStyle]="{'text-align': 'rowData.editMode' ? 'center':'left'}">
                             <span *ngIf="((rowData.editMode || !rowData.editMode) && rowData.type ==='milestone'  && rowData.type !=='submilestone') || (!rowData.editMode && rowData.type !=='milestone'  && rowData.type !=='submilestone' ) ">{{rowData.allowStart === true ? 'Yes':'No'}}</span>
                             <p-inputSwitch *ngIf="rowData.editMode && (rowData.type !== 'milestone' && rowData.type !=='submilestone') && (rowData.itemType !=='Client Review' && rowData.itemType !=='Send to client')" [(ngModel)]="rowData.allowStart"></p-inputSwitch>
-                         </td>
+                         </td> -->
                         <!-- Disable cascade -->
 
                         <td [ngStyle]="{'text-align': 'rowData.editMode' ? 'center':'left'}">
