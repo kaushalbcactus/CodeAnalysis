@@ -52,3 +52,4 @@ New folder/package-lock.json
 # git rm --cached  src/app/app.component.ts
 /src/app/app.component.ts
 src/app/app.component.ts
+package-lock.json
