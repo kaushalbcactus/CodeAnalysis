@@ -278,9 +278,9 @@ export class StandardprojectComponent implements OnInit {
     let clientLegalEntity = this.pmObject.addProject.ProjectAttributes.ClientLegalEntity;
     let standardTemplate = [];
     const standardTemplateOptions = {
-      select: 'ID,Title,Skill,Active,TotalHours,StandardService/ID,StandardService/Title,LegalEntity/ID,LegalEntity/Title',
+      select: 'ID,Title,Skill,IsActiveCH,TotalHours,StandardService/ID,StandardService/Title,LegalEntity/ID,LegalEntity/Title',
       expand: 'StandardService/ID,StandardService/Title,LegalEntity/ID,LegalEntity/Title',
-      filter: 'StandardService/Title eq \'' + selectedServices + '\' and LegalEntity/Title eq \'' + clientLegalEntity + '\' and Active eq \'Yes\''
+      filter: 'StandardService/Title eq \'' + selectedServices + '\' and LegalEntity/Title eq \'' + clientLegalEntity + '\' and IsActiveCH eq \'Yes\''
     };
     this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetStdTemplateBasedOnDeliverables');
     standardTemplate = await this.spService.readItems(this.constants.listNames.StandardTemplates.name, standardTemplateOptions)
@@ -296,9 +296,9 @@ export class StandardprojectComponent implements OnInit {
     let clientLegalEntity = this.pmObject.addProject.ProjectAttributes.ClientLegalEntity;
     let standardTemplate = [];
     const standardTemplateOptions = {
-      select: 'ID,Title,Skill,Active,TotalHours,StandardService/ID,StandardService/Title,LegalEntity/ID,LegalEntity/Title',
+      select: 'ID,Title,Skill,IsActiveCH,TotalHours,StandardService/ID,StandardService/Title,LegalEntity/ID,LegalEntity/Title',
       expand: 'StandardService/ID,StandardService/Title,LegalEntity/ID,LegalEntity/Title',
-      filter: 'LegalEntity/Title eq \'' + clientLegalEntity + '\' and Active eq \'Yes \''
+      filter: 'LegalEntity/Title eq \'' + clientLegalEntity + '\' and IsActiveCH eq \'Yes \''
     };
     this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetStdTemplate');
     standardTemplate = await this.spService.readItems(this.constants.listNames.StandardTemplates.name, standardTemplateOptions);
@@ -416,9 +416,9 @@ export class StandardprojectComponent implements OnInit {
       });
     }
     const standardServiceOptions = {
-      select: 'ID,Title,BaseSkill,Active,Deliverable/ID,Deliverable/Title,SubDeliverable/ID,SubDeliverable/Title,Services/ID,Services/Title',
+      select: 'ID,Title,BaseSkill,IsActiveCH,Deliverable/ID,Deliverable/Title,SubDeliverable/ID,SubDeliverable/Title,Services/ID,Services/Title',
       expand: 'Deliverable/ID,Deliverable/Title,SubDeliverable/ID,SubDeliverable/Title,Services/ID,Services/Title',
-      filter: 'Active eq \'Yes\' and ' + filter + '',
+      filter: 'IsActiveCH eq \'Yes\' and ' + filter + '',
       orderby: 'Title'
     };
     this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetStandardServiceName');
@@ -454,14 +454,14 @@ export class StandardprojectComponent implements OnInit {
       this.pmObject.addProject.Timeline.Standard.SubDeliverable = event.value.SubDeliverable.Title;
       this.pmObject.addProject.Timeline.Standard.ServiceLevel = this.selectedService;
       const skillMasterOptions = {
-        select: 'ID,Title,Category,Name,Location,Tasks/ID,Tasks/Title',
+        select: 'ID,Title,CategoryCH,NameCH,LocationCH,Tasks/ID,Tasks/Title',
         expand: 'Tasks/ID,Tasks/Title',
-        filter: 'Name eq \'' + selectedVal + '\''
+        filter: 'NameCH eq \'' + selectedVal + '\''
       };
       this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetSkillMaster');
       let skillMaster = await this.spService.readItems(this.constants.listNames.SkillMaster.name, skillMasterOptions);
       skillMaster.forEach((skill) => {
-        let tempSkill = skill.Name;
+        let tempSkill = skill.NameCH;
         if (tempSkill) {
           const matchingSkill = this.sharedTaskAllocateObj.oStandardTemplateForDeliverable.filter(function (obj) {
             return obj.Skill === tempSkill;
@@ -1054,8 +1054,8 @@ export class StandardprojectComponent implements OnInit {
               startdate = new Date(newStartDate);
             }
             if (filterResource && filterResource.length) {
-              taskObj.data.AssignedTo = filterResource[0].UserName.Title;
-              taskObj.data.userId = filterResource[0].UserName.ID;
+              taskObj.data.AssignedTo = filterResource[0].UserNamePG.Title;
+              taskObj.data.userId = filterResource[0].UserNamePG.ID;
               startdate = this.checkUserAvailability(startdate, taskObj);
             } else {
               taskObj.data.AssignedTo = milestoneTask[index].Skill;
@@ -1126,8 +1126,8 @@ export class StandardprojectComponent implements OnInit {
               startdate = new Date(newStartDate);
             }
             if (filterResource.length) {
-              taskObj.data.AssignedTo = filterResource[0].UserName.Title;
-              taskObj.data.userId = filterResource[0].UserName.ID;
+              taskObj.data.AssignedTo = filterResource[0].UserNamePG.Title;
+              taskObj.data.userId = filterResource[0].UserNamePG.ID;
               startdate = this.checkUserAvailability(startdate, taskObj);
             } else {
               taskObj.data.AssignedTo = milestoneTask[index].Skill;
@@ -1780,7 +1780,7 @@ export class StandardprojectComponent implements OnInit {
           if (milestoneIndex !== -1 && subMilestoneIndex !== -1 && taskIndex !== -1) {
             let selectedSkillObj = this.pmObject.oTaskAllocation.oAllSelectedResource;
             let filterResource = selectedSkillObj.filter(function (obj) {
-              return milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.userId === obj.UserName.ID;
+              return milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.userId === obj.UserNamePG.ID;
             });
             if (milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.toggleCapacity) {
               setTimeout(async () => {
@@ -1811,7 +1811,7 @@ export class StandardprojectComponent implements OnInit {
           if (milestoneIndex !== -1 && taskIndex !== -1) {
             let selectedSkillObj = this.pmObject.oTaskAllocation.oAllSelectedResource;
             let filterResource = selectedSkillObj.filter(function (obj) {
-              return milestones_copy[milestoneIndex].children[taskIndex].data.userId === obj.UserName.ID;
+              return milestones_copy[milestoneIndex].children[taskIndex].data.userId === obj.UserNamePG.ID;
             });
             if (milestones_copy[milestoneIndex].children[taskIndex].data.toggleCapacity) {
               setTimeout(async () => {

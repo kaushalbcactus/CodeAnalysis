@@ -740,7 +740,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             // console.log('form is submitting ..... this.addExpenditure_form ', this.createFreelancer_form.value);
             this.createFreelancer_form.get('BilledTo').setValue(this.createFreelancer_form.value.BilledTo.Title);
             this.createFreelancer_form.get('RecordType').setValue(this.createFreelancer_form.value.RecordType.value);
-            this.createFreelancer_form.value['__metadata'] = { type: 'SP.Data.VendorFreelancerListItem' };
+            this.createFreelancer_form.value['__metadata'] = { type: this.constantService.listNames.VendorFreelancer.type };
             const endpoint = this.fdConstantsService.fdComponent.addUpdateFreelancer.create;
             const formValue: any = this.createFreelancer_form.value;
             if (!formValue.ContractEndDate) {
@@ -800,8 +800,8 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
                     Status: 'Created',
                     FileURL: this.fileUploadedUrl,
                     ClientApprovalFileURL: this.caFileUploadedUrl,
-                    Notes: this.addExpenditure_form.value.Notes,
-                    Category: this.addExpenditure_form.value.Billable,
+                    NotesMT: this.addExpenditure_form.value.Notes,
+                    CategoryST: this.addExpenditure_form.value.Billable,
                     CSId: { results: this.pcmLevels.map(x => x.ID) },
                     // ApproverFileUrl: '',
                     // PayingEntity: this.addExpenditure_form.value.PayingEntity.Title,
@@ -814,7 +814,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             // const endpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.create;
             for (let j = 0; j < this.finalAddEArray.length; j++) {
                 const element = this.finalAddEArray[j];
-                element['__metadata'] = { type: 'SP.Data.SpendingInfoListItem' };
+                element['__metadata'] = { type: this.constantService.listNames.SpendingInfo.type };
                 // data.push({
                 //     objData: element,
                 //     endpoint: endpoint,
@@ -1038,7 +1038,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
 
     getResourceData(ele) {
         const found = this.rcData.find((x) => {
-            if (x.UserName.ID === ele.ID) {
+            if (x.UserNamePG.ID === ele.ID) {
                 return x;
             }
         });
@@ -1052,7 +1052,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
 
         if (this.mailContentRes.length) {
             const mailSubject = expense.Title + ': Expense Created';
-            let mailContent = this.mailContentRes[0].Content;
+            let mailContent = this.mailContentRes[0].ContentMT;
             mailContent = this.replaceContent(mailContent, '@@Val9@@', this.currentUserInfoData.Title);
             mailContent = this.replaceContent(mailContent, '@@Val8@@', !isCleData.hasOwnProperty('ClientLegalEntity') ?
                 'Client legal entity' : 'Project');

@@ -9,29 +9,29 @@ export class SharedConstantsService {
   // tslint:disable
   public userCapacity = {
     fetchTasks: {
-      select: 'ID,Milestone,ProjectCode,SubMilestones,Task,Status,Title,TimeSpent,ExpectedTime,StartDate,DueDate,TimeZone,ParentSlot',
+      select: 'ID,Milestone,ProjectCode,SubMilestones,Task,Status,Title,TimeSpent,ExpectedTime,StartDate,DueDateDT,TimeZoneNM,ParentSlot',
       filter: "(AssignedTo/Id eq {{userID}}) and(" +
         "(StartDate ge '{{startDateString}}' and StartDate le '{{endDateString}}')" +
-        "or (DueDate ge '{{startDateString}}' and DueDate le '{{endDateString}}')" +
-        " or (StartDate le '{{startDateString}}' and DueDate ge '{{endDateString}}')" +
+        "or (DueDateDT ge '{{startDateString}}' and DueDateDT le '{{endDateString}}')" +
+        " or (StartDate le '{{startDateString}}' and DueDateDT ge '{{endDateString}}')" +
         ") and Status ne 'Abandon' and Status ne 'Deleted' and Task ne 'Time Booking' and Task ne 'Send to client' and Task ne 'Client Review' ",
       top: '4500',
       orderby: 'StartDate'
     },
 
     fetchSpentTimeTasks: {
-      select: 'ID,Milestone,ProjectCode,SubMilestones,Task,Status,Title,TimeSpent,ExpectedTime,StartDate,DueDate,TimeZone,ParentSlot,TimeSpentPerDay,AssignedTo/Title,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date',
+      select: 'ID,Milestone,ProjectCode,SubMilestones,Task,Status,Title,TimeSpent,ExpectedTime,StartDate,DueDateDT,TimeZoneNM,ParentSlot,TimeSpentPerDay,AssignedTo/Title,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date',
       filter : "(AssignedTo/Id eq {{userID}}) and ((Status eq 'Completed' and(" +
       "(StartDate ge '{{startDateString}}' and StartDate le '{{endDateString}}')" +
-      " or (DueDate ge '{{startDateString}}' and DueDate le '{{endDateString}}')" +
-      " or (StartDate le '{{startDateString}}' and DueDate ge '{{endDateString}}')"+
+      " or (DueDateDT ge '{{startDateString}}' and DueDateDT le '{{endDateString}}')" +
+      " or (StartDate le '{{startDateString}}' and DueDateDT ge '{{endDateString}}')"+
       " or (Actual_x0020_Start_x0020_Date ge '{{startDateString}}' and Actual_x0020_Start_x0020_Date le '{{endDateString}}')" +
       " or (Actual_x0020_End_x0020_Date ge '{{startDateString}}' and Actual_x0020_End_x0020_Date le '{{endDateString}}')" +
       " or (Actual_x0020_Start_x0020_Date le '{{startDateString}}' and Actual_x0020_End_x0020_Date ge '{{endDateString}}'))) or " +
       "((Status eq 'In Progress' or Status eq 'Auto Closed' ) and (" +
       "(Actual_x0020_Start_x0020_Date ge '{{startDateString}}' and Actual_x0020_Start_x0020_Date le '{{endDateString}}')" +
-      " or (DueDate ge '{{startDateString}}' and DueDate le '{{endDateString}}')" +
-      " or (Actual_x0020_Start_x0020_Date le '{{startDateString}}' and DueDate ge '{{endDateString}}'))))",
+      " or (DueDateDT ge '{{startDateString}}' and DueDateDT le '{{endDateString}}')" +
+      " or (Actual_x0020_Start_x0020_Date le '{{startDateString}}' and DueDateDT ge '{{endDateString}}'))))",
       
       
       
@@ -49,7 +49,7 @@ export class SharedConstantsService {
     },
     //startswith(Title,'{{projectCode}}')
     getProjectTasks: {
-      select: 'ID,Task,Title,ExpectedTime,StartDate,DueDate,TimeZone,Status,AssignedTo/Title,ContentType/Name',
+      select: 'ID,Task,Title,ExpectedTime,StartDate,DueDateDT,TimeZoneNM,Status,AssignedTo/Title,ContentType/Name',
       expand: 'ContentType , AssignedTo/ID, AssignedTo/Title',
       filter: "ProjectCode eq '{{projectCode}}' and Milestone eq '{{milestone}}'" +
         " and Status ne 'Abandon' and Status ne 'Completed' and Status ne 'Deleted' and Status ne 'Auto Closed'",

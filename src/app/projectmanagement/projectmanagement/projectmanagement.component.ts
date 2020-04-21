@@ -204,8 +204,8 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       if (poc && poc.length) {
         // tslint:disable-next-line:no-shadowed-variable
         poc.forEach(element => {
-          this.sowDropDown.POC.push({ label: element.FullName, value: element.ID });
-          this.sowDropDown.POCOptional.push({ label: element.FullName, value: element.ID });
+          this.sowDropDown.POC.push({ label: element.FullNameCC, value: element.ID });
+          this.sowDropDown.POCOptional.push({ label: element.FullNameCC, value: element.ID });
         });
       }
       const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
@@ -777,22 +777,22 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    * @param sowObj The parameter should be SOW list object.
    */
   getSOWDataObj(sowObj) {
-    const d = new Date();
-    const year = d.getFullYear();
+    // const d = new Date();
+    // const year = d.getFullYear();
     const sowInfoOptions = {
       ClientLegalEntity: sowObj.ClientLegalEntity,
       SOWCode: sowObj.SOWCode,
       BillingEntity: sowObj.BillingEntity,
       Status: sowObj.Status,
       Title: sowObj.SOWTitle,
-      Comments: sowObj.Comments,
+      CommentsMT: sowObj.Comments,
       Currency: sowObj.Currency,
       TotalBudget: sowObj.Budget.Total,
       NetBudget: sowObj.Budget.Net,
       OOPBudget: sowObj.Budget.OOP,
       TaxBudget: sowObj.Budget.Tax,
       BusinessVertical: sowObj.PracticeArea.join(';#'),
-      Year: year,
+      //Year: year,
       CreatedDate: sowObj.SOWCreationDate,
       ExpiryDate: sowObj.SOWExpiryDate,
       SOWLink: sowObj.SOWFileURL ? sowObj.SOWFileURL : sowObj.SOWDocument,
@@ -952,6 +952,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
           key: 'custom', severity: 'error',
           summary: 'Error Message', detail: 'Addendum SOW document name same as original document name.'
         });
+        this.pmObject.isMainLoaderHidden = true;
         return;
       }
 

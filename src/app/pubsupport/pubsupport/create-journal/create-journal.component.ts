@@ -117,6 +117,12 @@ export class CreateJournalComponent implements OnInit {
             this.submitBtn.isClicked = true;
             this.psConstantService.pubsupportComponent.isPSInnerLoaderHidden = false;
             let obj = this.createJournal_form.value;
+            // Added by Arvind
+            obj['CommentsMT'] = obj['Comments'];
+            delete obj['Comments'];
+            obj['IsActiveCH'] = obj['IsActive'];
+            delete obj['IsActive']; 
+            // Arvind code end here
             obj['__metadata'] = { type: this.constantService.listNames.Journal.type };
             const endpoint = this.spOperationsService.getReadURL(this.constantService.listNames.Journal.name);
             const data = [{

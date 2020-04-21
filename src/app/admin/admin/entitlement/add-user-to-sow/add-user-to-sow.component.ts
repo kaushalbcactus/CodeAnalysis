@@ -115,7 +115,7 @@ export class AddUserToSowComponent implements OnInit {
       if (userResults && userResults.length) {
         userResults.forEach(element => {
           if (element.Role === this.adminConstants.FILTER.CM_LEVEL_1 || element.Role === this.adminConstants.FILTER.CM_LEVEL_2 || element.Role === this.adminConstants.FILTER.DELIVERY_LEVEL_1 || element.Role === this.adminConstants.FILTER.DELIVERY_LEVEL_2) {
-            this.users.push({ label: element.UserName.Title, value: element });
+            this.users.push({ label: element.UserNamePG.Title, value: element });
           }
         });
       }
@@ -192,17 +192,17 @@ export class AddUserToSowComponent implements OnInit {
         obj.IsCheckBoxChecked = false;
         obj.SOWCode = item.SOWCode ? item.SOWCode : '';
         if (item.CMLevel2 && item.CMLevel2.hasOwnProperty('ID')
-          && userObj.UserName.ID === item.CMLevel2.ID ||
+          && userObj.UserNamePG.ID === item.CMLevel2.ID ||
           item.DeliveryLevel2 && item.DeliveryLevel2.hasOwnProperty('ID')
-          && userObj.UserName.ID === item.DeliveryLevel2.ID) {
+          && userObj.UserNamePG.ID === item.DeliveryLevel2.ID) {
           obj.IsTypeChangedDisabled = true;
           disableCount++;
           obj.AccessType = this.adminConstants.ACCESS_TYPE.ACCOUNTABLE;
           obj.CurrentAccess = this.adminConstants.ACCESS_TYPE.ACCOUNTABLE;
         } else if (item.CMLevel1 && item.CMLevel1.hasOwnProperty('results') && item.CMLevel1.results.length
-          && item.CMLevel1.results.some(a => a.ID === userObj.UserName.ID) ||
+          && item.CMLevel1.results.some(a => a.ID === userObj.UserNamePG.ID) ||
           item.DeliveryLevel1 && item.DeliveryLevel1.hasOwnProperty('results') && item.DeliveryLevel1.results.length
-          && item.DeliveryLevel1.results.some(a => a.ID === userObj.UserName.ID)) {
+          && item.DeliveryLevel1.results.some(a => a.ID === userObj.UserNamePG.ID)) {
           obj.AccessType = this.adminConstants.ACCESS_TYPE.ACCESS;
           obj.IsTypeChangedDisabled = false;
           obj.CurrentAccess = this.adminConstants.ACCESS_TYPE.ACCESS;
@@ -243,11 +243,11 @@ export class AddUserToSowComponent implements OnInit {
   typeChange(sowObj) {
     this.messageService.clear();
     const userObj = this.selectedUser;
-    if (sowObj && sowObj.CMLevel1 && sowObj.CMLevel1.length && sowObj.CMLevel1[0].ID === userObj.UserName.ID) {
+    if (sowObj && sowObj.CMLevel1 && sowObj.CMLevel1.length && sowObj.CMLevel1[0].ID === userObj.UserNamePG.ID) {
       if (sowObj.AccessType === this.adminConstants.ACCESS_TYPE.ACCOUNTABLE) {
         this.messageService.add({
           key: 'adminCustom', severity: 'error', sticky: true,
-          summary: 'Error Message', detail: 'The user ' + userObj.UserName.Title + ' cannot be made accountable.'
+          summary: 'Error Message', detail: 'The user ' + userObj.UserNamePG.Title + ' cannot be made accountable.'
             + ' Since he is only available in Access. Hence resetting the accessType to Access'
         });
         setTimeout(() => {
@@ -303,7 +303,7 @@ export class AddUserToSowComponent implements OnInit {
       type: '',
       listName: ''
     };
-    if (!this.selectedUser || !this.selectedUser.hasOwnProperty('UserName')) {
+    if (!this.selectedUser || !this.selectedUser.hasOwnProperty('UserNamePG')) {
       this.messageService.add({
         key: 'adminCustom', severity: 'error', sticky: true,
         summary: 'Error Message', detail: 'Please select the user.'

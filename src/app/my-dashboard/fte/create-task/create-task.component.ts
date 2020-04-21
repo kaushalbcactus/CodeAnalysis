@@ -329,7 +329,7 @@ export class CreateTaskComponent implements OnInit {
         };
 
         /* tslint:disable:no-string-literal */
-        milestoneDataObj['__metadata'] = { type: 'SP.Data.SchedulesListItem' };
+        milestoneDataObj['__metadata'] = { type: this.constantsService.listNames.Schedules.type };
         /* tslint:enable:no-string-literal */
 
         const milestoneObj = Object.assign({}, this.queryConfig);
@@ -351,20 +351,20 @@ export class CreateTaskComponent implements OnInit {
         Task: this.create_task_form.value.ProjectCode.ServiceLevel,
         StartDate: this.datePipe.transform(new Date(this.create_task_form.value.StartDate),
           'yyyy-MM-dd' + 'T' + startTime + ':00.000'),
-        DueDate: this.datePipe.transform(this.create_task_form.value.EndDate,
+        DueDateDT: this.datePipe.transform(this.create_task_form.value.EndDate,
           'yyyy-MM-dd' + 'T' + endTime + ':00.000'),
         ExpectedTime: '0',
         TimeSpent: '',
-        Comments: this.create_task_form.value.Comments,
+        CommentsMT: this.create_task_form.value.Comments,
         TaskComments: '',
         Status: 'Not Started',
         AssignedToId: this.currentUserInfo.Id.toString(),
-        TimeZone: this.globalService.DashboardData.ResourceCategorization.find(c => c.ID ===
+        TimeZoneNM: this.globalService.DashboardData.ResourceCategorization.find(c => c.ID ===
           this.globalService.currentUser.userId) !== undefined ?
           this.globalService.DashboardData.ResourceCategorization.find(c => c.ID ===
             this.globalService.currentUser.userId).TimeZone !== undefined ?
             this.globalService.DashboardData.ResourceCategorization.find(c => c.ID ===
-              this.globalService.currentUser.userId).TimeZone.Title : '5.5' : '5.5',
+              this.globalService.currentUser.userId).TimeZone.Title : 5.5 : 5.5,
         TATStatus: 'No',
         SubMilestones: this.create_task_form.value.SubMilestones.label ? this.create_task_form.value.SubMilestones.label :
           this.create_task_form.value.SubMilestones,
@@ -377,7 +377,7 @@ export class CreateTaskComponent implements OnInit {
         DisableCascade: 'Yes',
       };
       /* tslint:disable:no-string-literal */
-      taskObj['__metadata'] = { type: 'SP.Data.SchedulesListItem' };
+      taskObj['__metadata'] = { type: this.constantsService.listNames.Schedules.type };
       /* tslint:enable:no-string-literal */
 
       const invObj = Object.assign({}, this.queryConfig);

@@ -358,7 +358,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         const obj = Object.assign({}, this.fdConstantsService.fdComponent.paidInvoices);
         obj.filter = obj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
         this.commonService.SetNewrelic('Finance-Dashboard', 'paid-invoices', 'getPaidInvoices');
-        const res = await this.spServices.readItems(this.constantService.listNames.OutInvoices.name, obj);
+        const res = await this.spServices.readItems(this.constantService.listNames.Invoices.name, obj);
         const arrResults = res.length ? res : [];
         this.formatData(arrResults);
         this.isPSInnerLoaderHidden = true;
@@ -401,7 +401,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
                 Currency: element.Currency,
                 POC: this.getPOCName(element),
                 FileURL: element.FileURL,
-                FiscalYear: element.FiscalYear,
+                // FiscalYear: element.FiscalYear,
                 Title: element.InvoiceTitle,
                 AddressType: element.AddressType,
 

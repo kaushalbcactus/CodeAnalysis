@@ -6,7 +6,7 @@ import { ConstantsService } from './constants.service';
 import { PmconstantService } from '../projectmanagement/services/pmconstant.service';
 import { PMObjectService } from '../projectmanagement/services/pmobject.service';
 import { DatePipe } from '@angular/common';
-import { Table } from 'primeng';
+import { Table } from 'primeng/table';
 declare var $;
 
 declare const newrelic;
@@ -450,7 +450,7 @@ export class CommonService {
         }
         return arrItem;
     }
-    
+
     async checkTaskStatus(task) {
         this.SetNewrelic('Service', 'Common-Service', 'readItem');
         const currentTask = await this.spServices.readItem(this.constants.listNames.Schedules.name, task.ID);
@@ -464,7 +464,7 @@ export class CommonService {
         }
         return isActionRequired;
     }
-    
+
     setIframeHeight() {
         setTimeout(() => {
             const height = $('.custom-table-container').height();
@@ -749,7 +749,7 @@ export class CommonService {
 
         if (prjObj.CMLevel1.results) {
             prjObj.CMLevel1.results = prjObj.CMLevel1.results.map(cmL1 => {
-                var cm = this.sharedTaskAllocateObj.oResources.filter(user => user.UserName.ID === cmL1.ID).map(u => u.UserName.EMail);
+                var cm = this.sharedTaskAllocateObj.oResources.filter(user => user.UserNamePG.ID === cmL1.ID).map(u => u.UserNamePG.EMail);
                 cmL1.EMail = cm.length > 0 ? cm[0] : ''
                 return cmL1;
             });

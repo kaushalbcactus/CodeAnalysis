@@ -116,12 +116,6 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     startTimeArray: [],
     endTimeArray: []
   };
-
-
-
-  private scheduleList = this.globalConstant.listNames.Schedules.name;
-  private resourceCategorizationList = this.globalConstant.listNames.ResourceCategorization.name;
-  private projectInformationList = this.globalConstant.listNames.ProjectInformation.name;
   public allocatedHideLoader = false;
   public allocatedHideTable = true;
   public allocatedHideNoDataMessage = true;
@@ -392,7 +386,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         task.capacity = oCapacity;
         const setResources = $.extend(true, [], task.resources);
         for (const resource of setResources) {
-          const retResource = oCapacity.arrUserDetails.filter(user => user.uid === resource.UserName.ID);
+          const retResource = oCapacity.arrUserDetails.filter(user => user.uid === resource.UserNamePG.ID);
           this.setColorCode(retResource, resource, task);
           const dispTime = parseFloat(retResource[0].displayTotalUnAllocated.replace(':', '.'));
           resource.taskDetails = retResource[0];
@@ -405,13 +399,13 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         if (task.PreviousAssignedUser && task.PreviousAssignedUser.ID > -1 && task.CentralAllocationDone === 'No') {
 
           const resourcesList = $.extend(true, [], this.resourceList);
-          let ExistingUser = res.find(c => c.UserName.ID === task.PreviousAssignedUser.ID &&
-            c.UserName.Title === task.PreviousAssignedUser.Title);
+          let ExistingUser = res.find(c => c.UserNamePG.ID === task.PreviousAssignedUser.ID &&
+            c.UserNamePG.Title === task.PreviousAssignedUser.Title);
           if (ExistingUser) {
             ExistingUser.userType = 'Previously Assigned';
           } else {
-            ExistingUser = resourcesList.find(c => c.UserName.ID === task.PreviousAssignedUser.ID &&
-              c.UserName.Title === task.PreviousAssignedUser.Title);
+            ExistingUser = resourcesList.find(c => c.UserNamePG.ID === task.PreviousAssignedUser.ID &&
+              c.UserNamePG.Title === task.PreviousAssignedUser.Title);
             if (ExistingUser) {
               ExistingUser.userType = 'Previously Assigned';
               const retResource = oCapacity.arrUserDetails.filter(user => user.uid === ExistingUser.UserName.ID);
@@ -431,7 +425,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
             const Users = resExtn.filter(c => c.userType === retRes);
             const Items = [];
             Users.forEach(user => {
-              Items.push({ label: user.UserName.Title + ' (' + user.timeAvailable + ') ', value: user }
+              Items.push({ label: user.UserNamePG.Title + ' (' + user.timeAvailable + ') ', value: user }
               );
               task.selectedResources.push(user);
             });
@@ -449,7 +443,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         this.messageService.clear();
         if (this.selectedUser) {
           this.selectedButton = Array.from(document.querySelectorAll('li'))
-            .find(el => el.textContent.indexOf(this.selectedUser.UserName.Title) > -1);
+            .find(el => el.textContent.indexOf(this.selectedUser.UserNamePG.Title) > -1);
           if (this.selectedButton) {
             this.selectedButton.scrollIntoViewIfNeeded();
             this.selectedButton = null;
@@ -465,8 +459,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
         if (task.displayselectedResources) {
           task.displayselectedResources.map(c => c.items).forEach(element => {
-            task.allocatedResource = element.find(c => c.value.UserName.ID === task.AssignedTo.ID) ?
-              element.find(c => c.value.UserName.ID === task.AssignedTo.ID).value : task.allocatedResource;
+            task.allocatedResource = element.find(c => c.value.UserNamePG.ID === task.AssignedTo.ID) ?
+              element.find(c => c.value.UserNamePG.ID === task.AssignedTo.ID).value : task.allocatedResource;
           });
         }
       }, 500);
@@ -495,9 +489,9 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   setColorCode(retResource, res, task) {
     const retRes = retResource[0];
     const retTask = retRes.tasks.filter((tsk) => {
-      return (task.startDate <= tsk.DueDate && task.dueDate >= tsk.DueDate)
-        || (task.startDate <= tsk.StartDate && task.dueDate >= tsk.StartDate)
-        || (task.startDate >= tsk.StartDate && task.dueDate <= tsk.DueDate);
+      return (task.startDate <= tsk.DueDate && task.DueDate >= tsk.DueDate)
+        || (task.startDate <= tsk.StartDate && task.DueDate >= tsk.StartDate)
+        || (task.startDate >= tsk.StartDate && task.DueDate <= tsk.DueDate);
     });
     if (retTask.length) {
       res.Color = '#D7181F';
@@ -572,9 +566,9 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   // **************************************************************************************************
 
   async sendMail(task, slot) {
-    if (task.allocatedResource && task.allocatedResource.UserName.hasOwnProperty('ID') && task.allocatedResource.UserName.ID !== -1) {
+    if (task.allocatedResource && task.allocatedResource.UserNamePG.hasOwnProperty('ID') && task.allocatedResource.UserNamePG.ID !== -1) {
       const fromUser = this.globalService.currentUser.email;
-      const user = task.allocatedResource.UserName;
+      const user = task.allocatedResource.UserNamePG;
       const mailSubject = task.ProjectCode + '(' + slot.ProjectName + ')' + ': Task created';
       const objEmailBody = await this.getsendEmailObjBody(task, slot, 'TaskCreation');
       const arrayTo = [];
@@ -600,7 +594,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       slot.Milestone + ' ' + milestoneTask.TaskName
 
     let mailContent = this.emailTemplate;
-    mailContent = this.replaceContent(mailContent, "@@Val3@@", milestoneTask.allocatedResource && milestoneTask.allocatedResource.UserName ? milestoneTask.allocatedResource.UserName.Title : milestoneTask.AssignedTo ? milestoneTask.AssignedTo.Title : undefined);
+    mailContent = this.replaceContent(mailContent, "@@Val3@@", milestoneTask.allocatedResource && milestoneTask.allocatedResource.UserNamePG ? milestoneTask.allocatedResource.UserNamePG.Title : milestoneTask.AssignedTo ? milestoneTask.AssignedTo.Title : undefined);
     mailContent = this.replaceContent(mailContent, "@@Val1@@", milestoneTask.ProjectCode);
     mailContent = this.replaceContent(mailContent, "@@Val2@@", slot.SubMilestones && slot.SubMilestones !== 'Default' ? milestoneTask.Title + ' - ' + slot.SubMilestones : milestoneTask.Title);
     mailContent = this.replaceContent(mailContent, "@@Val4@@", milestoneTask.Task);
@@ -619,7 +613,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     this.commonService.SetNewrelic('unallocated-allocated', 'CA-GetMailContent', 'readItems');
     const templateData = await this.spServices.readItems(this.globalConstant.listNames.MailContent.name,
       mailObj);
-    mailContent = templateData.length > 0 ? templateData[0].Content : [];
+    mailContent = templateData.length > 0 ? templateData[0].ContentMT : [];
     return mailContent;
   }
 
@@ -900,12 +894,12 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     //   task.Task : task.Task
     if (task.PreviousAssignedUser && task.PreviousAssignedUser.ID > -1 && task.CentralAllocationDone === 'No') {
 
-      let ExistingUser = resPool.find(c => c.UserName.ID === task.PreviousAssignedUser.ID && c.UserName.Title === task.PreviousAssignedUser.Title);
+      let ExistingUser = resPool.find(c => c.UserNamePG.ID === task.PreviousAssignedUser.ID && c.UserNamePG.Title === task.PreviousAssignedUser.Title);
       if (ExistingUser) {
         ExistingUser.userType = 'Previously Assigned';
       } else {
-        ExistingUser = resourcesList.find(c => c.UserName.ID === task.PreviousAssignedUser.ID &&
-          c.UserName.Title === task.PreviousAssignedUser.Title);
+        ExistingUser = resourcesList.find(c => c.UserNamePG.ID === task.PreviousAssignedUser.ID &&
+          c.UserNamePG.Title === task.PreviousAssignedUser.Title);
         if (ExistingUser) {
           ExistingUser.userType = 'Previously Assigned';
           resPool.push(ExistingUser);
@@ -913,12 +907,12 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       }
     }
     const AssignedUserTimeZone = task.AssignedTo ? resourcesList.filter((objt) => {
-      return task.AssignedTo.ID === objt.UserName.ID;
+      return task.AssignedTo.ID === objt.UserNamePG.ID;
     }) : [];
     task.AssignedUserTimeZone = AssignedUserTimeZone && AssignedUserTimeZone.length > 0
       ? AssignedUserTimeZone[0].TimeZone.Title ?
         AssignedUserTimeZone[0].TimeZone.Title : '+5.5' : '+5.5';
-
+    task.DueDate = IsdbTask ? task.DueDateDT : task.DueDate; 
     const convertedStartDate = task.StartDate ? this.commonService.calcTimeForDifferentTimeZone(new Date(task.StartDate),
       this.globalService.currentUser.timeZone, task.AssignedUserTimeZone) :
       this.commonService.calcTimeForDifferentTimeZone(new Date(task.StartDate),
@@ -943,7 +937,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     taskObj.Id = task.ID ? task.ID : task.Id;
     taskObj.Task = task.Type && task.Type === 'Slot' ? task.TaskName : task.Task ? task.Task : task.taskType;
     taskObj.Task = taskObj.Task.split(' ')[0];
-    taskObj.Timezone = task.timezone ? task.timezone : task.TimeZone;
+    taskObj.Timezone = task.timezone ? task.timezone : task.TimeZoneNM;
     taskObj.Title = task.Title;
     taskObj.ProjectCode = task.projectCode ? task.projectCode : task.ProjectCode;
     taskObj.NextTasks = task.Type && task.Type === 'Slot' ? '' : task.nextTasks;
@@ -953,23 +947,23 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     taskObj.EstimatedTime = task.estimatedTime ? task.estimatedTime : task.ExpectedTime ?
       task.ExpectedTime : task.EstimatedTime ? task.EstimatedTime : '0';
     taskObj.StartTime = task.startDate ? task.startDate : task.StartDate;
-    taskObj.EndTime = task.dueDate ? task.dueDate : task.DueDate;
+    taskObj.EndTime = task.DueDate ? task.DueDate : task.DueDate;
     taskObj.StartDate = task.startDate ? new Date(task.startDate) : new Date(task.StartDate);
-    taskObj.DueDate = task.dueDate ? new Date(task.dueDate) : new Date(task.DueDate);
+    taskObj.DueDate = task.DueDate ? new Date(task.DueDate) : new Date(task.DueDate);
     taskObj.UserStart = task.startDate ? new Date(task.startDate) : new Date(task.StartDate);
-    taskObj.UserEnd = task.dueDate ? new Date(task.dueDate) : new Date(task.DueDate);
+    taskObj.UserEnd = task.DueDate? new Date(task.DueDate) : new Date(task.DueDate);
     taskObj.ProjectName = task.ProjectName;
     taskObj.SpentTime = this.commonService.ajax_addHrsMins([hrsMinObject]);
     taskObj.UserStartDatePart = this.getDatePart(convertedStartDate);
     taskObj.UserStartTimePart = this.getTimePart(convertedStartDate);
     taskObj.UserEndDatePart = this.getDatePart(convertedEndDate);
     taskObj.UserEndTimePart = this.getTimePart(convertedEndDate);
-    taskObj.TaskScope = task.Comments;
+    taskObj.TaskScope = task.CommentsMT;
     taskObj.resources = $.extend(true, [], resPool);
-    taskObj.AssignedTo = task.assignedTo ? task.assignedTo : task.AssignedTo ? task.AssignedTo : [];
+    taskObj.AssignedTo = task.AssignedTo ? task.AssignedTo : task.AssignedTo ? task.AssignedTo : [];
     taskObj.allocatedResource = task.AssignedTo && task.AssignedTo.hasOwnProperty('ID') && task.AssignedTo.ID > -1 ?
-      resPool.find(c => c.UserName.ID === task.AssignedTo.ID && c.Title === task.AssignedTo.Title) ?
-        resPool.find(c => c.UserName.ID === task.AssignedTo.ID && c.Title === task.AssignedTo.Title) : '' : '';
+      resPool.find(c => c.UserNamePG.ID === task.AssignedTo.ID && c.Title === task.AssignedTo.Title) ?
+        resPool.find(c => c.UserNamePG.ID === task.AssignedTo.ID && c.Title === task.AssignedTo.Title) : '' : '';
     taskObj.selectedResources = [];
     taskObj.mileStoneTask = [];
     taskObj.projectTask = [];
@@ -1007,7 +1001,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     task.capacity = oCapacity;
     const setResources = $.extend(true, [], task.resources);
     for (const resource of setResources) {
-      const retResource = oCapacity.arrUserDetails.filter(user => user.uid === resource.UserName.ID);
+      const retResource = oCapacity.arrUserDetails.filter(user => user.uid === resource.UserNamePG.ID);
       this.setColorCode(retResource, resource, task);
       const dispTime = parseFloat(retResource[0].displayTotalUnAllocated.replace(':', '.'));
       resource.taskDetails = retResource[0];
@@ -1019,13 +1013,13 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
     if (task.PreviousAssignedUser && task.PreviousAssignedUser.ID > -1 && task.CentralAllocationDone === 'No') {
       const resourcesList = $.extend(true, [], this.resourceList);
-      let ExistingUser = res.find(c => c.UserName.ID === task.PreviousAssignedUser.ID
-        && c.UserName.Title === task.PreviousAssignedUser.Title);
+      let ExistingUser = res.find(c => c.UserNamePG.ID === task.PreviousAssignedUser.ID
+        && c.UserNamePG.Title === task.PreviousAssignedUser.Title);
       if (ExistingUser) {
         ExistingUser.userType = 'Previously Assigned';
       } else {
-        ExistingUser = resourcesList.find(c => c.UserName.ID === task.PreviousAssignedUser.ID &&
-          c.UserName.Title === task.PreviousAssignedUser.Title);
+        ExistingUser = resourcesList.find(c => c.UserNamePG.ID === task.PreviousAssignedUser.ID &&
+          c.UserNamePG.Title === task.PreviousAssignedUser.Title);
         if (ExistingUser) {
           ExistingUser.userType = 'Previously Assigned';
           res.push(ExistingUser);
@@ -1040,7 +1034,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         const Users = resExtn.filter(c => c.userType === retRes);
         const Items = [];
         Users.forEach(user => {
-          Items.push({ label: user.UserName.Title + ' (' + user.timeAvailable + ') ', value: user }
+          Items.push({ label: user.UserNamePG.Title + ' (' + user.timeAvailable + ') ', value: user }
           );
           task.selectedResources.push(user);
         });
@@ -1051,7 +1045,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     this.messageService.clear();
     if (this.selectedUser) {
       this.selectedButton = Array.from(document.querySelectorAll('li'))
-        .find(el => el.textContent.indexOf(this.selectedUser.UserName.Title) > -1);
+        .find(el => el.textContent.indexOf(this.selectedUser.UserNamePG.Title) > -1);
       if (this.selectedButton) {
         this.selectedButton.scrollIntoViewIfNeeded();
         this.selectedButton = null;
@@ -1065,8 +1059,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
     if (task.displayselectedResources) {
       task.displayselectedResources.map(c => c.items).forEach(element => {
-        task.allocatedResource = element.find(c => c.value.UserName.ID === task.AssignedTo.ID) ?
-          element.find(c => c.value.UserName.ID === task.AssignedTo.ID).value : task.allocatedResource;
+        task.allocatedResource = element.find(c => c.value.UserNamePG.ID === task.AssignedTo.ID) ?
+          element.find(c => c.value.UserNamePG.ID === task.AssignedTo.ID).value : task.allocatedResource;
       });
     }
   }
@@ -1225,20 +1219,20 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     this.disableSave = true;
     const isValid = await this.validate();
 
-    // if (isValid) {
-    //   this.loaderenable = true;
-    //   setTimeout(() => {
+    if (isValid) {
+      this.loaderenable = true;
+      setTimeout(() => {
 
-    //     this.messageService.add({
-    //       key: 'tc', severity: 'warn', sticky: true,
-    //       summary: 'Info Message', detail: 'Updating...'
-    //     });
-    //     this.generateSaveTasks(unt);
-    //   }, 300);
-    // }
-    // else {
-    //   this.disableSave = false;
-    // }
+        this.messageService.add({
+          key: 'tc', severity: 'warn', sticky: true,
+          summary: 'Info Message', detail: 'Updating...'
+        });
+        this.generateSaveTasks(unt);
+      }, 300);
+    }
+    else {
+      this.disableSave = false;
+    }
 
   }
 
@@ -1305,7 +1299,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
         slot.SlotTasks.forEach(element => {
           if (element.edited) {
-            const title = element.allocatedResource ? element.allocatedResource.UserName.Title : null;
+            const title = element.allocatedResource ? element.allocatedResource.UserNamePG.Title : null;
             if (!title) {
               validateAllocation = false;
             }
@@ -1430,10 +1424,10 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
             const batchUrl = [];
             const tasksObj = Object.assign({}, this.queryConfig);
-            tasksObj.url = this.spServices.getReadURL(this.globalConstant.listNames.projectInfo.name,
+            tasksObj.url = this.spServices.getReadURL(this.globalConstant.listNames.ProjectInformation.name,
               this.caConstant.projectResources);
             tasksObj.url = tasksObj.url.replace(/{{ProjectCode}}/gi, slot.ProjectCode);
-            tasksObj.listName = this.globalConstant.listNames.projectInfo.name;
+            tasksObj.listName = this.globalConstant.listNames.ProjectInformation.name;
             tasksObj.type = 'GET';
             batchUrl.push(tasksObj);
             this.commonService.SetNewrelic('unallocated-allocated', 'CA', 'GetProjectInfoByProjectCode');
@@ -1462,30 +1456,30 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         addedTasks.forEach(task => {
 
 
-          if (task.allocatedResource && task.allocatedResource.UserName.hasOwnProperty('ID') && task.allocatedResource.UserName.ID !== -1) {
+          if (task.allocatedResource && task.allocatedResource.UserNamePG.hasOwnProperty('ID') && task.allocatedResource.UserNamePG.ID !== -1) {
             switch (task.Task) {
               case 'QC':
               case 'Review-QC':
               case 'Inco-QC':
-                tempProject.qualityChecker.push({ ID: task.allocatedResource.UserName.ID, Name: task.allocatedResource.UserName.Title });
-                tempProject.arrQualityCheckerIds.push(task.allocatedResource.UserName.ID);
+                tempProject.qualityChecker.push({ ID: task.allocatedResource.UserNamePG.ID, Name: task.allocatedResource.UserNamePG.Title });
+                tempProject.arrQualityCheckerIds.push(task.allocatedResource.UserNamePG.ID);
                 break;
               case 'Edit':
               case 'Review-Edit':
               case 'Inco-Edit':
-                tempProject.editors.push({ ID: task.allocatedResource.UserName.ID, Name: task.allocatedResource.UserName.Title });
-                tempProject.arrEditorsIds.push(task.allocatedResource.UserName.ID);
+                tempProject.editors.push({ ID: task.allocatedResource.UserNamePG.ID, Name: task.allocatedResource.UserNamePG.Title });
+                tempProject.arrEditorsIds.push(task.allocatedResource.UserNamePG.ID);
                 break;
               case 'Graphics':
               case 'Review-Graphics':
               case 'Inco-Graphics':
-                tempProject.graphics.push({ ID: task.allocatedResource.UserName.ID, Name: task.allocatedResource.UserName.Title });
-                tempProject.arrGraphicsIds.push(task.allocatedResource.UserName.ID);
+                tempProject.graphics.push({ ID: task.allocatedResource.UserNamePG.ID, Name: task.allocatedResource.UserNamePG.Title });
+                tempProject.arrGraphicsIds.push(task.allocatedResource.UserNamePG.ID);
                 break;
               case 'Submit':
               case 'Galley':
-                tempProject.pubSupport.push({ ID: task.allocatedResource.UserName.ID, Name: task.allocatedResource.UserName.Title });
-                tempProject.arrPubSupportIds.push(task.allocatedResource.UserName.ID);
+                tempProject.pubSupport.push({ ID: task.allocatedResource.UserNamePG.ID, Name: task.allocatedResource.UserNamePG.Title });
+                tempProject.arrPubSupportIds.push(task.allocatedResource.UserNamePG.ID);
                 break;
             }
           }
@@ -1495,30 +1489,30 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         });
         updatedTasks.forEach(task => {
 
-          if (task.allocatedResource && task.allocatedResource.UserName.hasOwnProperty('ID') && task.allocatedResource.UserName.ID !== -1) {
+          if (task.allocatedResource && task.allocatedResource.UserNamePG.hasOwnProperty('ID') && task.allocatedResource.UserNamePG.ID !== -1) {
             switch (task.Task) {
               case 'QC':
               case 'Review-QC':
               case 'Inco-QC':
-                tempProject.qualityChecker.push({ ID: task.allocatedResource.UserName.ID, Name: task.allocatedResource.UserName.Title });
-                tempProject.arrQualityCheckerIds.push(task.allocatedResource.UserName.ID);
+                tempProject.qualityChecker.push({ ID: task.allocatedResource.UserNamePG.ID, Name: task.allocatedResource.UserNamePG.Title });
+                tempProject.arrQualityCheckerIds.push(task.allocatedResource.UserNamePG.ID);
                 break;
               case 'Edit':
               case 'Review-Edit':
               case 'Inco-Edit':
-                tempProject.editors.push({ ID: task.allocatedResource.UserName.ID, Name: task.allocatedResource.UserName.Title });
-                tempProject.arrEditorsIds.push(task.allocatedResource.UserName.ID);
+                tempProject.editors.push({ ID: task.allocatedResource.UserNamePG.ID, Name: task.allocatedResource.UserNamePG.Title });
+                tempProject.arrEditorsIds.push(task.allocatedResource.UserNamePG.ID);
                 break;
               case 'Graphics':
               case 'Review-Graphics':
               case 'Inco-Graphics':
-                tempProject.graphics.push({ ID: task.allocatedResource.UserName.ID, Name: task.allocatedResource.UserName.Title });
-                tempProject.arrGraphicsIds.push(task.allocatedResource.UserName.ID);
+                tempProject.graphics.push({ ID: task.allocatedResource.UserNamePG.ID, Name: task.allocatedResource.UserNamePG.Title });
+                tempProject.arrGraphicsIds.push(task.allocatedResource.UserNamePG.ID);
                 break;
               case 'Submit':
               case 'Galley':
-                tempProject.pubSupport.push({ ID: task.allocatedResource.UserName.ID, Name: task.allocatedResource.UserName.Title });
-                tempProject.arrPubSupportIds.push(task.allocatedResource.UserName.ID);
+                tempProject.pubSupport.push({ ID: task.allocatedResource.UserNamePG.ID, Name: task.allocatedResource.UserNamePG.Title });
+                tempProject.arrPubSupportIds.push(task.allocatedResource.UserNamePG.ID);
                 break;
 
             }
@@ -1619,7 +1613,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     for (const slot of updateSlot) {
       if (slot.CentralAllocationDone !== 'Yes') {
         const updateProjectBody = {
-          __metadata: { type: 'SP.Data.SchedulesListItem' },
+          __metadata: { type: this.globalConstant.listNames.Schedules.type },
           CentralAllocationDone: 'Yes',
         };
         if (!slot.Id) {
@@ -1635,7 +1629,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     }
     this.commonService.SetNewrelic('unallocated-allocated', 'CA', 'SaveTasks');
     const responseInLines = await this.executeBulkRequests(UpdateProjectInfo, batchUrl);
-    if (responseInLines.length > 0) {
+    /*if (responseInLines.length > 0) {
       let counter = 0;
       const endIndex = addedTasks.length;
       const respBatchUrl = [];
@@ -1662,7 +1656,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       }
       this.commonService.SetNewrelic('unallocated-allocated', 'CA', 'MoveSaveTask');
       await this.spServices.executeBatch(respBatchUrl);
-    }
+    }*/
     this.messageService.clear();
     await this.getProperties();
 
@@ -1685,8 +1679,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       let updateProjectRes = {};
       const projectID = project.projectID;
       updateProjectRes = {
-        __metadata: { type: 'SP.Data.ProjectInformationListItem' },
-
+        __metadata: { type: this.globalConstant.listNames.ProjectInformation.type},
         EditorsId: { results: project.updatedResources.editor.results },
         AllDeliveryResourcesId: { results: project.updatedResources.allDeliveryRes },
         QCId: { results: project.updatedResources.qualityChecker.results },
@@ -1718,21 +1711,19 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       task.assignedUserChanged = false;
     }
 
-
-
     if (bAdd) {
 
       const addData = {
-        __metadata: { type: 'SP.Data.SchedulesListItem' },
+        __metadata: { type: this.globalConstant.listNames.Schedules.type },
         StartDate: task.StartDate,
-        DueDate: task.DueDate,
+        DueDateDT: task.DueDate,
         ExpectedTime: '' + task.EstimatedTime,
         AllowCompletion: task.allowStart === true ? 'Yes' : 'No',
-        AssignedToId: task.allocatedResource ? task.allocatedResource.UserName.hasOwnProperty('ID') ?
-          task.allocatedResource.UserName.ID : -1 : -1,
-        TimeZone: task.allocatedResource ? task.allocatedResource.TimeZone.hasOwnProperty('Title')
-          ? task.allocatedResource.TimeZone.Title : '+5.5' : '+5.5',
-        Comments: task.TaskScope,
+        AssignedToId: task.allocatedResource ? task.allocatedResource.UserNamePG.hasOwnProperty('ID') ?
+          task.allocatedResource.UserNamePG.ID : -1 : -1,
+        TimeZoneNM: task.allocatedResource ? task.allocatedResource.TimeZone.hasOwnProperty('Title')
+          ? task.allocatedResource.TimeZone.Title :+5.5 : +5.5,
+        CommentsMT: task.TaskScope,
         Status: task.Status,
         NextTasks: this.setPreviousAndNext(task.NextTasks, slot.Milestone, slot.ProjectCode),
         PrevTasks: this.setPreviousAndNext(task.PrevTasks, slot.Milestone, slot.ProjectCode),
@@ -1744,28 +1735,30 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         Title: slot.ProjectCode + ' ' + slot.Milestone + ' ' + task.TaskName,
         CentralAllocationDone: 'Yes',
         IsCentrallyAllocated: 'No',
+        ContentTypeCH: this.globalConstant.CONTENT_TYPE.TASK, 
         DisableCascade: task.DisableCascade === true ? 'Yes' : 'No'
       };
       url = this.spServices.getReadURL(this.globalConstant.listNames.Schedules.name);
       data = addData;
     } else {
       const updateData = {
-        __metadata: { type: 'SP.Data.SchedulesListItem' },
+        __metadata: { type: this.globalConstant.listNames.Schedules.type },
         ID: task.Id,
         StartDate: task.StartDate,
-        DueDate: task.DueDate,
+        DueDateDT: task.DueDate,
         Status: task.Status,
         ExpectedTime: task.EstimatedTime ? '' + task.EstimatedTime : '' + task.ExpectedTime,
         AllowCompletion: task.allowStart === true ? 'Yes' : 'No',
-        AssignedToId: task.allocatedResource ? task.allocatedResource.UserName.hasOwnProperty('ID') ?
-          task.allocatedResource.UserName.ID : -1 : -1,
-        TimeZone: task.allocatedResource ? task.allocatedResource.TimeZone.hasOwnProperty('Title')
-          ? task.allocatedResource.TimeZone.Title : '+5.5' : '+5.5',
-        Comments: task.TaskScope ? task.TaskScope : '',
+        AssignedToId: task.allocatedResource ? task.allocatedResource.UserNamePG.hasOwnProperty('ID') ?
+          task.allocatedResource.UserNamePG.ID : -1 : -1,
+        TimeZoneNM: task.allocatedResource ? task.allocatedResource.TimeZone.hasOwnProperty('Title')
+          ? task.allocatedResource.TimeZone.Title : +5.5 : +5.5,
+        CommentsMT: task.TaskScope ? task.TaskScope : '',
         NextTasks: task.Status !== 'Deleted' ? this.setPreviousAndNext(task.NextTasks, slot.Milestone, slot.ProjectCode) : '',
         PrevTasks: task.Status !== 'Deleted' ? this.setPreviousAndNext(task.PrevTasks, slot.Milestone, slot.ProjectCode) : '',
         CentralAllocationDone: 'Yes',
         IsCentrallyAllocated: 'No',
+        ContentTypeCH: this.globalConstant.CONTENT_TYPE.TASK,
         DisableCascade: task.DisableCascade === true ? 'Yes' : 'No',
         PreviousAssignedUserId: task.PreviousAssignedUser ? task.PreviousAssignedUser.hasOwnProperty('ID') ?
           task.PreviousAssignedUser.ID : -1 : -1,

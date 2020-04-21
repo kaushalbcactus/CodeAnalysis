@@ -70,10 +70,10 @@ export class QmsAuthService {
     this.displayAdminView();
     this.global.viewTabsPermission.hideAdmin = this.hideAdmin;
     resource = this.global.allResources.length > 0 ?
-      this.global.allResources.filter(u => u.UserName.ID === this.global.currentUser.userId) : [];
+      this.global.allResources.filter(u => u.UserNamePG.ID === this.global.currentUser.userId) : [];
     if (resource && resource.length > 0) {
-      this.global.currentUser.title = resource[0].UserName.Title;
-      this.global.currentUser.email = resource[0].UserName.EMail;
+      this.global.currentUser.title = resource[0].UserNamePG.Title;
+      this.global.currentUser.email = resource[0].UserNamePG.EMail;
       this.global.currentUser.timeZone = resource[0].TimeZone.Title;
       this.global.currentUser.designation = resource[0].Designation;
     }

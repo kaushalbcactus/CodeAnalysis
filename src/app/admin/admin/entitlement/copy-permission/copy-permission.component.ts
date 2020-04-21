@@ -115,8 +115,8 @@ export class CopyPermissionComponent implements OnInit {
         this.adminObject.resourceCatArray : results[0].retItems;
       if (userResults && userResults.length) {
         userResults.forEach(element => {
-          this.sourceUsersArray.push({ label: element.UserName.Title, value: element.UserName.ID });
-          this.destinationUsersArray.push({ label: element.UserName.Title, value: element.UserName.ID });
+          this.sourceUsersArray.push({ label: element.UserNamePG.Title, value: element.UserNamePG.ID });
+          this.destinationUsersArray.push({ label: element.UserNamePG.Title, value: element.UserNamePG.ID });
         });
       }
       // Added resouce to global variable.
@@ -130,7 +130,7 @@ export class CopyPermissionComponent implements OnInit {
    *
    * @description
    * It will prepare the request as per following Sequence.
-   * 1. Users           - Get data from `ResourceCategorization` list based on filter `IsActive='Yes'`.
+   * 1. Users           - Get data from `ResourceCategorization` list based on filter `IsActiveCH='Yes'`.
    *
    * @return An Array of the response in `JSON` format in above sequence.
    */

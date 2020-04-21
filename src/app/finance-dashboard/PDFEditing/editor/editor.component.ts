@@ -3138,7 +3138,7 @@ export class EditorComponent implements OnInit {
                 appendix.dvcode = project.WBJID ? project.WBJID : '';
                 appendix.cactusSpCode = project.ProjectCode ? project.ProjectCode : '';
                 appendix.title = project.Title ? project.Title : '';
-                appendix.poc = projectContact ? projectContact.FullName : '';
+                appendix.poc = projectContact ? projectContact.FullNameCC : '';
             }
             appendix.amount = element.Amount;
             projectAppendix.push(appendix);

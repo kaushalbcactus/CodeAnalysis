@@ -164,7 +164,7 @@ export class ExternalComponent implements OnDestroy {
   appendPropertyTOObject(arrResult) {
     arrResult.map((cd) => {
       let validity = this.globalConstant.cdStatus.Valid;
-      validity = cd.IsActive === true ? this.globalConstant.cdStatus.Valid : this.globalConstant.cdStatus.InValid;
+      validity = cd.IsActiveCH === true ? this.globalConstant.cdStatus.Valid : this.globalConstant.cdStatus.InValid;
       cd.fullUrl = window.location.origin + '/' + cd.FileURL;
       cd.Status = cd.Status === this.globalConstant.cdStatus.Closed ? cd.Status + '-' + validity : cd.Status;
       return cd;
@@ -191,17 +191,16 @@ export class ExternalComponent implements OnDestroy {
         SentBy: element.SentBy.Title,
         Status: element.Status ? element.Status : '',
         SeverityLevel: element.SeverityLevel ? element.SeverityLevel : '',
-        Accountable: element.Category ? element.Category : '',
+        Accountable: element.CategoryST ? element.CategoryST : '',
         Segregation: element.Segregation ? element.Segregation : '',
         BusinessImpact: element.BusinessImpact ? element.BusinessImpact : '',
         fullUrl: element.fullUrl,
-        Comments: element.Comments,
+        CommentsMT: element.Comments,
         CorrectiveActions: element.CorrectiveActions,
         FileID: element.FileID,
         FileURL: element.FileURL,
         Id: element.Id,
-        IdentifiedResource: element.IdentifiedResource,
-        IsActive: element.IsActive,
+        IsActive: element.IsActiveCH,
         Modified: element.Modified,
         PreventiveActions: element.PreventiveActions,
         Resources: element.Resources,

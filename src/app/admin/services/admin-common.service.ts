@@ -83,7 +83,7 @@ export class AdminCommonService {
    *
    * @description
    * It will prepare the request as per following Sequence.
-   * 1. Users           - Get data from `ResourceCategorization` list based on filter `IsActive='Yes'`.
+   * 1. Users           - Get data from `ResourceCategorization` list based on filter `IsActiveCH='Yes'`.
    *
    * @return An Array of the response in `JSON` format in above sequence.
    */
@@ -125,13 +125,13 @@ export class AdminCommonService {
   async getClients(userObj) {
     const cleGet = Object.assign({}, this.adminConstants.QUERY.GET_CLIENTLEGALENTITY_BY_USER_ROLE);
     if (userObj.Role && (userObj.Role === this.adminConstants.FILTER.CM_LEVEL_1 || userObj.Role === this.adminConstants.FILTER.CM_LEVEL_2)) {
-      cleGet.filter = 'CMLevel1/ID eq ' + userObj.UserName.ID + ' or ' + 'CMLevel2/ID eq ' + userObj.UserName.ID + '';
+      cleGet.filter = 'CMLevel1/ID eq ' + userObj.UserNamePG.ID + ' or ' + 'CMLevel2/ID eq ' + userObj.UserNamePG.ID + '';
     }
     // if (userObj.Role && userObj.Role === this.adminConstants.FILTER.CM_LEVEL_2) {
     //   cleGet.filter = 'CMLevel2/ID eq ' + userObj.UserName.ID + '';
     // }
     if (userObj.Role && (userObj.Role === this.adminConstants.FILTER.DELIVERY_LEVEL_1 || userObj.Role === this.adminConstants.FILTER.DELIVERY_LEVEL_2)) {
-      cleGet.filter = 'DeliveryLevel1/ID eq ' + userObj.UserName.ID + ' or ' + 'DeliveryLevel2/ID eq ' + userObj.UserName.ID + '';
+      cleGet.filter = 'DeliveryLevel1/ID eq ' + userObj.UserNamePG.ID + ' or ' + 'DeliveryLevel2/ID eq ' + userObj.UserNamePG.ID + '';
     }
     // if (userObj.Role && userObj.Role === this.adminConstants.FILTER.DELIVERY_LEVEL_2) {
     //   cleGet.filter = 'DeliveryLevel2/ID eq ' + userObj.UserName.ID + '';
@@ -181,7 +181,7 @@ export class AdminCommonService {
             results: listObj.CMLevel1IDArray
           };
         }
-        data.CMLevel2Id = userObj.UserName.ID;
+        data.CMLevel2Id = userObj.UserNamePG.ID;
       }
     }
     if (userObj.Role === this.adminConstants.FILTER.DELIVERY_LEVEL_1 ||
@@ -198,7 +198,7 @@ export class AdminCommonService {
             results: listObj.DeliveryLevel1IDArray
           };
         }
-        data.DeliveryLevel2Id = userObj.UserName.ID;
+        data.DeliveryLevel2Id = userObj.UserNamePG.ID;
       }
     }
     return data;

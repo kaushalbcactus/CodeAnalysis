@@ -229,7 +229,7 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
         SentBy: element.SentBy.Title,
         Resources: element.resources,
         FileUrl: element.FileURL,
-        IsActive: element.IsActive,
+        IsActive: element.IsActiveCH,
         isLoggedInDeliveryLead: element.isLoggedInDeliveryLead
       });
     });

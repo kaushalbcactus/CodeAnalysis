@@ -323,9 +323,9 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
           Id: task.Id,
           AssignedTo: task.AssignedTo,
           StartDate: new Date(this.datePipe.transform(task.StartDate, 'MMM d, y, h:mm a')),
-          DueDate: new Date(this.datePipe.transform(task.DueDate, 'MMM d, y, h:mm a')),
+          DueDate: new Date(this.datePipe.transform(task.DueDateDT, 'MMM d, y, h:mm a')),
           ExportStartDate: new Date(this.datePipe.transform(task.StartDate, 'MMM d, y, h:mm a')),
-          ExportDueDate: new Date(this.datePipe.transform(task.DueDate, 'MMM d, y, h:mm a')),
+          ExportDueDate: new Date(this.datePipe.transform(task.DueDateDT, 'MMM d, y, h:mm a')),
           TimeSpent: task.TimeSpent === null ? 0 : task.TimeSpent.replace('.', ':'),
           TaskStatus: task.Status,
           ExpectedTime: task.ExpectedTime,
@@ -335,7 +335,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
           TaskName: DisplayTitle,
           Actual_x0020_End_x0020_Date: task.Actual_x0020_End_x0020_Date,
           Actual_x0020_Start_x0020_Date: task.Actual_x0020_Start_x0020_Date,
-          Comments: task.Comments,
+          CommentsMT: task.Comments,
           FinalDocSubmit: task.FinalDocSubmit,
           ID: task.Id,
           IsCentrallyAllocated: task.IsCentrallyAllocated,
@@ -405,7 +405,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
       const b = {
         label:
           // tslint:disable-next-line: align
-          this.datePipe.transform(a.DueDate, 'MMM d, y, h:mm a'), value: a.DueDate
+          this.datePipe.transform(a.DueDateDT, 'MMM d, y, h:mm a'), value: a.DueDateDT
         // tslint:disable-next-line: align
       }; return b;
     }));
@@ -565,7 +565,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     };
 
     this.commonService.SetNewrelic('MyCurrentCompletedTask', this.route.snapshot.data.type, 'UpdateComment');
-    await this.spServices.updateItem(this.constants.listNames.Schedules.name, task.ID, data, 'SP.Data.SchedulesListItem');
+    await this.spServices.updateItem(this.constants.listNames.Schedules.name, task.ID, data, this.constants.listNames.Schedules.type);
     this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Comment saved successfully' });
   }
 

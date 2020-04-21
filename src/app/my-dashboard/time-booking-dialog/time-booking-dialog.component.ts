@@ -110,7 +110,7 @@ export class TimeBookingDialogComponent implements OnInit {
         value: null
       }], dbMilestones: [{ label: 'Select Milestone', value: null }], isEditable: true,
       commentEnable: false,
-      Comments: '',
+      CommentsMT: '',
       TimeSpents: this.weekDays.map(c => new Object({
         date: c, MileHrs: '00:00', minHrs: '00:00',
         editable: new Date(this.datePipe.transform(this.MainminDate, 'yyyy-MM-dd')).getTime() <=
@@ -297,13 +297,13 @@ export class TimeBookingDialogComponent implements OnInit {
       Task: o.Task,
       // ProjectCode: o.ProjectCode === 'Adhoc' ? '-' : o.ProjectCode,
       ProjectCode: o.ProjectCode,
-      Milestone: o.Milestone === 'Select one' ? o.Comments : o.Milestone,
+      Milestone: o.Milestone === 'Select one' ? o.CommentsMT : o.Milestone,
       SubMilestone: o.SubMilestones,
-      displayName: o.Milestone === 'Select one' ? o.Comments : o.SubMilestones &&
+      displayName: o.Milestone === 'Select one' ? o.CommentsMT : o.SubMilestones &&
         o.SubMilestones !== 'Default' ? o.Milestone + ' - ' + o.SubMilestones : o.Milestone,
       type: o.Entity === null ? 'task' : 'Adhoc',
       commentEnable: o.Task === 'Time Booking' ? true : false,
-      Comments: o.Task === 'Time Booking' ? o.TaskComments : '',
+      CommentsMT: o.Task === 'Time Booking' ? o.TaskComments : '',
       TimeSpents: this.weekDays.map(c => new Object({
         date: c, MileHrs: '00:00', minHrs: '00: 00',
         editable: (new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime() >
@@ -327,7 +327,7 @@ export class TimeBookingDialogComponent implements OnInit {
       let milestoneTasks = [];
       let tbTask;
       if (record.ProjectCode === 'Adhoc') {
-        milestoneTasks = this.allTasks.filter(c => c.Entity === record.Entity && c.Comments === record.Milestone);
+        milestoneTasks = this.allTasks.filter(c => c.Entity === record.Entity && c.CommentsMT === record.Milestone);
       } else {
         milestoneTasks = this.allTasks.filter(c => c.Milestone === record.Milestone &&
           c.ProjectCode === record.ProjectCode && c.SubMilestones === record.SubMilestone);
@@ -347,7 +347,7 @@ export class TimeBookingDialogComponent implements OnInit {
         Title: tbTask ? tbTask.Title : '',
         isTBPresent: tbTask ? true : false,
         commentEnable: tbTask ? true : false,
-        Comments: tbTask ? tbTask.TaskComments : '',
+        CommentsMT: tbTask ? tbTask.TaskComments : '',
         TimeSpents: this.weekDays.map(c => new Object({
           date: c, MileHrs: '00:00', minHrs: '00: 00',
           editable: (new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime() >
@@ -489,10 +489,10 @@ export class TimeBookingDialogComponent implements OnInit {
 
       if (existingObjItem.length) {
         const existingObj = existingObjItem[0];
-        if (existingObj.TimeSpentPerDay !== timeSpentString || existingObj.TaskComments !== dbTasks[i].Comments) {
+        if (existingObj.TimeSpentPerDay !== timeSpentString || existingObj.TaskComments !== dbTasks[i].CommentsMT) {
           existingObj.TimeSpent = totalTimeSpent;
           existingObj.TimeSpentPerDay = timeSpentString;
-          existingObj.TaskComments = dbTasks[i].Comments;
+          existingObj.TaskComments = dbTasks[i].CommentsMT;
           count++;
 
           this.commonService.SetNewrelic('MyDashboard', 'time-bookingDialog', 'updateSchedule');
@@ -521,13 +521,13 @@ export class TimeBookingDialogComponent implements OnInit {
               const obj = {
                 __metadata: {
                   // tslint:disable-next-line: object-literal-key-quotes
-                  'type': 'SP.Data.SchedulesListItem'
+                  'type': this.constants.listNames.Schedules.type
                 },
                 Actual_x0020_End_x0020_Date: new Date(this.datePipe.transform(dbTasks[i].TimeSpents[6]
                   .date, 'yyyy-MM-dd') + 'T09:00:00.000'),
                 Actual_x0020_Start_x0020_Date: new Date(this.datePipe.transform(dbTasks[i].TimeSpents[0]
                   .date, 'yyyy-MM-dd') + 'T09:00:00.000'),
-                DueDate: new Date(this.datePipe.transform(dbTasks[i].TimeSpents[6].date, 'yyyy-MM-dd') + 'T09:00:00.000'),
+                DueDateDT: new Date(this.datePipe.transform(dbTasks[i].TimeSpents[6].date, 'yyyy-MM-dd') + 'T09:00:00.000'),
                 ExpectedTime: '0',
                 Milestone: dbTasks[i].Milestone,
                 SubMilestones: dbTasks[i].SubMilestone,
@@ -537,7 +537,7 @@ export class TimeBookingDialogComponent implements OnInit {
                 Task: 'Time Booking',
                 TimeSpent: totalTimeSpent,
                 TimeSpentPerDay: timeSpentString,
-                TaskComments: dbTasks[i].Comments,
+                TaskComments: dbTasks[i].CommentsMT,
                 Title: dbTasks[i].ProjectCode + ' ' + dbTasks[i].Milestone + ' TB ' + this.sharedObject.currentUser.title,
                 AssignedToId: this.sharedObject.currentUser.userId,
               };

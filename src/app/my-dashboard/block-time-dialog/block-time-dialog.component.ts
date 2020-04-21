@@ -186,7 +186,7 @@ export class BlockTimeDialogComponent implements OnInit {
       const obj = {
         __metadata: this.mode === 'create' ? {
           // tslint:disable-next-line: object-literal-key-quotes
-          'type': 'SP.Data.SchedulesListItem'
+          'type': this.constants.listNames.Schedules.type
         } : undefined,
         Title: 'Adhoc ' + this.datePipe.transform(this.eventDate, 'dd MMM') + ' ' + this.sharedObject.currentUser.title,
         Entity: this.data.timeblockType === 'Admin' || this.data.timeblockType === 'Training' ||
@@ -194,12 +194,12 @@ export class BlockTimeDialogComponent implements OnInit {
         ProjectCode: 'Adhoc',
         Task: 'Adhoc',
         StartDate: startDateTime,
-        DueDate: endDateTime,
+        DueDateDT: endDateTime,
         Actual_x0020_Start_x0020_Date: startDateTime,
         Actual_x0020_End_x0020_Date: endDateTime,
         ExpectedTime: '0',
         TimeSpent: this.data.timeblockType === 'Admin' ? this.starttime.replace(':', '.') : timeDifference.replace(':', '.'),
-        Comments: this.data.timeblockType === 'Client Meeting / Training' ?
+        CommentsMT: this.data.timeblockType === 'Client Meeting / Training' ?
           'Client meeting / client training' : this.data.timeblockType === 'Internal Meeting' ?
             'Internal meeting' : this.data.timeblockType === 'Training' ? 'Internal training' : 'Administrative Work',
         TaskComments: this.commment,

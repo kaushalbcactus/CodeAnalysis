@@ -117,6 +117,12 @@ export class CreateConferenceComponent implements OnInit {
             console.log('createConference_form ', this.createConference_form.value);
             let obj = this.createConference_form.value;
             obj['__metadata'] = { type: this.constantService.listNames.Conference.type };
+            // Added code by Arvind.
+            obj['CommentsMT'] = obj['Comments'];
+            delete obj['Comments'];
+            obj['IsActiveCH'] = obj['IsActive'];
+            delete obj['IsActive'];
+            //let obj = this.getConferenceDBObject(this.createConference_form.value);
             const endpoint = this.spOperationsService.getReadURL(this.constantService.listNames.Conference.name);
             const data = [{
                 data: obj,
@@ -136,6 +142,10 @@ export class CreateConferenceComponent implements OnInit {
             this.psConstantService.pubsupportComponent.isPSInnerLoaderHidden = true;
             this.ref.close(res);
         }
+    }
+
+    getConferenceDBObject() {
+
     }
 
 }

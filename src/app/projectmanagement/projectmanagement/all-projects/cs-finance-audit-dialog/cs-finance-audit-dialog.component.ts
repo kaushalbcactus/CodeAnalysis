@@ -264,13 +264,13 @@ export class CsFinanceAuditDialogComponent implements OnInit {
       }
       let UniqueInvalidExpenses = [];
       if (dbExpenseLineItems) {
-        const AllBillable = dbExpenseLineItems.filter(c => c.Category === 'Billable');
+        const AllBillable = dbExpenseLineItems.filter(c => c.CategoryST === 'Billable');
         let UniqueInvalidBilledExpenses = [];
         let UniqueInvalidNonBilledExpenses = [];
         if (AllBillable) {
           UniqueInvalidBilledExpenses = AllBillable.filter(c => c.Status.indexOf('Billed') === -1 && c.Status !== 'Rejected' && c.Status !== 'Cancelled') ? AllBillable.filter(c => c.Status.indexOf('Billed') === -1 && c.Status !== 'Rejected' && c.Status !== 'Cancelled').map(c => c.Title).filter((item, index) => AllBillable.filter(c => c.Status.indexOf('Billed') === -1 && c.Status !== 'Rejected' && c.Status !== 'Cancelled').map(c => c.Title).indexOf(item) === index) : [];
         }
-        const AllNonBillable = dbExpenseLineItems.filter(c => c.Category === 'Non Billable');
+        const AllNonBillable = dbExpenseLineItems.filter(c => c.CategoryST === 'Non Billable');
         if (AllNonBillable) {
           UniqueInvalidNonBilledExpenses = AllNonBillable.filter(c => c.Status.indexOf('Approved') === -1 && c.Status !== 'Rejected' && c.Status !== 'Cancelled') ? AllNonBillable.filter(c => c.Status.indexOf('Approved') === -1 && c.Status !== 'Rejected' && c.Status !== 'Cancelled').map(c => c.Title).filter((item, index) => AllNonBillable.filter(c => c.Status.indexOf('Approved') === -1 && c.Status !== 'Rejected' && c.Status !== 'Cancelled').map(c => c.Title).indexOf(item) === index) : [];
         }

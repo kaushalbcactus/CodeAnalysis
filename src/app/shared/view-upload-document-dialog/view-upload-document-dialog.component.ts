@@ -323,7 +323,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       });
       if (bSelectedNewFiles) {
         const jsonData = {
-          __metadata: { type: 'SP.Data.SchedulesListItem' },
+          __metadata: { type: this.constants.listNames.Schedules.type },
           FinalDocSubmit: true
         };
         const taskObj = Object.assign({}, this.queryConfig);
@@ -576,7 +576,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       listName: ''
     };
     const mailQueryOptions = {
-      select: 'Content',
+      select: 'ContentMT',
       // tslint:disable-next-line: quotemark
       filter: "Title eq 'ClosedTaskNotification'",
 
@@ -591,7 +591,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     const arrResults = await this.spServices.executeBatch(batchURL);
 
     if (arrResults[0].retItems) {
-      this.Emailtemplate = arrResults[0].retItems[0].Content;
+      this.Emailtemplate = arrResults[0].retItems[0].ContentMT;
     }
   }
 }

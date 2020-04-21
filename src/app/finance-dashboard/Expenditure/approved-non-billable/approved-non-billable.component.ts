@@ -303,13 +303,13 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
                 SOWCode: sowCodeFromPI.SOWCode,
                 SOWName: sowItem.Title,
                 ClientLegalEntity: sowCodeFromPI.ClientLegalEntity,
-                Category: element.Category,
+                Category: element.CategoryST,
                 Number: element.Number,
                 ExpenseType: element.SpendType,
                 ClientAmount: parseFloat(element.ClientAmount).toFixed(2),
                 ClientCurrency: element.ClientCurrency,
                 DateCreated: this.datePipe.transform(element.Created, 'MMM dd, yyyy, hh:mm a'),
-                Notes: element.Notes,
+                Notes: element.NotesMT,
                 Created: this.datePipe.transform(element.Created, 'MMM dd, yyyy, hh:mm a'),
                 ModifiedDate: new Date(this.datePipe.transform(element.Modified, 'MMM dd, yyyy')), //
                 ModifiedDateFormat: this.datePipe.transform(element.Modified, 'MMM dd, yyyy, hh:mm a'),
@@ -536,7 +536,6 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
                     ApproverFileUrl: this.fileUploadedUrl,
                     Status: 'Approved'
                 };
-                // speInfoData['__metadata'] = { type: 'SP.Data.SpendingInfoListItem' };
                 // let data = [];
                 this.selectedAllRowsItem.forEach((element: { Id: any; }) => {
                     const spendingInfoObj = Object.assign({}, this.queryConfig);

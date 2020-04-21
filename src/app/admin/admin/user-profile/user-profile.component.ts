@@ -182,7 +182,7 @@ export class UserProfileComponent implements OnInit {
 
   /**
    * Construct a REST_API Call request for getting data from `Resource Categerization` list
-   * based on filter `IsActive ='Yes'`.
+   * based on filter `IsActiveCH ='Yes'`.
    * @description
    *
    * Once the response return from REST Call, Iterate through each item and store into the
@@ -222,8 +222,8 @@ export class UserProfileComponent implements OnInit {
       // this.setValueInGlobalObject(sResult[0], false);
       for (const item of sResult) {
         const userObj = Object.assign({}, this.adminObject.addUser);
-        userObj.UserNameEmail = item.UserName.EMail;
-        userObj.UserId = item.UserName.ID;
+        userObj.UserNameEmail = item.UserNamePG.EMail;
+        userObj.UserId = item.UserNamePG.ID;
         userObj.ManagerEmail = item.Manager.EMail;
         userObj.ManagerId = item.Manager.ID;
         userObj.Bucket = item.Bucket;
@@ -258,11 +258,11 @@ export class UserProfileComponent implements OnInit {
         userObj.SkillLevelEffectiveDate = item.SkillLevelEffectiveDate;
         userObj.ID = item.ID;
         userObj.Manager = item.Manager.Title;
-        userObj.User = item.UserName.Title;
+        userObj.User = item.UserNamePG.Title;
         userObj.LastUpdated = new Date(new Date(item.Modified).toDateString());
         userObj.LastUpdatedFormat = this.datePipe.transform(new Date(item.Modified), 'MMM dd, yyyy');
         userObj.LastModifiedBy = item.Editor.Title;
-        userObj.IsActive = item.IsActive;
+        userObj.IsActive = item.IsActiveCH;
         userObj.DisplayText = item.Manager.Title;
         userObj.DateofExit = item.DateofExit;
         userObj.WorkingSunday = item.WorkingSunday;
@@ -358,11 +358,11 @@ export class UserProfileComponent implements OnInit {
     }
   }
   /**
-   * Construct a method to search the user based on filter `IsActive=No`.
+   * Construct a method to search the user based on filter `IsActiveCH=No`.
    *
    * @description
    *
-   * This method is used to search the inactive user based on `IsActive` column and display in table.
+   * This method is used to search the inactive user based on `IsActiveCH` column and display in table.
    */
   async searchInactiveUser() {
     const resCatFilter = Object.assign({}, this.adminConstants.QUERY.GET_RESOURCE_CATEGERIZATION);
@@ -376,8 +376,8 @@ export class UserProfileComponent implements OnInit {
       this.showTable = true;
       for (const item of sResult) {
         const userObj = Object.assign({}, this.adminObject.addUser);
-        userObj.UserNameEmail = item.UserName.EMail;
-        userObj.UserId = item.UserName.ID;
+        userObj.UserNameEmail = item.UserNamePG.EMail;
+        userObj.UserId = item.UserNamePG.ID;
         userObj.ManagerEmail = item.Manager.EMail;
         userObj.ManagerId = item.Manager.ID;
         userObj.Bucket = item.Bucket;
@@ -408,11 +408,11 @@ export class UserProfileComponent implements OnInit {
         userObj.BucketEffectiveDate = item.BucketEffectiveDate;
         userObj.ID = item.ID;
         userObj.Manager = item.Manager.Title;
-        userObj.User = item.UserName.Title;
+        userObj.User = item.UserNamePG.Title;
         userObj.LastUpdated = new Date(new Date(item.Modified).toDateString());
         userObj.LastUpdatedFormat = this.datePipe.transform(new Date(item.Modified), 'MMM dd, yyyy');
         userObj.LastModifiedBy = item.Editor.Title;
-        userObj.IsActive = item.IsActive;
+        userObj.IsActive = item.IsActiveCH;
         userObj.DisplayText = item.Manager.Title;
         userObj.DateofExit = item.DateofExit;
         userObj.WorkingSunday = item.WorkingSunday;
@@ -749,8 +749,8 @@ export class UserProfileComponent implements OnInit {
     if (result && result.length) {
       const item = result[0];
       const userObj = Object.assign({}, this.adminObject.addUser);
-      userObj.UserNameEmail = item.UserName.EMail;
-      userObj.UserId = item.UserName.ID;
+      userObj.UserNameEmail = item.UserNamePG.EMail;
+      userObj.UserId = item.UserNamePG.ID;
       userObj.ManagerEmail = item.Manager.EMail;
       userObj.ManagerId = item.Manager.ID;
       userObj.Bucket = item.Bucket;
@@ -785,10 +785,10 @@ export class UserProfileComponent implements OnInit {
       userObj.SkillLevelEffectiveDate = item.SkillLevelEffectiveDate;
       userObj.ID = item.ID;
       userObj.Manager = item.Manager.Title;
-      userObj.User = item.UserName.Title;
+      userObj.User = item.UserNamePG.Title;
       userObj.LastUpdated = item.Modified;
       userObj.LastModifiedBy = item.Editor.Title;
-      userObj.IsActive = item.IsActive;
+      userObj.IsActive = item.IsActiveCH;
       userObj.DisplayText = item.Manager.Title;
       userObj.DateofExit = item.DateofExit;
       userObj.WorkingSunday = item.WorkingSunday;
@@ -847,7 +847,7 @@ export class UserProfileComponent implements OnInit {
           userObj.TaskText = tasks.results.map(x => x.Title).join(', ');
         }
       }
-      // this.addUser.get('isActive').enable();
+      // this.addUser.get('IsActiveCH').enable();
       // If Create - add the new created item at position 0 in the array.
       // If Edit - Replace the item in the array and position at 0 in the array.
       if (isUpdate) {
@@ -1049,17 +1049,17 @@ export class UserProfileComponent implements OnInit {
 
 
     if (!isEdit) {
-      data.UserNameId = userId;
+      data.UserNamePGId = userId;
       data.UserNameText = userText;
       if (formObj.isActive === this.adminConstants.LOGICAL_FIELD.NO) {
-        data.IsActive = formObj.isActive;
+        data.IsActiveCH = formObj.isActive;
         data.DateofExit = formObj.dateofexit;
       } else {
         if (formObj.dateofexit) {
           const dateOfExit = this.datePipe.transform(new Date(formObj.dateofexit), 'MMM dd yyyy');
           const todayDate = this.datePipe.transform(new Date(), 'MMM dd yyyy');
           if (dateOfExit <= todayDate) {
-            data.IsActive = 'No';
+            data.IsActiveCH = this.adminConstants.LOGICAL_FIELD.NO;
           }
           data.DateofExit = formObj.dateofexit;
         }
@@ -1070,9 +1070,9 @@ export class UserProfileComponent implements OnInit {
         const dateOfExit = formObj.dateofexit ? new Date(formObj.dateofexit) : null;
         const todayDate = new Date(new Date().setHours(0, 0, 0, 0));
         if (dateOfExit !== null && dateOfExit.getTime() <= todayDate.getTime()) {
-          data.IsActive = this.adminConstants.LOGICAL_FIELD.NO;
+          data.IsActiveCH = this.adminConstants.LOGICAL_FIELD.NO;
         } else {
-          data.IsActive = this.adminConstants.LOGICAL_FIELD.YES;
+          data.IsActiveCH = this.adminConstants.LOGICAL_FIELD.YES;
         }
         data.DateofExit = formObj.dateofexit;
       }
@@ -1098,9 +1098,9 @@ export class UserProfileComponent implements OnInit {
         data.MaxHrsEffectiveDate = formObj.maxHrsEffectiveDate;
       }
 
-      if (date.isFTEEffectiveDateActive && formObj.fTEEffectiveDate && formObj.isFTE === 'Yes') {
+      if (date.isFTEEffectiveDateActive && formObj.fTEEffectiveDate && formObj.isFTE === this.adminConstants.LOGICAL_FIELD.YES) {
         data.FTEEffectiveDate = formObj.fTEEffectiveDate;
-      } else if (formObj.isFTE === 'No') {
+      } else if (formObj.isFTE === this.adminConstants.LOGICAL_FIELD.NO) {
         data.FTEEffectiveDate = null;
       }
     }

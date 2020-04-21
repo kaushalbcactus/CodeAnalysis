@@ -226,9 +226,9 @@ export class UsercapacityComponent implements OnInit {
 
           const userDetail = [selectedUsers[userIndex]];
           if (userDetail.length > 0) {
-            oUser.uid = userDetail[0].UserName.ID ? userDetail[0].UserName.ID : userDetail[0].UserName.Id;
-            oUser.userName = userDetail[0].UserName.Title;
-            oUser.maxHrs = userDetail[0].UserName.MaxHrs ? userDetail[0].UserName.MaxHrs : userDetail[0].MaxHrs;
+            oUser.uid = userDetail[0].UserNamePG.ID ? userDetail[0].UserNamePG.ID : userDetail[0].UserNamePG.Id;
+            oUser.userName = userDetail[0].UserNamePG.Title;
+            oUser.maxHrs = userDetail[0].UserNamePG.MaxHrs ? userDetail[0].UserNamePG.MaxHrs : userDetail[0].MaxHrs;
             oUser.GoLiveDate = userDetail[0].GoLiveDate;
             oUser.JoiningDate = userDetail[0].DateOfJoining;
             this.fetchData(oUser, startDateString, endDateString, batchUrl);
@@ -293,14 +293,14 @@ export class UsercapacityComponent implements OnInit {
 
         if (oCapacity.arrUserDetails[indexUser].tasks && oCapacity.arrUserDetails[indexUser].tasks.length) {
           oCapacity.arrUserDetails[indexUser].tasks.sort((a, b) => {
-            return b.DueDate - a.DueDate;
+            return b.DueDateDT - a.DueDateDT;
           });
 
 
           // tslint:disable
           this.datepipe.transform(startDate, 'yyyy-MM-dd') + 'T00:00:01.000Z'
-          endDateString = new Date(sTopEndDate) > new Date(this.datepipe.transform(oCapacity.arrUserDetails[indexUser].tasks[0].DueDate, 'yyyy-MM-ddT') + '23:59:00.000Z')
-            ? sTopEndDate.toISOString() : this.datepipe.transform(oCapacity.arrUserDetails[indexUser].tasks[0].DueDate, 'yyyy-MM-ddT') + "23:59:00.000Z";
+          endDateString = new Date(sTopEndDate) > new Date(this.datepipe.transform(oCapacity.arrUserDetails[indexUser].tasks[0].DueDateDT, 'yyyy-MM-ddT') + '23:59:00.000Z')
+            ? sTopEndDate.toISOString() : this.datepipe.transform(oCapacity.arrUserDetails[indexUser].tasks[0].DueDateDT, 'yyyy-MM-ddT') + "23:59:00.000Z";
 
           startDateString = new Date(sTopStartDate) < new Date(this.datepipe.transform(oCapacity.arrUserDetails[indexUser].tasks[0].StartDate, 'yyyy-MM-ddT') + '00:00:01.000Z')
             ? sTopStartDate.toISOString() : this.datepipe.transform(oCapacity.arrUserDetails[indexUser].tasks[0].StartDate, 'yyyy-MM-ddT') + '00:00:01.000Z';
@@ -314,7 +314,7 @@ export class UsercapacityComponent implements OnInit {
 
             if (oCapacity.arrUserDetails[indexUser].TimeSpentTasks && oCapacity.arrUserDetails[indexUser].TimeSpentTasks.length) {
               oCapacity.arrUserDetails[indexUser].TimeSpentTasks.sort((a, b) => {
-                return b.DueDate - a.DueDate;
+                return b.DueDateDT - a.DueDateDT;
               });
             }
           }
@@ -327,7 +327,7 @@ export class UsercapacityComponent implements OnInit {
 
 
 
-        selectedUsers.map(c => c.ResourceUserID = c.UserName.Id ? c.UserName.Id : c.UserName.ID);
+        selectedUsers.map(c => c.ResourceUserID = c.UserNamePG.Id ? c.UserNamePG.Id : c.UserNamePG.ID);
 
         oCapacity.arrUserDetails.map(c => c.AvailableHoursRID = selectedUsers.find(c => c.ResourceUserID === oCapacity.arrUserDetails[indexUser].uid).ID)
 
@@ -375,8 +375,8 @@ export class UsercapacityComponent implements OnInit {
     finalArray = finalArray.length ? finalArray : [];
     if (finalArray) {
 
-      const UserLeaves = finalArray.filter(c => c.listName === 'Leave Calendar');
-      const UserAvailableHrs = finalArray.filter(c => c.listName === 'AvailableHours');
+      const UserLeaves = finalArray.filter(c => c.listName === this.globalConstantService.listNames.LeaveCalendar.name);
+      const UserAvailableHrs = finalArray.filter(c => c.listName === this.globalConstantService.listNames.AvailableHours.name);
 
       for (var index in oCapacity.arrUserDetails) {
         if (oCapacity.arrUserDetails.hasOwnProperty(index)) {
@@ -460,10 +460,10 @@ export class UsercapacityComponent implements OnInit {
         tasks[index].TotalAllocated = tasks[index].Task !== 'Adhoc' ?
           this.commonservice.convertToHrsMins('' + tasks[index].ExpectedTime).replace('.', ':')
           : tasks[index].TimeSpent.replace('.', ':');
-        const sTimeZone = tasks[index].TimeZone === null ? '+5.5' : tasks[index].TimeZone;
+        const sTimeZone = tasks[index].TimeZoneNM ? +5.5 : tasks[index].TimeZoneNM;
         const currentUserTimeZone = (new Date()).getTimezoneOffset() / 60 * -1;
         tasks[index].StartDate = this.commonservice.calcTimeForDifferentTimeZone(new Date(tasks[index].StartDate), currentUserTimeZone, sTimeZone);
-        tasks[index].DueDate = this.commonservice.calcTimeForDifferentTimeZone(new Date(tasks[index].DueDate), currentUserTimeZone, sTimeZone);
+        tasks[index].DueDateDT = this.commonservice.calcTimeForDifferentTimeZone(new Date(tasks[index].DueDateDT), currentUserTimeZone, sTimeZone);
       }
     }
     return tasks;
@@ -574,7 +574,7 @@ export class UsercapacityComponent implements OnInit {
         for (const j in oUser.tasks) {
           if (oUser.tasks.hasOwnProperty(j)) {
             const taskStartDate = new Date(this.datepipe.transform(new Date(oUser.tasks[j].StartDate), 'MMM dd, yyyy'));
-            const taskEndDate = new Date(this.datepipe.transform(new Date(oUser.tasks[j].DueDate), 'MMM dd, yyyy'));
+            const taskEndDate = new Date(this.datepipe.transform(new Date(oUser.tasks[j].DueDateDT), 'MMM dd, yyyy'));
             // const taskStartDate = new Date(new Date(oUser.tasks[j].StartDate));
             // const taskEndDate = new Date(new Date(oUser.tasks[j].DueDate));
             const taskBusinessDays = this.commonservice.calcBusinessDays(taskStartDate, taskEndDate);
@@ -610,7 +610,7 @@ export class UsercapacityComponent implements OnInit {
                 shortTitle: '',
                 milestoneDeadline: '',
                 startDate: oUser.tasks[j].StartDate,
-                dueDate: oUser.tasks[j].DueDate,
+                dueDate: oUser.tasks[j].DueDateDT,
                 timeAllocatedPerDay: oUser.tasks[j].timeAllocatedPerDay,
                 displayTimeAllocatedPerDay: oUser.tasks[j].timeAllocatedPerDay !== null ?
                   oUser.tasks[j].timeAllocatedPerDay.replace('.', ':') : oUser.tasks[j].timeAllocatedPerDay,
@@ -836,8 +836,8 @@ export class UsercapacityComponent implements OnInit {
                   const currentUserTimeZone = (new Date()).getTimezoneOffset() / 60 * -1;
                   miltasks[index].StartDate = this.commonservice.
                     calcTimeForDifferentTimeZone(new Date(miltasks[index].StartDate), currentUserTimeZone, sTimeZone);
-                  miltasks[index].DueDate = this.commonservice.
-                    calcTimeForDifferentTimeZone(new Date(miltasks[index].DueDate), currentUserTimeZone, sTimeZone);
+                  miltasks[index].DueDateDT = this.commonservice.
+                    calcTimeForDifferentTimeZone(new Date(miltasks[index].DueDateDT), currentUserTimeZone, sTimeZone);
                 }
               }
               miltasks.sort(function (a, b) {
@@ -1096,7 +1096,7 @@ export class UsercapacityComponent implements OnInit {
           Title: tasks[i].Title,
           projectCode: tasks[i].ProjectCode,
           StartDate: tasks[i].StartDate,
-          EndDate: tasks[i].DueDate ,
+          EndDate: tasks[i].DueDateDT ,
           TimeSpentDate: new Date(this.datepipe.transform(tasks[i].StartDate, 'MM/dd/yyyy')),
           TimeSpentPerDay: tasks[i].TimeSpent.replace('.', ':'),
           Status: tasks[i].Status,
@@ -1115,7 +1115,7 @@ export class UsercapacityComponent implements OnInit {
             Title: tasks[i].Title,
             projectCode: tasks[i].ProjectCode,
             StartDate: tasks[i].Actual_x0020_Start_x0020_Date,
-            EndDate: tasks[i].Actual_x0020_End_x0020_Date ? tasks[i].Actual_x0020_End_x0020_Date : tasks[i].DueDate,
+            EndDate: tasks[i].Actual_x0020_End_x0020_Date ? tasks[i].Actual_x0020_End_x0020_Date : tasks[i].DueDateDT,
             TimeSpentDate: new Date(element.split(':')[0]),
             TimeSpentPerDay: element.split(':')[1] + ':' + element.split(':')[2],
             Status: tasks[i].Status,

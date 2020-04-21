@@ -210,8 +210,8 @@ export class FeedbackPopupComponent implements OnInit {
         Title: taskDetail.task,
         SubMilestones: taskDetail.submilestones,
         FeedbackType: 'Task Feedback',
-        Comments: taskDetail.feedbackComment,
-        AverageRating: taskDetail.averageRating,
+        CommentsMT: taskDetail.feedbackComment,
+        AverageRatingNM: taskDetail.averageRating,
         AssignedToId: taskDetail.assignedToID,
         DocumentsUrl: taskDetail.documentUrl,
         ReviewerDocsUrl: taskDetail.reviewTaskDocUrl,
@@ -432,7 +432,7 @@ export class FeedbackPopupComponent implements OnInit {
 
     tasks = previousNextTaskChildRes.length ? previousNextTaskChildRes : tasks;
     tasks.map(c => c.StartDate = c.StartDate !== null ? this.datePipe.transform(c.StartDate, 'MMM d, y h:mm a') : '-');
-    tasks.map(c => c.DueDate = c.DueDate !== null ? this.datePipe.transform(c.DueDate, 'MMM d, y h:mm a') : '-');
+    tasks.map(c => c.DueDate = c.DueDateDT !== null ? this.datePipe.transform(c.DueDateDT, 'MMM d, y h:mm a') : '-');
 
     return tasks;
   }

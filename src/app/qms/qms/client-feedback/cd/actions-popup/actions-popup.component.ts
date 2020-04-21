@@ -54,7 +54,7 @@ export class ActionsPopupComponent implements OnInit {
     paComments: '',
     rejectionComments: '',
     newRejectionComments: '',
-    isActive: true,
+    isActive: '',
     ASD: {
       results: []
     },
@@ -177,7 +177,6 @@ export class ActionsPopupComponent implements OnInit {
     this.qc.actionClicked = currentTarget.id;
     this.qc.actionClickedTitle = currentTarget.title;
     this.qc.status = content.Status ? content.Status : '';
-    // this.qc.selectedResource = content.IdentifiedResource && content.IdentifiedResource.Title ? content.IdentifiedResource : null;
     this.qc.selectedAccountableGroup = content.Category ? content.Category : null;
     this.qc.selectedBusinessImpact = content.BusinessImpact ? content.BusinessImpact : null;
     this.qc.selectedCDCategory = content.SeverityLevel ? content.SeverityLevel : null;
@@ -296,8 +295,8 @@ export class ActionsPopupComponent implements OnInit {
       CorrectiveActions: this.qc.caComments ? this.qc.caComments : '',
       PreventiveActions: this.qc.paComments ? this.qc.paComments : '',
       Status: popupActionClicked === 'closeBtn' ? this.globalConstant.cdStatus.ValidationPending : this.qc.status,
-      Comments: this.qc.resourceIdentifiedComments ? this.qc.resourceIdentifiedComments : '',
-      Category: this.qc.selectedAccountableGroup ? this.qc.selectedAccountableGroup : '',
+      CommentsMT: this.qc.resourceIdentifiedComments ? this.qc.resourceIdentifiedComments : '',
+      CategoryST: this.qc.selectedAccountableGroup ? this.qc.selectedAccountableGroup : '',
       BusinessImpact: this.qc.selectedBusinessImpact ? this.qc.selectedBusinessImpact : '',
       SeverityLevel: this.qc.selectedCDCategory ? this.qc.selectedCDCategory : '',
       Segregation: this.qc.selectedSegregation ? this.qc.selectedSegregation : '',
@@ -315,7 +314,7 @@ export class ActionsPopupComponent implements OnInit {
         const validityPendingTemplate = arrResult.length > 0 ? arrResult[0].retItems : [];
         const notifyMailTemplate = arrResult.length > 1 ? arrResult[1].retItems : [];
         if (validityPendingTemplate.length > 0) {
-          let validityMailContent = validityPendingTemplate[0].Content;
+          let validityMailContent = validityPendingTemplate[0].ContentMT;
           const validityMailSubject = this.qc.projectCode + '(#' + this.qc.qcID + '): Dissatisfaction validation pending';
           validityMailContent = this.replaceContent(validityMailContent, '@@Val1@@',
             this.global.sharePointPageObject.webAbsoluteUrl + '/dashboard#/qms/clientFeedback/clientDissatisfaction');
@@ -325,7 +324,7 @@ export class ActionsPopupComponent implements OnInit {
         }
         if (oldStatus === this.globalConstant.cdStatus.Created) {
           if (notifyMailTemplate.length > 0) {
-            let notifyMailContent = notifyMailTemplate[0].Content;
+            let notifyMailContent = notifyMailTemplate[0].ContentMT;
             const notifyMailSubject = this.qc.projectCode + '(#' + this.qc.qcID + '): Dissatisfaction';
             const strTo = this.qc.selectedSegregation === 'Internal' ? cd.Internal.resourcesEmail.join(',') : cd.External.resourcesEmail.join(',');
             notifyMailContent = this.replaceContent(notifyMailContent, '@@Val1@@', this.global.sharePointPageObject.webAbsoluteUrl + '/dashboard#/qms/personalFeedback/externalFeedback');
@@ -358,28 +357,28 @@ export class ActionsPopupComponent implements OnInit {
     };
     let cdDetails = {
       Status: '',
-      IsActive: true
+      IsActiveCH: 'Yes'
     };
     switch (actionClicked) {
       case 'valid':
         cdDetails = {
           ...metadata,                                              // Appending metadata property object
           Status: this.globalConstant.cdStatus.Closed,
-          IsActive: true
+          IsActiveCH: 'Yes'
         };
         break;
       case 'invalid':
         cdDetails = {
           ...metadata,
           Status: this.globalConstant.cdStatus.Closed,
-          IsActive: false
+          IsActiveCH: 'No'
         };
         break;
       case 'reject':
         cdDetails = {
           ...metadata,
           Status: this.globalConstant.cdStatus.Rejected,
-          IsActive: true,
+          IsActiveCH: 'Yes',
           ...{ RejectionComments: this.qc.rejectionComments + '\n' + this.qc.newRejectionComments }           // Appending property to object since RejectionComments cant be declared
         };
         break;
@@ -388,15 +387,15 @@ export class ActionsPopupComponent implements OnInit {
       this.updateCD(cdDetails);
       //tslint:disable
 
-      this.qc.status = cdDetails.Status === this.globalConstant.cdStatus.Rejected ? cdDetails.Status : cdDetails.IsActive === true ?
+      this.qc.status = cdDetails.Status === this.globalConstant.cdStatus.Rejected ? cdDetails.Status : cdDetails.IsActiveCH === 'Yes' ?
         cdDetails.Status + ' - ' + this.globalConstant.cdStatus.Valid : cdDetails.Status + ' - ' + this.globalConstant.cdStatus.InValid;
-      this.qc.isActive = cdDetails.IsActive;
+      this.qc.isActive = cdDetails.IsActiveCH;
       this.qc.rejectionComments = this.qc.rejectionComments + '\n' + this.qc.newRejectionComments;
       this.bindTableEvent.emit(this.qc);
       if (actionClicked === 'reject') {
         const rejectTemplate = await this.getMailContent(this.qmsConstant.EmailTemplates.CD.RejectQualityComplaint);
         if (rejectTemplate.length > 0) {
-          let rejectMailContent = rejectTemplate[0].Content;
+          let rejectMailContent = rejectTemplate[0].ContentMT;
           const rejectMailSubject = this.qc.projectCode + '(#' + this.qc.qcID + '): Dissatisfaction rejected';
           const strTo = this.qc.deliveryLevel2.emailIDs.join(',');
           rejectMailContent = this.replaceContent(rejectMailContent, "@@Val1@@", this.global.sharePointPageObject.webAbsoluteUrl + '/dashboard#/qms/clientFeedback/clientDissatisfaction');
@@ -434,9 +433,9 @@ export class ActionsPopupComponent implements OnInit {
     const emails = [];
     const ids = [];
     resources.forEach(element => {
-      const resourceDetail = allResources.filter(r => r.UserName.ID === element.ID);
-      emails.push(resourceDetail.length > 0 ? resourceDetail[0].UserName.EMail : '');
-      ids.push(resourceDetail.length > 0 ? resourceDetail[0].UserName.ID : '');
+      const resourceDetail = allResources.filter(r => r.UserNamePG.ID === element.ID);
+      emails.push(resourceDetail.length > 0 ? resourceDetail[0].UserNamePG.EMail : '');
+      ids.push(resourceDetail.length > 0 ? resourceDetail[0].UserNamePG.ID : '');
     });
     return {
       emailIDs: emails,
@@ -465,7 +464,7 @@ export class ActionsPopupComponent implements OnInit {
         ASDId: { 'results': delivery2 },
         PrimaryResId: { 'results': primaryResources },
         CSId: { 'results': cm },
-        Milestone: this.qc.selectedTaggedItem.Milestone ? this.qc.selectedTaggedItem.Milestone : '',
+        //Milestone: this.qc.selectedTaggedItem.Milestone ? this.qc.selectedTaggedItem.Milestone : '',
         ResourcesId: { 'results': delivery2 }
       };
       // update projectcode property to bind cd component
@@ -480,7 +479,7 @@ export class ActionsPopupComponent implements OnInit {
       // send mail
       const createCDTemplate = await this.getMailContent(this.qmsConstant.EmailTemplates.CD.CreateQualityComplaint);
       if (createCDTemplate.length > 0) {
-        let createMailContent = createCDTemplate[0].Content;
+        let createMailContent = createCDTemplate[0].ContentMT;
         const createMailSubject = this.qc.projectCode + '(#' + this.qc.qcID + '): Dissatisfaction';
         const strTo = delivery2EMail.toString();
         createMailContent = this.replaceContent(createMailContent, "@@Val1@@", this.global.sharePointPageObject.webAbsoluteUrl + '/dashboard#/qms/clientFeedback/clientDissatisfaction');
@@ -564,8 +563,8 @@ export class ActionsPopupComponent implements OnInit {
    */
   updateResourceEmail(array) {
     array = array.map(res => {
-      var resource = this.global.allResources.filter(u => u.UserName.ID === res.ID);
-      res.EMail = resource.length > 0 ? resource[0].UserName.EMail : '';
+      var resource = this.global.allResources.filter(u => u.UserNamePG.ID === res.ID);
+      res.EMail = resource.length > 0 ? resource[0].UserNamePG.EMail : '';
       return res;
     });
   }

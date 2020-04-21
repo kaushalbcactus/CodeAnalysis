@@ -115,7 +115,7 @@ export class UserRoleMappingComponent implements OnInit {
       const userResults = results[0].retItems;
       if (userResults && userResults.length) {
         userResults.forEach(element => {
-          this.users.push({ label: element.UserName.Title, value: element.UserName });
+          this.users.push({ label: element.UserNamePG.Title, value: element.UserNamePG });
         });
       }
       // load groups
@@ -137,7 +137,7 @@ export class UserRoleMappingComponent implements OnInit {
    *
    * @description
    * It will prepare the request as per following Sequence.
-   * 1. Users           - Get data from `ResourceCategorization` list based on filter `IsActive='Yes'`.
+   * 1. Users           - Get data from `ResourceCategorization` list based on filter `IsActiveCH='Yes'`.
    * 2. Groups          - Get data from Groups.
    *
    * @return An Array of the response in `JSON` format in above sequence.

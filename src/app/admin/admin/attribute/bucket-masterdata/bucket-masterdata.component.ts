@@ -172,8 +172,8 @@ export class BucketMasterdataComponent implements OnInit {
    *
    * @description
    * It will prepare the request as per following Sequence.
-   * 1. Bucket  - Get data from `Focus Group` list based on filter `IsActive='Yes'`.
-   * 2. ClientLegalEntity - Get data from `ClientLegalEntity` list based on filter `IsActive='Yes'`.
+   * 1. Bucket  - Get data from `Focus Group` list based on filter `IsActiveCH='Yes'`.
+   * 2. ClientLegalEntity - Get data from `ClientLegalEntity` list based on filter `IsActiveCH='Yes'`.
    *
    * @return An Array of the response in `JSON` format in above sequence.
    */
@@ -188,7 +188,7 @@ export class BucketMasterdataComponent implements OnInit {
     // Get Bucket value  from FocusGroup list ##0;
     const bucketGet = Object.assign({}, options);
     const bucketFilter = Object.assign({}, this.adminConstants.QUERY.GET_FOCUS_GROUP_BY_ACTIVE);
-    bucketFilter.filter = bucketFilter.filter.replace(/{{isActive}}/gi, '1');
+    bucketFilter.filter = bucketFilter.filter.replace(/{{isActive}}/gi, this.adminConstants.LOGICAL_FIELD.YES);
     bucketGet.url = this.spServices.getReadURL(this.constants.listNames.FocusGroup.name,
       bucketFilter);
     bucketGet.type = 'GET';
@@ -397,7 +397,8 @@ export class BucketMasterdataComponent implements OnInit {
     }
     this.adminObject.isMainLoaderHidden = false;
     const data = {
-      Title: this.bucketData
+      Title: this.bucketData,
+      IsActiveCH: this.adminConstants.LOGICAL_FIELD.YES
     };
     this.common.SetNewrelic('admin', 'admin-attribute-bucketMasterData', 'CreateFocusData');
     const result = await this.spServices.createItem(this.constants.listNames.FocusGroup.name, data,
@@ -416,7 +417,7 @@ export class BucketMasterdataComponent implements OnInit {
    *
    * @description
    *
-   * This method mark the bucket as `IsActive='NO'` in `FocusGroup` list so that it is not visible in table.
+   * This method mark the bucket as `IsActiveCH='NO'` in `FocusGroup` list so that it is not visible in table.
    *
    * @param data Pass data as parameter which contains value of bucket row.
    */
@@ -429,7 +430,7 @@ export class BucketMasterdataComponent implements OnInit {
       key: 'confirm',
       accept: () => {
         const updateData = {
-          IsActive: false
+          IsActiveCH: this.adminConstants.LOGICAL_FIELD.NO
         };
         this.confirmUpdate(data, updateData, this.constants.listNames.FocusGroup.name, this.constants.listNames.FocusGroup.type);
       },
@@ -601,7 +602,7 @@ export class BucketMasterdataComponent implements OnInit {
             const tempDate = this.selectedClient.filter(a => a.Title === cleObj.CLEName);
             const updateData = {
               __metadata: { type: this.constants.listNames.CLEBucketMapping.type },
-              EndDate: new Date(new Date(tempDate[0].EffectiveDate).setDate(new Date(tempDate[0].EffectiveDate).getDate() - 1))
+              EndDateDT: new Date(new Date(tempDate[0].EffectiveDate).setDate(new Date(tempDate[0].EffectiveDate).getDate() - 1))
             };
             const updateCleMapping = Object.assign({}, options);
             updateCleMapping.data = updateData;

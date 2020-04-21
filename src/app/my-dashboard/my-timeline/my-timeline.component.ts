@@ -228,7 +228,7 @@ export class MyTimelineComponent implements OnInit {
           } else {
 
             if (new Date(self.datePipe.transform(self.EnableEditDate, 'MMM dd, yyyy')).getTime() <= new Date(self.datePipe.transform(self.task.StartDate, 'MMM dd, yyyy')).getTime()) {
-              const Type = self.task.Comments === 'Client meeting / client training' ? 'Client Meeting / Training' : self.task.Comments === 'Internal meeting' ? 'Internal Meeting' : self.task.Comments === 'Internal training' ? 'Training' : 'Admin';
+              const Type = self.task.CommentsMT === 'Client meeting / client training' ? 'Client Meeting / Training' : self.task.CommentsMT === 'Internal meeting' ? 'Internal Meeting' : self.task.CommentsMT === 'Internal training' ? 'Training' : 'Admin';
               self.loadBlockTimeDialog(Type, self.task);
             } else {
               self.taskdisplay = true;
@@ -362,12 +362,12 @@ export class MyTimelineComponent implements OnInit {
       }
 
       const eventObj = {
-        "title": element.Task === 'Adhoc' ? element.Entity + "-" + element.Comments + " : " + element.TimeSpent : element.SubMilestones ? element.ExpectedTime ? element.Title + ' - ' + element.SubMilestones + " : " + element.ExpectedTime : element.Title + ' - ' + element.SubMilestones : element.ExpectedTime ? element.Title + " : " + element.ExpectedTime : element.Title,
+        "title": element.Task === 'Adhoc' ? element.Entity + "-" + element.CommentsMT + " : " + element.TimeSpent : element.SubMilestones ? element.ExpectedTime ? element.Title + ' - ' + element.SubMilestones + " : " + element.ExpectedTime : element.Title + ' - ' + element.SubMilestones : element.ExpectedTime ? element.Title + " : " + element.ExpectedTime : element.Title,
         "id": element.Id,
         "start": new Date(element.StartDate),
-        "end": element.TATStatus === "Yes" && new Date(this.datePipe.transform(element.StartDate, "yyyy-MM-dd")).getTime() !== new Date(this.datePipe.transform(element.DueDate, "yyyy-MM-dd")).getTime() ? new Date(new Date(element.DueDate).setDate(new Date(element.DueDate).getDate() + 1)) : new Date(element.DueDate),
-        "backgroundColor": element.Status === 'Not Confirmed' ? "#FFD34E" : element.Status === 'Not Started' ? "#5F6273" : element.Status === 'In Progress' ? "#6EDC6C" : element.Status === 'Auto Closed' ? "#8183CC" : element.Status === 'On Hold' ? "#FF3E56" : (element.Status === 'Completed' && element.Task === 'Adhoc') ? element.Comments === "Administrative Work" ?
-          '#eb592d' : element.Comments === "Client meeting / client training" ? '#ff8566' : element.Comments === "Internal meeting" ? '#795C32' : '#445cad' : "#3498DB",
+        "end": element.TATStatus === "Yes" && new Date(this.datePipe.transform(element.StartDate, "yyyy-MM-dd")).getTime() !== new Date(this.datePipe.transform(element.DueDateDT, "yyyy-MM-dd")).getTime() ? new Date(new Date(element.DueDateDT).setDate(new Date(element.DueDateDT).getDate() + 1)) : new Date(element.DueDateDT),
+        "backgroundColor": element.Status === 'Not Confirmed' ? "#FFD34E" : element.Status === 'Not Started' ? "#5F6273" : element.Status === 'In Progress' ? "#6EDC6C" : element.Status === 'Auto Closed' ? "#8183CC" : element.Status === 'On Hold' ? "#FF3E56" : (element.Status === 'Completed' && element.Task === 'Adhoc') ? element.CommentsMT === "Administrative Work" ?
+          '#eb592d' : element.CommentsMT === "Client meeting / client training" ? '#ff8566' : element.CommentsMT === "Internal meeting" ? '#795C32' : '#445cad' : "#3498DB",
         allDay: element.TATStatus === "Yes" ? true : false
 
       }
@@ -505,10 +505,10 @@ export class MyTimelineComponent implements OnInit {
       if (this.task.Status === 'Not Started') {
         this.SelectedStatus = 'Not Started';
         this.task.StartDate = new Date(this.task.StartDate);
-        this.task.DueDate = new Date(this.task.DueDate);
+        this.task.DueDate = new Date(this.task.DueDateDT);
         console.log(this.task.StartDate);
         this.task['StartTime'] = this.datePipe.transform(this.task.StartDate, 'h:mm a');
-        this.task['DueTime'] = this.datePipe.transform(this.task.DueDate, 'h:mm a');
+        this.task['DueTime'] = this.datePipe.transform(this.task.DueDateDT, 'h:mm a');
         console.log('this.task ', this.task);
         this.statusOptions = [
           { label: 'Not Started', value: 'Not Started' },
@@ -519,7 +519,7 @@ export class MyTimelineComponent implements OnInit {
         this.SelectedStatus = 'In Progress';
         this.task.StartDate = new Date(this.task.StartDate);
         this.task.DueDate = new Date(this.task.DueDate);
-        this.task['DueTime'] = this.datePipe.transform(this.task.DueDate, 'h:mm a');
+        this.task['DueTime'] = this.datePipe.transform(this.task.DueDateDT, 'h:mm a');
         this.statusOptions = [
           { label: 'In Progress', value: 'In Progress' },
           { label: 'Completed', value: 'Completed' },
@@ -723,7 +723,7 @@ export class MyTimelineComponent implements OnInit {
           }
           if (this.task.DueTime) {
             const endTime = this.commonService.ConvertTimeformat(24, this.task.DueTime);
-            this.task.DueDate = this.datePipe.transform(this.task.DueDate, 'yyyy-MM-dd' + 'T' + endTime + ':00.000');
+            this.task.DueDate = this.datePipe.transform(this.task.DueDateDT, 'yyyy-MM-dd' + 'T' + endTime + ':00.000');
           }
 
           this.SelectedStatus = undefined;
@@ -733,11 +733,11 @@ export class MyTimelineComponent implements OnInit {
             Actual_x0020_Start_x0020_Date: task.Actual_x0020_Start_x0020_Date !== null ? task.Actual_x0020_Start_x0020_Date : new Date(),
             Status: task.Status,
             StartDate: this.task.StartDate,
-            DueDate: this.task.DueDate
+            DueDateDT: this.task.DueDate
           };
 
           this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'UpdateTask');
-          await this.spServices.updateItem(this.constants.listNames.Schedules.name, task.ID, jsonData, 'SP.Data.SchedulesListItem');
+          await this.spServices.updateItem(this.constants.listNames.Schedules.name, task.ID, jsonData, this.constants.listNames.Schedules.type);
 
 
           if (task.ParentSlot) {
@@ -791,9 +791,9 @@ export class MyTimelineComponent implements OnInit {
       listName: ''
     };
 
-    const ResourceId = this.sharedObject.DashboardData.ResourceCategorization.find(c => c.UserName.ID
+    const ResourceId = this.sharedObject.DashboardData.ResourceCategorization.find(c => c.UserNamePG.ID
       === this.sharedObject.currentUser.userId) ?
-      this.sharedObject.DashboardData.ResourceCategorization.find(c => c.UserName.ID ===
+      this.sharedObject.DashboardData.ResourceCategorization.find(c => c.UserNamePG.ID ===
         this.sharedObject.currentUser.userId).ID : 0;
     const AvailableHoursGet = Object.assign({}, options);
     const AvailableHoursQuery = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.AvailableHours);

@@ -275,7 +275,7 @@ export class ManageFinanceComponent implements OnInit {
       this.poArray = unfilteredPOArray;
       if (this.poArray && this.poArray) {
         this.poArray.forEach((element) => {
-          this.poList.push({ label: element.Number + '-' + element.Name, value: element.ID });
+          this.poList.push({ label: element.Number + '-' + element.NameST, value: element.ID });
         });
       }
       this.sowObj = arrResults[1].retItems[0];
@@ -676,7 +676,7 @@ export class ManageFinanceComponent implements OnInit {
         tempPOObj.poId = this.selectedPo;
         const poValue = this.poArray.filter(x => x.ID === this.selectedPo);
         if (poValue && poValue.length) {
-          tempPOObj.poValue = poValue[0].Number + ' - ' + poValue[0].Name;
+          tempPOObj.poValue = poValue[0].Number + ' - ' + poValue[0].NameST;
         }
         tempPOObj.total = 0;
         tempPOObj.revenue = 0;
@@ -943,7 +943,7 @@ export class ManageFinanceComponent implements OnInit {
     if (poc && poc.length) {
       // tslint:disable-next-line:no-shadowed-variable
       poc.forEach(element => {
-        this.primaryPoc.push({ label: element.FullName, value: element.ID });
+        this.primaryPoc.push({ label: element.FullNameCC, value: element.ID });
       });
     }
     this.showAddInvoiceDetails = true;
@@ -1327,7 +1327,7 @@ export class ManageFinanceComponent implements OnInit {
         tempPOObj.poId = poItem.POLookup;
         const poValue = this.poArray.filter(x => x.ID === poItem.POLookup);
         if (poValue && poValue.length) {
-          tempPOObj.poValue = poValue[0].Number + ' - ' + poValue[0].Name;
+          tempPOObj.poValue = poValue[0].Number + ' - ' + poValue[0].NameST;
         }
         tempPOObj.total = poItem.Amount;
         tempPOObj.revenue = poItem.AmountRevenue;
@@ -1629,7 +1629,7 @@ export class ManageFinanceComponent implements OnInit {
       obj.ClientLegalEntity === this.projObj.ClientLegalEntity);
     if (poc && poc.length) {
       poc.forEach(element => {
-        this.primaryPoc.push({ label: element.FullName, value: element.ID });
+        this.primaryPoc.push({ label: element.FullNameCC, value: element.ID });
       });
     }
     this.addPOForm.get('poDate').setValue(rowData.date);
@@ -2029,7 +2029,7 @@ export class ManageFinanceComponent implements OnInit {
       __metadata: { type: this.constant.listNames.ProjectBudgetBreakup.type },
     };
     data.Reason = budgetArray[0].reasonType;
-    data.Comments = budgetArray[0].reason;
+    data.CommentsMT = budgetArray[0].reason;
     if (isCreate) {
       data.ProjectCode = projObj.ProjectCode;
       data.ProjectLookup = projObj.ID;

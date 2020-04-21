@@ -424,7 +424,7 @@ export class OopComponent implements OnInit, OnDestroy {
                 return x;
             }
         });
-        return found ? found.FullName : '';
+        return found ? found.FullNameCC : '';
     }
 
     // Project Client
@@ -651,7 +651,7 @@ export class OopComponent implements OnInit, OnDestroy {
             const iliData = {
                 Status: 'Confirmed'
             };
-            iliData['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
+            iliData['__metadata'] = { type: this.constantService.listNames.InvoiceLineItems.type };
             const invObj = Object.assign({}, this.queryConfig);
             invObj.url = this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, +this.selectedRowItem.Id);
             invObj.listName = this.constantService.listNames.InvoiceLineItems.name;
@@ -671,7 +671,7 @@ export class OopComponent implements OnInit, OnDestroy {
                 ScheduledDate: this.editOop_form.value.ScheduledDate,
                 MainPOC: this.editOop_form.value.POCName.ID
             };
-            iliData['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
+            iliData['__metadata'] = { type: this.constantService.listNames.InvoiceLineItems.type };
             const invObj = Object.assign({}, this.queryConfig);
             invObj.url = this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, +this.selectedRowItem.Id);
             invObj.listName = this.constantService.listNames.InvoiceLineItems.name;
@@ -717,7 +717,7 @@ export class OopComponent implements OnInit, OnDestroy {
 
     sendCreateExpenseMail() {
         const mailSubject = this.selectedRowItem.ProjectCode + '/' + this.selectedRowItem.ClientName + ': Confirmed line item for billing';
-        let mailContent = this.mailContentRes.Content;
+        let mailContent = this.mailContentRes.ContentMT;
         mailContent = this.replaceContent(mailContent, '@@Val1@@', 'Hello Invoice Team');
         mailContent = this.replaceContent(mailContent, '@@Val2@@', this.selectedRowItem.ProjectCode);
         mailContent = this.replaceContent(mailContent, '@@Val3@@', this.selectedRowItem.ClientName);
@@ -804,7 +804,7 @@ export class OopComponent implements OnInit, OnDestroy {
 
     getResourceData(ele) {
         const found = this.rcData.find((x) => {
-            if (x.UserName.ID === ele.ID) {
+            if (x.UserNamePG.ID === ele.ID) {
                 return x;
             }
         });

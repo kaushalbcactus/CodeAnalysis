@@ -8,13 +8,13 @@ export class AdminConstantService {
   public QUERY = {
     GET_BUCKET: {
       select: 'ID,Title',
-      filter: 'IsActive eq \'1\'',
+      filter: 'IsActiveCH eq \'Yes\'',
       orderby: 'Title',
       top: 4900
     },
     GET_PRACTICE_AREA: {
       select: 'ID,Title',
-      filter: 'IsActive eq \'Yes\' ',
+      filter: 'IsActiveCH eq \'Yes\' ',
       orderby: 'Title',
       top: 4900
     },
@@ -27,7 +27,7 @@ export class AdminConstantService {
       filter: 'EntityPropertyName eq \'{{choiceField}}\''
     },
     GET_SKILL_MASTER: {
-      select: 'ID,Title,Category,Name,Location',
+      select: 'ID,Title,CategoryCH,NameCH,LocationCH',
       orderby: 'Title',
       top: 4900
     },
@@ -40,18 +40,18 @@ export class AdminConstantService {
     GET_ACCOUNT: {
       select: 'ID,Title,Acronym,ListName,Market,ClientGroup',
       orderby: 'Title asc',
-      filter: "IsActive eq 'Yes'",
+      filter: "IsActiveCH eq 'Yes'",
       top: 4900
     },
     GET_DELIVERABLE: {
-      select: 'ID,Title,Acronym,Active',
-      filter: 'Active eq \'{{isActive}}\'',
+      select: 'ID,Title,Acronym,IsActiveCH',
+      filter: 'IsActiveCH eq \'{{isActive}}\'',
       orderby: 'Title asc',
       top: 4900
     },
     GET_TA: {
       select: 'ID,Title',
-      filter: 'Active eq \'{{isActive}}\'',
+      filter: 'IsActiveCH eq \'{{isActive}}\'',
       orderby: 'Title asc',
       top: 4900
     },
@@ -59,61 +59,61 @@ export class AdminConstantService {
       filter: 'EMail eq \'{{emailId}}\''
     },
     GET_RESOURCE_CATEGERIZATION: {
-      select: 'ID,Title,Account/ID,Account/Title,Bucket,Categories,Created,DateofExit,DateOfJoining,DeliverableExclusion/ID,'
+      select: 'ID,Title,Account/ID,Account/Title,Bucket,Created,DateofExit,DateOfJoining,DeliverableExclusion/ID,'
         + 'DeliverableExclusion/Title,Deliverables/ID,Deliverables/Title,Designation,GoLiveDate,InCapacity,'
-        + 'IsActive,IsLeader,Manager/ID,Manager/Title,Manager/EMail,ManagerEffectiveDate,MaxHrs,Modified,Pooled,Practice_x0020_Area,'
+        + 'IsActiveCH,Manager/ID,Manager/Title,Manager/EMail,ManagerEffectiveDate,MaxHrs,Modified,Pooled,Practice_x0020_Area,'
         + 'PracticeAreaEffectiveDate,PrimarySkill,PrimarySkillEffectiveDate,Ready_x0020_To,Role,SkillLevel/ID,SkillLevel/Title,'
         + 'SkillLevelEffectiveDate,TA/ID,TA/Title,TAExclusion/ID,TAExclusion/Title,Tasks/ID,Tasks/Title,TimeZone/ID,TimeZone/Title,'
-        + 'TimeZone/TimeZoneName,TimeZoneEffectiveDate,UserName/ID,UserName/Title,UserName/EMail,Author/ID,Author/Title,'
+        + 'TimeZone/TimeZoneName,TimeZoneEffectiveDate,UserNamePG/ID,UserNamePG/Title,UserNamePG/EMail,Author/ID,Author/Title,'
         + 'Editor/ID,Editor/Title,WorkingSunday,WorkingMonday,WorkingTuesday,WorkingWednesday,WorkingThursday,WorkingFriday,'
         + 'WorkingSaturday,CAVisibility,TAVisibility,IsFTE,FTEEffectiveDate, BucketEffectiveDate, MaxHrsEffectiveDate',
       expand: 'Account/ID,Account/Title,DeliverableExclusion/ID,DeliverableExclusion/Title,Deliverables/ID,Deliverables/Title,'
         + 'Manager/ID,Manager/Title,Manager/EMail,SkillLevel/ID,SkillLevel/Title,TA/ID,TA/Title,TAExclusion/ID,TAExclusion/Title,Tasks/ID,'
-        + 'Tasks/Title,TimeZone/ID,TimeZone/Title,TimeZone/TimeZoneName,UserName/ID,UserName/Title,UserName/EMail,Author/ID,Author/Title,'
+        + 'Tasks/Title,TimeZone/ID,TimeZone/Title,TimeZone/TimeZoneName,UserNamePG/ID,UserNamePG/Title,UserNamePG/EMail,Author/ID,Author/Title,'
         + 'Editor/ID,Editor/Title',
-      filter: 'IsActive eq \'{{isActive}}\'',
+      filter: 'IsActiveCH eq \'{{isActive}}\'',
       top: 4900,
       orderby: 'Modified desc'
     },
     GET_ACCESS_RESOURCE_CATEGERIZATION: {
-      select: 'ID,Title,Account/ID,Account/Title,Bucket,Categories,Created,DateofExit,DateOfJoining,DeliverableExclusion/ID,'
+      select: 'ID,Title,Account/ID,Account/Title,Bucket,Created,DateofExit,DateOfJoining,DeliverableExclusion/ID,'
         + 'DeliverableExclusion/Title,Deliverables/ID,Deliverables/Title,Designation,GoLiveDate,InCapacity,'
-        + 'IsActive,IsLeader,Manager/ID,Manager/Title,Manager/EMail,ManagerEffectiveDate,MaxHrs,Modified,Pooled,Practice_x0020_Area,'
+        + 'IsActiveCH,Manager/ID,Manager/Title,Manager/EMail,ManagerEffectiveDate,MaxHrs,Modified,Pooled,Practice_x0020_Area,'
         + 'PracticeAreaEffectiveDate,PrimarySkill,PrimarySkillEffectiveDate,Ready_x0020_To,Role,SkillLevel/ID,SkillLevel/Title,'
         + 'SkillLevelEffectiveDate,TA/ID,TA/Title,TAExclusion/ID,TAExclusion/Title,Tasks/ID,Tasks/Title,TimeZone/ID,TimeZone/Title,'
-        + 'TimeZone/TimeZoneName,TimeZoneEffectiveDate,UserName/ID,UserName/Title,UserName/EMail,Author/ID,Author/Title,'
+        + 'TimeZone/TimeZoneName,TimeZoneEffectiveDate,UserNamePG/ID,UserNamePG/Title,UserNamePG/EMail,Author/ID,Author/Title,'
         + 'Editor/ID,Editor/Title,WorkingSunday,WorkingMonday,WorkingTuesday,WorkingWednesday,WorkingThursday,WorkingFriday,'
         + 'WorkingSaturday,CAVisibility,TAVisibility,IsFTE,FTEEffectiveDate, BucketEffectiveDate, MaxHrsEffectiveDate',
       expand: 'Account/ID,Account/Title,DeliverableExclusion/ID,DeliverableExclusion/Title,Deliverables/ID,Deliverables/Title,'
         + 'Manager/ID,Manager/Title,Manager/EMail,SkillLevel/ID,SkillLevel/Title,TA/ID,TA/Title,TAExclusion/ID,TAExclusion/Title,Tasks/ID,'
-        + 'Tasks/Title,TimeZone/ID,TimeZone/Title,TimeZone/TimeZoneName,UserName/ID,UserName/Title,UserName/EMail,Author/ID,Author/Title,'
+        + 'Tasks/Title,TimeZone/ID,TimeZone/Title,TimeZone/TimeZoneName,UserNamePG/ID,UserNamePG/Title,UserNamePG/EMail,Author/ID,Author/Title,'
         + 'Editor/ID,Editor/Title',
-      filter: 'IsActive eq \'{{isActive}}\' and Manager/ID eq \'{{UserId}}\'',
+      filter: 'IsActiveCH eq \'{{isActive}}\' and Manager/ID eq \'{{UserId}}\'',
       top: 4900,
       orderby: 'Modified desc'
     },
     GET_RESOURCE_CATEGERIZATION_BY_ID: {
-      select: 'ID,Title,Account/ID,Account/Title,Bucket,Categories,Created,DateofExit,DateOfJoining,DeliverableExclusion/ID,'
+      select: 'ID,Title,Account/ID,Account/Title,Bucket,Created,DateofExit,DateOfJoining,DeliverableExclusion/ID,'
         + 'DeliverableExclusion/Title,Deliverables/ID,Deliverables/Title,Designation,GoLiveDate,InCapacity,'
-        + 'IsActive,IsLeader,Manager/ID,Manager/Title,Manager/EMail,ManagerEffectiveDate,MaxHrs,Modified,Pooled,Practice_x0020_Area,'
+        + 'IsActiveCH,Manager/ID,Manager/Title,Manager/EMail,ManagerEffectiveDate,MaxHrs,Modified,Pooled,Practice_x0020_Area,'
         + 'PracticeAreaEffectiveDate,PrimarySkill,PrimarySkillEffectiveDate,Ready_x0020_To,Role,SkillLevel/ID,SkillLevel/Title,'
         + 'SkillLevelEffectiveDate,TA/ID,TA/Title,TAExclusion/ID,TAExclusion/Title,Tasks/ID,Tasks/Title,TimeZone/ID,TimeZone/Title,'
-        + 'TimeZone/TimeZoneName,TimeZoneEffectiveDate,UserName/ID,UserName/Title,UserName/EMail,Author/ID,Author/Title,'
+        + 'TimeZone/TimeZoneName,TimeZoneEffectiveDate,UserNamePG/ID,UserNamePG/Title,UserNamePG/EMail,Author/ID,Author/Title,'
         + 'Editor/ID,Editor/Title,WorkingSunday,WorkingMonday,WorkingTuesday,WorkingWednesday,WorkingThursday,WorkingFriday,'
         + 'WorkingSaturday,CAVisibility,TAVisibility,IsFTE,FTEEffectiveDate, BucketEffectiveDate, MaxHrsEffectiveDate',
       expand: 'Account/ID,Account/Title,DeliverableExclusion/ID,DeliverableExclusion/Title,Deliverables/ID,Deliverables/Title,'
         + 'Manager/ID,Manager/Title,Manager/EMail,SkillLevel/ID,SkillLevel/Title,TA/ID,TA/Title,TAExclusion/ID,TAExclusion/Title,Tasks/ID,'
-        + 'Tasks/Title,TimeZone/ID,TimeZone/Title,TimeZone/TimeZoneName,UserName/ID,UserName/Title,UserName/EMail,Author/ID,Author/Title,'
+        + 'Tasks/Title,TimeZone/ID,TimeZone/Title,TimeZone/TimeZoneName,UserNamePG/ID,UserNamePG/Title,UserNamePG/EMail,Author/ID,Author/Title,'
         + 'Editor/ID,Editor/Title',
-      filter: 'IsActive eq \'{{isActive}}\' and ID eq \'{{Id}}\'',
+      filter: 'IsActiveCH eq \'{{isActive}}\' and ID eq \'{{Id}}\'',
       top: 4900
     },
     GET_RESOURCE_CATEGERIZATION_ORDER_BY_USERNAME: {
-      select: 'ID,Title,Role,UserName/ID,UserName/Title,UserName/EMail',
-      expand: 'UserName/ID,UserName/Title,UserName/EMail',
-      filter: 'IsActive eq \'{{isActive}}\'',
+      select: 'ID,Title,Role,UserNamePG/ID,UserNamePG/Title,UserNamePG/EMail',
+      expand: 'UserNamePG/ID,UserNamePG/Title,UserNamePG/EMail',
+      filter: 'IsActiveCH eq \'{{isActive}}\'',
       top: 4900,
-      orderby: 'UserName/Title asc'
+      orderby: 'UserNamePG/Title asc'
     },
     GET_CLIENTLEGALENTITY_BY_USER_ROLE: {
       select: 'ID,Title,Acronym,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,'
@@ -141,15 +141,15 @@ export class AdminConstantService {
       top: 4900
     },
     GET_FOCUS_GROUP_BY_ACTIVE: {
-      select: 'ID,Title,Modified,IsActive,Editor/ID,Editor/Title',
+      select: 'ID,Title,Modified,IsActiveCH,Editor/ID,Editor/Title',
       expand: 'Editor/ID,Editor/Title',
-      filter: 'IsActive eq {{isActive}}',
+      filter: 'IsActiveCH eq \'{{isActive}}\'',
       orderby: 'Modified desc',
       top: 4900
     },
     GET_CLIENTLEGALENTITY_BY_ACTIVE: {
       select: 'ID,Title,Bucket',
-      filter: 'IsActive eq \'{{isActive}}\'',
+      filter: 'IsActiveCH eq \'{{isActive}}\'',
       orderby: 'Title asc',
       top: 4900
     },
@@ -161,119 +161,119 @@ export class AdminConstantService {
       top: 4900
     },
     GET_DELIVERABLE_TYPE_BY_ACTIVE: {
-      select: 'ID,Title,Acronym,Modified,Active,Editor/ID,Editor/Title',
+      select: 'ID,Title,Acronym,Modified,IsActiveCH,Editor/ID,Editor/Title',
       expand: 'Editor/ID,Editor/Title',
-      filter: 'Active eq \'{{isActive}}\'',
+      filter: 'IsActiveCH eq \'{{isActive}}\'',
       orderby: 'Modified desc',
       top: 4900
     },
     GET_TA_BY_ACTIVE: {
-      select: 'ID,Title,Modified,Active,Editor/ID,Editor/Title',
+      select: 'ID,Title,Modified,IsActiveCH,Editor/ID,Editor/Title',
       expand: 'Editor/ID,Editor/Title',
-      filter: 'Active eq \'{{isActive}}\'',
+      filter: 'IsActiveCH eq \'{{isActive}}\'',
       orderby: 'Modified desc',
       top: 4900
     },
     GET_PRACTICE_AREA_BY_ACTIVE: {
-      select: 'ID,Title,Modified,IsActive,Editor/ID,Editor/Title',
+      select: 'ID,Title,Modified,IsActiveCH,Editor/ID,Editor/Title',
       expand: 'Editor/ID,Editor/Title',
-      filter: 'IsActive eq \'{{isActive}}\'',
+      filter: 'IsActiveCH eq \'{{isActive}}\'',
       orderby: 'Modified desc',
       top: 4900
     },
     GET_ALL_CLIENT_LEGAL_ENTITY_BY_ACTIVE: {
-      select: 'ID,Title,Acronym,Geography,ListName,Market,ClientGroup,InvoiceName,Currency,APAddress,APEmail,Template,'
-        + 'DistributionList,Realization,TimeZone,Notes,PORequired,BillingEntity,Bucket,IsCentrallyAllocated,IsActive,'
+      select: 'ID,Title,Acronym,ListName,Market,ClientGroup,InvoiceName,Currency,APAddress,APEmail,Template,'
+        + 'DistributionList,Realization,TimeZoneNM,NotesMT,PORequired,BillingEntity,Bucket,IsActiveCH,'
         + 'CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,'
         + 'DeliveryLevel2/Title,Editor/ID,Editor/Title,Modified',
       expand: 'CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,'
         + 'DeliveryLevel2/Title,Editor/ID,Editor/Title',
-      filter: 'IsActive eq \'{{isActive}}\'',
+      filter: 'IsActiveCH eq \'{{isActive}}\'',
       orderby: 'Modified desc',
       top: 4900
     },
     GET_ACCESS_CLIENT_LEGAL_ENTITY_BY_ACTIVE: {
-      select: 'ID,Title,Acronym,Geography,ListName,Market,ClientGroup,InvoiceName,Currency,APAddress,APEmail,Template,'
-        + 'DistributionList,Realization,TimeZone,Notes,PORequired,BillingEntity,Bucket,IsCentrallyAllocated,IsActive,'
+      select: 'ID,Title,Acronym,ListName,Market,ClientGroup,InvoiceName,Currency,APAddress,APEmail,Template,'
+        + 'DistributionList,Realization,TimeZoneNM,NotesMT,PORequired,BillingEntity,Bucket,IsActiveCH,'
         + 'CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,'
         + 'DeliveryLevel2/Title,Editor/ID,Editor/Title,Modified',
       expand: 'CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,'
         + 'DeliveryLevel2/Title,Editor/ID,Editor/Title',
-      filter: 'IsActive eq \'{{isActive}}\' and (CMLevel1/ID eq \'{{UserId}}\' or CMLevel2/ID eq \'{{UserId}}\' or DeliveryLevel1/ID eq \'{{UserId}}\' or DeliveryLevel2/ID eq \'{{UserId}}\') ',
+      filter: 'IsActiveCH eq \'{{isActive}}\' and (CMLevel1/ID eq \'{{UserId}}\' or CMLevel2/ID eq \'{{UserId}}\' or DeliveryLevel1/ID eq \'{{UserId}}\' or DeliveryLevel2/ID eq \'{{UserId}}\') ',
       orderby: 'Modified desc',
       top: 4900
     },
     GET_CLIENT_LEGAL_ENTITY_BY_ID: {
-      select: 'ID,Title,Acronym,Geography,ListName,Market,ClientGroup,InvoiceName,Currency,APAddress,APEmail,Template,'
-        + 'DistributionList,Realization,TimeZone,Notes,PORequired,BillingEntity,Bucket,IsCentrallyAllocated,IsActive,'
+      select: 'ID,Title,Acronym,ListName,Market,ClientGroup,InvoiceName,Currency,APAddress,APEmail,Template,'
+        + 'DistributionList,Realization,TimeZoneNM,NotesMT,PORequired,BillingEntity,Bucket,IsActiveCH,'
         + 'CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,'
         + 'DeliveryLevel2/Title,Editor/ID,Editor/Title,Modified',
       expand: 'CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,'
         + 'DeliveryLevel2/Title,Editor/ID,Editor/Title',
-      filter: 'IsActive eq \'{{isActive}}\' and ID eq \'{{Id}}\'',
+      filter: 'IsActiveCH eq \'{{isActive}}\' and ID eq \'{{Id}}\'',
       orderby: 'Modified desc',
       top: 4900
     },
     GET_CLIENT_GROUP_BY_ACTIVE: {
-      select: 'ID,Title,Realization,IsActive,Notes',
-      filter: 'IsActive eq \'{{isActive}}\'',
+      select: 'ID,Title,Realization,IsActiveCH,NotesMT',
+      filter: 'IsActiveCH eq \'{{isActive}}\'',
       orderby: 'Title asc',
       top: 4900
     },
     GET_BILLING_ENTITY_BY_ACTIVE: {
-      select: 'ID,Title,Acronym,IsActive,InvoiceTemplate',
-      filter: 'IsActive eq \'{{isActive}}\'',
+      select: 'ID,Title,Acronym,IsActiveCH,InvoiceTemplate',
+      filter: 'IsActiveCH eq \'{{isActive}}\'',
       orderby: 'Title asc',
       top: 4900
     },
     GET_CURRENCY_BY_ACTIVE: {
-      select: 'ID,Title,IsActive',
-      filter: 'IsActive eq \'{{isActive}}\'',
+      select: 'ID,Title,IsActiveCH',
+      filter: 'IsActiveCH eq \'{{isActive}}\'',
       orderby: 'Title asc',
       top: 4900
     },
     GET_SUB_DIVISION_BY_ACTIVE: {
-      select: 'ID,Title,ClientLegalEntity,CMLevel1/ID,CMLevel1/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DistributionList,IsActive,'
+      select: 'ID,Title,ClientLegalEntity,CMLevel1/ID,CMLevel1/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DistributionList,IsActiveCH,'
         + 'Modified,Editor/ID,Editor/Title',
       expand: 'CMLevel1/ID,CMLevel1/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,Editor/ID,Editor/Title',
-      filter: 'IsActive eq \'{{isActive}}\' and ClientLegalEntity eq \'{{clientLegalEntity}}\'',
+      filter: 'IsActiveCH eq \'{{isActive}}\' and ClientLegalEntity eq \'{{clientLegalEntity}}\'',
       orderby: 'Modified desc',
       top: 4900
     },
     GET_SUB_DIVISION_BY_ID: {
-      select: 'ID,Title,ClientLegalEntity,CMLevel1/ID,CMLevel1/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DistributionList,IsActive,'
+      select: 'ID,Title,ClientLegalEntity,CMLevel1/ID,CMLevel1/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DistributionList,IsActiveCH,'
         + 'Modified,Editor/ID,Editor/Title',
       expand: 'CMLevel1/ID,CMLevel1/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,Editor/ID,Editor/Title',
-      filter: 'IsActive eq \'{{isActive}}\' and ClientLegalEntity eq \'{{clientLegalEntity}}\' and ID eq \'{{Id}}\'',
+      filter: 'IsActiveCH eq \'{{isActive}}\' and ClientLegalEntity eq \'{{clientLegalEntity}}\' and ID eq \'{{Id}}\'',
       orderby: 'Modified desc',
       top: 4900
     },
     GET_POC_BY_ACTIVE: {
-      select: 'ID,Title,ClientLegalEntity,FName,LName,EmailAddress,Designation,Phone,Address,FullName,Department,ReferralSource,Status,'
-        + 'RelationshipStrength,EngagementPlan,Comments,ProjectContactsType,Modified,Editor/ID,Editor/Title',
+      select: 'ID,Title,ClientLegalEntity,FName,LName,EmailAddress,Designation,Phone,AddressMT,FullNameCC,DepartmentST,ReferralSource,Status,'
+        + 'RelationshipStrength,EngagementPlan,CommentsMT,ProjectContactsType,Modified,Editor/ID,Editor/Title',
       filter: 'Status eq \'{{active}}\' and ClientLegalEntity eq \'{{clientLegalEntity}}\'',
       expand: 'Editor/ID,Editor/Title',
       orderby: 'Modified desc',
       top: 4900
     },
     GET_POC_BY_ID: {
-      select: 'ID,Title,ClientLegalEntity,FName,LName,EmailAddress,Designation,Phone,Address,FullName,Department,ReferralSource,Status,'
-        + 'RelationshipStrength,EngagementPlan,Comments,ProjectContactsType,Modified,Editor/ID,Editor/Title',
+      select: 'ID,Title,ClientLegalEntity,FName,LName,EmailAddress,Designation,Phone,AddressMT,FullNameCC,DepartmentST,ReferralSource,Status,'
+        + 'RelationshipStrength,EngagementPlan,CommentsMT,ProjectContactsType,Modified,Editor/ID,Editor/Title',
       filter: 'Status eq \'{{active}}\' and ClientLegalEntity eq \'{{clientLegalEntity}}\' and ID eq \'{{Id}}\'',
       expand: 'Editor/ID,Editor/Title',
       orderby: 'Modified desc',
       top: 4900
     },
     GET_POC_ORDER_BY_Title: {
-      select: 'ID,FName,LName,FullName',
+      select: 'ID,FName,LName,FullNameCC',
       filter: 'Status eq \'{{active}}\' and ClientLegalEntity eq \'{{clientLegalEntity}}\'',
       orderby: 'FName,LName asc',
       top: 4900
     },
     GET_PO_BY_ACTIVE: {
-      select: 'ID,Title,Amount,AmountOOP,AmountRevenue,BillOOPFromRevenue,BuyingEntity,ClientLegalEntity,Currency,InvoicedOOP,'
-        + 'InvoicedRevenue,InvoicedTax,Link,Modified,Molecule,Name,Number,OOPLinked,PO_x0020_Geography,POCategory,POCLookup,'
-        + 'POExpiryDate,PoProposalID,RevenueLinked,ScheduledOOP,ScheduledRevenue,SOWLookup,Status,TA,TaxLinked,TotalInvoiced,'
+      select: 'ID,Title,Amount,AmountOOP,AmountRevenue,BuyingEntity,ClientLegalEntity,Currency,InvoicedOOP,'
+        + 'InvoicedRevenue,InvoicedTax,Link,Modified,Molecule,NameST,Number,OOPLinked,POCategory,POCLookup,'
+        + 'POExpiryDate,RevenueLinked,ScheduledOOP,ScheduledRevenue,Status,TA,TaxLinked,TotalInvoiced,'
         + 'TotalLinked,TotalScheduled,AmountTax,CMLevel2/ID,CMLevel2/Title,Editor/ID,Editor/Title',
       filter: 'Status eq \'{{active}}\' and ClientLegalEntity eq \'{{clientLegalEntity}}\'',
       expand: 'CMLevel2/ID,CMLevel2/Title,Editor/ID,Editor/Title',
@@ -281,9 +281,9 @@ export class AdminConstantService {
       top: 4900
     },
     GET_PO_BY_ID: {
-      select: 'ID,Title,Amount,AmountOOP,AmountRevenue,BillOOPFromRevenue,BuyingEntity,ClientLegalEntity,Currency,InvoicedOOP,'
-        + 'InvoicedRevenue,InvoicedTax,Link,Modified,Molecule,Name,Number,OOPLinked,PO_x0020_Geography,POCategory,POCLookup,'
-        + 'POExpiryDate,PoProposalID,RevenueLinked,ScheduledOOP,ScheduledRevenue,SOWLookup,Status,TA,TaxLinked,TotalInvoiced,'
+      select: 'ID,Title,Amount,AmountOOP,AmountRevenue,BuyingEntity,ClientLegalEntity,Currency,InvoicedOOP,'
+        + 'InvoicedRevenue,InvoicedTax,Link,Modified,Molecule,NameST,Number,OOPLinked,POCategory,POCLookup,'
+        + 'POExpiryDate,RevenueLinked,ScheduledOOP,ScheduledRevenue,Status,TA,TaxLinked,TotalInvoiced,'
         + 'TotalLinked,TotalScheduled,AmountTax,CMLevel2/ID,CMLevel2/Title,Editor/ID,Editor/Title',
       filter: 'Status eq \'{{active}}\' and ClientLegalEntity eq \'{{clientLegalEntity}}\' and  ID eq \'{{Id}}\'',
       expand: 'CMLevel2/ID,CMLevel2/Title,Editor/ID,Editor/Title',
@@ -291,20 +291,20 @@ export class AdminConstantService {
       top: 4900
     },
     GET_MOLECULES_ORDER_BY_TITLE: {
-      select: 'ID,Title,IsActive',
-      filter: 'IsActive eq \'{{isActive}}\'',
+      select: 'ID,Title,IsActiveCH',
+      filter: 'IsActiveCH eq \'{{isActive}}\'',
       orderby: 'Title asc',
       top: 4900
     },
     GET_CLE_MAPPING_BY_ID: {
       select: 'ID,CLEName',
-      filter: 'CLEName eq \'{{clientLegalEntity}}\' and EndDate eq null',
+      filter: 'CLEName eq \'{{clientLegalEntity}}\' and EndDateDT eq null',
       orderby: 'ID asc',
       top: 4900
     },
     GET_BUCKET_MAPPING_BY_ID: {
       select: 'ID,CLEName,Bucket,StartDate',
-      filter: 'Bucket eq \'{{bucket}}\' and EndDate eq null',
+      filter: 'Bucket eq \'{{bucket}}\' and EndDateDT eq null',
       orderby: 'ID asc',
       top: 4900
     }

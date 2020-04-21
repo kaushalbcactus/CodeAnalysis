@@ -74,7 +74,7 @@ export class ResourcesComponent implements OnInit {
     this.editorusers = [];
     this.graphicsusers = [];
     this.pubsupportusers = [];
-    this.allPrimaryResources = this.resources.map(o => new Object({ Id: o.UserName.ID, UserName: o.UserName.Title }));
+    this.allPrimaryResources = this.resources.map(o => new Object({ Id: o.UserNamePG.ID, UserName: o.UserNamePG.Title }));
     this.filterPrimaryResources = this.allPrimaryResources;
     const projectDetails = this.sharedTaskAllocateObj.oProjectDetails;
     if (projectDetails.primaryResources.results) {
@@ -162,7 +162,7 @@ export class ResourcesComponent implements OnInit {
     }
     this.commonService.SetNewrelic('TaskAllocation', 'resources', 'SaveResources');
     await this.spService.updateItem(this.constants.listNames.ProjectInformation.name, project.projectID,
-      oBj, 'SP.Data.ProjectInformationListItem');
+      oBj, this.constants.listNames.ProjectInformation.type);
     this.commonService.SetNewrelic('TaskAllocation', 'resources-getProjectResources', 'saveResources');
     await this.commonService.getProjectResources(project.projectCode, true, false);
 

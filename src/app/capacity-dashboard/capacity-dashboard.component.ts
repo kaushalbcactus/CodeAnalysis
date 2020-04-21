@@ -70,10 +70,10 @@ export class CapacityDashboardComponent implements OnInit {
 
     const Resources = {
       // tslint:disable 
-      select: "ID,UserName/Id,UserName/Title,UserName/EMail,PrimarySkill,Bucket,Practice_x0020_Area,MaxHrs,GoLiveDate,DateOfJoining",
-      expand: "UserName/ID,UserName/EMail,UserName/Title",
-      filter: "IsActive eq 'Yes'",
-      orderby: "UserName/Title asc",
+      select: "ID,UserNamePG/Id,UserNamePG/Title,UserNamePG/EMail,PrimarySkill,Bucket,Practice_x0020_Area,MaxHrs,GoLiveDate,DateOfJoining",
+      expand: "UserNamePG/ID,UserNamePG/EMail,UserNamePG/Title",
+      filter: "IsActiveCH eq 'Yes'",
+      orderby: "UserNamePG/Title asc",
       top: 4500
       // tslint:enable
     };
@@ -109,7 +109,7 @@ export class CapacityDashboardComponent implements OnInit {
             value: o.PrimarySkill
           })), ['label']));
 
-        this.Resources = this.AlldbResources.map(o => new Object({ label: o.UserName.Title, value: o }));
+        this.Resources = this.AlldbResources.map(o => new Object({ label: o.UserNamePG.Title, value: o }));
       }
     }
   }
@@ -167,8 +167,8 @@ export class CapacityDashboardComponent implements OnInit {
         .filter(c => c.PrimarySkill !== null).map(o => o.PrimarySkill))) : [];
 
       const resources = event.value.length > 0 ? this.commonService.sortData(
-        this.filterData('bucket', 'resource').filter(c => c.UserName.Title !== null).map(o =>
-          new Object({ label: o.UserName.Title, value: o }))) : [];
+        this.filterData('bucket', 'resource').filter(c => c.UserNamePG.Title !== null).map(o =>
+          new Object({ label: o.UserNamePG.Title, value: o }))) : [];
 
       const resValues = resources.map(({ value }) => value); // this.Resources.map(o => o.value);
       // tslint:disable-next-line: no-string-literal
@@ -185,10 +185,10 @@ export class CapacityDashboardComponent implements OnInit {
         .filter(c => c.PrimarySkill !== null).map(o => o.PrimarySkill))) : [];
 
       const resources = event.value.length > 0 ? this.commonService.sortData(
-        this.filterData('practicearea', 'resource').filter(c => c.UserName.Title !== null).map(o =>
-          new Object({ label: o.UserName.Title, value: o }))) : this.commonService.sortData
-          (this.AlldbResources.filter(c => c.UserName.Title !== null).map(o =>
-            new Object({ label: o.UserName.Title, value: o })));
+        this.filterData('practicearea', 'resource').filter(c => c.UserNamePG.Title !== null).map(o =>
+          new Object({ label: o.UserNamePG.Title, value: o }))) : this.commonService.sortData
+          (this.AlldbResources.filter(c => c.UserNamePG.Title !== null).map(o =>
+            new Object({ label: o.UserNamePG.Title, value: o })));
 
       // tslint:disable-next-line: no-string-literal
       //this.searchCapacityForm.controls['skill'].setValue(null);
@@ -200,10 +200,10 @@ export class CapacityDashboardComponent implements OnInit {
     } else if (arrayType === 'skill') {
       // tslint:disable-next-line: no-string-literal
       const resources = event.value.length > 0 ? this.commonService.sortData(
-        this.filterData('skill', 'resource').filter(c => c.UserName.Title !== null).map(o =>
-          new Object({ label: o.UserName.Title, value: o }))) : this.commonService.sortData
-          (this.AlldbResources.filter(c => c.UserName.Title !== null).map(o =>
-            new Object({ label: o.UserName.Title, value: o })));
+        this.filterData('skill', 'resource').filter(c => c.UserNamePG.Title !== null).map(o =>
+          new Object({ label: o.UserNamePG.Title, value: o }))) : this.commonService.sortData
+          (this.AlldbResources.filter(c => c.UserNamePG.Title !== null).map(o =>
+            new Object({ label: o.UserNamePG.Title, value: o })));
 
       //this.searchCapacityForm.controls['resources'].setValue(this.Resources);
       const resValues = resources.map(({ value }) => value);

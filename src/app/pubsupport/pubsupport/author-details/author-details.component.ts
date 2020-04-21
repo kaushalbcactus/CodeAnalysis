@@ -33,11 +33,11 @@ export class AuthorDetailsComponent implements OnInit {
         this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
         const obj = Object.assign({}, this.pubsupportService.pubsupportComponent.authors);
         obj.filter = obj.filter.replace('{{ProjectCode}}', data.ProjectCode);
-        const authEndpoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.addAuthor.name + '', obj);
+        const authEndpoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.Authors.name + '', obj);
         const authorsObj = [{
             url: authEndpoint,
             type: 'GET',
-            listName: this.constantService.listNames.addAuthor.name
+            listName: this.constantService.listNames.Authors.name
         }];
         this.common.SetNewrelic('PubSupport', 'author-details', 'getAuthorByProjectCode');
         const res = await this.spOperationsService.executeBatch(authorsObj);

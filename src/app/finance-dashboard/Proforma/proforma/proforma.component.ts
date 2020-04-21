@@ -960,7 +960,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             State: this.selectedRowItem.State,
             ProformaLookup: this.selectedRowItem.Id
         };
-        invData['__metadata'] = { type: 'SP.Data.InvoicesListItem' };
+        invData['__metadata'] = { type: this.constantService.listNames.Invoices.type };
 
         const invObj = Object.assign({}, this.queryConfig);
         invObj.url = this.spServices.getReadURL(this.constantService.listNames.Invoices.name);
@@ -979,7 +979,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             ID: cleItem.Id,
             InvoiceCounter: cleItem.InvoiceCounter ? cleItem.InvoiceCounter + 1 : 1
         };
-        cleData['__metadata'] = { type: 'SP.Data.ClientLegalEntityListItem' };
+        cleData['__metadata'] = { type: this.constantService.listNames.ClientLegalEntity.type };
 
         const cleObj = Object.assign({}, this.queryConfig);
         cleObj.url = this.spServices.getItemURL(this.constantService.listNames.ClientLegalEntity.name, +cleItem.Id);
@@ -995,7 +995,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
         // let pObj = {
         //     Status: 'Approved'
         // }
-        // pObj['__metadata'] = { type: 'SP.Data.ProformaListItem' };
         // const pEndpoint = this.fdConstantsService.fdComponent.addUpdateProforma.update.replace("{{Id}}", this.selectedRowItem.Id);
         // let updatePObj = { objData: pObj, endpoint: pEndpoint, requestPost: false }
         // data.push(updatePObj);
@@ -1024,7 +1023,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             }
             // tslint:disable
         }
-        poData['__metadata'] = { type: 'SP.Data.POListItem' };
+        poData['__metadata'] = { type: this.constantService.listNames.PO.type };
 
         const poObj = Object.assign({}, this.queryConfig);
         poObj.url = this.spServices.getItemURL(this.constantService.listNames.PO.name, +poItem.ID);
@@ -1148,7 +1147,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         if (pfs.length) {
             for (let pf = 0; pf < pfs.length; pf++) {
                 const element = pfs[pf];
-                element['__metadata'] = { type: 'SP.Data.ProjectFinancesListItem' };
+                element['__metadata'] = { type: this.constantService.listNames.ProjectFinances.type };
                 const pfObj = Object.assign({}, this.queryConfig);
                 pfObj.url = this.spServices.getItemURL(this.constantService.listNames.ProjectFinances.name, +element.Id);
                 pfObj.listName = this.constantService.listNames.ProjectFinances.name;
@@ -1166,7 +1165,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         if (pfbs.length) {
             for (let pfb = 0; pfb < pfbs.length; pfb++) {
                 const element = pfbs[pfb];
-                element['__metadata'] = { type: 'SP.Data.ProjectFinanceBreakupListItem' };
+                element['__metadata'] = { type: this.constantService.listNames.ProjectFinanceBreakup.type };
                 const pfbObj = Object.assign({}, this.queryConfig);
                 pfbObj.url = this.spServices.getItemURL(this.constantService.listNames.ProjectFinanceBreakup.name, +element.Id);
                 pfbObj.listName = this.constantService.listNames.ProjectFinanceBreakup.name;
@@ -1184,7 +1183,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         if (sows.length) {
             for (let sow = 0; sow < sows.length; sow++) {
                 const element = sows[sow];
-                element['__metadata'] = { type: 'SP.Data.SOWListItem' };
+                element['__metadata'] = { type: this.constantService.listNames.SOW.type };
 
                 const sowObj = Object.assign({}, this.queryConfig);
                 sowObj.url = this.spServices.getItemURL(this.constantService.listNames.SOW.name, +element.Id);
@@ -1303,7 +1302,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 FileURL: res.ServerRelativeUrl ? res.ServerRelativeUrl : '',
                 ProformaHtml: null
             }
-            prfData['__metadata'] = { type: 'SP.Data.ProformaListItem' };
+            prfData['__metadata'] = { type: this.constantService.listNames.Proforma.type };
 
             const invObj = Object.assign({}, this.queryConfig);
             invObj.url = this.spServices.getItemURL(this.constantService.listNames.Proforma.name, +this.selectedRowItem.Id);
@@ -1447,7 +1446,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             let prfData = {
                 Status: sts
             }
-            prfData['__metadata'] = { type: 'SP.Data.ProformaListItem' };
+            prfData['__metadata'] = { type: this.constantService.listNames.Proforma.type };
             // const endpoint = this.fdConstantsService.fdComponent.addUpdateProforma.update.replace("{{Id}}", this.selectedRowItem.Id);
             // let data = [
             //     {
@@ -1469,7 +1468,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             let prfData = {
                 Status: sts
             }
-            prfData['__metadata'] = { type: 'SP.Data.ProformaListItem' };
+            prfData['__metadata'] = { type: this.constantService.listNames.Proforma.type };
             // const endpoint = this.fdConstantsService.fdComponent.addUpdateProforma.update.replace("{{Id}}", this.selectedRowItem.Id);
             // Get invoce line items & update sts  to all ids
             const prfObj = Object.assign({}, this.queryConfig);
@@ -1490,7 +1489,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
                     Status: 'Confirmed',
                     ProformaLookup: null
                 }
-                invData['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
+                invData['__metadata'] = { type: this.constantService.listNames.InvoiceLineItems.type };
 
                 const prfObj = Object.assign({}, this.queryConfig);
                 prfObj.url = this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, + this.iliByPidRes[j].Id);
@@ -1536,7 +1535,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 Status: 'Created'
             }
             // console.log('obj ', obj);
-            prfData['__metadata'] = { type: 'SP.Data.ProformaListItem' };
+            prfData['__metadata'] = { type: this.constantService.listNames.Proforma.type };
 
             const prfObj = Object.assign({}, this.queryConfig);
             prfObj.url = this.spServices.getReadURL(this.constantService.listNames.Proforma.name);
@@ -1553,7 +1552,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 ID: currentCle.Id,
                 ProformaCounter: currentCle.ProformaCounter ? currentCle.ProformaCounter + 1 : 1
             }
-            cleData['__metadata'] = { type: 'SP.Data.ClientLegalEntityListItem' };
+            cleData['__metadata'] = { type: this.constantService.listNames.ClientLegalEntity.type };
             const cleObj = Object.assign({}, this.queryConfig);
             cleObj.url = this.spServices.getItemURL(this.constantService.listNames.ClientLegalEntity.name, +currentCle.Id);
             cleObj.listName = this.constantService.listNames.ClientLegalEntity.name;
@@ -1632,7 +1631,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 InvoiceLookup: oInv.ID
             }
             // let data = [];
-            iliData['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
+            iliData['__metadata'] = { type: this.constantService.listNames.InvoiceLineItems.type };
             for (let j = 0; j < this.iliByPidRes.length; j++) {
                 const element = this.iliByPidRes[j];
                 const iliObj = Object.assign({}, this.queryConfig);
@@ -1654,7 +1653,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 Status: 'Approved',
                 InvoiceLookup: oInv.ID
             }
-            proformaData['__metadata'] = { type: 'SP.Data.ProformaListItem' };
+            proformaData['__metadata'] = { type: this.constantService.listNames.Proforma.type };
             const prfObj = Object.assign({}, this.queryConfig);
             prfObj.url = this.spServices.getItemURL(this.constantService.listNames.Proforma.name, +this.selectedRowItem.Id);
             prfObj.listName = this.constantService.listNames.Proforma.name;

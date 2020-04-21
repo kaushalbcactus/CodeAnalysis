@@ -409,13 +409,13 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                 SOWCode: sowCodeFromPI.SOWCode,
                 SOWName: sowItem.Title,
                 ClientLegalEntity: sowCodeFromPI.ClientLegalEntity,
-                Category: element.Category,
+                Category: element.CategoryST,
                 Number: element.Number,
                 ExpenseType: element.SpendType,
                 ClientAmount: parseFloat(element.ClientAmount).toFixed(2),
                 ClientCurrency: element.ClientCurrency,
                 VendorName: this.getVendorNameById(element),
-                Notes: element.Notes,
+                Notes: element.NotesMT,
                 RequestType: element.RequestType,
                 PaymentMode: element.PaymentMode,
                 PayingEntity: element.PayingEntity,
@@ -855,7 +855,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
             ScheduledOOP: poScheduledOOP.toFixed(2),
             TotalScheduled: poTotalScheduled.toFixed(2)
         };
-        poData['__metadata'] = { type: 'SP.Data.POListItem' };
+        poData['__metadata'] = { type: this.constantService.listNames.PO.type };
         const poEndpoint = this.fdConstantsService.fdComponent.addUpdatePO.update.replace('{{Id}}', expenseData.ID);
         return {
             objData: poData,
@@ -878,7 +878,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
             Budget: totalBudget,
             OOPBudget: oopBudget
         };
-        pfData['__metadata'] = { type: 'SP.Data.ProjectFinancesListItem' };
+        pfData['__metadata'] = { type: this.constantService.listNames.ProjectFinances.type };
         const pfEntpoint = this.fdConstantsService.fdComponent.addUpdateProjectFinances.update.replace('{{Id}}', this.pfListItem[0].Id);
         return {
             objData: pfData,
@@ -909,7 +909,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
             pfbData['AmountOOP'] = pfbAmountOOP;
             pfbData['ScheduledOOP'] = pfbScheduledOOP;
             pfbData['TotalScheduled'] = pfbTotalScheduled;
-            pfbData['__metadata'] = { type: 'SP.Data.ProjectFinanceBreakupListItem' };
+            pfbData['__metadata'] = { type: this.constantService.listNames.ProjectFinanceBreakup.type };
             pfbEntpoint = this.fdConstantsService.fdComponent.addUpdateProjectFinanceBreakup.update.replace('{{Id}}', this.pfbListItem[0].Id);
             sts = 'PATCH';
         } else {
@@ -918,7 +918,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
             pfbData['Amount'] = parseFloat(this.scheduleOopInvoice_form.getRawValue().Amount);
             pfbData['AmountOOP'] = parseFloat(this.scheduleOopInvoice_form.getRawValue().Amount);
             pfbData['Status'] = 'Active';
-            pfbData['__metadata'] = { type: 'SP.Data.ProjectFinanceBreakupListItem' };
+            pfbData['__metadata'] = { type: this.constantService.listNames.ProjectFinanceBreakup.type };
         }
 
         return {
@@ -939,7 +939,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
             OOPBudget: parseFloat(this.scheduleOopInvoice_form.getRawValue().Amount),
             ProjectCode: this.scheduleOopInvoice_form.getRawValue().ProjectCode,
         };
-        pbbData['__metadata'] = { type: 'SP.Data.ProjectBudgetBreakupListItem' };
+        pbbData['__metadata'] = { type: this.constantService.listNames.ProjectBudgetBreakup.type };
 
         return {
             objData: pbbData,
@@ -990,7 +990,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                         ApproverFileUrl: this.fileUploadedUrl,
                         Status: element.Status.replace(' Payment Pending', '')
                     };
-                    speInfoObj['__metadata'] = { type: 'SP.Data.SpendingInfoListItem' };
+                    speInfoObj['__metadata'] = { type: this.constantService.listNames.SpendingInfo.type };
                     const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace('{{Id}}', element.Id);;
                     data.push({
                         data: speInfoObj,
@@ -1032,7 +1032,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                 Template: this.pfListItem[0].Template,
                 Status: 'Scheduled'
             };
-            obj['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
+            obj['__metadata'] = { type: this.constantService.listNames.InvoiceLineItems.type };
             const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.create;
             const data = [];
             data.push({
@@ -1156,7 +1156,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                 Status: element.Status.replace('Approved', 'Billed'),
                 InvoiceID: arrRet[0].retItems.ID.toString()
             };
-            spObj['__metadata'] = { type: 'SP.Data.SpendingInfoListItem' };
+            spObj['__metadata'] = { type: this.constantService.listNames.SpendingInfo.type };
             const speEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace('{{Id}}', element.Id);
             this.updateSpeLineItems.push({
                 data: spObj,

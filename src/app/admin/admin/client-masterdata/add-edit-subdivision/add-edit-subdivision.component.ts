@@ -75,6 +75,7 @@ export class AddEditSubdivisionComponent implements OnInit {
     if (!this.showeditSubDivision) {
       data.Title = this.subDivisionform.value.subDivision_Name;
       data.ClientLegalEntity = this.currClientObj.ClientLegalEntity;
+      data.IsActiveCH = this.adminConstants.LOGICAL_FIELD.YES;
     }
     data.DeliveryLevel1Id = this.subDivisionform.value.deliveryLevel1 ? { results: this.subDivisionform.value.deliveryLevel1 } :
       { results: [] };
@@ -111,7 +112,7 @@ export class AddEditSubdivisionComponent implements OnInit {
       obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
       obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd ,yyyy');
       obj.LastUpdatedBy = item.Editor.Title;
-      obj.IsActive = item.IsActive;
+      obj.IsActive = item.IsActiveCH;
       obj.CMLevel1 = item.CMLevel1;
       obj.DeliveryLevel1 = item.DeliveryLevel1;
       obj.DistributionList = item.DistributionList;
@@ -190,19 +191,19 @@ export class AddEditSubdivisionComponent implements OnInit {
       switch (role) {
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.CMLevel1:
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.CMLevel2:
-          this.adminObject.dropdown.CMLevel1Array.push({ label: element.UserName.Title, value: element.UserName.ID });
+          this.adminObject.dropdown.CMLevel1Array.push({ label: element.UserNamePG.Title, value: element.UserNamePG.ID });
           break;
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.DELIVERY_LEVEL_1:
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.DELIVERY_LEVEL_2:
-          this.adminObject.dropdown.DeliveryLevel1Array.push({ label: element.UserName.Title, value: element.UserName.ID });
+          this.adminObject.dropdown.DeliveryLevel1Array.push({ label: element.UserNamePG.Title, value: element.UserNamePG.ID });
           break;
       }
       switch (role) {
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.CMLevel2:
-          this.adminObject.dropdown.CMLevel2Array.push({ label: element.UserName.Title, value: element.UserName.ID });
+          this.adminObject.dropdown.CMLevel2Array.push({ label: element.UserNamePG.Title, value: element.UserNamePG.ID });
           break;
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.DELIVERY_LEVEL_2:
-          this.adminObject.dropdown.DeliveryLevel2Array.push({ label: element.UserName.Title, value: element.UserName.ID });
+          this.adminObject.dropdown.DeliveryLevel2Array.push({ label: element.UserNamePG.Title, value: element.UserNamePG.ID });
           break;
       }
     });

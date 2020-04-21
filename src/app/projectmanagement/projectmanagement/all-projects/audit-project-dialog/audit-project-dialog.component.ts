@@ -54,7 +54,7 @@ export class AuditProjectDialogComponent implements OnInit {
       this.enableConfirm = true;
     }
     else {
-      const tempObj = this.addRollingProjectArray.filter(c => c.comments === '');
+      const tempObj = this.addRollingProjectArray.filter(c => c.commentsMT === '');
       if (tempObj) {
         this.enableConfirm = tempObj.filter(c => c.checked === false).length > 0 ? false : true;
       } else {

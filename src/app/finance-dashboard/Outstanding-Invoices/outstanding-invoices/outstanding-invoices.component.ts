@@ -315,15 +315,15 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         // const batchGuid = this.spServices.generateUUID();
         // let invoicesQuery = '';
         // if (true) {
-        //     invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.OutInvoices.name + '',
+        //     invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.Invoices.name + '',
         //      this.fdConstantsService.fdComponent.invoicesForMangerIT);
         // } else {
-        //     invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.OutInvoices.name +
+        //     invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.Invoices.name +
         //      '', this.fdConstantsService.fdComponent.invoicesForNonManger);
         // }
         const outInvObj = Object.assign({}, this.fdConstantsService.fdComponent.invoicesForMangerIT);
         this.commonService.SetNewrelic('Finance-Dashboard', 'outstanding-invoices', 'invoicesForMangerIT');
-        const res = await this.spServices.readItems(this.constantService.listNames.OutInvoices.name, outInvObj);
+        const res = await this.spServices.readItems(this.constantService.listNames.Invoices.name, outInvObj);
         // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
 
         // let endPoints = [invoicesQuery];
@@ -364,7 +364,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 ClientLegalEntity: element.ClientLegalEntity,
                 Currency: element.Currency,
                 FileURL: element.FileURL,
-                FiscalYear: element.FiscalYear,
+                // FiscalYear: element.FiscalYear,
                 InvoiceDate: new Date(this.datePipe.transform(element.InvoiceDate, 'MMM dd, yyyy')),
                 InvoiceDateFormat: this.datePipe.transform(element.InvoiceDate, 'MMM dd, yyyy, hh:mm a'),
                 InvoiceNumber: element.InvoiceNumber,
@@ -739,7 +739,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 FileURL: res.ServerRelativeUrl ? res.ServerRelativeUrl : '',
                 InvoiceHtml: null
             }
-            invData['__metadata'] = { type: 'SP.Data.InvoicesListItem' };
+            invData['__metadata'] = { type: this.constantService.listNames.Invoices.type };
             // const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoice.update.replace("{{Id}}", this.selectedRowItem.Id);
             // let data = [
             //     {
@@ -775,7 +775,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 Status: 'Paid',
                 PaymentURL: res.ServerRelativeUrl ? res.ServerRelativeUrl : ''
             };
-            invData['__metadata'] = { type: 'SP.Data.InvoicesListItem' };
+            invData['__metadata'] = { type: this.constantService.listNames.Invoices.type };
             // const endpoint2 = this.fdConstantsService.fdComponent.addUpdateInvoice.update.replace("{{Id}}", this.selectedRowItem.Id);
             // let data = [
             //     {
@@ -855,7 +855,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 DisputeReason: this.disputeInvoice_form.value.DisputeReason.value,
                 DisputeComments: this.disputeInvoice_form.value.DisputeComments
             };
-            disputeData['__metadata'] = { type: 'SP.Data.InvoicesListItem' };
+            disputeData['__metadata'] = { type: this.constantService.listNames.Invoices.type };
             // const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoice.update.replace("{{Id}}", this.selectedRowItem.Id);
             // let data = [
             //     {
@@ -909,7 +909,6 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             invObj.type = 'PATCH';
             invObj.data = invData;
             batchUrl.push(invObj);
-            // obj['__metadata'] = { type: 'SP.Data.InvoicesListItem' };
             // const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoice.update.replace("{{Id}}", this.selectedRowItem.Id);
             // let data = [
             //     {
@@ -937,7 +936,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             OriginatedInvoiceLookup: this.selectedRowItem.Id,
             LinkedInvoiceLookup: this.selectedRowItem.Id
         }
-        debitCreditData['__metadata'] = { type: 'SP.Data.CreditAndDebitNoteListItem' };
+        debitCreditData['__metadata'] = { type: this.constantService.listNames.CreditAndDebit.type };
         const debCreditObj = Object.assign({}, this.queryConfig);
         debCreditObj.url = this.spServices.getReadURL(this.constantService.listNames.CreditAndDebit.name);
         debCreditObj.listName = this.constantService.listNames.CreditAndDebit.name;
@@ -948,7 +947,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         const invData = {
             Status: this.creditOrDebitNote_form.value.Status
         };
-        invData['__metadata'] = { type: 'SP.Data.InvoicesListItem' };
+        invData['__metadata'] = { type: this.constantService.listNames.Invoices.type };
         const invObj = Object.assign({}, this.queryConfig);
         invObj.url = this.spServices.getItemURL(this.constantService.listNames.Invoices.name, +this.selectedRowItem.Id);
         invObj.listName = this.constantService.listNames.Invoices.name;

@@ -326,10 +326,10 @@ export class SOWComponent implements OnInit, OnDestroy {
           return (obj.ID === task.PrimaryPOC);
         });
 
-        sowObj.POC = poc.length > 0 ? poc[0].FullName : '';
+        sowObj.POC = poc.length > 0 ? poc[0].FullNameCC : '';
         sowObj.CreatedBy = task.Author ? task.Author.Title : '';
         sowObj.CreatedDate = task.Created;
-        sowObj.Comments = task.Comments;
+        sowObj.Comments = task.CommentsMT;
         sowObj.Status = task.Status;
         sowObj.BusinessVertical = task.BusinessVertical ? task.BusinessVertical.replace(/;#/g, ',') : '';
         sowObj.BillingEntity = task.BillingEntity;

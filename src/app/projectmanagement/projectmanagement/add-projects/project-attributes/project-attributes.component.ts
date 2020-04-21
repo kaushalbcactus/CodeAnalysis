@@ -240,7 +240,7 @@ export class ProjectAttributesComponent implements OnInit {
     this.pmObject.projectContactsItems.forEach(element => {
       if (element.ClientLegalEntity === clientLeagalEntity) {
         this.pmObject.oProjectCreation.oProjectInfo.projectContact.push({
-          label: element.FullName
+          label: element.FullNameCC
           , value: element.ID
         });
       }
@@ -515,7 +515,7 @@ export class ProjectAttributesComponent implements OnInit {
     this.pmObject.addProject.ProjectAttributes.ActiveDelivery2 = projObj.DeliveryLevel2ID;
     this.pmObject.addProject.ProjectAttributes.ProjectTitle = projObj.Title;
     this.pmObject.addProject.ProjectAttributes.AlternateShortTitle = projObj.ShortTitle;
-    this.pmObject.addProject.ProjectAttributes.EndUseofDeliverable = projObj.Description;
+    this.pmObject.addProject.ProjectAttributes.EndUseofDeliverable = projObj.DescriptionMT;
     this.pmObject.addProject.ProjectAttributes.SOWBoxLink = projObj.SOWBoxLink;
     this.pmObject.addProject.ProjectAttributes.ConferenceJournal = projObj.ConferenceJournal;
     this.pmObject.addProject.ProjectAttributes.Authors = projObj.Authors;

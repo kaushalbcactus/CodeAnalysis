@@ -156,7 +156,7 @@ export class AddEditCommentComponent implements OnInit {
           };
           this.editor.setData('');
           this.common.SetNewrelic('MyDashboard', 'AddEditCommentDialog', 'SaveComment');
-          await this.spServices.updateItem(this.constants.listNames.Schedules.name, this.data.ID, data, 'SP.Data.SchedulesListItem');
+          await this.spServices.updateItem(this.constants.listNames.Schedules.name, this.data.ID, data, this.constants.listNames.Schedules.type);
           this.messageService.add({ key: 'custom-comment', severity: 'success', summary: 'Success Message', detail: 'Comment saved successfully' });
 
           this.getComments(this.data, false);

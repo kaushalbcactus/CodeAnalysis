@@ -335,15 +335,15 @@ export class CACommonService {
     scObj.SubMilestones = task.SubMilestones;
     scObj.Task = task.Task;
     scObj.Displaytask = $.trim(task.Title.replace(scObj.ProjectCode + '', '').replace(scObj.Milestone + '', ''));
-    scObj.Timezone = task.TimeZone;
+    scObj.Timezone = task.TimeZoneNM;
     scObj.Title = task.Title;
     scObj.TaskName = $.trim(task.Title.replace(scObj.ProjectCode + '', '').replace(scObj.Milestone + '', ''));
     scObj.DeliveryType = projectItem.length ? projectItem[0].DeliverableType :'';
     scObj.EstimatedTime = task.ExpectedTime;
     scObj.StartTime = task.StartDate;
-    scObj.EndTime = task.DueDate;
+    scObj.EndTime = task.DueDateDT;
     scObj.StartDate = new Date(task.StartDate);
-    scObj.DueDate = new Date(task.DueDate);
+    scObj.DueDate = new Date(task.DueDateDT);
     scObj.StartDateText = this.datePipe.transform(scObj.StartDate, 'd MMM, yyyy, hh:mm a');
     scObj.DueDateText = this.datePipe.transform(scObj.DueDate, 'd MMM, yyyy, hh:mm a');
     scObj.NextTaskStartDate = new Date(); // nextTaskItem[0].StartDate;
@@ -354,7 +354,7 @@ export class CACommonService {
     scObj.SendToClientDateText = '';
     scObj.NextTasks = task.NextTasks ? task.NextTasks : '';
     scObj.PrevTasks = task.PrevTasks ? task.PrevTasks : '';
-    scObj.TaskScope = task.Comments;
+    scObj.TaskScope = task.CommentsMT;
     scObj.PrevTaskComments = '';
     scObj.allocatedResource = '';
     scObj.AssignedTo = task.AssignedTo.Title;
@@ -640,7 +640,7 @@ export class CACommonService {
 
             filteredResources.push(element);
           }
-          element.Title = element.UserName.Title;
+          element.Title = element.UserNamePG.Title;
         }
        
       });
@@ -764,9 +764,9 @@ export class CACommonService {
         });
         if (prevTasks.length) {
           prevTasks.sort(function (a, b) {
-            return b.DueDate - a.DueDate;
+            return b.DueDateDT - a.DueDateDT;
           });
-          task.LastTaskEndDate = prevTasks[0].DueDate;
+          task.LastTaskEndDate = prevTasks[0].DueDateDT;
           task.LastTaskEndDateText = this.datePipe.transform(task.LastTaskEndDate, 'd MMM, yyyy, hh:mm a');
         }
       }
@@ -843,8 +843,7 @@ export class CACommonService {
    * @param comments 
    */
   async saveTaskScopeComments(task, comments) {
-    const options = { 'Comments': comments };
-    // this.spServices.update(this.globalConstantService.listNames.Schedules.name, task.id, options, 'SP.Data.SchedulesListItem');
+    const options = { 'CommentsMT': comments };
     await this.spServices.updateItem(this.globalConstantService.listNames.Schedules.name, task.id, options, this.globalConstantService.listNames.Schedules.type);
   }
   /**
@@ -967,7 +966,6 @@ export class CACommonService {
       QCId: { results: updatedResources.qualityChecker.results },
       GraphicsMembersId: { results: updatedResources.graphicsMembers.results },
     };
-    // this.spServices.update(projectInformationList, project.ID, updateProjectRes, 'SP.Data.ProjectInformationListItem');
     await this.spServices.updateItem(this.globalConstantService.listNames.ProjectInformation.name, project.ID, updateProjectRes, this.globalConstantService.listNames.ProjectInformation.type);
   }
 
@@ -1011,18 +1009,18 @@ export class CACommonService {
         case 'QC':
         case 'Review-QC':
         case 'Inco-QC':
-          arrQualityCheckerIds.push(task.allocatedResource.UserName.ID);
+          arrQualityCheckerIds.push(task.allocatedResource.UserNamePG.ID);
           break;
         case 'Edit':
         case 'Review-Edit':
         case 'Inco-Edit':
         case 'Galley':
-          arrEditorsIds.push(task.allocatedResource.UserName.ID);
+          arrEditorsIds.push(task.allocatedResource.UserNamePG.ID);
           break;
         case 'Graphics':
         case 'Review-Graphics':
         case 'Inco-Graphics':
-          arrGraphicsIds.push(task.allocatedResource.UserName.ID);
+          arrGraphicsIds.push(task.allocatedResource.UserNamePG.ID);
           break;
       }
     }
@@ -1046,7 +1044,6 @@ export class CACommonService {
       QCId: { results: updatedResources.qualityChecker.results },
       GraphicsMembersId: { results: updatedResources.graphicsMembers.results },
     };
-    // this.spServices.update(projectInformationList, project.ID, updateProjectRes, 'SP.Data.ProjectInformationListItem');
     await this.spServices.updateItem(this.globalConstantService.listNames.ProjectInformation.name, project.ID, updateProjectRes, this.globalConstantService.listNames.ProjectInformation.type);
   }
 

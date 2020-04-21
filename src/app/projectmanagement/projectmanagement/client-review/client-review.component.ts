@@ -215,7 +215,7 @@ export class ClientReviewComponent implements OnInit {
     const startDateString = new Date(this.commonService.formatDate(startDate) + ' 00:00:00').toISOString();
     const endDateString = new Date(this.commonService.formatDate(endDate) + ' 23:59:00').toISOString();
     const currentFilter = '((StartDate ge \'' + startDateString + '\' or StartDate le \'' + endDateString
-      + '\') and (DueDate ge \'' + startDateString + '\' and DueDate le \'' + endDateString
+      + '\') and (DueDateDT ge \'' + startDateString + '\' and DueDateDT le \'' + endDateString
       + '\')) and (Status eq \'Not Started\') and (Task eq \'Client Review\')'
       + ' and PreviousTaskClosureDate ne null and AssignedTo eq ' + this.globalObject.currentUser.userId + '';
     this.getCR(currentFilter);
@@ -223,7 +223,7 @@ export class ClientReviewComponent implements OnInit {
 
   async getCR(currentFilter) {
     const queryOptions = {
-      select: 'ID,Title,ProjectCode,StartDate,DueDate,PreviousTaskClosureDate,Milestone,PrevTasks,NextTasks',
+      select: 'ID,Title,ProjectCode,StartDate,DueDateDT,PreviousTaskClosureDate,Milestone,PrevTasks,NextTasks',
       filter: currentFilter,
       top: 4200
     };
@@ -279,11 +279,11 @@ export class ClientReviewComponent implements OnInit {
           });
 
           if (projecContObj.length) {
-            crObj.POC = projecContObj[0].FullName;
+            crObj.POC = projecContObj[0].FullNameCC;
           }
         }
-        crObj.DueDate = new Date(this.datePipe.transform(task.DueDate, 'MMM dd, yyyy, h:mm a'));
-        crObj.DueDateFormat = new Date(this.datePipe.transform(crObj.DueDate, 'MMM dd, yyyy, h:mm a'));
+        crObj.DueDate = new Date(this.datePipe.transform(task.DueDateDT, 'MMM dd, yyyy, h:mm a'));
+        crObj.DueDateFormat = new Date(this.datePipe.transform(crObj.DueDateDT, 'MMM dd, yyyy, h:mm a'));
         crObj.Milestone = task.Milestone;
 
         // Check Task Due is greater or smaller than current date.
@@ -340,8 +340,8 @@ export class ClientReviewComponent implements OnInit {
         if (prevTask[0] && prevTask[0].length) {
           taskItem.PreviousTaskStatus = prevTask[0][0].Status;
           this.crArrays.previousTaskArray.push(prevTask[0]);
-          taskItem.DeliveryDate = prevTask[0][0].DueDate ? new Date(prevTask[0][0].DueDate) : null;
-          taskItem.DeliveryDateFormat = this.datePipe.transform(new Date(prevTask[0][0].DueDate), 'MMM dd, yyyy, h:mm a');
+          taskItem.DeliveryDate = prevTask[0][0].DueDateDT ? new Date(prevTask[0][0].DueDateDT) : null;
+          taskItem.DeliveryDateFormat = this.datePipe.transform(new Date(prevTask[0][0].DueDateDT), 'MMM dd, yyyy, h:mm a');
           deliveryDateTempArray.push({ label: taskItem.DeliveryDate, value: taskItem.DeliveryDate });
         }
       }

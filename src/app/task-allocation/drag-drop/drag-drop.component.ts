@@ -1078,7 +1078,7 @@ export class DragDropComponent implements OnInit {
       }
 
       if (!this.milestonesGraph.nodes[this.milestoneIndex].allTasks.find(c => c.type === originalType)) {
-        this.milestonesGraph.nodes[this.milestoneIndex].allTasks.push({ type: originalType, tasks: [], slotType: MilTask.TaskType })
+        this.milestonesGraph.nodes[this.milestoneIndex].allTasks.push({ type: originalType, tasks: [], slotType: MilTask.TaskTypeCH })
       }
 
       const TaskOfType = this.milestonesGraph.nodes[this.milestoneIndex].allTasks.find(c => c.type === originalType).tasks;
@@ -1101,7 +1101,7 @@ export class DragDropComponent implements OnInit {
           CentralAllocationDone: centralAllocationDone === 'Yes' ? 'Yes' : 'No',
           ActiveCA: activeCA === 'Yes' ? 'Yes' : 'No',
           skillLevel: MilTask !== undefined ? MilTask.DefaultSkill !== null ? MilTask.DefaultSkill : '' : '',
-          slotType: MilTask.TaskType ? MilTask.TaskType : ''
+          slotType: MilTask.TaskTypeCH ? MilTask.TaskTypeCH : ''
         };
       }
       else {
@@ -1118,7 +1118,7 @@ export class DragDropComponent implements OnInit {
           CentralAllocationDone: centralAllocationDone === 'Yes' ? 'Yes' : 'No',
           ActiveCA: activeCA === 'Yes' ? 'Yes' : 'No',
           skillLevel: MilTask !== undefined ? MilTask.DefaultSkill !== null ? MilTask.DefaultSkill : '' : '',
-          slotType: MilTask.TaskType ? MilTask.TaskType : ''
+          slotType: MilTask.TaskTypeCH ? MilTask.TaskTypeCH : ''
         };
       }
       this.recentEventNode = node.id;
@@ -1129,7 +1129,7 @@ export class DragDropComponent implements OnInit {
         existObject.tasks.push(node.label);
       }
       else {
-        this.milestonesGraph.nodes[this.milestoneIndex].allTasks.push({ type: node.taskType, tasks: [node.label], slotType: MilTask.TaskType })
+        this.milestonesGraph.nodes[this.milestoneIndex].allTasks.push({ type: node.taskType, tasks: [node.label], slotType: MilTask.TaskTypeCH })
       }
 
       subMilestone.task.nodes.push(node);
@@ -1606,7 +1606,7 @@ export class DragDropComponent implements OnInit {
           CentralAllocationDone: CentralAllocationDone === 'Yes' ? 'Yes' : 'No',
           ActiveCA: ActiveCA === 'Yes' ? 'Yes' : 'No',
           skillLevel: MilTask !== undefined ? MilTask.DefaultSkill !== null ? MilTask.DefaultSkill : '' : '',
-          slotType: MilTask.TaskType ? MilTask.TaskType : ''
+          slotType: MilTask.TaskTypeCH ? MilTask.TaskTypeCH : ''
         };
       }
       else {
@@ -1624,7 +1624,7 @@ export class DragDropComponent implements OnInit {
           CentralAllocationDone: CentralAllocationDone === 'Yes' ? 'Yes' : 'No',
           ActiveCA: ActiveCA === 'Yes' ? 'Yes' : 'No',
           skillLevel: MilTask !== undefined ? MilTask.DefaultSkill !== null ? MilTask.DefaultSkill : '' : '',
-          slotType: MilTask.TaskType ? MilTask.TaskType : ''
+          slotType: MilTask.TaskTypeCH ? MilTask.TaskTypeCH : ''
         };
       }
 

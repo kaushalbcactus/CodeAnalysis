@@ -417,7 +417,7 @@ export class AddEditUserProfileComponent implements OnInit {
   * 3. If user changes the value of `Manger`,` Practice Area`, `Time Zone`, `Primary Skill` and `Skill level` field then
   * `Manager Effective Date`, `Practice Area Effective Date`, `Time Zone Effective Date`, `Primary Skill Effective Date`
   * and `Skill Level Effective Date` will become mandatory field respectively.
-  * 4. If user changes the value of `IsActive` field from `Yes` to `No` then `Date of Exit` field become mandatory.
+  * 4. If user changes the value of `IsActiveCH` field from `Yes` to `No` then `Date of Exit` field become mandatory.
   */
   async showEditUserModal() {
     this.addUser.reset();
@@ -439,7 +439,7 @@ export class AddEditUserProfileComponent implements OnInit {
   }
   /**
    * Construct a method to set the value into form field
-   * load the dropdown value of `IsActive` field
+   * load the dropdown value of `IsActiveCH` field
    * @param userObj The userObj as paramater which is required for setting the form field value.
    */
   setUserFormField(userObj) {
@@ -863,7 +863,7 @@ export class AddEditUserProfileComponent implements OnInit {
    *
    * @description
    * It will prepare the request as per following Sequence.
-   * 1. Bucket          - Get data from `FocusGroup` list based on filter `IsActive='Yes'`.
+   * 1. Bucket          - Get data from `FocusGroup` list based on filter `IsActiveCH='Yes'`.
    * 2. Practice Area   - Get data from `FocusGroup` list.
    * 3. TimeZones       - Get data from `TimeZones` list.
    * 4. InCapacity      - Get data for ChoiceField `InCapacity` from ResourceCategorization list.
@@ -896,13 +896,13 @@ export class AddEditUserProfileComponent implements OnInit {
     bucketGet.listName = this.constants.listNames.FocusGroup.name;
     batchURL.push(bucketGet);
 
-    // Get Practice Area from BusinessVerticals list ##1;
+    // Get Practice Area from PracticeArea list ##1;
     const practiceAreaGet = Object.assign({}, options);
     const practiceAreaFilter = Object.assign({}, this.adminConstants.QUERY.GET_PRACTICE_AREA);
-    practiceAreaGet.url = this.spServices.getReadURL(this.constants.listNames.BusinessVerticals.name,
+    practiceAreaGet.url = this.spServices.getReadURL(this.constants.listNames.PracticeArea.name,
       practiceAreaFilter);
     practiceAreaGet.type = 'GET';
-    practiceAreaGet.listName = this.constants.listNames.BusinessVerticals.name;
+    practiceAreaGet.listName = this.constants.listNames.PracticeArea.name;
     batchURL.push(practiceAreaGet);
 
     // Get TimeZones from TimeZones list ##2

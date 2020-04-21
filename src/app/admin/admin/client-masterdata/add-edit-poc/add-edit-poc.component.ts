@@ -285,18 +285,18 @@ export class AddEditPocComponent implements OnInit {
       ProjectContactsType: this.pocForm.value.contactsType,
       ClientLegalEntity: this.currClientObj.ClientLegalEntity,
       Title: this.currClientObj.ClientLegalEntity,
-      FullName: this.pocForm.value.fname + ' ' + this.pocForm.value.lname
+      FullNameCC: this.pocForm.value.fname + ' ' + this.pocForm.value.lname
     };
     data.Phone = this.pocForm.value.phone ? this.pocForm.value.phone : '';
     const ap1 = this.pocForm.value.address1 ? this.pocForm.value.address1 : '';
     const ap2 = this.pocForm.value.address2 ? this.pocForm.value.address2 : '';
     const ap3 = this.pocForm.value.address3 ? this.pocForm.value.address3 : '';
     const ap4 = this.pocForm.value.address4 ? this.pocForm.value.address4 : '';
-    data.Address = ap1 + ';#' + ap2 + ';#' + ap3 + ';#' + ap4;
-    data.Department = this.pocForm.value.department ? this.pocForm.value.department : '';
+    data.AddressMT = ap1 + ';#' + ap2 + ';#' + ap3 + ';#' + ap4;
+    data.DepartmentST = this.pocForm.value.department ? this.pocForm.value.department : '';
     data.RelationshipStrength = this.pocForm.value.relationshipStrength ? this.pocForm.value.relationshipStrength : '';
     data.EngagementPlan = this.pocForm.value.engagementPlan ? this.pocForm.value.engagementPlan : '';
-    data.Comments = this.pocForm.value.comments ? this.pocForm.value.comments : '';
+    data.CommentsMT = this.pocForm.value.comments ? this.pocForm.value.comments : '';
     return data;
   }
 
@@ -331,14 +331,14 @@ export class AddEditPocComponent implements OnInit {
       obj.EmailAddress = item.EmailAddress;
       obj.Designation = item.Designation;
       obj.Phone = item.Phone ? item.Phone : '';
-      obj.Address = item.Address ? item.Address : '';
-      obj.FullName = item.FullName ? item.FullName : '';
-      obj.Department = item.Department ? item.Department : '';
+      obj.Address = item.AddressMT ? item.AddressMT : '';
+      obj.FullName = item.FullNameCC ? item.FullNameCC : '';
+      obj.Department = item.DepartmentST ? item.DepartmentST : '';
       obj.ReferralSource = item.ReferralSource;
       obj.Status = item.Status;
       obj.RelationshipStrength = item.RelationshipStrength ? item.RelationshipStrength : '';
       obj.EngagementPlan = item.EngagementPlan ? item.EngagementPlan : '';
-      obj.Comments = item.Comments ? item.Comments : '';
+      obj.Comments = item.CommentsMT ? item.CommentsMT : '';
       obj.ProjectContactsType = item.ProjectContactsType;
       obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
       obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd ,yyyy');

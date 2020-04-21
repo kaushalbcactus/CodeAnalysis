@@ -711,7 +711,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                     IsApproved: 'Yes',
 
                 };
-                piData['__metadata'] = { type: 'SP.Data.ProjectInformationListItem' };
+                piData['__metadata'] = { type: this.constantService.listNames.ProjectInformation.type };
                 const piObj = Object.assign({}, this.queryConfig);
                 piObj.url = this.spServices.getItemURL(this.constantService.listNames.ProjectInformation.name, +piId.Id);
                 piObj.listName = this.constantService.listNames.ProjectInformation.name;
@@ -727,7 +727,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                     TotalScheduled: updatedPOTotalScheduled,
                     ScheduledRevenue: updatedScheduledRevenue,
                 };
-                poData['__metadata'] = { type: 'SP.Data.POListItem' };
+                poData['__metadata'] = { type: this.constantService.listNames.PO.type };
                 // const poEndpoint = this.fdConstantsService.fdComponent.addUpdatePO.update.replace("{{Id}}", this.poLookupDataObj.ID);
                 const poObj = Object.assign({}, this.queryConfig);
                 poObj.url = this.spServices.getItemURL(this.constantService.listNames.PO.name, +this.poLookupDataObj.ID);
@@ -743,7 +743,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                     TotalScheduled: totalVal,
                     ScheduledRevenue: totalVal,
                 };
-                pfbData['__metadata'] = { type: 'SP.Data.ProjectFinanceBreakupListItem' };
+                pfbData['__metadata'] = { type: this.constantService.listNames.ProjectFinanceBreakup.type };
                 // const pfbEndpoint = this.fdConstantsService.fdComponent.addUpdateProjectFinanceBreakup.update.replace("{{Id}}", this.ProjectFinanceBreakupData.ID);
                 const pfbObj = Object.assign({}, this.queryConfig);
                 pfbObj.url = this.spServices.getItemURL(this.constantService.listNames.ProjectFinanceBreakup.name,
@@ -760,7 +760,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                     ApprovalDate: this.confirmHourlybased_form.value.approvalDate,
                     BudgetHours: hrs
                 };
-                pbbData['__metadata'] = { type: 'SP.Data.ProjectBudgetBreakupListItem' };
+                pbbData['__metadata'] = { type: this.constantService.listNames.ProjectBudgetBreakup };
                 // const pbbEndpoint = this.fdConstantsService.fdComponent.addUpdateProjectBudgetBreakup.update.replace("{{Id}}", this.projectBudgetBreakupData.ID);
                 const pbbObj = Object.assign({}, this.queryConfig);
                 pbbObj.url = this.spServices.getItemURL(this.constantService.listNames.ProjectBudgetBreakup.name,
@@ -777,7 +777,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                     TotalScheduled: updatedSOWTotalScheduled,
                     RevenueLinked: updatedSOWRevenueLinked
                 };
-                sowData['__metadata'] = { type: 'SP.Data.SOWListItem' };
+                sowData['__metadata'] = { type: this.constantService.listNames.SOW.type };
                 // const sowEndpoint = this.fdConstantsService.fdComponent.addUpdateSow.update.replace("{{Id}}", this.sowData.ID);
                 const sowObj = Object.assign({}, this.queryConfig);
                 sowObj.url = this.spServices.getItemURL(this.constantService.listNames.SOW.name,
@@ -802,7 +802,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                     CSId: { results: this.pcmLevels.map(x => x.ID) },
                     SOWCode: this.selectedRowItem.SOWCode,
                 };
-                iliData['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
+                iliData['__metadata'] = { type: this.constantService.listNames.InvoiceLineItems.type };
                 // const iliEndpoint = this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.create;
                 const iliObj = Object.assign({}, this.queryConfig);
                 iliObj.url = this.spServices.getReadURL(this.constantService.listNames.InvoiceLineItems.name);
@@ -818,7 +818,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                     BudgetHrs: hrs,
                     InvoicesScheduled: totalVal
                 };
-                pfData['__metadata'] = { type: 'SP.Data.ProjectFinancesListItem' };
+                pfData['__metadata'] = { type: this.constantService.listNames.ProjectFinances.type };
                 // const pfEndpoint = this.fdConstantsService.fdComponent.addUpdateProjectFinances.update.replace("{{Id}}", this.selectedRowItem.PFID);
                 const pfObj = Object.assign({}, this.queryConfig);
                 pfObj.url = this.spServices.getItemURL(this.constantService.listNames.ProjectFinances.name, +this.selectedRowItem.PFID);
@@ -896,7 +896,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                 Budget: this.editHourly_form.value.Rate,
                 HoursSpent: this.editHourly_form.value.HoursSpent
             };
-            pfData['__metadata'] = { type: 'SP.Data.ProjectFinancesListItem' };
+            pfData['__metadata'] = { type: this.constantService.listNames.ProjectFinances.type };
             this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-hourlyBased', 'updatePFLItem');
             await this.spServices.updateItem(this.constantService.listNames.ProjectFinances.name, +this.selectedRowItem.PFID,
                 pfData, this.constantService.listNames.ProjectFinances.type);
@@ -1015,7 +1015,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
 
     getResourceData(ele) {
         const found = this.rcData.find((x) => {
-            if (x.UserName.ID === ele.ID) {
+            if (x.UserNamePG.ID === ele.ID) {
                 return x;
             }
         });
@@ -1030,7 +1030,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         const sharepointPageObject = this.globalService.sharePointPageObject;
         // Confirmation Mail 
         const mailSubject = this.selectedRowItem.ProjectCode + '/' + this.selectedRowItem.ClientLegalEntity + ': Confirmed line item for billing';
-        let mailContent = this.mailContentRes[0].retItems[0].Content;
+        let mailContent = this.mailContentRes[0].retItems[0].ContentMT;
         mailContent = this.replaceContent(mailContent, "@@Val1@@", "Hello Invoice Team");
         mailContent = this.replaceContent(mailContent, "@@Val2@@", this.selectedRowItem.ProjectCode);
         mailContent = this.replaceContent(mailContent, "@@Val3@@", this.selectedRowItem.ClientLegalEntity);
@@ -1041,7 +1041,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
 
         // Propose Closure Mail Content
         const pcmailSubject = this.selectedRowItem.ProjectCode + '(' + this.selectedRowItem.Id + '): ' + 'Propose closure for project';
-        let pcmailContent = this.mailContentRes[1].retItems[0].Content;
+        let pcmailContent = this.mailContentRes[1].retItems[0].ContentMT;
         pcmailContent = this.replaceContent(pcmailContent, "@@Val3@@", 'All');
         pcmailContent = this.replaceContent(pcmailContent, "@@Val1@@", this.selectedRowItem.ProjectCode);
         pcmailContent = this.replaceContent(pcmailContent, "@@Val2@@", this.selectedRowItem.ClientLegalEntity);
