@@ -1,17 +1,11 @@
+.taskButton {
+    position: fixed !important;
+    width: 100% !important;
+    margin: -50px !important;
+}
 .saveTaskButton {
-    margin-right: 10px;
     background-color: #db1721 !important;
     border: 1px solid #db1721 !important;
-}
-
-.viewAllocation {
-    background-color: #db1721 !important;
-    border: 1px solid #db1721 !important;
-}
-
-.footer {
-    text-align: right;
-    margin-top: 10px;
 }
 
 body .p-grid .ui-overlaypanel {

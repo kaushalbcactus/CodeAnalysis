@@ -43,6 +43,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   @Output() reloadResources = new EventEmitter<string>();
   public GanttchartData = [];
   tempGanttchartData = [];
+  oldGantChartData = [];
   public noTaskError = 'No milestones found.';
   // @ViewChild('gantteditor', { static: true }) gantteditor: GanttEditorComponent;
   @ViewChild('reallocationMailTableID', { static: false }) reallocateTable: ElementRef;
@@ -802,6 +803,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       this.milestoneData = [...this.milestoneData];
       this.GanttchartData = [...this.GanttchartData];
       this.tempmilestoneData = [];
+      this.oldGantChartData = this.GanttchartData;
       this.tempGanttchartData = JSON.parse(JSON.stringify(this.GanttchartData));
       this.tempmilestoneData = JSON.parse(JSON.stringify(this.milestoneData));
       this.loaderenable = false;
@@ -967,11 +969,11 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         submilestones.forEach((subMile) => {
           if (item.submilestone === subMile.title) {
             item.parent = subMile.id;
-          } 
+          }
         })
-        subIndex.forEach((s)=>{
+        subIndex.forEach((s) => {
           var sub = this.GanttchartData[s];
-          var m = this.GanttchartData[s-1];
+          var m = this.GanttchartData[s - 1];
           sub.parent = m.id
         })
       } else {
@@ -983,7 +985,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       }
     })
 
-    
+
 
     this.GanttchartData.forEach((item, index) => {
 
@@ -1064,6 +1066,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         return true;
       }
     }, Object.create(null));
+
+    this.taskAllocateCommonService.ganttParseObject.data = this.GanttchartData;
+    this.taskAllocateCommonService.ganttParseObject.links = this.linkArray;
   }
 
   fetchTask(task) {
@@ -1239,14 +1244,14 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   ganttAttachEvents() {
 
-    gantt.attachEvent("onMouseMove", (id, event) => {
-      if (id) {
-        var task = gantt.getTask(id);
-        // event.target = event.target.parentElement;
-        var target = event.target
-        this.showOverlayPanel(event, task, this.dailyAllocateOP, target);
-      }
-    });
+    // gantt.attachEvent("onMouseMove", (id, event) => {
+    //   if (id) {
+    //     var task = gantt.getTask(id);
+    //     // event.target = event.target.parentElement;
+    //     var target = event.target
+    //     this.showOverlayPanel(event, task, this.dailyAllocateOP, target);
+    //   }
+    // });
 
     gantt.attachEvent("onBeforeTaskDrag", function (id, mode, e) {
       var task = gantt.getTask(id)
@@ -1474,8 +1479,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       data: data,
       width: '65vw',
 
-      header: 'Edit Task ('+ data.task.milestone + ' - ' + data.task.title + ')' ,
-      contentStyle: { 'max-height': '90vh', 'overflow': 'auto' },
+      header: 'Edit Task (' + data.task.milestone + ' - ' + data.task.title + ')',
+      contentStyle: { 'max-height': '90vh', 'overflow-y': 'auto' },
       closable: false
     });
     ref.onClose.subscribe((updateData: any) => {
@@ -1683,7 +1688,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       this.loaderenable = false;
       this.changeInRestructure = false;
       this.milestoneData = JSON.parse(JSON.stringify(this.tempmilestoneData));
+      this.GanttchartData = this.oldGantChartData;
+      this.createGanttDataAndLinks();
       this.convertDateString();
+      this.loadComponent();
     }
     else if (type === 'task' && milestone.itemType === 'Client Review') {
       const tempMile = this.tempmilestoneData.find(c => c.data.id === milestone.id);
@@ -2313,6 +2321,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         }
 
         this.tempGanttchartData = JSON.parse(JSON.stringify(this.GanttchartData));
+        this.oldGantChartData = this.GanttchartData;
         var ganttData: any = this.updateGanttChartData()
         console.log(ganttData);
 
@@ -2322,8 +2331,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
         console.log(this.GanttchartData);
         // console.log(this.linkArray);
-        this.taskAllocateCommonService.ganttParseObject.data = this.GanttchartData;
-        this.taskAllocateCommonService.ganttParseObject.links = this.linkArray;
+        // this.taskAllocateCommonService.ganttParseObject.data = this.GanttchartData;
+        // this.taskAllocateCommonService.ganttParseObject.links = this.linkArray;
 
         this.loadComponent();
 
@@ -2351,7 +2360,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         data.push(milestone.data)
       }
       if (milestone.data.itemType === 'Client Review') {
-        if(milestone.data.parent === undefined){
+        if (milestone.data.parent === undefined) {
           milestone.data.parent = 0
         }
         if (milestone.data.id === 0) {
@@ -2382,7 +2391,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
               //   task.data.parent = 1
               // } 
               if (task.data.id === 0) {
-                task.data.id = 'T' + nCountTask + 3;
+                task.data.id = 'T' + nCountSub + nCountTask + 3;
               }
               data.push(task.data)
             }
@@ -2474,7 +2483,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     const eqgTasks = ['Edit', 'Quality', 'Graphics', 'Client Review', 'Send to client'];
 
     if (!eqgTasks.find(t => t === milestoneTask.itemType) && milestoneTask.pUserStartDatePart &&
-         resource.length && milestoneTask.pUserEndDatePart && milestoneTask.budgetHours) {
+      resource.length && milestoneTask.pUserEndDatePart && milestoneTask.budgetHours) {
       const allocationData: IDailyAllocationTask = {
         ID: milestoneTask.id,
         task: milestoneTask.taskFullName,
@@ -3155,7 +3164,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   workingHoursBetweenDates(start, end) {
     let count = 0;
     for (let i = start.valueOf(); i < end.valueOf(); i = (start.setMinutes(start.getMinutes() + 1)).valueOf()) {
-      if (start.getDay() !== 0 && start.getDay() !== 6 ) { // && start.getHours() >= 9 && start.getHours() < 19
+      if (start.getDay() !== 0 && start.getDay() !== 6) { // && start.getHours() >= 9 && start.getHours() < 19
         count++;
       }
     }
@@ -3184,7 +3193,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     let CaculateDate = new Date(start);
     const workHours = workingHours * 60;
     while (count < workHours) {
-      if (EndDate.getDay() !== 0 && EndDate.getDay() !== 6 ) { // && EndDate.getHours() >= 9 && EndDate.getHours() < 19
+      if (EndDate.getDay() !== 0 && EndDate.getDay() !== 6) { // && EndDate.getHours() >= 9 && EndDate.getHours() < 19
         EndDate = new Date(EndDate.setMinutes(EndDate.getMinutes() + 1));
         CaculateDate = new Date(EndDate);
       }
@@ -4801,9 +4810,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     }
   }
 
-  showOverlayPanel(event, rowData, dailyAllocateOP,target?) {
+  showOverlayPanel(event, rowData, dailyAllocateOP, target?) {
     const allocationPerDay = rowData.allocationPerDay ? rowData.allocationPerDay : '';
-    dailyAllocateOP.showOverlay(event, allocationPerDay,target);
+    dailyAllocateOP.showOverlay(event, allocationPerDay, target);
   }
 }
 
