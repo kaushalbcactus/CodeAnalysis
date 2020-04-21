@@ -973,7 +973,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           var sub = this.GanttchartData[s];
           var m = this.GanttchartData[s-1];
           sub.parent = m.id
-          console.log(sub)
         })
       } else {
         milestones.forEach((m) => {
@@ -1183,7 +1182,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           menu.showItem(menus[7].id);
           menu.showItem(menus[8].id);
         }
-      } else if (task.type == "milestone") {
+      } else if (task.type == "milestone" || task.type == "submilestone") {
         menu.showItem(menus[0].id);
         menu.hideItem(menus[1].id);
         menu.hideItem(menus[2].id);
@@ -1244,7 +1243,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       if (id) {
         var task = gantt.getTask(id);
         // event.target = event.target.parentElement;
-        this.showOverlayPanel(event, task, this.dailyAllocateOP);
+        var target = event.target
+        this.showOverlayPanel(event, task, this.dailyAllocateOP, target);
       }
     });
 
@@ -1291,7 +1291,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         var task = gantt.getTask(id);
         this.editTaskModal(task)
         return true;
-      } else if (filteredTasks.type == "milestone") {
+      } else if (filteredTasks.type == "milestone" || filteredTasks.type == "submilestone") {
         this.changeBudgetHrs(id)
         return true;
       }
@@ -1474,7 +1474,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       data: data,
       width: '65vw',
 
-      header: 'Edit Task',
+      header: 'Edit Task ('+ data.task.milestone + ' - ' + data.task.title + ')' ,
       contentStyle: { 'max-height': '90vh', 'overflow': 'auto' },
       closable: false
     });
@@ -1679,7 +1679,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   // **************************************************************************************************************************************
 
   CancelChanges(milestone, type) {
-    milestone.allocationColor = '';
+    // milestone.allocationColor = '';
     if (type === "discardAll") {
       this.loaderenable = false;
       this.changeInRestructure = false;
@@ -4804,9 +4804,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     }
   }
 
-  showOverlayPanel(event, rowData, dailyAllocateOP) {
+  showOverlayPanel(event, rowData, dailyAllocateOP,target?) {
     const allocationPerDay = rowData.allocationPerDay ? rowData.allocationPerDay : '';
-    dailyAllocateOP.showOverlay(event, allocationPerDay);
+    dailyAllocateOP.showOverlay(event, allocationPerDay,target);
   }
 }
 

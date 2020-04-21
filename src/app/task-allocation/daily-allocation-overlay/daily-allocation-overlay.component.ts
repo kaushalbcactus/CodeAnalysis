@@ -21,10 +21,10 @@ export class DailyAllocationOverlayComponent implements OnInit {
     ];
   }
 
-  showOverlay(event, allocationPerDay) {
+  showOverlay(event, allocationPerDay, target?) {
     if (allocationPerDay) {
       this.setAllocation(allocationPerDay);
-      this.panel.show(event);
+      this.panel.show(event,target);
     }
   }
 
