@@ -288,7 +288,7 @@
         </div>
     </div>
 </div>
-<p-dialog [header]="invoiceHeader" appendTo='body' [(visible)]="showAddInvoiceDetails" [style]="{width: '500px'}">
+<p-dialog [header]="invoiceHeader" appendTo='body' [(visible)]="showAddInvoiceDetails" [style]="{width: '500px'}" [contentStyle]="{ 'overflow': 'visible'}">
     <form [formGroup]='addPOForm'>
         <div class="ui-grid-row mt-20">
             <div class="ui-grid-col-3">Date</div>
@@ -326,7 +326,7 @@
     </p-footer>
 </p-dialog>
 
-<p-dialog [(visible)]="showBudgetIncrease" appendTo='body' [style]="{width: '500px'}">
+<p-dialog [(visible)]="showBudgetIncrease" appendTo='body' [style]="{width: '500px'}" [contentStyle]="{ 'overflow': 'visible'}">
     <p-header>
         Budget Increment Popup
     </p-header>
