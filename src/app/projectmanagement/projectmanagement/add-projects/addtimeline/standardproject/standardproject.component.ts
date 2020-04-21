@@ -408,26 +408,25 @@ export class StandardprojectComponent implements OnInit {
    *
    */
   async loadServiceDropDown(standardTemplate) {
-    let filter = '';
+    const templates = [];
     if (standardTemplate.length > 0) {
-      standardTemplate.forEach((val, index) => {
-        filter += "Title eq '" + val.StandardService.Title + "'";
-        if (index != standardTemplate.length - 1) {
-          filter += " or ";
-        }
+      standardTemplate.forEach((val) => {
+        templates.push(val.StandardService.Title);
       });
     }
     const standardServiceOptions = {
       select: 'ID,Title,BaseSkill,Active,Deliverable/ID,Deliverable/Title,SubDeliverable/ID,SubDeliverable/Title,Services/ID,Services/Title',
       expand: 'Deliverable/ID,Deliverable/Title,SubDeliverable/ID,SubDeliverable/Title,Services/ID,Services/Title',
-      filter: 'Active eq \'Yes\' and ' + filter + '',
+      filter: 'Active eq \'Yes\'',
       orderby: 'Title'
     };
     this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetStandardServiceName');
     const result = await this.spService.readItems(this.constants.listNames.StandardServices.name, standardServiceOptions);
     if (result && result.length) {
       result.forEach(element => {
-        this.standardServices.push({ label: element.Title, value: element });
+        if(templates.indexOf(element.Title) > -1) {
+          this.standardServices.push({ label: element.Title, value: element });
+        }
       });
     }
   }

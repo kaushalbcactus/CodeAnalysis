@@ -260,7 +260,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
 
       if (results) {
         completedCRList = results.length > 0 ? results : [];
-        const dbMilestones = this.ProjectInformation.Milestones ? this.ProjectInformation.Milestones.split(';#') : [];
+        const dbMilestones = this.ProjectInformation.Milestones ? this.ProjectInformation.Milestones.split(';#') :[];
         const Milestones = completedCRList.filter(c => dbMilestones.includes(c.Milestone)) ? completedCRList.filter(c => dbMilestones.includes(c.Milestone)).map(c => c.Milestone) : [];
         if (Milestones) {
           const options = {
