@@ -967,7 +967,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         submilestones.forEach((subMile) => {
           if (item.submilestone === subMile.title) {
             item.parent = subMile.id;
-          } 
+          }
         })
         subIndex.forEach((s)=>{
           var sub = this.GanttchartData[s];
@@ -984,7 +984,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       }
     })
 
-    
+
 
     this.GanttchartData.forEach((item, index) => {
 
@@ -2380,7 +2380,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
               const task = submilestone.children[nCountTask];
               // if(task.data.parent === undefined){
               //   task.data.parent = 1
-              // } 
+              // }
               if (task.data.id === 0) {
                 task.data.id = 'T' + nCountTask + 3;
               }
@@ -2480,6 +2480,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         task: milestoneTask.taskFullName,
         startDate: milestoneTask.pUserStartDatePart,
         endDate: milestoneTask.pUserEndDatePart,
+        startTime: milestoneTask.pUserStartTimePart,
+        endTime: milestoneTask.pUserEndTimePart,
         budgetHrs: milestoneTask.budgetHours,
         resource,
         strAllocation: '',
@@ -4766,8 +4768,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       data: {
         ID: milestoneTask.id,
         task: milestoneTask.taskFullName,
-        startDate: milestoneTask.start_date,
-        endDate: milestoneTask.end_date,
+        startDate: milestoneTask.pUserStartDatePart,
+        endDate: milestoneTask.pUserEndDatePart,
+        startTime: milestoneTask.pUserStartTimePart,
+        endTime: milestoneTask.pUserEndTimePart,
         budgetHrs: milestoneTask.budgetHours,
         resource: milestoneTask.resources,
         strAllocation: milestoneTask.allocationPerDay,
