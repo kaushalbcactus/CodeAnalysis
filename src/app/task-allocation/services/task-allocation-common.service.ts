@@ -290,6 +290,7 @@ export class TaskAllocationCommonService {
     milestone.budgetHours = task ? task.budgetHours : milestone.budgetHours;
     milestone.slotColor = task ? task.slotColor : milestone.slotColor;
     milestone.DisableCascade = task ? task.DisableCascade : milestone.DisableCascade;
+    milestone.allocationColor = '';
 
     return milestone;
   }
@@ -357,10 +358,14 @@ export class TaskAllocationCommonService {
       'deallocateSlot': false,
       'taskFullName': data.Title,
       'subMilestonePresent': dbSubMilestones.length > 0 ? true : false,
-      'allocationPerDay' : data.AllocationPerDay ? data.AllocationPerDay : ''
+      'allocationPerDay' : data.AllocationPerDay ? data.AllocationPerDay : '',
+      'allocationColor': ''
     }
 
     return ganttObject;
   }
 
+  getMinsValue(val) {
+    return +val === 0 ? 0 : +val === 25 ? 15 : +val === 50 ? 30 : +val === 15 ? 25 : +val === 30 ? 50 : 75;
+  }
 }

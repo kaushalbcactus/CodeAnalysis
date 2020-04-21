@@ -579,6 +579,7 @@ export class CommonService {
 
     convertToHrsMins(hours) {
         if (hours != null) {
+          hours = '' + hours;
             if (hours.indexOf(':') > -1 || hours.indexOf('.') > -1) {
                 hours = parseFloat(hours).toFixed(2).toString();
                 const hrs = hours.indexOf(':') > -1 ? hours.split(':')[0] : hours.split('.')[0];

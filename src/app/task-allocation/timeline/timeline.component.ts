@@ -1679,7 +1679,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   // **************************************************************************************************************************************
 
   CancelChanges(milestone, type) {
-    // milestone.allocationColor = '';
     if (type === "discardAll") {
       this.loaderenable = false;
       this.changeInRestructure = false;
@@ -2626,12 +2625,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       new Date(prevNodeData.start_date) : new Date(prevNodeData.end_date));
     nodeData.pUserStart = this.commonService.calcTimeForDifferentTimeZone(prevNodeStartDate,
       this.sharedObject.currentUser.timeZone, nodeData.assignedUserTimeZone);
-    // const chkDate = nodeData.pUserStart.getHours() >= 19 && (nodeData.pUserStart.getHours() <= 23 && nodeData.pUserStart.getMinutes() < 60)
-    // nodeData.pUserStart = nodeData.pUserStart.getHours() >= 19 || nodeData.pUserStart.getHours() < 9 || prevNodeData.itemType === 'Client Review' || nodeData.itemType === 'Client Review' ?
     // new change cascade maxwell
-    nodeData.pUserStart = nodeData.pUserStart.getHours() >= 19 || nodeData.pUserStart.getHours() < 9 ?
-      this.checkStartDate(new Date(nodeData.pUserStart.getFullYear(), nodeData.pUserStart.getMonth(), (nodeData.pUserStart.getDate() + 1), 9, 0)) :
-      nodeData.pUserStart;
+    // nodeData.pUserStart = nodeData.pUserStart.getHours() >= 19 || nodeData.pUserStart.getHours() < 9 ?
+    //   this.checkStartDate(new Date(nodeData.pUserStart.getFullYear(), nodeData.pUserStart.getMonth(), (nodeData.pUserStart.getDate() + 1), 9, 0)) :
+    //   nodeData.pUserStart;
     nodeData.pUserEnd = this.checkEndDate(nodeData.pUserStart, workingHours);
 
     nodeData.pUserStartDatePart = this.getDatePart(nodeData.pUserStart);
@@ -3158,7 +3155,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   workingHoursBetweenDates(start, end) {
     let count = 0;
     for (let i = start.valueOf(); i < end.valueOf(); i = (start.setMinutes(start.getMinutes() + 1)).valueOf()) {
-      if (start.getDay() !== 0 && start.getDay() !== 6 && start.getHours() >= 9 && start.getHours() < 19) {
+      if (start.getDay() !== 0 && start.getDay() !== 6 ) { // && start.getHours() >= 9 && start.getHours() < 19
         count++;
       }
     }
@@ -3187,22 +3184,22 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     let CaculateDate = new Date(start);
     const workHours = workingHours * 60;
     while (count < workHours) {
-
-      if (EndDate.getDay() !== 0 && EndDate.getDay() !== 6 && EndDate.getHours() >= 9 && EndDate.getHours() < 19) {
+      if (EndDate.getDay() !== 0 && EndDate.getDay() !== 6 ) { // && EndDate.getHours() >= 9 && EndDate.getHours() < 19
         EndDate = new Date(EndDate.setMinutes(EndDate.getMinutes() + 1));
         CaculateDate = new Date(EndDate);
-      } else if (EndDate.getHours() === 19 && EndDate.getMinutes() === 0) {
-
-        CaculateDate = new Date(EndDate);
-        EndDate = new Date(EndDate.setMinutes(EndDate.getMinutes() + 1));
-        count--;
-      } else {
-        EndDate = new Date(EndDate.getFullYear(), EndDate.getMonth(), (EndDate.getDate() + 1), 9, 0);
-        CaculateDate = new Date(EndDate);
-        count--;
       }
+      count++;
+      // else if (EndDate.getHours() === 19 && EndDate.getMinutes() === 0) {
 
-      if (EndDate.getHours() >= 9 && EndDate.getHours() <= 19) { count++; }
+      //   CaculateDate = new Date(EndDate);
+      //   EndDate = new Date(EndDate.setMinutes(EndDate.getMinutes() + 1));
+      //   count--;
+      // } else {
+      //   EndDate = new Date(EndDate.getFullYear(), EndDate.getMonth(), (EndDate.getDate() + 1), 9, 0);
+      //   CaculateDate = new Date(EndDate);
+      //   count--;
+      // }
+      // if (EndDate.getHours() >= 9 && EndDate.getHours() <= 19) { }
     }
     return CaculateDate;
   }

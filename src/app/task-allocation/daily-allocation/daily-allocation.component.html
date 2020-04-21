@@ -3,7 +3,7 @@
   <div id="dailyAllocationLoaderText">Loading...</div>
 </div>
 <div id="mainContent" [hidden]="hideTable">
-  <div
+  <!-- <div
     fxLayout="row"
     fxLayoutAlign="space-between center"
     class=""
@@ -13,7 +13,7 @@
       <label>Above maximum working Hrs</label>
       <div class="color-box" style="background-color: orange;"></div>
     </div>
-  </div>
+  </div> -->
   <div class="table">
     <p-table [columns]="cols" [value]="newAllocation">
       <ng-template pTemplate="header" let-columns>
@@ -28,7 +28,7 @@
             Mins
           </th>
           <th class="valueCol">
-            Value
+            Budget Hrs
           </th>
         </tr>
       </ng-template>
@@ -54,11 +54,24 @@
             ></app-ngslider>
           </td>
           <td>
-            <span>
+              <div>
               {{
-                rowData.Allocation.valueHrs + rowData.Allocation.valueMins / 100
+                rowData.Allocation.valueHrs + '.' + allocationCommon.getMinsValue(rowData.Allocation.valueMins)
               }}
-            </span>
+            </div>
+            <div class="timepicker">
+               <!-- ({{rowData.Allocation.valueHrs + ':' + rowData.Allocation.valueMins}}) -->
+              <ngx-material-timepicker-toggle [for]="picker"></ngx-material-timepicker-toggle>
+              <ngx-material-timepicker
+                [preventOverlayClick]="true"
+                #picker
+                (closed)="checkAllocation(picker, rowData)"
+                [defaultTime]="rowData.Allocation.valueHrs + ':' + rowData.Allocation.valueMins"
+                [ngxMaterialTimepickerTheme]="darkTheme"
+                [minutesGap]="15"
+              >
+              </ngx-material-timepicker>
+            </div>
           </td>
         </tr>
       </ng-template>
