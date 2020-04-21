@@ -18,6 +18,7 @@ import { Table } from 'primeng/table';
 import { FeedbackPopupComponent } from '../../qms/qms/reviewer-detail-view/feedback-popup/feedback-popup.component';
 import { ViewUploadDocumentDialogComponent } from 'src/app/shared/view-upload-document-dialog/view-upload-document-dialog.component';
 import { Subscription } from 'rxjs';
+import { ConfirmationDialogComponent } from 'src/app/shared/confirmation-dialog/confirmation-dialog.component';
 
 
 interface DateObj {
@@ -618,12 +619,12 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
         return false;
       }
       if (task.TaskComments) {
-
-        this.confirmationService.confirm({
-          message: 'Are you sure that you want to proceed?',
+        const confirmref = this.dialogService.open(ConfirmationDialogComponent, {
           header: 'Confirmation',
-          icon: 'pi pi-exclamation-triangle',
-          accept: async () => {
+          data : 'Are you sure that you want to proceed?'
+        });
+        confirmref.onClose.subscribe(async (Confirmation: any) => {
+          if (Confirmation) {
             task.parent = 'Dashboard';
             task.Status = 'Completed';
             const qmsTasks = await this.myDashboardConstantsService.callQMSPopup(task);
@@ -632,10 +633,26 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
             } else {
               this.saveTask(task);
             }
-          },
-          reject: () => {
-          }
+          } 
         });
+
+        // this.confirmationService.confirm({
+        //   message: 'Are you sure that you want to proceed?',
+        //   header: 'Confirmation',
+        //   icon: 'pi pi-exclamation-triangle',
+        //   accept: async () => {
+        //     task.parent = 'Dashboard';
+        //     task.Status = 'Completed';
+        //     const qmsTasks = await this.myDashboardConstantsService.callQMSPopup(task);
+        //     if (qmsTasks.length) {
+        //       this.feedbackPopupComponent.openPopup(qmsTasks, task);
+        //     } else {
+        //       this.saveTask(task);
+        //     }
+        //   },
+        //   reject: () => {
+        //   }
+        // });
 
       } else {
         this.getAddUpdateComment(task, true);
