@@ -1,7 +1,7 @@
 <div class='taskButton' fxLayout="row" fxLayoutAlign="end center">
 
-    <button type="button" pButton icon="pi pi-save"
-        [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="saveTask()" label="Save" class="saveTaskButton"></button>
+    <button type="button" pButton icon="pi pi-save" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }"
+        (click)="saveTask()" label="Save" class="saveTaskButton"></button>
     <button type="button" pButton icon="pi pi-times" (click)="reset();" label="Cancel" class="ui-button-secondary"
         style="background-color:ghostwhite;"></button>
 
@@ -54,8 +54,8 @@
                     formControlName="budgetHrs" min="0" value="0" step="0.25">
             </div>
             <div class="p-col-2">
-                <button pButton type="button" (click)="viewAllocation('')"
-                    style="margin-left: 12px;" class="saveTaskButton" icon='pi pi-sliders-h'></button>
+                <button pButton type="button" (click)="viewAllocation('')" style="margin-left: 12px;"
+                    class="saveTaskButton" icon='pi pi-sliders-h'></button>
             </div>
             <div class="p-col-2">
                 Resource
@@ -74,6 +74,7 @@
             </div>
         </div>
         <div class="p-grid p-col mt-20">
+
             <div class="p-col-2">
                 Disable Cascade
             </div>

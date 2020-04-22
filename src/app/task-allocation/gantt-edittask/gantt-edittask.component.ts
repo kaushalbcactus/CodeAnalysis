@@ -62,7 +62,6 @@ export class GanttEdittaskComponent implements OnInit {
   ngOnInit() {
     this.editTaskForm.get('tat').setValue(false);
     this.editTaskForm.get('disableCascade').setValue(false);
-
     this.assignedUsers = this.config.data.assignedUsers;
     this.task = this.config.data.task;
     this.onLoad(this.task);
@@ -72,8 +71,8 @@ export class GanttEdittaskComponent implements OnInit {
     
     this.editTaskForm.patchValue({
       budgetHrs: task.budgetHours,
-      startDate: task.pUserStart,
-      endDate: task.pUserEnd,
+      startDate: task.start_date,
+      endDate: task.end_date,
       tat: task.tat,
       disableCascade: task.DisableCascade,
       resource: task.AssignedTo,

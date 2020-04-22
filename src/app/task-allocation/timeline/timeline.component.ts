@@ -930,8 +930,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
   showGanttChart() {
-    this.selectedScale = { label: 'Day Scale', value: '1' }
-
     this.createGanttDataAndLinks()
 
     console.log(this.GanttchartData)
@@ -1079,6 +1077,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
 
   loadComponent() {
+    this.selectedScale = this.selectedScale || { label: 'Day Scale', value: '1' };
+    
     this.ganttChart.clear();
     this.ganttChart.remove();
     const factory = this.resolver.resolveComponentFactory(GanttChartComponent);
@@ -1090,7 +1090,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     gantt.init(this.ganttComponentRef.instance.ganttContainer.nativeElement);
     gantt.clearAll();
     this.ganttComponentRef.instance.onLoad(this.taskAllocateCommonService.ganttParseObject, this.resource);
-    this.setScale({ label: 'Day Scale', value: '1' });
+    this.setScale(this.selectedScale);
     this.ganttComponentRef.instance.isLoaderHidden = false;
 
     var menus = [
@@ -1626,6 +1626,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       if (task.id == this.updatedTasks.id && task.edited == false) {
         task.start_date = task.pUserStart;
         task.end_date = task.pUserEnd;
+        task.open = true;
       }
     })
     this.taskAllocateCommonService.ganttParseObject = allTasks;
