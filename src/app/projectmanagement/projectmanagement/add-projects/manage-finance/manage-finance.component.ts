@@ -2065,8 +2065,16 @@ export class ManageFinanceComponent implements OnInit {
 
     console.log(batchURL);
     if (batchURL.length) {
-      this.commonService.SetNewrelic('projectManagment', 'addproj-manageFinance', 'GetProjFinanceProjFinanceBreakupPBBInvoices');
+      this.commonService.SetNewrelic('projectManagment', 'manageFinance', 'addupdateSchedulesFTEBudget');
       const res = await this.spServices.executeBatch(batchURL);
+      debugger
+      console.log(res);
+
+      if (res && res.filter(c => c.listName === 'Schedules')) {
+        const Schedules = res.filter(c => c.listName === 'Schedules').map(c => c.retItems)
+        await this.moveMilestoneAndTask(Schedules);
+      }
+
     }
 
     this.pmObject.isMainLoaderHidden = true;
@@ -2419,5 +2427,67 @@ export class ManageFinanceComponent implements OnInit {
       }
     }
 
+  }
+
+
+  async moveMilestoneAndTask(Schedules) {
+
+    let batchURL = [];
+    let batchResults = [];
+    let finalArray = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    for (const schedule of Schedules) {
+
+      const fileUrl = this.global.sharePointPageObject.serverRelativeUrl +
+        '/Lists/' + this.constant.listNames.Schedules.name + '/' + schedule.ID + '_.000';
+      let moveFileUrl = this.global.sharePointPageObject.serverRelativeUrl +
+        '/Lists/' + this.constant.listNames.Schedules.name + '/' +
+        this.projObj.ProjectCode;
+      if (schedule.Milestone === 'Select one') {
+        moveFileUrl = moveFileUrl + '/' + schedule.ID + '_.000';
+        const milestoneURL = this.global.sharePointPageObject.webAbsoluteUrl +
+          '/_api/Web/Lists/getByTitle(\'' + this.constant.listNames.Schedules.name + '\')/Items' +
+          '(' + schedule.ID + ')';
+        const moveData = {
+          __metadata: { type: this.constant.listNames.Schedules.type },
+          FileLeafRef: schedule.Title
+        };
+        const url = this.global.sharePointPageObject.webAbsoluteUrl +
+          '/_api/web/getfolderbyserverrelativeurl(\'' + fileUrl + '\')/moveto(newurl=\'' + moveFileUrl + '\')';
+        const moveMileObj = Object.assign({}, options);
+        moveMileObj.url = url;
+        moveMileObj.type = 'POST';
+        moveMileObj.listName = this.constant.listNames.Schedules.name;
+        batchURL.push(moveMileObj);
+        const moveMilewithDataObj = Object.assign({}, options);
+        moveMilewithDataObj.url = milestoneURL;
+        moveMilewithDataObj.data = moveData;
+        moveMilewithDataObj.type = 'PATCH';
+        moveMilewithDataObj.listName = this.constant.listNames.Schedules.name;
+        batchURL.push(moveMilewithDataObj);
+      } else {
+        moveFileUrl = moveFileUrl + '/' + schedule.Milestone + '/' + schedule.ID + '_.000';
+        const url = this.global.sharePointPageObject.webAbsoluteUrl +
+          '/_api/web/getfilebyserverrelativeurl(\'' + fileUrl + '\')/moveto(newurl=\'' + moveFileUrl + '\',flags=1)';
+        const moveTaskObj = Object.assign({}, options);
+        moveTaskObj.url = url;
+        moveTaskObj.type = 'POST';
+        moveTaskObj.listName = this.constant.listNames.Schedules.name;
+        batchURL.push(moveTaskObj);
+      }
+    }
+    if (batchURL.length) {
+      this.commonService.SetNewrelic('projectManagment', 'Manage-Finance', 'MoveSchedules');
+      batchResults = await this.spServices.executeBatch(batchURL);
+      console.log(batchResults);
+      finalArray = [...finalArray, ...batchResults];
+    }
+
+    this.pmObject.isMainLoaderHidden = true;
   }
 }
