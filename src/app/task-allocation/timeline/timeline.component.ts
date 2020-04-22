@@ -254,6 +254,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.cdRef.detectChanges();
   }
   ngOnDestroy() {
+    gantt.detachAllEvents();
   }
 
 
@@ -1083,8 +1084,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.ganttChart.remove();
     const factory = this.resolver.resolveComponentFactory(GanttChartComponent);
     this.ganttComponentRef = this.ganttChart.createComponent(factory);
-    // this.ganttChart.clear();
-    // this.ganttChart.remove();
     gantt.serverList("AssignedTo", this.resource);
     // this.ganttComponentRef.instance.isLoaderHidden = false;
     gantt.init(this.ganttComponentRef.instance.ganttContainer.nativeElement);
@@ -1499,6 +1498,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         if (task.id == this.updatedTasks.id) {
           task.budgetHours = this.budgetHrs;
           task.edited = true;
+          task.open = true;
         }
       })
 
@@ -1554,6 +1554,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         if (task.type == "milestone") {
           if (task.title.replace(' (Current)', '') == this.updatedTasks.milestone) {
             task.edited = true;
+            task.open = true;
           }
         }
       })
@@ -1623,9 +1624,16 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     var allTasks = gantt.serialize();
 
     allTasks.data.forEach((task) => {
+      if(this.updatedTasks.itemType === 'milestone'){
+        if (task.id == this.updatedTasks.id) {
+          task.open = true;
+        }
+      }
       if (task.id == this.updatedTasks.id && task.edited == false) {
         task.start_date = task.pUserStart;
         task.end_date = task.pUserEnd;
+      }
+      if(task.title.replace(' (Current)', '') === this.updatedTasks.milestone){
         task.open = true;
       }
     })
