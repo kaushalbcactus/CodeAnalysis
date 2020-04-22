@@ -226,22 +226,33 @@ export class DailyAllocationComponent implements OnInit {
     const budgetHours = +allocationData.budgetHrs;
     const calcPerDay = this.common.roundToPrecision(budgetHours / businessDays, 0.5);
     let allocationPerDay = calcPerDay;
-    const strAllocationPerDay = this.common.convertToHrsMins(allocationPerDay);
+    // const strAllocationPerDay = this.common.convertToHrsMins(allocationPerDay);
+    // const strAvailableDay = this.common.subtractHrsMins(availableStartDayHrs, strAllocationPerDay, true);
+    // allocationPerDay = strAvailableDay.indexOf('-') > -1 ? this.common.convertFromHrsMins(availableStartDayHrs) : allocationPerDay;
+    // const extraHrs = this.common.convertFromHrsMins(strAvailableDay.replace('-', ''));
+    // const strEndAvailableDay = this.common.subtractHrsMins(availableEndDayHrs, strAllocationPerDay, true);
+    // const endDayAvailableHrs = this.common.convertFromHrsMins(strEndAvailableDay);
+    // const considerEndDate = strAvailableDay.indexOf('-') > -1 && extraHrs < endDayAvailableHrs ? true : false;
+
     const resource = Object.keys(this.resourceCapacity).length ? this.resourceCapacity : await this.getResourceCapacity(allocationData);
     const resourceSliderMaxHrs = resource.maxHrs + 3;
     const resourceDailyDetails = resource.dates.filter(d => d.userCapacity !== 'Leave');
     let remainingBudgetHrs = budgetHours;
     let i = 0;
     for (const detail of resourceDailyDetails) {
+      // let extraHrsPerDay = 0;
       // if (i === 0) {
-      //   const strAvailableDay = this.common.subtractHrsMins(availableStartDayHrs, strAllocationPerDay, true);
-      //   allocationPerDay = strAvailableDay.indexOf('-') > -1 ? this.common.convertFromHrsMins(availableStartDayHrs) : allocationPerDay;
-      //   // remainingBudgetHrs = remainingBudgetHrs + this.common.convertFromHrsMins(strAvailableDay);
-      // } else if (i === resourceDailyDetails.length - 1) {
+
+      //   const numMiddleDays = resourceDailyDetails.length > 1 ? considerEndDate ?
+      //                         resourceDailyDetails.length - 1 : resourceDailyDetails.length - 2 : 0;
+      //   extraHrsPerDay = this.common.roundToPrecision(extraHrs / numMiddleDays, 0.5);
+      // }
+      // else if (i === resourceDailyDetails.length - 1) {
       //   const strAvailableDay = this.common.subtractHrsMins(availableEndDayHrs, strAllocationPerDay, true);
       //   allocationPerDay = strAvailableDay.indexOf('-') > -1 ? this.common.convertFromHrsMins(availableEndDayHrs) : allocationPerDay;
       // }
-      const totalHrs = allocationPerDay < remainingBudgetHrs ? allocationPerDay : remainingBudgetHrs;
+      let totalHrs = allocationPerDay < remainingBudgetHrs ? allocationPerDay : remainingBudgetHrs;
+      // totalHrs = i !== 0 && considerEndDate ? totalHrs + extraHrsPerDay : totalHrs;
       const maximumHrs = totalHrs < resourceSliderMaxHrs ? resourceSliderMaxHrs : totalHrs;
       remainingBudgetHrs = remainingBudgetHrs - allocationPerDay;
       const strTotalHrs = this.common.convertToHrsMins(totalHrs);

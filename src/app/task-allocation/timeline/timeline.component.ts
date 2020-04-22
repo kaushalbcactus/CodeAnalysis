@@ -969,9 +969,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
             item.parent = subMile.id;
           }
         })
-        subIndex.forEach((s)=>{
+        subIndex.forEach((s) => {
           var sub = this.GanttchartData[s];
-          var m = this.GanttchartData[s-1];
+          var m = this.GanttchartData[s - 1];
           sub.parent = m.id
         })
       } else {
@@ -1474,7 +1474,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       data: data,
       width: '65vw',
 
-      header: 'Edit Task ('+ data.task.milestone + ' - ' + data.task.title + ')' ,
+      header: 'Edit Task (' + data.task.milestone + ' - ' + data.task.title + ')',
       contentStyle: { 'max-height': '90vh', 'overflow': 'auto' },
       closable: false
     });
@@ -1875,22 +1875,22 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   // *************************************************************************************************
   //  Add Comment
   // **************************************************************************************************
-  openComment(task, rowNode) {
-    this.tempComment = task.scope;
-    this.task = task;
-    this.displayComment = true;
+  // openComment(task, rowNode) {
+  //   this.tempComment = task.scope;
+  //   this.task = task;
+  //   this.displayComment = true;
 
-    if (rowNode.parent !== null) {
-      if (rowNode.parent.parent === null) {
-        rowNode.parent.data.edited = true;
-      } else {
-        rowNode.parent.parent.data.edited = true;
-        rowNode.parent.data.edited = true;
+  //   if (rowNode.parent !== null) {
+  //     if (rowNode.parent.parent === null) {
+  //       rowNode.parent.data.edited = true;
+  //     } else {
+  //       rowNode.parent.parent.data.edited = true;
+  //       rowNode.parent.data.edited = true;
 
-      }
-    }
-    task.edited = true;
-  }
+  //     }
+  //   }
+  //   task.edited = true;
+  // }
 
   // *************************************************************************************************
 
@@ -1909,7 +1909,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
 
   openPopup(data, rowNode) {
-
     this.taskMenu = [];
     if (data.type === 'task' && data.milestoneStatus !== 'Completed' &&
       (data.status !== 'Completed' && data.status !== 'Abandon' && data.status !== 'Auto Closed'
@@ -1920,20 +1919,31 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       ];
 
       if (data.itemType !== 'Client Review' && data.itemType !== 'Send to client') {
-        this.taskMenu.push({ label: 'Scope', icon: 'pi pi-comment', command: (event) => this.openComment(data, rowNode) });
-        if (data.AssignedTo.ID !== undefined && data.AssignedTo.ID > -1 && data.user !== 'QC' && data.user !== 'Edit') {
-          this.taskMenu.push({ label: 'User Capacity', icon: 'pi pi-camera', command: (event) => this.getUserCapacity(data) },
-            { label: 'View Allocation', icon: 'pi pi-sliders-h', command: (event) => this.viewAllocation(data, '') },
-            { label: 'Equal Split', icon: 'pi pi-sliders-h', command: (event) => this.viewAllocation(data, 'Equal') });
+        if (data.slotType.indexOf('Slot') < 0) {
+          this.taskMenu.push(
+            { label: 'Edit Allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, '') },
+            { label: 'Equal Split', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, 'Equal') }
+          );
+          if (data.AssignedTo.ID !== undefined && data.AssignedTo.ID > -1 && data.user !== 'QC' && data.user !== 'Edit') {
+            this.taskMenu.push({ label: 'User Capacity', icon: 'pi pi-camera', command: (event) => this.getUserCapacity(data) });
+          }
         }
       }
     }
   }
 
-  openPopupEdit(data, rowNode) {
+  openPopupEdit(data) {
     this.taskMenu = [];
     if (data.itemType !== 'Client Review' && data.itemType !== 'Send to client') {
-      this.taskMenu.push({ label: 'Scope', icon: 'pi pi-comment', command: (event) => this.openComment(data, rowNode) });
+      if (data.slotType.indexOf('Slot') < 0) {
+        this.taskMenu.push(
+          { label: 'Edit Allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, '') },
+          { label: 'Equal Split', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, 'Equal') }
+        );
+      }
+    }
+    if (data.editMode) {
+      this.taskMenu.push({ label: 'Cancel', icon: 'pi pi-times-circle', command: (event) => this.CancelChanges(data,'task') });
     }
   }
 
@@ -2351,7 +2361,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         data.push(milestone.data)
       }
       if (milestone.data.itemType === 'Client Review') {
-        if(milestone.data.parent === undefined){
+        if (milestone.data.parent === undefined) {
           milestone.data.parent = 0
         }
         if (milestone.data.id === 0) {
@@ -2474,7 +2484,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     const eqgTasks = ['Edit', 'Quality', 'Graphics', 'Client Review', 'Send to client'];
 
     if (!eqgTasks.find(t => t === milestoneTask.itemType) && milestoneTask.pUserStartDatePart &&
-         resource.length && milestoneTask.pUserEndDatePart && milestoneTask.budgetHours) {
+      resource.length && milestoneTask.pUserEndDatePart && milestoneTask.budgetHours) {
       const allocationData: IDailyAllocationTask = {
         ID: milestoneTask.id,
         task: milestoneTask.taskFullName,
@@ -2650,7 +2660,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   // tslint:enable
 
   setStartAndEnd(node) {
-    if(node.data.itemType == 'Client Review') {
+    if (node.data.itemType == 'Client Review') {
       node.data.pEnd = node.children !== undefined && node.children.length > 0 ? this.sortDates(node, 'end') : node.data.pEnd;
       node.data.pStart = node.children !== undefined && node.children.length > 0 ? this.sortDates(node, 'start') : node.data.pStart;
       //node.data.pUserStart = node.data.pStart;
@@ -2660,10 +2670,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       node.data.pUserEndDatePart = this.getDatePart(node.data.pUserEnd);
       node.data.pUserEndTimePart = this.getTimePart(node.data.pUserEnd);
       node.data.tatVal = this.commonService.calcBusinessDays(new Date(node.data.pStart), new Date(node.data.pEnd));
-    }
-    else if (node.data.status !== 'Completed' ) {
+    } else if (node.data.status !== 'Completed') {
       node.data.pEnd = node.children !== undefined && node.children.length > 0 ? this.sortDates(node, 'end') : node.data.pEnd;
       node.data.pStart = node.children !== undefined && node.children.length > 0 ? this.sortDates(node, 'start') : node.data.pStart;
+      node.data.end_date = node.data.pEnd;
       node.data.pUserStart = node.data.pStart;
       node.data.pUserEnd = node.data.pEnd;
       node.data.pUserStartDatePart = this.getDatePart(node.data.pUserStart);
@@ -3168,7 +3178,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   workingHoursBetweenDates(start, end) {
     let count = 0;
     for (let i = start.valueOf(); i < end.valueOf(); i = (start.setMinutes(start.getMinutes() + 1)).valueOf()) {
-      if (start.getDay() !== 0 && start.getDay() !== 6 ) { // && start.getHours() >= 9 && start.getHours() < 19
+      if (start.getDay() !== 0 && start.getDay() !== 6) { // && start.getHours() >= 9 && start.getHours() < 19
         count++;
       }
     }
@@ -3197,7 +3207,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     let CaculateDate = new Date(start);
     const workHours = workingHours * 60;
     while (count < workHours) {
-      if (EndDate.getDay() !== 0 && EndDate.getDay() !== 6 ) { // && EndDate.getHours() >= 9 && EndDate.getHours() < 19
+      if (EndDate.getDay() !== 0 && EndDate.getDay() !== 6) { // && EndDate.getHours() >= 9 && EndDate.getHours() < 19
         EndDate = new Date(EndDate.setMinutes(EndDate.getMinutes() + 1));
         CaculateDate = new Date(EndDate);
       }
@@ -3597,7 +3607,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         TATBusinessDays: milestoneTask.tatVal,
         AssignedToId: milestoneTask.AssignedTo ? milestoneTask.AssignedTo.hasOwnProperty('ID') ? milestoneTask.AssignedTo.ID : -1 : -1,
         TimeZone: milestoneTask.assignedUserTimeZone.toString(),
-        Comments: milestoneTask.scope,
+        // Comments: milestoneTask.scope,
         Status: milestoneTask.status,
         NextTasks: this.setPreviousAndNext(milestoneTask.nextTask, milestoneTask.milestone, this.oProjectDetails.projectCode),
         PrevTasks: this.setPreviousAndNext(milestoneTask.previousTask, milestoneTask.milestone, this.oProjectDetails.projectCode),
@@ -3627,7 +3637,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         TATBusinessDays: milestoneTask.tatVal,
         AssignedToId: milestoneTask.AssignedTo ? milestoneTask.AssignedTo.ID ? milestoneTask.AssignedTo.ID : -1 : -1,
         TimeZone: milestoneTask.assignedUserTimeZone.toString(),
-        Comments: milestoneTask.scope ? milestoneTask.scope : '',
+        // Comments: milestoneTask.scope ? milestoneTask.scope : '',
         Status: milestoneTask.status,
         NextTasks: this.setPreviousAndNext(milestoneTask.nextTask, milestoneTask.milestone, this.oProjectDetails.projectCode),
         PrevTasks: this.setPreviousAndNext(milestoneTask.previousTask, milestoneTask.milestone, this.oProjectDetails.projectCode),
@@ -4770,7 +4780,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     return index; // or item.id
   }
 
-  viewAllocation(milestoneTask, allocationType): void {
+  editAllocation(milestoneTask, allocationType): void {
     milestoneTask.resources = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
       return objt.UserName.ID === milestoneTask.AssignedTo.ID;
     });
@@ -4816,9 +4826,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     }
   }
 
-  showOverlayPanel(event, rowData, dailyAllocateOP,target?) {
+  showOverlayPanel(event, rowData, dailyAllocateOP, target?) {
     const allocationPerDay = rowData.allocationPerDay ? rowData.allocationPerDay : '';
-    dailyAllocateOP.showOverlay(event, allocationPerDay,target);
+    dailyAllocateOP.showOverlay(event, allocationPerDay, target);
   }
 }
 
