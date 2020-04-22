@@ -707,6 +707,7 @@ body .ui-dropdown-panel .ui-dropdown-filter-container .ui-dropdown-filter-icon {
   }
 
   .saveTaskButton {
+      margin-right: 15px !important;
       background-color: #db1721 !important;
       border: 1px solid #db1721 !important;
   }
@@ -718,3 +719,15 @@ body .ui-dropdown-panel .ui-dropdown-filter-container .ui-dropdown-filter-icon {
   .ui-dropdown {
     min-width: 10.5em !important;
   }
+
+  .footerBtn .cancelBtn{
+    color: #333333 !important; 
+    border: 1px solid #f4f4f4 !important;
+    background-color: ghostwhite !important;
+  }
+
+  .footerBtn{
+      margin-top: 15px;
+      float: right;
+  }
+

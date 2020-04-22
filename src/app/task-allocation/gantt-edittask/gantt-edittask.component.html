@@ -73,20 +73,24 @@
                 </p-dropdown>
             </div>
         </div>
-        <div class="p-grid p-col mt-20">
 
-            <div class="p-col-2">
-                Disable Cascade
-            </div>
-            <div class="p-col-4">
-                <p-inputSwitch formControlName="disableCascade"></p-inputSwitch>
-            </div>
-            <div class="p-col-2">
-                TAT
-            </div>
-            <div class="p-col-4">
-                <p-inputSwitch formControlName="tat"></p-inputSwitch>
-            </div>
+        <div class="p-grid p-col mt-20">
+            <ng-container *ngIf="editTaskObject.isDisableCascade">
+                <div class="p-col-2">
+                    Disable Cascade
+                </div>
+                <div class="p-col-4">
+                    <p-inputSwitch formControlName="disableCascade"></p-inputSwitch>
+                </div>
+            </ng-container>
+            <ng-container *ngIf="editTaskObject.isTat">
+                <div class="p-col-2">
+                    TAT
+                </div>
+                <div class="p-col-4">
+                    <p-inputSwitch formControlName="tat"></p-inputSwitch>
+                </div>
+            </ng-container>
         </div>
     </form>
 

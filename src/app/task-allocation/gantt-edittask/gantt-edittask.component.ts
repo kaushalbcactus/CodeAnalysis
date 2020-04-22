@@ -20,6 +20,10 @@ export class GanttEdittaskComponent implements OnInit {
   editTaskForm: FormGroup;
   task: any;
   assignedUsers: any;
+  editTaskObject = {
+    isTat: true,
+    isDisableCascade: true
+  }
   // @ViewChild('dailyAllocateOP', { static: false }) dailyAllocateOP: DailyAllocationOverlayComponent;
 
 
@@ -62,12 +66,29 @@ export class GanttEdittaskComponent implements OnInit {
   ngOnInit() {
     this.editTaskForm.get('tat').setValue(false);
     this.editTaskForm.get('disableCascade').setValue(false);
+    this.editTaskForm.controls['budgetHrs'].enable();
     this.assignedUsers = this.config.data.assignedUsers;
     this.task = this.config.data.task;
     this.onLoad(this.task);
   }
 
   onLoad(task) {
+
+    if(task.itemType === 'Client Review' || task.itemType === 'Send to client'){
+      var bHrs = 0 || task.budgetHours;
+      this.editTaskForm.get('budgetHrs').setValue(bHrs);
+      this.editTaskForm.controls['budgetHrs'].disable();
+    }
+    if(task.itemType === 'Client Review'){
+      this.editTaskObject.isDisableCascade = false;
+      this.editTaskObject.isTat = false;
+    } else if(task.itemType === 'Send to client') {
+      this.editTaskObject.isDisableCascade = true;
+      this.editTaskObject.isTat = false;
+    } else if(task.slotType === 'Slot') {
+      this.editTaskObject.isDisableCascade = true;
+      this.editTaskObject.isTat = false;
+    }
     
     this.editTaskForm.patchValue({
       budgetHrs: task.budgetHours,
