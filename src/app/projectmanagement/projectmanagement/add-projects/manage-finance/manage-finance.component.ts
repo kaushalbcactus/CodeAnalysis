@@ -421,6 +421,20 @@ export class ManageFinanceComponent implements OnInit {
   async reduceBudget() {
     if (this.selectedReason && this.selectedReasonType && this.newBudgetHrs) {
 
+      if (this.newBudgetHrs <= 0) {
+        this.messageService.add({
+          key: 'manageFinance', severity: 'error', summary: 'Error Message', sticky: true,
+          detail: 'Budget hours cannot be less than or equal to 0.'
+        });
+        return;
+      }
+      if (this.newBudgetHrs > this.budgetData[0].budget_hours) {
+        this.messageService.add({
+          key: 'manageFinance', severity: 'error', summary: 'Error Message', sticky: true,
+          detail: 'New budget hours can not be greater than old budget hours.'
+        });
+        return;
+      }
       if (this.budgetData[0].budget_hours === this.newBudgetHrs &&
         this.selectedReasonType !== this.pmConstant.PROJECT_BUDGET_DECREASE_REASON.INPUT_ERROR) {
         this.messageService.add({
@@ -1877,6 +1891,8 @@ export class ManageFinanceComponent implements OnInit {
           let Resources;
 
           const selectedDateMonth = this.pmConstant.MONTH_NAMES[this.selectedProposedEndDate.getMonth()];
+
+          const dbProposedDateMonth = this.pmConstant.MONTH_NAMES[this.dbProposedDate.getMonth()];
           for (let i = 0; i < months.length; i++) {
 
             if (!Resources) {
@@ -1896,6 +1912,12 @@ export class ManageFinanceComponent implements OnInit {
                   Actual_x0020_End_x0020_Date: months[i].monthEndDay,
                   DueDate: months[i].monthEndDay,
                 };
+
+                if(milestone.Title !== dbProposedDateMonth){
+                  milestoneUpdate.data.Status = this.constant.STATUS.NOT_CONFIRMED;
+                  milestoneUpdate.data.Actual_x0020_Start_x0020_Date=months[i].monthStartDay;
+                  milestoneUpdate.data.StartDate=months[i].monthStartDay;
+                }
                 milestoneUpdate.type = 'PATCH';
                 milestoneUpdate.listName = this.constant.listNames.Schedules.name;
                 batchURL.push(milestoneUpdate);
@@ -1916,6 +1938,12 @@ export class ManageFinanceComponent implements OnInit {
                   } else if (task.Task === 'Blocking') {
                     const businessDay = this.commonService.calcBusinessDays(task.StartDate, months[i].monthEndDay);
                     taskUpdate.data.ExpectedTime = '' + businessDay * Resources[0].MaxHrs;
+                  }
+
+                  if(milestone.Title !== dbProposedDateMonth){
+                    taskUpdate.data.Status = this.constant.STATUS.NOT_CONFIRMED;
+                    taskUpdate.data.Actual_x0020_Start_x0020_Date=months[i].monthStartDay;
+                    taskUpdate.data.StartDate=months[i].monthStartDay;
                   }
                   taskUpdate.type = 'PATCH';
                   taskUpdate.listName = this.constant.listNames.Schedules.name;
