@@ -2065,10 +2065,16 @@ export class ManageFinanceComponent implements OnInit {
 
     console.log(batchURL);
     if (batchURL.length) {
-      this.commonService.SetNewrelic('projectManagment', 'addproj-manageFinance', 'GetProjFinanceProjFinanceBreakupPBBInvoices');
+      this.commonService.SetNewrelic('projectManagment', 'manageFinance', 'addupdateSchedulesFTEBudget');
       const res = await this.spServices.executeBatch(batchURL);
-    }
+      debugger
+      console.log(res);
 
+      if (res && res.filter(c => c.listName === 'Schedules')) {
+        const Schedules = res.filter(c => c.listName === 'Schedules')
+        await this.pmCommonService.moveMilestoneAndTask(Schedules, this.projObj.ProjectCode);
+      }
+    }
     this.pmObject.isMainLoaderHidden = true;
     this.messageService.add({
       key: 'manageFinance', severity: 'success', summary: 'Success Message', sticky: true,
@@ -2085,8 +2091,6 @@ export class ManageFinanceComponent implements OnInit {
         }
       }
     }, this.pmConstant.TIME_OUT);
-
-
     return returnObj;
   }
   /**
@@ -2418,6 +2422,5 @@ export class ManageFinanceComponent implements OnInit {
         return data;
       }
     }
-
   }
 }

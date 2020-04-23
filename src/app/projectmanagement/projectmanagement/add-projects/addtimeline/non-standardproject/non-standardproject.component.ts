@@ -401,45 +401,26 @@ export class NonStandardprojectComponent implements OnInit {
                 this.pmObject.addSOW.isStatusDisabled = true;
               }
             }
-            this.pmObject.isMainLoaderHidden = false;
-            await this.pmCommonService.addUpdateProject();
-            this.messageService.add({
-              key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
-              detail: 'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode
-            });
-            setTimeout(() => {
-              this.pmObject.isAddProjectVisible = false;
-              if (this.router.url === '/projectMgmt/allProjects') {
-                this.dataService.publish('reload-project');
-              } else {
-                this.pmObject.allProjectItems = [];
-                this.router.navigate(['/projectMgmt/allProjects']);
-              }
-            }, this.pmConstant.TIME_OUT);
+            this.callAddUpdateProject();
           });
         }
         else {
-          this.pmObject.isMainLoaderHidden = false;
-          await this.pmCommonService.addUpdateProject();
-          this.messageService.add({
-            key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
-            detail: 'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode
-          });
-          setTimeout(() => {
-            this.pmObject.isAddProjectVisible = false;
-            if (this.router.url === '/projectMgmt/allProjects') {
-              this.dataService.publish('reload-project');
-            } else {
-              this.pmObject.allProjectItems = [];
-              this.router.navigate(['/projectMgmt/allProjects']);
-            }
-          }, this.pmConstant.TIME_OUT);
+          this.callAddUpdateProject();
         }
       }
-
-
     }
   }
+
+  async callAddUpdateProject() {
+    this.pmObject.isMainLoaderHidden = false;
+    await this.pmCommonService.addUpdateProject();
+    this.messageService.add({
+      key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
+      detail: 'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode
+    });
+    this.pmCommonService.reloadPMPage();
+  }
+
   goToProjectAttributes() {
     this.pmObject.activeIndex = 2;
   }

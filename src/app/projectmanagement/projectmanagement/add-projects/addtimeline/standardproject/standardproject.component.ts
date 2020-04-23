@@ -424,7 +424,7 @@ export class StandardprojectComponent implements OnInit {
     const result = await this.spService.readItems(this.constants.listNames.StandardServices.name, standardServiceOptions);
     if (result && result.length) {
       result.forEach(element => {
-        if(templates.indexOf(element.Title) > -1) {
+        if (templates.indexOf(element.Title) > -1) {
           this.standardServices.push({ label: element.Title, value: element });
         }
       });
@@ -2069,45 +2069,25 @@ export class StandardprojectComponent implements OnInit {
                 this.pmObject.addSOW.isStatusDisabled = true;
               }
             }
-            this.pmObject.isMainLoaderHidden = false;
-            await this.pmCommonService.addUpdateProject();
-
-            this.messageService.add({
-              key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
-              detail: 'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode
-            });
-            setTimeout(() => {
-              this.pmObject.isAddProjectVisible = false;
-              if (this.router.url === '/projectMgmt/allProjects') {
-                this.dataService.publish('reload-project');
-              } else {
-                this.pmObject.allProjectItems = [];
-                this.router.navigate(['/projectMgmt/allProjects']);
-              }
-            }, this.pmConstant.TIME_OUT);
+            this.CallAddUpdateProject();
           });
         }
         else {
-
-          await this.pmCommonService.addUpdateProject();
-          this.messageService.add({
-            key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
-            detail: 'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode
-          });
-          setTimeout(() => {
-            this.pmObject.isAddProjectVisible = false;
-            if (this.router.url === '/projectMgmt/allProjects') {
-              this.dataService.publish('reload-project');
-            } else {
-              this.pmObject.allProjectItems = [];
-              this.router.navigate(['/projectMgmt/allProjects']);
-            }
-          }, this.pmConstant.TIME_OUT);
+          this.CallAddUpdateProject();
         }
       }
     }
   }
 
+  async CallAddUpdateProject() {
+    this.pmObject.isMainLoaderHidden = false;
+    await this.pmCommonService.addUpdateProject();
+    this.messageService.add({
+      key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
+      detail: 'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode
+    });
+    this.pmCommonService.reloadPMPage();
+  }
 
 
   setFieldProperties() {
