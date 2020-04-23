@@ -2006,7 +2006,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       ];
 
       if (data.itemType !== 'Client Review' && data.itemType !== 'Send to client' && data.slotType.indexOf('Slot') < 0) {
-        if (+data.budgetHours) {
+        if (+data.budgetHours && data.pUserStartDatePart.getTime() !== data.pUserEndDatePart.getTime()) {
           this.taskMenu.push(
             { label: 'Edit Allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, '') },
             { label: 'Equal Split', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, 'Equal') }
@@ -2022,7 +2022,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   openPopupEdit(data) {
     this.taskMenu = [];
     if (data.itemType !== 'Client Review' && data.itemType !== 'Send to client') {
-      if (data.slotType.indexOf('Slot') < 0 && +data.budgetHours) {
+      if (data.slotType.indexOf('Slot') < 0 && +data.budgetHours &&
+          data.pUserStartDatePart.getTime() !== data.pUserEndDatePart.getTime()) {
         this.taskMenu.push(
           { label: 'Edit Allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, '') },
           { label: 'Equal Split', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, 'Equal') }
@@ -4907,11 +4908,16 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     });
   }
   setAllocationPerDay(allocation, milestoneTask: IMilestoneTask) {
-    const milestoneData: MilestoneTreeNode = this.milestoneData.find(m => m.data.title === milestoneTask.milestone);
-    const milestoneTasks: any[] = this.getTasksFromMilestones(milestoneData, false, true);
-    const task = milestoneTasks.find(t => t.id === milestoneTask.id);
+    let task: any;
+    if (milestoneTask.type === 'Milestone') {
+      const milestoneData: MilestoneTreeNode = this.milestoneData.find(m => m.data.title === milestoneTask.milestone);
+      const milestoneTasks: any[] = this.getTasksFromMilestones(milestoneData, false, true);
+      milestoneData.data.edited = true;
+      task = milestoneTasks.find(t => t.id === milestoneTask.id);
+    } else {
+      task = milestoneTask;
+    }
     task.allocationPerDay = allocation.allocationPerDay;
-    milestoneData.data.edited = true;
     task.edited = true;
     if (allocation.allocationType === 'Equal Split') {
       task.allocationColor = 'indianred';

@@ -187,7 +187,7 @@ export class DailyAllocationComponent implements OnInit {
           taskBudgetHrs = newBudgetHrs;
         } else {
           let budgetHrs = taskBudgetHrs.indexOf('-') > -1 ? taskBudgetHrs.replace('-', '') : taskBudgetHrs;
-          budgetHrs = this.common.convertToHrsMins(budgetHrs);
+          budgetHrs = budgetHrs.indexOf('.') > -1 ? this.common.convertToHrsMins(budgetHrs) : budgetHrs;
           obj.Allocation.valueHrs = this.getHrsMinsObj(budgetHrs, false).hours;
           obj.Allocation.valueMins = this.getHrsMinsObj(budgetHrs, false).mins;
           flag = false;
