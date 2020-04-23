@@ -1507,89 +1507,79 @@ export class PMCommonService {
       batchResults = await this.createFTEMilestones(response);
       finalArray = [...finalArray, ...batchResults];
     }
-    await this.moveMilestoneAndTask(finalArray);
-  }
-  async moveMilestoneAndTask(results) {
-    if (results && results.length && (this.pmObject.addProject.Timeline.Standard.IsStandard ||
+
+    if (finalArray && finalArray.length && (this.pmObject.addProject.Timeline.Standard.IsStandard ||
       this.pmObject.addProject.FinanceManagement.BilledBy === this.pmConstant.PROJECT_TYPE.FTE.value)) {
-      let batchURL = [];
-      let batchResults = [];
-      let finalArray = [];
-      const options = {
-        data: null,
-        url: '',
-        type: '',
-        listName: ''
-      };
-      for (const response of results) {
-        if (batchURL.length < 100) {
-          const fileUrl = this.globalObject.sharePointPageObject.serverRelativeUrl +
-            '/Lists/' + this.constant.listNames.Schedules.name + '/' + response.retItems.ID + '_.000';
-          let moveFileUrl = this.globalObject.sharePointPageObject.serverRelativeUrl +
-            '/Lists/' + this.constant.listNames.Schedules.name + '/' +
-            this.pmObject.addProject.ProjectAttributes.ProjectCode;
-          if (response.retItems.Milestone === 'Select one') {
-            moveFileUrl = moveFileUrl + '/' + response.retItems.ID + '_.000';
-            const milestoneURL = this.globalObject.sharePointPageObject.webAbsoluteUrl +
-              '/_api/Web/Lists/getByTitle(\'' + this.constant.listNames.Schedules.name + '\')/Items' +
-              '(' + response.retItems.ID + ')';
-            const moveData = {
-              __metadata: { type: this.constant.listNames.Schedules.type },
-              FileLeafRef: response.retItems.Title
-            };
-            const url = this.globalObject.sharePointPageObject.webAbsoluteUrl +
-              '/_api/web/getfolderbyserverrelativeurl(\'' + fileUrl + '\')/moveto(newurl=\'' + moveFileUrl + '\')';
-            const moveMileObj = Object.assign({}, options);
-            moveMileObj.url = url;
-            moveMileObj.type = 'POST';
-            moveMileObj.listName = this.constant.listNames.Schedules.name;
-            batchURL.push(moveMileObj);
-            const moveMilewithDataObj = Object.assign({}, options);
-            moveMilewithDataObj.url = milestoneURL;
-            moveMilewithDataObj.data = moveData;
-            moveMilewithDataObj.type = 'PATCH';
-            moveMilewithDataObj.listName = this.constant.listNames.Schedules.name;
-            batchURL.push(moveMilewithDataObj);
-          } else {
-            moveFileUrl = moveFileUrl + '/' + response.retItems.Milestone + '/' + response.retItems.ID + '_.000';
-            const url = this.globalObject.sharePointPageObject.webAbsoluteUrl +
-              '/_api/web/getfilebyserverrelativeurl(\'' + fileUrl + '\')/moveto(newurl=\'' + moveFileUrl + '\',flags=1)';
-            const moveTaskObj = Object.assign({}, options);
-            moveTaskObj.url = url;
-            moveTaskObj.type = 'POST';
-            moveTaskObj.listName = this.constant.listNames.Schedules.name;
-            batchURL.push(moveTaskObj);
-          }
-          if (batchURL.length === 99) {
-            this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetSchedules');
-            batchResults = await this.spServices.executeBatch(batchURL);
-            console.log(batchResults);
-            finalArray = [...finalArray, ...batchResults];
-            batchURL = [];
-          }
+      await this.moveMilestoneAndTask(finalArray, this.pmObject.addProject.ProjectAttributes.);
+    }
+  }
+  async moveMilestoneAndTask(results, ProjectCode) {
+
+    let batchURL = [];
+    let batchResults = [];
+    let finalArray = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    for (const response of results) {
+      if (batchURL.length < 100) {
+        const fileUrl = this.globalObject.sharePointPageObject.serverRelativeUrl +
+          '/Lists/' + this.constant.listNames.Schedules.name + '/' + response.retItems.ID + '_.000';
+        let moveFileUrl = this.globalObject.sharePointPageObject.serverRelativeUrl +
+          '/Lists/' + this.constant.listNames.Schedules.name + '/' +
+          ProjectCode;
+        if (response.retItems.Milestone === 'Select one') {
+          moveFileUrl = moveFileUrl + '/' + response.retItems.ID + '_.000';
+          const milestoneURL = this.globalObject.sharePointPageObject.webAbsoluteUrl +
+            '/_api/Web/Lists/getByTitle(\'' + this.constant.listNames.Schedules.name + '\')/Items' +
+            '(' + response.retItems.ID + ')';
+          const moveData = {
+            __metadata: { type: this.constant.listNames.Schedules.type },
+            FileLeafRef: response.retItems.Title
+          };
+          const url = this.globalObject.sharePointPageObject.webAbsoluteUrl +
+            '/_api/web/getfolderbyserverrelativeurl(\'' + fileUrl + '\')/moveto(newurl=\'' + moveFileUrl + '\')';
+          const moveMileObj = Object.assign({}, options);
+          moveMileObj.url = url;
+          moveMileObj.type = 'POST';
+          moveMileObj.listName = this.constant.listNames.Schedules.name;
+          batchURL.push(moveMileObj);
+          const moveMilewithDataObj = Object.assign({}, options);
+          moveMilewithDataObj.url = milestoneURL;
+          moveMilewithDataObj.data = moveData;
+          moveMilewithDataObj.type = 'PATCH';
+          moveMilewithDataObj.listName = this.constant.listNames.Schedules.name;
+          batchURL.push(moveMilewithDataObj);
+        } else {
+          moveFileUrl = moveFileUrl + '/' + response.retItems.Milestone + '/' + response.retItems.ID + '_.000';
+          const url = this.globalObject.sharePointPageObject.webAbsoluteUrl +
+            '/_api/web/getfilebyserverrelativeurl(\'' + fileUrl + '\')/moveto(newurl=\'' + moveFileUrl + '\',flags=1)';
+          const moveTaskObj = Object.assign({}, options);
+          moveTaskObj.url = url;
+          moveTaskObj.type = 'POST';
+          moveTaskObj.listName = this.constant.listNames.Schedules.name;
+          batchURL.push(moveTaskObj);
+        }
+        if (batchURL.length === 99) {
+          this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetSchedules');
+          batchResults = await this.spServices.executeBatch(batchURL);
+          console.log(batchResults);
+          finalArray = [...finalArray, ...batchResults];
+          batchURL = [];
         }
       }
-      if (batchURL.length) {
-        this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetSchedules');
-        batchResults = await this.spServices.executeBatch(batchURL);
-        console.log(batchResults);
-        finalArray = [...finalArray, ...batchResults];
-      }
     }
+    if (batchURL.length) {
+      this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetSchedules');
+      batchResults = await this.spServices.executeBatch(batchURL);
+      console.log(batchResults);
+      finalArray = [...finalArray, ...batchResults];
+    }
+
     this.pmObject.isMainLoaderHidden = true;
-    // this.messageService.add({
-    //   key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
-    //   detail: 'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode
-    // });
-    // setTimeout(() => {
-    //   this.pmObject.isAddProjectVisible = false;
-    //   if (this.router.url === '/projectMgmt/allProjects') {
-    //     this.dataService.publish('reload-project');
-    //   } else {
-    //     this.pmObject.allProjectItems = [];
-    //     this.router.navigate(['/projectMgmt/allProjects']);
-    //   }
-    // }, this.pmConstant.TIME_OUT);
   }
   async createFTEMilestones(response) {
     const monthObjArray = this.pmObject.addProject.Timeline.NonStandard.months;
@@ -1987,6 +1977,24 @@ export class PMCommonService {
       libraryName = clientInfo[0].ListName;
     }
     return libraryName + '/' + docFolder;
+  }
+
+  async reloadPMPage() {
+    this.pmObject.isMainLoaderHidden = false;
+    await this.addUpdateProject();
+    this.messageService.add({
+      key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
+      detail: 'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode
+    });
+    setTimeout(() => {
+      this.pmObject.isAddProjectVisible = false;
+      if (this.router.url === '/projectMgmt/allProjects') {
+        this.dataService.publish('reload-project');
+      } else {
+        this.pmObject.allProjectItems = [];
+        this.router.navigate(['/projectMgmt/allProjects']);
+      }
+    }, this.pmConstant.TIME_OUT);
   }
 
 
