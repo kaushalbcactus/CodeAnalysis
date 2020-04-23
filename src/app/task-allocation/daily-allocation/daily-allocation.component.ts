@@ -186,7 +186,8 @@ export class DailyAllocationComponent implements OnInit {
           obj.Allocation.valueMins = this.getHrsMinsObj(availableHrs, false).mins;
           taskBudgetHrs = newBudgetHrs;
         } else {
-          const budgetHrs = taskBudgetHrs.indexOf('-') > -1 ? taskBudgetHrs.replace('-', '') : taskBudgetHrs;
+          let budgetHrs = taskBudgetHrs.indexOf('-') > -1 ? taskBudgetHrs.replace('-', '') : taskBudgetHrs;
+          budgetHrs = this.common.convertToHrsMins(budgetHrs);
           obj.Allocation.valueHrs = this.getHrsMinsObj(budgetHrs, false).hours;
           obj.Allocation.valueMins = this.getHrsMinsObj(budgetHrs, false).mins;
           flag = false;
@@ -229,20 +230,20 @@ export class DailyAllocationComponent implements OnInit {
     const resourceDailyDetails = resource.dates.filter(d => d.userCapacity !== 'Leave');
     let remainingBudgetHrs = budgetHours;
     const availaibility = this.equalSplitAvailibilty(allocationData, allocationPerDay);
-    let calcBudgetHrs = availaibility.lastDayAvailability < allocationPerDay ? budgetHours - availaibility.lastDayAvailability :
-      budgetHours;
+    const noOfDays = businessDays > availaibility.days ? (businessDays - availaibility.days) : businessDays;
+    let calcBudgetHrs = availaibility.lastDayAvailability < allocationPerDay && noOfDays > 1 ?
+                        budgetHours - availaibility.lastDayAvailability : budgetHours;
     calcBudgetHrs = availaibility.firstDayAvailablity < allocationPerDay ? calcBudgetHrs - availaibility.firstDayAvailablity :
-                          calcBudgetHrs;
-    allocationPerDay = calcBudgetHrs !== budgetHours ?
-      Math.ceil(calcBudgetHrs / (businessDays - availaibility.days)) : allocationPerDay;
+      calcBudgetHrs;
+    allocationPerDay = calcBudgetHrs !== budgetHours ? Math.ceil(calcBudgetHrs / noOfDays) : allocationPerDay;
     let i = 0;
     for (const detail of resourceDailyDetails) {
       let totalHrs = 0;
       if (i === 0) {
-        totalHrs = availaibility.firstDayAvailablity < allocationPerDay ? availaibility.firstDayAvailablity : allocationPerDay;
+        totalHrs = availaibility.firstDayAvailablity < allocationPerDay ?
+                   availaibility.firstDayAvailablity : noOfDays <= 1 ? availaibility.firstDayAvailablity : allocationPerDay;
       } else if (i === resourceDailyDetails.length - 1) {
-        totalHrs = availaibility.lastDayAvailability < remainingBudgetHrs ? // availaibility.lastDayAvailability
-         availaibility.lastDayAvailability : remainingBudgetHrs;
+        totalHrs = availaibility.lastDayAvailability < remainingBudgetHrs ? availaibility.lastDayAvailability : remainingBudgetHrs;
       } else {
         totalHrs = allocationPerDay < remainingBudgetHrs ? allocationPerDay : remainingBudgetHrs;
       }

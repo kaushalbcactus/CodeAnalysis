@@ -2570,9 +2570,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   async dailyAllocateTask(resource, milestoneTask) {
     const eqgTasks = ['Edit', 'Quality', 'Graphics', 'Client Review', 'Send to client'];
-
     if (!eqgTasks.find(t => t === milestoneTask.itemType) && milestoneTask.pUserStartDatePart &&
-      resource.length && milestoneTask.pUserEndDatePart && milestoneTask.budgetHours) {
+      resource.length && milestoneTask.pUserEndDatePart && milestoneTask.budgetHours &&
+      milestoneTask.pUserEnd > milestoneTask.pUserStart) {
       const allocationData: IDailyAllocationTask = {
         ID: milestoneTask.id,
         task: milestoneTask.taskFullName,
@@ -2718,8 +2718,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
     var nodeData = node.hasOwnProperty('data') ? node.data : node;
     var prevNodeData = previousNode.hasOwnProperty('data') ? previousNode.data : previousNode;
-    const startDate = nodeData.pUserStart;
-    const endDate = nodeData.pUserEnd;
+    const startDate = new Date(nodeData.pUserStart);
+    const endDate = new Date(nodeData.pUserEnd);
     var workingHours = this.workingHoursBetweenDates(startDate, endDate);
     // Check if prev node slot then consider startdate of slot
     const prevNodeStartDate = ((prevNodeData.slotType === 'Slot' && nodeData.parentSlot) ?
@@ -3322,8 +3322,12 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   // *************************************************************************************************************************************
 
 
-  ChangeEndDate($event, node) {
+  async ChangeEndDate($event, node) {
     if ($event) {
+      const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
+        return node.AssignedTo.ID === objt.UserName.ID;
+      });
+      await this.dailyAllocateTask(resource, node);
       // node.start_date = new Date(node.start_date.getFullYear(), node.start_date.getMonth(), node.start_date.getDate(), 9, 0);
       // node.end_date = new Date(node.start_date.getFullYear(), node.start_date.getMonth(), node.start_date.getDate(), 19, 0);
       node.pUserStart = new Date(node.pUserStart.getFullYear(), node.pUserStart.getMonth(), node.pUserStart.getDate(), 9, 0);
