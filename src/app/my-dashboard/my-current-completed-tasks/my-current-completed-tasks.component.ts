@@ -176,7 +176,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
   // *********************************************************************************************************
 
   GetDatabyDateSelection(event, days) {
-
+    this.loaderenable = true;
     this.commonService.SetNewrelic('MyCurrentCompletedTask', this.route.snapshot.data.type, 'GetTasks');
     this.TabName = this.route.snapshot.data.type;
     this.days = days;
