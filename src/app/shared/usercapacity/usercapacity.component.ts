@@ -652,10 +652,7 @@ export class UsercapacityComponent implements OnInit {
               });
             }
             if (oUser.tasks[j].Task !== 'Adhoc') {
-              // const arrHrsMin = []
-              // tslint:disable
               if (oUser.tasks[j].AllocationPerDay) {
-                // var allocationPerDay = oUser.tasks[j].AllocationPerDay.split(/:(.+)/)
                 let allocationPerDay = oUser.tasks[j].AllocationPerDay.split(/\n/);
                 allocationPerDay = allocationPerDay.forEach(allocation => {
                   const arrAllocation = allocation.split(':');
@@ -666,22 +663,10 @@ export class UsercapacityComponent implements OnInit {
                     oUser.tasks[j].timeAllocatedPerDay = allocationTime;
                   }
                 });
-                // allocationPerDay.forEach((i) => {
-                //   const hrsMinObject = {
-                //     timeHrs: '0',
-                //     timeMins: '0'
-                //   };
-                //   hrsMinObject.timeHrs = i.replace('.', ':').split(':')[0];
-                //   hrsMinObject.timeMins = i.replace('.', ':').split(':')[1];
-                //   arrHrsMin.push(hrsMinObject)
-                // })
-
-                // oUser.tasks[j].timeAllocatedPerDay = arrHrsMin.length > 0 ? this.commonservice.ajax_addHrsMins(arrHrsMin) : '0:0';
-              } else {
+               } else {
                 oUser.tasks[j].timeAllocatedPerDay = this.commonservice.convertToHrsMins('' + this.getPerDayTime(oUser.tasks[j].ExpectedTime !== null ?
                   oUser.tasks[j].ExpectedTime : '0', taskBusinessDays - arrLeaveDays.length));
               }
-              // tslint:enable
             } else {
               oUser.tasks[j].timeAllocatedPerDay = oUser.tasks[j].TimeSpent !== null ? '' + oUser.tasks[j].TimeSpent : '0.0';
             }

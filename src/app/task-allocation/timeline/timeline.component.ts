@@ -1989,8 +1989,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         { label: 'Edit', icon: 'pi pi-pencil', command: (event) => this.editTask(data, rowNode) },
       ];
 
-      if (data.itemType !== 'Client Review' && data.itemType !== 'Send to client') {
-        if (data.slotType.indexOf('Slot') < 0) {
+      if (data.itemType !== 'Client Review' && data.itemType !== 'Send to client' && data.slotType.indexOf('Slot') < 0) {
+        if (+data.budgetHours) {
           this.taskMenu.push(
             { label: 'Edit Allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, '') },
             { label: 'Equal Split', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, 'Equal') }
@@ -2006,7 +2006,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   openPopupEdit(data) {
     this.taskMenu = [];
     if (data.itemType !== 'Client Review' && data.itemType !== 'Send to client') {
-      if (data.slotType.indexOf('Slot') < 0) {
+      if (data.slotType.indexOf('Slot') < 0 && +data.budgetHours) {
         this.taskMenu.push(
           { label: 'Edit Allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, '') },
           { label: 'Equal Split', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, 'Equal') }
