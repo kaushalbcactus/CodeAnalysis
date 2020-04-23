@@ -1855,7 +1855,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   // **************************************************************************************************
 
 
-  editTask(task, rowNode) {
+  async editTask(task, rowNode) {
     task.assignedUsers.forEach(element => {
 
       if (element.items.find(c => c.value.ID === task.AssignedTo.ID)) {
@@ -1876,9 +1876,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     }
     task.editMode = true;
     task.edited = true;
-
-
-
   }
 
   // *************************************************************************************************
@@ -2797,7 +2794,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     return errorPresnet;
   }
 
-  DateChangePart(Node, type) {
+  async DateChangePart(Node, type) {
     this.reallocationMailArray.length = 0;
     this.deallocationMailArray.length = 0;
     Node.pUserStart = new Date(this.datepipe.transform(Node.pUserStartDatePart, 'MMM d, y') + ' ' + Node.pUserStartTimePart);
@@ -2805,7 +2802,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
       return Node.AssignedTo.ID === objt.UserName.ID;
     });
-    this.dailyAllocateTask(resource, Node);
+    await this.dailyAllocateTask(resource, Node);
     this.DateChange(Node, type);
   }
   // tslint:disable

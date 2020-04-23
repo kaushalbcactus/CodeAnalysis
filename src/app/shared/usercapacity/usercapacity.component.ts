@@ -1053,7 +1053,7 @@ export class UsercapacityComponent implements OnInit {
       setTimeout(() => {
         let tableWidth = document.getElementById('capacityTable').offsetWidth;
 
-        tableWidth = tableWidth === 0 ? (document.getElementsByClassName("userCapacity") ? document.getElementsByClassName("userCapacity")[0].parentElement.offsetWidth : 1192) : tableWidth;
+        tableWidth = tableWidth === 0 ? (document.getElementsByClassName("userCapacity").length ? document.getElementsByClassName("userCapacity")[0].parentElement.offsetWidth : 1192) : tableWidth;
 
         this.pageWidth = tableWidth + 'px';
 
