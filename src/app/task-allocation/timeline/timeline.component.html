@@ -58,9 +58,9 @@
                     {{ visualgraph === false ? 'Gantt Chart' : 'Table' }}
                 </button>
             </div>
-            <div>
+            <!-- <div>
                 <button class="mr-20" type="button" mat-raised-button>Show Timeline</button>
-            </div>
+            </div> -->
             <div *ngIf='visualgraph'>
                 <button class="mr-20" type="button" mat-raised-button (click)="zoomIn()"><mat-icon>zoom_in</mat-icon></button>
                 <button class="mr-20" type="button" mat-raised-button (click)="zoomOut()"><mat-icon>zoom_out</mat-icon></button>
@@ -510,10 +510,10 @@
         </div>
 
     </form>
-    <p-footer>
-        <button type="button" pButton (click)="saveTask(true,null)" label="Save" class="saveTaskButton"></button>
-        <button type="button" pButton (click)="close()" label="Cancel" class="ui-button-secondary"></button>
-    </p-footer>
+    <div class="footerBtn">
+        <button type="button" pButton (click)="saveTask(true,null)" label="Save" icon="pi pi-save" class="saveTaskButton"></button>
+        <button type="button" pButton (click)="close()" label="Cancel" icon="pi pi-times" class="cancelBtn"></button>
+    </div>
 </p-dialog>
 
 <p-overlayPanel #op2 [showCloseIcon]="true" [dismissable]="false">

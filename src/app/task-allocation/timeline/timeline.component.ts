@@ -1101,7 +1101,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       { "id": "disableCascadeON", "text": "Disable Cascade ON", "enabled": true },
       { "id": "disableCascadeOFF", "text": "Disable Cascade OFF", "enabled": true },
       { "id": "filesandcomments", "text": "Files And Comments", "enabled": true },
-      { "id": "capacity", "text": "Show Capacity", "enabled": true }
+      { "id": "capacity", "text": "Show Capacity", "enabled": true },
+      { "id": "confirmMilestone", "text": "Confirm Milestone", "enabled": true },
+      { "id": "confirmSubmilestone", "text": "Confirm SubMilestone", "enabled": true }
 
     ]
 
@@ -1116,7 +1118,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     menu.hideItem(menus[6].id);
     menu.showItem(menus[7].id);
     menu.showItem(menus[8].id);
-
+    menu.hideItem(menus[9].id);
+    menu.hideItem(menus[10].id);
     gantt.attachEvent("onContextMenu", (taskId, linkId, event) => {
       if (gantt.ext.zoom.getCurrentLevel() < 3) {
         if (taskId) {
@@ -1144,8 +1147,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       }
     });
 
-    function showMenus(task) {
+    var showMenus = ((task) => {
       if (task.type == "task") {
+        menu.hideItem(menus[9].id);
+        menu.hideItem(menus[10].id);
         if (task.tat && task.DisableCascade) {
           menu.showItem(menus[1].id);
           menu.showItem(menus[2].id);
@@ -1186,7 +1191,29 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           menu.showItem(menus[7].id);
           menu.showItem(menus[8].id);
         }
-      } else if (task.type == "milestone" || task.type == "submilestone") {
+      } else if (task.type == "milestone") {
+        if ((task.isNext === true && !task.subMilestonePresent && !this.changeInRestructure) || (task.type === 'submilestone' && task.isCurrent && !this.changeInRestructure) || (task.type === 'submilestone' && task.isNext && !this.changeInRestructure)) {
+          menu.showItem(menus[9].id);
+          menu.hideItem(menus[10].id);
+        } else {
+          menu.hideItem(menus[9].id);
+        }
+        menu.showItem(menus[0].id);
+        menu.hideItem(menus[1].id);
+        menu.hideItem(menus[2].id);
+        menu.hideItem(menus[3].id);
+        menu.hideItem(menus[4].id);
+        menu.hideItem(menus[5].id);
+        menu.hideItem(menus[6].id);
+        menu.hideItem(menus[7].id);
+        menu.hideItem(menus[8].id);
+      } else if (task.type == "submilestone") {
+        if ((task.isNext === true && !task.subMilestonePresent && !this.changeInRestructure) || (task.type === 'submilestone' && task.isCurrent && !this.changeInRestructure) || (task.type === 'submilestone' && task.isNext && !this.changeInRestructure)) {
+          menu.hideItem(menus[9].id);
+          menu.showItem(menus[10].id);
+        } else {
+          menu.hideItem(menus[10].id);
+        }
         menu.showItem(menus[0].id);
         menu.hideItem(menus[1].id);
         menu.hideItem(menus[2].id);
@@ -1197,7 +1224,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         menu.hideItem(menus[7].id);
         menu.hideItem(menus[8].id);
       }
-    }
+    });
 
 
     menu.attachEvent("onClick", (id, zoneId, cas) => {
@@ -1206,32 +1233,39 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         case 'tatON':
           task.tat = true;
           task.edited = true;
-          this.updateMilestoneData()
-          this.notificationMessage()
+          this.changeDate(task);
+          this.updateMilestoneData();
+          this.notificationMessage();
           break;
         case 'tatOFF':
           task.tat = false;
           task.edited = true;
-          this.updateMilestoneData()
-          this.notificationMessage()
+          this.updateMilestoneData();
+          this.notificationMessage();
           break;
         case 'disableCascadeON':
           task.DisableCascade = true;
           task.edited = true;
-          this.updateMilestoneData()
-          this.notificationMessage()
+          this.updateMilestoneData();
+          this.notificationMessage();
           break;
         case 'disableCascadeOFF':
           task.DisableCascade = false;
           task.edited = true;
-          this.updateMilestoneData()
-          this.notificationMessage()
+          this.updateMilestoneData();
+          this.notificationMessage();
           break;
         case 'filesandcomments':
           this.ViewTaskDetails(task);
           break;
         case 'capacity':
-          this.showCapacity(task);
+          this.getUserCapacity(task);
+          break;
+        case 'confirmMilestone':
+          this.confirmMilestone(task);
+          break;
+        case 'confirmSubilestone':
+          this.confirmMilestone(task);
           break;
         default:
           this.openPopupOnGanttTask(this.currentTaskId);
@@ -1239,6 +1273,21 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       }
     });
 
+  }
+
+  changeDate(task) {
+        task.pUserStart = new Date(task.pUserStart.getFullYear(), task.pUserStart.getMonth(), task.pUserStart.getDate(), 9, 0);
+        task.pUserEnd = new Date(task.pUserEnd.getFullYear(), task.pUserEnd.getMonth(), task.pUserEnd.getDate(), 19, 0);
+        task.pUserStartDatePart = this.getDatePart(task.pUserStart);
+        task.pUserStartTimePart = this.getTimePart(task.pUserStart);
+        task.pUserEndDatePart = this.getDatePart(task.pUserEnd);
+        task.pUserEndTimePart = this.getTimePart(task.pUserEnd);
+        task.start_date = this.commonService.calcTimeForDifferentTimeZone(task.pUserStart,
+          task.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
+        task.end_date = this.commonService.calcTimeForDifferentTimeZone(task.pUserEnd,
+          task.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
+        task.tatVal = this.commonService.calcBusinessDays(new Date(task.start_date), new Date(task.end_date));
+        this.DateChange(task, 'end');
   }
 
   ganttAttachEvents() {
@@ -1405,6 +1454,14 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   }
 
+  confirmMilestone(task) {
+    var data = this.milestoneData.filter(e=> e.data.id === task.id)
+    var rowNode = {
+      node: data[0]
+    }
+    this.setAsNextMilestoneCall(task,rowNode)
+  }
+
   confirmChangeResource(event) {
     this.confirmationService.confirm({
       header: 'Change Resource of Task',
@@ -1533,7 +1590,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           task.pUserEndTimePart = updatedTask.value.endDateTimePart;
           task.start_date = new Date(this.datepipe.transform(updatedTask.value.startDate, 'MMM d, y') + ' ' + updatedTask.value.startDateTimePart);
           task.end_date = new Date(this.datepipe.transform(updatedTask.value.endDate, 'MMM d, y') + ' ' + updatedTask.value.endDateTimePart);
-          task.budgetHours = updatedTask.value.budgetHrs;
+          task.budgetHours = updatedTask.value.budgetHrs ? updatedTask.value.budgetHrs : updatedTask.get('budgetHrs').value;
           task.tat = updatedTask.value.tat;
           task.user = updatedTask.value.resource.Title;
           task.AssignedTo = updatedTask.value.resource;
@@ -1624,7 +1681,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     var allTasks = gantt.serialize();
 
     allTasks.data.forEach((task) => {
-      if(this.updatedTasks.itemType === 'milestone'){
+      if (this.updatedTasks.itemType === 'milestone') {
         if (task.id == this.updatedTasks.id) {
           task.open = true;
         }
@@ -1633,7 +1690,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         task.start_date = task.pUserStart;
         task.end_date = task.pUserEnd;
       }
-      if(task.title.replace(' (Current)', '') === this.updatedTasks.milestone){
+      if (task.title.replace(' (Current)', '') === this.updatedTasks.milestone) {
         task.open = true;
       }
     })
@@ -1957,7 +2014,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       }
     }
     if (data.editMode) {
-      this.taskMenu.push({ label: 'Cancel', icon: 'pi pi-times-circle', command: (event) => this.CancelChanges(data,'task') });
+      this.taskMenu.push({ label: 'Cancel', icon: 'pi pi-times-circle', command: (event) => this.CancelChanges(data, 'task') });
     }
   }
 
