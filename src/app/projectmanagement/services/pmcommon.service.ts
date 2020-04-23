@@ -1510,7 +1510,7 @@ export class PMCommonService {
 
     if (finalArray && finalArray.length && (this.pmObject.addProject.Timeline.Standard.IsStandard ||
       this.pmObject.addProject.FinanceManagement.BilledBy === this.pmConstant.PROJECT_TYPE.FTE.value)) {
-      await this.moveMilestoneAndTask(finalArray, this.pmObject.addProject.ProjectAttributes.);
+      await this.moveMilestoneAndTask(finalArray, this.pmObject.addProject.ProjectAttributes.ProjectCode);
     }
   }
   async moveMilestoneAndTask(results, ProjectCode) {
