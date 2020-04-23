@@ -409,13 +409,13 @@
             <p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="gantt-message"
                 position="bottom-center">
             </p-toast>
-            <!-- <ng-gantt style="width:100%;" *ngIf='visualgraph' [options]="editorOptions" [data]="GanttchartData"
-                #gantteditor></ng-gantt> -->
+
             <div style="width:100%">
                 <ng-template #ganttcontainer></ng-template>
             </div>
         </div>
-
+  <!-- <ng-gantt style="width:100%;" *ngIf='visualgraph' [options]="editorOptions" [data]="GanttchartData"
+                #gantteditor></ng-gantt> -->
         <app-daily-allocation-overlay #dailyAllocateOP></app-daily-allocation-overlay>
     </div>
 

@@ -1109,14 +1109,16 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       { "id": "filesandcomments", "text": "Files And Comments", "enabled": true },
       { "id": "capacity", "text": "Show Capacity", "enabled": true },
       { "id": "confirmMilestone", "text": "Confirm Milestone", "enabled": true },
-      { "id": "confirmSubmilestone", "text": "Confirm SubMilestone", "enabled": true }
+      { "id": "confirmSubmilestone", "text": "Confirm SubMilestone", "enabled": true },
+      { "id": "editAllocation", "text": "Edit Allocation", "enabled": true },
+      { "id": "equalSplit", "text": "Equal Split", "enabled": true }
 
     ]
 
     
     this.menu.renderAsContextMenu();
     this.menu.setSkin("dhx_terrace");
-    this.menu.loadStruct(menus);
+    this.menu.loadStruct(menus);   
 
     this.menu.hideItem(menus[3].id);
     this.menu.hideItem(menus[4].id);
@@ -1126,6 +1128,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.menu.showItem(menus[8].id);
     this.menu.hideItem(menus[9].id);
     this.menu.hideItem(menus[10].id);
+    this.menu.hideItem(menus[11].id);
+    this.menu.hideItem(menus[12].id);
     gantt.attachEvent("onContextMenu", (taskId, linkId, event) => {
       if (gantt.ext.zoom.getCurrentLevel() < 3) {
         if (taskId) {
@@ -1157,6 +1161,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       if (task.type == "task") {
         this.menu.hideItem(menus[9].id);
         this.menu.hideItem(menus[10].id);
+        this.menu.hideItem(menus[11].id);
+        this.menu.hideItem(menus[12].id);
         if (task.tat && task.DisableCascade) {
           this.menu.showItem(menus[1].id);
           this.menu.showItem(menus[2].id);
@@ -1196,6 +1202,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         } else {
           this.menu.showItem(menus[7].id);
           this.menu.showItem(menus[8].id);
+          if (+task.budgetHours) {
+            this.menu.showItem(menus[11].id);
+            this.menu.showItem(menus[12].id);
+          }
         }
       } else if (task.type == "milestone") {
         if ((task.isNext === true && !task.subMilestonePresent && !this.changeInRestructure) || (task.type === 'submilestone' && task.isCurrent && !this.changeInRestructure) || (task.type === 'submilestone' && task.isNext && !this.changeInRestructure)) {
@@ -1272,6 +1282,12 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           break;
         case 'confirmSubilestone':
           this.confirmMilestone(task);
+          break;
+        case 'editAllocation':
+          this.editAllocation(task, '');
+          break;
+        case 'equalSplit':
+          this.editAllocation(task, 'Equal');
           break;
         default:
           this.openPopupOnGanttTask(this.currentTaskId);
@@ -1952,7 +1968,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   // **************************************************************************************************
 
 
-  editTask(task, rowNode) {
+  async editTask(task, rowNode) {
     task.assignedUsers.forEach(element => {
 
       if (element.items.find(c => c.value.ID === task.AssignedTo.ID)) {
@@ -1973,9 +1989,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     }
     task.editMode = true;
     task.edited = true;
-
-
-
   }
 
   // *************************************************************************************************
@@ -2032,8 +2045,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         { label: 'Edit', icon: 'pi pi-pencil', command: (event) => this.editTask(data, rowNode) },
       ];
 
-      if (data.itemType !== 'Client Review' && data.itemType !== 'Send to client') {
-        if (data.slotType.indexOf('Slot') < 0) {
+      if (data.itemType !== 'Client Review' && data.itemType !== 'Send to client' && data.slotType.indexOf('Slot') < 0) {
+        if (+data.budgetHours && data.pUserStartDatePart.getTime() !== data.pUserEndDatePart.getTime()) {
           this.taskMenu.push(
             { label: 'Edit Allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, '') },
             { label: 'Equal Split', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, 'Equal') }
@@ -2049,7 +2062,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   openPopupEdit(data) {
     this.taskMenu = [];
     if (data.itemType !== 'Client Review' && data.itemType !== 'Send to client') {
-      if (data.slotType.indexOf('Slot') < 0) {
+      if (data.slotType.indexOf('Slot') < 0 && +data.budgetHours &&
+          data.pUserStartDatePart.getTime() !== data.pUserEndDatePart.getTime()) {
         this.taskMenu.push(
           { label: 'Edit Allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, '') },
           { label: 'Equal Split', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, 'Equal') }
@@ -2597,9 +2611,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   async dailyAllocateTask(resource, milestoneTask) {
     const eqgTasks = ['Edit', 'Quality', 'Graphics', 'Client Review', 'Send to client'];
-
     if (!eqgTasks.find(t => t === milestoneTask.itemType) && milestoneTask.pUserStartDatePart &&
-      resource.length && milestoneTask.pUserEndDatePart && milestoneTask.budgetHours) {
+      resource.length && milestoneTask.pUserEndDatePart && milestoneTask.budgetHours &&
+      milestoneTask.pUserEnd > milestoneTask.pUserStart) {
       const allocationData: IDailyAllocationTask = {
         ID: milestoneTask.id,
         task: milestoneTask.taskFullName,
@@ -2618,6 +2632,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       if (objDailyAllocation.allocationAlert) {
         this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Resource is over allocated' });
       }
+    } else {
+      milestoneTask.allocationColor = '';
     }
   }
 
@@ -2743,8 +2759,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
     var nodeData = node.hasOwnProperty('data') ? node.data : node;
     var prevNodeData = previousNode.hasOwnProperty('data') ? previousNode.data : previousNode;
-    const startDate = nodeData.pUserStart;
-    const endDate = nodeData.pUserEnd;
+    const startDate = new Date(nodeData.pUserStart);
+    const endDate = new Date(nodeData.pUserEnd);
     var workingHours = this.workingHoursBetweenDates(startDate, endDate);
     // Check if prev node slot then consider startdate of slot
     const prevNodeStartDate = ((prevNodeData.slotType === 'Slot' && nodeData.parentSlot) ?
@@ -2894,7 +2910,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     return errorPresnet;
   }
 
-  DateChangePart(Node, type) {
+  async DateChangePart(Node, type) {
     this.reallocationMailArray.length = 0;
     this.deallocationMailArray.length = 0;
     Node.pUserStart = new Date(this.datepipe.transform(Node.pUserStartDatePart, 'MMM d, y') + ' ' + Node.pUserStartTimePart);
@@ -2902,7 +2918,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
       return Node.AssignedTo.ID === objt.UserName.ID;
     });
-    this.dailyAllocateTask(resource, Node);
+    await this.dailyAllocateTask(resource, Node);
     this.DateChange(Node, type);
   }
   // tslint:disable
@@ -3347,8 +3363,12 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   // *************************************************************************************************************************************
 
 
-  ChangeEndDate($event, node) {
+  async ChangeEndDate($event, node) {
     if ($event) {
+      const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
+        return node.AssignedTo.ID === objt.UserName.ID;
+      });
+      await this.dailyAllocateTask(resource, node);
       // node.start_date = new Date(node.start_date.getFullYear(), node.start_date.getMonth(), node.start_date.getDate(), 9, 0);
       // node.end_date = new Date(node.start_date.getFullYear(), node.start_date.getMonth(), node.start_date.getDate(), 19, 0);
       node.pUserStart = new Date(node.pUserStart.getFullYear(), node.pUserStart.getMonth(), node.pUserStart.getDate(), 9, 0);
@@ -4928,11 +4948,16 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     });
   }
   setAllocationPerDay(allocation, milestoneTask: IMilestoneTask) {
-    const milestoneData: MilestoneTreeNode = this.milestoneData.find(m => m.data.title === milestoneTask.milestone);
-    const milestoneTasks: any[] = this.getTasksFromMilestones(milestoneData, false, true);
-    const task = milestoneTasks.find(t => t.id === milestoneTask.id);
+    let task: any;
+    if (milestoneTask.type === 'Milestone') {
+      const milestoneData: MilestoneTreeNode = this.milestoneData.find(m => m.data.title === milestoneTask.milestone);
+      const milestoneTasks: any[] = this.getTasksFromMilestones(milestoneData, false, true);
+      milestoneData.data.edited = true;
+      task = milestoneTasks.find(t => t.id === milestoneTask.id);
+    } else {
+      task = milestoneTask;
+    }
     task.allocationPerDay = allocation.allocationPerDay;
-    milestoneData.data.edited = true;
     task.edited = true;
     if (allocation.allocationType === 'Equal Split') {
       task.allocationColor = 'indianred';

@@ -641,8 +641,6 @@ export class UsercapacityComponent implements OnInit {
           if (oUser.tasks.hasOwnProperty(j)) {
             const taskStartDate = new Date(this.datepipe.transform(new Date(oUser.tasks[j].StartDate), 'MMM dd, yyyy'));
             const taskEndDate = new Date(this.datepipe.transform(new Date(oUser.tasks[j].DueDate), 'MMM dd, yyyy'));
-            // const taskStartDate = new Date(new Date(oUser.tasks[j].StartDate));
-            // const taskEndDate = new Date(new Date(oUser.tasks[j].DueDate));
             const taskBusinessDays = this.commonservice.calcBusinessDays(taskStartDate, taskEndDate);
             oUser.tasks[j].taskBusinessDays = taskBusinessDays;
             oUser.tasks[j].taskTotalDays = this.CalculateWorkingDays(taskStartDate, taskEndDate);
@@ -654,28 +652,21 @@ export class UsercapacityComponent implements OnInit {
               });
             }
             if (oUser.tasks[j].Task !== 'Adhoc') {
-              const arrHrsMin = []
-              // tslint:disable
               if (oUser.tasks[j].AllocationPerDay) {
-                var allocationPerDay = oUser.tasks[j].AllocationPerDay.split(/:(.+)/)
-                allocationPerDay = allocationPerDay.filter(e => e.includes(':'))
-                allocationPerDay.forEach((i) => {
-                  const hrsMinObject = {
-                    timeHrs: '0',
-                    timeMins: '0'
-                  };
-                  hrsMinObject.timeHrs = i.replace('.', ':').split(':')[0];
-                  hrsMinObject.timeMins = i.replace('.', ':').split(':')[1];
-                  arrHrsMin.push(hrsMinObject)
-                })
-
-                oUser.tasks[j].timeAllocatedPerDay = arrHrsMin.length > 0 ? this.commonservice.ajax_addHrsMins(arrHrsMin) : '0:0';
-                // oUser.tasks[j].timeAllocatedPerDay = this.commonservice.convertToHrsMins('' + allocationPerDay);
-              } else {
+                let allocationPerDay = oUser.tasks[j].AllocationPerDay.split(/\n/);
+                allocationPerDay = allocationPerDay.forEach(allocation => {
+                  const arrAllocation = allocation.split(':');
+                  const allocationDate = arrAllocation.length && new Date(arrAllocation[0]) instanceof Date ?  new Date(arrAllocation[0]) : new Date();
+                  let allocationTime = arrAllocation.length > 0 ?  arrAllocation[1] : '0';
+                  allocationTime = arrAllocation.length > 1 ? arrAllocation[1] + ':' + arrAllocation[2] : '0';
+                  if(allocationDate.getTime() === oUser.dates[i].date.getTime()) {
+                    oUser.tasks[j].timeAllocatedPerDay = allocationTime;
+                  }
+                });
+               } else {
                 oUser.tasks[j].timeAllocatedPerDay = this.commonservice.convertToHrsMins('' + this.getPerDayTime(oUser.tasks[j].ExpectedTime !== null ?
                   oUser.tasks[j].ExpectedTime : '0', taskBusinessDays - arrLeaveDays.length));
               }
-              // tslint:enable
             } else {
               oUser.tasks[j].timeAllocatedPerDay = oUser.tasks[j].TimeSpent !== null ? '' + oUser.tasks[j].TimeSpent : '0.0';
             }
@@ -1053,7 +1044,7 @@ export class UsercapacityComponent implements OnInit {
       setTimeout(() => {
         let tableWidth = document.getElementById('capacityTable').offsetWidth;
 
-        tableWidth = tableWidth === 0 ? (document.getElementsByClassName("userCapacity") ? document.getElementsByClassName("userCapacity")[0].parentElement.offsetWidth : 1192) : tableWidth;
+        tableWidth = tableWidth === 0 ? (document.getElementsByClassName("userCapacity").length ? document.getElementsByClassName("userCapacity")[0].parentElement.offsetWidth : 1192) : tableWidth;
 
         this.pageWidth = tableWidth + 'px';
 
