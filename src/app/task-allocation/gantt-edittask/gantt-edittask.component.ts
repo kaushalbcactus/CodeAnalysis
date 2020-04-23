@@ -8,6 +8,7 @@ import { IDailyAllocationTask, IMilestoneTask } from '../interface/allocation';
 import { DailyAllocationComponent } from '../daily-allocation/daily-allocation.component';
 import { TimelineComponent } from '../timeline/timeline.component';
 import { DailyAllocationOverlayComponent } from '../daily-allocation-overlay/daily-allocation-overlay.component';
+import { CommonService } from 'src/app/Services/common.service';
 
 @Component({
   selector: 'app-gantt-edittask',
@@ -49,7 +50,8 @@ export class GanttEdittaskComponent implements OnInit {
     private globalService: GlobalService,
     private dialogService: DialogService,
     private messageService: MessageService,
-    private timeline: TimelineComponent) {
+    private timeline: TimelineComponent,
+    private commonService: CommonService) {
 
     this.editTaskForm = this.fb.group({
       budgetHrs: ['', Validators.required],
@@ -97,10 +99,23 @@ export class GanttEdittaskComponent implements OnInit {
       tat: task.tat,
       disableCascade: task.DisableCascade,
       resource: task.AssignedTo,
-      startDateTimePart: task.pUserStartTimePart,
-      endDateTimePart: task.pUserEndTimePart,
+      startDateTimePart: this.getTimePart(task.start_date),
+      endDateTimePart: this.getTimePart(task.end_date),
     })
     console.log(this.editTaskForm.value)
+
+    this.editTaskForm.get('tat').valueChanges.subscribe(tat => {
+      if(tat) {
+        var startDate = new Date(task.start_date.getFullYear(), task.start_date.getMonth(), task.start_date.getDate(), 9, 0) 
+        var endDate = new Date(task.end_date.getFullYear(), task.end_date.getMonth(), task.end_date.getDate(), 19, 0)
+        this.editTaskForm.patchValue({
+          startDate: startDate,
+          endDate: endDate,
+          startDateTimePart: this.getTimePart(startDate),
+          endDateTimePart: this.getTimePart(endDate),
+        })
+      }
+    });
   }
 
   saveTask(): void {
@@ -126,8 +141,9 @@ export class GanttEdittaskComponent implements OnInit {
     return new Date(this.datepipe.transform(newDate, 'MMM d, y'));
   }
 
-  showOverlayPanel(event, dailyAllocateOP) {
-    this.timeline.showOverlayPanel(event, this.task, dailyAllocateOP)
+  getTimePart(date) {
+    const newDate = new Date(date);
+    return this.datepipe.transform(newDate, 'hh:mm a');
   }
 
   viewAllocation(allocationType) { 
@@ -159,5 +175,11 @@ export class GanttEdittaskComponent implements OnInit {
         this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Resource is over allocated' });
       }
     });
+  }
+
+  showOverlayPanel(event, dailyAllocateOP) {
+    var target = event.target; 
+    const allocationPerDay = this.task.allocationPerDay ? this.task.allocationPerDay : '';
+    dailyAllocateOP.showOverlay(event, allocationPerDay, target);
   }
 }
