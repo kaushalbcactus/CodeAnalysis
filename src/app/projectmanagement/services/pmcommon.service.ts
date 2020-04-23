@@ -1980,12 +1980,7 @@ export class PMCommonService {
   }
 
   async reloadPMPage() {
-    this.pmObject.isMainLoaderHidden = false;
-    await this.addUpdateProject();
-    this.messageService.add({
-      key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
-      detail: 'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode
-    });
+   
     setTimeout(() => {
       this.pmObject.isAddProjectVisible = false;
       if (this.router.url === '/projectMgmt/allProjects') {

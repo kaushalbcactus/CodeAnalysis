@@ -2069,16 +2069,25 @@ export class StandardprojectComponent implements OnInit {
                 this.pmObject.addSOW.isStatusDisabled = true;
               }
             }
-            this.pmCommonService.reloadPMPage();
+            this.CallAddUpdateProject();
           });
         }
         else {
-          this.pmCommonService.reloadPMPage();
+          this.CallAddUpdateProject();
         }
       }
     }
   }
 
+  async CallAddUpdateProject() {
+    this.pmObject.isMainLoaderHidden = false;
+    await this.pmCommonService.addUpdateProject();
+    this.messageService.add({
+      key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
+      detail: 'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode
+    });
+    this.pmCommonService.reloadPMPage();
+  }
 
 
   setFieldProperties() {
