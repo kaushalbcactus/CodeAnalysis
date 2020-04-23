@@ -152,7 +152,7 @@ export class DailyAllocationComponent implements OnInit {
     const startTime = allocationData.startTime ? this.common.convertTo24Hour(allocationData.startTime) : '0:0';
     const endTime = allocationData.endTime ? this.common.convertTo24Hour(allocationData.endTime) : '0:0';
     const availableStartDayHrs = this.common.subtractHrsMins(startTime, '24:00', false);
-    const availableEndDayHrs = this.common.subtractHrsMins(endTime, '24:00', false);
+    const availableEndDayHrs = this.common.convertTo24Hour(endTime);
     const resourceDailyDetails = resource.dates.filter(d => d.userCapacity !== 'Leave');
     const resourceSliderMaxHrs = resource.maxHrs + 3;
     let newBudgetHrs = '0';
@@ -171,9 +171,9 @@ export class DailyAllocationComponent implements OnInit {
       };
       if (flag) {
         if (i === 0) {
-          detail.availableHrs = this.compareHrs(availableStartDayHrs, detail.availableHrs) ? availableStartDayHrs : detail.availableHrs;
+          detail.availableHrs = this.compareHrs(availableStartDayHrs, detail) ? availableStartDayHrs : detail.availableHrs;
         } else if (i === resourceDailyDetails.length - 1) {
-          detail.availableHrs = this.compareHrs(availableEndDayHrs, detail.availableHrs) ? availableEndDayHrs : detail.availableHrs;
+          detail.availableHrs = this.compareHrs(availableEndDayHrs, detail) ? availableEndDayHrs : detail.availableHrs;
         }
         let availableHrs = detail.availableHrs.indexOf('-') > -1 ? '0:0' : detail.availableHrs;
         availableHrs = detail.mandatoryHrs ? availableHrs : this.common.addHrsMins([availableHrs, extraHrs]);
@@ -198,8 +198,10 @@ export class DailyAllocationComponent implements OnInit {
     return newBudgetHrs;
   }
 
-  compareHrs(firstElement, secondElement) {
-    const result = this.common.convertFromHrsMins(firstElement) < this.common.convertFromHrsMins(secondElement) ? true : false;
+  compareHrs(firstElement, day) {
+    const secondElement = day.availableHrs;
+    const result = this.common.convertFromHrsMins(firstElement) <= this.common.convertFromHrsMins(secondElement) ? true : false;
+    day.mandatoryHrs = result ? true : false;
     return result;
   }
 
@@ -268,7 +270,7 @@ export class DailyAllocationComponent implements OnInit {
     const startTime = allocationData.startTime ? this.common.convertFromHrsMins(this.common.convertTo24Hour(allocationData.startTime)) : 0;
     const endTime = allocationData.endTime ? this.common.convertFromHrsMins(this.common.convertTo24Hour(allocationData.endTime)) : 0;
     const availableStartDayHrs = 24 - startTime;
-    const availableEndDayHrs = 24 - endTime;
+    const availableEndDayHrs = endTime;
     if (availableEndDayHrs < allocationPerDay) {
       count++;
     }
