@@ -1103,7 +1103,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       { "id": "filesandcomments", "text": "Files And Comments", "enabled": true },
       { "id": "capacity", "text": "Show Capacity", "enabled": true },
       { "id": "confirmMilestone", "text": "Confirm Milestone", "enabled": true },
-      { "id": "confirmSubmilestone", "text": "Confirm SubMilestone", "enabled": true }
+      { "id": "confirmSubmilestone", "text": "Confirm SubMilestone", "enabled": true },
+      { "id": "editAllocation", "text": "Edit Allocation", "enabled": true },
+      { "id": "equalSplit", "text": "Equal Split", "enabled": true }
 
     ]
 
@@ -1120,6 +1122,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     menu.showItem(menus[8].id);
     menu.hideItem(menus[9].id);
     menu.hideItem(menus[10].id);
+    menu.hideItem(menus[11].id);
+    menu.hideItem(menus[12].id);
     gantt.attachEvent("onContextMenu", (taskId, linkId, event) => {
       if (gantt.ext.zoom.getCurrentLevel() < 3) {
         if (taskId) {
@@ -1151,6 +1155,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       if (task.type == "task") {
         menu.hideItem(menus[9].id);
         menu.hideItem(menus[10].id);
+        menu.hideItem(menus[11].id);
+        menu.hideItem(menus[12].id);
         if (task.tat && task.DisableCascade) {
           menu.showItem(menus[1].id);
           menu.showItem(menus[2].id);
@@ -1190,6 +1196,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         } else {
           menu.showItem(menus[7].id);
           menu.showItem(menus[8].id);
+          if (+task.budgetHours) {
+            menu.showItem(menus[11].id);
+            menu.showItem(menus[12].id);
+          }
         }
       } else if (task.type == "milestone") {
         if ((task.isNext === true && !task.subMilestonePresent && !this.changeInRestructure) || (task.type === 'submilestone' && task.isCurrent && !this.changeInRestructure) || (task.type === 'submilestone' && task.isNext && !this.changeInRestructure)) {
@@ -1267,6 +1277,12 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         case 'confirmSubilestone':
           this.confirmMilestone(task);
           break;
+        case 'editAllocation':
+          this.editAllocation(task, '');
+          break;
+        case 'equalSplit':
+          this.editAllocation(task, 'Equal');
+          break;
         default:
           this.openPopupOnGanttTask(this.currentTaskId);
           break;
@@ -1276,18 +1292,18 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
   changeDate(task) {
-        task.pUserStart = new Date(task.pUserStart.getFullYear(), task.pUserStart.getMonth(), task.pUserStart.getDate(), 9, 0);
-        task.pUserEnd = new Date(task.pUserEnd.getFullYear(), task.pUserEnd.getMonth(), task.pUserEnd.getDate(), 19, 0);
-        task.pUserStartDatePart = this.getDatePart(task.pUserStart);
-        task.pUserStartTimePart = this.getTimePart(task.pUserStart);
-        task.pUserEndDatePart = this.getDatePart(task.pUserEnd);
-        task.pUserEndTimePart = this.getTimePart(task.pUserEnd);
-        task.start_date = this.commonService.calcTimeForDifferentTimeZone(task.pUserStart,
-          task.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
-        task.end_date = this.commonService.calcTimeForDifferentTimeZone(task.pUserEnd,
-          task.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
-        task.tatVal = this.commonService.calcBusinessDays(new Date(task.start_date), new Date(task.end_date));
-        this.DateChange(task, 'end');
+    task.pUserStart = new Date(task.pUserStart.getFullYear(), task.pUserStart.getMonth(), task.pUserStart.getDate(), 9, 0);
+    task.pUserEnd = new Date(task.pUserEnd.getFullYear(), task.pUserEnd.getMonth(), task.pUserEnd.getDate(), 19, 0);
+    task.pUserStartDatePart = this.getDatePart(task.pUserStart);
+    task.pUserStartTimePart = this.getTimePart(task.pUserStart);
+    task.pUserEndDatePart = this.getDatePart(task.pUserEnd);
+    task.pUserEndTimePart = this.getTimePart(task.pUserEnd);
+    task.start_date = this.commonService.calcTimeForDifferentTimeZone(task.pUserStart,
+      task.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
+    task.end_date = this.commonService.calcTimeForDifferentTimeZone(task.pUserEnd,
+      task.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
+    task.tatVal = this.commonService.calcBusinessDays(new Date(task.start_date), new Date(task.end_date));
+    this.DateChange(task, 'end');
   }
 
   ganttAttachEvents() {
@@ -1455,11 +1471,11 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
   confirmMilestone(task) {
-    var data = this.milestoneData.filter(e=> e.data.id === task.id)
+    var data = this.milestoneData.filter(e => e.data.id === task.id)
     var rowNode = {
       node: data[0]
     }
-    this.setAsNextMilestoneCall(task,rowNode)
+    this.setAsNextMilestoneCall(task, rowNode)
   }
 
   confirmChangeResource(event) {
@@ -2575,6 +2591,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       if (objDailyAllocation.allocationAlert) {
         this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Resource is over allocated' });
       }
+    } else {
+      milestoneTask.allocationColor = '';
     }
   }
 
