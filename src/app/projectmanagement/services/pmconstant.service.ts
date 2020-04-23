@@ -473,7 +473,7 @@ export class PmconstantService {
     GET_SCHEDULES_BY_PROJECTCODE: {
       select: 'ID,Title,Task,Status,FileSystemObjectType,Milestone,StartDate,DueDate,Actual_x0020_End_x0020_Date,Actual_x0020_Start_x0020_Date',
       orderby: 'StartDate asc',
-      filter: "ProjectCode eq '{{projectCode}}' and Status ne 'Deleted'",
+      filter: "ProjectCode eq '{{projectCode}}'",
       top: 4500
     },
     PROJECT_FINANCE_BY_PROJECTCODE: {
