@@ -119,7 +119,7 @@
                     style="margin-right: 10px;">
                     <button mat-raised-button type="button"
                         (click)="refreshGantt()">
-                        Refresh
+                        <mat-icon>refresh</mat-icon>
                     </button>
                 </div>
                 <div *ngIf="changeInRestructure " class="input-color" fxLayoutAlign="end center"
@@ -314,7 +314,7 @@
                                 #assignedTo class="txtTask" [options]="rowData.assignedUsers"
                                 [disabled]="rowData.status=== 'In Progress'" [panelStyle]="{minWidth:'15em' }"
                                 [(ngModel)]="rowData.AssignedTo" placeholder="Select Resource" [showClear]="true"
-                                [group]="true" filter="true" (onChange)="assignedToUserChanged(rowData, milestoneData)">
+                                [group]="true" filter="true" (onChange)="assignedToUserChanged(rowData)">
                                 <ng-template let-group pTemplate="group">
                                     <span style="margin-left:.25em">{{group.label}}</span>
                                 </ng-template>

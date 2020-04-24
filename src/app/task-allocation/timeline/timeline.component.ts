@@ -1588,7 +1588,11 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
     var data = {
       task,
-      assignedUsers: this.assignedUsers
+      assignedUsers: this.assignedUsers,
+      milestoneData: this.milestoneData,
+      milestoneDataCopy: this.milestoneDataCopy,
+      allRestructureTasks: this.allRestructureTasks,
+      allTasks: this.allTasks
     }
 
     this.editTaskComponent(data)
@@ -1655,13 +1659,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           task.pUserStartTimePart = updatedTask.value.startDateTimePart;
           task.pUserEndDatePart = this.getDatePart(updatedTask.value.endDate);
           task.pUserEndTimePart = updatedTask.value.endDateTimePart;
-          // task.start_date = new Date(this.datepipe.transform(updatedTask.value.startDate, 'MMM d, y') + ' ' + updatedTask.value.startDateTimePart);
-          // task.end_date = new Date(this.datepipe.transform(updatedTask.value.endDate, 'MMM d, y') + ' ' + updatedTask.value.endDateTimePart);
-          task.start_date = this.commonService.calcTimeForDifferentTimeZone(updatedTask.value.startDate,
-            task.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
-          task.end_date = this.commonService.calcTimeForDifferentTimeZone(updatedTask.value.endDate,
-            task.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
-          task.tatVal = this.commonService.calcBusinessDays(new Date(task.start_date), new Date(task.end_date));
+          task.start_date = new Date(this.datepipe.transform(updatedTask.value.startDate, 'MMM d, y') + ' ' + updatedTask.value.startDateTimePart);
+          task.end_date = new Date(this.datepipe.transform(updatedTask.value.endDate, 'MMM d, y') + ' ' + updatedTask.value.endDateTimePart);
           task.budgetHours = updatedTask.value.budgetHrs ? updatedTask.value.budgetHrs : updatedTask.get('budgetHrs').value;
           task.tat = updatedTask.value.tat;
           task.user = updatedTask.value.resource.Title;
@@ -4111,7 +4110,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     }
 
     this.sharedObject.oTaskAllocation.oProjectDetails.allMilestones = listOfMilestones;
-
+    this.refreshGantt();
     this.getDeletedMilestoneTasks(updatedTasks, updatedMilestones);
     this.setMilestone(addedTasks, updatedTasks, addedMilestones, updatedMilestones);
 
