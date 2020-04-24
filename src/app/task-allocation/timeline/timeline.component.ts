@@ -828,10 +828,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.oProjectDetails.availableHours = +(+this.oProjectDetails.budgetHours - +this.oProjectDetails.spentHours).toFixed(2);
     this.disableSave = false;
     if (!bFirstLoad) {
-      setTimeout(() => {
+      // setTimeout(() => {
         this.changeInRestructure = false;
         this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Tasks Saved Successfully' });
-      }, 300);
+      // }, 300);
     } else {
       // if (this.visualgraph) {
       this.ganttAttachEvents();
@@ -1221,7 +1221,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           this.menu.showItem(menus[0].id);
           this.menu.showItem(menus[7].id);
           this.menu.showItem(menus[8].id);
-          if (+task.budgetHours && task.pUserStartDatePart.getTime() !== task.pUserEndDatePart.getTime()) {
+          if (+task.budgetHours && new Date(task.pUserStartDatePart).getTime() !== new Date(task.pUserEndDatePart).getTime()) {
             this.menu.showItem(menus[11].id);
             this.menu.showItem(menus[12].id);
           }
@@ -2070,14 +2070,14 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       ];
 
       if (data.itemType !== 'Client Review' && data.itemType !== 'Send to client' && data.slotType.indexOf('Slot') < 0) {
-        if (+data.budgetHours && data.pUserStartDatePart.getTime() !== data.pUserEndDatePart.getTime()) {
+        if (+data.budgetHours && new Date(data.pUserStartDatePart).getTime() !== new Date(data.pUserEndDatePart).getTime()) {
           this.taskMenu.push(
             { label: 'Edit Allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, '') },
             { label: 'Equal Split', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, 'Equal') }
           );
-          if (data.AssignedTo.ID !== undefined && data.AssignedTo.ID > -1 && data.user !== 'QC' && data.user !== 'Edit') {
-            this.taskMenu.push({ label: 'User Capacity', icon: 'pi pi-camera', command: (event) => this.getUserCapacity(data) });
-          }
+        }
+        if (data.AssignedTo.ID !== undefined && data.AssignedTo.ID > -1 && data.user !== 'QC' && data.user !== 'Edit') {
+          this.taskMenu.push({ label: 'User Capacity', icon: 'pi pi-camera', command: (event) => this.getUserCapacity(data) });
         }
       }
     }
@@ -2087,7 +2087,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.taskMenu = [];
     if (data.itemType !== 'Client Review' && data.itemType !== 'Send to client') {
       if (data.slotType.indexOf('Slot') < 0 && +data.budgetHours &&
-        data.pUserStartDatePart.getTime() !== data.pUserEndDatePart.getTime()) {
+        new Date(data.pUserStartDatePart).getTime() !== new Date(data.pUserEndDatePart).getTime()) {
         this.taskMenu.push(
           { label: 'Edit Allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, '') },
           { label: 'Equal Split', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, 'Equal') }
@@ -2467,11 +2467,11 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
         this.changeInRestructure = this.milestoneData.find(c => c.data.editMode === true) !== undefined ? true : false;
         if (this.changeInRestructure) {
-          setTimeout(() => {
+          // setTimeout(() => {
 
             this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'There are some unsaved changes, Please save them.' });
 
-          }, 300);
+          // }, 300);
         }
 
         this.tempGanttchartData = JSON.parse(JSON.stringify(this.GanttchartData));
@@ -2658,6 +2658,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       }
     } else {
       milestoneTask.allocationColor = '';
+      milestoneTask.allocationPerDay = '';
     }
   }
 
@@ -2829,6 +2830,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       node.data.pEnd = node.children !== undefined && node.children.length > 0 ? this.sortDates(node, 'end') : node.data.pEnd;
       node.data.pStart = node.children !== undefined && node.children.length > 0 ? this.sortDates(node, 'start') : node.data.pStart;
       node.data.end_date = node.data.pEnd;
+      node.data.start_date = node.data.pStart;
       node.data.pUserStart = node.data.pStart;
       node.data.pUserEnd = node.data.pEnd;
       node.data.pUserStartDatePart = this.getDatePart(node.data.pUserStart);
@@ -3392,7 +3394,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
         return node.AssignedTo.ID === objt.UserName.ID;
       });
-      await this.dailyAllocateTask(resource, node);
       // node.start_date = new Date(node.start_date.getFullYear(), node.start_date.getMonth(), node.start_date.getDate(), 9, 0);
       // node.end_date = new Date(node.start_date.getFullYear(), node.start_date.getMonth(), node.start_date.getDate(), 19, 0);
       node.pUserStart = new Date(node.pUserStart.getFullYear(), node.pUserStart.getMonth(), node.pUserStart.getDate(), 9, 0);
@@ -3407,6 +3408,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         node.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
       node.tatVal = this.commonService.calcBusinessDays(new Date(node.start_date), new Date(node.end_date));
       this.DateChange(node, 'end');
+      await this.dailyAllocateTask(resource, node);
     }
   }
 
