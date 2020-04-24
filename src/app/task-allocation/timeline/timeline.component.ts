@@ -1202,7 +1202,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         } else {
           this.menu.showItem(menus[7].id);
           this.menu.showItem(menus[8].id);
-          if (+task.budgetHours && task.pUserStartDatePart.getTime() !== task.pUserEndDatePart.getTime()) {
+          if (+task.budgetHours && new Date(task.pUserStartDatePart).getTime() !== new Date(task.pUserEndDatePart).getTime()) {
             this.menu.showItem(menus[11].id);
             this.menu.showItem(menus[12].id);
           }
@@ -2046,7 +2046,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       ];
 
       if (data.itemType !== 'Client Review' && data.itemType !== 'Send to client' && data.slotType.indexOf('Slot') < 0) {
-        if (+data.budgetHours && data.pUserStartDatePart.getTime() !== data.pUserEndDatePart.getTime()) {
+        if (+data.budgetHours && new Date(data.pUserStartDatePart).getTime() !== new Date(data.pUserEndDatePart).getTime()) {
           this.taskMenu.push(
             { label: 'Edit Allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, '') },
             { label: 'Equal Split', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, 'Equal') }
@@ -2063,7 +2063,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.taskMenu = [];
     if (data.itemType !== 'Client Review' && data.itemType !== 'Send to client') {
       if (data.slotType.indexOf('Slot') < 0 && +data.budgetHours &&
-          data.pUserStartDatePart.getTime() !== data.pUserEndDatePart.getTime()) {
+        new Date(data.pUserStartDatePart).getTime() !== new Date(data.pUserEndDatePart).getTime()) {
         this.taskMenu.push(
           { label: 'Edit Allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, '') },
           { label: 'Equal Split', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, 'Equal') }
@@ -2805,6 +2805,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       node.data.pEnd = node.children !== undefined && node.children.length > 0 ? this.sortDates(node, 'end') : node.data.pEnd;
       node.data.pStart = node.children !== undefined && node.children.length > 0 ? this.sortDates(node, 'start') : node.data.pStart;
       node.data.end_date = node.data.pEnd;
+      node.data.start_date = node.data.pStart;
       node.data.pUserStart = node.data.pStart;
       node.data.pUserEnd = node.data.pEnd;
       node.data.pUserStartDatePart = this.getDatePart(node.data.pUserStart);
@@ -3368,7 +3369,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
         return node.AssignedTo.ID === objt.UserName.ID;
       });
-      await this.dailyAllocateTask(resource, node);
       // node.start_date = new Date(node.start_date.getFullYear(), node.start_date.getMonth(), node.start_date.getDate(), 9, 0);
       // node.end_date = new Date(node.start_date.getFullYear(), node.start_date.getMonth(), node.start_date.getDate(), 19, 0);
       node.pUserStart = new Date(node.pUserStart.getFullYear(), node.pUserStart.getMonth(), node.pUserStart.getDate(), 9, 0);
@@ -3383,6 +3383,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         node.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
       node.tatVal = this.commonService.calcBusinessDays(new Date(node.start_date), new Date(node.end_date));
       this.DateChange(node, 'end');
+      await this.dailyAllocateTask(resource, node);
     }
   }
 

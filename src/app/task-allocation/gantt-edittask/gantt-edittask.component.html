@@ -48,13 +48,13 @@
             <div class="p-col-2">
                 Budget Hrs
             </div>
-            <div class="p-col-2">
+            <div class="p-col">
                 <app-daily-allocation-overlay #dailyAllocateOP></app-daily-allocation-overlay>
                 <input type="number" (mouseenter)="this.showOverlayPanel($event, dailyAllocateOP)" pInputText
                     formControlName="budgetHrs" min="0" value="0" step="0.25">
             </div>
-            <div class="p-col-2">
-                <button pButton type="button" (click)="viewAllocation('')"
+            <div class="p-col">
+                <button pButton type="button" title="View Allocation" (click)="viewAllocation('')"
                     class="viewAllocation" icon='pi pi-sliders-h'></button>
             </div>
             <div class="p-col-2">
