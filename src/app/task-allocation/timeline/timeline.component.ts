@@ -1115,10 +1115,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
     ]
 
-    
+
     this.menu.renderAsContextMenu();
     this.menu.setSkin("dhx_terrace");
-    this.menu.loadStruct(menus);   
+    this.menu.loadStruct(menus);
 
     this.menu.hideItem(menus[3].id);
     this.menu.hideItem(menus[4].id);
@@ -1202,7 +1202,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         } else {
           this.menu.showItem(menus[7].id);
           this.menu.showItem(menus[8].id);
-          if (+task.budgetHours) {
+          if (+task.budgetHours && task.pUserStartDatePart.getTime() !== task.pUserEndDatePart.getTime()) {
             this.menu.showItem(menus[11].id);
             this.menu.showItem(menus[12].id);
           }
