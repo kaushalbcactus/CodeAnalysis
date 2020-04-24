@@ -1093,7 +1093,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.ganttComponentRef.instance.onLoad(this.taskAllocateCommonService.ganttParseObject, this.resource);
     this.setScale(this.selectedScale);
     this.ganttComponentRef.instance.isLoaderHidden = false;
-    if(this.menu !== undefined){
+    if (this.menu !== undefined) {
       this.menu.unload();
     }
     this.menu = new dhtmlXMenuObject();
@@ -1120,6 +1120,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.menu.setSkin("dhx_terrace");
     this.menu.loadStruct(menus);
 
+    this.menu.hideItem(menus[0].id);
     this.menu.hideItem(menus[3].id);
     this.menu.hideItem(menus[4].id);
     this.menu.hideItem(menus[5].id);
@@ -1159,47 +1160,65 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
     var showMenus = ((task) => {
       if (task.type == "task") {
+        this.menu.showItem(menus[0].id);
+        this.menu.hideItem(menus[3].id);
+        this.menu.hideItem(menus[4].id);
+        this.menu.hideItem(menus[5].id);
+        this.menu.hideItem(menus[6].id);
         this.menu.hideItem(menus[9].id);
         this.menu.hideItem(menus[10].id);
         this.menu.hideItem(menus[11].id);
         this.menu.hideItem(menus[12].id);
-        if (task.tat && task.DisableCascade) {
-          this.menu.showItem(menus[1].id);
-          this.menu.showItem(menus[2].id);
-          this.menu.hideItem(menus[3].id);
-          this.menu.showItem(menus[4].id);
-          this.menu.hideItem(menus[5].id);
-          this.menu.showItem(menus[6].id);
-        } else if (task.tat && !task.DisableCascade) {
-          this.menu.showItem(menus[1].id);
-          this.menu.showItem(menus[2].id);
-          this.menu.hideItem(menus[3].id);
-          this.menu.showItem(menus[4].id);
-          this.menu.showItem(menus[5].id);
-          this.menu.hideItem(menus[6].id);
-        } else if (!task.tat && task.DisableCascade) {
-          this.menu.showItem(menus[1].id);
-          this.menu.showItem(menus[2].id);
-          this.menu.showItem(menus[3].id);
-          this.menu.hideItem(menus[4].id);
-          this.menu.hideItem(menus[5].id);
-          this.menu.showItem(menus[6].id);
-        } else if (!task.tat && !task.DisableCascade) {
-          this.menu.showItem(menus[1].id);
-          this.menu.showItem(menus[2].id);
-          this.menu.showItem(menus[3].id);
-          this.menu.hideItem(menus[4].id);
-          this.menu.showItem(menus[5].id);
-          this.menu.hideItem(menus[6].id);
+        if (task.itemType !== "Client Review") {
+          if (task.tat && task.DisableCascade) {
+            this.menu.showItem(menus[1].id);
+            this.menu.showItem(menus[2].id);
+            if (task.slotType !== "Slot" && task.itemType !== "Send to client") {
+              this.menu.hideItem(menus[3].id);
+              this.menu.showItem(menus[4].id);
+            }
+            this.menu.hideItem(menus[5].id);
+            this.menu.showItem(menus[6].id);
+          } else if (task.tat && !task.DisableCascade) {
+            this.menu.showItem(menus[1].id);
+            this.menu.showItem(menus[2].id);
+            if (task.slotType !== "Slot" && task.itemType !== "Send to client") {
+              this.menu.hideItem(menus[3].id);
+              this.menu.showItem(menus[4].id);
+            }
+            this.menu.showItem(menus[5].id);
+            this.menu.hideItem(menus[6].id);
+          } else if (!task.tat && task.DisableCascade) {
+            this.menu.showItem(menus[1].id);
+            this.menu.showItem(menus[2].id);
+            if (task.slotType !== "Slot" && task.itemType !== "Send to client") {
+              this.menu.showItem(menus[3].id);
+              this.menu.hideItem(menus[4].id);
+            }
+            this.menu.hideItem(menus[5].id);
+            this.menu.showItem(menus[6].id);
+          } else if (!task.tat && !task.DisableCascade) {
+            this.menu.showItem(menus[1].id);
+            this.menu.showItem(menus[2].id);
+            if (task.slotType !== "Slot" && task.itemType !== "Send to client") {
+              this.menu.showItem(menus[3].id);
+              this.menu.hideItem(menus[4].id);
+            }
+            this.menu.showItem(menus[5].id);
+            this.menu.hideItem(menus[6].id);
+          }
         }
 
         if (task.slotType == "Slot") {
+          this.menu.showItem(menus[0].id);
           this.menu.hideItem(menus[7].id);
           this.menu.hideItem(menus[8].id);
         } else if (task.itemType == "Send to client" || task.itemType == "Client Review") {
+          this.menu.hideItem(menus[0].id);
           this.menu.showItem(menus[7].id);
           this.menu.hideItem(menus[8].id);
         } else {
+          this.menu.showItem(menus[0].id);
           this.menu.showItem(menus[7].id);
           this.menu.showItem(menus[8].id);
           if (+task.budgetHours && new Date(task.pUserStartDatePart).getTime() !== new Date(task.pUserEndDatePart).getTime()) {
@@ -1256,6 +1275,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         case 'tatOFF':
           task.tat = false;
           task.edited = true;
+          this.changeDate(task);
           this.updateMilestoneData();
           this.notificationMessage();
           break;
@@ -1336,7 +1356,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
     // gantt.templates.tooltip_text = tooltipText;
 
-    gantt.attachEvent("onTaskOpened", (id)=> {
+    gantt.attachEvent("onTaskOpened", (id) => {
       this.ganttComponentRef.instance.onLoad(this.taskAllocateCommonService.ganttParseObject, this.resource);
       this.setScale(this.selectedScale);
     });
@@ -1348,7 +1368,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         if (task.status == 'Completed' || task.status == "Auto Closed") {
           return false;
         } else {
-          if(mode === 'resize' ) {
+          if (mode === 'resize') {
             return true;
           } else {
             return false;
@@ -1649,7 +1669,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           task.DisableCascade = updatedTask.value.disableCascade;
           task.edited = true;
           editedTask = task;
-          if(updatedTask.value.tat) {
+          if (updatedTask.value.tat) {
             this.DateChange(editedTask, 'end');
           }
         }
@@ -1752,6 +1772,11 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     })
     this.taskAllocateCommonService.ganttParseObject = allTasks;
     this.loadComponent();
+  }
+
+  refreshGantt() {
+    this.ganttComponentRef.instance.onLoad(this.taskAllocateCommonService.ganttParseObject, this.resource);
+    this.setScale(this.selectedScale);
   }
 
   setScale(scale) {
@@ -2924,13 +2949,13 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
   // tslint:disable
   DateChange(Node, type) {
-    let previousNode = undefined;
+    let previousNode: any = undefined;
     let milestonePosition = -1;
     let selectedMil = -1;
     let subMilestonePosition = 0;
     this.milestoneData.forEach(milestone => {
       milestonePosition = milestonePosition + 1;
-      if (Node === milestone.data && milestone.data.type === 'task') {
+      if ((Node === milestone.data || Node.id === milestone.data.id) && milestone.data.type === 'task') {
         this.changeDateOfEditedTask(milestone.data, type);
         selectedMil = milestonePosition;
         previousNode = milestone.data;
@@ -2939,7 +2964,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         milestone.children.forEach(submilestone => {
 
           if (submilestone.data.type === 'task') {
-            if (Node === submilestone.data) {
+            if (Node === submilestone.data || Node.id === submilestone.data.id) {
               this.changeDateOfEditedTask(submilestone.data, type);
               selectedMil = milestonePosition;
               previousNode = submilestone.data;
@@ -2947,7 +2972,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           }
           if (submilestone.children !== undefined) {
             submilestone.children.forEach(task => {
-              if (Node === task.data) {
+              if (Node === task.data || Node.id === task.data.id) {
                 subMilestonePosition = parseInt(submilestone.data.position, 10);
                 this.changeDateOfEditedTask(task.data, type);
                 selectedMil = milestonePosition;
