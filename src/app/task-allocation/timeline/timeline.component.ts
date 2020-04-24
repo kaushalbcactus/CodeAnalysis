@@ -2659,6 +2659,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       }
     } else {
       milestoneTask.allocationColor = '';
+      milestoneTask.allocationPerDay = '';
     }
   }
 
