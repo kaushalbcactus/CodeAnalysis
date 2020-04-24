@@ -12,8 +12,10 @@
 }
 
 body .p-grid .ui-overlaypanel {
+    /* top: 55px !important;
+    left: 190px !important; */
     top: 55px !important;
-    left: 190px !important;
+	left: 255px !important;
 }
 
 body .p-grid .ui-overlaypanel-shifted:after, .ui-overlaypanel-shifted:before {

@@ -25,6 +25,7 @@ export class GanttEdittaskComponent implements OnInit {
     isTat: true,
     isDisableCascade: true
   }
+  isViewAllocation = false;
   // @ViewChild('dailyAllocateOP', { static: false }) dailyAllocateOP: DailyAllocationOverlayComponent;
 
 
@@ -76,22 +77,28 @@ export class GanttEdittaskComponent implements OnInit {
 
   onLoad(task) {
 
-    if(task.itemType === 'Client Review' || task.itemType === 'Send to client'){
+    if (task.itemType === 'Client Review' || task.itemType === 'Send to client') {
       var bHrs = 0 || task.budgetHours;
       this.editTaskForm.get('budgetHrs').setValue(bHrs);
       this.editTaskForm.controls['budgetHrs'].disable();
     }
-    if(task.itemType === 'Client Review'){
+    if (task.itemType === 'Client Review') {
       this.editTaskObject.isDisableCascade = false;
       this.editTaskObject.isTat = false;
-    } else if(task.itemType === 'Send to client') {
+    } else if (task.itemType === 'Send to client') {
       this.editTaskObject.isDisableCascade = true;
       this.editTaskObject.isTat = false;
-    } else if(task.slotType === 'Slot') {
+    } else if (task.slotType === 'Slot') {
       this.editTaskObject.isDisableCascade = true;
       this.editTaskObject.isTat = false;
     }
-    
+
+    if (task.itemType !== 'Client Review' && task.itemType !== 'Send to client' && task.slotType !== 'Slot') {
+      if (task.budgetHours && task.pUserStartDatePart.getTime() !== task.pUserEndDatePart.getTime()) {
+        this.isViewAllocation = true;
+      }
+    }
+
     this.editTaskForm.patchValue({
       budgetHrs: task.budgetHours,
       startDate: task.start_date,
@@ -105,8 +112,8 @@ export class GanttEdittaskComponent implements OnInit {
     console.log(this.editTaskForm.value)
 
     this.editTaskForm.get('tat').valueChanges.subscribe(tat => {
-      if(tat) {
-        var startDate = new Date(task.start_date.getFullYear(), task.start_date.getMonth(), task.start_date.getDate(), 9, 0) 
+      if (tat) {
+        var startDate = new Date(task.start_date.getFullYear(), task.start_date.getMonth(), task.start_date.getDate(), 9, 0)
         var endDate = new Date(task.end_date.getFullYear(), task.end_date.getMonth(), task.end_date.getDate(), 19, 0)
         this.editTaskForm.patchValue({
           startDate: startDate,
@@ -146,7 +153,7 @@ export class GanttEdittaskComponent implements OnInit {
     return this.datepipe.transform(newDate, 'hh:mm a');
   }
 
-  viewAllocation(allocationType) { 
+  viewAllocation(allocationType) {
     this.task.resources = this.globalService.oTaskAllocation.oResources.filter((objt) => {
       return objt.UserName.ID === this.task.AssignedTo.ID;
     });
@@ -178,7 +185,7 @@ export class GanttEdittaskComponent implements OnInit {
   }
 
   showOverlayPanel(event, dailyAllocateOP) {
-    var target = event.target; 
+    var target = event.target;
     const allocationPerDay = this.task.allocationPerDay ? this.task.allocationPerDay : '';
     dailyAllocateOP.showOverlay(event, allocationPerDay, target);
   }

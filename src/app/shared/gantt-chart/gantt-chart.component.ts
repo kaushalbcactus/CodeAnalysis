@@ -462,6 +462,44 @@ export class GanttChartComponent implements OnInit {
       }
     };
 
+  //   gantt.templates.grid_row_class =
+	// 		gantt.templates.task_class = function (start, end, task) {
+	// 	var css = [];
+	// 	// if (task.$virtual || task.type == gantt.config.types.project)
+	// 	// 	css.push("summary-bar");
+
+	// 	if(task.owner_id){
+	// 		css.push("gantt_resource_task gantt_resource_" + task.owner_id);
+	// 	}
+
+	// 	return css.join(" ");
+  // };
+  
+  //   gantt.attachEvent("onLoadEnd", function(){
+  //     var styleId = "dynamicGanttStyles";
+  //     var element = document.getElementById(styleId);
+  //     if(!element){
+  //       element = document.createElement("style");
+  //       element.id = styleId;
+  //       document.querySelector("head").appendChild(element);
+  //     }
+  //     var html = [];
+  //     var resources = gantt.serverList(resource);
+  
+  //     resources.forEach(function(r){
+  //       html.push(".gantt_task_line.gantt_resource_" + r.key + "{" +
+  //         "background-color:"+r.backgroundColor+"; " +
+  //         "color:"+r.textColor+";" +
+  //       "}");
+  //       html.push(".gantt_row.gantt_resource_" + r.key + " .gantt_cell:nth-child(2) .gantt_tree_content{" +
+  //         "background-color:"+r.backgroundColor+"; " +
+  //         "color:"+r.textColor+";" +
+  //         "}");
+  //     });
+  //     element.innerHTML = html.join("");
+  //   });
+  
+
 
     // if(gantt.ext.zoom.getCurrentLevel() < 3) {
     // gantt.attachEvent("onTaskDrag", function(id, mode, task, original){

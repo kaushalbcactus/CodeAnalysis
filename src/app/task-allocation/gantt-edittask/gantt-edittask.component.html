@@ -45,18 +45,26 @@
             </div>
         </div>
         <div class="p-grid p-col mt-20">
+            <app-daily-allocation-overlay #dailyAllocateOP></app-daily-allocation-overlay>
             <div class="p-col-2">
                 Budget Hrs
             </div>
-            <div class="p-col-2">
-                <app-daily-allocation-overlay #dailyAllocateOP></app-daily-allocation-overlay>
-                <input type="number" (mouseenter)="this.showOverlayPanel($event, dailyAllocateOP)" pInputText
-                    formControlName="budgetHrs" min="0" value="0" step="0.25">
-            </div>
-            <div class="p-col-2">
-                <button pButton type="button" (click)="viewAllocation('')"
-                    class="viewAllocation" icon='pi pi-sliders-h'></button>
-            </div>
+            <ng-container *ngIf="!isViewAllocation">
+                <div class="p-col-4">
+                    <input type="number" (mouseenter)="this.showOverlayPanel($event, dailyAllocateOP)" pInputText
+                        formControlName="budgetHrs" min="0" value="0" step="0.25">
+                </div>
+            </ng-container>
+            <ng-container *ngIf="isViewAllocation">
+                <div class="p-col-2">
+                    <input type="number" (mouseenter)="this.showOverlayPanel($event, dailyAllocateOP)" pInputText
+                        formControlName="budgetHrs" min="0" value="0" step="0.25">
+                </div>
+                <div class="p-col-2">
+                    <button pButton type="button" (click)="viewAllocation('')" class="viewAllocation"
+                        icon='pi pi-sliders-h'></button>
+                </div>
+            </ng-container>
             <div class="p-col-2">
                 Resource
             </div>
