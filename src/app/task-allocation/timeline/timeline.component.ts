@@ -828,10 +828,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.oProjectDetails.availableHours = +(+this.oProjectDetails.budgetHours - +this.oProjectDetails.spentHours).toFixed(2);
     this.disableSave = false;
     if (!bFirstLoad) {
-      setTimeout(() => {
+      // setTimeout(() => {
         this.changeInRestructure = false;
         this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Tasks Saved Successfully' });
-      }, 300);
+      // }, 300);
     } else {
       // if (this.visualgraph) {
       this.ganttAttachEvents();
@@ -2468,11 +2468,11 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
         this.changeInRestructure = this.milestoneData.find(c => c.data.editMode === true) !== undefined ? true : false;
         if (this.changeInRestructure) {
-          setTimeout(() => {
+          // setTimeout(() => {
 
             this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'There are some unsaved changes, Please save them.' });
 
-          }, 300);
+          // }, 300);
         }
 
         this.tempGanttchartData = JSON.parse(JSON.stringify(this.GanttchartData));
