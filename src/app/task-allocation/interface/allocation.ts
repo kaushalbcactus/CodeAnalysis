@@ -23,6 +23,16 @@ export interface ICapacity {
   displayAvailableHrs: string;
 }
 
+export interface IDailyAllocation {
+  Date: Date;
+  Allocation: {
+    valueHrs: number;
+    valueMins: number;
+    maxHrs: number;
+    maxMins: number;
+  };
+};
+
 export interface IMilestoneTask {
     'pUserStart': string;
     'pUserEnd': string;

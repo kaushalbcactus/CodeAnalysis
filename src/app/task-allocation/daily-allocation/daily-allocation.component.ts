@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { IDailyAllocationTask, ICapacity } from '../interface/allocation';
+import { IDailyAllocationTask, ICapacity, IDailyAllocation } from '../interface/allocation';
 import { UsercapacityComponent } from 'src/app/shared/usercapacity/usercapacity.component';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 import { CommonService } from 'src/app/Services/common.service';
@@ -93,18 +93,18 @@ export class DailyAllocationComponent implements OnInit {
     const allocationDays = strAllocation.split(/\n/);
     allocationDays.forEach(day => {
       if (day) {
+        const resourceDailyAllocation: any[] = resource.dates;
         const arrDateTime: string[] = day.indexOf(':') > -1 ? day.split(':') : [];
         const date: Date = arrDateTime.length ? new Date(arrDateTime[0]) : new Date();
         const time: string = arrDateTime.length > 1 ? arrDateTime[1] + ':' + arrDateTime[2] : '';
-        const resourceDailyAllocation: any[] = resource.dates;
+        const value = this.getHrsMinsObj(time, false);
         const allocatedDate: any = resourceDailyAllocation.find(d => d.date.getTime() === date.getTime());
         const resourceSliderMaxHrs: string = this.getResourceSliderMaxHrs(sliderMaxHrs, allocatedDate);
-        // const hrsMins = this.common.convertFromHrsMins(time);
-        const obj = {
+        const obj: IDailyAllocation = {
           Date: date,
           Allocation: {
-            valueHrs: this.getHrsMinsObj(time, false).hours,
-            valueMins: this.getHrsMinsObj(time, false).mins,
+            valueHrs: value.hours,
+            valueMins: value.mins,
             maxHrs: this.getHrsMinsObj(resourceSliderMaxHrs, true).hours,
             maxMins: 45
           }
@@ -124,16 +124,17 @@ export class DailyAllocationComponent implements OnInit {
   }
 
   checkDailyAllocation(resource, allocationData): boolean {
-    const budgetHrs = allocationData.budgetHrs;
+    const autoAllocateAddHrs = '0:30';
+    let extraHrs = '0:0';
     const maxLimit = resource.maxHrs + 2;
+    const budgetHrs: number = allocationData.budgetHrs;
     let maxAvailableHrs = resource.maxHrs;
     let remainingBudgetHrs: string;
-    let extraHrs = '0:0';
     while (maxAvailableHrs <= maxLimit) {
       remainingBudgetHrs = '' + budgetHrs;
       remainingBudgetHrs = this.checkResourceAvailability(resource, extraHrs, remainingBudgetHrs, allocationData);
       if (remainingBudgetHrs.indexOf('-') > -1) {
-        extraHrs = this.common.addHrsMins([extraHrs, '0:30']);
+        extraHrs = this.common.addHrsMins([extraHrs, autoAllocateAddHrs]);
         maxAvailableHrs = maxAvailableHrs + 0.5;
       } else {
         break;

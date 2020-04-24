@@ -1221,7 +1221,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           this.menu.showItem(menus[0].id);
           this.menu.showItem(menus[7].id);
           this.menu.showItem(menus[8].id);
-          if (+task.budgetHours) {
+          if (+task.budgetHours && task.pUserStartDatePart.getTime() !== task.pUserEndDatePart.getTime()) {
             this.menu.showItem(menus[11].id);
             this.menu.showItem(menus[12].id);
           }
