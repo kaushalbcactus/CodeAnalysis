@@ -1391,7 +1391,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     });
 
     gantt.attachEvent("onAfterTaskDrag", (id, mode, e) => {
-      var task = gantt.getTask(id)
+      var task = gantt.getTask(id);
+      this.cascadeGantt(e, task);
       if (task.status !== 'Completed' || task.type == 'milestone') {
         this.openPopupOnGanttTask(id);
         return true;
@@ -1399,6 +1400,21 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         return false;
       }
     });
+  }
+
+  cascadeGantt(e, task) {
+    const isStartDate = e.srcElement.className.indexOf('start_date') > -1 ? true : false;
+    if(isStartDate) {
+      task.pUserStart = new Date(task.start_date);
+      task.pUserStartDatePart = task.pUserStart;
+      task.pUserStartTimePart = task.pUserStart.getHours() + ":" + task.pUserStart.getMinutes();
+      this.DateChangePart(task, 'start')
+    } else {
+      task.pUserEnd = new Date(task.end_date);
+      task.pUserEndDatePart = task.pUserEnd;
+      task.pUserEndTimePart = task.pUserEnd.getHours() + ":" + task.pUserEnd.getMinutes();
+      this.DateChangePart(task, 'end')
+    }
   }
 
   openPopupOnGanttTask(id) {
