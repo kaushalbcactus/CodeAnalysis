@@ -5,7 +5,7 @@
                 <mat-form-field style="width:80%;">
                     <input matInput placeholder="Search Project" class="searchPrj" [formControl]="searchFormControl" (keydown)="SearchProject($event)">
                     <button matSuffix mat-icon-button>
-                  <mat-icon class="searchIcon" (click)=getProjectDetails() [style.color]=" !Searchenable ? '#b03f44'  :'#673AB7'" >search</mat-icon>
+                  <mat-icon class="searchIcon" (click)="getProjectDetails()" [style.color]=" !Searchenable ? '#b03f44'  :'#673AB7'" >search</mat-icon>
                 </button>
                 </mat-form-field>
             </form>
@@ -24,8 +24,9 @@
 
 <div id="codeSection" *ngIf="!loaderenable  && timelineView">
     <h1 class="floatLeft" id="formHeaderText">Project Code: {{globalObject.oTaskAllocation.oProjectDetails.projectCode}}({{globalObject.oTaskAllocation.oProjectDetails.wbjid}})</h1>
-    <div class="floatRight">
 
+    <div class="floatRight">
+        <mat-icon (click)="getProjectDetails()" style="vertical-align: middle;color:#db1721;cursor: pointer; margin-right: 5px;">refresh</mat-icon>
         <mat-icon (click)="showSearchSection()" style="vertical-align: middle;color:#db1721;cursor: pointer; ">navigation</mat-icon>
     </div>
     <div class="clearBoth"></div>
