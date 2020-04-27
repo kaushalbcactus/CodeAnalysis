@@ -328,13 +328,13 @@ export class AddUserToProjectsComponent implements OnInit {
         if (element.DeliveryLevel1 && element.DeliveryLevel1.length) {
           element.DeliveryLevel1IDArray = element.DeliveryLevel1.map(x => x.ID);
         }
-        element.AllOperationresourcesIDArray.push(this.selectedUser.UserName.ID);
+        element.AllOperationresourcesIDArray.push(this.selectedUser.UserNamePG.ID);
         if (element.AccessType === this.adminConstants.ACCESS_TYPE.ACCESS) {
-          element.CMLevel1IDArray.push(this.selectedUser.UserName.ID);
-          element.DeliveryLevel1IDArray.push(this.selectedUser.UserName.ID);
+          element.CMLevel1IDArray.push(this.selectedUser.UserNamePG.ID);
+          element.DeliveryLevel1IDArray.push(this.selectedUser.UserNamePG.ID);
         } else if (element.AccessType === this.adminConstants.ACCESS_TYPE.ACCOUNTABLE) {
           // remove the current user if present in CMLevel1.
-          const cmIndex = element.CMLevel1IDArray.indexOf(this.selectedUser.UserName.ID);
+          const cmIndex = element.CMLevel1IDArray.indexOf(this.selectedUser.UserNamePG.ID);
           if (cmIndex > -1) {
             element.IsUserExistInCMLevel1 = true;
             element.CMLevel1IDArray.splice(cmIndex, 1);
@@ -342,7 +342,7 @@ export class AddUserToProjectsComponent implements OnInit {
             element.IsUserExistInCMLevel1 = false;
           }
           // remove the current user if present in DeliveryLevel1.
-          const delIndex = element.DeliveryLevel1IDArray.indexOf(this.selectedUser.UserName.ID);
+          const delIndex = element.DeliveryLevel1IDArray.indexOf(this.selectedUser.UserNamePG.ID);
           if (delIndex > -1) {
             element.IsUserExistInDeliveryLevel1 = true;
             element.DeliveryLevel1IDArray.splice(delIndex, 1);
