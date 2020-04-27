@@ -731,3 +731,11 @@ body .ui-dropdown-panel .ui-dropdown-filter-container .ui-dropdown-filter-icon {
       float: right;
   }
 
+  .gantt_cell:nth-child(2) .gantt_tree_content{
+    border-radius: 16px;
+    width: 100%;
+    height: 80%;
+    margin: 0% 0;
+    padding-left: 10px;
+    line-height: 230%;
+  }

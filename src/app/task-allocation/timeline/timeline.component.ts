@@ -829,8 +829,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.disableSave = false;
     if (!bFirstLoad) {
       // setTimeout(() => {
-        this.changeInRestructure = false;
-        this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Tasks Saved Successfully' });
+      this.changeInRestructure = false;
+      this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Tasks Saved Successfully' });
       // }, 300);
     } else {
       // if (this.visualgraph) {
@@ -963,9 +963,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       return r;
     }, []);
 
-    var submilestones = this.GanttchartData.filter(item => item.type == 'submilestone')
+    var submilestones = this.GanttchartData.filter(item => item.type == 'submilestone' && item.added === true)
+    var subLength = submilestones.length;
 
-    this.GanttchartData.forEach((item) => {
+    this.GanttchartData.forEach((item, index) => {
       if (item.submilestone) {
         submilestones.forEach((subMile) => {
           if (item.submilestone === subMile.title) {
@@ -976,6 +977,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           var sub = this.GanttchartData[s];
           var m = this.GanttchartData[s - 1];
           sub.parent = m.id
+          // if (sub.parent == 0) {
+          //   var m: any = this.GanttchartData.filter(e => e.type === 'milestone' && e.added === true);
+          //   sub.parent = m[0].id
+          // }
         })
       } else {
         milestones.forEach((m) => {
@@ -1054,7 +1059,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
             "key": item.AssignedTo.ID,
             "Name": item.AssignedTo.Name,
             "label": item.AssignedTo.Title,
-            "Email": item.AssignedTo.EMail
+            "Email": item.AssignedTo.EMail,
+            'textColor': '#fff'
           })
         }
       }
@@ -1093,6 +1099,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.ganttComponentRef.instance.onLoad(this.taskAllocateCommonService.ganttParseObject, this.resource);
     this.setScale(this.selectedScale);
     this.ganttComponentRef.instance.isLoaderHidden = false;
+    this.allocationColor();
     if (this.menu !== undefined) {
       this.menu.unload();
     }
@@ -1365,7 +1372,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       var task = gantt.getTask(id)
 
       if (gantt.ext.zoom.getCurrentLevel() < 3) {
-        if (task.status == 'Completed' || task.status == "Auto Closed") {
+        if (task.status == 'Completed' || task.status == "Auto Closed" || task.type == "milestone" || task.type === 'submilestone') {
           return false;
         } else {
           if (mode === 'resize') {
@@ -1642,8 +1649,11 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           }
         })
       });
-
       this.showBudgetHrs = false;
+      this.notificationMessage();
+      this.loadComponent()
+      this.scrollToTaskDate(this.updatedTasks.end_date);
+
     } else if (updatedDataObj.reset) {
       this.close();
     } else {
@@ -1708,10 +1718,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         })
       });
       console.log(this.milestoneData);
+      this.notificationMessage();
+      this.loadComponent()
+      this.scrollToTaskDate(this.updatedTasks.end_date);
     }
-
-    this.notificationMessage();
-    this.loadComponent()
   }
 
   updateMilestoneData() {
@@ -1759,23 +1769,33 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       if (this.updatedTasks.itemType === 'milestone') {
         if (task.id == this.updatedTasks.id) {
           task.open = true;
+          task.edited = false;
         }
       }
-      if (task.id == this.updatedTasks.id && task.edited == false) {
+      if (task.id == this.updatedTasks.id) {
         task.start_date = task.pUserStart;
         task.end_date = task.pUserEnd;
+        task.edited = false
+        task.allocationColor = '';
       }
-      if (task.title.replace(' (Current)', '') === this.updatedTasks.milestone) {
+      if (task.title.replace(' (Current)', '') === this.updatedTasks.milestone || task.title === this.updatedTasks.milestone) {
         task.open = true;
       }
     })
     this.taskAllocateCommonService.ganttParseObject = allTasks;
+    this.GanttchartData = allTasks.data;
     this.loadComponent();
+    this.scrollToTaskDate(this.updatedTasks.pUserEnd);
   }
 
   refreshGantt() {
     this.ganttComponentRef.instance.onLoad(this.taskAllocateCommonService.ganttParseObject, this.resource);
     this.setScale(this.selectedScale);
+  }
+
+  scrollToTaskDate(date) {
+    var endDate = date.setDate(date.getDate() + 1)
+    gantt.showDate(new Date(endDate));
   }
 
   setScale(scale) {
@@ -1794,6 +1814,50 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       this.ganttComponentRef.instance.zoomOut()
       this.selectedScale = this.scales[gantt.ext.zoom.getCurrentLevel()];
     }
+  }
+
+  allocationColor() {
+    gantt.templates.grid_row_class = function (start, end, task) {
+      var css = [];
+      // if (task.$virtual || task.type == gantt.config.types.project)
+      // 	css.push("summary-bar");
+
+      if (task.title) {
+        css.push("gantt_resource_task gantt_resource_task" + task.title);
+      }
+
+      return css.join(" ");
+    };
+
+    gantt.attachEvent("onParse", () => {
+      var styleId = "dynamicGanttStyles";
+      var element = document.getElementById(styleId);
+      if (!element) {
+        element = document.createElement("style");
+        element.id = styleId;
+        document.querySelector("head").appendChild(element);
+      }
+      var html = [];
+      var resources = gantt.serverList('AssignedTo');
+
+      var allTasks = this.GanttchartData;
+
+      resources.forEach((r) => {
+        allTasks.forEach((e) => {
+          // html.push(".gantt_task_line.gantt_resource_" + r.key + "{" +
+          //   "background-color:" + r.backgroundColor + "; " +
+          //   "color:" + r.textColor + ";" +
+          //   "}");
+          var textColor = '';
+          textColor = e.allocationColor ? r.textColor : '#454545';
+          html.push(".gantt_row.gantt_resource_task" + e.title + " .gantt_cell:nth-child(2) .gantt_tree_content{" +
+            "background-color:" + e.allocationColor + "; " +
+            "color:" + textColor + ";" +
+            "}");
+        })
+      });
+      element.innerHTML = html.join("");
+    });
   }
 
   ganttExportToExcel() {
@@ -2469,7 +2533,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         if (this.changeInRestructure) {
           // setTimeout(() => {
 
-            this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'There are some unsaved changes, Please save them.' });
+          this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'There are some unsaved changes, Please save them.' });
 
           // }, 300);
         }
