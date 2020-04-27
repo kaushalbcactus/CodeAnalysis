@@ -978,6 +978,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           sub.parent = m.id
         })
       } else {
+        item.end_date = new Date(new Date(item.end_date).setHours(23,59,59,59));
         milestones.forEach((m) => {
           if (item.milestone === m.title) {
             item.parent = m.id;
@@ -1406,13 +1407,13 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     const isStartDate = e.srcElement.className.indexOf('start_date') > -1 ? true : false;
     if(isStartDate) {
       task.pUserStart = new Date(task.start_date);
-      task.pUserStartDatePart = task.pUserStart;
-      task.pUserStartTimePart = task.pUserStart.getHours() + ":" + task.pUserStart.getMinutes();
+      task.pUserStartDatePart = this.getDatePart(task.pUserStart);
+      task.pUserStartTimePart = this.getTimePart(task.pUserStart);
       this.DateChangePart(task, 'start')
     } else {
       task.pUserEnd = new Date(task.end_date);
-      task.pUserEndDatePart = task.pUserEnd;
-      task.pUserEndTimePart = task.pUserEnd.getHours() + ":" + task.pUserEnd.getMinutes();
+      task.pUserEndDatePart = this.getDatePart(task.pUserEnd);
+      task.pUserEndTimePart = this.getTimePart(task.pUserEnd);
       this.DateChangePart(task, 'end')
     }
   }
