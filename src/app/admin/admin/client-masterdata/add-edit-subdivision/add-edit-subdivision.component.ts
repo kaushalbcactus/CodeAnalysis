@@ -241,6 +241,39 @@ export class AddEditSubdivisionComponent implements OnInit {
     this.modalloaderenable = false;
   }
 
+  /**
+   * Construct a method to map the array values into particular column dropdown.
+   *
+   * @description
+   *
+   * This method will extract the column object value from an array and stores into the column dropdown array and display
+   * the values into the SubDivision,LastUpdated and LastUpdatedBy column dropdown.
+   *
+   * @param colData Pass colData as a parameter which contains an array of column object.
+   *
+   */
+  subDivisionFilters(colData) {
+    this.adminObject.subDivisionDetailsColArray.SubDivision = this.common.sortData(this.adminCommonService.uniqueArrayObj(
+      colData.map(a => { const b = { label: a.SubDivision, value: a.SubDivision }; return b; })));
+    const lastUpdatedArray = this.common.sortDateArray(this.adminCommonService.uniqueArrayObj(
+      colData.map(a => {
+        const b = {
+          label: this.datepipe.transform(a.LastUpdated, 'MMM dd, yyyy'),
+          value: a.LastUpdated
+        };
+        return b;
+      })));
+    this.adminObject.subDivisionDetailsColArray.LastUpdated = lastUpdatedArray.map(a => {
+      const b = {
+        label: this.datepipe.transform(a, 'MMM dd, yyyy'),
+        value: new Date(new Date(a).toDateString())
+      };
+      return b;
+    });
+    this.adminObject.subDivisionDetailsColArray.LastUpdatedBy = this.common.sortData(this.adminCommonService.uniqueArrayObj(
+      colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; })));
+  }
+
   validateEmailId() {
 
     if (this.subDivisionform.value.distributionList) {
@@ -267,6 +300,7 @@ export class AddEditSubdivisionComponent implements OnInit {
    */
   async saveSubdivision() {
     if (this.subDivisionform.valid) {
+      console.log(this.subDivisionform.value);
       if (!this.showeditSubDivision) {
         if (this.subDivisionDetailsRows.some(a =>
           a.SubDivision.toLowerCase() === this.subDivisionform.value.subDivision_Name.toLowerCase())) {
@@ -277,7 +311,31 @@ export class AddEditSubdivisionComponent implements OnInit {
           return false;
         }
       }
-      this.ref.close(this.subDivisionform);
+      // write the save logic using rest api.
+      const subDivisionData = await this.getSubDivisionData();
+      if (!this.showeditSubDivision) {
+        this.common.SetNewrelic('admin', 'admin-clientMaster', 'createClientSubdivision');
+        const results = await this.spServices.createItem(this.constantsService.listNames.ClientSubdivision.name,
+          subDivisionData, this.constantsService.listNames.ClientSubdivision.type);
+        if (!results.hasOwnProperty('hasError') && !results.hasError) {
+          this.messageService.add({
+            key: 'adminCustom', severity: 'success', summary: 'Success Message',
+            detail: 'The subdivision ' + this.subDivisionform.value.subDivision_Name + ' is created successfully.'
+          });
+          await this.loadRecentSubDivisionRecords(results.ID, this.showeditSubDivision);
+        }
+      }
+      if (this.showeditSubDivision) {
+        this.common.SetNewrelic('admin', 'admin-clientMaster', 'updateClientSubdivision');
+        const results = await this.spServices.updateItem(this.constantsService.listNames.ClientSubdivision.name, this.currSubDivisionObj.ID,
+          subDivisionData, this.constantsService.listNames.ClientSubdivision.type);
+        this.messageService.add({
+          key: 'adminCustom', severity: 'success',
+          summary: 'Success Message', detail: 'The subdivision ' + this.currSubDivisionObj.SubDivision + ' is updated successfully.'
+        });
+        await this.loadRecentSubDivisionRecords(this.currSubDivisionObj.ID, this.showeditSubDivision);
+      }
+      // this.showaddSubDivision = false;
     } else {
       this.isSubDivisionFormSubmit = true;
     }

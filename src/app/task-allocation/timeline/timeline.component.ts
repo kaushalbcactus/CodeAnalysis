@@ -73,7 +73,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
   ];
 
   public allTasks = [];
-  public allRestructureTasks = [];
   batchContents = new Array();
   private editorOptions: GanttEditorOptions;
   public GanttChartView = false;
@@ -305,10 +304,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
           'pID': milestone.Id,
           'pName': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? milestone.Title + " (Current)" : milestone.Title,
-          // 'pStart': milestone.startDate !== "" ? milestone.startDate.date.year + "/" + (milestone.startDate.date.month < 10 ? "0" + milestone.startDate.date.month : milestone.startDate.date.month) + "/" + (milestone.startDate.date.day < 10 ? "0" + milestone.startDate.date.day : milestone.startDate.date.day) : '',
-          // 'pEnd': milestone.endDate !== "" ? milestone.endDate.date.year + "/" + (milestone.endDate.date.month < 10 ? "0" + milestone.endDate.date.month : milestone.endDate.date.month) + "/" + (milestone.endDate.date.day < 10 ? "0" + milestone.endDate.date.day : milestone.endDate.date.day) : '',
-          'pStart': milestone.StartDate !== "" ? new Date(milestone.StartDate) : '',
-          'pEnd': milestone.DueDate !== "" ? new Date(milestone.DueDate) : '',
+          'pStart': milestone.startDate !== "" ? milestone.startDate.date.year + "/" + (milestone.startDate.date.month < 10 ? "0" + milestone.startDate.date.month : milestone.startDate.date.month) + "/" + (milestone.startDate.date.day < 10 ? "0" + milestone.startDate.date.day : milestone.startDate.date.day) : '',
+          'pEnd': milestone.endDate !== "" ? milestone.endDate.date.year + "/" + (milestone.endDate.date.month < 10 ? "0" + milestone.endDate.date.month : milestone.endDate.date.month) + "/" + (milestone.endDate.date.day < 10 ? "0" + milestone.endDate.date.day : milestone.endDate.date.day) : '',
           'pUserStart': milestone.startDate !== "" ? milestone.startDate.date.year + "/" + (milestone.startDate.date.month < 10 ? "0" + milestone.startDate.date.month : milestone.startDate.date.month) + "/" + (milestone.startDate.date.day < 10 ? "0" + milestone.startDate.date.day : milestone.startDate.date.day) : '',
           'pUserEnd': milestone.endDate !== "" ? milestone.endDate.date.year + "/" + (milestone.endDate.date.month < 10 ? "0" + milestone.endDate.date.month : milestone.endDate.date.month) + "/" + (milestone.endDate.date.day < 10 ? "0" + milestone.endDate.date.day : milestone.endDate.date.day) : '',
           'pUserStartDatePart': this.getDate(milestone.startDate),
@@ -1906,7 +1903,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
         this.milestoneData = [];
         this.milestoneData.push.apply(this.milestoneData, updatedtempmilestoneData);
-        this.allRestructureTasks = allReturnedTasks;
+
         this.assignUsers(allReturnedTasks);
         this.loaderenable = false;
         this.milestoneData = [...this.milestoneData];
@@ -2083,39 +2080,14 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   getNewTaskName(milestoneTask, originalName) {
     let counter = 1;
-    // let getItem = this.allRestructureTasks.filter(e => e.pName === originalName && e.milestone === milestoneTask.milestone);
-    // if (!getItem.length) {
-    //   getItem = this.allTasks.filter(e => {
-    //     const taskName = e.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + e.Milestone + ' ', '');
-    //     return e.FileSystemObjectType === 0 && taskName === originalName && e.Milestone === milestoneTask.milestone;
-    //   });
-    // }
-    let tasks = this.checkNameExists([], milestoneTask, originalName);
-    while (tasks.length) {
+    let getItem = this.tempGanttchartData.filter(e => e.pName === originalName && e.milestone === milestoneTask.milestone);
+    while (getItem.length) {
       counter++;
       originalName = milestoneTask.itemType + ' ' + counter;
-      tasks = this.checkNameExists(tasks, milestoneTask, originalName);
-      // getItem = this.allRestructureTasks.filter(e => e.pName === originalName && e.milestone === milestoneTask.milestone);
-      // if (!getItem.length) {
-      //   getItem = this.allTasks.filter(e => {
-      //     const taskName = e.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + e.Milestone + ' ', '');
-      //     return e.FileSystemObjectType === 0 && taskName === originalName && e.Milestone === milestoneTask.milestone;
-      //   });
-      // }
+      getItem = this.tempGanttchartData.filter(e => e.pName === originalName);
     }
 
     return originalName;
-  }
-
-  checkNameExists(tasks, milestoneTask, originalName) {
-    tasks = this.allRestructureTasks.filter(e => e.pName === originalName && e.milestone === milestoneTask.milestone);
-    if (!tasks.length) {
-      tasks = this.allTasks.filter(e => {
-        const taskName = e.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + e.Milestone + ' ', '');
-        return e.FileSystemObjectType === 0 && taskName === originalName && e.Milestone === milestoneTask.milestone;
-      });
-    }
-    return tasks;
   }
   // *************************************************************************************************
   // Date changes Cascading (Task Date Change)
@@ -2135,9 +2107,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     nodeData.pUserStart = this.commonService.calcTimeForDifferentTimeZone(prevNodeStartDate,
       this.sharedObject.currentUser.timeZone, nodeData.assignedUserTimeZone);
     // const chkDate = nodeData.pUserStart.getHours() >= 19 && (nodeData.pUserStart.getHours() <= 23 && nodeData.pUserStart.getMinutes() < 60)
-    // nodeData.pUserStart = nodeData.pUserStart.getHours() >= 19 || nodeData.pUserStart.getHours() < 9 || prevNodeData.itemType === 'Client Review' || nodeData.itemType === 'Client Review' ?
-    // new change cascade maxwell
-    nodeData.pUserStart = nodeData.pUserStart.getHours() >= 19 || nodeData.pUserStart.getHours() < 9 ?
+    nodeData.pUserStart = nodeData.pUserStart.getHours() >= 19 || nodeData.pUserStart.getHours() < 9 || prevNodeData.itemType === 'Client Review' || nodeData.itemType === 'Client Review' ?
       this.checkStartDate(new Date(nodeData.pUserStart.getFullYear(), nodeData.pUserStart.getMonth(), (nodeData.pUserStart.getDate() + 1), 9, 0)) :
       nodeData.pUserStart;
     nodeData.pUserEnd = this.checkEndDate(nodeData.pUserStart, workingHours);
@@ -2159,28 +2129,15 @@ export class TimelineComponent implements OnInit, OnDestroy {
   // tslint:enable
 
   setStartAndEnd(node) {
-    if(node.data.itemType == 'Client Review') {
-      node.data.pEnd = node.children !== undefined && node.children.length > 0 ? this.sortDates(node, 'end') : node.data.pEnd;
-      node.data.pStart = node.children !== undefined && node.children.length > 0 ? this.sortDates(node, 'start') : node.data.pStart;
-      //node.data.pUserStart = node.data.pStart;
-      //node.data.pUserEnd = node.data.pEnd;
-      node.data.pUserStartDatePart = this.getDatePart(node.data.pUserStart);
-      node.data.pUserStartTimePart = this.getTimePart(node.data.pUserStart);
-      node.data.pUserEndDatePart = this.getDatePart(node.data.pUserEnd);
-      node.data.pUserEndTimePart = this.getTimePart(node.data.pUserEnd);
-      node.data.tatVal = this.commonService.calcBusinessDays(new Date(node.data.pStart), new Date(node.data.pEnd));
-    }
-    else if (node.data.status !== 'Completed' ) {
-      node.data.pEnd = node.children !== undefined && node.children.length > 0 ? this.sortDates(node, 'end') : node.data.pEnd;
-      node.data.pStart = node.children !== undefined && node.children.length > 0 ? this.sortDates(node, 'start') : node.data.pStart;
-      node.data.pUserStart = node.data.pStart;
-      node.data.pUserEnd = node.data.pEnd;
-      node.data.pUserStartDatePart = this.getDatePart(node.data.pUserStart);
-      node.data.pUserStartTimePart = this.getTimePart(node.data.pUserStart);
-      node.data.pUserEndDatePart = this.getDatePart(node.data.pUserEnd);
-      node.data.pUserEndTimePart = this.getTimePart(node.data.pUserEnd);
-      node.data.tatVal = this.commonService.calcBusinessDays(new Date(node.data.pStart), new Date(node.data.pEnd));
-    }
+    node.data.pEnd = node.children !== undefined && node.children.length > 0 ? this.sortDates(node, 'end') : node.data.pEnd;
+    node.data.pStart = node.children !== undefined && node.children.length > 0 ? this.sortDates(node, 'start') : node.data.pStart;
+    node.data.pUserStart = node.data.pStart;
+    node.data.pUserEnd = node.data.pEnd;
+    node.data.pUserStartDatePart = this.getDatePart(node.data.pUserStart);
+    node.data.pUserStartTimePart = this.getTimePart(node.data.pUserStart);
+    node.data.pUserEndDatePart = this.getDatePart(node.data.pUserEnd);
+    node.data.pUserEndTimePart = this.getTimePart(node.data.pUserEnd);
+    node.data.tatVal = this.commonService.calcBusinessDays(new Date(node.data.pStart), new Date(node.data.pEnd));
   }
 
   sortDates(node, type) {
@@ -2213,7 +2170,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
 
   changeDateOfEditedTask(node, type) {
-    node.pUserStart = node.tat === true && node.itemType !== 'Client Review' ?
+    node.pUserStart = node.tat === true ?
       new Date(node.pUserStart.getFullYear(), node.pUserStart.getMonth(), node.pUserStart.getDate(), 9, 0) : node.pUserStart;
     node.pUserEnd = type === 'start' && node.pUserStart > node.pUserEnd ? (node.tat === true ?
       new Date(node.pUserStart.getFullYear(), node.pUserStart.getMonth(),
@@ -2650,7 +2607,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
     else if (nodeData.type === 'milestone') {
       if (new Date(prevNodeEndDate) >= new Date(nodeData.pStart)) {
         const firstTask = nextNode.children[0].data;
-        nodeData.edited = true;
         const allTasks = this.getTasksFromMilestones(nextNode, false, false);
         let allParallelTasks = [];
         if (firstTask.type === 'task') {
@@ -2669,7 +2625,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         }
         allParallelTasks.forEach(element => {
 
-          if (!element.DisableCascade && element.status !== 'In Progress') {
+          if (!element.data.DisableCascade && element.data.status !== 'In Progress') {
             this.cascadeNextTask(previousNode, element, element.submilestone ? 1 : 0, selectedMil + 1);
           }
         });
@@ -4106,7 +4062,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
           }
         }
 
-        if (previousNode !== undefined && previousNode.status !== "Completed" && new Date(previousNode.pEnd) > new Date(milestone.data.pStart)) {
+        if (previousNode !== undefined && previousNode.status !== "Completed" && new Date(previousNode.pEnd) >= new Date(milestone.data.pStart)) {
           let errormessage = previousNode.milestone + ' Client Review';
           if (previousNode.pName !== 'Client Review') {
             errormessage = previousNode.pName;
@@ -4196,8 +4152,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       'status': 'Not Saved',
       'budgetHours': 0,
       'allowStart': false,
-      // 'tat': task.taskType === 'Client Review' ? true : false,
-      'tat': false,
+      'tat': task.taskType === 'Client Review' ? true : false,
       'tatVal': 0,
       'milestoneStatus': className = 'gtaskred' ? 'Not Saved' : null,
       'type': 'task',

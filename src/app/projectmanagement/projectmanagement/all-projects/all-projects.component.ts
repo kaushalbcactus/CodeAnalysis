@@ -149,7 +149,6 @@ export class AllProjectsComponent implements OnInit {
   CSButton = false;
   CSButtonEnable = false;
   FinanceButtonEnable = false;
-  res: void;
   constructor(
     public pmObject: PMObjectService,
     private datePipe: DatePipe,
@@ -332,7 +331,6 @@ export class AllProjectsComponent implements OnInit {
           { label: 'Communications', command: (event) => this.communications(this.selectedProjectObj) },
           { label: 'Timeline', command: (event) => this.projectTimeline(this.selectedProjectObj) },
           { label: 'Go to Allocation', command: (event) => this.goToAllocationPage(this.selectedProjectObj) },
-          { label: 'Project Scope', command: (event) => this.goToProjectScope(this.selectedProjectObj) },
         ]
       },
       {
@@ -1791,7 +1789,7 @@ export class AllProjectsComponent implements OnInit {
     this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetSchedulesByProjCode');
     const tasks = await this.spServices.readItems(this.constants.listNames.Schedules.name, scheduleFilter);
 
-    const filterTasks = tasks.filter(e => e.Task !== 'Select one' && e.Milestone == this.selectedProjectObj.Milestone)
+    const filterTasks = tasks.filter(e => e.Task !== 'Select one')
 
     const scNotStartedUpdateData = {
       __metadata: {
@@ -1851,39 +1849,34 @@ export class AllProjectsComponent implements OnInit {
     batchURL.push(piUpdate);
 
     filterTasks.forEach(element => {
-      if(element.IsCentrallyAllocated == 'No') {
-        if (element.Task == "Client Review") {
+      if (element.Task == "Client Review") {
+        const scheduleStatusUpdate = Object.assign({}, options);
+        scheduleStatusUpdate.data = scCRUpdateData;
+        scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
+        scheduleStatusUpdate.type = 'PATCH';
+        scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
+          element.ID);
+        batchURL.push(scheduleStatusUpdate);
+      } else {
+        if (element.Status == this.constants.STATUS.NOT_STARTED) {
           const scheduleStatusUpdate = Object.assign({}, options);
-          scheduleStatusUpdate.data = scCRUpdateData;
+          scheduleStatusUpdate.data = scNotStartedUpdateData;
           scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
           scheduleStatusUpdate.type = 'PATCH';
           scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
             element.ID);
           batchURL.push(scheduleStatusUpdate);
-        } else {
-          if (element.Status == this.constants.STATUS.NOT_STARTED) {
-            const scheduleStatusUpdate = Object.assign({}, options);
-            scheduleStatusUpdate.data = scNotStartedUpdateData;
-            scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
-            scheduleStatusUpdate.type = 'PATCH';
-            scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
-              element.ID);
-            batchURL.push(scheduleStatusUpdate);
-          } else if (element.Status == this.constants.STATUS.IN_PROGRESS) {
-            const scheduleStatusUpdate = Object.assign({}, options);
-            const scInProgressUpdateDataNew = Object.assign({}, scInProgressUpdateData);
-            scInProgressUpdateDataNew.ExpectedTime = element.TimeSpent;
-            scInProgressUpdateDataNew.DueDate = new Date(element.DueDate) < new Date() ? new Date(element.DueDate) : new Date(); 
-            scheduleStatusUpdate.data = scInProgressUpdateDataNew;
-            scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
-            scheduleStatusUpdate.type = 'PATCH';
-            scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
-              element.ID);
-            batchURL.push(scheduleStatusUpdate);
-          }
+        } else if (element.Status == this.constants.STATUS.IN_PROGRESS) {
+          const scheduleStatusUpdate = Object.assign({}, options);
+          scInProgressUpdateData.ExpectedTime = element.TimeSpent;
+          scheduleStatusUpdate.data = scInProgressUpdateData;
+          scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
+          scheduleStatusUpdate.type = 'PATCH';
+          scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
+            element.ID);
+          batchURL.push(scheduleStatusUpdate);
         }
       }
-      
     });
 
     // console.log(batchURL)
@@ -2313,30 +2306,9 @@ export class AllProjectsComponent implements OnInit {
     console.log('Test');
     console.log(this.projectViewDataArray);
     this.pmObject.isProjectRightSideVisible = true;
+
+
   }
-
-
-  // **************************************************************************************************
-  //   This function is used to open or download project scope 
-  // **************************************************************************************************
-  async goToProjectScope(task) {
-    this.loaderView.nativeElement.classList.add('show');
-    this.spannerView.nativeElement.classList.add('show');
-    const response = await this.commonService.goToProjectScope(task, task.Status);
-    if (response === 'No Document Found.') {
-      this.messageService.add({
-        key: 'custom', severity: 'error', summary: 'Error Message',
-        detail: task.ProjectCode + ' - Project Scope not found.'
-      });
-    }
-    else {
-      window.open(response);
-    }
-    this.loaderView.nativeElement.classList.remove('show');
-    this.spannerView.nativeElement.classList.remove('show');
-  }
-
-
   goToAllocationPage(task) {
     window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +
       '/dashboard#/taskAllocation?ProjectCode=' + task.ProjectCode, '_blank');

@@ -11,121 +11,108 @@
 </div>
 
 <div fxLayout="row" *ngIf="!modalloaderenable" #scrollDown fxLayoutAlign="space-between start" fxLayoutGap="5px">
-    <form [formGroup]='pocForm' class="p-col">
-
-        <!-- first row html -->
-        <div class="p-grid">
-            <div class="p-grid p-col">
-                <div class="p-col-4"><span class="compulsory">*</span>First Name</div>
-                <div class="p-col-8">
-                    <input type="text" style="width: 100%;" formControlName="fname" placeholder="First Name" pInputText>
-                    <div class="error" *ngIf="isPOCFormSubmit && pocForm.controls.fname.errors">
-                        <div *ngIf="pocForm.controls.fname.errors.required">
-                            First Name is required</div>
-                    </div>
-                </div>
-            </div>
-            <div class="p-grid p-col">
-                <div class="p-col-4"><span class="compulsory">*</span>Last Name</div>
-                <div class="p-col-8">
-                    <input type="text" style="width: 100%;" formControlName="lname" placeholder="Last Name" pInputText>
-                    <div class="error" *ngIf="isPOCFormSubmit && pocForm.controls.lname.errors">
-                        <div *ngIf="pocForm.controls.lname.errors.required">
-                            Last Name is required</div>
-                    </div>
-                </div>
-            </div>
-            <div class="p-grid p-col">
-                <div class="p-col-4">Designation</div>
-                <div class="p-col-8">
-                    <input type="text" style="width: 100%;" formControlName="designation" placeholder="Designation" pInputText>
-                    <div class="error" *ngIf="isPOCFormSubmit && pocForm.controls.designation.errors">
-                        <div *ngIf="pocForm.controls.designation.errors.required">
-                            Designation is required</div>
-                    </div>
+    <form [formGroup]='pocForm'>
+        <div class="p-grid mt-20">
+            <div class="p-col-3 mr-10"><span class="compulsory">*</span>First Name</div>
+            <div class="p-col-4">
+                <input class="mr-5" type="text" size="60" formControlName="fname" placeholder="First Name" pInputText>
+                <div class="error" *ngIf="isPOCFormSubmit && pocForm.controls.fname.errors">
+                    <div *ngIf="pocForm.controls.fname.errors.required">
+                        First Name is required</div>
                 </div>
             </div>
         </div>
-
-        <!-- second row html  -->
-        <div class="p-grid">
-            <div class="p-grid p-col">
-                <div class="p-col-4"><span class="compulsory">*</span>Email</div>
-                <div class="p-col-8">
-                    <input type="text" style="width: 100%;" formControlName="email" placeholder="Email" pInputText>
-                    <div class="error" *ngIf="isPOCFormSubmit && pocForm.controls.email.errors">
-                        <div *ngIf="pocForm.controls.email.errors.required">
-                            Email is required</div>
-                    </div>
-                    <div class="error" *ngIf="isPOCFormSubmit && pocForm.controls.email.errors">
-                        <div *ngIf="pocForm.controls.email.errors.email">Email must be a valid email address</div>
-                    </div>
-                </div>
-            </div>
-            <div class="p-grid p-col">
-                <div class="p-col-4">Phone No.</div>
-                <div class="p-col-8">
-                    <input type="text" style="width: 100%;" formControlName="phone" placeholder="Phone Number" pInputText>
-                </div>
-            </div>
-            <div class="p-grid p-col">
-                <div class="p-col-4">Department</div>
-                <div class="p-col-8">
-                    <input type="text" style="width: 100%;" formControlName="department" placeholder="Department" pInputText>
+        <div class="p-grid mt-20">
+            <div class="p-col-3 mr-10"><span class="compulsory">*</span>Last Name</div>
+            <div class="p-col-4">
+                <input class="mr-5" type="text" size="60" formControlName="lname" placeholder="Last Name" pInputText>
+                <div class="error" *ngIf="isPOCFormSubmit && pocForm.controls.lname.errors">
+                    <div *ngIf="pocForm.controls.lname.errors.required">
+                        Last Name is required</div>
                 </div>
             </div>
         </div>
-
-        <!-- Third row html  -->
-        <div class="p-grid">
-            <div class="p-grid p-col">
-                <div class="p-col-4"><span class="compulsory">*</span>Referral Source</div>
-                <div class="p-col-8">
-                    <p-dropdown [options]="adminObject.dropdown.POCRefferalSourceArray" placeholder="Select Referral Source" formControlName="referralSource" editable="true" filter="true" resetFilterOnHide="true" [style]="{'width':'100%'}"></p-dropdown>
-                    <div class="error" *ngIf="isPOCFormSubmit && pocForm.controls.referralSource.errors">
-                        <div *ngIf="pocForm.controls.referralSource.errors.required">
-                            Referral Source is required</div>
-                    </div>
-                </div>
-            </div>
-            <div class="p-grid p-col">
-                <div class="p-col-4"><span class="compulsory">*</span>Project Contacts Type</div>
-                <div class="p-col-8">
-                    <p-dropdown [options]="adminObject.dropdown.POCProjectContactTypesArray" placeholder="Select Project Contacts Type" formControlName="contactsType" resetFilterOnHide="true" filter="true" [style]="{'width':'100%'}"></p-dropdown>
-                    <div class="error" *ngIf="isPOCFormSubmit && pocForm.controls.contactsType.errors">
-                        <div *ngIf="pocForm.controls.contactsType.errors.required">
-                            Project Contacts Type is required</div>
-                    </div>
-                </div>
-            </div>
-            <div class="p-grid p-col">
-                <div class="p-col-4">Relationship Strength</div>
-                <div class="p-col-8">
-                    <p-dropdown [options]="adminObject.dropdown.POCRelationshipArray" placeholder="Select Relationship" formControlName="relationshipStrength" filter="true" [style]="{'width':'100%'}" resetFilterOnHide="true"></p-dropdown>
+        <div class="p-grid mt-20">
+            <div class="p-col-3 mr-10">Designation</div>
+            <div class="p-col-4">
+                <input class="mr-5" type="text" size="60" formControlName="designation" placeholder="Designation" pInputText>
+                <div class="error" *ngIf="isPOCFormSubmit && pocForm.controls.designation.errors">
+                    <div *ngIf="pocForm.controls.designation.errors.required">
+                        Designation is required</div>
                 </div>
             </div>
         </div>
-        <!-- forth row html  -->
-        <div class="p-grid">
-            <div class="p-grid p-col">
-                <div class="p-col-4">Address</div>
-                <div class="p-col-8 AddressText">
-                    <input type="text" formControlName="address1" pInputText>
-                    <input type="text" formControlName="address2" pInputText>
-                    <input type="text" formControlName="address3" pInputText>
-                    <input type="text" formControlName="address4" pInputText>
+        <div class="p-grid mt-20">
+            <div class="p-col-3 mr-10"><span class="compulsory">*</span>Email</div>
+            <div class="p-col-4">
+                <input class="mr-5" type="text" size="60" formControlName="email" placeholder="Email" pInputText>
+                <div class="error" *ngIf="isPOCFormSubmit && pocForm.controls.email.errors">
+                    <div *ngIf="pocForm.controls.email.errors.required">
+                        Email is required</div>
+                </div>
+                <div class="error" *ngIf="isPOCFormSubmit && pocForm.controls.email.errors">
+                    <div *ngIf="pocForm.controls.email.errors.email">Email must be a valid email address</div>
                 </div>
             </div>
-            <div class="p-grid p-col">
-                <div class="p-col-4">Engagement Plan</div>
-                <div class="p-col-8">
-                    <textarea [rows]="5" [cols]="30" formControlName="engagementPlan" placeholder="Engagement Plan" pInputTextarea autoResize="autoResize" style="width: 100%;"></textarea>
+        </div>
+        <div class="p-grid mt-20">
+            <div class="p-col-3 mr-10">Phone No.</div>
+            <div class="p-col-4">
+                <input class="mr-5" type="text" size="60" formControlName="phone" placeholder="Phone No" pInputText>
+            </div>
+        </div>
+        <div class="p-grid mt-20">
+            <div class="p-col-3 mr-10">Address</div>
+            <div class="p-col-4">
+                <input class="mr-5" type="text" size="60" formControlName="address1" placeholder="Address" pInputText>
+                <input class="mr-5 mt-5" class="mt-10" type="text" size="60" formControlName="address2" placeholder="Address" pInputText>
+                <input class="mr-5" class="mt-10" type="text" size="60" formControlName="address3" placeholder="Address" pInputText>
+                <input class="mr-5" class="mt-10" type="text" size="60" formControlName="address4" placeholder="Address" pInputText>
+            </div>
+        </div>
+        <div class="p-grid mt-20">
+            <div class="p-col-3 mr-10">Department</div>
+            <div class="p-col-4">
+                <input class="mr-5" type="text" size="60" formControlName="department" placeholder="Department" pInputText>
+            </div>
+        </div>
+        <div class="p-grid mt-20">
+            <div class="p-col-3 mr-10"><span class="compulsory">*</span>Referral Source</div>
+            <div class="p-col-4">
+                <p-dropdown [options]="adminObject.dropdown.POCRefferalSourceArray" placeholder="Select Referral Source" formControlName="referralSource" filter="true" resetFilterOnHide="true">
+                </p-dropdown>
+                <div class="error" *ngIf="isPOCFormSubmit && pocForm.controls.referralSource.errors">
+                    <div *ngIf="pocForm.controls.referralSource.errors.required">
+                        Referral Source is required</div>
                 </div>
             </div>
-            <div class="p-grid p-col">
-                <div class="p-col-4">Comments</div>
-                <div class="p-col-8">
-                    <textarea [rows]="5" [cols]="30" formControlName="comments" placeholder="Comments" pInputTextarea autoResize="autoResize" style="width: 100%;"></textarea>
+        </div>
+        <div class="p-grid mt-20">
+            <div class="p-col-3 mr-10">Relationship Strength</div>
+            <div class="p-col-4">
+                <p-dropdown [options]="adminObject.dropdown.POCRelationshipArray" placeholder="Select Relationship" formControlName="relationshipStrength" filter="true" resetFilterOnHide="true">
+                </p-dropdown>
+            </div>
+        </div>
+        <div class="p-grid mt-20">
+            <div class="p-col-3 mr-10">Engagement Plan</div>
+            <div class="p-col-4">
+                <textarea [rows]="5" [cols]="60" formControlName="engagementPlan" placeholder="Engagement Plan" pInputTextarea></textarea>
+            </div>
+        </div>
+        <div class="p-grid mt-20">
+            <div class="p-col-3 mr-10">Comments</div>
+            <div class="p-col-4">
+                <textarea [rows]="5" [cols]="60" formControlName="comments" placeholder="Comments" pInputTextarea></textarea>
+            </div>
+        </div>
+        <div class="p-grid mt-20">
+            <div class="p-col-3 mr-10"><span class="compulsory">*</span>Project Contacts Type</div>
+            <div class="p-col-4">
+                <p-dropdown [options]="adminObject.dropdown.POCProjectContactTypesArray" placeholder="Select Project Contacts Type" formControlName="contactsType" resetFilterOnHide="true" filter="true"></p-dropdown>
+                <div class="error" *ngIf="isPOCFormSubmit && pocForm.controls.contactsType.errors">
+                    <div *ngIf="pocForm.controls.contactsType.errors.required">
+                        Project Contacts Type is required</div>
                 </div>
             </div>
         </div>

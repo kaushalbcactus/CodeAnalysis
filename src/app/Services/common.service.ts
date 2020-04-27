@@ -631,7 +631,7 @@ export class CommonService {
 
 
     /*****************************************************************
-
+   
     Call Api to Get Project Resources
    *******************************************************************/
 
@@ -742,7 +742,7 @@ export class CommonService {
     }
 
     // ***********************************************************************************************************************************
-    // Get Project Data
+    // Get Project Data 
     // ***********************************************************************************************************************************
 
     public setLevel1Email(prjObj) {
@@ -876,41 +876,6 @@ export class CommonService {
             newrelic.setCustomAttribute('spRouteType', routeType);
             newrelic.setCustomAttribute('spCallType', value);
         }
-    }
-
-    async goToProjectScope(task, Status) {
-        let response = '';
-        if (Status === 'Closed' || Status === 'Cancelled') {
-            const res = await this.spServices.checkFileExist(task.ProjectFolder + '/Miscellaneous/' + task.ProjectCode + '_scope.docx')
-            if (res.hasOwnProperty('status')) {
-                if (res.status === 404) {
-                    response = "No Document Found."
-                }
-                else {
-                    response = task.ProjectFolder + '/Miscellaneous/' + task.ProjectCode + '_scope.docx', '_blank';
-                }
-            }
-        }
-        else {
-            response = task.ProjectFolder + '/Miscellaneous/' + task.ProjectCode + '_scope.docx?web=1', '_blank';
-        }
-        return response;
-    }
-
-    CalculateminstartDateValue(date, days) {
-        let tempminDateValue = null;
-        const dayCount = days;
-        let tempDate = new Date(date);
-        while (days > 0) {
-            tempDate = new Date(tempDate.setDate(tempDate.getDate() - 1));
-            if (tempDate.getDay() !== 6 && tempDate.getDay() !== 0) {
-                days -= 1;
-                if (dayCount - 3 <= days) {
-                    tempminDateValue = tempDate;
-                }
-            }
-        }
-        return tempminDateValue;
     }
 
 

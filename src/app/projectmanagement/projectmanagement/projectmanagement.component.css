@@ -863,7 +863,7 @@ body .ui-table .ui-table-tbody>tr.ui-contextmenu-selected {
 }
 
 body .ui-table .ui-table-tbody>tr:nth-child(even) {
-    /* background-color: #f9f9f9 !important; */
+    background-color: #f9f9f9 !important;
     color: #333333 !important;
 }
 
@@ -1233,6 +1233,7 @@ body .ui-corner-top {
 
 .excelIcon {
     float: right !important;
+    margin-top: 10px !important;
 }
 
 .ui-fileupload-content {

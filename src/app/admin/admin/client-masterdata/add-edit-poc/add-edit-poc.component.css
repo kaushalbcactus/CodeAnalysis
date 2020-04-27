@@ -9,11 +9,6 @@
     border-color: #C53E3E !important;
 }
 
-::ng-deep .AddressText>input {
-    width: 100% !important;
-    margin: 5px 0px 0px 0px !important;
-}
-
 #modalInnerLoader {
     border: 5px solid #f3f3f3;
     border-radius: 50%;

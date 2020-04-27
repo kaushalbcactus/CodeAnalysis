@@ -17,17 +17,10 @@
     <ng-template pTemplate="body" let-rowData let-task style="overflow: auto">
         <tr class="formContentChecklist">
             <td>
-                <p-tableCheckbox [value]="rowData" [hidden]="task.hideCheckBox" ></p-tableCheckbox>
+                <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
             </td>
             <td>{{task.parameter}}</td>
-            <td [hidden]="task.hideCheckBox"><textarea style="width: 100%;border-radius: 4px;" [(ngModel)]="task.comments" (keyup)="keyPress($event)"></textarea></td>
-            <td [hidden]="!task.hideCheckBox">
-                <select [(ngModel)]="task.comments" (change)="keyPress($event)">
-                    <option value="Select One">Select One</option>
-                    <option value="Yes">Yes</option>
-                    <option value="No">No</option>
-                </select>
-            </td>
+            <td><textarea style="width: 100%;border-radius: 4px;" [(ngModel)]="task.comments" (keyup)="keyPress($event)"></textarea></td>
         </tr>
     </ng-template>
     <ng-template pTemplate="footer">

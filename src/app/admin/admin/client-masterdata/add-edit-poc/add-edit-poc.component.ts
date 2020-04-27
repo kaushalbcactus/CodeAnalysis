@@ -19,6 +19,7 @@ export class AddEditPocComponent implements OnInit {
   showeditPOC: boolean = false;
   buttonLabel: string;
   isPOCFormSubmit: boolean;
+  showaddPOC: boolean;
   modalloaderenable = true;
   currPOCObj: any;
   currClientObj: any;
@@ -83,6 +84,7 @@ export class AddEditPocComponent implements OnInit {
     await this.loadPOCDropdown();
     this.showeditPOC = false;
     this.buttonLabel = 'Submit';
+    this.showaddPOC = true;
     this.isPOCFormSubmit = false;
     this.modalloaderenable = false;
   }
@@ -221,6 +223,7 @@ export class AddEditPocComponent implements OnInit {
    */
   async savePOC() {
     if (this.pocForm.valid) {
+      console.log(this.pocForm.value);
       if (!this.showeditPOC) {
         if (this.POCRows.some(a =>
           a.EmailAddress.toLowerCase() === this.pocForm.value.email.toLowerCase())) {
@@ -231,9 +234,32 @@ export class AddEditPocComponent implements OnInit {
           return false;
         }
       }
-    
-      this.ref.close(this.pocForm)
-  
+      // write the save logic using rest api.
+      const pocData = await this.getPOCData();
+      if (!this.showeditPOC) {
+        this.common.SetNewrelic('admin', 'admin-clientMaster', 'CreateProjectContacts');
+        const results = await this.spServices.createItem(this.constantsService.listNames.ProjectContacts.name,
+          pocData, this.constantsService.listNames.ProjectContacts.type);
+        if (!results.hasOwnProperty('hasError') && !results.hasError) {
+          this.messageService.add({
+            key: 'adminCustom', severity: 'success', summary: 'Success Message',
+            detail: 'The Poc ' + this.pocForm.value.fname + ' ' + this.pocForm.value.lname + ' is created successfully.'
+          });
+          await this.loadRecentPOCRecords(results.ID, this.showeditPOC);
+        }
+      }
+      if (this.showeditPOC) {
+        this.common.SetNewrelic('admin', 'admin-clientMaster', 'updateProjectContacts');
+        const results = await this.spServices.updateItem(this.constantsService.listNames.ProjectContacts.name, this.currPOCObj.ID,
+          pocData, this.constantsService.listNames.ProjectContacts.type);
+        this.messageService.add({
+          key: 'adminCustom', severity: 'success',
+          summary: 'Success Message', detail: 'The Poc ' + this.pocForm.value.fname + ' ' + this.pocForm.value.lname +
+            ' is updated successfully.'
+        });
+        await this.loadRecentPOCRecords(this.currPOCObj.ID, this.showeditPOC);
+      }
+      this.showaddPOC = false;
     } else {
       this.isPOCFormSubmit = true;
     }

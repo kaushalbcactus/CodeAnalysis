@@ -355,12 +355,12 @@ export class ManageFinanceComponent implements OnInit {
     if (this.existBudgetArray && this.existBudgetArray.length) {
       unassignedObj.total = this.updatedBudget + this.existBudgetArray.retItems[0].Budget;
       unassignedObj.revenue = this.updatedBudget + this.existBudgetArray.retItems[0].RevenueBudget;
-      unassignedObj.oop = 0;
+      unassignedObj.oop = tempbudgetObject.oop;
       unassignedObj.tax = 0;
     } else {
       unassignedObj.total = this.updatedBudget;
       unassignedObj.revenue = this.updatedBudget;
-      unassignedObj.oop = 0;
+      unassignedObj.oop = tempbudgetObject.oop;
       unassignedObj.tax = 0;
     }
     this.unassignedBudget = [];
@@ -1093,8 +1093,6 @@ export class ManageFinanceComponent implements OnInit {
       this.poData.forEach((poInfoObj) => {
         // tslint:disable-next-line:no-shadowed-variable
         poInfoObj.poInfo.forEach(element => {
-          element.revenue = element.revenue ? element.revenue : 0;
-          element.scRevenue = element.scRevenue ? element.scRevenue : 0;
           if (element.revenue !== element.scRevenue) {
             isValid = false;
           }
