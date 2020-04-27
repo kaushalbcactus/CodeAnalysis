@@ -829,8 +829,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.disableSave = false;
     if (!bFirstLoad) {
       // setTimeout(() => {
-        this.changeInRestructure = false;
-        this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Tasks Saved Successfully' });
+      this.changeInRestructure = false;
+      this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Tasks Saved Successfully' });
       // }, 300);
     } else {
       // if (this.visualgraph) {
@@ -953,6 +953,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.linkArray = [];
 
     var milestones = this.GanttchartData.filter(e => e.type == 'milestone')
+    milestones.map(m => {
+      m.end_date = new Date(new Date(m.end_date).setHours(23, 59, 59, 59));
+      return m;
+    });
     const indexes = this.GanttchartData.reduce((r, e, i) => {
       e.itemType == 'Client Review' && r.push(i);
       return r;
@@ -978,7 +982,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           sub.parent = m.id
         })
       } else {
-        item.end_date = new Date(new Date(item.end_date).setHours(23,59,59,59));
         milestones.forEach((m) => {
           if (item.milestone === m.title) {
             item.parent = m.id;
@@ -1405,7 +1408,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   cascadeGantt(e, task) {
     const isStartDate = e.srcElement.className.indexOf('start_date') > -1 ? true : false;
-    if(isStartDate) {
+    if (isStartDate) {
       task.pUserStart = new Date(task.start_date);
       task.pUserStartDatePart = this.getDatePart(task.pUserStart);
       task.pUserStartTimePart = this.getTimePart(task.pUserStart);
@@ -2102,13 +2105,16 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   openPopupEdit(data) {
     this.taskMenu = [];
-    if (data.itemType !== 'Client Review' && data.itemType !== 'Send to client') {
+    if (data.type === 'task' && data.itemType !== 'Client Review' && data.itemType !== 'Send to client') {
       if (data.slotType.indexOf('Slot') < 0 && +data.budgetHours &&
         new Date(data.pUserStartDatePart).getTime() !== new Date(data.pUserEndDatePart).getTime()) {
         this.taskMenu.push(
           { label: 'Edit Allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, '') },
           { label: 'Equal Split', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, 'Equal') }
         );
+      }
+      if (data.AssignedTo.ID !== undefined && data.AssignedTo.ID > -1 && data.user !== 'QC' && data.user !== 'Edit') {
+        this.taskMenu.push({ label: 'User Capacity', icon: 'pi pi-camera', command: (event) => this.getUserCapacity(data) });
       }
     }
     if (data.editMode) {
@@ -2486,7 +2492,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         if (this.changeInRestructure) {
           // setTimeout(() => {
 
-            this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'There are some unsaved changes, Please save them.' });
+          this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'There are some unsaved changes, Please save them.' });
 
           // }, 300);
         }
@@ -5010,8 +5016,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
   showOverlayPanel(event, rowData, dailyAllocateOP, target?) {
-    const allocationPerDay = rowData.allocationPerDay ? rowData.allocationPerDay : '';
-    dailyAllocateOP.showOverlay(event, allocationPerDay, target);
+    if (new Date(rowData.pUserStartDatePart).getTime() !== new Date(rowData.pUserEndDatePart).getTime()) {
+      const allocationPerDay = rowData.allocationPerDay ? rowData.allocationPerDay : '';
+      dailyAllocateOP.showOverlay(event, allocationPerDay, target);
+    }
   }
 }
 
