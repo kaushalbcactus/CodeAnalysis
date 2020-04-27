@@ -215,7 +215,7 @@
 <!-- Sub-Division Dialog -->
 
 <p-dialog [(visible)]="showSubDivisionDetails" [modal]="true" [contentStyle]="{'max-height':'500px', 'top':'0px'}" [style]="{width: '90%'}">
-    <div class="pr-20">
+    <div>
         <a (click)="downloadExcel(sd)" class="download-worksheet td-none"><i class="fa fa-fw fa-file-excel-o"
                 aria-hidden="true"></i>
         </a>
@@ -298,7 +298,7 @@
 <!-- POC Dialog -->
 
 <p-dialog [(visible)]="showPointofContact" [modal]="true" [contentStyle]="{'max-height':'500px', 'top':'0px'}" [style]="{width: '90%'}">
-    <div class="pr-20">
+    <div>
         <a (click)="downloadExcel(poc)" class="download-worksheet td-none"><i class="fa fa-fw fa-file-excel-o"
                 aria-hidden="true"></i>
         </a>
@@ -395,18 +395,29 @@
 <!-- PO Dialog -->
 
 <p-dialog [(visible)]="showPurchaseOrder" [modal]="true" [contentStyle]="{'max-height':'500px', 'top':'0px'}" [style]="{width: '90%'}">
-    <div class="pr-20">
+
+
+
+
+
+    <div>
         <a (click)="downloadExcel(poTable)" class="download-worksheet td-none"><i class="fa fa-fw fa-file-excel-o"
                 aria-hidden="true"></i>
         </a>
-        <button pButton styleClass="pBtnRight" type="button" class="adminBtn" icon="pi pi-plus-circle" label="Add New Purchase Order" *ngIf="isUserSPMCA || isUserPO" (click)="showAddPO()">
+        <button pButton styleClass="pBtnRight" type="button" class="adminBtn" icon="pi pi-plus-circle" label="Add New Purchase Order" *ngIf="isUserSPMCA || isUserPO" (click)="addEditPO('Add Purchase Order',null)">
         </button>
     </div>
     <div class="clearBoth"></div>
     <p-header>
         Purchase Order
     </p-header>
-    <div class="adminTable">
+
+    <div fxLayout="column" style="padding: 8vw;" fxLayoutAlign="center center" [hidden]="!modalloaderenable">
+        <div id="modalInnerLoader"></div>
+        <div id="modalInnerLoaderText">Loading...</div>
+    </div>
+
+    <div class="adminTable" [hidden]="modalloaderenable">
         <p-table #poTable [columns]="POColumns" [value]="PORows" exportFilename="Purchase Order" class="minFirstLastCol5Per" [paginator]="true" [rows]="10">
             <ng-template pTemplate="header" let-columns>
                 <tr>
@@ -484,321 +495,10 @@
     </div>
 </p-dialog>
 
-<p-dialog [(visible)]="showaddBudget" [modal]="true" appendTo="body" [contentStyle]="{'max-height':'500px', 'top':'0px'}" [style]="{width: '90%'}">
-    <p-header>
-        Change Budget
-    </p-header>
 
-    <p-dropdown [options]="budgetType" placeholder="Select Value" [(ngModel)]="selectedValue" filter="true" resetFilterOnHide="true">
-    </p-dropdown>
 
-    <div class="ui-g" *ngIf="checkBudgetValue">
-        <div class="ui-g-12 error">Please Select Value</div>
-    </div>
 
-    <form [formGroup]='changeBudgetForm'>
-        <div class="p-grid mt-20">
-            <div *ngIf="adminObject.oldBudget" class="p-col-2 card-section">
-                <div class="card">
-                    <div class="content">
-                        <div class="p-grid">
-                            <div class="p-col-5">
-                                <div class="icon-big icon-warning text-center">
-                                    <i class="fa fa-money"></i>
-                                </div>
-                            </div>
-                            <div class="p-col-7">
-                                <div class="numbers">
-                                    <p>Total</p>
-                                    <span class="brandColor">{{adminObject.oldBudget.Amount}}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="footer">
-                            <hr>
-                            <div class="stats">
-                                <i class="pi pi-clock"></i> {{adminObject.oldBudget.LastUpdated | date:'MMM dd, yyyy'}}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div *ngIf="adminObject.oldBudget" class="p-col-2 card-section">
-                <div class="card">
-                    <div class="content">
-                        <div class="p-grid">
-                            <div class="p-col-5">
-                                <div class="icon-big icon-warning text-center">
-                                    <i class="fa fa-money"></i>
-                                </div>
-                            </div>
-                            <div class="p-col-7">
-                                <div class="numbers">
-                                    <p>Revenue</p>
-                                    <span class="brandColor">{{adminObject.oldBudget.AmountRevenue}}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="footer">
-                            <hr>
-                            <div class="stats">
-                                <i class="pi pi-clock"></i> {{adminObject.oldBudget.LastUpdated | date:'MMM dd, yyyy'}}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div *ngIf="adminObject.oldBudget" class="p-col-2 card-section">
-                <div class="card">
-                    <div class="content">
-                        <div class="p-grid">
-                            <div class="p-col-5">
-                                <div class="icon-big icon-warning text-center">
-                                    <i class="fa fa-money"></i>
-                                </div>
-                            </div>
-                            <div class="p-col-7">
-                                <div class="numbers">
-                                    <p>OOP</p>
-                                    <span class="brandColor">{{adminObject.oldBudget.AmountOOP}}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="footer">
-                            <hr>
-                            <div class="stats">
-                                <i class="pi pi-clock"></i> {{adminObject.oldBudget.LastUpdated | date:'MMM dd, yyyy'}}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div *ngIf="adminObject.oldBudget" class="p-col-2 card-section">
-                <div class="card">
-                    <div class="content">
-                        <div class="p-grid">
-                            <div class="p-col-5">
-                                <div class="icon-big icon-warning text-center">
-                                    <i class="fa fa-money"></i>
-                                </div>
-                            </div>
-                            <div class="p-col-7">
-                                <div class="numbers">
-                                    <p>Tax</p>
-                                    <span class="brandColor">{{adminObject.oldBudget.AmountTax}}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="footer">
-                            <hr>
-                            <div class="stats">
-                                <i class="pi pi-clock"></i> {{adminObject.oldBudget.LastUpdated | date:'MMM dd, yyyy'}}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="p-grid mt-20">
-            <div class="p-col-2">Total Amount</div>
-            <div class="p-col-2">
-                <input class="mr-5" type="number" size="30" formControlName="total" placeholder="Total Amount" pInputText>
-                <div class="error" *ngIf="cmObject.isBudgetFormSubmit && changeBudgetForm.controls.total.errors">
-                    <div *ngIf="changeBudgetForm.controls.total.errors.required">Total Amount is required</div>
-                </div>
-            </div>
-        </div>
-        <div class="p-grid mt-20">
-            <div class="p-col-2 ">Revenue</div>
-            <div class="p-col-4">
-                <input class="mr-5" type="number" size="30" formControlName="revenue" placeholder="Revenue" (change)="setPOTotal()" pInputText>
-                <div class="error" *ngIf="cmObject.isBudgetFormSubmit && changeBudgetForm.controls.revenue.errors">
-                    <div *ngIf="changeBudgetForm.controls.revenue.errors.required">Revenue is required</div>
-                </div>
-            </div>
-        </div>
-        <div class="p-grid mt-20">
-            <div class="p-col-2 ">OOP</div>
-            <div class="p-col-4">
-                <input class="mr-5" type="number" size="30" formControlName="oop" placeholder="OOP" (change)="setPOTotal()" pInputText>
-                <div class="error" *ngIf="cmObject.isBudgetFormSubmit && changeBudgetForm.controls.oop.errors">
-                    <div *ngIf="changeBudgetForm.controls.oop.errors.required">OOP is required</div>
-                </div>
-            </div>
-        </div>
-        <div class="p-grid mt-20">
-            <div class="p-col-2 ">Tax</div>
-            <div class="p-col-4">
-                <input class="mr-5" type="number" size="30" formControlName="tax" placeholder="Tax" (change)="setPOTotal()">
-                <div class="error" *ngIf="cmObject.isBudgetFormSubmit && changeBudgetForm.controls.tax.errors">
-                    <div *ngIf="changeBudgetForm.controls.tax.errors.required">Tax is required</div>
-                </div>
-            </div>
-        </div>
-    </form>
-    <p-footer>
-        <button pButton label="Submit" type="button" class="adminBtn" (click)="saveBudget()"></button>
-    </p-footer>
-</p-dialog>
 
-<p-dialog [(visible)]="showaddPO" [modal]="true" appendTo="body" [style]="{width: '1000px', height: '600px'}">
-    <p-header *ngIf="!showeditPO">
-        Add Purchase Order
-    </p-header>
-    <p-header *ngIf="showeditPO">
-        Edit Purchase Order
-    </p-header>
-    <form [formGroup]='PoForm'>
-        <div class="p-grid mt-20">
-            <div class="p-col-2 "><span class="compulsory">*</span>Po Number</div>
-            <div class="p-col-4">
-                <input class="mr-5" type="text" size="30" formControlName="poNumber" placeholder="Po Number" pInputText>
-                <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.poNumber.errors">
-                    <div *ngIf="PoForm.controls.poNumber.errors.required">
-                        Po Number is required</div>
-                    <!-- <div *ngIf="PoForm.controls.poNumber.errors.pattern">
-                        Special characters are allowed between alphabets. Allowed special characters are '-' and '_'.
-                    </div> -->
-                </div>
-            </div>
-            <div class="p-col-2 "><span class="compulsory">*</span>PO Name</div>
-            <div class="p-col-4">
-                <input class="mr-5" type="text" size="30" formControlName="poName" placeholder="PO Name" pInputText>
-                <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.poName.errors">
-                    <div *ngIf="PoForm.controls.poName.errors.required">
-                        PO Name is required</div>
-                    <div *ngIf="PoForm.controls.poName.errors.pattern">
-                        Special characters are allowed between alphabets. Allowed special characters are '-' and '_'.
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div *ngIf="editPo">
-            <div class="p-grid mt-20">
-                <div class="p-col-2 "><span class="compulsory">*</span>Total Amount</div>
-                <div class="p-col-4">
-                    <input class="mr-5" type="number" size="30" formControlName="total" placeholder="Total Amount" pInputText>
-                    <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.total.errors">
-                        <div *ngIf="PoForm.controls.total.errors.required">Total Amount is required</div>
-                        <div *ngIf="PoForm.controls.total.errors.nonZeroNumber">
-                            Total cannot be less than equal to zero</div>
-                    </div>
-                </div>
-                <div class="p-col-2 "><span class="compulsory">*</span>Revenue</div>
-                <div class="p-col-4">
-                    <input class="mr-5" type="number" size="30" formControlName="revenue" placeholder="Revenue" (change)="setPOTotal()" pInputText>
-                    <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.revenue.errors">
-                        <div *ngIf="PoForm.controls.revenue.errors.required">Revenue is required</div>
-                        <div *ngIf="PoForm.controls.revenue.errors.positiveNumber">
-                            Revenue cannot be less than zero</div>
-                    </div>
-                </div>
-            </div>
-            <div class="p-grid mt-20">
-                <div class="p-col-2 "><span class="compulsory">*</span>OOP</div>
-                <div class="p-col-4">
-                    <input class="mr-5" type="number" size="30" formControlName="oop" placeholder="OOP" (change)="setPOTotal()" pInputText>
-                    <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.oop.errors">
-                        <div *ngIf="PoForm.controls.oop.errors.required">OOP is required</div>
-                        <div *ngIf="PoForm.controls.oop.errors.positiveNumber">
-                            OOP cannot be less than zero.</div>
-                    </div>
-                </div>
-                <div class="p-col-2 "><span class="compulsory">*</span>Tax</div>
-                <div class="p-col-4">
-                    <input class="mr-5" type="number" size="30" formControlName="tax" placeholder="Tax" (change)="setPOTotal()" pInputText>
-                    <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.tax.errors">
-                        <div *ngIf="PoForm.controls.tax.errors.required">Tax is required</div>
-                        <div *ngIf="PoForm.controls.tax.errors.positiveNumber">
-                            Tax cannot be less than zero.</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="p-grid mt-20">
-            <div class="p-col-2 "><span class="compulsory">*</span>Currency</div>
-            <div class="p-col-4">
-                <p-dropdown [options]="adminObject.dropdown.CurrencyArray" placeholder="Select Currency" formControlName="currency" filter="true" resetFilterOnHide="true">
-                </p-dropdown>
-                <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.currency.errors">
-                    <div *ngIf="PoForm.controls.currency.errors.required">
-                        Currency is required</div>
-                </div>
-            </div>
-            <div class="p-col-2 "><span class="compulsory">*</span>PO Expiry Date</div>
-            <div class="p-col-4">
-                <p-calendar styleClass="pCalendarBtn" formControlName="poExpiryDate" [minDate]="minDateValue" [showIcon]="true" [showOnFocus]="false" [monthNavigator]="true" [readonlyInput]="true">
-                </p-calendar>
-                <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.poExpiryDate.errors">
-                    <div *ngIf="PoForm.controls.poExpiryDate.errors.required">
-                        PO Expiry Date is required</div>
-                </div>
-            </div>
-        </div>
-        <div class="p-grid mt-20">
-            <div class="p-col-2 "><span class="compulsory">*</span>Point of Contact</div>
-            <div class="p-col-4">
-                <p-dropdown [options]="adminObject.dropdown.POPointOfContactArray" placeholder="Select Point of Contact" formControlName="poc" filter="true" resetFilterOnHide="true">
-                </p-dropdown>
-                <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.poc.errors">
-                    <div *ngIf="PoForm.controls.poc.errors.required">
-                        Point of Contact is required</div>
-                </div>
-            </div>
-            <div class="p-col-2 "><span class="compulsory">*</span>PO File</div>
-            <div class="p-col-4">
-                <input type="file" formControlName="poFile" (change)="onFileChange($event)" pInputText>
-                <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.poFile.errors">
-                    <div *ngIf="PoForm.controls.poFile.errors.required">
-                        PO File is required</div>
-                </div>
-            </div>
-        </div>
-        <div class="p-grid mt-20">
-            <div class="p-col-2 "><span class="compulsory">*</span>TA</div>
-            <div class="p-col-4">
-                <p-dropdown [options]="adminObject.dropdown.POTAArray" placeholder="Select TA" formControlName="ta" filter="true" resetFilterOnHide="true">
-                </p-dropdown>
-                <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.ta.errors">
-                    <div *ngIf="PoForm.controls.ta.errors.required">
-                        TA is required</div>
-                </div>
-            </div>
-            <div class="p-col-2 "><span class="compulsory">*</span>Molecule</div>
-            <div class="p-col-4">
-                <p-dropdown [options]="adminObject.dropdown.POMoleculeArray" placeholder="Select Molecule" formControlName="molecule" filter="true" resetFilterOnHide="true">
-                </p-dropdown>
-                <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.molecule.errors">
-                    <div *ngIf="PoForm.controls.molecule.errors.required">
-                        Molecule is required</div>
-                </div>
-            </div>
-        </div>
-        <div class="p-grid mt-20">
-            <div class="p-col-2 "><span class="compulsory">*</span>CM Level 2</div>
-            <div class="p-col-4">
-                <p-dropdown [options]="adminObject.dropdown.CMLevel2Array" placeholder="Select CM Level 2" formControlName="cmLevel2" filter="true" resetFilterOnHide="true">
-                </p-dropdown>
-                <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.cmLevel2.errors">
-                    <div *ngIf="PoForm.controls.cmLevel2.errors.required">
-                        CM Level 2 is required</div>
-                </div>
-            </div>
-            <div class="p-col-2 "><span class="compulsory">*</span>PO Buying Entity</div>
-            <div class="p-col-4">
-                <p-dropdown [options]="adminObject.dropdown.POBuyingEntityArray" placeholder="Select PO Buying Entity" formControlName="poBuyingEntity" filter="true" resetFilterOnHide="true">
-                </p-dropdown>
-                <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.poBuyingEntity.errors">
-                    <div *ngIf="PoForm.controls.poBuyingEntity.errors.required">
-                        PO Buying Entity is required</div>
-                </div>
-            </div>
-        </div>
-    </form>
-    <p-footer>
-        <button pButton label="{{buttonLabel}}" type="button" class="adminBtn" (click)="savePO()"></button>
-    </p-footer>
-</p-dialog>
 <div *ngIf="adminObject.po.isRightVisible" class="ng-right-side-overlay">
     <p-sidebar [(visible)]="adminObject.po.isRightVisible" position="right" styleClass="ui-sidebar-md">
         <p-table [value]="PORightRows">

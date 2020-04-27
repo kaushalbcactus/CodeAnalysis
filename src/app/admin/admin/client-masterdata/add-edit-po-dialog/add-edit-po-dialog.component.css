@@ -9,9 +9,16 @@
     border-color: #C53E3E !important;
 }
 
-::ng-deep .AddressText>input {
+::ng-deep button.ui-datepicker-trigger.ui-calendar-button {
+    padding: 2px !important;
+}
+
+::ng-deep .pCalendarBtn {
     width: 100% !important;
-    margin: 5px 0px 0px 0px !important;
+}
+
+::ng-deep .pCalendarBtn>input {
+    width: 89% !important;
 }
 
 #modalInnerLoader {

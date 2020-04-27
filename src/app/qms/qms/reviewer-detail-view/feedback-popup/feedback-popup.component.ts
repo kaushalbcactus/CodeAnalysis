@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { ConstantsService } from '../../../../Services/constants.service';
 import { GlobalService } from '../../../../Services/global.service';
 import { SPOperationService } from '../../../../Services/spoperation.service';
@@ -26,7 +26,7 @@ export class FeedbackPopupComponent implements OnInit {
   public popupByJS = false;
   public hidePopupLoader = true;
   public hidePopupTable = false;
-  public activeIndex = -1;
+  public activeIndex = 0;
   display = false;
   public options = {
     data: null,
@@ -52,6 +52,7 @@ export class FeedbackPopupComponent implements OnInit {
     private messageService: MessageService,
     private dashbaordService: MyDashboardConstantsService,
     private datePipe: DatePipe,
+    private cdr: ChangeDetectorRef,
   ) {
   }
 
@@ -138,6 +139,16 @@ export class FeedbackPopupComponent implements OnInit {
       });
       return false;
     }
+    const emptyCommentSC = this.scorecardTasks.tasks.filter(t => !t.ignoreFeedback && !t.feedbackComment.length && t.averageRating < 3);
+    if (emptyCommentSC.length) {
+      const tasksNames = emptyCommentSC.map(s => s.task);
+      const taskString = tasksNames.join(',');
+      this.messageService.add({
+        key: 'custom', severity: 'warn', summary: 'Warning Message', life: 10000,
+        detail: 'Please provide comments for tasks ' + taskString + ' as rating is less than 3'
+      });
+      return false;
+    }
     if (emptyScorecard.length) {
       const tasksNames = emptyScorecard.map(s => s.task);
       const taskString = tasksNames.join(',');
@@ -177,7 +188,7 @@ export class FeedbackPopupComponent implements OnInit {
             //   this.popupClosed.emit(this.scorecardTasks.currentTask);
             //   break;
             case 'Retrospective':
-              this.bindTableEvent.emit(this.global.oReviewerPendingTasks);
+              this.bindTableEvent.emit(previousTasks[0]);
               break;
             case 'Reviewer':
               previousTasks.forEach(task => {
@@ -301,7 +312,7 @@ export class FeedbackPopupComponent implements OnInit {
       const tasksReviewPending = taskDetail.reviewTask.defaultSkill === 'Review' ? await this.getPrevTask(prevTasks) : [taskDetail];
       let updateIsRatedDetail = {};
       // Update review task rated 'yes' if this is last previous task not rated
-      if (tasksReviewPending.length <= 1 && taskDetail.reviewTask) {
+      if (tasksReviewPending.length <= 1 && taskDetail.reviewTask.ID) {
         const reviewTaskUpdateDetail = {
           __metadata: { type: this.constantsService.listNames.Schedules.type },
           IsRated: true // for review task
@@ -334,7 +345,7 @@ export class FeedbackPopupComponent implements OnInit {
           Rated: true,
           // IsRated: true
         };
-      } else if (!taskDetail.reviewTask) {
+      } else if (!taskDetail.reviewTask.ID) {
         /// Below will be updated for Admin users
         updateIsRatedDetail = {
           __metadata: { type: this.constantsService.listNames.Schedules.type },
@@ -526,8 +537,10 @@ export class FeedbackPopupComponent implements OnInit {
       }
       this.scorecardTasks.tasks = [...previousTasks];
       this.showTable();
+      this.activeIndex = 0;
+      this.cdr.detectChanges();
     }, 300);
-    this.activeIndex = 0;
+
   }
 
   // #endregion ForRatingPopup

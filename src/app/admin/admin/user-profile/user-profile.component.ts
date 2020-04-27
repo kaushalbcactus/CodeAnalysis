@@ -699,19 +699,19 @@ export class UserProfileComponent implements OnInit {
       this.common.SetNewrelic('admin', 'admin-UserProfile', 'updateResourceCategorization');
       await this.spServices.updateItem(this.constants.listNames.ResourceCategorization.name,
         this.currUserObj.ID, data, this.constants.listNames.ResourceCategorization.type);
-      this.adminObject.isMainLoaderHidden = true;
+     
+     
       this.messageService.add({
         key: 'adminCustom', severity: 'success', sticky: true,
         summary: 'Success Message', detail: 'User - ' + this.currUserObj.User + ' is updated successfully'
       });
       await this.loadRecentRecords(this.currUserObj.ID, this.showeditUser);
-      this.showModal = false;
+     
     } else {
       const data = await this.getResourceData(formValue, IdResults, this.showeditUser, date);
       this.common.SetNewrelic('admin', 'admin-UserProfile', 'CreateResourceCategorization');
       const result = await this.spServices.createItem(this.constants.listNames.ResourceCategorization.name,
         data, this.constants.listNames.ResourceCategorization.type);
-      this.adminObject.isMainLoaderHidden = true;
 
       if (result.hasOwnProperty('hasError') && result.hasError && result.message.value.includes('duplicate')) {
         this.messageService.add({
@@ -719,7 +719,7 @@ export class UserProfileComponent implements OnInit {
           summary: 'Error Message', detail: 'User - ' + formValue.username.DisplayText + ' is already exist.'
         });
       } else {
-        this.showModal = false;
+     
         this.messageService.add({
           key: 'adminCustom', severity: 'success', sticky: true,
           summary: 'Success Message', detail: 'User - ' + formValue.username.DisplayText + ' is added successfully'
@@ -857,12 +857,14 @@ export class UserProfileComponent implements OnInit {
       } else {
         this.userProfileData.unshift(userObj);
       }
+      this.adminObject.isMainLoaderHidden = false;
     } else {
       if (isUpdate) {
         const index = this.userProfileData.findIndex(x => x.ID === ID);
         this.userProfileData.splice(index, 1);
       }
     }
+    this.adminObject.isMainLoaderHidden = false;
     this.colFilters(this.userProfileData);
   }
   /**

@@ -18,6 +18,7 @@ import { Table } from 'primeng/table';
 import { FeedbackPopupComponent } from '../../qms/qms/reviewer-detail-view/feedback-popup/feedback-popup.component';
 import { ViewUploadDocumentDialogComponent } from 'src/app/shared/view-upload-document-dialog/view-upload-document-dialog.component';
 import { Subscription } from 'rxjs';
+import { ConfirmationDialogComponent } from 'src/app/shared/confirmation-dialog/confirmation-dialog.component';
 
 
 interface DateObj {
@@ -157,13 +158,15 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     if (this.TabName === 'MyCompletedTask') {
       this.taskMenu = [
         { label: 'View / Upload Documents', icon: 'pi pi-fw pi-upload', command: (e) => this.getAddUpdateDocument(data) },
-        { label: 'View / Add Comment', icon: 'pi pi-fw pi-comment', command: (e) => this.getAddUpdateComment(data, false) }
+        { label: 'View / Add Comment', icon: 'pi pi-fw pi-comment', command: (e) => this.getAddUpdateComment(data, false) },
+        { label: 'Project Scope', icon: 'pi pi-fw pi-file', command: (e) => this.goToProjectScope(data) }
       ];
     } else {
       this.taskMenu = [
         { label: 'View / Upload Documents', icon: 'pi pi-fw pi-upload', command: (e) => this.getAddUpdateDocument(data) },
         { label: 'View / Add Comment', icon: 'pi pi-fw pi-comment', command: (e) => this.getAddUpdateComment(data, false) },
         { label: 'Mark Complete', icon: 'pi pi-fw pi-check', command: (e) => this.checkCompleteTask(data) },
+        { label: 'Project Scope', icon: 'pi pi-fw pi-file', command: (e) => this.goToProjectScope(data) }
       ];
     }
   }
@@ -616,12 +619,12 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
         return false;
       }
       if (task.TaskComments) {
-
-        this.confirmationService.confirm({
-          message: 'Are you sure that you want to proceed?',
+        const confirmref = this.dialogService.open(ConfirmationDialogComponent, {
           header: 'Confirmation',
-          icon: 'pi pi-exclamation-triangle',
-          accept: async () => {
+          data : 'Are you sure that you want to proceed?'
+        });
+        confirmref.onClose.subscribe(async (Confirmation: any) => {
+          if (Confirmation) {
             task.parent = 'Dashboard';
             task.Status = 'Completed';
             const qmsTasks = await this.myDashboardConstantsService.callQMSPopup(task);
@@ -630,10 +633,26 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
             } else {
               this.saveTask(task);
             }
-          },
-          reject: () => {
-          }
+          } 
         });
+
+        // this.confirmationService.confirm({
+        //   message: 'Are you sure that you want to proceed?',
+        //   header: 'Confirmation',
+        //   icon: 'pi pi-exclamation-triangle',
+        //   accept: async () => {
+        //     task.parent = 'Dashboard';
+        //     task.Status = 'Completed';
+        //     const qmsTasks = await this.myDashboardConstantsService.callQMSPopup(task);
+        //     if (qmsTasks.length) {
+        //       this.feedbackPopupComponent.openPopup(qmsTasks, task);
+        //     } else {
+        //       this.saveTask(task);
+        //     }
+        //   },
+        //   reject: () => {
+        //   }
+        // });
 
       } else {
         this.getAddUpdateComment(task, true);
@@ -673,6 +692,23 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
   ngOnDestroy() {
     if (this.subscription) {
       this.subscription.unsubscribe();
+    }
+  }
+
+  // **************************************************************************************************
+  //   This function is used to open or download project scope 
+  // **************************************************************************************************
+  async goToProjectScope(task) {
+    const ProjectInformation = await this.myDashboardConstantsService.getCurrentTaskProjectInformation(task.ProjectCode);
+    const response = await this.commonService.goToProjectScope(ProjectInformation, ProjectInformation.Status);
+    if (response === 'No Document Found.') {
+      this.messageService.add({
+        key: 'custom', severity: 'error', summary: 'Error Message',
+        detail: task.ProjectCode + ' - Project Scope not found.'
+      });
+    }
+    else {
+      window.open(response);
     }
   }
 

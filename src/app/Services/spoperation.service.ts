@@ -524,6 +524,8 @@ export class SPOperationService {
         const obj: any = res.error;
         obj.hasError = true;
         return obj;
+      } else if (res.valueOf('odata')) {
+        return res;
       } else {
         return {
           hasError: true,
@@ -803,7 +805,23 @@ export class SPOperationService {
     });
   }
 
+  async executePostForFileUpload(url, data, requestHeaders) {
+    const res = await this.httpClient.post(url, data, requestHeaders).toPromise().catch((err: HttpErrorResponse) => {
+      const error = err.error;
+      return error;
+    });
+    return this.parseRetSingle(res);
+  }
 
+
+
+  // check if file exist 
+  async checkFileExist(url:string) {
+    const res = await this.httpClient.get<Response>(url).toPromise().catch((err: HttpErrorResponse) => {
+      return err;
+    });
+    return res;
+  }
 
   // postJson(endpointUrl, payload, success, failure) {
   //   $.ajax({

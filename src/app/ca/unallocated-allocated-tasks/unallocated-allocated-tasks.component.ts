@@ -12,27 +12,13 @@ import { ActivatedRoute } from '@angular/router';
 import { CommonService } from 'src/app/Services/common.service';
 import { DialogService, MessageService, MenuItem, SelectItem } from 'primeng';
 import { CaDragdropComponent } from '../ca-dragdrop/ca-dragdrop.component';
-import { async } from '@angular/core/testing';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
-import { exists } from 'fs';
+
 
 @Component({
   selector: 'app-unallocated-allocated-tasks',
   templateUrl: './unallocated-allocated-tasks.component.html',
   styleUrls: ['./unallocated-allocated-tasks.component.css'],
-  //   animations: [
-  //     trigger('rowExpansionTrigger', [
-  //         state('void', style({
-  //             transform: 'translateX(-10%)',
-  //             opacity: 0
-  //         })),
-  //         state('active', style({
-  //             transform: 'translateX(0)',
-  //             opacity: 1
-  //         })),
-  //         transition('* <=> *', animate('400ms cubic-bezier(0.86, 0, 0.07, 1)'))
-  //     ])
-  // ],
   providers: [UsercapacityComponent]
 })
 export class UnallocatedAllocatedTasksComponent implements OnInit {
@@ -84,6 +70,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   BudgetHoursTask = [];
   BudgetHoursTaskenable = true;
   tempSlot: any;
+  arrMilestoneTasks = [];
   constructor(
     private spServices: SPOperationService,
     private globalConstant: ConstantsService,
@@ -216,8 +203,9 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         this.caCommonService.getCaProperties(taskCounter, schedulesItemFetch, task, this.projects,
           this.resourceList, this.completeTaskArray, acTempArrays);
       }
+      this.arrMilestoneTasks = await this.caCommonService.getMilestoneSchedules(this.globalConstant.listNames.Schedules.name, schedulesItemFetch);
 
-      this.caCommonService.getScheduleItems(schedulesItemFetch, this.completeTaskArray);
+      this.caCommonService.getScheduleItems(this.completeTaskArray, this.arrMilestoneTasks);
       this.caArrays.clientLegalEntityArray = this.caCommonService.sortByAttribute(this.commonService.unique
         (acTempArrays.clientLegalEntityTempArray, 'value'), 'value', 'label');
       this.caArrays.projectCodeArray = this.caCommonService.sortByAttribute(this.commonService.unique
@@ -661,7 +649,11 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     }
   }
 
-  showRestructureCA(RowData) {
+  async showRestructureCA(RowData) {
+
+    if (!RowData.MilestoneAllTasks) {
+      RowData.MilestoneAllTasks = await this.getMilestoneTasks(RowData);
+    }
 
     const ref = this.dialogService.open(CaDragdropComponent, {
 
@@ -780,12 +772,71 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   }
 
 
+  // async getMilestoneTasks(task) {
+
+  //   let alltasks = [];
+  //   if (this.arrMilestoneTasks.find(c => c.projectCode === task.ProjectCode && c.milestone === task.Milestone)) {
+  //     const dbMilestoneTasks = this.arrMilestoneTasks.find(c => c.projectCode === task.ProjectCode && c.milestone === task.Milestone).MilestoneTasks;
+
+  //     for (let i = 0; i < dbMilestoneTasks.length; i++) {
+
+  //       const TaskType = dbMilestoneTasks[i].Task;
+  //       const TaskName = $.trim(dbMilestoneTasks[i].Title.replace(dbMilestoneTasks[i].ProjectCode + '', '').replace(dbMilestoneTasks[i].Milestone + '', ''));
+
+  //       if (alltasks.length > 0 && alltasks.find(c => c.type === TaskType && c.milestone === dbMilestoneTasks[i].Milestone)) {
+  //         alltasks.find(c => c.type === TaskType).tasks.push(TaskName);
+  //       }
+  //       else {
+  //         alltasks.push({ type: TaskType, milestone: dbMilestoneTasks[i].Milestone, tasks: [TaskName] });
+  //       }
+
+  //     }
+  //     return alltasks;
+  //   }
+
+  //   // const TaskType = milTasks[i].Task;
+  //   // const TaskName = $.trim(milTasks[i].Title.replace(milTasks[i].ProjectCode + '', '').replace(milTasks[i].Milestone + '', ''));
+
+  //   //   if (task.MilestoneAllTasks.length > 0 && task.MilestoneAllTasks.find(c => c.type === TaskType && c.milestone === milTasks[i].Milestone)) {
+  //   //     task.MilestoneAllTasks.find(c => c.type === TaskType).tasks.push(TaskName);
+  //   //   }
+  //   //   else {
+  //   //     task.MilestoneAllTasks.push({ type: TaskType, milestone: milTasks[i].Milestone, tasks: [TaskName] });
+  //   //   }
+
+  // }
+
+
+  async getMilestoneTasks(task) {
+
+    let alltasks = [];
+    if (this.arrMilestoneTasks.find(c => c.projectCode === task.ProjectCode && c.milestone === task.Milestone)) {
+      let dbMilestoneTasks = this.arrMilestoneTasks.find(c => c.projectCode === task.ProjectCode && c.milestone === task.Milestone).MilestoneTasks;
+      dbMilestoneTasks = dbMilestoneTasks.filter(c => c.Milestone === task.Milestone);
+      alltasks = Array.from(new Set(dbMilestoneTasks.map(s => s.Task))).map(task => {
+        return {
+          type: task,
+          milestone: dbMilestoneTasks.find(s => s.Task === task).Milestone,
+          //tasks: []
+          tasks: dbMilestoneTasks.filter(s => s.Task === task).map(c => $.trim(c.Title.replace(c.ProjectCode + '', '').replace(c.Milestone + '', '')))
+        };
+      });
+
+      return alltasks;
+    }
+  }
+
+
 
 
 
   async OnRowExpand(event) {
-
     event.data.subTaskloaderenable = true;
+
+    if (!event.data.MilestoneAllTasks) {
+      event.data.MilestoneAllTasks = await this.getMilestoneTasks(event.data);
+    }
+
     if (event.data.SlotTasks) {
       if (event.data.SlotTasks.length === 1 && event.data.SlotTasks[0].Id === undefined) {
         event.data.SlotTasks[0].editMode = true;
@@ -808,9 +859,11 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         }
         event.data.subTaskloaderenable = false;
       } else {
+
         const tasks = await this.GetAllConstantTasks(event.data.Task);
         let count = 0;
         const constTask = event.data.MilestoneAllTasks.find(c => c.type === tasks[0] && c.milestone === event.data.Milestone);
+
         if (constTask) {
           count = constTask.tasks.filter(task => new RegExp(tasks[0], 'g').test(task)).length > 0 ?
             constTask.tasks.filter(task => new RegExp(tasks[0], 'g').test(task)).filter((v) => {
@@ -825,9 +878,6 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
                 return v.replace(new RegExp(tasks[0], 'g'), '');
               }).map(c => (!isNaN(c) ? parseInt(c) : 0))) : 1 : 0;
         }
-
-
-
 
         event.data.TaskName = tasks.length > 0 ? count > 0 ? tasks[0] + ' ' + (count + 1) : tasks[0] : event.data.TaskName;
         // event.data.nextTasks = event.data.NextTasks;
@@ -844,14 +894,13 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         } else {
           event.data.MilestoneAllTasks.push({ type: tasks[0], milestone: event.data.Milestone, tasks: [event.data.TaskName] });
         }
-
-        if (this.completeTaskArray.filter(c => c.ProjectCode === event.data.ProjectCode && c.Milestone === event.data.Milestone)) {
-          this.completeTaskArray.filter(c => c.ProjectCode === event.data.ProjectCode && c.Milestone ===
-            event.data.Milestone).map(c => c.MilestoneAllTasks = event.data.MilestoneAllTasks);
-        }
-
         console.log(event.data);
         event.data.subTaskloaderenable = false;
+      }
+
+      if (this.completeTaskArray.filter(c => c.ProjectCode === event.data.ProjectCode && c.Milestone === event.data.Milestone)) {
+        this.completeTaskArray.filter(c => c.ProjectCode === event.data.ProjectCode && c.Milestone ===
+          event.data.Milestone).map(c => c.MilestoneAllTasks = event.data.MilestoneAllTasks);
       }
     }
   }
@@ -1341,9 +1390,10 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         }
 
         // check for task already exists new (Maxwell)
-        const dbProjectTasks = dbAllProjectTasks.filter(c => c.ProjectCode === slot.ProjectCode).map(c => $.trim(c.Title.replace(c.ProjectCode + '', '').replace(c.Milestone + '', '')));
+
+        const dbProjectTasks = dbAllProjectTasks.filter(c => c.ProjectCode === slot.ProjectCode && c.Milestone === slot.Milestone).map(c => $.trim(c.Title.replace(c.ProjectCode + '', '').replace(c.Milestone + '', '')));
         if (slot.SlotTasks.filter(c => c.Id === undefined)) {
-          const ExisitingTasks = slot.SlotTasks.filter(c => c.Id === undefined).map(c => c.TaskName).filter(c => dbProjectTasks.includes(c))
+          const ExisitingTasks = slot.SlotTasks.filter(c => c.Status === 'Not Saved').map(c => c.TaskName).filter(c => dbProjectTasks.includes(c))
 
           if (ExisitingTasks.length > 0) {
             this.messageService.add({

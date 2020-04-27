@@ -1,0 +1,204 @@
+<div fxLayout="column" style="padding: 8vw;" fxLayoutAlign="center center" [hidden]="!modalloaderenable">
+    <div id="modalInnerLoader"></div>
+    <div id="modalInnerLoaderText">Loading...</div>
+</div>
+
+<p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom-booking" [hideTransitionOptions]="'0ms'" position="bottom-center">
+</p-toast>
+
+<div class='UserButton' fxLayout="row" fxLayoutAlign="end center" [hidden]="modalloaderenable">
+
+    <button *ngIf="!showeditPO" type="button" pButton icon="pi pi-save" id="saveClient" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="SavePODetails()" label="Save"></button>
+    <button *ngIf="showeditPO" type="button" pButton icon="pi pi-save" id="saveClient" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="SavePODetails()" label="Update"></button>
+
+    <button type="button" pButton icon="pi pi-times" (click)="cancel();" label="Cancel" class="ui-button-secondary" style="background-color:ghostwhite;"></button>
+
+</div>
+
+<div fxLayout="row" *ngIf="!modalloaderenable" #scrollDown fxLayoutAlign="space-between start" fxLayoutGap="5px">
+
+    <form [formGroup]='PoForm' class="p-col">
+        <!-- first Row html  -->
+        <div class="p-grid">
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>Po Number</div>
+                <div class="p-col-8">
+                    <input type="text" style="width: 100%;" formControlName="poNumber" placeholder="PO Number" pInputText>
+                    <div class="error" *ngIf="isPOFormSubmit && PoForm.controls.poNumber.errors">
+                        <div *ngIf="PoForm.controls.poNumber.errors.required">
+                            Po Number is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>PO Name</div>
+                <div class="p-col-8">
+                    <input type="text" style="width: 100%;" formControlName="poName" placeholder="PO Name" pInputText>
+                    <div class="error" *ngIf="isPOFormSubmit && PoForm.controls.poName.errors">
+                        <div *ngIf="PoForm.controls.poName.errors.required">
+                            PO Name is required</div>
+                        <div *ngIf="PoForm.controls.poName.errors.pattern">
+                            Special characters are allowed between alphabets. Allowed special characters are '-' and '_'.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- second Row html if new -->
+        <div class="p-grid" [hidden]="showeditPO">
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>Total Amount</div>
+                <div class="p-col-8">
+                    <input type="number" size="30" style="width: 100%;" formControlName="total" placeholder="Total Amount" pInputText>
+                    <div class="error" *ngIf="isPOFormSubmit && PoForm.controls.total.errors">
+                        <div *ngIf="PoForm.controls.total.errors.required">Total Amount is required</div>
+                        <div *ngIf="PoForm.controls.total.errors.nonZeroNumber">
+                            Total cannot be less than equal to zero</div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>Revenue</div>
+                <div class="p-col-8">
+                    <input type="number" size="30" style="width: 100%;" formControlName="revenue" placeholder="Revenue Amount" (change)="setPOTotal()" pInputText>
+                    <div class="error" *ngIf="isPOFormSubmit && PoForm.controls.revenue.errors">
+                        <div *ngIf="PoForm.controls.revenue.errors.required">Revenue is required</div>
+                        <div *ngIf="PoForm.controls.revenue.errors.positiveNumber">
+                            Revenue cannot be less than zero</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- third Row html if new -->
+        <div class="p-grid" [hidden]="showeditPO">
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>OOP Amount</div>
+                <div class="p-col-8">
+                    <input type="number" size="30" style="width: 100%;" formControlName="oop" placeholder="OOP Amount" (change)="setPOTotal()" pInputText>
+                    <div class="error" *ngIf="isPOFormSubmit && PoForm.controls.oop.errors">
+                        <div *ngIf="PoForm.controls.oop.errors.required">OOP is required</div>
+                        <div *ngIf="PoForm.controls.oop.errors.positiveNumber">
+                            OOP cannot be less than zero.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>Tax Amount</div>
+                <div class="p-col-8">
+                    <input type="number" size="30" style="width: 100%;" formControlName="tax" placeholder="Tax Amount" (change)="setPOTotal()" pInputText>
+                    <div class="error" *ngIf="isPOFormSubmit && PoForm.controls.tax.errors">
+                        <div *ngIf="PoForm.controls.tax.errors.required">Tax is required</div>
+                        <div *ngIf="PoForm.controls.tax.errors.positiveNumber">
+                            Tax cannot be less than zero.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- forth Row html if new else for edit secod row  -->
+        <div class="p-grid">
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>Currency</div>
+                <div class="p-col-8">
+                    <p-dropdown [options]="adminObject.dropdown.CurrencyArray" placeholder="Select Currency" formControlName="currency" editable="true" filter="true" resetFilterOnHide="true" [style]="{'width':'100%'}"></p-dropdown>
+                    <div class="error" *ngIf="isPOFormSubmit && PoForm.controls.currency.errors">
+                        <div *ngIf="PoForm.controls.currency.errors.required">
+                            Currency is required</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>PO Expiry Date</div>
+                <div class="p-col-8">
+                    <p-calendar styleClass="pCalendarBtn" formControlName="poExpiryDate" [minDate]="minDateValue" [showIcon]="true" [maxDate]="minDateValue" dateFormat="M dd, yy"   [showOnFocus]="false"   [monthNavigator]="true" [readonlyInput]="true">
+                    </p-calendar>
+                    <div class="error" *ngIf="isPOFormSubmit && PoForm.controls.poExpiryDate.errors">
+                        <div *ngIf="PoForm.controls.poExpiryDate.errors.required">
+                            PO Expiry Date is required</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- fifth Row html if new else for edit third row  -->
+        <div class="p-grid">
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>Point of Contact</div>
+                <div class="p-col-8">
+                    <p-dropdown [options]="adminObject.dropdown.POPointOfContactArray" placeholder="Select Point of Contact" formControlName="poc" editable="true" filter="true" resetFilterOnHide="true" [style]="{'width':'100%'}"></p-dropdown>
+                    <div class="error" *ngIf="isPOFormSubmit && PoForm.controls.poc.errors">
+                        <div *ngIf="PoForm.controls.poc.errors.required">
+                            Point of Contact is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>PO File</div>
+                <div class="p-col-8">
+                    <input type="file" style="width: 100%;" formControlName="poFile" (change)="onFileChange($event)" pInputText>
+                    <div class="error" *ngIf="isPOFormSubmit && PoForm.controls.poFile.errors">
+                        <div *ngIf="PoForm.controls.poFile.errors.required">
+                            PO File is required</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- sixth Row html if new else for edit fourth row  -->
+        <div class="p-grid">
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>TA</div>
+                <div class="p-col-8">
+                    <p-dropdown [options]="adminObject.dropdown.POTAArray" placeholder="Select TA" formControlName="ta" filter="true" resetFilterOnHide="true" [style]="{'width':'100%'}">
+                    </p-dropdown>
+                    <div class="error" *ngIf="isPOFormSubmit && PoForm.controls.ta.errors">
+                        <div *ngIf="PoForm.controls.ta.errors.required">
+                            TA is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>Molecule
+                </div>
+                <div class="p-col-8">
+                    <p-dropdown [options]="adminObject.dropdown.POMoleculeArray" placeholder="Select Molecule" formControlName="molecule" filter="true" resetFilterOnHide="true" [style]="{'width':'100%'}">
+                    </p-dropdown>
+                    <div class="error" *ngIf="isPOFormSubmit && PoForm.controls.molecule.errors">
+                        <div *ngIf="PoForm.controls.molecule.errors.required">
+                            Molecule is required</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- seventh Row html if new else for edit fifth row  -->
+        <div class="p-grid">
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>CM Level 2</div>
+                <div class="p-col-8">
+                    <p-dropdown [options]="adminObject.dropdown.CMLevel2Array" placeholder="Select CM Level 2" formControlName="cmLevel2" [style]="{'width':'100%'}">
+                    </p-dropdown>
+                    <div class="error" *ngIf="isPOFormSubmit && PoForm.controls.cmLevel2.errors">
+                        <div *ngIf="PoForm.controls.cmLevel2.errors.required">
+                            CM Level 2 is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>PO Buying Entity
+                </div>
+                <div class="p-col-8">
+                    <p-dropdown [options]="adminObject.dropdown.POBuyingEntityArray" placeholder="Select PO Buying Entity" formControlName="poBuyingEntity" filter="true" resetFilterOnHide="true" [style]="{'width':'100%'}">
+                    </p-dropdown>
+
+                    <div class="error" *ngIf="isPOFormSubmit && PoForm.controls.poBuyingEntity.errors">
+                        <div *ngIf="PoForm.controls.poBuyingEntity.errors.required">
+                            PO Buying Entity is required</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+</div>

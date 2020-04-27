@@ -223,8 +223,8 @@ export class NonStandardprojectComponent implements OnInit {
     let sClientAcronym = clientLegalEntityObject[0].Acronym;
     let sDeliverableTypeCode = deliveryObject[0].Acronym;
     let oCurrentDate = new Date();
-    let sYear = oCurrentDate.getFullYear();
-    let sProjCode = oCurrentDate.getMonth() > 2 ? sYear + 1 : sYear;
+    let sProjCode = oCurrentDate.getFullYear();
+    // let sProjCode = oCurrentDate.getMonth() > 2 ? sYear + 1 : sYear;
     let sProjCount = this.pmObject.oProjectManagement.oProjectPerYear.toString();
     sProjCount = ("000" + sProjCount).slice(-4);
     if (sProjCode) {

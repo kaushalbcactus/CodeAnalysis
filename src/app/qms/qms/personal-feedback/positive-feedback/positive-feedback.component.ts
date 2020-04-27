@@ -142,7 +142,7 @@ export class PositiveFeedbackComponent implements OnInit, OnDestroy {
       const deliveryLeads = pf.DeliveryLeads.results ? pf.DeliveryLeads.results.filter(a => a.ID === currentUserId) : [];
       pf.isLoggedInDeliveryLead = deliveryLeads.length > 0 ? true : false;
       pf.formattedSentDate = datePipe.transform(pf.SentDate, 'd MMM, yyyy');
-      pf.resources = pf.Resources.results ? pf.Resources.results.map(a => a.Title) : [];
+      pf.resources = pf.Resources.results ? pf.Resources.results.map(a => a.Title).join(', ') : '';
       return pf;
     });
     return arrResult;

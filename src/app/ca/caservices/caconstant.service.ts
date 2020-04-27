@@ -36,7 +36,7 @@ export class CAConstantService {
   public scheduleMilestoneQueryOptions = {
     select: 'ID,Title,TimeZoneNM,Task,Status,NextTasks,PrevTasks,ProjectCode,Milestone,SubMilestones,TaskComments,StartDate,DueDateDT,AssignedTo/ID, AssignedTo/Title',
     expand: 'AssignedTo/ID, AssignedTo/Title',
-    filter: "((ProjectCode eq '{0}' and Milestone eq '{1}') or (ProjectCode eq '{2}' and Status eq 'Completed' and (Task eq 'QC' or Task eq 'Review-QC' or Task eq 'Inco-QC' or Task eq 'Edit' or Task eq 'Review-Edit' or Task eq 'Inco-Edit' or Task eq 'Graphics' or Task eq 'Review-Graphics' or Task eq 'Inco-Graphics')))",
+    filter: "((ProjectCode eq '{0}' and Milestone eq '{1}') or (ProjectCode eq '{2}' and (Status eq 'Completed' or Status eq 'Auto Closed') and (Task eq 'QC' or Task eq 'Review-QC' or Task eq 'Inco-QC' or Task eq 'Edit' or Task eq 'Review-Edit' or Task eq 'Inco-Edit' or Task eq 'Graphics' or Task eq 'Review-Graphics' or Task eq 'Inco-Graphics')))",
     top: 4200
   };
 

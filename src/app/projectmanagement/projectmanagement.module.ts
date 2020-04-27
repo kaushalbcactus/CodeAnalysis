@@ -38,6 +38,7 @@ import { CsFinanceAuditDialogComponent } from './projectmanagement/all-projects/
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { AuditProjectDialogComponent } from './projectmanagement/all-projects/audit-project-dialog/audit-project-dialog.component';
 import { InvoiceLineitemsComponent } from './projectmanagement/all-projects/invoice-lineitems/invoice-lineitems.component';
+import { ConfirmationDialogComponent } from '../shared/confirmation-dialog/confirmation-dialog.component';
 
 @NgModule({
   declarations: [
@@ -96,7 +97,8 @@ import { InvoiceLineitemsComponent } from './projectmanagement/all-projects/invo
     UsercapacityComponent,
     CsFinanceAuditDialogComponent,
     AuditProjectDialogComponent,
-    InvoiceLineitemsComponent
+    InvoiceLineitemsComponent,
+    ConfirmationDialogComponent
   ]
 })
 export class ProjectmanagementModule { }

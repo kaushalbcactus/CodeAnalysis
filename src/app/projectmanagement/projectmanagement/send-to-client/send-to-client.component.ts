@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef, HostListener, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
 import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
-import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
@@ -8,7 +7,7 @@ import { GlobalService } from 'src/app/Services/global.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { PmconstantService } from '../../services/pmconstant.service';
 import { PMObjectService } from '../../services/pmobject.service';
-import { MenuItem } from 'primeng/api';
+import { MenuItem, MessageService } from 'primeng/api';
 import { PMCommonService } from '../../services/pmcommon.service';
 import { Router } from '@angular/router';
 import { Table } from 'primeng/table';
@@ -21,6 +20,8 @@ declare var $;
 })
 export class SendToClientComponent implements OnInit {
   tempClick: any;
+  @ViewChild("loader", { static: false }) loaderView: ElementRef;
+  @ViewChild("spanner", { static: false }) spannerView: ElementRef;
   private options = {
     data: null,
     url: '',
@@ -52,11 +53,6 @@ export class SendToClientComponent implements OnInit {
   @ViewChild('sendToClientTableRef', { static: true }) sct: ElementRef;
   @ViewChild('sendToClientTableRef', { static: false }) sendToClientTableRef: Table;
   // tslint:disable-next-line:variable-name
-  private _success = new Subject<string>();
-  // tslint:disable-next-line:variable-name
-  private _error = new Subject<string>();
-  public successMessage: string;
-  public errorMessage: string;
   public selectedSendToClientTask;
   public contextMenuOptions = [];
   isSCInnerLoaderHidden = true;
@@ -77,16 +73,6 @@ export class SendToClientComponent implements OnInit {
     displayMilestone: [],
     PreviousTaskUser: [],
     PreviousTaskStatus: [],
-
-    // projectCodeArray: [],
-    // shortTitleArray: [],
-    // clientLegalEntityArray: [],
-    // POCArray: [],
-    // deliveryTypeArray: [],
-    // dueDateArray: [],
-    // milestoneArray: [],
-    // previousTaskOwnerArray: [],
-    // previousTaskStatusArray: [],
     nextTaskArray: [],
     previousTaskArray: []
   };
@@ -105,19 +91,9 @@ export class SendToClientComponent implements OnInit {
       },
       { label: 'Close', command: (event) => this.closeTask(this.selectedSendToClientTask) }
     ];
+
     this.pmObject.sendToClientArray = [];
-    this._success.subscribe((message) => this.successMessage = message);
-    this._success.pipe(
-      debounceTime(5000)
-    ).subscribe(() => this.successMessage = null);
-    this._error.subscribe((message) => this.errorMessage = message);
-    this._error.pipe(
-      debounceTime(5000)
-    ).subscribe(() => this.errorMessage = null);
-    setTimeout(() => {
-      this.hideNoDataMessage = true;
-      this.callSendToClient();
-    }, this.pmConstant.TIME_OUT);
+    this.callSendToClient();
   }
   constructor(
     private spServices: SPOperationService,
@@ -134,6 +110,7 @@ export class SendToClientComponent implements OnInit {
     private platformLocation: PlatformLocation,
     private locationStrategy: LocationStrategy,
     _applicationRef: ApplicationRef,
+    public messageService: MessageService,
     zone: NgZone,
   ) {
 
@@ -148,12 +125,7 @@ export class SendToClientComponent implements OnInit {
     });
 
   }
-  public changeSuccessMessage(message) {
-    this._success.next(message);
-  }
-  public changeErrorMessage(message) {
-    this._error.next(message);
-  }
+
   async downloadTask(task) {
     // setTimeout(() => {
     const tempArray = [];
@@ -190,17 +162,27 @@ export class SendToClientComponent implements OnInit {
     this.router.navigate(['/projectMgmt/allProjects']);
   }
   closeTask(task) {
+
     if (task.PreviousTaskStatus === 'Auto Closed' || task.PreviousTaskStatus === 'Completed') {
+
+      this.loaderView.nativeElement.classList.add('show');
+      this.spannerView.nativeElement.classList.add('show');
+
+
       const options = { Status: 'Completed', Actual_x0020_Start_x0020_Date: new Date(), Actual_x0020_End_x0020_Date: new Date(), __metadata: { type: this.Constant.listNames.Schedules.type } };
       this.closeTaskWithStatus(task, options, this.sct);
     } else {
-      this.changeErrorMessage('Previous task should be Completed or Auto Closed');
+      this.messageService.add({
+        key: 'custom', severity: 'error',
+        summary: 'Error Message', detail: 'Previous task should be Completed or Auto Closed'
+      });
+
     }
   }
   async closeTaskWithStatus(task, options, unt) {
     const isActionRequired = await this.commonService.checkTaskStatus(task);
     if (isActionRequired) {
-    
+
       let batchUrl = [];
 
       if (task.SubMilestones) {
@@ -265,17 +247,26 @@ export class SendToClientComponent implements OnInit {
         }
       }
       await this.spServices.executeBatch(batchUrl);
-      this.changeSuccessMessage(task.Title + ' is completed Sucessfully');
+      this.messageService.add({
+        key: 'custom', severity: 'success', sticky: true,
+        summary: 'Success Message', detail: task.Title + ' is completed Sucessfully'
+      });
 
+      this.loaderView.nativeElement.classList.remove('show');
+      this.spannerView.nativeElement.classList.remove('show');
       const index = this.pmObject.sendToClientArray.findIndex(item => item.ID === task.ID);
       this.pmObject.sendToClientArray.splice(index, 1);
-      this.pmObject.loading.SendToClient = true;
+      this.pmObject.sendToClientArray =[...this.pmObject.sendToClientArray];
       this.pmObject.countObj.scCount = this.pmObject.countObj.scCount - 1;
-      this.commonService.filterAction(unt.sortField, unt.sortOrder,
-        unt.filters.hasOwnProperty('global') ? unt.filters.global.value : null, unt.filters, unt.first, unt.rows,
-        this.pmObject.sendToClientArray, this.filterColumns, this.pmConstant.filterAction.SEND_TO_CLIENT);
     } else {
-      this.changeSuccessMessage('' + task.Title + ' is already completed or closed or auto closed. Hence record is refreshed in 30 sec.');
+
+      this.loaderView.nativeElement.classList.remove('show');
+      this.spannerView.nativeElement.classList.remove('show');
+
+      this.messageService.add({
+        key: 'custom', severity: 'success', sticky: true,
+        summary: 'Success Message', detail: task.Title + ' is already completed or closed or auto closed. Hence record is refreshed in 30 sec.'
+      });
       setTimeout(() => {
         this.ngOnInit();
       }, 3000);
@@ -454,7 +445,7 @@ export class SendToClientComponent implements OnInit {
         const arrRes = arrResults[counter];
 
         // tslint:disable-next-line:only-arrow-functions
-        const prevTask = arrRes.filter((previousTaskElement) => {
+        let prevTask = arrRes.filter((previousTaskElement) => {
           return previousTaskElement.Title === taskItem.PreviousTask;
         });
         // tslint:disable-next-line:only-arrow-functions
@@ -463,14 +454,15 @@ export class SendToClientComponent implements OnInit {
         });
         counter++;
         if (prevTask.length) {
-          // if (prevTask[0].IsCentrallyAllocated === 'Yes') {
-          //   const preTaskObj = Object.assign({}, this.pmConstant.subtaskOptions);
-          //   preTaskObj.filter = preTaskObj.filter.replace('{0}', prevTask[0].ID);
-          //   const previousTask = await this.spServices.readItems(this.Constant.listNames.Schedules.name, preTaskObj);
-          //   prevTask = previousTask.length ? previousTask : prevTask;
-          // }
+          if (prevTask[0].IsCentrallyAllocated === 'Yes') {
+            const preTaskObj = Object.assign({}, this.pmConstant.subtaskOptions);
+            preTaskObj.filter = preTaskObj.filter.replace('{0}', prevTask[0].ID);
+            const previousTask = await this.spServices.readItems(this.Constant.listNames.Schedules.name, preTaskObj);
+            prevTask = previousTask.length ? previousTask : prevTask;
+          }
           this.scArrays.previousTaskArray.push(prevTask[0]);
           taskItem.PreviousTaskStatus = prevTask[0].Status;
+          taskItem.PreviousTask = prevTask[0].Title;
           taskItem.PreviousTaskUser = prevTask[0].AssignedTo ? prevTask[0].AssignedTo.Title : '';
           previousTaskOwnerTempArray.push({ label: taskItem.PreviousTaskUser, value: taskItem.PreviousTaskUser });
           previousTaskStatusTempArray.push({ label: taskItem.PreviousTaskStatus, value: taskItem.PreviousTaskStatus });
