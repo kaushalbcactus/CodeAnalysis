@@ -444,7 +444,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
 
                 CS: this.getCSDetails(element),
                 PracticeArea: this.getPracticeArea(element).BusinessVertical,
-                POName: poItem.Name,
+                POName: poItem.NameST,
                 TaggedDate: element.TaggedDate,
                 Status: element.Status,
                 ProformaLookup: element.ProformaLookup,

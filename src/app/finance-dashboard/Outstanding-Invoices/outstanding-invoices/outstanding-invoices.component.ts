@@ -274,8 +274,6 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             { field: 'PaymentURL', header: 'Payment URL', visibility: false },
             { field: 'MainPOC', header: 'Main POC', visibility: false },
             { field: 'Template', header: 'Template', visibility: false },
-            // { field: 'ProformaLookup', header: 'Proforma Lookup', visibility: false },
-            // { field: 'LineItemsLookup', header: 'LineItems Lookup', visibility: false },
             { field: 'DisputeReason', header: 'Dispute Reason', visibility: false },
             { field: 'DisputeComments', header: 'Dispute Comments', visibility: false },
             { field: 'Reason', header: 'Reason', visibility: false },
@@ -285,7 +283,6 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             { field: 'TaggedAmount', header: 'Tagged Amount', visibility: false },
             { field: 'IsTaggedFully', header: 'Is Tagged Fully', visibility: false },
             { field: 'Modified', header: 'Modified', visibility: false },
-            // { field: 'AdditionalPOC', header: 'Additional POC', visibility: false },
             { field: 'Created', header: 'Created', visibility: false },
             { field: '', header: '', visibility: true },
         ];
@@ -371,7 +368,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 MainPOC: element.MainPOC,
                 InvoiceStatus: element.Status,
                 PONumber: poItem.Number,
-                POName: poItem.Name,
+                POName: poItem.NameST,
                 POC: this.getPOCName(element),
                 PO: element.PO,
                 Title: element.InvoiceTitle,
@@ -380,7 +377,6 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 showMenu: true, // (element.Status === 'Sent to AP' || element.Status === 'Generated') ?  true : false
                 PaymentURL: element.PaymentURL,
                 ProformaLookup: element.ProformaLookup,
-                LineItemsLookup: element.LineItemsLookup,
                 DisputeReason: element.DisputeReason,
                 DisputeComments: element.DisputeComments,
                 Reason: element.Reason,

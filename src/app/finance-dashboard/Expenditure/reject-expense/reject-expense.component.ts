@@ -88,7 +88,7 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
             this.DateRange.endDate = new Date(this.datePipe.transform(this.rangeDates[1], "yyyy-MM-dd") + " 23:59:00").toISOString();
             this.fdDataShareServie.expenseDateRange = this.DateRange;
         }
-
+        this.freelancerVendersRes = await this.fdDataShareServie.getVendorFreelanceData();
         this.createRCECols();
         await this.projectInfo();
         // Resource Categorization

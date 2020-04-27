@@ -746,7 +746,11 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             if (!formValue.ContractEndDate) {
                 formValue.ContractEndDate = null;
             }
-
+            // added by arvind
+            formValue.IsActiveCH = 'Yes';
+            formValue.AddressMT = formValue.Address
+            delete formValue.Address
+            // Arvind Code end here.
             const getPrjContactItemData = Object.assign({}, this.queryConfig);
             getPrjContactItemData.url = this.spServices.getReadURL(this.constantService.listNames.VendorFreelancer.name);
             getPrjContactItemData.listName = this.constantService.listNames.VendorFreelancer.name;

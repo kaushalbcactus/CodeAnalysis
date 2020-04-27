@@ -527,7 +527,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 ProjectMileStone: project ? project.Milestone : '', // this.getMilestones(element),
                 POValues,
                 PONumber: poItem.Number,
-                POName: poItem.Name,
+                POName: poItem.NameST,
                 ClientLegalEntity: this.selectedPurchaseNumber.ClientLegalEntity,
                 ScheduledDate: new Date(this.datePipe.transform(element.ScheduledDate, 'MMM dd, yyyy')), // this.datePipe.transform(element.ScheduledDate, 'MMM dd, yyyy'),
                 ScheduledDateFormat: this.datePipe.transform(element.ScheduledDate, 'MMM dd, yyyy'),

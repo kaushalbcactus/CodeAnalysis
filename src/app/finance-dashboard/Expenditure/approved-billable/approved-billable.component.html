@@ -266,13 +266,13 @@
                         (onChange)="poChange($event)">
                         <ng-template let-item pTemplate="selectedItem">
                             <span style="vertical-align:middle">{{item.label}}
-                                {{item.value.Name ? ' -- '+ item.value.Name:'' }}
+                                {{item.value.NameST ? ' -- '+ item.value.NameST:'' }}
                             </span>
                         </ng-template>
                         <ng-template let-item pTemplate="item">
                             <div class="ui-helper-clearfix" style="position: relative;">
                                 <div style="font-size:14px;float: left;margin-top:4px;width: 300px;line-height: 20px;">
-                                    {{item.label}} {{item.value.Name ? ' -- '+ item.value.Name:'' }}
+                                    {{item.label}} {{item.value.NameST ? ' -- '+ item.value.NameST:'' }}
                                 </div>
                             </div>
                         </ng-template>
@@ -342,7 +342,7 @@
             </div>
             <div class="ui-g-10">
                 <p-dropdown resetFilterOnHide="true" [options]="listOfPOCs" formControlName="POCName"
-                    placeholder="Select POC Name" optionLabel="FullName" filter="true" (onChange)="pocChange($event)">
+                    placeholder="Select POC Name" optionLabel="FullNameCC" filter="true" (onChange)="pocChange($event)">
                 </p-dropdown>
                 <div *ngIf="formSubmit.isSubmit && isValidScheduleOOPInvoiceForm.POCName.errors">
                     <div *ngIf="isValidScheduleOOPInvoiceForm.POCName.errors.required" style="color:red;">Please

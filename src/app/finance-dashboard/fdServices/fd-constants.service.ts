@@ -32,18 +32,18 @@ export class FdConstantsService {
         selectedComp: null,
         isPSInnerLoaderHidden: false,
         projectInfo: {
-            select: "ID,ProjectCode,ProjectType,WBJID,Title,ClientLegalEntity,SOWCode,ProposedEndDate,PrimaryPOC,NextSCDate,Status,Milestone,Milestones,BusinessVertical,AdditionalPOCLookup/ID,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail",
+            select: "ID,ProjectCode,ProjectType,WBJID,Title,ClientLegalEntity,SOWCode,ProposedEndDate,PrimaryPOC,Status,Milestone,Milestones,BusinessVertical,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail",
             filter: "Status ne 'In Discussion' and Status ne 'cancelled' and Status ne 'Pending Closure' and Status ne 'closed' and Status ne 'Awaiting Cancel Approval'",
             orderby: "ProjectCode",
             top: 4500,
-            expand: "AdditionalPOCLookup,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail"
+            expand: "CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail"
         },
         projectInfoCode: {
-            select: "ID,ProjectCode,ProjectType,WBJID,Title,ClientLegalEntity,SOWCode,ProposedEndDate,PrimaryPOC,NextSCDate,Status,Milestone,BusinessVertical,AdditionalPOCLookup/ID,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail",
+            select: "ID,ProjectCode,ProjectType,WBJID,Title,ClientLegalEntity,SOWCode,ProposedEndDate,PrimaryPOC,Status,Milestone,BusinessVertical,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail",
             filter: "ProjectCode eq '{{ProjectCode}}'",
             orderby: "ProjectCode",
             top: 4500,
-            expand: "AdditionalPOCLookup,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail"
+            expand: "CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail"
         },
         projectPO: {
             select: "ID,Title,NameST,Amount,ClientLegalEntity,Status,POExpiryDate,Currency,AmountRevenue,TotalLinked,RevenueLinked,TotalScheduled,ScheduledRevenue,Number,ScheduledOOP,InvoicedOOP, InvoicedRevenue, AmountOOP, POCLookup, OOPLinked,TotalInvoiced",
@@ -254,24 +254,24 @@ export class FdConstantsService {
         // Proforma
         proformaForMangerIT: {
             // select: "ID,Title,ProformaDate,ProformaHtml,ProformaType,ClientLegalEntity,Amount,Currency,MainPOC,AddressType,LineItems/Id,LineItems/Title,PO,Status,FileURL,Template,AdditionalInfo",
-            select: "Title,ClientLegalEntity,ProformaType,ProformaDate,Amount,Currency,PO,Status,MainPOC,AdditionalInfo,ProformaTitle,AddressType,Template,InvoiceLookup,LineItemsLookup,FileURL,Reason,State,Modified,ID,ProformaHtml,LineItems/Id,LineItems/Title,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title",
+            select: "Title,ClientLegalEntity,ProformaType,ProformaDate,Amount,Currency,PO,Status,MainPOC,AdditionalInfo,ProformaTitle,AddressType,Template,InvoiceLookup,FileURL,Reason,State,Modified,ID,ProformaHtml,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title",
             filter: "Status eq 'Created' or Status eq 'Sent' ",
             orderby: "ProformaDate",
-            expand: "LineItems,Editor,Author",
+            expand: "Editor,Author",
             top: 4500
         },
 
         // Proforma
         proformaForUser: {
             // select: "ID,Title,ProformaDate,ProformaHtml,ProformaType,ClientLegalEntity,Amount,Currency,MainPOC,AddressType,LineItems/Id,LineItems/Title,PO,Status,FileURL,Template,AdditionalInfo",
-            select: "Title,ClientLegalEntity,ProformaType,ProformaDate,Amount,Currency,PO,Status,MainPOC,AdditionalInfo,ProformaTitle,AddressType,Template,InvoiceLookup,LineItemsLookup,FileURL,Reason,State,Modified,ID,ProformaHtml,LineItems/Id,LineItems/Title,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title",
+            select: "Title,ClientLegalEntity,ProformaType,ProformaDate,Amount,Currency,PO,Status,MainPOC,AdditionalInfo,ProformaTitle,AddressType,Template,InvoiceLookup,FileURL,Reason,State,Modified,ID,ProformaHtml,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title",
             filter: "ID eq '{{ItemID}}'",
             orderby: "ProformaDate",
-            expand: "LineItems,Editor,Author",
+            expand: "Editor,Author",
             top: 4500
         },
         proformaForNonManger: {
-            select: "ID,Title,ProformaDate,ProformaType,ClientLegalEntity,Amount,Currency,MainPOC,AddressType,LineItems,PO,Status,FileURL",
+            select: "ID,Title,ProformaDate,ProformaType,ClientLegalEntity,Amount,Currency,MainPOC,AddressType,PO,Status,FileURL",
             filter: "ID lt 0",
             // orderby: "ProformaDate",
             // expand: "LineItems",
@@ -281,7 +281,7 @@ export class FdConstantsService {
         // Outstanding Invoices
         invoicesForMangerIT: {
             // select: "ID,ClientLegalEntity,Title,InvoiceNumber,InvoiceDate,Amount,Currency,MainPOC,AddressType,PO,Status,FileURL,Template,ProformaLookup,InvoiceType",
-            select: "ID,ClientLegalEntity,InvoiceNumber,InvoiceDate,Amount,PaymentURL,FileURL,Currency,PO,Status,MainPOC,InvoiceTitle,AddressType,Template,ProformaLookup,LineItemsLookup,DisputeReason,DisputeComments,Reason,State,AdditionalInfo,InvoiceType,TaggedAmount,IsTaggedFully,Modified,Title,Created,InvoiceHtml,Editor/Id, Editor/Title",
+            select: "ID,ClientLegalEntity,InvoiceNumber,InvoiceDate,Amount,PaymentURL,FileURL,Currency,PO,Status,MainPOC,InvoiceTitle,AddressType,Template,ProformaLookup,DisputeReason,DisputeComments,Reason,State,AdditionalInfo,InvoiceType,TaggedAmount,IsTaggedFully,Modified,Title,Created,InvoiceHtml,Editor/Id, Editor/Title",
             filter: "Status eq '" + this.constantService.invoicesStatus.AwaitingClosedCreditNote + "' or " +
                 "Status eq '" + this.constantService.invoicesStatus.AwaitingClosedDebitNote + "' or " +
                 "Status eq '" + this.constantService.invoicesStatus.AwaitingWriteOff + "' or " +
@@ -305,7 +305,7 @@ export class FdConstantsService {
         // Paid Invoices
         paidInvoices: {
             // select: "ID,ClientLegalEntity,InvoiceNumber,InvoiceDate, FileURL,InvoiceTitle,Amount,Currency,MainPOC,AddressType,PO,Status,ProformaLookup,State, InvoiceType, Title",
-            select: "ID,ClientLegalEntity,InvoiceNumber,InvoiceDate,Amount,PaymentURL,FileURL,Currency,PO,Status,MainPOC,InvoiceTitle,AddressType,Template,ProformaLookup,LineItemsLookup,DisputeReason,DisputeComments,Reason,State,AdditionalInfo,InvoiceType,TaggedAmount,IsTaggedFully,Modified,Title,Created,Editor/Id,Editor/Title",
+            select: "ID,ClientLegalEntity,InvoiceNumber,InvoiceDate,Amount,PaymentURL,FileURL,Currency,PO,Status,MainPOC,InvoiceTitle,AddressType,Template,ProformaLookup,DisputeReason,DisputeComments,Reason,State,AdditionalInfo,InvoiceType,TaggedAmount,IsTaggedFully,Modified,Title,Created,Editor/Id,Editor/Title",
             filter: "InvoiceDate ge '{{StartDate}}' and InvoiceDate le '{{EndDate}}' and Status eq 'Paid'",
             // orderby: "ProformaDate",
             expand: "Editor",
@@ -314,7 +314,7 @@ export class FdConstantsService {
 
         // Invoice Line Item
         invoiceLineItem: {
-            select: "ID,Title,Status,ScheduledDate,Amount,Currency,PO,MainPOC,ScheduleType,InvoiceLookup,Expenses,AddressType,Template,SOWCode, AdditionalInfo,ProformaLookup",
+            select: "ID,Title,Status,ScheduledDate,Amount,Currency,PO,MainPOC,ScheduleType,InvoiceLookup,Expenses,AddressType,Template,SOWCode,ProformaLookup",
             filter: "ProformaLookup eq '{{ProformaLookup}}' ",
             top: 4500
         },

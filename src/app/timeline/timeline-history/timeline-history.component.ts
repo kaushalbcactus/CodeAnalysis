@@ -170,7 +170,7 @@ export class TimelineHistoryComponent implements OnInit {
     await this.intialRequestCreation(moduleName, requestType, clickedInvItemId);
     this.differenceProcessing(this.timelineBaseObj, this.initialRequest[0]);
     this.initialRequest.splice(0, 1);
-    this.responseCreation(this.timelineBaseObj.entityType, this.timelineBaseObj);
+    this.responseCreation(requestType, this.timelineBaseObj);
     this.assimilation();
     this.updateInitialStruture(this.timelineBaseObj);
     await this.creationComplete(moduleName);
@@ -634,6 +634,7 @@ export class TimelineHistoryComponent implements OnInit {
     let invLineItemVersions = arrResult.length > 0 ? arrResult[0].retItems : [];
     invLineItemVersions = invLineItemVersions.map(version => ({ ...version, projects: this.projectCodes }));
     return [invLineItemVersions];
+    // return invLineItemVersions;
   }
 
   /**
