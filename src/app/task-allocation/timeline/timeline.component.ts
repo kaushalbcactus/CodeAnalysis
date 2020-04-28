@@ -1834,13 +1834,13 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
   refreshGantt() {
-    this.loaderenable = true;
-    this.visualgraph = false;
+    // this.loaderenable = true;
+    // this.visualgraph = false;
     setTimeout(() => {
       this.ganttComponentRef.instance.onLoad(this.taskAllocateCommonService.ganttParseObject, this.resource);
       this.setScale(this.selectedScale);
-      this.loaderenable = false;
-      this.visualgraph = true;
+    //   this.loaderenable = false;
+    //   this.visualgraph = true;
     }, 300);
 
   }
@@ -3109,6 +3109,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.cascadeNextNodes(previousNode, subMilestonePosition, selectedMil);
     this.ResetStartAndEnd();
     previousNode.clickedInput = undefined;
+    this.refreshGantt();
   }
 
 
