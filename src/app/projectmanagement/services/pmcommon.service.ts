@@ -1983,6 +1983,7 @@ export class PMCommonService {
    
     setTimeout(() => {
       this.pmObject.isAddProjectVisible = false;
+      this.pmObject.isMainLoaderHidden = true;
       if (this.router.url === '/projectMgmt/allProjects') {
         this.dataService.publish('reload-project');
       } else {
