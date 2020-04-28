@@ -154,6 +154,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   disableSave = false;
   currentTask;
   allTaskData;
+  resetTask
   darkTheme: NgxMaterialTimepickerTheme = {
     container: {
       bodyBackgroundColor: '#424242',
@@ -968,6 +969,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     let submilestones = this.GanttchartData.filter(item => item.type == 'submilestone' && item.added === true)
     let subLength = submilestones.length;
 
+    console.log(this.GanttchartData);
+
     this.GanttchartData.forEach((item, index) => {
       if (item.submilestone) {
         submilestones.forEach((subMile) => {
@@ -1148,7 +1151,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           showMenus(task);
           this.menu.loadStruct(menus);
           this.currentTaskId = taskId;
-          this.currentTask = task;
+          this.resetTask = task;
           let x = event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft,
             y = event.clientY + document.body.scrollTop + document.documentElement.scrollTop;
 
@@ -1321,7 +1324,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           this.editAllocation(task, 'Equal');
           break;
         default:
-          this.openPopupOnGanttTask(this.currentTaskId);
+          this.openPopupOnGanttTask(task);
           break;
       }
     });
@@ -1371,6 +1374,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
     gantt.attachEvent("onBeforeTaskChanged", (id, mode, task)=> {
       this.allTaskData = gantt.serialize();
+      this.resetTask = task;
       this.currentTask = task;
       return true;
     });
@@ -1406,10 +1410,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
     gantt.attachEvent("onAfterTaskDrag", (id, mode, e) => {
       let task = gantt.getTask(id);
-      this.cascadeGantt(e, task);
+      // this.cascadeGantt(e, task);
       console.log(e.srcElement.className);
       if (task.status !== 'Completed' || task.type == 'milestone') {
-        this.openPopupOnGanttTask(id);
+        this.openPopupOnGanttTask(this.currentTask);
         return true;
       } else {
         return false;
@@ -1432,16 +1436,15 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     }
   }
 
-  openPopupOnGanttTask(id) {
+  openPopupOnGanttTask(task) {
     // let tasks = this.GanttchartData.filter(e => e.type !== 'milestone')
-    let filteredTasks = this.taskAllocateCommonService.ganttParseObject.data.find(e => e.id == id)
+    // let filteredTasks = this.taskAllocateCommonService.ganttParseObject.data.find(e => e.id == id)
     if (gantt.ext.zoom.getCurrentLevel() < 3) {
-      if (filteredTasks.type == "task") {
-        let task = gantt.getTask(id);
+      if (task.type == "task") {
         this.editTaskModal(task)
         return true;
-      } else if (filteredTasks.type == "milestone" || filteredTasks.type == "submilestone") {
-        this.changeBudgetHrs(id)
+      } else if (task.type == "milestone" || task.type == "submilestone") {
+        this.changeBudgetHrs(task)
         return true;
       }
     } else {
@@ -1449,10 +1452,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     }
   }
 
-  changeBudgetHrs(id) {
+  changeBudgetHrs(task) {
     this.budgetHrs = 0;
     this.showBudgetHrs = true;
-    let task = gantt.getTask(id);
     this.updatedTasks = task;
     this.budgetHrs = task.budgetHours;
   }
@@ -1795,33 +1797,33 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     let allTasks = this.allTaskData;
 
     allTasks.data.forEach((task) => {
-      if (this.currentTask.itemType === 'milestone') {
-        if (task.id == this.currentTask.id) {
+      if (this.resetTask.itemType === 'milestone') {
+        if (task.id == this.resetTask.id) {
           task.open = true;
           task.edited = false;
         }
       }
-      if (task.id == this.currentTask.id) {
-        task.start_date = this.currentTask.start_date;
-        task.end_date = this.currentTask.end_date;
-        task.pUserStart = this.currentTask.pUserStart;
-        task.pUserEnd = this.currentTask.pUserEnd;
-        task.pUserStartDatePart = this.currentTask.pUserStartDatePart;
-        task.pUserEndDatePart = this.currentTask.pUserEndDatePart;
-        task.pUserStartTimePart = this.currentTask.pUserStartTimePart;
-        task.pUserEndTimePart = this.currentTask.pUserEndTimePart;
-        if(this.currentTask.tat) {
-          task.pUserStart = new Date(this.currentTask.pUserStart.getFullYear(), this.currentTask.pUserStart.getMonth(), this.currentTask.pUserStart.getDate(), 9, 0);
-          task.pUserEnd = new Date(this.currentTask.pUserEnd.getFullYear(), this.currentTask.pUserEnd.getMonth(), this.currentTask.pUserEnd.getDate(), 19, 0);
-          task.pUserStartDatePart = this.getDatePart(this.currentTask.pUserStart);
-          task.pUserStartTimePart = this.getTimePart(this.currentTask.pUserStart);
-          task.pUserEndDatePart = this.getDatePart(this.currentTask.pUserEnd);
-          task.pUserEndTimePart = this.getTimePart(this.currentTask.pUserEnd);
-          task.start_date =  new Date(this.currentTask.pUserStart.getFullYear(), this.currentTask.pUserStart.getMonth(), this.currentTask.pUserStart.getDate(), 9, 0);
-          task.end_date = new Date(this.currentTask.pUserEnd.getFullYear(), this.currentTask.pUserEnd.getMonth(), this.currentTask.pUserEnd.getDate(), 19, 0);
+      if (task.id == this.resetTask.id) {
+        task.start_date = this.resetTask.pUserStart;
+        task.end_date = this.resetTask.pUserEnd;
+        task.pUserStart = this.resetTask.pUserStart;
+        task.pUserEnd = this.resetTask.pUserEnd;
+        task.pUserStartDatePart = this.resetTask.pUserStartDatePart;
+        task.pUserEndDatePart = this.resetTask.pUserEndDatePart;
+        task.pUserStartTimePart = this.resetTask.pUserStartTimePart;
+        task.pUserEndTimePart = this.resetTask.pUserEndTimePart;
+        if(this.resetTask.tat) {
+          task.pUserStart = new Date(this.resetTask.pUserStart.getFullYear(), this.resetTask.pUserStart.getMonth(), this.resetTask.pUserStart.getDate(), 9, 0);
+          task.pUserEnd = new Date(this.resetTask.pUserEnd.getFullYear(), this.resetTask.pUserEnd.getMonth(), this.resetTask.pUserEnd.getDate(), 19, 0);
+          task.pUserStartDatePart = this.getDatePart(this.resetTask.pUserStart);
+          task.pUserStartTimePart = this.getTimePart(this.resetTask.pUserStart);
+          task.pUserEndDatePart = this.getDatePart(this.resetTask.pUserEnd);
+          task.pUserEndTimePart = this.getTimePart(this.resetTask.pUserEnd);
+          task.start_date =  new Date(this.resetTask.pUserStart.getFullYear(), this.resetTask.pUserStart.getMonth(), this.resetTask.pUserStart.getDate(), 9, 0);
+          task.end_date = new Date(this.resetTask.pUserEnd.getFullYear(), this.resetTask.pUserEnd.getMonth(), this.resetTask.pUserEnd.getDate(), 19, 0);
         }
       }
-      if (task.title.replace(' (Current)', '') === this.currentTask.milestone || task.title === this.currentTask.milestone) {
+      if (task.title.replace(' (Current)', '') === this.resetTask.milestone || task.title === this.resetTask.milestone) {
         task.open = true;
       }
     })
@@ -1829,7 +1831,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.GanttchartData = allTasks.data;
     await this.loadComponent();
     setTimeout(() => {
-      this.scrollToTaskDate(this.currentTask.pUserEnd);
+      this.scrollToTaskDate(this.resetTask.pUserEnd);
     }, 1000);
   }
 
@@ -2645,7 +2647,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           let submilestone = milestone.children[nCountSub];
           if (submilestone.data.type === 'submilestone') {
             if (submilestone.data.id === 0) {
-              submilestone.data.id = 'SUB' + nCountSub + 1
+              submilestone.data.id = 'SUB' + nCountSub + nCount + 1
             }
             data.push(submilestone.data)
           }
