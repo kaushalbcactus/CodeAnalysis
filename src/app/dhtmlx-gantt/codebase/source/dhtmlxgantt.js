@@ -26061,15 +26061,16 @@ function createTaskDND(timeline, gantt){
 		},
 
 		_finalize_mouse_up: function(taskId, config, drag, e){
-			var ev = gantt.getTask(taskId);
-
+            var ev = gantt.getTask(taskId);
+            var originalEvt = gantt.copy(ev);
+            debugger;
 			if (config.work_time && config.correct_work_time) {
 				this._fix_working_times(ev, drag);
 			}
 
 			this._fix_dnd_scale_time(ev, drag);
 
-			if (!this._fireEvent("before_finish", drag.mode, [taskId, drag.mode, gantt.copy(drag.obj), e])) {
+			if (!this._fireEvent("before_finish", drag.mode, [taskId, drag.mode, originalEvt, e])) {
 				//drag.obj._dhx_changed = false;
 				this.clear_drag_state();
 				if(taskId == drag.id){
