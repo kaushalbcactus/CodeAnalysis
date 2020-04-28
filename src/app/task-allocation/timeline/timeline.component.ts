@@ -182,6 +182,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   budgetHrs = 0;
   selectedTask: any;
   displayBody = false;
+  graphFlag: boolean;
   menu: any;
   constructor(
     private constants: ConstantsService,
@@ -814,10 +815,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     }
 
     this.GanttChartView = true;
+    this.visualgraph = this.graphFlag !== undefined ? this.graphFlag : true;
     if (this.visualgraph) {
       this.showGanttChart();
     }
-    // this.visualgraph = true;
     this.milestoneDataCopy = JSON.parse(JSON.stringify(this.milestoneData));
     this.oProjectDetails.hoursSpent = this.commonService.convertToHrs(projectHoursSpent.length > 0 ? this.commonService.addHrsMins(projectHoursSpent) : '0:0');
     this.oProjectDetails.hoursSpent = parseFloat(this.oProjectDetails.hoursSpent.toFixed(2));
@@ -828,14 +829,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.oProjectDetails.availableHours = +(+this.oProjectDetails.budgetHours - +this.oProjectDetails.spentHours).toFixed(2);
     this.disableSave = false;
     if (!bFirstLoad) {
-      // setTimeout(() => {
       this.changeInRestructure = false;
       this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Tasks Saved Successfully' });
-      // }, 300);
     } else {
-      // if (this.visualgraph) {
       this.ganttAttachEvents();
-      // }
     }
   }
 
@@ -1809,8 +1806,15 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
   refreshGantt() {
-    this.ganttComponentRef.instance.onLoad(this.taskAllocateCommonService.ganttParseObject, this.resource);
-    this.setScale(this.selectedScale);
+    this.loaderenable = true;
+    this.visualgraph = false;
+    setTimeout(() => {
+      this.ganttComponentRef.instance.onLoad(this.taskAllocateCommonService.ganttParseObject, this.resource);
+      this.setScale(this.selectedScale);
+      this.loaderenable = false;
+      this.visualgraph = true;
+    }, 300);
+
   }
 
   scrollToTaskDate(date) {
@@ -3535,6 +3539,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
       const isValid = this.validate();
       if (isValid) {
+        this.graphFlag = this.visualgraph;
         this.loaderenable = true;
         this.visualgraph = false;
         this.sharedObject.resSectionShow = false;

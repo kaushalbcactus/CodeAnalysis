@@ -167,7 +167,7 @@
         <!-- **********************************************************************************************************
                                                           Table View Data
            ********************************************************************************************************** -->
-        <div fxLayout="row" class="taskAllocationTimeline" fxLayoutAlign="center start" [hidden]="visualgraph === true" *ngIf="!loaderenable">
+        <div fxLayout="row" class="taskAllocationTimeline" fxLayoutAlign="center start" [hidden]="visualgraph" *ngIf="!loaderenable">
             <p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom" position="bottom-center">
             </p-toast>
             <!-- <p-treeTable [value]="milestoneData" [(contextMenuSelection)]="selectedNode" [contextMenu]="!projectDetails ? milestones : ''" (onContextMenuSelect)="milestoneContextMenuEvent($event, milestones)"> -->
@@ -412,7 +412,7 @@
            ********************************************************************************************************** -->
         <div fxLayout="row" fxLayoutAlign=" start center"
             [ngClass]="projectDetails  ? 'VisualRepresentationpopup':'VisualRepresentation'"
-            [hidden]="visualgraph === false" style="width:100%"> <!--&& loaderenable === true-->
+            [hidden]="!visualgraph" style="width:100%"> <!--&& loaderenable === true-->
             <p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="gantt-message"
                 position="bottom-center">
             </p-toast>
