@@ -87,7 +87,7 @@ export class GanttEdittaskComponent implements OnInit {
   async onLoad(task) {
 
     if (task.itemType === 'Client Review' || task.itemType === 'Send to client') {
-      var bHrs = 0 || task.budgetHours;
+      let bHrs = 0 || task.budgetHours;
       this.editTaskForm.get('budgetHrs').setValue(bHrs);
       this.editTaskForm.controls['budgetHrs'].disable();
     }
@@ -102,12 +102,8 @@ export class GanttEdittaskComponent implements OnInit {
       this.editTaskObject.isTat = false;
     }
 
-    if (task.itemType !== 'Client Review' && task.itemType !== 'Send to client' && task.slotType !== 'Slot') {
-      if (task.budgetHours && task.pUserStartDatePart.getTime() !== task.pUserEndDatePart.getTime()) {
-        this.isViewAllocation = true;
-      }
-    }
-
+    this.isViewAllocationBtn(task)
+    
     this.editTaskForm.patchValue({
       budgetHrs: task.budgetHours,
       startDate: task.start_date,
@@ -118,18 +114,14 @@ export class GanttEdittaskComponent implements OnInit {
       startDateTimePart: this.getTimePart(task.start_date),
       endDateTimePart: this.getTimePart(task.end_date),
     })
-    console.log(this.editTaskForm.value)
+
+    if (task.tat) {
+      this.isTaskTAT(task);
+    }
 
     this.editTaskForm.get('tat').valueChanges.subscribe(tat => {
       if (tat) {
-        var startDate = new Date(task.start_date.getFullYear(), task.start_date.getMonth(), task.start_date.getDate(), 9, 0)
-        var endDate = new Date(task.end_date.getFullYear(), task.end_date.getMonth(), task.end_date.getDate(), 19, 0)
-        this.editTaskForm.patchValue({
-          startDate: startDate,
-          endDate: endDate,
-          startDateTimePart: this.getTimePart(startDate),
-          endDateTimePart: this.getTimePart(endDate),
-        })
+        this.isTaskTAT(task);
       }
     });
 
@@ -142,10 +134,10 @@ export class GanttEdittaskComponent implements OnInit {
         return this.task.AssignedTo.ID === objt.UserName.ID;
       });
       await this.dailyAllocateTask(resources, this.task);
-      var task = await this.assignedToUserChanged();
+      let task = await this.assignedToUserChanged();
 
-      var startDate = task.start_date;
-      var endDate = task.end_date;
+      let startDate = task.start_date;
+      let endDate = task.end_date;
       this.editTaskForm.patchValue({
         startDate: startDate,
         endDate: endDate,
@@ -159,6 +151,11 @@ export class GanttEdittaskComponent implements OnInit {
       const resources = this.globalService.oTaskAllocation.oResources.filter((objt) => {
         return this.task.AssignedTo.ID === objt.UserName.ID;
       });
+
+      this.task.budgetHours = budgetHrs;
+
+      this.isViewAllocationBtn(task)
+
       await this.dailyAllocateTask(resources, this.task);
     });
 
@@ -166,6 +163,15 @@ export class GanttEdittaskComponent implements OnInit {
       const resources = this.globalService.oTaskAllocation.oResources.filter((objt) => {
         return this.task.AssignedTo.ID === objt.UserName.ID;
       });
+
+      let start_date = new Date(this.datepipe.transform(startDate, 'MMM d, y') + ' ' +  this.editTaskForm.get('startDateTimePart').value);
+      this.task.start_date = start_date
+      this.task.pUserStart = start_date
+      this.task.pUserStartDatePart = this.getDatePart(start_date);
+      this.task.pUserStartTimePart = this.getTimePart(start_date);
+
+      this.isViewAllocationBtn(task)
+
       await this.dailyAllocateTask(resources, this.task);
     });
 
@@ -173,16 +179,70 @@ export class GanttEdittaskComponent implements OnInit {
       const resources = this.globalService.oTaskAllocation.oResources.filter((objt) => {
         return this.task.AssignedTo.ID === objt.UserName.ID;
       });
+
+      let end_date = new Date(this.datepipe.transform(endDate, 'MMM d, y') + ' ' +  this.editTaskForm.get('endDateTimePart').value);;
+      this.task.end_date = end_date;
+      this.task.pUserEnd = end_date;
+      this.task.pUserEndDatePart = this.getDatePart(end_date);
+      this.task.pUserEndTimePart = this.getTimePart(end_date);
+
+      this.isViewAllocationBtn(task)
+
+      await this.dailyAllocateTask(resources, this.task);
+    });
+
+    this.editTaskForm.get('startDateTimePart').valueChanges.subscribe(async startTime => {
+      const resources = this.globalService.oTaskAllocation.oResources.filter((objt) => {
+        return this.task.AssignedTo.ID === objt.UserName.ID;
+      });
+
+      let start_date = new Date(this.datepipe.transform(this.editTaskForm.get('startDate').value, 'MMM d, y') + ' ' +  startTime);;
+      this.task.end_date = start_date;
+      this.task.pUserEnd = start_date;
+      this.task.pUserEndDatePart = this.getDatePart(start_date);
+      this.task.pUserEndTimePart = this.getTimePart(start_date);
+
+      await this.dailyAllocateTask(resources, this.task);
+    });
+
+    this.editTaskForm.get('endDateTimePart').valueChanges.subscribe(async endTime => {
+      const resources = this.globalService.oTaskAllocation.oResources.filter((objt) => {
+        return this.task.AssignedTo.ID === objt.UserName.ID;
+      });
+
+      let end_date = new Date(this.datepipe.transform(this.editTaskForm.get('endDateTimePart').value, 'MMM d, y') + ' ' +  endTime);;
+      this.task.end_date = end_date;
+      this.task.pUserEnd = end_date;
+      this.task.pUserEndDatePart = this.getDatePart(end_date);
+      this.task.pUserEndTimePart = this.getTimePart(end_date);
+
       await this.dailyAllocateTask(resources, this.task);
     });
 
   }
 
+  isViewAllocationBtn(task) {
+    if (task.itemType !== 'Client Review' && task.itemType !== 'Send to client' && task.slotType !== 'Slot') {
+      if (task.budgetHours && task.pUserStartDatePart.getTime() !== task.pUserEndDatePart.getTime()) {
+        this.isViewAllocation = true;
+      }
+    }
+  }
 
+  isTaskTAT(task) {
+    let startDate = new Date(task.start_date.getFullYear(), task.start_date.getMonth(), task.start_date.getDate(), 9, 0)
+    let endDate = new Date(task.end_date.getFullYear(), task.end_date.getMonth(), task.end_date.getDate(), 19, 0)
+    this.editTaskForm.patchValue({
+      startDate: startDate,
+      endDate: endDate,
+      startDateTimePart: this.getTimePart(startDate),
+      endDateTimePart: this.getTimePart(endDate),
+    })
+  }
 
   saveTask(): void {
     if (this.editTaskForm.valid) {
-      var obj = {
+      let obj = {
         updatedTask: this.editTaskForm,
         reset: false,
       }
@@ -191,7 +251,7 @@ export class GanttEdittaskComponent implements OnInit {
   }
 
   reset() {
-    var obj = {
+    let obj = {
       updatedTask: this.editTaskForm,
       reset: true,
     }
@@ -289,23 +349,23 @@ export class GanttEdittaskComponent implements OnInit {
   getTasksFromMilestones(milestone, bOld, includeSubTasks) {
     let tasks = [];
     if (milestone.children !== undefined) {
-      for (var nCountSub = 0; nCountSub < milestone.children.length; nCountSub = nCountSub + 1) {
-        var submilestone = milestone.children[nCountSub];
+      for (let nCountSub = 0; nCountSub < milestone.children.length; nCountSub = nCountSub + 1) {
+        let submilestone = milestone.children[nCountSub];
         if (submilestone.data.type === 'task') {
           tasks.push(submilestone.data);
           if (includeSubTasks && submilestone.children) {
             for (let nCountSubTask = 0; nCountSubTask < submilestone.children.length; nCountSubTask = nCountSubTask + 1) {
-              var subtask = submilestone.children[nCountSubTask];
+              let subtask = submilestone.children[nCountSubTask];
               tasks.push(subtask.data);
             }
           }
         } else if (submilestone.children !== undefined) {
-          for (var nCountTask = 0; nCountTask < submilestone.children.length; nCountTask = nCountTask + 1) {
-            var task = submilestone.children[nCountTask];
+          for (let nCountTask = 0; nCountTask < submilestone.children.length; nCountTask = nCountTask + 1) {
+            let task = submilestone.children[nCountTask];
             tasks.push(task.data);
             if (includeSubTasks && task.children) {
               for (let nCountSubTask = 0; nCountSubTask < task.children.length; nCountSubTask = nCountSubTask + 1) {
-                var subtask = task.children[nCountSubTask];
+                let subtask = task.children[nCountSubTask];
                 tasks.push(subtask.data);
               }
             }
@@ -490,7 +550,7 @@ export class GanttEdittaskComponent implements OnInit {
   }
 
   showOverlayPanel(event, dailyAllocateOP) {
-    var target = event.target;
+    let target = event.target;
     const allocationPerDay = this.task.allocationPerDay ? this.task.allocationPerDay : '';
     dailyAllocateOP.showOverlay(event, allocationPerDay, target);
   }
