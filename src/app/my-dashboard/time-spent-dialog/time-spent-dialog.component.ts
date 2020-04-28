@@ -324,12 +324,7 @@ export class TimeSpentDialogComponent implements OnInit {
 
     if (task.ParentSlot) {
       await this.myDashboardConstantsService.getCurrentAndParentTask(task, jsonData.Status);
-    } else {
-
-    }
-
-
-
+    }  
     this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Task Time updated successfully.' });
   }
 

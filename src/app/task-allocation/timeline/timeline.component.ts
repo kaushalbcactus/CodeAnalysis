@@ -3422,7 +3422,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
             milestone.data.pID = deletedTask[0].ID
             milestone.data.added = false;
           }
-          debugger;
           if (milestone.data.added === true) {
             addedTasks.push(milestone.data);
           }
@@ -3447,7 +3446,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
             }
             if (submilestone.data.edited === true) {
               if (submilestone.data.type === 'task') {
-                debugger;
                 if (submilestone.data.added == true) {
                   submilestone.data.status = milestone.data.status === 'In Progress' ? 'Not Started' : submilestone.data.status;
                   addedTasks.push(submilestone.data);

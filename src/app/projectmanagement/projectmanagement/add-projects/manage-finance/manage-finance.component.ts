@@ -2095,7 +2095,6 @@ export class ManageFinanceComponent implements OnInit {
     if (batchURL.length) {
       this.commonService.SetNewrelic('projectManagment', 'manageFinance', 'addupdateSchedulesFTEBudget');
       const res = await this.spServices.executeBatch(batchURL);
-      debugger
       console.log(res);
 
       if (res && res.filter(c => c.listName === 'Schedules')) {
