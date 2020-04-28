@@ -30,6 +30,10 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { AddEditClientlegalentityDialogComponent } from './admin/client-masterdata/add-edit-clientlegalentity-dialog/add-edit-clientlegalentity-dialog.component';
 import { AddEditSubdivisionComponent } from './admin/client-masterdata/add-edit-subdivision/add-edit-subdivision.component';
 import { AddEditPocComponent } from './admin/client-masterdata/add-edit-poc/add-edit-poc.component';
+import { AddEditPoDialogComponent } from './admin/client-masterdata/add-edit-po-dialog/add-edit-po-dialog.component';
+import { ChangeBudgetDialogComponent } from './admin/client-masterdata/change-budget-dialog/change-budget-dialog.component';
+import { CustomMaterialModule } from '../shared/material.module';
+
 
 @NgModule({
   declarations: [
@@ -54,17 +58,20 @@ import { AddEditPocComponent } from './admin/client-masterdata/add-edit-poc/add-
     AddEditUserProfileComponent,
     AddEditClientlegalentityDialogComponent,
     AddEditSubdivisionComponent,
-    AddEditPocComponent],
+    AddEditPocComponent,
+    AddEditPoDialogComponent,
+    ChangeBudgetDialogComponent],
   imports: [
     SharedModule,
     AdminRoutingModule,
     PrimengModule,
     NgbModule,
     FlexLayoutModule,
+    CustomMaterialModule
   ],
   providers: [
   ],
-  entryComponents : [AddEditUserProfileComponent, AddEditClientlegalentityDialogComponent,AddEditSubdivisionComponent, AddEditPocComponent]
+  entryComponents : [AddEditUserProfileComponent, AddEditClientlegalentityDialogComponent,AddEditSubdivisionComponent, AddEditPocComponent,AddEditPoDialogComponent,ChangeBudgetDialogComponent]
 
 })
 export class AdminModule { }

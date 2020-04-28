@@ -12,6 +12,7 @@ import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { Table } from 'primeng/table';
 import { Router } from '@angular/router';
+import { DialogService } from 'primeng';
 
 @Component({
     selector: 'app-approved-billable',
@@ -19,6 +20,8 @@ import { Router } from '@angular/router';
     styleUrls: ['./approved-billable.component.css']
 })
 export class ApprovedBillableComponent implements OnInit, OnDestroy {
+    FolderName: string;
+    SelectedFile = [];
 
     constructor(
         private messageService: MessageService,
@@ -35,6 +38,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         private locationStrategy: LocationStrategy,
         private readonly _router: Router,
         _applicationRef: ApplicationRef,
+        public dialogService: DialogService,
         zone: NgZone,
     ) {
         this.subscription.add(this.fdDataShareServie.getDateRange().subscribe(date => {
@@ -951,9 +955,15 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     selectedPaymentMode(val: any) {
         console.log('Payment Mode ', val);
     }
+
+    //*************************************************************************************************
+    // new File uplad function updated by Maxwell
+    // ************************************************************************************************
+
     onFileChange(event, folderName: string) {
-        this.fileReader = new FileReader();
+
         if (event.target.files && event.target.files.length > 0) {
+            this.SelectedFile = [];
             this.selectedFile = event.target.files[0];
             const fileName = this.selectedFile.name;
             const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
@@ -963,52 +973,53 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                 this.messageService.add({ key: 'approvedToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
                 return false;
             }
-            this.fileReader.readAsArrayBuffer(this.selectedFile);
-            this.fileReader.onload = () => {
-                const date = new Date();
-                const folderPath: string = this.globalService.sharePointPageObject.webRelativeUrl + '/SpendingInfoFiles/' + folderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM') + '/';
-                this.filePathUrl = this.globalService.sharePointPageObject.webRelativeUrl + '/_api/web/GetFolderByServerRelativeUrl(' + '\'' + folderPath + '\'' + ')/Files/add(url=@TargetFileName,overwrite=\'true\')?' + '&@TargetFileName=\'' + this.selectedFile.name + '\'';
-            };
+
+            this.FolderName = folderName;
+            this.SelectedFile.push(new Object({ name: sNewFileName, file: this.selectedFile }));
         }
     }
 
     async uploadFileData(type: string) {
+        const date = new Date();
         this.commonService.SetNewrelic('Finance-Dashboard', 'approve-billable', 'UploadFile');
-        const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
-        if (res.ServerRelativeUrl) {
-            this.fileUploadedUrl = res.ServerRelativeUrl;
-            if (this.fileUploadedUrl) {
-                const data = [];
-                for (let j = 0; j < this.selectedAllRowsItem.length; j++) {
-                    const element = this.selectedAllRowsItem[j];
-                    const speInfoObj = {
-                        // PayingEntity: this.markAsPayment_form.value.PayingEntity.Title,
-                        Number: this.markAsPayment_form.value.Number,
-                        DateSpend: this.markAsPayment_form.value.DateSpend,
-                        PaymentMode: this.markAsPayment_form.value.PaymentMode.value,
-                        // ApproverComments: this.markAsPayment_form.value.ApproverComments,
-                        ApproverFileUrl: this.fileUploadedUrl,
-                        Status: element.Status.replace(' Payment Pending', '')
-                    };
-                    speInfoObj['__metadata'] = { type: this.constantService.listNames.SpendingInfo.type };
-                    const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace('{{Id}}', element.Id);;
-                    data.push({
-                        data: speInfoObj,
-                        url: spEndpoint,
-                        type: 'PATCH',
-                        listName: this.constantService.listNames.SpendingInfo.name
+        this.commonService.UploadFilesProgress(this.SelectedFile, 'SpendingInfoFiles/' + this.FolderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM'), true).then(async uploadedfile => {
+            if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
+                if (uploadedfile[0].hasOwnProperty('odata.error')) {
+                    this.submitBtn.isClicked = false;
+                    this.messageService.add({
+                        key: 'approvedToast', severity: 'error', summary: 'Error message',
+                        detail: 'File not uploaded,Folder / File Not Found', life: 3000
                     });
+                } else if (uploadedfile[0].ServerRelativeUrl) {
+                    this.fileUploadedUrl = uploadedfile[0].ServerRelativeUrl;
+                    if (this.fileUploadedUrl) {
+                        this.isPSInnerLoaderHidden = false;
+                        const data = [];
+                        for (let j = 0; j < this.selectedAllRowsItem.length; j++) {
+                            const element = this.selectedAllRowsItem[j];
+                            const speInfoObj = {
+                                // PayingEntity: this.markAsPayment_form.value.PayingEntity.Title,
+                                Number: this.markAsPayment_form.value.Number,
+                                DateSpend: this.markAsPayment_form.value.DateSpend,
+                                PaymentMode: this.markAsPayment_form.value.PaymentMode.value,
+                                // ApproverComments: this.markAsPayment_form.value.ApproverComments,
+                                ApproverFileUrl: this.fileUploadedUrl,
+                                Status: element.Status.replace(' Payment Pending', '')
+                            };
+                            speInfoObj['__metadata'] = { type: this.constantService.listNames.SpendingInfo.type };
+                            const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace('{{Id}}', element.Id);;
+                            data.push({
+                                data: speInfoObj,
+                                url: spEndpoint,
+                                type: 'PATCH',
+                                listName: this.constantService.listNames.SpendingInfo.name
+                            });
+                        }
+                        this.submitForm(data, type);
+                    }
                 }
-                this.submitForm(data, type);
             }
-        } else if (res.hasError) {
-            this.isPSInnerLoaderHidden = true;
-            this.submitBtn.isClicked = false;
-            this.messageService.add({
-                key: 'approvedToast', severity: 'error', summary: 'Error message',
-                detail: 'File not uploaded,Folder / ' + res.message.value + '', life: 3000
-            });
-        }
+        });
     }
 
     onSubmit(type: string) {
@@ -1093,7 +1104,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
             if (this.markAsPayment_form.invalid) {
                 return;
             }
-            this.isPSInnerLoaderHidden = false;
+            // this.isPSInnerLoaderHidden = false;
             // console.log('form is submitting ..... for selected row Item i.e ', this.markAsPayment_form.value);
             this.uploadFileData(type);
         }

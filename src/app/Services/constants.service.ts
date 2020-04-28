@@ -21,6 +21,10 @@ export class ConstantsService {
   };
 
   public listNames = {
+  ProjectScope: {
+      name: 'ProjectScope',
+      type: 'SP.Data.ProjectScopeListItem'
+    },
     AvailableHours: { // checked
       name: 'AvailableHoursCT',
       type: 'SP.Data.AvailableHoursCTListItem',

@@ -23,6 +23,8 @@ import { CommonService } from 'src/app/Services/common.service';
 })
 // tslint: disable
 export class PubsupportComponent implements OnInit {
+    SelectedFile: any[];
+    FolderName: any;
 
     constructor(
         private formBuilder: FormBuilder,
@@ -1612,46 +1614,7 @@ export class PubsupportComponent implements OnInit {
         };
     }
 
-    async uploadFileData(type: string) {
-        this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
-        this.common.SetNewrelic('PubSupport', 'pubsupport', 'UploadFile');
-        const res = await this.spOperationsService.uploadFile(this.filePathUrl, this.fileReader.result);
-        console.log('selectedFile uploaded .', res.ServerRelativeUrl);
-        if (res.hasError) {
-            this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
-            // document.getElementById('closeModalButton').click();
-            this.messageService.add({
-                key: 'myKey1', severity: 'info', summary: 'File not uploaded.',
-                detail: 'Folder / ' + res.message.value + '', life: 4000
-            });
-            return;
-        }
-        if (res.ServerRelativeUrl && type !== 'updateAuthors') {
-            const arrayUpdateData = [];
-            const data1 = this.updateProjectInfo(res.ServerRelativeUrl, type);
-            const data2 = this.updateJCSubmissionDetails(res.ServerRelativeUrl, type);
-            const data3 = this.updateJCDetails(res.ServerRelativeUrl, type);
-            let data4 = {};
-            if (this.update_decision_details.value.Decision === 'Resubmit to same journal') {
-                data4 = this.addJCSubmission();
-            }
-            if (type === 'galley') {
-                data4 = this.addJCGalley(res.ServerRelativeUrl);
-            }
-            arrayUpdateData.push(data1, data2, data3, data4);
-            this.submit(arrayUpdateData, type);
-        }
-        if (type === 'updateAuthors') {
-            this.messageService.add({
-                key: 'myKey1', severity: 'success', summary: 'Success message',
-                detail: 'Author details updated.', life: 4000
-            });
-            // this.reload();
-            this.updateAuthorModal_1 = false;
-            // document.getElementById('closeModalButton').click();
-            this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
-        }
-    }
+    
 
     jcViewDetails = (index: number) => {
         this.showJournalRowIndex = index;
@@ -1787,26 +1750,98 @@ export class PubsupportComponent implements OnInit {
         }
     }
 
+
+    //*************************************************************************************************
+    // new File uplad function updated by Maxwell
+    // ************************************************************************************************
+
     onFileChange(event) {
-        this.fileReader = new FileReader();
+        // this.fileReader = new FileReader();
         if (event.target.files && event.target.files.length > 0) {
+            this.SelectedFile = [];
             this.selectedFile = event.target.files[0];
-            this.fileReader.readAsArrayBuffer(this.selectedFile);
-            this.fileReader.onload = () => {
-                let folderPath = '/Publication Support/Published Papers';
-                if (event.target.placeholder === 'updateAuthorForms') {
-                    folderPath = '/Publication Support/Forms';
-                    // this.update_author_form.value.
-                    this.update_author_form.removeControl('existingAuthorList');
-                }
-                this.filePathUrl = this.globalObject.sharePointPageObject.webRelativeUrl +
-                    '/_api/web/GetFolderByServerRelativeUrl(' + '\'' + this.selectedProject.ProjectFolder + '' +
-                    folderPath + '\'' + ')/Files/add(url=@TargetFileName,overwrite=\'true\')?' +
-                    '&@TargetFileName=\'' + this.selectedFile.name + '\'';
-            };
+
+            let folderPath = '/Publication Support/Published Papers';
+            if (event.target.placeholder === 'updateAuthorForms') {
+                folderPath = '/Publication Support/Forms';
+                this.update_author_form.removeControl('existingAuthorList');
+            }
+            this.FolderName = this.selectedProject.ProjectFolder.replace(this.globalObject.sharePointPageObject.webRelativeUrl + '/','') + folderPath;
+            this.SelectedFile.push(new Object({ name: this.selectedFile.name, file: this.selectedFile }));
             this.update_author_form.updateValueAndValidity();
         }
     }
+
+
+    async uploadFileData(type: string) {
+        this.common.SetNewrelic('PubSupport', 'pubsupport', 'UploadFile');
+        this.common.UploadFilesProgress(this.SelectedFile, this.FolderName, true).then(uploadedfile => {
+            if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
+                if (uploadedfile[0].hasOwnProperty('odata.error')) {
+                    this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
+                    this.submitBtn.isClicked = false;
+                    this.messageService.add({
+                        key: 'myKey1', severity: 'error', summary: 'File not uploaded.',
+                        detail: 'Folder / File Not Found', life: 3000
+                    });
+                    return;
+                } else if (uploadedfile[0].ServerRelativeUrl && type !== 'updateAuthors') {
+
+                    if (type === 'updateJCRequirementModal') {
+                        const objData = {
+                            JournalRequirementResponse: uploadedfile[0].ServerRelativeUrl
+                        };
+                        objData['__metadata'] = { type: this.constantService.listNames.JournalConf.type };
+
+                        this.jc_jcSubId[0].retItems.forEach(element => {
+                            if (element) {
+                                this.jcId = element.ID;
+                            }
+                        });
+
+                        const endpoint = this.spOperationsService.getItemURL(this.constantService.listNames.JournalConf.name, this.jcId);
+                        let data = [];
+                        if (uploadedfile[0].ServerRelativeUrl) {
+                            data = [{
+                                data: objData,
+                                url: endpoint,
+                                type: 'PATCH',
+                                listName: this.constantService.listNames.JournalConf.name
+                            }];
+                        }
+                        this.submit(data, type);
+                    }
+                    else {
+                        this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
+                        const arrayUpdateData = [];
+                        const data1 = this.updateProjectInfo(uploadedfile[0].ServerRelativeUrl, type);
+                        const data2 = this.updateJCSubmissionDetails(uploadedfile[0].ServerRelativeUrl, type);
+                        const data3 = this.updateJCDetails(uploadedfile[0].ServerRelativeUrl, type);
+                        let data4 = {};
+                        if (this.update_decision_details.value.Decision === 'Resubmit to same journal') {
+                            data4 = this.addJCSubmission();
+                        }
+                        if (type === 'galley') {
+                            data4 = this.addJCGalley(uploadedfile[0].ServerRelativeUrl);
+                        }
+                        arrayUpdateData.push(data1, data2, data3, data4);
+                        this.submit(arrayUpdateData, type);
+                    }
+                }
+
+                if (type === 'updateAuthors') {
+                    this.messageService.add({
+                        key: 'myKey1', severity: 'success', summary: 'Success message',
+                        detail: 'Author details updated.', life: 4000
+                    });
+                    this.updateAuthorModal_1 = false;
+                    this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
+                }
+            }
+        })
+    }
+
+    
 
     // TO update data after submit just call method name in DoCheck mothod
     // tslint:disable-next-line:use-life-cycle-interface

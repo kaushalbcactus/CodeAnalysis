@@ -10,18 +10,18 @@
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-rowData>
-      <tr>
-        <td>  <p-calendar  class="pcalendarClass" [(ngModel)]="rowData.date" [disabledDays]="[0,6]"   [readonlyInput]="true"  
-            dateFormat="M dd, yy"   appendTo="body"   hideOnDateTimeSelect="true"   [required]="true"   [showIcon]="true"  
-            [showOnFocus]="false"   [monthNavigator]="true"   [yearNavigator]="true"     yearRange="{{pmObject.yearRange}}"
-            [inputStyle]="{'width': '80%', 'min-width': '80%'}"  inputStyleClass="ngPrime-red">
-          </p-calendar></td>
-        <td>{{rowData.amount}}</td>
-        <td>{{rowData.type}}</td>
-        <td>{{rowData.status}}</td>
-        <td>{{rowData.pocText[0]}}</td>
-        <td>{{rowData.address}}</td>
-      </tr>
+        <tr>
+            <td>
+                <p-calendar  class="pcalendarClass" [(ngModel)]="rowData.date" [disabledDays]="[0,6]"   [readonlyInput]="true"   dateFormat="M dd, yy"   appendTo="body"   hideOnDateTimeSelect="true"   [required]="true"   [showIcon]="true"   [showOnFocus]="false"
+                    [minDate]="minDateValue"   [monthNavigator]="true"   [yearNavigator]="true"     yearRange="{{pmObject.yearRange}}" [inputStyle]="{'width': '80%', 'min-width': '80%'}"  inputStyleClass="ngPrime-red">
+                    </p-calendar>
+            </td>
+            <td>{{rowData.amount}}</td>
+            <td>{{rowData.type}}</td>
+            <td>{{rowData.status}}</td>
+            <td>{{rowData.pocText[0]}}</td>
+            <td>{{rowData.address}}</td>
+        </tr>
     </ng-template>
     <ng-template pTemplate="emptymessage" let-columns>
       <tr>

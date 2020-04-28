@@ -122,7 +122,7 @@ export class CreateConferenceComponent implements OnInit {
             delete obj['Comments'];
             obj['IsActiveCH'] = obj['IsActive'];
             delete obj['IsActive'];
-            //let obj = this.getConferenceDBObject(this.createConference_form.value);
+            
             const endpoint = this.spOperationsService.getReadURL(this.constantService.listNames.Conference.name);
             const data = [{
                 data: obj,
@@ -144,8 +144,6 @@ export class CreateConferenceComponent implements OnInit {
         }
     }
 
-    getConferenceDBObject() {
-
-    }
+    
 
 }

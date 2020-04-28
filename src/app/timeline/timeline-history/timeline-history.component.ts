@@ -634,7 +634,6 @@ export class TimelineHistoryComponent implements OnInit {
     let invLineItemVersions = arrResult.length > 0 ? arrResult[0].retItems : [];
     invLineItemVersions = invLineItemVersions.map(version => ({ ...version, projects: this.projectCodes }));
     return [invLineItemVersions];
-    // return invLineItemVersions;
   }
 
   /**

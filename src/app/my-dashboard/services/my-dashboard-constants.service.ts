@@ -258,6 +258,12 @@ export class MyDashboardConstantsService {
       filter: 'ID eq {{projectId}}',
     },
 
+
+    ClientReviewSchedules: {
+      select: 'ID,Title,Status,Task,Milestone,ProjectCode',
+      filter: 'ProjectCode eq \'{{projectCode}}\' and Task eq \'Client Review\' and (Status eq \'Completed\' or (Status eq \'Not Started\' and PreviousTaskClosureDate ne null))'
+    }
+
   };
 
   public queryConfig = {
@@ -608,7 +614,7 @@ export class MyDashboardConstantsService {
     this.common.SetNewrelic('MyDashboard', 'my-dashboard-constants', 'readFiles');
     this.response = await this.spServices.readFiles(completeFolderRelativeUrl);
     this.allDocuments = this.response.length > 0 ? this.response : [];
-    this.allDocuments.map(c => c.isFileMarkedAsFinal = c.ListItemAllFields.Status.split(' ').splice(-1)[0] === 'Complete' ? true : false);
+    this.allDocuments.map(c => c.isFileMarkedAsFinal = c.ListItemAllFields.Status ? c.ListItemAllFields.Status.split(' ').splice(-1)[0] === 'Complete' ? true : false : false);
     this.DocumentArray = this.allDocuments.filter(c => c.ListItemAllFields.TaskName === task.Title && c.isFileMarkedAsFinal);
   }
   // **************************************************************************************************************************************

@@ -460,12 +460,26 @@ export class PmconstantService {
       top: 4900
     },
 
+    GET_RESOUCEBYID: {
+      select: 'ID,MaxHrs,UserNamePG/ID,UserNamePG/EMail,UserNamePG/Title,TimeZone/Title,IsFTE',
+      expand: 'UserName/ID,UserName/EMail,UserName/Title,TimeZone/Title',
+      filter: 'UserName/ID eq  \'{{Id}}\'',
+      orderby: 'UserName/Title asc',
+
+    },
+
     GET_FinancePO: {
       select: 'ID,Title, ClientLegalEntity, Currency, Number, NameST, Amount, AmountOOP, AmountRevenue, AmountTax,POCategory,POExpiryDate,'
         + 'TotalLinked, RevenueLinked, OOPLinked, TaxLinked,TotalScheduled,ScheduledRevenue',
       filter: 'Status eq \'Active\' and ClientLegalEntity eq \'{{clientLegalEntity}}\' and  Currency eq \'{{currency}}\'',
       orderby: 'Created desc',
       top: 4900
+    },
+    GET_SCHEDULES_BY_PROJECTCODE: {
+      select: 'ID,Title,Task,Status,FileSystemObjectType,Milestone,StartDate,DueDate,Actual_x0020_End_x0020_Date,Actual_x0020_Start_x0020_Date',
+      orderby: 'StartDate asc',
+      filter: "ProjectCode eq '{{projectCode}}'",
+      top: 4500
     },
     PROJECT_FINANCE_BY_PROJECTCODE: {
       select: 'ID, Title, Currency, ApprovedBudget, Budget, RevenueBudget, OOPBudget, TaxBudget,BudgetHrs,' +
@@ -568,7 +582,7 @@ export class PmconstantService {
       filter: 'ProjectNumber eq \'{{projectCode}}\' and Status eq \'Active\''
     },
     GET_SCHEDULE_LIST_ITEM_BY_PROJECT_CODE: {
-      select: 'ID,Title,Milestone,Status,Task,ProjectCode,TimeSpent',
+      select: 'ID,Title,Milestone,Status,Task,ProjectCode,TimeSpent,DueDate,IsCentrallyAllocated',
       filter: 'ProjectCode eq \'{{projectCode}}\''
     },
     GET_EARLY_TASK_COMPLETED: {

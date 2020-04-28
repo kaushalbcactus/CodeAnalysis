@@ -9,6 +9,8 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { GlobalService } from 'src/app/Services/global.service';
+import { DataService } from 'src/app/Services/data.service';
+import { Router } from '@angular/router';
 
 declare var $;
 @Component({
@@ -153,11 +155,15 @@ export class ManageFinanceComponent implements OnInit {
   hideRemoveButton = false;
   disableAddBudget = false;
   @Output() maximizeDialog = new EventEmitter<any>();
+  dbProposedDate: any;
+  selectedProposedEndDate: Date;
+  maxEndDate: Date;
+  minDate: any;
 
   constructor(
     private frmbuilder: FormBuilder,
     public pmObject: PMObjectService,
-    private pmConstant: PmconstantService,
+    public pmConstant: PmconstantService,
     private spServices: SPOperationService,
     private constant: ConstantsService,
     private datePipe: DatePipe,
@@ -168,6 +174,8 @@ export class ManageFinanceComponent implements OnInit {
     private pmCommonService: PMCommonService,
     private commonService: CommonService,
     private global: GlobalService,
+    private router: Router,
+    private dataService: DataService
   ) {
     this.addPOForm = frmbuilder.group({
       poDate: ['', Validators.required],
@@ -355,12 +363,12 @@ export class ManageFinanceComponent implements OnInit {
     if (this.existBudgetArray && this.existBudgetArray.length) {
       unassignedObj.total = this.updatedBudget + this.existBudgetArray.retItems[0].Budget;
       unassignedObj.revenue = this.updatedBudget + this.existBudgetArray.retItems[0].RevenueBudget;
-      unassignedObj.oop = tempbudgetObject.oop;
+      unassignedObj.oop = 0;
       unassignedObj.tax = 0;
     } else {
       unassignedObj.total = this.updatedBudget;
       unassignedObj.revenue = this.updatedBudget;
-      unassignedObj.oop = tempbudgetObject.oop;
+      unassignedObj.oop = 0;
       unassignedObj.tax = 0;
     }
     this.unassignedBudget = [];
@@ -413,6 +421,20 @@ export class ManageFinanceComponent implements OnInit {
   async reduceBudget() {
     if (this.selectedReason && this.selectedReasonType && this.newBudgetHrs) {
 
+      if (this.newBudgetHrs <= 0) {
+        this.messageService.add({
+          key: 'manageFinance', severity: 'error', summary: 'Error Message', sticky: true,
+          detail: 'Budget hours cannot be less than or equal to 0.'
+        });
+        return;
+      }
+      if (this.newBudgetHrs > this.budgetData[0].budget_hours) {
+        this.messageService.add({
+          key: 'manageFinance', severity: 'error', summary: 'Error Message', sticky: true,
+          detail: 'New budget hours can not be greater than old budget hours.'
+        });
+        return;
+      }
       if (this.budgetData[0].budget_hours === this.newBudgetHrs &&
         this.selectedReasonType !== this.pmConstant.PROJECT_BUDGET_DECREASE_REASON.INPUT_ERROR) {
         this.messageService.add({
@@ -430,7 +452,7 @@ export class ManageFinanceComponent implements OnInit {
       }
       this.showReduction = false;
       this.budgetData[0].edited = true;
-      const pfPFB: any = await this.saveUpdatePO();
+      const pfPFB: any = await this.saveUpdatePO('ReduceBudget');
       const subjectVal = 'Approve project budget reduction';
       const mailSubject = this.projObj.ProjectCode + ': ' + subjectVal;
       const objEmailBody = [];
@@ -515,11 +537,14 @@ export class ManageFinanceComponent implements OnInit {
       this.budgetData[0].edited = true;
       this.budgetData[0].total = this.budgetData[0].total - this.unassignedBudget[0].total;
       this.budgetData[0].revenue = this.budgetData[0].revenue - this.unassignedBudget[0].revenue;
-      const pfPFB: any = await this.saveUpdatePO();
+      const pfPFB: any = await this.saveUpdatePO('');
     } else {
       this.selectedReason = '';
       this.selectedReasonType = '';
       this.newBudgetHrs = 0;
+      this.selectedProposedEndDate = new Date(this.projObj.ProposedEndDate);
+      this.minDate = new Date(this.datePipe.transform(this.projObj.ProposedStartDate, 'MMM dd, yyyy')) < new Date() ? new Date() : this.projObj.ProposedStartDate;
+      this.dbProposedDate = new Date(this.datePipe.transform(this.projObj.ProposedEndDate, 'MMM dd, yyyy'));
       this.budgetDecreaseArray = [];
       this.budgetDecreaseArray = [
         {
@@ -576,6 +601,10 @@ export class ManageFinanceComponent implements OnInit {
       } else if (this.updatedBudget < 0) {
         showError = true;
       } else {
+
+        this.selectedProposedEndDate = new Date(this.projObj.ProposedEndDate);
+        this.dbProposedDate = new Date(this.projObj.ProposedEndDate);
+        this.maxEndDate = new Date(this.projObj.ProposedStartDate.getFullYear() + 1, this.projObj.ProposedStartDate.getMonth(), 0);
         this.selectedReason = '';
         this.selectedReasonType = '';
         this.budgetIncreaseArray = [];
@@ -1093,6 +1122,8 @@ export class ManageFinanceComponent implements OnInit {
       this.poData.forEach((poInfoObj) => {
         // tslint:disable-next-line:no-shadowed-variable
         poInfoObj.poInfo.forEach(element => {
+          element.revenue = element.revenue ? element.revenue : 0;
+          element.scRevenue = element.scRevenue ? element.scRevenue : 0;
           if (element.revenue !== element.scRevenue) {
             isValid = false;
           }
@@ -1211,12 +1242,14 @@ export class ManageFinanceComponent implements OnInit {
       this.isHourlyRateDisabled = true;
       this.isHourlyOverNightDisabled = true;
       // this.isAddBudgetButtonHidden = true;
-    } else if (this.projObj.ProjectType === this.pmConstant.PROJECT_TYPE.FTE.value) {
-      this.isAddBudgetButtonHidden = true;
-      this.showHourly = false;
-      this.isrevenueFieldDisabled = true;
-      this.isPoRevenueDisabled = true;
-    } else {
+    }
+    //  else if (this.projObj.ProjectType === this.pmConstant.PROJECT_TYPE.FTE.value) {
+    //   this.isAddBudgetButtonHidden = true;
+    //   this.showHourly = false;
+    //   this.isrevenueFieldDisabled = true;
+    //   this.isPoRevenueDisabled = true;
+    // } 
+    else {
       this.showHourly = false;
       this.isrevenueFieldDisabled = false;
       this.isAddBudgetButtonHidden = false;
@@ -1662,7 +1695,9 @@ export class ManageFinanceComponent implements OnInit {
       this.reInitializePopup();
     }, this.pmConstant.TIME_OUT);
   }
-  async saveUpdatePO() {
+
+
+  async saveUpdatePO(budgetType) {
     const returnObj = {
       pfObj: {},
       pbbObj: {}
@@ -1676,7 +1711,7 @@ export class ManageFinanceComponent implements OnInit {
       type: '',
       listName: ''
     };
-
+    let FTEUpdate = false;
     // Project Finance Breakup ==>  if data exist - update else create.
     const projectFinanceBreakArray = [];
     this.poData.forEach(poInfoObj => {
@@ -1841,11 +1876,225 @@ export class ManageFinanceComponent implements OnInit {
           batchURL.push(invoicecreate);
         });
       }
+
+      if (this.projObj.ProjectType === this.pmConstant.PROJECT_TYPE.FTE.value && this.projObj.projectStatus !== this.constant.projectList.status.InDiscussion && this.datePipe.transform(new Date(this.dbProposedDate), 'MMM dd, yyyy') !== this.datePipe.transform(new Date(this.selectedProposedEndDate), 'MMM dd, yyyy')) {
+
+        const months = budgetType === 'IncreaseBudget' ? this.pmCommonService.getMonths(this.dbProposedDate, this.selectedProposedEndDate) : this.pmCommonService.getMonths(this.selectedProposedEndDate, this.dbProposedDate);
+
+        const ProjectMilestones = this.projObj.Milestones.split(';#');
+
+        if (months) {
+
+          let milestoneCall = Object.assign({}, this.pmConstant.FINANCE_QUERY.GET_SCHEDULES_BY_PROJECTCODE);
+          milestoneCall.filter = milestoneCall.filter.replace(/{{projectCode}}/gi, this.projObj.ProjectCode);
+          this.commonService.SetNewrelic('Project-Management', 'manage-finance', 'AddUpdatePO-GetSchedules');
+          const response = await this.spServices.readItems(this.constant.listNames.Schedules.name, milestoneCall);
+          let Resources;
+
+          const selectedDateMonth = this.pmConstant.MONTH_NAMES[this.selectedProposedEndDate.getMonth()];
+
+          const dbProposedDateMonth = this.pmConstant.MONTH_NAMES[this.dbProposedDate.getMonth()];
+          for (let i = 0; i < months.length; i++) {
+
+            if (!Resources) {
+              let resouceCall = Object.assign({}, this.pmConstant.FINANCE_QUERY.GET_RESOUCEBYID);
+              resouceCall.filter = resouceCall.filter.replace(/{{Id}}/gi, this.projObj.PrimaryResourcesId[0].Id);
+              this.commonService.SetNewrelic('Project-Management', 'manage-finance', 'AddUpdatePO-GetResource');
+              Resources = await this.spServices.readItems(this.constant.listNames.ResourceCategorization.name, resouceCall);
+            }
+
+            if (budgetType === 'IncreaseBudget') {
+              const milestone = response.find(c => c.FileSystemObjectType === 1 && c.Title === months[i].monthName)
+              if (milestone) {
+                const milestoneUpdate = Object.assign({}, options);
+                milestoneUpdate.url = this.spServices.getItemURL(this.constant.listNames.Schedules.name, milestone.Id);
+                milestoneUpdate.data = {
+                  __metadata: { type: this.constant.listNames.Schedules.type },
+                  Actual_x0020_End_x0020_Date: months[i].monthEndDay,
+                  DueDate: months[i].monthEndDay,
+                };
+
+                if(milestone.Title !== dbProposedDateMonth){
+                  milestoneUpdate.data.Status = this.constant.STATUS.NOT_CONFIRMED;
+                  milestoneUpdate.data.Actual_x0020_Start_x0020_Date=months[i].monthStartDay;
+                  milestoneUpdate.data.StartDate=months[i].monthStartDay;
+                }
+                milestoneUpdate.type = 'PATCH';
+                milestoneUpdate.listName = this.constant.listNames.Schedules.name;
+                batchURL.push(milestoneUpdate);
+
+                const milestoneTasks = response.filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title);
+
+                milestoneTasks.forEach(task => {
+                  const taskUpdate = Object.assign({}, options);
+                  taskUpdate.url = this.spServices.getItemURL(this.constant.listNames.Schedules.name, task.Id);
+
+                  taskUpdate.data = {
+                    __metadata: { type: this.constant.listNames.Schedules.type },
+                    DueDate: months[i].monthEndDay,
+                  };
+
+                  if (task.Actual_x0020_End_x0020_Date && (task.Task === 'Training' || task.Task === 'Meeting')) {
+                    taskUpdate.data.Actual_x0020_End_x0020_Date = months[i].monthEndDay
+                  } else if (task.Task === 'Blocking') {
+                    const businessDay = this.commonService.calcBusinessDays(task.StartDate, months[i].monthEndDay);
+                    taskUpdate.data.ExpectedTime = '' + businessDay * Resources[0].MaxHrs;
+                  }
+
+                  if(milestone.Title !== dbProposedDateMonth){
+                    taskUpdate.data.Status = this.constant.STATUS.NOT_CONFIRMED;
+                    taskUpdate.data.Actual_x0020_Start_x0020_Date=months[i].monthStartDay;
+                    taskUpdate.data.StartDate=months[i].monthStartDay;
+                  }
+                  taskUpdate.type = 'PATCH';
+                  taskUpdate.listName = this.constant.listNames.Schedules.name;
+                  batchURL.push(taskUpdate);
+                });
+              }
+              else {
+
+
+                const milestonedata = this.pmCommonService.getFTEMilestoneData(months[i], this.projObj.ProjectCode);
+                const milestoneCreate = Object.assign({}, options);
+                milestoneCreate.url = this.spServices.getReadURL(this.constant.listNames.Schedules.name, null);
+                milestoneCreate.data = milestonedata;
+                milestoneCreate.type = 'POST';
+                milestoneCreate.listName = this.constant.listNames.Schedules.name;
+                batchURL.push(milestoneCreate);
+                // create the milestone folder.
+
+                const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
+                  x.Title === this.projObj.ClientLegalEntity);
+                if (clientInfo && clientInfo.length) {
+                  const listName = clientInfo[0].ListName;
+                  const milestoneFolderBody = {
+                    __metadata: { type: 'SP.Folder' },
+                    ServerRelativeUrl: listName + '/' + this.projObj.ProjectCode + '/Drafts/Client/' + months[i].monthName
+                  };
+                  const createForderObj = Object.assign({}, options);
+                  createForderObj.data = milestoneFolderBody;
+                  // createForderObj.listName = element;
+                  createForderObj.type = 'POST';
+                  createForderObj.url = this.spServices.getFolderCreationURL();
+                  batchURL.push(createForderObj);
+                }
+
+                // create FTE Task.
+                months[i].Resources = Resources[0];
+                const taskBlockingdata = this.pmCommonService.getFTETask(months[i], this.projObj.ProjectCode, this.pmConstant.task.BLOCKING);
+                const taskBlockingCreate = Object.assign({}, options);
+                taskBlockingCreate.url = this.spServices.getReadURL(this.constant.listNames.Schedules.name, null);
+                taskBlockingCreate.data = taskBlockingdata;
+                taskBlockingCreate.type = 'POST';
+                taskBlockingCreate.listName = this.constant.listNames.Schedules.name;
+                batchURL.push(taskBlockingCreate);
+
+                // create Meeting Task
+                const taskMeetingdata = this.pmCommonService.getFTETask(months[i], this.projObj.ProjectCode, this.pmConstant.task.MEETING);
+                const taskMeetingCreate = Object.assign({}, options);
+                taskMeetingCreate.url = this.spServices.getReadURL(this.constant.listNames.Schedules.name, null);
+                taskMeetingCreate.data = taskMeetingdata;
+                taskMeetingCreate.type = 'POST';
+                taskMeetingCreate.listName = this.constant.listNames.Schedules.name;
+                batchURL.push(taskMeetingCreate);
+                // Create Training Task
+                const taskTrainingdata = this.pmCommonService.getFTETask(months[i], this.projObj.ProjectCode, this.pmConstant.task.TRAINING);
+                const taskTrainingCreate = Object.assign({}, options);
+                taskTrainingCreate.url = this.spServices.getReadURL(this.constant.listNames.Schedules.name, null);
+                taskTrainingCreate.data = taskTrainingdata;
+                taskTrainingCreate.type = 'POST';
+                taskTrainingCreate.listName = this.constant.listNames.Schedules.name;
+                batchURL.push(taskTrainingCreate);
+              }
+              if (!ProjectMilestones.find(c => c === months[i].monthName)) {
+                ProjectMilestones.push(months[i].monthName);
+              }
+            }
+            else if (budgetType === 'ReduceBudget') {
+
+              const milestone = response.find(c => c.FileSystemObjectType === 1 && c.Title === months[i].monthName)
+
+              if (milestone && milestone.Title === selectedDateMonth) {
+                const milestoneUpdate = Object.assign({}, options);
+                milestoneUpdate.url = this.spServices.getItemURL(this.constant.listNames.Schedules.name, milestone.Id);
+                milestoneUpdate.data = {
+                  __metadata: { type: this.constant.listNames.Schedules.type },
+                  Actual_x0020_End_x0020_Date: new Date(this.selectedProposedEndDate.setHours(23, 45)),
+                  DueDate: new Date(this.selectedProposedEndDate.setHours(23, 45)),
+                };
+                milestoneUpdate.type = 'PATCH';
+                milestoneUpdate.listName = this.constant.listNames.Schedules.name;
+                batchURL.push(milestoneUpdate);
+
+                const milestoneTasks = response.filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title);
+                milestoneTasks.forEach(task => {
+                  const taskUpdate = Object.assign({}, options);
+                  taskUpdate.url = this.spServices.getItemURL(this.constant.listNames.Schedules.name, task.Id);
+                  taskUpdate.data = {
+                    __metadata: { type: this.constant.listNames.Schedules.type },
+                    DueDate: new Date(this.selectedProposedEndDate.setHours(23, 45)),
+                  };
+                  if (task.Task === 'Blocking') {
+                    const businessDay = this.commonService.calcBusinessDays(task.StartDate, months[i].monthEndDay);
+                    taskUpdate.data.ExpectedTime = '' + businessDay * Resources[0].MaxHrs;
+                  }
+                  taskUpdate.type = 'PATCH';
+                  taskUpdate.listName = this.constant.listNames.Schedules.name;
+                  batchURL.push(taskUpdate);
+                });
+              }
+              else {
+
+                const milestoneUpdate = Object.assign({}, options);
+                milestoneUpdate.url = this.spServices.getItemURL(this.constant.listNames.Schedules.name, milestone.Id);
+                milestoneUpdate.data = {
+                  __metadata: { type: this.constant.listNames.Schedules.type },
+                  Status: 'Deleted'
+                };
+                milestoneUpdate.type = 'PATCH';
+                milestoneUpdate.listName = this.constant.listNames.Schedules.name;
+                batchURL.push(milestoneUpdate);
+
+                const milestoneTasks = response.filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title);
+                milestoneTasks.forEach(task => {
+                  const taskUpdate = Object.assign({}, options);
+                  taskUpdate.url = this.spServices.getItemURL(this.constant.listNames.Schedules.name, task.Id);
+                  taskUpdate.data = {
+                    __metadata: { type: this.constant.listNames.Schedules.type },
+                    Status: 'Deleted'
+                  };
+                  taskUpdate.type = 'PATCH';
+                  taskUpdate.listName = this.constant.listNames.Schedules.name;
+                  batchURL.push(taskUpdate);
+                });
+
+              }
+              if (ProjectMilestones.find(c => c === months[i].monthName && selectedDateMonth !== months[i].monthName)) {
+                ProjectMilestones.splice(ProjectMilestones.indexOf(months[i].monthName), 1);
+              }
+            }
+          }
+        }
+        const projectInfoData: any = {
+          __metadata: { type: this.constant.listNames.ProjectInformation.type },
+          ProposedEndDate: new Date(this.datePipe.transform(this.selectedProposedEndDate, 'MMM dd, yyyy')
+          ),
+          Milestones: ProjectMilestones.join(';#')
+        };
+
+        const projectInfoUpdate = Object.assign({}, options);
+        projectInfoUpdate.url = this.spServices.getItemURL(this.constant.listNames.ProjectInformation.name, this.projObj.ID);
+        projectInfoUpdate.data = projectInfoData;
+        projectInfoUpdate.type = 'PATCH';
+        projectInfoUpdate.listName = this.constant.listNames.ProjectInformation.name;
+        batchURL.push(projectInfoUpdate);
+        FTEUpdate = true;
+      }
     }
 
     console.log(batchURL);
     if (batchURL.length) {
-      this.commonService.SetNewrelic('projectManagment', 'addproj-manageFinance', 'GetProjFinanceProjFinanceBreakupPBBInvoices');
+      this.commonService.SetNewrelic('projectManagment', 'manageFinance', 'addupdateSchedulesFTEBudget');
       const res = await this.spServices.executeBatch(batchURL);
     }
 
@@ -1856,6 +2105,14 @@ export class ManageFinanceComponent implements OnInit {
     });
     setTimeout(() => {
       this.dynamicDialogRef.close();
+      if (FTEUpdate) {
+        if (this.router.url === '/projectMgmt/allProjects') {
+          this.dataService.publish('reload-project');
+        } else {
+          this.pmObject.allProjectItems = [];
+          this.router.navigate(['/projectMgmt/allProjects']);
+        }
+      }
     }, this.pmConstant.TIME_OUT);
 
     return returnObj;

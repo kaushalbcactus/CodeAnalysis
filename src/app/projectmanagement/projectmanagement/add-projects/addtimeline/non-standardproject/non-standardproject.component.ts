@@ -9,6 +9,8 @@ import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { DataService } from 'src/app/Services/data.service';
 import { CommonService } from 'src/app/Services/common.service';
+import { GlobalService } from 'src/app/Services/global.service';
+import { DialogService } from 'primeng';
 declare var $;
 @Component({
   selector: 'app-non-standardproject',
@@ -26,7 +28,9 @@ export class NonStandardprojectComponent implements OnInit {
     private constants: ConstantsService,
     private timelineObject: AddTimelineComponent,
     private messageService: MessageService,
-    private commonService : CommonService,
+    private commonService: CommonService,
+    private dialogService: DialogService,
+    private globalObject: GlobalService,
     private router: Router,
     private dataService: DataService) { }
   public nonStandardDeliverableType = [];
@@ -223,8 +227,8 @@ export class NonStandardprojectComponent implements OnInit {
     let sClientAcronym = clientLegalEntityObject[0].Acronym;
     let sDeliverableTypeCode = deliveryObject[0].Acronym;
     let oCurrentDate = new Date();
-    let sYear = oCurrentDate.getFullYear();
-    let sProjCode = oCurrentDate.getMonth() > 2 ? sYear + 1 : sYear;
+    let sProjCode = oCurrentDate.getFullYear();
+    // let sProjCode = oCurrentDate.getMonth() > 2 ? sYear + 1 : sYear;
     let sProjCount = this.pmObject.oProjectManagement.oProjectPerYear.toString();
     sProjCount = ("000" + sProjCount).slice(-4);
     if (sProjCode) {
@@ -375,22 +379,48 @@ export class NonStandardprojectComponent implements OnInit {
       this.pmObject.addProject.Timeline.NonStandard.ProposedEndDate = this.ngNonStandardProposedEndDate;
       this.pmObject.addProject.Timeline.NonStandard.ProjectBudgetHours = this.nonstandardProjectBudgetHrs;
       this.pmObject.addProject.FinanceManagement.BudgetHours = this.pmObject.addProject.Timeline.NonStandard.ProjectBudgetHours;
-      await this.pmCommonService.validateAndSave();
-      this.messageService.add({
-        key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
-        detail: 'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode
-      });
-      setTimeout(() => {
-        this.pmObject.isAddProjectVisible = false;
-        if (this.router.url === '/projectMgmt/allProjects') {
-          this.dataService.publish('reload-project');
-        } else {
-          this.pmObject.allProjectItems = [];
-          this.router.navigate(['/projectMgmt/allProjects']);
+
+      this.pmObject.isMainLoaderHidden = false;
+      const newProjectCode = await this.pmCommonService.verifyAndUpdateProjectCode();
+      this.pmObject.addProject.ProjectAttributes.ProjectCode = newProjectCode;
+      if (newProjectCode) {
+        if (this.pmObject.addProject.FinanceManagement.selectedFile) {
+          let SelectedFile = [];
+          this.pmObject.isMainLoaderHidden = true;
+          this.commonService.SetNewrelic('projectManagment', 'nonStdConfirm', 'UploadFiles');
+          const FolderName = await this.pmCommonService.getFolderName();
+          SelectedFile.push(new Object({ name: this.pmObject.addProject.FinanceManagement.selectedFile.name, file: this.pmObject.addProject.FinanceManagement.selectedFile }));
+
+          this.commonService.UploadFilesProgress(SelectedFile, FolderName, true).then(async uploadedfile => {
+            if (SelectedFile.length > 0 && SelectedFile.length === uploadedfile.length) {
+              if (uploadedfile[0].ServerRelativeUrl) {
+                this.pmObject.addProject.FinanceManagement.SOWFileURL = uploadedfile[0].ServerRelativeUrl;
+                this.pmObject.addProject.FinanceManagement.SOWFileName = uploadedfile[0].Name;
+                this.pmObject.addProject.FinanceManagement.SOWFileProp = uploadedfile[0];
+                this.pmObject.addSOW.isSOWCodeDisabled = false;
+                this.pmObject.addSOW.isStatusDisabled = true;
+              }
+            }
+            this.callAddUpdateProject();
+          });
         }
-      }, this.pmConstant.TIME_OUT);
+        else {
+          this.callAddUpdateProject();
+        }
+      }
     }
   }
+
+  async callAddUpdateProject() {
+    this.pmObject.isMainLoaderHidden = false;
+    await this.pmCommonService.addUpdateProject();
+    this.messageService.add({
+      key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
+      detail: 'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode
+    });
+    this.pmCommonService.reloadPMPage();
+  }
+
   goToProjectAttributes() {
     this.pmObject.activeIndex = 2;
   }

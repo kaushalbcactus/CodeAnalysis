@@ -8,6 +8,7 @@ import { GlobalService } from 'src/app/Services/global.service';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { DataService } from 'src/app/Services/data.service';
+import { DialogService } from 'primeng';
 
 declare var $;
 @Injectable({
@@ -24,6 +25,7 @@ export class PMCommonService {
     private globalObject: GlobalService,
     public messageService: MessageService,
     private router: Router,
+    private dialogService: DialogService,
     private dataService: DataService
   ) {
   }
@@ -949,21 +951,23 @@ export class PMCommonService {
       this.pmObject.billedBy = tempResult;
     }
   }
-  async validateAndSave() {
-    this.pmObject.isMainLoaderHidden = false;
-    const newProjectCode = await this.verifyAndUpdateProjectCode();
-    this.pmObject.addProject.ProjectAttributes.ProjectCode = newProjectCode;
-    if (newProjectCode) {
-      if (this.pmObject.addProject.FinanceManagement.selectedFile) {
-        const fileUploadResult = await this.submitFile(this.pmObject.addProject.FinanceManagement.selectedFile, this.pmObject.fileReader);
-        if (fileUploadResult.hasOwnProperty('ServerRelativeUrl')) {
-          this.pmObject.addSOW.isSOWCodeDisabled = false;
-          this.pmObject.addSOW.isStatusDisabled = true;
-        }
-      }
-     await this.addUpdateProject();
-    }
-  }
+
+
+  // async validateAndSave() {
+  //   this.pmObject.isMainLoaderHidden = false;
+  //   const newProjectCode = await this.verifyAndUpdateProjectCode();
+  //   this.pmObject.addProject.ProjectAttributes.ProjectCode = newProjectCode;
+  //   if (newProjectCode) {
+  //     if (this.pmObject.addProject.FinanceManagement.selectedFile) {
+  //       const fileUploadResult = await this.submitFile(this.pmObject.addProject.FinanceManagement.selectedFile, this.pmObject.fileReader);
+  //       if (fileUploadResult.hasOwnProperty('ServerRelativeUrl')) {
+  //         this.pmObject.addSOW.isSOWCodeDisabled = false;
+  //         this.pmObject.addSOW.isStatusDisabled = true;
+  //       }
+  //     }
+  //     await this.addUpdateProject();
+  //   }
+  // }
   /**
    * This method is used to verify the project code.
    */
@@ -975,8 +979,8 @@ export class PMCommonService {
     const codeValue = codeSplit[2];
     const year = codeValue.substring(0, 2);
     const oCurrentDate = new Date();
-    let sYear = oCurrentDate.getFullYear();
-    sYear = oCurrentDate.getMonth() > 2 ? sYear + 1 : sYear;
+    const sYear = oCurrentDate.getFullYear();
+    // sYear = oCurrentDate.getMonth() > 2 ? sYear + 1 : sYear;
     const contentFilter = Object.assign({}, this.pmConstant.TIMELINE_QUERY.PROJECT_PER_YEAR);
     // tslint:disable-next-line:max-line-length
     contentFilter.filter = contentFilter.filter.replace(/{{Id}}/gi, sYear.toString());
@@ -1050,7 +1054,17 @@ export class PMCommonService {
     projectCreate.listName = this.constant.listNames.ProjectInformation.name;
     batchURL.push(projectCreate);
     counter += 1;
-    // Add data to ProjectFinances call ##17
+
+    // Add data to ProjectScope call ##17
+    const projectScopeData = this.getProjectScopeData(projectInformationData);
+    const projectScopeCreate = Object.assign({}, options);
+    projectScopeCreate.url = this.spServices.getReadURL(this.constant.listNames.ProjectScope.name, null);
+    projectScopeCreate.data = projectScopeData;
+    projectScopeCreate.type = 'POST';
+    projectScopeCreate.listName = this.constant.listNames.ProjectScope.name;
+    batchURL.push(projectScopeCreate);
+    counter += 1;
+    // Add data to ProjectFinances call ##18
     const projectFinanceData = this.getProjectFinancesData();
     const projectFinanceCreate = Object.assign({}, options);
     projectFinanceCreate.url = this.spServices.getReadURL(this.constant.listNames.ProjectFinances.name, null);
@@ -1146,6 +1160,22 @@ export class PMCommonService {
       listName + '/' + projectCode + '/Publication Support/Published Papers'
     ];
     return arrFolders;
+  }
+
+
+  /**
+   * This function is used to set the projectScope object
+   */
+  getProjectScopeData(ProjectInfo) {
+
+    const data: any = {
+      __metadata: { type: this.constant.listNames.ProjectScope.type },
+      Title: ProjectInfo.ProjectCode,
+      ProjectFolder: ProjectInfo.ProjectFolder,
+
+    };
+
+    return data;
   }
   /**
    * This function is used to set the projectfinanaces object
@@ -1960,6 +1990,30 @@ export class PMCommonService {
     const templateData = await this.spServices.readItems(this.constant.listNames.MailContent.name,
       this.pmConstant.SOW_QUERY.CONTENT_QUERY);
     return templateData.length > 0 ? templateData[0] : [];
+  }
+
+  async getFolderName() {
+    const docFolder = 'Finance/SOW';
+    let libraryName = '';
+    const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
+      x.Title === this.pmObject.addProject.ProjectAttributes.ClientLegalEntity);
+    if (clientInfo && clientInfo.length) {
+      libraryName = clientInfo[0].ListName;
+    }
+    return libraryName + '/' + docFolder;
+  }
+
+  async reloadPMPage() {
+   
+    setTimeout(() => {
+      this.pmObject.isAddProjectVisible = false;
+      if (this.router.url === '/projectMgmt/allProjects') {
+        this.dataService.publish('reload-project');
+      } else {
+        this.pmObject.allProjectItems = [];
+        this.router.navigate(['/projectMgmt/allProjects']);
+      }
+    }, this.pmConstant.TIME_OUT);
   }
 
 

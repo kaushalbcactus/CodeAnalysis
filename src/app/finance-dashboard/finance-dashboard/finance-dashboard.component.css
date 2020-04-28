@@ -3,7 +3,6 @@
     /* border:1px solid #c53e3e !important; */
 }
 
-
 .pDialog {
     top: 50px !important;
 }
@@ -95,7 +94,8 @@ body .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active {
     color: #fff;
 }
 
-body .ui-button.ui-state-default.ui-button-secondary:enabled:focus, body .ui-buttonset.ui-button-secondary > .ui-button.ui-state-default:enabled:focus {
+body .ui-button.ui-state-default.ui-button-secondary:enabled:focus,
+body .ui-buttonset.ui-button-secondary>.ui-button.ui-state-default:enabled:focus {
     box-shadow: 0 0 0 0.2em #8dcdff;
 }
 

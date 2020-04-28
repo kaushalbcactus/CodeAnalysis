@@ -10,17 +10,24 @@
             <th style="width:10px;">
                 <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
             </th>
-            <th style="width:270px;">Parameters</th>
+            <th style="width:300px;">Parameters</th>
             <th>Comments</th>
         </tr>
     </ng-template>
     <ng-template pTemplate="body" let-rowData let-task style="overflow: auto">
         <tr class="formContentChecklist">
             <td>
-                <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+                <p-tableCheckbox [value]="rowData" [hidden]="task.hideCheckBox"></p-tableCheckbox>
             </td>
-            <td>{{task.parameter}}</td>
-            <td><textarea style="width: 100%;border-radius: 4px;" [(ngModel)]="task.comments" (keyup)="keyPress($event)"></textarea></td>
+            <td style="word-break:break-word;">{{task.parameter}}</td>
+            <td [hidden]="task.hideCheckBox"><textarea style="width: 100%;border-radius: 4px;" [(ngModel)]="task.comments" (keyup)="keyPress($event)"></textarea></td>
+            <td [hidden]="!task.hideCheckBox">
+                <select [(ngModel)]="task.comments" (change)="keyPress($event)">
+                    <option value="Select One">Select One</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+            </td>
         </tr>
     </ng-template>
     <ng-template pTemplate="footer">

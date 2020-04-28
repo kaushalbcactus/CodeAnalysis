@@ -2,6 +2,17 @@
     <div id="mainLoader"></div>
     <div id="mainLoaderText">Loading...</div>
 </div>
+
+
+<div class='UserButton' fxLayout="row" fxLayoutAlign="end center" [hidden]="isProjectAttributeTableHidden">
+
+    <button *ngIf="showEditSave" type="button" pButton icon="pi pi-save" id="saveClient" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="saveEditProject()" label="Update"></button>
+
+    <button type="button" pButton icon="pi pi-times" (click)="cancel();" label="Cancel" class="ui-button-secondary" style="background-color:ghostwhite;"></button>
+
+</div>
+
+
 <div class="allSOW-section" [hidden]="isProjectAttributeTableHidden">
     <form [formGroup]="addProjectAttributesForm">
         <div class="ui-grid-row mt-20">
@@ -262,11 +273,11 @@
             </p-button>
         </div>
     </div>
-    <p-footer>
+    <!-- <p-footer>
         <div *ngIf="showEditSave" style="float: right;">
             <p-button type="button" styleClass="pmBtn" (click)="saveEditProject()" label="Save"></p-button>
         </div>
-    </p-footer>
+    </p-footer> -->
 </div>
 
 <div *ngIf="showMoleculeAdd">

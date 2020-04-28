@@ -204,13 +204,10 @@
                         <!-- Start Date -->
                         <td>
 
-                            <span [title]="rowData.pUserStart |  date:' d MMM, y, h:mm a'"
-                                *ngIf="(!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat === true) || rowData.type === 'milestone' || rowData.type === 'submilestone' || (!rowData.editMode && rowData.type === 'task' && rowData.itemType==='Client Review' ) ">{{rowData.pStart |  date:' d MMM, y' }}</span>
-                            <span [title]="rowData.pUserStart |  date:' d MMM, y, h:mm a'"
-                                *ngIf="(!rowData.editMode && rowData.type === 'task' &&  rowData.tat !== true  && rowData.itemType !=='Client Review') || (rowData.type === 'task' && rowData.editMode && rowData.status === 'In Progress')">{{rowData.pStart |  date:' d MMM, y, h:mm a' }}</span>
+                            <span [title]="rowData.pUserStart |  date:' d MMM, y, h:mm a'" *ngIf="(!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat === true) || rowData.type === 'milestone' || rowData.type === 'submilestone'">{{rowData.pStart |  date:' d MMM, y' }}</span>
+                            <span [title]="rowData.pUserStart |  date:' d MMM, y, h:mm a'" *ngIf="(!rowData.editMode && rowData.type === 'task' &&  rowData.tat !== true) || (rowData.type === 'task' && rowData.editMode && rowData.status === 'In Progress')">{{rowData.pStart |  date:' d MMM, y, h:mm a' }}</span>
 
-                            <span
-                                *ngIf="rowData.editMode && rowData.type === 'task' && rowData.itemType ==='Client Review' ">
+                            <!-- <span *ngIf="rowData.editMode && rowData.type === 'task' && rowData.itemType ==='Client Review' ">
                                 <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserStartDatePart"
                                     [disabledDays]="[0,6]" [readonlyInput]="true" dateFormat="dd M , yy"
                                     yearRange="{{yearsRange}}" hideOnDateTimeSelect="true" [stepMinute]="15"
@@ -218,9 +215,8 @@
                                     [yearNavigator]="true" (onClose)="DateChangePart(rowData,'start')" appendTo="body"
                                     [inputStyle]="{'width': '78%', 'min-width': '78%','padding':'0px','border':'none'}">
                                 </p-calendar>
-                            </span>
-                            <span
-                                *ngIf="rowData.editMode && rowData.type === 'task' && rowData.itemType !=='Client Review' && rowData.status !== 'In Progress'">
+                            </span> -->
+                            <span *ngIf="rowData.editMode && rowData.type === 'task'  && rowData.status !== 'In Progress'">
                                 <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserStartDatePart"
                                     [disabledDays]="[0,6]" [readonlyInput]="true" dateFormat="dd M , yy"
                                     yearRange="{{yearsRange}}" hideOnDateTimeSelect="true" [stepMinute]="15"
@@ -228,7 +224,7 @@
                                     [yearNavigator]="true" (onClose)="DateChangePart(rowData,'start')" appendTo="body"
                                     [inputStyle]="{'width': '78%', 'min-width': '78%','padding':'0px','border':'none'}">
                                 </p-calendar>
-                                <input [disabled]="rowData.tat" readonly [ngxTimepicker]="picker"
+                                <input [disabled]="rowData.tat && rowData.itemType !=='Client Review'" readonly [ngxTimepicker]="picker"
                                     [(ngModel)]="rowData.pUserStartTimePart" class="timePicker">
                                 <ngx-material-timepicker-toggle [for]="picker"></ngx-material-timepicker-toggle>
                                 <ngx-material-timepicker [preventOverlayClick]="true"
@@ -240,13 +236,10 @@
                         </td>
                         <!-- End Date -->
                         <td>
-                            <span [title]="rowData.pUserEnd |  date:' d MMM, y, h:mm a'"
-                                *ngIf="(!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat === true) || rowData.type === 'milestone' || rowData.type === 'submilestone' || (!rowData.editMode && rowData.type === 'task' && rowData.itemType==='Client Review' ) ">{{rowData.pEnd |  date:' d MMM, y' }}</span>
-                            <span [title]="rowData.pUserEnd |  date:' d MMM, y, h:mm a'"
-                                *ngIf="!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat !== true  && rowData.itemType !=='Client Review'">{{rowData.pEnd |  date:' d MMM, y, h:mm a' }}</span>
+                            <span [title]="rowData.pUserEnd |  date:' d MMM, y, h:mm a'" *ngIf="(!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat === true) || rowData.type === 'milestone' || rowData.type === 'submilestone'">{{rowData.pEnd |  date:' d MMM, y' }}</span>
+                            <span [title]="rowData.pUserEnd |  date:' d MMM, y, h:mm a'" *ngIf="!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat !== true">{{rowData.pEnd |  date:' d MMM, y, h:mm a' }}</span>
 
-                            <span
-                                *ngIf="rowData.editMode && rowData.type === 'task' && rowData.itemType ==='Client Review' ">
+                            <!-- <span *ngIf="rowData.editMode && rowData.type === 'task' && rowData.itemType ==='Client Review' ">
                                 <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserEndDatePart"
                                     [disabledDays]="[0,6]" [readonlyInput]="true" dateFormat="dd M , yy"
                                     yearRange="{{yearsRange}}" hideOnDateTimeSelect="true" [stepMinute]="15"
@@ -255,9 +248,8 @@
                                     [inputStyle]="{'width': '78%', 'min-width': '78%','padding':'0px','border':'none'}">
                                 </p-calendar>
 
-                            </span>
-                            <span
-                                *ngIf="rowData.editMode && rowData.type === 'task' && rowData.itemType !=='Client Review' ">
+                            </span> -->
+                            <span *ngIf="rowData.editMode && rowData.type === 'task'">
 
                                 <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserEndDatePart"
                                     [disabledDays]="[0,6]" [readonlyInput]="true" dateFormat="dd M , yy"
@@ -266,7 +258,7 @@
                                     [yearNavigator]="true" (onClose)="DateChangePart(rowData,'end')" appendTo="body"
                                     [inputStyle]="{'width': '78%', 'min-width': '78%','padding':'0px','border':'none'}">
                                 </p-calendar>
-                                <input #inputDate [disabled]="rowData.tat" readonly [ngxTimepicker]="picker"
+                                <input #inputDate [disabled]="rowData.tat && rowData.itemType !=='Client Review'" readonly [ngxTimepicker]="picker"
                                     [min]="rowData.pUserStartDatePart === rowData.pUserEndDatePart ? rowData.pUserStartTimePart :'12:00 am'"
                                     [(ngModel)]="rowData.pUserEndTimePart" class="timePicker">
                                 <ngx-material-timepicker-toggle [for]="picker"></ngx-material-timepicker-toggle>
@@ -278,14 +270,11 @@
                         </td>
                         <!-- TaT -->
                         <td style="text-align: center">
-                            <span
-                                *ngIf="rowData.type ==='milestone' || rowData.type ==='submilestone'">{{rowData.tatVal}}</span>
-                            <span
-                                *ngIf="!rowData.editMode && rowData.type ==='task' ">{{rowData.tat === true ? 'Yes' :'No'}}</span>
-                            <p-checkbox *ngIf="rowData.editMode && rowData.type === 'task' && (rowData.IsCentrallyAllocated !== 'Yes' || rowData.slotType === 'Both' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.pName.indexOf('Slot') < 0))  "
-                                [disabled]=" rowData.pName ==='Client Review'"
-                                (onChange)="ChangeEndDate($event, rowData)"
-                                [(ngModel)]="rowData.pName ==='Client Review' ? 'Yes' : rowData.tat" binary="true">
+                            <span *ngIf="rowData.type ==='milestone' || rowData.type ==='submilestone'">{{rowData.tatVal}}</span>
+                            <span *ngIf="!rowData.editMode && rowData.type ==='task' && rowData.itemType !=='Client Review' && rowData.itemType !=='Send to client' ">{{rowData.tat === true ? 'Yes' :'No'}}</span>
+                            <p-checkbox *ngIf="rowData.editMode && rowData.type === 'task' 
+                            && rowData.itemType !=='Client Review' && rowData.itemType !=='Send to client' && (rowData.IsCentrallyAllocated !== 'Yes' || rowData.slotType === 'Both' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.pName.indexOf('Slot') < 0))"
+                                (onChange)="ChangeEndDate($event, rowData)" [(ngModel)]="rowData.pName ==='Client Review' ? 'Yes' : rowData.tat" binary="true">
                             </p-checkbox>
                         </td>
 

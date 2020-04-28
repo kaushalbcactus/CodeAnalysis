@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewEncapsulation, ViewChild, OnDestroy, HostListener, ElementRef, ApplicationRef, NgZone, TemplateRef, ChangeDetectorRef } from '@angular/core';
 import { Message, ConfirmationService, MessageService, SelectItem } from 'primeng/api';
-import { Calendar, Table } from 'primeng';
+import { Calendar, Table, DialogService } from 'primeng';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -81,6 +81,8 @@ export class ProformaComponent implements OnInit, OnDestroy {
 
     // List of Subscribers 
     private subscription: Subscription = new Subscription();
+    FolderName: string;
+    SelectedFile: any;
 
 
     constructor(
@@ -99,6 +101,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         private locationStrategy: LocationStrategy,
         private readonly _router: Router,
         _applicationRef: ApplicationRef,
+        public dialogService: DialogService,
         zone: NgZone,
     ) {
         // Browser back button disabled & bookmark issue solution
@@ -1240,6 +1243,12 @@ export class ProformaComponent implements OnInit, OnDestroy {
     selectedFile: any;
     filePathUrl: any;
     fileReader: any;
+
+    //*************************************************************************************************
+    // new File uplad function updated by Maxwell
+    // ************************************************************************************************
+
+
     onFileChange(event, folderName) {
         let existingFile = this.selectedRowItem.FileURL ? this.selectedRowItem.FileURL.split('/') : [];
         if (existingFile) {
@@ -1252,8 +1261,9 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 return;
             }
         }
-        this.fileReader = new FileReader();
+        // this.fileReader = new FileReader();
         if (event.target.files && event.target.files.length > 0) {
+            this.SelectedFile =[];
             this.selectedFile = event.target.files[0];
             const fileName = this.selectedFile.name;
             const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
@@ -1263,19 +1273,44 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 this.messageService.add({ key: 'proformaInfoToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
                 return false;
             }
-            this.fileReader.readAsArrayBuffer(this.selectedFile);
-            this.fileReader.onload = () => {
-                // console.log('selectedFile ', this.selectedFile);
-                // console.log('this.fileReader  ', this.fileReader.result);
-                let folderPath: string = '/Finance/Proforma/';
-                let cleListName = this.getCLEListNameFromCLE(this.selectedRowItem.ClientLegalEntity);
-                this.filePathUrl = this.spServices.getFileUploadUrl(this.globalService.sharePointPageObject.webRelativeUrl + '/' + cleListName + folderPath, this.selectedFile.name, true);
-                // this.filePathUrl = this.globalService.sharePointPageObject.webAbsoluteUrl + "/_api/web/GetFolderByServerRelativeUrl(" + "'" + cleListName + '' + folderPath + "'" + ")/Files/add(url=@TargetFileName,overwrite='true')?" +
-                // "&@TargetFileName='" + this.selectedFile.name + "'";
-                // this.uploadFileData('');
-            };
-
+            let cleListName = this.getCLEListNameFromCLE(this.selectedRowItem.ClientLegalEntity)
+            this.FolderName = cleListName + '/Finance/Proforma';
+            this.SelectedFile.push(new Object({ name: this.selectedFile.name, file: this.selectedFile }));
         }
+    }
+
+
+    async uploadFileData() {
+        const batchUrl = [];
+        this.commonService.SetNewrelic('Finance-Dashboard', 'Proforma', 'uploadFile');
+       
+
+        this.commonService.UploadFilesProgress(this.SelectedFile, this.FolderName, true).then(async uploadedfile => {
+            if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
+                if (uploadedfile[0].hasOwnProperty('odata.error')) {
+                    this.submitBtn.isClicked = false;
+                        this.messageService.add({
+                            key: 'proformaInfoToast', severity: 'error', summary: 'Error message',
+                            detail: 'File not uploaded,Folder / File Not Found', life: 3000
+                        });
+                } else if (uploadedfile[0].ServerRelativeUrl) {
+                    this.isPSInnerLoaderHidden = false;
+                    let prfData = {
+                        FileURL: uploadedfile[0].ServerRelativeUrl ? uploadedfile[0].ServerRelativeUrl : '',
+                        ProformaHtml: null
+                    }
+                    prfData['__metadata'] = { type: this.constantService.listNames.Proforma.type };
+                    const invObj = Object.assign({}, this.queryConfig);
+                    invObj.url = this.spServices.getItemURL(this.constantService.listNames.Proforma.name, +this.selectedRowItem.Id);
+                    invObj.listName = this.constantService.listNames.Proforma.name;
+                    invObj.type = 'PATCH';
+                    invObj.data = prfData;
+                    batchUrl.push(invObj);
+                    this.commonService.SetNewrelic('Finance-Dashboard', 'Proforma-proforma', 'uploadFileUpdateProforma');
+                    this.submitForm(batchUrl, 'replaceProforma');
+                }
+            }
+        });
     }
 
     getCLEListNameFromCLE(cleName) {
@@ -1562,7 +1597,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             }
             // console.log('form is submitting ..... & Form data is ', this.replaceProforma_form.value);
             this.submitBtn.isClicked = true;
-            this.isPSInnerLoaderHidden = false;
+          
             this.uploadFileData();
 
         } else if (type === 'generateInvoice') {

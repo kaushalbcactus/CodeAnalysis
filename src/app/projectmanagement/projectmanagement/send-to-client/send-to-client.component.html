@@ -2,6 +2,15 @@
     <!-- <ngb-alert *ngIf="successMessage" type="success" (close)="successMessage = null">{{ successMessage }}</ngb-alert>
     <ngb-alert *ngIf="errorMessage" type="danger" (close)="errorMessage = null">{{ errorMessage }}</ngb-alert> -->
 </div>
+
+<div #loader class="overlay"></div>
+<div #spanner class="spanner">
+    <div class="loader"></div>
+    <p>Please wait...</p>
+</div>
+
+
+
 <div style="padding:15%" [hidden]='isSCInnerLoaderHidden'>
     <div id="scInnerLoader"></div>
     <div id="scInnerLoaderText">Loading...</div>
@@ -90,3 +99,5 @@
         </p-table>
     </div>
 </div>
+
+<p-toast position="bottom-right" key="custom"></p-toast>
