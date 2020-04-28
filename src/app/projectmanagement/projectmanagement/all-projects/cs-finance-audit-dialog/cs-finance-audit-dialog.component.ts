@@ -320,7 +320,7 @@ export class CsFinanceAuditDialogComponent implements OnInit {
           })
         }
 
-        this.ErrorProjectCodes = [...new Set([].concat(UniqueInvalidInvoices, UniqueInvalidExpenses))];
+        this.ErrorProjectCodes.push.apply(this.ErrorProjectCodes, [...new Set([].concat(UniqueInvalidInvoices, UniqueInvalidExpenses))]);
         this.selectedProjects = this.selectedProjects.filter(c => !this.ErrorProjectCodes.includes(c.ProjectCode));
         this.checked = this.selectedProjects.length >= 10 ? true : false;
         this.messageService.addAll(errorMessage);

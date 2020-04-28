@@ -475,7 +475,7 @@ export class ClientReviewComponent implements OnInit {
           const projectID = this.pmObject.allProjectItems.filter(item => item.ProjectCode === task.ProjectCode);
           const projectInfoObj = Object.assign({}, this.options);
           projectInfoObj.url = this.spServices.getItemURL(this.Constant.listNames.ProjectInformation.name, projectID[0].ID);
-          projectInfoObj.data = { Status: 'Unallocated', __metadata: { type: this.Constant.listNames.ProjectInformation.type } };
+          projectInfoObj.data = { Status: this.Constant.STATUS.UNALLOCATED, __metadata: { type: this.Constant.listNames.ProjectInformation.type } };
           projectInfoObj.listName = this.Constant.listNames.ProjectInformation.name;
           projectInfoObj.type = 'PATCH';
           batchUrl.push(projectInfoObj);
