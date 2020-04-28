@@ -1101,7 +1101,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.ganttComponentRef.instance.onLoad(this.taskAllocateCommonService.ganttParseObject, this.resource);
     this.setScale(this.selectedScale);
     this.allTaskData = this.taskAllocateCommonService.ganttParseObject;
-    this.ganttComponentRef.instance.isLoaderHidden = false;
+    // this.ganttComponentRef.instance.isLoaderHidden = false;
     this.allocationColor();
     if (this.menu !== undefined) {
       this.menu.unload();
@@ -1679,7 +1679,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       setTimeout(() => {
         this.scrollToTaskDate(this.updatedTasks.end_date);
       }, 1000);
-      
+
 
     } else if (updatedDataObj.reset) {
       this.close();
@@ -4492,11 +4492,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         return false;
       }
 
-      const compareDates = currMilTasks.filter(e => (e.end_date <= e.start_date && e.tat === false
-        && e.itemType !== 'Send to client' && e.itemType !== 'Client Review' &&
+      const compareDates = currMilTasks.filter(e => (e.end_date <= e.start_date && e.tat === false &&
         e.itemType !== 'Follow up' && e.status !== 'Completed'));
       if (compareDates.length > 0) {
-
+        //  && e.itemType !== 'Send to client' && e.itemType !== 'Client Review'
         this.messageService.add({
           key: 'custom', severity: 'warn', summary: 'Warning Message',
           detail: 'End date should be greater than start date of ' + compareDates[0].title
@@ -4855,10 +4854,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
             return false;
           }
           const compareDates = checkTasks.filter(e => (e.pUserEnd <= e.pUserStart && e.tat === false
-            && e.itemType !== 'Send to client' && e.itemType !== 'Client Review' &&
-            e.itemType !== 'Follow up' && e.status !== 'Completed'));
+            && e.itemType !== 'Follow up' && e.status !== 'Completed'));
           if (compareDates.length > 0) {
-
+            //  && e.itemType !== 'Send to client' && e.itemType !== 'Client Review'
             this.messageService.add({
               key: 'custom', severity: 'warn', summary: 'Warning Message',
               detail: 'End date should be greater than start date of ' + milestone.data.pName + ' - ' + compareDates[0].pName
@@ -4887,8 +4885,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
             return false;
           }
         }
-
-        if (previousNode !== undefined && previousNode.status !== "Completed" && new Date(previousNode.end_date) >= new Date(milestone.data.start_date)) {
+        // previousNode - Milestone
+        // milestone.data. - client review
+        if (previousNode !== undefined && previousNode.status !== 'Completed' &&
+          new Date(previousNode.end_date).getTime() > new Date(milestone.data.start_date).getTime()) {
           let errormessage = previousNode.milestone + ' Client Review';
           if (previousNode.title !== 'Client Review') {
             errormessage = previousNode.title;
@@ -4897,6 +4897,14 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           this.messageService.add({
             key: 'custom', severity: 'warn', summary: 'Warning Message',
             detail: 'Start Date of ' + milestone.data.title + ' should be greater than end date of ' + errormessage
+          });
+          return false;
+        }
+        if (milestone.data.title === 'Client Review' &&
+          new Date(milestone.data.start_date).getTime() >= new Date(milestone.data.end_date).getTime()) {
+          this.messageService.add({
+            key: 'custom', severity: 'warn', summary: 'Warning Message',
+            detail: 'End date should be greater than start date of ' + milestone.data.milestone + ' - Client Review'
           });
           return false;
         }

@@ -241,9 +241,9 @@
                         <td>
 
                             <span [title]="rowData.pUserStart |  date:' d MMM, y, h:mm a'"
-                                *ngIf="(!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat === true) || rowData.type === 'milestone' || rowData.type === 'submilestone' || (!rowData.editMode && rowData.type === 'task' && rowData.itemType==='Client Review' ) ">{{rowData.start_date |  date:' d MMM, y' }}</span>
+                                *ngIf="(!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat === true) || rowData.type === 'milestone' || rowData.type === 'submilestone'">{{rowData.start_date |  date:' d MMM, y' }}</span>
                             <span [title]="rowData.pUserStart |  date:' d MMM, y, h:mm a'"
-                                *ngIf="(!rowData.editMode && rowData.type === 'task' &&  rowData.tat !== true  && rowData.itemType !=='Client Review') || (rowData.type === 'task' && rowData.editMode && rowData.status === 'In Progress')">{{rowData.start_date |  date:' d MMM, y, h:mm a' }}</span>
+                                *ngIf="(!rowData.editMode && rowData.type === 'task' &&  rowData.tat !== true) || (rowData.type === 'task' && rowData.editMode && rowData.status === 'In Progress')">{{rowData.start_date |  date:' d MMM, y, h:mm a' }}</span>
 
                             <span *ngIf="rowData.editMode && rowData.type === 'task'  && rowData.status !== 'In Progress'">
                                 <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserStartDatePart"
@@ -266,9 +266,9 @@
                         <!-- End Date -->
                         <td>
                             <span [title]="rowData.pUserEnd |  date:' d MMM, y, h:mm a'"
-                                *ngIf="(!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat === true) || rowData.type === 'milestone' || rowData.type === 'submilestone' || (!rowData.editMode && rowData.type === 'task' && rowData.itemType==='Client Review' ) ">{{rowData.end_date |  date:' d MMM, y' }}</span>
+                                *ngIf="(!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat === true) || rowData.type === 'milestone' || rowData.type === 'submilestone'">{{rowData.end_date |  date:' d MMM, y' }}</span>
                             <span [title]="rowData.pUserEnd |  date:' d MMM, y, h:mm a'"
-                                *ngIf="!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat !== true  && rowData.itemType !=='Client Review'">{{rowData.end_date |  date:' d MMM, y, h:mm a' }}</span>
+                                *ngIf="!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat !== true">{{rowData.end_date |  date:' d MMM, y, h:mm a' }}</span>
 
 
                             <span *ngIf="rowData.editMode && rowData.type === 'task'">
