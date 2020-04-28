@@ -1,7 +1,7 @@
-<div fxLayout="column" style="padding: 2vw;" fxLayoutAlign="center center" *ngIf="!GanttChartView && projectDetails !== undefined">
+<!-- <div fxLayout="column" style="padding: 2vw;" fxLayoutAlign="center center" *ngIf="!GanttChartView && projectDetails !== undefined">
     <div id="modalInnerLoader"></div>
     <div id="modalInnerLoaderText">Loading...</div>
-</div>
+</div> -->
 
 
 <p-toast [style]="{marginTop: '80px'}" position="top-center" key="tc" [modal]="true" [baseZIndex]="5000" closable="false"></p-toast>
@@ -117,7 +117,7 @@
             <div>
                 <div *ngIf="visualgraph" class="input-color" fxLayoutAlign="end center"
                     style="margin-right: 10px;">
-                    <button mat-raised-button type="button"
+                    <button mat-raised-button type="button" title="Refresh Gantt"
                         (click)="refreshGantt()">
                         <mat-icon>refresh</mat-icon>
                     </button>
@@ -412,7 +412,7 @@
            ********************************************************************************************************** -->
         <div fxLayout="row" fxLayoutAlign=" start center"
             [ngClass]="projectDetails  ? 'VisualRepresentationpopup':'VisualRepresentation'"
-            [hidden]="visualgraph === false && loaderenable === false" style="width:100%">
+            [hidden]="visualgraph === false" style="width:100%"> <!--&& loaderenable === true-->
             <p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="gantt-message"
                 position="bottom-center">
             </p-toast>

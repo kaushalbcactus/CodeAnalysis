@@ -17,6 +17,7 @@ export class GanttChartComponent implements OnInit {
   gridConfig: any;
   ganttParseObject = {};
   isLoaderHidden: any;
+  isTableHidden: boolean;
   constructor() { }
 
   user = "AssignedTo" //"user"
@@ -26,8 +27,6 @@ export class GanttChartComponent implements OnInit {
   tasks = {}
 
   ngOnInit() {
-    // this.isLoaderHidden = false;
-    // this.onLoad(data,this.resource)
   }
 
   onLoad(data, resource) {
@@ -82,24 +81,26 @@ export class GanttChartComponent implements OnInit {
           scale_height: 60,
           min_column_width: 90,
           scales: [
-            {unit: "year", step: 1, format: "%Y"},
-            {unit: "quarter", step: 1, format: function quarterLabel(date) {
-              var month = date.getMonth();
-              var q_num;
-      
-              if (month >= 9) {
-                q_num = 4;
-              } else if (month >= 6) {
-                q_num = 3;
-              } else if (month >= 3) {
-                q_num = 2;
-              } else {
-                q_num = 1;
+            { unit: "year", step: 1, format: "%Y" },
+            {
+              unit: "quarter", step: 1, format: function quarterLabel(date) {
+                var month = date.getMonth();
+                var q_num;
+
+                if (month >= 9) {
+                  q_num = 4;
+                } else if (month >= 6) {
+                  q_num = 3;
+                } else if (month >= 3) {
+                  q_num = 2;
+                } else {
+                  q_num = 1;
+                }
+
+                return "Q" + q_num;
               }
-      
-              return "Q" + q_num;
-            }},
-            {unit: "month", step: 1, format: "%M"}
+            },
+            { unit: "month", step: 1, format: "%M" }
           ]
         },
         {
@@ -326,12 +327,6 @@ export class GanttChartComponent implements OnInit {
       }
     });
 
-    // gantt.templates.timeline_cell_class = function (task, date) {
-    //   if (!gantt.isWorkTime({ date: date, task: task }))
-    //     return "week_end";
-    //   return "";
-    // };
-
     gantt.templates.resource_cell_class = function (start_date, end_date, resource, tasks) {
       var css = [];
       css.push("resource_marker");
@@ -381,10 +376,10 @@ export class GanttChartComponent implements OnInit {
 
     gantt.templates.tooltip_text = function (start, end, task) {
       gantt.templates.tooltip_date_format = task.type == 'milestone' || task.type == 'submilestone' ? gantt.date.date_to_str("%d-%M-%Y") : gantt.date.date_to_str("%d-%M-%Y %h:%i %A");
-      
+
       this.singleTask = task
       return "<h3>" + task.text + "</h3>" +
-        "<b>Start date:</b> " + 
+        "<b>Start date:</b> " +
         gantt.templates.tooltip_date_format(task.start_date) +
         "<br/><b>End date:</b> " + gantt.templates.tooltip_date_format(task.end_date) +
         "<br/><b>Duration:</b> " + gantt.calculateDuration(task) + "<br/><b>Status:</b> " + task.status +
@@ -437,24 +432,24 @@ export class GanttChartComponent implements OnInit {
       return "";
     }
 
-    gantt.eachSuccessor = function(callback, root){
-      if(!this.isTaskExists(root))
+    gantt.eachSuccessor = function (callback, root) {
+      if (!this.isTaskExists(root))
         return;
-     
+
       // remember tasks we've already iterated in order to avoid infinite loops
       var traversedTasks = arguments[2] || {};
-      if(traversedTasks[root])
+      if (traversedTasks[root])
         return;
       traversedTasks[root] = true;
-     
+
       var rootTask = this.getTask(root);
       var links = rootTask.$source;
-      if(links){
-        for(var i=0; i < links.length; i++){
+      if (links) {
+        for (var i = 0; i < links.length; i++) {
           var link = this.getLink(links[i]);
-          if(this.isTaskExists(link.target) && !traversedTasks[link.target]){
+          if (this.isTaskExists(link.target) && !traversedTasks[link.target]) {
             callback.call(this, this.getTask(link.target));
-     
+
             // iterate the whole branch, not only first-level dependencies
             this.eachSuccessor(callback, link.target, traversedTasks);
           }
@@ -462,48 +457,48 @@ export class GanttChartComponent implements OnInit {
       }
     };
 
-  //   gantt.templates.grid_row_class =
-	// 		gantt.templates.task_class = function (start, end, task) {
-	// 	var css = [];
-	// 	// if (task.$virtual || task.type == gantt.config.types.project)
-	// 	// 	css.push("summary-bar");
+    //   gantt.templates.grid_row_class =
+    // 		gantt.templates.task_class = function (start, end, task) {
+    // 	var css = [];
+    // 	// if (task.$virtual || task.type == gantt.config.types.project)
+    // 	// 	css.push("summary-bar");
 
-	// 	if(task.owner_id){
-	// 		css.push("gantt_resource_task gantt_resource_" + task.owner_id);
-	// 	}
+    // 	if(task.owner_id){
+    // 		css.push("gantt_resource_task gantt_resource_" + task.owner_id);
+    // 	}
 
-	// 	return css.join(" ");
-  // };
-  
-  //   gantt.attachEvent("onLoadEnd", function(){
-  //     var styleId = "dynamicGanttStyles";
-  //     var element = document.getElementById(styleId);
-  //     if(!element){
-  //       element = document.createElement("style");
-  //       element.id = styleId;
-  //       document.querySelector("head").appendChild(element);
-  //     }
-  //     var html = [];
-  //     var resources = gantt.serverList(resource);
-  
-  //     resources.forEach(function(r){
-  //       html.push(".gantt_task_line.gantt_resource_" + r.key + "{" +
-  //         "background-color:"+r.backgroundColor+"; " +
-  //         "color:"+r.textColor+";" +
-  //       "}");
-  //       html.push(".gantt_row.gantt_resource_" + r.key + " .gantt_cell:nth-child(2) .gantt_tree_content{" +
-  //         "background-color:"+r.backgroundColor+"; " +
-  //         "color:"+r.textColor+";" +
-  //         "}");
-  //     });
-  //     element.innerHTML = html.join("");
-  //   });
-  
+    // 	return css.join(" ");
+    // };
+
+    //   gantt.attachEvent("onLoadEnd", function(){
+    //     var styleId = "dynamicGanttStyles";
+    //     var element = document.getElementById(styleId);
+    //     if(!element){
+    //       element = document.createElement("style");
+    //       element.id = styleId;
+    //       document.querySelector("head").appendChild(element);
+    //     }
+    //     var html = [];
+    //     var resources = gantt.serverList(resource);
+
+    //     resources.forEach(function(r){
+    //       html.push(".gantt_task_line.gantt_resource_" + r.key + "{" +
+    //         "background-color:"+r.backgroundColor+"; " +
+    //         "color:"+r.textColor+";" +
+    //       "}");
+    //       html.push(".gantt_row.gantt_resource_" + r.key + " .gantt_cell:nth-child(2) .gantt_tree_content{" +
+    //         "background-color:"+r.backgroundColor+"; " +
+    //         "color:"+r.textColor+";" +
+    //         "}");
+    //     });
+    //     element.innerHTML = html.join("");
+    //   });
+
 
 
     // if(gantt.ext.zoom.getCurrentLevel() < 3) {
     // gantt.attachEvent("onTaskDrag", function(id, mode, task, original){
-      
+
     //   var modes = gantt.config.drag_mode;
     //   if(mode == modes.move){
     //     var diff = task.start_date - original.start_date;
@@ -536,7 +531,7 @@ export class GanttChartComponent implements OnInit {
     // gantt.config.order_branch = true;
     // gantt.config.order_branch_free = true;
 
-    // gantt.config.drag_project = true; 
+    // gantt.config.drag_project = true;
     gantt.config.fit_tasks = true;
 
     this.ganttParseObject = data;
@@ -545,7 +540,7 @@ export class GanttChartComponent implements OnInit {
     gantt.config.skip_off_time = true;
 
 
-    gantt.ignore_time = function (date) {
+    gantt.ignore_time = function(date) {
       if (date.getDay() == 0 || date.getDay() == 6)
         return true;
     };
@@ -554,24 +549,19 @@ export class GanttChartComponent implements OnInit {
 
     gantt.init(this.ganttContainer.nativeElement)
     gantt.config.branch_loading = true;
-    gantt.parse(data)
+    gantt.parse(data);
 
   }
 
 
   setScaleConfig(value) {
-    this.isLoaderHidden = false;
-    // if (value == '0') {
-    // gantt.config.layout = this.gridConfig;
-    // } else {
-    // gantt.config.layout = this.resourcePanelConfig;
-    // }
+    // this.showLoader();
     gantt.ext.zoom.setLevel(value);
     setTimeout(() => {
-      gantt.init(this.ganttContainer.nativeElement)
+      gantt.init(this.ganttContainer.nativeElement);
       gantt.parse(this.ganttParseObject);
-      this.isLoaderHidden = true;
-    }, 1000);
+      // this.showTable();
+    }, 300);
   }
 
   showResourceView() {
@@ -584,29 +574,39 @@ export class GanttChartComponent implements OnInit {
 
   zoomIn() {
     gantt.ext.zoom.zoomIn();
-    if (gantt.ext.zoom.getCurrentLevel() == 0) {
-      this.isLoaderHidden = false;
-      // gantt.config.layout = this.gridConfig;
-      gantt.init(this.ganttContainer.nativeElement)
+    if (gantt.ext.zoom.getCurrentLevel() === 0) {
+      // this.showLoader();
+      gantt.init(this.ganttContainer.nativeElement);
       setTimeout(() => {
         gantt.parse(this.ganttParseObject);
-        this.isLoaderHidden = true;
-      }, 1000);
+        // this.showTable();
+      }, 300);
     }
   }
 
   zoomOut() {
     gantt.ext.zoom.zoomOut();
     if (gantt.ext.zoom.getCurrentLevel() >= 1 && gantt.ext.zoom.getCurrentLevel() <= 5) {
-      this.isLoaderHidden = false;
-      // gantt.config.layout = this.resourcePanelConfig;
+      // this.showLoader();
       setTimeout(() => {
         gantt.init(this.ganttContainer.nativeElement)
         gantt.parse(this.ganttParseObject);
-        this.isLoaderHidden = true;
-      }, 1000);
+        // this.showTable();
+      }, 300);
     }
   }
-  
-  
+
+  // showTable() {
+  //   this.isLoaderHidden = true;
+  //   this.isTableHidden = false;
+  //   gantt.init(this.ganttContainer.nativeElement);
+  //   setTimeout(() => {
+  //     gantt.parse(this.ganttParseObject);
+  //   }, 300);
+  // }
+
+  // showLoader() {
+  //   this.isLoaderHidden = false;
+  //   this.isTableHidden = true;
+  // }
 }
