@@ -951,7 +951,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   createGanttDataAndLinks() {
     let task: any;
     this.linkArray = [];
-    debugger;
+    
     let milestones = this.GanttchartData.filter(e => e.type == 'milestone')
     milestones.map(m => {
       const getClientReview = this.GanttchartData.find(e=>e.itemType === 'Client Review' && e.milestone === m.taskFullName);
