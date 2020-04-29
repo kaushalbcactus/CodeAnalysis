@@ -967,25 +967,24 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     }, []);
 
     let submilestones = this.GanttchartData.filter(item => item.type == 'submilestone' && item.added === true)
-    let subLength = submilestones.length;
 
-    console.log(this.GanttchartData);
-
+    let previousSub: any;
     this.GanttchartData.forEach((item, index) => {
       if (item.submilestone) {
         submilestones.forEach((subMile) => {
           if (item.submilestone === subMile.title) {
-            item.parent = subMile.id;
+            item.parent = item.subId;
           }
         })
         subIndex.forEach((s) => {
           let sub = this.GanttchartData[s];
+          if(sub.position > 1 && previousSub!== undefined){
+            sub.parent = previousSub.parent;
+          } else {
           let m = this.GanttchartData[s - 1];
           sub.parent = m.id
-          // if (sub.parent == 0) {
-          //   let m: any = this.GanttchartData.filter(e => e.type === 'milestone' && e.added === true);
-          //   sub.parent = m[0].id
-          // }
+          previousSub = sub;
+          }
         })
       } else {
         milestones.forEach((m) => {
@@ -996,6 +995,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       }
     })
 
+    this.taskAllocateCommonService.ganttParseObject.data = this.GanttchartData;
 
 
     this.GanttchartData.forEach((item, index) => {
@@ -1026,7 +1026,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
               "nextTask": item.nextTask,
               "type": 0,
             })
-          } else if (e.type == 'task' && e.itemType == 'Client Review') {
+          }
+          if (e.type == 'task' && e.itemType == 'Client Review') {
             milestones.forEach((m) => {
               if ((e.milestone === m.title.replace(' (Current)', '') || e.milestone === m.title) && !(this.linkArray.find(e => e.name == m.title))) {
                 this.linkArray.push({
@@ -1038,7 +1039,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
                 })
               }
             })
-          }
+          } 
         })
       }
     })
@@ -1079,7 +1080,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       }
     }, Object.create(null));
 
-    this.taskAllocateCommonService.ganttParseObject.data = this.GanttchartData;
     this.taskAllocateCommonService.ganttParseObject.links = this.linkArray;
   }
 
@@ -2637,7 +2637,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
         console.log(this.GanttchartData);
         // console.log(this.linkArray);
-        // this.taskAllocateCommonService.ganttParseObject.data = this.GanttchartData;
+        this.taskAllocateCommonService.ganttParseObject.data = this.GanttchartData;
         // this.taskAllocateCommonService.ganttParseObject.links = this.linkArray;
 
         this.loadComponent();
@@ -2693,6 +2693,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           } else if (submilestone.children !== undefined) {
             for (let nCountTask = 0; nCountTask < submilestone.children.length; nCountTask = nCountTask + 1) {
               const task = submilestone.children[nCountTask];
+              task.data.subId = submilestone.data.id;
               // if(task.data.parent === undefined){
               //   task.data.parent = 1
               // }
