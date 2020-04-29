@@ -124,7 +124,7 @@ export class OopComponent implements OnInit, OnDestroy {
 
     oopColArray = {
         ProjectCode: [],
-        ShortTitle:[],
+        ShortTitle: [],
         SOWValue: [],
         ProjectMileStone: [],
         POValues: [],
@@ -526,14 +526,22 @@ export class OopComponent implements OnInit, OnDestroy {
         const todaysDateTimeZero = new Date();
         const projectData = this.projectInfoData.find(e => e.ProjectCode === data.ProjectCode);
         todaysDateTimeZero.setHours(0, 0, 0, 0);
-        if (date >= last3Days && date < lastDay && retPO && new Date(retPO.POExpiryDate) >= todaysDateTimeZero && 
-        (projectData && projectData.Status !== this.constantService.projectList.status.InDiscussion &&
-            projectData.Status !== this.constantService.projectList.status.AwaitingCancelApproval && 
-            projectData.Status !== this.constantService.projectList.status.OnHold)) {
+        if (date >= last3Days && date < lastDay && retPO && new Date(retPO.POExpiryDate) >= todaysDateTimeZero &&
+            (projectData && projectData.Status !== this.constantService.projectList.status.InDiscussion &&
+                projectData.Status !== this.constantService.projectList.status.AwaitingCancelApproval &&
+                projectData.Status !== this.constantService.projectList.status.OnHold)) {
             // if (date > last3Days && retPO && new Date(retPO.POExpiryDate) >= new Date()) {
             this.items.push({ label: 'Confirm Invoice', command: (e) => this.openMenuContent(e, data) });
         } else {
-            if (!(date >= last3Days && date <= lastDay)) {
+            if (projectData.Status === this.constantService.projectList.status.InDiscussion ||
+                projectData.Status === this.constantService.projectList.status.AwaitingCancelApproval ||
+                projectData.Status === this.constantService.projectList.status.OnHold) {
+                this.messageService.add({
+                    key: 'oopInfoToast', severity: 'info', summary: 'Info message',
+                    detail: 'Project status is ' + projectData.Status + ', so can not confirm the line item.',
+                    life: 4000
+                });
+            } else if (!(date >= last3Days && date <= lastDay)) {
                 this.messageService.add({
                     key: 'oopInfoToast', severity: 'info', summary: 'Info message',
                     detail: 'To confirm the line item, scheduled Date should be between last 3 working days & last date of the current month.',

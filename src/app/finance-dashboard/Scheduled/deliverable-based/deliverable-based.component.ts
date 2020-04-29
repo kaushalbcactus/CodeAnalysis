@@ -128,7 +128,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
 
     deliverableBasedColArray = {
         ProjectCode: [],
-        ShortTitle:[],
+        ShortTitle: [],
         SOWValue: [],
         ProjectMileStone: [],
         POValues: [],
@@ -372,7 +372,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             this.deliverableBasedRes.push({
                 Id: element.ID,
                 ProjectCode: element.Title,
-                ShortTitle : piInfo.Title ? piInfo.Title : '',
+                ShortTitle: piInfo.Title ? piInfo.Title : '',
                 SOWCode: element.SOWCode,
                 SOWValue: sowcn,
                 SOWName: sowItem.Title,
@@ -538,11 +538,19 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         todaysDateTimeZero.setHours(0, 0, 0, 0);
         if (date >= last3Days && date < lastDay && retPO && new Date(retPO.POExpiryDate) >= todaysDateTimeZero &&
             (projectData && projectData.Status !== this.constantService.projectList.status.InDiscussion &&
-                projectData.Status !== this.constantService.projectList.status.AwaitingCancelApproval && 
+                projectData.Status !== this.constantService.projectList.status.AwaitingCancelApproval &&
                 projectData.Status !== this.constantService.projectList.status.OnHold)) {
             this.items.push({ label: 'Confirm Invoice', command: (e) => this.openMenuContent(e, data) });
         } else {
-            if (!(date >= last3Days && date <= lastDay)) {
+            if (projectData.Status === this.constantService.projectList.status.InDiscussion ||
+                projectData.Status === this.constantService.projectList.status.AwaitingCancelApproval ||
+                projectData.Status === this.constantService.projectList.status.OnHold) {
+                    this.messageService.add({
+                        key: 'deliverableInfoToast', severity: 'info', summary: 'Info message',
+                        detail: 'Project status is '+ projectData.Status +', so can not confirm the line item.',
+                        life: 4000
+                    });
+            } else if (!(date >= last3Days && date <= lastDay)) {
                 this.messageService.add({
                     key: 'deliverableInfoToast', severity: 'info', summary: 'Info message',
                     detail: 'To confirm the line item, scheduled Date should be between last 3 working days & last date of the current month.',

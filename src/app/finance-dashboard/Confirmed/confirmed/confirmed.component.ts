@@ -702,18 +702,14 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
 
     confirm1() {
         const pInfo = this.getPIByPC(this.selectedRowItem);
-        // console.log('pInfo ', pInfo);
-        this.confirmationService.confirm({
-            message: 'Are you sure that you want to revert the invoice from confirmed to scheduled status?',
-            header: 'Confirmation',
-            icon: 'pi pi-exclamation-triangle',
-            key: 'confirm',
-            accept: () => {
+        console.log('pInfo ', pInfo);
+        this.commonService.confirmMessageDialog('Are you sure that you want to revert the invoice from confirmed to scheduled status?', ['Yes', 'No'], false).then(async Confirmation => {
+            if (Confirmation === 'Yes') {
                 this.msgs = [{ severity: 'info', summary: 'Confirmed', detail: 'You have Confirmed' }];
                 // Call server service here
                 this.onSubmit('revertInvoice');
-            },
-            reject: () => {
+            }
+            else if (Confirmation === 'No') {
                 this.msgs = [{ severity: 'info', summary: 'Cancel', detail: 'You have canceled' }];
             }
         });
@@ -1091,7 +1087,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             if (type === 'revertInvoice') {
                 this.messageService.add({
                     key: 'confirmSuccessToast', severity: 'success', summary: 'Success message',
-                    detail: 'Reverted the invoice from Confirmed to Scheduled.', life: 20000
+                    detail: 'Reverted the invoice of '+ this.selectedRowItem.ProjectCode +' from Confirmed to Scheduled.', life: 20000
                 });
                 this.reFetchData();
             } else if (type === 'editInvoice') {
