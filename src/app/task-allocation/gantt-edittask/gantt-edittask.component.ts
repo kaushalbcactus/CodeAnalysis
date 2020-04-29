@@ -237,6 +237,8 @@ export class GanttEdittaskComponent implements OnInit {
     if (task.itemType !== 'Client Review' && task.itemType !== 'Send to client' && task.slotType !== 'Slot') {
       if (task.budgetHours && task.pUserStartDatePart.getTime() !== task.pUserEndDatePart.getTime()) {
         this.isViewAllocation = true;
+      } else {
+        this.isViewAllocation = false;
       }
     }
   }
