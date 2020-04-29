@@ -106,8 +106,9 @@ export class GanttEdittaskComponent implements OnInit {
       this.editTaskObject.isTat = false;
     }
 
+    const startTime = this.setMinutesAfterDrag(task.pUserStart);
+    const endTime = this.setMinutesAfterDrag(task.pUserEnd);
     this.isViewAllocationBtn(task);
-
     this.editTaskForm.patchValue({
       budgetHrs: task.budgetHours,
       startDate: task.pUserStart,
@@ -115,8 +116,8 @@ export class GanttEdittaskComponent implements OnInit {
       tat: task.tat,
       disableCascade: task.DisableCascade,
       resource: task.AssignedTo,
-      startDateTimePart: this.getTimePart(task.pUserStart),
-      endDateTimePart: this.getTimePart(task.pUserEnd),
+      startDateTimePart: startTime,
+      endDateTimePart: endTime,
     });
 
     if (task.tat) {
@@ -229,6 +230,16 @@ export class GanttEdittaskComponent implements OnInit {
       await this.dailyAllocateTask(resources, this.task);
     });
 
+  }
+
+  setMinutesAfterDrag(date){
+    let time: any = this.getTimePart(date);
+    time = time.split(':')
+    let h = parseInt(time[0])
+    let m =  parseInt(time[1].split(' ')[0])
+    let ampm = time[1].split(' ')[1]
+    let minutes = (Math.round(m/15) * 15) % 60;
+    return h + ':' + minutes + ' ' + ampm;
   }
 
   isViewAllocationBtn(task) {

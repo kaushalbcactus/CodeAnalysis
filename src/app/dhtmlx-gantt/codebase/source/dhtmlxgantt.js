@@ -26063,7 +26063,7 @@ function createTaskDND(timeline, gantt){
 		_finalize_mouse_up: function(taskId, config, drag, e){
             var ev = gantt.getTask(taskId);
             var originalEvt = gantt.copy(ev);
-            debugger;
+            
 			if (config.work_time && config.correct_work_time) {
 				this._fix_working_times(ev, drag);
 			}

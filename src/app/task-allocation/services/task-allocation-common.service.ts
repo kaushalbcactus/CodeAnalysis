@@ -14,6 +14,7 @@ export class TaskAllocationCommonService {
 
   ganttParseObject: any = {}
   allTasks: any = {}
+  attachedEvents = [];
 
   getResourceByMatrix(task, allTasks) {
     let resources = this.sharedObject.oTaskAllocation.oResources;
