@@ -124,6 +124,7 @@ export class OopComponent implements OnInit, OnDestroy {
 
     oopColArray = {
         ProjectCode: [],
+        ShortTitle:[],
         SOWValue: [],
         ProjectMileStone: [],
         POValues: [],
@@ -260,11 +261,11 @@ export class OopComponent implements OnInit, OnDestroy {
     createANBCols() {
         this.oopBasedCols = [
             { field: 'ProjectCode', header: 'Project Code', visibility: true },
-            { field: 'ProjectTitle', header: 'Project Title', visibility: false },
+            { field: 'ShortTitle', header: 'Short Title', visibility: true },
             { field: 'SOWValue', header: 'SOW Code/ Name', visibility: true },
             { field: 'ProjectMileStone', header: 'Project Milestone', visibility: true },
             { field: 'POValues', header: 'PO Number/ Name', visibility: true },
-            { field: 'ClientName', header: 'Client LE', visibility: true },
+            { field: 'ClientName', header: 'Client', visibility: true },
             { field: 'ScheduledDateFormat', header: 'Scheduled Date', visibility: false },
             { field: 'ScheduledDate', header: 'Scheduled Date', visibility: true, exportable: false },
             { field: 'Amount', header: 'Amount', visibility: true },
@@ -352,7 +353,7 @@ export class OopComponent implements OnInit, OnDestroy {
             this.oopBasedRes.push({
                 Id: element.ID,
                 ProjectCode: element.Title,
-                ProjectTitle: piInfo.Title ? piInfo.Title : '',
+                ShortTitle: piInfo.Title ? piInfo.Title : '',
                 SOWCode: element.SOWCode,
                 SOWName: sowItem.Title,
                 SOWValue: sowcn,
@@ -452,6 +453,7 @@ export class OopComponent implements OnInit, OnDestroy {
 
     createColFieldValues(resArray) {
         this.oopColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
+        this.oopColArray.ShortTitle = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ShortTitle, value: a.ShortTitle }; return b; }).filter(ele => ele.label)));
         this.oopColArray.SOWValue = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.SOWValue, value: a.SOWValue }; return b; }).filter(ele => ele.label)));
         this.oopColArray.ProjectMileStone = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }).filter(ele => ele.label)));
         this.oopColArray.POValues = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.POValues, value: a.POValues }; return b; }).filter(ele => ele.label)));

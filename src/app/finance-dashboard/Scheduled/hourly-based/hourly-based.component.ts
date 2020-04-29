@@ -120,6 +120,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
 
     hourlyBasedColArray = {
         ProjectCode: [],
+        ShortTitle:[],
         SOWValue: [],
         ProjectMileStone: [],
         ClientLegalEntity: [],
@@ -272,10 +273,10 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     createHBCCols() {
         this.hourlyBasedCols = [
             { field: 'ProjectCode', header: 'Project Code', visibility: true },
-            { field: 'ProjectTitle', header: 'Project Title', visibility: false },
+            { field: 'ShortTitle', header: 'Short Title', visibility: true },
             { field: 'SOWValue', header: 'SOW Code/ Name', visibility: true },
             { field: 'ProjectMileStone', header: 'Project Milestone', visibility: true },
-            { field: 'ClientLegalEntity', header: 'Clent LE', visibility: true },
+            { field: 'ClientLegalEntity', header: 'Client', visibility: true },
             { field: 'PONumber', header: 'PO Number', visibility: true },
             { field: 'POName', header: 'PO Name', visibility: true },
             { field: 'POCName', header: 'POC Name', visibility: true },
@@ -339,7 +340,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                     this.hourlyBasedRes.push({
                         Id: this.projectCodes[p].ID,
                         ProjectCode: this.projectCodes[p].ProjectCode,
-                        ProjectTitle: piInfo.Title ? piInfo.Title : '',
+                        ShortTitle: piInfo.Title ? piInfo.Title : '',
                         SOWCode: this.projectCodes[p].SOWCode,
                         SOWValue: this.projectCodes[p].SOWCode + ' / ' + sowItem.Title,
                         SOWName: sowItem.Title,
@@ -446,6 +447,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
 
     createColFieldValues(resArray) {
         this.hourlyBasedColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
+        this.hourlyBasedColArray.ShortTitle = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ShortTitle, value: a.ShortTitle }; return b; }).filter(ele => ele.label)));
         this.hourlyBasedColArray.SOWValue = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.SOWValue, value: a.SOWValue }; return b; }).filter(ele => ele.label)));
         this.hourlyBasedColArray.ProjectMileStone = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }).filter(ele => ele.label)));
         this.hourlyBasedColArray.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));

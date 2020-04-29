@@ -2073,6 +2073,8 @@ export class EditorComponent implements OnInit {
     }
 
     editable(id: string) {
+
+        debugger;
         this.elementId = id;
         if (id === 'contact_details') {
             this.heading = 'Contact Details';

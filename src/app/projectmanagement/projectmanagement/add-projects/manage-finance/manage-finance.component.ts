@@ -24,6 +24,7 @@ export class ManageFinanceComponent implements OnInit {
   @Input() billedBy: any;
   @Output() budgetOutputData = new EventEmitter<any>();
   addPOForm: FormGroup;
+  reasonsArray = [];
   existBudgetArray: any = [];
   existPBBBudgetArray: any = [];
   existPOArray: any = [];
@@ -1183,11 +1184,28 @@ export class ManageFinanceComponent implements OnInit {
     const currentDate = new Date();
     const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
     const last3Days = this.commonService.getLastWorkingDay(3, new Date());
-
+    debugger;
     if (invoice.date >= last3Days && invoice.date < lastDay && invoice.amount > 0 &&
       POObj.POCategory !== 'Client PO Pending' && new Date(POObj.POExpiryDate) >= new Date()) {
       return true;
     } else {
+      if (invoice.date < last3Days) {
+        this.reasonsArray.push('Invoice date should be greater than ' + this.datePipe.transform(last3Days, 'MMM dd,yyyy'));
+      }
+      if (invoice.date >= lastDay) {
+        this.reasonsArray.push('Invoice date should be less than ' + this.datePipe.transform(lastDay, 'MMM dd,yyyy'));
+      }
+      if (invoice.amount <= 0) {
+        this.reasonsArray.push('Invoice amount should be greater than 0');
+      }
+      if (new Date(POObj.POExpiryDate) < new Date()) {
+        this.reasonsArray.push('Po expiry date should be greater than or equal to today');
+      }
+      if (POObj.POCategory === 'Client PO Pending') {
+        this.reasonsArray.push('Po category should not be equal to Client PO Pending');
+      }
+
+
       return false;
     }
   }
@@ -1913,10 +1931,10 @@ export class ManageFinanceComponent implements OnInit {
                   DueDate: months[i].monthEndDay,
                 };
 
-                if(milestone.Title !== dbProposedDateMonth){
+                if (milestone.Title !== dbProposedDateMonth) {
                   milestoneUpdate.data.Status = this.constant.STATUS.NOT_CONFIRMED;
-                  milestoneUpdate.data.Actual_x0020_Start_x0020_Date=months[i].monthStartDay;
-                  milestoneUpdate.data.StartDate=months[i].monthStartDay;
+                  milestoneUpdate.data.Actual_x0020_Start_x0020_Date = months[i].monthStartDay;
+                  milestoneUpdate.data.StartDate = months[i].monthStartDay;
                 }
                 milestoneUpdate.type = 'PATCH';
                 milestoneUpdate.listName = this.constant.listNames.Schedules.name;
@@ -1940,10 +1958,10 @@ export class ManageFinanceComponent implements OnInit {
                     taskUpdate.data.ExpectedTime = '' + businessDay * Resources[0].MaxHrs;
                   }
 
-                  if(milestone.Title !== dbProposedDateMonth){
+                  if (milestone.Title !== dbProposedDateMonth) {
                     taskUpdate.data.Status = this.constant.STATUS.NOT_CONFIRMED;
-                    taskUpdate.data.Actual_x0020_Start_x0020_Date=months[i].monthStartDay;
-                    taskUpdate.data.StartDate=months[i].monthStartDay;
+                    taskUpdate.data.Actual_x0020_Start_x0020_Date = months[i].monthStartDay;
+                    taskUpdate.data.StartDate = months[i].monthStartDay;
                   }
                   taskUpdate.type = 'PATCH';
                   taskUpdate.listName = this.constant.listNames.Schedules.name;

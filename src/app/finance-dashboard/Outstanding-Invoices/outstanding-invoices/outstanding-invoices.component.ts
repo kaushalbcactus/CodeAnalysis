@@ -264,7 +264,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
 
     createOutstandingInvoiceCols() {
         this.outstandingInCols = [
-            { field: 'ClientLegalEntity', header: 'Client LE', visibility: true },
+            { field: 'ClientLegalEntity', header: 'Client', visibility: true },
             { field: 'InvoiceStatus', header: 'Invoice Status', visibility: true },
             { field: 'InvoiceNumber', header: 'Invoice Number', visibility: true },
             { field: 'POName', header: 'PO Name', visibility: true },

@@ -291,7 +291,7 @@ export class TimeSpentDialogComponent implements OnInit {
       Actual_x0020_Start_x0020_Date: ActualStartDate,
       TimeSpent: totalTimeSpent,
       TimeSpentPerDay: timeSpentString,
-      Status: task.Status === this.constants.STATUS.NOT_CONFIRMED ? this.constants.STATUS.IN_PROGRESS : task.Status,
+      Status: task.Status === this.constants.STATUS.NOT_STARTED ? this.constants.STATUS.IN_PROGRESS : task.Status,
       ActiveCA: 'No'
     };
 
@@ -307,7 +307,7 @@ export class TimeSpentDialogComponent implements OnInit {
     batchURL.push(taskUpdate);
 
 
-    if (task.Status === this.constants.STATUS.NOT_CONFIRMED) {
+    if (task.Status === this.constants.STATUS.NOT_STARTED) {
 
       const ProjectInformation = await this.myDashboardConstantsService.getCurrentTaskProjectInformation(task.ProjectCode);
 

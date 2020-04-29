@@ -210,8 +210,15 @@
                                     <td>{{rowData.pocText}}</td>
                                     <td>{{rowData.address}}</td>
                                     <td>
-                                        <i *ngIf="rowData.isInvoiceItemConfirm"  class="pi pi-check"  style="font-size:2em;cursor: pointer;" (click)="confirmInvoiceItem(rowData)"></i>
-                                        <i *ngIf="rowData.isInvoiceItemEdit"  class="pi pi-pencil"  style="font-size:2em;cursor: pointer;" (click)="editInvoiceItem(rowData)"></i>
+                                        <i *ngIf="rowData.isInvoiceItemConfirm"  class="pi pi-check"  style="font-size:2em;cursor: pointer;vertical-align: middle;" (click)="confirmInvoiceItem(rowData)"></i>
+                                        <i *ngIf="!rowData.isInvoiceItemConfirm" class="pi pi-info-circle" (click)="op2.show($event)" style="font-size:2em;cursor: pointer; vertical-align: middle;"></i>
+                                        <i *ngIf="rowData.isInvoiceItemEdit"  class="pi pi-pencil"  style="font-size:2em;cursor: pointer;vertical-align: middle;" (click)="editInvoiceItem(rowData)"></i>
+
+                                        <p-overlayPanel appendTo="body" #op2 [dismissable]="true">
+                                            <ul *ngIf="reasonsArray">
+                                                <li *ngFor='let reson of reasonsArray'>{{reson}}</li>
+                                            </ul>
+                                        </p-overlayPanel>
                                     </td>
                                 </tr>
                             </ng-template>
