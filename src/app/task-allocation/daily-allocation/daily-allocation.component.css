@@ -1,14 +1,15 @@
 .budgetHr:focus {
   box-shadow: none;
 }
-::ng-deep .footer .ui-button{
+/* ::ng-deep .footer .ui-button{
   background-color: #c53e3e !important;
   border: 1px solid #C53E3D !important;
-}
+} */
 
 .footer {
-  text-align: right;
-  margin-top: 10px;
+  position: fixed !important;
+  width: 100% !important;
+  margin: -50px !important;
 }
 
 .pBtnCancel {

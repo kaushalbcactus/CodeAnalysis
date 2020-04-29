@@ -951,10 +951,15 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   createGanttDataAndLinks() {
     let task: any;
     this.linkArray = [];
-
+    debugger;
     let milestones = this.GanttchartData.filter(e => e.type == 'milestone')
     milestones.map(m => {
-      m.end_date = new Date(new Date(m.end_date).setHours(23, 59, 59, 59));
+      const getClientReview = this.GanttchartData.find(e=>e.itemType === 'Client Review' && e.milestone === m.taskFullName);
+      if(getClientReview) {
+        m.end_date = new Date(getClientReview.start_date);
+      } else {
+        m.end_date = new Date(new Date(m.end_date).setHours(23, 59, 59, 59));
+      }
       return m;
     });
     const indexes = this.GanttchartData.reduce((r, e, i) => {
@@ -1093,15 +1098,21 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   loadComponent() {
     this.selectedScale = this.selectedScale || { label: 'Day Scale', value: '1' };
-
     this.ganttChart.clear();
     this.ganttChart.remove();
     const factory = this.resolver.resolveComponentFactory(GanttChartComponent);
     this.ganttComponentRef = this.ganttChart.createComponent(factory);
     gantt.serverList("AssignedTo", this.resource);
     // this.ganttComponentRef.instance.isLoaderHidden = false;
+    let firstTaskStart = new Date(this.taskAllocateCommonService.ganttParseObject.data[0].start_date);
+    firstTaskStart = new Date(firstTaskStart.setDate(-1));
+    gantt.config.start_date = new Date(firstTaskStart.getFullYear(), firstTaskStart.getMonth() ,firstTaskStart.getDate(), 0, 0);
+    let lastTaskEnd = new Date(this.taskAllocateCommonService.ganttParseObject.data[this.taskAllocateCommonService.ganttParseObject.data.length - 1].end_date);
+    lastTaskEnd = new Date(lastTaskEnd.setDate(lastTaskEnd.getDate() + 31));
+    gantt.config.end_date= new Date(lastTaskEnd.getFullYear(), lastTaskEnd.getMonth() ,lastTaskEnd.getDate(), 0, 0);
     gantt.init(this.ganttComponentRef.instance.ganttContainer.nativeElement);
     gantt.clearAll();
+    
     this.ganttComponentRef.instance.onLoad(this.taskAllocateCommonService.ganttParseObject, this.resource);
     this.setScale(this.selectedScale);
     this.allTaskData = this.taskAllocateCommonService.ganttParseObject;
