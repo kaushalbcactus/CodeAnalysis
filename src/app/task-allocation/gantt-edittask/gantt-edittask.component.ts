@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewEncapsulation, EventEmitter, Output } from '@angular/core';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { DynamicDialogConfig, DynamicDialogRef, DialogService, MessageService, TreeNode } from 'primeng';
 import { DatePipe } from '@angular/common';
@@ -6,7 +6,6 @@ import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
 import { GlobalService } from 'src/app/Services/global.service';
 import { IDailyAllocationTask, IMilestoneTask } from '../interface/allocation';
 import { DailyAllocationComponent } from '../daily-allocation/daily-allocation.component';
-import { DailyAllocationOverlayComponent } from '../daily-allocation-overlay/daily-allocation-overlay.component';
 import { TaskAllocationCommonService } from '../services/task-allocation-common.service';
 import { CommonService } from 'src/app/Services/common.service';
 
@@ -18,6 +17,10 @@ import { CommonService } from 'src/app/Services/common.service';
   encapsulation: ViewEncapsulation.None
 })
 export class GanttEdittaskComponent implements OnInit {
+  private cascadingObject = {
+    node: {} as any,
+    type: ''
+  };
   editTaskForm: FormGroup;
   task: any;
   assignedUsers: any;
@@ -30,7 +33,6 @@ export class GanttEdittaskComponent implements OnInit {
   milestoneDataCopy: any = [];
   allTasks = [];
   allRestructureTasks = [];
-  // @ViewChild('dailyAllocateOP', { static: false }) dailyAllocateOP: DailyAllocationOverlayComponent;
 
 
   darkTheme: NgxMaterialTimepickerTheme = {
@@ -81,11 +83,13 @@ export class GanttEdittaskComponent implements OnInit {
     this.milestoneDataCopy = this.config.data.milestoneDataCopy;
     this.allRestructureTasks = this.config.data.allRestructureTasks;
     this.allTasks = this.allTasks;
-    this.onLoad(this.task);
+    const clickedInputType = this.config.data.clickedInputType;
+    this.onLoad(this.task, clickedInputType);
   }
 
-  async onLoad(task) {
-
+  async onLoad(task, clickedInputType) {
+    this.cascadingObject.node = clickedInputType ? task : '';
+    this.cascadingObject.type = clickedInputType;
     if (task.itemType === 'Client Review' || task.itemType === 'Send to client') {
       let bHrs = 0 || task.budgetHours;
       this.editTaskForm.get('budgetHrs').setValue(bHrs);
@@ -102,20 +106,19 @@ export class GanttEdittaskComponent implements OnInit {
       this.editTaskObject.isTat = false;
     }
 
-    let startTime = this.setMinutesAfterDrag(task.start_date);
-    let endTime = this.setMinutesAfterDrag(task.end_date);
-    this.isViewAllocationBtn(task)
-    
+    const startTime = this.setMinutesAfterDrag(task.pUserStart);
+    const endTime = this.setMinutesAfterDrag(task.pUserEnd);
+    this.isViewAllocationBtn(task);
     this.editTaskForm.patchValue({
       budgetHrs: task.budgetHours,
-      startDate: task.start_date,
-      endDate: task.end_date,
+      startDate: task.pUserStart,
+      endDate: task.pUserEnd,
       tat: task.tat,
       disableCascade: task.DisableCascade,
       resource: task.AssignedTo,
       startDateTimePart: startTime,
       endDateTimePart: endTime,
-    })
+    });
 
     if (task.tat) {
       this.isTaskTAT(task);
@@ -128,7 +131,6 @@ export class GanttEdittaskComponent implements OnInit {
     });
 
     this.editTaskForm.get('resource').valueChanges.subscribe(async resource => {
-      console.log(resource)
       this.task.AssignedTo = resource;
       this.task.res_id = resource;
       this.task.user = resource.Title;
@@ -138,14 +140,14 @@ export class GanttEdittaskComponent implements OnInit {
       await this.dailyAllocateTask(resources, this.task);
       let task = await this.assignedToUserChanged();
 
-      let startDate = task.start_date;
-      let endDate = task.end_date;
+      let startDate = task.pUserStart;
+      let endDate = task.pUserEnd;
       this.editTaskForm.patchValue({
         startDate: startDate,
         endDate: endDate,
-        startDateTimePart: this.getTimePart(task.start_date),
-        endDateTimePart: this.getTimePart(task.end_date),
-      })
+        startDateTimePart: this.getTimePart(task.pUserStart),
+        endDateTimePart: this.getTimePart(task.pUserEnd),
+      });
     });
 
 
@@ -166,14 +168,15 @@ export class GanttEdittaskComponent implements OnInit {
         return this.task.AssignedTo.ID === objt.UserName.ID;
       });
 
-      let start_date = new Date(this.datepipe.transform(startDate, 'MMM d, y') + ' ' +  this.editTaskForm.get('startDateTimePart').value);
-      this.task.start_date = start_date
-      this.task.pUserStart = start_date
+      const start_date = new Date(this.datepipe.transform(startDate, 'MMM d, y') + ' ' +  this.editTaskForm.get('startDateTimePart').value);
+      this.task.start_date = this.commonService.calcTimeForDifferentTimeZone(start_date, task.assignedUserTimeZone,
+                              this.globalService.currentUser.timeZone);
+      this.task.pUserStart = start_date;
       this.task.pUserStartDatePart = this.getDatePart(start_date);
       this.task.pUserStartTimePart = this.getTimePart(start_date);
-
-      this.isViewAllocationBtn(task)
-
+      this.cascadingObject.node = this.task;
+      this.cascadingObject.type = 'start';
+      this.isViewAllocationBtn(task);
       await this.dailyAllocateTask(resources, this.task);
     });
 
@@ -182,13 +185,15 @@ export class GanttEdittaskComponent implements OnInit {
         return this.task.AssignedTo.ID === objt.UserName.ID;
       });
 
-      let end_date = new Date(this.datepipe.transform(endDate, 'MMM d, y') + ' ' +  this.editTaskForm.get('endDateTimePart').value);;
-      this.task.end_date = end_date;
+      const end_date = new Date(this.datepipe.transform(endDate, 'MMM d, y') + ' ' +  this.editTaskForm.get('endDateTimePart').value);;
+      this.task.end_date = this.commonService.calcTimeForDifferentTimeZone(end_date, task.assignedUserTimeZone,
+                            this.globalService.currentUser.timeZone);
       this.task.pUserEnd = end_date;
       this.task.pUserEndDatePart = this.getDatePart(end_date);
       this.task.pUserEndTimePart = this.getTimePart(end_date);
-
-      this.isViewAllocationBtn(task)
+      this.cascadingObject.node = this.task;
+      this.cascadingObject.type = 'end';
+      this.isViewAllocationBtn(task);
 
       await this.dailyAllocateTask(resources, this.task);
     });
@@ -199,11 +204,13 @@ export class GanttEdittaskComponent implements OnInit {
       });
 
       let start_date = new Date(this.datepipe.transform(this.editTaskForm.get('startDate').value, 'MMM d, y') + ' ' +  startTime);;
-      this.task.end_date = start_date;
-      this.task.pUserEnd = start_date;
-      this.task.pUserEndDatePart = this.getDatePart(start_date);
-      this.task.pUserEndTimePart = this.getTimePart(start_date);
-
+      this.task.start_date = this.commonService.calcTimeForDifferentTimeZone(start_date, task.assignedUserTimeZone,
+                              this.globalService.currentUser.timeZone);
+      this.task.pUserStart = start_date;
+      this.task.pUserStartDatePart = this.getDatePart(start_date);
+      this.task.pUserStartTimePart = this.getTimePart(start_date);
+      this.cascadingObject.node = this.task;
+      this.cascadingObject.type = 'start';
       await this.dailyAllocateTask(resources, this.task);
     });
 
@@ -212,12 +219,14 @@ export class GanttEdittaskComponent implements OnInit {
         return this.task.AssignedTo.ID === objt.UserName.ID;
       });
 
-      let end_date = new Date(this.datepipe.transform(this.editTaskForm.get('endDateTimePart').value, 'MMM d, y') + ' ' +  endTime);;
-      this.task.end_date = end_date;
+      let end_date = new Date(this.datepipe.transform(this.editTaskForm.get('endDate').value, 'MMM d, y') + ' ' +  endTime);;
+      this.task.end_date = this.commonService.calcTimeForDifferentTimeZone(end_date, task.assignedUserTimeZone,
+                            this.globalService.currentUser.timeZone);
       this.task.pUserEnd = end_date;
       this.task.pUserEndDatePart = this.getDatePart(end_date);
       this.task.pUserEndTimePart = this.getTimePart(end_date);
-
+      this.cascadingObject.node = this.task;
+      this.cascadingObject.type = 'end';
       await this.dailyAllocateTask(resources, this.task);
     });
 
@@ -230,7 +239,7 @@ export class GanttEdittaskComponent implements OnInit {
     let m =  parseInt(time[1].split(' ')[0])
     let ampm = time[1].split(' ')[1]
     let minutes = (Math.round(m/15) * 15) % 60;
-    return h + ':' + minutes + ' ' + ampm; 
+    return h + ':' + minutes + ' ' + ampm;
   }
 
   isViewAllocationBtn(task) {
@@ -244,11 +253,11 @@ export class GanttEdittaskComponent implements OnInit {
   }
 
   isTaskTAT(task) {
-    let startDate = new Date(task.start_date.getFullYear(), task.start_date.getMonth(), task.start_date.getDate(), 9, 0)
-    let endDate = new Date(task.end_date.getFullYear(), task.end_date.getMonth(), task.end_date.getDate(), 19, 0)
+    const startDate = new Date(task.start_date.getFullYear(), task.start_date.getMonth(), task.start_date.getDate(), 9, 0)
+    const endDate = new Date(task.end_date.getFullYear(), task.end_date.getMonth(), task.end_date.getDate(), 19, 0);
     this.editTaskForm.patchValue({
-      startDate: startDate,
-      endDate: endDate,
+      startDate,
+      endDate,
       startDateTimePart: this.getTimePart(startDate),
       endDateTimePart: this.getTimePart(endDate),
     })
@@ -256,20 +265,22 @@ export class GanttEdittaskComponent implements OnInit {
 
   saveTask(): void {
     if (this.editTaskForm.valid) {
-      let obj = {
+      const obj = {
         updatedTask: this.editTaskForm,
         reset: false,
-      }
-      this.editTaskRef.close(obj)
+        cascadingObject: this.cascadingObject
+      };
+      this.editTaskRef.close(obj);
     }
   }
 
   reset() {
-    let obj = {
+    const obj = {
       updatedTask: this.editTaskForm,
       reset: true,
-    }
-    this.editTaskRef.close(obj)
+      cascadingObject: {}
+    };
+    this.editTaskRef.close(obj);
   }
 
   getDatePart(date) {
@@ -291,8 +302,8 @@ export class GanttEdittaskComponent implements OnInit {
       data: {
         ID: this.task.id,
         task: this.task.taskFullName,
-        startDate: this.task.start_date,
-        endDate: this.task.end_date,
+        startDate: this.task.pUserStart,
+        endDate: this.task.pUserEnd,
         budgetHrs: this.task.budgetHours,
         resource: this.task.resources,
         strAllocation: this.task.allocationPerDay,

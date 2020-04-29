@@ -739,3 +739,11 @@ body .ui-dropdown-panel .ui-dropdown-filter-container .ui-dropdown-filter-icon {
     padding-left: 10px;
     line-height: 230%;
   }
+
+  
+  .gantt_task_drag.task_left.task_start_date {
+    background-color: #FF3E56 !important;
+  }
+  .gantt_task_drag.task_right.task_end_date {
+    background-color: darkgreen !important;
+  }

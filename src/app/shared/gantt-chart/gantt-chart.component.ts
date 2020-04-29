@@ -379,9 +379,10 @@ export class GanttChartComponent implements OnInit {
 
       this.singleTask = task
       return "<h3>" + task.text + "</h3>" +
-        "<b>Start date:</b> " +
-        gantt.templates.tooltip_date_format(task.start_date) +
+        "<b>Start date:</b> " + gantt.templates.tooltip_date_format(task.start_date) +
         "<br/><b>End date:</b> " + gantt.templates.tooltip_date_format(task.end_date) +
+        "<br/><b>User start date:</b> " + gantt.templates.tooltip_date_format(task.pUserStart) +
+        "<br/><b>User end date:</b> " + gantt.templates.tooltip_date_format(task.pUserEnd) +
         "<br/><b>Duration:</b> " + gantt.calculateDuration(task) + "<br/><b>Status:</b> " + task.status +
         "<br/><b>Resource:</b> " + getResource(task) + "<br/><b>Budget Hrs:</b> " + task.budgetHours +
         "<br/><b>Spent Hrs:</b> " + task.spentTime;
@@ -540,7 +541,7 @@ export class GanttChartComponent implements OnInit {
     gantt.config.skip_off_time = true;
 
 
-    gantt.ignore_time = function(date) {
+    gantt.ignore_time = function (date) {
       if (date.getDay() == 0 || date.getDay() == 6)
         return true;
     };

@@ -927,7 +927,7 @@ export class CommonService {
     }
 
     convertTo24Hour(time) {
-      time = time.toUpperCase();
+      time = time.replace(':','.').toUpperCase();
       let hours = +(time.substr(0, 2));
       if(time.indexOf('AM') != -1 && hours == 12) {
           time = time.replace('12', '0');
