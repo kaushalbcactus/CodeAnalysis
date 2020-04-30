@@ -1433,7 +1433,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       let task = this.currentTask;
       //gantt.getTask(id);
       const isStartDate =  this.dragClickedInput.indexOf('start_date') > -1 ? true : false;
-      this.updateDates(e, task, isStartDate);
+      // this.updateDates(e, task, isStartDate);
       if (task.status !== 'Completed' || task.type == 'milestone') {
         isStartDate ? this.openPopupOnGanttTask(task, 'start') : this.openPopupOnGanttTask(task, 'end');
         return true;
@@ -1445,22 +1445,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   }
 
-  updateDates(e, task, isStartDate) {
-    // const isStartDate = e.srcElement.className.indexOf('start_date') > -1 ? true : false;
-    if (isStartDate) {
-      task.pUserStart = this.commonService.calcTimeForDifferentTimeZone(task.start_date,
-        this.sharedObject.currentUser.timeZone, task.assignedUserTimeZone);
-      task.pUserStartDatePart = this.getDatePart(task.pUserStart);
-      task.pUserStartTimePart = this.getTimePart(task.pUserStart);
-      // this.DateChangePart(task, 'start')
-    } else {
-      task.pUserEnd = this.commonService.calcTimeForDifferentTimeZone(task.end_date,
-        this.sharedObject.currentUser.timeZone, task.assignedUserTimeZone);
-      task.pUserEndDatePart = this.getDatePart(task.pUserEnd);
-      task.pUserEndTimePart = this.getTimePart(task.pUserEnd);
-      // this.DateChangePart(task, 'end')
-    }
-  }
+
 
 
   openPopupOnGanttTask(task, clickedInputType) {
@@ -1715,10 +1700,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     } else if (updatedDataObj.reset) {
       this.close();
     } else {
-      let updatedTask = updatedDataObj.updatedTask
+      // let updatedTask = updatedDataObj.updatedTask
       const cascadingObject = updatedDataObj.cascadingObject;
       if (Object.keys(cascadingObject).length) {
-        this.DateChangePart(cascadingObject.node, cascadingObject.type);
+        this.DateChange(cascadingObject.node, cascadingObject.type);
       }
       let allTasks = {
         data: []
