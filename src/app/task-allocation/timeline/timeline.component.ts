@@ -68,6 +68,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   };
   min_date;
   max_date;
+  startDate;
+  endDate;
   public colors = [
     {
       key: 'Not Confirmed',
@@ -1159,6 +1161,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           showMenus(task);
           this.menu.loadStruct(menus);
           this.currentTaskId = taskId;
+          this.startDate = task.start_date;
+          this.endDate = task.end_date;
           this.resetTask = task;
           let x = event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft,
             y = event.clientY + document.body.scrollTop + document.documentElement.scrollTop;
@@ -1393,13 +1397,15 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.taskAllocateCommonService.attachedEvents.push(onTaskOpened);
     const onBeforeTaskChanged = gantt.attachEvent("onBeforeTaskChanged", (id, mode, task) => {
       this.allTaskData = gantt.serialize();
-      this.resetTask = task;
       this.currentTask = task;
       return true;
     });
     this.taskAllocateCommonService.attachedEvents.push(onBeforeTaskChanged);
     const onBeforeTaskDrag = gantt.attachEvent("onBeforeTaskDrag", (id, mode, e) => {
       let task = gantt.getTask(id)
+      this.startDate = task.start_date;
+      this.endDate = task.end_date;
+      this.resetTask = task;
       this.dragClickedInput =  e.srcElement.className;
       if (gantt.ext.zoom.getCurrentLevel() < 3) {
         if (task.status == 'Completed' || task.status == "Auto Closed" || task.type == "milestone" || task.type === 'submilestone') {
@@ -1815,8 +1821,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         }
       }
       if (task.id == this.resetTask.id) {
-        task.start_date = this.resetTask.pUserStart;
-        task.end_date = this.resetTask.pUserEnd;
+        task.start_date = this.startDate;
+        task.end_date = this.endDate;
         task.pUserStart = this.resetTask.pUserStart;
         task.pUserEnd = this.resetTask.pUserEnd;
         task.pUserStartDatePart = this.resetTask.pUserStartDatePart;
@@ -1830,8 +1836,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           task.pUserStartTimePart = this.getTimePart(this.resetTask.pUserStart);
           task.pUserEndDatePart = this.getDatePart(this.resetTask.pUserEnd);
           task.pUserEndTimePart = this.getTimePart(this.resetTask.pUserEnd);
-          task.start_date = new Date(this.resetTask.pUserStart.getFullYear(), this.resetTask.pUserStart.getMonth(), this.resetTask.pUserStart.getDate(), 9, 0);
-          task.end_date = new Date(this.resetTask.pUserEnd.getFullYear(), this.resetTask.pUserEnd.getMonth(), this.resetTask.pUserEnd.getDate(), 19, 0);
+          task.start_date = new Date(this.startDate.getFullYear(), this.startDate.getMonth(), this.startDate.getDate(), 9, 0);
+          task.end_date = new Date(this.endDate.getFullYear(), this.endDate.getMonth(), this.endDate.getDate(), 19, 0);
         }
       }
       if (task.title.replace(' (Current)', '') === this.resetTask.milestone || task.title === this.resetTask.milestone) {
