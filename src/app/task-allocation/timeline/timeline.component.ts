@@ -4160,6 +4160,10 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   LinkScToClientReview(milestoneTasks) {
 
+    milestoneTasks.filter(c=>c.itemType ==='Send to client' && c.nextTask && c.nextTask === 'Client Review').forEach(sc => {
+      sc.nextTask = null;
+      sc.edited = true;
+    });
     const LatestSCDate = new Date(Math.max.apply(null, milestoneTasks.filter(c => c.itemType === 'Send to client').map(c => c.pUserEnd)));
 
     const LatestSC = milestoneTasks.find(c => c.itemType === 'Send to client' &&

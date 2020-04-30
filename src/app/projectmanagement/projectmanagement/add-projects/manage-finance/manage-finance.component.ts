@@ -1179,7 +1179,7 @@ export class ManageFinanceComponent implements OnInit {
   }
 
   lineItemConfirmAllowed(invoice) {
-
+    this.reasonsArray = [];
     const POObj = this.poArray.find(c => c.Id === invoice.poId);
     const currentDate = new Date();
     const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
@@ -1445,7 +1445,7 @@ export class ManageFinanceComponent implements OnInit {
           invoiceObj.currency = this.existBudgetArray.retItems[0].Currency;
           invoiceObj.proformaLookup = invoiceItem.ProformaLookup;
           invoiceObj.invoiceLookup = invoiceItem.InvoiceLookup;
-
+          this.reasonsArray=[];
           if (invoiceObj.status === 'Scheduled' && invoiceObj.type === 'revenue') {
 
             if (this.projectStatus === this.constant.projectStatus.Unallocated
@@ -1455,6 +1455,9 @@ export class ManageFinanceComponent implements OnInit {
               || this.projectStatus === this.constant.projectStatus.AuthorReview
               || this.projectStatus === this.constant.projectStatus.PendingClosure) {
               invoiceObj.isInvoiceItemConfirm = this.lineItemConfirmAllowed(invoiceObj);
+            }
+            else {
+              this.reasonsArray.push('Project status should not be ' + this.projectStatus);
             }
             if (this.projectStatus === this.constant.projectStatus.Unallocated
               || this.projectStatus === this.constant.projectStatus.InProgress

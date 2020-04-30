@@ -266,7 +266,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         this.outstandingInCols = [
             { field: 'ClientLegalEntity', header: 'Client', visibility: true },
             { field: 'InvoiceStatus', header: 'Invoice Status', visibility: true },
-            { field: 'InvoiceNumber', header: 'Invoice Number', visibility: true },
+            { field: 'DisplayInvoiceWithAuxiliary', header: 'Invoice Number', visibility: true },
             { field: 'POName', header: 'PO Name', visibility: true },
             { field: 'PONumber', header: 'PO Number', visibility: true },
             { field: 'InvoiceDate', header: 'Invoice Date', visibility: true, exportable: false },
@@ -315,40 +315,16 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     // Get Proformas InvoiceItemList
 
     async getRequiredData() {
-        // const batchContents = new Array();
-        // const batchGuid = this.spServices.generateUUID();
-        // let invoicesQuery = '';
-        // if (true) {
-        //     invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.OutInvoices.name + '',
-        //      this.fdConstantsService.fdComponent.invoicesForMangerIT);
-        // } else {
-        //     invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.OutInvoices.name +
-        //      '', this.fdConstantsService.fdComponent.invoicesForNonManger);
-        // }
+      
         const outInvObj = Object.assign({}, this.fdConstantsService.fdComponent.invoicesForMangerIT);
         this.commonService.SetNewrelic('Finance-Dashboard', 'outstanding-invoices', 'invoicesForMangerIT');
-        const res = await this.spServices.readItems(this.constantService.listNames.OutInvoices.name, outInvObj);
-        // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
-
-        // let endPoints = [invoicesQuery];
-        // let userBatchBody = '';
-        // for (let i = 0; i < endPoints.length; i++) {
-        //     const element = endPoints[i];
-        //     this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
-        // }
-        // batchContents.push('--batch_' + batchGuid + '--');
-        // userBatchBody = batchContents.join('\r\n');
-        // let arrResults: any = [];
-        // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
-        // console.log('REs in Outstanding Invoice ', res);
-        const arrResults = res.length ? res : [];
-        // if (arrResults.length) {
+        const res = await this.spServices.readItems(this.constantService.listNames.OutInvoices.name, outInvObj);     
+        const arrResults = res.length ? res : [];  
         this.formatData(arrResults);
-        // }
         this.isPSInnerLoaderHidden = true;
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
         this.setCurrentPage(0);
-        // });
+   
     }
 
     async formatData(data: any[]) {
@@ -357,10 +333,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
             let poItem = this.getPONumber(element);
-            // let resCInfo = await this.fdDataShareServie.getResDetailById(this.rcData, element);
-            // if (resCInfo && resCInfo.hasOwnProperty('UserName') && resCInfo.UserName.hasOwnProperty('Title')) {
-            //     resCInfo = resCInfo.UserName.Title
-            // }
+        
             this.outstandingInvoicesRes.push({
                 Id: element.ID,
                 Amount: element.Amount,
@@ -372,6 +345,8 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 InvoiceDate: new Date(this.datePipe.transform(element.InvoiceDate, 'MMM dd, yyyy')),
                 InvoiceDateFormat: this.datePipe.transform(element.InvoiceDate, 'MMM dd, yyyy, hh:mm a'),
                 InvoiceNumber: element.InvoiceNumber,
+                AuxiliaryInvoiceName : element.AuxiliaryInvoiceName ? element.AuxiliaryInvoiceName : '',
+                DisplayInvoiceWithAuxiliary : element.AuxiliaryInvoiceName ?  element.InvoiceNumber +' - '+ element.AuxiliaryInvoiceName : element.InvoiceNumber,
                 MainPOC: element.MainPOC,
                 InvoiceStatus: element.Status,
                 PONumber: poItem.Number,
@@ -447,7 +422,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     createColFieldValues(resArray) {
         this.outInvoiceColArray.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
         this.outInvoiceColArray.InvoiceStatus = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.InvoiceStatus, value: a.InvoiceStatus }; return b; }).filter(ele => ele.label)));
-        this.outInvoiceColArray.InvoiceNumber = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.InvoiceNumber, value: a.InvoiceNumber }; return b; }).filter(ele => ele.label)));
+        this.outInvoiceColArray.InvoiceNumber = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.DisplayInvoiceWithAuxiliary, value: a.DisplayInvoiceWithAuxiliary }; return b; }).filter(ele => ele.label)));
         this.outInvoiceColArray.PONumber = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }).filter(ele => ele.label)));
         this.outInvoiceColArray.POName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POName, value: a.POName }; return b; }).filter(ele => ele.label)));
         this.outInvoiceColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
