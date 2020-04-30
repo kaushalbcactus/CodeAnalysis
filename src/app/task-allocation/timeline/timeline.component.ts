@@ -2709,7 +2709,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         milestone.children.forEach(submilestone => {
           if (submilestone.children) {
             submilestone.data.start_date = submilestone.children[0].data.start_date;
-            submilestone.data.pUserStart = submilestone.children[0].pUserStart;
+            submilestone.data.pUserStart = submilestone.children[0].data.pUserStart;
             submilestone.data.pUserStartDatePart = submilestone.children[0].data.pUserStartDatePart;
             submilestone.data.end_date = submilestone.children[submilestone.children.length - 1].data.end_date;
             submilestone.data.pUserEnd = submilestone.children[submilestone.children.length - 1].data.pUserEnd;
