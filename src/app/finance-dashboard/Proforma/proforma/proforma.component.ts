@@ -1283,8 +1283,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
     async uploadFileData() {
         const batchUrl = [];
         this.commonService.SetNewrelic('Finance-Dashboard', 'Proforma', 'uploadFile');
-       
-
         this.commonService.UploadFilesProgress(this.SelectedFile, this.FolderName, true).then(async uploadedfile => {
             if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
                 if (uploadedfile[0].hasOwnProperty('odata.error')) {
@@ -1322,41 +1320,41 @@ export class ProformaComponent implements OnInit, OnDestroy {
         return found ? found.ListName : ''
     }
 
-    async uploadFileData() {
-        this.commonService.SetNewrelic('Finance-Dashboard', 'Proforma', 'uploadFile');
-        const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result)
-        // console.log('selectedFile uploaded .', res.ServerRelativeUrl);
-        const batchUrl = [];
-        if (res) {
-            // let fileUrl = res.ServerRelativeUrl;
-            let prfData = {
-                FileURL: res.ServerRelativeUrl ? res.ServerRelativeUrl : '',
-                ProformaHtml: null
-            }
-            prfData['__metadata'] = { type: this.constantService.listNames.Proforma.type };
+    // async uploadFileData() {
+    //     this.commonService.SetNewrelic('Finance-Dashboard', 'Proforma', 'uploadFile');
+    //     const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result)
+    //     // console.log('selectedFile uploaded .', res.ServerRelativeUrl);
+    //     const batchUrl = [];
+    //     if (res) {
+    //         // let fileUrl = res.ServerRelativeUrl;
+    //         let prfData = {
+    //             FileURL: res.ServerRelativeUrl ? res.ServerRelativeUrl : '',
+    //             ProformaHtml: null
+    //         }
+    //         prfData['__metadata'] = { type: this.constantService.listNames.Proforma.type };
 
-            const invObj = Object.assign({}, this.queryConfig);
-            invObj.url = this.spServices.getItemURL(this.constantService.listNames.Proforma.name, +this.selectedRowItem.Id);
-            invObj.listName = this.constantService.listNames.Proforma.name;
-            invObj.type = 'PATCH';
-            invObj.data = prfData;
-            batchUrl.push(invObj);
+    //         const invObj = Object.assign({}, this.queryConfig);
+    //         invObj.url = this.spServices.getItemURL(this.constantService.listNames.Proforma.name, +this.selectedRowItem.Id);
+    //         invObj.listName = this.constantService.listNames.Proforma.name;
+    //         invObj.type = 'PATCH';
+    //         invObj.data = prfData;
+    //         batchUrl.push(invObj);
 
-            // const endpoint = this.fdConstantsService.fdComponent.addUpdateProforma.update.replace("{{Id}}", this.selectedRowItem.Id);
-            // let data = [
-            //     {
-            //         objData: obj,
-            //         endpoint: endpoint,
-            //         requestPost: false
-            //     }
-            // ];
-            this.commonService.SetNewrelic('Finance-Dashboard', 'Proforma-proforma', 'uploadFileUpdateProforma');
-            this.submitForm(batchUrl, 'replaceProforma');
-        } else if (res.hasError) {
-            this.isPSInnerLoaderHidden = true;
-            this.messageService.add({ key: 'proformaInfoToast', severity: 'info', summary: 'Info message', detail: 'File not uploaded,Folder / ' + res.message.value + '', life: 3000 })
-        }
-    }
+    //         // const endpoint = this.fdConstantsService.fdComponent.addUpdateProforma.update.replace("{{Id}}", this.selectedRowItem.Id);
+    //         // let data = [
+    //         //     {
+    //         //         objData: obj,
+    //         //         endpoint: endpoint,
+    //         //         requestPost: false
+    //         //     }
+    //         // ];
+    //         this.commonService.SetNewrelic('Finance-Dashboard', 'Proforma-proforma', 'uploadFileUpdateProforma');
+    //         this.submitForm(batchUrl, 'replaceProforma');
+    //     } else if (res.hasError) {
+    //         this.isPSInnerLoaderHidden = true;
+    //         this.messageService.add({ key: 'proformaInfoToast', severity: 'info', summary: 'Info message', detail: 'File not uploaded,Folder / ' + res.message.value + '', life: 3000 })
+    //     }
+    // }
 
     createProforma() {
         this.minProformDate = this.commonService.getLastWorkingDay(3, new Date());

@@ -839,10 +839,6 @@ async getMilestoneTasks(task) {
                 return v.replace(new RegExp(tasks[0], 'g'), '');
               }).map(c => (!isNaN(c) ? parseInt(c) : 0))) : 1 : 0;
         }
-
-
-
-
         event.data.TaskName = tasks.length > 0 ? count > 0 ? tasks[0] + ' ' + (count + 1) : tasks[0] : event.data.TaskName;
         // event.data.nextTasks = event.data.NextTasks;
         // event.data.prevTasks = event.data.PrevTasks;
@@ -871,23 +867,17 @@ async getMilestoneTasks(task) {
         event.data.subTaskloaderenable = false;
       }
     }
-  }
-
   modelChanged(event, Slot) {
-
-
     event.editMode = true;
     event.edited = true;
     Slot.editMode = true;
     this.disableSave = false;
   }
-
   async GetAllConstantTasks(taskName) {
     let allConstantTasks = [];
     allConstantTasks = await this.caCommonService.GetAllTasksMilestones(taskName);
     return allConstantTasks.map(c => c.Title);
   }
-
   async GetTask(task, IsdbTask) {
 
 

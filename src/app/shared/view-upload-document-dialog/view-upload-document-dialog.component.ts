@@ -34,7 +34,6 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   dbcols: { field: string; header: string; }[];
   cols: { field: string; header: string; }[];
   selectedDocuments: any = [];
-  uploadedFiles: any[] = [];
   fileReader = new FileReader();
   prevTask: string;
   enableNotification = false;
@@ -560,13 +559,12 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
           contentStyle: { 'max-height': '82vh', 'overflow-y': 'auto', 'background-color': '#f4f3ef' },
           closable: false,
         });
-
         return ref.onClose.subscribe(async (uploadedfiles: any) => {
           if (uploadedfiles) {
             if (event.files.length > 0 && event.files.length === uploadedfiles.length) {
               this.loaderenable = true;
               if (this.selectedTab === 'My Drafts') {
-                this.LinkDocumentToProject(uploadedFiles);
+                this.LinkDocumentToProject(uploadedfiles);
               } else {
                 this.loadDraftDocs(this.selectedTab);
                 this.messageService.add({

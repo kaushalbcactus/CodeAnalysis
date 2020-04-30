@@ -168,7 +168,7 @@ export class AddEditPoDialogComponent implements OnInit {
       if (pocArray && pocArray.length) {
         this.adminObject.dropdown.POPointOfContactArray = [];
         pocArray.forEach(element => {
-          this.adminObject.dropdown.POPointOfContactArray.push({ label: element.FullName, value: element.ID });
+          this.adminObject.dropdown.POPointOfContactArray.push({ label: element.FullNameCC, value: element.ID });
         });
       }
       if (taArray && taArray.length) {
@@ -327,19 +327,19 @@ export class AddEditPoDialogComponent implements OnInit {
       switch (role) {
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.CMLevel1:
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.CMLevel2:
-          this.adminObject.dropdown.CMLevel1Array.push({ label: element.UserName.Title, value: element.UserName.ID });
+          this.adminObject.dropdown.CMLevel1Array.push({ label: element.UserNamePG.Title, value: element.UserNamePG.ID });
           break;
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.DELIVERY_LEVEL_1:
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.DELIVERY_LEVEL_2:
-          this.adminObject.dropdown.DeliveryLevel1Array.push({ label: element.UserName.Title, value: element.UserName.ID });
+          this.adminObject.dropdown.DeliveryLevel1Array.push({ label: element.UserNamePG.Title, value: element.UserNamePG.ID });
           break;
       }
       switch (role) {
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.CMLevel2:
-          this.adminObject.dropdown.CMLevel2Array.push({ label: element.UserName.Title, value: element.UserName.ID });
+          this.adminObject.dropdown.CMLevel2Array.push({ label: element.UserNamePG.Title, value: element.UserNamePG.ID });
           break;
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.DELIVERY_LEVEL_2:
-          this.adminObject.dropdown.DeliveryLevel2Array.push({ label: element.UserName.Title, value: element.UserName.ID });
+          this.adminObject.dropdown.DeliveryLevel2Array.push({ label: element.UserNamePG.Title, value: element.UserNamePG.ID });
           break;
       }
     });

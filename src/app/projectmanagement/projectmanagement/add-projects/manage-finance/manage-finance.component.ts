@@ -1911,7 +1911,7 @@ export class ManageFinanceComponent implements OnInit {
                 milestoneUpdate.data = {
                   __metadata: { type: this.constant.listNames.Schedules.type },
                   Actual_x0020_End_x0020_Date: months[i].monthEndDay,
-                  DueDate: months[i].monthEndDay,
+                  DueDateDT: months[i].monthEndDay,
                 };
 
                 if(milestone.Title !== dbProposedDateMonth){
@@ -1931,7 +1931,7 @@ export class ManageFinanceComponent implements OnInit {
 
                   taskUpdate.data = {
                     __metadata: { type: this.constant.listNames.Schedules.type },
-                    DueDate: months[i].monthEndDay,
+                    DueDateDT: months[i].monthEndDay,
                   };
 
                   if (task.Actual_x0020_End_x0020_Date && (task.Task === 'Training' || task.Task === 'Meeting')) {
@@ -1952,8 +1952,6 @@ export class ManageFinanceComponent implements OnInit {
                 });
               }
               else {
-
-
                 const milestonedata = this.pmCommonService.getFTEMilestoneData(months[i], this.projObj.ProjectCode);
                 const milestoneCreate = Object.assign({}, options);
                 milestoneCreate.url = this.spServices.getReadURL(this.constant.listNames.Schedules.name, null);
@@ -2020,7 +2018,7 @@ export class ManageFinanceComponent implements OnInit {
                 milestoneUpdate.data = {
                   __metadata: { type: this.constant.listNames.Schedules.type },
                   Actual_x0020_End_x0020_Date: new Date(this.selectedProposedEndDate.setHours(23, 45)),
-                  DueDate: new Date(this.selectedProposedEndDate.setHours(23, 45)),
+                  DueDateDT: new Date(this.selectedProposedEndDate.setHours(23, 45)),
                 };
                 milestoneUpdate.type = 'PATCH';
                 milestoneUpdate.listName = this.constant.listNames.Schedules.name;
@@ -2032,7 +2030,7 @@ export class ManageFinanceComponent implements OnInit {
                   taskUpdate.url = this.spServices.getItemURL(this.constant.listNames.Schedules.name, task.Id);
                   taskUpdate.data = {
                     __metadata: { type: this.constant.listNames.Schedules.type },
-                    DueDate: new Date(this.selectedProposedEndDate.setHours(23, 45)),
+                    DueDateDT: new Date(this.selectedProposedEndDate.setHours(23, 45)),
                   };
                   if (task.Task === 'Blocking') {
                     const businessDay = this.commonService.calcBusinessDays(task.StartDate, months[i].monthEndDay);

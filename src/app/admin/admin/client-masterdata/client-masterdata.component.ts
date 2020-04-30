@@ -73,10 +73,6 @@ export class ClientMasterdataComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     public dialogService: DialogService
   ) {
-
-    this.initAddPOForm();
-    this.initAddBudgetForm();
-
     // Browser back button disabled & bookmark issue solution
     history.pushState(null, null, window.location.href);
     platformLocation.onPopState(() => {
@@ -1326,6 +1322,7 @@ export class ClientMasterdataComponent implements OnInit {
     if (!this.showeditSubDivision) {
       data.Title = subDivisionDetails.value.subDivision_Name;
       data.ClientLegalEntity = this.currClientObj.ClientLegalEntity;
+      data.IsActiveCH = this.adminConstants.LOGICAL_FIELD.YES;
     }
     data.DeliveryLevel1Id = subDivisionDetails.value.deliveryLevel1 ? { results: subDivisionDetails.value.deliveryLevel1 } :
       { results: [] };
@@ -1362,7 +1359,7 @@ export class ClientMasterdataComponent implements OnInit {
       obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
       obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd ,yyyy');
       obj.LastUpdatedBy = item.Editor.Title;
-      obj.IsActive = item.IsActive;
+      obj.IsActive = item.IsActiveCH;
       obj.CMLevel1 = item.CMLevel1;
       obj.DeliveryLevel1 = item.DeliveryLevel1;
       obj.DistributionList = item.DistributionList;
@@ -1438,18 +1435,18 @@ export class ClientMasterdataComponent implements OnInit {
       ProjectContactsType: pocDetails.value.contactsType,
       ClientLegalEntity: this.currClientObj.ClientLegalEntity,
       Title: this.currClientObj.ClientLegalEntity,
-      FullName: pocDetails.value.fname + ' ' + pocDetails.value.lname
+      FullNameCC: pocDetails.value.fname + ' ' + pocDetails.value.lname
     };
     data.Phone = pocDetails.value.phone ? pocDetails.value.phone : '';
     const ap1 = pocDetails.value.address1 ? pocDetails.value.address1 : '';
     const ap2 = pocDetails.value.address2 ? pocDetails.value.address2 : '';
     const ap3 = pocDetails.value.address3 ? pocDetails.value.address3 : '';
     const ap4 = pocDetails.value.address4 ? pocDetails.value.address4 : '';
-    data.Address = ap1 + ';#' + ap2 + ';#' + ap3 + ';#' + ap4;
-    data.Department = pocDetails.value.department ? pocDetails.value.department : '';
+    data.AddressMT = ap1 + ';#' + ap2 + ';#' + ap3 + ';#' + ap4;
+    data.DepartmentST = pocDetails.value.department ? pocDetails.value.department : '';
     data.RelationshipStrength = pocDetails.value.relationshipStrength ? pocDetails.value.relationshipStrength : '';
     data.EngagementPlan = pocDetails.value.engagementPlan ? pocDetails.value.engagementPlan : '';
-    data.Comments = pocDetails.value.comments ? pocDetails.value.comments : '';
+    data.CommentsMT = pocDetails.value.comments ? pocDetails.value.comments : '';
     return data;
   }
 
@@ -1484,14 +1481,14 @@ export class ClientMasterdataComponent implements OnInit {
       obj.EmailAddress = item.EmailAddress;
       obj.Designation = item.Designation;
       obj.Phone = item.Phone ? item.Phone : '';
-      obj.Address = item.Address ? item.Address : '';
-      obj.FullName = item.FullName ? item.FullName : '';
-      obj.Department = item.Department ? item.Department : '';
+      obj.Address = item.AddressMT ? item.AddressMT : '';
+      obj.FullName = item.FullNameCC ? item.FullNameCC : '';
+      obj.Department = item.DepartmentST ? item.DepartmentST : '';
       obj.ReferralSource = item.ReferralSource;
       obj.Status = item.Status;
       obj.RelationshipStrength = item.RelationshipStrength ? item.RelationshipStrength : '';
       obj.EngagementPlan = item.EngagementPlan ? item.EngagementPlan : '';
-      obj.Comments = item.Comments ? item.Comments : '';
+      obj.Comments = item.CommentsMT ? item.CommentsMT : '';
       obj.ProjectContactsType = item.ProjectContactsType;
       obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
       obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd ,yyyy');
@@ -1607,7 +1604,7 @@ export class ClientMasterdataComponent implements OnInit {
    */
   getPOData(poDetails, selectedFile) {
     const data: any = {
-      Name: poDetails.value.poName,
+      NameST: poDetails.value.poName,
       POExpiryDate: poDetails.value.poExpiryDate,
       POCLookup: poDetails.value.poc,
       TA: poDetails.value.ta,

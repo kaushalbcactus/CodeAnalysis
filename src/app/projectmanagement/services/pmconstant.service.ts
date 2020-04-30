@@ -462,9 +462,9 @@ export class PmconstantService {
 
     GET_RESOUCEBYID: {
       select: 'ID,MaxHrs,UserNamePG/ID,UserNamePG/EMail,UserNamePG/Title,TimeZone/Title,IsFTE',
-      expand: 'UserName/ID,UserName/EMail,UserName/Title,TimeZone/Title',
-      filter: 'UserName/ID eq  \'{{Id}}\'',
-      orderby: 'UserName/Title asc',
+      expand: 'UserNamePG/ID,UserNamePG/EMail,UserNamePG/Title,TimeZone/Title',
+      filter: 'UserNamePG/ID eq  \'{{Id}}\'',
+      orderby: 'UserNamePG/Title asc',
 
     },
 
@@ -476,7 +476,7 @@ export class PmconstantService {
       top: 4900
     },
     GET_SCHEDULES_BY_PROJECTCODE: {
-      select: 'ID,Title,Task,Status,FileSystemObjectType,Milestone,StartDate,DueDate,Actual_x0020_End_x0020_Date,Actual_x0020_Start_x0020_Date',
+      select: 'ID,Title,Task,Status,FileSystemObjectType,Milestone,StartDate,DueDateDT,Actual_x0020_End_x0020_Date,Actual_x0020_Start_x0020_Date',
       orderby: 'StartDate asc',
       filter: "ProjectCode eq '{{projectCode}}'",
       top: 4500
@@ -582,7 +582,7 @@ export class PmconstantService {
       filter: 'ProjectNumber eq \'{{projectCode}}\' and Status eq \'Active\''
     },
     GET_SCHEDULE_LIST_ITEM_BY_PROJECT_CODE: {
-      select: 'ID,Title,Milestone,Status,Task,ProjectCode,TimeSpent,DueDate,IsCentrallyAllocated',
+      select: 'ID,Title,Milestone,Status,Task,ProjectCode,TimeSpent,DueDateDT,IsCentrallyAllocated',
       filter: 'ProjectCode eq \'{{projectCode}}\''
     },
     GET_EARLY_TASK_COMPLETED: {

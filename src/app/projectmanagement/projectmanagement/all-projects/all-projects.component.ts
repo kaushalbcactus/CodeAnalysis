@@ -1873,7 +1873,7 @@ export class AllProjectsComponent implements OnInit {
             const scheduleStatusUpdate = Object.assign({}, options);
             const scInProgressUpdateDataNew = Object.assign({}, scInProgressUpdateData);
             scInProgressUpdateDataNew.ExpectedTime = element.TimeSpent;
-            scInProgressUpdateDataNew.DueDate = new Date(element.DueDate) < new Date() ? new Date(element.DueDate) : new Date();
+            scInProgressUpdateDataNew.DueDateDT = new Date(element.DueDateDT) < new Date() ? new Date(element.DueDateDT) : new Date();
             scheduleStatusUpdate.data = scInProgressUpdateDataNew;
             scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
             scheduleStatusUpdate.type = 'PATCH';
