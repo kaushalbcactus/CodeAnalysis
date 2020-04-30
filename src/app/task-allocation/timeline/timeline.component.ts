@@ -1720,7 +1720,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         }
       });
 
-      
+
       this.GanttchartData = allTasks.data;
 
       this.notificationMessage();
@@ -3092,7 +3092,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.DateChange(Node, type, false);
   }
 
- 
+
   SetDateToCurrent(Node) {
     this.milestoneData.forEach(milestone => {
       if(milestone.data.type === 'task' && Node.milestone === milestone.data.milestone && Node.taskFullName === milestone.data.taskFullName ) {
@@ -3544,18 +3544,21 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       if (EndDate.getDay() !== 0 && EndDate.getDay() !== 6) { // && EndDate.getHours() >= 9 && EndDate.getHours() < 19
         EndDate = new Date(EndDate.setMinutes(EndDate.getMinutes() + 1));
         CaculateDate = new Date(EndDate);
-      } else if (EndDate.getHours() === 19 && EndDate.getMinutes() === 0) {
+        count++;
+      }
+      // else if (EndDate.getHours() === 19 && EndDate.getMinutes() === 0) {
 
-        CaculateDate = new Date(EndDate);
-        EndDate = new Date(EndDate.setMinutes(EndDate.getMinutes() + 1));
-        count--;
-      } else {
+      //   CaculateDate = new Date(EndDate);
+      //   EndDate = new Date(EndDate.setMinutes(EndDate.getMinutes() + 1));
+      //   count--;
+      // }
+      else {
         EndDate = new Date(EndDate.getFullYear(), EndDate.getMonth(), (EndDate.getDate() + 1), 9, 0);
         CaculateDate = new Date(EndDate);
         count--;
       }
 
-      if (EndDate.getHours() >= 9 && EndDate.getHours() <= 19) { count++; }
+      // if (EndDate.getHours() >= 9 && EndDate.getHours() <= 19) { count++; }
     }
 
     // while (count < workHours) {
