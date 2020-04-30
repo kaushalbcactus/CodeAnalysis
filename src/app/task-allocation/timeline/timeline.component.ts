@@ -2951,6 +2951,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       nodeData.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
     nodeData.tatVal = this.commonService.calcBusinessDays(new Date(nodeData.start_date), new Date(nodeData.end_date));
     nodeData.edited = true;
+    const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
+      return nodeData.AssignedTo && nodeData.AssignedTo.ID === objt.UserName.ID;
+    });
+    await this.dailyAllocateTask(resource, nodeData);
     if (nodeData.IsCentrallyAllocated === 'Yes' && node.slotType !== 'Slot' && !node.parentSlot) {
       nodeData.user = nodeData.skillLevel;
     }
@@ -3545,43 +3549,12 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         EndDate = new Date(EndDate.setMinutes(EndDate.getMinutes() + 1));
         CaculateDate = new Date(EndDate);
         count++;
-      }
-      // else if (EndDate.getHours() === 19 && EndDate.getMinutes() === 0) {
-
-      //   CaculateDate = new Date(EndDate);
-      //   EndDate = new Date(EndDate.setMinutes(EndDate.getMinutes() + 1));
-      //   count--;
-      // }
-      else {
+      } else {
         EndDate = new Date(EndDate.getFullYear(), EndDate.getMonth(), (EndDate.getDate() + 1), 9, 0);
         CaculateDate = new Date(EndDate);
         count--;
       }
-
-      // if (EndDate.getHours() >= 9 && EndDate.getHours() <= 19) { count++; }
     }
-
-    // while (count < workHours) {
-    //   if (EndDate.getDay() !== 0 && EndDate.getDay() !== 6) { // && EndDate.getHours() >= 9 && EndDate.getHours() < 19
-    //     EndDate = new Date(EndDate.setMinutes(EndDate.getMinutes() + 1));
-    //     CaculateDate = new Date(EndDate);
-    //   } else {
-    //     EndDate = new Date(EndDate.getFullYear(), EndDate.getMonth(), (EndDate.getDate() + 1), 9, 0);
-    //     CaculateDate = new Date(EndDate);
-    //   }
-    //   count++;
-    //   // else if (EndDate.getHours() === 19 && EndDate.getMinutes() === 0) {
-
-    //   //   CaculateDate = new Date(EndDate);
-    //   //   EndDate = new Date(EndDate.setMinutes(EndDate.getMinutes() + 1));
-    //   //   count--;
-    //   // } else {
-    //   //   EndDate = new Date(EndDate.getFullYear(), EndDate.getMonth(), (EndDate.getDate() + 1), 9, 0);
-    //   //   CaculateDate = new Date(EndDate);
-    //   //   count--;
-    //   // }
-    //   // if (EndDate.getHours() >= 9 && EndDate.getHours() <= 19) { }
-    // }
     return CaculateDate;
   }
 
