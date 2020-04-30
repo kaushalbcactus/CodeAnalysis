@@ -186,7 +186,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   displayBody = false;
   graphFlag: boolean;
   menu: any;
-
+  dragClickedInput: string;
   constructor(
     private constants: ConstantsService,
     public sharedObject: GlobalService,
@@ -1400,7 +1400,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.taskAllocateCommonService.attachedEvents.push(onBeforeTaskChanged);
     const onBeforeTaskDrag = gantt.attachEvent("onBeforeTaskDrag", (id, mode, e) => {
       let task = gantt.getTask(id)
-
+      this.dragClickedInput =  e.srcElement.className;
       if (gantt.ext.zoom.getCurrentLevel() < 3) {
         if (task.status == 'Completed' || task.status == "Auto Closed" || task.type == "milestone" || task.type === 'submilestone') {
           return false;
@@ -1431,9 +1431,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.taskAllocateCommonService.attachedEvents.push(onTaskClick);
     const onTaskDrag = gantt.attachEvent("onAfterTaskDrag", (id, mode, e) => {
       let task = gantt.getTask(id);
-      const isStartDate = e.srcElement.className.indexOf('start_date') > -1 ? true : false;
+      const isStartDate =  this.dragClickedInput.indexOf('start_date') > -1 ? true : false;
       this.updateDates(e, task, isStartDate);
-      console.log(e.srcElement.className);
       if (task.status !== 'Completed' || task.type == 'milestone') {
         isStartDate ? this.openPopupOnGanttTask(task, 'start') : this.openPopupOnGanttTask(task, 'end');
         return true;

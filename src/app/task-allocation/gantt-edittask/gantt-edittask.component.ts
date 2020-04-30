@@ -575,7 +575,7 @@ export class GanttEdittaskComponent implements OnInit {
   }
 
   showOverlayPanel(event, dailyAllocateOP) {
-    let target = event.target;
+    const target = event.target;
     const allocationPerDay = this.task.allocationPerDay ? this.task.allocationPerDay : '';
     dailyAllocateOP.showOverlay(event, allocationPerDay, target);
   }
