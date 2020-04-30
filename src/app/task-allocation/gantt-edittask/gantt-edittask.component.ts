@@ -87,9 +87,19 @@ export class GanttEdittaskComponent implements OnInit {
     this.onLoad(this.task, clickedInputType);
   }
 
+  updateDates(task) {
+    task.pUserStart = this.commonService.calcTimeForDifferentTimeZone(task.start_date,
+      this.globalService.currentUser.timeZone, task.assignedUserTimeZone);
+    task.pUserStartDatePart = this.getDatePart(task.pUserStart);
+    task.pUserStartTimePart = this.getTimePart(task.pUserStart);
+
+    task.pUserEnd = this.commonService.calcTimeForDifferentTimeZone(task.end_date,
+      this.globalService.currentUser.timeZone, task.assignedUserTimeZone);
+    task.pUserEndDatePart = this.getDatePart(task.pUserEnd);
+    task.pUserEndTimePart = this.getTimePart(task.pUserEnd);
+  }
+
   async onLoad(task, clickedInputType) {
-    this.cascadingObject.node = clickedInputType ? task : '';
-    this.cascadingObject.type = clickedInputType;
     if (task.itemType === 'Client Review' || task.itemType === 'Send to client') {
       let bHrs = 0 || task.budgetHours;
       this.editTaskForm.get('budgetHrs').setValue(bHrs);
@@ -106,8 +116,14 @@ export class GanttEdittaskComponent implements OnInit {
       this.editTaskObject.isTat = false;
     }
 
-    const startTime = this.setMinutesAfterDrag(task.pUserStart);
-    const endTime = this.setMinutesAfterDrag(task.pUserEnd);
+    const startTime = this.setMinutesAfterDrag(task.start_date);
+    task.start_date = new Date(this.datepipe.transform(task.start_date, 'MMM d, y') + ' ' + startTime);
+    const endTime = this.setMinutesAfterDrag(task.end_date);
+    task.end_date = new Date(this.datepipe.transform(task.end_date, 'MMM d, y') + ' ' + endTime);
+    this.updateDates(task);
+    this.task = task;
+    this.cascadingObject.node = clickedInputType ? task : '';
+    this.cascadingObject.type = clickedInputType;
     this.isViewAllocationBtn(task);
     this.editTaskForm.patchValue({
       budgetHrs: task.budgetHours,
@@ -168,9 +184,9 @@ export class GanttEdittaskComponent implements OnInit {
         return this.task.AssignedTo.ID === objt.UserName.ID;
       });
 
-      const start_date = new Date(this.datepipe.transform(startDate, 'MMM d, y') + ' ' +  this.editTaskForm.get('startDateTimePart').value);
+      const start_date = new Date(this.datepipe.transform(startDate, 'MMM d, y') + ' ' + this.editTaskForm.get('startDateTimePart').value);
       this.task.start_date = this.commonService.calcTimeForDifferentTimeZone(start_date, task.assignedUserTimeZone,
-                              this.globalService.currentUser.timeZone);
+        this.globalService.currentUser.timeZone);
       this.task.pUserStart = start_date;
       this.task.pUserStartDatePart = this.getDatePart(start_date);
       this.task.pUserStartTimePart = this.getTimePart(start_date);
@@ -185,9 +201,9 @@ export class GanttEdittaskComponent implements OnInit {
         return this.task.AssignedTo.ID === objt.UserName.ID;
       });
 
-      const end_date = new Date(this.datepipe.transform(endDate, 'MMM d, y') + ' ' +  this.editTaskForm.get('endDateTimePart').value);;
+      const end_date = new Date(this.datepipe.transform(endDate, 'MMM d, y') + ' ' + this.editTaskForm.get('endDateTimePart').value);;
       this.task.end_date = this.commonService.calcTimeForDifferentTimeZone(end_date, task.assignedUserTimeZone,
-                            this.globalService.currentUser.timeZone);
+        this.globalService.currentUser.timeZone);
       this.task.pUserEnd = end_date;
       this.task.pUserEndDatePart = this.getDatePart(end_date);
       this.task.pUserEndTimePart = this.getTimePart(end_date);
@@ -203,9 +219,9 @@ export class GanttEdittaskComponent implements OnInit {
         return this.task.AssignedTo.ID === objt.UserName.ID;
       });
 
-      let start_date = new Date(this.datepipe.transform(this.editTaskForm.get('startDate').value, 'MMM d, y') + ' ' +  startTime);;
+      let start_date = new Date(this.datepipe.transform(this.editTaskForm.get('startDate').value, 'MMM d, y') + ' ' + startTime);;
       this.task.start_date = this.commonService.calcTimeForDifferentTimeZone(start_date, task.assignedUserTimeZone,
-                              this.globalService.currentUser.timeZone);
+        this.globalService.currentUser.timeZone);
       this.task.pUserStart = start_date;
       this.task.pUserStartDatePart = this.getDatePart(start_date);
       this.task.pUserStartTimePart = this.getTimePart(start_date);
@@ -219,9 +235,9 @@ export class GanttEdittaskComponent implements OnInit {
         return this.task.AssignedTo.ID === objt.UserName.ID;
       });
 
-      let end_date = new Date(this.datepipe.transform(this.editTaskForm.get('endDate').value, 'MMM d, y') + ' ' +  endTime);;
+      let end_date = new Date(this.datepipe.transform(this.editTaskForm.get('endDate').value, 'MMM d, y') + ' ' + endTime);;
       this.task.end_date = this.commonService.calcTimeForDifferentTimeZone(end_date, task.assignedUserTimeZone,
-                            this.globalService.currentUser.timeZone);
+        this.globalService.currentUser.timeZone);
       this.task.pUserEnd = end_date;
       this.task.pUserEndDatePart = this.getDatePart(end_date);
       this.task.pUserEndTimePart = this.getTimePart(end_date);
@@ -232,13 +248,13 @@ export class GanttEdittaskComponent implements OnInit {
 
   }
 
-  setMinutesAfterDrag(date){
+  setMinutesAfterDrag(date) {
     let time: any = this.getTimePart(date);
     time = time.split(':')
     let h = parseInt(time[0])
-    let m =  parseInt(time[1].split(' ')[0])
+    let m = parseInt(time[1].split(' ')[0])
     let ampm = time[1].split(' ')[1]
-    let minutes = (Math.round(m/15) * 15) % 60;
+    let minutes = (Math.round(m / 15) * 15) % 60;
     return h + ':' + minutes + ' ' + ampm;
   }
 
@@ -579,6 +595,7 @@ export class GanttEdittaskComponent implements OnInit {
     const allocationPerDay = this.task.allocationPerDay ? this.task.allocationPerDay : '';
     dailyAllocateOP.showOverlay(event, allocationPerDay, target);
   }
+
 }
 
 export interface MilestoneTreeNode {
