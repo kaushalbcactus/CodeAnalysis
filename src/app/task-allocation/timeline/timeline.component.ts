@@ -1430,7 +1430,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
     this.taskAllocateCommonService.attachedEvents.push(onTaskClick);
     const onTaskDrag = gantt.attachEvent("onAfterTaskDrag", (id, mode, e) => {
-      let task = gantt.getTask(id);
+      let task = this.currentTask;
+      //gantt.getTask(id);
       const isStartDate =  this.dragClickedInput.indexOf('start_date') > -1 ? true : false;
       this.updateDates(e, task, isStartDate);
       if (task.status !== 'Completed' || task.type == 'milestone') {
