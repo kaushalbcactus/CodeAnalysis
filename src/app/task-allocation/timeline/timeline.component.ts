@@ -1039,7 +1039,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
                 })
               }
             })
-          } 
+          }
         })
       }
     })
@@ -1098,10 +1098,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.ganttComponentRef = this.ganttChart.createComponent(factory);
     gantt.serverList("AssignedTo", this.resource);
     // this.ganttComponentRef.instance.isLoaderHidden = false;
-    let firstTaskStart = new Date(this.taskAllocateCommonService.ganttParseObject.data[0].start_date);
+    let firstTaskStart = this.taskAllocateCommonService.ganttParseObject.data.length ? new Date(this.taskAllocateCommonService.ganttParseObject.data[0].start_date) : new Date();
     firstTaskStart = new Date(firstTaskStart.setDate(-1));
     gantt.config.start_date = new Date(firstTaskStart.getFullYear(), firstTaskStart.getMonth(), firstTaskStart.getDate(), 0, 0);
-    let lastTaskEnd = new Date(this.taskAllocateCommonService.ganttParseObject.data[this.taskAllocateCommonService.ganttParseObject.data.length - 1].end_date);
+    let lastTaskEnd = this.taskAllocateCommonService.ganttParseObject.data.length ? new Date(this.taskAllocateCommonService.ganttParseObject.data[this.taskAllocateCommonService.ganttParseObject.data.length - 1].end_date): new Date(new Date().setDate(new Date().getDate() + 1));
     lastTaskEnd = new Date(lastTaskEnd.setDate(lastTaskEnd.getDate() + 31));
     gantt.config.end_date = new Date(lastTaskEnd.getFullYear(), lastTaskEnd.getMonth(), lastTaskEnd.getDate(), 0, 0);
     gantt.init(this.ganttComponentRef.instance.ganttContainer.nativeElement);
@@ -1607,28 +1607,30 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         }
       });
     }
-
-    // this.selectedTask.owner_id = this.selectedTask.AssignedTo.ID;
-    // this.selectedTask.res_id = this.selectedTask.AssignedTo;
     this.selectedTask.user = this.selectedTask.AssignedTo.Title;
-
-    let allTasks = gantt.serialize();
-    let editedTask: any;
-    allTasks.data.forEach((task) => {
-      if (task.id == this.selectedTask.id) {
-        task = this.selectedTask;
-        task.edited = true;
-        editedTask = task;
-      }
-    })
+    this.assignedToUserChanged(this.selectedTask);
+    let allTasks = {
+      data: []
+    }
+    allTasks.data = this.getGanttTasksFromMilestones(this.milestoneData, true);
+    // let allTasks = gantt.serialize();
+    // let editedTask: any;
+    // allTasks.data.forEach((task) => {
+    //   if (task.id == this.selectedTask.id) {
+    //     task = this.selectedTask;
+    //     task.edited = true;
+    //     editedTask = task;
+    //   }
+    // })
 
     this.GanttchartData = allTasks.data;
     this.taskAllocateCommonService.ganttParseObject = allTasks;
-    await this.loadComponent();
+    // await this.loadComponent();
     const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
-      return editedTask.AssignedTo.ID === objt.UserName.ID;
+      return this.selectedTask.AssignedTo.ID === objt.UserName.ID;
     });
-    await this.dailyAllocateTask(resource, editedTask);
+    await this.dailyAllocateTask(resource, this.selectedTask);
+    this.refreshGantt();
   }
 
   editTaskModal(task, clickedInputType) {
@@ -2743,14 +2745,15 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   // *************************************************************************************************************************************
 
   async assignedToUserChanged(milestoneTask) {
-    if (milestoneTask.AssignedTo) {
+    const assignedTo = milestoneTask.AssignedTo;
+    if (assignedTo) {
       this.updateNextPreviousTasks(milestoneTask);
       milestoneTask.assignedUserChanged = true;
-      if (milestoneTask.AssignedTo.hasOwnProperty('ID') && milestoneTask.AssignedTo.ID) {
-        milestoneTask.skillLevel = this.taskAllocateCommonService.getSkillName(milestoneTask.AssignedTo.SkillText);
+      if (assignedTo.hasOwnProperty('ID') && assignedTo.ID) {
+        milestoneTask.skillLevel = this.taskAllocateCommonService.getSkillName(assignedTo.SkillText);
         const previousUserTimeZone = milestoneTask.assignedUserTimeZone;
         const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
-          return milestoneTask.AssignedTo.ID === objt.UserName.ID;
+          return assignedTo.ID === objt.UserName.ID;
         });
         await this.dailyAllocateTask(resource, milestoneTask);
         milestoneTask.assignedUserTimeZone = resource && resource.length > 0
