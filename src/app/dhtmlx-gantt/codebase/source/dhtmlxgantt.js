@@ -6456,6 +6456,7 @@ module.exports = function () {
             completed: "Completed",
             autoclosed: "Auto Closed",
             onhold: "Hold",
+            notsaved: "Not Saved",
         },
         auto_types: false,
         duration_unit: "day",

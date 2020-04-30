@@ -371,6 +371,9 @@ export class GanttChartComponent implements OnInit {
       }
       else if (task.status == gantt.config.types.onhold) {
         return "On Hold";
+      } 
+      else if (task.status == gantt.config.types.notsaved) {
+        return "Not Saved";
       }
     }
 
@@ -412,7 +415,7 @@ export class GanttChartComponent implements OnInit {
       if (task.status == gantt.config.types.meeting) {
         return "meeting_task";
       }
-      else if (task.status == gantt.config.types.planned) {
+      else if (task.status == gantt.config.types.planned || task.status == gantt.config.types.notsaved) {
         return "planned_task";
       }
       else if (task.status == gantt.config.types.notstarted) {
