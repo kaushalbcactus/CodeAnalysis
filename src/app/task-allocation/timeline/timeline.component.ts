@@ -1353,7 +1353,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     task.pUserEndTimePart = this.getTimePart(task.pUserEnd);
     task.start_date = new Date(task.pUserStart.getFullYear(), task.pUserStart.getMonth(), task.pUserStart.getDate(), 9, 0);
     task.end_date = new Date(task.pUserEnd.getFullYear(), task.pUserEnd.getMonth(), task.pUserEnd.getDate(), 19, 0);
-    this.DateChange(task, 'end');
+    this.DateChange(task, 'end', false);
   }
 
   ganttAttachEvents() {
@@ -1702,15 +1702,15 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     } else {
       // let updatedTask = updatedDataObj.updatedTask
       const cascadingObject = updatedDataObj.cascadingObject;
+      const scrollDate = new Date(cascadingObject.node.end_date);
       if (Object.keys(cascadingObject).length) {
-        this.DateChange(cascadingObject.node, cascadingObject.type);
+        this.SetDateToCurrent(cascadingObject.node);
+        this.DateChange(cascadingObject.node, cascadingObject.type, true);
       }
       let allTasks = {
         data: []
       };
       allTasks.data = this.getGanttTasksFromMilestones(this.milestoneData, true);
-      this.GanttchartData = allTasks.data;
-      this.taskAllocateCommonService.ganttParseObject = allTasks;
       allTasks.data.forEach((task) => {
         if (task.type == "milestone") {
           if (task.title.replace(' (Current)', '') == this.updatedTasks.milestone) {
@@ -1718,25 +1718,16 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
             task.open = true;
           }
         }
-      })
-
-      allTasks.data = allTasks.data.filter(e => e.edited == true);
-
-      allTasks.data.forEach((task) => {
-        this.milestoneData.forEach((item: any) => {
-          if (task.id == item.data.id) {
-            item.data.edited = true;
-          } else if (item.children) {
-            item.children.forEach((child: any) => {
-              if (task.id == child.data.id) {
-                child.data = task;
-              }
-            })
-          }
-        })
       });
+
+      
+      this.GanttchartData = allTasks.data;
+
       this.notificationMessage();
-      this.refreshGantt();
+      this.showGanttChart();
+      setTimeout(() => {
+        this.scrollToTaskDate(scrollDate);
+      }, 1000);
     }
   }
 
@@ -1859,6 +1850,14 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.loaderenable = true;
     this.visualgraph = false;
     setTimeout(() => {
+      if (this.taskAllocateCommonService.ganttParseObject.data.length) {
+        let firstTaskStart = new Date(this.taskAllocateCommonService.ganttParseObject.data[0].start_date);
+        firstTaskStart = new Date(firstTaskStart.setDate(-1));
+        gantt.config.start_date = new Date(firstTaskStart.getFullYear(), firstTaskStart.getMonth(), firstTaskStart.getDate(), 0, 0);
+        let lastTaskEnd = new Date(this.taskAllocateCommonService.ganttParseObject.data[this.taskAllocateCommonService.ganttParseObject.data.length - 1].end_date);
+        lastTaskEnd = new Date(lastTaskEnd.setDate(lastTaskEnd.getDate() + 31));
+        gantt.config.end_date = new Date(lastTaskEnd.getFullYear(), lastTaskEnd.getMonth(), lastTaskEnd.getDate(), 0, 0);
+      }
       this.ganttComponentRef.instance.onLoad(this.taskAllocateCommonService.ganttParseObject, this.resource);
       this.setScale(this.selectedScale);
       this.loaderenable = false;
@@ -3090,10 +3089,37 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       return Node.AssignedTo && Node.AssignedTo.ID === objt.UserName.ID;
     });
     await this.dailyAllocateTask(resource, Node);
-    this.DateChange(Node, type);
+    this.DateChange(Node, type, false);
   }
+
+ 
+  SetDateToCurrent(Node) {
+    this.milestoneData.forEach(milestone => {
+      if(milestone.data.type === 'task' && Node.milestone === milestone.data.milestone && Node.taskFullName === milestone.data.taskFullName ) {
+       milestone.data = Node;
+       milestone.data.edited = true;
+      }
+      if (milestone.children !== undefined) {
+        milestone.children.forEach(submilestone => {
+          if(submilestone.data.type === 'task'  && Node.milestone === submilestone.data.milestone && Node.taskFullName === submilestone.data.taskFullName) {
+            submilestone.data =  Node;
+            submilestone.data.edited = true;
+          }
+          if (submilestone.children !== undefined) {
+            submilestone.children.forEach(task => {
+              if(Node.milestone === task.data.milestone && Node.taskFullName === task.data.taskFullName) {
+                task.data = Node;
+                task.data.edited = true;
+              }
+            });
+          }
+        });
+      }
+    });
+  }
+
   // tslint:disable
-  DateChange(Node, type) {
+  DateChange(Node, type, bGanttCascade) {
     let previousNode: any = undefined;
     let milestonePosition = -1;
     let selectedMil = -1;
@@ -3101,7 +3127,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.milestoneData.forEach(milestone => {
       milestonePosition = milestonePosition + 1;
       if ((Node === milestone.data || Node.taskFullName === milestone.data.taskFullName) && milestone.data.type === 'task') {
-        this.changeDateOfEditedTask(milestone.data, type);
+        if(!bGanttCascade) {
+          this.changeDateOfEditedTask(milestone.data, type);
+        }
         selectedMil = milestonePosition;
         previousNode = milestone.data;
       }
@@ -3110,6 +3138,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
           if (submilestone.data.type === 'task') {
             if (Node === submilestone.data || Node.taskFullName === submilestone.data.taskFullName) {
+              if(!bGanttCascade)
               this.changeDateOfEditedTask(submilestone.data, type);
               selectedMil = milestonePosition;
               previousNode = submilestone.data;
@@ -3119,6 +3148,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
             submilestone.children.forEach(task => {
               if (Node === task.data || Node.taskFullName === task.data.taskFullName) {
                 subMilestonePosition = parseInt(submilestone.data.position, 10);
+                if(!bGanttCascade)
                 this.changeDateOfEditedTask(task.data, type);
                 selectedMil = milestonePosition;
                 previousNode = task.data;
@@ -3575,7 +3605,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       node.end_date = this.commonService.calcTimeForDifferentTimeZone(node.pUserEnd,
         node.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
       node.tatVal = this.commonService.calcBusinessDays(new Date(node.start_date), new Date(node.end_date));
-      this.DateChange(node, 'end');
+      this.DateChange(node, 'end', false);
       await this.dailyAllocateTask(resource, node);
     }
   }
