@@ -371,7 +371,7 @@ export class GanttChartComponent implements OnInit {
       }
       else if (task.status == gantt.config.types.onhold) {
         return "On Hold";
-      } 
+      }
       else if (task.status == gantt.config.types.notsaved) {
         return "Not Saved";
       }
@@ -384,8 +384,8 @@ export class GanttChartComponent implements OnInit {
       return "<h3>" + task.text + "</h3>" +
         "<b>Start date:</b> " + gantt.templates.tooltip_date_format(task.start_date) +
         "<br/><b>End date:</b> " + gantt.templates.tooltip_date_format(task.end_date) +
-        "<br/><b>User start date:</b> " + gantt.templates.tooltip_date_format(task.pUserStart) +
-        "<br/><b>User end date:</b> " + gantt.templates.tooltip_date_format(task.pUserEnd) +
+        "<br/><b>Resource start date:</b> " + gantt.templates.tooltip_date_format(task.pUserStart) +
+        "<br/><b>Resource end date:</b> " + gantt.templates.tooltip_date_format(task.pUserEnd) +
         "<br/><b>Duration:</b> " + gantt.calculateDuration(task) + "<br/><b>Status:</b> " + task.status +
         "<br/><b>Resource:</b> " + getResource(task) + "<br/><b>Budget Hrs:</b> " + task.budgetHours +
         "<br/><b>Spent Hrs:</b> " + task.spentTime;
