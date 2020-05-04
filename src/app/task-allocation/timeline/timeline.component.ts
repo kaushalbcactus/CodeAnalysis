@@ -1945,25 +1945,32 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     //   if (!gantt.config.columns[i].hide)
     //     export_columns.push({ id: gantt.config.columns[i].name, header: gantt.config.columns[i].label, width: 40 });
     // }
+   let exportColumnConfig = [
+      { name: "text", label: "Task", width: 50 },
+      { name: "status", label: "Status", width: 50 },
+      { name: "user", label: "Resource", width: 50 },
+      { name: "budgetHours", label: "Budget Hours", width: 50 },
+      { name: "spentTime", label: "Spent Hours", width: 50 },
+      { name: "start_date", label: "Start date", width: 50, type: "date" },
+      { name: "end_date", label: "End date", width: 50, type: "date" }
+    ]
 
-    // gantt.exportToExcel();
+    let mainGridConfig = [
+        { name: "text", tree: true, width: 150 },
+        {
+          name: "user", width: 150, label: "Resource", template: function (task) {
+            if (!task.user) return "";
+            return task.user
+          }
+        }
+      ];
+    gantt.config.columns = exportColumnConfig;
     gantt.exportToExcel({
       name: "Task Allocation.xlsx",
-      columns: [
-        { id: "text", header: "Task", width: 200 },
-        { id: "status", header: "Status", width: 200 },
-        { id: "user", header: "Resource", width: 150 },
-        { id: "budgetHours", header: "Budget Hours", width: 50 },
-        { id: "spentTime", header: "Spent Hours", width: 50 },
-        { id: "start_date", header: "Start date", width: 250, type: "date" },
-        { id: "end_date", header: "End date", width: 250, type: "date" }
-      ],
-      // server:"https://export.dhtmlx.com/gantt",
-      visual: true,
-      cellColors: true,
-      // data:{}
-      data: this.taskAllocateCommonService.ganttParseObject.data
+      // visual: true,
+      // cellColors: true
     })
+    gantt.config.columns = mainGridConfig;
   }
 
 
@@ -2957,10 +2964,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       nodeData.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
     nodeData.tatVal = this.commonService.calcBusinessDays(new Date(nodeData.start_date), new Date(nodeData.end_date));
     nodeData.edited = true;
-    const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
-      return nodeData.AssignedTo && nodeData.AssignedTo.ID === objt.UserName.ID;
-    });
-    await this.dailyAllocateTask(resource, nodeData);
     if (nodeData.IsCentrallyAllocated === 'Yes' && node.slotType !== 'Slot' && !node.parentSlot) {
       nodeData.user = nodeData.skillLevel;
     }
@@ -3555,12 +3558,43 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         EndDate = new Date(EndDate.setMinutes(EndDate.getMinutes() + 1));
         CaculateDate = new Date(EndDate);
         count++;
-      } else {
+      }
+      // else if (EndDate.getHours() === 19 && EndDate.getMinutes() === 0) {
+
+      //   CaculateDate = new Date(EndDate);
+      //   EndDate = new Date(EndDate.setMinutes(EndDate.getMinutes() + 1));
+      //   count--;
+      // }
+      else {
         EndDate = new Date(EndDate.getFullYear(), EndDate.getMonth(), (EndDate.getDate() + 1), 9, 0);
         CaculateDate = new Date(EndDate);
         count--;
       }
+
+      // if (EndDate.getHours() >= 9 && EndDate.getHours() <= 19) { count++; }
     }
+
+    // while (count < workHours) {
+    //   if (EndDate.getDay() !== 0 && EndDate.getDay() !== 6) { // && EndDate.getHours() >= 9 && EndDate.getHours() < 19
+    //     EndDate = new Date(EndDate.setMinutes(EndDate.getMinutes() + 1));
+    //     CaculateDate = new Date(EndDate);
+    //   } else {
+    //     EndDate = new Date(EndDate.getFullYear(), EndDate.getMonth(), (EndDate.getDate() + 1), 9, 0);
+    //     CaculateDate = new Date(EndDate);
+    //   }
+    //   count++;
+    //   // else if (EndDate.getHours() === 19 && EndDate.getMinutes() === 0) {
+
+    //   //   CaculateDate = new Date(EndDate);
+    //   //   EndDate = new Date(EndDate.setMinutes(EndDate.getMinutes() + 1));
+    //   //   count--;
+    //   // } else {
+    //   //   EndDate = new Date(EndDate.getFullYear(), EndDate.getMonth(), (EndDate.getDate() + 1), 9, 0);
+    //   //   CaculateDate = new Date(EndDate);
+    //   //   count--;
+    //   // }
+    //   // if (EndDate.getHours() >= 9 && EndDate.getHours() <= 19) { }
+    // }
     return CaculateDate;
   }
 

@@ -40,7 +40,7 @@ export class GanttChartComponent implements OnInit {
           scales: [
             { unit: "day", step: 1, format: "%j %F, %l" },
             { unit: "hour", step: 1, format: "%g %a" },
-            { unit: "minute", step: 15, format: "%i" }
+            { unit: "minute", step: 30, format: "%i" }
           ],
         },
         {
@@ -218,7 +218,7 @@ export class GanttChartComponent implements OnInit {
       columns: [
         { name: "text", tree: true, width: 150 },
         {
-          name: "owner", width: 150, label: "Resource", template: function (task) {
+          name: "user", width: 150, label: "Resource", template: function (task) {
             if (!task.user) return "";
             return task.user
           }

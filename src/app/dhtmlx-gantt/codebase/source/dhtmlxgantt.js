@@ -6509,11 +6509,11 @@ module.exports = function () {
         root_id: 0,
         autofit: false,
         columns: [
-            { name: "text", tree: true, width: "*", resize: true,hide: false },
-            { name: "owner", width: 80, align: "center", hide: false},
-            { name: "status", width: 80, hide: false},
-            { name: "start_date", align: "center", resize: true, hide: false },
-            { name: "end_date", align: "center" ,hide: false},
+            { name: "text", tree: true, width: "*", resize: true },
+            { name: "user", width: 80, align: "center"},
+            // { name: "status", width: 80},
+            // { name: "start_date", align: "center", resize: true },
+            // { name: "end_date", align: "center"},
             // { name: "add", width: 44 }
         ],
         /*scale*/
@@ -29107,7 +29107,7 @@ module.exports = function (gantt) {
 		/* grid columns */
 		column_wbs: "WBS",
         column_text: "Task name",
-        column_owner: "Resource",
+        column_user: "Resource",
         column_status: "Status",
 		column_start_date: "Start Date",
 		column_end_date: "End Date",
