@@ -292,7 +292,7 @@ export class TaskAllocationCommonService {
     milestone.slotColor = task ? task.slotColor : milestone.slotColor;
     milestone.DisableCascade = task ? task.DisableCascade : milestone.DisableCascade;
     milestone.allocationColor = '';
-
+    milestone.showAllocationSplit = false;
     return milestone;
   }
 
@@ -360,9 +360,12 @@ export class TaskAllocationCommonService {
       'taskFullName': data.Title,
       'subMilestonePresent': dbSubMilestones.length > 0 ? true : false,
       'allocationPerDay' : data.AllocationPerDay ? data.AllocationPerDay : '',
-      'allocationColor': ''
-    }
-
+      'allocationColor': '',
+      'showAllocationSplit': false
+    };
+    ganttObject.showAllocationSplit = ganttObject.type === 'task' && ganttObject.itemType !== 'Client Review' && ganttObject.itemType !== 'Send to client'
+    && ganttObject.IsCentrallyAllocated === 'No' && +ganttObject.budgetHours &&
+    new Date(ganttObject.pUserStartDatePart).getTime() !== new Date(ganttObject.pUserEndDatePart).getTime() ? true : false;
     return ganttObject;
   }
 
