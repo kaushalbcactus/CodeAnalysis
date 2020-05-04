@@ -4145,7 +4145,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
           });
           return false;
         }
-        const milestoneTasksRelink = AllTasks.filter(t => t.status !== 'Abandon' && t.status !== 'Completed' && t.itemType !== 'Adhoc');
+        const milestoneTasksRelink = AllTasks.filter(t => t.status !== 'Abandon' && t.itemType !== 'Adhoc');
         if (milestoneTasksRelink.length > 0) {
           this.LinkScToClientReview(milestoneTasksRelink);
         }

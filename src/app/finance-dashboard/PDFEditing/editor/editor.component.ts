@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import DecoupledEditor from '@ckeditor/ckeditor5-build-decoupled-document';
 import { CommonService } from '../services/common.service';
 import { FdConstantsService } from '../../fdServices/fd-constants.service';
@@ -53,6 +53,8 @@ export class EditorComponent implements OnInit {
     serviceDetailHeader = '';
     iliByPidRes: any = [];
     private subscription: Subscription = new Subscription();
+    editJapanPayment =false;
+    SelectedJapanDays: any;
     constructor(
         private common: CommonService,
         private fdConstantsService: FdConstantsService,
@@ -61,7 +63,6 @@ export class EditorComponent implements OnInit {
         private globalObject: GlobalService,
         private spOperationsServices: SPOperationService,
         private constantsService: ConstantsService,
-
 
     ) { }
 
@@ -2074,25 +2075,31 @@ export class EditorComponent implements OnInit {
 
     editable(id: string) {
 
-        debugger;
-        this.elementId = id;
-        if (id === 'contact_details') {
-            this.heading = 'Contact Details';
+        if(id ==='paymentInstructions2'){
+            this.SelectedJapanDays = document.getElementById(id).querySelector('span').innerText;
+            this.editJapanPayment = true;
         }
-        if (id === 'paymentInstructions') {
-            this.heading = 'Payment Instructions';
-        }
-        if (id === 'appendix') {
-            this.heading = 'Appendix';
-        }
-        this.editor = true;
-        const mainUl = document.getElementById(id);
-        const getLi = mainUl.getElementsByTagName('li')[1];
-        if (getLi === null || getLi === undefined) {
-            this.data = document.getElementById(id).innerHTML;
-        } else {
-            // console.log(getLi.firstElementChild.innerHTML);
-            this.data = getLi.firstElementChild.innerHTML;
+        else{
+
+            this.elementId = id;
+            if (id === 'contact_details') {
+                this.heading = 'Contact Details';
+            }
+            if (id === 'paymentInstructions') {
+                this.heading = 'Payment Instructions';
+            }
+            if (id === 'appendix') {
+                this.heading = 'Appendix';
+            }
+            this.editor = true;
+            const mainUl = document.getElementById(id);
+            const getLi = mainUl.getElementsByTagName('li')[1];
+            if (getLi === null || getLi === undefined) {
+                this.data = document.getElementById(id).innerHTML;
+            } else {
+                // console.log(getLi.firstElementChild.innerHTML);
+                this.data = getLi.firstElementChild.innerHTML;
+            }
         }
     }
 
@@ -3145,6 +3152,12 @@ export class EditorComponent implements OnInit {
         });
 
         return projectAppendix;
+    }
+
+
+    updateDays(id:string){
+
+        document.getElementById(id).querySelector('span').innerText = this.SelectedJapanDays;
     }
 }
 

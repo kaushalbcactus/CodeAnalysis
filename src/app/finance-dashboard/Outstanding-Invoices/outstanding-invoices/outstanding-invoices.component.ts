@@ -25,7 +25,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     outstandingInvoicesRes: any = [];
     outstandingInCols: any[];
     msgs: Message[] = [];
-
+    SelectedAuxInvoiceName = '';
     // Row Selection Array
     selectedRowData: any = [];
 
@@ -68,7 +68,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     // Loader
     isPSInnerLoaderHidden: boolean = false;
     @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
-    @ViewChild('editorRef', { static: false }) editorRef: EditorComponent;
+    @ViewChild('editorRef', { static: true }) editorRef: EditorComponent;
     @ViewChild('replaceInvoiceFile', { static: false }) replaceInvoiceFile: ElementRef;
     @ViewChild('paymentResolvedFile', { static: false }) paymentResolvedFile: ElementRef;
     @ViewChild('outi', { static: false }) outInvTable: Table;
@@ -77,6 +77,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     private subscription: Subscription = new Subscription();
     SelectedFile: any;
     FolderName: string;
+    editAuxiliary = false;
 
     constructor(
         private confirmationService: ConfirmationService,
@@ -315,16 +316,16 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     // Get Proformas InvoiceItemList
 
     async getRequiredData() {
-      
+
         const outInvObj = Object.assign({}, this.fdConstantsService.fdComponent.invoicesForMangerIT);
         this.commonService.SetNewrelic('Finance-Dashboard', 'outstanding-invoices', 'invoicesForMangerIT');
-        const res = await this.spServices.readItems(this.constantService.listNames.OutInvoices.name, outInvObj);     
-        const arrResults = res.length ? res : [];  
+        const res = await this.spServices.readItems(this.constantService.listNames.OutInvoices.name, outInvObj);
+        const arrResults = res.length ? res : [];
         this.formatData(arrResults);
         this.isPSInnerLoaderHidden = true;
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
         this.setCurrentPage(0);
-   
+
     }
 
     async formatData(data: any[]) {
@@ -333,7 +334,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
             let poItem = this.getPONumber(element);
-        
+
             this.outstandingInvoicesRes.push({
                 Id: element.ID,
                 Amount: element.Amount,
@@ -345,8 +346,8 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 InvoiceDate: new Date(this.datePipe.transform(element.InvoiceDate, 'MMM dd, yyyy')),
                 InvoiceDateFormat: this.datePipe.transform(element.InvoiceDate, 'MMM dd, yyyy, hh:mm a'),
                 InvoiceNumber: element.InvoiceNumber,
-                AuxiliaryInvoiceName : element.AuxiliaryInvoiceName ? element.AuxiliaryInvoiceName : '',
-                DisplayInvoiceWithAuxiliary : element.AuxiliaryInvoiceName ?  element.InvoiceNumber +' - '+ element.AuxiliaryInvoiceName : element.InvoiceNumber,
+                AuxiliaryInvoiceName: element.AuxiliaryInvoiceName ? element.AuxiliaryInvoiceName : '',
+                DisplayInvoiceWithAuxiliary: element.AuxiliaryInvoiceName ? element.InvoiceNumber + ' - ' + element.AuxiliaryInvoiceName : element.InvoiceNumber,
                 MainPOC: element.MainPOC,
                 InvoiceStatus: element.Status,
                 PONumber: poItem.Number,
@@ -512,6 +513,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         this.items.push(
             { label: 'Details', command: (e) => this.openMenuContent(e, data) },
             { label: 'Show History', command: (e) => this.openMenuContent(e, data) },
+            { label: 'Edit Invoice Number', command: (e) => this.openMenuContent(e, data) },
         )
         if (this.items.length === 0) {
             console.log('this.items ', this.items);
@@ -548,6 +550,8 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         } else if (this.confirmDialog.title.toLowerCase() === 'edit invoice') {
             const invObj = JSON.parse(data.InvoiceHtml);
             if (invObj.hasOwnProperty('saveObj')) {
+
+                debugger;
                 this.fdConstantsService.fdComponent.selectedEditObject.Code = data.InvoiceNumber;
                 const oCLE = this.cleData.find(e => e.Title === data.ClientLegalEntity);
                 this.fdConstantsService.fdComponent.selectedEditObject.ListName = oCLE.ListName;
@@ -606,6 +610,12 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 }
             }
             // this.pdfEditor.getInvoiceData(JSON.parse(data.ProformaHtml));
+        }
+        else if (this.confirmDialog.title === 'Edit Invoice Number') {
+
+            this.SelectedAuxInvoiceName = this.selectedRowItem.AuxiliaryInvoiceName;
+            this.editAuxiliary = true;
+
         }
     }
 
@@ -988,6 +998,35 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             this.commonService.SetNewrelic('Finance-Dashboard', 'outstanding-invoices', 'submitForm');
             this.submitForm(batchUrl, type);
         }
+        else if (type === 'AuxiliaryUpdate') {
+
+            if (this.SelectedAuxInvoiceName.trim() === '' || this.SelectedAuxInvoiceName.length > 30) {
+
+                const errorMessage = this.SelectedAuxInvoiceName.trim() === '' ? 'Please enter Auxiliary Name' : 'Maximum 30 character allowed.'
+                this.messageService.add({ key: 'outstandingInfoToast', severity: 'error', summary: 'Error message', detail: errorMessage, life: 3000 });
+                return false;
+            }
+            else {
+                this.editAuxiliary= false;
+                this.isPSInnerLoaderHidden = false;
+                this.submitBtn.isClicked = true;
+                const invObj = Object.assign({}, this.queryConfig);
+                invObj.url = this.spServices.getItemURL(this.constantService.listNames.Invoices.name, +this.selectedRowItem.Id);
+                invObj.listName = this.constantService.listNames.Invoices.name;
+                invObj.type = 'PATCH';
+                invObj.data = {
+                    __metadata: {
+                        type: this.constantService.listNames.Invoices.type
+                    },
+                    AuxiliaryInvoiceName: this.SelectedAuxInvoiceName
+                };
+                batchUrl.push(invObj);
+
+                this.commonService.SetNewrelic('Finance-Dashboard', 'outstanding-invoices', 'submitForm');
+                this.submitForm(batchUrl, type);
+            }
+
+        }
     }
 
     submitDebitCreditNoteForm(type: string, pathURL) {
@@ -1041,29 +1080,6 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
 
     // batchContents: any = [];
     async submitForm(batchUrl, type: string) {
-        // console.log('Form is submitting');
-        // this.batchContents = [];
-        // const batchGuid = this.spServices.generateUUID();
-        // const changeSetId = this.spServices.generateUUID();
-
-        // // const batchContents = this.spServices.getChangeSetBody1(changeSetId, endpoint, JSON.stringify(obj), true);
-        // console.log(' dataEndpointArray ', dataEndpointArray);
-        // dataEndpointArray.forEach(element => {
-        //     if (element)
-        //         this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId, 
-        //      element.endpoint, JSON.stringify(element.objData), element.requestPost)];
-        // });
-
-        // console.log("this.batchContents ", JSON.stringify(this.batchContents));
-
-        // this.batchContents.push('--changeset_' + changeSetId + '--');
-        // const batchBody = this.batchContents.join('\r\n');
-        // const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
-        // batchBodyContent.push('--batch_' + batchGuid + '--');
-        // const sBatchData = batchBodyContent.join('\r\n');
-        // const res = await this.spServices.getFDData(batchGuid, sBatchData);//.subscribe(res => {
-        // const arrResults = res;
-        // console.log('--oo ', arrResults);
         await this.spServices.executeBatch(batchUrl);
         if (type === "creditDebit") {
             this.messageService.add({
@@ -1098,6 +1114,14 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 detail: this.selectedRowItem.InvoiceNumber + ' ' + 'Success.', life: 20000
             });
             this.replaceInvoiceModal = false;
+            this.reFetchData();
+        }
+        else if (type === "AuxiliaryUpdate") {
+
+            this.messageService.add({
+                key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message',
+                detail: 'Auxiliary Name for ' + this.selectedRowItem.InvoiceNumber + ' ' + ' updated sucessfully.', life: 20000
+            });
             this.reFetchData();
         }
         this.isPSInnerLoaderHidden = true;
@@ -1171,5 +1195,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         }
         this.cdr.detectChanges();
     }
+
+
 
 }
