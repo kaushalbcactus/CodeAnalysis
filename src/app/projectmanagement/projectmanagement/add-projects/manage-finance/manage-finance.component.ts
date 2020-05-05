@@ -1179,33 +1179,31 @@ export class ManageFinanceComponent implements OnInit {
   }
 
   lineItemConfirmAllowed(invoice) {
-    this.reasonsArray = [];
+    invoice.reasonsArray = [];
     const POObj = this.poArray.find(c => c.Id === invoice.poId);
     const currentDate = new Date();
     const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
-    const last3Days = this.commonService.getLastWorkingDay(3, new Date());
     debugger;
+    const last3Days = this.commonService.getLastWorkingDay(3, new Date());
     if (invoice.date >= last3Days && invoice.date < lastDay && invoice.amount > 0 &&
       POObj.POCategory !== 'Client PO Pending' && new Date(POObj.POExpiryDate) >= new Date()) {
       return true;
     } else {
       if (invoice.date < last3Days) {
-        this.reasonsArray.push('Invoice date should be greater than ' + this.datePipe.transform(last3Days, 'MMM dd,yyyy'));
+        invoice.reasonsArray.push('Invoice date should be greater than ' + this.datePipe.transform(last3Days, 'MMM dd,yyyy'));
       }
       if (invoice.date >= lastDay) {
-        this.reasonsArray.push('Invoice date should be less than ' + this.datePipe.transform(lastDay, 'MMM dd,yyyy'));
+        invoice.reasonsArray.push('Invoice date should be less than ' + this.datePipe.transform(lastDay, 'MMM dd,yyyy'));
       }
       if (invoice.amount <= 0) {
         this.reasonsArray.push('Invoice amount should be greater than 0');
       }
       if (new Date(POObj.POExpiryDate) < new Date()) {
-        this.reasonsArray.push('Po expiry date should be greater than or equal to today');
+        invoice.reasonsArray.push('Po expiry date should be greater than or equal to today');
       }
       if (POObj.POCategory === 'Client PO Pending') {
-        this.reasonsArray.push('Po category should not be equal to Client PO Pending');
+        invoice.reasonsArray.push('Po category should not be equal to Client PO Pending');
       }
-
-
       return false;
     }
   }
@@ -1457,7 +1455,8 @@ export class ManageFinanceComponent implements OnInit {
               invoiceObj.isInvoiceItemConfirm = this.lineItemConfirmAllowed(invoiceObj);
             }
             else {
-              this.reasonsArray.push('Project status should not be ' + this.projectStatus);
+              invoiceObj.reasonsArray=[];
+              invoiceObj.reasonsArray.push('Project status should not be ' + this.projectStatus);
             }
             if (this.projectStatus === this.constant.projectStatus.Unallocated
               || this.projectStatus === this.constant.projectStatus.InProgress

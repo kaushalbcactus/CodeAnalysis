@@ -581,6 +581,9 @@ export class ProformaComponent implements OnInit, OnDestroy {
         }
         if (data.ProformaHtml) {
             this.items.push({ label: 'Edit Proforma', command: (e) => this.openMenuContent(e, data) });
+            if(!data.FileURL){
+                this.items.push({ label: 'Regenerate Proforma', command: (e) => this.openMenuContent(e, data) });
+            }
         }
         this.items.push(
             { label: 'Replace Proforma', command: (e) => this.openMenuContent(e, data) },

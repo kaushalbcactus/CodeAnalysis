@@ -215,8 +215,8 @@
                                         <i *ngIf="rowData.isInvoiceItemEdit"  class="pi pi-pencil"  style="font-size:2em;cursor: pointer;vertical-align: middle;" (click)="editInvoiceItem(rowData)"></i>
 
                                         <p-overlayPanel appendTo="body" #op2 [dismissable]="true">
-                                            <ul *ngIf="reasonsArray">
-                                                <li *ngFor='let reson of reasonsArray'>{{reson}}</li>
+                                            <ul *ngIf="rowData.reasonsArray">
+                                                <li *ngFor='let reson of rowData.reasonsArray'>{{reson}}</li>
                                             </ul>
                                         </p-overlayPanel>
                                     </td>
