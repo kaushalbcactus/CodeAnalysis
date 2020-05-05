@@ -599,18 +599,4 @@ export class GanttChartComponent implements OnInit {
       }, 300);
     }
   }
-
-  // showTable() {
-  //   this.isLoaderHidden = true;
-  //   this.isTableHidden = false;
-  //   gantt.init(this.ganttContainer.nativeElement);
-  //   setTimeout(() => {
-  //     gantt.parse(this.ganttParseObject);
-  //   }, 300);
-  // }
-
-  // showLoader() {
-  //   this.isLoaderHidden = false;
-  //   this.isTableHidden = true;
-  // }
 }

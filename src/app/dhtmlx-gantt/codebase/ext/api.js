@@ -451,9 +451,11 @@ function add_export_methods(gantt){
 			if (color == "363636")
 				color = get_color(node, "backgroundColor");
 
-			copy.$color = color;
+			copy.$color = obj.color.replace("#","");
+			copy.color = copy.color.replace("#","");
 		} else if (obj.color)
-			copy.$color = obj.color;
+			copy.$color = obj.color.replace("#","");
+			copy.color = copy.color.replace("#","");
 
 		return copy;
 	}

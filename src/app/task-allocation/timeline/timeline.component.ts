@@ -1935,37 +1935,21 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
   ganttExportToExcel() {
-    // let export_columns = [];
-    // for (let i = 0; i < gantt.config.columns.length; i++) {
-    //   if (!gantt.config.columns[i].hide)
-    //     export_columns.push({ id: gantt.config.columns[i].name, header: gantt.config.columns[i].label, width: 40 });
-    // }
-   let exportColumnConfig = [
-      { name: "text", label: "Task", width: 50 },
-      { name: "status", label: "Status", width: 50 },
-      { name: "user", label: "Resource", width: 50 },
-      { name: "budgetHours", label: "Budget Hours", width: 50 },
-      { name: "spentTime", label: "Spent Hours", width: 50 },
-      { name: "start_date", label: "Start date", width: 50, type: "date" },
-      { name: "end_date", label: "End date", width: 50, type: "date" }
-    ]
 
-    let mainGridConfig = [
-        { name: "text", tree: true, width: 150 },
-        {
-          name: "user", width: 150, label: "Resource", template: function (task) {
-            if (!task.user) return "";
-            return task.user
-          }
-        }
-      ];
-    gantt.config.columns = exportColumnConfig;
     gantt.exportToExcel({
       name: "Task Allocation.xlsx",
-      // visual: true,
-      // cellColors: true
+      columns: [
+        { id: "text", header: "Task", width: 40 },
+        { id: "status", header: "Status", width: 40 },
+        { id: "user", header: "Resource", width: 40 },
+        { id: "budgetHours", header: "Budget Hours", width: 40 },
+        { id: "spentTime", header: "Spent Hours", width: 40 },
+        { id: "start_date", header: "Start date", width: 40, type: "date" },
+        { id: "end_date", header: "End date", width: 40, type: "date" }
+      ],
+      visual: true,
+      cellColors: true
     })
-    gantt.config.columns = mainGridConfig;
   }
 
 
