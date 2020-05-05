@@ -1,5 +1,5 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { SelectItemGroup } from 'primeng';
+import { SelectItemGroup, DialogService } from 'primeng';
 import { FormGroup, Validators, FormControl, FormBuilder } from '@angular/forms';
 import { SelectItem } from 'primeng';
 import { PMObjectService } from 'src/app/projectmanagement/services/pmobject.service';
@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 import { DataService } from 'src/app/Services/data.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { DatePipe } from '@angular/common';
+import { GlobalService } from 'src/app/Services/global.service';
 @Component({
   selector: 'app-project-attributes',
   templateUrl: './project-attributes.component.html',
@@ -56,6 +57,8 @@ export class ProjectAttributesComponent implements OnInit {
     private dataService: DataService,
     private commonService: CommonService,
     private datePipe: DatePipe,
+    private dialogService: DialogService,
+    private globalObject: GlobalService
   ) { }
   async ngOnInit() {
     this.initForm();
@@ -571,46 +574,126 @@ export class ProjectAttributesComponent implements OnInit {
   }
 
 
+  //*************************************************************************************************
+  // new File uplad function updated by Maxwell
+  // ************************************************************************************************
+
+
+  /**
+* This method is called when file is selected
+* @param event file
+*/
+  onFileChange(event) {
+    this.selectedFile = null;
+    if (event.target.files && event.target.files.length > 0) {
+      this.selectedFile = event.target.files[0];
+    }
+  }
+
+
   async SaveProject() {
     if (this.addProjectAttributesForm.valid) {
       this.pmObject.isMainLoaderHidden = false;
       this.setFormFieldValue();
       if (this.selectedFile) {
-        await this.pmCommonService.submitFile(this.selectedFile, this.fileReader);
+        let SelectedFile = [];
+
+        const FolderName = await this.pmCommonService.getFolderName();
+        SelectedFile.push(new Object({ name: this.selectedFile.name, file: this.selectedFile }));
+        this.commonService.SetNewrelic('projectManagment', 'addproj-projectAttributes', 'UpdateProjectInformationfileupload');
+        this.pmObject.isMainLoaderHidden = true;
+
+        this.commonService.UploadFilesProgress(SelectedFile, FolderName, true).then(uploadedfile => {
+          if (SelectedFile.length > 0 && SelectedFile.length === uploadedfile.length) {
+            this.pmObject.isMainLoaderHidden = false;
+            if (uploadedfile[0].ServerRelativeUrl && uploadedfile[0].hasOwnProperty('Name') && !uploadedfile[0].hasOwnProperty('odata.error')) {
+              this.pmObject.addProject.FinanceManagement.SOWFileURL = uploadedfile[0].ServerRelativeUrl;
+              this.pmObject.addProject.FinanceManagement.SOWFileName = uploadedfile[0].Name;
+              this.pmObject.addProject.FinanceManagement.SOWFileProp = uploadedfile[0];
+            }
+          }
+          this.continueSaveProject();
+        })
       }
-      const projectInfo = this.pmCommonService.getProjectData(this.pmObject.addProject, false);
-      this.commonService.SetNewrelic('projectManagment', 'addproj-projectAttributes', 'UpdateProjectInformation');
-      await this.spServices.updateItem(this.constant.listNames.ProjectInformation.name, this.projObj.ID, projectInfo,
-        this.constant.listNames.ProjectInformation.type);
-      this.pmObject.isMainLoaderHidden = true;
-      this.messageService.add({
-        key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
-        detail: 'Project Updated Successfully for the projectcode - ' + this.projObj.ProjectCode
-      });
-      setTimeout(() => {
-        this.dynamicDialogRef.close();
-        if (this.router.url === '/projectMgmt/allProjects') {
-          this.dataService.publish('reload-project');
-        } else {
-          this.router.navigate(['/projectMgmt/allProjects']);
-        }
-      }, this.pmConstant.TIME_OUT);
+      else {
+        this.continueSaveProject();
+      }
+
     } else {
       this.validateAllFormFields(this.addProjectAttributesForm);
     }
   }
-  /**
-   * This method is called when file is selected
-   * @param event file
-   */
-  onFileChange(event) {
-    this.selectedFile = null;
-    this.fileReader = new FileReader();
-    if (event.target.files && event.target.files.length > 0) {
-      this.selectedFile = event.target.files[0];
-      this.fileReader.readAsArrayBuffer(this.selectedFile);
-    }
+
+  async  continueSaveProject() {
+    const projectInfo = this.pmCommonService.getProjectData(this.pmObject.addProject, false);
+    this.commonService.SetNewrelic('projectManagment', 'addproj-projectAttributes', 'UpdateProjectInformation');
+    await this.spServices.updateItem(this.constant.listNames.ProjectInformation.name, this.projObj.ID, projectInfo,
+      this.constant.listNames.ProjectInformation.type);
+    this.pmObject.isMainLoaderHidden = true;
+    this.messageService.add({
+      key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
+      detail: 'Project Updated Successfully for the projectcode - ' + this.projObj.ProjectCode
+    });
+    setTimeout(() => {
+      this.dynamicDialogRef.close();
+      if (this.router.url === '/projectMgmt/allProjects') {
+        this.dataService.publish('reload-project');
+      } else {
+        this.router.navigate(['/projectMgmt/allProjects']);
+      }
+    }, this.pmConstant.TIME_OUT);
   }
+
+
+  //*************************************************************************************************
+  // commented old file upload function
+  // ************************************************************************************************
+
+
+
+  //   /**
+  //  * This method is called when file is selected
+  //  * @param event file
+  //  */
+  //   onFileChange(event) {
+  //     this.selectedFile = null;
+  //     this.fileReader = new FileReader();
+  //     if (event.target.files && event.target.files.length > 0) {
+  //       this.selectedFile = event.target.files[0];
+  //       this.fileReader.readAsArrayBuffer(this.selectedFile);
+  //     }
+  //   }
+
+
+  //   async SaveProject() {
+  //     if (this.addProjectAttributesForm.valid) {
+  //       this.pmObject.isMainLoaderHidden = false;
+  //       this.setFormFieldValue();
+  //       if (this.selectedFile) {
+  //         await this.pmCommonService.submitFile(this.selectedFile, this.fileReader);
+  //       }
+  //       const projectInfo = this.pmCommonService.getProjectData(this.pmObject.addProject, false);
+  //       this.commonService.SetNewrelic('projectManagment', 'addproj-projectAttributes', 'UpdateProjectInformation');
+  //       await this.spServices.updateItem(this.constant.listNames.ProjectInformation.name, this.projObj.ID, projectInfo,
+  //         this.constant.listNames.ProjectInformation.type);
+  //       this.pmObject.isMainLoaderHidden = true;
+  //       this.messageService.add({
+  //         key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
+  //         detail: 'Project Updated Successfully for the projectcode - ' + this.projObj.ProjectCode
+  //       });
+  //       setTimeout(() => {
+  //         this.dynamicDialogRef.close();
+  //         if (this.router.url === '/projectMgmt/allProjects') {
+  //           this.dataService.publish('reload-project');
+  //         } else {
+  //           this.router.navigate(['/projectMgmt/allProjects']);
+  //         }
+  //       }, this.pmConstant.TIME_OUT);
+  //     } else {
+  //       this.validateAllFormFields(this.addProjectAttributesForm);
+  //     }
+  //   }
+
   /**
    * This method is used open the molecule.
    */
@@ -675,4 +758,8 @@ export class ProjectAttributesComponent implements OnInit {
     }
   }
 
+
+  cancel() {
+    this.dynamicDialogRef.close();
+  }
 }

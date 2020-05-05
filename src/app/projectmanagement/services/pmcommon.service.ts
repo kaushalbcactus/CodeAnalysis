@@ -8,6 +8,7 @@ import { GlobalService } from 'src/app/Services/global.service';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { DataService } from 'src/app/Services/data.service';
+import { DialogService } from 'primeng';
 
 declare var $;
 @Injectable({
@@ -24,6 +25,7 @@ export class PMCommonService {
     private globalObject: GlobalService,
     public messageService: MessageService,
     private router: Router,
+    private dialogService: DialogService,
     private dataService: DataService
   ) {
   }
@@ -947,21 +949,23 @@ export class PMCommonService {
       this.pmObject.billedBy = tempResult;
     }
   }
-  async validateAndSave() {
-    this.pmObject.isMainLoaderHidden = false;
-    const newProjectCode = await this.verifyAndUpdateProjectCode();
-    this.pmObject.addProject.ProjectAttributes.ProjectCode = newProjectCode;
-    if (newProjectCode) {
-      if (this.pmObject.addProject.FinanceManagement.selectedFile) {
-        const fileUploadResult = await this.submitFile(this.pmObject.addProject.FinanceManagement.selectedFile, this.pmObject.fileReader);
-        if (fileUploadResult.hasOwnProperty('ServerRelativeUrl')) {
-          this.pmObject.addSOW.isSOWCodeDisabled = false;
-          this.pmObject.addSOW.isStatusDisabled = true;
-        }
-      }
-      await this.addUpdateProject();
-    }
-  }
+
+
+  // async validateAndSave() {
+  //   this.pmObject.isMainLoaderHidden = false;
+  //   const newProjectCode = await this.verifyAndUpdateProjectCode();
+  //   this.pmObject.addProject.ProjectAttributes.ProjectCode = newProjectCode;
+  //   if (newProjectCode) {
+  //     if (this.pmObject.addProject.FinanceManagement.selectedFile) {
+  //       const fileUploadResult = await this.submitFile(this.pmObject.addProject.FinanceManagement.selectedFile, this.pmObject.fileReader);
+  //       if (fileUploadResult.hasOwnProperty('ServerRelativeUrl')) {
+  //         this.pmObject.addSOW.isSOWCodeDisabled = false;
+  //         this.pmObject.addSOW.isStatusDisabled = true;
+  //       }
+  //     }
+  //     await this.addUpdateProject();
+  //   }
+  // }
   /**
    * This method is used to verify the project code.
    */
@@ -1048,7 +1052,17 @@ export class PMCommonService {
     projectCreate.listName = this.constant.listNames.ProjectInformation.name;
     batchURL.push(projectCreate);
     counter += 1;
-    // Add data to ProjectFinances call ##17
+
+    // Add data to ProjectScope call ##17
+    const projectScopeData = this.getProjectScopeData(projectInformationData);
+    const projectScopeCreate = Object.assign({}, options);
+    projectScopeCreate.url = this.spServices.getReadURL(this.constant.listNames.ProjectScope.name, null);
+    projectScopeCreate.data = projectScopeData;
+    projectScopeCreate.type = 'POST';
+    projectScopeCreate.listName = this.constant.listNames.ProjectScope.name;
+    batchURL.push(projectScopeCreate);
+    counter += 1;
+    // Add data to ProjectFinances call ##18
     const projectFinanceData = this.getProjectFinancesData();
     const projectFinanceCreate = Object.assign({}, options);
     projectFinanceCreate.url = this.spServices.getReadURL(this.constant.listNames.ProjectFinances.name, null);
@@ -1057,7 +1071,7 @@ export class PMCommonService {
     projectFinanceCreate.listName = this.constant.listNames.ProjectFinances.name;
     batchURL.push(projectFinanceCreate);
     counter += 1;
-    // Add data to projectFinanceBreakup call ##18
+    // Add data to projectFinanceBreakup call ##19
     const projectFinanceBreakArray = this.getProjectFinanceBreakupData();
     projectFinanceBreakArray.forEach(element => {
       const projectFinanceBreakupCreate = Object.assign({}, options);
@@ -1070,7 +1084,7 @@ export class PMCommonService {
     });
     if (this.pmObject.addProject.ProjectAttributes.BilledBy === this.pmConstant.PROJECT_TYPE.DELIVERABLE.value ||
       this.pmObject.addProject.ProjectAttributes.BilledBy === this.pmConstant.PROJECT_TYPE.FTE.value) {
-      //  Add data to  InvoiceLineItem call ## 19
+      //  Add data to  InvoiceLineItem call ## 20
       const invoiceLineItemArray = this.getInvoiceLineItemData();
       invoiceLineItemArray.forEach(element => {
         const createForderObj: any = Object.assign({}, options);
@@ -1081,7 +1095,7 @@ export class PMCommonService {
         batchURL.push(createForderObj);
         counter += 1;
       });
-      // Add data to  SOWItem call ## 20
+      // Add data to  SOWItem call ## 21
       const sowItemData = this.getSowItemData(projectFinanceData);
       const selectSOWItem: any = this.pmObject.addProject.SOWSelect.SOWSelectedItem;
       const sowItemCreate = Object.assign({}, options);
@@ -1091,7 +1105,7 @@ export class PMCommonService {
       sowItemCreate.listName = this.constant.listNames.SOW.name;
       batchURL.push(sowItemCreate);
       counter += 1;
-      // Add data to POItem call ## 21
+      // Add data to POItem call ## 22
       const poItemArray = this.getPoItemData(projectFinanceBreakArray);
       poItemArray.forEach(element => {
         const poItemCreate = Object.assign({}, options);
@@ -1132,7 +1146,7 @@ export class PMCommonService {
       listName + '/' + projectCode + '/Communications',
       listName + '/' + projectCode + '/Drafts',
       listName + '/' + projectCode + '/Emails',
-  //    listName + '/' + projectCode + '/Graphics',
+      //    listName + '/' + projectCode + '/Graphics',
       listName + '/' + projectCode + '/Miscellaneous',
       listName + '/' + projectCode + '/Publication Support',
       listName + '/' + projectCode + '/References',
@@ -1144,6 +1158,22 @@ export class PMCommonService {
       listName + '/' + projectCode + '/Publication Support/Published Papers'
     ];
     return arrFolders;
+  }
+
+
+  /**
+   * This function is used to set the projectScope object
+   */
+  getProjectScopeData(ProjectInfo) {
+
+    const data: any = {
+      __metadata: { type: this.constant.listNames.ProjectScope.type },
+      Title: ProjectInfo.ProjectCode,
+      ProjectFolder: ProjectInfo.ProjectFolder,
+
+    };
+
+    return data;
   }
   /**
    * This function is used to set the projectfinanaces object
@@ -1477,89 +1507,79 @@ export class PMCommonService {
       batchResults = await this.createFTEMilestones(response);
       finalArray = [...finalArray, ...batchResults];
     }
-    await this.moveMilestoneAndTask(finalArray);
-  }
-  async moveMilestoneAndTask(results) {
-    if (results && results.length && (this.pmObject.addProject.Timeline.Standard.IsStandard ||
+
+    if (finalArray && finalArray.length && (this.pmObject.addProject.Timeline.Standard.IsStandard ||
       this.pmObject.addProject.FinanceManagement.BilledBy === this.pmConstant.PROJECT_TYPE.FTE.value)) {
-      let batchURL = [];
-      let batchResults = [];
-      let finalArray = [];
-      const options = {
-        data: null,
-        url: '',
-        type: '',
-        listName: ''
-      };
-      for (const response of results) {
-        if (batchURL.length < 100) {
-          const fileUrl = this.globalObject.sharePointPageObject.serverRelativeUrl +
-            '/Lists/' + this.constant.listNames.Schedules.name + '/' + response.retItems.ID + '_.000';
-          let moveFileUrl = this.globalObject.sharePointPageObject.serverRelativeUrl +
-            '/Lists/' + this.constant.listNames.Schedules.name + '/' +
-            this.pmObject.addProject.ProjectAttributes.ProjectCode;
-          if (response.retItems.Milestone === 'Select one') {
-            moveFileUrl = moveFileUrl + '/' + response.retItems.ID + '_.000';
-            const milestoneURL = this.globalObject.sharePointPageObject.webAbsoluteUrl +
-              '/_api/Web/Lists/getByTitle(\'' + this.constant.listNames.Schedules.name + '\')/Items' +
-              '(' + response.retItems.ID + ')';
-            const moveData = {
-              __metadata: { type: this.constant.listNames.Schedules.type },
-              FileLeafRef: response.retItems.Title
-            };
-            const url = this.globalObject.sharePointPageObject.webAbsoluteUrl +
-              '/_api/web/getfolderbyserverrelativeurl(\'' + fileUrl + '\')/moveto(newurl=\'' + moveFileUrl + '\')';
-            const moveMileObj = Object.assign({}, options);
-            moveMileObj.url = url;
-            moveMileObj.type = 'POST';
-            moveMileObj.listName = this.constant.listNames.Schedules.name;
-            batchURL.push(moveMileObj);
-            const moveMilewithDataObj = Object.assign({}, options);
-            moveMilewithDataObj.url = milestoneURL;
-            moveMilewithDataObj.data = moveData;
-            moveMilewithDataObj.type = 'PATCH';
-            moveMilewithDataObj.listName = this.constant.listNames.Schedules.name;
-            batchURL.push(moveMilewithDataObj);
-          } else {
-            moveFileUrl = moveFileUrl + '/' + response.retItems.Milestone + '/' + response.retItems.ID + '_.000';
-            const url = this.globalObject.sharePointPageObject.webAbsoluteUrl +
-              '/_api/web/getfilebyserverrelativeurl(\'' + fileUrl + '\')/moveto(newurl=\'' + moveFileUrl + '\',flags=1)';
-            const moveTaskObj = Object.assign({}, options);
-            moveTaskObj.url = url;
-            moveTaskObj.type = 'POST';
-            moveTaskObj.listName = this.constant.listNames.Schedules.name;
-            batchURL.push(moveTaskObj);
-          }
-          if (batchURL.length === 99) {
-            this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetSchedules');
-            batchResults = await this.spServices.executeBatch(batchURL);
-            console.log(batchResults);
-            finalArray = [...finalArray, ...batchResults];
-            batchURL = [];
-          }
+      await this.moveMilestoneAndTask(finalArray, this.pmObject.addProject.ProjectAttributes.ProjectCode);
+    }
+  }
+  async moveMilestoneAndTask(results, ProjectCode) {
+
+    let batchURL = [];
+    let batchResults = [];
+    let finalArray = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    for (const response of results) {
+      if (batchURL.length < 100) {
+        const fileUrl = this.globalObject.sharePointPageObject.serverRelativeUrl +
+          '/Lists/' + this.constant.listNames.Schedules.name + '/' + response.retItems.ID + '_.000';
+        let moveFileUrl = this.globalObject.sharePointPageObject.serverRelativeUrl +
+          '/Lists/' + this.constant.listNames.Schedules.name + '/' +
+          ProjectCode;
+        if (response.retItems.Milestone === 'Select one') {
+          moveFileUrl = moveFileUrl + '/' + response.retItems.ID + '_.000';
+          const milestoneURL = this.globalObject.sharePointPageObject.webAbsoluteUrl +
+            '/_api/Web/Lists/getByTitle(\'' + this.constant.listNames.Schedules.name + '\')/Items' +
+            '(' + response.retItems.ID + ')';
+          const moveData = {
+            __metadata: { type: this.constant.listNames.Schedules.type },
+            FileLeafRef: response.retItems.Title
+          };
+          const url = this.globalObject.sharePointPageObject.webAbsoluteUrl +
+            '/_api/web/getfolderbyserverrelativeurl(\'' + fileUrl + '\')/moveto(newurl=\'' + moveFileUrl + '\')';
+          const moveMileObj = Object.assign({}, options);
+          moveMileObj.url = url;
+          moveMileObj.type = 'POST';
+          moveMileObj.listName = this.constant.listNames.Schedules.name;
+          batchURL.push(moveMileObj);
+          const moveMilewithDataObj = Object.assign({}, options);
+          moveMilewithDataObj.url = milestoneURL;
+          moveMilewithDataObj.data = moveData;
+          moveMilewithDataObj.type = 'PATCH';
+          moveMilewithDataObj.listName = this.constant.listNames.Schedules.name;
+          batchURL.push(moveMilewithDataObj);
+        } else {
+          moveFileUrl = moveFileUrl + '/' + response.retItems.Milestone + '/' + response.retItems.ID + '_.000';
+          const url = this.globalObject.sharePointPageObject.webAbsoluteUrl +
+            '/_api/web/getfilebyserverrelativeurl(\'' + fileUrl + '\')/moveto(newurl=\'' + moveFileUrl + '\',flags=1)';
+          const moveTaskObj = Object.assign({}, options);
+          moveTaskObj.url = url;
+          moveTaskObj.type = 'POST';
+          moveTaskObj.listName = this.constant.listNames.Schedules.name;
+          batchURL.push(moveTaskObj);
+        }
+        if (batchURL.length === 99) {
+          this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetSchedules');
+          batchResults = await this.spServices.executeBatch(batchURL);
+          console.log(batchResults);
+          finalArray = [...finalArray, ...batchResults];
+          batchURL = [];
         }
       }
-      if (batchURL.length) {
-        this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetSchedules');
-        batchResults = await this.spServices.executeBatch(batchURL);
-        console.log(batchResults);
-        finalArray = [...finalArray, ...batchResults];
-      }
     }
+    if (batchURL.length) {
+      this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetSchedules');
+      batchResults = await this.spServices.executeBatch(batchURL);
+      console.log(batchResults);
+      finalArray = [...finalArray, ...batchResults];
+    }
+
     this.pmObject.isMainLoaderHidden = true;
-    // this.messageService.add({
-    //   key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
-    //   detail: 'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode
-    // });
-    // setTimeout(() => {
-    //   this.pmObject.isAddProjectVisible = false;
-    //   if (this.router.url === '/projectMgmt/allProjects') {
-    //     this.dataService.publish('reload-project');
-    //   } else {
-    //     this.pmObject.allProjectItems = [];
-    //     this.router.navigate(['/projectMgmt/allProjects']);
-    //   }
-    // }, this.pmConstant.TIME_OUT);
   }
   async createFTEMilestones(response) {
     const monthObjArray = this.pmObject.addProject.Timeline.NonStandard.months;
@@ -1579,6 +1599,7 @@ export class PMCommonService {
       milestoneCreate.type = 'POST';
       milestoneCreate.listName = this.constant.listNames.Schedules.name;
       batchURL.push(milestoneCreate);
+
       // create the milestone folder.
       const milestoneFolderBody = {
         __metadata: { type: 'SP.Folder' },
@@ -1639,7 +1660,7 @@ export class PMCommonService {
   }
   getFTETask(fteObj, projectCode, taskType) {
     const businessDay = this.commonService.calcBusinessDays(fteObj.monthStartDay, fteObj.monthEndDay);
-    const resourceObj: any = this.pmObject.addProject.Timeline.NonStandard.ResourceName;
+    const resourceObj: any = this.pmObject.addProject.Timeline.NonStandard.ResourceName.hasOwnProperty('UserName') ? this.pmObject.addProject.Timeline.NonStandard.ResourceName : fteObj.Resources.hasOwnProperty('UserName') ? fteObj.Resources : null;
     let data: any;
     if (taskType === this.pmConstant.task.BLOCKING) {
       data = {
@@ -1740,7 +1761,7 @@ export class PMCommonService {
       ExpectedTime: '' + milestoneTask.Hours,
       TimeZone: '' + milestoneTask.assignedUserTimeZone,
       AllowCompletion: 'No',
-      TATStatus: milestoneTask.UseTaskDays,
+      TATStatus: milestoneTask.Task === 'Client Review' ? 'No' : milestoneTask.UseTaskDays,
       TATBusinessDays: milestoneTask.TaskDays,
       Status: this.constant.STATUS.NOT_CONFIRMED,
       SubMilestones: milestoneTask.SubMilestone,
@@ -1945,6 +1966,31 @@ export class PMCommonService {
     const templateData = await this.spServices.readItems(this.constant.listNames.MailContent.name,
       this.pmConstant.SOW_QUERY.CONTENT_QUERY);
     return templateData.length > 0 ? templateData[0] : [];
+  }
+
+  async getFolderName() {
+    const docFolder = 'Finance/SOW';
+    let libraryName = '';
+    const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
+      x.Title === this.pmObject.addProject.ProjectAttributes.ClientLegalEntity);
+    if (clientInfo && clientInfo.length) {
+      libraryName = clientInfo[0].ListName;
+    }
+    return libraryName + '/' + docFolder;
+  }
+
+  async reloadPMPage() {
+   
+    setTimeout(() => {
+      this.pmObject.isAddProjectVisible = false;
+      this.pmObject.isMainLoaderHidden = true;
+      if (this.router.url === '/projectMgmt/allProjects') {
+        this.dataService.publish('reload-project');
+      } else {
+        this.pmObject.allProjectItems = [];
+        this.router.navigate(['/projectMgmt/allProjects']);
+      }
+    }, this.pmConstant.TIME_OUT);
   }
 
 

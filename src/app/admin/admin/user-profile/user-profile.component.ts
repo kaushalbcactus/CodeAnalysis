@@ -666,7 +666,7 @@ export class UserProfileComponent implements OnInit {
       // This will get called when user update the manager name.
       if (this.showeditUser) {
         if (IdResults[0] && IdResults[0].retItems.length) {
-          this.createOrUpdateItem(addUserForm.value, IdResults, this.showeditUser, date);
+          await this.createOrUpdateItem(addUserForm.value, IdResults, this.showeditUser, date);
         } else {
           const sResult = await this.addUserToGroup(null, addUserForm.value.manager.Key);
           if (sResult && sResult.length) {
@@ -679,9 +679,11 @@ export class UserProfileComponent implements OnInit {
     } else {
       // This will get called when user doesn't update the manager name.
       if (this.showeditUser) {
-        this.createOrUpdateItem(addUserForm.value, IdResults, this.showeditUser, date);
+        await  this.createOrUpdateItem(addUserForm.value, IdResults, this.showeditUser, date);
       }
     }
+
+    this.adminObject.isMainLoaderHidden = true;
 
   }
   /**

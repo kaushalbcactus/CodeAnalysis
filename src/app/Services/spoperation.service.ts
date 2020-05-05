@@ -524,6 +524,8 @@ export class SPOperationService {
         const obj: any = res.error;
         obj.hasError = true;
         return obj;
+      } else if (res.valueOf('odata')) {
+        return res;
       } else {
         return {
           hasError: true,
@@ -803,7 +805,31 @@ export class SPOperationService {
     });
   }
 
+  async executePostForFileUpload(url, data, headers) {
+    let header;
+    if (!headers) {
+      header = this.getHeaders(true, true);
+    } else {
+      const context: any = document.getElementById('__REQUESTDIGEST');
+      if (context) {
+        headers['X-RequestDigest'] = context.value;
+      }
+      header = { headers: new HttpHeaders(headers) };
+    }
+    const res = await this.httpClient.post(url, data, header).toPromise().catch((err: HttpErrorResponse) => {
+      const error = err.error;
+      return error;
+    });
+    return this.parseRetSingle(res);
+  }
 
+  // check if file exist 
+  async checkFileExist(url: string) {
+    const res = await this.httpClient.get<Response>(url).toPromise().catch((err: HttpErrorResponse) => {
+      return err;
+    });
+    return res;
+  }
 
   // postJson(endpointUrl, payload, success, failure) {
   //   $.ajax({

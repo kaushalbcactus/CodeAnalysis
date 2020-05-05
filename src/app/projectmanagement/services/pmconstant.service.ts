@@ -14,7 +14,7 @@ export class PmconstantService {
     DELIVERY_LEVEL_1: 'Delivery L1',
     DELIVERY_LEVEL_2: 'Delivery L2',
     BUSINESS_DEVELOPMENT: 'Business Development',
-    FINANCE :'Finance'
+    FINANCE: 'Finance'
   };
   public RESOURCES_CATEGORY = {
     BUSINESS_DEVELOPMENT: 'Business Development',
@@ -225,7 +225,7 @@ export class PmconstantService {
       select: 'Content',
       filter: 'Title eq \'{{templateName}}\''
     },
-    
+
     SOW_BUDGET_BREAKUP: {
       select: 'ID',
       filter: 'SOWCode eq \'{{SOWCodeStr}}\''
@@ -455,12 +455,26 @@ export class PmconstantService {
       top: 4900
     },
 
+    GET_RESOUCEBYID: {
+      select: 'ID,MaxHrs,UserName/ID,UserName/EMail,UserName/Title,TimeZone/Title,IsFTE',
+      expand: 'UserName/ID,UserName/EMail,UserName/Title,TimeZone/Title',
+      filter: 'UserName/ID eq  \'{{Id}}\'',
+      orderby: 'UserName/Title asc',
+
+    },
+
     GET_FinancePO: {
       select: 'ID,Title, ClientLegalEntity, Currency, Number, Name, Amount, AmountOOP, AmountRevenue, AmountTax,POCategory,POExpiryDate,'
         + 'TotalLinked, RevenueLinked, OOPLinked, TaxLinked,TotalScheduled,ScheduledRevenue',
       filter: 'Status eq \'Active\' and ClientLegalEntity eq \'{{clientLegalEntity}}\' and  Currency eq \'{{currency}}\'',
       orderby: 'Created desc',
       top: 4900
+    },
+    GET_SCHEDULES_BY_PROJECTCODE: {
+      select: 'ID,Title,Task,Status,FileSystemObjectType,Milestone,StartDate,DueDate,Actual_x0020_End_x0020_Date,Actual_x0020_Start_x0020_Date',
+      orderby: 'StartDate asc',
+      filter: "ProjectCode eq '{{projectCode}}'",
+      top: 4500
     },
     PROJECT_FINANCE_BY_PROJECTCODE: {
       select: 'ID, Title, Currency, ApprovedBudget, Budget, RevenueBudget, OOPBudget, TaxBudget,BudgetHrs,' +

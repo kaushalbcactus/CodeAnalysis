@@ -100,7 +100,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     BlockTimeDialogComponent,
     ProjectDraftsComponent,
     ViewUploadDocumentDialogComponent,
-    CreateTaskComponent
+    CreateTaskComponent,
   ]
 })
 export class MyDashboardModule { }

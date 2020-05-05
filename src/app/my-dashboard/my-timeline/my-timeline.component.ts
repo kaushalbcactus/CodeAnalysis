@@ -16,6 +16,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { CommonService } from 'src/app/Services/common.service';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
+import { ConfirmationDialogComponent } from 'src/app/shared/confirmation-dialog/confirmation-dialog.component';
 
 declare var Tooltip: any;
 
@@ -675,7 +676,9 @@ export class MyTimelineComponent implements OnInit {
       this.task.AssignedTo = this.sharedObject.currentUser.title;
       this.task.TimeSpent = this.task.TimeSpent ? "00:00" : this.task.TimeSpent.replace('.', ':');
       const data = this.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === this.task.ProjectCode);
-
+      this.tasks = await this.myDashboardConstantsService.getNextPreviousTask(this.task);
+      this.task.nextTasks = this.tasks ? this.tasks.filter(c => c.TaskType === 'Next Task') : [];
+      this.task.prevTaskDetails = this.tasks ? this.tasks.filter(c => c.TaskType === 'Previous Task') : [];
       if (data !== undefined) {
         this.task.ProjectName = data.WBJID !== null ? this.task.ProjectCode + '(' + data.WBJID + ')' : this.task.ProjectCode;
       } else {
@@ -698,11 +701,12 @@ export class MyTimelineComponent implements OnInit {
       } else {
         this.CalendarLoader = false;
         if (task.Status === "Completed") {
-          this.confirmationService.confirm({
-            message: 'Are you sure that you want to proceed?',
+          const confirmref = this.dialogService.open(ConfirmationDialogComponent, {
             header: 'Confirmation',
-            icon: 'pi pi-exclamation-triangle',
-            accept: async () => {
+            data : 'Are you sure that you want to proceed?'
+          });
+          confirmref.onClose.subscribe(async (Confirmation: any) => {
+            if (Confirmation) {
               task.parent = 'Dashboard';
               const qmsTasks = await this.myDashboardConstantsService.callQMSPopup(task);
               if (qmsTasks.length) {
@@ -710,8 +714,7 @@ export class MyTimelineComponent implements OnInit {
               } else {
                 this.saveTask(task);
               }
-            },
-            reject: () => {
+            }else{
               task.Status = earlierStaus;
             }
           });
@@ -887,6 +890,27 @@ export class MyTimelineComponent implements OnInit {
   ngOnDestroy() {
     if (this.subscription) {
       this.subscription.unsubscribe()
+    }
+  }
+
+
+
+
+
+  // **************************************************************************************************
+  //   This function is used to open or download project scope 
+  // **************************************************************************************************
+  async goToProjectScope(task) {
+    const ProjectInformation = await this.myDashboardConstantsService.getCurrentTaskProjectInformation(task.ProjectCode);
+    const response = await this.commonService.goToProjectScope(ProjectInformation, ProjectInformation.Status);
+    if (response === 'No Document Found.') {
+      this.messageService.add({
+        key: 'custom', severity: 'error', summary: 'Error Message',
+        detail: task.ProjectCode + ' - Project Scope not found.'
+      });
+    }
+    else {
+      window.open(response);
     }
   }
 

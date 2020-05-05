@@ -14,13 +14,13 @@ import { TimelineHistoryComponent } from './timeline/timeline-history/timeline-h
 import { MessageService } from 'primeng/api';
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component';
 import { PrimengModule } from './primeng/primeng.module';
+import { FileUploadProgressDialogComponent } from './shared/file-upload-progress-dialog/file-upload-progress-dialog.component';
 
 
 @NgModule({
   imports: [
     BrowserModule,
     CommonModule,
-    // FileUploadModule,
     FormsModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
@@ -34,6 +34,7 @@ import { PrimengModule } from './primeng/primeng.module';
     AppComponent,
     PageNotFoundComponent,
   ],
+  entryComponents:[FileUploadProgressDialogComponent],
   providers: [DataService, TimelineHistoryComponent, DatePipe, MessageService, Title],
   bootstrap: [AppComponent]
 })

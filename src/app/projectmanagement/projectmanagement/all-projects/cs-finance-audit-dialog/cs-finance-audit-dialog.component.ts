@@ -241,12 +241,15 @@ export class CsFinanceAuditDialogComponent implements OnInit {
         { checked: false, parameter: 'Final documents uploaded for all the tasks', comments: '', hideCheckBox: false },
         { checked: false, parameter: 'Is the project budget and budget hours correct?', comments: '', hideCheckBox: false },
         { checked: false, parameter: 'Is the pub support status updated to submitted?', comments: '', hideCheckBox: false },
+        { checked: false, parameter: 'Are the CM Lvl 2 and Delivery Lvl 2 correct?', comments: '', hideCheckBox: false },
         { checked: false, parameter: 'Has ER been fully accrued before proposing closure?', comments: 'Select One', hideCheckBox: true },
+       
+        
       ];
 
       const ref = this.dialogService.open(AuditProjectDialogComponent, {
         header: ' Audit Projects',
-        width: '60vw',
+        width: '65vw',
         data: addRollingProjectArray,
         closable: false,
       });
@@ -364,7 +367,6 @@ export class CsFinanceAuditDialogComponent implements OnInit {
     let batchResults = [];
     let batchURL = [];
     let finalArray = [];
-    debugger
     this.selectedProjects.forEach(async element => {
       const ProjectUpdate = Object.assign({}, this.options);
       ProjectUpdate.data = piUdpate;
@@ -467,7 +469,6 @@ export class CsFinanceAuditDialogComponent implements OnInit {
   MultipleSelectRows(AuditType) {
     setTimeout(() => {
       if (AuditType === 'Finance') {
-        debugger
         if (this.allProjectRef.filteredValue) {
           if (this.allProjectRef.filteredValue.length > 10 && !this.checked) {
             this.selectedProjects = this.allProjectRef.filteredValue.slice(this.allProjectRef.first, this.allProjectRef.first + 10)

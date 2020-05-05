@@ -6,7 +6,8 @@ import { ConstantsService } from './constants.service';
 import { PmconstantService } from '../projectmanagement/services/pmconstant.service';
 import { PMObjectService } from '../projectmanagement/services/pmobject.service';
 import { DatePipe } from '@angular/common';
-import { Table } from 'primeng';
+import { Table, DialogService } from 'primeng';
+import { FileUploadProgressDialogComponent } from '../shared/file-upload-progress-dialog/file-upload-progress-dialog.component';
 declare var $;
 
 declare const newrelic;
@@ -32,7 +33,8 @@ export class CommonService {
         private pmConstant: PmconstantService, public sharedObject: GlobalService,
         public taskAllocationService: TaskAllocationConstantsService,
         private datePipe: DatePipe,
-        public common: CommonService
+        public common: CommonService,
+        public dialogService: DialogService
     ) { }
 
     tableToExcel = (function () {
@@ -878,20 +880,59 @@ export class CommonService {
         }
     }
 
-    CalculateminstartDateValue(date, days) {
-      let tempminDateValue = null;
-      const dayCount = days;
-      let tempDate = new Date(date);
-      while (days > 0) {
-        tempDate = new Date(tempDate.setDate(tempDate.getDate() - 1));
-        if (tempDate.getDay() !== 6 && tempDate.getDay() !== 0) {
-          days -= 1;
-          if (dayCount - 3 <= days) {
-            tempminDateValue = tempDate;
-          }
+    async goToProjectScope(task, Status) {
+        let response = '';
+        if (Status === 'Closed' || Status === 'Cancelled') {
+            const res = await this.spServices.checkFileExist(task.ProjectFolder + '/Miscellaneous/' + task.ProjectCode + '_scope.docx')
+            if (res.hasOwnProperty('status')) {
+                if (res.status === 404) {
+                    response = "No Document Found."
+                }
+                else {
+                    response = task.ProjectFolder + '/Miscellaneous/' + task.ProjectCode + '_scope.docx', '_blank';
+                }
+            }
         }
-      }
-      return tempminDateValue;
+        else {
+            response = task.ProjectFolder + '/Miscellaneous/' + task.ProjectCode + '_scope.docx?web=1', '_blank';
+        }
+        return response;
+    }
+
+    CalculateminstartDateValue(date, days) {
+        let tempminDateValue = null;
+        const dayCount = days;
+        let tempDate = new Date(date);
+        while (days > 0) {
+            tempDate = new Date(tempDate.setDate(tempDate.getDate() - 1));
+            if (tempDate.getDay() !== 6 && tempDate.getDay() !== 0) {
+                days -= 1;
+                if (dayCount - 3 <= days) {
+                    tempminDateValue = tempDate;
+                }
+            }
+        }
+        return tempminDateValue;
+    }
+
+    UploadFilesProgress(tempFiles, libraryName, overwrite): Promise<any> {
+        return new Promise((resolve, reject) => {
+            const ref = this.dialogService.open(FileUploadProgressDialogComponent, {
+                header: 'File Uploading',
+                width: '70vw',
+                data: {
+                    Files: tempFiles,
+                    libraryName:  this.sharedObject.sharePointPageObject.webRelativeUrl +'/'+ libraryName,
+                    overwrite: overwrite,
+
+                },
+                contentStyle: { 'overflow-y': 'visible', 'background-color': '#f4f3ef' },
+                closable: false,
+            });
+            ref.onClose.subscribe((uploadedfile: any) => {
+                resolve(uploadedfile);
+            });
+        });
     }
 
 

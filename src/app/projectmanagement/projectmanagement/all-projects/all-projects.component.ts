@@ -149,6 +149,7 @@ export class AllProjectsComponent implements OnInit {
   CSButton = false;
   CSButtonEnable = false;
   FinanceButtonEnable = false;
+  res: void;
   constructor(
     public pmObject: PMObjectService,
     private datePipe: DatePipe,
@@ -331,6 +332,7 @@ export class AllProjectsComponent implements OnInit {
           { label: 'Communications', command: (event) => this.communications(this.selectedProjectObj) },
           { label: 'Timeline', command: (event) => this.projectTimeline(this.selectedProjectObj) },
           { label: 'Go to Allocation', command: (event) => this.goToAllocationPage(this.selectedProjectObj) },
+          { label: 'Project Scope', command: (event) => this.goToProjectScope(this.selectedProjectObj) },
         ]
       },
       {
@@ -1846,7 +1848,7 @@ export class AllProjectsComponent implements OnInit {
     batchURL.push(piUpdate);
 
     filterTasks.forEach(element => {
-      if(element.IsCentrallyAllocated == 'No') {
+      if (element.IsCentrallyAllocated == 'No') {
         if (element.Task == "Client Review") {
           const scheduleStatusUpdate = Object.assign({}, options);
           scheduleStatusUpdate.data = scCRUpdateData;
@@ -1868,7 +1870,7 @@ export class AllProjectsComponent implements OnInit {
             const scheduleStatusUpdate = Object.assign({}, options);
             const scInProgressUpdateDataNew = Object.assign({}, scInProgressUpdateData);
             scInProgressUpdateDataNew.ExpectedTime = element.TimeSpent;
-            scInProgressUpdateDataNew.DueDate = new Date(element.DueDate) < new Date() ? new Date(element.DueDate) : new Date(); 
+            scInProgressUpdateDataNew.DueDate = new Date(element.DueDate) < new Date() ? new Date(element.DueDate) : new Date();
             scheduleStatusUpdate.data = scInProgressUpdateDataNew;
             scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
             scheduleStatusUpdate.type = 'PATCH';
@@ -1878,7 +1880,7 @@ export class AllProjectsComponent implements OnInit {
           }
         }
       }
-      
+
     });
 
     // console.log(batchURL)
@@ -2308,9 +2310,30 @@ export class AllProjectsComponent implements OnInit {
     console.log('Test');
     console.log(this.projectViewDataArray);
     this.pmObject.isProjectRightSideVisible = true;
-
-
   }
+
+
+  // **************************************************************************************************
+  //   This function is used to open or download project scope 
+  // **************************************************************************************************
+  async goToProjectScope(task) {
+    this.loaderView.nativeElement.classList.add('show');
+    this.spannerView.nativeElement.classList.add('show');
+    const response = await this.commonService.goToProjectScope(task, task.Status);
+    if (response === 'No Document Found.') {
+      this.messageService.add({
+        key: 'custom', severity: 'error', summary: 'Error Message',
+        detail: task.ProjectCode + ' - Project Scope not found.'
+      });
+    }
+    else {
+      window.open(response);
+    }
+    this.loaderView.nativeElement.classList.remove('show');
+    this.spannerView.nativeElement.classList.remove('show');
+  }
+
+
   goToAllocationPage(task) {
     window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +
       '/dashboard#/taskAllocation?ProjectCode=' + task.ProjectCode, '_blank');
@@ -2365,7 +2388,6 @@ export class AllProjectsComponent implements OnInit {
     }
   }
 
- 
   /**
    * This method is used to send email by using template.
    * @param val pass the template name.
@@ -2481,7 +2503,9 @@ export class AllProjectsComponent implements OnInit {
       width: '90vw',
       data: {
         projectObj: projObj
-      }
+      },
+      contentStyle: { 'max-height': '85vh', 'overflow-y': 'auto' },
+      closable: false
     });
     ref.onClose.subscribe(element => {
       this.pmCommonService.resetAddProject();

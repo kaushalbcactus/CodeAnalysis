@@ -3,7 +3,8 @@ import { DynamicDialogRef, DynamicDialogConfig, MessageService, DialogService } 
 import { GlobalService } from 'src/app/Services/global.service';
 import * as shape from 'd3-shape';
 import { CACommonService } from '../caservices/cacommon.service';
-import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
+import { ConfirmationDialogComponent } from 'src/app/shared/confirmation-dialog/confirmation-dialog.component';
+
 @Component({
   selector: 'app-ca-dragdrop',
   templateUrl: './ca-dragdrop.component.html',
@@ -644,8 +645,8 @@ export class CaDragdropComponent implements OnInit {
 
 
       const confirmref = this.dialogService.open(ConfirmationDialogComponent, {
-
         header: 'Confirmation',
+        data : 'There are multiple end tasks for current slot. Are you sure that you want to continue?'
       });
       confirmref.onClose.subscribe((Confirmation: any) => {
         if (Confirmation) {
