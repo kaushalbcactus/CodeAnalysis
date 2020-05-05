@@ -1947,8 +1947,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         { id: "start_date", header: "Start date", width: 40, type: "date" },
         { id: "end_date", header: "End date", width: 40, type: "date" }
       ],
-      visual: true,
-      cellColors: true
+      // visual: true,
+      // cellColors: true
     })
   }
 
