@@ -205,6 +205,7 @@ export class ManageFinanceComponent implements OnInit {
       { label: 'Yes', value: 'Yes' },
       { label: 'No', value: 'No' }
     ];
+    debugger;
     if (this.config && this.config.hasOwnProperty('data')) {
       setTimeout(async () => {
         this.projObj = this.config.data.projectObj;
@@ -1183,7 +1184,6 @@ export class ManageFinanceComponent implements OnInit {
     const POObj = this.poArray.find(c => c.Id === invoice.poId);
     const currentDate = new Date();
     const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
-    debugger;
     const last3Days = this.commonService.getLastWorkingDay(3, new Date());
     if (invoice.date >= last3Days && invoice.date < lastDay && invoice.amount > 0 &&
       POObj.POCategory !== 'Client PO Pending' && new Date(POObj.POExpiryDate) >= new Date()) {
@@ -1896,7 +1896,7 @@ export class ManageFinanceComponent implements OnInit {
         });
       }
 
-      if (this.projObj.ProjectType === this.pmConstant.PROJECT_TYPE.FTE.value && this.projObj.projectStatus !== this.constant.projectList.status.InDiscussion && this.datePipe.transform(new Date(this.dbProposedDate), 'MMM dd, yyyy') !== this.datePipe.transform(new Date(this.selectedProposedEndDate), 'MMM dd, yyyy')) {
+      if (this.projectType === this.pmConstant.PROJECT_TYPE.FTE.value && this.projectStatus !== this.constant.projectList.status.InDiscussion && this.datePipe.transform(new Date(this.dbProposedDate), 'MMM dd, yyyy') !== this.datePipe.transform(new Date(this.selectedProposedEndDate), 'MMM dd, yyyy')) {
 
         const months = budgetType === 'IncreaseBudget' ? this.pmCommonService.getMonths(this.dbProposedDate, this.selectedProposedEndDate) : this.pmCommonService.getMonths(this.selectedProposedEndDate, this.dbProposedDate);
 
