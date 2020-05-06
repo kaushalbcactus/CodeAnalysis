@@ -581,9 +581,11 @@ export class ProformaComponent implements OnInit, OnDestroy {
         }
         if (data.ProformaHtml) {
             this.items.push({ label: 'Edit Proforma', command: (e) => this.openMenuContent(e, data) });
-            if(!data.FileURL){
-                this.items.push({ label: 'Regenerate Proforma', command: (e) => this.openMenuContent(e, data) });
-            }
+
+        }
+
+        if (!data.FileURL && (data.Template === 'US' || data.Template === 'India' || data.Template === 'Japan')) {
+            this.items.push({ label: 'Regenerate Proforma', command: (e) => this.openMenuContent(e, data) });
         }
         this.items.push(
             { label: 'Replace Proforma', command: (e) => this.openMenuContent(e, data) },
@@ -706,6 +708,9 @@ export class ProformaComponent implements OnInit, OnDestroy {
         } else if (event.item.label === 'Details') {
             this.rightSideBar = !this.rightSideBar;
             return;
+        }
+        else if(this.confirmDialog.title ==='Regenerate Proforma'){
+            this.generateExistingProforma(data);
         }
     }
 
@@ -1271,7 +1276,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         }
         // this.fileReader = new FileReader();
         if (event.target.files && event.target.files.length > 0) {
-            this.SelectedFile =[];
+            this.SelectedFile = [];
             this.selectedFile = event.target.files[0];
             const fileName = this.selectedFile.name;
             const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
@@ -1291,16 +1296,16 @@ export class ProformaComponent implements OnInit, OnDestroy {
     async uploadFileData() {
         const batchUrl = [];
         this.commonService.SetNewrelic('Finance-Dashboard', 'Proforma', 'uploadFile');
-       
+
 
         this.commonService.UploadFilesProgress(this.SelectedFile, this.FolderName, true).then(async uploadedfile => {
             if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
-                if (uploadedfile[0].hasOwnProperty('odata.error')) {
+                if (uploadedfile[0].hasOwnProperty('odata.error') || uploadedfile[0].hasError) {
                     this.submitBtn.isClicked = false;
-                        this.messageService.add({
-                            key: 'proformaInfoToast', severity: 'error', summary: 'Error message',
-                            detail: 'File not uploaded,Folder / File Not Found', life: 3000
-                        });
+                    this.messageService.add({
+                        key: 'proformaInfoToast', severity: 'error', summary: 'Error message',
+                        detail: 'File not uploaded, Folder / File Not Found', life: 3000
+                    });
                 } else if (uploadedfile[0].ServerRelativeUrl) {
                     this.isPSInnerLoaderHidden = false;
                     let prfData = {
@@ -1618,10 +1623,10 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 ProformaType: this.createProforma_form.value.ProformaType.value,
                 AdditionalInfo: this.createProforma_form.value.AdditionalComments,
                 ProformaDate: this.createProforma_form.value.ProformaDate,
-                Status: 'Created'
+                Status: this.constantService.proformaList.status.Created
             }
             // console.log('obj ', obj);
-            prfData['__metadata'] = { type: 'SP.Data.ProformaListItem' };
+            prfData['__metadata'] = { type: this.constantService.listNames.Proforma.type };
 
             const prfObj = Object.assign({}, this.queryConfig);
             prfObj.url = this.spServices.getReadURL(this.constantService.listNames.Proforma.name);
@@ -1638,7 +1643,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 ID: currentCle.Id,
                 ProformaCounter: currentCle.ProformaCounter ? currentCle.ProformaCounter + 1 : 1
             }
-            cleData['__metadata'] = { type: 'SP.Data.ClientLegalEntityListItem' };
+            cleData['__metadata'] = { type: this.constantService.listNames.ClientLegalEntity.type };
             const cleObj = Object.assign({}, this.queryConfig);
             cleObj.url = this.spServices.getItemURL(this.constantService.listNames.ClientLegalEntity.name, +currentCle.Id);
             cleObj.listName = this.constantService.listNames.ClientLegalEntity.name;
@@ -1650,11 +1655,8 @@ export class ProformaComponent implements OnInit, OnDestroy {
             if (this.replaceProforma_form.invalid) {
                 return
             }
-            // console.log('form is submitting ..... & Form data is ', this.replaceProforma_form.value);
             this.submitBtn.isClicked = true;
-          
             this.uploadFileData();
-
         } else if (type === 'generateInvoice') {
             if (this.generateInvoice_form.invalid) {
                 return;
@@ -1666,32 +1668,9 @@ export class ProformaComponent implements OnInit, OnDestroy {
         }
     }
 
-    async callBatchRequest(dataEndpointArray) {
-        this.batchContents = [];
-        // const batchGuid = this.spServices.generateUUID();
-        // const changeSetId = this.spServices.generateUUID();
-
-        // // const batchContents = this.spServices.getChangeSetBody1(changeSetId, endpoint, JSON.stringify(obj), true);
-        // console.log(' dataEndpointArray ', dataEndpointArray);
-        // dataEndpointArray.forEach(element => {
-        //     if (element)
-        //         this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId, element.endpoint, JSON.stringify(element.objData), element.requestPost)];
-        // });
-
-        // // console.log("this.batchContents ", JSON.stringify(this.batchContents));
-
-        // this.batchContents.push('--changeset_' + changeSetId + '--');
-        // const batchBody = this.batchContents.join('\r\n');
-        // const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
-        // batchBodyContent.push('--batch_' + batchGuid + '--');
-        // const sBatchData = batchBodyContent.join('\r\n');
-        // return await this.spServices.getFDData(batchGuid, sBatchData);
-    }
-
-
     batchContents: any = [];
     async submitForm(dataEndpointArray, type: string) {
-        // const res = await this.callBatchRequest(dataEndpointArray);
+
         const res = await this.spServices.executeBatch(dataEndpointArray);
         const arrResults = res.length ? res.map(a => a.retItems) : [];
         // console.log('--oo ', arrResults);
@@ -1717,7 +1696,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 InvoiceLookup: oInv.ID
             }
             // let data = [];
-            iliData['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
+            iliData['__metadata'] = { type: this.constantService.listNames.InvoiceLineItems.type };
             for (let j = 0; j < this.iliByPidRes.length; j++) {
                 const element = this.iliByPidRes[j];
                 const iliObj = Object.assign({}, this.queryConfig);
@@ -1726,35 +1705,22 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 iliObj.type = 'PATCH';
                 iliObj.data = iliData;
                 batchUrl.push(iliObj);
-
-                // data.push({
-                //     // Id: element.Id,
-                //     objData: iliObj,
-                //     endpoint: this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.update.replace("{{Id}}", element.Id),
-                //     requestPost: false
-                // });
             }
             // Update Proforma
             const proformaData = {
-                Status: 'Approved',
+                Status: this.constantService.STATUS.APPROVED,
                 InvoiceLookup: oInv.ID
             }
-            proformaData['__metadata'] = { type: 'SP.Data.ProformaListItem' };
+            proformaData['__metadata'] = { type: this.constantService.listNames.Proforma.type };
             const prfObj = Object.assign({}, this.queryConfig);
             prfObj.url = this.spServices.getItemURL(this.constantService.listNames.Proforma.name, +this.selectedRowItem.Id);
             prfObj.listName = this.constantService.listNames.Proforma.name;
             prfObj.type = 'PATCH';
             prfObj.data = proformaData;
             batchUrl.push(prfObj);
-
-            // const pEndpoint = this.fdConstantsService.fdComponent.addUpdateProforma.update.replace("{{Id}}", this.selectedRowItem.Id);
-            // const updatePObj = { objData: pObj, endpoint: pEndpoint, requestPost: false }
-            // data.push(updatePObj);
-            // await this.callBatchRequest(batchUrl);
             this.commonService.SetNewrelic('Finance-Dashboard', 'Proforma-proforma', 'UpdateProforma');
             await this.spServices.executeBatch(batchUrl);
             ////// Replace date on specific sections only
-
             if (proformHtml) {
                 const proformaDate = this.datePipe.transform(this.selectedRowItem.ProformaDate, 'MMM dd, yyyy');
                 const proformaDateSingle = this.datePipe.transform(this.selectedRowItem.ProformaDate, 'MMM d, yyyy');
@@ -1923,6 +1889,97 @@ export class ProformaComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         // this.subscriptionPE.unsubscribe();
         this.subscription.unsubscribe();
+    }
+
+
+
+    async generateExistingProforma(rowItem) {
+
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
+        await this.projectInfo();
+        await this.getILIByPIDForProforma(rowItem.ID);
+        const projectAppendix = await this.createProjectAppendix(this.projectContactsData, this.iliByPidRes);
+        // tslint:disable-next-line: max-line-length
+        await this.fdDataShareServie.callProformaCreation(rowItem, this.cleData, this.projectContactsData, this.purchaseOrdersList, this, projectAppendix);
+
+    }
+
+
+    async createProjectAppendix(prjContacts, selectedProjects) {
+
+        const projectAppendix = [];
+        let projects = [];
+        const projectProcessed = [];
+        const callProjects = [];
+        selectedProjects.forEach(element => {
+            if (projectProcessed.indexOf(element.Title) === -1) {
+                const project = this.projectInfoData.find(e => e.ProjectCode === element.Title);
+                if (project) {
+                    projects.push(project);
+                    projectProcessed.push(project.ProjectCode);
+                } else {
+                    callProjects.push(element.Title);
+                }
+            }
+        });
+        if (callProjects.length) {
+            const batchURL = [];
+            const options = {
+                data: null,
+                url: '',
+                type: '',
+                listName: ''
+            };
+            let callCount = 0;
+            let retProjects = [];
+            for (const element of callProjects) {
+                const getPIData = Object.assign({}, options);
+                getPIData.url = this.spServices.getReadURL(this.constantService.listNames.ProjectInformation.name,
+                    this.fdConstantsService.fdComponent.projectInfoCode);
+                getPIData.url = getPIData.url.replace('{{ProjectCode}}', element);
+                getPIData.listName = this.constantService.listNames.ProjectInformation.name;
+                getPIData.type = 'GET';
+                batchURL.push(getPIData);
+                callCount++;
+                if (callCount % 100 === 0) {
+                    const innerResults = await this.spServices.executeBatch(batchURL);
+                    retProjects = [...retProjects, ...innerResults];
+                    batchURL.length = 0;
+                }
+            }
+            const remainingResults = await this.spServices.executeBatch(batchURL);
+            retProjects = [...retProjects, ...remainingResults];
+            const mappedProjects = retProjects.map(obj => obj.retItems.length ? obj.retItems[0] : []);
+            projects = [...projects, ...mappedProjects];
+        }
+        const appendixObj = { dvcode: '', cactusSpCode: '', title: '', poc: '', amount: '' };
+        selectedProjects.forEach(element => {
+            const project = projects.find(e => e.ProjectCode === element.Title);
+            const appendix = Object.assign({}, appendixObj);
+            if (project) {
+                const projectContact = prjContacts.find(pc => pc.ID === project.PrimaryPOC);
+                appendix.dvcode = project.WBJID ? project.WBJID : '';
+                appendix.cactusSpCode = project.ProjectCode ? project.ProjectCode : '';
+                appendix.title = project.Title ? project.Title : '';
+                appendix.poc = projectContact ? projectContact.FullName : '';
+            }
+            appendix.amount = element.Amount;
+            projectAppendix.push(appendix);
+        });
+
+        return projectAppendix;
+    }
+
+
+    async getILIByPIDForProforma(id) {
+
+    
+        const iliObj = Object.assign({}, this.fdConstantsService.fdComponent.invoiceLineItem);
+        iliObj.filter = iliObj.filter.replace('{{ProformaLookup}}', id);
+        this.commonService.SetNewrelic('Finance-Dashboard', 'PDFEditing-editor', 'readInviceLineItem');
+        const res = await this.spServices.readItems(this.constantService.listNames.InvoiceLineItems.name, iliObj);
+        const arrResults = res.length ? res : [];
+        this.iliByPidRes = arrResults;
     }
 
 }

@@ -53,7 +53,7 @@ export class EditorComponent implements OnInit {
     serviceDetailHeader = '';
     iliByPidRes: any = [];
     private subscription: Subscription = new Subscription();
-    editJapanPayment =false;
+    editJapanPayment = false;
     SelectedJapanDays: any;
     constructor(
         private common: CommonService,
@@ -2075,11 +2075,11 @@ export class EditorComponent implements OnInit {
 
     editable(id: string) {
 
-        if(id ==='paymentInstructions2'){
+        if (id === 'paymentInstructions2') {
             this.SelectedJapanDays = document.getElementById(id).querySelector('span').innerText;
             this.editJapanPayment = true;
         }
-        else{
+        else {
 
             this.elementId = id;
             if (id === 'contact_details') {
@@ -2977,25 +2977,25 @@ export class EditorComponent implements OnInit {
     }
 
 
-    async generateExistingProforma() {
-        await this.projectInfo();
-        await this.cleInfo();
-        this.poInfo();
-        this.projectContacts();
-        const id = '3250';
-        const prfObj = Object.assign({}, this.fdConstantsService.fdComponent.proformaForUser);
-        prfObj.filter = prfObj.filter.replace('{{ItemID}}', id);
-        this.common.SetNewrelic('Finance-Dashboard', 'PDFEditing-editor', 'generateExistingProforma');
-        const res = await this.spOperationsServices.readItems(this.constantsService.listNames.Proforma.name, prfObj);
-        const arrResults = res.length ? res : [];
-        if (arrResults.length) {
-            const prf = arrResults[0];
-            await this.getILIByPID(id);
-            const projectAppendix = await this.createProjectAppendix(this.projectContactsData, this.iliByPidRes);
-            // tslint:disable-next-line: max-line-length
-            await this.fdShareDataService.callProformaCreation(prf, this.cleData, this.projectContactsData, this.purchaseOrdersList, this, projectAppendix);
-        }
-    }
+    // async generateExistingProforma() {
+    //     await this.projectInfo();
+    //     await this.cleInfo();
+    //     this.poInfo();
+    //     this.projectContacts();
+    //     const id = '3250';
+    //     const prfObj = Object.assign({}, this.fdConstantsService.fdComponent.proformaForUser);
+    //     prfObj.filter = prfObj.filter.replace('{{ItemID}}', id);
+    //     this.common.SetNewrelic('Finance-Dashboard', 'PDFEditing-editor', 'generateExistingProforma');
+    //     const res = await this.spOperationsServices.readItems(this.constantsService.listNames.Proforma.name, prfObj);
+    //     const arrResults = res.length ? res : [];
+    //     if (arrResults.length) {
+    //         const prf = arrResults[0];
+    //         await this.getILIByPID(id);
+    //         const projectAppendix = await this.createProjectAppendix(this.projectContactsData, this.iliByPidRes);
+    //         // tslint:disable-next-line: max-line-length
+    //         await this.fdShareDataService.callProformaCreation(prf, this.cleData, this.projectContactsData, this.purchaseOrdersList, this, projectAppendix);
+    //     }
+    // }
 
 
     // Purchase Order Number
@@ -3039,40 +3039,7 @@ export class EditorComponent implements OnInit {
     // Generate Invoice Data start
 
 
-    async getILIByPID(id) {
 
-        // const batchContents = new Array();
-        // const batchGuid = this.spOperationsServices.generateUUID();
-        // let invoicesQuery = '';
-        // let obj = {
-        //     filter: this.fdConstantsService.fdComponent.invoiceLineItem.filter.replace("{{ProformaLookup}}", id),
-        //     select: this.fdConstantsService.fdComponent.invoiceLineItem.select,
-        //     top: this.fdConstantsService.fdComponent.invoiceLineItem.top,
-        //     // orderby: this.fdConstantsService.fdComponent.projectFinances.orderby
-        // }
-        // invoicesQuery = this.spOperationsServices.getReadURL('' + this.constantsService.listNames.InvoiceLineItems.name + '', obj);
-        // // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
-
-        // let endPoints = [invoicesQuery];
-        // let userBatchBody = '';
-        // for (let i = 0; i < endPoints.length; i++) {
-        //     const element = endPoints[i];
-        //     this.spOperationsServices.getBatchBodyGet(batchContents, batchGuid, element);
-        // }
-        // batchContents.push('--batch_' + batchGuid + '--');
-        // userBatchBody = batchContents.join('\r\n');
-        // let arrResults: any = [];
-        // const res = await this.spOperationsServices.getFDData(batchGuid, userBatchBody);// .subscribe(res => {
-        const iliObj = Object.assign({}, this.fdConstantsService.fdComponent.invoiceLineItem);
-        iliObj.filter = iliObj.filter.replace('{{ProformaLookup}}', id);
-        this.common.SetNewrelic('Finance-Dashboard', 'PDFEditing-editor', 'readInviceLineItem');
-        const res = await this.spOperationsServices.readItems(this.constantsService.listNames.InvoiceLineItems.name, iliObj);
-        const arrResults = res.length ? res : [];
-        // if (arrResults.length) {
-        this.iliByPidRes = arrResults;
-        // }
-
-    }
 
     // Project Info
     projectInfoData: any = [];
@@ -3089,75 +3056,21 @@ export class EditorComponent implements OnInit {
         }))
     }
 
-    async createProjectAppendix(prjContacts, selectedProjects) {
 
-        const projectAppendix = [];
-        let projects = [];
-        const projectProcessed = [];
-        const callProjects = [];
-        selectedProjects.forEach(element => {
-            if (projectProcessed.indexOf(element.Title) === -1) {
-                const project = this.projectInfoData.find(e => e.ProjectCode === element.Title);
-                if (project) {
-                    projects.push(project);
-                    projectProcessed.push(project.ProjectCode);
-                } else {
-                    callProjects.push(element.Title);
-                }
-            }
-        });
-        if (callProjects.length) {
-            const batchURL = [];
-            const options = {
-                data: null,
-                url: '',
-                type: '',
-                listName: ''
-            };
-            let callCount = 0;
-            let retProjects = [];
-            for (const element of callProjects) {
-                const getPIData = Object.assign({}, options);
-                getPIData.url = this.spOperationsServices.getReadURL(this.constantsService.listNames.ProjectInformation.name,
-                    this.fdConstantsService.fdComponent.projectInfoCode);
-                getPIData.url = getPIData.url.replace('{{ProjectCode}}', element);
-                getPIData.listName = this.constantsService.listNames.ProjectInformation.name;
-                getPIData.type = 'GET';
-                batchURL.push(getPIData);
-                callCount++;
-                if (callCount % 100 === 0) {
-                    const innerResults = await this.spOperationsServices.executeBatch(batchURL);
-                    retProjects = [...retProjects, ...innerResults];
-                    batchURL.length = 0;
-                }
-            }
-            const remainingResults = await this.spOperationsServices.executeBatch(batchURL);
-            retProjects = [...retProjects, ...remainingResults];
-            const mappedProjects = retProjects.map(obj => obj.retItems.length ? obj.retItems[0] : []);
-            projects = [...projects, ...mappedProjects];
+
+
+    updateDays(id: string) {
+
+        if (this.SelectedJapanDays > 0) {
+            this.editJapanPayment = false;
+            document.getElementById(id).querySelector('span').innerText = this.SelectedJapanDays;
         }
-        const appendixObj = { dvcode: '', cactusSpCode: '', title: '', poc: '', amount: '' };
-        selectedProjects.forEach(element => {
-            const project = projects.find(e => e.ProjectCode === element.Title);
-            const appendix = Object.assign({}, appendixObj);
-            if (project) {
-                const projectContact = prjContacts.find(pc => pc.ID === project.PrimaryPOC);
-                appendix.dvcode = project.WBJID ? project.WBJID : '';
-                appendix.cactusSpCode = project.ProjectCode ? project.ProjectCode : '';
-                appendix.title = project.Title ? project.Title : '';
-                appendix.poc = projectContact ? projectContact.FullName : '';
-            }
-            appendix.amount = element.Amount;
-            projectAppendix.push(appendix);
-        });
+        else {
+            this.messageService.add({ key: 'editToast', severity: 'info', summary: 'Info message', detail: 'Payment days should be greater than 0', life: 4000 });
+            return false;
 
-        return projectAppendix;
-    }
+        }
 
-
-    updateDays(id:string){
-
-        document.getElementById(id).querySelector('span').innerText = this.SelectedJapanDays;
     }
 }
 

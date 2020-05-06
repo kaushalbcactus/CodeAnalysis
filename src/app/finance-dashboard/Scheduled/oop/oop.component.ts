@@ -261,6 +261,7 @@ export class OopComponent implements OnInit, OnDestroy {
     createANBCols() {
         this.oopBasedCols = [
             { field: 'ProjectCode', header: 'Project Code', visibility: true },
+            { field: 'ProjectTitle', header: 'Project Title', visibility: false },
             { field: 'ShortTitle', header: 'Short Title', visibility: true },
             { field: 'SOWValue', header: 'SOW Code/ Name', visibility: true },
             { field: 'ProjectMileStone', header: 'Project Milestone', visibility: true },
@@ -353,7 +354,8 @@ export class OopComponent implements OnInit, OnDestroy {
             this.oopBasedRes.push({
                 Id: element.ID,
                 ProjectCode: element.Title,
-                ShortTitle: piInfo.Title ? piInfo.Title : '',
+                ProjectTitle: piInfo.Title ? piInfo.Title : '',
+                ShortTitle: piInfo && piInfo.WBJID ? piInfo.WBJID : '',
                 SOWCode: element.SOWCode,
                 SOWName: sowItem.Title,
                 SOWValue: sowcn,

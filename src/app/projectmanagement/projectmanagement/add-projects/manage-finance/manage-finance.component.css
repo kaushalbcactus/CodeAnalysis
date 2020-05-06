@@ -3,27 +3,33 @@
     width: 98%;
 }
 
-.financeHeader > div > div:first-child {
+.financeHeader>div>div:first-child {
     padding-left: 0.3%;
 }
 
-.financeHeader > div > div:nth-child(2) {
+.financeHeader>div>div:nth-child(2) {
     padding-left: 0.7%;
 }
 
-.financeHeader > div > div:nth-child(3) {
+.financeHeader>div>div:nth-child(3) {
     padding-left: 1%;
 }
 
-.financeHeader > div > div:nth-child(4) {
+.financeHeader>div>div:nth-child(4) {
     padding-left: 1.5%;
 }
 
-.financeHeader > div > div:nth-child(5) {
+.financeHeader>div>div:nth-child(5) {
     padding-left: 2%;
 }
 
-
 .hourlyTable {
     margin: 10px 0px;
+}
+
+.overlaypanel>.ui-overlaypanel {
+    top: 30px !important;
+    left: inherit !important;
+    right: 0px !important;
+    width: 450px !important;
 }

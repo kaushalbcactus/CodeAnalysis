@@ -68,7 +68,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     // Loader
     isPSInnerLoaderHidden: boolean = false;
     @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
-    @ViewChild('editorRef', { static: true }) editorRef: EditorComponent;
+    @ViewChild('editorRef', { static: false }) editorRef: EditorComponent;
     @ViewChild('replaceInvoiceFile', { static: false }) replaceInvoiceFile: ElementRef;
     @ViewChild('paymentResolvedFile', { static: false }) paymentResolvedFile: ElementRef;
     @ViewChild('outi', { static: false }) outInvTable: Table;
@@ -334,7 +334,6 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
             let poItem = this.getPONumber(element);
-
             this.outstandingInvoicesRes.push({
                 Id: element.ID,
                 Amount: element.Amount,
@@ -550,8 +549,6 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         } else if (this.confirmDialog.title.toLowerCase() === 'edit invoice') {
             const invObj = JSON.parse(data.InvoiceHtml);
             if (invObj.hasOwnProperty('saveObj')) {
-
-                debugger;
                 this.fdConstantsService.fdComponent.selectedEditObject.Code = data.InvoiceNumber;
                 const oCLE = this.cleData.find(e => e.Title === data.ClientLegalEntity);
                 this.fdConstantsService.fdComponent.selectedEditObject.ListName = oCLE.ListName;
@@ -723,11 +720,11 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
 
         this.commonService.UploadFilesProgress(this.SelectedFile, this.FolderName, true).then(async uploadedfile => {
             if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
-                if (uploadedfile[0].hasOwnProperty('odata.error')) {
+                if (uploadedfile[0].hasOwnProperty('odata.error')  || uploadedfile[0].hasError) {
                     this.submitBtn.isClicked = false;
                     this.messageService.add({
                         key: 'outstandingInfoToast', severity: 'error', summary: 'Error message',
-                        detail: 'File not uploaded,Folder / File Not Found', life: 3000
+                        detail: 'File not uploaded, Folder / File Not Found', life: 3000
                     });
                 } else if (uploadedfile[0].ServerRelativeUrl) {
                     let invData;

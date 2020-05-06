@@ -919,11 +919,11 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'FileUpolad');
         this.commonService.UploadFilesProgress(this.SelectedFile, 'SpendingInfoFiles/' + this.FolderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM'), true).then(async uploadedfile => {
             if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
-                if (uploadedfile[0].hasOwnProperty('odata.error')) {
+                if (uploadedfile[0].hasOwnProperty('odata.error')  || uploadedfile[0].hasError) {
                     this.submitBtn.isClicked = false;
                     this.messageService.add({
                         key: 'expenseErrorToast', severity: 'error', summary: 'Error message',
-                        detail: 'File not uploaded,Folder / File Not Found', life: 3000
+                        detail: 'File not uploaded, Folder / File Not Found', life: 3000
                     });
                 } else if (uploadedfile[0].ServerRelativeUrl) {
                     this.fileUploadedUrl = uploadedfile[0].ServerRelativeUrl;
@@ -972,11 +972,11 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'UploadCAFiles');
         this.commonService.UploadFilesProgress(this.caSelectedFile, 'SpendingInfoFiles/' + this.caFolderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM'), true).then(async uploadedfile => {
             if (this.caSelectedFile.length > 0 && this.caSelectedFile.length === uploadedfile.length) {
-                if (uploadedfile[0].hasOwnProperty('odata.error')) {
+                if (uploadedfile[0].hasOwnProperty('odata.error')  || uploadedfile[0].hasError) {
                     this.submitBtn.isClicked = false;
                     this.messageService.add({
                         key: 'expenseErrorToast', severity: 'error', summary: 'Error message',
-                        detail: 'Approve File not uploaded,Folder / File Not Found', life: 3000
+                        detail: 'Approve File not uploaded, Folder / File Not Found', life: 3000
                     });
                 } else if (uploadedfile[0].ServerRelativeUrl) {
                     this.caFileUploadedUrl = uploadedfile[0].ServerRelativeUrl;

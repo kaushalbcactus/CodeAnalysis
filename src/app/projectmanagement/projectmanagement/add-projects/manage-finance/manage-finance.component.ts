@@ -205,7 +205,6 @@ export class ManageFinanceComponent implements OnInit {
       { label: 'Yes', value: 'Yes' },
       { label: 'No', value: 'No' }
     ];
-    debugger;
     if (this.config && this.config.hasOwnProperty('data')) {
       setTimeout(async () => {
         this.projObj = this.config.data.projectObj;
@@ -1409,6 +1408,7 @@ export class ManageFinanceComponent implements OnInit {
         this.poData.push(tempObj);
         const inoviceItems = this.existPOInvoiceArray.retItems.filter(x => x.PO === poItem.POLookup);
         // get Invoice number & performa number.
+        let count = 0;
         const invoicePermormaNumberArray = await this.getInvoiceProformaNumber(inoviceItems);
         inoviceItems.forEach(invoiceItem => {
           const invoiceObj = $.extend(true, {}, this.poAddObj);
@@ -1419,6 +1419,7 @@ export class ManageFinanceComponent implements OnInit {
             .filter(c => c.listName === this.constant.listNames.Proforma.name)
             .filter(d => d.retItems && d.retItems.length && d.retItems[0].ID === invoiceItem.ProformaLookup);
           invoiceObj.Id = invoiceItem.ID;
+          invoiceObj.lineitemCount = "lineitem" + count++;
           invoiceObj.poId = invoiceItem.PO;
           invoiceObj.inv_number = invoiceNumber && invoiceNumber.length && invoiceNumber[0].retItems && invoiceNumber[0].retItems.length
             ? invoiceNumber[0].retItems[0].InvoiceNumber : '';
@@ -1443,7 +1444,7 @@ export class ManageFinanceComponent implements OnInit {
           invoiceObj.currency = this.existBudgetArray.retItems[0].Currency;
           invoiceObj.proformaLookup = invoiceItem.ProformaLookup;
           invoiceObj.invoiceLookup = invoiceItem.InvoiceLookup;
-          this.reasonsArray=[];
+          this.reasonsArray = [];
           if (invoiceObj.status === 'Scheduled' && invoiceObj.type === 'revenue') {
 
             if (this.projectStatus === this.constant.projectStatus.Unallocated
@@ -1455,7 +1456,7 @@ export class ManageFinanceComponent implements OnInit {
               invoiceObj.isInvoiceItemConfirm = this.lineItemConfirmAllowed(invoiceObj);
             }
             else {
-              invoiceObj.reasonsArray=[];
+              invoiceObj.reasonsArray = [];
               invoiceObj.reasonsArray.push('Project status should not be ' + this.projectStatus);
             }
             if (this.projectStatus === this.constant.projectStatus.Unallocated

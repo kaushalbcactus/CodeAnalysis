@@ -120,7 +120,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
 
     hourlyBasedColArray = {
         ProjectCode: [],
-        ShortTitle:[],
+        ShortTitle: [],
         SOWValue: [],
         ProjectMileStone: [],
         ClientLegalEntity: [],
@@ -273,6 +273,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     createHBCCols() {
         this.hourlyBasedCols = [
             { field: 'ProjectCode', header: 'Project Code', visibility: true },
+            { field: 'ProjectTitle', header: 'Project Title', visibility: false },
             { field: 'ShortTitle', header: 'Short Title', visibility: true },
             { field: 'SOWValue', header: 'SOW Code/ Name', visibility: true },
             { field: 'ProjectMileStone', header: 'Project Milestone', visibility: true },
@@ -340,7 +341,8 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                     this.hourlyBasedRes.push({
                         Id: this.projectCodes[p].ID,
                         ProjectCode: this.projectCodes[p].ProjectCode,
-                        ShortTitle: piInfo.Title ? piInfo.Title : '',
+                        ProjectTitle: piInfo.Title ? piInfo.Title : '',
+                        ShortTitle: piInfo && piInfo.WBJID ? piInfo.WBJID : '',
                         SOWCode: this.projectCodes[p].SOWCode,
                         SOWValue: this.projectCodes[p].SOWCode + ' / ' + sowItem.Title,
                         SOWName: sowItem.Title,

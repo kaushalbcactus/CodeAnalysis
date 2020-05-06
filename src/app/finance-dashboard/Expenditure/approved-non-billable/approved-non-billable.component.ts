@@ -525,11 +525,11 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         this.commonService.SetNewrelic('Finance-Dashboard', 'approve-nonbillable', 'UploadFile');
         this.commonService.UploadFilesProgress(this.SelectedFile, 'SpendingInfoFiles/' + this.FolderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM'), true).then(async uploadedfile => {
             if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
-                if (uploadedfile[0].hasOwnProperty('odata.error')) {
+                if (uploadedfile[0].hasOwnProperty('odata.error')  || uploadedfile[0].hasError) {
                     this.submitBtn.isClicked = false;
                     this.messageService.add({
                         key: 'approvedToast', severity: 'error', summary: 'Error message',
-                        detail: 'File not uploaded,Folder / File Not Found', life: 3000
+                        detail: 'File not uploaded, Folder / File Not Found', life: 3000
                     });
                 } else if (uploadedfile[0].ServerRelativeUrl) {
                     this.fileUploadedUrl = uploadedfile[0].ServerRelativeUrl;
