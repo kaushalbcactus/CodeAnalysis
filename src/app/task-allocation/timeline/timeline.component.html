@@ -229,12 +229,13 @@
                                 [id]="rowData.id"
                                 (change)="modelChanged(rowData)"
                                 [(ngModel)]="rowData.budgetHours">
-                            <!-- <div class='overlayIcon'
-                             (mouseleave)="hideOverlayPanel()" (mouseenter)="this.showOverlayPanel($event, rowData, dailyAllocateOP)"
-                              style="float: right;"
+                            <div class='overlayIcon'
+                             (click)="this.showOverlayPanel($event, rowData, dailyAllocateOP)"
+                              style="float: right;cursor: pointer;"
+                              title="Click to see allocation split"
                             *ngIf="rowData.showAllocationSplit">
                             <i class="fa fa-info-circle" aria-hidden="true"></i>
-                        </div> -->
+                        </div>
                         </td>
 
                         <td style="text-align: center;" *ngIf="projectDetails">
