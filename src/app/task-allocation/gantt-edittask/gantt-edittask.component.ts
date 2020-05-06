@@ -122,6 +122,9 @@ export class GanttEdittaskComponent implements OnInit {
     task.end_date = new Date(this.datepipe.transform(task.end_date, 'MMM d, y') + ' ' + endTime);
     this.updateDates(task);
     this.task = task;
+    this.task.showAllocationSplit = this.task.type === 'task' && this.task.itemType !== 'Client Review' && this.task.itemType !== 'Send to client'
+    && this.task.IsCentrallyAllocated === 'No' && +this.task.budgetHours &&
+    new Date(this.task.pUserStartDatePart).getTime() !== new Date(this.task.pUserEndDatePart).getTime() ? true : false;
     this.cascadingObject.node = clickedInputType ? task : '';
     this.cascadingObject.type = clickedInputType;
     this.isViewAllocationBtn(task);
@@ -596,6 +599,9 @@ export class GanttEdittaskComponent implements OnInit {
     dailyAllocateOP.showOverlay(event, allocationPerDay, target);
   }
 
+  hideOverlayPanel(dailyAllocateOP) {
+    dailyAllocateOP.hideOverlay();
+  }
 }
 
 export interface MilestoneTreeNode {

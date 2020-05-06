@@ -1,5 +1,5 @@
 <!-- <i class="pi pi-search" (mouseenter)="op2.show($event)" style="font-size:24px"></i> -->
-<p-overlayPanel #op2 [dismissable]="true">
+<p-overlayPanel #op2 [dismissable]="true" [showCloseIcon]="true">
       <p-table #viewAllocate [columns]="cols" [value]="allocation" [style]="{width: '250px'}" [paginator]="true" [rows]="5" >
           <ng-template pTemplate="header">
               <tr>

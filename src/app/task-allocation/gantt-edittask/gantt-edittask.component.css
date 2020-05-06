@@ -1,25 +1,33 @@
 .taskButton {
-    position: fixed !important;
-    width: 100% !important;
-    margin: -50px !important;
+  position: fixed !important;
+  width: 100% !important;
+  margin: -50px !important;
 }
 .viewAllocation {
-    background-color: #db1721 !important;
-    border: 1px solid #db1721 !important;
-    /* margin-left: 12px !important; */
-    padding: 5px;
-    font-size: 16px !important;
+  background-color: #db1721 !important;
+  border: 1px solid #db1721 !important;
+  /* margin-left: 12px !important; */
+  padding: 5px;
+  font-size: 16px !important;
 }
 
 body .p-grid .ui-overlaypanel {
-    /* top: 55px !important;
+  /* top: 55px !important;
     left: 190px !important; */
-    top: 55px !important;
-	left: 255px !important;
+  top: 55px !important;
+  left: 255px !important;
 }
 
-body .p-grid .ui-overlaypanel-shifted:after, .ui-overlaypanel-shifted:before {
-    left: 18px !important;
-    /* right: 260px; */
-    margin-left: -10px !important;
+body .p-grid .ui-overlaypanel-shifted:after,
+.ui-overlaypanel-shifted:before {
+  left: 18px !important;
+  /* right: 260px; */
+  margin-left: -10px !important;
+}
+.overlayIconGantt {
+  margin-left: 10px!important;
+  cursor: pointer;
+}
+.ui-overlaypanel-close {
+  background-color: #db1721 !important;
 }
