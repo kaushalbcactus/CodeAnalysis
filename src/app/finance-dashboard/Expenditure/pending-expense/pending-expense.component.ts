@@ -11,6 +11,7 @@ import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Table } from 'primeng/table';
+import { DialogService } from 'primeng';
 
 @Component({
     selector: 'app-pending-expense',
@@ -18,6 +19,8 @@ import { Table } from 'primeng/table';
     styleUrls: ['./pending-expense.component.css']
 })
 export class PendingExpenseComponent implements OnInit, OnDestroy {
+    FolderName: string;
+    SelectedFile: any;
     constructor(
         private messageService: MessageService,
         private fb: FormBuilder,
@@ -33,6 +36,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         private platformLocation: PlatformLocation,
         private locationStrategy: LocationStrategy,
         private readonly _router: Router,
+        public dialogService: DialogService,
         _applicationRef: ApplicationRef,
         zone: NgZone,
     ) {
@@ -667,9 +671,12 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         console.log('Payment Mode ', val);
     }
 
-    onFileChange(event, folderName: string) {
-        this.fileReader = new FileReader();
+    //*************************************************************************************************
+    // new File uplad function updated by Maxwell
+    // ************************************************************************************************
+    onFileChange(event: { target: { files: string | any[]; }; }, folderName: string) {
         if (event.target.files && event.target.files.length > 0) {
+            this.SelectedFile = [];
             this.selectedFile = event.target.files[0];
             const fileName = this.selectedFile.name;
             const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
@@ -679,61 +686,131 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 this.messageService.add({ key: 'pendingExpenseToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
                 return false;
             }
-            this.fileReader.readAsArrayBuffer(this.selectedFile);
-            this.fileReader.onload = () => {
-                const date = new Date();
-                const folderPath: string = this.globalService.sharePointPageObject.webRelativeUrl + '/SpendingInfoFiles/' + folderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM') + '/';
-                this.filePathUrl = this.globalService.sharePointPageObject.webRelativeUrl + '/_api/web/GetFolderByServerRelativeUrl(' + '\'' + folderPath + '\'' + ')/Files/add(url=@TargetFileName,overwrite=\'true\')?' + '&@TargetFileName=\'' + this.selectedFile.name + '\'';
-            };
+            this.FolderName = folderName;
+            this.SelectedFile.push(new Object({ name: sNewFileName, file: this.selectedFile }));
+
         }
     }
 
     async uploadFileData(type: string) {
-        this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'UploadFiles');
-        const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
-        if (res.ServerRelativeUrl) {
-            this.fileUploadedUrl = res.ServerRelativeUrl ? res.ServerRelativeUrl : '';
-            // console.log('this.fileUploadedUrl ', this.fileUploadedUrl);
-            if (this.fileUploadedUrl) {
-                const batchUrl = [];
-                const speInfoObj = {
-                    PayingEntity: this.approveExpense_form.value.PayingEntity.Title,
-                    Number: this.approveExpense_form.value.Number,
-                    DateSpend: this.approveExpense_form.value.DateSpend,
-                    PaymentMode: this.approveExpense_form.value.PaymentMode.value,
-                    ApproverComments: this.approveExpense_form.value.ApproverComments,
-                    ApproverFileUrl: this.fileUploadedUrl,
-                    Status: 'Approved'
-                };
-                speInfoObj['__metadata'] = { type: 'SP.Data.SpendingInfoListItem' };
-                // let data = [];
-                for (let inv = 0; inv < this.selectedAllRowsItem.length; inv++) {
-                    const element = this.selectedAllRowsItem[inv];
-                    // const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace("{{Id}}", element.Id);
-                    // data.push({
-                    //     objData: speInfoObj,
-                    //     endpoint: spEndpoint,
-                    //     requestPost: false
-                    // })
+        const date = new Date();
+        this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure-PendingExpense', 'UploadFiles');
 
-                    const expenseObj = Object.assign({}, this.queryConfig);
-                    expenseObj.url = this.spServices.getItemURL(this.constantService.listNames.SpendingInfo.name, +element.Id);
-                    expenseObj.listName = this.constantService.listNames.SpendingInfo.name;
-                    expenseObj.type = 'PATCH';
-                    expenseObj.data = speInfoObj;
-                    batchUrl.push(expenseObj);
+        this.commonService.UploadFilesProgress(this.SelectedFile, 'SpendingInfoFiles/' + this.FolderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM'), true).then(async uploadedfile => {
+            if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
+                if (uploadedfile[0].hasOwnProperty('odata.error')) {
+                    this.submitBtn.isClicked = false;
+                    this.messageService.add({
+                        key: 'pendingExpenseToast', severity: 'error', summary: 'Error message',
+                        detail: 'File not uploaded,Folder / File Not Found', life: 3000
+                    });
+                } else if (uploadedfile[0].ServerRelativeUrl) {
+                    this.isPSInnerLoaderHidden = false;
+                    this.fileUploadedUrl = uploadedfile[0].ServerRelativeUrl;
+                    if (this.fileUploadedUrl) {
+                        const batchUrl = [];
+                        const speInfoObj = {
+                            PayingEntity: this.approveExpense_form.value.PayingEntity.Title,
+                            Number: this.approveExpense_form.value.Number,
+                            DateSpend: this.approveExpense_form.value.DateSpend,
+                            PaymentMode: this.approveExpense_form.value.PaymentMode.value,
+                            ApproverComments: this.approveExpense_form.value.ApproverComments,
+                            ApproverFileUrl: this.fileUploadedUrl,
+                            Status: 'Approved'
+                        };
+                        speInfoObj['__metadata'] = { type: this.constantService.listNames.SpendingInfo.type };
+
+                        for (let inv = 0; inv < this.selectedAllRowsItem.length; inv++) {
+                            const element = this.selectedAllRowsItem[inv];
+                            const expenseObj = Object.assign({}, this.queryConfig);
+                            expenseObj.url = this.spServices.getItemURL(this.constantService.listNames.SpendingInfo.name, +element.Id);
+                            expenseObj.listName = this.constantService.listNames.SpendingInfo.name;
+                            expenseObj.type = 'PATCH';
+                            expenseObj.data = speInfoObj;
+                            batchUrl.push(expenseObj);
+                        }
+                        this.submitForm(batchUrl, type);
+                    }
                 }
-                this.submitForm(batchUrl, type);
             }
-        } else if (res.hasError) {
-            this.isPSInnerLoaderHidden = true;
-            this.submitBtn.isClicked = false;
-            this.messageService.add({
-                key: 'pendingExpenseToast', severity: 'error', summary: 'Error message',
-                detail: 'File not uploaded,Folder / ' + res.message.value + '', life: 3000
-            });
-        }
+        });
     }
+
+
+    //*************************************************************************************************
+    // commented old file upload function
+    // ************************************************************************************************
+
+
+
+
+    // onFileChange(event, folderName: string) {
+    //     this.fileReader = new FileReader();
+    //     if (event.target.files && event.target.files.length > 0) {
+    //         this.selectedFile = event.target.files[0];
+    //         const fileName = this.selectedFile.name;
+    //         const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
+    //         if (fileName !== sNewFileName) {
+    //             this.fileInput.nativeElement.value = '';
+    //             this.approveExpense_form.get('ApproverFileUrl').setValue('');
+    //             this.messageService.add({ key: 'pendingExpenseToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
+    //             return false;
+    //         }
+    //         this.fileReader.readAsArrayBuffer(this.selectedFile);
+    //         this.fileReader.onload = () => {
+    //             const date = new Date();
+    //             const folderPath: string = this.globalService.sharePointPageObject.webRelativeUrl + '/SpendingInfoFiles/' + folderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM') + '/';
+    //             this.filePathUrl = this.globalService.sharePointPageObject.webRelativeUrl + '/_api/web/GetFolderByServerRelativeUrl(' + '\'' + folderPath + '\'' + ')/Files/add(url=@TargetFileName,overwrite=\'true\')?' + '&@TargetFileName=\'' + this.selectedFile.name + '\'';
+    //         };
+    //     }
+    // }
+
+    // async uploadFileData(type: string) {
+    //     this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'UploadFiles');
+    //     const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
+    //     if (res.ServerRelativeUrl) {
+    //         this.fileUploadedUrl = res.ServerRelativeUrl ? res.ServerRelativeUrl : '';
+    //         // console.log('this.fileUploadedUrl ', this.fileUploadedUrl);
+    //         if (this.fileUploadedUrl) {
+    //             const batchUrl = [];
+    //             const speInfoObj = {
+    //                 PayingEntity: this.approveExpense_form.value.PayingEntity.Title,
+    //                 Number: this.approveExpense_form.value.Number,
+    //                 DateSpend: this.approveExpense_form.value.DateSpend,
+    //                 PaymentMode: this.approveExpense_form.value.PaymentMode.value,
+    //                 ApproverComments: this.approveExpense_form.value.ApproverComments,
+    //                 ApproverFileUrl: this.fileUploadedUrl,
+    //                 Status: 'Approved'
+    //             };
+    //             speInfoObj['__metadata'] = { type: 'SP.Data.SpendingInfoListItem' };
+    //             // let data = [];
+    //             for (let inv = 0; inv < this.selectedAllRowsItem.length; inv++) {
+    //                 const element = this.selectedAllRowsItem[inv];
+    //                 // const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace("{{Id}}", element.Id);
+    //                 // data.push({
+    //                 //     objData: speInfoObj,
+    //                 //     endpoint: spEndpoint,
+    //                 //     requestPost: false
+    //                 // })
+
+    //                 const expenseObj = Object.assign({}, this.queryConfig);
+    //                 expenseObj.url = this.spServices.getItemURL(this.constantService.listNames.SpendingInfo.name, +element.Id);
+    //                 expenseObj.listName = this.constantService.listNames.SpendingInfo.name;
+    //                 expenseObj.type = 'PATCH';
+    //                 expenseObj.data = speInfoObj;
+    //                 batchUrl.push(expenseObj);
+    //             }
+    //             this.submitForm(batchUrl, type);
+    //         }
+    //     } else if (res.hasError) {
+    //         this.isPSInnerLoaderHidden = true;
+    //         this.submitBtn.isClicked = false;
+    //         this.messageService.add({
+    //             key: 'pendingExpenseToast', severity: 'error', summary: 'Error message',
+    //             detail: 'File not uploaded,Folder / ' + res.message.value + '', life: 3000
+    //         });
+    //     }
+    // }
 
     onSubmit(type: string) {
         this.formSubmit.isSubmit = true;
@@ -830,6 +907,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 this.submitForm(batchUrl, type);
                 return;
             }
+            this.isPSInnerLoaderHidden = true;
             this.uploadFileData(type);
         }
     }

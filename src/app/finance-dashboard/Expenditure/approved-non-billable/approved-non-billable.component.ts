@@ -11,6 +11,7 @@ import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { Table } from 'primeng/table';
 import { Router } from '@angular/router';
+import { DialogService } from 'primeng';
 
 @Component({
     selector: 'app-approved-non-billable',
@@ -18,6 +19,8 @@ import { Router } from '@angular/router';
     styleUrls: ['./approved-non-billable.component.css']
 })
 export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
+    FolderName: string;
+    SelectedFile = [];
 
     constructor(
         private messageService: MessageService,
@@ -34,6 +37,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         private locationStrategy: LocationStrategy,
         private readonly _router: Router,
         _applicationRef: ApplicationRef,
+        public dialogService: DialogService,
         zone: NgZone,
     ) {
         this.subscription.add(this.fdDataShareServie.getDateRange().subscribe(date => {
@@ -150,7 +154,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
     selectedFile: any;
     filePathUrl: any;
     fileReader: any;
-    fileUploadedUrl: any;
+    fileUploadedUrl = '';
 
     isOptionFilter: boolean;
 
@@ -487,15 +491,20 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
             if (this.markAsPayment_form.invalid) {
                 return;
             }
-            this.isPSInnerLoaderHidden = false;
+            // this.isPSInnerLoaderHidden = false;
             this.submitBtn.isClicked = true;
             console.log('form is submitting ..... for selected row Item i.e ', this.markAsPayment_form.value);
             this.uploadFileData(type);
         }
     }
+
+    //*************************************************************************************************
+    // new File uplad function updated by Maxwell
+    // ************************************************************************************************
     onFileChange(event: { target: { files: string | any[]; }; }, folderName: string) {
         this.fileReader = new FileReader();
         if (event.target.files && event.target.files.length > 0) {
+            this.SelectedFile = [];
             this.selectedFile = event.target.files[0];
             const fileName = this.selectedFile.name;
             const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
@@ -505,64 +514,128 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
                 this.messageService.add({ key: 'approvedNonBToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
                 return false;
             }
-            this.fileReader.readAsArrayBuffer(this.selectedFile);
-            this.fileReader.onload = () => {
-                const date = new Date();
-                const folderPath: string = this.globalService.sharePointPageObject.webRelativeUrl + '/SpendingInfoFiles/'
-                    + folderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM') + '/';
-                this.filePathUrl = this.globalService.sharePointPageObject.webRelativeUrl
-                    + '/_api/web/GetFolderByServerRelativeUrl(' + '\'' + folderPath + '\'' + ')/Files/add(url=@TargetFileName,overwrite=\'true\')?' + '&@TargetFileName=\'' + this.selectedFile.name + '\'';
-            };
+            this.FolderName = folderName;
+            this.SelectedFile.push(new Object({ name: sNewFileName, file: this.selectedFile }));
+
         }
     }
 
     async uploadFileData(type: string) {
-
-        // this.nodeService.uploadFIle(this.filePathUrl, this.fileReader.result).subscribe(res => {
+        const date = new Date();
         this.commonService.SetNewrelic('Finance-Dashboard', 'approve-nonbillable', 'UploadFile');
-        const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
-        if (res) {
-            this.fileUploadedUrl = res.ServerRelativeUrl ? res.ServerRelativeUrl : '';
-            // console.log('this.fileUploadedUrl ', this.fileUploadedUrl);
-            if (this.fileUploadedUrl) {
-                const batchUrl = [];
-                const speInfoData = {
-                    __metadata: { type: this.constantService.listNames.SpendingInfo.type },
-                    // PayingEntity: this.markAsPayment_form.value.PayingEntity.Title,
-                    Number: this.markAsPayment_form.value.Number,
-                    DateSpend: this.markAsPayment_form.value.DateSpend,
-                    PaymentMode: this.markAsPayment_form.value.PaymentMode.value,
-                    // ApproverComments: this.markAsPayment_form.value.ApproverComments,
-                    ApproverFileUrl: this.fileUploadedUrl,
-                    Status: 'Approved'
-                };
-                // speInfoData['__metadata'] = { type: 'SP.Data.SpendingInfoListItem' };
-                // let data = [];
-                this.selectedAllRowsItem.forEach((element: { Id: any; }) => {
-                    const spendingInfoObj = Object.assign({}, this.queryConfig);
-                    spendingInfoObj.url = this.spServices.getItemURL(this.constantService.listNames.SpendingInfo.name, element.Id);
-                    spendingInfoObj.listName = this.constantService.listNames.SpendingInfo.name;
-                    spendingInfoObj.type = 'PATCH';
-                    spendingInfoObj.data = speInfoData;
-                    batchUrl.push(spendingInfoObj);
-                });
-                // for (let j = 0; j < this.selectedAllRowsItem.length; j++) {
-                //     const element = this.selectedAllRowsItem[j];
-                //     const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace("{{Id}}", element.Id);
-                //     data.push({
-                //         objData: speInfoObj,
-                //         endpoint: spEndpoint,
-                //         requestPost: false
-                //     })
-                // }
-                this.submitForm(batchUrl, type);
+        this.commonService.UploadFilesProgress(this.SelectedFile, 'SpendingInfoFiles/' + this.FolderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM'), true).then(async uploadedfile => {
+            if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
+                if (uploadedfile[0].hasOwnProperty('odata.error')) {
+                    this.submitBtn.isClicked = false;
+                    this.messageService.add({
+                        key: 'approvedToast', severity: 'error', summary: 'Error message',
+                        detail: 'File not uploaded,Folder / File Not Found', life: 3000
+                    });
+                } else if (uploadedfile[0].ServerRelativeUrl) {
+                    this.fileUploadedUrl = uploadedfile[0].ServerRelativeUrl;
+                    if (this.fileUploadedUrl) {
+                        this.isPSInnerLoaderHidden = false;
+                        const batchUrl = [];
+                        const speInfoData = {
+                            __metadata: { type: this.constantService.listNames.SpendingInfo.type },
+                            Number: this.markAsPayment_form.value.Number,
+                            DateSpend: this.markAsPayment_form.value.DateSpend,
+                            PaymentMode: this.markAsPayment_form.value.PaymentMode.value,
+                            ApproverFileUrl: this.fileUploadedUrl,
+                            Status: 'Approved'
+                        };
+
+                        this.selectedAllRowsItem.forEach((element: { Id: any; }) => {
+                            const spendingInfoObj = Object.assign({}, this.queryConfig);
+                            spendingInfoObj.url = this.spServices.getItemURL(this.constantService.listNames.SpendingInfo.name, element.Id);
+                            spendingInfoObj.listName = this.constantService.listNames.SpendingInfo.name;
+                            spendingInfoObj.type = 'PATCH';
+                            spendingInfoObj.data = speInfoData;
+                            batchUrl.push(spendingInfoObj);
+                        });
+                        this.submitForm(batchUrl, type);
+                    }
+                }
             }
-        } else if (res.hasError) {
-            this.isPSInnerLoaderHidden = true;
-            this.submitBtn.isClicked = false;
-            this.messageService.add({ key: 'approvedToast', severity: 'error', summary: 'Error message', detail: 'File not uploaded,Folder / ' + res.message.value + '', life: 3000 });
-        }
+        });
     }
+
+
+    //*************************************************************************************************
+    // commented old file upload function
+    // ************************************************************************************************
+
+
+    // onFileChange(event: { target: { files: string | any[]; }; }, folderName: string) {
+    //     this.fileReader = new FileReader();
+    //     if (event.target.files && event.target.files.length > 0) {
+    //         this.selectedFile = event.target.files[0];
+    //         const fileName = this.selectedFile.name;
+    //         const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
+    //         if (fileName !== sNewFileName) {
+    //             this.fileInput.nativeElement.value = '';
+    //             this.markAsPayment_form.get('ApproverFileUrl').setValue('');
+    //             this.messageService.add({ key: 'approvedNonBToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
+    //             return false;
+    //         }
+    //         this.fileReader.readAsArrayBuffer(this.selectedFile);
+    //         this.fileReader.onload = () => {
+    //             const date = new Date();
+    //             const folderPath: string = this.globalService.sharePointPageObject.webRelativeUrl + '/SpendingInfoFiles/'
+    //                 + folderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM') + '/';
+    //             this.filePathUrl = this.globalService.sharePointPageObject.webRelativeUrl
+    //                 + '/_api/web/GetFolderByServerRelativeUrl(' + '\'' + folderPath + '\'' + ')/Files/add(url=@TargetFileName,overwrite=\'true\')?' + '&@TargetFileName=\'' + this.selectedFile.name + '\'';
+    //         };
+    //     }
+    // }
+
+    // async uploadFileData(type: string) {
+
+    //     // this.nodeService.uploadFIle(this.filePathUrl, this.fileReader.result).subscribe(res => {
+    //     this.commonService.SetNewrelic('Finance-Dashboard', 'approve-nonbillable', 'UploadFile');
+    //     const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
+    //     if (res) {
+    //         this.fileUploadedUrl = res.ServerRelativeUrl ? res.ServerRelativeUrl : '';
+    //         // console.log('this.fileUploadedUrl ', this.fileUploadedUrl);
+    //         if (this.fileUploadedUrl) {
+    //             const batchUrl = [];
+    //             const speInfoData = {
+    //                 __metadata: { type: this.constantService.listNames.SpendingInfo.type },
+    //                 // PayingEntity: this.markAsPayment_form.value.PayingEntity.Title,
+    //                 Number: this.markAsPayment_form.value.Number,
+    //                 DateSpend: this.markAsPayment_form.value.DateSpend,
+    //                 PaymentMode: this.markAsPayment_form.value.PaymentMode.value,
+    //                 // ApproverComments: this.markAsPayment_form.value.ApproverComments,
+    //                 ApproverFileUrl: this.fileUploadedUrl,
+    //                 Status: 'Approved'
+    //             };
+    //             // speInfoData['__metadata'] = { type: 'SP.Data.SpendingInfoListItem' };
+    //             // let data = [];
+    //             this.selectedAllRowsItem.forEach((element: { Id: any; }) => {
+    //                 const spendingInfoObj = Object.assign({}, this.queryConfig);
+    //                 spendingInfoObj.url = this.spServices.getItemURL(this.constantService.listNames.SpendingInfo.name, element.Id);
+    //                 spendingInfoObj.listName = this.constantService.listNames.SpendingInfo.name;
+    //                 spendingInfoObj.type = 'PATCH';
+    //                 spendingInfoObj.data = speInfoData;
+    //                 batchUrl.push(spendingInfoObj);
+    //             });
+    //             // for (let j = 0; j < this.selectedAllRowsItem.length; j++) {
+    //             //     const element = this.selectedAllRowsItem[j];
+    //             //     const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace("{{Id}}", element.Id);
+    //             //     data.push({
+    //             //         objData: speInfoObj,
+    //             //         endpoint: spEndpoint,
+    //             //         requestPost: false
+    //             //     })
+    //             // }
+    //             this.submitForm(batchUrl, type);
+    //         }
+    //     } else if (res.hasError) {
+    //         this.isPSInnerLoaderHidden = true;
+    //         this.submitBtn.isClicked = false;
+    //         this.messageService.add({ key: 'approvedToast', severity: 'error', summary: 'Error message', detail: 'File not uploaded,Folder / ' + res.message.value + '', life: 3000 });
+    //     }
+    // }
 
     // batchContents: any = [];
     async submitForm(batchUrl: any[], type: string) {

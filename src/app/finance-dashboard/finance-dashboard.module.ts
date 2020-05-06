@@ -79,7 +79,7 @@ import { InvTableAttributeComponent } from './Outstanding-Invoices/inv-table-att
     PaidInvoicesComponent,
     SaveYourViewComponent,
     TableAttributeComponent,
-    EditorComponent
+    EditorComponent,
   ],
   providers: [
     FDResolve,

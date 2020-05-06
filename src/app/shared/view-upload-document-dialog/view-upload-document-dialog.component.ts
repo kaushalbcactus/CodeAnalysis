@@ -8,6 +8,7 @@ import { GlobalService } from 'src/app/Services/global.service';
 import { MyDashboardConstantsService } from 'src/app/my-dashboard/services/my-dashboard-constants.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
+import { FileUploadProgressDialogComponent } from '../file-upload-progress-dialog/file-upload-progress-dialog.component';
 
 
 @Component({
@@ -319,7 +320,6 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       users = await this.getUsers(Ids);
     }
     this.loaderenable = false;
-    debugger;
     this.DocumentArray.map(c => c.taskName = c.ListItemAllFields.TaskName != null ? c.ListItemAllFields.TaskName : '');
     this.DocumentArray.map(c => c.modifiedUserName = users.find(d => d.Id ===
       c.ListItemAllFields.EditorId) !== undefined ? users.find(d => d.Id === c.ListItemAllFields.EditorId).Title : '');
@@ -498,30 +498,25 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       switch (type) {
         case 'Source Docs':
           docFolder = 'Source Documents';
-          //  sVal = 'source documents';
           break;
         case 'References':
           docFolder = 'References';
-          //  sVal = 'references';
           break;
         case 'meetingNotes':
           docFolder = 'Communications';
-          // sVal = 'meeting notes';
           break;
         case 'Meeting Notes':
           docFolder = 'Communications';
-          // sVal = 'meeting notes & comments';
           break;
         default:
           docFolder = 'Drafts/Internal/' + this.selectedTask.Milestone;
-          //  sVal = 'current task documents';
           break;
       }
-      const uploadedFiles = [];
       const readers = [];
       let bUpload = true;
       event.files.forEach(async element => {
 
+        let file = element;
         let filename = element.name;
         const sNewFileName = filename.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
         if (filename !== sNewFileName) {
@@ -532,40 +527,33 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
           filename = filename.split(/\.(?=[^\.]+$)/)[0] + '.' + this.datePipe.transform(new Date(),
             'ddMMyyyyhhmmss') + '.' + filename.split(/\.(?=[^\.]+$)/)[1];
         }
-
-
-        const fileReader = new FileReader();
-        fileReader.readAsArrayBuffer(element);
         const fileObj = {
-          reader: fileReader,
+          file: file,
           name: filename
         };
 
         readers.push(fileObj);
-
         existingFiles.push(filename.toLowerCase());
       });
       if (bUpload) {
-        this.messageService.add({ key: 'custom', severity: 'info', summary: 'Info Message', detail: 'Uploading....' });
-        this.loaderenable = true;
-        readers.forEach(async element => {
-          const fileObj = element;
-          fileObj.reader.onload = async (readerEvt) => {
+        const ref = this.dialogService.open(FileUploadProgressDialogComponent, {
+          header: 'File Uploading',
+          width: '70vw',
+          data: {
+            Files: readers,
+            libraryName: this.ProjectInformation.ProjectFolder + "/" +  docFolder,
+            overwrite: false,
+          },
+          contentStyle: { 'max-height': '82vh', 'overflow-y': 'auto', 'background-color': '#f4f3ef' },
+          closable: false,
+        });
 
-            const filePathUrl = this.sharedObject.sharePointPageObject.serverRelativeUrl +
-              // tslint:disable-next-line: quotemark
-              "/_api/web/GetFolderByServerRelativeUrl('" + this.ProjectInformation.ProjectFolder + "/"
-              // tslint:disable-next-line: quotemark
-              + docFolder + "')/Files/add(url=@TargetFileName,overwrite='false')?" +
-              // tslint:disable-next-line: quotemark
-              "&@TargetFileName='" + fileObj.name + "'&$expand=ListItemAllFields";
-
-            this.commonService.SetNewrelic('Shared', 'viewUpladDocDialog', 'uploadDocuments');
-            const res = await this.spOperations.uploadFile(filePathUrl, fileObj.reader.result);
-            uploadedFiles.push(res);
-            if (readers.length === uploadedFiles.length) {
+        return ref.onClose.subscribe(async (uploadedfiles: any) => {
+          if (uploadedfiles) {
+            if (event.files.length > 0 && event.files.length === uploadedfiles.length) {
+              this.loaderenable = true;
               if (this.selectedTab === 'My Drafts') {
-                this.LinkDocumentToProject(uploadedFiles);
+                this.LinkDocumentToProject(uploadedfiles);
               } else {
                 this.loadDraftDocs(this.selectedTab);
                 this.messageService.add({
@@ -574,7 +562,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
                 });
               }
             }
-          };
+          }
         });
       } else {
         this.messageService.add({

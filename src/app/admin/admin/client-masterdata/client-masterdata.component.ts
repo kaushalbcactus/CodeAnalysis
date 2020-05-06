@@ -18,6 +18,7 @@ import { AddEditPocComponent } from './add-edit-poc/add-edit-poc.component';
 import { AddEditPoDialogComponent } from './add-edit-po-dialog/add-edit-po-dialog.component';
 import { ChangeBudgetDialogComponent } from './change-budget-dialog/change-budget-dialog.component';
 
+
 @Component({
   selector: 'app-client-masterdata',
   templateUrl: './client-masterdata.component.html',
@@ -1535,55 +1536,62 @@ export class ClientMasterdataComponent implements OnInit {
 
 
   async savePO(poDetails, selectedFile) {
-
-    this.constantsService.loader.isPSInnerLoaderHidden = false;
-
-    this.fileReader = new FileReader();
-    if(selectedFile){
-      this.fileReader.readAsArrayBuffer(selectedFile);
-    }
-    const docFolder = this.adminConstants.FOLDER_LOCATION.PO;
-    const libraryName = this.currClientObj.ListName;
-    const folderPath: string = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + libraryName + '/' + docFolder;
-  this.filePathUrl = await this.spServices.getFileUploadUrl(folderPath, selectedFile.name, true);
+    const tempFiles = [new Object({ name: selectedFile[0].name, file: selectedFile[0] })];
     this.common.SetNewrelic('Admin-ClientMasterData', 'SavePO', 'UploadFile');
-   const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
-    console.log(res);
-    if (selectedFile && !res.hasOwnProperty('hasError')) {
-      // write the logic of create new PO.
-      const poData = await this.getPOData(poDetails, selectedFile);
-      if (!this.showeditPO) {
-        this.common.SetNewrelic('admin', 'client-masterdata', 'savePO');
-        const results = await this.spServices.createItem(this.constantsService.listNames.PO.name,
-          poData, this.constantsService.listNames.PO.type);
-        if (!results.hasOwnProperty('hasError') && !results.hasError) {
-          const poBreakUPData = await this.getPOBudgetBreakUPData(results, poDetails);
-          this.common.SetNewrelic('admin', 'admin-clientMaster', 'createPOBudgetreakup');
-          const poBreakUPResult = await this.spServices.createItem(this.constantsService.listNames.POBudgetBreakup.name,
-            poBreakUPData, this.constantsService.listNames.POBudgetBreakup.type);
-          if (!poBreakUPResult.hasOwnProperty('hasError') && !poBreakUPResult.hasError) {
-            this.messageService.add({
-              key: 'adminCustom', severity: 'success', summary: 'Success Message',
-              detail: 'The Po ' + poDetails.value.poNumber + ' is created successfully.'
-            });
+    this.common.UploadFilesProgress(tempFiles, this.currClientObj.ListName + '/' + this.adminConstants.FOLDER_LOCATION.PO, true).then(async uploadedfile => {
+      if (selectedFile.length > 0 && selectedFile.length === uploadedfile.length) {
+        if (!uploadedfile[0].hasOwnProperty('odata.error')) {
+          this.modalloaderenable = true;
+          this.messageService.add({
+            key: 'adminCustom', severity: 'success',
+            summary: 'Success Message', detail: 'File uploaded sucessfully.'
+          });
+          const poData = await this.getPOData(poDetails, selectedFile[0]);
+          if (!this.showeditPO) {
+            this.common.SetNewrelic('admin', 'client-masterdata', 'savePO');
+            const results = await this.spServices.createItem(this.constantsService.listNames.PO.name,
+              poData, this.constantsService.listNames.PO.type);
+            if (!results.hasOwnProperty('hasError') && !results.hasError) {
+              const poBreakUPData = await this.getPOBudgetBreakUPData(results, poDetails);
+              this.common.SetNewrelic('admin', 'admin-clientMaster', 'createPOBudgetreakup');
+              const poBreakUPResult = await this.spServices.createItem(this.constantsService.listNames.POBudgetBreakup.name,
+                poBreakUPData, this.constantsService.listNames.POBudgetBreakup.type);
+              if (!poBreakUPResult.hasOwnProperty('hasError') && !poBreakUPResult.hasError) {
+                this.messageService.add({
+                  key: 'adminCustom', severity: 'success', summary: 'Success Message',
+                  detail: 'The Po ' + poDetails.value.poNumber + ' is created successfully.'
+                });
+              }
+              await this.loadRecentPORecords(results.ID, this.adminConstants.ACTION.ADD);
+            }
           }
-          await this.loadRecentPORecords(results.ID, this.adminConstants.ACTION.ADD);
+          if (this.showeditPO) {
+            this.common.SetNewrelic('admin', 'admin-clientMaster', 'updatePO');
+            const results = await this.spServices.updateItem(this.constantsService.listNames.PO.name, this.currPOObj.ID,
+              poData, this.constantsService.listNames.PO.type);
+            this.messageService.add({
+              key: 'adminCustom', severity: 'success',
+              summary: 'Success Message', detail: 'The Po ' + this.currPOObj.PoNumber + ' is updated successfully.'
+            });
+            await this.loadRecentPORecords(this.currPOObj.ID, this.adminConstants.ACTION.EDIT);
+          }
+        }
+        else {
+          this.messageService.add({
+            key: 'adminCustom', severity: 'error',
+            summary: 'Error Message', detail: 'Error while uploading file.'
+          });
         }
       }
-      if (this.showeditPO) {
-        this.common.SetNewrelic('admin', 'admin-clientMaster', 'updatePO');
-        const results = await this.spServices.updateItem(this.constantsService.listNames.PO.name, this.currPOObj.ID,
-          poData, this.constantsService.listNames.PO.type);
-        this.messageService.add({
-          key: 'adminCustom', severity: 'success',
-          summary: 'Success Message', detail: 'The Po ' + this.currPOObj.PoNumber + ' is updated successfully.'
-        });
-        await this.loadRecentPORecords(this.currPOObj.ID, this.adminConstants.ACTION.EDIT);
-      }
-      this.showaddPO = false;
-      this.constantsService.loader.isPSInnerLoaderHidden = true;
-    }
+    }).catch(error => {
+      console.log("Error while uploading" + error)
+      this.messageService.add({
+        key: 'adminCustom', severity: 'error',
+        summary: 'Error Message', detail: 'Error while uploading file.'
+      });
+    });
   }
+
   /**
    * Construct a method to create an object of `PO`.
    *

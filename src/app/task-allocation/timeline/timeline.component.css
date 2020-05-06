@@ -756,9 +756,11 @@ div.sticky {
 
 .gantt_task_drag.task_left.task_start_date {
   background-color: #ff3e56 !important;
+  left: -12px !important;
 }
 .gantt_task_drag.task_right.task_end_date {
   background-color: darkgreen !important;
+  right: -12px !important;
 }
 .fa .fa-info-circle {
   font-size: 0.85em !important;
