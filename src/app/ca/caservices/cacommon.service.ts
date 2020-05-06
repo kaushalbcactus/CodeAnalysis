@@ -272,7 +272,7 @@ export class CACommonService {
 
     let taskObj = Object.assign({}, this.queryConfig);
     taskObj.url = this.spServices.getReadURL(this.globalConstantService.listNames.Schedules.name, scheduleQueryOptions);
-    taskObj.listName = this.globalConstantService.listNames.ProjectInformation.name;
+    taskObj.listName = this.globalConstantService.listNames.Schedules.name;
     taskObj.type = 'GET';
     batchUrl.push(taskObj);
 

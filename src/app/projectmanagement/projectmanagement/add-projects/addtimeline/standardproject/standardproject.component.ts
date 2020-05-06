@@ -13,6 +13,7 @@ import { DataService } from 'src/app/Services/data.service';
 import { UsercapacityComponent } from 'src/app/shared/usercapacity/usercapacity.component';
 import { async } from '@angular/core/testing';
 import { CommonService } from 'src/app/Services/common.service';
+import { DialogService } from 'primeng';
 
 declare var $;
 @Component({
@@ -97,7 +98,8 @@ export class StandardprojectComponent implements OnInit {
     private sharedObject: GlobalService,
     public messageService: MessageService,
     private router: Router,
-    private commonService : CommonService,
+    private commonService: CommonService,
+    private dialogService: DialogService,
     private dataService: DataService) {
   }
 
@@ -422,7 +424,7 @@ export class StandardprojectComponent implements OnInit {
     const result = await this.spService.readItems(this.constants.listNames.StandardServices.name, standardServiceOptions);
     if (result && result.length) {
       result.forEach(element => {
-        if(templates.indexOf(element.Title) > -1) {
+        if (templates.indexOf(element.Title) > -1) {
           this.standardServices.push({ label: element.Title, value: element });
         }
       });
@@ -713,7 +715,7 @@ export class StandardprojectComponent implements OnInit {
       //   this.pmObject.addProject.Timeline.Standard.Milestones += ';#';
       // }
 
-      
+
       StartDate = this.setClientReview(milestoneObj, true);
       if (index < orginalMilestone.length) {
         index++;
@@ -1009,7 +1011,7 @@ export class StandardprojectComponent implements OnInit {
           taskObj.PreviousTask = milestoneTask[index].PreviousTask;
           taskObj.data.Skill = milestoneTask[index].Skill;
           taskObj.data.TaskDays = milestoneTask[index].TaskDays;
-          taskObj.data.UseTaskDays = milestoneTask[index].TaskName.Title === 'Send to client' ? 'No': milestoneTask[index].UseTaskDays;
+          taskObj.data.UseTaskDays = milestoneTask[index].TaskName.Title === 'Send to client' ? 'No' : milestoneTask[index].UseTaskDays;
           taskObj.data.Title = milestoneTask[index].Title;
           taskObj.data.Name = taskObj.data.TaskName;
           taskObj.data.isStartDateDisabled = false;
@@ -1030,12 +1032,12 @@ export class StandardprojectComponent implements OnInit {
               taskObj.data.AssignedTo = this.userProperties.Title;
               startdate = this.setDefaultAMHours(milestoneObj.data.StartDate);
             }
-            if (taskObj.data.UseTaskDays !== this.pmConstant.task.USE_TASK_DAYS || milestoneTask[index].TaskName.Title === 'Send to client' ) {
+            if (taskObj.data.UseTaskDays !== this.pmConstant.task.USE_TASK_DAYS || milestoneTask[index].TaskName.Title === 'Send to client') {
               taskObj.data.showTime = true;
-              if(milestoneTask[index].TaskName.Title === 'Send to client'){
+              if (milestoneTask[index].TaskName.Title === 'Send to client') {
                 taskObj.data.Days = taskObj.data.TaskDays;
               }
-            
+
             }
             taskObj.data.showHyperLink = true;
             if (daysHours !== "") {
@@ -1080,7 +1082,7 @@ export class StandardprojectComponent implements OnInit {
               taskObj.isHoursDisabled = true;
             }
             if (taskObj.data.UseTaskDays !== this.pmConstant.task.USE_TASK_DAYS || milestoneTask[index].TaskName.Title === 'Send to client') {
-              if(milestoneTask[index].TaskName.Title === 'Send to client'){
+              if (milestoneTask[index].TaskName.Title === 'Send to client') {
                 taskObj.data.Days = taskObj.data.TaskDays;
               }
               taskObj.data.showTime = true;
@@ -2043,22 +2045,51 @@ export class StandardprojectComponent implements OnInit {
       this.pmObject.addProject.Timeline.Standard.StandardBudgetHrs = this.standardBudgetHrs;
       this.pmObject.addProject.Timeline.Standard.standardArray = this.standardFiles;
       this.pmObject.addProject.FinanceManagement.BudgetHours = this.pmObject.addProject.Timeline.Standard.StandardProjectBugetHours;
-      await this.pmCommonService.validateAndSave();
-      this.messageService.add({
-        key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
-        detail: 'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode
-      });
-      setTimeout(() => {
-        this.pmObject.isAddProjectVisible = false;
-        if (this.router.url === '/projectMgmt/allProjects') {
-          this.dataService.publish('reload-project');
-        } else {
-          this.pmObject.allProjectItems = [];
-          this.router.navigate(['/projectMgmt/allProjects']);
+      // await this.pmCommonService.validateAndSave();
+      // new code by maxwell file upload progress bar 
+
+      this.pmObject.isMainLoaderHidden = false;
+      const newProjectCode = await this.pmCommonService.verifyAndUpdateProjectCode();
+      this.pmObject.addProject.ProjectAttributes.ProjectCode = newProjectCode;
+      if (newProjectCode) {
+        if (this.pmObject.addProject.FinanceManagement.selectedFile) {
+          let SelectedFile = [];
+          this.pmObject.isMainLoaderHidden = true;
+          this.commonService.SetNewrelic('projectManagment', 'nonStdConfirm', 'UploadFiles');
+
+          const FolderName = await this.pmCommonService.getFolderName();
+          SelectedFile.push(new Object({ name: this.pmObject.addProject.FinanceManagement.selectedFile.name, file: this.pmObject.addProject.FinanceManagement.selectedFile }));
+          this.commonService.UploadFilesProgress(SelectedFile, FolderName, true).then(async uploadedfile => {
+            if (SelectedFile.length > 0 && SelectedFile.length === uploadedfile.length) {
+              if (uploadedfile[0].ServerRelativeUrl) {
+                this.pmObject.addProject.FinanceManagement.SOWFileURL = uploadedfile[0].ServerRelativeUrl;
+                this.pmObject.addProject.FinanceManagement.SOWFileName = uploadedfile[0].Name;
+                this.pmObject.addProject.FinanceManagement.SOWFileProp = uploadedfile[0];
+                this.pmObject.addSOW.isSOWCodeDisabled = false;
+                this.pmObject.addSOW.isStatusDisabled = true;
+              }
+            }
+            this.CallAddUpdateProject();
+          });
         }
-      }, this.pmConstant.TIME_OUT);
+        else {
+          this.CallAddUpdateProject();
+        }
+      }
     }
   }
+
+  async CallAddUpdateProject() {
+    this.pmObject.isMainLoaderHidden = false;
+    await this.pmCommonService.addUpdateProject();
+    this.messageService.add({
+      key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
+      detail: 'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode
+    });
+    this.pmCommonService.reloadPMPage();
+  }
+
+
   setFieldProperties() {
     if (this.pmObject.addProject.Timeline.Standard.IsStandard) {
       this.pmObject.isStandardChecked = true;

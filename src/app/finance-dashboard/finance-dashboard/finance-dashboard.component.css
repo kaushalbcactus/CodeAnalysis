@@ -3,7 +3,6 @@
     /* border:1px solid #c53e3e !important; */
 }
 
-
 .pDialog {
     top: 50px !important;
 }
@@ -95,11 +94,12 @@ body .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active {
     color: #fff;
 }
 
-body .ui-button.ui-state-default.ui-button-secondary:enabled:focus, body .ui-buttonset.ui-button-secondary > .ui-button.ui-state-default:enabled:focus {
+body .ui-button.ui-state-default.ui-button-secondary:enabled:focus,
+body .ui-buttonset.ui-button-secondary>.ui-button.ui-state-default:enabled:focus {
     box-shadow: 0 0 0 0.2em #8dcdff;
 }
 
-.pCalendarBtn .ui-button{
+.pCalendarBtn .ui-button {
     background-color: #c53e3e !important;
     border: 1px solid #C53E3D !important;
 }
@@ -226,6 +226,7 @@ body .ui-datepicker table td>a.ui-state-active:hover {
 
 
 /*Header */
+
 #header {
     font-family: Verdana !important;
 }
@@ -243,8 +244,8 @@ body .ui-datepicker table td>a.ui-state-active:hover {
 }
 
 #header .logo-img {
-    width: 200px; 
-    height: auto; 
+    width: 200px;
+    height: auto;
     margin: auto
 }
 
@@ -300,7 +301,10 @@ body .ui-datepicker table td>a.ui-state-active:hover {
 #header .header-left.indHeader span {
     width: 145px !important;
 }
+
+
 /*Header End */
+
 
 /*Footer */
 
@@ -348,16 +352,21 @@ footer table:first-child tr td {
 }
 
 footer {
-    height:175px;
-    background-color:#c5d3e5
+    height: 175px;
+    background-color: #c5d3e5
 }
+
 footer table:last-child {
     margin-top: 8px !important;
-} 
+}
+
 footer table:last-child tr td {
     padding: 5px;
 }
+
+
 /*Footer End */
+
 
 /*Content*/
 
@@ -659,7 +668,7 @@ figure {
 #appendix.col4 table tr th:first-child,
 #appendix.col4 table tr td:first-child,
 .col4 #appendix table tr th:first-child,
-.col4 #appendix table tr td:first-child  {
+.col4 #appendix table tr td:first-child {
     width: 18%;
 }
 
@@ -669,6 +678,7 @@ figure {
 .col4 #appendix table tr td:nth-child(2) {
     width: 17%;
 }
+
 #appendix.col4 table tr th:last-child,
 #appendix.col4 table tr td:last-child,
 .col4 #appendix table tr th:last-child,
@@ -693,7 +703,7 @@ figure {
 #appendix.col5 table tr th:first-child,
 #appendix.col5 table tr td:first-child,
 .col5 #appendix table tr th:first-child,
-.col5 #appendix table tr td:first-child  {
+.col5 #appendix table tr td:first-child {
     width: 18%;
 }
 
@@ -724,7 +734,6 @@ figure {
 
 
 /*Content End*/
-
 
 .ck-reset_all.ck-body.ck-rounded-corners+.ui-dialog-resizable,
 .ck-reset_all.ck-body.ck-rounded-corners~.ui-widget-overlay~.ui-dialog-resizable,
@@ -871,6 +880,8 @@ button.ui-datepicker-trigger.ui-calendar-button span.ui-button-text.ui-clickable
 .ui-multiselect-item {
     font-size: 12px !important;
 }
+
+
 /* 
 body {
     font-size: 13px !important;

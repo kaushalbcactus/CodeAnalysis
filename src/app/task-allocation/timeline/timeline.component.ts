@@ -323,7 +323,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       const milestonesList = [];
 
       for (const mil of arrMilestones) {
-        const milestone = milestones.find(e => e.Title === mil);
+        const milestone = milestones.find(e => e.Title === mil && e.Status !== 'Deleted');
         milestonesList.push(milestone);
       }
       milestones = milestonesList;
