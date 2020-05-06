@@ -114,7 +114,7 @@
                                 <th>TAT</th>
                                 <th>Start Date</th>
                                 <th>End Date</th>
-                                <th>Deviation</th>
+                                <!-- <th>Deviation</th> -->
                                 <th>Assigned</th>
                             </tr>
                         </ng-template>
@@ -154,7 +154,7 @@
                                         [showIcon]="true" [monthNavigator]="true"   [yearNavigator]="true"   yearRange="{{yearRange}}" [disabled]="rowData.isEndDateDisabled" [minDate]="rowData.minEndDateValue" (onSelect)="onEndDateChanged(rowData)">
                                     </p-calendar>
                                 </td>
-                                <td>{{rowData.Deviation}}</td>
+                                <!-- <td>{{rowData.Deviation}}</td> -->
                                 <td *ngIf="!rowData.showHyperLink">
                                     <a href="javascript:void(0)" (click)="getUserCapacity(rowData,UserCapacity)">{{rowData.AssignedTo}}</a>
                                 </td>

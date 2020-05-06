@@ -626,7 +626,8 @@ export class StandardprojectComponent implements OnInit {
    */
   private async generateSkillMilestones() {
     this.pmObject.addProject.Timeline.Standard.Milestones = [];
-    let startDate = this.calcBusinessNextDate(new Date(), 1);
+    // let startDate = this.calcBusinessNextDate(new Date(), 1);
+    let startDate: Date;
     if (this.ngStandardProposedStartDate) {
       startDate = this.ngStandardProposedStartDate;
     }
@@ -1757,15 +1758,13 @@ export class StandardprojectComponent implements OnInit {
    */
   private async getMilestoneByType() {
     this.sharedTaskAllocateObj.oMilestones = await this.getStandardMilestone();
-    // if (this.sharedObject.oCapacity.arrUserDetails.length === 0) {
-    //   await this.userCapacity.Onload(data);
-    // }
     await this.getMilestoneTask(this.sharedTaskAllocateObj.oMilestones);
     this.generateSkillMilestones();
 
     $('.standard-spinner-section').hide();
     $('.standardMilestoneByType').show();
   }
+
   /**
    * This method is used to get the particular user capacity based on task start and end date.
    * @param milestoneName Provide the milestone.
@@ -1922,7 +1921,7 @@ export class StandardprojectComponent implements OnInit {
       });
       return false;
     }
-    if (this.selectedSkillObject.value.userType === 'Type') {
+    // if (this.selectedSkillObject.value.userType === 'Type') {
       if (!this.ngStandardProposedStartDate) {
         this.messageService.add({
           key: 'custom', severity: 'error',
@@ -1930,7 +1929,7 @@ export class StandardprojectComponent implements OnInit {
         });
         return false;
       }
-    }
+    // }
     if (!this.standardProjectBudgetHrs) {
       this.messageService.add({
         key: 'custom', severity: 'error',
@@ -2046,7 +2045,7 @@ export class StandardprojectComponent implements OnInit {
       this.pmObject.addProject.Timeline.Standard.standardArray = this.standardFiles;
       this.pmObject.addProject.FinanceManagement.BudgetHours = this.pmObject.addProject.Timeline.Standard.StandardProjectBugetHours;
       // await this.pmCommonService.validateAndSave();
-      // new code by maxwell file upload progress bar 
+      // new code by maxwell file upload progress bar
 
       this.pmObject.isMainLoaderHidden = false;
       const newProjectCode = await this.pmCommonService.verifyAndUpdateProjectCode();
