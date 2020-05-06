@@ -968,7 +968,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         })
       } else {
         milestones.forEach((m) => {
-          if (item.milestone === m.title) {
+          if (item.milestone === m.title.replace(' (Current)', '') || item.milestone === m.title) {
             item.parent = m.id;
           }
         })
@@ -1007,21 +1007,24 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
               "type": 0,
             })
           }
-          if (e.type == 'task' && e.itemType == 'Client Review') {
-            milestones.forEach((m) => {
-              if ((e.milestone === m.title.replace(' (Current)', '') || e.milestone === m.title) && !(this.linkArray.find(e => e.name == m.title))) {
-                this.linkArray.push({
-                  "name": m.title,
-                  "source": m.id,
-                  "target": e.id,
-                  "nextTask": e.nextTask,
-                  "type": 0,
-                })
-              }
-            })
-          }
         })
       }
+    })
+
+    let tasks = data.filter(e => e.itemType == "Client Review")
+
+    tasks.forEach((task) => {
+      milestones.forEach((m) => {
+        if ((task.milestone === m.title.replace(' (Current)', '') || task.milestone === m.title) && !(this.linkArray.find(e => e.name == m.title))) {
+          this.linkArray.push({
+            "name": m.title,
+            "source": m.id,
+            "target": task.id,
+            "nextTask": task.nextTask,
+            "type": 0,
+          })
+        }
+      })
     })
 
     data.forEach((item, index) => {
@@ -1051,7 +1054,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   fetchTask(task) {
     if (task.nextTask) {
-      const nextTaskVal = task.nextTask.replace(/#/gi,'');
+      const nextTaskVal = task.nextTask.replace(/#/gi, '');
       const arrayNext = nextTaskVal.split(';');
       return this.GanttchartData.filter(e => arrayNext.indexOf(e.title) > -1);
     } else {
