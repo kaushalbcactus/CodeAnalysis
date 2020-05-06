@@ -25,8 +25,8 @@ body .p-grid .ui-overlaypanel-shifted:after,
   margin-left: -10px !important;
 }
 .overlayIconGantt {
-  margin-right: 35px!important;
-  margin-top: 15px!important;
+  margin-left: 10px!important;
+  cursor: pointer;
 }
 .ui-overlaypanel-close {
   background-color: #db1721 !important;
