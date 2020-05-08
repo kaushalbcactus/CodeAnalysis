@@ -1119,7 +1119,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             }
         }
         else {
-            console.log('proforma html is null');
+            this.messageService.add({ key: 'outstandingSuccessToast', severity: 'error', summary: 'Error Message', detail:'Unable to generate invoice for '+ lineItem.InvoiceNumber +', proforma html not found.', life: 20000 });
             this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
         }
 
