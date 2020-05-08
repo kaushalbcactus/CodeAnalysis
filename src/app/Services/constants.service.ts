@@ -410,7 +410,9 @@ export class ConstantsService {
     AUTO_CLOSED: 'Auto Closed',
     COMPLETED: 'Completed',
     AUTHOR_REVIEW : 'Author Review',
-    UNALLOCATED:'Unallocated'
+    UNALLOCATED:'Unallocated',
+    SENTTOAP:'Sent to AP',
+    GENERATED: 'Generated'
   };
   public SKILL_LEVEL = {
     WRITER: 'Writer',

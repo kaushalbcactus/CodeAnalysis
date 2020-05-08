@@ -365,7 +365,15 @@ export class NonStandardprojectComponent implements OnInit {
     }
   }
   async nonStandardConfirm() {
-    const isValid = this.validateRequiredField();
+    let  isValid = this.validateRequiredField();
+
+    if(this.pmObject.addProject.FinanceManagement.selectedFile && this.pmObject.addProject.FinanceManagement.selectedFile.size === 0 ){
+      this.messageService.add({
+        key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
+        detail: 'Unable to upload file, size of ' + this.pmObject.addProject.FinanceManagement.selectedFile.name + ' is 0 KB.'
+      });
+      isValid = false;
+    }
     if (isValid) {
       this.disableField();
       this.pmObject.addProject.Timeline.NonStandard.IsStandard = true;
