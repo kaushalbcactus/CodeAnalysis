@@ -507,26 +507,38 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       }
       const readers = [];
       let bUpload = true;
+      let filesizeerror = false;
       event.files.forEach(async element => {
 
-        let file = element;
-        let filename = element.name;
-        const sNewFileName = filename.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
-        if (filename !== sNewFileName) {
+        if(element.size > 0){
+          let file = element;
+          let filename = element.name;
+          const sNewFileName = filename.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
+          if (filename !== sNewFileName) {
+            bUpload = false;
+            return;
+          }
+          if (existingFiles.includes(element.name.toLowerCase())) {
+            filename = filename.split(/\.(?=[^\.]+$)/)[0] + '.' + this.datePipe.transform(new Date(),
+              'ddMMyyyyhhmmss') + '.' + filename.split(/\.(?=[^\.]+$)/)[1];
+          }
+          const fileObj = {
+            file: file,
+            name: filename
+          };
+  
+          readers.push(fileObj);
+          existingFiles.push(filename.toLowerCase());
+        }
+        else{
+          filesizeerror = true;
           bUpload = false;
+          this.messageService.add({
+            key: 'custom', severity: 'info',
+            summary: 'Info Message', detail: element.name + ' file size should be greater than 0 KB.'
+          });
           return;
         }
-        if (existingFiles.includes(element.name.toLowerCase())) {
-          filename = filename.split(/\.(?=[^\.]+$)/)[0] + '.' + this.datePipe.transform(new Date(),
-            'ddMMyyyyhhmmss') + '.' + filename.split(/\.(?=[^\.]+$)/)[1];
-        }
-        const fileObj = {
-          file: file,
-          name: filename
-        };
-
-        readers.push(fileObj);
-        existingFiles.push(filename.toLowerCase());
       });
       if (bUpload) {
         const ref = this.dialogService.open(FileUploadProgressDialogComponent, {
@@ -558,11 +570,13 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
           }
         });
       } else {
-        this.messageService.add({
-          key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
-          // tslint:disable-next-line: max-line-length
-          detail: 'There are certain files with special characters. Please rename them. List of special characters ~ # % & * { } \ : / + < > ? " @ \''
-        });
+        if(!filesizeerror){
+          this.messageService.add({
+            key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
+            // tslint:disable-next-line: max-line-length
+            detail: 'There are certain files with special characters. Please rename them. List of special characters ~ # % & * { } \ : / + < > ? " @ \''
+          });
+        }
       }
     }
   }

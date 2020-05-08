@@ -3062,10 +3062,17 @@ export class EditorComponent implements OnInit {
     updateDays(id: string) {
 
         if (this.SelectedJapanDays > 0) {
-            this.editJapanPayment = false;
-            document.getElementById(id).querySelector('span').innerText = this.SelectedJapanDays;
+            if (Math.floor(this.SelectedJapanDays) !== this.SelectedJapanDays) {
+                this.messageService.add({ key: 'editToast', severity: 'info', summary: 'Info message', detail: 'Payment days allowd only numeric value, decimal point not allowed.', life: 4000 });
+                return false;
+            }
+            else {
+                this.editJapanPayment = false;
+                document.getElementById(id).querySelector('span').innerText = this.SelectedJapanDays;
+            }
         }
         else {
+
             this.messageService.add({ key: 'editToast', severity: 'info', summary: 'Info message', detail: 'Payment days should be greater than 0', life: 4000 });
             return false;
 

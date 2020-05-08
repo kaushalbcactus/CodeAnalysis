@@ -35,7 +35,6 @@ export class FileUploadProgressDialogComponent implements OnInit {
     let uploadedFiles =[];
     const fSExt = new Array('Bytes', 'KB', 'MB', 'GB');
     for (let index = 0; index < this.Files.length; index++) {
-
       const size = this.Files[index].file.size;
 
       if (size < 1000) {
@@ -58,10 +57,7 @@ export class FileUploadProgressDialogComponent implements OnInit {
       }));
       this.fileUpload(this.Files[index].file, this.config.data.libraryName, this.Files[index].name, this.overwrite).then(uploadedFile => {
         Fileuploadcount++;
-        
-
         uploadedFiles.push(uploadedFile)
-
         if (Fileuploadcount === this.Files.length) {
            this.dialogref.close(uploadedFiles);
         }

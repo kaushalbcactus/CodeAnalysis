@@ -487,8 +487,7 @@ export class PmconstantService {
       filter: 'ProjectNumber eq \'{{projectCode}}\' and Status eq \'Active\''
     },
     INVOICE_LINE_ITEMS_BY_PROJECTCODE: {
-      select: 'ID, Title, ScheduledDate,Amount, Currency, PO, MainPOC, AddressType, SOWCode, ScheduleType, Status, ProformaLookup,'
-        + ' InvoiceLookup',
+      select: 'ID, Title, ScheduledDate,Amount, Currency, PO, MainPOC, AddressType, SOWCode, ScheduleType, Status, ProformaLookup,InvoiceLookup',
       filter: 'Title eq \'{{projectCode}}\' and Status ne \'Deleted\'',
       orderby: 'ScheduledDate'
     },
@@ -499,7 +498,7 @@ export class PmconstantService {
       top: 1
     },
     ADV_INVOICES: {
-      select: 'ID, ClientLegalEntity, Amount, AddressType, InvoiceNumber, PO, ProformaLookup, IsTaggedFully, TaggedAmount,'
+      select: 'ID, ClientLegalEntity, Amount, AddressType, InvoiceNumber, PO, ProformaLookup, IsTaggedFully, TaggedAmount,AuxiliaryInvoiceName'
         + ' InvoiceDate, MainPOC, FileURL',
       filter: 'ClientLegalEntity eq \'{{clientLegalEntity}}\' and IsTaggedFully eq \'No\'',
       top: 4500
@@ -549,7 +548,7 @@ export class PmconstantService {
       top: 4900
     },
     INVOICES_BY_INVOICELOOKUP: {
-      select: 'ID, Title, FileURL, InvoiceNumber',
+      select: 'ID, Title, FileURL, InvoiceNumber,AuxiliaryInvoiceName',
       filter: 'ID eq \'{{invoiceLookup}}\''
     },
     PROFORMA_BY_PROFORMALOOKUP: {

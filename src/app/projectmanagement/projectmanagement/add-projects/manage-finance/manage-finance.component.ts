@@ -890,9 +890,11 @@ export class ManageFinanceComponent implements OnInit {
       });
       return;
     }
+    debugger;
     const tempPOObj = $.extend(true, {}, this.poAddObj);
     tempPOObj.poId = this.selectedPo;
     tempPOObj.inv_number = oInv.InvoiceNumber;
+    tempPOObj.auxiliaryInvoiceName = oInv.AuxiliaryInvoiceName;
     tempPOObj.prf_number = '';
     tempPOObj.invUrl = oInv.FileURL;
     tempPOObj.prfUrl = '';
@@ -1319,6 +1321,7 @@ export class ManageFinanceComponent implements OnInit {
 
       this.existBudgetArray = result[0];
       this.existPOArray = result[1];
+      debugger;
       this.existPOInvoiceArray = result[2];
       this.existPBBBudgetArray = result[3];
       await this.getInitData(projObj.ProjectCode, projObj.ClientLegalEntity,
@@ -1421,11 +1424,15 @@ export class ManageFinanceComponent implements OnInit {
           invoiceObj.Id = invoiceItem.ID;
           invoiceObj.lineitemCount = "lineitem" + count++;
           invoiceObj.poId = invoiceItem.PO;
+
+          debugger;
           invoiceObj.inv_number = invoiceNumber && invoiceNumber.length && invoiceNumber[0].retItems && invoiceNumber[0].retItems.length
             ? invoiceNumber[0].retItems[0].InvoiceNumber : '';
           if (invoiceObj.inv_number) {
             invoiceObj.invUrl = invoiceNumber && invoiceNumber.length && invoiceNumber[0].retItems && invoiceNumber[0].retItems.length
               ? invoiceNumber[0].retItems[0].FileURL : '';
+            invoiceObj.auxiliaryInvoiceName =invoiceNumber && invoiceNumber.length && invoiceNumber[0].retItems && invoiceNumber[0].retItems.length
+            ? invoiceNumber[0].retItems[0].AuxiliaryInvoiceName : '';
           }
           invoiceObj.prf_number = proformaNumber && proformaNumber.length && proformaNumber[0].retItems && proformaNumber[0].retItems.length
             ? proformaNumber[0].retItems[0].Title : '';

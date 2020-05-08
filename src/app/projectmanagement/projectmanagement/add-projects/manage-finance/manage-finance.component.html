@@ -189,11 +189,11 @@
                                 <tr>
                                     <td>
                                         <span *ngIf="rowData.inv_number && rowData.invUrl">
-                      <a [href]="rowData.invUrl" target="_blank"> {{rowData.inv_number}}</a>
-                    </span>
+                      <a [href]="rowData.invUrl" target="_blank"> {{rowData.inv_number}} <span *ngIf="rowData.auxiliaryInvoiceName"> -  {{rowData.auxiliaryInvoiceName}}</span></a>
+                                        </span>
                                         <span *ngIf="rowData.inv_number && !rowData.invUrl">
-                      {{rowData.inv_number}}
-                    </span>
+                      {{rowData.inv_number}}  <span *ngIf="rowData.auxiliaryInvoiceName"> - {{rowData.auxiliaryInvoiceName}}</span>
+                                        </span>
                                     </td>
                                     <td>
                                         <span *ngIf="rowData.prf_number && rowData.prfUrl">

@@ -32,7 +32,7 @@
                         <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'InvoiceStatus'" [options]="outInvoiceColArray.InvoiceStatus" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="pi.filter($event.value, col.field, 'in')"
                             (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'DisplayInvoiceWithAuxiliary'" [options]="outInvoiceColArray.InvoiceNumber" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="pi.filter($event.value, col.field, 'in')"
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'DisplayInvoiceWithAuxiliary'" [options]="outInvoiceColArray.DisplayInvoiceWithAuxiliary" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="pi.filter($event.value, col.field, 'in')"
                             (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'PONumber'" [options]="outInvoiceColArray.PONumber" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="pi.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"

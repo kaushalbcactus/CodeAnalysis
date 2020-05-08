@@ -78,6 +78,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     SelectedFile: any;
     FolderName: string;
     editAuxiliary = false;
+    DisplayInvoiceWithAuxiliaryArray = [];
 
     constructor(
         private confirmationService: ConfirmationService,
@@ -322,9 +323,12 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         const res = await this.spServices.readItems(this.constantService.listNames.OutInvoices.name, outInvObj);
         const arrResults = res.length ? res : [];
         this.formatData(arrResults);
-        this.isPSInnerLoaderHidden = true;
-        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
         this.setCurrentPage(0);
+
+        setTimeout(() => {
+            this.isPSInnerLoaderHidden = true;
+            this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
+        }, 300);
 
     }
 
@@ -375,8 +379,11 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             });
         }
         this.outstandingInvoicesRes = [...this.outstandingInvoicesRes];
-        this.isPSInnerLoaderHidden = true;
         this.createColFieldValues(this.outstandingInvoicesRes);
+        if (this.outInvTable.filteredValue && this.outInvTable.filters.DisplayInvoiceWithAuxiliary) {
+            this.DisplayInvoiceWithAuxiliaryArray = this.outstandingInvoicesRes.filter(c => this.outInvTable.filters.DisplayInvoiceWithAuxiliary.value.includes(c.DisplayInvoiceWithAuxiliary)) ? this.outstandingInvoicesRes.filter(c => this.outInvTable.filters.DisplayInvoiceWithAuxiliary.value.includes(c.DisplayInvoiceWithAuxiliary)).map(c => c.DisplayInvoiceWithAuxiliary) : [];
+            this.outInvTable.filter(this.DisplayInvoiceWithAuxiliaryArray, 'DisplayInvoiceWithAuxiliary', 'in')
+        }
     }
 
     // Project PO
@@ -409,7 +416,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     outInvoiceColArray = {
         ClientLegalEntity: [],
         InvoiceStatus: [],
-        InvoiceNumber: [],
+        DisplayInvoiceWithAuxiliary: [],
         PONumber: [],
         POName: [],
         InvoiceDate: [],
@@ -422,7 +429,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     createColFieldValues(resArray) {
         this.outInvoiceColArray.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
         this.outInvoiceColArray.InvoiceStatus = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.InvoiceStatus, value: a.InvoiceStatus }; return b; }).filter(ele => ele.label)));
-        this.outInvoiceColArray.InvoiceNumber = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.DisplayInvoiceWithAuxiliary, value: a.DisplayInvoiceWithAuxiliary }; return b; }).filter(ele => ele.label)));
+        this.outInvoiceColArray.DisplayInvoiceWithAuxiliary = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.DisplayInvoiceWithAuxiliary, value: a.DisplayInvoiceWithAuxiliary }; return b; }).filter(ele => ele.label)));
         this.outInvoiceColArray.PONumber = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }).filter(ele => ele.label)));
         this.outInvoiceColArray.POName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POName, value: a.POName }; return b; }).filter(ele => ele.label)));
         this.outInvoiceColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
@@ -433,6 +440,9 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         const amount = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }).filter(ele => ele.label));
         this.outInvoiceColArray.Amount = this.fdDataShareServie.customSort(amount, 1, 'label');
     }
+
+
+
 
     uniqueArrayObj(array: any) {
         let sts: any = '';
@@ -497,11 +507,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             }
             case 'dispute': {
                 this.items = [
-                    // { label: 'Export Invoice', command: (e) => this.openMenuContent(e, data) },
-                    { label: 'Mark as Payment Resolved', command: (e) => this.openMenuContent(e, data) },
-                    // { label: 'Dispute Invoice', command: (e) => this.openMenuContent(e, data) },
-                    // { label: 'Mark as Debit/Credit Note', command: (e) => this.openMenuContent(e, data) },
-                ]
+                    { label: 'Mark as Payment Resolved', command: (e) => this.openMenuContent(e, data) }]
                 break;
             }
             default: {
@@ -509,6 +515,10 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 break;
             }
         }
+        if (!data.FileURL && data.ProformaLookup && (data.Template === 'US' || data.Template === 'India' || data.Template === 'Japan')) {
+            this.items.push({ label: 'Regenerate Invoice', command: (e) => this.openMenuContent(e, data) });
+        }
+
         this.items.push(
             { label: 'Details', command: (e) => this.openMenuContent(e, data) },
             { label: 'Show History', command: (e) => this.openMenuContent(e, data) },
@@ -612,8 +622,10 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
 
             this.SelectedAuxInvoiceName = this.selectedRowItem.AuxiliaryInvoiceName;
             this.editAuxiliary = true;
-
+        } else if (this.confirmDialog.title === 'Regenerate Invoice') {
+            this.generateExistingInvoice(data);
         }
+
     }
 
     setAppendixCol(sContent) {
@@ -720,7 +732,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
 
         this.commonService.UploadFilesProgress(this.SelectedFile, this.FolderName, true).then(async uploadedfile => {
             if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
-                if (uploadedfile[0].hasOwnProperty('odata.error')  || uploadedfile[0].hasError) {
+                if (uploadedfile[0].hasOwnProperty('odata.error') || uploadedfile[0].hasError) {
                     this.submitBtn.isClicked = false;
                     this.messageService.add({
                         key: 'outstandingInfoToast', severity: 'error', summary: 'Error message',
@@ -758,144 +770,6 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             }
         });
     }
-
-    //*************************************************************************************************
-    // commented old file upload function
-    // ************************************************************************************************
-
-
-    // // selectedFile: any;
-    // filePathUrl: any;
-    // // fileReader: any;
-    // onFilePaymentChange(event, folderName) {
-    //     console.log("Event ", event);
-    //     this.fileReader = new FileReader();
-    //     if (event.target.files && event.target.files.length > 0) {
-    //         this.selectedFile = event.target.files[0];
-    //         const fileName = this.selectedFile.name;
-    //         const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
-    //         if (fileName !== sNewFileName) {
-    //             this.replaceInvoiceFile.nativeElement.value = '';
-    //             this.paymentResoved_form.get('file').setValue('');
-    //             this.messageService.add({ key: 'outstandingInfoToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
-    //             return false;
-    //         }
-    //         this.fileReader.readAsArrayBuffer(this.selectedFile);
-    //         this.fileReader.onload = () => {
-    //             let folderPath: string = '/Finance/Invoice/' + folderName + '/';
-    //             let cleListName = this.globalService.sharePointPageObject.webRelativeUrl + '/' + this.getCLEListNameFromCLE(this.selectedRowItem.ClientLegalEntity);
-    //             this.filePathUrl = this.globalService.sharePointPageObject.webRelativeUrl + "/_api/web/GetFolderByServerRelativeUrl(" + "'" + cleListName + '' + folderPath + "'" + ")/Files/add(url=@TargetFileName,overwrite='true')?" +
-    //                 "&@TargetFileName='" + this.selectedFile.name + "'";
-    //         };
-    //     }
-    // }
-
-    // // Replace File
-    // selectedFile: any;
-    // FilePathUrl: any;
-    // fileReader: any;
-    // onFileChange(event) {
-    //     let existingFile = this.selectedRowItem.FileURL ? this.selectedRowItem.FileURL.split('/') : [];
-    //     if (existingFile.length) {
-    //         let file = existingFile[existingFile.length - 1];
-    //         // let fileName = file.substr(0, file.indexOf('.'));
-    //         console.log('fileName  ', file);
-    //         if (file === event.target.files[0].name) {
-    //             this.messageService.add({ key: 'outstandingInfoToast', severity: 'info', summary: 'Info message', detail: 'This file name already exit.Please select another file name.', life: 4000 });
-    //             this.replaceInvoice_form.reset();
-    //             return;
-    //         }
-    //     }
-    //     this.fileReader = new FileReader();
-    //     if (event.target.files && event.target.files.length > 0) {
-    //         this.selectedFile = event.target.files[0];
-    //         const fileName = this.selectedFile.name;
-    //         const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
-    //         if (fileName !== sNewFileName) {
-    //             this.replaceInvoiceFile.nativeElement.value = '';
-    //             this.replaceInvoice_form.get('file').setValue('');
-    //             this.messageService.add({ key: 'outstandingInfoToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
-    //             return false;
-    //         }
-    //         this.fileReader.readAsArrayBuffer(this.selectedFile);
-    //         this.fileReader.onload = () => {
-    //             let folderPath: string = '/Finance/Invoice/Client/';
-    //             let cleListName = this.getCLEListNameFromCLE(this.selectedRowItem.ClientLegalEntity);
-    //             this.filePathUrl = this.spServices.getFileUploadUrl(this.globalService.sharePointPageObject.webRelativeUrl + '/' + cleListName + folderPath, this.selectedFile.name, true);
-    //         };
-    //     }
-    // }
-
-    // async uploadFileData() {
-    //     const batchUrl = [];
-    //     this.commonService.SetNewrelic('Finance-Dashboard', 'outstanding-invoices', 'uploadFile');
-    //     const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
-    //     // console.log('selectedFile uploaded .', res.ServerRelativeUrl);
-    //     if (res) {
-    //         // let fileUrl = res.ServerRelativeUrl ? res.ServerRelativeUrl : '';
-    //         const invData = {
-    //             FileURL: res.ServerRelativeUrl ? res.ServerRelativeUrl : '',
-    //             InvoiceHtml: null
-    //         }
-    //         invData['__metadata'] = { type: this.constantService.listNames.Invoices.type };
-    //         // const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoice.update.replace("{{Id}}", this.selectedRowItem.Id);
-    //         // let data = [
-    //         //     {
-    //         //         objData: obj,
-    //         //         endpoint: endpoint,
-    //         //         requestPost: false
-    //         //     }
-    //         // ];
-    //         const invObj = Object.assign({}, this.queryConfig);
-    //         invObj.url = this.spServices.getItemURL(this.constantService.listNames.Invoices.name, +this.selectedRowItem.Id);
-    //         invObj.listName = this.constantService.listNames.Invoices.name;
-    //         invObj.type = 'PATCH';
-    //         invObj.data = invData;
-    //         batchUrl.push(invObj);
-    //         this.submitForm(batchUrl, 'replaceInvoice');
-    //     } else if (res.hasError) {
-    //         this.isPSInnerLoaderHidden = true;
-    //         this.messageService.add({
-    //             key: 'outstandingInfoToast', severity: 'info', summary: 'Info message',
-    //             detail: 'File not uploaded,folder / ' + res.message.value + '', life: 3000
-    //         });
-    //     }
-    // }
-
-    // async uploadPaymentFileData(type: string) {
-    //     this.commonService.SetNewrelic('Finance-Dashboard', 'outstanding-invoices-payment-resolved', 'uploadFile');
-    //     const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
-    //     const batchUrl = [];
-    //     // console.log('selectedFile uploaded .', res.ServerRelativeUrl);
-    //     if (res) {
-    //         // console.log('selectedFile uploaded .', res.ServerRelativeUrl);
-    //         const invData = {
-    //             Status: 'Paid',
-    //             PaymentURL: res.ServerRelativeUrl ? res.ServerRelativeUrl : ''
-    //         };
-    //         invData['__metadata'] = { type: this.constantService.listNames.Invoices.type };
-    //         // const endpoint2 = this.fdConstantsService.fdComponent.addUpdateInvoice.update.replace("{{Id}}", this.selectedRowItem.Id);
-    //         // let data = [
-    //         //     {
-    //         //         objData: obj2,
-    //         //         endpoint: endpoint2,
-    //         //         requestPost: false
-    //         //     }]
-    //         const invObj = Object.assign({}, this.queryConfig);
-    //         invObj.url = this.spServices.getItemURL(this.constantService.listNames.Invoices.name, +this.selectedRowItem.Id);
-    //         invObj.listName = this.constantService.listNames.Invoices.name;
-    //         invObj.type = 'PATCH';
-    //         invObj.data = invData;
-    //         batchUrl.push(invObj);
-    //         this.submitForm(batchUrl, type);
-    //     } else if (res.hasError) {
-    //         this.isPSInnerLoaderHidden = true;
-    //         this.messageService.add({
-    //             key: 'outstandingInfoToast', severity: 'info', summary: 'Info message',
-    //             detail: 'File not uploaded,folder / ' + res.message.value + '', life: 3000
-    //         });
-    //     }
-    // }
 
     cancelFormSub(formType) {
         if (formType === 'paymentResoved') {
@@ -1004,7 +878,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 return false;
             }
             else {
-                this.editAuxiliary= false;
+                this.editAuxiliary = false;
                 this.isPSInnerLoaderHidden = false;
                 this.submitBtn.isClicked = true;
                 const invObj = Object.assign({}, this.queryConfig);
@@ -1119,9 +993,11 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message',
                 detail: 'Auxiliary Name for ' + this.selectedRowItem.InvoiceNumber + ' ' + ' updated sucessfully.', life: 20000
             });
+            this.formSubmit.isSubmit = false;
+            this.submitBtn.isClicked = false;
             this.reFetchData();
         }
-        this.isPSInnerLoaderHidden = true;
+
         // });
     }
 
@@ -1191,6 +1067,39 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             }
         }
         this.cdr.detectChanges();
+    }
+
+
+    //*************************************************************************************************
+    // regenerate invoice for line item  
+    // ************************************************************************************************
+
+
+    async  generateExistingInvoice(lineItem) {
+
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
+        const prfObj = Object.assign({}, this.fdConstantsService.fdComponent.proformaForUser);
+        prfObj.filter = prfObj.filter.replace('{{ItemID}}', lineItem.ProformaLookup);
+        this.commonService.SetNewrelic('Finance-Dashboard', 'outstanding-invoices', 'generateExistingInvoice');
+        const res = await this.spServices.readItems(this.constantService.listNames.Proforma.name, prfObj);
+        const proforma = res.length ? res[0] : [];
+        if (proforma.ProformaHtml) {
+            proforma.ProformaNumber = proforma.Title;
+            const response = await this.fdDataShareServie.createInvoice(proforma.ProformaHtml, proforma, lineItem, this.cleData);
+            if (response) {
+                this.reFetchData();
+                this.messageService.add({ key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message', detail: lineItem.InvoiceNumber + 'created sucessfully.', life: 20000 });
+            }
+            else {
+                console.log('Json parse Issue');
+                this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
+            }
+        }
+        else {
+            console.log('proforma html is null');
+            this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
+        }
+
     }
 
 

@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, OnDestroy, HostListener, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
-import { Message, ConfirmationService, MessageService } from 'primeng/api';
+import { Message, MessageService } from 'primeng/api';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -76,8 +76,8 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
     // List of Subscribers 
     private subscription: Subscription = new Subscription();
 
+
     constructor(
-        private confirmationService: ConfirmationService,
         private fb: FormBuilder,
         private globalService: GlobalService,
         private spServices: SPOperationService,
@@ -461,7 +461,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
 
     outInvoiceColArray = {
         InvoiceStatus: [],
-        InvoiceNumber: [],
+        DisplayInvoiceWithAuxiliary: [],
         PONumber: [],
         POValues: [],
         ClientLegalEntity: [],
@@ -474,7 +474,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
 
     createColFieldValues(resArray) {
         // this.outInvoiceColArray.InvoiceStatus = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.InvoiceStatus, value: a.InvoiceStatus }; return b; }).filter(ele => ele.label));
-        this.outInvoiceColArray.InvoiceNumber = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.DisplayInvoiceWithAuxiliary, value: a.DisplayInvoiceWithAuxiliary }; return b; }).filter(ele => ele.label)));
+        this.outInvoiceColArray.DisplayInvoiceWithAuxiliary = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.DisplayInvoiceWithAuxiliary, value: a.DisplayInvoiceWithAuxiliary }; return b; }).filter(ele => ele.label)));
         // this.outInvoiceColArray.PONumber this.commonService.sortData(= this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }).filter(ele => ele.label)));
         this.outInvoiceColArray.POValues = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POValues, value: a.POValues }; return b; }).filter(ele => ele.label)));
         this.outInvoiceColArray.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
