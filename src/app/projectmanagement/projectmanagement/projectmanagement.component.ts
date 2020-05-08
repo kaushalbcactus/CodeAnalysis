@@ -1081,6 +1081,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     if (this.addAdditionalBudgetForm.valid) {
       this.pmObject.isSOWFormSubmit = false;
       // get the budget from SOW list based on SOWID.
+      debugger;
       if (!this.selectedFile) {
         this.messageService.add({
           key: 'custom', severity: 'error',
@@ -1115,15 +1116,18 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
         return;
       }
       if (this.selectedFile) {
+        this.pmObject.isMainLoaderHidden = true;
         this.getFileAndFolderName();
         this.commonService.SetNewrelic('ProjectManagement', 'projectmanagement-AddAditionBudget', 'uploadFile');
         this.commonService.UploadFilesProgress(this.SelectedFile,this.FolderName, true).then(async uploadedfile => {
+         debugger;
           if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
             if (uploadedfile[0].hasOwnProperty('ServerRelativeUrl') && uploadedfile[0].hasOwnProperty('Name')) {
               this.pmObject.addSOW.SOWFileURL = uploadedfile[0].ServerRelativeUrl;
               this.pmObject.addSOW.SOWFileName = uploadedfile[0].Name;
               this.pmObject.addSOW.SOWDocProperties = uploadedfile;
             }
+            this.pmObject.isMainLoaderHidden = false;
             await this.ContinueAddBudget(today, sowItemResult, currSelectedSOW);
           }
         });

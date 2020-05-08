@@ -266,6 +266,7 @@ export class ManageFinanceComponent implements OnInit {
     sowGet.listName = this.constant.listNames.SOW.name;
     batchURL.push(sowGet);
 
+    debugger;
     // Get Advance Invoices ##2
     const invGet = Object.assign({}, options);
     const invFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.ADV_INVOICES);

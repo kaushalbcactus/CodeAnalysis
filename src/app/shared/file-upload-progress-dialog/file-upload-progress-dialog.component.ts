@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef, MessageService } from 'primeng';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 
@@ -21,6 +21,7 @@ export class FileUploadProgressDialogComponent implements OnInit {
     public dialogref: DynamicDialogRef,
     public globalService: GlobalService,
     public spoperationService: SPOperationService,
+    public messageService: MessageService
   ) { }
 
   ngOnInit() {
@@ -37,34 +38,46 @@ export class FileUploadProgressDialogComponent implements OnInit {
     for (let index = 0; index < this.Files.length; index++) {
       const size = this.Files[index].file.size;
 
-      if (size < 1000) {
-        this.size = size;
-        this.unit = "Bytes";
-      } else if (size < 1000 * 1000) {
-        this.size = size / 1000;
-        this.unit = "KB";
-      } else if (size < 1000 * 1000 * 1000) {
-        this.size = size / 1000 / 1000;
-        this.unit = "MB";
-      } else {
-        this.size = size / 1000 / 1000 / 1000;
-        this.unit = "GB";
+      if(size === 0 ){
+        this.messageService.add({
+          key: 'fileuploadMessage', severity: 'error', summary: 'Error Message', sticky: true,
+          detail: 'Unable to upload file, size of ' + this.Files[index].name + ' is 0 KB.' 
+        });
+        
+
+        this.dialogref.close(uploadedFiles);
       }
-      this.filedisplayArray.push(new Object({
-        fileName: this.Files[index].name,
-        percentage: 0,
-        size: this.size.toFixed(2) + " " + this.unit,
-      }));
-      this.fileUpload(this.Files[index].file, this.config.data.libraryName, this.Files[index].name, this.overwrite).then(uploadedFile => {
-        Fileuploadcount++;
-        uploadedFiles.push(uploadedFile)
-        if (Fileuploadcount === this.Files.length) {
-           this.dialogref.close(uploadedFiles);
+      else{
+        if (size < 1000) {
+          this.size = size;
+          this.unit = "Bytes";
+        } else if (size < 1000 * 1000) {
+          this.size = size / 1000;
+          this.unit = "KB";
+        } else if (size < 1000 * 1000 * 1000) {
+          this.size = size / 1000 / 1000;
+          this.unit = "MB";
+        } else {
+          this.size = size / 1000 / 1000 / 1000;
+          this.unit = "GB";
         }
-      }).catch(error => {
-        console.log("Error while uploading" + error)
-         this.dialogref.close(uploadedFiles);
-      });
+        this.filedisplayArray.push(new Object({
+          fileName: this.Files[index].name,
+          percentage: 0,
+          size: this.size.toFixed(2) + " " + this.unit,
+        }));
+        this.fileUpload(this.Files[index].file, this.config.data.libraryName, this.Files[index].name, this.overwrite).then(uploadedFile => {
+          Fileuploadcount++;
+          uploadedFiles.push(uploadedFile)
+          if (Fileuploadcount === this.Files.length) {
+             this.dialogref.close(uploadedFiles);
+          }
+        }).catch(error => {
+          console.log("Error while uploading" + error)
+           this.dialogref.close(uploadedFiles);
+        });
+      }
+     
     }
   }
 
