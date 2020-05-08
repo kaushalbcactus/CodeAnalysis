@@ -519,10 +519,14 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             this.items.push({ label: 'Regenerate Invoice', command: (e) => this.openMenuContent(e, data) });
         }
 
+        if (data.InvoiceStatus === this.constantService.STATUS.GENERATED || data.InvoiceStatus === this.constantService.STATUS.SENTTOAP) {
+            this.items.push({ label: 'Edit Invoice Number', command: (e) => this.openMenuContent(e, data) })
+        }
+
         this.items.push(
             { label: 'Details', command: (e) => this.openMenuContent(e, data) },
             { label: 'Show History', command: (e) => this.openMenuContent(e, data) },
-            { label: 'Edit Invoice Number', command: (e) => this.openMenuContent(e, data) },
+
         )
         if (this.items.length === 0) {
             console.log('this.items ', this.items);
@@ -811,6 +815,9 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         if (type === 'paymentResoved') {
             if (this.paymentResoved_form.invalid) {
                 return;
+            } else if (this.selectedFile.size === 0) {
+                this.errorMessage();
+                return;
             }
 
             this.submitBtn.isClicked = true;
@@ -840,11 +847,19 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             if (this.replaceInvoice_form.invalid) {
                 return;
             }
+            else if (this.selectedFile.size === 0) {
+                this.errorMessage();
+                return;
+            }
             // console.log('form is submitting ..... & Form data is ', this.replaceInvoice_form.value);
             this.submitBtn.isClicked = true;
             this.uploadFileData(type);
         } else if (type === 'creditDebit') {
             if (this.creditOrDebitNote_form.invalid) {
+                return;
+            }
+            else if (this.selectedFile.size === 0) {
+                this.errorMessage();
                 return;
             }
             this.uploadFileData(type);
@@ -898,6 +913,14 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             }
 
         }
+    }
+
+
+    errorMessage() {
+        this.messageService.add({
+            key: 'outstandingInfoToast', severity: 'error',
+            summary: 'Error message', detail: 'Unable to upload file, size of ' + this.selectedFile.name + ' is 0 KB.', life: 2000
+        });
     }
 
     submitDebitCreditNoteForm(type: string, pathURL) {
@@ -1096,7 +1119,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             }
         }
         else {
-            console.log('proforma html is null');
+            this.messageService.add({ key: 'outstandingSuccessToast', severity: 'error', summary: 'Error Message', detail:'Unable to generate invoice for '+ lineItem.InvoiceNumber +', proforma html not found.', life: 20000 });
             this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
         }
 

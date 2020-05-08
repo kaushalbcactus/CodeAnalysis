@@ -37,17 +37,6 @@ export class FileUploadProgressDialogComponent implements OnInit {
     const fSExt = new Array('Bytes', 'KB', 'MB', 'GB');
     for (let index = 0; index < this.Files.length; index++) {
       const size = this.Files[index].file.size;
-
-      if(size === 0 ){
-        this.messageService.add({
-          key: 'fileuploadMessage', severity: 'error', summary: 'Error Message', sticky: true,
-          detail: 'Unable to upload file, size of ' + this.Files[index].name + ' is 0 KB.' 
-        });
-        
-
-        this.dialogref.close(uploadedFiles);
-      }
-      else{
         if (size < 1000) {
           this.size = size;
           this.unit = "Bytes";
@@ -77,8 +66,6 @@ export class FileUploadProgressDialogComponent implements OnInit {
            this.dialogref.close(uploadedFiles);
         });
       }
-     
-    }
   }
 
 

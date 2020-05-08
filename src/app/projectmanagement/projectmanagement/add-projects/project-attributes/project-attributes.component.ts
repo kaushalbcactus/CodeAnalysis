@@ -550,25 +550,35 @@ export class ProjectAttributesComponent implements OnInit {
    * This method is used to update the project.
    */
   async saveEditProject() {
-    if (this.enableCountFields) {
-      if (this.addProjectAttributesForm.value.ReferenceCount === null || this.addProjectAttributesForm.value.ReferenceCount < 0) {
-        this.CountError = true;
-        this.errorType = 'Reference';
-      }
-      else if (this.addProjectAttributesForm.value.SlideCount === null || this.addProjectAttributesForm.value.SlideCount < 0) {
-        this.CountError = true;
-        this.errorType = 'Slide';
-      }
-      else if (this.addProjectAttributesForm.value.PageCount === null || this.addProjectAttributesForm.value.PageCount < 0) {
-        this.CountError = true;
-        this.errorType = 'Page';
+
+    if (this.selectedFile && this.selectedFile.size === 0) {
+      this.messageService.add({
+        key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
+        detail: 'Unable to upload file, size of ' + this.selectedFile.name + ' is 0 KB.'
+      });
+    }
+    else {
+      if (this.enableCountFields) {
+        if (this.addProjectAttributesForm.value.ReferenceCount === null || this.addProjectAttributesForm.value.ReferenceCount < 0) {
+          this.CountError = true;
+          this.errorType = 'Reference';
+        }
+        else if (this.addProjectAttributesForm.value.SlideCount === null || this.addProjectAttributesForm.value.SlideCount < 0) {
+          this.CountError = true;
+          this.errorType = 'Slide';
+        }
+        else if (this.addProjectAttributesForm.value.PageCount === null || this.addProjectAttributesForm.value.PageCount < 0) {
+          this.CountError = true;
+          this.errorType = 'Page';
+        }
+        else {
+          await this.SaveProject();
+        }
       }
       else {
         await this.SaveProject();
       }
-    }
-    else {
-      await this.SaveProject();
+
     }
 
   }

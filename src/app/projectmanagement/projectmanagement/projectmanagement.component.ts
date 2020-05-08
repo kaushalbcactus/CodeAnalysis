@@ -324,105 +324,115 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    */
   async createSOW() {
 
-    this.pmObject.isSOWFormSubmit = true;
-    if (this.addSowForm.valid) {
-      this.pmObject.isSOWFormSubmit = false;
-      if (!this.selectedFile && !this.pmObject.addSOW.ID) {
-        this.messageService.add({
-          key: 'custom', severity: 'error',
-          summary: 'Error Message', detail: 'Please select SOW document.'
-        });
-        return false;
-      }
-      // get all the value from form.
-      this.pmObject.addSOW.ClientLegalEntity = this.addSowForm.value.clientLegalEntity ? this.addSowForm.value.clientLegalEntity :
-        this.pmObject.addSOW.ClientLegalEntity;
-      this.pmObject.addSOW.SOWCode = this.addSowForm.value.sowCode ? this.addSowForm.value.sowCode + '-SOW' : this.pmObject.addSOW.SOWCode;
-      this.pmObject.addSOW.BillingEntity = this.addSowForm.value.cactusBillingEntity;
-      this.pmObject.addSOW.PracticeArea = this.addSowForm.value.practiceArea;
-      this.pmObject.addSOW.Poc = this.addSowForm.value.poc;
-      this.pmObject.addSOW.PocOptional = this.addSowForm.value.pocOptional;
-      this.pmObject.addSOW.SOWTitle = this.addSowForm.value.sowTitle;
-      this.pmObject.addSOW.SOWCreationDate = this.addSowForm.value.sowCreationDate ? this.addSowForm.value.sowCreationDate :
-        this.pmObject.addSOW.SOWCreationDate;
-      this.pmObject.addSOW.SOWExpiryDate = this.addSowForm.value.sowExpiryDate;
-      if (this.pmObject.addSOW.SOWCreationDate && this.pmObject.addSOW.SOWExpiryDate) {
-        const creationDate = new Date(this.pmObject.addSOW.SOWCreationDate);
-        const expirtyDate = new Date(this.pmObject.addSOW.SOWExpiryDate);
-        if (expirtyDate <= creationDate) {
+    if (this.selectedFile && this.selectedFile.size === 0) {
+      this.messageService.add({
+        key: 'custom', severity: 'error',
+        summary: 'Error Message', detail: 'Unable to upload file, size of ' + this.selectedFile.name + ' is 0 KB.'
+      });
+      return false;
+    }
+    else {
+      this.pmObject.isSOWFormSubmit = true;
+      if (this.addSowForm.valid) {
+        this.pmObject.isSOWFormSubmit = false;
+        if (!this.selectedFile && !this.pmObject.addSOW.ID) {
           this.messageService.add({
             key: 'custom', severity: 'error',
-            summary: 'Error Message', detail: 'SOW expiry date should be greater than sow creation date.'
+            summary: 'Error Message', detail: 'Please select SOW document.'
           });
-          return;
+          return false;
         }
-      }
-     
-      this.pmObject.addSOW.Status = this.addSowForm.value.status ? this.addSowForm.value.status : this.pmObject.addSOW.Status;
-      this.pmObject.addSOW.Comments = this.addSowForm.value.comments;
-      this.pmObject.addSOW.Currency = this.addSowForm.value.currency ? this.addSowForm.value.currency : this.pmObject.addSOW.Currency;
-      this.pmObject.addSOW.Budget.Total = this.addSowForm.value.total;
-      this.pmObject.addSOW.CM1 = this.addSowForm.value.cm;
-      this.pmObject.addSOW.CM2 = this.addSowForm.value.cm2;
-      this.pmObject.addSOW.DeliveryOptional = this.addSowForm.value.deliveryOptional;
-      this.pmObject.addSOW.Delivery = this.addSowForm.value.delivery;
-      this.pmObject.addSOW.SOWOwner = this.addSowForm.value.sowOwner;
-      // Add user to all operation field.
-      this.pmObject.addSOW.AllOperationId.push(this.pmObject.currLoginInfo.Id);
-      if (this.pmObject.addSOW.CM1 && this.pmObject.addSOW.CM1.length) {
-        this.pmObject.addSOW.CM1.forEach(element => {
-          this.pmObject.addSOW.AllOperationId.push(element);
-        });
-      }
-      if (this.pmObject.addSOW.Delivery && this.pmObject.addSOW.Delivery.length) {
-        this.pmObject.addSOW.Delivery.forEach(element => {
-          this.pmObject.addSOW.AllOperationId.push(element);
-        });
-      }
-      this.pmObject.addSOW.AllOperationId.push(this.pmObject.addSOW.SOWOwner);
-      this.pmObject.addSOW.AllOperationId.push(this.pmObject.addSOW.CM2);
-      this.pmObject.addSOW.AllOperationId.push(this.pmObject.addSOW.DeliveryOptional);
-      if (this.selectedFile) {
-        // fileUploadResult = await this.submitFile();
-        // uploadedfile[0].hasOwnProperty('odata.error')
-
-        this.getFileAndFolderName();
-        this.commonService.SetNewrelic('ProjectManagement', 'projectmanagement-CreateSOW', 'uploadFile');
-        this.commonService.UploadFilesProgress(this.SelectedFile, this.FolderName, true).then(async uploadedfile => {
-          this.pmObject.isMainLoaderHidden = false;
-          if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
-            if (uploadedfile[0].hasOwnProperty('ServerRelativeUrl') && uploadedfile[0].hasOwnProperty('Name')) {
-              this.pmObject.addSOW.SOWFileURL = uploadedfile[0].ServerRelativeUrl;
-              this.pmObject.addSOW.SOWFileName = uploadedfile[0].Name;
-              this.pmObject.addSOW.SOWDocProperties = uploadedfile;
-            }
-            this.pmObject.addSOW.isSOWCodeDisabled = false;
-            this.pmObject.addSOW.isStatusDisabled = true;
-            if (!this.pmObject.addSOW.ID) {
-              await this.createUpdateSOW(false, this.pmObject.addSOW);
-            }
-            if (this.pmObject.addSOW.ID) {
-              await this.createUpdateSOW(true, this.pmObject.addSOW);
-            }
-            this.selectedFile = null;
+        // get all the value from form.
+        this.pmObject.addSOW.ClientLegalEntity = this.addSowForm.value.clientLegalEntity ? this.addSowForm.value.clientLegalEntity :
+          this.pmObject.addSOW.ClientLegalEntity;
+        this.pmObject.addSOW.SOWCode = this.addSowForm.value.sowCode ? this.addSowForm.value.sowCode + '-SOW' : this.pmObject.addSOW.SOWCode;
+        this.pmObject.addSOW.BillingEntity = this.addSowForm.value.cactusBillingEntity;
+        this.pmObject.addSOW.PracticeArea = this.addSowForm.value.practiceArea;
+        this.pmObject.addSOW.Poc = this.addSowForm.value.poc;
+        this.pmObject.addSOW.PocOptional = this.addSowForm.value.pocOptional;
+        this.pmObject.addSOW.SOWTitle = this.addSowForm.value.sowTitle;
+        this.pmObject.addSOW.SOWCreationDate = this.addSowForm.value.sowCreationDate ? this.addSowForm.value.sowCreationDate :
+          this.pmObject.addSOW.SOWCreationDate;
+        this.pmObject.addSOW.SOWExpiryDate = this.addSowForm.value.sowExpiryDate;
+        if (this.pmObject.addSOW.SOWCreationDate && this.pmObject.addSOW.SOWExpiryDate) {
+          const creationDate = new Date(this.pmObject.addSOW.SOWCreationDate);
+          const expirtyDate = new Date(this.pmObject.addSOW.SOWExpiryDate);
+          if (expirtyDate <= creationDate) {
+            this.messageService.add({
+              key: 'custom', severity: 'error',
+              summary: 'Error Message', detail: 'SOW expiry date should be greater than sow creation date.'
+            });
+            return;
           }
-        });
-      }
-      else {
-        this.pmObject.isMainLoaderHidden = false;
-        this.pmObject.addSOW.isSOWCodeDisabled = false;
-        this.pmObject.addSOW.isStatusDisabled = true;
-        if (!this.pmObject.addSOW.ID) {
-          await this.createUpdateSOW(false, this.pmObject.addSOW);
         }
-        if (this.pmObject.addSOW.ID) {
-          await this.createUpdateSOW(true, this.pmObject.addSOW);
+
+        this.pmObject.addSOW.Status = this.addSowForm.value.status ? this.addSowForm.value.status : this.pmObject.addSOW.Status;
+        this.pmObject.addSOW.Comments = this.addSowForm.value.comments;
+        this.pmObject.addSOW.Currency = this.addSowForm.value.currency ? this.addSowForm.value.currency : this.pmObject.addSOW.Currency;
+        this.pmObject.addSOW.Budget.Total = this.addSowForm.value.total;
+        this.pmObject.addSOW.CM1 = this.addSowForm.value.cm;
+        this.pmObject.addSOW.CM2 = this.addSowForm.value.cm2;
+        this.pmObject.addSOW.DeliveryOptional = this.addSowForm.value.deliveryOptional;
+        this.pmObject.addSOW.Delivery = this.addSowForm.value.delivery;
+        this.pmObject.addSOW.SOWOwner = this.addSowForm.value.sowOwner;
+        // Add user to all operation field.
+        this.pmObject.addSOW.AllOperationId.push(this.pmObject.currLoginInfo.Id);
+        if (this.pmObject.addSOW.CM1 && this.pmObject.addSOW.CM1.length) {
+          this.pmObject.addSOW.CM1.forEach(element => {
+            this.pmObject.addSOW.AllOperationId.push(element);
+          });
         }
-        this.selectedFile = null;
+        if (this.pmObject.addSOW.Delivery && this.pmObject.addSOW.Delivery.length) {
+          this.pmObject.addSOW.Delivery.forEach(element => {
+            this.pmObject.addSOW.AllOperationId.push(element);
+          });
+        }
+        this.pmObject.addSOW.AllOperationId.push(this.pmObject.addSOW.SOWOwner);
+        this.pmObject.addSOW.AllOperationId.push(this.pmObject.addSOW.CM2);
+        this.pmObject.addSOW.AllOperationId.push(this.pmObject.addSOW.DeliveryOptional);
+        if (this.selectedFile) {
+          // fileUploadResult = await this.submitFile();
+          // uploadedfile[0].hasOwnProperty('odata.error')
+
+          this.getFileAndFolderName();
+          this.commonService.SetNewrelic('ProjectManagement', 'projectmanagement-CreateSOW', 'uploadFile');
+          this.commonService.UploadFilesProgress(this.SelectedFile, this.FolderName, true).then(async uploadedfile => {
+            this.pmObject.isMainLoaderHidden = false;
+            if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
+              if (uploadedfile[0].hasOwnProperty('ServerRelativeUrl') && uploadedfile[0].hasOwnProperty('Name')) {
+                this.pmObject.addSOW.SOWFileURL = uploadedfile[0].ServerRelativeUrl;
+                this.pmObject.addSOW.SOWFileName = uploadedfile[0].Name;
+                this.pmObject.addSOW.SOWDocProperties = uploadedfile;
+              }
+              this.pmObject.addSOW.isSOWCodeDisabled = false;
+              this.pmObject.addSOW.isStatusDisabled = true;
+              if (!this.pmObject.addSOW.ID) {
+                await this.createUpdateSOW(false, this.pmObject.addSOW);
+              }
+              if (this.pmObject.addSOW.ID) {
+                await this.createUpdateSOW(true, this.pmObject.addSOW);
+              }
+              this.selectedFile = null;
+            }
+          });
+        }
+        else {
+          this.pmObject.isMainLoaderHidden = false;
+          this.pmObject.addSOW.isSOWCodeDisabled = false;
+          this.pmObject.addSOW.isStatusDisabled = true;
+          if (!this.pmObject.addSOW.ID) {
+            await this.createUpdateSOW(false, this.pmObject.addSOW);
+          }
+          if (this.pmObject.addSOW.ID) {
+            await this.createUpdateSOW(true, this.pmObject.addSOW);
+          }
+          this.selectedFile = null;
+        }
+
+      } else {
+        this.validateAllFormFields(this.addSowForm);
       }
 
-    } else {
-      this.validateAllFormFields(this.addSowForm);
     }
   }
 
@@ -1080,12 +1090,16 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.pmObject.isSOWFormSubmit = true;
     if (this.addAdditionalBudgetForm.valid) {
       this.pmObject.isSOWFormSubmit = false;
-      // get the budget from SOW list based on SOWID.
-      debugger;
       if (!this.selectedFile) {
         this.messageService.add({
           key: 'custom', severity: 'error',
           summary: 'Error Message', detail: 'Please select SOW document.'
+        });
+        return;
+      } else if (this.selectedFile && this.selectedFile.size === 0) {
+        this.messageService.add({
+          key: 'custom', severity: 'error',
+          summary: 'Error Message', detail: 'Unable to upload file, size of ' + this.selectedFile.name + ' is 0 KB.'
         });
         return;
       }
@@ -1119,8 +1133,8 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
         this.pmObject.isMainLoaderHidden = true;
         this.getFileAndFolderName();
         this.commonService.SetNewrelic('ProjectManagement', 'projectmanagement-AddAditionBudget', 'uploadFile');
-        this.commonService.UploadFilesProgress(this.SelectedFile,this.FolderName, true).then(async uploadedfile => {
-         debugger;
+        this.commonService.UploadFilesProgress(this.SelectedFile, this.FolderName, true).then(async uploadedfile => {
+          debugger;
           if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
             if (uploadedfile[0].hasOwnProperty('ServerRelativeUrl') && uploadedfile[0].hasOwnProperty('Name')) {
               this.pmObject.addSOW.SOWFileURL = uploadedfile[0].ServerRelativeUrl;

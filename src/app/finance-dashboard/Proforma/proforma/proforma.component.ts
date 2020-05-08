@@ -810,7 +810,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             batchUrl.push(sowObj);
             this.commonService.SetNewrelic('Finance-Dashboard', 'Proforma-proforma', 'GetPFPFBForPOSow');
             const res = await this.spServices.executeBatch(batchUrl);
-          
+
             const arrResults = res.length ? res.map(a => a.retItems) : [];
             if (arrResults.length) {
                 this.pfresp = arrResults[0] ? arrResults[0] : [];
@@ -1491,7 +1491,14 @@ export class ProformaComponent implements OnInit, OnDestroy {
             this.submitForm(batchUrl, type);
         } else if (type === 'replaceProforma') {
             if (this.replaceProforma_form.invalid) {
-                return
+                return;
+            }
+            else if (this.selectedFile.size === 0) {
+                this.messageService.add({
+                    key: 'proformaSuccessToast', severity: 'error',
+                    summary: 'Error message', detail: 'Unable to upload file, size of ' + this.selectedFile.name + ' is 0 KB.', life: 2000
+                });
+                return;
             }
             this.submitBtn.isClicked = true;
             this.uploadFileData();
@@ -1561,7 +1568,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             await this.spServices.executeBatch(batchUrl);
             ////// Replace date on specific sections only
             if (proformHtml) {
-               await  this.fdDataShareServie.createInvoice(proformHtml, this.selectedRowItem, oInv, this.cleData)
+                await this.fdDataShareServie.createInvoice(proformHtml, this.selectedRowItem, oInv, this.cleData)
             }
             this.generateInvoiceModal = false;
             this.messageService.add({ key: 'custom', severity: 'success', summary: 'Invoice Generated', detail: 'Invoice Number: ' + oInv.InvoiceNumber, life: 20000 });
