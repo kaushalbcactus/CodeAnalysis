@@ -5119,33 +5119,36 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     milestoneTask.resources = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
       return objt.UserName.ID === milestoneTask.AssignedTo.ID;
     });
+    if (milestoneTask.resources.length) {
+      const ref = this.dialogService.open(DailyAllocationComponent, {
+        data: {
+          ID: milestoneTask.id,
+          task: milestoneTask.taskFullName,
+          startDate: milestoneTask.pUserStartDatePart,
+          endDate: milestoneTask.pUserEndDatePart,
+          startTime: milestoneTask.pUserStartTimePart,
+          endTime: milestoneTask.pUserEndTimePart,
+          budgetHrs: milestoneTask.budgetHours,
+          resource: milestoneTask.resources,
+          strAllocation: milestoneTask.allocationPerDay,
+          allocationType
+        } as IDailyAllocationTask,
+        width: '90vw',
 
-    const ref = this.dialogService.open(DailyAllocationComponent, {
-      data: {
-        ID: milestoneTask.id,
-        task: milestoneTask.taskFullName,
-        startDate: milestoneTask.pUserStartDatePart,
-        endDate: milestoneTask.pUserEndDatePart,
-        startTime: milestoneTask.pUserStartTimePart,
-        endTime: milestoneTask.pUserEndTimePart,
-        budgetHrs: milestoneTask.budgetHours,
-        resource: milestoneTask.resources,
-        strAllocation: milestoneTask.allocationPerDay,
-        allocationType
-      } as IDailyAllocationTask,
-      width: '90vw',
-
-      header: milestoneTask.submilestone ? milestoneTask.milestone + ' ' + milestoneTask.title
-        + ' ( ' + milestoneTask.submilestone + ' )' : milestoneTask.milestone + ' ' + milestoneTask.title,
-      contentStyle: { 'max-height': '90vh', 'overflow-y': 'auto' },
-      closable: false
-    });
-    ref.onClose.subscribe((allocation: any) => {
-      this.setAllocationPerDay(allocation, milestoneTask);
-      if (allocation.allocationAlert) {
-        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Resource is over allocated' });
-      }
-    });
+        header: milestoneTask.submilestone ? milestoneTask.milestone + ' ' + milestoneTask.title
+          + ' ( ' + milestoneTask.submilestone + ' )' : milestoneTask.milestone + ' ' + milestoneTask.title,
+        contentStyle: { 'max-height': '90vh', 'overflow-y': 'auto' },
+        closable: false
+      });
+      ref.onClose.subscribe((allocation: any) => {
+        this.setAllocationPerDay(allocation, milestoneTask);
+        if (allocation.allocationAlert) {
+          this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Resource is over allocated' });
+        }
+      });
+    } else {
+      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please select resource' });
+    }
   }
   setAllocationPerDay(allocation, milestoneTask: IMilestoneTask) {
     let task: any;

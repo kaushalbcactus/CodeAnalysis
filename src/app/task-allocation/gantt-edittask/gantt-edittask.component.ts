@@ -123,8 +123,8 @@ export class GanttEdittaskComponent implements OnInit {
     this.updateDates(task);
     this.task = task;
     this.task.showAllocationSplit = this.task.type === 'task' && this.task.itemType !== 'Client Review' && this.task.itemType !== 'Send to client'
-    && this.task.IsCentrallyAllocated === 'No' && +this.task.budgetHours &&
-    new Date(this.task.pUserStartDatePart).getTime() !== new Date(this.task.pUserEndDatePart).getTime() ? true : false;
+      && this.task.IsCentrallyAllocated === 'No' && +this.task.budgetHours &&
+      new Date(this.task.pUserStartDatePart).getTime() !== new Date(this.task.pUserEndDatePart).getTime() ? true : false;
     this.cascadingObject.node = clickedInputType ? task : '';
     this.cascadingObject.type = clickedInputType;
     this.isViewAllocationBtn(task);
@@ -316,31 +316,34 @@ export class GanttEdittaskComponent implements OnInit {
     this.task.resources = this.globalService.oTaskAllocation.oResources.filter((objt) => {
       return objt.UserName.ID === this.task.AssignedTo.ID;
     });
+    if (this.task.resources.length) {
+      const ref = this.dialogService.open(DailyAllocationComponent, {
+        data: {
+          ID: this.task.id,
+          task: this.task.taskFullName,
+          startDate: this.task.pUserStart,
+          endDate: this.task.pUserEnd,
+          budgetHrs: this.task.budgetHours,
+          resource: this.task.resources,
+          strAllocation: this.task.allocationPerDay,
+          allocationType
+        } as IDailyAllocationTask,
+        width: '90vw',
 
-    const ref = this.dialogService.open(DailyAllocationComponent, {
-      data: {
-        ID: this.task.id,
-        task: this.task.taskFullName,
-        startDate: this.task.pUserStart,
-        endDate: this.task.pUserEnd,
-        budgetHrs: this.task.budgetHours,
-        resource: this.task.resources,
-        strAllocation: this.task.allocationPerDay,
-        allocationType
-      } as IDailyAllocationTask,
-      width: '90vw',
-
-      header: this.task.submilestone ? this.task.milestone + ' ' + this.task.title
-        + ' ( ' + this.task.submilestone + ' )' : this.task.milestone + ' ' + this.task.title,
-      contentStyle: { 'max-height': '90vh', 'overflow-y': 'auto' },
-      closable: false
-    });
-    ref.onClose.subscribe((allocation: any) => {
-      this.setAllocationPerDay(allocation, this.task);
-      if (allocation.allocationAlert) {
-        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Resource is over allocated' });
-      }
-    });
+        header: this.task.submilestone ? this.task.milestone + ' ' + this.task.title
+          + ' ( ' + this.task.submilestone + ' )' : this.task.milestone + ' ' + this.task.title,
+        contentStyle: { 'max-height': '90vh', 'overflow-y': 'auto' },
+        closable: false
+      });
+      ref.onClose.subscribe((allocation: any) => {
+        this.setAllocationPerDay(allocation, this.task);
+        if (allocation.allocationAlert) {
+          this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Resource is over allocated' });
+        }
+      });
+    } else {
+      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please select resource' });
+    }
   }
 
   async dailyAllocateTask(resource, milestoneTask) {

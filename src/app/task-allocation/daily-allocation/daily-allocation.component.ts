@@ -44,10 +44,11 @@ export class DailyAllocationComponent implements OnInit {
     ];
     const allocationData: IDailyAllocationTask = this.popupData.data;
     this.resourceCapacity = {};
-    if (allocationData) {
+    if (allocationData && allocationData.resource.length && allocationData.startDate && allocationData.endDate) {
       this.showLoader();
       setTimeout(async () => {
         this.resourceCapacity = await this.getResourceCapacity(allocationData);
+
         await this.initialize(this.resourceCapacity, allocationData);
         this.hideTable = false;
         this.showTable();
@@ -144,9 +145,11 @@ export class DailyAllocationComponent implements OnInit {
   }
 
   async getResourceCapacity(task: IDailyAllocationTask) {
-    const oCapacity = await this.usercapacityComponent.applyFilterReturn(task.startDate, task.endDate, task.resource, [task]);
-    const resource = oCapacity.arrUserDetails.length ? oCapacity.arrUserDetails[0] : {};
-    return resource;
+    if (task.resource.length) {
+      const oCapacity = await this.usercapacityComponent.applyFilterReturn(task.startDate, task.endDate, task.resource, [task]);
+      const resource = oCapacity.arrUserDetails.length ? oCapacity.arrUserDetails[0] : {};
+      return resource;
+    }
   }
 
   checkResourceAvailability(resource, extraHrs, taskBudgetHrs, allocationData): string {
@@ -233,7 +236,7 @@ export class DailyAllocationComponent implements OnInit {
     const availaibility = this.equalSplitAvailibilty(allocationData, allocationPerDay);
     const noOfDays = businessDays > availaibility.days ? (businessDays - availaibility.days) : businessDays;
     let calcBudgetHrs = availaibility.lastDayAvailability < allocationPerDay && noOfDays > 1 ?
-                        budgetHours - availaibility.lastDayAvailability : budgetHours;
+      budgetHours - availaibility.lastDayAvailability : budgetHours;
     calcBudgetHrs = availaibility.firstDayAvailablity < allocationPerDay ? calcBudgetHrs - availaibility.firstDayAvailablity :
       calcBudgetHrs;
     allocationPerDay = calcBudgetHrs !== budgetHours ? Math.ceil(calcBudgetHrs / noOfDays) : allocationPerDay;
@@ -242,7 +245,7 @@ export class DailyAllocationComponent implements OnInit {
       let totalHrs = 0;
       if (i === 0) {
         totalHrs = availaibility.firstDayAvailablity < allocationPerDay ?
-                   availaibility.firstDayAvailablity : noOfDays <= 1 ? availaibility.firstDayAvailablity : allocationPerDay;
+          availaibility.firstDayAvailablity : noOfDays <= 1 ? availaibility.firstDayAvailablity : allocationPerDay;
       } else if (i === resourceDailyDetails.length - 1) {
         totalHrs = availaibility.lastDayAvailability < remainingBudgetHrs ? availaibility.lastDayAvailability : remainingBudgetHrs;
       } else {
