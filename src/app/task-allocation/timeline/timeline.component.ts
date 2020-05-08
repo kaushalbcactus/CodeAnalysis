@@ -15,7 +15,6 @@ import { TaskDetailsDialogComponent } from '../task-details-dialog/task-details-
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { UsercapacityComponent } from 'src/app/shared/usercapacity/usercapacity.component';
-import { CascadeDialogComponent } from '../cascade-dialog/cascade-dialog.component';
 import { TaskAllocationCommonService } from '../services/task-allocation-common.service';
 import { GanttChartComponent } from '../../shared/gantt-chart/gantt-chart.component';
 import { SelectItem } from 'primeng/api';
@@ -489,11 +488,12 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
               subMilData.end_date = tempSubmilestonesWOAT[tempSubmilestonesWOAT.length - 1].data.end_date;
               subMilData.pUserStart = tempSubmilestonesWOAT[0].data.start_date;
               subMilData.pUserEnd = tempSubmilestonesWOAT[tempSubmilestonesWOAT.length - 1].data.end_date;
-              subMilData.pUserStartDatePart = this.getDatePart(subMilData.pUserStart);
-              subMilData.pUserStartTimePart = this.getTimePart(subMilData.pUserStart);
-              subMilData.pUserEndDatePart = this.getDatePart(subMilData.pUserEnd);
-              subMilData.pUserEndTimePart = this.getTimePart(subMilData.pUserEnd);
-              subMilData.tatVal = this.commonService.calcBusinessDays(new Date(subMilData.start_date), new Date(subMilData.end_date));
+              this.setDatePartAndTimePart(subMilData);
+              // subMilData.pUserStartDatePart = this.getDatePart(subMilData.pUserStart);
+              // subMilData.pUserStartTimePart = this.getTimePart(subMilData.pUserStart);
+              // subMilData.pUserEndDatePart = this.getDatePart(subMilData.pUserEnd);
+              // subMilData.pUserEndTimePart = this.getTimePart(subMilData.pUserEnd);
+              // subMilData.tatVal = this.commonService.calcBusinessDays(new Date(subMilData.start_date), new Date(subMilData.end_date));
             }
             const temptasks = {
               'data': this.GanttchartData.find(c => c.title === element.subMile && c.parent === milestone.Id),
@@ -1266,15 +1266,17 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       switch (id) {
         case 'tatON':
           task.tat = true;
-          task.edited = true;
-          this.changeDate(task);
+          //task.edited = true;
+          //          this.changeDate(task);
+          this.ChangeEndDate(true, task);
           this.updateMilestoneData();
           this.notificationMessage();
           break;
         case 'tatOFF':
           task.tat = false;
-          task.edited = true;
-          this.changeDate(task);
+          //task.edited = true;
+          //        this.changeDate(task);
+          this.ChangeEndDate(true, task);
           this.updateMilestoneData();
           this.notificationMessage();
           break;
@@ -1321,41 +1323,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   }
 
-  changeDate(task) {
-    task.pUserStart = new Date(task.pUserStart.getFullYear(), task.pUserStart.getMonth(), task.pUserStart.getDate(), 9, 0);
-    task.pUserEnd = new Date(task.pUserEnd.getFullYear(), task.pUserEnd.getMonth(), task.pUserEnd.getDate(), 19, 0);
-    task.pUserStartDatePart = this.getDatePart(task.pUserStart);
-    task.pUserStartTimePart = this.getTimePart(task.pUserStart);
-    task.pUserEndDatePart = this.getDatePart(task.pUserEnd);
-    task.pUserEndTimePart = this.getTimePart(task.pUserEnd);
-    task.start_date = new Date(task.pUserStart.getFullYear(), task.pUserStart.getMonth(), task.pUserStart.getDate(), 9, 0);
-    task.end_date = new Date(task.pUserEnd.getFullYear(), task.pUserEnd.getMonth(), task.pUserEnd.getDate(), 19, 0);
-    this.DateChange(task, 'end', false);
-  }
-
   ganttAttachEvents() {
-    // let tooltipText = ((start, end, task) => {
-    //   gantt.templates.tooltip_date_format = gantt.date.date_to_str("%d-%M-%Y %h:%i %A");
-    //   this.ganttComponentRef.instance.singleTask = task;
-    //   return "<h3>" + task.text + "</h3>" +
-    //     "<b>Start date:</b> " +
-    //     gantt.templates.tooltip_date_format(task.start_date) +
-    //     "<br/><b>End date:</b> " + gantt.templates.tooltip_date_format(task.end_date) +
-    //     "<br/><b>Duration:</b> " + gantt.calculateDuration(task) + "<br/><b>Status:</b> " + task.status +
-    //     "<br/><b>Resource:</b> " + this.ganttComponentRef.instance.getResource(task) + "<br/><b>Budget Hrs:</b> " + task.budgetHours +
-    //     "<br/><b>Spent Hrs:</b> " + task.spentTime;
-    // })
 
-    // gantt.attachEvent("onMouseMove", (id, event) => {
-    //   if (id) {
-    //     let task = gantt.getTask(id);
-    //     // event.target = event.target.parentElement;
-    //     let target = event.target
-    //     this.showOverlayPanel(event, task, this.dailyAllocateOP, target);
-    //   }
-    // });
-
-    // gantt.templates.tooltip_text = tooltipText;
     if (this.taskAllocateCommonService.attachedEvents.length) {
       this.taskAllocateCommonService.attachedEvents.forEach(element => {
         gantt.detachEvent(element);
@@ -1638,6 +1607,45 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
 
+  // *************************************************************************************************************************************
+  // GANTT cascade start
+  // *************************************************************************************************************************************
+
+
+  setDateToCurrent(Node) {
+    for (const milestone of this.milestoneData) {
+      // this.milestoneData.forEach(milestone => {
+      if (milestone.data.type === 'task' && Node.milestone === milestone.data.milestone && Node.taskFullName === milestone.data.taskFullName) {
+        milestone.data = Node;
+        milestone.data.edited = true;
+        break;
+      }
+      if (milestone.children !== undefined) {
+        for (const submilestone of milestone.children) {
+          // milestone.children.forEach(submilestone => {
+          if (submilestone.data.type === 'task' && Node.milestone === submilestone.data.milestone && Node.taskFullName === submilestone.data.taskFullName) {
+            submilestone.data = Node;
+            submilestone.data.edited = true;
+            break;
+          }
+          if (submilestone.children !== undefined) {
+            for (const task of submilestone.children) {
+              // submilestone.children.forEach(task => {
+              if (Node.milestone === task.data.milestone && Node.taskFullName === task.data.taskFullName) {
+                task.data = Node;
+                task.data.edited = true;
+                break;
+              }
+              // });
+            }
+          }
+          // });
+        }
+      }
+    }
+    // });
+  }
+
   async saveTask(isBudgetHrs, updatedDataObj) {
     if (isBudgetHrs) {
       let allTasks = gantt.serialize();
@@ -1678,8 +1686,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       const cascadingObject = updatedDataObj.cascadingObject;
       const scrollDate = new Date(cascadingObject.node.end_date);
       if (Object.keys(cascadingObject).length) {
-        this.SetDateToCurrent(cascadingObject.node);
-        this.DateChange(cascadingObject.node, cascadingObject.type, true);
+        this.setDateToCurrent(cascadingObject.node);
+        ////// Cascade future  dates
+        this.DateChange(cascadingObject.node, cascadingObject.type);
       }
       let allTasks = {
         data: []
@@ -1789,24 +1798,27 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         }
       }
       if (task.id == this.resetTask.id) {
-        task.start_date = this.startDate;
-        task.end_date = this.endDate;
-        task.pUserStart = this.resetTask.pUserStart;
-        task.pUserEnd = this.resetTask.pUserEnd;
-        task.pUserStartDatePart = this.resetTask.pUserStartDatePart;
-        task.pUserEndDatePart = this.resetTask.pUserEndDatePart;
-        task.pUserStartTimePart = this.resetTask.pUserStartTimePart;
-        task.pUserEndTimePart = this.resetTask.pUserEndTimePart;
-        if (this.resetTask.tat) {
-          task.pUserStart = new Date(this.resetTask.pUserStart.getFullYear(), this.resetTask.pUserStart.getMonth(), this.resetTask.pUserStart.getDate(), 9, 0);
-          task.pUserEnd = new Date(this.resetTask.pUserEnd.getFullYear(), this.resetTask.pUserEnd.getMonth(), this.resetTask.pUserEnd.getDate(), 19, 0);
-          task.pUserStartDatePart = this.getDatePart(this.resetTask.pUserStart);
-          task.pUserStartTimePart = this.getTimePart(this.resetTask.pUserStart);
-          task.pUserEndDatePart = this.getDatePart(this.resetTask.pUserEnd);
-          task.pUserEndTimePart = this.getTimePart(this.resetTask.pUserEnd);
-          task.start_date = new Date(this.startDate.getFullYear(), this.startDate.getMonth(), this.startDate.getDate(), 9, 0);
-          task.end_date = new Date(this.endDate.getFullYear(), this.endDate.getMonth(), this.endDate.getDate(), 19, 0);
-        }
+        task = this.resetTask;
+        // task.start_date = this.startDate;
+        // task.end_date = this.endDate;
+        // task.pUserStart = this.resetTask.pUserStart;
+        // task.pUserEnd = this.resetTask.pUserEnd;
+        // task.pUserStartDatePart = this.resetTask.pUserStartDatePart;
+        // task.pUserEndDatePart = this.resetTask.pUserEndDatePart;
+        // task.pUserStartTimePart = this.resetTask.pUserStartTimePart;
+        // task.pUserEndTimePart = this.resetTask.pUserEndTimePart;
+        // if (this.resetTask.tat) {
+        //   task.pUserStart = new Date(this.resetTask.pUserStart.getFullYear(), this.resetTask.pUserStart.getMonth(), this.resetTask.pUserStart.getDate(), 9, 0);
+        //   task.pUserEnd = new Date(this.resetTask.pUserEnd.getFullYear(), this.resetTask.pUserEnd.getMonth(), this.resetTask.pUserEnd.getDate(), 19, 0);
+
+        //   // task.pUserStartDatePart = this.getDatePart(this.resetTask.pUserStart);
+        //   // task.pUserStartTimePart = this.getTimePart(this.resetTask.pUserStart);
+        //   // task.pUserEndDatePart = this.getDatePart(this.resetTask.pUserEnd);
+        //   // task.pUserEndTimePart = this.getTimePart(this.resetTask.pUserEnd);
+
+        //   task.start_date = new Date(this.startDate.getFullYear(), this.startDate.getMonth(), this.startDate.getDate(), 9, 0);
+        //   task.end_date = new Date(this.endDate.getFullYear(), this.endDate.getMonth(), this.endDate.getDate(), 19, 0);
+        // }
       }
       if (task.title.replace(' (Current)', '') === this.resetTask.milestone || task.title === this.resetTask.milestone) {
         task.open = true;
@@ -1866,8 +1878,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   allocationColor() {
     gantt.templates.grid_row_class = function (start, end, task) {
       let css = [];
-      // if (task.$virtual || task.type == gantt.config.types.project)
-      // 	css.push("summary-bar");
+
 
       if (task.title) {
         css.push("gantt_resource_task gantt_resource_task" + task.title);
@@ -1891,10 +1902,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
       resources.forEach((r) => {
         allTasks.forEach((e) => {
-          // html.push(".gantt_task_line.gantt_resource_" + r.key + "{" +
-          //   "background-color:" + r.backgroundColor + "; " +
-          //   "color:" + r.textColor + ";" +
-          //   "}");
+
           let textColor = '';
           textColor = e.allocationColor ? r.textColor : '#454545';
           html.push(".gantt_row.gantt_resource_task" + e.title + " .gantt_cell:nth-child(2) .gantt_tree_content{" +
@@ -2382,7 +2390,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
                   let oExistingTask = this.tempGanttchartData.find(c => c.id === task.dbId);
                   if (oExistingTask !== undefined) {
-                    oExistingTask = this.getExistindData(oExistingTask);
+                    oExistingTask = this.getExistingData(oExistingTask);
                     if (oExistingTask.previousTask !== previousTasks || oExistingTask.nextTask !== nextTasks) {
                       if (submilestoneObj.title === 'Default') {
                         oExistingTask.editMode = true;
@@ -2495,7 +2503,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
               let oExistingTask = this.tempGanttchartData.find(c => c.id === task.dbId);
               if (oExistingTask !== undefined) {
 
-                oExistingTask = this.getExistindData(oExistingTask);
+                oExistingTask = this.getExistingData(oExistingTask);
 
                 if (oExistingTask.previousTask !== previousTasks || oExistingTask.nextTask !== nextTasks) {
                   oExistingTask.editMode = true;
@@ -2710,28 +2718,32 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           ? resource[0].TimeZone.Title ?
             resource[0].TimeZone.Title : '+5.5' : '+5.5';
 
-        milestoneTask.pUserStart = this.commonService.calcTimeForDifferentTimeZone(milestoneTask.pUserStart,
-          previousUserTimeZone, milestoneTask.assignedUserTimeZone);
-        milestoneTask.pUserEnd = this.commonService.calcTimeForDifferentTimeZone(milestoneTask.pUserEnd,
-          previousUserTimeZone, milestoneTask.assignedUserTimeZone);
+        this.changeUserTimeZone(milestoneTask, previousUserTimeZone, milestoneTask.assignedUserTimeZone);
+        // milestoneTask.pUserStart = this.commonService.calcTimeForDifferentTimeZone(milestoneTask.pUserStart,
+        //   previousUserTimeZone, milestoneTask.assignedUserTimeZone);
+        // milestoneTask.pUserEnd = this.commonService.calcTimeForDifferentTimeZone(milestoneTask.pUserEnd,
+        //   previousUserTimeZone, milestoneTask.assignedUserTimeZone);
 
-        milestoneTask.pUserStartDatePart = this.getDatePart(milestoneTask.pUserStart);
-        milestoneTask.pUserStartTimePart = this.getTimePart(milestoneTask.pUserStart);
-        milestoneTask.pUserEndDatePart = this.getDatePart(milestoneTask.pUserEnd);
-        milestoneTask.pUserEndTimePart = this.getTimePart(milestoneTask.pUserEnd);
+        this.setDatePartAndTimePart(milestoneTask);
+
+        // milestoneTask.pUserStartDatePart = this.getDatePart(milestoneTask.pUserStart);
+        // milestoneTask.pUserStartTimePart = this.getTimePart(milestoneTask.pUserStart);
+        // milestoneTask.pUserEndDatePart = this.getDatePart(milestoneTask.pUserEnd);
+        // milestoneTask.pUserEndTimePart = this.getTimePart(milestoneTask.pUserEnd);
         /// Change date as user changed in AssignedTo dropdown
       } else {
         const previousUserTimeZone = milestoneTask.assignedUserTimeZone;
         milestoneTask.assignedUserTimeZone = '+5.5';
-        milestoneTask.pUserStart = this.commonService.calcTimeForDifferentTimeZone(milestoneTask.pUserStart,
-          previousUserTimeZone, milestoneTask.assignedUserTimeZone);
-        milestoneTask.pUserEnd = this.commonService.calcTimeForDifferentTimeZone(milestoneTask.pUserEnd,
-          previousUserTimeZone, milestoneTask.assignedUserTimeZone);
-
-        milestoneTask.pUserStartDatePart = this.getDatePart(milestoneTask.pUserStart);
-        milestoneTask.pUserStartTimePart = this.getTimePart(milestoneTask.pUserStart);
-        milestoneTask.pUserEndDatePart = this.getDatePart(milestoneTask.pUserEnd);
-        milestoneTask.pUserEndTimePart = this.getTimePart(milestoneTask.pUserEnd);
+        this.changeUserTimeZone(milestoneTask, previousUserTimeZone, milestoneTask.assignedUserTimeZone);
+        // milestoneTask.pUserStart = this.commonService.calcTimeForDifferentTimeZone(milestoneTask.pUserStart,
+        //   previousUserTimeZone, milestoneTask.assignedUserTimeZone);
+        // milestoneTask.pUserEnd = this.commonService.calcTimeForDifferentTimeZone(milestoneTask.pUserEnd,
+        //   previousUserTimeZone, milestoneTask.assignedUserTimeZone);
+        this.setDatePartAndTimePart(milestoneTask);
+        // milestoneTask.pUserStartDatePart = this.getDatePart(milestoneTask.pUserStart);
+        // milestoneTask.pUserStartTimePart = this.getTimePart(milestoneTask.pUserStart);
+        // milestoneTask.pUserEndDatePart = this.getDatePart(milestoneTask.pUserEnd);
+        // milestoneTask.pUserEndTimePart = this.getTimePart(milestoneTask.pUserEnd);
         milestoneTask.skillLevel = milestoneTask.AssignedTo.SkillText;
         milestoneTask.user = milestoneTask.skillLevel;
       }
@@ -2849,25 +2861,11 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   getNewTaskName(milestoneTask, originalName) {
     let counter = 1;
-    // let getItem = this.allRestructureTasks.filter(e => e.pName === originalName && e.milestone === milestoneTask.milestone);
-    // if (!getItem.length) {
-    //   getItem = this.allTasks.filter(e => {
-    //     const taskName = e.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + e.Milestone + ' ', '');
-    //     return e.FileSystemObjectType === 0 && taskName === originalName && e.Milestone === milestoneTask.milestone;
-    //   });
-    // }
     let tasks = this.checkNameExists([], milestoneTask, originalName);
     while (tasks.length) {
       counter++;
       originalName = milestoneTask.itemType + ' ' + counter;
       tasks = this.checkNameExists(tasks, milestoneTask, originalName);
-      // getItem = this.allRestructureTasks.filter(e => e.pName === originalName && e.milestone === milestoneTask.milestone);
-      // if (!getItem.length) {
-      //   getItem = this.allTasks.filter(e => {
-      //     const taskName = e.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + e.Milestone + ' ', '');
-      //     return e.FileSystemObjectType === 0 && taskName === originalName && e.Milestone === milestoneTask.milestone;
-      //   });
-      // }
     }
 
     return originalName;
@@ -2883,256 +2881,93 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     }
     return tasks;
   }
+
   // *************************************************************************************************
-  // Date changes Cascading (Task Date Change)
+  // Cascading full data
   // **************************************************************************************************
-  // tslint:disable
-  async cascadeNode(previousNode, node) {
-
-    var nodeData = node.hasOwnProperty('data') ? node.data : node;
-    var prevNodeData = previousNode.hasOwnProperty('data') ? previousNode.data : previousNode;
-    const startDate = new Date(nodeData.pUserStart);
-    const endDate = new Date(nodeData.pUserEnd);
-    var workingHours = this.workingHoursBetweenDates(startDate, endDate);
-    // Check if prev node slot then consider startdate of slot
-    const prevNodeStartDate = ((prevNodeData.slotType === 'Slot' && nodeData.parentSlot) ?
-      // || (prevNodeData.slotType === 'Slot' && prevNodeData.clickedInput && prevNodeData.clickedInput === 'start' && nodeData.parentSlot) ?
-      new Date(prevNodeData.start_date) : new Date(prevNodeData.end_date));
-    nodeData.pUserStart = this.commonService.calcTimeForDifferentTimeZone(prevNodeStartDate,
-      this.sharedObject.currentUser.timeZone, nodeData.assignedUserTimeZone);
-    // new change cascade maxwell
-    // nodeData.pUserStart = nodeData.pUserStart.getHours() >= 19 || nodeData.pUserStart.getHours() < 9 ?
-    //   this.checkStartDate(new Date(nodeData.pUserStart.getFullYear(), nodeData.pUserStart.getMonth(), (nodeData.pUserStart.getDate() + 1), 9, 0)) :
-    //   nodeData.pUserStart;
-    nodeData.pUserEnd = this.checkEndDate(nodeData.pUserStart, workingHours);
-
-    nodeData.pUserStartDatePart = this.getDatePart(nodeData.pUserStart);
-    nodeData.pUserStartTimePart = this.getTimePart(nodeData.pUserStart);
-    nodeData.pUserEndDatePart = this.getDatePart(nodeData.pUserEnd);
-    nodeData.pUserEndTimePart = this.getTimePart(nodeData.pUserEnd);
-    nodeData.start_date = this.commonService.calcTimeForDifferentTimeZone(nodeData.pUserStart,
-      nodeData.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
-    nodeData.end_date = this.commonService.calcTimeForDifferentTimeZone(nodeData.pUserEnd,
-      nodeData.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
-    nodeData.tatVal = this.commonService.calcBusinessDays(new Date(nodeData.start_date), new Date(nodeData.end_date));
-    nodeData.edited = true;
-    if (nodeData.IsCentrallyAllocated === 'Yes' && node.slotType !== 'Slot' && !node.parentSlot) {
-      nodeData.user = nodeData.skillLevel;
-    }
-  }
-  // tslint:enable
-
-  setStartAndEnd(node) {
-    if (node.data.itemType === 'Client Review') {
-      node.data.end_date = node.children !== undefined && node.children.length > 0 ? this.sortDates(node, 'end') : node.data.end_date;
-      node.data.start_date = node.children !== undefined && node.children.length > 0 ? this.sortDates(node, 'start') : node.data.start_date;
-      // node.data.end_date = node.data.pEnd;
-      // node.data.start_date = node.data.pStart;
-      //node.data.pUserStart = node.data.pStart;
-      //node.data.pUserEnd = node.data.pEnd;
-      node.data.pUserStartDatePart = this.getDatePart(node.data.pUserStart);
-      node.data.pUserStartTimePart = this.getTimePart(node.data.pUserStart);
-      node.data.pUserEndDatePart = this.getDatePart(node.data.pUserEnd);
-      node.data.pUserEndTimePart = this.getTimePart(node.data.pUserEnd);
-      node.data.tatVal = this.commonService.calcBusinessDays(new Date(node.data.end_date), new Date(node.data.start_date));
-    } else if (node.data.status !== 'Completed') {
-      node.data.end_date = node.children !== undefined && node.children.length > 0 ? this.sortDates(node, 'end') : node.data.end_date;
-      node.data.start_date = node.children !== undefined && node.children.length > 0 ? this.sortDates(node, 'start') : node.data.start_date;
-      // node.data.end_date = node.data.pEnd;
-      // node.data.start_date = node.data.pStart;
-      node.data.pUserStart = node.data.start_date;
-      node.data.pUserEnd = node.data.end_date;
-      node.data.pUserStartDatePart = this.getDatePart(node.data.pUserStart);
-      node.data.pUserStartTimePart = this.getTimePart(node.data.pUserStart);
-      node.data.pUserEndDatePart = this.getDatePart(node.data.pUserEnd);
-      node.data.pUserEndTimePart = this.getTimePart(node.data.pUserEnd);
-      node.data.tatVal = this.commonService.calcBusinessDays(new Date(node.data.start_date), new Date(node.data.end_date));
-    }
-  }
-
-  sortDates(node, type) {
-    const nodeCopy = Object.assign({}, node).children.filter(c =>
-      c.data.title.toLowerCase().indexOf('adhoc') === -1 && c.data.title.toLowerCase().indexOf('tb') === -1);
-    switch (type) {
-      case 'start':
-        nodeCopy.sort((a, b) => {
-          const startDate = new Date(a.data.start_date);
-          const dueDate = new Date(b.data.start_date);
-          return startDate > dueDate ? 1 : -1;
-        });
-        return nodeCopy[0].data.start_date;
-      case 'end':
-        nodeCopy.sort((a, b) => {
-          const startDate = new Date(a.data.end_date);
-          const dueDate = new Date(b.data.end_date);
-          return dueDate > startDate ? 1 : -1;
-        });
-        return nodeCopy[0].data.end_date;
-      default:
-        nodeCopy.sort((a, b) => {
-          const startDate = new Date(a.data.start_date);
-          const dueDate = new Date(b.data.start_date);
-          return startDate > dueDate ? 1 : -1;
-        });
-        return nodeCopy[0];
-    }
-  }
-
-
-  changeDateOfEditedTask(node, type) {
-    node.pUserStart = node.tat === true && node.itemType !== 'Client Review' ?
-      new Date(node.pUserStart.getFullYear(), node.pUserStart.getMonth(), node.pUserStart.getDate(), 9, 0) : node.pUserStart;
-    node.pUserEnd = type === 'start' && node.pUserStart > node.pUserEnd ? (node.tat === true ?
-      new Date(node.pUserStart.getFullYear(), node.pUserStart.getMonth(),
-        node.pUserStart.getDate(), 19, 0) : node.pUserStart) : node.pUserEnd;
-
-
-    node.pUserStartDatePart = this.getDatePart(node.pUserStart);
-    node.pUserStartTimePart = this.getTimePart(node.pUserStart);
-    node.pUserEndDatePart = this.getDatePart(node.pUserEnd);
-    node.pUserEndTimePart = this.getTimePart(node.pUserEnd);
-
-    node.start_date = this.commonService.calcTimeForDifferentTimeZone(node.pUserStart,
-      node.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
-    node.end_date = this.commonService.calcTimeForDifferentTimeZone(node.pUserEnd,
-      node.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
-    node.edited = true;
-    if (node.IsCentrallyAllocated === 'Yes' && node.slotType !== 'Slot' && !node.parentSlot) {
-      node.user = node.skillLevel;
-    }
-
-    node.tatVal = this.commonService.calcBusinessDays(new Date(node.start_date), new Date(node.end_date));
-  }
-
-  ResetStartAndEnd() {
-
-    this.milestoneData.forEach(milestone => {
-
-      if (milestone.children !== undefined) {
-        milestone.children.forEach(submilestone => {
-          if (submilestone.data.type === 'submilestone') {
-
-            this.setStartAndEnd(submilestone);
-          }
-        });
-      }
-      this.setStartAndEnd(milestone);
-    });
-  }
-
-  validateTaskDates(AllTasks) {
-    let errorPresnet = false;
-    const taskCount = AllTasks.length;
-    for (let i = 0; i < taskCount; i = i + 1) {
-      const task = AllTasks[i];
-      if (task.nextTask && task.status !== 'Completed'
-        && task.status !== 'Auto Closed' && task.status !== 'Deleted') {
-        const nextTasks = task.nextTask.split(';');
-        const AllNextTasks = AllTasks.filter(c => (nextTasks.indexOf(c.title) > -1));
-
-        const SDTask = AllNextTasks.find(c => c.start_date < task.end_date && c.status !== 'Completed'
-          && c.status !== 'Auto Closed' && c.status !== 'Deleted' && c.allowStart === false);
-        if (SDTask) {
-          this.messageService.add({
-            key: 'custom', severity: 'warn', summary: 'Warning Message',
-            detail: 'Start Date of ' + SDTask.title + '  should be greater than end date of ' + task.title + ' in ' + task.milestone
-          });
-          errorPresnet = true;
-          break;
-        }
-      }
-    }
-    return errorPresnet;
-  }
-
-  async DateChangePart(Node, type) {
+  async DateChangePart(node, type) {
     this.reallocationMailArray.length = 0;
     this.deallocationMailArray.length = 0;
-    Node.pUserStart = new Date(this.datepipe.transform(Node.pUserStartDatePart, 'MMM d, y') + ' ' + Node.pUserStartTimePart);
-    Node.pUserEnd = new Date(this.datepipe.transform(Node.pUserEndDatePart, 'MMM d, y') + ' ' + Node.pUserEndTimePart);
+    node.pUserStart = new Date(this.datepipe.transform(node.pUserStartDatePart, 'MMM d, y') + ' ' + node.pUserStartTimePart);
+    node.pUserEnd = new Date(this.datepipe.transform(node.pUserEndDatePart, 'MMM d, y') + ' ' + node.pUserEndTimePart);
     const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
-      return Node.AssignedTo && Node.AssignedTo.ID === objt.UserName.ID;
+      return node.AssignedTo && node.AssignedTo.ID === objt.UserName.ID;
     });
-    await this.dailyAllocateTask(resource, Node);
-    this.DateChange(Node, type, false);
-  }
-
-
-  SetDateToCurrent(Node) {
-    this.milestoneData.forEach(milestone => {
-      if (milestone.data.type === 'task' && Node.milestone === milestone.data.milestone && Node.taskFullName === milestone.data.taskFullName) {
-        milestone.data = Node;
-        milestone.data.edited = true;
-      }
-      if (milestone.children !== undefined) {
-        milestone.children.forEach(submilestone => {
-          if (submilestone.data.type === 'task' && Node.milestone === submilestone.data.milestone && Node.taskFullName === submilestone.data.taskFullName) {
-            submilestone.data = Node;
-            submilestone.data.edited = true;
-          }
-          if (submilestone.children !== undefined) {
-            submilestone.children.forEach(task => {
-              if (Node.milestone === task.data.milestone && Node.taskFullName === task.data.taskFullName) {
-                task.data = Node;
-                task.data.edited = true;
-              }
-            });
-          }
-        });
-      }
-    });
+    this.changeDateOfEditedTask(node, type);
+    await this.dailyAllocateTask(resource, node);
+    this.DateChange(node, type);
   }
 
   // tslint:disable
-  DateChange(Node, type, bGanttCascade) {
-    let previousNode: any = undefined;
-    let milestonePosition = -1;
+  DateChange(node, type) {
+    let previousNode = node;
     let selectedMil = -1;
     let subMilestonePosition = 0;
-    this.milestoneData.forEach(milestone => {
-      milestonePosition = milestonePosition + 1;
-      if ((Node === milestone.data || Node.taskFullName === milestone.data.taskFullName) && milestone.data.type === 'task') {
-        if (!bGanttCascade) {
-          this.changeDateOfEditedTask(milestone.data, type);
-        }
-        selectedMil = milestonePosition;
-        previousNode = milestone.data;
-      }
-      if (milestone.children !== undefined) {
-        milestone.children.forEach(submilestone => {
 
-          if (submilestone.data.type === 'task') {
-            if (Node === submilestone.data || Node.taskFullName === submilestone.data.taskFullName) {
-              if (!bGanttCascade)
-                this.changeDateOfEditedTask(submilestone.data, type);
-              selectedMil = milestonePosition;
-              previousNode = submilestone.data;
-            }
-          }
-          if (submilestone.children !== undefined) {
-            submilestone.children.forEach(task => {
-              if (Node === task.data || Node.taskFullName === task.data.taskFullName) {
-                subMilestonePosition = parseInt(submilestone.data.position, 10);
-                if (!bGanttCascade)
-                  this.changeDateOfEditedTask(task.data, type);
-                selectedMil = milestonePosition;
-                previousNode = task.data;
-              }
-            });
-          }
-        });
+    if (previousNode.itemType === 'Client Review') {
+      const clientReviewIndex = this.milestoneData.findIndex(e => e.data.itemType === 'Client Review' && e.data.text === previousNode.text);
+      selectedMil = clientReviewIndex;
+    }
+    else {
+      selectedMil = this.milestoneData.findIndex(e => e.data.text === previousNode.milestone);
+      if (previousNode.subMilestone) {
+        const milestone = this.milestoneData[selectedMil];
+        const subMil = milestone.children.find(e => e.data.text === previousNode.subMilestone);
+        subMilestonePosition = parseInt(subMil.data.position, 10);
       }
-    });
+    }
+    // this.milestoneData.forEach(milestone => {
+    //   milestonePosition = milestonePosition + 1;
+    //   if ((Node === milestone.data || Node.taskFullName === milestone.data.taskFullName) && milestone.data.type === 'task') {
+    //     if (!bGanttCascade) {
+    //       this.changeDateOfEditedTask(milestone.data, type);
+    //     }
+    //     selectedMil = milestonePosition;
+    //     previousNode = milestone.data;
+    //   }
+    //   if (milestone.children !== undefined) {
+    //     milestone.children.forEach(submilestone => {
+
+    //       if (submilestone.data.type === 'task') {
+    //         if (Node === submilestone.data || Node.taskFullName === submilestone.data.taskFullName) {
+    //           if (!bGanttCascade)
+    //             this.changeDateOfEditedTask(submilestone.data, type);
+    //           selectedMil = milestonePosition;
+    //           previousNode = submilestone.data;
+    //         }
+    //       }
+    //       if (submilestone.children !== undefined) {
+    //         submilestone.children.forEach(task => {
+    //           if (Node === task.data || Node.taskFullName === task.data.taskFullName) {
+    //             subMilestonePosition = parseInt(submilestone.data.position, 10);
+    //             if (!bGanttCascade)
+    //               this.changeDateOfEditedTask(task.data, type);
+    //             selectedMil = milestonePosition;
+    //             previousNode = task.data;
+    //           }
+    //         });
+    //       }
+    //     });
+    //   }
+    // });
+
+
     // clickedInput variable is used to know if start or end date changed
     previousNode.clickedInput = type;
     this.cascadeNextNodes(previousNode, subMilestonePosition, selectedMil);
-    this.ResetStartAndEnd();
+    this.resetStartAndEnd();
     previousNode.clickedInput = undefined;
-    // this.refreshGantt();
   }
 
-
-
+  setMilestoneStartEnd(nextNode, selectedMil) {
+    const sentPrevNode = this.milestoneData[selectedMil];
+    this.setStartAndEnd(sentPrevNode);
+    this.milestoneData[selectedMil] = sentPrevNode;
+    if (this.milestoneData.length > (selectedMil + 1)) {
+      nextNode.push(this.milestoneData[selectedMil + 1]);
+    }
+    return sentPrevNode;
+  }
 
   cascadeNextNodes(previousNode, subMilestonePosition, selectedMil) {
     var nextNode = [];
@@ -3186,44 +3021,338 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           }
           else {
             ///// Set current mil end dates
-            sentPrevNode = this.milestoneData[selectedMil];
-            this.setStartAndEnd(sentPrevNode);
-            this.milestoneData[selectedMil] = sentPrevNode;
-            if (this.milestoneData.length > (selectedMil + 1)) {
-              nextNode.push(this.milestoneData[selectedMil + 1]);
-            }
+            // sentPrevNode = this.milestoneData[selectedMil];
+            // this.setStartAndEnd(sentPrevNode);
+            // this.milestoneData[selectedMil] = sentPrevNode;
+            // if (this.milestoneData.length > (selectedMil + 1)) {
+            //   nextNode.push(this.milestoneData[selectedMil + 1]);
+            // }
+            sentPrevNode = this.setMilestoneStartEnd(nextNode, selectedMil);
           }
         }
       }
       else {
-        sentPrevNode = this.milestoneData[selectedMil];
-        this.setStartAndEnd(sentPrevNode);
-        this.milestoneData[selectedMil] = sentPrevNode;
-        if (this.milestoneData.length > (selectedMil + 1)) {
-          nextNode.push(this.milestoneData[selectedMil + 1]);
-        }
+        // sentPrevNode = this.milestoneData[selectedMil];
+        // this.setStartAndEnd(sentPrevNode);
+        // this.milestoneData[selectedMil] = sentPrevNode;
+        // if (this.milestoneData.length > (selectedMil + 1)) {
+        //   nextNode.push(this.milestoneData[selectedMil + 1]);
+        // }
+
+        sentPrevNode = this.setMilestoneStartEnd(nextNode, selectedMil);
 
       }
     }
     if (sentPrevNode.slotType === 'Slot' && sentPrevNode.id > 0) {
-      // if ((sentPrevNode.slotType === 'Slot' && sentPrevNode.id > 0 && !sentPrevNode.clickedInput) ||
-      //   sentPrevNode.slotType === 'Slot' && sentPrevNode.clickedInput) {
       this.compareSlotSubTasksTimeline(sentPrevNode, subMilestonePosition, selectedMil)
     }
 
     if (nextNode.length) {
       nextNode.forEach(element => {
+        const elementData = element.hasOwnProperty('data') ? element.data : element;
         // stops cascading if elements cascading is disabled or task is in progress
-        if (!element.DisableCascade && element.status !== 'In Progress') {
-          // first condition checks if slot is changed due to previous task of slot and if it is updated
-          // second condition checks if slot start date is changed
-          //else {
+        if (!elementData.DisableCascade && (elementData.status === 'Not Started' || elementData.status === 'Not Confirmed' || elementData.status === 'Not Saved')) {
           this.cascadeNextTask(sentPrevNode, element, subMilestonePosition, selectedMil);
-          //}
         }
       });
     }
   }
+
+  async cascadeNextTask(previousNode, nextNode, subMilestonePosition, selectedMil) {
+    const nodeData = nextNode.hasOwnProperty('data') ? nextNode.data : nextNode;
+    const prevNodeData = previousNode.hasOwnProperty('data') ? previousNode.data : previousNode;
+    // based on slot or task use start date or end date
+    const prevNodeEndDate = ((prevNodeData.slotType === 'Slot' && nodeData.parentSlot) ?
+      // && !prevNodeData.clickedInput
+      // || (prevNodeData.slotType === 'Slot' && prevNodeData.clickedInput && prevNodeData.clickedInput === 'start' && nodeData.parentSlot) ?
+      new Date(prevNodeData.start_date) : new Date(prevNodeData.end_date));
+    if (nodeData.type === 'task') {
+      if (nodeData.status !== 'Completed' && nodeData.status !== 'Auto Closed' && prevNodeEndDate > new Date(nodeData.start_date) ) {
+        if (nodeData.itemType !== 'Client Review') {
+          this.cascadeNode(previousNode, nodeData);
+          this.cascadeNextNodes(nodeData, subMilestonePosition, selectedMil);
+        } else {
+          this.cascadeNode(previousNode, nodeData);
+          this.cascadeNextNodes(nodeData, 0, selectedMil + 1);
+        }
+      }
+    }
+    // else if (prevNodeData.itemType === 'Client Review' && nodeData.status !== 'Completed' && nodeData.status !== 'Auto Closed' && prevNodeEndDate > nodeData.start_date) {
+    //   this.cascadeNode(previousNode, nodeData);
+    //   this.cascadeNextNodes(nodeData, subMilestonePosition, selectedMil);
+    // }
+    else if (nodeData.type === 'submilestone') {
+      if (prevNodeEndDate > nodeData.start_date) {
+        const allParallelTasks = nextNode.children.filter(dataEl => {
+          return !dataEl.data.previousTask
+        });
+        allParallelTasks.forEach(element => {
+          if (!element.data.DisableCascade && element.data.status !== 'In Progress') {
+            this.cascadeNextTask(previousNode, element.data, parseInt(nodeData.position), selectedMil);
+          }
+        });
+      }
+    }
+    else if (nodeData.type === 'milestone') {
+      if (prevNodeEndDate >= nodeData.start_date) {
+        const firstTask = nextNode.children[0].data;
+        nodeData.edited = true;
+        const allTasks = this.getTasksFromMilestones(nextNode, false, false);
+        let allParallelTasks = [];
+        if (firstTask.type === 'task') {
+          allParallelTasks = allTasks.filter(dataEl => {
+            return !dataEl.previousTask
+          });
+        }
+        else {
+          nextNode.children.forEach(element => {
+            const tempData = allTasks.filter(dataEl => {
+              return (!dataEl.previousTask && (parseInt(firstTask.position) === parseInt(element.data.position)));
+            });
+            allParallelTasks.push.apply(allParallelTasks, tempData);
+          });
+        }
+        allParallelTasks.forEach(element => {
+          if (!element.DisableCascade && element.status !== 'In Progress') {
+            this.cascadeNextTask(previousNode, element, element.submilestone ? 1 : 0, selectedMil + 1);
+          }
+        });
+      }
+    }
+
+  }
+
+  // *************************************************************************************************
+  // Date changes Cascading (Task Date Change)
+  // **************************************************************************************************
+  // tslint:disable
+  async cascadeNode(previousNode, node) {
+
+    const nodeData = node.hasOwnProperty('data') ? node.data : node;
+    const prevNodeData = previousNode.hasOwnProperty('data') ? previousNode.data : previousNode;
+    const startDate = new Date(nodeData.pUserStart);
+    const endDate = new Date(nodeData.pUserEnd);
+    const workingHours = this.workingMinutesBetweenDates(startDate, endDate);
+    // Check if prev node slot then consider startdate of slot
+    const prevNodeStartDate = ((prevNodeData.slotType === 'Slot' && nodeData.parentSlot) ?
+      new Date(prevNodeData.start_date) : new Date(prevNodeData.end_date));
+    nodeData.pUserStart = this.commonService.calcTimeForDifferentTimeZone(prevNodeStartDate,
+      this.sharedObject.currentUser.timeZone, nodeData.assignedUserTimeZone);
+    nodeData.pUserEnd = this.checkEndDate(nodeData.pUserStart, workingHours);
+
+    // nodeData.pUserStartDatePart = this.getDatePart(nodeData.pUserStart);
+    // nodeData.pUserStartTimePart = this.getTimePart(nodeData.pUserStart);
+    // nodeData.pUserEndDatePart = this.getDatePart(nodeData.pUserEnd);
+    // nodeData.pUserEndTimePart = this.getTimePart(nodeData.pUserEnd);
+    // nodeData.start_date = this.commonService.calcTimeForDifferentTimeZone(nodeData.pUserStart,
+    //   nodeData.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
+    // nodeData.end_date = this.commonService.calcTimeForDifferentTimeZone(nodeData.pUserEnd,
+    //   nodeData.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
+    // nodeData.tatVal = this.commonService.calcBusinessDays(new Date(nodeData.start_date), new Date(nodeData.end_date));
+    // nodeData.edited = true;
+
+    this.changeDateProperties(nodeData);
+    if (nodeData.IsCentrallyAllocated === 'Yes' && node.slotType !== 'Slot' && !node.parentSlot) {
+      nodeData.user = nodeData.skillLevel;
+    }
+  }
+  // tslint:enable
+
+  getSortedDates(node) {
+    node.data.end_date = node.children !== undefined && node.children.length > 0 ? this.sortDates(node, 'end') : node.data.end_date;
+    node.data.start_date = node.children !== undefined && node.children.length > 0 ? this.sortDates(node, 'start') : node.data.start_date;
+  }
+
+  setStartAndEnd(node) {
+    if (node.data.itemType === 'Client Review') {
+      this.getSortedDates(node);
+      this.setDatePartAndTimePart(node.data);
+      // node.data.pUserStartDatePart = this.getDatePart(node.data.pUserStart);
+      // node.data.pUserStartTimePart = this.getTimePart(node.data.pUserStart);
+      // node.data.pUserEndDatePart = this.getDatePart(node.data.pUserEnd);
+      // node.data.pUserEndTimePart = this.getTimePart(node.data.pUserEnd);
+      // node.data.tatVal = this.commonService.calcBusinessDays(new Date(node.data.end_date), new Date(node.data.start_date));
+    } else if (node.data.status !== 'Completed') {
+      this.getSortedDates(node);
+      node.data.pUserStart = node.data.start_date;
+      node.data.pUserEnd = node.data.end_date;
+      this.setDatePartAndTimePart(node.data);
+      // node.data.pUserStartDatePart = this.getDatePart(node.data.pUserStart);
+      // node.data.pUserStartTimePart = this.getTimePart(node.data.pUserStart);
+      // node.data.pUserEndDatePart = this.getDatePart(node.data.pUserEnd);
+      // node.data.pUserEndTimePart = this.getTimePart(node.data.pUserEnd);
+      // node.data.tatVal = this.commonService.calcBusinessDays(new Date(node.data.start_date), new Date(node.data.end_date));
+    }
+  }
+
+  sortDates(node, type) {
+    const nodeCopy = Object.assign({}, node).children.filter(c =>
+      c.data.itemType.toLowerCase() !== 'adhoc' && c.data.itemType.toLowerCase() !== 'tb');
+    switch (type) {
+      case 'start':
+        nodeCopy.sort((a, b) => {
+          const startDate = new Date(a.data.start_date);
+          const dueDate = new Date(b.data.start_date);
+          return startDate > dueDate ? 1 : -1;
+        });
+        return nodeCopy[0].data.start_date;
+      case 'end':
+        nodeCopy.sort((a, b) => {
+          const startDate = new Date(a.data.end_date);
+          const dueDate = new Date(b.data.end_date);
+          return dueDate > startDate ? 1 : -1;
+        });
+        return nodeCopy[0].data.end_date;
+      default:
+        nodeCopy.sort((a, b) => {
+          const startDate = new Date(a.data.start_date);
+          const dueDate = new Date(b.data.start_date);
+          return startDate > dueDate ? 1 : -1;
+        });
+        return nodeCopy[0];
+    }
+  }
+
+  getDefaultStartDate(node) {
+    return new Date(node.pUserStart.getFullYear(), node.pUserStart.getMonth(), node.pUserStart.getDate(), 9, 0);
+  }
+
+  getDefaultEndDate(node) {
+    return new Date(node.pUserStart.getFullYear(), node.pUserStart.getMonth(), node.pUserStart.getDate(), 19, 0);
+  }
+
+  setDatePartAndTimePart(node) {
+    node.pUserStartDatePart = this.getDatePart(node.pUserStart);
+    node.pUserStartTimePart = this.getTimePart(node.pUserStart);
+    node.pUserEndDatePart = this.getDatePart(node.pUserEnd);
+    node.pUserEndTimePart = this.getTimePart(node.pUserEnd);
+    node.tatVal = this.commonService.calcBusinessDays(new Date(node.start_date), new Date(node.end_date));
+  }
+
+  changeUserTimeZoneToCurrent(node) {
+    node.start_date = this.commonService.calcTimeForDifferentTimeZone(node.pUserStart,
+      node.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
+    node.end_date = this.commonService.calcTimeForDifferentTimeZone(node.pUserEnd,
+      node.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
+  }
+
+  changeUserTimeZone(node, previousTimezone, newTimeZone) {
+    node.pUserStart = this.commonService.calcTimeForDifferentTimeZone(node.pUserStart,
+      previousTimezone, newTimeZone);
+    node.pUserEnd = this.commonService.calcTimeForDifferentTimeZone(node.pUserEnd,
+      previousTimezone, newTimeZone);
+  }
+
+  changeDateProperties(node) {
+    this.changeUserTimeZoneToCurrent(node);
+    this.setDatePartAndTimePart(node);
+  }
+
+  changeDateOfEditedTask(node, type) {
+    node.pUserStart = node.tat === true && node.itemType !== 'Client Review' ?
+      this.getDefaultStartDate(node) : node.pUserStart;
+    node.pUserEnd = type === 'start' && node.pUserStart > node.pUserEnd ? (node.tat === true ?
+      this.getDefaultEndDate(node) : node.pUserStart) : node.pUserEnd;
+    this.changeDateProperties(node);
+    node.edited = true;
+    if (node.IsCentrallyAllocated === 'Yes' && node.slotType !== 'Slot' && !node.parentSlot) {
+      node.user = node.skillLevel;
+    }
+  }
+
+  resetStartAndEnd() {
+    this.milestoneData.forEach(milestone => {
+      if (milestone.children !== undefined) {
+        milestone.children.forEach(submilestone => {
+          if (submilestone.data.type === 'submilestone') {
+            this.setStartAndEnd(submilestone);
+          }
+        });
+      }
+      this.setStartAndEnd(milestone);
+    });
+  }
+
+  // tslint:enable
+
+  // *************************************************************************************************************************************
+  // Calculate Working Hours between Dates
+  // *************************************************************************************************************************************
+
+  workingMinutesBetweenDates(start, end) {
+    let count = 0;
+    for (let i = start.valueOf(); i < end.valueOf(); i = (start.setMinutes(start.getMinutes() + 1)).valueOf()) {
+      if (start.getDay() !== 0 && start.getDay() !== 6) { // && start.getHours() >= 9 && start.getHours() < 19
+        count++;
+      }
+    }
+    return count;
+  }
+
+  // **************************************************************************************************
+  // Check Start Date
+  // *************************************************************************************************
+
+
+  // private checkStartDate(date) {
+  //   date.setDate(date.getDay() === 6 ? date.getDate() + 2 : date.getDay() === 0 ? date.getDate() + 1 : date.getDate() + 0);
+  //   return new Date(date);
+  // }
+
+
+  // *************************************************************************************************************************************
+  // Calculate  End  Date  after working hours difference
+  // *************************************************************************************************************************************
+
+  checkEndDate(start, workingMinutes) {
+    let count = 0;
+    let EndDate = new Date(start);
+    //let CaculateDate = new Date(start);
+    while (count < workingMinutes) {
+      if (EndDate.getDay() !== 0 && EndDate.getDay() !== 6) {
+        EndDate = new Date(EndDate.setMinutes(EndDate.getMinutes() + 1));
+        //CaculateDate = new Date(EndDate);
+        count++;
+      }
+      else {
+        EndDate = new Date(EndDate.getFullYear(), EndDate.getMonth(), (EndDate.getDate() + 1), 0, 0);
+        //CaculateDate = new Date(EndDate);
+      }
+    }
+    return EndDate;
+  }
+
+  // *************************************************************************************************************************************
+  // Calculate  Start End Date On Tat
+  // *************************************************************************************************************************************
+  async ChangeEndDate($event, node) {
+    if ($event) {
+      const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
+        return node.AssignedTo.ID === objt.UserName.ID;
+      });
+      // node.start_date = new Date(node.start_date.getFullYear(), node.start_date.getMonth(), node.start_date.getDate(), 9, 0);
+      // node.end_date = new Date(node.start_date.getFullYear(), node.start_date.getMonth(), node.start_date.getDate(), 19, 0);
+      node.pUserStart = new Date(node.pUserStart.getFullYear(), node.pUserStart.getMonth(), node.pUserStart.getDate(), 9, 0);
+      node.pUserEnd = new Date(node.pUserEnd.getFullYear(), node.pUserEnd.getMonth(), node.pUserEnd.getDate(), 19, 0);
+      // node.pUserStartDatePart = this.getDatePart(node.pUserStart);
+      // node.pUserStartTimePart = this.getTimePart(node.pUserStart);
+      // node.pUserEndDatePart = this.getDatePart(node.pUserEnd);
+      // node.pUserEndTimePart = this.getTimePart(node.pUserEnd);
+      // node.start_date = this.commonService.calcTimeForDifferentTimeZone(node.pUserStart,
+      //   node.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
+      // node.end_date = this.commonService.calcTimeForDifferentTimeZone(node.pUserEnd,
+      //   node.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
+      // node.tatVal = this.commonService.calcBusinessDays(new Date(node.start_date), new Date(node.end_date));
+      this.changeDateProperties(node);
+      await this.dailyAllocateTask(resource, node);
+      this.DateChange(node, 'end');
+    }
+  }
+
+  // *************************************************************************************************************************************
+  // Cascade Slot sub tasks 
+  // *************************************************************************************************************************************
+
 
   /**
    * Cascading slot subtasks if start date of slot is changed
@@ -3241,8 +3370,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       const submilestone = this.milestoneData[selectedMil].children.find(sm => sm.data.title === sentPrevNode1.submilestone);
       sentPrevNode = submilestone.children.find(st => st.data.title === sentPrevNode1.title);
     }
-    // const sentPrevNode = subMilestonePosition === 0 ?  :
-    //   this.milestoneData[selectedMil].children[subMilestonePosition - 1].children.find(st => st.data.title === sentPrevNode1.title);
 
     let slotFirstTask = sentPrevNode ? sentPrevNode.children ? sentPrevNode.children.filter(st => !st.data.previousTask) : [] : [];
     // cascade if slot start date is more than first subtask in slot
@@ -3252,7 +3379,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         let slotFirstTaskSorted = this.sortByDate(slotFirstTask, 'pUserStart', 'asc');
         if (sentPrevNode.data.start_date > slotFirstTaskSorted[0].data.start_date) {
           slotFirstTaskSorted.forEach(element => {
-            if (!element.data.DisableCascade && element.data.status !== 'In Progress') {
+            if (!element.data.DisableCascade && (element.data.status === 'Not Started')) {
               this.cascadeNextTask(sentPrevNode, element, subMilestonePosition, selectedMil);
             }
           });
@@ -3400,184 +3527,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     }
   }
 
-  async cascadeNextTask(previousNode, nextNode, subMilestonePosition, selectedMil) {
-    const nodeData = nextNode.hasOwnProperty('data') ? nextNode.data : nextNode;
-    const prevNodeData = previousNode.hasOwnProperty('data') ? previousNode.data : previousNode;
-    // based on slot or task use start date or end date
-    const prevNodeEndDate = ((prevNodeData.slotType === 'Slot' && nodeData.parentSlot) ?
-      // && !prevNodeData.clickedInput
-      // || (prevNodeData.slotType === 'Slot' && prevNodeData.clickedInput && prevNodeData.clickedInput === 'start' && nodeData.parentSlot) ?
-      new Date(prevNodeData.start_date) : new Date(prevNodeData.end_date));
-    if (nodeData.type === 'task' && nodeData.itemType !== 'Client Review') {
-      if (new Date(prevNodeEndDate) > new Date(nodeData.start_date) && nodeData.status !== 'Completed' && nodeData.status !== 'Auto Closed') {
-        this.cascadeNode(previousNode, nodeData);
-        this.cascadeNextNodes(nodeData, subMilestonePosition, selectedMil);
-      }
-      else if (new Date(prevNodeEndDate).getTime() === new Date(nodeData.start_date).getTime() && prevNodeData.itemType === 'Client Review' && nodeData.status !== 'Completed' && nodeData.status !== 'Auto Closed') {
-        this.cascadeNode(previousNode, nodeData);
-        this.cascadeNextNodes(nodeData, subMilestonePosition, selectedMil);
-      }
-    }
-    else if (nodeData.type === 'task' && nodeData.itemType === 'Client Review') {
-      if (new Date(prevNodeEndDate) >= new Date(nodeData.start_date) && nodeData.status !== 'Completed' && nodeData.status !== 'Auto Closed') {
-        this.cascadeNode(previousNode, nodeData);
-        this.cascadeNextNodes(nodeData, 0, selectedMil + 1);
-      }
-    }
-    else if (nodeData.type === 'submilestone') {
-      if (new Date(prevNodeEndDate) > new Date(nodeData.start_date)) {
-        const allParallelTasks = nextNode.children.filter(dataEl => {
-          return !dataEl.data.previousTask
-        });
-        allParallelTasks.forEach(element => {
-          if (!element.data.DisableCascade && element.data.status !== 'In Progress') {
-            this.cascadeNextTask(previousNode, element.data, parseInt(nodeData.position), selectedMil);
-          }
-        });
-      }
-    }
-    else if (nodeData.type === 'milestone') {
-      if (new Date(prevNodeEndDate) >= new Date(nodeData.start_date)) {
-        const firstTask = nextNode.children[0].data;
-        nodeData.edited = true;
-        const allTasks = this.getTasksFromMilestones(nextNode, false, false);
-        let allParallelTasks = [];
-        if (firstTask.type === 'task') {
-          allParallelTasks = allTasks.filter(dataEl => {
-            return !dataEl.previousTask
-          });
-        }
-        else {
-          nextNode.children.forEach(element => {
-
-            const tempData = allTasks.filter(dataEl => {
-              return (!dataEl.previousTask && (parseInt(firstTask.position) === parseInt(element.data.position)));
-            });
-            allParallelTasks.push.apply(allParallelTasks, tempData);
-          });
-        }
-        allParallelTasks.forEach(element => {
-
-          if (!element.DisableCascade && element.status !== 'In Progress') {
-            this.cascadeNextTask(previousNode, element, element.submilestone ? 1 : 0, selectedMil + 1);
-          }
-        });
-      }
-    }
-
-  }
-
-  // tslint:enable
-
-  // *************************************************************************************************************************************
-  // Calculate Working Hours between Dates
-  // *************************************************************************************************************************************
-
-  workingHoursBetweenDates(start, end) {
-    let count = 0;
-    for (let i = start.valueOf(); i < end.valueOf(); i = (start.setMinutes(start.getMinutes() + 1)).valueOf()) {
-      if (start.getDay() !== 0 && start.getDay() !== 6) { // && start.getHours() >= 9 && start.getHours() < 19
-        count++;
-      }
-    }
-    return count / 60;
-  }
-
-  // **************************************************************************************************
-  // Check Start Date
-  // *************************************************************************************************
-
-
-  private checkStartDate(date) {
-    date.setDate(date.getDay() === 6 ? date.getDate() + 2 : date.getDay() === 0 ? date.getDate() + 1 : date.getDate() + 0);
-    return new Date(date);
-  }
-
-
-  // *************************************************************************************************************************************
-  // Calculate  End  Date  after working hours difference
-  // *************************************************************************************************************************************
-
-
-  checkEndDate(start, workingHours) {
-    let count = 0;
-    let EndDate = new Date(start);
-    let CaculateDate = new Date(start);
-    const workHours = workingHours * 60;
-    while (count < workHours) {
-
-      if (EndDate.getDay() !== 0 && EndDate.getDay() !== 6) { // && EndDate.getHours() >= 9 && EndDate.getHours() < 19
-        EndDate = new Date(EndDate.setMinutes(EndDate.getMinutes() + 1));
-        CaculateDate = new Date(EndDate);
-        count++;
-      }
-      // else if (EndDate.getHours() === 19 && EndDate.getMinutes() === 0) {
-
-      //   CaculateDate = new Date(EndDate);
-      //   EndDate = new Date(EndDate.setMinutes(EndDate.getMinutes() + 1));
-      //   count--;
-      // }
-      else {
-        EndDate = new Date(EndDate.getFullYear(), EndDate.getMonth(), (EndDate.getDate() + 1), 9, 0);
-        CaculateDate = new Date(EndDate);
-        count--;
-      }
-
-      // if (EndDate.getHours() >= 9 && EndDate.getHours() <= 19) { count++; }
-    }
-
-    // while (count < workHours) {
-    //   if (EndDate.getDay() !== 0 && EndDate.getDay() !== 6) { // && EndDate.getHours() >= 9 && EndDate.getHours() < 19
-    //     EndDate = new Date(EndDate.setMinutes(EndDate.getMinutes() + 1));
-    //     CaculateDate = new Date(EndDate);
-    //   } else {
-    //     EndDate = new Date(EndDate.getFullYear(), EndDate.getMonth(), (EndDate.getDate() + 1), 9, 0);
-    //     CaculateDate = new Date(EndDate);
-    //   }
-    //   count++;
-    //   // else if (EndDate.getHours() === 19 && EndDate.getMinutes() === 0) {
-
-    //   //   CaculateDate = new Date(EndDate);
-    //   //   EndDate = new Date(EndDate.setMinutes(EndDate.getMinutes() + 1));
-    //   //   count--;
-    //   // } else {
-    //   //   EndDate = new Date(EndDate.getFullYear(), EndDate.getMonth(), (EndDate.getDate() + 1), 9, 0);
-    //   //   CaculateDate = new Date(EndDate);
-    //   //   count--;
-    //   // }
-    //   // if (EndDate.getHours() >= 9 && EndDate.getHours() <= 19) { }
-    // }
-    return CaculateDate;
-  }
-
-  // *************************************************************************************************************************************
-  // Calculate  Start End Date On Tat
-  // *************************************************************************************************************************************
-
-
-  async ChangeEndDate($event, node) {
-    if ($event) {
-      const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
-        return node.AssignedTo.ID === objt.UserName.ID;
-      });
-      // node.start_date = new Date(node.start_date.getFullYear(), node.start_date.getMonth(), node.start_date.getDate(), 9, 0);
-      // node.end_date = new Date(node.start_date.getFullYear(), node.start_date.getMonth(), node.start_date.getDate(), 19, 0);
-      node.pUserStart = new Date(node.pUserStart.getFullYear(), node.pUserStart.getMonth(), node.pUserStart.getDate(), 9, 0);
-      node.pUserEnd = new Date(node.pUserEnd.getFullYear(), node.pUserEnd.getMonth(), node.pUserEnd.getDate(), 19, 0);
-      node.pUserStartDatePart = this.getDatePart(node.pUserStart);
-      node.pUserStartTimePart = this.getTimePart(node.pUserStart);
-      node.pUserEndDatePart = this.getDatePart(node.pUserEnd);
-      node.pUserEndTimePart = this.getTimePart(node.pUserEnd);
-      node.start_date = this.commonService.calcTimeForDifferentTimeZone(node.pUserStart,
-        node.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
-      node.end_date = this.commonService.calcTimeForDifferentTimeZone(node.pUserEnd,
-        node.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
-      node.tatVal = this.commonService.calcBusinessDays(new Date(node.start_date), new Date(node.end_date));
-      this.DateChange(node, 'end', false);
-      await this.dailyAllocateTask(resource, node);
-    }
-  }
-
 
   // *************************************************************************************************
   // Save tasks
@@ -3615,6 +3564,62 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     return arrData;
   }
 
+  updateResourcesForProject(milestoneTask,
+    writers, arrWriterIDs,
+    qualityChecker, arrQualityCheckerIds,
+    editors, arrEditorsIds,
+    graphics, arrGraphicsIds,
+    pubSupport, arrPubSupportIds,
+    reviewers, arrReviewers) {
+    if (milestoneTask.AssignedTo && milestoneTask.AssignedTo.hasOwnProperty('ID') && milestoneTask.AssignedTo.ID !== -1) {
+      switch (milestoneTask.itemType) {
+        case 'Write':
+          writers.push({ ID: milestoneTask.AssignedTo.ID, Name: milestoneTask.AssignedTo.Title });
+          arrWriterIDs.push(milestoneTask.AssignedTo.ID);
+          break;
+        case 'QC':
+          qualityChecker.push({ ID: milestoneTask.AssignedTo.ID, Name: milestoneTask.AssignedTo.Title });
+          arrQualityCheckerIds.push(milestoneTask.AssignedTo.ID);
+          break;
+        case 'Edit':
+          editors.push({ ID: milestoneTask.AssignedTo.ID, Name: milestoneTask.AssignedTo.Title });
+          arrEditorsIds.push(milestoneTask.AssignedTo.ID);
+          break;
+        case 'Graphics':
+          graphics.push({ ID: milestoneTask.AssignedTo.ID, Name: milestoneTask.AssignedTo.Title });
+          arrGraphicsIds.push(milestoneTask.AssignedTo.ID);
+          break;
+        case 'Send to client':
+        case 'Client Review':
+          break;
+        case 'Pub Support':
+        case 'Submission Pkg':
+        case 'Journal Selection':
+        case 'Submit':
+        case 'Galley':
+        case 'Journal Requirement':
+          pubSupport.push({ ID: milestoneTask.AssignedTo.ID, Name: milestoneTask.AssignedTo.Title });
+          arrPubSupportIds.push(milestoneTask.AssignedTo.ID);
+          break;
+        default:
+          if (milestoneTask.itemType.startsWith('Review-')) {
+            reviewers.push({ ID: milestoneTask.AssignedTo.ID, Name: milestoneTask.AssignedTo.Title });
+            arrReviewers.push(milestoneTask.AssignedTo.ID);
+          }
+          break;
+      }
+    }
+  }
+
+  setSchedulesObject(scObj, batchUrl) {
+    const obj = Object.assign({}, this.queryConfig);
+    obj.url = scObj.url;
+    obj.listName = this.constants.listNames.Schedules.name;
+    obj.type = 'POST';
+    obj.data = scObj.body;
+    batchUrl.push(obj);
+  }
+
   async setMilestone(addTaskItems, updateTaskItems, addMilestoneItems, updateMilestoneItems) {
     let updatedCurrentMilestone = false;
     // tslint:disable-next-line: one-variable-per-declaration
@@ -3638,86 +3643,24 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     arrPrimaryResourcesIds = this.getIDFromItem(this.oProjectDetails.primaryResources);
 
     for (const milestoneTask of addTaskItems) {
-      if (milestoneTask.AssignedTo && milestoneTask.AssignedTo.hasOwnProperty('ID') && milestoneTask.AssignedTo.ID !== -1) {
-        switch (milestoneTask.itemType) {
-          case 'Write':
-            writers.push({ ID: milestoneTask.AssignedTo.ID, Name: milestoneTask.AssignedTo.Title });
-            arrWriterIDs.push(milestoneTask.AssignedTo.ID);
-            break;
-          case 'QC':
-            qualityChecker.push({ ID: milestoneTask.AssignedTo.ID, Name: milestoneTask.AssignedTo.Title });
-            arrQualityCheckerIds.push(milestoneTask.AssignedTo.ID);
-            break;
-          case 'Edit':
-            editors.push({ ID: milestoneTask.AssignedTo.ID, Name: milestoneTask.AssignedTo.Title });
-            arrEditorsIds.push(milestoneTask.AssignedTo.ID);
-            break;
-          case 'Graphics':
-            graphics.push({ ID: milestoneTask.AssignedTo.ID, Name: milestoneTask.AssignedTo.Title });
-            arrGraphicsIds.push(milestoneTask.AssignedTo.ID);
-            break;
-          case 'Send to client':
-          case 'Client Review':
-            break;
-          case 'Pub Support':
-          case 'Submission Pkg':
-          case 'Journal Selection':
-          case 'Submit':
-          case 'Galley':
-          case 'Journal Requirement':
-            pubSupport.push({ ID: milestoneTask.AssignedTo.ID, Name: milestoneTask.AssignedTo.Title });
-            arrPubSupportIds.push(milestoneTask.AssignedTo.ID);
-            break;
-          default:
-            if (milestoneTask.itemType.startsWith('Review-')) {
-              reviewers.push({ ID: milestoneTask.AssignedTo.ID, Name: milestoneTask.AssignedTo.Title });
-              arrReviewers.push(milestoneTask.AssignedTo.ID);
-            }
-            break;
-        }
-      }
+      this.updateResourcesForProject(milestoneTask,
+        writers, arrWriterIDs,
+        qualityChecker, arrQualityCheckerIds,
+        editors, arrEditorsIds,
+        graphics, arrGraphicsIds,
+        pubSupport, arrPubSupportIds,
+        reviewers, arrReviewers)
 
       addTasks.push(await this.setMilestoneTaskForAddUpdate(milestoneTask, true));
     }
     for (const milestoneTask of updateTaskItems) {
-      if (milestoneTask.AssignedTo && milestoneTask.AssignedTo.hasOwnProperty('ID') && milestoneTask.AssignedTo.ID !== -1) {
-        switch (milestoneTask.itemType) {
-          case 'Write':
-            writers.push({ ID: milestoneTask.AssignedTo.ID, Name: milestoneTask.AssignedTo.Title });
-            arrWriterIDs.push(milestoneTask.AssignedTo.ID);
-            break;
-          case 'QC':
-            qualityChecker.push({ ID: milestoneTask.AssignedTo.ID, Name: milestoneTask.AssignedTo.Title });
-            arrQualityCheckerIds.push(milestoneTask.AssignedTo.ID);
-            break;
-          case 'Edit':
-            editors.push({ ID: milestoneTask.AssignedTo.ID, Name: milestoneTask.AssignedTo.Title });
-            arrEditorsIds.push(milestoneTask.AssignedTo.ID);
-            break;
-          case 'Graphics':
-            graphics.push({ ID: milestoneTask.AssignedTo.ID, Name: milestoneTask.AssignedTo.Title });
-            arrGraphicsIds.push(milestoneTask.AssignedTo.ID);
-            break;
-          case 'Send to client':
-          case 'Client Review':
-            break;
-          case 'Pub Support':
-          case 'Submission Pkg':
-          case 'Journal Selection':
-          case 'Submit':
-          case 'Galley':
-          case 'Journal Requirement':
-            pubSupport.push({ ID: milestoneTask.AssignedTo.ID, Name: milestoneTask.AssignedTo.Title });
-            arrPubSupportIds.push(milestoneTask.AssignedTo.ID);
-            break;
-          default:
-            if (milestoneTask.itemType.startsWith('Review-')) {
-              reviewers.push({ ID: milestoneTask.AssignedTo.ID, Name: milestoneTask.AssignedTo.Title });
-              arrReviewers.push(milestoneTask.AssignedTo.ID);
-            }
-            break;
-        }
-      }
+      this.updateResourcesForProject(milestoneTask,
+        writers, arrWriterIDs,
+        qualityChecker, arrQualityCheckerIds,
+        editors, arrEditorsIds,
+        graphics, arrGraphicsIds,
+        pubSupport, arrPubSupportIds,
+        reviewers, arrReviewers)
 
       updateTasks.push(await this.setMilestoneTaskForAddUpdate(milestoneTask, false));
     }
@@ -3731,23 +3674,25 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     }
 
     for (const mil of addMilestones) {
+      this.setSchedulesObject(mil, batchUrl);
       // this.spServices.getChangeSetBodySC(batchContents, changeSetId, mil.url, mil.body, true);
-      const milObj = Object.assign({}, this.queryConfig);
-      milObj.url = mil.url;
-      milObj.listName = this.constants.listNames.Schedules.name;
-      milObj.type = 'POST';
-      milObj.data = mil.body;
-      batchUrl.push(milObj);
+      // const milObj = Object.assign({}, this.queryConfig);
+      // milObj.url = mil.url;
+      // milObj.listName = this.constants.listNames.Schedules.name;
+      // milObj.type = 'POST';
+      // milObj.data = mil.body;
+      // batchUrl.push(milObj);
     }
 
     for (const tasks of addTasks) {
+      this.setSchedulesObject(tasks, batchUrl);
       // this.spServices.getChangeSetBodySC(batchContents, changeSetId, tasks.url, tasks.body, true);
-      const milTaskObj = Object.assign({}, this.queryConfig);
-      milTaskObj.url = tasks.url;
-      milTaskObj.listName = this.constants.listNames.Schedules.name;
-      milTaskObj.type = 'POST';
-      milTaskObj.data = tasks.body;
-      batchUrl.push(milTaskObj);
+      // const milTaskObj = Object.assign({}, this.queryConfig);
+      // milTaskObj.url = tasks.url;
+      // milTaskObj.listName = this.constants.listNames.Schedules.name;
+      // milTaskObj.type = 'POST';
+      // milTaskObj.data = tasks.body;
+      // batchUrl.push(milTaskObj);
     }
 
     for (const mil of addMilestoneItems) {
@@ -3765,24 +3710,24 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       // this.spServices.getChangeSetBodySC(batchContents, changeSetId, milestoneFolderEndpoint, JSON.stringify(milestoneFolderBody), true);
     }
     for (const mil of updateMilestones) {
+      this.setSchedulesObject(mil, batchUrl);
       // this.spServices.getChangeSetBodySC(batchContents, changeSetId, mil.url, mil.body, false);
-      const milObj = Object.assign({}, this.queryConfig);
-      milObj.url = mil.url;
-      milObj.listName = this.constants.listNames.Schedules.name;
-      milObj.type = 'PATCH';
-      milObj.data = mil.body;
-      batchUrl.push(milObj);
+      // const milObj = Object.assign({}, this.queryConfig);
+      // milObj.url = mil.url;
+      // milObj.listName = this.constants.listNames.Schedules.name;
+      // milObj.type = 'PATCH';
+      // milObj.data = mil.body;
+      // batchUrl.push(milObj);
     }
     for (const tasks of updateTasks) {
-
-
+      this.setSchedulesObject(tasks, batchUrl);
       // this.spServices.getChangeSetBodySC(batchContents, changeSetId, tasks.url, tasks.body, false);
-      const taskObj = Object.assign({}, this.queryConfig);
-      taskObj.url = tasks.url;
-      taskObj.listName = this.constants.listNames.Schedules.name;
-      taskObj.type = 'PATCH';
-      taskObj.data = tasks.body;
-      batchUrl.push(taskObj);
+      // const taskObj = Object.assign({}, this.queryConfig);
+      // taskObj.url = tasks.url;
+      // taskObj.listName = this.constants.listNames.Schedules.name;
+      // taskObj.type = 'PATCH';
+      // taskObj.data = tasks.body;
+      // batchUrl.push(taskObj);
     }
 
     arrWriterIDs = arrWriterIDs.filter((el) => {
@@ -4447,6 +4392,31 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   // tslint:enable
 
+  validateTaskDates(AllTasks) {
+    let errorPresnet = false;
+    const taskCount = AllTasks.length;
+    for (let i = 0; i < taskCount; i = i + 1) {
+      const task = AllTasks[i];
+      if (task.nextTask && task.status !== 'Completed'
+        && task.status !== 'Auto Closed' && task.status !== 'Deleted') {
+        const nextTasks = task.nextTask.split(';');
+        const AllNextTasks = AllTasks.filter(c => (nextTasks.indexOf(c.title) > -1));
+
+        const SDTask = AllNextTasks.find(c => c.start_date < task.end_date && c.status !== 'Completed'
+          && c.status !== 'Auto Closed' && c.status !== 'Deleted' && c.allowStart === false);
+        if (SDTask) {
+          this.messageService.add({
+            key: 'custom', severity: 'warn', summary: 'Warning Message',
+            detail: 'Start Date of ' + SDTask.title + '  should be greater than end date of ' + task.title + ' in ' + task.milestone
+          });
+          errorPresnet = true;
+          break;
+        }
+      }
+    }
+    return errorPresnet;
+  }
+
   validateNextMilestone(subMile) {
 
     let validateNextMilestone = true;
@@ -5078,38 +5048,24 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
 
-  getExistindData(oExistingTask) {
+  getExistingData(oExistingTask) {
     oExistingTask.start_date = new Date(oExistingTask.start_date);
     oExistingTask.end_date = new Date(oExistingTask.end_date);
     oExistingTask.pUserStart = new Date(oExistingTask.pUserStart);
     oExistingTask.pUserEnd = new Date(oExistingTask.pUserEnd);
-    oExistingTask.pUserStartDatePart = this.getDatePart(oExistingTask.pUserStart);
-    oExistingTask.pUserStartTimePart = this.getTimePart(oExistingTask.pUserStart);
-    oExistingTask.pUserEndDatePart = this.getDatePart(oExistingTask.pUserEnd);
-    oExistingTask.pUserEndTimePart = this.getTimePart(oExistingTask.pUserEnd);
-    oExistingTask.tatVal = this.commonService.calcBusinessDays(new Date(oExistingTask.start_date), new Date(oExistingTask.end_date));
 
+    this.setDatePartAndTimePart(oExistingTask);
+
+    // oExistingTask.pUserStartDatePart = this.getDatePart(oExistingTask.pUserStart);
+    // oExistingTask.pUserStartTimePart = this.getTimePart(oExistingTask.pUserStart);
+    // oExistingTask.pUserEndDatePart = this.getDatePart(oExistingTask.pUserEnd);
+    // oExistingTask.pUserEndTimePart = this.getTimePart(oExistingTask.pUserEnd);
+    // oExistingTask.tatVal = this.commonService.calcBusinessDays(new Date(oExistingTask.start_date), new Date(oExistingTask.end_date));
 
     return oExistingTask;
   }
   // tslint:enable
 
-
-  CascadeDialog() {
-
-    const ref = this.dialogService.open(CascadeDialogComponent, {
-      data: {
-
-      },
-      header: 'Cascading Data',
-      width: '80vw',
-      contentStyle: { 'min-height': '30vh', 'max-height': '90vh', 'overflow-y': 'auto' }
-    });
-    ref.onClose.subscribe(async (taskobj: any) => {
-
-    });
-
-  }
 
   trackByFn(index, item) {
     return index; // or item.id

@@ -19,7 +19,6 @@ import { TaskDetailsDialogComponent } from './task-details-dialog/task-details-d
 import { ResourcesComponent } from './resources/resources.component';
 import { UserCapacityModule } from '../shared/usercapacity/usercapacity.module';
 import { UsercapacityComponent } from '../shared/usercapacity/usercapacity.component';
-import { CascadeDialogComponent } from './cascade-dialog/cascade-dialog.component';
 import { GanttChartModule } from '../shared/gantt-chart/gantt-chart.module';
 import { GanttChartComponent } from '../shared/gantt-chart/gantt-chart.component';
 import { DailyAllocationComponent } from './daily-allocation/daily-allocation.component';
@@ -30,7 +29,7 @@ import { DailyAllocationOverlayComponent } from './daily-allocation-overlay/dail
 
 @NgModule({
   declarations: [TaskAllocationComponent, TimelineComponent, DragDropComponent,
-     TaskDetailsDialogComponent, ResourcesComponent, CascadeDialogComponent, DailyAllocationComponent, NgsliderComponent, DailyAllocationOverlayComponent,GanttEdittaskComponent],
+     TaskDetailsDialogComponent, ResourcesComponent, DailyAllocationComponent, NgsliderComponent, DailyAllocationOverlayComponent,GanttEdittaskComponent],
   imports: [
     CommonModule,
     TaskAllocationRoutingModule,
