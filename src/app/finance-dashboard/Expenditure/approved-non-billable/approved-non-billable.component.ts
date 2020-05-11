@@ -490,7 +490,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         if (type === 'markAsPayment_form') {
             if (this.markAsPayment_form.invalid) {
                 return;
-            } else if (this.selectedFile.size === 0) {
+            } else if ( this.selectedFile && this.selectedFile.size === 0) {
                 this.messageService.add({
                     key: 'approvedNonBToast', severity: 'error',
                     summary: 'Error message', detail: 'Unable to upload file, size of ' + this.selectedFile.name + ' is 0 KB.', life: 2000

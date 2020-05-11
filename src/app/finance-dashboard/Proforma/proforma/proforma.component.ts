@@ -1493,7 +1493,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             if (this.replaceProforma_form.invalid) {
                 return;
             }
-            else if (this.selectedFile.size === 0) {
+            else if (this.selectedFile && this.selectedFile.size === 0) {
                 this.messageService.add({
                     key: 'proformaSuccessToast', severity: 'error',
                     summary: 'Error message', detail: 'Unable to upload file, size of ' + this.selectedFile.name + ' is 0 KB.', life: 2000

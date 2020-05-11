@@ -877,7 +877,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             if (this.approveExpense_form.invalid) {
                 return;
             }
-            else if (this.selectedFile.size === 0) {
+            else if (this.selectedFile && this.selectedFile.size === 0) {
                 this.messageService.add({
                     key: 'pendingExpenseToast', severity: 'error',
                     summary: 'Error message', detail: 'Unable to upload file, size of ' + this.selectedFile.name + ' is 0 KB.', life: 2000

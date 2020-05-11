@@ -2331,7 +2331,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     let sentPrevNode = undefined;
     if (previousNode.nextTask && previousNode.nextTask.indexOf('Client Review') === -1) {
       const currMil = this.milestoneData[selectedMil];
-      const allMilestoneTasks = this.getTasksFromMilestones(currMil, false, false);
+      const allMilestoneTasks = this.getTasksFromMilestones(currMil, false, true);
       const nextTasks = previousNode.nextTask.split(';');
       let retNodes = undefined;
       if (subMilestonePosition !== 0) {
