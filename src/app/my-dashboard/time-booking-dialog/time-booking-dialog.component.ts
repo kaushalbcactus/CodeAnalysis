@@ -81,8 +81,6 @@ export class TimeBookingDialogComponent implements OnInit {
     private dialogService: DialogService,
   ) { }
 
-
-
   async ngOnInit() {
     this.modalloaderenable = true;
     this.getAllClients();
@@ -158,9 +156,8 @@ export class TimeBookingDialogComponent implements OnInit {
     rowData.dbMilestones = [{ label: 'Select Milestone', value: null }];
     rowData.ProjectCode = projectCode;
     this.batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
-    const AllMilestones = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.AllMilestones);
 
+    const AllMilestones = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.AllMilestones);
     const month = this.MainminDate.getMonth() + 1;
     const EndDate = this.MainminDate.getFullYear() + '-' + (month < 10 ? '0' + month : month) + '-' +
       (this.MainminDate.getDate() < 10 ? '0' + this.MainminDate.getDate() : this.MainminDate.getDate()) + 'T23:59:00.000Z';
@@ -178,11 +175,9 @@ export class TimeBookingDialogComponent implements OnInit {
     // this.response[0].map(o => new Object({ label: o.Title, value: o.Title }))
     const subMileArray = [];
     Milestones.forEach(element => {
-
       if (element.SubMilestones) {
         const SubMilestone = element.SubMilestones.split(';#');
         SubMilestone.forEach((value, i) => {
-
           const tempValue = value.split(':');
           if (tempValue[2] !== 'Not Confirmed') {
             subMileArray.push(new Object({
@@ -190,20 +185,12 @@ export class TimeBookingDialogComponent implements OnInit {
                 value.indexOf(':')), value: element.Title + ' - ' + value.substr(0, value.indexOf(':'))
             }));
           }
-
         });
-
-
       } else {
         subMileArray.push(new Object({ label: element.Title, value: element.Title }));
       }
-
     });
-
-
     return subMileArray;
-
-
   }
 
 

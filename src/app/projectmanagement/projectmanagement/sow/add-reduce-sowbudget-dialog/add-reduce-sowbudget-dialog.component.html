@@ -1,0 +1,246 @@
+<div fxLayout="column" style="padding: 8vw;" fxLayoutAlign="center center" [hidden]="!modalloaderenable">
+    <div id="modalInnerLoader"></div>
+    <div id="modalInnerLoaderText">Loading...</div>
+</div>
+
+<p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom-booking" [hideTransitionOptions]="'0ms'" position="bottom-center">
+</p-toast>
+
+<div class='UserButton' fxLayout="row" fxLayoutAlign="end center" [hidden]="modalloaderenable">
+
+    <button type="button" pButton icon="pi pi-save" id="saveClient" [ngStyle]="{'margin-right':'5px','cursor':'pointer' }" (click)="saveBudget()" label="Update"></button>
+
+    <button type="button" pButton icon="pi pi-times" (click)="cancel();" label="Cancel"></button>
+
+</div>
+
+<div *ngIf="!modalloaderenable" #scrollDown>
+
+    <div class="p-grid p-justify-around p-align-center" style="padding: 10px 0px 0px 0px;">
+
+        <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="card card-stats">
+                <div class="card-body ">
+                    <div class="row">
+                        <div class="col-4 col-md-3">
+                            <div class="icon-big text-center icon-warning"><i class="fa fa-university" aria-hidden="true"></i></div>
+                        </div>
+                        <div class="col-8 col-md-9" style="padding: 0px 10px 0px 0px;">
+                            <div class="numbers">
+                                <p class="card-category">Total</p>
+                                <p class="card-title">{{currency}} {{adminObject.oldBudget.Amount | number}} </p>
+                                <p></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer ">
+                    <hr>
+                    <div class="stats"><i class="fa fa-calendar-o"></i> {{adminObject.oldBudget.LastUpdated | date:'MMM dd, yyyy'}} </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="card card-stats">
+                <div class="card-body ">
+                    <div class="row">
+                        <div class="col-4 col-md-3">
+                            <div class="icon-big text-center icon-warning">
+                                <mat-icon>account_balance_wallet</mat-icon>
+                            </div>
+                        </div>
+                        <div class="col-8 col-md-9" style="padding: 0px 10px 0px 0px;">
+                            <div class="numbers">
+                                <p class="card-category">Net</p>
+                                <p class="card-title">{{currency}} {{adminObject.oldBudget.AmountRevenue | number }} </p>
+                                <p></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer ">
+                    <hr>
+                    <div class="stats"><i class="fa fa-calendar-o"></i> {{adminObject.oldBudget.LastUpdated | date:'MMM dd, yyyy'}}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="card card-stats">
+                <div class="card-body ">
+                    <div class="row">
+                        <div class="col-4 col-md-3">
+                            <div class="icon-big text-center icon-warning"><i class="fa fa-credit-card" aria-hidden="true"></i></div>
+                        </div>
+                        <div class="col-8 col-md-9" style="padding: 0px 10px 0px 0px;">
+                            <div class="numbers">
+                                <p class="card-category">OOP</p>
+                                <p class="card-title">{{currency}} {{adminObject.oldBudget.AmountOOP | number}} </p>
+                                <p></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer ">
+                    <hr>
+                    <div class="stats"><i class="fa fa-calendar-o"></i> {{adminObject.oldBudget.LastUpdated | date:'MMM dd, yyyy'}} </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="card card-stats">
+                <div class="card-body ">
+                    <div class="row">
+                        <div class="col-4 col-md-3">
+                            <div class="icon-big text-center icon-warning"><i class="fa fa-calculator" aria-hidden="true"></i></div>
+                        </div>
+                        <div class="col-8 col-md-9" style="padding: 0px 10px 0px 0px;">
+                            <div class="numbers">
+                                <p class="card-category">Tax</p>
+                                <p class="card-title">{{currency}} {{adminObject.oldBudget.AmountTax | number}} </p>
+                                <p></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer ">
+                    <hr>
+                    <div class="stats"><i class="fa fa-calendar-o"></i> {{adminObject.oldBudget.LastUpdated | date:'MMM dd, yyyy'}} </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <p-card class="p-col-12">
+        <div class="p-col-12">
+
+            <div class="p-col-2" *ngFor="let type of budgetType" style="float: left;">
+                <p-radioButton name="budgetType" [value]="type.value" [label]="type.label" [(ngModel)]="selectedValue" inputId="selectedValue"></p-radioButton>
+            </div>
+        </div>
+        <br><br>
+
+        <form [formGroup]='changeBudgetForm' class="p-col-12">
+
+            <!-- first Row html -->
+            <div class="p-grid">
+                <div class="p-grid p-col">
+                    <div class="p-col-4"><span class="compulsory">*</span>Total Amount</div>
+                    <div class="p-col-8">
+                        <input type="number" size="30" style="width: 100%;" formControlName="total" placeholder="Total Amount" pInputText>
+                        <div class="error" *ngIf="isBudgetFormSubmit && changeBudgetForm.controls.total.errors">
+                            <div *ngIf="changeBudgetForm.controls.total.errors.required">Total Amount is required</div>
+                            <div *ngIf="changeBudgetForm.controls.total.errors.nonZeroNumber">
+                                Total cannot be less than equal to zero</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-grid p-col">
+                    <div class="p-col-4"><span class="compulsory">*</span>Net</div>
+                    <div class="p-col-8">
+                        <input type="number" size="30" style="width: 100%;" formControlName="net" placeholder="Net Amount" (change)="setTotal()" pInputText>
+                        <div class="error" *ngIf="isBudgetFormSubmit && changeBudgetForm.controls.net.errors">
+                            <div *ngIf="changeBudgetForm.controls.net.errors.required">Net amount is required</div>
+                            <div *ngIf="changeBudgetForm.controls.net.errors.positiveNumber">
+                                Net amount cannot be less than zero</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- second Row html  -->
+            <div class="p-grid" [hidden]="showeditPO">
+                <div class="p-grid p-col">
+                    <div class="p-col-4"><span class="compulsory">*</span>OOP Amount</div>
+                    <div class="p-col-8">
+                        <input type="number" size="30" style="width: 100%;" formControlName="oop" placeholder="OOP Amount" (change)="setTotal()" pInputText>
+                        <div class="error" *ngIf="isBudgetFormSubmit && changeBudgetForm.controls.oop.errors">
+                            <div *ngIf="changeBudgetForm.controls.oop.errors.required">OOP is required</div>
+                            <div *ngIf="changeBudgetForm.controls.oop.errors.positiveNumber">
+                                OOP cannot be less than zero.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-grid p-col">
+                    <div class="p-col-4"><span class="compulsory">*</span>Tax Amount</div>
+                    <div class="p-col-8">
+                        <input type="number" size="30" style="width: 100%;" formControlName="tax" placeholder="Tax Amount" (change)="setTotal()" pInputText>
+                        <div class="error" *ngIf="isBudgetFormSubmit && changeBudgetForm.controls.tax.errors">
+                            <div *ngIf="changeBudgetForm.controls.tax.errors.required">Tax is required</div>
+                            <div *ngIf="changeBudgetForm.controls.tax.errors.positiveNumber">
+                                Tax cannot be less than zero.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </p-card>
+</div>
+
+<!-- 
+
+<div class="add-additional-budget-sow-section" *ngIf="pmObject.isAdditionalBudgetVisible">
+    <p-dialog [(visible)]="pmObject.isAdditionalBudgetVisible" [modal]="true"
+        [style]="{width: '600px', height: '500px'}" [contentStyle]="{'max-height':'450px'}"
+        (onHide)="closeAdditonalPop();">
+        <p-header>
+            Add Budget <span *ngIf="pmObject.selectedSOWTask"> ({{pmObject.selectedSOWTask.SOWCode}}) </span>
+        </p-header>
+        <form [formGroup]='addAdditionalBudgetForm'>
+            <div class="ui-g mt-20">
+                <div class="ui-g-5">Additional Budget</div>
+                <div class="ui-g-5">
+                    <input formControlName="addTotal" type="number" [attr.disabled]="true" placeholder="Total"
+                        pInputText>
+                    <div class="error"
+                        *ngIf="pmObject.isSOWFormSubmit && !addAdditionalBudgetForm.controls['addTotal'].valid">
+                        Total is required</div>
+                </div>
+            </div>
+            <div class="ui-g mt-20">
+                <div class="ui-g-5">Additional Net Budget</div>
+                <div class="ui-g-5">
+                    <input formControlName="addNet" min="0" (change)="setAddSOWTotal()" type="number" placeholder="Net"
+                        pInputText>
+                    <div class="error"
+                        *ngIf="pmObject.isSOWFormSubmit && !addAdditionalBudgetForm.controls['addNet'].valid">
+                        Additional Net should be greater than zero </div>
+                </div>
+            </div>
+            <div class="ui-g mt-20">
+                <div class="ui-g-5">Additional OOP Budget</div>
+                <div class="ui-g-5">
+                    <input formControlName="addOOP" min="0" (change)="setAddSOWTotal()" type="number" placeholder="OOP"
+                        pInputText>
+                    <div class="error"
+                        *ngIf="pmObject.isSOWFormSubmit && !addAdditionalBudgetForm.controls['addOOP'].valid">
+                        Additional OOP should be Non negative </div>
+                </div>
+            </div>
+            <div class="ui-g mt-20">
+                <div class="ui-g-5">Additional Tax Budget</div>
+                <div class="ui-g-5">
+                    <input formControlName="addTax" min="0" (change)="setAddSOWTotal()" type="number" placeholder="Tax"
+                        pInputText>
+                    <div class="error"
+                        *ngIf="pmObject.isSOWFormSubmit && !addAdditionalBudgetForm.controls['addTax'].valid">
+                        Additional Tax should be Non negative </div>
+                </div>
+            </div>
+            <div class="ui-g mt-20">
+                <div class="ui-g-5">SOW Document</div>
+                <div class="ui-g-5">
+                    <input type="file" #myInput name="myfile" class="form-control" (change)="onFileChange($event)"
+                        formControlName="sowDocumentsAdd" />
+
+                </div>
+            </div>
+        </form>
+        <p-footer>
+            <button type="button" pButton (click)="addAdditionalBudget()" label="Add"></button>
+            <button type="button" pButton (click)="closeAdditonalPop()" label="Cancel"></button>
+        </p-footer>
+    </p-dialog>
+</div> -->
