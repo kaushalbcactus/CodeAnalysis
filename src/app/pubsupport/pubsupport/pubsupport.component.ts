@@ -1810,6 +1810,7 @@ export class PubsupportComponent implements OnInit {
             key: 'myKey1', severity: 'error', summary: 'Error Message',
             detail: 'Unable to upload file, size of ' + this.selectedFile.name + ' is 0 KB.', life: 4000
         });
+        this.submitBtn.isClicked = false;
     }
 
     //*************************************************************************************************

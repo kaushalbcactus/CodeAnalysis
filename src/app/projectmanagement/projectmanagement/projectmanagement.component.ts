@@ -1127,6 +1127,8 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
           key: 'custom', severity: 'error',
           summary: 'Error Message', detail: 'Addendum SOW document name same as original document name.'
         });
+        this.pmObject.isSOWFormSubmit = true;
+        this.pmObject.isMainLoaderHidden = true;
         return;
       }
       if (this.selectedFile) {
