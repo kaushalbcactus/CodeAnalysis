@@ -815,7 +815,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         if (type === 'paymentResoved') {
             if (this.paymentResoved_form.invalid) {
                 return;
-            } else if (this.selectedFile.size === 0) {
+            } else if (this.selectedFile && this.selectedFile.size === 0) {
                 this.errorMessage();
                 return;
             }
@@ -847,7 +847,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             if (this.replaceInvoice_form.invalid) {
                 return;
             }
-            else if (this.selectedFile.size === 0) {
+            else if (this.selectedFile && this.selectedFile.size === 0) {
                 this.errorMessage();
                 return;
             }
@@ -858,7 +858,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             if (this.creditOrDebitNote_form.invalid) {
                 return;
             }
-            else if (this.selectedFile.size === 0) {
+            else if (this.selectedFile && this.selectedFile.size === 0) {
                 this.errorMessage();
                 return;
             }

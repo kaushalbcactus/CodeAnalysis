@@ -1721,7 +1721,7 @@ export class PubsupportComponent implements OnInit {
             if (this.update_Journal_Requirement_form.invalid) {
                 this.submitBtn.isClicked = false;
                 return;
-            } else if (this.selectedFile.size === 0) {
+            } else if (this.selectedFile && this.selectedFile.size === 0) {
                 this.errorMessage();
                 return;
             }
@@ -1755,7 +1755,7 @@ export class PubsupportComponent implements OnInit {
                 this.updateAuthorModal_1 = false;
                 // this.reload();
             } else {
-                if (this.selectedFile.size === 0) {
+                if (this.selectedFile && this.selectedFile.size === 0) {
                     this.errorMessage();
                     this.submitBtn.isClicked = false;
                     return;
@@ -1769,7 +1769,7 @@ export class PubsupportComponent implements OnInit {
             if (this.update_decision_details.invalid) {
                 this.submitBtn.isClicked = false;
                 return;
-            } else if (this.selectedFile.size === 0) {
+            } else if (this.selectedFile && this.selectedFile.size === 0) {
                 this.errorMessage();
                 return;
             }
@@ -1782,7 +1782,7 @@ export class PubsupportComponent implements OnInit {
             if (this.update_publication_form.invalid) {
                 this.submitBtn.isClicked = false;
                 return;
-            } else if (this.selectedFile.size === 0) {
+            } else if (this.selectedFile && this.selectedFile.size === 0) {
                 this.errorMessage();
                 return;
             }
@@ -1795,7 +1795,7 @@ export class PubsupportComponent implements OnInit {
             if (this.galley_form.invalid) {
                 this.submitBtn.isClicked = false;
                 return;
-            } else if (this.selectedFile.size === 0) {
+            } else if (this.selectedFile && this.selectedFile.size === 0) {
                 this.errorMessage();
                 return;
             }
