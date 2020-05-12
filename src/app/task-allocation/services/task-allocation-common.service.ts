@@ -16,6 +16,16 @@ export class TaskAllocationCommonService {
   allTasks: any = {}
   attachedEvents = [];
 
+  adhocStatus = [
+    'Administrative Work',
+    'Internal meeting'
+  ]
+
+  taskStatus = [
+      'Not Saved',
+      'Not Confirmed'
+  ]
+
   getResourceByMatrix(task, allTasks) {
     let resources = this.sharedObject.oTaskAllocation.oResources;
     resources = resources.filter(e => e.TAVisibility === 'Yes');
@@ -367,9 +377,5 @@ export class TaskAllocationCommonService {
     && ganttObject.IsCentrallyAllocated === 'No' && +ganttObject.budgetHours &&
     new Date(ganttObject.pUserStartDatePart).getTime() !== new Date(ganttObject.pUserEndDatePart).getTime() ? true : false;
     return ganttObject;
-  }
-
-  getMinsValue(val) {
-    return +val === 0 ? 0 : +val === 25 ? 15 : +val === 50 ? 30 : +val === 15 ? 25 : +val === 30 ? 50 : 75;
   }
 }

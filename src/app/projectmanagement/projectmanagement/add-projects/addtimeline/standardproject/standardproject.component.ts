@@ -1,5 +1,5 @@
 import { Component, OnInit, NgZone, ViewEncapsulation, ViewChild } from '@angular/core';
-import { TreeNode, SelectItemGroup, MessageService } from 'primeng/api';
+import { TreeNode, SelectItemGroup, MessageService, MenuItem } from 'primeng/api';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
@@ -13,14 +13,19 @@ import { DataService } from 'src/app/Services/data.service';
 import { UsercapacityComponent } from 'src/app/shared/usercapacity/usercapacity.component';
 import { async } from '@angular/core/testing';
 import { CommonService } from 'src/app/Services/common.service';
-import { DialogService } from 'primeng';
+import { DialogService, DynamicDialogRef } from 'primeng';
+import { DailyAllocationTask } from 'src/app/shared/pre-stack-allocation/interface/prestack';
+import { PreStackAllocationComponent } from 'src/app/shared/pre-stack-allocation/pre-stack-allocation.component';
+import { AllocationOverlayComponent } from 'src/app/shared/pre-stack-allocation/allocation-overlay/allocation-overlay.component';
 
 declare var $;
 @Component({
   selector: 'app-standardproject',
   templateUrl: './standardproject.component.html',
   styleUrls: ['./standardproject.component.css'],
-  encapsulation: ViewEncapsulation.None,
+  providers: [MessageService, DialogService, UsercapacityComponent, DynamicDialogRef,
+               PreStackAllocationComponent, AllocationOverlayComponent],
+  encapsulation: ViewEncapsulation.None
 })
 export class StandardprojectComponent implements OnInit {
   public deliverableType: string;
@@ -86,6 +91,7 @@ export class StandardprojectComponent implements OnInit {
   public yearRange: any;
   standardFiles: TreeNode[];
   standardCol: any[];
+  taskMenu: MenuItem[];
   constructor(
     private spService: SPOperationService,
     public pmObject: PMObjectService,
@@ -100,7 +106,9 @@ export class StandardprojectComponent implements OnInit {
     private router: Router,
     private commonService: CommonService,
     private dialogService: DialogService,
-    private dataService: DataService) {
+    private dataService: DataService,
+    public dailyAllocation: PreStackAllocationComponent,
+    private dailyAllocateOP: AllocationOverlayComponent) {
   }
 
   getDatePart(date) {
@@ -111,8 +119,8 @@ export class StandardprojectComponent implements OnInit {
     const newDate = new Date(date);
     return this.datepipe.transform(newDate, 'hh:mm a');
   }
-  ngOnInit() {
-    this.loadStandardTimeline();
+  async ngOnInit() {
+    await this.loadStandardTimeline();
     this.setFieldProperties();
   }
   onSeviceClear() {
@@ -138,8 +146,8 @@ export class StandardprojectComponent implements OnInit {
     if (this.pmObject.addProject.ProjectAttributes.ClientLegalEntity
       && !this.pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked) {
       this.standardServices = [];
-      this.getProjectManagement();
-      this.getStandardTemplate();
+      await this.getProjectManagement();
+      await this.getStandardTemplate();
       this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetUserInfo');
       this.userProperties = await this.spService.getUserInfo(this.sharedObject.currentUser.userId);
     } else {
@@ -148,7 +156,7 @@ export class StandardprojectComponent implements OnInit {
     $('.iframe-spinner-section', window.parent.document).hide();
     $('.timeline-top-section').show();
   }
-  private async getProjectManagement() {
+  public async getProjectManagement() {
     const batchURL = [];
     const options = {
       data: null,
@@ -204,7 +212,7 @@ export class StandardprojectComponent implements OnInit {
   /**
    * This method is used to get all the Resources from ResourceCategorization list.
    */
-  private getResources(skill) {
+  public getResources(skill) {
     let resources;
     if (skill.length) {
       resources = this.pmObject.oProjectManagement.oResourcesCat.filter(element => {
@@ -222,7 +230,7 @@ export class StandardprojectComponent implements OnInit {
    * This method is used to get the budget hours based on project code.
    * @param projectCode Provide the project code.
    */
-  private async getBudgetHours(projectCode) {
+  public async getBudgetHours(projectCode) {
     const prjFinanceOptions = {
       select: 'BudgetHrs',
       filter: 'Title eq \'' + projectCode + '\''
@@ -624,7 +632,7 @@ export class StandardprojectComponent implements OnInit {
   /**
    * This method generate the milestone.
    */
-  private async generateSkillMilestones() {
+  public async generateSkillMilestones() {
     this.pmObject.addProject.Timeline.Standard.Milestones = [];
     // let startDate = this.calcBusinessNextDate(new Date(), 1);
     let startDate: Date;
@@ -636,10 +644,10 @@ export class StandardprojectComponent implements OnInit {
       let resource = [];
       resource.push(this.selectedSkillObject.value, this.selectedResourceObject.value);
       this.pmObject.oTaskAllocation.oAllSelectedResource = resource;
-      await this.userCapacity.applyFilterGlobal(startDate, endDate, resource, []);
+      this.sharedObject.oCapacity = await this.userCapacity.applyFilterReturn(startDate, endDate, resource, []);
     }
     this.standardFiles = [];
-    this.createMilestone(0, true, new Date(startDate));
+    await this.createMilestone(0, true, new Date(startDate));
     if (this.selectedSkillObject.value.userType != 'Type') {
       this.ngStandardProposedStartDate = this.standardFiles[0].data.StartDate;
     }
@@ -676,7 +684,7 @@ export class StandardprojectComponent implements OnInit {
    * @param isCreate
    * @param StartDate
    */
-  private async createMilestone(index, isCreate, StartDate) {
+  public async createMilestone(index, isCreate, StartDate) {
     if (isCreate && index < this.sharedTaskAllocateObj.oMilestones.length) {
       let orginalMilestone = this.sharedTaskAllocateObj.oMilestones;
       let milestoneObj: any = $.extend(true, {}, this.pmObject.ngPrimeMilestoneGlobalObj);
@@ -684,6 +692,7 @@ export class StandardprojectComponent implements OnInit {
       milestoneObj.MilestoneName = orginalMilestone[index].MilestoneName;
       milestoneObj.data.Name = orginalMilestone[index].MilestoneName;
       milestoneObj.data.isEndDateDisabled = false;
+      milestoneObj.data.type = 'milestone';
       milestoneObj.data.MileId = milestoneObj.data.Name;
       milestoneObj.data.Hours = orginalMilestone[index].Hours;
       milestoneObj.data.Days = orginalMilestone[index].MilestoneDays;
@@ -697,15 +706,16 @@ export class StandardprojectComponent implements OnInit {
       milestoneObj.data.minEndDateValue = milestoneObj.data.StartDate;
       milestoneObj.data.ClientReviewDays = orginalMilestone[index].ClientReviewDays;
       milestoneObj.data.strSubMilestone = orginalMilestone[index].SubMilestones;
-
+      milestoneObj.data.allocationColor = '';
+      milestoneObj.data.showAllocationSplit = false;
       milestoneObj.SubMilestones = this.getSubMilestones(orginalMilestone[index].SubMilestones);
       // check If submilestones is present or not
       if (milestoneObj.SubMilestones) {
         // We passed 0 as parameter when all the submilestone task need to change.
-        this.createSubMilestones(StartDate, milestoneObj, true, 0);
+        await this.createSubMilestones(StartDate, milestoneObj, true, 0);
       } else {
         this.sharedTaskAllocateObj.oTasks = this.filterTask(milestoneObj.TemplateMileStone, null);
-        this.createTask(StartDate, true, "", "", "", milestoneObj, null);
+        await this.createTask(StartDate, true, "", "", "", milestoneObj, null);
       }
       this.calculateMilestoneDeviationDays(milestoneObj);
       milestoneObj.data.clientReviewStartDate = this.setDefaultAMHours(this.calcBusinessNextDate(milestoneObj.data.EndDate, 1));
@@ -720,7 +730,7 @@ export class StandardprojectComponent implements OnInit {
       StartDate = this.setClientReview(milestoneObj, true);
       if (index < orginalMilestone.length) {
         index++;
-        this.createMilestone(index, isCreate, StartDate);
+        await this.createMilestone(index, isCreate, StartDate);
       }
     }
     if (!isCreate && index < this.sharedTaskAllocateObj.oMilestones.length) {
@@ -738,12 +748,13 @@ export class StandardprojectComponent implements OnInit {
         milestoneObj.data.EndDatePart = this.getDatePart(milestoneObj.data.EndDate);
         milestoneObj.data.EndTimePart = this.getTimePart(milestoneObj.data.EndDate);
         milestoneObj.data.minEndDateValue = milestoneObj.data.StartDate;
+        milestoneObj.data.allocationColor = '';
         // We passed 0 as parameter when all the submilestone task need to change.
         if (milestoneObj.SubMilestones) {
-          this.createSubMilestones(StartDate, milestoneObj, false, 0);
+          await this.createSubMilestones(StartDate, milestoneObj, false, 0);
         } else {
           this.sharedTaskAllocateObj.oTasks = milestoneObj.children;
-          this.createTask(StartDate, false, "", "", "", milestoneObj, null);
+          await this.createTask(StartDate, false, "", "", "", milestoneObj, null);
         }
         this.calculateMilestoneDeviationDays(milestoneObj);
         milestones_copy[milestoneIndex + 1].clientReviewStartDate = this.setDefaultAMHours(this.calcBusinessNextDate(milestoneObj.data.EndDate, 1));
@@ -751,7 +762,7 @@ export class StandardprojectComponent implements OnInit {
         StartDate = this.setClientReview(this.standardFiles[milestoneIndex + 1], false);
         this.standardFiles.splice(milestoneIndex, 1, milestoneObj);
         index++;
-        this.createMilestone(index, isCreate, StartDate);
+        await this.createMilestone(index, isCreate, StartDate);
       }
     }
   }
@@ -761,7 +772,7 @@ export class StandardprojectComponent implements OnInit {
    * @param StartDate
    * @param ngPrimemilestoneObj
    */
-  private async createSubMilestones(StartDate, milestoneObj, isCreate, index) {
+  public async createSubMilestones(StartDate, milestoneObj, isCreate, index) {
     let displayOrder: Number = 0;
     if (isCreate && milestoneObj.SubMilestones && milestoneObj.SubMilestones.length) {
       for (let submilestoneObj of milestoneObj.SubMilestones) {
@@ -777,14 +788,17 @@ export class StandardprojectComponent implements OnInit {
         ngPrimeSubmilestoneObj.data.MileId = milestoneObj.data.MileId + ";#" + ngPrimeSubmilestoneObj.data.Name;
         ngPrimeSubmilestoneObj.data.Hours = 0;
         ngPrimeSubmilestoneObj.data.Days = 0;
+        ngPrimeSubmilestoneObj.data.type = 'submilestone';
         ngPrimeSubmilestoneObj.data.Deviation = 0;
         ngPrimeSubmilestoneObj.subMilestoneName = submilestoneObj.subMilestoneName;
         ngPrimeSubmilestoneObj.displayOrder = submilestoneObj.displayOrder;
         ngPrimeSubmilestoneObj.data.StartDate = this.setDefaultAMHours(StartDate);
         ngPrimeSubmilestoneObj.data.StartDatePart = this.getDatePart(ngPrimeSubmilestoneObj.data.StartDate);
         ngPrimeSubmilestoneObj.data.StartTimePart = this.getTimePart(ngPrimeSubmilestoneObj.data.StartDate);
+        ngPrimeSubmilestoneObj.data.allocationColor = '';
+        ngPrimeSubmilestoneObj.data.showAllocationSplit = false;
         this.sharedTaskAllocateObj.oTasks = this.filterTask(milestoneObj.TemplateMileStone, ngPrimeSubmilestoneObj.data.Name);
-        this.createTask(StartDate, true, "", "", "", milestoneObj, ngPrimeSubmilestoneObj);
+        await this.createTask(StartDate, true, "", "", "", milestoneObj, ngPrimeSubmilestoneObj);
         if (ngPrimeSubmilestoneObj.children.length) {
           ngPrimeSubmilestoneObj.data.EndDate = ngPrimeSubmilestoneObj.children[ngPrimeSubmilestoneObj.children.length - 1].data.EndDate;
           ngPrimeSubmilestoneObj.data.EndDatePart = this.getDatePart(ngPrimeSubmilestoneObj.data.EndDate);
@@ -814,7 +828,7 @@ export class StandardprojectComponent implements OnInit {
         submilestoneObj.data.StartDatePart = this.getDatePart(submilestoneObj.data.StartDate);
         submilestoneObj.data.StartTimePart = this.getTimePart(submilestoneObj.data.StartDate);
         this.sharedTaskAllocateObj.oTasks = submilestoneObj.children;
-        this.createTask(StartDate, false, "", "", "", milestoneObj, submilestoneObj);
+        await this.createTask(StartDate, false, "", "", "", milestoneObj, submilestoneObj);
         if (submilestoneObj.children.length) {
           submilestoneObj.data.EndDate = submilestoneObj.children[submilestoneObj.children.length - 1].data.EndDate;
           submilestoneObj.data.EndDatePart = this.getDatePart(submilestoneObj.data.EndDate);
@@ -920,7 +934,7 @@ export class StandardprojectComponent implements OnInit {
    * @param milestoneObj
    * @param submilestoneObj
    */
-  private createTask(startdate, isCreate, previousTask, daysHours, timezone, milestoneObj, submilestoneObj) {
+  public async createTask(startdate, isCreate, previousTask, daysHours, timezone, milestoneObj, submilestoneObj) {
     let newStartDate = new Date(startdate);
     let milestoneTask = this.sharedTaskAllocateObj.oTasks;
     if (milestoneTask && milestoneTask.length) {
@@ -986,7 +1000,10 @@ export class StandardprojectComponent implements OnInit {
           let taskObj: any = $.extend(true, {}, this.pmObject.ngPrimeTaskGlobalObj);
           taskObj.data.Title = milestoneTask[index].Title;
           taskObj.Milestones = milestoneTask[index].Milestones.Title;
+          taskObj.data.Milestone = milestoneObj.MilestoneName;
           taskObj.data.Task = milestoneTask[index].TaskName.Title;
+          taskObj.data.type = 'task';
+          taskObj.data.allocationColor = '';
           let addedTaskArray = [];
           if (submilestoneObj) {
             if (milestoneObj.children.length) {
@@ -1007,7 +1024,7 @@ export class StandardprojectComponent implements OnInit {
               return obj.data.Task === taskObj.data.Task;
             });
           }
-          taskObj.data.TaskName = taskObj.data.Task + (addedTaskArray && addedTaskArray.length > 0 ? (" " + (addedTaskArray.length + 1)) : "");;//milestoneTask[index].TaskName.Title;
+          taskObj.data.TaskName = taskObj.data.Task + (addedTaskArray && addedTaskArray.length > 0 ? (" " + (addedTaskArray.length + 1)) : "");
           taskObj.data.PreviousTask = milestoneTask[index].PreviousTask;
           taskObj.PreviousTask = milestoneTask[index].PreviousTask;
           taskObj.data.Skill = milestoneTask[index].Skill;
@@ -1015,6 +1032,7 @@ export class StandardprojectComponent implements OnInit {
           taskObj.data.UseTaskDays = milestoneTask[index].TaskName.Title === 'Send to client' ? 'No' : milestoneTask[index].UseTaskDays;
           taskObj.data.Title = milestoneTask[index].Title;
           taskObj.data.Name = taskObj.data.TaskName;
+          taskObj.data.taskFullName = this.pmObject.addProject.ProjectAttributes.ProjectCode + ' ' + milestoneObj.MilestoneName + ' ' + taskObj.data.TaskName;
           taskObj.data.isStartDateDisabled = false;
           taskObj.data.isEndDateDisabled = false;
           taskObj.data.Hours = milestoneTask[index].Hours;
@@ -1089,6 +1107,13 @@ export class StandardprojectComponent implements OnInit {
               taskObj.data.showTime = true;
             }
           }
+          taskObj.data.showAllocationSplit = taskObj.data.Task !== this.pmConstant.task.CLIENT_REVIEW && taskObj.data.Task !== this.pmConstant.task.SEND_TO_CLIENT
+            && taskObj.data.Task.indexOf('Slot') <= -1 && +taskObj.data.Hours &&
+            new Date(taskObj.data.StartDatePart).getTime() !== new Date(taskObj.data.EndDatePart).getTime() ? true : false;
+          const resource = this.sharedTaskAllocateObj.oAllResource.filter((objt) => {
+            return taskObj.data.userId === objt.UserName.ID;
+          });
+          await this.dailyAllocateTask(resource, taskObj.data);
           tempTaskArray.push(taskObj);
           endateArray.push(taskObj);
           if (submilestoneObj) {
@@ -1099,6 +1124,7 @@ export class StandardprojectComponent implements OnInit {
         }
         if (!isCreate) {
           let taskObj = milestoneTask[index];
+          taskObj.data.allocationColor = '';
           for (let taskTitle of taskObj.PreviousTask) {
             let arrTasks;
             if (submilestoneObj && submilestoneObj.children) {
@@ -1170,9 +1196,9 @@ export class StandardprojectComponent implements OnInit {
         return new Date(b.EndDate).getTime() - new Date(a.EndDate).getTime();
       });
       startdate = endateArray[0].EndDate;
-      endateArray.forEach((element) => {
-        this.createTask(element.EndDate, isCreate, element.data.Title, element.data.UseTaskDays, element.data.assignedUserTimeZone, milestoneObj, submilestoneObj);
-      });
+      for (const element of endateArray) {
+        await this.createTask(element.EndDate, isCreate, element.data.Title, element.data.UseTaskDays, element.data.assignedUserTimeZone, milestoneObj, submilestoneObj);
+      }
     }
   }
   /**
@@ -1181,11 +1207,7 @@ export class StandardprojectComponent implements OnInit {
    */
   private calculateMilestoneDeviationDays(ngPrimemilestoneObj) {
     if (ngPrimemilestoneObj.SubMilestones) {
-      // ngPrimemilestoneObj.children.forEach(element => {
-      //   element.sort(function (a, b) {
-      //     return new Date(a.StartDate).getTime() - new Date(b.StartDate).getTime(); // - new Date(a.EndDate.jsdate).getTime();
-      //   });
-      // });
+
       for (let index = 0; index < ngPrimemilestoneObj.children.length - 1; index++) {
         ngPrimemilestoneObj.children[index].children.sort(function (a, b) {
           return new Date(a.StartDate).getTime() - new Date(b.StartDate).getTime(); // - new Date(a.EndDate.jsdate).getTime();
@@ -1262,7 +1284,7 @@ export class StandardprojectComponent implements OnInit {
    * This method is used to cascade the task when start date is changed.
    * @param curObj
    */
-  cascadeStartDate(curObj) {
+  async cascadeStartDate(curObj) {
     if (curObj) {
       // check whether Milestone, ClientReview or Task End date Changed
       const str = this.checkStartDateChanged(curObj.MileId);
@@ -1279,12 +1301,12 @@ export class StandardprojectComponent implements OnInit {
               return uniqueId[0] === obj.data.Name;
             });
             if (milestones_copy[milestoneIndex].SubMilestones) {
-              stardate = this.subMilestoneTaskStartDate(milestones_copy, milestoneIndex, uniqueId, stardate, curObj);
+              stardate = await this.subMilestoneTaskStartDate(milestones_copy, milestoneIndex, uniqueId, stardate, curObj);
             } else {
-              stardate = this.onTaskStartDate(milestones_copy, milestoneIndex, uniqueId, stardate, curObj)
+              stardate = await this.onTaskStartDate(milestones_copy, milestoneIndex, uniqueId, stardate, curObj)
             }
             this.calculateMilestoneDeviationDays(milestones_copy[milestoneIndex]);
-            this.createMilestone(mileStoneArrayIndex + 1, false, stardate);
+            await this.createMilestone(mileStoneArrayIndex + 1, false, stardate);
           }
           break;
       }
@@ -1301,7 +1323,7 @@ export class StandardprojectComponent implements OnInit {
    * @param stardate
    * @param curObj
    */
-  private onTaskStartDate(milestones_copy, milestoneIndex, uniqueId, stardate, curObj) {
+  private async onTaskStartDate(milestones_copy, milestoneIndex, uniqueId, stardate, curObj) {
     let taskIndex = milestones_copy[milestoneIndex].children.findIndex(function (obj) {
       return uniqueId[2] === obj.data.Name;
     });
@@ -1314,11 +1336,11 @@ export class StandardprojectComponent implements OnInit {
         milestones_copy[milestoneIndex].data.StartDate = stardate;
         milestones_copy[milestoneIndex].data.StartDatePart = this.getDatePart(milestones_copy[milestoneIndex].data.StartDate);
         milestones_copy[milestoneIndex].data.StartTimePart = this.getTimePart(milestones_copy[milestoneIndex].data.StartDate);
-        this.createTask(stardate, false, "", taskObj.data.TaskDays, taskObj.data.assignedUserTimeZone, milestones_copy[milestoneIndex], null);
+        await this.createTask(stardate, false, "", taskObj.data.TaskDays, taskObj.data.assignedUserTimeZone, milestones_copy[milestoneIndex], null);
       }
       if (taskIndex > 0) {
         let updatedStartdate = this.commonTaskProperties(taskObj, stardate);
-        this.createTask(updatedStartdate, false, taskObj.data.Title, taskObj.data.TaskDays, taskObj.data.assignedUserTimeZone, milestones_copy[milestoneIndex], null);
+        await this.createTask(updatedStartdate, false, taskObj.data.Title, taskObj.data.TaskDays, taskObj.data.assignedUserTimeZone, milestones_copy[milestoneIndex], null);
       }
       const taskEndDate = milestones_copy[milestoneIndex].children[milestones_copy[milestoneIndex].children.length - 1].data.EndDate;
       milestones_copy[milestoneIndex].data.EndDate = taskEndDate;
@@ -1341,7 +1363,7 @@ export class StandardprojectComponent implements OnInit {
    * @param stardate
    * @param curObj
    */
-  private subMilestoneTaskStartDate(milestones_copy, milestoneIndex, uniqueId, stardate, curObj) {
+  private async subMilestoneTaskStartDate(milestones_copy, milestoneIndex, uniqueId, stardate, curObj) {
     let subMilestoneIndex = milestones_copy[milestoneIndex].children.findIndex(function (obj) {
       return uniqueId[1] === obj.data.Name;
     });
@@ -1360,11 +1382,11 @@ export class StandardprojectComponent implements OnInit {
         milestones_copy[milestoneIndex].children[subMilestoneIndex].data.StartDate = stardate;
         milestones_copy[milestoneIndex].children[subMilestoneIndex].data.StartDatePart = this.getDatePart(milestones_copy[milestoneIndex].children[subMilestoneIndex].data.StartDate);
         milestones_copy[milestoneIndex].children[subMilestoneIndex].data.StartTimePart = this.getTimePart(milestones_copy[milestoneIndex].children[subMilestoneIndex].data.StartDate);
-        this.createTask(stardate, false, "", taskObj.data.TaskDays, taskObj.data.assignedUserTimeZone, milestones_copy[milestoneIndex], milestones_copy[milestoneIndex].children[subMilestoneIndex]);
+        await this.createTask(stardate, false, "", taskObj.data.TaskDays, taskObj.data.assignedUserTimeZone, milestones_copy[milestoneIndex], milestones_copy[milestoneIndex].children[subMilestoneIndex]);
       }
       if (taskIndex > 0) {
         let updatedStartdate = this.commonTaskProperties(taskObj, stardate);
-        this.createTask(updatedStartdate, false, taskObj.data.Title, taskObj.data.TaskDays, taskObj.data.assignedUserTimeZone, milestones_copy[milestoneIndex], milestones_copy[milestoneIndex].children[subMilestoneIndex]);
+        await this.createTask(updatedStartdate, false, taskObj.data.Title, taskObj.data.TaskDays, taskObj.data.assignedUserTimeZone, milestones_copy[milestoneIndex], milestones_copy[milestoneIndex].children[subMilestoneIndex]);
       }
       const taskEndDate = milestones_copy[milestoneIndex].children[subMilestoneIndex].children[milestones_copy[milestoneIndex].children[subMilestoneIndex].children.length - 1].data.EndDate;
       const subMilestoneEndDate = milestones_copy[milestoneIndex].children[subMilestoneIndex].data.EndDate;
@@ -1375,7 +1397,7 @@ export class StandardprojectComponent implements OnInit {
       milestones_copy[milestoneIndex].children[subMilestoneIndex].data.EndTimePart = this.getTimePart(milestones_copy[milestoneIndex].children[subMilestoneIndex].data.EndDate);
       // Increase the start date for next sub milestone.
       stardate = this.setDefaultAMHours(this.calcBusinessNextDate(milestones_copy[milestoneIndex].children[subMilestoneIndex].data.EndDate, 1));
-      this.createSubMilestones(stardate, milestones_copy[milestoneIndex], false, subMilestoneIndex + 1);
+      await this.createSubMilestones(stardate, milestones_copy[milestoneIndex], false, subMilestoneIndex + 1);
       // check whether milestone end date is greater than last milestones last task.
       // milestones_copy[milestoneIndex].data.EndDate = milestones_copy[milestoneIndex].data.EndDate > milestones_copy[milestoneIndex].children[milestones_copy[milestoneIndex].children.length - 1].data.EndDate ? milestones_copy[milestoneIndex].data.EndDate : milestones_copy[milestoneIndex].children[milestones_copy[milestoneIndex].children.length - 1].data.EndDate;
       milestones_copy[milestoneIndex].data.EndDate = milestones_copy[milestoneIndex].children[milestones_copy[milestoneIndex].children.length - 1].data.EndDate;
@@ -1395,7 +1417,7 @@ export class StandardprojectComponent implements OnInit {
    * This method is cascade the task, milestone and submilestone when task end date changed.
    * @param curObj
    */
-  cascadeEndDate(curObj) {
+  async cascadeEndDate(curObj) {
     if (curObj) {
       // check whether Milestone, ClientReview or Task End date Changed
       const str = this.checkEndDateChanged(curObj.MileId);
@@ -1413,11 +1435,11 @@ export class StandardprojectComponent implements OnInit {
           milestones_copy[objIndex + 1].clientReviewStartDate = this.calcBusinessNextDate(this.setDefaultAMHours(curObj.EndDate), 1);
           milestones_copy[objIndex + 1].clientReviewEndDate = this.calcBusinessNextDate(this.setDefaultPMHours(milestones_copy[objIndex + 1].clientReviewStartDate), milestones_copy[objIndex + 1].data.Days == 1 ? 0 : milestones_copy[objIndex + 1].data.Days);
           stardate = this.setClientReview(milestones_copy[objIndex + 1], false);
-          this.createMilestone(mileStoneArrayIndex + 1, false, stardate);
+          await this.createMilestone(mileStoneArrayIndex + 1, false, stardate);
           break;
         case this.pmConstant.endDate.CLIENT_REVIEW_END_DATE_CHANGED:
           stardate = this.setDefaultAMHours(this.calcBusinessNextDate(curObj.EndDate, 1));
-          this.createMilestone(mileStoneArrayIndex + 1, false, stardate);
+          await this.createMilestone(mileStoneArrayIndex + 1, false, stardate);
           break;
         case this.pmConstant.endDate.TASK_END_DATE_CHANGED:
           let uniqueId = curObj.MileId.split(';#');
@@ -1426,12 +1448,12 @@ export class StandardprojectComponent implements OnInit {
               return uniqueId[0] === obj.data.Name;
             });
             if (milestones_copy[milestoneIndex].SubMilestones) {
-              stardate = this.subMilestoneTaskEndDate(milestones_copy, milestoneIndex, uniqueId, stardate, curObj);
+              stardate = await this.subMilestoneTaskEndDate(milestones_copy, milestoneIndex, uniqueId, stardate, curObj);
             } else {
-              stardate = this.taskEndDate(milestones_copy, milestoneIndex, uniqueId, stardate, curObj)
+              stardate = await this.taskEndDate(milestones_copy, milestoneIndex, uniqueId, stardate, curObj)
             }
             this.calculateMilestoneDeviationDays(milestones_copy[milestoneIndex]);
-            this.createMilestone(mileStoneArrayIndex + 1, false, stardate);
+            await this.createMilestone(mileStoneArrayIndex + 1, false, stardate);
           }
           break
       }
@@ -1447,7 +1469,7 @@ export class StandardprojectComponent implements OnInit {
    * @param stardate
    * @param curObj
    */
-  private subMilestoneTaskEndDate(milestones_copy, milestoneIndex, uniqueId, stardate, curObj) {
+  private async subMilestoneTaskEndDate(milestones_copy, milestoneIndex, uniqueId, stardate, curObj) {
     let subMilestoneIndex = milestones_copy[milestoneIndex].children.findIndex(function (obj) {
       return uniqueId[1] === obj.data.Name;
     });
@@ -1459,7 +1481,7 @@ export class StandardprojectComponent implements OnInit {
       stardate = this.setDefaultPMHours(curObj.EndDate);
       this.sharedTaskAllocateObj.oTasks = milestones_copy[milestoneIndex].children[subMilestoneIndex].children;
       // It will cascade the remaining task in current submilestone
-      this.createTask(stardate, false, taskObj.data.Title, taskObj.data.TaskDays, taskObj.data.assignedUserTimeZone, milestones_copy[milestoneIndex], milestones_copy[milestoneIndex].children[subMilestoneIndex]);
+      await this.createTask(stardate, false, taskObj.data.Title, taskObj.data.TaskDays, taskObj.data.assignedUserTimeZone, milestones_copy[milestoneIndex], milestones_copy[milestoneIndex].children[subMilestoneIndex]);
       const taskEndDate = milestones_copy[milestoneIndex].children[subMilestoneIndex].children[milestones_copy[milestoneIndex].children[subMilestoneIndex].children.length - 1].data.EndDate;
       const subMilestoneEndDate = milestones_copy[milestoneIndex].children[subMilestoneIndex].data.EndDate;
       // check whether submilestone end date is greater than last task end date.
@@ -1469,7 +1491,7 @@ export class StandardprojectComponent implements OnInit {
       milestones_copy[milestoneIndex].children[subMilestoneIndex].data.minEndDateValue = milestones_copy[milestoneIndex].children[subMilestoneIndex].data.StartDate;
       // Increase the start date for next sub milestone.
       stardate = this.setDefaultAMHours(this.calcBusinessNextDate(milestones_copy[milestoneIndex].children[subMilestoneIndex].data.EndDate, 1));
-      this.createSubMilestones(stardate, milestones_copy[milestoneIndex], false, subMilestoneIndex + 1);
+      await this.createSubMilestones(stardate, milestones_copy[milestoneIndex], false, subMilestoneIndex + 1);
       // check whether milestone end date is greater than last milestones last task.
       milestones_copy[milestoneIndex].data.EndDate = milestones_copy[milestoneIndex].data.EndDate > milestones_copy[milestoneIndex].children[milestones_copy[milestoneIndex].children.length - 1].data.EndDate ? milestones_copy[milestoneIndex].data.EndDate : milestones_copy[milestoneIndex].children[milestones_copy[milestoneIndex].children.length - 1].data.EndDate;
       milestones_copy[milestoneIndex].data.EndDatePart = this.getDatePart(milestones_copy[milestoneIndex].data.EndDate);
@@ -1492,7 +1514,7 @@ export class StandardprojectComponent implements OnInit {
    * @param stardate
    * @param curObj
    */
-  private taskEndDate(milestones_copy, milestoneIndex, uniqueId, stardate, curObj) {
+  private async taskEndDate(milestones_copy, milestoneIndex, uniqueId, stardate, curObj) {
     let taskIndex = milestones_copy[milestoneIndex].children.findIndex(function (obj) {
       return uniqueId[2] === obj.data.Name;
     });
@@ -1501,7 +1523,7 @@ export class StandardprojectComponent implements OnInit {
       stardate = this.setDefaultPMHours(curObj.EndDate);
       this.sharedTaskAllocateObj.oTasks = milestones_copy[milestoneIndex].children;
       // It will cascade the remaining task in current submilestone
-      this.createTask(stardate, false, taskObj.data.Title, taskObj.data.TaskDays, taskObj.data.assignedUserTimeZone, milestones_copy[milestoneIndex], null);
+      await this.createTask(stardate, false, taskObj.data.Title, taskObj.data.TaskDays, taskObj.data.assignedUserTimeZone, milestones_copy[milestoneIndex], null);
       milestones_copy[milestoneIndex].data.EndDate = milestones_copy[milestoneIndex].data.EndDate > milestones_copy[milestoneIndex].children[milestones_copy[milestoneIndex].children.length - 1].data.EndDate ? milestones_copy[milestoneIndex].data.EndDate : milestones_copy[milestoneIndex].children[milestones_copy[milestoneIndex].children.length - 1].data.EndDate;
       milestones_copy[milestoneIndex].data.EndDatePart = this.getDatePart(milestones_copy[milestoneIndex].data.EndDate);
       milestones_copy[milestoneIndex].data.EndTimePart = this.getTimePart(milestones_copy[milestoneIndex].data.EndDate);
@@ -1516,14 +1538,22 @@ export class StandardprojectComponent implements OnInit {
     }
   }
 
-  public onStartDatePartChanged(curObj) {
+  public async onStartDatePartChanged(curObj) {
     curObj.StartDate = new Date(this.datepipe.transform(curObj.StartDatePart, 'MMM d, y') + ' ' + curObj.StartTimePart);
     this.onStartDateChanged(curObj);
+    const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
+      return curObj.UserId === objt.UserName.ID;
+    });
+    await this.dailyAllocateTask(resource, curObj);
   }
 
-  public onEndDatePartChanged(curObj) {
+  public async onEndDatePartChanged(curObj) {
     curObj.EndDate = new Date(this.datepipe.transform(curObj.EndDatePart, 'MMM d, y') + ' ' + curObj.EndTimePart);
     this.onEndDateChanged(curObj);
+    const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
+      return curObj.UserId === objt.UserName.ID;
+    });
+    await this.dailyAllocateTask(resource, curObj);
   }
 
   /**
@@ -1746,8 +1776,8 @@ export class StandardprojectComponent implements OnInit {
     if (val) {
       $('.standardMilestoneByType').hide();
       $('.standard-spinner-section').show();
-      setTimeout(() => {
-        this.getMilestoneByType();
+      setTimeout(async () => {
+        await this.getMilestoneByType();
       }, 100);
       $('#standardTimelineConfirm').attr('disabled', false);
     }
@@ -1759,7 +1789,7 @@ export class StandardprojectComponent implements OnInit {
   private async getMilestoneByType() {
     this.sharedTaskAllocateObj.oMilestones = await this.getStandardMilestone();
     await this.getMilestoneTask(this.sharedTaskAllocateObj.oMilestones);
-    this.generateSkillMilestones();
+    await this.generateSkillMilestones();
 
     $('.standard-spinner-section').hide();
     $('.standardMilestoneByType').show();
@@ -1922,13 +1952,13 @@ export class StandardprojectComponent implements OnInit {
       return false;
     }
     // if (this.selectedSkillObject.value.userType === 'Type') {
-      if (!this.ngStandardProposedStartDate) {
-        this.messageService.add({
-          key: 'custom', severity: 'error',
-          summary: 'Error Message', detail: 'Please select the proposed start date.'
-        });
-        return false;
-      }
+    if (!this.ngStandardProposedStartDate) {
+      this.messageService.add({
+        key: 'custom', severity: 'error',
+        summary: 'Error Message', detail: 'Please select the proposed start date.'
+      });
+      return false;
+    }
     // }
     if (!this.standardProjectBudgetHrs) {
       this.messageService.add({
@@ -2223,11 +2253,103 @@ export class StandardprojectComponent implements OnInit {
     this.pmObject.activeIndex = 2;
   }
 
-  // goToFinanceMang() {
-  //   if (this.pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked) {
-  //     this.pmObject.activeIndex = 3;
-  //   } else {
-  //     this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: 'Please generate and register the task.' });
-  //   }
-  // }
+  openPopup(data) {
+    this.taskMenu = [];
+    this.taskMenu.push(
+      { label: 'Edit Allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, '') },
+      { label: 'Equal Split', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, 'Equal') }
+    );
+  }
+
+  editAllocation(milestoneTask, allocationType): void {
+    milestoneTask.resources = this.sharedTaskAllocateObj.oAllResource.filter((objt) => {
+      return objt.UserName.ID === milestoneTask.userId;
+    });
+
+    const ref = this.dialogService.open(PreStackAllocationComponent, {
+      data: {
+        ID: milestoneTask.id,
+        task: milestoneTask.taskFullName,
+        startDate: milestoneTask.StartDate,
+        endDate: milestoneTask.EndDate,
+        startTime: milestoneTask.StartTimePart,
+        endTime: milestoneTask.EndTimePart,
+        budgetHrs: milestoneTask.Hours,
+        resource: milestoneTask.resources,
+        strAllocation: milestoneTask.allocationPerDay,
+        allocationType
+      } as DailyAllocationTask,
+      width: '90vw',
+
+      header: milestoneTask.SubMilestone ? milestoneTask.Milestone + ' ' + milestoneTask.TaskName
+        + ' ( ' + milestoneTask.SubMilestone + ' )' : milestoneTask.Milestone + ' ' + milestoneTask.TaskName,
+      contentStyle: { 'max-height': '90vh', 'overflow-y': 'auto' },
+      closable: false
+    });
+    ref.onClose.subscribe((allocation: any) => {
+      this.setAllocationPerDay(allocation, milestoneTask);
+      if (allocation.allocationAlert) {
+        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Resource is over allocated' });
+      }
+    });
+  }
+
+  async dailyAllocateTask(resource, milestoneTask) {
+    const eqgTasks = ['Edit', 'Quality', 'Graphics', 'Client Review', 'Send to client'];
+    if (!eqgTasks.find(t => t === milestoneTask.Task) && milestoneTask.StartDatePart &&
+      resource.length && milestoneTask.EndDatePart && milestoneTask.Hours &&
+      milestoneTask.EndDate > milestoneTask.StartDate) {
+      const allocationData: DailyAllocationTask = {
+        ID: milestoneTask.id,
+        task: milestoneTask.taskFullName,
+        startDate: milestoneTask.StartDatePart,
+        endDate: milestoneTask.EndDatePart,
+        startTime: milestoneTask.StartTimePart,
+        endTime: milestoneTask.EndTimePart,
+        budgetHrs: milestoneTask.Hours,
+        resource,
+        strAllocation: '',
+        allocationType: ''
+      };
+      const resourceCapacity = await this.dailyAllocation.getResourceCapacity(allocationData);
+      // const resourceCapacity = this.sharedObject.oCapacity.arrUserDetails.filter(t => t && t.uid === resource[0].UserName.ID);
+      const objDailyAllocation = await this.dailyAllocation.initialize(resourceCapacity, allocationData);
+      this.setAllocationPerDay(objDailyAllocation, milestoneTask);
+      if (objDailyAllocation.allocationAlert) {
+        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Resource is over allocated' });
+      }
+    } else {
+      milestoneTask.allocationColor = '';
+      milestoneTask.allocationPerDay = '';
+    }
+  }
+
+
+  setAllocationPerDay(allocation, milestoneTask) {
+    // let task: any;
+    // if (milestoneTask.type === 'Milestone') {
+    //   const milestoneData = this.milestoneData.find(m => m.data.title === milestoneTask.milestone);
+    //   const milestoneTasks: any[] = this.getTasksFromMilestones(milestoneData, false, true);
+    //   milestoneData.data.edited = true;
+    //   task = milestoneTasks.find(t => t.id === milestoneTask.id);
+    // } else {
+    //   task = milestoneTask;
+    // }
+    milestoneTask.allocationPerDay = allocation.allocationPerDay;
+    milestoneTask.edited = true;
+    if (allocation.allocationType === 'Equal Split') {
+      milestoneTask.allocationColor = 'indianred';
+    } else if (allocation.allocationType === 'Daily Allocation') {
+      milestoneTask.allocationColor = 'rgb(160, 247, 142)';
+    }
+  }
+
+  showOverlayPanel(event, rowData, dailyAllocateOP, target?) {
+    const allocationPerDay = rowData.allocationPerDay ? rowData.allocationPerDay : '';
+    dailyAllocateOP.showOverlay(event, allocationPerDay, target);
+  }
+
+  hideOverlayPanel() {
+    this.dailyAllocateOP.hideOverlay();
+  }
 }

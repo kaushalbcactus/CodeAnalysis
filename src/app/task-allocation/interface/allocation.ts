@@ -7,6 +7,7 @@ export interface IDailyAllocationTask {
   endTime: string;
   budgetHrs: string;
   resource: number;
+  status: string;
   strAllocation: string;
   allocationType: string;
 }
