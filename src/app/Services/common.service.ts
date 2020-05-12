@@ -960,5 +960,8 @@ export class CommonService {
       }
       return time.replace(/(AM|PM)/, '');
   }
+  getMinsValue(val) {
+    return +val === 0 ? 0 : +val === 25 ? 15 : +val === 50 ? 30 : +val === 15 ? 25 : +val === 30 ? 50 : 75;
+  }
 
 }

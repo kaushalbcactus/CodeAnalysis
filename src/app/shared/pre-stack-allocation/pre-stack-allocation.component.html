@@ -23,30 +23,6 @@
       style="background-color:ghostwhite;"></button>
 
   </div>
-
-
-
-  <!--
-  <div class="footer">
-    <button
-      pButton
-      class="pBtnCancel"
-      type="button"
-      icon="pi pi-times"
-      label="Cancel"
-      (click)="cancel()"
-    >
-    </button>
-    <button
-      pButton
-      class="pBtnSave"
-      type="button"
-      icon="pi pi-check"
-      label="Save"
-      (click)="saveAllocation()"
-    >
-    </button>
-  </div> -->
   <div class="table">
     <p-table [columns]="cols" [value]="newAllocation">
       <ng-template pTemplate="header" let-columns>
@@ -71,12 +47,12 @@
             {{ rowData["Date"] | date: " d MMM, y" }}
           </td>
           <td>
-            <app-ngslider (changedValue)="checkAllocation($event, rowData)" type="hrs"
-              [value]="rowData.Allocation.valueHrs" [range]="rowData.Allocation.maxHrs"></app-ngslider>
+            <app-allocation-slider (changedValue)="checkAllocation($event, rowData)" type="hrs"
+              [value]="rowData.Allocation.valueHrs" [range]="rowData.Allocation.maxHrs"></app-allocation-slider>
           </td>
           <td>
-            <app-ngslider (changedValue)="checkAllocation($event, rowData)" type="mins"
-              [value]="rowData.Allocation.valueMins" [range]="rowData.Allocation.maxMins"></app-ngslider>
+            <app-allocation-slider (changedValue)="checkAllocation($event, rowData)" type="mins"
+              [value]="rowData.Allocation.valueMins" [range]="rowData.Allocation.maxMins"></app-allocation-slider>
           </td>
           <td>
             <div>

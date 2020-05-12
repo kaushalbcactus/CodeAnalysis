@@ -496,8 +496,13 @@ export class PMObjectService {
       toggleCapacity: true,
       showTime: false,
       assignedUserTimeZone: '+5.5',
+      Milestone: '',
       SubMilestone: '',
       userId: 0,
+      taskFullName: '',
+      allocationPerDay: '',
+      allocationType: '',
+      allocationColor: ''
     },
   };
   public currLoginInfo: any = [];

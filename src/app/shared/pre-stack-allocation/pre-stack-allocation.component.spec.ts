@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CascadeDialogComponent } from './cascade-dialog.component';
+import { PreStackAllocationComponent } from './pre-stack-allocation.component';
 
-describe('CascadeDialogComponent', () => {
-  let component: CascadeDialogComponent;
-  let fixture: ComponentFixture<CascadeDialogComponent>;
+describe('PreStackAllocationComponent', () => {
+  let component: PreStackAllocationComponent;
+  let fixture: ComponentFixture<PreStackAllocationComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CascadeDialogComponent ]
+      declarations: [ PreStackAllocationComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CascadeDialogComponent);
+    fixture = TestBed.createComponent(PreStackAllocationComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
