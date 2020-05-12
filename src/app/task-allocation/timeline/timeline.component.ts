@@ -2905,14 +2905,14 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     let subMilestonePosition = 0;
 
     if (previousNode.itemType === 'Client Review') {
-      const clientReviewIndex = this.milestoneData.findIndex(e => e.data.itemType === 'Client Review' && e.data.text === previousNode.text);
+      const clientReviewIndex = this.milestoneData.findIndex(e => e.data.itemType === 'Client Review' && e.data.milestone === previousNode.milestone);
       selectedMil = clientReviewIndex;
     }
     else {
       selectedMil = this.milestoneData.findIndex(e => e.data.text === previousNode.milestone);
-      if (previousNode.subMilestone) {
+      if (previousNode.submilestone) {
         const milestone = this.milestoneData[selectedMil];
-        const subMil = milestone.children.find(e => e.data.text === previousNode.subMilestone);
+        const subMil = milestone.children.find(e => e.data.text === previousNode.submilestone);
         subMilestonePosition = parseInt(subMil.data.position, 10);
       }
     }
@@ -3186,9 +3186,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
   sortDates(node, type) {
-    const nodeCopy = Object.assign({}, node).children.filter(c =>
-      c.data.itemType.toLowerCase() !== 'adhoc' && c.data.itemType.toLowerCase() !== 'tb');
-    switch (type) {
+    const nodeCopy = Object.assign({}, node).children.filter(c => c.data.type  !== 'task' || (c.data.type  === 'task' &&
+      c.data.itemType.toLowerCase() !== 'adhoc' && c.data.itemType.toLowerCase() !== 'tb'));
+    switch (type) { 
       case 'start':
         nodeCopy.sort((a, b) => {
           const startDate = new Date(a.data.start_date);
