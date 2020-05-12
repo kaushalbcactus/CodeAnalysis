@@ -134,8 +134,8 @@ export class UsercapacityComponent implements OnInit {
       oCapacity.arrUserDetails = tempUserDetailsArray;
     }
     if (this.globalService.isResourceChange) {
-     const capacity: any = this.afterResourceChange(this.globalService.data.startTime, this.globalService.data.endTime, this.globalService.data.task);
-     this.oCapacity = capacity.__zone_symbol__value;
+      const capacity: any = this.afterResourceChange(this.globalService.data.startTime, this.globalService.data.endTime, this.globalService.data.task);
+      this.oCapacity = capacity.__zone_symbol__value;
     } else {
       this.globalService.oCapacity = oCapacity;
       this.oCapacity = oCapacity;
@@ -189,7 +189,7 @@ export class UsercapacityComponent implements OnInit {
     return objDates;
   }
 
-  async applyFilter(startDate, endDate, selectedUsers, excludeTasks) {
+  async applyFilter(startDate, endDate, selectedUsers, excludeTasks, taskStatus?, adhocStatus?) {
     const oCapacity = {
       arrUserDetails: [],
       arrDateRange: [],
@@ -302,7 +302,7 @@ export class UsercapacityComponent implements OnInit {
         // oCapacity.arrUserDetails[indexUser].tasks = this.fetchTasks(oCapacity.arrUserDetails[indexUser], arruserResults[indexUser]);
 
 
-        const TempTasks = this.fetchTasks(oCapacity.arrUserDetails[indexUser], arruserResults[indexUser], excludeTasks);
+        const TempTasks = this.fetchTasks(oCapacity.arrUserDetails[indexUser], arruserResults[indexUser], excludeTasks, taskStatus, adhocStatus);
 
         oCapacity.arrUserDetails[indexUser].tasks = this.filterData(TempTasks);
 
@@ -410,7 +410,9 @@ export class UsercapacityComponent implements OnInit {
     return taskArray;
   }
 
-
+  async factoringTimeForAllocation(startDate, endDate, resource, excludeTasks, taskStatus, adhocStatus) {
+    return this.applyFilter(startDate, endDate, resource, excludeTasks, taskStatus, adhocStatus);
+  }
 
   applyFilterReturn(startDate, endDate, selectedUsers, excludeTasks) {
     return this.applyFilter(startDate, endDate, selectedUsers, excludeTasks);
@@ -436,7 +438,17 @@ export class UsercapacityComponent implements OnInit {
     const selectedUserID = oUser.uid;
     const invObj = Object.assign({}, this.queryConfig);
     // tslint:disable-next-line: max-line-length
+    // let filter = " ";
+    // let userCapacityUrl = Object.assign({}, this.sharedConstant.userCapacity.fetchTasks);
 
+    // if (status.length) {
+    //   status.forEach((s) => {
+    //     filter = filter + userCapacityUrl.filterNotConfirmed.replace(/{{taskStatus}}/gi, s)
+    //   })
+    //   userCapacityUrl.filter.replace('{{userID}}', selectedUserID).replace(/{{startDateString}}/gi, startDateString)
+    //     .replace(/{{endDateString}}/gi, endDateString);
+    //   userCapacityUrl.filter = userCapacityUrl.filter + filter;
+    // }
     invObj.url = this.spService.getReadURL(this.globalConstantService.listNames.Schedules.name, this.sharedConstant.userCapacity.fetchTasks);
     invObj.url = invObj.url.replace('{{userID}}', selectedUserID).replace(/{{startDateString}}/gi, startDateString)
       .replace(/{{endDateString}}/gi, endDateString);
@@ -466,7 +478,7 @@ export class UsercapacityComponent implements OnInit {
     return arrResults;
   }
   // tslint:disable
-  fetchTasks(oUser, tasks, excludeTasks?) {
+  fetchTasks(oUser, tasks, excludeTasks?, taskStatus?, adhocStatus?) {
     const filteredTasks = [];
     for (const index in tasks) {
       if (tasks.hasOwnProperty(index)) {
@@ -481,7 +493,28 @@ export class UsercapacityComponent implements OnInit {
             tasks[index].DueDate = this.commonservice.calcTimeForDifferentTimeZone(new Date(tasks[index].DueDate), currentUserTimeZone, sTimeZone);
             filteredTasks.push(tasks[index]);
           }
-        } else {
+        } else if (tasks[index].Task == 'Adhoc' && adhocStatus && adhocStatus.length) {
+          if (!adhocStatus.find(status => tasks[index].Comments === status)) {
+            tasks[index].TotalAllocated = tasks[index].TimeSpent.replace('.', ':');
+            const sTimeZone = tasks[index].TimeZone === null ? '+5.5' : tasks[index].TimeZone;
+            const currentUserTimeZone = (new Date()).getTimezoneOffset() / 60 * -1;
+            tasks[index].StartDate = this.commonservice.calcTimeForDifferentTimeZone(new Date(tasks[index].StartDate), currentUserTimeZone, sTimeZone);
+            tasks[index].DueDate = this.commonservice.calcTimeForDifferentTimeZone(new Date(tasks[index].DueDate), currentUserTimeZone, sTimeZone);
+            filteredTasks.push(tasks[index]);
+          }
+        } else if (taskStatus && taskStatus.length) {
+          if (!taskStatus.find(status => tasks[index].Status === status)) {
+            tasks[index].TotalAllocated = tasks[index].Task !== 'Adhoc' ?
+            this.commonservice.convertToHrsMins('' + tasks[index].ExpectedTime).replace('.', ':')
+            : tasks[index].TimeSpent.replace('.', ':');
+            const sTimeZone = tasks[index].TimeZone === null ? '+5.5' : tasks[index].TimeZone;
+            const currentUserTimeZone = (new Date()).getTimezoneOffset() / 60 * -1;
+            tasks[index].StartDate = this.commonservice.calcTimeForDifferentTimeZone(new Date(tasks[index].StartDate), currentUserTimeZone, sTimeZone);
+            tasks[index].DueDate = this.commonservice.calcTimeForDifferentTimeZone(new Date(tasks[index].DueDate), currentUserTimeZone, sTimeZone);
+            filteredTasks.push(tasks[index]);
+          }
+        }
+        else {
           tasks[index].TotalAllocated = tasks[index].Task !== 'Adhoc' ?
             this.commonservice.convertToHrsMins('' + tasks[index].ExpectedTime).replace('.', ':')
             : tasks[index].TimeSpent.replace('.', ':');
@@ -656,14 +689,14 @@ export class UsercapacityComponent implements OnInit {
                 let allocationPerDay = oUser.tasks[j].AllocationPerDay.split(/\n/);
                 allocationPerDay = allocationPerDay.forEach(allocation => {
                   const arrAllocation = allocation.split(':');
-                  const allocationDate = arrAllocation.length && new Date(arrAllocation[0]) instanceof Date ?  new Date(arrAllocation[0]) : new Date();
-                  let allocationTime = arrAllocation.length > 0 ?  arrAllocation[1] : '0';
+                  const allocationDate = arrAllocation.length && new Date(arrAllocation[0]) instanceof Date ? new Date(arrAllocation[0]) : new Date();
+                  let allocationTime = arrAllocation.length > 0 ? arrAllocation[1] : '0';
                   allocationTime = arrAllocation.length > 1 ? arrAllocation[1] + ':' + arrAllocation[2] : '0';
-                  if(allocationDate.getTime() === oUser.dates[i].date.getTime()) {
+                  if (allocationDate.getTime() === oUser.dates[i].date.getTime()) {
                     oUser.tasks[j].timeAllocatedPerDay = allocationTime;
                   }
                 });
-               } else {
+              } else {
                 oUser.tasks[j].timeAllocatedPerDay = this.commonservice.convertToHrsMins('' + this.getPerDayTime(oUser.tasks[j].ExpectedTime !== null ?
                   oUser.tasks[j].ExpectedTime : '0', taskBusinessDays - arrLeaveDays.length));
               }

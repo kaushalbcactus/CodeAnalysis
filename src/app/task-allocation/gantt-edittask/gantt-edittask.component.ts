@@ -357,6 +357,7 @@ export class GanttEdittaskComponent implements OnInit {
         endTime: milestoneTask.pUserEndTimePart,
         budgetHrs: milestoneTask.budgetHours,
         resource,
+        status: milestoneTask.status,
         strAllocation: '',
         allocationType: ''
       };

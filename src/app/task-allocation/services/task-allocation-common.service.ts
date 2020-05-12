@@ -16,6 +16,16 @@ export class TaskAllocationCommonService {
   allTasks: any = {}
   attachedEvents = [];
 
+  adhocStatus = [
+    'Administrative Work',
+    'Internal meeting'
+  ]
+
+  taskStatus = [
+      'Not Saved',
+      'Not Confirmed'
+  ]
+
   getResourceByMatrix(task, allTasks) {
     let resources = this.sharedObject.oTaskAllocation.oResources;
     resources = resources.filter(e => e.TAVisibility === 'Yes');

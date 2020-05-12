@@ -144,7 +144,9 @@ export class DailyAllocationComponent implements OnInit {
   }
 
   async getResourceCapacity(task: IDailyAllocationTask) {
-    const oCapacity = await this.usercapacityComponent.applyFilterReturn(task.startDate, task.endDate, task.resource, [task]);
+    let taskStatus = [];
+    taskStatus = task.status == 'Not Confirmed' || task.status == 'Not Saved' ? this.allocationCommon.taskStatus : [];
+    const oCapacity = await this.usercapacityComponent.factoringTimeForAllocation(task.startDate, task.endDate, task.resource, [task], taskStatus, this.allocationCommon.adhocStatus);
     const resource = oCapacity.arrUserDetails.length ? oCapacity.arrUserDetails[0] : {};
     return resource;
   }

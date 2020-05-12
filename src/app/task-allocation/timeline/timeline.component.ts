@@ -1398,7 +1398,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.taskAllocateCommonService.attachedEvents.push(onBeforeTaskDrag);
     const onTaskClick = gantt.attachEvent("onTaskClick", (id, e) => {
       let task = gantt.getTask(id);
-      if (task.itemType !== "Send to client" && task.itemType !== "Client Review" && task.slotType !== 'Slot') {
+      if (task.itemType !== "Send to client" && task.itemType !== "Client Review" && task.slotType !== 'Slot' && task.type !== "milestone" && task.type !== "submilestone") {
         if (e.target.className === "gantt_tree_content" && e.target.parentElement.className == "gantt_cell gantt_last_cell") {
           this.onResourceClick(task);
         }
@@ -2754,6 +2754,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         endTime: milestoneTask.pUserEndTimePart,
         budgetHrs: milestoneTask.budgetHours,
         resource,
+        status: milestoneTask.status,
         strAllocation: '',
         allocationType: ''
       };
@@ -4282,6 +4283,17 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.getDeletedMilestoneTasks(updatedTasks, updatedMilestones);
     this.setMilestone(addedTasks, updatedTasks, addedMilestones, updatedMilestones);
 
+    let allTasks = this.milestoneData.filter((e=> e.children));
+    allTasks.forEach((e)=>{
+      e.children.forEach((task: any)=>{
+        if(task.data.itemType !== 'Client Review'&& task.data.itemType !== 'Send to client' && task.data.slotType.indexOf('Slot') < 0 || task.data.added == false) {
+          task.data.resources = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
+            return objt.UserName.ID === task.data.AssignedTo.ID;
+          });
+          this.usercapacityComponent.factoringTimeForAllocation(task.data.start_date, task.data.end_date, task.data.resources, [], this.taskAllocateCommonService.taskStatus, this.taskAllocateCommonService.adhocStatus);
+        }
+      })
+    })
   }
 
   // tslint:enable
@@ -4546,13 +4558,22 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
     } else {
       const Title = rowNode.parent ? rowNode.parent.data.title + ' - ' + rowData.title : rowData.title;
-
+      let tasks = [];
       this.confirmationService.confirm({
         message: 'Are you sure that you want to Confirm ' + Title + ' ?',
         header: 'Confirmation',
         icon: 'pi pi-exclamation-triangle',
         accept: () => {
           this.selectedSubMilestone = rowData;
+          let allTasks = rowNode.node;
+          allTasks.children.forEach((task)=>{
+              if(task.data.itemType !== 'Client Review'&& task.data.itemType !== 'Send to client' && task.data.slotType.indexOf('Slot') < 0) {
+                task.data.resources = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
+                  return objt.UserName.ID === task.data.AssignedTo.ID;
+                });
+                this.usercapacityComponent.factoringTimeForAllocation(task.data.start_date, task.data.end_date, task.data.resources, [], [], this.taskAllocateCommonService.adhocStatus);
+              }
+          })
           const validateNextMilestone = this.validateNextMilestone(this.selectedSubMilestone);
           if (validateNextMilestone) {
             this.loaderenable = true;
