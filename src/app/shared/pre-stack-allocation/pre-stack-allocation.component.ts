@@ -1,18 +1,18 @@
 import { Component, OnInit } from '@angular/core';
-import { IDailyAllocationTask, ICapacity, IDailyAllocation } from '../interface/allocation';
+import { DailyAllocationTask, DailyAllocationObject } from './interface/prestack';
 import { UsercapacityComponent } from 'src/app/shared/usercapacity/usercapacity.component';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 import { CommonService } from 'src/app/Services/common.service';
 import { DatePipe } from '@angular/common';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
-import { TaskAllocationCommonService } from '../services/task-allocation-common.service';
 
 @Component({
-  selector: 'app-daily-allocation',
-  templateUrl: './daily-allocation.component.html',
-  styleUrls: ['./daily-allocation.component.css']
+  selector: 'app-pre-stack-allocation',
+  templateUrl: './pre-stack-allocation.component.html',
+  styleUrls: ['./pre-stack-allocation.component.css'],
+  providers: [UsercapacityComponent]
 })
-export class DailyAllocationComponent implements OnInit {
+export class PreStackAllocationComponent implements OnInit {
   public cols: any[];
   public resourceCapacity: any;
   public newAllocation = [];
@@ -41,7 +41,7 @@ export class DailyAllocationComponent implements OnInit {
       { field: 'Date', header: 'Date' },
       { field: 'Allocation', header: 'Hours' }
     ];
-    const allocationData: IDailyAllocationTask = this.popupData.data;
+    const allocationData: DailyAllocationTask = this.popupData.data;
     this.resourceCapacity = {};
     if (allocationData) {
       this.showLoader();
@@ -99,7 +99,7 @@ export class DailyAllocationComponent implements OnInit {
         const value = this.getHrsMinsObj(time, false);
         const allocatedDate: any = resourceDailyAllocation.find(d => d.date.getTime() === date.getTime());
         const resourceSliderMaxHrs: string = this.getResourceSliderMaxHrs(sliderMaxHrs, allocatedDate);
-        const obj: IDailyAllocation = {
+        const obj: DailyAllocationObject = {
           Date: date,
           Allocation: {
             valueHrs: value.hours,
@@ -142,7 +142,7 @@ export class DailyAllocationComponent implements OnInit {
     return remainingBudgetHrs.indexOf('-') < 0 ? true : false;
   }
 
-  async getResourceCapacity(task: IDailyAllocationTask) {
+  async getResourceCapacity(task: DailyAllocationTask) {
     const oCapacity = await this.usercapacityComponent.applyFilterReturn(task.startDate, task.endDate, task.resource, [task]);
     const resource = oCapacity.arrUserDetails.length ? oCapacity.arrUserDetails[0] : {};
     return resource;
@@ -219,7 +219,7 @@ export class DailyAllocationComponent implements OnInit {
     return newBudgetHrs;
   }
 
-  async equalSplitAllocation(allocationData: IDailyAllocationTask) {
+  async equalSplitAllocation(allocationData: DailyAllocationTask) {
     this.newAllocation.length = 0;
 
     const businessDays = this.common.calcBusinessDays(allocationData.startDate, allocationData.endDate);
@@ -302,7 +302,7 @@ export class DailyAllocationComponent implements OnInit {
   }
 
   saveAllocation(): void {
-    const allocationData: IDailyAllocationTask = this.popupData.data;
+    const allocationData: DailyAllocationTask = this.popupData.data;
     const objAllocation = this.getAllocationPerDay(allocationData);
     const allocationPerDay = objAllocation.allocationPerDay;
     const allocationAlert = objAllocation.allocationAlert;
@@ -337,4 +337,5 @@ export class DailyAllocationComponent implements OnInit {
   async cancel() {
     this.popupConfig.close({ allocationPerDay: this.popupData.data.strAllocation, allocationAlert: false });
   }
+
 }
