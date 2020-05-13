@@ -4,8 +4,10 @@ import { DynamicDialogConfig, DynamicDialogRef, DialogService, MessageService, T
 import { DatePipe } from '@angular/common';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
 import { GlobalService } from 'src/app/Services/global.service';
-import { IDailyAllocationTask, IMilestoneTask } from '../interface/allocation';
-import { DailyAllocationComponent } from '../daily-allocation/daily-allocation.component';
+import { IMilestoneTask } from '../interface/allocation';
+import { DailyAllocationTask } from 'src/app/shared/pre-stack-allocation/interface/prestack';
+// import { DailyAllocationComponent } from '../daily-allocation/daily-allocation.component';
+import { PreStackAllocationComponent } from 'src/app/shared/pre-stack-allocation/pre-stack-allocation.component';
 import { TaskAllocationCommonService } from '../services/task-allocation-common.service';
 import { CommonService } from 'src/app/Services/common.service';
 
@@ -57,7 +59,7 @@ export class GanttEdittaskComponent implements OnInit {
     private globalService: GlobalService,
     private dialogService: DialogService,
     private messageService: MessageService,
-    private dailyAllocation: DailyAllocationComponent,
+    private dailyAllocation: PreStackAllocationComponent,
     private taskAllocateCommonService: TaskAllocationCommonService,
     private commonService: CommonService) {
 
@@ -318,7 +320,7 @@ export class GanttEdittaskComponent implements OnInit {
       return objt.UserName.ID === this.task.AssignedTo.ID;
     });
 
-    const ref = this.dialogService.open(DailyAllocationComponent, {
+    const ref = this.dialogService.open(PreStackAllocationComponent, {
       data: {
         ID: this.task.id,
         task: this.task.taskFullName,
@@ -326,9 +328,10 @@ export class GanttEdittaskComponent implements OnInit {
         endDate: this.task.pUserEnd,
         budgetHrs: this.task.budgetHours,
         resource: this.task.resources,
+        status: this.task.status,
         strAllocation: this.task.allocationPerDay,
         allocationType
-      } as IDailyAllocationTask,
+      } as DailyAllocationTask,
       width: '90vw',
 
       header: this.task.submilestone ? this.task.milestone + ' ' + this.task.title
@@ -349,7 +352,7 @@ export class GanttEdittaskComponent implements OnInit {
     if (!eqgTasks.find(t => t === milestoneTask.itemType) && milestoneTask.pUserStartDatePart &&
       resource.length && milestoneTask.pUserEndDatePart && milestoneTask.budgetHours &&
       milestoneTask.pUserEnd > milestoneTask.pUserStart) {
-      const allocationData: IDailyAllocationTask = {
+      const allocationData: DailyAllocationTask = {
         ID: milestoneTask.id,
         task: milestoneTask.taskFullName,
         startDate: milestoneTask.pUserStartDatePart,

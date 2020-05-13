@@ -939,8 +939,9 @@ export class CommonService {
 
 
     roundToPrecision(x, precision) {
-        const y = +x + (precision === undefined ? 0.5 : precision / 2);
-        return y - (y % (precision === undefined ? 1 : +precision));
+      // const y = +x + (precision === undefined ? 0.5 : precision / 2);
+      // return y - (y % (precision === undefined ? 1 : +precision));
+     return  Math.ceil(x / precision) * precision;
     }
 
     convertTo24Hour(time) {

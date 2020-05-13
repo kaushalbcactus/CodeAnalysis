@@ -21,17 +21,20 @@ import { SelectItem } from 'primeng/api';
 import { gantt, Gantt } from '../../dhtmlx-gantt/codebase/source/dhtmlxgantt';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 declare let dhtmlXMenuObject: any;
-import { DailyAllocationComponent } from '../daily-allocation/daily-allocation.component';
-import { IDailyAllocationTask, IMilestoneTask } from '../interface/allocation';
+// import { DailyAllocationComponent } from '../daily-allocation/daily-allocation.component';
+import { IMilestoneTask } from '../interface/allocation';
+import { DailyAllocationTask } from 'src/app/shared/pre-stack-allocation/interface/prestack';
+import { PreStackAllocationComponent } from 'src/app/shared/pre-stack-allocation/pre-stack-allocation.component';
+import { AllocationOverlayComponent } from 'src/app/shared/pre-stack-allocation/allocation-overlay/allocation-overlay.component';
 import { GanttEdittaskComponent } from '../gantt-edittask/gantt-edittask.component';
-import { DailyAllocationOverlayComponent } from '../daily-allocation-overlay/daily-allocation-overlay.component';
-
+import { ConflictAllocationsComponent } from '../conflict-allocations/conflict-allocations.component';
 
 @Component({
   selector: 'app-timeline',
   templateUrl: './timeline.component.html',
   styleUrls: ['./timeline.component.css'],
-  providers: [MessageService, DialogService, DragDropComponent, UsercapacityComponent, DynamicDialogRef, DailyAllocationComponent, GanttEdittaskComponent],
+  providers: [MessageService, DialogService, DragDropComponent, UsercapacityComponent, DynamicDialogRef,
+              PreStackAllocationComponent, AllocationOverlayComponent, GanttEdittaskComponent],
   encapsulation: ViewEncapsulation.None
 })
 export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, AfterViewChecked {
@@ -48,7 +51,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   @ViewChild('reallocationMailTableID', { static: false }) reallocateTable: ElementRef;
   @ViewChild('ganttcontainer', { read: ViewContainerRef, static: false }) ganttChart: ViewContainerRef;
   @ViewChild('userCapacity', { static: false }) userCapacity: UsercapacityComponent;
-  @ViewChild('dailyAllocateOP', { static: false }) dailyAllocateOP: DailyAllocationOverlayComponent;
+  @ViewChild('dailyAllocateOP', { static: false }) dailyAllocateOP: AllocationOverlayComponent;
   Today = new Date();
   tempComment;
   minDateValue = new Date();
@@ -202,7 +205,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     private usercapacityComponent: UsercapacityComponent,
     private resolver: ComponentFactoryResolver,
     private zone: NgZone, private fb: FormBuilder,
-    private dailyAllocation: DailyAllocationComponent,
+    private dailyAllocation: PreStackAllocationComponent,
     private cdRef: ChangeDetectorRef,
     private myElement: ElementRef
   ) {
@@ -1486,13 +1489,21 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       this.resetTask = task;
       this.dragClickedInput = e.srcElement.className;
       if (gantt.ext.zoom.getCurrentLevel() < 3) {
-        if (task.status == 'Completed' || task.status == "Auto Closed" || task.type == "milestone" || task.type === 'submilestone') {
+        if (task.status == 'Completed' || task.status == "Auto Closed" || task.type == "milestone" || task.type === 'submilestone' ) {
           return false;
         } else {
-          if (mode === 'resize') {
-            return true;
+          if(task.itemType == 'Client Review') {
+            if (mode === 'resize'){
+              return true;
+            } else {
+              return false;
+            }
           } else {
-            return false;
+            if (mode === 'resize' || mode === 'move') {
+              return true;
+            } else {
+              return false;
+            }
           }
           // return true;
         }
@@ -1846,7 +1857,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       }, 1000);
     }
   }
-  ////// Refactor code - Use get tasks from milestone function rather looping 
+  ////// Refactor code - Use get tasks from milestone function rather looping
   getGanttTasksFromMilestones(milestones, includeSubTasks) {
     let tasks = [];
     milestones.forEach(milestone => {
@@ -1933,8 +1944,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       if (task.id == this.resetTask.id) {
         ////// Refactor code - Done
         task = this.resetTask;
-        // task.start_date = this.startDate;
-        // task.end_date = this.endDate;
+        task.start_date = this.startDate;
+        task.end_date = this.endDate;
         // task.pUserStart = this.resetTask.pUserStart;
         // task.pUserEnd = this.resetTask.pUserEnd;
         // task.pUserStartDatePart = this.resetTask.pUserStartDatePart;
@@ -1958,7 +1969,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         task.open = true;
       }
     })
-    this.taskAllocateCommonService.ganttParseObject = allTasks;
+    // this.taskAllocateCommonService.ganttParseObject = allTasks;
     this.GanttchartData = allTasks.data;
     await this.loadComponent();
     setTimeout(() => {
@@ -2747,7 +2758,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     });
   }
 
-  ////// Refactor code - Why change again ? 
+  ////// Refactor code - Why change again ?
   async updateGanttChartData() {
     let data = [];
 
@@ -2895,7 +2906,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     if (!eqgTasks.find(t => t === milestoneTask.itemType) && milestoneTask.pUserStartDatePart &&
       resource.length && milestoneTask.pUserEndDatePart && milestoneTask.budgetHours &&
       milestoneTask.pUserEnd > milestoneTask.pUserStart) {
-      const allocationData: IDailyAllocationTask = {
+      const allocationData: DailyAllocationTask = {
         ID: milestoneTask.id,
         task: milestoneTask.taskFullName,
         startDate: milestoneTask.pUserStartDatePart,
@@ -3491,7 +3502,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
   // *************************************************************************************************************************************
-  // Cascade Slot sub tasks 
+  // Cascade Slot sub tasks
   // *************************************************************************************************************************************
 
 
@@ -3668,6 +3679,26 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     }
   }
 
+  conflictAllocations(resources) {
+    const ref = this.dialogService.open(ConflictAllocationsComponent, {
+
+      data: {
+       resources: resources
+      },
+
+      header: 'Conflicting Allocations ',
+      width: '100vw',
+      height: '100vh',
+      contentStyle: { "height": "90vh", "overflow": "auto" },
+      closable: true,
+
+    });
+
+    ref.onClose.subscribe((RestructureMilestones: any) => {
+
+    })
+  }
+
 
   // *************************************************************************************************
   // Save tasks
@@ -3752,11 +3783,11 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     }
   }
 
-  setSchedulesObject(scObj, batchUrl, sVal) {
+  setSchedulesObject(scObj, batchUrl, type) {
     const obj = Object.assign({}, this.queryConfig);
     obj.url = scObj.url;
     obj.listName = this.constants.listNames.Schedules.name;
-    obj.type = sVal;
+    obj.type = type;
     obj.data = scObj.body;
     batchUrl.push(obj);
   }
@@ -5237,7 +5268,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       return objt.UserName.ID === milestoneTask.AssignedTo.ID;
     });
 
-    const ref = this.dialogService.open(DailyAllocationComponent, {
+    const ref = this.dialogService.open(PreStackAllocationComponent, {
       data: {
         ID: milestoneTask.id,
         task: milestoneTask.taskFullName,
@@ -5247,9 +5278,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         endTime: milestoneTask.pUserEndTimePart,
         budgetHrs: milestoneTask.budgetHours,
         resource: milestoneTask.resources,
+        status: milestoneTask.status,
         strAllocation: milestoneTask.allocationPerDay,
         allocationType
-      } as IDailyAllocationTask,
+      } as DailyAllocationTask,
       width: '90vw',
 
       header: milestoneTask.submilestone ? milestoneTask.milestone + ' ' + milestoneTask.title

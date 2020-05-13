@@ -1,17 +1,3 @@
-export interface IDailyAllocationTask {
-  ID: number;
-  task: string;
-  startDate: Date;
-  endDate: Date;
-  startTime: string;
-  endTime: string;
-  budgetHrs: string;
-  resource: number;
-  status: string;
-  strAllocation: string;
-  allocationType: string;
-}
-
 export interface ICapacity {
   date: Date;
   userCapacity: string;
@@ -23,16 +9,6 @@ export interface ICapacity {
   totalTimeAllocatedPerDay: string;
   displayAvailableHrs: string;
 }
-
-export interface IDailyAllocation {
-  Date: Date;
-  Allocation: {
-    valueHrs: number;
-    valueMins: number;
-    maxHrs: number;
-    maxMins: number;
-  };
-};
 
 export interface IMilestoneTask {
     'pUserStart': string;

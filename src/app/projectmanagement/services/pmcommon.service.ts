@@ -66,8 +66,8 @@ export class PMCommonService {
           }
         }
       });
-      return filteredResources;
     }
+    return filteredResources;
   }
   calcBusinessDays(dDate1, dDate2) {         // input given as Date objects
     // tslint:disable-next-line:one-variable-per-declaration
@@ -1980,7 +1980,7 @@ export class PMCommonService {
   }
 
   async reloadPMPage() {
-   
+
     setTimeout(() => {
       this.pmObject.isAddProjectVisible = false;
       this.pmObject.isMainLoaderHidden = true;
