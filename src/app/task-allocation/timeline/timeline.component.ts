@@ -3009,7 +3009,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
     if ((updatedCurrentMilestone || currentMilestoneTaskUpdated) && this.sharedObject.oTaskAllocation.oProjectDetails.status === this.constants.STATUS.AUTHOR_REVIEW) {
 
-      this.commonService.confirmMessageDialog('Do you want to keep project in Author Review or In Progress?', [this.constants.STATUS.AUTHOR_REVIEW, this.constants.STATUS.IN_PROGRESS], false).then(async projectstatus => {
+      this.commonService.confirmMessageDialog("Do you want to keep project in 'Author Review' or 'In Progress' ?", [this.constants.STATUS.AUTHOR_REVIEW, this.constants.STATUS.IN_PROGRESS], false).then(async projectstatus => {
         if (projectstatus) {
           projectStatus = projectstatus;
           if (projectstatus !== this.sharedObject.oTaskAllocation.oProjectDetails.status) {
