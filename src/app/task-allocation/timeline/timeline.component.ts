@@ -21,17 +21,21 @@ import { SelectItem } from 'primeng/api';
 import { gantt, Gantt } from '../../dhtmlx-gantt/codebase/source/dhtmlxgantt';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 declare let dhtmlXMenuObject: any;
-import { DailyAllocationComponent } from '../daily-allocation/daily-allocation.component';
-import { IDailyAllocationTask, IMilestoneTask } from '../interface/allocation';
+// import { DailyAllocationComponent } from '../daily-allocation/daily-allocation.component';
+import { IMilestoneTask } from '../interface/allocation';
+import { DailyAllocationTask } from 'src/app/shared/pre-stack-allocation/interface/prestack';
+import { PreStackAllocationComponent } from 'src/app/shared/pre-stack-allocation/pre-stack-allocation.component';
+import { AllocationOverlayComponent } from 'src/app/shared/pre-stack-allocation/allocation-overlay/allocation-overlay.component';
 import { GanttEdittaskComponent } from '../gantt-edittask/gantt-edittask.component';
-import { DailyAllocationOverlayComponent } from '../daily-allocation-overlay/daily-allocation-overlay.component';
+// import { DailyAllocationOverlayComponent } from '../daily-allocation-overlay/daily-allocation-overlay.component';
 
 
 @Component({
   selector: 'app-timeline',
   templateUrl: './timeline.component.html',
   styleUrls: ['./timeline.component.css'],
-  providers: [MessageService, DialogService, DragDropComponent, UsercapacityComponent, DynamicDialogRef, DailyAllocationComponent, GanttEdittaskComponent],
+  providers: [MessageService, DialogService, DragDropComponent, UsercapacityComponent, DynamicDialogRef,
+              PreStackAllocationComponent, AllocationOverlayComponent, GanttEdittaskComponent],
   encapsulation: ViewEncapsulation.None
 })
 export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, AfterViewChecked {
@@ -48,7 +52,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   @ViewChild('reallocationMailTableID', { static: false }) reallocateTable: ElementRef;
   @ViewChild('ganttcontainer', { read: ViewContainerRef, static: false }) ganttChart: ViewContainerRef;
   @ViewChild('userCapacity', { static: false }) userCapacity: UsercapacityComponent;
-  @ViewChild('dailyAllocateOP', { static: false }) dailyAllocateOP: DailyAllocationOverlayComponent;
+  @ViewChild('dailyAllocateOP', { static: false }) dailyAllocateOP: AllocationOverlayComponent;
   Today = new Date();
   tempComment;
   minDateValue = new Date();
@@ -202,7 +206,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     private usercapacityComponent: UsercapacityComponent,
     private resolver: ComponentFactoryResolver,
     private zone: NgZone, private fb: FormBuilder,
-    private dailyAllocation: DailyAllocationComponent,
+    private dailyAllocation: PreStackAllocationComponent,
     private cdRef: ChangeDetectorRef,
     private myElement: ElementRef
   ) {
@@ -2757,7 +2761,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     if (!eqgTasks.find(t => t === milestoneTask.itemType) && milestoneTask.pUserStartDatePart &&
       resource.length && milestoneTask.pUserEndDatePart && milestoneTask.budgetHours &&
       milestoneTask.pUserEnd > milestoneTask.pUserStart) {
-      const allocationData: IDailyAllocationTask = {
+      const allocationData: DailyAllocationTask = {
         ID: milestoneTask.id,
         task: milestoneTask.taskFullName,
         startDate: milestoneTask.pUserStartDatePart,
@@ -3189,7 +3193,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   sortDates(node, type) {
     const nodeCopy = Object.assign({}, node).children.filter(c => c.data.type  !== 'task' || (c.data.type  === 'task' &&
       c.data.itemType.toLowerCase() !== 'adhoc' && c.data.itemType.toLowerCase() !== 'tb'));
-    switch (type) { 
+    switch (type) {
       case 'start':
         nodeCopy.sort((a, b) => {
           const startDate = new Date(a.data.start_date);
@@ -3351,7 +3355,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
   // *************************************************************************************************************************************
-  // Cascade Slot sub tasks 
+  // Cascade Slot sub tasks
   // *************************************************************************************************************************************
 
 
@@ -3612,11 +3616,11 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     }
   }
 
-  setSchedulesObject(scObj, batchUrl) {
+  setSchedulesObject(scObj, batchUrl, type) {
     const obj = Object.assign({}, this.queryConfig);
     obj.url = scObj.url;
     obj.listName = this.constants.listNames.Schedules.name;
-    obj.type = 'POST';
+    obj.type = type;
     obj.data = scObj.body;
     batchUrl.push(obj);
   }
@@ -3675,7 +3679,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     }
 
     for (const mil of addMilestones) {
-      this.setSchedulesObject(mil, batchUrl);
+      this.setSchedulesObject(mil, batchUrl, 'POST');
       // this.spServices.getChangeSetBodySC(batchContents, changeSetId, mil.url, mil.body, true);
       // const milObj = Object.assign({}, this.queryConfig);
       // milObj.url = mil.url;
@@ -3686,7 +3690,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     }
 
     for (const tasks of addTasks) {
-      this.setSchedulesObject(tasks, batchUrl);
+      this.setSchedulesObject(tasks, batchUrl, 'POST');
       // this.spServices.getChangeSetBodySC(batchContents, changeSetId, tasks.url, tasks.body, true);
       // const milTaskObj = Object.assign({}, this.queryConfig);
       // milTaskObj.url = tasks.url;
@@ -3711,7 +3715,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       // this.spServices.getChangeSetBodySC(batchContents, changeSetId, milestoneFolderEndpoint, JSON.stringify(milestoneFolderBody), true);
     }
     for (const mil of updateMilestones) {
-      this.setSchedulesObject(mil, batchUrl);
+      this.setSchedulesObject(mil, batchUrl, 'PATCH');
       // this.spServices.getChangeSetBodySC(batchContents, changeSetId, mil.url, mil.body, false);
       // const milObj = Object.assign({}, this.queryConfig);
       // milObj.url = mil.url;
@@ -3721,7 +3725,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       // batchUrl.push(milObj);
     }
     for (const tasks of updateTasks) {
-      this.setSchedulesObject(tasks, batchUrl);
+      this.setSchedulesObject(tasks, batchUrl, 'PATCH');
       // this.spServices.getChangeSetBodySC(batchContents, changeSetId, tasks.url, tasks.body, false);
       // const taskObj = Object.assign({}, this.queryConfig);
       // taskObj.url = tasks.url;
@@ -5097,7 +5101,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       return objt.UserName.ID === milestoneTask.AssignedTo.ID;
     });
 
-    const ref = this.dialogService.open(DailyAllocationComponent, {
+    const ref = this.dialogService.open(PreStackAllocationComponent, {
       data: {
         ID: milestoneTask.id,
         task: milestoneTask.taskFullName,
@@ -5107,9 +5111,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         endTime: milestoneTask.pUserEndTimePart,
         budgetHrs: milestoneTask.budgetHours,
         resource: milestoneTask.resources,
+        status: milestoneTask.status,
         strAllocation: milestoneTask.allocationPerDay,
         allocationType
-      } as IDailyAllocationTask,
+      } as DailyAllocationTask,
       width: '90vw',
 
       header: milestoneTask.submilestone ? milestoneTask.milestone + ' ' + milestoneTask.title

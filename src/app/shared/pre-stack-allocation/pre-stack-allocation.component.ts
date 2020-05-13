@@ -5,6 +5,7 @@ import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 import { CommonService } from 'src/app/Services/common.service';
 import { DatePipe } from '@angular/common';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
+import { TaskAllocationCommonService } from 'src/app/task-allocation/services/task-allocation-common.service';
 
 @Component({
   selector: 'app-pre-stack-allocation',
@@ -34,7 +35,8 @@ export class PreStackAllocationComponent implements OnInit {
     }
   };
   constructor(private usercapacityComponent: UsercapacityComponent, private popupData: DynamicDialogConfig,
-    public common: CommonService, private datePipe: DatePipe, public popupConfig: DynamicDialogRef) { }
+    public common: CommonService, private datePipe: DatePipe, public popupConfig: DynamicDialogRef,
+    public allocationCommon: TaskAllocationCommonService) { }
 
   ngOnInit() {
     this.cols = [
@@ -98,7 +100,8 @@ export class PreStackAllocationComponent implements OnInit {
         const time: string = arrDateTime.length > 1 ? arrDateTime[1] + ':' + arrDateTime[2] : '';
         const value = this.getHrsMinsObj(time, false);
         const allocatedDate: any = resourceDailyAllocation.find(d => d.date.getTime() === date.getTime());
-        const resourceSliderMaxHrs: string = this.getResourceSliderMaxHrs(sliderMaxHrs, allocatedDate);
+        let resourceSliderMaxHrs: string = this.getResourceSliderMaxHrs(sliderMaxHrs, allocatedDate);
+        resourceSliderMaxHrs = resourceSliderMaxHrs.indexOf('-') > -1 ? '0:0' :  resourceSliderMaxHrs;
         const obj: DailyAllocationObject = {
           Date: date,
           Allocation: {
@@ -143,7 +146,9 @@ export class PreStackAllocationComponent implements OnInit {
   }
 
   async getResourceCapacity(task: DailyAllocationTask) {
-    const oCapacity = await this.usercapacityComponent.applyFilterReturn(task.startDate, task.endDate, task.resource, [task]);
+    let taskStatus = [];
+    taskStatus = task.status === 'Not Confirmed' || task.status === 'Not Saved' ? this.allocationCommon.taskStatus : [];
+    const oCapacity = await this.usercapacityComponent.factoringTimeForAllocation(task.startDate, task.endDate, task.resource, [task], taskStatus, this.allocationCommon.adhocStatus);
     const resource = oCapacity.arrUserDetails.length ? oCapacity.arrUserDetails[0] : {};
     return resource;
   }
@@ -224,7 +229,7 @@ export class PreStackAllocationComponent implements OnInit {
 
     const businessDays = this.common.calcBusinessDays(allocationData.startDate, allocationData.endDate);
     const budgetHours = +allocationData.budgetHrs;
-    let allocationPerDay = this.common.roundToPrecision(budgetHours / businessDays, 0.5);
+    let allocationPerDay = this.common.roundToPrecision(budgetHours / businessDays, 0.25);
     const resource = Object.keys(this.resourceCapacity).length ? this.resourceCapacity : await this.getResourceCapacity(allocationData);
     const resourceSliderMaxHrs = resource.maxHrs + 3;
     const resourceDailyDetails = resource.dates.filter(d => d.userCapacity !== 'Leave');
@@ -241,7 +246,7 @@ export class PreStackAllocationComponent implements OnInit {
       let totalHrs = 0;
       if (i === 0) {
         totalHrs = availaibility.firstDayAvailablity < allocationPerDay ?
-                   availaibility.firstDayAvailablity : noOfDays <= 1 ? availaibility.firstDayAvailablity : allocationPerDay;
+                   availaibility.firstDayAvailablity : allocationPerDay; // noOfDays <= 1 ? availaibility.firstDayAvailablity :
       } else if (i === resourceDailyDetails.length - 1) {
         totalHrs = availaibility.lastDayAvailability < remainingBudgetHrs ? availaibility.lastDayAvailability : remainingBudgetHrs;
       } else {
@@ -337,5 +342,4 @@ export class PreStackAllocationComponent implements OnInit {
   async cancel() {
     this.popupConfig.close({ allocationPerDay: this.popupData.data.strAllocation, allocationAlert: false });
   }
-
 }
