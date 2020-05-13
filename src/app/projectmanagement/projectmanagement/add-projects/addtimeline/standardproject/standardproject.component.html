@@ -173,7 +173,7 @@
                                     {{rowData.AssignedTo}}
                                 </td>
                                 <td>
-                                   <div *ngIf = "rowData.type === 'task' && rowData.Task !== 'Client Review' && rowData.Task !== 'Send to client' && rowData.Task.indexOf('Slot') < 0">
+                                   <div *ngIf = "rowData.showAllocationSplit">
                                     <p-menu #popupMenu [popup]="true" [style]="{'text-align': 'left'}" [model]="taskMenu">
                                     </p-menu>
                                     <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData);popupMenu.show($event);"></i>

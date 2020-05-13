@@ -381,7 +381,7 @@ export class GanttChartComponent implements OnInit {
       gantt.templates.tooltip_date_format = task.type == 'milestone' || task.type == 'submilestone' ? gantt.date.date_to_str("%d-%M-%Y") : gantt.date.date_to_str("%d-%M-%Y %h:%i %A");
 
       this.singleTask = task
-      return "<h3>" + task.text + "</h3>" +
+      return "<h3>" + task.title + "</h3>" +
         "<b>Start date:</b> " + gantt.templates.tooltip_date_format(task.start_date) +
         "<br/><b>End date:</b> " + gantt.templates.tooltip_date_format(task.end_date) +
         "<br/><b>Resource start date:</b> " + gantt.templates.tooltip_date_format(task.pUserStart) +

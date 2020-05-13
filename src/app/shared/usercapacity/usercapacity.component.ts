@@ -298,10 +298,6 @@ export class UsercapacityComponent implements OnInit {
 
     for (const indexUser in oCapacity.arrUserDetails) {
       if (oCapacity.arrUserDetails.hasOwnProperty(indexUser)) {
-        //oCapacity.arrUserDetails[indexUser].tasks = this.fetchTasks(oCapacity.arrUserDetails[indexUser], arruserResults[indexUser], excludeTasks);
-        // oCapacity.arrUserDetails[indexUser].tasks = this.fetchTasks(oCapacity.arrUserDetails[indexUser], arruserResults[indexUser]);
-
-
         const TempTasks = this.fetchTasks(oCapacity.arrUserDetails[indexUser], arruserResults[indexUser], excludeTasks, taskStatus, adhocStatus);
 
         oCapacity.arrUserDetails[indexUser].tasks = this.filterData(TempTasks);
@@ -395,7 +391,7 @@ export class UsercapacityComponent implements OnInit {
       for (var index in oCapacity.arrUserDetails) {
         if (oCapacity.arrUserDetails.hasOwnProperty(index)) {
           await this.fetchUserLeaveDetails(oCapacity, oCapacity.arrUserDetails[index], UserLeaves[index].retItems, UserAvailableHrs[index].retItems);
-          this.fetchUserCapacity(oCapacity.arrUserDetails[index], startDate, endDate);
+          this.fetchUserCapacity(oCapacity.arrUserDetails[index]);
         }
       }
     }
@@ -437,18 +433,6 @@ export class UsercapacityComponent implements OnInit {
 
     const selectedUserID = oUser.uid;
     const invObj = Object.assign({}, this.queryConfig);
-    // tslint:disable-next-line: max-line-length
-    // let filter = " ";
-    // let userCapacityUrl = Object.assign({}, this.sharedConstant.userCapacity.fetchTasks);
-
-    // if (status.length) {
-    //   status.forEach((s) => {
-    //     filter = filter + userCapacityUrl.filterNotConfirmed.replace(/{{taskStatus}}/gi, s)
-    //   })
-    //   userCapacityUrl.filter.replace('{{userID}}', selectedUserID).replace(/{{startDateString}}/gi, startDateString)
-    //     .replace(/{{endDateString}}/gi, endDateString);
-    //   userCapacityUrl.filter = userCapacityUrl.filter + filter;
-    // }
     invObj.url = this.spService.getReadURL(this.globalConstantService.listNames.Schedules.name, this.sharedConstant.userCapacity.fetchTasks);
     invObj.url = invObj.url.replace('{{userID}}', selectedUserID).replace(/{{startDateString}}/gi, startDateString)
       .replace(/{{endDateString}}/gi, endDateString);
@@ -615,16 +599,14 @@ export class UsercapacityComponent implements OnInit {
 
   async afterResourceChange(startDate, endDate, task) {
     var Task: any;
-    // if (task.owner_id !== task.AssignedTo.ID) {
     if (this.globalService.oCapacity.arrUserDetails) {
       this.globalService.oCapacity.arrUserDetails.forEach((e) => {
         e.tasks.forEach((c) => {
-          if (c.Id == task.id) {
+          if(task.id && c.Id == task.id) {
             Task = c;
           }
-        })
+        });
       })
-      // }
 
       this.globalService.oCapacity.arrUserDetails.forEach(e => e.tasks = e.tasks.filter(c => c.Id !== Task.Id))
 
@@ -636,20 +618,26 @@ export class UsercapacityComponent implements OnInit {
 
       for (var index in this.globalService.oCapacity.arrUserDetails) {
         if (this.globalService.oCapacity.arrUserDetails.hasOwnProperty(index)) {
-          // await this.fetchUserLeaveDetails(this.oCapacity, this.oCapacity.arrUserDetails[index], UserLeaves[index].retItems, UserAvailableHrs[index].retItems);
-          this.fetchUserCapacity(this.globalService.oCapacity.arrUserDetails[index], startDate, endDate);
+          this.fetchUserCapacity(this.globalService.oCapacity.arrUserDetails[index]);
         }
       }
-
-      console.log(this.globalService.oCapacity)
       const capacity = this.globalService.oCapacity;
       return capacity;
     }
   }
 
-  fetchUserCapacity(oUser, startDate, endDate) {
+  filterCapacityByDates(startDate, endDate, task) {
+    const usercapacity = Object.assign({}, this.globalService.oCapacity.arrUserDetails.find(e => e.uid == task.userId));
+    const dateRangeTasks = usercapacity.tasks.filter(t =>
+       (t.StartDate >= startDate && t.StartDate <= endDate) || (t.DueDate >= startDate && t.DueDate <= endDate)
+       || (t.StartDate <= startDate && t.DueDate >= endDate))
+    usercapacity.tasks = dateRangeTasks;
+    const updatedCapacity = this.fetchUserCapacity(usercapacity);
+    return updatedCapacity;
+  }
 
-    const totalAllocatedPerUser = 0, totalUnAllocatedPerUser = 0;
+
+  fetchUserCapacity(oUser) {
     const arrTotalAllocatedPerUser = [], arrTotalAvailablePerUser = [];
     let bench = [];
     for (const i in oUser.dates) {
@@ -696,6 +684,10 @@ export class UsercapacityComponent implements OnInit {
                     oUser.tasks[j].timeAllocatedPerDay = allocationTime;
                   }
                 });
+                if(!oUser.tasks[j].timeAllocatedPerDay) {
+                  oUser.tasks[j].timeAllocatedPerDay = this.commonservice.convertToHrsMins('' + this.getPerDayTime(oUser.tasks[j].ExpectedTime !== null ?
+                    oUser.tasks[j].ExpectedTime : '0', taskBusinessDays - arrLeaveDays.length));
+                }
               } else {
                 oUser.tasks[j].timeAllocatedPerDay = this.commonservice.convertToHrsMins('' + this.getPerDayTime(oUser.tasks[j].ExpectedTime !== null ?
                   oUser.tasks[j].ExpectedTime : '0', taskBusinessDays - arrLeaveDays.length));
@@ -822,6 +814,7 @@ export class UsercapacityComponent implements OnInit {
       oUser.displayTotalTimeSpent.split(':')[1] + 'm';
     oUser.dayTasks = [];
     oUser.TimeSpentDayTasks = [];
+    return oUser;
   }
 
 
