@@ -189,6 +189,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   graphFlag: boolean;
   menu: any;
   dragClickedInput: string;
+  capacityObj: any = {
+    users: [],
+    conflictAllocation: false
+  }
   constructor(
     private constants: ConstantsService,
     public sharedObject: GlobalService,
@@ -317,12 +321,14 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         let taskName;
         milestoneSubmilestones = milestone.SubMilestones !== null ? milestone.SubMilestones.replace(/#/gi, "").split(';') : [];
 
-        var dbSubMilestones: Array<any> = milestoneSubmilestones.length > 0 ? milestoneSubmilestones.map(o => new Object({ subMile: o.split(':')[0], 
-        position: o.split(':')[1], status: o.split(':')[2] })) : [];
+        var dbSubMilestones: Array<any> = milestoneSubmilestones.length > 0 ? milestoneSubmilestones.map(o => new Object({
+          subMile: o.split(':')[0],
+          position: o.split(':')[1], status: o.split(':')[2]
+        })) : [];
 
-        var NextSubMilestone = dbSubMilestones.length > 0 ? dbSubMilestones.find(c => c.status === 'Not Confirmed') !== undefined 
-        ? dbSubMilestones.find(c => c.status === 'Not Confirmed') : new Object({ subMile: '', position: '', status: '' }) : 
-        new Object({ subMile: '', position: '', status: '' });
+        var NextSubMilestone = dbSubMilestones.length > 0 ? dbSubMilestones.find(c => c.status === 'Not Confirmed') !== undefined
+          ? dbSubMilestones.find(c => c.status === 'Not Confirmed') : new Object({ subMile: '', position: '', status: '' }) :
+          new Object({ subMile: '', position: '', status: '' });
 
         milestone.startDate = milestone.Actual_x0020_Start_x0020_Date ?
           {
@@ -508,7 +514,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
             submile.push(temptasks);
           }
 
-          const DefaultTasks = this.allTasks.filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title 
+          const DefaultTasks = this.allTasks.filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title
             && (c.SubMilestones === null || c.SubMilestones === 'Default') && c.Task !== 'Client Review' && c.Status !== 'Deleted');
 
           if (DefaultTasks !== undefined) {
@@ -621,7 +627,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
             this.milestoneData.push(tempmilestone);
           }
 
-          const clientReviewObj = this.allTasks.filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title && 
+          const clientReviewObj = this.allTasks.filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title &&
             (c.SubMilestones === null || c.SubMilestones === 'Default') && c.Task === 'Client Review' && c.Status !== 'Deleted');
 
           if (clientReviewObj.length > 0) {
@@ -1356,11 +1362,11 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       this.resetTask = task;
       this.dragClickedInput = e.srcElement.className;
       if (gantt.ext.zoom.getCurrentLevel() < 3) {
-        if (task.status == 'Completed' || task.status == "Auto Closed" || task.type == "milestone" || task.type === 'submilestone' ) {
+        if (task.status == 'Completed' || task.status == "Auto Closed" || task.type == "milestone" || task.type === 'submilestone') {
           return false;
         } else {
-          if(task.itemType == 'Client Review') {
-            if (mode === 'resize'){
+          if (task.itemType == 'Client Review') {
+            if (mode === 'resize') {
               return true;
             } else {
               return false;
@@ -1989,7 +1995,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
           if (submilestoneIndex > -1) {
             var taskindex = this.milestoneData[milestoneIndex].children[submilestoneIndex].children.indexOf(this.milestoneData[milestoneIndex].children[submilestoneIndex].children.find(c => c.data === milestone));
-            
+
             ////// Refactor code
             // replace all milestone from edited milestone
             this.milestoneData = this.milestoneData.splice(0, milestoneIndex + 1);
@@ -2298,7 +2304,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     return array;
   }
 
-////// Refactor code
+  ////// Refactor code
   // **************************************************************************************************
   // Get  Milestone Data After Restructure (Drag & Drop)
   // *************************************************************************************************
@@ -3547,7 +3553,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     const ref = this.dialogService.open(ConflictAllocationsComponent, {
 
       data: {
-       resources: resources
+        resources: resources
       },
 
       header: 'Conflicting Allocations ',
@@ -3561,6 +3567,39 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     ref.onClose.subscribe((RestructureMilestones: any) => {
 
     })
+  }
+
+  checkConflictsAllocations() {
+    let allTasks = this.milestoneData.filter((e => e.children));
+    allTasks.forEach((e) => {
+      e.children.forEach(async (task: any) => {
+        if (task.data.itemType !== 'Client Review' && task.data.itemType !== 'Send to client' && task.data.slotType.indexOf('Slot') < 0 || task.data.added == false) {
+          task.data.resources = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
+            return objt.UserName.ID === task.data.AssignedTo.ID;
+          });
+          let capacity = await this.usercapacityComponent.factoringTimeForAllocation(task.data.start_date, task.data.end_date, task.data.resources, [], this.taskAllocateCommonService.taskStatus, this.taskAllocateCommonService.adhocStatus);
+          let maxHrs = 10;
+          let maxMin = 0;
+          for (var index in capacity.arrUserDetails) {
+            if (capacity.arrUserDetails.hasOwnProperty(index)) {
+              let dates = capacity.arrUserDetails[index].dates;
+              for (var dateIndex in dates) {
+                if (dates[dateIndex].userCapacity != 'Leave') {
+                  let hrs = dates[dateIndex].totalTimeAllocatedPerDay.split(':')[0];
+                  let min = dates[dateIndex].totalTimeAllocatedPerDay.split(':')[1];
+                  if (hrs > maxHrs || min > maxMin) {
+                    this.capacityObj.conflictAllocation = true;
+                    this.capacityObj.users.push(capacity.arrUserDetails[index]);
+                  }
+                }
+              }
+            }
+          }
+          console.log(capacity);
+        }
+      })
+    })
+
   }
 
 
@@ -3579,7 +3618,12 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         this.loaderenable = true;
         this.visualgraph = false;
         this.sharedObject.resSectionShow = false;
-        setTimeout(() => {
+        setTimeout(async() => {
+          await this.checkConflictsAllocations();
+
+          if (this.capacityObj.conflictAllocation) {
+            this.conflictAllocations(this.capacityObj.users);
+          }
           this.generateSaveTasks();
         }, 300);
       } else {
@@ -3984,7 +4028,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
     return sVal;
   }
-////// Refactor code
+  ////// Refactor code
   setMilestoneForAddUpdate(sentMilestone, bAdd) {
     let currentMilestone = sentMilestone.data;
     let url = '';
@@ -4164,7 +4208,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   replaceContent(mailContent, key, value) {
     return mailContent.replace(new RegExp(key, 'g'), value);
   }
-////// Refactor code
+  ////// Refactor code
   public generateSaveTasks() {
     // this.sharedObject.isResourceChange = false;
     var listOfMilestones = [];
@@ -4265,10 +4309,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.getDeletedMilestoneTasks(updatedTasks, updatedMilestones);
     this.setMilestone(addedTasks, updatedTasks, addedMilestones, updatedMilestones);
 
-    let allTasks = this.milestoneData.filter((e=> e.children));
-    allTasks.forEach((e)=>{
-      e.children.forEach((task: any)=>{
-        if(task.data.itemType !== 'Client Review'&& task.data.itemType !== 'Send to client' && task.data.slotType.indexOf('Slot') < 0 || task.data.added == false) {
+    let allTasks = this.milestoneData.filter((e => e.children));
+    allTasks.forEach((e) => {
+      e.children.forEach((task: any) => {
+        if (task.data.itemType !== 'Client Review' && task.data.itemType !== 'Send to client' && task.data.slotType.indexOf('Slot') < 0 || task.data.added == false) {
           task.data.resources = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
             return objt.UserName.ID === task.data.AssignedTo.ID;
           });
@@ -4279,7 +4323,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
   // tslint:enable
-////// Refactor code
+  ////// Refactor code
   getDeletedMilestoneTasks(updatedTasks, updatedMilestones) {
 
     this.milestoneDataCopy.forEach((element) => {
@@ -4584,13 +4628,13 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         accept: () => {
           this.selectedSubMilestone = rowData;
           let allTasks = rowNode.node;
-          allTasks.children.forEach((task)=>{
-              if(task.data.itemType !== 'Client Review'&& task.data.itemType !== 'Send to client' && task.data.slotType.indexOf('Slot') < 0) {
-                task.data.resources = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
-                  return objt.UserName.ID === task.data.AssignedTo.ID;
-                });
-                this.usercapacityComponent.factoringTimeForAllocation(task.data.start_date, task.data.end_date, task.data.resources, [], [], this.taskAllocateCommonService.adhocStatus);
-              }
+          allTasks.children.forEach((task) => {
+            if (task.data.itemType !== 'Client Review' && task.data.itemType !== 'Send to client' && task.data.slotType.indexOf('Slot') < 0) {
+              task.data.resources = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
+                return objt.UserName.ID === task.data.AssignedTo.ID;
+              });
+              this.usercapacityComponent.factoringTimeForAllocation(task.data.start_date, task.data.end_date, task.data.resources, [], [], this.taskAllocateCommonService.adhocStatus);
+            }
           })
           const validateNextMilestone = this.validateNextMilestone(this.selectedSubMilestone);
           if (validateNextMilestone) {
@@ -4711,7 +4755,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
             const updateSchedulesBody = {
               __metadata: { type: this.constants.listNames.Schedules.type },
               Status: task.status,
-             // AllowCompletion: 'Yes',
+              // AllowCompletion: 'Yes',
               ActiveCA: task.ActiveCA
             };
             const taskUpdateObj = Object.assign({}, this.queryConfig);
@@ -4855,7 +4899,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   // ************************************************************************************************
   // Milestone Validation
   // **************************************************************************************************
-////// Refactor code
+  ////// Refactor code
   validate() {
 
     const projectBudgetHours = this.oProjectDetails.budgetHours;
@@ -5116,7 +5160,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     };
   }
 
-////// Refactor
+  ////// Refactor
   getExistingData(oExistingTask) {
     oExistingTask.start_date = new Date(oExistingTask.start_date);
     oExistingTask.end_date = new Date(oExistingTask.end_date);
