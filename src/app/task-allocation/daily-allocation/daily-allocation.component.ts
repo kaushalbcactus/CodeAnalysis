@@ -34,7 +34,7 @@ export class DailyAllocationComponent implements OnInit {
     }
   };
   constructor(private usercapacityComponent: UsercapacityComponent, private popupData: DynamicDialogConfig,
-    public common: CommonService, private datePipe: DatePipe, public popupConfig: DynamicDialogRef) { }
+    public common: CommonService, private datePipe: DatePipe, public popupConfig: DynamicDialogRef,private allocationCommon:TaskAllocationCommonService) { }
 
   ngOnInit() {
     this.cols = [

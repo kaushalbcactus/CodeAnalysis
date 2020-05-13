@@ -25,6 +25,7 @@ import { DailyAllocationComponent } from '../daily-allocation/daily-allocation.c
 import { IDailyAllocationTask, IMilestoneTask } from '../interface/allocation';
 import { GanttEdittaskComponent } from '../gantt-edittask/gantt-edittask.component';
 import { DailyAllocationOverlayComponent } from '../daily-allocation-overlay/daily-allocation-overlay.component';
+import { ConflictAllocationsComponent } from '../conflict-allocations/conflict-allocations.component';
 
 
 @Component({
@@ -1350,13 +1351,21 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       this.resetTask = task;
       this.dragClickedInput = e.srcElement.className;
       if (gantt.ext.zoom.getCurrentLevel() < 3) {
-        if (task.status == 'Completed' || task.status == "Auto Closed" || task.type == "milestone" || task.type === 'submilestone') {
+        if (task.status == 'Completed' || task.status == "Auto Closed" || task.type == "milestone" || task.type === 'submilestone' ) {
           return false;
         } else {
-          if (mode === 'resize') {
-            return true;
+          if(task.itemType == 'Client Review') {
+            if (mode === 'resize'){
+              return true;
+            } else {
+              return false;
+            }
           } else {
-            return false;
+            if (mode === 'resize' || mode === 'move') {
+              return true;
+            } else {
+              return false;
+            }
           }
           // return true;
         }
@@ -1799,8 +1808,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       }
       if (task.id == this.resetTask.id) {
         task = this.resetTask;
-        // task.start_date = this.startDate;
-        // task.end_date = this.endDate;
+        task.start_date = this.startDate;
+        task.end_date = this.endDate;
         // task.pUserStart = this.resetTask.pUserStart;
         // task.pUserEnd = this.resetTask.pUserEnd;
         // task.pUserStartDatePart = this.resetTask.pUserStartDatePart;
@@ -1824,7 +1833,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         task.open = true;
       }
     })
-    this.taskAllocateCommonService.ganttParseObject = allTasks;
+    // this.taskAllocateCommonService.ganttParseObject = allTasks;
     this.GanttchartData = allTasks.data;
     await this.loadComponent();
     setTimeout(() => {
@@ -3526,6 +3535,26 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         template: 'CentralTaskCreation'
       });
     }
+  }
+
+  conflictAllocations(resources) {
+    const ref = this.dialogService.open(ConflictAllocationsComponent, {
+
+      data: {
+       resources: resources
+      },
+
+      header: 'Conflicting Allocations ',
+      width: '100vw',
+      height: '100vh',
+      contentStyle: { "height": "90vh", "overflow": "auto" },
+      closable: true,
+
+    });
+
+    ref.onClose.subscribe((RestructureMilestones: any) => {
+
+    })
   }
 
 

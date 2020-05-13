@@ -26,10 +26,11 @@ import { GanttEdittaskComponent } from './gantt-edittask/gantt-edittask.componen
 import { NgsliderComponent } from './daily-allocation/ngslider/ngslider.component';
 import { Ng5SliderModule } from 'ng5-slider';
 import { DailyAllocationOverlayComponent } from './daily-allocation-overlay/daily-allocation-overlay.component';
+import { ConflictAllocationsComponent } from './conflict-allocations/conflict-allocations.component';
 
 @NgModule({
   declarations: [TaskAllocationComponent, TimelineComponent, DragDropComponent,
-     TaskDetailsDialogComponent, ResourcesComponent, DailyAllocationComponent, NgsliderComponent, DailyAllocationOverlayComponent,GanttEdittaskComponent],
+     TaskDetailsDialogComponent, ResourcesComponent, DailyAllocationComponent, NgsliderComponent, DailyAllocationOverlayComponent,GanttEdittaskComponent, ConflictAllocationsComponent],
   imports: [
     CommonModule,
     TaskAllocationRoutingModule,
@@ -53,7 +54,7 @@ import { DailyAllocationOverlayComponent } from './daily-allocation-overlay/dail
   ],
   providers: [DatePipe, DynamicDialogConfig, DynamicDialogRef, ConfirmationService],
   entryComponents: [UsercapacityComponent, DragDropComponent, TaskDetailsDialogComponent, GanttChartComponent,
-                    DailyAllocationComponent,GanttEdittaskComponent]
+                    DailyAllocationComponent,GanttEdittaskComponent,ConflictAllocationsComponent]
   // providers: [TaskAllocationAPI]
 })
 export class TaskAllocationModule { }
