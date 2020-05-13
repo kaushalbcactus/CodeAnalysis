@@ -201,7 +201,7 @@ export class SendToClientComponent implements OnInit {
       } else {
         this.loaderView.nativeElement.classList.remove('show');
         this.spannerView.nativeElement.classList.remove('show');
-        this.commonService.confirmMessageDialog('Do you want to change project status from ' + project.Status + ' to ' + this.Constant.STATUS.AUTHOR_REVIEW + ' or ' + this.Constant.STATUS.IN_PROGRESS + ' ?', [this.Constant.STATUS.AUTHOR_REVIEW, this.Constant.STATUS.IN_PROGRESS], true).then(async projectstatus => {
+        this.commonService.confirmMessageDialog("Do you want to change project status from '" + project.Status + "' to '" + this.Constant.STATUS.AUTHOR_REVIEW + "' or '" + this.Constant.STATUS.IN_PROGRESS + "' ?", [this.Constant.STATUS.AUTHOR_REVIEW, this.Constant.STATUS.IN_PROGRESS], true).then(async projectstatus => {
           if (projectstatus) {
             this.loaderView.nativeElement.classList.add('show');
             this.spannerView.nativeElement.classList.add('show');
