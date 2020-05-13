@@ -9,6 +9,7 @@ import { DatePipe } from '@angular/common';
 import { Table, DialogService } from 'primeng';
 import { FileUploadProgressDialogComponent } from '../shared/file-upload-progress-dialog/file-upload-progress-dialog.component';
 import { ConfirmationDialogComponent } from '../shared/confirmation-dialog/confirmation-dialog.component';
+import { ControlContainer, ValidatorFn, AbstractControl } from '@angular/forms';
 declare var $;
 
 declare const newrelic;
@@ -937,7 +938,7 @@ export class CommonService {
     }
 
 
-    confirmMessageDialog(message,buttons,Closable): Promise<any> {
+    confirmMessageDialog(message, buttons, Closable): Promise<any> {
         return new Promise((resolve, reject) => {
             const ref = this.dialogService.open(ConfirmationDialogComponent, {
                 header: 'Confirmation',
@@ -952,5 +953,63 @@ export class CommonService {
                 resolve(Confirmation);
             });
         });
+    }
+
+
+
+//     /**
+//  * This method is used to validate the number.
+//  *
+//  * @param control Pass the form control.
+//  *
+//  * @returns `positiveNumber` if conditions fails else `null`
+//  */
+//     checkPositiveNumber(control: ControlContainer): { [key: string]: boolean; } | null {
+//         debugger
+//         if (isNaN(control.value) || Number(control.value) < 0) {
+//             return { positiveNumber: true };
+//         }
+//         return null;
+//     }
+//     /**
+//      * This method is used to validate the number.
+//      *
+//      * @param control Pass the form control.
+//      *
+//      * @returns `positiveNumber` if conditions fails else `null`
+//      */
+//     lessThanZero(control: ControlContainer): { [key: string]: boolean; } | null {
+//         if (isNaN(control.value) || Number(control.value) <= 0) {
+//             return { nonZeroNumber: true };
+//         }
+//         return null;
+//     }
+
+
+    checkPositiveNumberValidator(): ValidatorFn {
+        return (control: AbstractControl): { [key: string]: boolean } | null => {
+            if (isNaN(control.value) || Number(control.value) < 0) {
+                return { positiveNumber: true };
+            }
+            return null;
+        };
+    }
+
+    checkNegativerNumberValidator(): ValidatorFn {
+        return (control: AbstractControl): { [key: string]: boolean } | null => {
+            if (isNaN(control.value) || Number(control.value) > 0) {
+                return { negativeNumber: true };
+            }
+            return null;
+        };
+    }
+
+    checkZeroNumberValidator(): ValidatorFn {
+        return (control: AbstractControl): { [key: string]: boolean } | null => {
+            if (isNaN(control.value) || Number(control.value) > 0 || Number(control.value) < 0 ) {
+                return { zeroNumber: true };
+            }
+            return null;
+        };
     }
 }

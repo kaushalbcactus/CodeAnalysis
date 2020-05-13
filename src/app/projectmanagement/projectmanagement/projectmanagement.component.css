@@ -1133,11 +1133,12 @@ body .ui-accordion .ui-accordion-header:not(.ui-state-disabled).ui-state-active:
     color: #ffffff !important;
 }
 
-body .ui-dialog .ui-dialog-titlebar {
+
+/* body .ui-dialog .ui-dialog-titlebar {
     background-color: #fff;
     font-weight: 500;
     font-size: 20px;
-}
+} */
 
 
 /* .ui-dialog .ui-dialog-titlebar-icon span {

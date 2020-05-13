@@ -1993,6 +1993,15 @@ export class PMCommonService {
   }
 
 
+
+  replaceContent(mailContent, key, value) {
+    return mailContent.replace(new RegExp(key, 'g'), value);
+  }
+
+
+
+  
+  
   // SendEmail(){
   //   var EmailTemplate = this.Emailtemplate.Content;
   //   var objEmailBody = [];

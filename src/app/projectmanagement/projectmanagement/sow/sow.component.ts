@@ -4,7 +4,7 @@ import { CommonService } from 'src/app/Services/common.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { PmconstantService } from '../../services/pmconstant.service';
 import { PMObjectService } from '../../services/pmobject.service';
-import { MenuItem, DialogService } from 'primeng';
+import { MenuItem, DialogService, MessageService } from 'primeng';
 import { DataService } from 'src/app/Services/data.service';
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -14,6 +14,7 @@ import { Table } from 'primeng/table';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { GlobalService } from 'src/app/Services/global.service';
+import { AddReduceSowbudgetDialogComponent } from './add-reduce-sowbudget-dialog/add-reduce-sowbudget-dialog.component';
 
 declare var $;
 @Component({
@@ -134,6 +135,7 @@ export class SOWComponent implements OnInit, OnDestroy {
   totalOOPBudget = 0;
   loaderenable = false;
   private _destroy$ = new Subject();
+  emailTemplate: any;
 
   constructor(
     public pmObject: PMObjectService,
@@ -152,6 +154,7 @@ export class SOWComponent implements OnInit, OnDestroy {
     private locationStrategy: LocationStrategy,
     _applicationRef: ApplicationRef,
     zone: NgZone,
+    public messageService: MessageService,
   ) {
 
     // Browser back button disabled & bookmark issue solution
@@ -195,7 +198,7 @@ export class SOWComponent implements OnInit, OnDestroy {
       },
       {
         label: 'Update Budget', target: '_blank',
-        command: (event) => this.addBudgetSOW(this.pmObject.selectedSOWTask)
+        command: (event) => this.changeBudgetDialog(this.pmObject.selectedSOWTask)
       },
       {
         label: 'View Projects', target: '_blank',
@@ -540,13 +543,6 @@ export class SOWComponent implements OnInit, OnDestroy {
         projectObj.DeliverableType = projectItem.DeliverableType;
         projectObj.ProjectCode = projectItem.ProjectCode;
         projectObj.Title = projectItem.Title;
-        // const tempBuget = budgetArray.find(x => x.retItems && x.retItems.length &&
-        //   x.retItems[0].Title === projectItem.ProjectCode);
-        // projectObj.Budget = tempBuget && tempBuget.retItems.length
-        //   ? (tempBuget.retItems[0].ApprovedBudget ? tempBuget.retItems[0].ApprovedBudget :
-        //     (tempBuget.retItems[0].RevenueBudget ? tempBuget.retItems[0].RevenueBudget : 0)) : 0;
-
-
         projectObj.Status = projectItem.Status;
         tempProjectArray.push(projectObj);
       });
@@ -660,9 +656,6 @@ export class SOWComponent implements OnInit, OnDestroy {
     }
   }
   navigateToProject(projObj) {
-    // this.pmObject.isProjectVisible = false;
-    // this.pmObject.columnFilter.ProjectCode = [projObj.ProjectCode];
-    // this.router.navigate(['/projectMgmt/allProjects']);
     if (this.pmObject.allProjectItems) {
       localStorage.setItem('allProjects', JSON.stringify(this.pmObject.allProjectItems));
     }
@@ -721,10 +714,183 @@ export class SOWComponent implements OnInit, OnDestroy {
 
 
 
+  // ***************************************************************************************************
+  // open dialog module to add / reduce sow budget of selected row item 
+  // ***************************************************************************************************
 
-  AddReduceBudget(task){
 
+  changeBudgetDialog(SowObject) {
+
+    const ref = this.dialogService.open(AddReduceSowbudgetDialogComponent, {
+      header: SowObject.SOWCode +  ' - Change Budget',
+      width: '78vw',
+      data: {
+        sowObject: SowObject,
+      },
+      contentStyle: { 'overflow-y': 'visible', 'background-color': '#f4f3ef' },
+      closable: false,
+    });
+
+    ref.onClose.subscribe(async (budgetDetails: any) => {
+      if (budgetDetails) {
+        if (!this.emailTemplate) {
+          this.emailTemplate = await this.pmCommonService.getEmailTemplate(this.constants.EMAIL_TEMPLATE_NAME.SOW_BUDGET_UPDATED);
+        }
+        const today = this.pmCommonService.toISODateString(new Date());
+        const docFolder = 'Finance/SOW';
+        let libraryName = '';
+        let SelectedFile = [];
+        SelectedFile.push(new Object({ name: budgetDetails.selectedFile.name, file: budgetDetails.selectedFile }))
+        const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
+          x.Title === this.pmObject.addSOW.ClientLegalEntity);
+        if (clientInfo && clientInfo.length) {
+          libraryName = clientInfo[0].ListName;
+        }
+        this.constants.loader.isPSInnerLoaderHidden = true;
+        this.commonService.SetNewrelic('ProjectManagement', 'projectmanagement-sowAddBudget', 'uploadFile');
+        this.commonService.UploadFilesProgress(SelectedFile, libraryName + '/' + docFolder, true).then(async uploadedfile => {
+
+          if (uploadedfile.length === SelectedFile.length) {
+            if (uploadedfile[0].hasOwnProperty('ServerRelativeUrl') && uploadedfile[0].hasOwnProperty('Name')) {
+              this.pmObject.addSOW.SOWFileURL = uploadedfile[0].ServerRelativeUrl;
+              this.pmObject.addSOW.SOWFileName = uploadedfile[0].Name;
+              this.pmObject.addSOW.SOWDocProperties = uploadedfile;
+            }
+            this.constants.loader.isPSInnerLoaderHidden = false;
+            const batchURL = [];
+            const options = {
+              data: null,
+              url: '',
+              type: '',
+              listName: ''
+            };
+            // Assign form value to global variable
+            this.pmObject.addSOW.Addendum.TotalBudget = budgetDetails.BudgetDetails.total;
+            this.pmObject.addSOW.Addendum.NetBudget = budgetDetails.BudgetDetails.net;
+            this.pmObject.addSOW.Addendum.OOPBudget = budgetDetails.BudgetDetails.oop ? budgetDetails.BudgetDetails.oop : 0;
+            this.pmObject.addSOW.Addendum.TaxBudget = budgetDetails.BudgetDetails.tax ? budgetDetails.BudgetDetails.tax : 0;
+            // create sow obj for update the sow list.
+            const updateSOWObj = {
+              TotalBudget: this.pmObject.addSOW.Addendum.TotalBudget + this.pmObject.addSOW.Budget.Total,
+              NetBudget: this.pmObject.addSOW.Addendum.NetBudget + this.pmObject.addSOW.Budget.Net,
+              OOPBudget: this.pmObject.addSOW.Addendum.OOPBudget + this.pmObject.addSOW.Budget.OOP,
+              TaxBudget: this.pmObject.addSOW.Addendum.TaxBudget + this.pmObject.addSOW.Budget.Tax,
+              SOWLink: this.pmObject.addSOW.SOWFileURL,
+              __metadata: {
+                type: this.constants.listNames.SOW.type
+              }
+            };
+            // create budgetbreakup obj for create new item in SOWBudgetBreakup list.
+            const newBudgetSOWObj = {
+              TotalBudget: this.pmObject.addSOW.Addendum.TotalBudget + this.pmObject.addSOW.Budget.Total,
+              NetBudget: this.pmObject.addSOW.Addendum.NetBudget + this.pmObject.addSOW.Budget.Net,
+              OOPBudget: this.pmObject.addSOW.Addendum.OOPBudget + this.pmObject.addSOW.Budget.OOP,
+              TaxBudget: this.pmObject.addSOW.Addendum.TaxBudget + this.pmObject.addSOW.Budget.Tax,
+              AddendumTotalBudget: this.pmObject.addSOW.Addendum.TotalBudget,
+              AddendumNetBudget: this.pmObject.addSOW.Addendum.NetBudget,
+              AddendumOOPBudget: this.pmObject.addSOW.Addendum.OOPBudget,
+              AddendumTaxBudget: this.pmObject.addSOW.Addendum.TaxBudget,
+              Currency: this.pmObject.addSOW.Currency,
+              SOWCode: this.pmObject.addSOW.SOWCode,
+              Status: this.pmObject.addSOW.Status,
+              InternalReviewStartDate: today,
+              ClientReviewStartDate: today,
+              ClientReviewCompletionDate: today,
+              InternalReviewCompletionDate: today,
+              __metadata: {
+                type: this.constants.listNames.SOWBudgetBreakup.type
+              }
+            };
+            const updateSowData = Object.assign({}, options);
+            updateSowData.data = updateSOWObj;
+            updateSowData.listName = this.constants.listNames.SOW.name;
+            updateSowData.type = 'PATCH';
+            updateSowData.url = this.spServices.getItemURL(this.constants.listNames.SOW.name, this.pmObject.selectedSOWTask.ID);
+            batchURL.push(updateSowData);
+
+            const insertSOWBudgetBreakup = Object.assign({}, options);
+            insertSOWBudgetBreakup.data = newBudgetSOWObj;
+            insertSOWBudgetBreakup.listName = this.constants.listNames.SOWBudgetBreakup.name;
+            insertSOWBudgetBreakup.type = 'POST';
+            insertSOWBudgetBreakup.url = this.spServices.getReadURL(this.constants.listNames.SOWBudgetBreakup.name, null);
+            batchURL.push(insertSOWBudgetBreakup);
+
+
+            let arrayTo = [];
+            let tempArray = [];
+            tempArray = Array.from(new Set(tempArray.concat(this.pmObject.addSOW.SOWOwner, this.pmObject.addSOW.CM1, this.pmObject.addSOW.CM2, this.pmObject.addSOW.DeliveryOptional, this.pmObject.addSOW.Delivery)));
+            arrayTo = this.pmCommonService.getEmailId(tempArray);
+            const mailSubject = this.pmObject.addSOW.SOWCode + ' - Budget Updated';
+            let mailContent = await this.getMailContent(this.pmObject.addSOW);
+            mailContent = mailContent.replace(RegExp('\'', 'gi'), '');
+            mailContent = mailContent.replace(/\\/g, '\\\\');
+
+            // arrayTo.forEach(toUser => {
+
+              const sendEmailObj = {
+                __metadata: { type: this.constants.listNames.SendEmail.type },
+                Title: mailSubject,
+                MailBody: mailContent,
+                Subject: mailSubject,
+                ToEmailId: arrayTo.join(','),
+                FromEmailId: this.globalObject.currentUser.email,
+                CCEmailId: this.globalObject.currentUser.email
+              };
+              const createSendEmailObj = Object.assign({}, options);
+              createSendEmailObj.url = this.spServices.getReadURL(this.constants.listNames.SendEmail.name, null);
+              createSendEmailObj.data = sendEmailObj;
+              createSendEmailObj.type = 'POST';
+              createSendEmailObj.listName = this.constants.listNames.SendEmail.name;
+              batchURL.push(createSendEmailObj);
+              
+            // });
+           
+
+            this.commonService.SetNewrelic('projectManagment', 'projectManagement', 'GetSowSowBudBreakup');
+            const res = await this.spServices.executeBatch(batchURL);
+
+            // this.updateBudgetEmail(this.pmObject.addSOW);
+            this.constants.loader.isPSInnerLoaderHidden = true;
+            this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Budget updated Successfully.' });
+            console.log(res);
+            setTimeout(() => {
+              if (this.router.url === '/projectMgmt/allSOW') {
+                this.dataService.publish('reload-EditSOW');
+              }
+            }, this.pmConstant.TIME_OUT);
+          }
+        });
+      }
+    });
   }
 
 
+
+
+  getMailContent(sowObj) {
+    let mailContent = this.emailTemplate ? this.emailTemplate.Content : '';
+    mailContent = this.pmCommonService.replaceContent(mailContent, "@@SowCode@@", sowObj.SOWCode);
+    mailContent = this.pmCommonService.replaceContent(mailContent, "@@ClientName@@", sowObj.ClientLegalEntity);
+    mailContent = this.pmCommonService.replaceContent(mailContent, "@@Title@@", sowObj.SOWTitle);
+    mailContent = this.pmCommonService.replaceContent(mailContent, "@@POC@@", this.pmCommonService.extractNamefromPOC([sowObj.Poc]));
+    mailContent = this.pmCommonService.replaceContent(mailContent, "@@Currency@@", sowObj.Currency);
+    mailContent = this.pmCommonService.replaceContent(mailContent, "@@Comments@@", sowObj.Comments);
+    mailContent = this.pmCommonService.replaceContent(mailContent, "@@TotalBudget@@", sowObj.Budget.Total);
+    mailContent = this.pmCommonService.replaceContent(mailContent, "@@AddendumTotalvalue@@", sowObj.Addendum.TotalBudget);
+    mailContent = this.pmCommonService.replaceContent(mailContent, "@@NewTotalBudget@@", parseFloat((sowObj.Budget.Total + sowObj.Addendum.TotalBudget).toFixed(2)));
+    mailContent = this.pmCommonService.replaceContent(mailContent, "@@NetBudget@@", sowObj.Budget.Net);
+    mailContent = this.pmCommonService.replaceContent(mailContent, "@@AddendumNetvalue@@", sowObj.Addendum.NetBudget);
+    mailContent = this.pmCommonService.replaceContent(mailContent, "@@NewNetBudget@@", parseFloat((sowObj.Budget.Net + sowObj.Addendum.NetBudget).toFixed(2)));
+    mailContent = this.pmCommonService.replaceContent(mailContent, "@@OOPBudget@@", sowObj.Budget.OOP);
+    mailContent = this.pmCommonService.replaceContent(mailContent, "@@AddendumOOPvalue@@", sowObj.Addendum.OOPBudget);
+    mailContent = this.pmCommonService.replaceContent(mailContent, "@@NewOOPBudget@@", parseFloat((sowObj.Budget.OOP + sowObj.Addendum.OOPBudget).toFixed(2)));
+    mailContent = this.pmCommonService.replaceContent(mailContent, "@@TaxBudget@@", sowObj.Budget.Tax);
+    mailContent = this.pmCommonService.replaceContent(mailContent, "@@AddendumTaxvalue@@", sowObj.Addendum.TaxBudget);
+    mailContent = this.pmCommonService.replaceContent(mailContent, "@@NewTaxBudget@@", parseFloat((sowObj.Budget.Tax + sowObj.Addendum.TaxBudget).toFixed(2)));
+
+    return mailContent;
+
+  }
 }
+
+

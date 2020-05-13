@@ -619,6 +619,7 @@ export class PmconstantService {
     OFF_HOLD: 'Off Hold',
     ADD: 'Add',
     REDUCE: 'Reduce',
+    RESTRUCTURE: 'Restructure'
   };
 
   public CURRENCY = [

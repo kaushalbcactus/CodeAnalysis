@@ -8,9 +8,9 @@
 
 <div class='UserButton' fxLayout="row" fxLayoutAlign="end center" [hidden]="modalloaderenable">
 
-    <button type="button" pButton icon="pi pi-save" id="saveClient" [ngStyle]="{'margin-right':'5px','cursor':'pointer' }" (click)="saveBudget()" label="Update"></button>
+    <button type="button" pButton icon="pi pi-save" id="saveBudget" [ngStyle]="{'margin-right':'5px','cursor':'pointer' }" (click)="saveBudget()" label="Update"></button>
 
-    <button type="button" pButton icon="pi pi-times" (click)="cancel();" label="Cancel"></button>
+    <button type="button" pButton icon="pi pi-times" id="cancelBudget" (click)="cancel();" label="Cancel"></button>
 
 </div>
 
@@ -28,7 +28,7 @@
                         <div class="col-8 col-md-9" style="padding: 0px 10px 0px 0px;">
                             <div class="numbers">
                                 <p class="card-category">Total</p>
-                                <p class="card-title">{{currency}} {{adminObject.oldBudget.Amount | number}} </p>
+                                <p class="card-title">{{currency}} {{pmObject.addSOW.Budget.TotalBalance | number}} </p>
                                 <p></p>
                             </div>
                         </div>
@@ -36,7 +36,7 @@
                 </div>
                 <div class="card-footer ">
                     <hr>
-                    <div class="stats"><i class="fa fa-calendar-o"></i> {{adminObject.oldBudget.LastUpdated | date:'MMM dd, yyyy'}} </div>
+                    <div class="stats"><i class="fa fa-calendar-o"></i> {{pmObject.addSOW.Budget.LastUpdated | date:'MMM dd, yyyy'}} </div>
                 </div>
             </div>
         </div>
@@ -47,13 +47,13 @@
                     <div class="row">
                         <div class="col-4 col-md-3">
                             <div class="icon-big text-center icon-warning">
-                                <mat-icon>account_balance_wallet</mat-icon>
+                                <div class="icon-big text-center icon-warning"><i class="fa fa-database"></i></div>
                             </div>
                         </div>
                         <div class="col-8 col-md-9" style="padding: 0px 10px 0px 0px;">
                             <div class="numbers">
                                 <p class="card-category">Net</p>
-                                <p class="card-title">{{currency}} {{adminObject.oldBudget.AmountRevenue | number }} </p>
+                                <p class="card-title">{{currency}} {{pmObject.addSOW.Budget.NetBalance | number }} </p>
                                 <p></p>
                             </div>
                         </div>
@@ -61,7 +61,7 @@
                 </div>
                 <div class="card-footer ">
                     <hr>
-                    <div class="stats"><i class="fa fa-calendar-o"></i> {{adminObject.oldBudget.LastUpdated | date:'MMM dd, yyyy'}}</div>
+                    <div class="stats"><i class="fa fa-calendar-o"></i> {{pmObject.addSOW.Budget.LastUpdated | date:'MMM dd, yyyy'}}</div>
                 </div>
             </div>
         </div>
@@ -76,7 +76,7 @@
                         <div class="col-8 col-md-9" style="padding: 0px 10px 0px 0px;">
                             <div class="numbers">
                                 <p class="card-category">OOP</p>
-                                <p class="card-title">{{currency}} {{adminObject.oldBudget.AmountOOP | number}} </p>
+                                <p class="card-title">{{currency}} {{pmObject.addSOW.Budget.OOPBalance | number}} </p>
                                 <p></p>
                             </div>
                         </div>
@@ -84,7 +84,7 @@
                 </div>
                 <div class="card-footer ">
                     <hr>
-                    <div class="stats"><i class="fa fa-calendar-o"></i> {{adminObject.oldBudget.LastUpdated | date:'MMM dd, yyyy'}} </div>
+                    <div class="stats"><i class="fa fa-calendar-o"></i> {{pmObject.addSOW.Budget.LastUpdated | date:'MMM dd, yyyy'}} </div>
                 </div>
             </div>
         </div>
@@ -99,7 +99,7 @@
                         <div class="col-8 col-md-9" style="padding: 0px 10px 0px 0px;">
                             <div class="numbers">
                                 <p class="card-category">Tax</p>
-                                <p class="card-title">{{currency}} {{adminObject.oldBudget.AmountTax | number}} </p>
+                                <p class="card-title">{{currency}} {{pmObject.addSOW.Budget.TaxBalance | number}} </p>
                                 <p></p>
                             </div>
                         </div>
@@ -107,51 +107,65 @@
                 </div>
                 <div class="card-footer ">
                     <hr>
-                    <div class="stats"><i class="fa fa-calendar-o"></i> {{adminObject.oldBudget.LastUpdated | date:'MMM dd, yyyy'}} </div>
+                    <div class="stats"><i class="fa fa-calendar-o"></i> {{pmObject.addSOW.Budget.LastUpdated | date:'MMM dd, yyyy'}} </div>
                 </div>
             </div>
         </div>
     </div>
 
     <p-card class="p-col-12">
-        <div class="p-col-12">
-
-            <div class="p-col-2" *ngFor="let type of budgetType" style="float: left;">
-                <p-radioButton name="budgetType" [value]="type.value" [label]="type.label" [(ngModel)]="selectedValue" inputId="selectedValue"></p-radioButton>
-            </div>
-        </div>
-        <br><br>
-
         <form [formGroup]='changeBudgetForm' class="p-col-12">
+            <!-- <div class="p-col-12">
 
-            <!-- first Row html -->
+                <div class="p-col-2" *ngFor="let type of budgetType" style="float: left;">
+                    <p-radioButton name="budgetType" [value]="type.value" [label]="type.label" [(ngModel)]="selectedValue" inputId="selectedValue"></p-radioButton>
+                </div>
+            </div>
+            <br><br> -->
+
+
             <div class="p-grid">
+                <div class="p-grid p-col">
+                    <div class="p-col-4" *ngFor="let type of budgetType" style="float: left;">
+                        <p-radioButton name="budgetType" [value]="type.value" [label]="type.label" formControlName="selectedValue" (ngModelChange)="UpdateValidator($event)" inputId="selectedValue"></p-radioButton>
+                    </div>
+                </div>
                 <div class="p-grid p-col">
                     <div class="p-col-4"><span class="compulsory">*</span>Total Amount</div>
                     <div class="p-col-8">
-                        <input type="number" size="30" style="width: 100%;" formControlName="total" placeholder="Total Amount" pInputText>
+                        <input type="number" size="30" style="width: 100%;" formControlName="total" placeholder="Total Amount" readonly pInputText>
                         <div class="error" *ngIf="isBudgetFormSubmit && changeBudgetForm.controls.total.errors">
                             <div *ngIf="changeBudgetForm.controls.total.errors.required">Total Amount is required</div>
                             <div *ngIf="changeBudgetForm.controls.total.errors.nonZeroNumber">
                                 Total cannot be less than equal to zero</div>
+                            <div *ngIf="changeBudgetForm.controls.total.errors.min">
+                                Amount should be less than balance amount.</div>
+                            <div *ngIf="changeBudgetForm.controls.total.errors.zeroNumber">
+                                Total should be zero.</div>
                         </div>
                     </div>
                 </div>
+            </div>
+
+
+
+            <!-- first Row html -->
+            <div class="p-grid">
                 <div class="p-grid p-col">
-                    <div class="p-col-4"><span class="compulsory">*</span>Net</div>
+                    <div class="p-col-4"><span class="compulsory">*</span>Net Amount</div>
                     <div class="p-col-8">
                         <input type="number" size="30" style="width: 100%;" formControlName="net" placeholder="Net Amount" (change)="setTotal()" pInputText>
                         <div class="error" *ngIf="isBudgetFormSubmit && changeBudgetForm.controls.net.errors">
                             <div *ngIf="changeBudgetForm.controls.net.errors.required">Net amount is required</div>
                             <div *ngIf="changeBudgetForm.controls.net.errors.positiveNumber">
                                 Net amount cannot be less than zero</div>
+                            <div *ngIf="changeBudgetForm.controls.net.errors.negativeNumber">
+                                Net amount cannot be greater than zero</div>
+                            <div *ngIf="changeBudgetForm.controls.net.errors.min">
+                                Amount should be less than balance amount.</div>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- second Row html  -->
-            <div class="p-grid" [hidden]="showeditPO">
                 <div class="p-grid p-col">
                     <div class="p-col-4"><span class="compulsory">*</span>OOP Amount</div>
                     <div class="p-col-8">
@@ -160,9 +174,18 @@
                             <div *ngIf="changeBudgetForm.controls.oop.errors.required">OOP is required</div>
                             <div *ngIf="changeBudgetForm.controls.oop.errors.positiveNumber">
                                 OOP cannot be less than zero.</div>
+                            <div *ngIf="changeBudgetForm.controls.oop.errors.negativeNumber">
+                                OOP cannot be greater than zero.</div>
+                            <div *ngIf="changeBudgetForm.controls.oop.errors.min">
+                                Amount should be less than balance amount.</div>
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- second Row html  -->
+            <div class="p-grid">
+
                 <div class="p-grid p-col">
                     <div class="p-col-4"><span class="compulsory">*</span>Tax Amount</div>
                     <div class="p-col-8">
@@ -171,6 +194,27 @@
                             <div *ngIf="changeBudgetForm.controls.tax.errors.required">Tax is required</div>
                             <div *ngIf="changeBudgetForm.controls.tax.errors.positiveNumber">
                                 Tax cannot be less than zero.</div>
+                            <div *ngIf="changeBudgetForm.controls.tax.errors.negativeNumber">
+                                Tax cannot be greater than zero.</div>
+                            <div *ngIf="changeBudgetForm.controls.tax.errors.min">
+                                Amount should be less than balance amount.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-grid p-col">
+                    <div class="p-col-4"><span class="compulsory">*</span>SOW Document</div>
+                    <div class="p-col-8">
+
+                        <div class="file-upload" #fileuploderView>
+                            <div class="file-select">
+                                <div class="file-select-button" id="fileName">Choose File</div>
+                                <div class="file-select-name" id="noFile">No file chosen...</div>
+                                <input type="file" name="chooseFile" id="chooseFile" (change)="onFileChange($event)">
+                            </div>
+                        </div>
+
+                        <div class="error" *ngIf="isBudgetFormSubmit && changeBudgetForm.controls.sowDocument.errors">
+                            <div *ngIf="changeBudgetForm.controls.sowDocument.errors.required">Sow document is required</div>
                         </div>
                     </div>
                 </div>

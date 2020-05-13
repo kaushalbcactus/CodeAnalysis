@@ -99,6 +99,7 @@ import { AddReduceSowbudgetDialogComponent } from './projectmanagement/sow/add-r
     CsFinanceAuditDialogComponent,
     AuditProjectDialogComponent,
     InvoiceLineitemsComponent,
+    AddReduceSowbudgetDialogComponent
   ]
 })
 export class ProjectmanagementModule { }

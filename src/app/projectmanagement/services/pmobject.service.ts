@@ -349,6 +349,7 @@ export class PMObjectService {
       NetBalance: 0,
       OOPBalance: 0,
       TaxBalance: 0,
+      LastUpdated: new Date()
     },
     CM1: [],
     CM1Text: '',
@@ -525,17 +526,6 @@ export class PMObjectService {
   public fileReader: any = '';
   public updateInvoices = [];
 
-  public oldBudget = {
-    Total: 0,
-    Net: 0,
-    OOP: 0,
-    Tax: 0,
-    TotalBalance: 0,
-    NetBalance: 0,
-    OOPBalance: 0,
-    TaxBalance: 0,
-    LastUpdated: new Date()
-  }
 }
 
 

@@ -85,8 +85,7 @@
 
         <tr>
             <td [ngStyle]="{'color':'#d7181f'}">Approver File Url</td>
-            <td><a href="{{rowItemData.ApproverFileUrl}}" target="_blank" style="color:red"
-                    *ngIf="rowItemData.ApproverFileUrl">Click here</a>
+            <td><a href="{{rowItemData.ApproverFileUrl}}" target="_blank" style="color:red" *ngIf="rowItemData.ApproverFileUrl">Click here</a>
             </td>
         </tr>
         <tr>
@@ -97,13 +96,12 @@
         </tr>
         <tr>
             <td [ngStyle]="{'color':'#d7181f'}">Client Approval File URL</td>
-            <td><a href="{{rowItemData.ClientApprovalFileURL }}" target="_blank" style="color:red"
-                    *ngIf="rowItemData.ClientApprovalFileURL">Click here</a>
+            <td><a href="{{rowItemData.ClientApprovalFileURL }}" target="_blank" style="color:red" *ngIf="rowItemData.ClientApprovalFileURL">Click here</a>
             </td>
         </tr>
         <tr>
             <td [ngStyle]="{'color':'#d7181f'}">Created Date</td>
-            <td>{{rowItemData.Created | date:'medium'}}</td>
+            <td>{{rowItemData.Created | date:'mediumDate'}}</td>
         </tr>
         <tr>
             <td [ngStyle]="{'color':'#d7181f'}">Created By</td>
@@ -111,7 +109,7 @@
         </tr>
         <tr>
             <td [ngStyle]="{'color':'#d7181f'}">Modified Date</td>
-            <td>{{rowItemData.Modified | date:'medium'}}</td>
+            <td>{{rowItemData.Modified | date:'mediumDate'}}</td>
         </tr>
         <tr>
             <td [ngStyle]="{'color':'#d7181f'}">Modified By</td>
