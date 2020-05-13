@@ -122,9 +122,10 @@ export class GanttEdittaskComponent implements OnInit {
     task.end_date = new Date(this.datepipe.transform(task.end_date, 'MMM d, y') + ' ' + endTime);
     this.updateDates(task);
     this.task = task;
-    this.task.showAllocationSplit = this.task.type === 'task' && this.task.itemType !== 'Client Review' && this.task.itemType !== 'Send to client'
-    && this.task.IsCentrallyAllocated === 'No' && +this.task.budgetHours &&
-    new Date(this.task.pUserStartDatePart).getTime() !== new Date(this.task.pUserEndDatePart).getTime() ? true : false;
+    // this.task.showAllocationSplit = this.task.type === 'task' && this.task.itemType !== 'Client Review' && this.task.itemType !== 'Send to client'
+    // && this.task.IsCentrallyAllocated === 'No' && +this.task.budgetHours &&
+    // new Date(this.task.pUserStartDatePart).getTime() !== new Date(this.task.pUserEndDatePart).getTime() ? true : false;
+    this.task.showAllocationSplit = this.task.AllocationPerDay ? true : false;
     this.cascadingObject.node = clickedInputType ? task : '';
     this.cascadingObject.type = clickedInputType;
     this.isViewAllocationBtn(task);
@@ -383,6 +384,7 @@ export class GanttEdittaskComponent implements OnInit {
       task = milestoneTask;
     }
     task.allocationPerDay = allocation.allocationPerDay;
+    task.showAllocationSplit = true;
     task.edited = true;
     if (allocation.allocationType === 'Equal Split') {
       task.allocationColor = 'indianred';

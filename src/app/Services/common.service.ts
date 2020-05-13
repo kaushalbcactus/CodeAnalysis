@@ -242,10 +242,12 @@ export class CommonService {
         }
         return [year, month, day].join('-');
     }
+    ///////// Refactor code -  Move inside project mgmt 
     lazyLoadTask(event, sendToClient, filterColumns, action) {
         this.filterAction(event.sortField, event.sortOrder,
             event.globalFilter, event.filters, event.first, event.rows, sendToClient, filterColumns, action);
     }
+    ///////// Refactor code -  Move inside project mgmt 
     filterAction(sortField, sortOrder, globalFilter, localFilter, first, rows, sendToClient, filterColumns, action) {
         switch (action) {
             case this.pmConstant.filterAction.ALL_SOW:
@@ -418,6 +420,9 @@ export class CommonService {
         }
         return documents;
     }
+    ////// Refactor end 
+
+
     unique(array, param) {
         return array.filter(function (item, pos, array) {
             return array.map(function (mapItem) { return mapItem[param]; }).indexOf(item[param]) === pos;
@@ -507,9 +512,9 @@ export class CommonService {
         let totalMins = 0;
         for (const i in arrayTotalTimeSpent) {
             if (arrayTotalTimeSpent.hasOwnProperty(i)) {
-              const hrsPart = arrayTotalTimeSpent[i].timeHrs ? +(arrayTotalTimeSpent[i].timeHrs) : +arrayTotalTimeSpent[i].split(':') [0];
-              const minsPart = arrayTotalTimeSpent[i].timeMins !== undefined ? +(arrayTotalTimeSpent[i].timeMins) :
-                               arrayTotalTimeSpent[i].indexOf(':') > -1 ? +arrayTotalTimeSpent[i].split(':')[1] : 0;
+                const hrsPart = arrayTotalTimeSpent[i].timeHrs ? +(arrayTotalTimeSpent[i].timeHrs) : +arrayTotalTimeSpent[i].split(':')[0];
+                const minsPart = arrayTotalTimeSpent[i].timeMins !== undefined ? +(arrayTotalTimeSpent[i].timeMins) :
+                    arrayTotalTimeSpent[i].indexOf(':') > -1 ? +arrayTotalTimeSpent[i].split(':')[1] : 0;
                 totalHrs = +(totalHrs) + hrsPart;
                 totalMins = +(totalMins) + minsPart;
                 if (totalMins >= 60) {
@@ -527,7 +532,7 @@ export class CommonService {
         let totalMinutes = 0;
         const negative: boolean = hrsMins.indexOf('-') > -1 ? true : false;
         if (hrsMins != null && hrsMins.indexOf(':') > -1) {
-          const hrs = negative ? -(+(hrsMins.toString().split(':')[0]) * 60) : (+(hrsMins.toString().split(':')[0]) * 60);
+            const hrs = negative ? -(+(hrsMins.toString().split(':')[0]) * 60) : (+(hrsMins.toString().split(':')[0]) * 60);
             totalMinutes = hrs + +(hrsMins.toString().split(':')[1]);
         } else if (hrsMins != null && hrsMins.indexOf(':') === -1) {
             totalMinutes = +(hrsMins) * 60;
@@ -569,19 +574,9 @@ export class CommonService {
         return currentsystemOffset;
     }
 
-    ajax_checkIfCurrentUserInArray(array, currentUserID) {
-        let item = '';
-        if (array.length > 0) {
-            item = array.filter(function (obj) {
-                return obj.ID === currentUserID;
-            });
-        }
-        return item;
-    }
-
     convertToHrsMins(hours) {
         if (hours != null) {
-          hours = '' + hours;
+            hours = '' + hours;
             if (hours.indexOf(':') > -1 || hours.indexOf('.') > -1) {
                 hours = parseFloat(hours).toFixed(2).toString();
                 const hrs = hours.indexOf(':') > -1 ? hours.split(':')[0] : hours.split('.')[0];
@@ -638,7 +633,7 @@ export class CommonService {
     }
 
 
-
+    //////////// Refactor code 
     /*****************************************************************
 
     Call Api to Get Project Resources
@@ -929,7 +924,7 @@ export class CommonService {
                 width: '70vw',
                 data: {
                     Files: tempFiles,
-                    libraryName:  this.sharedObject.sharePointPageObject.webRelativeUrl +'/'+ libraryName,
+                    libraryName: this.sharedObject.sharePointPageObject.webRelativeUrl + '/' + libraryName,
                     overwrite: overwrite,
 
                 },
@@ -944,24 +939,32 @@ export class CommonService {
 
 
     roundToPrecision(x, precision) {
-      const y = +x + (precision === undefined ? 0.5 : precision / 2);
-      return y - (y % (precision === undefined ? 1 : +precision));
+        const y = +x + (precision === undefined ? 0.5 : precision / 2);
+        return y - (y % (precision === undefined ? 1 : +precision));
     }
 
     convertTo24Hour(time) {
-      time = time.replace(':','.').toUpperCase();
-      let hours = +(time.substr(0, 2));
-      if(time.indexOf('AM') != -1 && hours == 12) {
-          time = time.replace('12', '0');
-      }
-      if(time.indexOf('PM')  != -1 && hours < 12) {
-          const numTime = time.indexOf('0' + hours) > -1 ? time.replace('0' + hours, (hours + 12)) : time.replace(hours, (hours + 12));
-          time = '' + numTime;
-      }
-      return time.replace(/(AM|PM)/, '');
-  }
-  getMinsValue(val) {
-    return +val === 0 ? 0 : +val === 25 ? 15 : +val === 50 ? 30 : +val === 15 ? 25 : +val === 30 ? 50 : 75;
-  }
+        time = time.replace(':', '.').toUpperCase();
+        let hours = +(time.substr(0, 2));
+        if (time.indexOf('AM') != -1 && hours == 12) {
+            time = time.replace('12', '0');
+        }
+        if (time.indexOf('PM') != -1 && hours < 12) {
+            const numTime = time.indexOf('0' + hours) > -1 ? time.replace('0' + hours, (hours + 12)) : time.replace(hours, (hours + 12));
+            time = '' + numTime;
+        }
+        return time.replace(/(AM|PM)/, '');
+    }
+    getMinsValue(val) {
+        return +val === 0 ? 0 : +val === 25 ? 15 : +val === 50 ? 30 : +val === 15 ? 25 : +val === 30 ? 50 : 75;
+    }
+
+    removeEmptyItems(array) {
+        array = array.filter((el) => {
+            return el != null;
+        });
+
+        return array;
+    }
 
 }
