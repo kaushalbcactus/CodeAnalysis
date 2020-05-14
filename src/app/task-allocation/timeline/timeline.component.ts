@@ -366,7 +366,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         if (GanttObj.status !== 'Deleted') {
           this.GanttchartData.push(GanttObj);
         }
-        ////// Refactor code
+        ////// Refactor code - 1
         if (dbSubMilestones.length > 0) {
           let submile = [];
           let index = 0;
@@ -3947,7 +3947,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       // batchUrl.push(taskObj);
     }
 
-    ////// Refactor code
+    ////// Refactor code - Done
     arrWriterIDs = this.commonService.removeEmptyItems(arrWriterIDs);
     arrEditorsIds = this.commonService.removeEmptyItems(arrEditorsIds);
     arrGraphicsIds = this.commonService.removeEmptyItems(arrGraphicsIds);
@@ -4579,7 +4579,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
     return tasks;
   }
-
+ ////// Refactor code
   // getSubTasksfromTasks(task) {
   //   let tasks = [];
   //   if (task.children !== undefined) {
@@ -4590,7 +4590,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   //     return tasks;
   //   }
   // }
-  ////// Refactor code
+
   // getTasksFromSubMilestones(submilestone) {
 
   //   let tasks = [];
