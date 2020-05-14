@@ -2331,6 +2331,7 @@ export class StandardprojectComponent implements OnInit {
         this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Resource is over allocated' });
       }
     } else {
+      milestoneTask.showAllocationSplit = false;
       milestoneTask.allocationColor = '';
       milestoneTask.allocationPerDay = '';
     }

@@ -95,18 +95,19 @@ export class PreStackAllocationComponent implements OnInit {
     allocationDays.forEach(day => {
       if (day) {
         const resourceDailyAllocation: any[] = resource.dates;
-        const arrDateTime: string[] = day.indexOf(':') > -1 ? day.split(':') : [];
-        const date: Date = arrDateTime.length ? new Date(arrDateTime[0]) : new Date();
-        const time: string = arrDateTime.length > 1 ? arrDateTime[1] + ':' + arrDateTime[2] : '';
-        const value = this.getHrsMinsObj(time, false);
-        const allocatedDate: any = resourceDailyAllocation.find(d => d.date.getTime() === date.getTime());
-        let resourceSliderMaxHrs: string = this.getResourceSliderMaxHrs(sliderMaxHrs, allocatedDate);
-        resourceSliderMaxHrs = resourceSliderMaxHrs.indexOf('-') > -1 ? '0:0' :  resourceSliderMaxHrs;
+        // const arrDateTime: string[] = day.indexOf(':') > -1 ? day.split(':') : [];
+        // const date: Date = arrDateTime.length ? new Date(arrDateTime[0]) : new Date();
+        // const time: string = arrDateTime.length > 1 ? arrDateTime[1] + ':' + arrDateTime[2] : '';
+        // const value = this.getHrsMinsObj(time, false);
+        const allocation = this.getDateTimeFromString(day);
+        const allocatedDate: any = resourceDailyAllocation.find(d => d.date.getTime() === allocation.date.getTime());
+        let resourceSliderMaxHrs: string = this.getResourceMaxHrs(sliderMaxHrs, allocatedDate, allocation.value.hours);
+        resourceSliderMaxHrs = resourceSliderMaxHrs.indexOf('-') > -1 ? '0:0' : resourceSliderMaxHrs;
         const obj: DailyAllocationObject = {
-          Date: date,
+          Date: allocation.date,
           Allocation: {
-            valueHrs: value.hours,
-            valueMins: value.mins,
+            valueHrs: allocation.value.hours,
+            valueMins: allocation.value.mins,
             maxHrs: this.getHrsMinsObj(resourceSliderMaxHrs, true).hours,
             maxMins: 45
           }
@@ -116,6 +117,14 @@ export class PreStackAllocationComponent implements OnInit {
     });
   }
 
+  getDateTimeFromString(hrsDate: Date | string) {
+    const day = hrsDate instanceof Date ? this.datePipe.transform(new Date(hrsDate), 'EE,MMMd,y') : hrsDate;
+    const arrDateTime: string[] = day.indexOf(':') > -1 ? day.split(':') : [];
+    const date: Date = arrDateTime.length ? new Date(arrDateTime[0]) : new Date();
+    const time: string = arrDateTime.length > 1 ? arrDateTime[1] + ':' + arrDateTime[2] : '';
+    const value = this.getHrsMinsObj(time, false);
+    return { date, value };
+  }
   getHrsMinsObj(hrs: string, isSliderRange: boolean): any {
     const strhrs = '' + hrs;
     const hours = strhrs.indexOf(':') > -1 ? +strhrs.split(':')[0] : +strhrs;
@@ -183,7 +192,8 @@ export class PreStackAllocationComponent implements OnInit {
         let availableHrs = detail.availableHrs.indexOf('-') > -1 ? '0:0' : detail.availableHrs;
         availableHrs = detail.mandatoryHrs ? availableHrs : this.common.addHrsMins([availableHrs, extraHrs]);
         newBudgetHrs = this.getDailyAvailableHours(availableHrs, taskBudgetHrs);
-        const numhrs = this.getResourceSliderMaxHrs(resourceSliderMaxHrs, detail);
+        const preAllocatedHrs = this.getAllocationByDate(detail.date, resourceSliderMaxHrs);
+        const numhrs = this.getResourceMaxHrs(resourceSliderMaxHrs, detail, preAllocatedHrs);
         obj.Allocation.maxHrs = this.getHrsMinsObj(numhrs, true).hours;
         obj.Allocation.maxMins = 45;
         if (newBudgetHrs.indexOf('-') > -1) {
@@ -204,6 +214,17 @@ export class PreStackAllocationComponent implements OnInit {
     return newBudgetHrs;
   }
 
+  getAllocationByDate(date: Date, optionalValToSet): number {
+    const strDate = this.datePipe.transform(new Date(date), 'EE,MMMd,y');
+    if (this.popupData.data) {
+      const arrAllocation = this.popupData.data.strAllocation ? this.popupData.data.strAllocation.split(/\n/) : '';
+      const strDay = arrAllocation.find(a => a.indexOf(strDate) > -1);
+      const value = strDay ? this.getDateTimeFromString(strDay).value : 0;
+      return value ? this.common.convertFromHrsMins(value.hours + ':' + value.mins) : optionalValToSet;
+     } else {
+      return optionalValToSet;
+    }
+  }
   compareHrs(firstElement, day) {
     const secondElement = day.availableHrs;
     const result = this.common.convertFromHrsMins(firstElement) <= this.common.convertFromHrsMins(secondElement) ? true : false;
@@ -211,9 +232,17 @@ export class PreStackAllocationComponent implements OnInit {
     return result;
   }
 
-  getResourceSliderMaxHrs(defaultResourceMaxHrs, day): string {
+  // getResourceSliderMaxHrs(defaultResourceMaxHrs, day): string {
+  //   const numtotalAllocated = this.common.convertFromHrsMins(day.totalTimeAllocatedPerDay);
+  //   const maxHrsMins = this.common.roundToPrecision(defaultResourceMaxHrs - numtotalAllocated, 0.25);
+  //   return this.common.convertToHrsMins('' + maxHrsMins);
+  // }
+
+  getResourceMaxHrs(defaultResourceMaxHrs, day, allocatedHours) {
     const numtotalAllocated = this.common.convertFromHrsMins(day.totalTimeAllocatedPerDay);
-    const maxHrsMins = this.common.roundToPrecision(defaultResourceMaxHrs - numtotalAllocated, 0.5);
+    const availableHrs = defaultResourceMaxHrs - numtotalAllocated;
+    const maxHrs = availableHrs < allocatedHours ? (defaultResourceMaxHrs + allocatedHours) - numtotalAllocated : availableHrs;
+    const maxHrsMins = this.common.roundToPrecision(maxHrs, 0.25);
     return this.common.convertToHrsMins('' + maxHrsMins);
   }
 
@@ -237,7 +266,7 @@ export class PreStackAllocationComponent implements OnInit {
     const availaibility = this.equalSplitAvailibilty(allocationData, allocationPerDay);
     const noOfDays = businessDays > availaibility.days ? (businessDays - availaibility.days) : businessDays;
     let calcBudgetHrs = availaibility.lastDayAvailability < allocationPerDay && noOfDays > 1 ?
-                        budgetHours - availaibility.lastDayAvailability : budgetHours;
+      budgetHours - availaibility.lastDayAvailability : budgetHours;
     calcBudgetHrs = availaibility.firstDayAvailablity < allocationPerDay ? calcBudgetHrs - availaibility.firstDayAvailablity :
       calcBudgetHrs;
     allocationPerDay = calcBudgetHrs !== budgetHours ? Math.ceil(calcBudgetHrs / noOfDays) : allocationPerDay;
@@ -246,7 +275,7 @@ export class PreStackAllocationComponent implements OnInit {
       let totalHrs = 0;
       if (i === 0) {
         totalHrs = availaibility.firstDayAvailablity < allocationPerDay ?
-                   availaibility.firstDayAvailablity : allocationPerDay; // noOfDays <= 1 ? availaibility.firstDayAvailablity :
+          availaibility.firstDayAvailablity : allocationPerDay; // noOfDays <= 1 ? availaibility.firstDayAvailablity :
       } else if (i === resourceDailyDetails.length - 1) {
         totalHrs = availaibility.lastDayAvailability < remainingBudgetHrs ? availaibility.lastDayAvailability : remainingBudgetHrs;
       } else {

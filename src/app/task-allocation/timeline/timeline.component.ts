@@ -366,7 +366,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         if (GanttObj.status !== 'Deleted') {
           this.GanttchartData.push(GanttObj);
         }
-        ////// Refactor code 
+        ////// Refactor code
         if (dbSubMilestones.length > 0) {
           let submile = [];
           let index = 0;
@@ -975,12 +975,12 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       return m;
     });
 
-    // ////// index of cr tasks 
+    // ////// index of cr tasks
     // const indexes = data.reduce((r, e, i) => {
     //   e.itemType == 'Client Review' && r.push(i);
     //   return r;
     // }, []);
-    // ////// index of submilestones 
+    // ////// index of submilestones
     // const subIndex = data.reduce((r, e, i) => {
     //   e.type == 'submilestone' && r.push(i);
     //   return r;
@@ -2930,6 +2930,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Resource is over allocated' });
       }
     } else {
+      milestoneTask.showAllocationSplit = false;
       milestoneTask.allocationColor = '';
       milestoneTask.allocationPerDay = '';
     }
@@ -5188,7 +5189,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
 
-  ////// Refactor code 
+  ////// Refactor code
   getTaskObjectByValue(task, className, milestone, nextTasks, previousTasks, submilestone) {
     const submilestoneLabel = submilestone ? submilestone.label : '';
     return {
@@ -5349,6 +5350,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       task = milestoneTask;
     }
     task.allocationPerDay = allocation.allocationPerDay;
+    task.showAllocationSplit = new Date(task.StartDatePart).getTime() !== new Date(task.EndDatePart).getTime() ? true : false;
     task.edited = true;
     if (allocation.allocationType === 'Equal Split') {
       task.allocationColor = 'indianred';
