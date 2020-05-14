@@ -1,6 +1,6 @@
 .taskButton {
   position: fixed !important;
-  width: 65vw !important;
+  width: 100% !important;
   margin: -50px !important;
 }
 .viewAllocation {

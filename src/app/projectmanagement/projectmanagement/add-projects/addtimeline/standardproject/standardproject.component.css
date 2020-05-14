@@ -64,3 +64,24 @@
     text-transform: uppercase;
     top: 0;
 }
+.taskAllocationTimeline
+  .ui-treetable-wrapper
+  tbody.ui-treetable-tbody
+  > tr
+  > td:last-child
+  > div
+  > i {
+  top: 0px !important;
+}
+
+.taskAllocationTimeline
+  .ui-treetable-wrapper
+  tbody.ui-treetable-tbody
+  > tr
+  > td:last-child
+  > div
+  div.ui-menu {
+  top: 0px !important;
+  left: inherit !important;
+  right: 56px !important;
+}

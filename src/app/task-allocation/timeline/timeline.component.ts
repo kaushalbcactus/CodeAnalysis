@@ -191,6 +191,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   graphFlag: boolean;
   menu: any;
   dragClickedInput: string;
+  capacityObj: any = {
+    users: [],
+    conflictAllocation: false
+  }
   constructor(
     private constants: ConstantsService,
     public sharedObject: GlobalService,
@@ -1489,11 +1493,11 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       this.resetTask = task;
       this.dragClickedInput = e.srcElement.className;
       if (gantt.ext.zoom.getCurrentLevel() < 3) {
-        if (task.status == 'Completed' || task.status == "Auto Closed" || task.type == "milestone" || task.type === 'submilestone' ) {
+        if (task.status == 'Completed' || task.status == "Auto Closed" || task.type == "milestone" || task.type === 'submilestone') {
           return false;
         } else {
-          if(task.itemType == 'Client Review') {
-            if (mode === 'resize'){
+          if (task.itemType == 'Client Review') {
+            if (mode === 'resize') {
               return true;
             } else {
               return false;
@@ -3683,7 +3687,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     const ref = this.dialogService.open(ConflictAllocationsComponent, {
 
       data: {
-       resources: resources
+        resources: resources
       },
 
       header: 'Conflicting Allocations ',
@@ -3697,6 +3701,39 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     ref.onClose.subscribe((RestructureMilestones: any) => {
 
     })
+  }
+
+  checkConflictsAllocations() {
+    let allTasks = this.milestoneData.filter((e => e.children));
+    allTasks.forEach((e) => {
+      e.children.forEach(async (task: any) => {
+        if (task.data.itemType !== 'Client Review' && task.data.itemType !== 'Send to client' && task.data.slotType.indexOf('Slot') < 0 || task.data.added == false) {
+          task.data.resources = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
+            return objt.UserName.ID === task.data.AssignedTo.ID;
+          });
+          let capacity = await this.usercapacityComponent.factoringTimeForAllocation(task.data.start_date, task.data.end_date, task.data.resources, [], this.taskAllocateCommonService.taskStatus, this.taskAllocateCommonService.adhocStatus);
+          let maxHrs = 10;
+          let maxMin = 0;
+          for (var index in capacity.arrUserDetails) {
+            if (capacity.arrUserDetails.hasOwnProperty(index)) {
+              let dates = capacity.arrUserDetails[index].dates;
+              for (var dateIndex in dates) {
+                if (dates[dateIndex].userCapacity != 'Leave') {
+                  let hrs = dates[dateIndex].totalTimeAllocatedPerDay.split(':')[0];
+                  let min = dates[dateIndex].totalTimeAllocatedPerDay.split(':')[1];
+                  if (hrs > maxHrs || min > maxMin) {
+                    this.capacityObj.conflictAllocation = true;
+                    this.capacityObj.users.push(capacity.arrUserDetails[index]);
+                  }
+                }
+              }
+            }
+          }
+          console.log(capacity);
+        }
+      })
+    })
+
   }
 
 
@@ -3715,7 +3752,12 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         this.loaderenable = true;
         this.visualgraph = false;
         this.sharedObject.resSectionShow = false;
-        setTimeout(() => {
+        setTimeout(async() => {
+          await this.checkConflictsAllocations();
+
+          if (this.capacityObj.conflictAllocation) {
+            this.conflictAllocations(this.capacityObj.users);
+          }
           this.generateSaveTasks();
         }, 300);
       } else {
