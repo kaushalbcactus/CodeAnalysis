@@ -34,7 +34,7 @@ import { ConflictAllocationsComponent } from '../conflict-allocations/conflict-a
   templateUrl: './timeline.component.html',
   styleUrls: ['./timeline.component.css'],
   providers: [MessageService, DialogService, DragDropComponent, UsercapacityComponent, DynamicDialogRef,
-              PreStackAllocationComponent, AllocationOverlayComponent, GanttEdittaskComponent],
+    PreStackAllocationComponent, AllocationOverlayComponent, GanttEdittaskComponent],
   encapsulation: ViewEncapsulation.None
 })
 export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, AfterViewChecked {
@@ -3696,53 +3696,72 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     const ref = this.dialogService.open(ConflictAllocationsComponent, {
 
       data: {
-        resources: resources
+        resources: resources,
+        projectDetail: this.oProjectDetails
       },
 
       header: 'Conflicting Allocations ',
       width: '100vw',
       height: '100vh',
-      contentStyle: { "height": "90vh", "overflow": "auto" },
+      contentStyle: { "height": "60vh", "overflow": "auto" },
       closable: true,
 
     });
 
-    ref.onClose.subscribe((RestructureMilestones: any) => {
+    ref.onClose.subscribe((conflictAllocations: any) => {
 
     })
   }
 
-  checkConflictsAllocations() {
+  async checkConflictsAllocations(type) {
+    let tasksStatus = type ? this.taskAllocateCommonService.taskStatus : [];
+    let currentMilestone = this.milestoneData.filter(e=> e.data.type == 'milestone' && e.data.isCurrent == true )
     let allTasks = this.milestoneData.filter((e => e.children));
-    allTasks.forEach((e) => {
-      e.children.forEach(async (task: any) => {
-        if (task.data.itemType !== 'Client Review' && task.data.itemType !== 'Send to client' && task.data.slotType.indexOf('Slot') < 0 || task.data.added == false) {
-          task.data.resources = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
-            return objt.UserName.ID === task.data.AssignedTo.ID;
-          });
-          let capacity = await this.usercapacityComponent.factoringTimeForAllocation(task.data.start_date, task.data.end_date, task.data.resources, [], this.taskAllocateCommonService.taskStatus, this.taskAllocateCommonService.adhocStatus);
-          let maxHrs = 10;
-          let maxMin = 0;
-          for (var index in capacity.arrUserDetails) {
-            if (capacity.arrUserDetails.hasOwnProperty(index)) {
-              let dates = capacity.arrUserDetails[index].dates;
-              for (var dateIndex in dates) {
-                if (dates[dateIndex].userCapacity != 'Leave') {
-                  let hrs = dates[dateIndex].totalTimeAllocatedPerDay.split(':')[0];
-                  let min = dates[dateIndex].totalTimeAllocatedPerDay.split(':')[1];
-                  if (hrs > maxHrs || min > maxMin) {
-                    this.capacityObj.conflictAllocation = true;
-                    this.capacityObj.users.push(capacity.arrUserDetails[index]);
+    let capacity;
+    for (var index in allTasks) {
+      if (allTasks.hasOwnProperty(index)) {
+        let task = allTasks[index].children;
+        for (var childIndex in task) {
+          if (task[childIndex].data.itemType !== 'Client Review' && task[childIndex].data.itemType !== 'Send to client' && task[childIndex].data.slotType.indexOf('Slot') < 0) {
+            task[childIndex].data.resources = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
+              return objt.UserName.ID === task[childIndex].data.AssignedTo.ID;
+            });
+            if( (task[childIndex].data.edited || task[childIndex].data.added) && task[childIndex].data.milestone == currentMilestone[0].data.text) {
+              capacity = await this.usercapacityComponent.afterMilestoneTaskModified(task[childIndex].data, task[childIndex].data.start_date, task[childIndex].data.end_date, task[childIndex].data.resources, [])
+            } else {
+              capacity = await this.usercapacityComponent.factoringTimeForAllocation(task[childIndex].data.start_date, task[childIndex].data.end_date, task[childIndex].data.resources, [], tasksStatus, this.taskAllocateCommonService.adhocStatus);
+            }
+            let maxHrs = 10;
+            let maxMin = 0;
+            let count = 0;
+            for (var index in capacity.arrUserDetails) {
+              if (capacity.arrUserDetails.hasOwnProperty(index)) {
+                let dates = capacity.arrUserDetails[index].dates;
+                for (var dateIndex in dates) {
+                  if (dates[dateIndex].userCapacity != 'Leave') {
+                    let hrs = dates[dateIndex].totalTimeAllocatedPerDay.split(':')[0];
+                    let min = dates[dateIndex].totalTimeAllocatedPerDay.split(':')[1];
+                    if (hrs >= maxHrs && min > maxMin) {
+                      count++;
+                      
+                    }
                   }
                 }
               }
+              if (count > 0) {
+                this.capacityObj.conflictAllocation = true;
+                this.capacityObj.users.push(capacity.arrUserDetails[index]);
+              }
             }
+            console.log(capacity);
           }
-          console.log(capacity);
         }
-      })
-    })
+      }
+    }
 
+    if (this.capacityObj.conflictAllocation) {
+      this.conflictAllocations(this.capacityObj.users);
+    }
   }
 
 
@@ -3751,7 +3770,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   // *************************************************************************************************
 
 
-  saveTasks() {
+  async saveTasks() {
     this.disableSave = true;
     if (this.milestoneData.length > 0) {
 
@@ -3761,14 +3780,14 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         this.loaderenable = true;
         this.visualgraph = false;
         this.sharedObject.resSectionShow = false;
-        setTimeout(async() => {
-          await this.checkConflictsAllocations();
 
-          if (this.capacityObj.conflictAllocation) {
-            this.conflictAllocations(this.capacityObj.users);
-          }
-          this.generateSaveTasks();
-        }, 300);
+        await this.checkConflictsAllocations(true);
+
+        if (!this.capacityObj.conflictAllocation) {
+          setTimeout(async () => {
+            await this.generateSaveTasks();
+          }, 300);
+        }
       } else {
         this.disableSave = false;
       }
@@ -4644,7 +4663,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         const nextTasks = task.nextTask.split(';');
         const AllNextTasks = AllTasks.filter(c => (nextTasks.indexOf(c.title) > -1));
 
-        const SDTask = AllNextTasks.find(c => task.end_date < c.start_date && c.status !== 'Completed'
+        const SDTask = AllNextTasks.find(c => task.end_date > c.start_date && c.status !== 'Completed'
           && c.status !== 'Auto Closed' && c.status !== 'Deleted' && c.DisableCascade === false); //// Change allow start to disable cascade
         if (SDTask) {
           this.messageService.add({
@@ -4763,21 +4782,16 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         message: 'Are you sure that you want to Confirm ' + Title + ' ?',
         header: 'Confirmation',
         icon: 'pi pi-exclamation-triangle',
-        accept: () => {
+        accept: async () => {
           this.selectedSubMilestone = rowData;
-          let allTasks = rowNode.node;
-          allTasks.children.forEach((task) => {
-            if (task.data.itemType !== 'Client Review' && task.data.itemType !== 'Send to client' && task.data.slotType.indexOf('Slot') < 0) {
-              task.data.resources = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
-                return objt.UserName.ID === task.data.AssignedTo.ID;
-              });
-              this.usercapacityComponent.factoringTimeForAllocation(task.data.start_date, task.data.end_date, task.data.resources, [], [], this.taskAllocateCommonService.adhocStatus);
-            }
-          })
+          // let allTasks = rowNode.node;
           const validateNextMilestone = this.validateNextMilestone(this.selectedSubMilestone);
           if (validateNextMilestone) {
-            this.loaderenable = true;
-            setTimeout(() => { this.setAsNextMilestone(this.selectedSubMilestone); }, 200);
+            await this.checkConflictsAllocations(false);
+            if (!this.capacityObj.conflictAllocation) {
+              this.loaderenable = true;
+              setTimeout(() => { this.setAsNextMilestone(this.selectedSubMilestone); }, 200);
+            }
           }
         },
         reject: () => {
