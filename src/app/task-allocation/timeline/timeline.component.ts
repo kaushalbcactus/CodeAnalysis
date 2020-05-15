@@ -1861,41 +1861,49 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       }, 1000);
     }
   }
-  ////// Refactor code - Use get tasks from milestone function rather looping
+
   getGanttTasksFromMilestones(milestones, includeSubTasks) {
     let tasks = [];
     milestones.forEach(milestone => {
-      if (milestone.data) {
-        tasks.push(milestone.data);
-      }
-      if (milestone.children !== undefined) {
-        for (var nCountSub = 0; nCountSub < milestone.children.length; nCountSub = nCountSub + 1) {
-          var submilestone = milestone.children[nCountSub];
-          if (submilestone.data.type === 'task') {
-            tasks.push(submilestone.data);
-            if (includeSubTasks && submilestone.children) {
-              for (let nCountSubTask = 0; nCountSubTask < submilestone.children.length; nCountSubTask = nCountSubTask + 1) {
-                var subtask = submilestone.children[nCountSubTask];
-                tasks.push(subtask.data);
-              }
-            }
-          } else if (submilestone.children !== undefined) {
-            for (var nCountTask = 0; nCountTask < submilestone.children.length; nCountTask = nCountTask + 1) {
-              var task = submilestone.children[nCountTask];
-              tasks.push(task.data);
-              if (includeSubTasks && task.children) {
-                for (let nCountSubTask = 0; nCountSubTask < task.children.length; nCountSubTask = nCountSubTask + 1) {
-                  var subtask = task.children[nCountSubTask];
-                  tasks.push(subtask.data);
-                }
-              }
-            }
-          }
-        }
-      }
+      tasks = [...tasks, ...this.getTasksFromMilestones(milestone, false, includeSubTasks, true)];
     });
     return tasks;
   }
+  ////// Refactor code - Use get tasks from milestone function rather looping
+  // getGanttTasksFromMilestones(milestones, includeSubTasks) {
+  //   let tasks = [];
+  //   milestones.forEach(milestone => {
+  //     if (milestone.data) {
+  //       tasks.push(milestone.data);
+  //     }
+  //     if (milestone.children !== undefined) {
+  //       for (var nCountSub = 0; nCountSub < milestone.children.length; nCountSub = nCountSub + 1) {
+  //         var submilestone = milestone.children[nCountSub];
+  //         if (submilestone.data.type === 'task') {
+  //           tasks.push(submilestone.data);
+  //           if (includeSubTasks && submilestone.children) {
+  //             for (let nCountSubTask = 0; nCountSubTask < submilestone.children.length; nCountSubTask = nCountSubTask + 1) {
+  //               var subtask = submilestone.children[nCountSubTask];
+  //               tasks.push(subtask.data);
+  //             }
+  //           }
+  //         } else if (submilestone.children !== undefined) {
+  //           for (var nCountTask = 0; nCountTask < submilestone.children.length; nCountTask = nCountTask + 1) {
+  //             var task = submilestone.children[nCountTask];
+  //             tasks.push(task.data);
+  //             if (includeSubTasks && task.children) {
+  //               for (let nCountSubTask = 0; nCountSubTask < task.children.length; nCountSubTask = nCountSubTask + 1) {
+  //                 var subtask = task.children[nCountSubTask];
+  //                 tasks.push(subtask.data);
+  //               }
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }
+  //   });
+  //   return tasks;
+  // }
 
   updateMilestoneData() {
 
@@ -4526,20 +4534,26 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     const milTasks = milestone.children.map(e => e.data)
     tasks = [...tasks, ...milTasks];
     if (includeSubTasks) {
-      const subTask = milestone.children.map(e => (e.children ? e.children.map(c => c.data) : []));
+      const subTask = milestone.children.map(e => (e.children ? e.children.map(c => c.data) : null));
       tasks = [...tasks, ...subTask];
     }
     return tasks;
   }
 
-  getTasksFromMilestones(milestone, bOld, includeSubTasks) {
+  getTasksFromMilestones(milestone, bOld, includeSubTasks, getMilSubMil?) {
     let tasks = [];
+    if(getMilSubMil) {
+      tasks.push(milestone.data);
+    }
     if (milestone.children && milestone.children.length) {
       var submilestone = milestone.children[0];
       if (submilestone.data.type === 'task') {
         tasks = this.getTasksSubTasks(tasks, includeSubTasks, milestone);
       } else if (submilestone.children && submilestone.children.length) {
         milestone.children.forEach(submil => {
+          if(getMilSubMil) {
+            tasks.push(submil.data);
+          }
           tasks = this.getTasksSubTasks(tasks, includeSubTasks, submil);
         });
       }
@@ -4574,10 +4588,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       return obj.data.type === 'task' && obj.data.itemType === 'Client Review' && obj.data.milestone === milestone.parent.data.title.split(' (')[0]
     }) : [];
 
-    if (clTask.length)
+    if (clTask.length && !getMilSubMil)
       tasks.push(clTask[0].data);
 
-    return tasks;
+    return this.commonService.removeEmptyItems(tasks);
   }
  ////// Refactor code
   // getSubTasksfromTasks(task) {
