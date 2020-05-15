@@ -406,7 +406,7 @@ export class UsercapacityComponent implements OnInit {
     return taskArray;
   }
 
-  async factoringTimeForAllocation(startDate, endDate, resource, excludeTasks, taskStatus, adhocStatus) {
+  factoringTimeForAllocation(startDate, endDate, resource, excludeTasks, taskStatus, adhocStatus) {
     return this.applyFilter(startDate, endDate, resource, excludeTasks, taskStatus, adhocStatus);
   }
 
@@ -623,7 +623,48 @@ export class UsercapacityComponent implements OnInit {
       }
       const capacity = this.globalService.oCapacity;
       return capacity;
-    }
+    } 
+  }
+
+  async afterMilestoneTaskModified(task, startDate, endDate, resource, []) {
+    let capacity = await this.applyFilter(startDate, endDate, resource, []);
+
+      let taskObj: any = {
+        Title: task.taskFullName,
+        Milestone: task.milestone,
+        SubMilestones: task.submilestone,
+        Task: task.title,
+        StartDate: task.start_date,
+        DueDate: task.end_date,
+        AllocationPerDay: task.allocationPerDay,
+        Status: task.status,
+        ExpectedTime: task.budgetHours,
+        ID: task.id,
+        TimeSpent: task.spentTime,
+        TimeZone: task.assignedUserTimeZone,
+        parentSlot: task.parentSlot
+      }
+
+      for (var index in capacity.arrUserDetails) {
+        if (capacity.arrUserDetails.hasOwnProperty(index)) {
+          if (capacity.arrUserDetails[index].uid == task.AssignedTo.ID && capacity.arrUserDetails[index].tasks.indexOf(task) === -1) {
+            let taskIndex = capacity.arrUserDetails[index].tasks.findIndex(x => x.ID === task.id);
+            if(taskIndex !== -1) {
+              capacity.arrUserDetails[index].tasks.splice(taskIndex, 1, taskObj);
+            } else {
+              capacity.arrUserDetails[index].tasks.push(taskObj)
+            }
+          }
+        }
+      }
+
+      for (var index in capacity.arrUserDetails) {
+        if (capacity.arrUserDetails.hasOwnProperty(index)) {
+          this.fetchUserCapacity(capacity.arrUserDetails[index]);
+        }
+      }
+
+    return capacity;
   }
 
   filterCapacityByDates(startDate, endDate, task) {
