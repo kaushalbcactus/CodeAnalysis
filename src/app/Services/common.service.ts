@@ -242,12 +242,12 @@ export class CommonService {
         }
         return [year, month, day].join('-');
     }
-    ///////// Refactor code -  Move inside project mgmt 
+    ///////// Refactor code -  Move inside project mgmt
     lazyLoadTask(event, sendToClient, filterColumns, action) {
         this.filterAction(event.sortField, event.sortOrder,
             event.globalFilter, event.filters, event.first, event.rows, sendToClient, filterColumns, action);
     }
-    ///////// Refactor code -  Move inside project mgmt 
+    ///////// Refactor code -  Move inside project mgmt
     filterAction(sortField, sortOrder, globalFilter, localFilter, first, rows, sendToClient, filterColumns, action) {
         switch (action) {
             case this.pmConstant.filterAction.ALL_SOW:
@@ -420,7 +420,7 @@ export class CommonService {
         }
         return documents;
     }
-    ////// Refactor end 
+    ////// Refactor end
 
 
     unique(array, param) {
@@ -612,7 +612,7 @@ export class CommonService {
         let negative = false;
         let total = 0;
         elem1 = elem1.indexOf('.') > -1 || elem1.indexOf(':') > -1 ? elem1 : elem1 + '.00';
-        elem2 = elem2.indexOf('.') > -1 || elem1.indexOf(':') > -1 ? elem2 : elem2 + '.00';
+        elem2 = elem2.indexOf('.') > -1 || elem2.indexOf(':') > -1 ? elem2 : elem2 + '.00';
         const totalMinsElem1 = elem1.indexOf('.') > -1 ? +(elem1.split('.')[0]) * 60 + +(elem1.split('.')[1]) :
             +(elem1.split(':')[0]) * 60 + +(elem1.split(':')[1]);
         const totalMinsElem2 = elem2.indexOf('.') > -1 ? +(elem2.split('.')[0]) * 60 + +(elem2.split('.')[1]) :
@@ -633,7 +633,7 @@ export class CommonService {
     }
 
 
-    //////////// Refactor code 
+    //////////// Refactor code
     /*****************************************************************
 
     Call Api to Get Project Resources
@@ -954,7 +954,7 @@ export class CommonService {
             const numTime = time.indexOf('0' + hours) > -1 ? time.replace('0' + hours, (hours + 12)) : time.replace(hours, (hours + 12));
             time = '' + numTime;
         }
-        return time.replace(/(AM|PM)/, '');
+        return time.replace(/(AM|PM)/, '').replace('.', ':');
     }
     getMinsValue(val) {
         return +val === 0 ? 0 : +val === 25 ? 15 : +val === 50 ? 30 : +val === 15 ? 25 : +val === 30 ? 50 : 75;
