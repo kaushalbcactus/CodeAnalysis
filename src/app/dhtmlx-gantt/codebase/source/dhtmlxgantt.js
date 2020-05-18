@@ -6449,6 +6449,7 @@ module.exports = function () {
             task: "task",
             project: "project",
             milestone: "milestone",
+            sc: "Send to client",
             meeting: "meeting",
             planned: "planned",
             notstarted: "Not Started",
@@ -7602,6 +7603,9 @@ module.exports = function(gantt) {
 			},
 
 			task_text: function (start, end, task) {
+                if(task.itemType == gantt.config.types.sc) {
+                    return "";
+                }
                 if(task.status == gantt.config.types.meeting){
                     return "Meeting: <b>" + task.text + "</b>";
                 }
@@ -7945,7 +7949,7 @@ module.exports = function(gantt) {
 		if (task_type == this.config.types.project) {
 			//project duration is always defined by children duration
 			state.$no_end = state.$no_start = true;
-		} else if (task_type != this.config.types.milestone) {
+		} else if (task_type != this.config.types.sc) {
 			//tasks can have fixed duration, children duration(as projects), or one date fixed, and other defined by nested items
 			state.$no_end = !(task.end_date || task.duration);
 			state.$no_start = !task.start_date;
@@ -7971,14 +7975,14 @@ module.exports = function(gantt) {
 			task.$rendered_type = task_mode.type;
 		}
 
-		if (dirty && task_type != this.config.types.milestone) {
+		if (dirty && task_type != this.config.types.sc) {
 			if (task_type == this.config.types.project) {
 				//project duration is always defined by children duration
 				this._set_default_task_timing(task);
 			}
 		}
 
-		if (task_type == this.config.types.milestone) {
+		if (task_type == this.config.types.sc) {
 			task.end_date = task.start_date;
 		}
 		if (task.start_date && task.end_date) {
@@ -23449,7 +23453,7 @@ var path_builder = {
 function getMilestonePosition(task, view){
 	var config = view.$getConfig();
 	var pos = view.getItemPosition(task);
-	if(gantt.getTaskType(task.status) == config.types.milestone){
+	if(gantt.getTaskType(task.status) == config.types.sc){
 		var milestoneHeight = gantt.getTaskHeight();
 		var milestoneWidth = Math.sqrt(2*milestoneHeight*milestoneHeight);
 		pos.left -= milestoneWidth / 2;
@@ -23733,12 +23737,12 @@ function createTaskRenderer(gantt){
 		var taskType = gantt.getTaskType(task.status);
 
 		var padd = Math.floor((gantt.config.row_height - height) / 2);
-		if (taskType == cfg.types.milestone && cfg.link_line_width > 1) {
+		if (taskType == cfg.types.sc && cfg.link_line_width > 1) {
 			//little adjust milestone position, so horisontal corners would match link arrow when thickness of link line is more than 1px
 			padd += 1;
 		}
 
-		if (taskType == cfg.types.milestone){
+		if (taskType == cfg.types.sc){
 			pos.left -= Math.round(height / 2);
 			pos.width = height;
 		}
@@ -23751,7 +23755,7 @@ function createTaskRenderer(gantt){
 			div.setAttribute(view.$config.item_attribute, task.id);
 		}
 
-		if (cfg.show_progress && taskType != cfg.types.milestone) {
+		if (cfg.show_progress && taskType != cfg.types.sc) {
 			_render_task_progress(task, div, width, cfg, templates);
 		}
 
@@ -23769,7 +23773,9 @@ function createTaskRenderer(gantt){
 		if (task.color || task.progressColor || task.textColor) {
 			css += " gantt_task_inline_color";
 		}
-		div.className = css;
+        div.className = css;
+        
+        width = task.itemType == cfg.types.sc ? 30 : width;
 
 		var styles = [
 			"left:" + pos.left + "px",
@@ -23797,7 +23803,7 @@ function createTaskRenderer(gantt){
 		var state = gantt.getState();
 
 		if (!gantt.isReadonly(task)) {
-			if (cfg.drag_resize && !gantt.isSummaryTask(task) && taskType != cfg.types.milestone) {
+			if (cfg.drag_resize && !gantt.isSummaryTask(task) && taskType != cfg.types.sc) {
 				_render_pair(div, "gantt_task_drag", task, function (css) {
 					var el = document.createElement("div");
 					el.className = css;
@@ -23871,7 +23877,7 @@ function createTaskRenderer(gantt){
 
 	function _render_task_content(task, width, templates) {
 		var content = document.createElement("div");
-		if (gantt.getTaskType(task.status) != gantt.config.types.milestone)
+		if (gantt.getTaskType(task.status) != gantt.config.types.sc)
 			content.innerHTML = templates.task_text(task.start_date, task.end_date, task);
 		content.className = "gantt_task_content";
 		//content.style.width = width + 'px';
@@ -23953,13 +23959,13 @@ function createTaskRenderer(gantt){
 
 		var task = gantt.getTask(itemId);
 
-		if (gantt.getTaskType(task.status) == cfg.types.milestone) {
+		if (gantt.getTaskType(task.itemType) == cfg.types.sc) {
 			css.push("gantt_milestone");
 		}else if (gantt.getTaskType(task.status) == cfg.types.project) {
 			css.push("gantt_project");
 		}
 
-		css.push("gantt_bar_" + gantt.getTaskType(task.status));
+		css.push("gantt_bar_" + gantt.getTaskType(task.itemType));
 
 
 		if (gantt.isSummaryTask(task))
@@ -24702,7 +24708,7 @@ var initLinksDND = function(timeline, gantt) {
 	}
 
 	function isMilestone(task) {
-		return gantt.getTaskType(task.status) == gantt.config.types.milestone;
+		return gantt.getTaskType(task.status) == gantt.config.types.sc;
 	}
 
 	function getDndState(){
@@ -24803,7 +24809,7 @@ var initLinksDND = function(timeline, gantt) {
 		}
 		res.yEnd = res.y + res.height;
 
-		if(gantt.getTaskType(task.status) == gantt.config.types.milestone){
+		if(gantt.getTaskType(task.status) == gantt.config.types.sc){
 			var milestoneWidth = getVisibleMilestoneWidth();
 
 			res.x += (!cfg.rtl ? -1 : 1)*(milestoneWidth / 2);

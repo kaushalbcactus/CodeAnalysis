@@ -250,9 +250,9 @@
                             <span [title]="rowData.pUserStart |  date:' d MMM, y, h:mm a'"
                                 *ngIf="(!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat === true) || rowData.type === 'milestone' || rowData.type === 'submilestone'">{{rowData.start_date |  date:' d MMM, y' }}</span>
                             <span [title]="rowData.pUserStart |  date:' d MMM, y, h:mm a'"
-                                *ngIf="(!rowData.editMode && rowData.type === 'task' &&  rowData.tat !== true) || (rowData.type === 'task' && rowData.editMode && rowData.status === 'In Progress')">{{rowData.start_date |  date:' d MMM, y, h:mm a' }}</span>
+                                *ngIf="(!rowData.editMode && rowData.type === 'task' &&  rowData.tat !== true) || (rowData.type === 'task' && rowData.editMode && rowData.status === 'In Progress') || (rowData.type === 'task' && rowData.editMode && rowData.itemType ==='Client Review')">{{rowData.start_date |  date:' d MMM, y, h:mm a' }}</span>
 
-                            <span *ngIf="rowData.editMode && rowData.type === 'task'  && rowData.status !== 'In Progress'">
+                            <span *ngIf="rowData.editMode && rowData.type === 'task'  && rowData.status !== 'In Progress' && rowData.itemType !== 'Client Review' && (rowData.status === 'Not Started' || rowData.status === 'Not Confirmed' || rowData.status === 'Not Saved')">
                                 <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserStartDatePart"
                                     [disabledDays]="[0,6]" [readonlyInput]="true" dateFormat="dd M , yy"
                                     yearRange="{{yearsRange}}" hideOnDateTimeSelect="true" [stepMinute]="15"
@@ -275,10 +275,10 @@
                             <span [title]="rowData.pUserEnd |  date:' d MMM, y, h:mm a'"
                                 *ngIf="(!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat === true) || rowData.type === 'milestone' || rowData.type === 'submilestone'">{{rowData.end_date |  date:' d MMM, y' }}</span>
                             <span [title]="rowData.pUserEnd |  date:' d MMM, y, h:mm a'"
-                                *ngIf="!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat !== true">{{rowData.end_date |  date:' d MMM, y, h:mm a' }}</span>
+                                *ngIf="(!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat !== true) || (rowData.type === 'task' && rowData.editMode && rowData.itemType ==='Send to client')">{{rowData.end_date |  date:' d MMM, y, h:mm a' }}</span>
 
 
-                            <span *ngIf="rowData.editMode && rowData.type === 'task'">
+                            <span *ngIf="rowData.editMode && rowData.type === 'task' && rowData.itemType !=='Send to client' && (rowData.status === 'Not Started' || rowData.status === 'Not Confirmed' || rowData.status === 'In Progress' || rowData.status === 'Not Saved')">
 
                                 <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserEndDatePart"
                                     [disabledDays]="[0,6]" [readonlyInput]="true" dateFormat="dd M , yy"

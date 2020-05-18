@@ -1731,7 +1731,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       milestoneData: this.milestoneData,
       milestoneDataCopy: this.milestoneDataCopy,
       allRestructureTasks: this.allRestructureTasks,
-      allTasks: this.allTasks
+      allTasks: this.allTasks,
+      startDate: this.startDate,
+      endDate: this.endDate
     }
 
     this.editTaskComponent(data)

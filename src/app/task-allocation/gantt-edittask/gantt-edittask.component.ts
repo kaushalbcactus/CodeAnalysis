@@ -35,7 +35,8 @@ export class GanttEdittaskComponent implements OnInit {
   milestoneDataCopy: any = [];
   allTasks = [];
   allRestructureTasks = [];
-
+  startDate: any;
+  endDate: any;
 
   darkTheme: NgxMaterialTimepickerTheme = {
     container: {
@@ -79,6 +80,10 @@ export class GanttEdittaskComponent implements OnInit {
     this.editTaskForm.get('tat').setValue(false);
     this.editTaskForm.get('disableCascade').setValue(false);
     this.editTaskForm.controls['budgetHrs'].enable();
+    this.editTaskForm.controls['startDate'].disable();
+    this.editTaskForm.controls['startDateTimePart'].disable();
+    this.editTaskForm.controls['endDate'].disable();
+    this.editTaskForm.controls['endDateTimePart'].disable();
     this.assignedUsers = this.config.data.assignedUsers;
     this.task = this.config.data.task;
     this.milestoneData = this.config.data.milestoneData;
@@ -86,6 +91,8 @@ export class GanttEdittaskComponent implements OnInit {
     this.allRestructureTasks = this.config.data.allRestructureTasks;
     this.allTasks = this.allTasks;
     const clickedInputType = this.config.data.clickedInputType;
+    this.startDate = this.config.data.startDate;
+    this.endDate = this.config.data.endDate;
     this.onLoad(this.task, clickedInputType);
   }
 
@@ -102,6 +109,8 @@ export class GanttEdittaskComponent implements OnInit {
   }
 
   async onLoad(task, clickedInputType) {
+    let sTime = this.getTimePart(this.startDate); 
+    let eTime = this.getTimePart(this.endDate);
     if (task.itemType === 'Client Review' || task.itemType === 'Send to client') {
       let bHrs = 0 || task.budgetHours;
       this.editTaskForm.get('budgetHrs').setValue(bHrs);
@@ -110,13 +119,46 @@ export class GanttEdittaskComponent implements OnInit {
     if (task.itemType === 'Client Review') {
       this.editTaskObject.isDisableCascade = false;
       this.editTaskObject.isTat = false;
+      this.editTaskForm.controls['startDate'].disable();
+      this.editTaskForm.controls['startDateTimePart'].disable();
+      // this.editTaskForm.get('startDate').setValue(this.startDate);
+      // this.editTaskForm.get('startDateTimePart').setValue(sTime);
+      task.start_date = this.startDate;
     } else if (task.itemType === 'Send to client') {
       this.editTaskObject.isDisableCascade = true;
       this.editTaskObject.isTat = false;
+      this.editTaskForm.controls['endDate'].disable();
+      this.editTaskForm.controls['endDateTimePart'].disable();
+      // this.editTaskForm.get('endDate').setValue(this.endDate);
+      // this.editTaskForm.get('endDateTimePart').setValue(eTime);
+      // task.start_date = this.startDate;
+      task.end_date = task.start_date;
     } else if (task.slotType === 'Slot') {
       this.editTaskObject.isDisableCascade = true;
       this.editTaskObject.isTat = false;
     }
+
+    if(task.status == 'Not Confirmed' || task.status == "Not Started" || task.status == "Not Saved") {
+      if (task.itemType !== 'Client Review') {
+        this.editTaskForm.controls['startDate'].enable();
+        this.editTaskForm.controls['startDateTimePart'].enable();
+      }
+      if (task.itemType !== 'Send to client') {
+        this.editTaskForm.controls['endDate'].enable();
+        this.editTaskForm.controls['endDateTimePart'].enable();
+      }
+    } else if(task.status == "In Progress") {
+      this.editTaskForm.controls['startDate'].disable();
+      this.editTaskForm.controls['startDateTimePart'].disable();
+      // this.editTaskForm.get('startDate').setValue(this.startDate);
+      // this.editTaskForm.get('startDateTimePart').setValue(sTime);
+      task.start_date = this.startDate;
+      if (task.itemType !== 'Send to client') {
+        this.editTaskForm.controls['endDate'].enable();
+        this.editTaskForm.controls['endDateTimePart'].enable();
+      }
+    } 
+
 
     const startTime = this.setMinutesAfterDrag(task.start_date);
     task.start_date = new Date(this.datepipe.transform(task.start_date, 'MMM d, y') + ' ' + startTime);
@@ -133,8 +175,8 @@ export class GanttEdittaskComponent implements OnInit {
     this.isViewAllocationBtn(task);
     this.editTaskForm.patchValue({
       budgetHrs: task.budgetHours,
-      startDate: task.pUserStart,
-      endDate: task.pUserEnd,
+      startDate: task.start_date,
+      endDate: task.end_date,
       tat: task.tat,
       disableCascade: task.DisableCascade,
       resource: task.AssignedTo,
