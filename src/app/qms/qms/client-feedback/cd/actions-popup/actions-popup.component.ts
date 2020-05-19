@@ -187,9 +187,9 @@ export class ActionsPopupComponent implements OnInit {
     this.qc.caComments = content.PreventiveActions ? content.PreventiveActions : '';
     this.qc.otherResources = content.Resources.results ? content.Resources.results : [];
     this.qc.rejectionComments = content.RejectionComments ? content.RejectionComments : '';
-    this.qc.deliveryLevel2 = content.ASD && content.ASD.results ? this.getResourceEmail(content.ASD.results) : this.qc.deliveryLevel2;
-    this.qc.deliveryLevel1 = content.TL && content.TL.results ? this.getResourceEmail(content.TL.results) : this.qc.deliveryLevel1;
-    this.qc.cm = content.CS && content.CS.results ? this.getResourceEmail(content.CS.results) : this.qc.cm;
+    this.qc.deliveryLevel2 = this.getResourceEmail(content.ASD);
+    this.qc.deliveryLevel1 = this.getResourceEmail(content.TL);
+    this.qc.cm = this.getResourceEmail(content.CS);
     if (this.qc.deliveryLevel2 && this.qc.deliveryLevel2.ids.length <= 0) {
       this.qc.deliveryLevel2 = codeDetails.DeliveryLevel2 ? this.getResourceEmail([codeDetails.DeliveryLevel2]) : this.qc.deliveryLevel2;
     }
@@ -433,7 +433,8 @@ export class ActionsPopupComponent implements OnInit {
     const allResources = this.global.allResources;
     const emails = [];
     const ids = [];
-    resources.forEach(element => {
+    const arrResources = resources && resources.results ? resources.results : []
+    arrResources.forEach(element => {
       const resourceDetail = allResources.filter(r => r.UserName.ID === element.ID);
       emails.push(resourceDetail.length > 0 ? resourceDetail[0].UserName.EMail : '');
       ids.push(resourceDetail.length > 0 ? resourceDetail[0].UserName.ID : '');
