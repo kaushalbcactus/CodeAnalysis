@@ -1,4 +1,3 @@
-
 import { Component, OnInit, OnDestroy, HostListener, ElementRef, ViewChild, ChangeDetectorRef, ApplicationRef, NgZone } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { SPOperationService } from '../../../Services/spoperation.service';
@@ -13,6 +12,8 @@ import { Subscription } from 'rxjs';
 import { Table } from 'primeng/table';
 import { Router } from '@angular/router';
 import { DialogService } from 'primeng';
+import { ScheduleOopInvoiceDialogComponent } from './schedule-oop-invoice-dialog/schedule-oop-invoice-dialog.component';
+import { MarkAsPaymentDialogComponent } from '../mark-as-payment-dialog/mark-as-payment-dialog.component';
 
 @Component({
     selector: 'app-approved-billable',
@@ -20,8 +21,9 @@ import { DialogService } from 'primeng';
     styleUrls: ['./approved-billable.component.css']
 })
 export class ApprovedBillableComponent implements OnInit, OnDestroy {
-    FolderName: string;
-    SelectedFile = [];
+
+    yearRange: string;
+    invoice: any;
 
     constructor(
         private messageService: MessageService,
@@ -58,35 +60,13 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         });
     }
 
-    get isValidScheduleOOPInvoiceForm() {
-        return this.scheduleOopInvoice_form.controls;
-    }
-
-    get isValidMarkAsPaymentForm() {
-        return this.markAsPayment_form.controls;
-    }
     tempClick: any;
     approvedBillableRes: any = [];
     approvedBillableCols: any[];
-    scheduleOopInvoice_form: FormGroup;
-    markAsPayment_form: FormGroup;
 
-    // Address Type
-    addressTypes: any = [];
-
-    // Payment Mode array
-    paymentModeArray: any = [];
 
     // Lodder
-    isPSInnerLoaderHidden: boolean = true;
-
-    formSubmit: any = {
-        isSubmit: false
-    };
-    submitBtn: any = {
-        isClicked: false
-    };
-
+    isLoaderenable: boolean = true;
     selectedRowData: any = [];
 
     // Date Range
@@ -108,7 +88,6 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     // List of Subscribers
     private subscription: Subscription = new Subscription();
 
-    @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
     @ViewChild('ab', { static: false }) approvedBTable: Table;
 
     // Project Info
@@ -120,23 +99,11 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     // Project COntacts
     projectContactsData: any = [];
 
-    // Client Legal Entity
-    cleData: any = [];
-
     // Billing ENtity Data
     billingEntityData: any = [];
 
     // Resource Categorization
     rcData: any = [];
-
-    // getCreatedModifiedByFromRC(id) {
-    //     let found = this.rcData.find((x) => {
-    //         if (x.UserName.ID == id) {
-    //             return x;
-    //         }
-    //     })
-    //     return found ? found : ''
-    // }
 
     appBillableColArray = {
         ProjectCode: [],
@@ -169,23 +136,14 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     items: any[];
 
     rowItemDetails: any;
-
-    scheduleOopModal: boolean = false;
-    markAsPaymentModal: boolean = false;
     listOfPOCs: any = [];
 
 
     // Project PO
     poNames: any = [];
-
     pcFound: boolean = false;
-
     vfUnique: boolean = false;
-
-    oopBalance: number = 0;
     poItem: any;
-    pocItem: any;
-
     pfListItem: any = [];
     pfbListItem: any = [];
     pbbListItem: any = [];
@@ -194,17 +152,15 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     pcmLevels: any = [];
 
     // Upload File
-
-    selectedFile: any;
-    filePathUrl: any;
-    fileReader: any;
-    fileUploadedUrl: any;
-
     updateSpeLineItems: any = [];
 
     isOptionFilter: boolean;
 
     async ngOnInit() {
+
+        const currentYear = new Date();
+        this.yearRange = (currentYear.getFullYear() - 10) + ':' + (currentYear.getFullYear() + 10);
+
         this.fdConstantsService.fdComponent.hideDatesSection = false;
         // SetDefault Values
         if (this.fdDataShareServie.expenseDateRange.startDate) {
@@ -218,40 +174,18 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         }
 
         this.createABCols();
-        this.getAddressType();
-        // Initialize Form Field
-        this.initializeOOPInvoiceForm_field();
-        this.initializeMarkAsPaymentForm_field();
-
-        this.paymentModeArray = [
-            { label: 'BankTransfer', value: 'Bank Transfer' },
-            { label: 'CreditCard', value: 'Credit Card' },
-            { label: 'Cheque', value: 'Cheque' },
-        ];
-
-
-        // Get Freelancer
         this.freelancerVendersRes = await this.fdDataShareServie.getVendorFreelanceData();
-
         await this.projectInfo();
-        this.poInfo();
-        this.projectContacts();
-        // GEt Client Legal Entity
-        this.cleInfo();
-        // Load Address Type
-
-        // Resource Categorization
         this.resourceCInfo();
+
     }
     async projectInfo() {
-        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         await this.fdDataShareServie.checkProjectsAvailable();
         this.subscription.add(this.fdDataShareServie.defaultPIData.subscribe((res) => {
             if (res) {
                 this.projectInfoData = res;
                 console.log('PI Data ', this.projectInfoData);
                 this.getRequiredData();
-                this.isPSInnerLoaderHidden = false;
             }
         }));
     }
@@ -264,24 +198,6 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         }));
     }
 
-    projectContacts() {
-        this.subscription.add(this.fdDataShareServie.defaultPCData.subscribe((res) => {
-            if (res) {
-                this.projectContactsData = res;
-                console.log('this.projectContactsData ', this.projectContactsData);
-                // this.getPCForSentToAMForApproval();
-            }
-        }));
-    }
-    cleInfo() {
-        this.cleData = [];
-        this.subscription.add(this.fdDataShareServie.defaultCLEData.subscribe((res) => {
-            if (res) {
-                this.cleData = res;
-                console.log('CLE Data ', this.cleData);
-            }
-        }));
-    }
     biilingEntityInfo() {
         this.subscription.add(this.fdDataShareServie.defaultBEData.subscribe((res) => {
             if (res) {
@@ -297,13 +213,6 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                 console.log('Resource Categorization ', this.rcData);
             }
         }));
-    }
-
-    getAddressType() {
-        this.addressTypes = [
-            { label: 'Client', value: 'Client' },
-            { label: 'POC', value: 'POC' },
-        ];
     }
 
     createABCols() {
@@ -330,44 +239,14 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
             { field: 'ApproverComments', header: 'Approver Comments', visibility: false },
             { field: 'ApproverFileUrl', header: 'Approver File Url', visibility: false },
             { field: 'PayingEntity', header: 'Paying Entity', visibility: false },
-            // { field: 'VendorFreelancer', header: 'Vendor Freelancer', visibility: false },
-            // { field: 'AuthorId', header: 'Author Id', visibility: false },
-            // { field: 'RequestType', header: 'Request Type', visibility: false },
-            // { field: 'DollarAmount', header: 'Dollar Amount', visibility: false },
-            // { field: 'InvoiceID', header: 'Invoice ID', visibility: false },
-            // { field: 'POLookup', header: 'PO Lookup', visibility: false },
             { field: '', header: '', visibility: true },
 
         ];
     }
 
-    initializeOOPInvoiceForm_field() {
-        this.scheduleOopInvoice_form = this.fb.group({
-            // ProjectCode: new FormControl('')
-            ProjectCode: [{ value: '', disabled: true }],
-            PONumber: ['', Validators.required],
-            ScheduledType: [{ value: 'oop', disabled: true }],
-            Amount: [{ value: '', disabled: true }, Validators.required],
-            Currency: [{ value: '', disabled: true }, Validators.required],
-            ScheduledDate: ['', Validators.required],
-            POCName: ['', Validators.required],
-            AddressType: ['', Validators.required],
-        });
-    }
-
-    initializeMarkAsPaymentForm_field() {
-        this.markAsPayment_form = this.fb.group({
-            Number: ['', Validators.required],
-            DateSpend: ['', Validators.required],
-            PaymentMode: ['', Validators.required],
-            // ApproverComments: ['', Validators.required],
-            ApproverFileUrl: ['', Validators.required]
-        });
-    }
-
     // On load get Required Data
     async getRequiredData() {
-        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
+
         let speInfoObj;
         const groups = this.globalService.userInfo.Groups.results.map(x => x.LoginName);
         if (groups.indexOf('Invoice_Team') > -1 || groups.indexOf('Managers') > -1 || groups.indexOf('ExpenseApprovers') > -1) {
@@ -384,8 +263,6 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         const res = await this.spServices.readItems(this.constantService.listNames.SpendingInfo.name, speInfoObj);
         const arrResults = res.length ? res : [];
         this.formatData(arrResults);
-        this.isPSInnerLoaderHidden = true;
-        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
 
     getVendorNameById(ele) {
@@ -402,8 +279,6 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         this.selectedAllRowsItem = [];
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
-            // let rcCreatedItem = this.getCreatedModifiedByFromRC(element.AuthorId);
-            // let rcModifiedItem = this.getCreatedModifiedByFromRC(element.EditorId);
             const sowCodeFromPI = await this.fdDataShareServie.getSowCodeFromPI(this.projectInfoData, element);
             const sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(sowCodeFromPI.SOWCode);
 
@@ -446,9 +321,8 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
             });
         }
         this.approvedBillableRes = [...this.approvedBillableRes];
-        this.isPSInnerLoaderHidden = true;
         this.createColFieldValues(this.approvedBillableRes);
-        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
+        this.isLoaderenable = false;
     }
 
     createColFieldValues(resArray) {
@@ -487,11 +361,13 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
             };
         });
     }
+
     selectAll(data) {
         console.log(data);
         this.selectedAllRows = !this.selectedAllRows;
         this.selectedCategories = !this.selectedCategories;
     }
+
     selectOneByOne(oneRow, isChecked) {
         // this.selectedCategories = !this.selectedCategories
         console.log('one Row ', oneRow);
@@ -511,25 +387,9 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
 
     onRowUnselect(event) {
         console.log('this.selectedAllRowsItem ', this.selectedAllRowsItem);
-        // let rowUnselectIndex = this.selectedRowItemData.indexOf(event.data);
-        // this.selectedRowItemData.splice(rowUnselectIndex, 1);
     }
 
-    setValInScheduleOop(selectedLineItems: any) {
-        let amt = 0;
-        for (let i = 0; i < this.selectedAllRowsItem.length; i++) {
-            const element = this.selectedAllRowsItem[i];
-            amt += parseFloat(element.ClientAmount);
-        }
-        if (selectedLineItems.length) {
-            console.log('', this.selectedAllRowsItem[0].ProjectCode);
-            this.scheduleOopInvoice_form.controls['ProjectCode'].setValue(this.selectedAllRowsItem[0].ProjectCode);
-            this.scheduleOopInvoice_form.controls['ScheduledType'].setValue('oop');
-            this.scheduleOopInvoice_form.controls['Currency'].setValue(this.selectedAllRowsItem[0].ClientCurrency);
-            this.scheduleOopInvoice_form.controls['Amount'].setValue(amt);
-            console.log('this.scheduleOopInvoice_form ', this.scheduleOopInvoice_form.getRawValue());
-        }
-    }
+
     openTableAtt(data, popUpData) {
         this.items = [];
         console.log('this.selectedAllRowsItem ', this.selectedAllRowsItem);
@@ -540,11 +400,9 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         this.rowItemDetails = data;
         this.rightSideBar = !this.rightSideBar;
     }
+
     openPopup(modal: string) {
         console.log('selectedAllRowsItem ', this.selectedAllRowsItem);
-        // console.log('this.selectedRowItemData ', this.selectedRowItemData);
-        this.listOfPOCs = [];
-
         if (!this.selectedAllRowsItem.length) {
             this.messageService.add({
                 key: 'approvedToast', severity: 'info', summary: 'Info message',
@@ -557,33 +415,45 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
             this.checkUniquePC();
             if (this.pcFound) {
                 const sts = this.checkApprovedStatus();
-                console.log('Sts ', sts);
-                // if (this.selectedAllRowsItem[0].Status.includes('Approved')) {
                 if (sts) {
-                    this.poNames = [];
-                    const pInfo = this.getCleFromPC();
-                    if (pInfo) {
-                        this.getPONumberFromCLE(pInfo);
-                        this.getPOCFromPCLE(pInfo);
-                    }
-                    console.log('this.listOfPOCs ', this.listOfPOCs);
-                    this.setValInScheduleOop(this.selectedAllRowsItem);
-                    this.scheduleOopModal = true;
-                } else {
+                    const ref = this.dialogService.open(ScheduleOopInvoiceDialogComponent, {
+                        header: 'Schedule OOP Invoice',
+                        width: '70vw',
+                        data: {
+                            selectedAllRowsItem: this.selectedAllRowsItem,
+                            projectInfoData: this.projectInfoData
+                        },
+                        contentStyle: { 'overflow-y': 'visible' },
+                        closable: false,
+                    });
+
+                    ref.onClose.subscribe((scheduleInvoice: any) => {
+                        if (scheduleInvoice) {
+                            this.poItem = scheduleInvoice.poItem;
+                            this.pfListItem = scheduleInvoice.pfListItem;
+                            this.pfbListItem = scheduleInvoice.pfbListItem;
+                            this.projectInfoLineItem = scheduleInvoice.projectInfoLineItem;
+                            this.pcmLevels = scheduleInvoice.pcmLevels;
+                            this.invoice = scheduleInvoice.Invoice;
+                            const ScheduleInvoiceForm = scheduleInvoice.ScheduleInvoiceForm
+                            this.onSubmit(ScheduleInvoiceForm, ScheduleInvoiceForm.get('InvoiceType').value, 'scheduledOOP')
+
+
+                        }
+                    })
+                }
+                else {
                     this.messageService.add({
                         key: 'approvedToast', severity: 'info', summary: 'Info message',
                         detail: 'Please select only those Projects whose scheduling is pending', life: 4000
                     });
                 }
-
             } else {
-                this.scheduleOopModal = false;
                 this.messageService.add({
                     key: 'approvedToast', severity: 'info', summary: 'Info message',
                     detail: 'Please select same Projects', life: 4000
                 });
             }
-
 
         } else if (modal === 'markAsPaymentModal') {
             this.checkUniqueVF();
@@ -591,7 +461,18 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                 const sts = this.checkPPStatus();
                 console.log('Sts ', sts);
                 if (sts) {
-                    this.markAsPaymentModal = true;
+                    const ref = this.dialogService.open(MarkAsPaymentDialogComponent, {
+                        header: 'Mark As Payment',
+                        width: '70vw',
+                        contentStyle: { 'overflow-y': 'visible' },
+                        closable: false,
+                    });
+                    ref.onClose.subscribe((paymentDetails: any) => {
+                        if (paymentDetails) {
+                            this.isLoaderenable = true;
+                            this.MarkAsPayment(paymentDetails.paymentForm, 'markAsPayment_form', paymentDetails.fileUrl);
+                        }
+                    });
                 } else {
                     this.messageService.add({
                         key: 'approvedToast', severity: 'info', summary: 'Info message',
@@ -599,18 +480,13 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                     });
                 }
             } else {
-                this.scheduleOopModal = false;
+
                 this.messageService.add({
                     key: 'approvedToast', severity: 'info', summary: 'Info message',
                     detail: 'Please select same Vendor/Freelance name', life: 4000
                 });
             }
         }
-
-        // } else {
-        //     this.scheduleOopModal = false;
-        //     this.messageService.add({ key: 'approvedToast', severity: 'info', summary: 'Info message', detail: 'Please select same Projects & try again', life: 4000 });
-        // }
     }
 
     checkApprovedStatus() {
@@ -641,47 +517,6 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         return ppSts;
     }
 
-    getCleFromPC() {
-        const found = this.projectInfoData.find((x) => {
-            if (x.ProjectCode === this.selectedAllRowsItem[0].ProjectCode) {
-                return x;
-            }
-        });
-        return found ? found : '';
-    }
-
-    getPOCFromPCLE(cle) {
-        this.listOfPOCs = [];
-        for (let i = 0; i < this.projectContactsData.length; i++) {
-            const element = this.projectContactsData[i];
-            if (element ? element.ClientLegalEntity : '') {
-                if (element.ClientLegalEntity === cle.ClientLegalEntity) {
-                    this.listOfPOCs.push(element);
-                }
-            }
-        }
-        console.log('listOfPOCs ', this.listOfPOCs);
-    }
-    getPONumberFromCLE(cli) {
-
-        this.purchaseOrdersList.map((x) => {
-            if (x.ClientLegalEntity === cli.ClientLegalEntity) {
-                if (this.matchCurrency(x)) {
-                    this.poNames.push(x);
-                }
-            }
-        });
-        console.log(this.poNames);
-    }
-
-    matchCurrency(po) {
-        const found = this.selectedAllRowsItem.find(item => {
-            if (item.ClientCurrency === po.Currency) {
-                return item;
-            }
-        });
-        return found ? found : '';
-    }
     checkUniquePC() {
         for (let i = 0; i < this.selectedAllRowsItem.length; i++) {
             const element = this.selectedAllRowsItem[i];
@@ -708,247 +543,109 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         }
     }
 
-    cancelFormSub(type) {
-        this.formSubmit.isSubmit = false;
-        this.submitBtn.isClicked = false;
-        if (type === 'markAsPayment_form') {
-            this.markAsPayment_form.reset();
-        } else if (type === 'scheduleOopInvoice_form') {
-            this.scheduleOopInvoice_form.reset();
-        }
-    }
-    async poChange(event) {
-        console.log('po event ', event.value);
-        this.submitBtn.isClicked = false;
-        this.poItem = event.value;
-        this.oopBalance = 0;
-        this.poItem.OOPLinked = this.poItem.OOPLinked ? this.poItem.OOPLinked : 0;
-        if (this.poItem) {
-            this.oopBalance = (this.poItem.AmountOOP ? this.poItem.AmountOOP - this.poItem.OOPLinked : 0 - (this.poItem.OOPLinked ? this.poItem.OOPLinked : 0));
-            this.oopBalance = parseFloat(this.oopBalance.toFixed(2));
-            const defaultPOC = this.listOfPOCs.filter(item => item.Id === this.poItem.POCLookup);
-            if (defaultPOC.length) {
-                this.scheduleOopInvoice_form.patchValue({
-                    POCName: defaultPOC[0]
-                });
-                this.pocItem = defaultPOC[0];
-            } else {
-                this.scheduleOopInvoice_form.controls['POCName'].setValue(null);
-            }
-        }
-        if (this.oopBalance >= this.scheduleOopInvoice_form.getRawValue().Amount) {
-            await this.getPfPfb();
-        } else {
-            this.submitBtn.isClicked = true;
-            this.messageService.add({ key: 'approvedToast', severity: 'info', summary: 'Info message', detail: 'OOP Balance must be greater than Scheduled oop Amount.', life: 4000 });
-            return;
-        }
-    }
-    pocChange(event) {
-        console.log('poc event ', event.value);
-        this.pocItem = event.value;
-    }
-    async getPfPfb() {
-        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
-        this.hBQuery = [];
-        const batchUrl = [];
-        // const batchContents = new Array();
-        // const batchGuid = this.spServices.generateUUID();
-
-        this.projectInfoLineItem = this.getPInfoByPC();
-        this.pcmLevels = [];
-        if (this.projectInfoLineItem) {
-            for (let i = 0; i < this.projectInfoLineItem.CMLevel1.results.length; i++) {
-                const element = this.projectInfoLineItem.CMLevel1.results[i];
-                this.pcmLevels.push(element);
-            }
-            this.pcmLevels.push(this.projectInfoLineItem.CMLevel2);
-            // console.log('this.pcmLevels ', this.pcmLevels);
-        }
-
-        // PF
-        const pfObj = Object.assign({}, this.queryConfig);
-        pfObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectFinances.name,
-            this.fdConstantsService.fdComponent.projectFinances);
-        pfObj.url = pfObj.url.replace('{{ProjectCode}}', this.scheduleOopInvoice_form.getRawValue().ProjectCode);
-        pfObj.listName = this.constantService.listNames.ProjectFinances.name;
-        pfObj.type = 'GET';
-        batchUrl.push(pfObj);
-        // let obj = {
-        //     filter: this.fdConstantsService.fdComponent.projectFinances.filter.replace("{{ProjectCode}}", this.scheduleOopInvoice_form.getRawValue().ProjectCode),
-        //     select: this.fdConstantsService.fdComponent.projectFinances.select,
-        //     top: this.fdConstantsService.fdComponent.projectFinances.top,
-        //     // orderby: this.fdConstantsService.fdComponent.projectFinances.orderby
-        // }
-        // this.hBQuery.push(this.spServices.getReadURL('' + this.constantService.listNames.ProjectFinances.name + '', obj));
-
-        // PFB
-        const pfbObj = Object.assign({}, this.queryConfig);
-        pfbObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectFinanceBreakup.name,
-            this.fdConstantsService.fdComponent.projectFinanceBreakupFromPO);
-        pfbObj.url = pfbObj.url.replace('{{ProjectCode}}', this.scheduleOopInvoice_form.getRawValue().ProjectCode)
-            .replace('{{PO}}', this.poItem.Id);
-        pfbObj.listName = this.constantService.listNames.ProjectFinanceBreakup.name;
-        pfbObj.type = 'GET';
-        batchUrl.push(pfbObj);
-        // let pfbObj = {
-        //     filter: this.fdConstantsService.fdComponent.projectFinanceBreakupFromPO.filter.replace("{{ProjectCode}}", this.scheduleOopInvoice_form.getRawValue().ProjectCode).replace("{{PO}}", this.poItem.Id),
-        //     select: this.fdConstantsService.fdComponent.projectFinanceBreakupFromPO.select,
-        //     top: this.fdConstantsService.fdComponent.projectFinanceBreakupFromPO.top,
-        // }
-        // this.hBQuery.push(this.spServices.getReadURL('' + this.constantService.listNames.ProjectFinanceBreakup.name + '', pfbObj));
-
-        // PBB
-        const pbbObj = Object.assign({}, this.queryConfig);
-        pbbObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectBudgetBreakup.name,
-            this.fdConstantsService.fdComponent.projectBudgetBreakup);
-        pbbObj.url = pbbObj.url.replace('{{ProjectCode}}', this.scheduleOopInvoice_form.getRawValue().ProjectCode);
-        pbbObj.listName = this.constantService.listNames.ProjectBudgetBreakup.name;
-        pbbObj.type = 'GET';
-        batchUrl.push(pbbObj);
-
-        // let pbbObj = {
-        //     filter: this.fdConstantsService.fdComponent.projectBudgetBreakup.filter.replace("{{ProjectCode}}", this.scheduleOopInvoice_form.getRawValue().ProjectCode),
-        //     select: this.fdConstantsService.fdComponent.projectBudgetBreakup.select,
-        //     // top: this.fdConstantsService.fdComponent.projectFinanceBreakup.top,
-        // }
-        // this.hBQuery.push(this.spServices.getReadURL('' + this.constantService.listNames.ProjectBudgetBreakup.name + '', pbbObj));
-
-
-        // let endPoints = this.hBQuery;
-        // let userBatchBody = '';
-        // for (let i = 0; i < endPoints.length; i++) {
-        //     const element = endPoints[i];
-        //     this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
-        // }
-
-        // batchContents.push('--batch_' + batchGuid + '--');
-        // userBatchBody = batchContents.join('\r\n');
-        // let arrResults: any = [];
-        // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
-
-        this.commonService.SetNewrelic('Finance-Dashboard', 'approved-billable', 'GetPFPFBPBB');
-        const res = await this.spServices.executeBatch(batchUrl);
-        const arrResults = res.length ? res.map(a => a.retItems) : [];
-        if (arrResults.length) {
-            this.pfListItem = arrResults[0];
-            this.pfbListItem = arrResults[1];
-            this.pbbListItem = arrResults[2];
-        }
-        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
-    }
-
-    getPInfoByPC() {
-        const found = this.projectInfoData.find((x) => {
-            if (x.ProjectCode === this.scheduleOopInvoice_form.getRawValue().ProjectCode) {
-                return x;
-            }
-        });
-        return found ? found : '';
-    }
-
     // PO
     getPOData(expenseData, amt) {
         const poLinkedAmt = parseFloat(expenseData.OOPLinked ? expenseData.OOPLinked : 0) + parseFloat(amt);
         const poTotalLinkedAmt = parseFloat(expenseData.TotalLinked ? expenseData.TotalLinked : 0) + parseFloat(amt);
         const poScheduledOOP = parseFloat(expenseData.ScheduledOOP ? expenseData.ScheduledOOP : 0) + parseFloat(amt);
         const poTotalScheduled = parseFloat(expenseData.TotalScheduled ? expenseData.TotalScheduled : 0) + parseFloat(amt);
-        const poData = {
+        return {
+            __metadata: { type: this.constantService.listNames.PO.type },
             OOPLinked: poLinkedAmt.toFixed(2),
             TotalLinked: poTotalLinkedAmt.toFixed(2),
             ScheduledOOP: poScheduledOOP.toFixed(2),
             TotalScheduled: poTotalScheduled.toFixed(2)
         };
-        poData['__metadata'] = { type: 'SP.Data.POListItem' };
-        const poEndpoint = this.fdConstantsService.fdComponent.addUpdatePO.update.replace('{{Id}}', expenseData.ID);
-        return {
-            objData: poData,
-            endpoint: poEndpoint,
-            requestPost: false
-        };
     }
 
     // PF
-    getPFData() {
+    getPFData(ScheduleInvoiceForm, InvoiceType: string) {
         const oldScheduledOOP = this.pfListItem[0].ScheduledOOP ? this.pfListItem[0].ScheduledOOP : 0;
         const oldTotalScheduled = this.pfListItem[0].InvoicesScheduled ? this.pfListItem[0].InvoicesScheduled : 0;
-        const totalBudget = this.pfListItem[0].Budget ? parseFloat(this.pfListItem[0].Budget) + parseFloat(this.scheduleOopInvoice_form.getRawValue().Amount) : 0 + parseFloat(this.scheduleOopInvoice_form.getRawValue().Amount);
-        const oopBudget = this.pfListItem[0].OOPBudget ? parseFloat(this.pfListItem[0].OOPBudget) + parseFloat(this.scheduleOopInvoice_form.getRawValue().Amount) : 0 + parseFloat(this.scheduleOopInvoice_form.getRawValue().Amount);
-        const pfScheduledOOP = parseFloat(oldScheduledOOP) + parseFloat(this.scheduleOopInvoice_form.getRawValue().Amount);
-        const pfTotalScheduled = parseFloat(oldTotalScheduled) + parseFloat(this.scheduleOopInvoice_form.getRawValue().Amount);
-        const pfData = {
-            ScheduledOOP: pfScheduledOOP,
-            InvoicesScheduled: pfTotalScheduled,
-            Budget: totalBudget,
-            OOPBudget: oopBudget
-        };
-        pfData['__metadata'] = { type: 'SP.Data.ProjectFinancesListItem' };
-        const pfEntpoint = this.fdConstantsService.fdComponent.addUpdateProjectFinances.update.replace('{{Id}}', this.pfListItem[0].Id);
-        return {
-            objData: pfData,
-            endpoint: pfEntpoint,
-            requestPost: false
-        };
+        const totalBudget = this.pfListItem[0].Budget ? parseFloat(this.pfListItem[0].Budget) + parseFloat(ScheduleInvoiceForm.getRawValue().Amount) : 0 + parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+        const oopBudget = this.pfListItem[0].OOPBudget ? parseFloat(this.pfListItem[0].OOPBudget) + parseFloat(ScheduleInvoiceForm.getRawValue().Amount) : 0 + parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+        const pfScheduledOOP = parseFloat(oldScheduledOOP) + parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+        const pfTotalScheduled = parseFloat(oldTotalScheduled) + parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+
+        const totalInvoiced = this.pfListItem[0].Invoiced ? parseFloat(this.pfListItem[0].Invoiced) + parseFloat(ScheduleInvoiceForm.getRawValue().Amount) : 0 + parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+        const oopInvoiced = this.pfListItem[0].InvoicedOOP ? parseFloat(this.pfListItem[0].InvoicedOOP) + parseFloat(ScheduleInvoiceForm.getRawValue().Amount) : 0 + parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+
+        if (InvoiceType === 'new') {
+            return {
+                __metadata: { type: this.constantService.listNames.ProjectFinances.type },
+                ScheduledOOP: pfScheduledOOP,
+                InvoicesScheduled: pfTotalScheduled,
+                Budget: totalBudget,
+                OOPBudget: oopBudget
+            };
+        }
+        else {
+            return {
+                __metadata: { type: this.constantService.listNames.ProjectFinances.type },
+                Invoiced: totalInvoiced,
+                InvoicedOOP: oopInvoiced
+            };
+        }
     }
 
     // PFB
-
-    getPFBData() {
-        const pfbData = {
-            ScheduledOOP: parseFloat(this.scheduleOopInvoice_form.getRawValue().Amount),
-            TotalScheduled: parseFloat(this.scheduleOopInvoice_form.getRawValue().Amount),
-        };
-        let sts = 'POST';
-        let pfbEntpoint = this.fdConstantsService.fdComponent.addUpdateProjectFinanceBreakup.create;
+    getPFBData(ScheduleInvoiceForm, InvoiceType: string) {
+        let pfbAmountOOP = parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+        let pfbAmount = parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+        let pfbScheduledOOP = parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+        let pfbTotalScheduled = parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+        let totalInvoiced = parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+        let oopInvoiced = parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
         if (this.pfbListItem.length > 0) {
             const oldScheduledOOP = this.pfbListItem[0].ScheduledOOP ? this.pfbListItem[0].ScheduledOOP : 0;
             const oldTotalScheduled = this.pfbListItem[0].TotalScheduled ? this.pfbListItem[0].TotalScheduled : 0;
             const oldAmountOOP = this.pfbListItem[0].AmountOOP ? this.pfbListItem[0].AmountOOP : 0;
             const oldTotalAmount = this.pfbListItem[0].Amount ? this.pfbListItem[0].Amount : 0;
-            const pfbScheduledOOP = parseFloat(oldScheduledOOP) + parseFloat(this.scheduleOopInvoice_form.getRawValue().Amount);
-            const pfbTotalScheduled = parseFloat(oldTotalScheduled) + parseFloat(this.scheduleOopInvoice_form.getRawValue().Amount);
-            const pfbAmountOOP = parseFloat(oldAmountOOP) + parseFloat(this.scheduleOopInvoice_form.getRawValue().Amount);
-            const pfbAmount = parseFloat(oldTotalAmount) + parseFloat(this.scheduleOopInvoice_form.getRawValue().Amount);
-            pfbData['Amount'] = pfbAmount;
-            pfbData['AmountOOP'] = pfbAmountOOP;
-            pfbData['ScheduledOOP'] = pfbScheduledOOP;
-            pfbData['TotalScheduled'] = pfbTotalScheduled;
-            pfbData['__metadata'] = { type: 'SP.Data.ProjectFinanceBreakupListItem' };
-            pfbEntpoint = this.fdConstantsService.fdComponent.addUpdateProjectFinanceBreakup.update.replace('{{Id}}', this.pfbListItem[0].Id);
-            sts = 'PATCH';
-        } else {
-            pfbData['POLookup'] = this.scheduleOopInvoice_form.getRawValue().PONumber.Id;
-            pfbData['ProjectNumber'] = this.scheduleOopInvoice_form.getRawValue().ProjectCode;
-            pfbData['Amount'] = parseFloat(this.scheduleOopInvoice_form.getRawValue().Amount);
-            pfbData['AmountOOP'] = parseFloat(this.scheduleOopInvoice_form.getRawValue().Amount);
-            pfbData['Status'] = 'Active';
-            pfbData['__metadata'] = { type: 'SP.Data.ProjectFinanceBreakupListItem' };
+            const oldtotalInvoiced = this.pfbListItem[0].TotalInvoiced ? this.pfbListItem[0].TotalInvoiced : 0;
+            const oldoopInvoiced = this.pfbListItem[0].InvoicedOOP ? this.pfbListItem[0].InvoicedOOP : 0;
+            pfbScheduledOOP = parseFloat(oldScheduledOOP) + parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+            pfbTotalScheduled = parseFloat(oldTotalScheduled) + parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+            pfbAmountOOP = parseFloat(oldAmountOOP) + parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+            pfbAmount = parseFloat(oldTotalAmount) + parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+            totalInvoiced = parseFloat(oldtotalInvoiced) + parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+            oopInvoiced = parseFloat(oldoopInvoiced) + parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+        }
+        if (InvoiceType === 'new') {
+            const Data = {
+                __metadata: { type: this.constantService.listNames.ProjectFinanceBreakup.type },
+                Amount: pfbAmount,
+                AmountOOP: pfbAmountOOP,
+                ScheduledOOP: pfbScheduledOOP,
+                TotalScheduled: pfbTotalScheduled,
+            }
+            if (!this.pfbListItem.length) {
+                Data['POLookup'] = ScheduleInvoiceForm.getRawValue().PONumber.Id;
+                Data['ProjectNumber'] = ScheduleInvoiceForm.getRawValue().ProjectCode;
+                Data['Status'] = this.constantService.projectFinanceBreakupList.status.Active;
+            }
+            return Data;
+
+        }
+        else {
+            return {
+                __metadata: { type: this.constantService.listNames.ProjectFinanceBreakup.type },
+                TotalInvoiced: totalInvoiced,
+                InvoicedOOP: oopInvoiced
+            }
         }
 
-        return {
-            objData: pfbData,
-            endpoint: pfbEntpoint,
-            requestPost: sts
-        };
     }
 
     // PBB
-    getPBBData() {
-        const pbbEndpoint = this.fdConstantsService.fdComponent.addUpdateProjectBudgetBreakup.create;
-        const pbbData = {
+    getPBBData(ScheduleInvoiceForm) {
+        return {
+            __metadata: { type: this.constantService.listNames.ProjectBudgetBreakup.type },
             ProjectLookup: this.projectInfoLineItem.Id,
             Status: 'Approved',
             ApprovalDate: new Date().toISOString(),
-            OriginalBudget: parseFloat(this.scheduleOopInvoice_form.getRawValue().Amount),
-            OOPBudget: parseFloat(this.scheduleOopInvoice_form.getRawValue().Amount),
-            ProjectCode: this.scheduleOopInvoice_form.getRawValue().ProjectCode,
-        };
-        pbbData['__metadata'] = { type: 'SP.Data.ProjectBudgetBreakupListItem' };
-
-        return {
-            objData: pbbData,
-            endpoint: pbbEndpoint,
-            requestPost: true
+            OriginalBudget: parseFloat(ScheduleInvoiceForm.getRawValue().Amount),
+            OOPBudget: parseFloat(ScheduleInvoiceForm.getRawValue().Amount),
+            ProjectCode: ScheduleInvoiceForm.getRawValue().ProjectCode,
         };
     }
 
@@ -956,258 +653,37 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         console.log('Payment Mode ', val);
     }
 
-    //*************************************************************************************************
-    // new File uplad function updated by Maxwell
-    // ************************************************************************************************
+    MarkAsPayment(markAsPayment_form, type: string, fileUploadedUrl) {
 
-    onFileChange(event, folderName: string) {
-
-        if (event.target.files && event.target.files.length > 0) {
-            this.SelectedFile = [];
-            this.selectedFile = event.target.files[0];
-            const fileName = this.selectedFile.name;
-            const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
-            if (fileName !== sNewFileName) {
-                this.fileInput.nativeElement.value = '';
-                this.markAsPayment_form.get('ApproverFileUrl').setValue('');
-                this.messageService.add({ key: 'approvedToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
-                return false;
-            }
-
-            this.FolderName = folderName;
-            this.SelectedFile.push(new Object({ name: sNewFileName, file: this.selectedFile }));
-        }
-    }
-
-    async uploadFileData(type: string) {
-        const date = new Date();
-        this.commonService.SetNewrelic('Finance-Dashboard', 'approve-billable', 'UploadFile');
-        this.commonService.UploadFilesProgress(this.SelectedFile, 'SpendingInfoFiles/' + this.FolderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM'), true).then(async uploadedfile => {
-            if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
-                if (uploadedfile[0].hasOwnProperty('odata.error') || uploadedfile[0].hasError) {
-                    this.submitBtn.isClicked = false;
-                    this.messageService.add({
-                        key: 'approvedToast', severity: 'error', summary: 'Error message',
-                        detail: 'File not uploaded, Folder / File Not Found', life: 3000
-                    });
-                } else if (uploadedfile[0].ServerRelativeUrl) {
-                    this.fileUploadedUrl = uploadedfile[0].ServerRelativeUrl;
-                    if (this.fileUploadedUrl) {
-                        this.isPSInnerLoaderHidden = false;
-                        const data = [];
-                        for (let j = 0; j < this.selectedAllRowsItem.length; j++) {
-                            const element = this.selectedAllRowsItem[j];
-                            const speInfoObj = {
-                                // PayingEntity: this.markAsPayment_form.value.PayingEntity.Title,
-                                Number: this.markAsPayment_form.value.Number,
-                                DateSpend: this.markAsPayment_form.value.DateSpend,
-                                PaymentMode: this.markAsPayment_form.value.PaymentMode.value,
-                                // ApproverComments: this.markAsPayment_form.value.ApproverComments,
-                                ApproverFileUrl: this.fileUploadedUrl,
-                                Status: element.Status.replace(' Payment Pending', '')
-                            };
-                            speInfoObj['__metadata'] = { type: this.constantService.listNames.SpendingInfo.type };
-                            const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace('{{Id}}', element.Id);;
-                            data.push({
-                                data: speInfoObj,
-                                url: spEndpoint,
-                                type: 'PATCH',
-                                listName: this.constantService.listNames.SpendingInfo.name
-                            });
-                        }
-                        this.submitForm(data, type);
-                    }
-                }
-            }
-        });
-    }
-
-    //*************************************************************************************************
-    // commented old file upload function
-    // ************************************************************************************************
-
-
-    // onFileChange(event, folderName: string) {
-    //     this.fileReader = new FileReader();
-    //     if (event.target.files && event.target.files.length > 0) {
-    //         this.selectedFile = event.target.files[0];
-    //         const fileName = this.selectedFile.name;
-    //         const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
-    //         if (fileName !== sNewFileName) {
-    //             this.fileInput.nativeElement.value = '';
-    //             this.markAsPayment_form.get('ApproverFileUrl').setValue('');
-    //             this.messageService.add({ key: 'approvedToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
-    //             return false;
-    //         }
-    //         this.fileReader.readAsArrayBuffer(this.selectedFile);
-    //         this.fileReader.onload = () => {
-    //             const date = new Date();
-    //             const folderPath: string = this.globalService.sharePointPageObject.webRelativeUrl + '/SpendingInfoFiles/' + folderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM') + '/';
-    //             this.filePathUrl = this.globalService.sharePointPageObject.webRelativeUrl + '/_api/web/GetFolderByServerRelativeUrl(' + '\'' + folderPath + '\'' + ')/Files/add(url=@TargetFileName,overwrite=\'true\')?' + '&@TargetFileName=\'' + this.selectedFile.name + '\'';
-    //         };
-    //     }
-    // }
-
-    // async uploadFileData(type: string) {
-    //     this.commonService.SetNewrelic('Finance-Dashboard', 'approve-billable', 'UploadFile');
-    //     const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
-    //     if (res.ServerRelativeUrl) {
-    //         this.fileUploadedUrl = res.ServerRelativeUrl;
-    //         if (this.fileUploadedUrl) {
-    //             const data = [];
-    //             for (let j = 0; j < this.selectedAllRowsItem.length; j++) {
-    //                 const element = this.selectedAllRowsItem[j];
-    //                 const speInfoObj = {
-    //                     // PayingEntity: this.markAsPayment_form.value.PayingEntity.Title,
-    //                     Number: this.markAsPayment_form.value.Number,
-    //                     DateSpend: this.markAsPayment_form.value.DateSpend,
-    //                     PaymentMode: this.markAsPayment_form.value.PaymentMode.value,
-    //                     // ApproverComments: this.markAsPayment_form.value.ApproverComments,
-    //                     ApproverFileUrl: this.fileUploadedUrl,
-    //                     Status: element.Status.replace(' Payment Pending', '')
-    //                 };
-    //                 speInfoObj['__metadata'] = { type: this.constantService.listNames.SpendingInfo.type };
-    //                 const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace('{{Id}}', element.Id);;
-    //                 data.push({
-    //                     data: speInfoObj,
-    //                     url: spEndpoint,
-    //                     type: 'PATCH',
-    //                     listName: this.constantService.listNames.SpendingInfo.name
-    //                 });
-    //             }
-    //             this.submitForm(data, type);
-    //         }
-    //     } else if (res.hasError) {
-    //         this.isPSInnerLoaderHidden = true;
-    //         this.submitBtn.isClicked = false;
-    //         this.messageService.add({
-    //             key: 'approvedToast', severity: 'error', summary: 'Error message',
-    //             detail: 'File not uploaded,Folder / ' + res.message.value + '', life: 3000
-    //         });
-    //     }
-    // }
-
-    onSubmit(type: string) {
-        this.formSubmit.isSubmit = true;
-        if (type === 'scheduledOOP') {
-            if (this.scheduleOopInvoice_form.invalid) {
-                return;
-            }
-            console.log('form is submitting ..... for selected row Item i.e ', this.scheduleOopInvoice_form.getRawValue());
-            const obj = {
-                Title: this.scheduleOopInvoice_form.getRawValue().ProjectCode,
-                PO: this.scheduleOopInvoice_form.getRawValue().PONumber.Id,
-                ScheduleType: this.scheduleOopInvoice_form.getRawValue().ScheduledType,
-                ScheduledDate: this.scheduleOopInvoice_form.getRawValue().ScheduledDate,
-                Amount: this.scheduleOopInvoice_form.getRawValue().Amount,
-                AddressType: this.scheduleOopInvoice_form.getRawValue().AddressType.value,
-                Currency: this.scheduleOopInvoice_form.getRawValue().Currency,
-                MainPOC: this.scheduleOopInvoice_form.getRawValue().POCName.Id,
-                SOWCode: this.projectInfoLineItem.SOWCode,
-                CSId: { results: this.pcmLevels.map(x => x.ID) },
-                Template: this.pfListItem[0].Template,
-                Status: 'Scheduled'
+        const data = [];
+        for (let j = 0; j < this.selectedAllRowsItem.length; j++) {
+            const element = this.selectedAllRowsItem[j];
+            const speInfoObj = {
+                Number: markAsPayment_form.value.Number,
+                DateSpend: markAsPayment_form.value.DateSpend,
+                PaymentMode: markAsPayment_form.value.PaymentMode.value,
+                ApproverFileUrl: fileUploadedUrl,
+                Status: element.Status.replace(' Payment Pending', '')
             };
-            obj['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
-            const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.create;
-            const data = [];
+            speInfoObj['__metadata'] = { type: this.constantService.listNames.SpendingInfo.type };
+            const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace('{{Id}}', element.Id);;
             data.push({
-                data: obj,
-                url: endpoint,
-                type: 'POST',
-                listName: this.constantService.listNames.InvoiceLineItems.name
+                data: speInfoObj,
+                url: spEndpoint,
+                type: 'PATCH',
+                listName: this.constantService.listNames.SpendingInfo.name
             });
-            const po = this.getPOData(this.poItem, this.scheduleOopInvoice_form.getRawValue().Amount);
-            if (po) {
-                data.push({
-                    data: po.objData,
-                    url: po.endpoint,
-                    type: 'PATCH',
-                    listName: this.constantService.listNames.PO
-                });
-            }
-            console.log('po ', po);
-            const pf = this.getPFData();
-            if (pf) {
-                data.push({
-                    data: pf.objData,
-                    url: pf.endpoint,
-                    type: 'PATCH',
-                    listName: this.constantService.listNames.ProjectFinances.name
-                });
-            }
-            console.log('pf ', pf);
-            const pfb = this.getPFBData();
-            if (pfb) {
-                data.push({
-                    data: pfb.objData,
-                    url: pfb.endpoint,
-                    type: pfb.requestPost,
-                    listName: this.constantService.listNames.ProjectFinanceBreakup.name
-                });
-            }
-            console.log('pfb ', pfb);
-
-            // PFBB
-            const pfbb = this.getPBBData();
-            if (pfbb) {
-                data.push({
-                    data: pfbb.objData,
-                    url: pfbb.endpoint,
-                    type: 'POST',
-                    listName: this.constantService.listNames.ProjectBudgetBreakup.name
-                });
-            }
-            // console.log('pfbb ', pfbb);
-
-            // console.log('data ', data);
-
-            this.isPSInnerLoaderHidden = false;
-            this.submitForm(data, type);
-
-        } else if (type === 'markAsPayment_form') {
-            if (this.markAsPayment_form.invalid) {
-                return;
-            } else if (this.selectedFile && this.selectedFile.size === 0) {
-                this.messageService.add({
-                    key: 'approvedToast', severity: 'error',
-                    summary: 'Error message', detail: 'Unable to upload file, size of ' + this.selectedFile.name + ' is 0 KB.', life: 2000
-                });
-                return;
-            }
-
-            this.uploadFileData(type);
         }
+        this.submitForm(data, type);
     }
 
     // batchContents: any = [];
     async submitForm(dataEndpointArray, type: string) {
         console.log('Form is submitting');
 
-        // this.batchContents = [];
-        // const batchGuid = this.spServices.generateUUID();
-        // const changeSetId = this.spServices.generateUUID();
-
-        // // const batchContents = this.spServices.getChangeSetBody1(changeSetId, endpoint, JSON.stringify(obj), true);
-        // console.log(' dataEndpointArray ', dataEndpointArray);
-        // dataEndpointArray.forEach(element => {
-        //     if (element)
-        //         this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId, element.endpoint, JSON.stringify(element.objData), element.requestPost)];
-        // });
-
-        // console.log("this.batchContents ", JSON.stringify(this.batchContents));
-
-        // this.batchContents.push('--changeset_' + changeSetId + '--');
-        // const batchBody = this.batchContents.join('\r\n');
-        // const batchBodyContent = this.spServices.getBatchBodyPost(batchBody, batchGuid, changeSetId);
-        // batchBodyContent.push('--batch_' + batchGuid + '--');
-        // const sBatchData = batchBodyContent.join('\r\n');
         this.commonService.SetNewrelic('Finance-Dashboard', 'approve-billable', 'formSubmitForSelectedRow');
         const res = await this.spServices.executeBatch(dataEndpointArray);
-        // await this.spServices.getData(batchGuid, sBatchData).subscribe(res => {
 
-
-        // });
         const arrResults = res;
         console.log('--oo ', arrResults);
         if (type === 'scheduledOOP') {
@@ -1217,15 +693,12 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                 key: 'approvedToast', severity: 'success',
                 summary: 'Success message', detail: 'OOP Invoice is Scheduled.', life: 2000
             });
-            this.scheduleOopModal = false;
             this.reFetchData();
         } else if (type === 'markAsPayment_form') {
             this.messageService.add({
                 key: 'approvedToast', severity: 'success',
-                summary: 'Success message', detail: 'Payment marked.', life: 2000
+                summary: 'Success message', detail: 'Payment marked.', life: 5000
             });
-            this.isPSInnerLoaderHidden = true;
-            this.markAsPaymentModal = false;
             this.reFetchData();
         }
     }
@@ -1250,15 +723,9 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         this.submitForm(this.updateSpeLineItems, 'updateScheduledOopLineItem');
     }
 
-    reFetchData() {
-        setTimeout(async () => {
-            // Refetch PO/CLE Data
-            await this.fdDataShareServie.getClePO('approved');
-            // Fetch latest PO & CLE
-            this.poInfo();
-            this.cleInfo();
-            this.getRequiredData();
-        }, 3000);
+    async reFetchData() {
+        await this.fdDataShareServie.getClePO('approved');
+        this.getRequiredData();
     }
 
     ngOnDestroy() {
@@ -1312,4 +779,89 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
     }
 
+
+    onSubmit(scheduleOopInvoice_form, InvoiceType: string, type: string) {
+        const batchURL = [];
+        const options = {
+            data: null,
+            url: '',
+            type: '',
+            listName: ''
+        };
+
+        const createInvoiceLineItemObj = Object.assign({}, options);
+        createInvoiceLineItemObj.url = this.spServices.getReadURL(this.constantService.listNames.InvoiceLineItems.name, null);
+        createInvoiceLineItemObj.data = this.getInvLineItemData(scheduleOopInvoice_form, InvoiceType);
+        createInvoiceLineItemObj.type = 'POST';
+        createInvoiceLineItemObj.listName = this.constantService.listNames.InvoiceLineItems.name;
+        batchURL.push(createInvoiceLineItemObj);
+
+        if (InvoiceType === 'new') {
+            const updatePOData = Object.assign({}, options);
+            updatePOData.data = this.getPOData(this.poItem, scheduleOopInvoice_form.getRawValue().Amount);
+            updatePOData.listName = this.constantService.listNames.PO.name;
+            updatePOData.type = 'PATCH';
+            updatePOData.url = this.spServices.getItemURL(this.constantService.listNames.PO.name, this.poItem.ID);
+            batchURL.push(updatePOData);
+
+            // PFBB
+            const createPBBObj = Object.assign({}, options);
+            createPBBObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectBudgetBreakup.name, null);
+            createPBBObj.data = this.getPBBData(scheduleOopInvoice_form);
+            createPBBObj.type = 'POST';
+            createPBBObj.listName = this.constantService.listNames.ProjectBudgetBreakup.name;
+            batchURL.push(createPBBObj);
+        }
+
+        const updatePFData = Object.assign({}, options);
+        updatePFData.data = this.getPFData(scheduleOopInvoice_form, InvoiceType);
+        updatePFData.listName = this.constantService.listNames.ProjectFinances.name;
+        updatePFData.type = 'PATCH';
+        updatePFData.url = this.spServices.getItemURL(this.constantService.listNames.ProjectFinances.name, this.pfListItem[0].Id);
+        batchURL.push(updatePFData);
+
+
+        const CORUPBBData = Object.assign({}, options);
+        CORUPBBData.data = this.getPFBData(scheduleOopInvoice_form, InvoiceType);
+        CORUPBBData.listName = this.constantService.listNames.ProjectFinanceBreakup.name;
+        CORUPBBData.type = this.pfbListItem.length > 0 ? 'PATCH' : 'POST';
+        CORUPBBData.url = this.spServices.getItemURL(this.constantService.listNames.ProjectFinanceBreakup.name, this.pfbListItem.length > 0 ? this.pfbListItem[0].Id : null);
+        batchURL.push(CORUPBBData);
+
+
+        // this.submitForm(batchURL, type);
+
+
+
+        // sowUpdateRequired
+    }
+
+
+    getInvLineItemData(scheduleOopInvoice_form, InvoiceType: string) {
+        if (InvoiceType === 'new') {
+            return {
+                __metadata: { type: this.constantService.listNames.InvoiceLineItems.type },
+                Title: scheduleOopInvoice_form.getRawValue().ProjectCode,
+                PO: scheduleOopInvoice_form.getRawValue().PONumber.Id,
+                ScheduleType: scheduleOopInvoice_form.getRawValue().ScheduledType,
+                ScheduledDate: scheduleOopInvoice_form.getRawValue().ScheduledDate,
+                Amount: scheduleOopInvoice_form.getRawValue().Amount,
+                AddressType: scheduleOopInvoice_form.getRawValue().AddressType.value,
+                Currency: scheduleOopInvoice_form.getRawValue().Currency,
+                MainPOC: scheduleOopInvoice_form.getRawValue().POCName.Id,
+                SOWCode: this.projectInfoLineItem.SOWCode,
+                CSId: { results: this.pcmLevels.map(x => x.ID) },
+                Template: this.pfListItem[0].Template,
+                Status: this.constantService.STATUS.SCHEDUELD
+            };
+        } else {
+            return {
+                __metadata: { type: this.constantService.listNames.InvoiceLineItems.type },
+                ProformaLookup: this.invoice.ProformaLookup,
+                InvoiceLookup: scheduleOopInvoice_form.getRawValue().InvoiceId,
+                Status: this.constantService.STATUS.APPROVED
+            };
+        }
+
+    }
 }

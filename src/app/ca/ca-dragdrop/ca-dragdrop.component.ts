@@ -57,7 +57,7 @@ export class CaDragdropComponent implements OnInit {
     private caCommonService: CACommonService,
     public dialogService: DialogService,
     private messageService: MessageService,
-    private commonService : CommonService) { }
+    private commonService: CommonService) { }
 
   async ngOnInit() {
 
@@ -646,7 +646,7 @@ export class CaDragdropComponent implements OnInit {
     if (sourceArray.length > 1 || (this.links.length === 0 && this.nodes.length > 1)) {
 
       const message = 'There are multiple end tasks for current slot. Are you sure that you want to continue?';
-      this.commonService.confirmMessageDialog(message, ['Yes', 'No'],false).then(async Confirmation => {
+      this.commonService.confirmMessageDialog('Confirmation', message, null, ['Yes', 'No'], false).then(async Confirmation => {
         if (Confirmation === 'Yes') {
           this.NodePosition();
           this.nodes.sort((a, b) => {

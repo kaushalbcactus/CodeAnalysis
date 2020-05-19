@@ -1154,7 +1154,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    */
   closeSOW() {
     this.pmObject.isSOWCloseVisible = true;
-    this.commonService.confirmMessageDialog('Are you sure you want to close the SOW ?',['Yes','No'],false).then(async Confirmation => {
+    this.commonService.confirmMessageDialog('Confirmation','Are you sure you want to close the SOW ?',null,['Yes','No'],false).then(async Confirmation => {
       if (Confirmation === 'Yes') {
         this.updateStatus();
       }

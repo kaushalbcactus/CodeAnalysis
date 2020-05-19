@@ -3009,7 +3009,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
     if ((updatedCurrentMilestone || currentMilestoneTaskUpdated) && this.sharedObject.oTaskAllocation.oProjectDetails.status === this.constants.STATUS.AUTHOR_REVIEW) {
 
-      this.commonService.confirmMessageDialog("Do you want to keep project in 'Author Review' or 'In Progress' ?", [this.constants.STATUS.AUTHOR_REVIEW, this.constants.STATUS.IN_PROGRESS], false).then(async projectstatus => {
+      this.commonService.confirmMessageDialog('Confirmation', "Do you want to keep project in 'Author Review' or 'In Progress' ?", null, [this.constants.STATUS.AUTHOR_REVIEW, this.constants.STATUS.IN_PROGRESS], false).then(async projectstatus => {
         if (projectstatus) {
           projectStatus = projectstatus;
           if (projectstatus !== this.sharedObject.oTaskAllocation.oProjectDetails.status) {
@@ -3287,8 +3287,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
       PSMembersId: { results: updatedResources.pubSupportMembers.results },
       Milestones: restructureMilstoneStr,
       Milestone: currentMilestone,
-      Status : projectStatus,
-      PrevStatus : previosProjectStatus
+      Status: projectStatus,
+      PrevStatus: previosProjectStatus
       // Status: currentMilestoneTaskUpdated ? projectStatus :  currentMilestoneUpdated ? this.constants.STATUS.IN_PROGRESS : this.sharedObject.oTaskAllocation.oProjectDetails.status,
       // PrevStatus:currentMilestoneTaskUpdated && projectStatus !== this.sharedObject.oTaskAllocation.oProjectDetails.status  ?  this.sharedObject.oTaskAllocation.oProjectDetails.status :  currentMilestoneUpdated ? this.sharedObject.oTaskAllocation.oProjectDetails.status : this.sharedObject.oTaskAllocation.oProjectDetails.prevstatus
     };
@@ -4160,7 +4160,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   LinkScToClientReview(milestoneTasks) {
 
-    milestoneTasks.filter(c=>c.itemType ==='Send to client' && c.nextTask && c.nextTask === 'Client Review').forEach(sc => {
+    milestoneTasks.filter(c => c.itemType === 'Send to client' && c.nextTask && c.nextTask === 'Client Review').forEach(sc => {
       sc.nextTask = null;
       sc.edited = true;
     });

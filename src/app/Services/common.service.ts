@@ -938,12 +938,13 @@ export class CommonService {
     }
 
 
-    confirmMessageDialog(message, buttons, Closable): Promise<any> {
+    confirmMessageDialog(headerMessage, message, note, buttons, Closable): Promise<any> {
         return new Promise((resolve, reject) => {
             const ref = this.dialogService.open(ConfirmationDialogComponent, {
-                header: 'Confirmation',
+                header: headerMessage,
                 data: {
                     message,
+                    note,
                     buttons
                 },
                 contentStyle: { 'overflow-y': 'visible', 'background-color': '#f4f3ef' },
@@ -957,33 +958,33 @@ export class CommonService {
 
 
 
-//     /**
-//  * This method is used to validate the number.
-//  *
-//  * @param control Pass the form control.
-//  *
-//  * @returns `positiveNumber` if conditions fails else `null`
-//  */
-//     checkPositiveNumber(control: ControlContainer): { [key: string]: boolean; } | null {
-//         debugger
-//         if (isNaN(control.value) || Number(control.value) < 0) {
-//             return { positiveNumber: true };
-//         }
-//         return null;
-//     }
-//     /**
-//      * This method is used to validate the number.
-//      *
-//      * @param control Pass the form control.
-//      *
-//      * @returns `positiveNumber` if conditions fails else `null`
-//      */
-//     lessThanZero(control: ControlContainer): { [key: string]: boolean; } | null {
-//         if (isNaN(control.value) || Number(control.value) <= 0) {
-//             return { nonZeroNumber: true };
-//         }
-//         return null;
-//     }
+    //     /**
+    //  * This method is used to validate the number.
+    //  *
+    //  * @param control Pass the form control.
+    //  *
+    //  * @returns `positiveNumber` if conditions fails else `null`
+    //  */
+    //     checkPositiveNumber(control: ControlContainer): { [key: string]: boolean; } | null {
+    //         debugger
+    //         if (isNaN(control.value) || Number(control.value) < 0) {
+    //             return { positiveNumber: true };
+    //         }
+    //         return null;
+    //     }
+    //     /**
+    //      * This method is used to validate the number.
+    //      *
+    //      * @param control Pass the form control.
+    //      *
+    //      * @returns `positiveNumber` if conditions fails else `null`
+    //      */
+    //     lessThanZero(control: ControlContainer): { [key: string]: boolean; } | null {
+    //         if (isNaN(control.value) || Number(control.value) <= 0) {
+    //             return { nonZeroNumber: true };
+    //         }
+    //         return null;
+    //     }
 
 
     checkPositiveNumberValidator(): ValidatorFn {
@@ -1006,8 +1007,20 @@ export class CommonService {
 
     checkZeroNumberValidator(): ValidatorFn {
         return (control: AbstractControl): { [key: string]: boolean } | null => {
-            if (isNaN(control.value) || Number(control.value) > 0 || Number(control.value) < 0 ) {
+            if (isNaN(control.value) || Number(control.value) > 0 || Number(control.value) < 0) {
                 return { zeroNumber: true };
+            }
+            return null;
+        };
+    }
+
+    checkGTZeroNumberValidator(): ValidatorFn {
+        return (control: AbstractControl): { [key: string]: boolean } | null => {
+            if( control.value !== null &&  !isNaN(control.value)){
+                if (Number(control.value) <= 0) {
+                    return { gtZeroNumber: true };
+                }
+                return null;
             }
             return null;
         };

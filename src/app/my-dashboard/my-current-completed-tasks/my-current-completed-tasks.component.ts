@@ -618,7 +618,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
         return false;
       }
       if (task.TaskComments) {
-        this.commonService.confirmMessageDialog('Are you sure that you want to proceed?',['Yes', 'No'],false).then(async Confirmation => {
+        this.commonService.confirmMessageDialog('Confirmation','Are you sure that you want to proceed?',null,['Yes', 'No'],false).then(async Confirmation => {
           if (Confirmation === 'Yes') { 
             task.parent = 'Dashboard';
             task.Status = 'Completed';

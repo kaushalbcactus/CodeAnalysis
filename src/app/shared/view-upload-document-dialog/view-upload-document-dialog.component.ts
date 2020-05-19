@@ -472,7 +472,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   uploadDocs(event, type) {
     if (this.ModifiedSelectedTaskName === 'Client Review' && this.closeCRTaskEnable && this.selectedTab === 'My Drafts') {
       const message = 'Are you sure that you want to close current task with selected documents?';
-      this.commonService.confirmMessageDialog(message, ['Yes', 'No'],false).then(async Confirmation => {
+      this.commonService.confirmMessageDialog('Confirmation', message, null, ['Yes', 'No'], false).then(async Confirmation => {
         if (Confirmation === 'Yes') {
           this.uploadDocuments(event, type);
         }
@@ -510,7 +510,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       let filesizeerror = false;
       event.files.forEach(async element => {
 
-        if(element.size > 0){
+        if (element.size > 0) {
           let file = element;
           let filename = element.name;
           const sNewFileName = filename.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
@@ -526,11 +526,11 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
             file: file,
             name: filename
           };
-  
+
           readers.push(fileObj);
           existingFiles.push(filename.toLowerCase());
         }
-        else{
+        else {
           filesizeerror = true;
           bUpload = false;
           this.messageService.add({
@@ -570,7 +570,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
           }
         });
       } else {
-        if(!filesizeerror){
+        if (!filesizeerror) {
           this.messageService.add({
             key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
             // tslint:disable-next-line: max-line-length

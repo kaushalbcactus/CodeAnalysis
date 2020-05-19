@@ -326,6 +326,13 @@ export class FdConstantsService {
             top: 1
         },
 
+        ADV_INVOICES: {
+            select: 'ID, ClientLegalEntity, Amount, AddressType, InvoiceNumber, PO, ProformaLookup, IsTaggedFully, TaggedAmount,AuxiliaryInvoiceName,'
+              + ' InvoiceDate, MainPOC, FileURL',
+            filter: 'ClientLegalEntity eq \'{{clientLegalEntity}}\' and IsTaggedFully eq \'No\'',
+            top: 4500
+          },
+
         // Authors
         // authors: {
         //     select: "ID,Title,FirstName, LastName, Address, EmailAddress, AuthorType",

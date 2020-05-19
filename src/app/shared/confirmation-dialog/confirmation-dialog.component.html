@@ -1,12 +1,13 @@
-<i class="pi pi-exclamation-triangle" style="font-size: 1.7em;margin-right: .5em;position: relative;top: .2em;"></i>
+<i *ngIf="!note" class="pi pi-exclamation-triangle" style="font-size: 1.7em;margin-right: .5em;position: relative;top: .2em;"></i>
 <span class="ui-confirmdialog-message">{{message}}</span>
 
+<div class="ui-confirmdialog-message" style="margin: 25px 0px 0px 0px;" *ngIf="note">
+    {{note}}
+</div>
 
 <hr style="border-top: 1.2px solid #cdcdcd;
 margin: 20px 0px 10px 0px;">
 
-<div class="ui-dialog-footer" style="border: none;">
-    <button type="button" pButton [icon]="confirmButtonName === 'Yes' ? 'pi pi-check' :''" [label]="confirmButtonName" (click)="Confirm(confirmButtonName)"></button>
-    <button type="button" pButton [icon]="confirmButtonName === 'No' ? 'pi pi-times' : ''" [label]="rejectButtonName" (click)="Confirm(rejectButtonName)"></button>
-
+<div class="ui-dialog-footer footer-buttons" style="border: none;">
+    <button *ngFor="let bName of buttons" type="button" pButton [icon]="bName === 'Yes' ? 'pi pi-check' : (bName ==='No' || bName ==='Cancel') ? 'pi pi-times' : ''" [label]="bName" (click)="Confirm(bName)"></button>
 </div>

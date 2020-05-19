@@ -701,7 +701,7 @@ export class MyTimelineComponent implements OnInit {
         this.CalendarLoader = false;
         if (task.Status === "Completed") {
 
-          this.commonService.confirmMessageDialog('Are you sure that you want to proceed?', ['Yes', 'No'],false).then(async Confirmation => {
+          this.commonService.confirmMessageDialog('Confirmation', 'Are you sure that you want to proceed?', null, ['Yes', 'No'], false).then(async Confirmation => {
             if (Confirmation === 'Yes') {
               task.parent = 'Dashboard';
               const qmsTasks = await this.myDashboardConstantsService.callQMSPopup(task);
@@ -754,12 +754,12 @@ export class MyTimelineComponent implements OnInit {
 
           const projectInfoUpdate = Object.assign({}, options);
           projectInfoUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, ProjectInformation.ID);
-          projectInfoUpdate.data =  { Status: this.constants.STATUS.IN_PROGRESS, __metadata: { type: this.constants.listNames.ProjectInformation.type } };;
+          projectInfoUpdate.data = { Status: this.constants.STATUS.IN_PROGRESS, __metadata: { type: this.constants.listNames.ProjectInformation.type } };;
           projectInfoUpdate.type = 'PATCH';
           projectInfoUpdate.listName = this.constants.listNames.ProjectInformation.name;
           batchURL.push(projectInfoUpdate);
           await this.spServices.executeBatch(batchURL);
-          
+
           if (task.ParentSlot) {
             await this.myDashboardConstantsService.getCurrentAndParentTask(task, jsonData.Status);
           }

@@ -412,7 +412,7 @@ export class ConstantsService {
     AUTHOR_REVIEW : 'Author Review',
     UNALLOCATED:'Unallocated',
     SENTTOAP:'Sent to AP',
-    GENERATED: 'Generated'
+    GENERATED: 'Generated',
   };
   public SKILL_LEVEL = {
     WRITER: 'Writer',

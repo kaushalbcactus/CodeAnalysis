@@ -144,7 +144,7 @@ export class ManageFinanceComponent implements OnInit {
   newBudgetHrs = 0;
   projectStatus = '';
   arrAdvanceInvoices = [];
-  relatedInvoiceLinkingPopup = false;
+  // relatedInvoiceLinkingPopup = false;
   advanceInvID = -1;
   existingInvDate = '';
   existingInvAmount = 0;
@@ -873,14 +873,7 @@ export class ManageFinanceComponent implements OnInit {
       });
       return;
     }
-    if (this.newInvAmount > this.invBalance) {
-      this.messageService.add({
-        key: 'manageFinance', severity: 'error', summary: 'Error Message', sticky: true,
-        detail: 'Amount to be tagged cannot be greater than Balance Amount'
-      });
-      return;
-    }
-
+   
     const poValue = this.poData.find(e => e.poInfo[0].poId === this.selectedPo);
     const retPOInfo = poValue.poInfo[0];
     if ((retPOInfo.revenue - retPOInfo.scRevenue) < this.newInvAmount) {
@@ -929,27 +922,40 @@ export class ManageFinanceComponent implements OnInit {
     }
   }
 
-  tagExistingInv() {
-    const arrINV = this.arrAdvanceInvoices.filter(e => e.PO === this.selectedPo);
-    this.advanceInvArray = [];
-    arrINV.forEach(element => {
-      this.advanceInvArray.push({ label: element.InvoiceNumber, value: element.ID });
-    });
-    this.relatedInvoiceLinkingPopup = false;
-    this.tagExistingInvSection = true;
-  }
+  // tagExistingInv() {
+  //   const arrINV = this.arrAdvanceInvoices.filter(e => e.PO === this.selectedPo);
+  //   this.advanceInvArray = [];
+  //   arrINV.forEach(element => {
+  //     this.advanceInvArray.push({ label: element.InvoiceNumber, value: element.ID });
+  //   });
+  //   this.relatedInvoiceLinkingPopup = false;
+  //   this.tagExistingInvSection = true;
+  // }
 
-  scheduleNew() {
-    const poValue = this.poData.find(e => e.poInfo[0].poId === this.selectedPo);
-    this.relatedInvoiceLinkingPopup = false;
-    this.scheduleInvoice(poValue);
-  }
+  // scheduleNew() {
+  //   const poValue = this.poData.find(e => e.poInfo[0].poId === this.selectedPo);
+  //   this.relatedInvoiceLinkingPopup = false;
+  //   this.scheduleInvoice(poValue);
+  // }
 
   createScheduleInvoice(poValue) {
     this.selectedPo = poValue.poInfo[0].poId;
     const arrINV = this.arrAdvanceInvoices.filter(e => e.PO === this.selectedPo);
     if (arrINV.length) {
-      this.relatedInvoiceLinkingPopup = true;
+      // this.relatedInvoiceLinkingPopup = true;
+      this.commonService.confirmMessageDialog('Advance invoice tagging decision', ' There is an advance invoice existing on this PO. Do you want to tag the project to that invoice or create a new schedule ?', 'Note: Ideally the project should be tagged to the advance invoice rather than scheduling new invoice on the PO.', ['Tag to existing', 'Schedule New Invoice', 'Cancel'], false).then(async Confirmation => {
+        if (Confirmation === 'Tag to existing') {
+          const arrINV = this.arrAdvanceInvoices.filter(e => e.PO === this.selectedPo);
+          this.advanceInvArray = [];
+          arrINV.forEach(element => {
+            this.advanceInvArray.push({ label: element.InvoiceNumber, value: element.ID });
+          });
+          this.tagExistingInvSection = true;
+        } else if (Confirmation === 'Schedule New Invoice') {
+          const poValue = this.poData.find(e => e.poInfo[0].poId === this.selectedPo);
+          this.scheduleInvoice(poValue);
+        }
+      })
     } else {
       this.scheduleInvoice(poValue);
     }
@@ -1428,8 +1434,8 @@ export class ManageFinanceComponent implements OnInit {
           if (invoiceObj.inv_number) {
             invoiceObj.invUrl = invoiceNumber && invoiceNumber.length && invoiceNumber[0].retItems && invoiceNumber[0].retItems.length
               ? invoiceNumber[0].retItems[0].FileURL : '';
-            invoiceObj.auxiliaryInvoiceName =invoiceNumber && invoiceNumber.length && invoiceNumber[0].retItems && invoiceNumber[0].retItems.length
-            ? invoiceNumber[0].retItems[0].AuxiliaryInvoiceName : '';
+            invoiceObj.auxiliaryInvoiceName = invoiceNumber && invoiceNumber.length && invoiceNumber[0].retItems && invoiceNumber[0].retItems.length
+              ? invoiceNumber[0].retItems[0].AuxiliaryInvoiceName : '';
           }
           invoiceObj.prf_number = proformaNumber && proformaNumber.length && proformaNumber[0].retItems && proformaNumber[0].retItems.length
             ? proformaNumber[0].retItems[0].Title : '';

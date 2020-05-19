@@ -31,6 +31,9 @@ import { IliTableAttributeComponent } from './Scheduled/ili-table-attribute/ili-
 import { PfTableAttributeComponent } from './Scheduled/pf-table-attribute/pf-table-attribute.component';
 import { ProTableAttributeComponent } from './Proforma/pro-table-attribute/pro-table-attribute.component';
 import { InvTableAttributeComponent } from './Outstanding-Invoices/inv-table-attribute/inv-table-attribute.component';
+import { ScheduleOopInvoiceDialogComponent } from './Expenditure/approved-billable/schedule-oop-invoice-dialog/schedule-oop-invoice-dialog.component';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { MarkAsPaymentDialogComponent } from './Expenditure/mark-as-payment-dialog/mark-as-payment-dialog.component';
 
 @NgModule({
   declarations: [
@@ -56,6 +59,8 @@ import { InvTableAttributeComponent } from './Outstanding-Invoices/inv-table-att
     PfTableAttributeComponent,
     ProTableAttributeComponent,
     InvTableAttributeComponent,
+    ScheduleOopInvoiceDialogComponent,
+    MarkAsPaymentDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -63,7 +68,8 @@ import { InvTableAttributeComponent } from './Outstanding-Invoices/inv-table-att
     PrimengModule,
     SharedModule,
     TimelineModule,
-    CKEditorModule
+    CKEditorModule,
+    FlexLayoutModule
   ],
   entryComponents: [
     RejectExpenseComponent,
@@ -80,6 +86,8 @@ import { InvTableAttributeComponent } from './Outstanding-Invoices/inv-table-att
     SaveYourViewComponent,
     TableAttributeComponent,
     EditorComponent,
+    ScheduleOopInvoiceDialogComponent,
+    MarkAsPaymentDialogComponent
   ],
   providers: [
     FDResolve,
