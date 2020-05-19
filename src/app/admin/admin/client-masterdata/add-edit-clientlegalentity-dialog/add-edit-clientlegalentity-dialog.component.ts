@@ -219,13 +219,13 @@ export class AddEditClientlegalentityDialogComponent implements OnInit {
    * 5. Currency dropdown            - Iterate data from `Currency` list based on filter `IsActiveCH='Yes'`.
    * 6. Bucket dropdown              - Iterate data from `Focus Group` list based on filter `IsActiveCH='Yes'`.
    * 7. CMLevel1 dropdwon            - Iterate data from `ResourceCategorization` list based on filter `IsActiveCH='Yes'`
-   * and `Role='CMLevel1'`.
+   * and `RoleCH='CMLevel1'`.
    * 8. CMLevel2 dropdwon            - Iterate data from `ResourceCategorization` list based on filter `IsActiveCH='Yes'`
-   * and `Role='CMLevel2'`.
+   * and `RoleCH='CMLevel2'`.
    * 9. DeliveryLevel1 dropdwon      - Iterate data from `ResourceCategorization` list based on filter `IsActiveCH='Yes'`
-   * and `Role='DeliveryLevel1'`.
+   * and `RoleCH='DeliveryLevel1'`.
    * 10. DeliveryLevel2 dropdwon      - Iterate data from `ResourceCategorization` list based on filter `IsActiveCH='Yes'`
-   * and `Role='DeliveryLevel2'`.
+   * and `RoleCH='DeliveryLevel2'`.
    * 11. PORequired dropdown          - Value is `Yes` and `No`.
    *
    */
@@ -304,7 +304,7 @@ export class AddEditClientlegalentityDialogComponent implements OnInit {
     this.adminObject.dropdown.DeliveryLevel1Array = [];
     this.adminObject.dropdown.DeliveryLevel2Array = [];
     array.forEach(element => {
-      const role = element.Role;
+      const role = element.RoleCH;
       switch (role) {
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.CMLevel1:
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.CMLevel2:

@@ -31,7 +31,7 @@ export class PmconstantService {
     BLUE: 'Blue'
   };
   public resourceQueryOptions = {
-    select: 'ID,UserNamePG/ID,UserNamePG/Title,Role',
+    select: 'ID,UserNamePG/ID,UserNamePG/Title,RoleCH',
     expand: 'UserNamePG/ID,UserNamePG/Title',
     filter: 'UserNamePG/ID eq {0}',
     top: 4200
@@ -362,7 +362,7 @@ export class PmconstantService {
     },
     STANDARD_RESOURCES_CATEGORIZATION: {
       // tslint:disable-next-line:max-line-length
-      select: 'ID,MaxHrs,PrimarySkill,UserNamePG/ID,UserNamePG/EMail,UserNamePG/Title,TimeZone/Title,SkillLevel/Title,Tasks/Title,Tasks/Status,Deliverables/Title,DeliverableExclusion/Title,TA/Title,TAExclusion/Title,Account/Title,Role',
+      select: 'ID,MaxHrs,PrimarySkill,UserNamePG/ID,UserNamePG/EMail,UserNamePG/Title,TimeZone/Title,SkillLevel/Title,Tasks/Title,Tasks/Status,Deliverables/Title,DeliverableExclusion/Title,TA/Title,TAExclusion/Title,Account/Title,RoleCH',
       // tslint:disable-next-line:max-line-length
       expand: 'UserNamePG/ID,UserNamePG/EMail,UserNamePG/Title,TimeZone/Title,SkillLevel/Title,Tasks/Title,Tasks/Status,Deliverables/Title,DeliverableExclusion/Title,TA/Title,TAExclusion/Title,Account/Title',
       filter: 'IsActiveCH eq \'Yes\' and SkillLevel/Title ne null',

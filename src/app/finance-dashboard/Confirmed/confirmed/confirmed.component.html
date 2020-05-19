@@ -10,13 +10,13 @@
             filter="true" placeholder="Select PO" optionLabel="Number" [showClear]="true" (onChange)="onChange($event)">
             <ng-template let-item pTemplate="selectedItem">
                 <span style="vertical-align:middle">{{item.label}}
-                    {{item.value.Name ? ' -- '+ item.value.Name:'' }}
+                    {{item.value.NameST ? ' -- '+ item.value.NameST:'' }}
                 </span>
             </ng-template>
             <ng-template let-item pTemplate="item">
                 <div class="ui-helper-clearfix" style="position: relative;">
                     <div style="font-size:14px;float: left;margin-top:4px;width: 300px;line-height: 20px;">
-                        {{item.label}} {{item.value.Name ? ' -- '+ item.value.Name:'' }}
+                        {{item.label}} {{item.value.NameST ? ' -- '+ item.value.NameST:'' }}
                     </div>
                 </div>
             </ng-template>

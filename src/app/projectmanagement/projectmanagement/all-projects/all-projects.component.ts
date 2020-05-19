@@ -204,10 +204,10 @@ export class AllProjectsComponent implements OnInit {
       this.CSButtonEnable = true;
       this.FinanceButtonEnable = true;
     }
-    else if (this.pmObject.userRights.isInvoiceTeam || this.pmObject.resourceCatItems[0].Role === this.pmConstant.resourCatConstant.FINANCE) {
+    else if (this.pmObject.userRights.isInvoiceTeam || this.pmObject.resourceCatItems[0].RoleCH === this.pmConstant.resourCatConstant.FINANCE) {
       this.FinanceButtonEnable = true;
     }
-    else if (this.pmObject.resourceCatItems[0].Role === this.pmConstant.resourCatConstant.CMLevel1 || this.pmObject.resourceCatItems[0].Role === this.pmConstant.resourCatConstant.CMLevel2) {
+    else if (this.pmObject.resourceCatItems[0].RoleCH === this.pmConstant.resourCatConstant.CMLevel1 || this.pmObject.resourceCatItems[0].RoleCH === this.pmConstant.resourCatConstant.CMLevel2) {
       this.CSButtonEnable = true;
     }
 

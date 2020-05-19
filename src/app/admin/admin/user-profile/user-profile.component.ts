@@ -243,7 +243,7 @@ export class UserProfileComponent implements OnInit {
         userObj.BucketEffectiveDate = item.BucketEffectiveDate;
         userObj.PrimarySkill = item.PrimarySkill;
         userObj.SkillLevel = item.SkillLevel;
-        userObj.Role = item.Role;
+        userObj.Role = item.RoleCH;
         userObj.ReadyTo = item.Ready_x0020_To;
         userObj.Task = item.Tasks;
         userObj.Account = item.Account;
@@ -391,7 +391,7 @@ export class UserProfileComponent implements OnInit {
         userObj.MaxHrs = item.MaxHrs;
         userObj.PrimarySkill = item.PrimarySkill;
         userObj.SkillLevel = item.SkillLevel;
-        userObj.Role = item.Role;
+        userObj.Role = item.RoleCH;
         userObj.ReadyTo = item.Ready_x0020_To;
         userObj.Task = item.Tasks;
         userObj.Account = item.Account;
@@ -772,7 +772,7 @@ export class UserProfileComponent implements OnInit {
       userObj.MaxHrs = item.MaxHrs;
       userObj.PrimarySkill = item.PrimarySkill;
       userObj.SkillLevel = item.SkillLevel;
-      userObj.Role = item.Role;
+      userObj.Role = item.RoleCH;
       userObj.ReadyTo = item.Ready_x0020_To;
       userObj.Task = item.Tasks;
       userObj.Account = item.Account;
@@ -951,7 +951,7 @@ export class UserProfileComponent implements OnInit {
     this.adminObject.addUser.MaxHrs = isCreate ? resObject.maxHrs : resObject.MaxHrs;
     this.adminObject.addUser.PrimarySkill = isCreate ? resObject.primarySkill : resObject.PrimarySkill;
     this.adminObject.addUser.SkillLevel = isCreate ? resObject.skillLevel : resObject.SkillLevel;
-    this.adminObject.addUser.Role = isCreate ? resObject.role : resObject.Role;
+    this.adminObject.addUser.Role = isCreate ? resObject.role : resObject.RoleCH;
     this.adminObject.addUser.ReadyTo = isCreate ? resObject.readyTo : resObject.Ready_x0020_To;
     this.adminObject.addUser.Task = isCreate ? resObject.task : resObject.Tasks;
     this.adminObject.addUser.Account = isCreate ? resObject.account : resObject.Account;
@@ -1036,7 +1036,7 @@ export class UserProfileComponent implements OnInit {
       WorkingSaturday: formObj.workSaturday ? this.adminConstants.LOGICAL_FIELD.YES : this.adminConstants.LOGICAL_FIELD.NO,
     };
     if (formObj.role) {
-      data.Role = formObj.role;
+      data.RoleCH = formObj.role;
     }
     if (formObj.readyTo) {
       data.Ready_x0020_To = formObj.readyTo;

@@ -148,7 +148,7 @@ export class AddEditPoDialogComponent implements OnInit {
   *  2. TA                    - Get data for `TA` from `TA` list.
   *  3. Molecule              - Get data for `Molecule` from `Molecule` list.
   *  4. PO Buying Entity      - Get choice field data for `BuyingEntity` from `PO` list.
-  *  5. CM Level 2            - Get data for `CM Level 2` from `ResourceCategorization` list based on filter `Role='CM Level 2'`.
+  *  5. CM Level 2            - Get data for `CM Level 2` from `ResourceCategorization` list based on filter `RoleCH='CM Level 2'`.
   *  6. Currency              - Get data for `Currency` from `Currency` list.
   * @Note
   * 1. If `dropdown.CurrencyArray` & `dropdown.CMLevel2Array` is not null then it will not query the `Currency` and
@@ -212,7 +212,7 @@ export class AddEditPoDialogComponent implements OnInit {
    * 2. TA                    - Get data for `TA` from `TA` list.
    * 3. Molecule              - Get data for `Molecule` from `Molecule` list.
    * 4. PO Buying Entity      - Get choice field data for `BuyingEntity` from `PO` list.
-   * 5. CM Level 2            - Get data for `CM Level 2` from `ResourceCategorization` list based on filter `Role='CM Level 2'`.
+   * 5. CM Level 2            - Get data for `CM Level 2` from `ResourceCategorization` list based on filter `RoleCH='CM Level 2'`.
    * 6. Currency              - Get data for `Currency` from `Currency` list.
    *
    * @Note
@@ -323,7 +323,7 @@ export class AddEditPoDialogComponent implements OnInit {
     this.adminObject.dropdown.DeliveryLevel1Array = [];
     this.adminObject.dropdown.DeliveryLevel2Array = [];
     array.forEach(element => {
-      const role = element.Role;
+      const role = element.RoleCH;
       switch (role) {
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.CMLevel1:
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.CMLevel2:

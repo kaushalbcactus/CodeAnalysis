@@ -114,7 +114,7 @@ export class AddUserToSowComponent implements OnInit {
         this.adminObject.resourceCatArray : results[0].retItems;
       if (userResults && userResults.length) {
         userResults.forEach(element => {
-          if (element.Role === this.adminConstants.FILTER.CM_LEVEL_1 || element.Role === this.adminConstants.FILTER.CM_LEVEL_2 || element.Role === this.adminConstants.FILTER.DELIVERY_LEVEL_1 || element.Role === this.adminConstants.FILTER.DELIVERY_LEVEL_2) {
+          if (element.RoleCH === this.adminConstants.FILTER.CM_LEVEL_1 || element.RoleCH === this.adminConstants.FILTER.CM_LEVEL_2 || element.RoleCH === this.adminConstants.FILTER.DELIVERY_LEVEL_1 || element.RoleCH === this.adminConstants.FILTER.DELIVERY_LEVEL_2) {
             this.users.push({ label: element.UserNamePG.Title, value: element });
           }
         });

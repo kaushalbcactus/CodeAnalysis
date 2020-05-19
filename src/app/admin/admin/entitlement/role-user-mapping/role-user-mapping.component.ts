@@ -223,7 +223,7 @@ export class RoleUserMappingComponent implements OnInit {
    * @description
    *
    * This method will extract the column object value from an array and stores into the column dropdown array and display
-   * the values into the User,Role,Action,By and Date column dropdown.
+   * the values into the User,RoleCH,Action,By and Date column dropdown.
    *
    * @param colData Pass colData as a parameter which contains an array of column object.
    *
@@ -237,7 +237,7 @@ export class RoleUserMappingComponent implements OnInit {
     }));
     this.roleUserColArray.Role = this.adminCommonService.uniqueArrayObj(colData.map(a => {
       const b = {
-        label: a.Role, value: a.Role
+        label: a.RoleCH, value: a.RoleCH
       };
       return b;
     }));

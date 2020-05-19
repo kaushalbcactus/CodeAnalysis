@@ -122,7 +122,7 @@ export class AddEditSubdivisionComponent implements OnInit {
     this.adminObject.dropdown.DeliveryLevel1Array = [];
     this.adminObject.dropdown.DeliveryLevel2Array = [];
     array.forEach(element => {
-      const role = element.Role;
+      const role = element.RoleCH;
       switch (role) {
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.CMLevel1:
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.CMLevel2:

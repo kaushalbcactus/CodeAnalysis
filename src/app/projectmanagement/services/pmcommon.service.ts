@@ -309,8 +309,8 @@ export class PMCommonService {
     if (arrResults && arrResults.length) {
       this.pmObject.resourceCatItems = arrResults[0].retItems;
       if (this.pmObject.resourceCatItems.length) {
-        if (this.pmObject.resourceCatItems[0].Role === this.pmConstant.resourCatConstant.CMLevel1 ||
-          this.pmObject.resourceCatItems[0].Role === this.pmConstant.resourCatConstant.CMLevel2) {
+        if (this.pmObject.resourceCatItems[0].RoleCH === this.pmConstant.resourCatConstant.CMLevel1 ||
+          this.pmObject.resourceCatItems[0].RoleCH === this.pmConstant.resourCatConstant.CMLevel2) {
           this.pmObject.isUserAllowed = false;
           // this.bindMenuItems();
         }
@@ -365,7 +365,7 @@ export class PMCommonService {
     this.pmObject.oProjectCreation.Resources.primaryRes = [];
     if (resourcesArray && resourcesArray.length) {
       resourcesArray.forEach(element => {
-        const role = element.Role;
+        const role = element.RoleCH;
         switch (role) {
           case this.pmConstant.resourCatConstant.CMLevel1:
             this.pmObject.oProjectCreation.Resources.cmLevel1.push(element.UserNamePG);

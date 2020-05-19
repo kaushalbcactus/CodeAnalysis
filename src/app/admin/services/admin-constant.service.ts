@@ -62,7 +62,7 @@ export class AdminConstantService {
       select: 'ID,Title,Account/ID,Account/Title,Bucket,Created,DateofExit,DateOfJoining,DeliverableExclusion/ID,'
         + 'DeliverableExclusion/Title,Deliverables/ID,Deliverables/Title,Designation,GoLiveDate,InCapacity,'
         + 'IsActiveCH,Manager/ID,Manager/Title,Manager/EMail,ManagerEffectiveDate,MaxHrs,Modified,Pooled,Practice_x0020_Area,'
-        + 'PracticeAreaEffectiveDate,PrimarySkill,PrimarySkillEffectiveDate,Ready_x0020_To,Role,SkillLevel/ID,SkillLevel/Title,'
+        + 'PracticeAreaEffectiveDate,PrimarySkill,PrimarySkillEffectiveDate,Ready_x0020_To,RoleCH,SkillLevel/ID,SkillLevel/Title,'
         + 'SkillLevelEffectiveDate,TA/ID,TA/Title,TAExclusion/ID,TAExclusion/Title,Tasks/ID,Tasks/Title,TimeZone/ID,TimeZone/Title,'
         + 'TimeZone/TimeZoneName,TimeZoneEffectiveDate,UserNamePG/ID,UserNamePG/Title,UserNamePG/EMail,Author/ID,Author/Title,'
         + 'Editor/ID,Editor/Title,WorkingSunday,WorkingMonday,WorkingTuesday,WorkingWednesday,WorkingThursday,WorkingFriday,'
@@ -79,7 +79,7 @@ export class AdminConstantService {
       select: 'ID,Title,Account/ID,Account/Title,Bucket,Created,DateofExit,DateOfJoining,DeliverableExclusion/ID,'
         + 'DeliverableExclusion/Title,Deliverables/ID,Deliverables/Title,Designation,GoLiveDate,InCapacity,'
         + 'IsActiveCH,Manager/ID,Manager/Title,Manager/EMail,ManagerEffectiveDate,MaxHrs,Modified,Pooled,Practice_x0020_Area,'
-        + 'PracticeAreaEffectiveDate,PrimarySkill,PrimarySkillEffectiveDate,Ready_x0020_To,Role,SkillLevel/ID,SkillLevel/Title,'
+        + 'PracticeAreaEffectiveDate,PrimarySkill,PrimarySkillEffectiveDate,Ready_x0020_To,RoleCH,SkillLevel/ID,SkillLevel/Title,'
         + 'SkillLevelEffectiveDate,TA/ID,TA/Title,TAExclusion/ID,TAExclusion/Title,Tasks/ID,Tasks/Title,TimeZone/ID,TimeZone/Title,'
         + 'TimeZone/TimeZoneName,TimeZoneEffectiveDate,UserNamePG/ID,UserNamePG/Title,UserNamePG/EMail,Author/ID,Author/Title,'
         + 'Editor/ID,Editor/Title,WorkingSunday,WorkingMonday,WorkingTuesday,WorkingWednesday,WorkingThursday,WorkingFriday,'
@@ -96,7 +96,7 @@ export class AdminConstantService {
       select: 'ID,Title,Account/ID,Account/Title,Bucket,Created,DateofExit,DateOfJoining,DeliverableExclusion/ID,'
         + 'DeliverableExclusion/Title,Deliverables/ID,Deliverables/Title,Designation,GoLiveDate,InCapacity,'
         + 'IsActiveCH,Manager/ID,Manager/Title,Manager/EMail,ManagerEffectiveDate,MaxHrs,Modified,Pooled,Practice_x0020_Area,'
-        + 'PracticeAreaEffectiveDate,PrimarySkill,PrimarySkillEffectiveDate,Ready_x0020_To,Role,SkillLevel/ID,SkillLevel/Title,'
+        + 'PracticeAreaEffectiveDate,PrimarySkill,PrimarySkillEffectiveDate,Ready_x0020_To,RoleCH,SkillLevel/ID,SkillLevel/Title,'
         + 'SkillLevelEffectiveDate,TA/ID,TA/Title,TAExclusion/ID,TAExclusion/Title,Tasks/ID,Tasks/Title,TimeZone/ID,TimeZone/Title,'
         + 'TimeZone/TimeZoneName,TimeZoneEffectiveDate,UserNamePG/ID,UserNamePG/Title,UserNamePG/EMail,Author/ID,Author/Title,'
         + 'Editor/ID,Editor/Title,WorkingSunday,WorkingMonday,WorkingTuesday,WorkingWednesday,WorkingThursday,WorkingFriday,'
@@ -109,7 +109,7 @@ export class AdminConstantService {
       top: 4900
     },
     GET_RESOURCE_CATEGERIZATION_ORDER_BY_USERNAME: {
-      select: 'ID,Title,Role,UserNamePG/ID,UserNamePG/Title,UserNamePG/EMail',
+      select: 'ID,Title,RoleCH,UserNamePG/ID,UserNamePG/Title,UserNamePG/EMail',
       expand: 'UserNamePG/ID,UserNamePG/Title,UserNamePG/EMail',
       filter: 'IsActiveCH eq \'{{isActive}}\'',
       top: 4900,
@@ -319,7 +319,7 @@ export class AdminConstantService {
     INCAPACITY: 'InCapacity',
     POOLED: 'Pooled',
     PRIMARYSKILL: 'PrimarySkill',
-    ROLE: 'Role',
+    ROLE: 'RoleCH',
     MARKET: 'Market',
     POC_STATUS: 'Status',
     POC_REFERRAL_SOURCE: 'ReferralSource',
