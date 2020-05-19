@@ -58,8 +58,10 @@ export class PmconstantService {
   public subtaskOptions = {
     select: 'ID,Title,Status, AssignedTo/ID,AssignedTo/Title',
     expand: 'AssignedTo/ID,AssignedTo/Title',
-    filter: 'ParentSlot eq \'{0}\' and NextTasks eq null',
+    filter: 'ParentSlot eq \'{0}\' and Status ne \'Deleted\' and NextTasks eq null',
+     orderby: 'DueDate desc',
     top: 4200
+
   };
 
   public crTaskOptions = {
