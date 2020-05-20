@@ -38,7 +38,7 @@
                             <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
                         </td>
                         <td *ngFor="let col of columns">
-                            <a href="{{rowData.ServerRelativeUrl}}" target="_blank" style="color:#c53e3e;" target="_blank" *ngIf="col.field === 'Name'">{{rowData[col.field]}}</a>
+                            <a href="{{rowData.ServerRelativeUrl}}" target="_blank" style="color:#c53e3e;word-break: break-all;" target="_blank" *ngIf="col.field === 'Name'">{{rowData[col.field]}}</a>
                             <span *ngIf="col.field !== 'Name'">{{rowData[col.field]}}</span>
                         </td>
                     </tr>
