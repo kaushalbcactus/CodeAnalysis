@@ -3757,23 +3757,23 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       }
     }
 
-    allTasks = allTasks.filter(e => e.itemType !== 'Client Review' && e.data.itemType !== 'Send to client' &&
-      e.data.slotType !== 'Slot' && e.data.AssignedTo && e.data.AssignedTo.ID && e.data.AssignedTo.ID !== -1);
+    allTasks = allTasks.filter(e => e.itemType !== 'Client Review' && e.itemType !== 'Send to client' &&
+      e.slotType !== 'Slot' && e.AssignedTo && e.AssignedTo.ID && e.AssignedTo.ID !== -1);
     let capacity;
     let maxHrs = 10;
     let maxMin = 0;
     let count = 0;
     for (const element of allTasks) {
       //allTasks.forEach(element => {
-      element.data.resources = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
-        return objt.UserName.ID === element.data.AssignedTo.ID;
+      element.resources = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
+        return objt.UserName.ID === element.AssignedTo.ID;
       });
       if (milSubMil) {
-        capacity = await this.usercapacityComponent.afterMilestoneTaskModified(element.data, element.data.start_date,
-          element.data.end_date, element.data.resources, [])
+        capacity = await this.usercapacityComponent.afterMilestoneTaskModified(element, element.start_date,
+          element.end_date, element.resources, [])
       } else {
-        capacity = await this.usercapacityComponent.factoringTimeForAllocation(element.data.start_date, element.data.end_date,
-          element.data.resources, [], [], this.taskAllocateCommonService.adhocStatus);
+        capacity = await this.usercapacityComponent.factoringTimeForAllocation(element.start_date, element.end_date,
+          element.resources, [], [], this.taskAllocateCommonService.adhocStatus);
       }
       for (var index in capacity.arrUserDetails) {
         if (capacity.arrUserDetails.hasOwnProperty(index)) {
@@ -4888,7 +4888,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       }
 
       const compareDates = currMilTasks.filter(e => (e.end_date <= e.start_date && e.tat === false &&
-        e.itemType !== 'Follow up' && e.status !== 'Completed'));
+        e.itemType !== 'Follow up' && e.itemType !== 'Send to client' && e.status !== 'Completed'));
       if (compareDates.length > 0) {
         //  && e.itemType !== 'Send to client' && e.itemType !== 'Client Review'
         this.messageService.add({
@@ -5254,7 +5254,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
             return false;
           }
           const compareDates = checkTasks.filter(e => (e.pUserEnd <= e.pUserStart && e.tat === false
-            && e.itemType !== 'Follow up' && e.status !== 'Completed'));
+            && e.itemType !== 'Follow up' && e.itemType !== 'Send to client' && e.status !== 'Completed'));
           if (compareDates.length > 0) {
             //  && e.itemType !== 'Send to client' && e.itemType !== 'Client Review'
             this.messageService.add({
