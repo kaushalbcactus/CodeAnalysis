@@ -33,7 +33,7 @@ export interface IMilestoneTask {
     'previousTask': string;
     'budgetHours': string;
     'spentTime': string;
-    'allowStart': string;
+   // 'allowStart': string;
     'tat': string;
     'tatVal': string;
     'milestoneStatus': string;
@@ -42,7 +42,7 @@ export interface IMilestoneTask {
     'scope': string;
     'isCurrent': boolean;
     'isNext': boolean;
-    'isFuture': boolean;
+   // 'isFuture': boolean;
     'assignedUsers': any [];
     'AssignedTo': any;
     'userCapacityEnable': string;

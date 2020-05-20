@@ -710,7 +710,7 @@ export class CommonService {
                     cmLevel2: returnedProject.CMLevel2,
                     currentMilestone: returnedProject.Milestone ? returnedProject.Milestone : '',
                     nextMilestone: arrMilestones.length !== currentMilestoneIndex + 1 ? arrMilestones[currentMilestoneIndex + 1] : '',
-                    futureMilestones: arrMilestones.slice(currentMilestoneIndex + 1, arrMilestones.length),
+                  //  futureMilestones: arrMilestones.slice(currentMilestoneIndex + 1, arrMilestones.length),
                     prevMilestone: arrMilestones.slice(currentMilestoneIndex - 1, currentMilestoneIndex),
                     allMilestones: arrMilestones,
                     allOldMilestones: arrMilestones,
