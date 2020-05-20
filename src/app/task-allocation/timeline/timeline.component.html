@@ -221,7 +221,7 @@
                             <div
                                 *ngIf="(rowData.type === 'milestone' && rowData.status !== 'Not Saved' && !rowData.isCurrent) || (rowData.type ==='task' && !rowData.editMode && rowData.itemType !== 'Client Review' && rowData.itemType !== 'Send to client')"
                                 style="float: left;margin-left: 22px;">{{rowData.budgetHours}}</div>
-                            <input type="number" class="form-control budgetHr" required="required" min="0" value="0"
+                            <input type="number" class="form-control budgetHr" required="required" min="0" max= {{maxBudgetHrs}} value="0"
                                 onchange="validity.valid||(value='0');" step="0.25"
                                 *ngIf="(rowData.type !=='milestone' && rowData.type !=='submilestone' && rowData.editMode && (rowData.itemType !== 'Client Review' &&  rowData.itemType !== 'Send to client')) || ((rowData.status ==='In Progress' || rowData.status ==='Not Started' || rowData.status ==='Not Confirmed' || rowData.status ==='Not Saved') && rowData.type === 'milestone')"
                                 required="required"

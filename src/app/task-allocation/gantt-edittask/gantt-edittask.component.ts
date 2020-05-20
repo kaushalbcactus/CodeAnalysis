@@ -37,7 +37,7 @@ export class GanttEdittaskComponent implements OnInit {
   allRestructureTasks = [];
   startDate: any;
   endDate: any;
-
+  maxBudgetHrs: any = '';
   darkTheme: NgxMaterialTimepickerTheme = {
     container: {
       bodyBackgroundColor: '#424242',
@@ -219,7 +219,11 @@ export class GanttEdittaskComponent implements OnInit {
       const resources = this.globalService.oTaskAllocation.oResources.filter((objt) => {
         return this.task.AssignedTo.ID === objt.UserName.ID;
       });
+      
+      this.maxBudgetHrs = '';
+      let time: any = this.commonService.getHrsAndMins(this.task.start_date , this.task.end_date);
 
+      this.maxBudgetHrs = time.maxBudgetHrs;
       this.task.budgetHours = budgetHrs;
 
       this.isViewAllocationBtn(task)
@@ -240,6 +244,7 @@ export class GanttEdittaskComponent implements OnInit {
       this.task.pUserStartTimePart = this.getTimePart(start_date);
       this.cascadingObject.node = this.task;
       this.cascadingObject.type = 'start';
+      this.validateBudgetHours(this.task);
       this.isViewAllocationBtn(task);
       await this.dailyAllocateTask(resources, this.task);
     });
@@ -257,6 +262,7 @@ export class GanttEdittaskComponent implements OnInit {
       this.task.pUserEndTimePart = this.getTimePart(end_date);
       this.cascadingObject.node = this.task;
       this.cascadingObject.type = 'end';
+      this.validateBudgetHours(this.task);
       this.isViewAllocationBtn(task);
 
       await this.dailyAllocateTask(resources, this.task);
@@ -275,6 +281,7 @@ export class GanttEdittaskComponent implements OnInit {
       this.task.pUserStartTimePart = this.getTimePart(start_date);
       this.cascadingObject.node = this.task;
       this.cascadingObject.type = 'start';
+      this.validateBudgetHours(this.task);
       await this.dailyAllocateTask(resources, this.task);
     });
 
@@ -291,9 +298,26 @@ export class GanttEdittaskComponent implements OnInit {
       this.task.pUserEndTimePart = this.getTimePart(end_date);
       this.cascadingObject.node = this.task;
       this.cascadingObject.type = 'end';
+      this.validateBudgetHours(this.task);
       await this.dailyAllocateTask(resources, this.task);
     });
 
+  }
+
+  validateBudgetHours(task: any) {
+    let time: any = this.commonService.getHrsAndMins(task.pUserStart, task.pUserEnd)
+    let bhrs = this.commonService.convertToHrsMins('' + task.budgetHours).replace('.', ':')
+
+    let maxHrs = time.hrs;
+    let maxMin = time.minutes;
+
+    let hrs = bhrs.split(':')[0];
+    let min = bhrs.split(':')[1];
+
+    if (hrs > maxHrs || min > maxMin) { 
+      let budgetHrs: number = 0;
+      this.editTaskForm.get('budgetHrs').setValue(budgetHrs);
+    }
   }
 
   setMinutesAfterDrag(date) {

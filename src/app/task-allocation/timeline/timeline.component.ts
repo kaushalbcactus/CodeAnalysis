@@ -195,6 +195,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     users: [],
     conflictAllocation: false
   }
+  maxBudgetHrs: any = "";
   constructor(
     private constants: ConstantsService,
     public sharedObject: GlobalService,
@@ -2401,11 +2402,18 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
 
   async modelChanged(event) {
+    this.maxBudgetHrs = '';
     event.editMode = true;
     event.edited = true;
     const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
       return event.AssignedTo && event.AssignedTo.ID === objt.UserName.ID;
     });
+    if(event.type !== 'milestone' || event.type !== 'submilestone') {
+      let time: any = this.commonService.getHrsAndMins(event.start_date , event.end_date);
+
+      this.maxBudgetHrs = time.maxBudgetHrs;
+    }
+
     await this.dailyAllocateTask(resource, event);
   }
 
@@ -3059,6 +3067,18 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
       return node.AssignedTo && node.AssignedTo.ID === objt.UserName.ID;
     });
+    let time: any = this.commonService.getHrsAndMins(node.pUserStart, node.pUserEnd)
+    let bhrs = this.commonService.convertToHrsMins('' + node.budgetHours).replace('.', ':')
+
+    let maxHrs = time.hrs;
+    let maxMin = time.minutes;
+
+    let hrs = bhrs.split(':')[0];
+    let min = bhrs.split(':')[1];
+
+    if (hrs > maxHrs || min > maxMin) { 
+      node.budgetHours = 0
+    }
     this.changeDateOfEditedTask(node, type);
     await this.dailyAllocateTask(resource, node);
     this.DateChange(node, type);
