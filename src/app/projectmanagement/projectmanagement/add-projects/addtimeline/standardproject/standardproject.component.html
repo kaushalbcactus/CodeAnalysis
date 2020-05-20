@@ -1,4 +1,4 @@
-<div class="timeline-standard-section">
+<div class="timeline-standard-section" [hidden]="isStandardTableHidden">
     <div class="container">
         <div class="margin-top25">
             <div class="row">
@@ -88,23 +88,26 @@
 <div>
 </div>
 <div class="clearBoth"></div>
-<div class="standard-spinner-section" style="display: none;padding-top: 12vh;">
+<div class="standard-spinner-section" [hidden]="hideLoader" style="padding-top: 12vh;">
     <div id="modalInnerLoader"></div>
     <div id="modalInnerLoaderText">Loading...</div>
 
 </div>
-
+<div  [hidden]='isStandardLoaderHidden'>
+  <div id="standardLoader"></div>
+  <div id="standardLoaderText">Loading...</div>
+</div>
 
 <div class="timeline-standard-generated-section">
     <div class="col-md-12">
         <div class="">
             <div class="col-lg-12 col-xs-12 col-lg-12">
-                <div class="margin-top25 initialUserCapacity-section">
+                <div class="margin-top25 initialUserCapacity-section" [hidden]="hideCapacity">
                     <app-usercapacity #InitialUserCapacity></app-usercapacity>
                 </div>
             </div>
             <div class="col-lg-12 col-xs-12 col-lg-12">
-                <div class="standardMilestoneByType">
+                <div class="standardMilestoneByType" [hidden]="hideTable">
                     <p-treeTable [value]="standardFiles">
                         <ng-template pTemplate="header">
                             <tr >
@@ -129,6 +132,7 @@
                                 </td>
                                 <td>{{rowData.Hours}}
                                   <div class='overlayIcon'
+                                      appendTo="body"
                                       (click)="this.showOverlayPanel($event, rowData, dailyAllocateOP)"
                                         style="float: right;cursor: pointer;"
                                         title="Click to see allocation split"
@@ -142,7 +146,7 @@
                                           [showIcon]="true" [monthNavigator]="true"   [yearNavigator]="true"   yearRange="{{yearRange}}" [disabled]="rowData.isStartDateDisabled" [minDate]="rowData.minStartDateValue" (onClose)="onStartDatePartChanged(rowData)"
                                         inputStyleClass="ngPrime-red">
                                     </p-calendar>
-                                    <input readonly [ngxTimepicker]="picker" [(ngModel)]="rowData.StartTimePart" class="timePicker">
+                                    <input readonly [ngxTimepicker]="picker" [(ngModel)]="rowData.StartTimePart" [disabled]="rowData.isStartDateDisabled" class="timePicker">
                                     <ngx-material-timepicker [preventOverlayClick]="true" (closed)="onStartDatePartChanged(rowData)" #picker [minutesGap]="15"></ngx-material-timepicker>
                                 </td>
                                 <td *ngIf="!rowData.showTime">
@@ -155,7 +159,7 @@
                                     <p-calendar class="pcalendarClass" [(ngModel)]="rowData.EndDatePart"   [disabledDays]="[0,6]"   [readonlyInput]="true"   [showTime]="false"   hourFormat="12"   dateFormat="dd M, yy"   appendTo="body" [required]="true"   [stepMinute]="15"    [showOnFocus]="false"
                                         [showIcon]="true" [monthNavigator]="true"   [yearNavigator]="true"   yearRange="{{yearRange}}" [disabled]="rowData.isEndDateDisabled" [minDate]="rowData.minEndDateValue" (onClose)="onEndDatePartChanged(rowData)">
                                     </p-calendar>
-                                    <input readonly [ngxTimepicker]="picker" [(ngModel)]="rowData.EndTimePart" class="timePicker">
+                                    <input readonly [ngxTimepicker]="picker" [(ngModel)]="rowData.EndTimePart" [disabled]="rowData.isEndDateDisabled" class="timePicker">
                                     <ngx-material-timepicker [preventOverlayClick]="true" (closed)="onEndDatePartChanged(rowData)" #picker [minutesGap]="15"></ngx-material-timepicker>
 
                                 </td>
@@ -166,15 +170,15 @@
                                 </td>
                                 <td [style.backgroundColor]="rowData.allocationColor"></td>
                                 <!-- <td>{{rowData.Deviation}}</td> -->
-                                <td *ngIf="!rowData.showHyperLink">
+                                <td *ngIf="rowData.showHyperLink">
                                     <a href="javascript:void(0)" (click)="getUserCapacity(rowData,UserCapacity)">{{rowData.AssignedTo}}</a>
                                 </td>
-                                <td *ngIf="rowData.showHyperLink">
+                                <td *ngIf="!rowData.showHyperLink">
                                     {{rowData.AssignedTo}}
                                 </td>
                                 <td>
                                    <div *ngIf = "rowData.showAllocationSplit">
-                                    <p-menu #popupMenu [popup]="true" [style]="{'text-align': 'left'}" [model]="taskMenu">
+                                    <p-menu #popupMenu [popup]="true" [style]="{'text-align': 'left'}" [model]="taskMenu" appendTo="body">
                                     </p-menu>
                                     <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData);popupMenu.show($event);"></i>
                                     </div>
@@ -244,10 +248,11 @@
             <div class="col-md-4 col-xs-4 col-lg-4"></div>
             <div class="col-md-6 col-xs-6 col-lg-6">
                 <div>
-                    <button id="standardTimelineConfirm" class="mr-5 btn btn-danger" type="button" styleClass="pmBtn"  (click)="saveTimelineData()">Save Project</button>
+                    <button [disabled]="confirmDisabled" id="standardTimelineConfirm" class="mr-5 btn btn-danger" type="button" styleClass="pmBtn"  (click)="saveTimelineData()">Save Project</button>
                     <!-- <p-button type="button" styleClass="pmBtn"  class="mr-5" label="Continue to Finance & Management" (click)="goToFinanceMang()"></p-button> -->
                 </div>
             </div>
         </div>
     </div>
 </div>
+<p-toast position="bottom-right" key="custom"></p-toast>
