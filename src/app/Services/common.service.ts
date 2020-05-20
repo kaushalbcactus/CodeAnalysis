@@ -968,4 +968,17 @@ export class CommonService {
         return array;
     }
 
+    getHrsAndMins(startDate: Date , endDate: Date): Object {
+        let msec: number = Math.abs(new Date(endDate).getTime() - new Date(startDate).getTime());
+        let mins: number = Math.floor(msec / 60000);
+        let minutes: number = mins % 60;
+        let hrs: number = Math.floor(mins / 60);
+        let maxBudgetHrs = mins / 60;
+        return {
+          hrs ,
+          minutes,
+          maxBudgetHrs
+        }
+      }
+
 }
