@@ -280,7 +280,7 @@ export class StandardprojectComponent implements OnInit {
         cmLevel1: project[0].CMLevel1,
         currentMilestone: project[0].Milestone,
         nextMilestone: arrMilestones.length !== currentMilestoneIndex + 1 ? arrMilestones[currentMilestoneIndex + 1] : '',
-        futureMilestones: arrMilestones.slice(currentMilestoneIndex + 1, arrMilestones.length),
+      //  futureMilestones: arrMilestones.slice(currentMilestoneIndex + 1, arrMilestones.length),
         prevMilestone: arrMilestones.slice(currentMilestoneIndex - 1, currentMilestoneIndex),
         allMilestones: arrMilestones,
         budgetHours: oPrjFinance.length > 0 ? oPrjFinance[0].BudgetHrs : 0,

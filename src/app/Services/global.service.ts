@@ -202,7 +202,7 @@ export class GlobalService {
       CMLevel2: null,
       Milestone: null,
       nextMilestone: null,
-      futureMilestones: null,
+    // futureMilestones: null,
       prevMilestone: null,
       arrMilestones: null,
       oPrjFinance: null,
