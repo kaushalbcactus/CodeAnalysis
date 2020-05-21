@@ -316,13 +316,15 @@ export class DragDropComponent implements OnInit {
                 }
               });
 
-
               const allUniqueLinkPath = [];
               for (const link of submilestone.task.links) {
                 const TargetLinks = submilestone.task.links.filter(c => c.target === link.source);
                 if (TargetLinks.length === 0) {
-                  const curPath = submilestone.task.nodes.find(node => node.id === link.source).taskType;
-                  this.getNextTargetSC(link.source, link.target, submilestone, curPath, allUniqueLinkPath);
+                  const curPath = submilestone.task.nodes.find(node => node.id === link.source);
+                  if(curPath) {
+                   // const curPath = submilestone.task.nodes.find(node => node.id === link.source).taskType;
+                    this.getNextTargetSC(link.source, link.target, submilestone, curPath.taskType, allUniqueLinkPath);
+                  }
                 }
 
                 if (!circularPresent) {

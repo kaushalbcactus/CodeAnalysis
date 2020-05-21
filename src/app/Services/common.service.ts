@@ -710,7 +710,7 @@ export class CommonService {
                     cmLevel2: returnedProject.CMLevel2,
                     currentMilestone: returnedProject.Milestone ? returnedProject.Milestone : '',
                     nextMilestone: arrMilestones.length !== currentMilestoneIndex + 1 ? arrMilestones[currentMilestoneIndex + 1] : '',
-                  //  futureMilestones: arrMilestones.slice(currentMilestoneIndex + 1, arrMilestones.length),
+                    //  futureMilestones: arrMilestones.slice(currentMilestoneIndex + 1, arrMilestones.length),
                     prevMilestone: arrMilestones.slice(currentMilestoneIndex - 1, currentMilestoneIndex),
                     allMilestones: arrMilestones,
                     allOldMilestones: arrMilestones,
@@ -939,9 +939,9 @@ export class CommonService {
 
 
     roundToPrecision(x, precision) {
-      // const y = +x + (precision === undefined ? 0.5 : precision / 2);
-      // return y - (y % (precision === undefined ? 1 : +precision));
-     return  Math.ceil(x / precision) * precision;
+        // const y = +x + (precision === undefined ? 0.5 : precision / 2);
+        // return y - (y % (precision === undefined ? 1 : +precision));
+        return Math.ceil(x / precision) * precision;
     }
 
     convertTo24Hour(time) {
@@ -968,17 +968,26 @@ export class CommonService {
         return array;
     }
 
-    getHrsAndMins(startDate: Date , endDate: Date): Object {
+    getHrsAndMins(startDate: Date, endDate: Date): Object {
         let msec: number = Math.abs(new Date(endDate).getTime() - new Date(startDate).getTime());
         let mins: number = Math.floor(msec / 60000);
         let minutes: number = mins % 60;
         let hrs: number = Math.floor(mins / 60);
         let maxBudgetHrs = mins / 60;
         return {
-          hrs ,
-          minutes,
-          maxBudgetHrs
+            hrs,
+            minutes,
+            maxBudgetHrs
         }
-      }
+    }
+
+    setBatchObject(batchUrl, url, body, listName, type, ) {
+        const obj = Object.assign({}, this.queryConfig);
+        obj.url = url;
+        obj.listName = listName; 
+        obj.type = type;
+        obj.data = body;
+        batchUrl.push(obj);
+    }
 
 }
