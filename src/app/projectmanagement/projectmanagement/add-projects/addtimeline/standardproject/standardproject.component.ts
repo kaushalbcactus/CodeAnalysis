@@ -725,10 +725,10 @@ export class StandardprojectComponent implements OnInit {
       // check If submilestones is present or not
       if (milestoneObj.SubMilestones) {
         // We passed 0 as parameter when all the submilestone task need to change.
-        await this.createSubMilestones(StartDate, milestoneObj, true, 0);
+        await this.createSubMilestones(milestoneObj.data.StartDate, milestoneObj, true, 0);
       } else {
         this.sharedTaskAllocateObj.oTasks = this.filterTask(milestoneObj.TemplateMileStone, null);
-        await this.createTask(StartDate, true, "", "", "", milestoneObj, null);
+        await this.createTask(milestoneObj.data.StartDate, true, "", "", "", milestoneObj, null);
       }
       this.calculateMilestoneDeviationDays(milestoneObj);
       milestoneObj.data.clientReviewStartDate = this.setDefaultAMHours(this.calcBusinessNextDate(milestoneObj.data.EndDate, 1));
@@ -811,7 +811,7 @@ export class StandardprojectComponent implements OnInit {
         ngPrimeSubmilestoneObj.data.allocationColor = '';
         ngPrimeSubmilestoneObj.data.showAllocationSplit = false;
         this.sharedTaskAllocateObj.oTasks = this.filterTask(milestoneObj.TemplateMileStone, ngPrimeSubmilestoneObj.data.Name);
-        await this.createTask(StartDate, true, "", "", "", milestoneObj, ngPrimeSubmilestoneObj);
+        await this.createTask(ngPrimeSubmilestoneObj.data.StartDate, true, "", "", "", milestoneObj, ngPrimeSubmilestoneObj);
         if (ngPrimeSubmilestoneObj.children.length) {
           ngPrimeSubmilestoneObj.data.EndDate = ngPrimeSubmilestoneObj.children[ngPrimeSubmilestoneObj.children.length - 1].data.EndDate;
           ngPrimeSubmilestoneObj.data.EndDatePart = this.getDatePart(ngPrimeSubmilestoneObj.data.EndDate);
@@ -841,7 +841,7 @@ export class StandardprojectComponent implements OnInit {
         submilestoneObj.data.StartDatePart = this.getDatePart(submilestoneObj.data.StartDate);
         submilestoneObj.data.StartTimePart = this.getTimePart(submilestoneObj.data.StartDate);
         this.sharedTaskAllocateObj.oTasks = submilestoneObj.children;
-        await this.createTask(StartDate, false, "", "", "", milestoneObj, submilestoneObj);
+        await this.createTask(submilestoneObj.data.StartDate, false, "", "", "", milestoneObj, submilestoneObj);
         if (submilestoneObj.children.length) {
           submilestoneObj.data.EndDate = submilestoneObj.children[submilestoneObj.children.length - 1].data.EndDate;
           submilestoneObj.data.EndDatePart = this.getDatePart(submilestoneObj.data.EndDate);
@@ -1399,10 +1399,10 @@ export class StandardprojectComponent implements OnInit {
         milestones_copy[milestoneIndex].children[subMilestoneIndex].data.StartDate = stardate;
         milestones_copy[milestoneIndex].children[subMilestoneIndex].data.StartDatePart = this.getDatePart(milestones_copy[milestoneIndex].children[subMilestoneIndex].data.StartDate);
         milestones_copy[milestoneIndex].children[subMilestoneIndex].data.StartTimePart = this.getTimePart(milestones_copy[milestoneIndex].children[subMilestoneIndex].data.StartDate);
-        await this.createTask(stardate, false, "", taskObj.data.TaskDays, taskObj.data.assignedUserTimeZone, milestones_copy[milestoneIndex], milestones_copy[milestoneIndex].children[subMilestoneIndex]);
+        await this.createTask(milestones_copy[milestoneIndex].data.StartDate, false, "", taskObj.data.TaskDays, taskObj.data.assignedUserTimeZone, milestones_copy[milestoneIndex], milestones_copy[milestoneIndex].children[subMilestoneIndex]);
       }
       if (taskIndex > 0) {
-        let updatedStartdate = this.commonTaskProperties(taskObj, stardate);
+        let updatedStartdate = this.commonTaskProperties(taskObj, milestones_copy[milestoneIndex].data.StartDate);
         await this.createTask(updatedStartdate, false, taskObj.data.Title, taskObj.data.TaskDays, taskObj.data.assignedUserTimeZone, milestones_copy[milestoneIndex], milestones_copy[milestoneIndex].children[subMilestoneIndex]);
       }
       const resource = this.sharedTaskAllocateObj.oAllResource.filter((objt) => {
