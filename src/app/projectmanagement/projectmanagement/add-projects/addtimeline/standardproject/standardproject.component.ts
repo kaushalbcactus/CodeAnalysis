@@ -91,6 +91,10 @@ export class StandardprojectComponent implements OnInit {
   standardFiles: TreeNode[];
   standardCol: any[];
   taskMenu: MenuItem[];
+  public hideTable = true;
+  public hideLoader = true;
+  public confirmDisabled = true;
+  public hideCapacity = true;
   constructor(
     private spService: SPOperationService,
     public pmObject: PMObjectService,
@@ -118,9 +122,13 @@ export class StandardprojectComponent implements OnInit {
     const newDate = new Date(date);
     return this.datepipe.transform(newDate, 'hh:mm a');
   }
-  async ngOnInit() {
-    await this.loadStandardTimeline();
-    this.setFieldProperties();
+  ngOnInit() {
+    setTimeout(async () => {
+      await this.loadStandardTimeline();
+      this.setFieldProperties();
+      this.isStandardLoaderHidden = true;
+      this.isStandardTableHidden = false;
+    }, 100);
   }
   onSeviceClear() {
     // tslint:disable-next-line:no-debugger
@@ -133,10 +141,12 @@ export class StandardprojectComponent implements OnInit {
     this.selectedResourceObject = null;
   }
   async loadStandardTimeline() {
-    $('.timeline-top-section').hide();
-    $('#standardTimelineConfirm').attr('disabled', 'true');
-    $('.standardMilestoneByType').hide();
-    $('.initialUserCapacity-section').hide();
+    // $('.timeline-top-section').hide();
+    // $('#standardTimelineConfirm').attr('disabled', 'true');
+    this.confirmDisabled = true;
+    // $('.standardMilestoneByType').hide();
+    // $('.initialUserCapacity-section').hide();
+    this.hideCapacity = true;
     const currentYear = new Date().getFullYear();
     const next10Year = currentYear + 10;
     const prev5Year = currentYear - 5;
@@ -152,8 +162,8 @@ export class StandardprojectComponent implements OnInit {
     } else {
       this.setDropdownField();
     }
-    $('.iframe-spinner-section', window.parent.document).hide();
-    $('.timeline-top-section').show();
+    // $('.iframe-spinner-section', window.parent.document).hide();
+    // $('.timeline-top-section').show();
   }
   public async getProjectManagement() {
     const batchURL = [];
@@ -444,7 +454,8 @@ export class StandardprojectComponent implements OnInit {
     if (event !== undefined) {
       this.onChangeResetField();
       this.serviceId = serviceId;
-      $('.standardMilestoneByType').hide();
+      // $('.standardMilestoneByType').hide();
+      // this.hideTable = false;
       this.isStandardFetchTableHidden = true;
       let tempskillTypes = {};
       let temSkillArray = [];
@@ -511,8 +522,10 @@ export class StandardprojectComponent implements OnInit {
         summary: 'Error Message', detail: 'Please select the service.'
       });
     } else {
-      $('.initialUserCapacity-section').hide();
-      $('.standard-spinner-section').show();
+      // $('.initialUserCapacity-section').hide();
+      this.hideCapacity = true;
+      // $('.standard-spinner-section').show();
+      this.hideLoader = false;
       let oCapacityStartDate = {};
       oCapacityStartDate = this.calcBusinessNextDate(new Date(), 1);
       if (this.ngStandardProposedStartDate) {
@@ -528,8 +541,10 @@ export class StandardprojectComponent implements OnInit {
 
 
         // userCapacityRef.applyFilterLocal(oCapacityStartDate, oCapacityEndDate, this.sharedTaskAllocateObj.oAllResource);
-        $('.standard-spinner-section').hide();
-        $('.initialUserCapacity-section').show();
+        // $('.standard-spinner-section').hide();
+        this.hideLoader = true;
+        // $('.initialUserCapacity-section').show();
+        this.hideCapacity = false;
       }, 100);
     }
   }
@@ -538,7 +553,7 @@ export class StandardprojectComponent implements OnInit {
    * @param event It provides the skill.
    */
   onSkillChange(event, skillId) {
-    if (event !== undefined) {
+    if (event.value) {
       this.reviewerList = [];
       this.resourceId = skillId;
       this.selectedSkillObject = event;
@@ -639,7 +654,7 @@ export class StandardprojectComponent implements OnInit {
     if (this.selectedSkillObject.value.userType != 'Type') {
       let endDate = this.calcBusinessNextDate(startDate, 90);
       let resource = [];
-      const currentUser = this.pmObject.oProjectManagement.oResourcesCat.find(u => u.UserName.ID ===  this.userProperties.Id);
+      const currentUser = this.pmObject.oProjectManagement.oResourcesCat.find(u => u.UserName.ID === this.userProperties.Id);
       resource.push(this.selectedSkillObject.value, this.selectedResourceObject.value, currentUser);
       this.pmObject.oTaskAllocation.oAllSelectedResource = resource;
       this.sharedObject.oCapacity = await this.userCapacity.applyFilterReturn(startDate, endDate, resource, []);
@@ -689,7 +704,7 @@ export class StandardprojectComponent implements OnInit {
       milestoneObj.TemplateMileStone = orginalMilestone[index].Title;
       milestoneObj.MilestoneName = orginalMilestone[index].MilestoneName;
       milestoneObj.data.Name = orginalMilestone[index].MilestoneName;
-      milestoneObj.data.isEndDateDisabled = false;
+      // milestoneObj.data.isEndDateDisabled = false;
       milestoneObj.data.type = 'milestone';
       milestoneObj.data.MileId = milestoneObj.data.Name;
       milestoneObj.data.Hours = orginalMilestone[index].Hours;
@@ -710,10 +725,10 @@ export class StandardprojectComponent implements OnInit {
       // check If submilestones is present or not
       if (milestoneObj.SubMilestones) {
         // We passed 0 as parameter when all the submilestone task need to change.
-        await this.createSubMilestones(StartDate, milestoneObj, true, 0);
+        await this.createSubMilestones(milestoneObj.data.StartDate, milestoneObj, true, 0);
       } else {
         this.sharedTaskAllocateObj.oTasks = this.filterTask(milestoneObj.TemplateMileStone, null);
-        await this.createTask(StartDate, true, "", "", "", milestoneObj, null);
+        await this.createTask(milestoneObj.data.StartDate, true, "", "", "", milestoneObj, null);
       }
       this.calculateMilestoneDeviationDays(milestoneObj);
       milestoneObj.data.clientReviewStartDate = this.setDefaultAMHours(this.calcBusinessNextDate(milestoneObj.data.EndDate, 1));
@@ -796,7 +811,7 @@ export class StandardprojectComponent implements OnInit {
         ngPrimeSubmilestoneObj.data.allocationColor = '';
         ngPrimeSubmilestoneObj.data.showAllocationSplit = false;
         this.sharedTaskAllocateObj.oTasks = this.filterTask(milestoneObj.TemplateMileStone, ngPrimeSubmilestoneObj.data.Name);
-        await this.createTask(StartDate, true, "", "", "", milestoneObj, ngPrimeSubmilestoneObj);
+        await this.createTask(ngPrimeSubmilestoneObj.data.StartDate, true, "", "", "", milestoneObj, ngPrimeSubmilestoneObj);
         if (ngPrimeSubmilestoneObj.children.length) {
           ngPrimeSubmilestoneObj.data.EndDate = ngPrimeSubmilestoneObj.children[ngPrimeSubmilestoneObj.children.length - 1].data.EndDate;
           ngPrimeSubmilestoneObj.data.EndDatePart = this.getDatePart(ngPrimeSubmilestoneObj.data.EndDate);
@@ -826,7 +841,7 @@ export class StandardprojectComponent implements OnInit {
         submilestoneObj.data.StartDatePart = this.getDatePart(submilestoneObj.data.StartDate);
         submilestoneObj.data.StartTimePart = this.getTimePart(submilestoneObj.data.StartDate);
         this.sharedTaskAllocateObj.oTasks = submilestoneObj.children;
-        await this.createTask(StartDate, false, "", "", "", milestoneObj, submilestoneObj);
+        await this.createTask(submilestoneObj.data.StartDate, false, "", "", "", milestoneObj, submilestoneObj);
         if (submilestoneObj.children.length) {
           submilestoneObj.data.EndDate = submilestoneObj.children[submilestoneObj.children.length - 1].data.EndDate;
           submilestoneObj.data.EndDatePart = this.getDatePart(submilestoneObj.data.EndDate);
@@ -889,7 +904,7 @@ export class StandardprojectComponent implements OnInit {
         ngPrimetaskObj.data.minEndDateValue = ngPrimetaskObj.data.StartDate;
         ngPrimetaskObj.data.MileId = ngPrimemilestoneObj.data.MileId + ';#' + this.pmConstant.task.CLIENT_REVIEW;
         ngPrimetaskObj.data.AssignedTo = this.userProperties.Title;
-        ngPrimetaskObj.data.showHyperLink = true;
+        ngPrimetaskObj.data.showHyperLink = false;
         this.standardFiles.push(ngPrimetaskObj);
         date = this.calcBusinessNextDate(ngPrimetaskObj.data.EndDate, 1);
       }
@@ -1034,9 +1049,11 @@ export class StandardprojectComponent implements OnInit {
           taskObj.data.isStartDateDisabled = false;
           taskObj.data.isEndDateDisabled = false;
           taskObj.data.Hours = milestoneTask[index].Hours;
+          taskObj.data.showHyperLink = true;
           taskObj.data.Days = taskObj.data.UseTaskDays + "(" + taskObj.data.TaskDays + ")";
           if (this.selectedSkillObject.value.userType === 'Type') {
             taskObj.data.AssignedTo = milestoneTask[index].Skill;
+            taskObj.data.showHyperLink = false;
             if (submilestoneObj) {
               taskObj.data.MileId = submilestoneObj.data.MileId + ";#" + taskObj.data.Name;
               taskObj.data.SubMilestone = submilestoneObj.data.Name;
@@ -1048,6 +1065,7 @@ export class StandardprojectComponent implements OnInit {
               taskObj.AssignedTo = this.userProperties.Title;
               taskObj.data.AssignedTo = this.userProperties.Title;
               startdate = this.setDefaultAMHours(milestoneObj.data.StartDate);
+              taskObj.data.isEndDateDisabled = true;
             }
             if (taskObj.data.UseTaskDays !== this.pmConstant.task.USE_TASK_DAYS || milestoneTask[index].TaskName.Title === 'Send to client') {
               taskObj.data.showTime = true;
@@ -1056,7 +1074,6 @@ export class StandardprojectComponent implements OnInit {
               }
 
             }
-            taskObj.data.showHyperLink = true;
             if (daysHours !== "") {
               startdate = this.changeStartDate(newStartDate, taskObj, "+5.5");
               startdate = this.commonTaskProperties(taskObj, startdate);
@@ -1084,7 +1101,7 @@ export class StandardprojectComponent implements OnInit {
               // startdate = this.checkUserAvailability(startdate, taskObj);
             } else {
               taskObj.data.AssignedTo = milestoneTask[index].Skill;
-              taskObj.data.showHyperLink = true;
+              taskObj.data.showHyperLink = false;
             }
             startdate = this.commonUserTaskProperties(taskObj, startdate);
             if (submilestoneObj) {
@@ -1097,6 +1114,7 @@ export class StandardprojectComponent implements OnInit {
             if (taskObj.data.Task === this.pmConstant.task.SEND_TO_CLIENT) {
               taskObj.data.AssignedTo = this.userProperties.Title;
               taskObj.isHoursDisabled = true;
+              taskObj.data.showHyperLink = false;
             }
             if (taskObj.data.UseTaskDays !== this.pmConstant.task.USE_TASK_DAYS || milestoneTask[index].TaskName.Title === 'Send to client') {
               if (milestoneTask[index].TaskName.Title === 'Send to client') {
@@ -1149,7 +1167,7 @@ export class StandardprojectComponent implements OnInit {
           if (this.selectedSkillObject.value.userType !== 'Type') {
             let selectedSkillObj = this.pmObject.oTaskAllocation.oAllSelectedResource;
             let filterResource = selectedSkillObj.filter(function (obj) {
-              let skill = obj.SkillLevel.Title.replace(' Offsite', '').replace('Jr ', '').replace('Sr ', '').replace('Medium ', '');
+              let skill = obj.SkillLevel.Title.replace(' Onsite', '').replace(' Offsite', '').replace('Jr ', '').replace('Sr ', '').replace('Medium ', '');
               return taskObj.data.Skill === skill;
             });
             if (daysHours !== "") {
@@ -1164,7 +1182,7 @@ export class StandardprojectComponent implements OnInit {
               // startdate = this.checkUserAvailability(startdate, taskObj);
             } else {
               taskObj.data.AssignedTo = milestoneTask[index].Skill;
-              taskObj.data.showHyperLink = true;
+              taskObj.data.showHyperLink = false;
             }
             if (previousTask == "") {
               milestoneObj.proposedStartDate = startdate;
@@ -1381,10 +1399,10 @@ export class StandardprojectComponent implements OnInit {
         milestones_copy[milestoneIndex].children[subMilestoneIndex].data.StartDate = stardate;
         milestones_copy[milestoneIndex].children[subMilestoneIndex].data.StartDatePart = this.getDatePart(milestones_copy[milestoneIndex].children[subMilestoneIndex].data.StartDate);
         milestones_copy[milestoneIndex].children[subMilestoneIndex].data.StartTimePart = this.getTimePart(milestones_copy[milestoneIndex].children[subMilestoneIndex].data.StartDate);
-        await this.createTask(stardate, false, "", taskObj.data.TaskDays, taskObj.data.assignedUserTimeZone, milestones_copy[milestoneIndex], milestones_copy[milestoneIndex].children[subMilestoneIndex]);
+        await this.createTask(milestones_copy[milestoneIndex].data.StartDate, false, "", taskObj.data.TaskDays, taskObj.data.assignedUserTimeZone, milestones_copy[milestoneIndex], milestones_copy[milestoneIndex].children[subMilestoneIndex]);
       }
       if (taskIndex > 0) {
-        let updatedStartdate = this.commonTaskProperties(taskObj, stardate);
+        let updatedStartdate = this.commonTaskProperties(taskObj, milestones_copy[milestoneIndex].data.StartDate);
         await this.createTask(updatedStartdate, false, taskObj.data.Title, taskObj.data.TaskDays, taskObj.data.assignedUserTimeZone, milestones_copy[milestoneIndex], milestones_copy[milestoneIndex].children[subMilestoneIndex]);
       }
       const resource = this.sharedTaskAllocateObj.oAllResource.filter((objt) => {
@@ -1530,7 +1548,14 @@ export class StandardprojectComponent implements OnInit {
     });
     if (milestoneIndex !== -1 && taskIndex !== -1) {
       let taskObj = milestones_copy[milestoneIndex].children[taskIndex];
+      taskObj.data.EndDate = this.setDefaultPMHours(curObj.EndDate);
+      taskObj.data.EndDatePart = this.getDatePart(curObj.EndDate);
+      taskObj.data.EndTimePart = this.getTimePart(curObj.EndDate);
       stardate = this.setDefaultPMHours(curObj.EndDate);
+      const resource = this.sharedTaskAllocateObj.oAllResource.filter((objt) => {
+        return taskObj.data.userId === objt.UserName.ID;
+      });
+      await this.dailyAllocateTask(resource, taskObj.data);
       this.sharedTaskAllocateObj.oTasks = milestones_copy[milestoneIndex].children;
       // It will cascade the remaining task in current submilestone
       await this.createTask(stardate, false, taskObj.data.Title, taskObj.data.TaskDays, taskObj.data.assignedUserTimeZone, milestones_copy[milestoneIndex], null);
@@ -1563,28 +1588,37 @@ export class StandardprojectComponent implements OnInit {
    * @param curObj
    */
   async onStartDateChanged(curObj) {
-    this.cascadeStartDate(curObj);
-    // const resource = this.sharedTaskAllocateObj.oAllResource.filter((objt) => {
-    //   return curObj.userId === objt.UserName.ID;
-    // });
-    // await this.dailyAllocateTask(resource, curObj);
-    let tempstand = this.standardFiles;
-    this.standardFiles = [...tempstand];
+    this.showLoader();
+    setTimeout(async () => {
+      await this.cascadeStartDate(curObj);
+      let tempstand = this.standardFiles;
+      this.standardFiles = [...tempstand];
+      this.showTable();
+    }, 100);
   }
   /**
    * This method will called respective method when end date is changed.
    * @param curObj
    */
   async onEndDateChanged(curObj) {
-    this.cascadeEndDate(curObj);
-    // const resource = this.sharedTaskAllocateObj.oAllResource.filter((objt) => {
-    //   return curObj.userId === objt.UserName.ID;
-    // });
-    // await this.dailyAllocateTask(resource, curObj);
-    let tempstand = this.standardFiles;
-    this.standardFiles = [...tempstand];
+    this.showLoader();
+    setTimeout(async () => {
+      await this.cascadeEndDate(curObj);
+      let tempstand = this.standardFiles;
+      this.standardFiles = [...tempstand];
+      this.showTable();
+    }, 100);
   }
 
+  showTable() {
+    this.hideTable = false;
+    this.hideLoader = true;
+  }
+
+  showLoader() {
+    this.hideLoader = false;
+    this.hideTable = true;
+  }
   /**
    * This function is used to check whether milestone, clientreview, submilestone or task end date is changed.
    * @param mileId
@@ -1651,23 +1685,23 @@ export class StandardprojectComponent implements OnInit {
    * @param startdate Provide the startdate.
    * @param milestoneTaskObj Provide the task object
    */
-  private checkUserAvailability(startdate, milestoneTaskObj) {
-    let userCapacity = this.sharedObject.oCapacity.arrUserDetails;
-    let filterUser;
-    if (userCapacity.length > 0) {
-      filterUser = userCapacity.filter(function (obj) {
-        return milestoneTaskObj.data.userId === obj.uid;
-      });
-    }
-    if (filterUser.length) {
-      if (milestoneTaskObj.data.UseTaskDays === this.pmConstant.task.USE_TASK_DAYS) {
-        startdate = this.calcTaskDays(startdate, milestoneTaskObj, filterUser);
-      } else {
-        startdate = this.calHoursDays(startdate, milestoneTaskObj, filterUser);
-      }
-    }
-    return startdate;
-  }
+  // private checkUserAvailability(startdate, milestoneTaskObj) {
+  //   let userCapacity = this.sharedObject.oCapacity.arrUserDetails;
+  //   let filterUser;
+  //   if (userCapacity.length > 0) {
+  //     filterUser = userCapacity.filter(function (obj) {
+  //       return milestoneTaskObj.data.userId === obj.uid;
+  //     });
+  //   }
+  //   if (filterUser.length) {
+  //     if (milestoneTaskObj.data.UseTaskDays === this.pmConstant.task.USE_TASK_DAYS) {
+  //       startdate = this.calcTaskDays(startdate, milestoneTaskObj, filterUser);
+  //     } else {
+  //       startdate = this.calHoursDays(startdate, milestoneTaskObj, filterUser);
+  //     }
+  //   }
+  //   return startdate;
+  // }
 
   /**
    * This method is called to calculate the task days.
@@ -1780,16 +1814,20 @@ export class StandardprojectComponent implements OnInit {
    * This method is called when the generate button clicked.
    */
   getMilestones() {
-    $('.initialUserCapacity-section').hide();
+    // $('.initialUserCapacity-section').hide();
+    this.hideCapacity = true;
+    this.confirmDisabled = true;
     this.isStandardFetchTableHidden = true;
     let val = this.validateRequiredField(false);
     if (val) {
-      $('.standardMilestoneByType').hide();
-      $('.standard-spinner-section').show();
+      // $('.standardMilestoneByType').hide();
+      // $('.standard-spinner-section').show();
+      this.showLoader();
       setTimeout(async () => {
         await this.getMilestoneByType();
+        this.confirmDisabled = false;
       }, 100);
-      $('#standardTimelineConfirm').attr('disabled', false);
+      // $('#standardTimelineConfirm').attr('disabled', false);
     }
   }
   /**
@@ -1800,9 +1838,10 @@ export class StandardprojectComponent implements OnInit {
     this.sharedTaskAllocateObj.oMilestones = await this.getStandardMilestone();
     await this.getMilestoneTask(this.sharedTaskAllocateObj.oMilestones);
     await this.generateSkillMilestones();
+    this.showTable();
 
-    $('.standard-spinner-section').hide();
-    $('.standardMilestoneByType').show();
+    // $('.standard-spinner-section').hide();
+    // $('.standardMilestoneByType').show();
   }
 
   /**
@@ -1835,7 +1874,7 @@ export class StandardprojectComponent implements OnInit {
             if (milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.toggleCapacity) {
               setTimeout(async () => {
                 milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.toggleCapacity = false;
-                await userCapacityRef.applyFilterLocal(milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.StartDate, milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.EndDate, filterResource, [], 'PM');
+                await userCapacityRef.applyFilterLocal(milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.StartDate, milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.EndDate, filterResource, 'PM', []);
 
                 // const Resources = { resources: filterResource };
                 // const data = { task: Resources, startTime: milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.StartDate, endTime:  milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.EndDate,Module:'PM' }
@@ -1866,7 +1905,7 @@ export class StandardprojectComponent implements OnInit {
             if (milestones_copy[milestoneIndex].children[taskIndex].data.toggleCapacity) {
               setTimeout(async () => {
                 milestones_copy[milestoneIndex].children[taskIndex].data.toggleCapacity = false;
-                await userCapacityRef.applyFilterLocal(milestones_copy[milestoneIndex].children[taskIndex].data.StartDate, milestones_copy[milestoneIndex].children[taskIndex].data.EndDate, filterResource, [], 'PM');
+                await userCapacityRef.applyFilterLocal(milestones_copy[milestoneIndex].children[taskIndex].data.StartDate, milestones_copy[milestoneIndex].children[taskIndex].data.EndDate, filterResource, 'PM', []);
 
                 // const Resources = { resources: filterResource };
                 // const data = { task: Resources, startTime: milestones_copy[milestoneIndex].children[taskIndex].data.StartDate, endTime:  milestones_copy[milestoneIndex].children[taskIndex].data.EndDate,Module:'PM' }
@@ -2068,8 +2107,10 @@ export class StandardprojectComponent implements OnInit {
     const isTrue = this.validateRequiredField(true);
     if (isTrue) {
       this.disableField();
-      $('.standardMilestoneByType').hide();
-      $('.standardMilestone-fetch').show();
+      // $('.standardMilestoneByType').hide();
+      // $('.standardMilestone-fetch').show();
+      this.hideTable = true;
+      this.isStandardFetchTableHidden = false;
       this.isStandardFetchTableHidden = false;
       this.pmObject.addProject.Timeline.Standard.IsStandard = true;
       this.pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked = true;
@@ -2153,8 +2194,10 @@ export class StandardprojectComponent implements OnInit {
     }
     if (this.pmObject.addProject.Timeline.Standard.standardArray && this.pmObject.addProject.Timeline.Standard.standardArray.length) {
       this.standardFiles = this.pmObject.addProject.Timeline.Standard.standardArray
-      $('.standardMilestoneByType').hide();
-      $('.standardMilestone-fetch').show();
+      // this.showTable();
+      // $('.standardMilestoneByType').hide();
+      // $('.standardMilestone-fetch').show();
+      this.hideTable = false;
       this.isStandardFetchTableHidden = false;
     }
   }
@@ -2187,27 +2230,28 @@ export class StandardprojectComponent implements OnInit {
     $('#standardTimeline').attr("disabled", 'true');
     $('#nonStandardTimeline').attr("disabled", 'true');
     $('#standardTimelineCapacity').attr("disabled", 'true');
-    $('#standardTimelineConfirm').attr("disabled", 'true');
+    // $('#standardTimelineConfirm').attr("disabled", 'true');
+    this.confirmDisabled = true;
     $('#standardTimelineGenerate').attr("disabled", 'true');
   }
   /**
    * This method is used to enable the disabled field.
    */
-  enabledField() {
-    this.resetField();
-    $('.standardMilestone-fetch').hide();
-    this.isStandardFetchTableHidden = true;
-    this.isServiceDisabled = false;
-    this.isResourceDisabled = false;
-    this.isReviewerDisabled = false;
-    this.isProposedStartDateDisabled = false;
-    $('#standardProjectBudgetHrs').attr("disabled", 'false');
-    $('#standardTimeline').attr("disabled", 'false');
-    $('#nonStandardTimeline').attr("disabled", 'false');
-    $('#standardTimelineCapacity').attr("disabled", 'false');
-    $('#standardTimelineGenerate').attr("disabled", 'false');
-    this.loadStandardTimeline();
-  }
+  // enabledField() {
+  //   this.resetField();
+  //   // $('.standardMilestone-fetch').hide();
+  //   this.isStandardFetchTableHidden = true;
+  //   this.isServiceDisabled = false;
+  //   this.isResourceDisabled = false;
+  //   this.isReviewerDisabled = false;
+  //   this.isProposedStartDateDisabled = false;
+  //   $('#standardProjectBudgetHrs').attr("disabled", 'false');
+  //   $('#standardTimeline').attr("disabled", 'false');
+  //   $('#nonStandardTimeline').attr("disabled", 'false');
+  //   $('#standardTimelineCapacity').attr("disabled", 'false');
+  //   $('#standardTimelineGenerate').attr("disabled", 'false');
+  //   this.loadStandardTimeline();
+  // }
   /**
    * This method is used to rese the field.
    */
