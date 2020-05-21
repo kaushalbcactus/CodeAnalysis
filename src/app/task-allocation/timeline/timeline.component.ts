@@ -438,8 +438,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     }
   }
 
-  createFetchTaskSubMil(dbSubMilestones, milestone, GanttObj, nextSubMilestone,milestoneHoursSpent, projectHoursSpent,
-     projectHoursAllocated, projectAvailableHours, allRetrievedTasks, submile) {
+  createFetchTaskSubMil(dbSubMilestones, milestone, GanttObj, nextSubMilestone, milestoneHoursSpent, projectHoursSpent,
+    projectHoursAllocated, projectAvailableHours, allRetrievedTasks, submile) {
     let index = 0;
     for (const element of dbSubMilestones) {
       index++;
@@ -572,7 +572,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         ////// Refactor code - 1
         if (dbSubMilestones.length > 0) {
           let submile = [];
-          this.createFetchTaskSubMil(dbSubMilestones, milestone, GanttObj, nextSubMilestone,milestoneHoursSpent, projectHoursSpent,
+          this.createFetchTaskSubMil(dbSubMilestones, milestone, GanttObj, nextSubMilestone, milestoneHoursSpent, projectHoursSpent,
             projectHoursAllocated, projectAvailableHours, allRetrievedTasks, submile);
           // let index = 0;
           // for (const element of dbSubMilestones) {
@@ -1388,12 +1388,13 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   generateMenuList(indices) {
     const menus = [
       { "id": "budgetHrs", "text": "Budget Hours", "enabled": true },
-      { "id": "startDate", "text": "Start Date and Time", "enabled": true },
-      { "id": "endDate", "text": "End Date and Time", "enabled": true },
+      // { "id": "startDate", "text": "Start Date and Time", "enabled": true },
+      // { "id": "endDate", "text": "End Date and Time", "enabled": true },
+      { "id": "editTask", "text": "Edit Task", "enabled": true },
       { "id": "tatON", "text": "TAT ON", "enabled": true },
       { "id": "tatOFF", "text": "TAT OFF", "enabled": true },
-      { "id": "disableCascadeON", "text": "Disable Cascade ON", "enabled": true },
-      { "id": "disableCascadeOFF", "text": "Disable Cascade OFF", "enabled": true },
+      { "id": "disableCascadeON", "text": "Disable Cascade", "enabled": true },
+      { "id": "disableCascadeOFF", "text": "Enable Cascade", "enabled": true },
       { "id": "filesandcomments", "text": "Files And Comments", "enabled": true },
       { "id": "capacity", "text": "Show Capacity", "enabled": true },
       { "id": "confirmMilestone", "text": "Confirm Milestone", "enabled": true },
@@ -1519,24 +1520,24 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     let index;
     if (task.type == "task") {
       if (task.itemType === 'Client Review') {
-        index = [2, 7];
+        index = [1, 6];
       }
       else if (task.itemType === 'Send to client') {
-        index = [1, 7];
-        index.push(task.DisableCascade ? 6 : 5);
+        index = [1, 6];
+        index.push(task.DisableCascade ? 5 : 4);
       } else {
         if (task.slotType === 'Slot' && task.status !== 'Completed') {
-          index = [0, 1, 2];
-          index.push(task.DisableCascade ? 6 : 5);
+          index = [0, 1,];
+          index.push(task.DisableCascade ? 5 : 4);
         } else {
-          index = [0, 1, 2, 7];
-          index.push(task.tat ? 4 : 3);
-          index.push(task.DisableCascade ? 6 : 5);
+          index = [0, 1, 6];
+          index.push(task.tat ? 3 : 2);
+          index.push(task.DisableCascade ? 5 : 4);
           if (task.AssignedTo && task.AssignedTo.Id) {
-            index.push(8);
+            index.push(7);
           }
           if (task.showAllocationSplit) {
-            index = index.concat([11, 12]);
+            index = index.concat([10, 11]);
           }
         }
       }
@@ -1546,11 +1547,11 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       if (task.isNext === true && !task.subMilestonePresent && !this.changeInRestructure &&
         this.oProjectDetails.status !== 'In Discussion' && this.oProjectDetails.projectType !== 'FTE-Writing'
         && task.status !== 'Completed') {
-        index.push(9);
+        index.push(8);
       }
     } else if (task.type == "submilestone" && !this.changeInRestructure && task.status === 'Not Confirmed' &&
       (task.isCurrent || task.isNext)) {
-      index = [10];
+      index = [9];
     }
 
     return this.generateMenuList(index);
@@ -1646,7 +1647,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           //          this.changeDate(task);
           this.ChangeEndDate(true, task);
           this.updateMilestoneData();
-          this.notificationMessage();
+          this.ganttNotification();
           break;
         case 'tatOFF':
           task.tat = false;
@@ -1654,19 +1655,19 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           //        this.changeDate(task);
           this.ChangeEndDate(true, task);
           this.updateMilestoneData();
-          this.notificationMessage();
+          this.ganttNotification();
           break;
         case 'disableCascadeON':
           task.DisableCascade = true;
           task.edited = true;
           this.updateMilestoneData();
-          this.notificationMessage();
+          this.ganttNotification();
           break;
         case 'disableCascadeOFF':
           task.DisableCascade = false;
           task.edited = true;
           this.updateMilestoneData();
-          this.notificationMessage();
+          this.ganttNotification();
           break;
         case 'filesandcomments':
           this.ViewTaskDetails(task);
@@ -1686,14 +1687,16 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         case 'equalSplit':
           this.editAllocation(task, 'Equal');
           break;
-        case 'startDate':
-          this.openPopupOnGanttTask(task, 'start');
-          break;
-        case 'endDate':
-          this.openPopupOnGanttTask(task, 'end');
+        // case 'startDate':
+        //   this.openPopupOnGanttTask(task, 'start');
+        //   break;
+        // case 'endDate':
+        //   this.openPopupOnGanttTask(task, 'end');
+        //   break;
+        case 'editTask':
+          this.openPopupOnGanttTask(task, '');
           break;
         default:
-          this.openPopupOnGanttTask(task, '');
           break;
       }
     });
@@ -1801,9 +1804,13 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.budgetHrs = task.budgetHours;
   }
 
-  notificationMessage() {
-    this.messageService.add({ key: 'gantt-message', severity: 'success', summary: 'Success Message', detail: 'Task Updated Successfully' });
+  ganttNotification() {
+    this.messageService.add({ key: 'gantt-message', severity: 'warn', summary: 'Warning Message', detail: 'Gantt task update. There are some unsaved changes, Please save them.' });
   }
+
+  // notificationMessage() {
+  //   this.messageService.add({ key: 'gantt-message', severity: 'success', summary: 'Success Message', detail: 'Task Updated Successfully' });
+  // }
 
   onResourceClick(task) {
     // task.resources = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
@@ -2056,7 +2063,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         })
       });
       this.showBudgetHrs = false;
-      this.notificationMessage();
+      this.ganttNotification();
       await this.loadComponent()
       setTimeout(() => {
         this.scrollToTaskDate(this.updatedTasks.end_date);
@@ -2090,7 +2097,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
       this.GanttchartData = allTasks.data;
 
-      this.notificationMessage();
+      this.ganttNotification();
       this.showGanttChart();
       setTimeout(() => {
         this.scrollToTaskDate(scrollDate);

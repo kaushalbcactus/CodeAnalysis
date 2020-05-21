@@ -650,6 +650,6 @@ export class ConstantsService {
     POST : 'POST',
     GET : 'GET',
     PATCH : 'PATCH'
-  }
+  };
 
 }
