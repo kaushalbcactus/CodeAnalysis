@@ -962,7 +962,7 @@ export class CommonService {
 
     removeEmptyItems(array) {
         array = array.filter((el) => {
-            return el != null;
+            return el != null && !Array.isArray(el)  
         });
 
         return array;

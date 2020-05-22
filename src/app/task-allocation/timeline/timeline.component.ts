@@ -573,7 +573,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         if (GanttObj.status !== 'Deleted') {
           this.GanttchartData.push(GanttObj);
         }
-        ////// Refactor code - 1
+        ////// Refactor code - Done
         if (dbSubMilestones.length > 0) {
           let submile = [];
           this.createFetchTaskSubMil(dbSubMilestones, milestone, GanttObj, nextSubMilestone, milestoneHoursSpent, projectHoursSpent,
@@ -1074,7 +1074,20 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   }
 
+  async assignUsersToTask(taskObj, allRetrievedTasks) {
+    const assignedUsers = await this.taskAllocateCommonService.getResourceByMatrix(taskObj.data, allRetrievedTasks);
 
+    taskObj.data.assignedUsers = [];
+    const response = await this.formatAssignedUser(assignedUsers);
+    taskObj.data.assignedUsers = response;
+    if (taskObj.data.editMode) {
+      taskObj.data.assignedUsers.forEach(element => {
+        if (element.items.find(c => c.value.ID === taskObj.data.AssignedTo.ID)) {
+          taskObj.data.AssignedTo = element.items.find(c => c.value.ID === taskObj.data.AssignedTo.ID).value;
+        }
+      });
+    }
+  }
 
   // *************************************************************************************************************************************
   // Switch between Gantt chart and Tree table View
@@ -1085,51 +1098,53 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     for (let nCount = 0; nCount < this.milestoneData.length; nCount = nCount + 1) {
       let milestone = this.milestoneData[nCount];
       if (milestone.data.itemType === 'Client Review') {
-        const assignedUsers = await this.taskAllocateCommonService.getResourceByMatrix(milestone.data, allRetrievedTasks);
+        // const assignedUsers = await this.taskAllocateCommonService.getResourceByMatrix(milestone.data, allRetrievedTasks);
 
-        milestone.data.assignedUsers = [];
-        const response = await this.formatAssignedUser(assignedUsers);
-        milestone.data.assignedUsers = response;
-        if (milestone.data.editMode) {
-          milestone.data.assignedUsers.forEach(element => {
-            if (element.items.find(c => c.value.ID === milestone.data.AssignedTo.ID)) {
-              milestone.data.AssignedTo = element.items.find(c => c.value.ID === milestone.data.AssignedTo.ID).value;
-            }
-          });
-        }
+        // milestone.data.assignedUsers = [];
+        // const response = await this.formatAssignedUser(assignedUsers);
+        // milestone.data.assignedUsers = response;
+        // if (milestone.data.editMode) {
+        //   milestone.data.assignedUsers.forEach(element => {
+        //     if (element.items.find(c => c.value.ID === milestone.data.AssignedTo.ID)) {
+        //       milestone.data.AssignedTo = element.items.find(c => c.value.ID === milestone.data.AssignedTo.ID).value;
+        //     }
+        //   });
+        // }
+        await this.assignUsersToTask(milestone, allRetrievedTasks);
 
       } else if (milestone.children !== undefined) {
         for (let nCountSub = 0; nCountSub < milestone.children.length; nCountSub = nCountSub + 1) {
           let submilestone = milestone.children[nCountSub];
           if (submilestone.data.type === 'task') {
-            const assignedUsers = await this.taskAllocateCommonService.getResourceByMatrix(submilestone.data, allRetrievedTasks);
+            // const assignedUsers = await this.taskAllocateCommonService.getResourceByMatrix(submilestone.data, allRetrievedTasks);
 
-            submilestone.data.assignedUsers = [];
-            const response = await this.formatAssignedUser(assignedUsers);
-            submilestone.data.assignedUsers = response;
-            if (submilestone.data.editMode) {
-              submilestone.data.assignedUsers.forEach(element => {
-                if (element.items.find(c => c.value.ID === submilestone.data.AssignedTo.ID)) {
-                  submilestone.data.AssignedTo = element.items.find(c => c.value.ID === submilestone.data.AssignedTo.ID).value;
-                }
-              });
-            }
-
+            // submilestone.data.assignedUsers = [];
+            // const response = await this.formatAssignedUser(assignedUsers);
+            // submilestone.data.assignedUsers = response;
+            // if (submilestone.data.editMode) {
+            //   submilestone.data.assignedUsers.forEach(element => {
+            //     if (element.items.find(c => c.value.ID === submilestone.data.AssignedTo.ID)) {
+            //       submilestone.data.AssignedTo = element.items.find(c => c.value.ID === submilestone.data.AssignedTo.ID).value;
+            //     }
+            //   });
+            // }
+            await this.assignUsersToTask(submilestone, allRetrievedTasks);
 
           } else if (submilestone.children !== undefined) {
             for (let nCountTask = 0; nCountTask < submilestone.children.length; nCountTask = nCountTask + 1) {
               const task = submilestone.children[nCountTask];
-              const assignedUsers = await this.taskAllocateCommonService.getResourceByMatrix(task.data, allRetrievedTasks);
-              task.data.assignedUsers = [];
-              const response = await this.formatAssignedUser(assignedUsers);
-              task.data.assignedUsers = response;
-              if (task.data.editMode) {
-                task.data.assignedUsers.forEach(element => {
-                  if (element.items.find(c => c.value.ID === task.data.AssignedTo.ID)) {
-                    task.data.AssignedTo = element.items.find(c => c.value.ID === task.data.AssignedTo.ID).value;
-                  }
-                });
-              }
+              // const assignedUsers = await this.taskAllocateCommonService.getResourceByMatrix(task.data, allRetrievedTasks);
+              // task.data.assignedUsers = [];
+              // const response = await this.formatAssignedUser(assignedUsers);
+              // task.data.assignedUsers = response;
+              // if (task.data.editMode) {
+              //   task.data.assignedUsers.forEach(element => {
+              //     if (element.items.find(c => c.value.ID === task.data.AssignedTo.ID)) {
+              //       task.data.AssignedTo = element.items.find(c => c.value.ID === task.data.AssignedTo.ID).value;
+              //     }
+              //   });
+              // }
+              await this.assignUsersToTask(task, allRetrievedTasks);
             }
           }
         }
@@ -1955,6 +1970,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     });
     await this.dailyAllocateTask(resource, this.selectedTask);
     this.refreshGantt();
+    this.ganttNotification();
   }
 
   editTaskModal(task, clickedInputType) {
@@ -2726,25 +2742,24 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
     });
 
-    ref.onClose.subscribe((RestructureMilestones: any) => {
+    ref.onClose.subscribe((restructureMilestones: any) => {
 
       let allReturnedTasks = [];
       this.loaderenable = true;
       let tempSubmilestones = [];
       let tempmilestoneId = 120000000;
-      if (RestructureMilestones) {
+      if (restructureMilestones) {
         tempmilestoneId++;
         let tempmilestoneData = [];
         let milestoneedit = false;
         const nodesNew = [];
-        for (const nodeOrder of RestructureMilestones.nodeOrder) {
+        for (const nodeOrder of restructureMilestones.nodeOrder) {
           const node = RestructureMilestones.nodes.find(e => e.id === nodeOrder);
           nodesNew.push(node);
         }
-        RestructureMilestones.nodes = nodesNew;
+        restructureMilestones.nodes = nodesNew;
 
-
-        RestructureMilestones.nodes.forEach(milestone => {
+        restructureMilestones.nodes.forEach(milestone => {
           let CRObj;
           let temptasks = [];
           let submilestoneposition = 1;
@@ -2997,9 +3012,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         this.changeInRestructure = this.milestoneData.find(c => c.data.editMode === true) !== undefined ? true : false;
         if (this.changeInRestructure) {
           // setTimeout(() => {
-
           this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'There are some unsaved changes, Please save them.' });
-
           // }, 300);
         }
 
