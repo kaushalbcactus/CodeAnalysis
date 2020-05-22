@@ -777,3 +777,14 @@ div.sticky {
 .ui-overlaypanel-close {
   background-color: #db1721 !important;
 }
+
+/* .ui-sidebar-top.ui-sidebar-lg, .resourcePanel .ui-sidebar-bottom.ui-sidebar-lg */
+.ui-sidebar-top.ui-sidebar-lg,.ui-sidebar-bottom.ui-sidebar-lg {
+  height: 35em !important;
+}
+
+.resourcePanel #capacityTable > .capacityBody {
+  overflow-y: auto !important;
+  height: 200px !important;
+  display: block !important;
+}

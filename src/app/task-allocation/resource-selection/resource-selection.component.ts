@@ -19,6 +19,7 @@ export class ResourceSelectionComponent implements OnInit {
   Buckets = [];
   PracticeAreas = [];
   Resources = [];
+  header = "";
   constructor(private timeline: TimelineComponent,
     private commonService: CommonService,
     private constants: ConstantsService,
@@ -37,7 +38,8 @@ export class ResourceSelectionComponent implements OnInit {
 
   async ngOnInit() {
     if(this.sharedObject.data) {
-      let data = this.sharedObject.data
+      let data = this.sharedObject.data;
+      this.header = this.sharedObject.resourceHeader;
       await this.onLoad(data);
     }
   }

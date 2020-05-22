@@ -1,6 +1,10 @@
 <div class="p-row p-dir-col">
+    <p-toast key="toastMessage" [style]="{marginTop: '80px'}" position="top-center"></p-toast>
     <p-card class="p-col">
         <form class="p-grid" #searchForm="ngForm" [formGroup]="searchCapacityForm" (ngSubmit)="onSubmit()">
+            <div class="p-col-12">
+                <h5>{{header}}</h5>
+            </div>
             <div class="p-col-12 p-justify-between p-align-center" style="padding: 20px 0px 20px 0px;">
                 <span class="p-col ui-float-label ui-fluid evenrow" style="width:11%;">
                     <p-multiSelect [options]="Buckets" formControlName="bucket" (onChange)="onChange($event,'bucket')"
@@ -28,7 +32,7 @@
                 </span>
 
                 <span class="p-col-2 ui-float-label ui-fluid evenrow" style="width: 17%;">
-                    <p-calendar formControlName="rangeDates" selectionMode="range" [style]="{'width':'100%'}"
+                    <p-calendar formControlName="rangeDates" selectionMode="range" styleClass="customDate" [style]="{'width':'100%'}"
                         numberOfMonths='1' dateFormat="M dd, yy" [showIcon]="true" [disabledDays]="[0,6]"
                         [readonlyInput]="true" placeholder="Select Custom Dates" [style]="{'cursor': 'pointer'}"
                         [required]="true"></p-calendar>
