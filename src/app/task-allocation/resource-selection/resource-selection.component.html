@@ -1,0 +1,57 @@
+<div class="p-row p-dir-col">
+    <p-card class="p-col">
+        <form class="p-grid" #searchForm="ngForm" [formGroup]="searchCapacityForm" (ngSubmit)="onSubmit()">
+            <div class="p-col-12 p-justify-between p-align-center" style="padding: 20px 0px 20px 0px;">
+                <span class="p-col ui-float-label ui-fluid evenrow" style="width:11%;">
+                    <p-multiSelect [options]="Buckets" formControlName="bucket" (onChange)="onChange($event,'bucket')"
+                        resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" defaultLabel="Select"
+                        [style]="{width:'100%'}">
+                    </p-multiSelect>
+                    <label for="float-input" class="mainlable">Bucket</label>
+                </span>
+
+                <span class="p-col-2 ui-float-label ui-fluid oddrow" style="width: 15%;">
+                    <p-multiSelect [options]="PracticeAreas" formControlName="practicearea"
+                        (onChange)="onChange($event,'practicearea')" resetFilterOnHide="true"
+                        (keydown.enter)="$event.preventDefault()" defaultLabel="Select Practice Area"
+                        [style]="{width:'100%'}">
+                    </p-multiSelect>
+                    <label for="float-input" class="mainlable">Practice Area</label>
+                </span>
+
+                <span class="p-col-2 ui-float-label ui-fluid oddrow">
+                    <p-multiSelect [options]="Resources" formControlName="resources"
+                        (onChange)="onChange($event,'resource')" resetFilterOnHide="true"
+                        (keydown.enter)="$event.preventDefault()" defaultLabel="Select Resource"
+                        [style]="{width:'100%'}"></p-multiSelect>
+                    <label for="float-input" class="mainlable">Resources</label>
+                </span>
+
+                <span class="p-col-2 ui-float-label ui-fluid evenrow" style="width: 17%;">
+                    <p-calendar formControlName="rangeDates" selectionMode="range" [style]="{'width':'100%'}"
+                        numberOfMonths='1' dateFormat="M dd, yy" [showIcon]="true" [disabledDays]="[0,6]"
+                        [readonlyInput]="true" placeholder="Select Custom Dates" [style]="{'cursor': 'pointer'}"
+                        [required]="true"></p-calendar>
+                    <label for="float-input" style="top: -.75em;" class="mainlable">Custom Dates</label>
+                </span>
+                <span class="p-col-2" style="width: 17%;">
+
+                    <div style="padding: 0px;float: right">
+                        <button pButton type="submit" icon="pi pi-search" class="ui-button-raised ui-button-danger search"
+                            style="float: right;margin: 0px 12px 0px 4px !important;"></button>
+                    </div>
+                </span>
+
+            </div>
+            <!-- <div style="width: 100%;">
+
+                <div style="padding: 0px;float: right">
+                    <button pButton type="submit" icon="pi pi-search" class="ui-button-raised ui-button-danger"
+                        style="float: right;margin: 0px 12px 0px 4px !important;"></button>
+                </div>
+                <div style="clear: both"></div>
+            </div> -->
+        </form>
+    </p-card>
+</div>
+<app-usercapacity #userCapacity (resourceSelect)="confirmChangeResource($event)"></app-usercapacity>
