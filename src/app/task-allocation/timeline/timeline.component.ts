@@ -1092,7 +1092,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   // *************************************************************************************************************************************
   // Switch between Gantt chart and Tree table View
   // *************************************************************************************************************************************
-  /////// Refactor code
+  /////// Refactor code - Done
   public async assignUsers(allRetrievedTasks) {
 
     for (let nCount = 0; nCount < this.milestoneData.length; nCount = nCount + 1) {
@@ -2755,7 +2755,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         let milestoneedit = false;
         const nodesNew = [];
         for (const nodeOrder of restructureMilestones.nodeOrder) {
-          const node = RestructureMilestones.nodes.find(e => e.id === nodeOrder);
+          const node = restructureMilestones.nodes.find(e => e.id === nodeOrder);
           nodesNew.push(node);
         }
         restructureMilestones.nodes = nodesNew;
@@ -3019,7 +3019,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
         this.tempGanttchartData = JSON.parse(JSON.stringify(this.GanttchartData));
         this.oldGantChartData = this.GanttchartData;
-        let ganttData: any = this.updateGanttChartData()
+        // let ganttData: any = this.getGanttTasksFromMilestones(this.milestoneData, true); 
+        // const data = this.updateGanttChartData();
+        let ganttData: any = this.updateGanttChartData();
         console.log(ganttData);
 
         // this.GanttchartData = this.taskAllocateCommonService.createGanttData(ganttData);
@@ -3104,6 +3106,14 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     return data;
   }
 
+  setDateValues(object)  {
+    object.data.start_date = object.children[0].data.start_date;
+    object.data.pUserStart = object.children[0].data.pUserStart;
+    object.data.pUserStartDatePart = object.children[0].data.pUserStartDatePart;
+    object.data.end_date = object.children[object.children.length - 1].data.end_date;
+    object.data.pUserEnd = object.children[object.children.length - 1].data.pUserEnd;
+    object.data.pUserEndDatePart = object.children[object.children.length - 1].data.pUserEndDatePart;
+  }
 
   updateMilestoneSubMilestonesDate(milestones) {
     const updatedMilestones = milestones;
@@ -3111,20 +3121,22 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       if (milestone.children) {
         milestone.children.forEach(submilestone => {
           if (submilestone.children) {
-            submilestone.data.start_date = submilestone.children[0].data.start_date;
-            submilestone.data.pUserStart = submilestone.children[0].data.pUserStart;
-            submilestone.data.pUserStartDatePart = submilestone.children[0].data.pUserStartDatePart;
-            submilestone.data.end_date = submilestone.children[submilestone.children.length - 1].data.end_date;
-            submilestone.data.pUserEnd = submilestone.children[submilestone.children.length - 1].data.pUserEnd;
-            submilestone.data.pUserEndDatePart = submilestone.children[submilestone.children.length - 1].data.pUserEndDatePart;
+            this.setDateValues(submilestone);
+            // submilestone.data.start_date = submilestone.children[0].data.start_date;
+            // submilestone.data.pUserStart = submilestone.children[0].data.pUserStart;
+            // submilestone.data.pUserStartDatePart = submilestone.children[0].data.pUserStartDatePart;
+            // submilestone.data.end_date = submilestone.children[submilestone.children.length - 1].data.end_date;
+            // submilestone.data.pUserEnd = submilestone.children[submilestone.children.length - 1].data.pUserEnd;
+            // submilestone.data.pUserEndDatePart = submilestone.children[submilestone.children.length - 1].data.pUserEndDatePart;
           }
         });
-        milestone.data.start_date = milestone.children[0].data.start_date;
-        milestone.data.pUserStart = milestone.children[0].data.pUserStart;
-        milestone.data.pUserStartDatePart = milestone.children[0].data.pUserStartDatePart;
-        milestone.data.end_date = milestone.children[milestone.children.length - 1].data.end_date;
-        milestone.data.pUserEnd = milestone.children[milestone.children.length - 1].data.pUserEnd;
-        milestone.data.pUserEndDatePart = milestone.children[milestone.children.length - 1].data.pUserEndDatePart;
+        this.setDateValues(milestone);
+        // milestone.data.start_date = milestone.children[0].data.start_date;
+        // milestone.data.pUserStart = milestone.children[0].data.pUserStart;
+        // milestone.data.pUserStartDatePart = milestone.children[0].data.pUserStartDatePart;
+        // milestone.data.end_date = milestone.children[milestone.children.length - 1].data.end_date;
+        // milestone.data.pUserEnd = milestone.children[milestone.children.length - 1].data.pUserEnd;
+        // milestone.data.pUserEndDatePart = milestone.children[milestone.children.length - 1].data.pUserEndDatePart;
       }
     });
     return updatedMilestones;
