@@ -1781,6 +1781,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         if (e.target.className === "gantt_tree_content" && e.target.parentElement.className == "gantt_cell gantt_last_cell") {
           this.header = task.submilestone ? task.milestone + ' ' + task.submilestone + ' ' + task.text
             : task.milestone + ' ' + task.text;
+          this.sharedObject.resourceHeader = this.header;
           this.onResourceClick(task);
         }
       }

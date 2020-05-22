@@ -535,8 +535,7 @@
 </p-overlayPanel> -->
 
 
-<p-sidebar [(visible)]="displayBody" position="bottom" styleClass="ui-sidebar-lg" [showCloseIcon]="false" [closeOnEscape]="false" (onHide)="onClose()">
-    <h5>{{header}}</h5>
+<p-sidebar [(visible)]="displayBody" position="bottom" styleClass="ui-sidebar-lg resourcePanel" [showCloseIcon]="false" [closeOnEscape]="false" (onHide)="onClose()">
     <app-resource-selection *ngIf="hideResourceSelection" #resourceSelect></app-resource-selection>
 </p-sidebar>
 

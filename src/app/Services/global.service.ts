@@ -12,6 +12,7 @@ export class GlobalService {
   public oReviewerPendingTasks = [];
   public isResourceChange: boolean = false;
   public data: any;
+  public resourceHeader = "";
   public user;
   public allocatedTask;
   public oTask = {
