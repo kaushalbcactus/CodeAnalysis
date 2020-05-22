@@ -1039,7 +1039,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     }
 
     if (this.visualgraph) {
-      this.showGanttChart();
+      this.showGanttChart(true);
     }
     this.milestoneDataCopy = JSON.parse(JSON.stringify(this.milestoneData));
 
@@ -1175,17 +1175,17 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   showVisualRepresentation() {
     if (this.visualgraph === false) {
       this.visualgraph = true;
-      this.showGanttChart();
+      this.showGanttChart(true);
     } else {
       this.ganttChart.remove();
       this.visualgraph = false;
     }
   }
 
-  showGanttChart() {
-    this.createGanttDataAndLinks()
-    this.taskAllocateCommonService.ganttParseObject.data = this.GanttchartData;
-    this.taskAllocateCommonService.ganttParseObject.links = this.linkArray;
+  showGanttChart(bCreateLinks) {
+    this.createGanttDataAndLinks(bCreateLinks);
+    // this.taskAllocateCommonService.ganttParseObject.data = this.GanttchartData;
+    // this.taskAllocateCommonService.ganttParseObject.links = this.linkArray;
     this.sharedObject.allocatedTask = this.taskAllocateCommonService.ganttParseObject.data.filter(e => e.type !== 'milestone' && e.slotType !== 'Slot' && e.title !== 'Client Review' && e.itemType !== 'Send to client')
     this.loadComponent();
   }
@@ -1200,8 +1200,11 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     }
   }
   /////// Refactor code - Done
-  createGanttDataAndLinks() {
-    this.linkArray = [];
+  createGanttDataAndLinks(createLinks, milestonesList?) {
+    if (createLinks) {
+      this.linkArray = [];
+    }
+
     const data = this.GanttchartData;
     let milestones = data.filter(e => e.type == 'milestone')
     milestones.map(m => {
@@ -1249,7 +1252,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         item.parent = mil.id;
         const subMils = data.filter(e => (e.position ? parseInt(e.position) : 0) === parseInt(item.position) + 1);
         subMils.forEach(submil => {
-          this.linkArray.push(this.createLinkArrayObject(item, submil));
+          if (createLinks) {
+            this.linkArray.push(this.createLinkArrayObject(item, submil));
+          }
         });
       } else if (item.type === 'task' && item.itemType !== 'Client Review') {
         if (item.parentSlot) {
@@ -1263,22 +1268,28 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         if (item.nextTask && item.nextTask.indexOf('Client Review') === -1) {
           const nextTasks = this.fetchNextTasks(item);
           nextTasks.forEach(nextTask => {
-            this.linkArray.push(this.createLinkArrayObject(item, nextTask));
+            if (createLinks) {
+              this.linkArray.push(this.createLinkArrayObject(item, nextTask));
+            }
           });
         }
 
       } else if (item.type === 'task' && item.itemType === 'Client Review') {
-        const arrMilestones = this.sharedObject.oTaskAllocation.oProjectDetails.allMilestones;
+        const arrMilestones = milestonesList ? milestonesList : this.sharedObject.oTaskAllocation.oProjectDetails.allMilestones;
         const milIndex = arrMilestones.indexOf(item.milestone);
         const nextMilesone = arrMilestones.length - 1 === milIndex ? '' : arrMilestones[milIndex + 1];
         if (nextMilesone) {
           const nextMil = data.find(e => e.text === nextMilesone);
-          this.linkArray.push(this.createLinkArrayObject(item, nextMil));
+          if (createLinks) {
+            this.linkArray.push(this.createLinkArrayObject(item, nextMil));
+          }
         }
       }
       else if (item.type === 'milestone') {
         const crTask = data.find(e => e.itemType === 'Client Review' && e.milestone === item.text);
-        this.linkArray.push(this.createLinkArrayObject(item, crTask));
+        if (createLinks) {
+          this.linkArray.push(this.createLinkArrayObject(item, crTask));
+        }
       }
       if (item.AssignedTo && item.AssignedTo.ID >= 0) {
         this.resource.push({
@@ -1388,7 +1399,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       }
     }, Object.create(null));
 
-    this.taskAllocateCommonService.ganttParseObject.links = this.linkArray;
+    if (createLinks) {
+      this.taskAllocateCommonService.ganttParseObject.links = this.linkArray;
+    }
   }
 
   fetchNextTasks(task) {
@@ -1790,7 +1803,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     });
 
     this.taskAllocateCommonService.attachedEvents.push(onTaskClick);
-    
+
     const onTaskDrag = gantt.attachEvent("onAfterTaskDrag", (id, mode, e) => {
       let task = this.currentTask;
       //gantt.getTask(id);
@@ -2120,7 +2133,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       this.GanttchartData = allTasks.data;
 
       this.ganttNotification();
-      this.showGanttChart();
+      this.showGanttChart(false);
       setTimeout(() => {
         this.scrollToTaskDate(scrollDate);
       }, 1000);
@@ -2369,7 +2382,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       this.changeInRestructure = false;
       this.milestoneData = JSON.parse(JSON.stringify(this.tempmilestoneData));
       this.GanttchartData = this.oldGantChartData;
-      this.createGanttDataAndLinks();
+      this.createGanttDataAndLinks(true);
       this.convertDateString();
       this.loadComponent();
     }
@@ -2748,11 +2761,12 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       let allReturnedTasks = [];
       this.loaderenable = true;
       let tempSubmilestones = [];
-      let tempmilestoneId = 120000000;
+      let tempId = 0;
       if (restructureMilestones) {
-        tempmilestoneId++;
+        //tempmilestoneId++;
         let tempmilestoneData = [];
         let milestoneedit = false;
+        let milestonesList = [];
         const nodesNew = [];
         for (const nodeOrder of restructureMilestones.nodeOrder) {
           const node = restructureMilestones.nodes.find(e => e.id === nodeOrder);
@@ -2765,8 +2779,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           let temptasks = [];
           let submilestoneposition = 1;
           let TempSubmilePositionArray = [];
-          let milestoneObj = this.getObjectByValue(milestone, 'milestone', tempmilestoneId, undefined);
-
+          tempId++;
+          let milestoneObj = this.getObjectByValue(milestone, 'milestone', 'M' + tempId, undefined);
+          milestonesList.push(milestone.label);
           if (milestone.submilestone.nodes.length > 1) {
             var submile = [];
             milestone.submilestone.nodes.forEach(submilestone => {
@@ -2808,7 +2823,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
                 }
 
               }
-              let submilestoneObj = this.getObjectByValue(submilestone, 'submilestone', tempmilestoneId, TempSubmilePositionArray);
+              tempId++;
+              let submilestoneObj = this.getObjectByValue(submilestone, 'submilestone', 'S' + tempId, TempSubmilePositionArray);
 
 
               if (submilestone.task.nodes.length > 0) {
@@ -2817,7 +2833,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
                   nextTasks = nextTasks.map(c => c.label).join(';')
                   let previousTasks = submilestone.task.nodes.filter(c => submilestone.task.links.filter(c => c.target === task.id).map(c => c.source).includes(c.id));
                   previousTasks = previousTasks.map(c => c.label).join(';')
-                  let TaskObj = this.getTaskObjectByValue(task, 'ggroupblack', milestone, nextTasks, previousTasks, submilestone);
+                  tempId++;
+                  let TaskObj = this.getTaskObjectByValue(task, 'ggroupblack', milestone, nextTasks, previousTasks, submilestone, 'T' + tempId);
                   previousTasks = previousTasks === "" ? null : previousTasks;
                   nextTasks = nextTasks === "" ? null : nextTasks;
 
@@ -2928,7 +2945,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
               nextTasks = nextTasks.map(c => c.label).join(';');
               let previousTasks = milestone.submilestone.nodes[0].task.nodes.filter(c => milestone.submilestone.nodes[0].task.links.filter(c => c.target === task.id).map(c => c.source).includes(c.id));
               previousTasks = previousTasks.map(c => c.label).join(';');
-              let TaskObj = this.getTaskObjectByValue(task, 'gtaskred', milestone, nextTasks, previousTasks, undefined);
+              tempId++
+              let TaskObj = this.getTaskObjectByValue(task, 'gtaskred', milestone, nextTasks, previousTasks, undefined, 'T' + tempId);
 
               previousTasks = previousTasks === "" ? null : previousTasks;
               nextTasks = nextTasks === "" ? null : nextTasks;
@@ -3019,14 +3037,14 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
         this.tempGanttchartData = JSON.parse(JSON.stringify(this.GanttchartData));
         this.oldGantChartData = this.GanttchartData;
-        // let ganttData: any = this.getGanttTasksFromMilestones(this.milestoneData, true); 
+        let ganttData: any = this.getGanttTasksFromMilestones(this.milestoneData, true);
         // const data = this.updateGanttChartData();
-        let ganttData: any = this.updateGanttChartData();
+        // let ganttData: any = this.updateGanttChartData();
         console.log(ganttData);
 
         // this.GanttchartData = this.taskAllocateCommonService.createGanttData(ganttData);
-        this.GanttchartData = ganttData.__zone_symbol__value;
-        this.createGanttDataAndLinks();
+        this.GanttchartData = ganttData;
+        this.createGanttDataAndLinks(true, milestonesList);
 
         console.log(this.GanttchartData);
         // console.log(this.linkArray);
@@ -3043,7 +3061,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     });
   }
 
-  ////// Refactor code - Why change again ?
+  ////// Refactor code - Done
   async updateGanttChartData() {
     let data = [];
 
@@ -3106,7 +3124,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     return data;
   }
 
-  setDateValues(object)  {
+  setDateValues(object) {
     object.data.start_date = object.children[0].data.start_date;
     object.data.pUserStart = object.children[0].data.pUserStart;
     object.data.pUserStartDatePart = object.children[0].data.pUserStartDatePart;
@@ -5580,7 +5598,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
 
   ////// Refactor code
-  getTaskObjectByValue(task, className, milestone, nextTasks, previousTasks, submilestone) {
+  getTaskObjectByValue(task, className, milestone, nextTasks, previousTasks, submilestone, tempID) {
     const submilestoneLabel = submilestone ? submilestone.label : '';
     return {
       'pUserStart': new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 9, 0),
@@ -5590,7 +5608,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       'pUserEndDatePart': this.getDatePart(this.Today),
       'pUserEndTimePart': this.getTimePart(new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 9, 0)),
       'status': 'Not Saved',
-      'id': task.dbId === undefined ? task.Id : task.dbId,
+      'id': task.dbId === undefined || task.dbId === 0 ? tempID : task.dbId,
       'text': task.label,
       'title': task.label,
       'start_date': new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 9, 0),
@@ -5632,7 +5650,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     };
   }
 
-  getObjectByValue(milestone, type, tempmilestoneId, TempSubmilePositionArray) {
+  getObjectByValue(milestone, type, tempID, TempSubmilePositionArray) {
 
     return {
       'pUserStart': new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 9, 0),
@@ -5642,7 +5660,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       'pUserEndDatePart': this.getDatePart(this.Today),
       'pUserEndTimePart': this.getTimePart(new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 9, 0)),
       'status': 'Not Saved',
-      'id': milestone.dbId === undefined ? tempmilestoneId : milestone.dbId,
+      'id': milestone.dbId === undefined || milestone.dbId === 0 ? tempID : milestone.dbId,
       'text': milestone.label,
       'title': milestone.label,
       'start_date': new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 9, 0),
