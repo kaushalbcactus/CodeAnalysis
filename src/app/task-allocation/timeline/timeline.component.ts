@@ -1721,12 +1721,14 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       this.setScale(this.selectedScale);
     });
     this.taskAllocateCommonService.attachedEvents.push(onTaskOpened);
+
     const onBeforeTaskChanged = gantt.attachEvent("onBeforeTaskChanged", (id, mode, task) => {
       this.allTaskData = gantt.serialize();
       this.currentTask = task;
       return true;
     });
     this.taskAllocateCommonService.attachedEvents.push(onBeforeTaskChanged);
+
     const onBeforeTaskDrag = gantt.attachEvent("onBeforeTaskDrag", (id, mode, e) => {
       let task = gantt.getTask(id)
       this.startDate = task.start_date;
@@ -1757,6 +1759,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       }
     });
     this.taskAllocateCommonService.attachedEvents.push(onBeforeTaskDrag);
+
     const onTaskClick = gantt.attachEvent("onTaskClick", (id, e) => {
       let task = gantt.getTask(id);
       if (task.itemType !== "Send to client" && task.itemType !== "Client Review" && task.slotType !== 'Slot' && task.type !== "milestone" && task.type !== "submilestone") {
@@ -1772,6 +1775,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     });
 
     this.taskAllocateCommonService.attachedEvents.push(onTaskClick);
+    
     const onTaskDrag = gantt.attachEvent("onAfterTaskDrag", (id, mode, e) => {
       let task = this.currentTask;
       //gantt.getTask(id);
