@@ -4,7 +4,7 @@ import { CommonService } from 'src/app/Services/common.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { PmconstantService } from '../../services/pmconstant.service';
 import { PMObjectService } from '../../services/pmobject.service';
-import { MenuItem, MessageService, DialogService, SelectItem, ConfirmationService, SortEvent, DynamicDialogRef } from 'primeng';
+import { MenuItem, MessageService, DialogService, SelectItem, SortEvent, DynamicDialogRef } from 'primeng';
 import { PMCommonService } from '../../services/pmcommon.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 // import { CommunicationComponent } from '../communication/communication.component';
@@ -161,7 +161,6 @@ export class AllProjectsComponent implements OnInit {
     private messageService: MessageService,
     public dialogService: DialogService,
     public router: Router,
-    private confirmationService: ConfirmationService,
     private globalObject: GlobalService,
     private route: ActivatedRoute,
     private dataService: DataService,
@@ -960,15 +959,13 @@ export class AllProjectsComponent implements OnInit {
         case this.pmConstant.ACTION.CONFIRM_PROJECT:
           this.loaderView.nativeElement.classList.remove('show');
           this.spannerView.nativeElement.classList.remove('show');
-          this.confirmationService.confirm({
-            header: 'Change Status of Project -' + selectedProjectObj.ProjectCode + '',
-            icon: 'pi pi-exclamation-triangle',
-            message: 'Are you sure you want to change the Status of Project - ' + selectedProjectObj.ProjectCode + ''
-              + ' from ' + selectedProjectObj.Status + ' to ' + this.constants.projectStatus.Unallocated + '?',
-            accept: () => {
-              this.changeProjectStatusUnallocated(selectedProjectObj);
-            }
-          });
+
+          this.commonService.confirmMessageDialog('Change Status of Project -' + selectedProjectObj.ProjectCode + '', 'Are you sure you want to change the Status of Project - ' + selectedProjectObj.ProjectCode + ''
+            + ' from ' + selectedProjectObj.Status + ' to ' + this.constants.projectStatus.Unallocated + '?', null, ['Yes', 'No'], false).then(async Confirmation => {
+              if (Confirmation === 'Yes') {
+                this.changeProjectStatusUnallocated(selectedProjectObj);
+              }
+            });
           break;
         case this.pmConstant.ACTION.PROPOSE_CLOSURE:
 
@@ -1029,28 +1026,25 @@ export class AllProjectsComponent implements OnInit {
           }
           this.loaderView.nativeElement.classList.remove('show');
           this.spannerView.nativeElement.classList.remove('show');
-          this.confirmationService.confirm({
-            header: 'Change Status of Project -' + selectedProjectObj.ProjectCode + '',
-            icon: 'pi pi-exclamation-triangle',
-            message: 'Are you sure you want to change the Status of Project - ' + selectedProjectObj.ProjectCode + ''
-              + ' from ' + selectedProjectObj.Status + ' to ' + this.constants.projectStatus.NewAuditInProgress + '?',
-            accept: () => {
-              this.changeProjectStatusAuditInProgress(selectedProjectObj, scheduleItems);
-            }
-          });
+
+          this.commonService.confirmMessageDialog('Change Status of Project -' + selectedProjectObj.ProjectCode + '', 'Are you sure you want to change the Status of Project - ' + selectedProjectObj.ProjectCode + ''
+            + ' from ' + selectedProjectObj.Status + ' to ' + this.constants.projectStatus.NewAuditInProgress + '?', null, ['Yes', 'No'], false).then(async Confirmation => {
+              if (Confirmation === 'Yes') {
+                this.changeProjectStatusAuditInProgress(selectedProjectObj, scheduleItems);
+              }
+            });
+
           break;
         case this.pmConstant.ACTION.CLOSE_PROJECT:
           this.loaderView.nativeElement.classList.remove('show');
           this.spannerView.nativeElement.classList.remove('show');
-          this.confirmationService.confirm({
-            header: 'Change Status of Project -' + selectedProjectObj.ProjectCode + '',
-            icon: 'pi pi-exclamation-triangle',
-            message: 'Are you sure you want to change the Status of Project - ' + selectedProjectObj.ProjectCode + ''
-              + ' from ' + this.constants.projectStatus.NewPendingClosure + ' to ' + this.constants.projectStatus.Closed + '?',
-            accept: () => {
-              this.changeProjectStatusClose(selectedProjectObj);
-            }
-          });
+
+          this.commonService.confirmMessageDialog('Change Status of Project -' + selectedProjectObj.ProjectCode + '', 'Are you sure you want to change the Status of Project - ' + selectedProjectObj.ProjectCode + ''
+            + ' from ' + this.constants.projectStatus.NewPendingClosure + ' to ' + this.constants.projectStatus.Closed + '?', null, ['Yes', 'No'], false).then(async Confirmation => {
+              if (Confirmation === 'Yes') {
+                this.changeProjectStatusClose(selectedProjectObj);
+              }
+            });
           break;
         case this.pmConstant.ACTION.CANCEL_PROJECT:
           this.selectedReasonType = '';

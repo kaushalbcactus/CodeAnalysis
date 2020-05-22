@@ -2,7 +2,8 @@ import { Component, OnInit, Output, Input, EventEmitter, OnChanges, SimpleChange
 import { PMObjectService } from 'src/app/projectmanagement/services/pmobject.service';
 import { PmconstantService } from 'src/app/projectmanagement/services/pmconstant.service';
 import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.service';
-import { MessageService, ConfirmationService } from 'primeng/api';
+import { MessageService } from 'primeng/api';
+import { CommonService } from 'src/app/Services/common.service';
 @Component({
   selector: 'app-finance-management',
   templateUrl: './finance-management.component.html',
@@ -39,7 +40,7 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
     private pmConstant: PmconstantService,
     private pmCommon: PMCommonService,
     public messageService: MessageService,
-    private confirmationService: ConfirmationService
+    private commonService: CommonService
   ) { }
   ngOnInit() {
     this.loadFinanceManagementInit();
@@ -121,11 +122,9 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
       });
       return false;
     } else if (this.pmObject.addProject.FinanceManagement.isBudgetRateAdded) {
-      this.confirmationService.confirm({
-        header: 'Manage Finance Changes',
-        icon: 'pi pi-exclamation-triangle',
-        message: 'Are you sure you want to change the Budget/Rate.',
-        accept: () => {
+
+      this.commonService.confirmMessageDialog('Manage Finance Changes', 'Are you sure you want to change the Budget/Rate.', null, ['Yes', 'No'], false).then(async Confirmation => {
+        if (Confirmation === 'Yes') {
           const emptyArray = [];
           this.poData = [...emptyArray];
           this.budgetData = [...emptyArray];
@@ -135,7 +134,7 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
           this.pmObject.addProject.ProjectAttributes.BilledBy = this.pmObject.addProject.FinanceManagement.BilledBy;
           this.dataEvent.emit('true');
         }
-      });
+    });
     } else {
       this.pmObject.addProject.ProjectAttributes.BilledBy = this.billedBy;
       this.dataEvent.emit('true');

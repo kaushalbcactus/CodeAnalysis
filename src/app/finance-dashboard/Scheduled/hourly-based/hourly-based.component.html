@@ -18,12 +18,13 @@
 
 <!-- Table Start -->
 <div class="financeTable">
-    <p-table #hb [columns]="hourlyBasedCols" [value]="hourlyBasedRes" [paginator]="true" [rows]="10" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)" selectionMode="" [(selection)]="selectedAllRowsItem" exportFilename="Hourly_Based_Projects">
+    <!-- <p-table #hb [columns]="hourlyBasedCols" [value]="hourlyBasedRes" [paginator]="true" [rows]="10" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)" selectionMode="" [(selection)]="selectedAllRowsItem" exportFilename="Hourly_Based_Projects"> -->
+    <p-table #hb [columns]="hourlyBasedCols" [value]="hourlyBasedRes" [paginator]="true" [rows]="10" [(selection)]="selectedAllRowsItem" exportFilename="Hourly_Based_Projects">
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th>S.No</th>
                 <th style="width: 2.25em">
-                    <p-tableHeaderCheckbox (click)="selectAllRows()"></p-tableHeaderCheckbox>
+                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
                 </th>
                 <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
                     {{col.header}}
@@ -120,7 +121,7 @@
 
 <!-- Confirmation Hourly Based -->
 <!-- <p-confirmDialog [style]="{width: '50vw'}"></p-confirmDialog> -->
-<p-dialog header="Approve For Billing" [(visible)]="confirmationModal" [modal]="true" [draggable]="false" [responsive]="true" [style]="{'width': '40%', 'top':'0px'}" [maximizable]="false" (onHide)="cancelFormSub('confirmationModal')" [contentStyle]="{ 'overflow': 'visible' }">
+<!-- <p-dialog header="Approve For Billing" [(visible)]="confirmationModal" [modal]="true" [draggable]="false" [responsive]="true" [style]="{'width': '40%', 'top':'0px'}" [maximizable]="false" (onHide)="cancelFormSub('confirmationModal')" [contentStyle]="{ 'overflow': 'visible' }">
 
     <form id="myform" [formGroup]="confirmHourlybased_form">
         <div class="ui-g">
@@ -156,7 +157,7 @@
         <button pButton type="button" class="fdBtn" label="Approve" [disabled]="submitBtn.isClicked" (click)="onSubmit('confirmInvoice')"></button>
         <button pButton type="button" class="fdBtn" label="Cancel" (click)="cancelFormSub('confirmationModal')"></button>
     </p-footer>
-</p-dialog>
+</p-dialog> -->
 
 <!-- <button type="button" (click)="confirm1()" pButton icon="pi pi-check" label="Confirm"></button> -->
 
@@ -201,7 +202,7 @@
         </div>
     </form>
     <p-footer>
-        <button pButton type="button" class="fdBtn" label="Save" [disabled]="submitBtn.isClicked" (click)="onSubmit('editInvoice')"></button>
+        <button pButton type="button" class="fdBtn" label="Save" [disabled]="submitBtn.isClicked" (click)="onSubmit(null,'editInvoice')"></button>
         <button pButton type="button" class="fdBtn" label="Cancel" (click)="cancelFormSub('editHourly')"></button>
     </p-footer>
 </p-dialog>

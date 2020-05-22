@@ -1,6 +1,6 @@
 import { Component, OnInit, ApplicationRef, NgZone, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { DatePipe, PlatformLocation } from '@angular/common';
-import { MessageService, ConfirmationService, Message } from 'primeng/api';
+import { MessageService, Message } from 'primeng/api';
 import { AdminCommonService } from 'src/app/admin/services/admin-common.service';
 import { AdminObjectService } from 'src/app/admin/services/admin-object.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -53,7 +53,6 @@ export class ProjectTypesComponent implements OnInit {
    *
    * @param datepipe This is instance referance of `DatePipe` component.
    * @param messageService This is instance referance of `MessageService` component.
-   * @param confirmationService This is instance referance of `ConfirmationService` component.
    * @param adminCommonService This is instance referance of `AdminCommonService` component.
    * @param adminObject This is instance referance of `AdminObjectService` component.
    * @param spServices This is instance referance of `SPOperationService` component.
@@ -68,7 +67,6 @@ export class ProjectTypesComponent implements OnInit {
   constructor(
     private datepipe: DatePipe,
     private messageService: MessageService,
-    private confirmationService: ConfirmationService,
     private adminCommonService: AdminCommonService,
     private adminObject: AdminObjectService,
     private spServices: SPOperationService,
@@ -238,17 +236,14 @@ export class ProjectTypesComponent implements OnInit {
    */
   delete() {
     const data = this.currProjectTypeObj;
-    this.confirmationService.confirm({
-      message: 'Do you want to delete this record?',
-      header: 'Delete Confirmation',
-      icon: 'pi pi-info-circle',
-      key: 'confirm',
-      accept: () => {
+
+    this.common.confirmMessageDialog('Delete Confirmation','Do you want to delete this record?',null,['Yes','No'],false).then(async Confirmation => {
+      if (Confirmation === 'Yes') {
         const updateData = {
           IsActive: this.adminConstants.LOGICAL_FIELD.NO
         };
         this.confirmUpdate(data, updateData, this.constants.listNames.ProjectType.name, this.constants.listNames.ProjectType.type);
-      },
+	  }
     });
   }
 

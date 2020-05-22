@@ -1,0 +1,147 @@
+<div class='UserButton' fxLayout="row" fxLayoutAlign="end center">
+
+    <button type="button" pButton icon="pi pi-save" id="saveClient" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="SaveDetails()" label="Approve"></button>
+
+    <button type="button" pButton icon="pi pi-times" id="cancelClient" (click)="cancel();" label="Cancel"></button>
+
+</div>
+
+<div fxLayout="row" #scrollDown fxLayoutAlign="space-between start" fxLayoutGap="5px">
+
+
+    <form [formGroup]='ApproveInvoiceForm' class="p-col">
+        <!-- first Row html  -->
+        <div style="margin: 0px 0px 15px 0px;">Are you sure you want to approve billing and send for auditing project ?</div>
+
+        <div class="p-grid">
+            <div class="p-grid p-col">
+                <div class="p-col-12">Project Budget Hours - <b>{{ApproveInvoiceForm.value.BudgetHrs}}</b></div>
+            </div>
+            <div class="p-grid p-col">
+                <div class="p-col-12">Approved Time Spent - <b>{{ApproveInvoiceForm.value.HoursSpent}}</b></div>
+
+            </div>
+
+        </div>
+
+
+        <div style="margin: 0px 15px 15px 0px;">On approval the budget hours will be updated to the approved time spent for the project.</div>
+
+
+
+        <!-- second Row html if new   -->
+        <div class="p-grid" *ngIf="!modalloaderenable && advanceInvArray && advanceInvArray.length > 0">
+            <div class="p-grid p-col">
+                <p-selectButton [options]="InvoiceTypeArray" class="p-col selectButton" [style]="{width : '100%'}" formControlName="InvoiceType" (onChange)="UpdateValidator($event.value)"></p-selectButton>
+            </div>
+        </div>
+
+
+        <div fxLayout="column" fxLayoutAlign="center center" [hidden]="!modalloaderenable">
+            <div id="modalInnerLoader"></div>
+            <div id="modalInnerLoaderText">Loading...</div>
+        </div>
+
+        <!-- third Row html if new   -->
+        <div class="p-grid" *ngIf="!modalloaderenable && ApproveInvoiceForm.controls['InvoiceType'].value === 'new'">
+            <div class="p-grid p-col">
+                <div class="p-col-5"><span class="compulsory">*</span>Approval Date ({{ApproveInvoiceForm.value.approvalDate}})</div>
+                <div class="p-col-7">
+
+                    <p-calendar styleClass="pCalendarBtn" formControlName="approvalDate" [showIcon]="true" dateFormat="dd M , yy"   [showOnFocus]="false"   [monthNavigator]="true" yearRange="{{yearRange}}" [disabledDays]="[0,6]" [yearNavigator]="true" [readonlyInput]="true"
+                        placeholder="Select approval date">
+                    </p-calendar>
+
+                    <div class="error" *ngIf="isApproveInvoiceFormSubmit && ApproveInvoiceForm.controls.approvalDate.errors">
+                        <div *ngIf="ApproveInvoiceForm.controls.approvalDate.errors.required">
+                            Please select approval date.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <!-- forth Row html if existing   -->
+        <div class="p-grid" *ngIf="!modalloaderenable && ApproveInvoiceForm.controls['InvoiceType'].value === 'existing'">
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>Invoice List</div>
+                <div class="p-col-8">
+
+                    <p-dropdown [options]="advanceInvArray" placeholder="Select Invoice" formControlName="InvoiceId" [showClear]="true" (onChange)="setInvData()" filter="true" resetFilterOnHide="true" [style]="{'width':'100%'}">
+                    </p-dropdown>
+
+                    <div class="error" *ngIf="isApproveInvoiceFormSubmit && ApproveInvoiceForm.controls.InvoiceId.errors">
+                        <div *ngIf="ApproveInvoiceForm.controls.InvoiceId.errors.required">
+                            Please select invoice.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>Invoice Date</div>
+                <div class="p-col-8">
+
+                    <input type="text" style="width: 100%;opacity: 0.5;" formControlName="InvoiceDate" placeholder="Invoice Date" readonly pInputText>
+
+                    <div class="error" *ngIf="isApproveInvoiceFormSubmit && ApproveInvoiceForm.controls.InvoiceDate.errors">
+                        <div *ngIf="ApproveInvoiceForm.controls.InvoiceDate.errors.required">
+                            Invoice date is required.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- fifth Row html if existing   -->
+        <div class="p-grid" *ngIf="!modalloaderenable && ApproveInvoiceForm.controls['InvoiceType'].value === 'existing'">
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>Invoice Amount</div>
+                <div class="p-col-8">
+                    <input type="text" style="width: 100%;opacity: 0.5;" formControlName="InvoiceAmount" placeholder="Invoice Amount" readonly pInputText>
+
+                    <div class="error" *ngIf="isApproveInvoiceFormSubmit && ApproveInvoiceForm.controls.InvoiceAmount.errors">
+                        <div *ngIf="ApproveInvoiceForm.controls.InvoiceAmount.errors.required">
+                            Invoice amount is required.</div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>Balance Amount</div>
+                <div class="p-col-8">
+                    <input type="text" style="width: 100%;opacity: 0.5;" formControlName="BalanceAmount" placeholder="Balance Amount" readonly pInputText>
+
+                    <div class="error" *ngIf="isApproveInvoiceFormSubmit && ApproveInvoiceForm.controls.BalanceAmount.errors">
+                        <div *ngIf="ApproveInvoiceForm.controls.BalanceAmount.errors.required">
+                            Balance amount is required.</div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- sixth Row html if existing   -->
+        <div class="p-grid" *ngIf="!modalloaderenable && ApproveInvoiceForm.controls['InvoiceType'].value === 'existing'">
+
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>Tag Amount</div>
+                <div class="p-col-8">
+                    <input type="number" style="width: 100%;opacity: 0.5;" formControlName="TagAmount" placeholder="Tag Amount" readonly pInputText>
+
+                    <div class="error" *ngIf="isApproveInvoiceFormSubmit && ApproveInvoiceForm.controls.TagAmount.errors">
+                        <div *ngIf="ApproveInvoiceForm.controls.TagAmount.errors.required">
+                            Tag amount is required.</div>
+                        <div *ngIf="ApproveInvoiceForm.controls.TagAmount.errors.gtZeroNumber">
+                            Tag amount cannot be less than equal to zero</div>
+                        <div *ngIf="ApproveInvoiceForm.controls.TagAmount.errors.max">
+                            Tag amount should be less than balance amount. Please select another / create new invoice.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-grid p-col">
+            </div>
+        </div>
+    </form>
+</div>

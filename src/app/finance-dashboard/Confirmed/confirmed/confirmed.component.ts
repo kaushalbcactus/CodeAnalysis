@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation, ViewChild, OnDestroy, HostListener, ChangeDetectorRef, ApplicationRef, NgZone } from '@angular/core';
-import { Message, ConfirmationService, MessageService, SelectItem } from 'primeng/api';
+import { Message, MessageService, SelectItem } from 'primeng/api';
 import { Calendar, Table } from 'primeng';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -24,7 +24,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
 
 
     constructor(
-        private confirmationService: ConfirmationService,
         private fb: FormBuilder,
         private globalService: GlobalService,
         private spServices: SPOperationService,

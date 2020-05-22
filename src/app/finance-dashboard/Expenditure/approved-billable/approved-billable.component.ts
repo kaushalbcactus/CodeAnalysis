@@ -420,6 +420,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                         header: 'Schedule OOP Invoice',
                         width: '70vw',
                         data: {
+                            type: 'approve-billable',
                             selectedAllRowsItem: this.selectedAllRowsItem,
                             projectInfoData: this.projectInfoData
                         },

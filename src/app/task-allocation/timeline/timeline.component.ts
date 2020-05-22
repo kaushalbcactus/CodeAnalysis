@@ -5,7 +5,7 @@ import { GlobalService } from 'src/app/Services/global.service';
 import { TaskAllocationConstantsService } from '../services/task-allocation-constants.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { GanttEditorComponent, GanttEditorOptions } from 'ng-gantt';
-import { TreeNode, MessageService, DialogService, ConfirmationService, DynamicDialogRef } from 'primeng';
+import { TreeNode, MessageService, DialogService, DynamicDialogRef } from 'primeng';
 import { MenuItem } from 'primeng/api';
 import { DragDropComponent } from '../drag-drop/drag-drop.component';
 import { TaskDetailsDialogComponent } from '../task-details-dialog/task-details-dialog.component';
@@ -159,7 +159,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
     public datepipe: DatePipe,
     public dialogService: DialogService,
     private messageService: MessageService,
-    private confirmationService: ConfirmationService,
     private taskAllocateCommonService: TaskAllocationCommonService,
     private usercapacityComponent: UsercapacityComponent,
   ) {
@@ -3769,20 +3768,14 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
     } else {
       const Title = rowNode.parent ? rowNode.parent.data.pName + ' - ' + rowData.pName : rowData.pName;
-
-      this.confirmationService.confirm({
-        message: 'Are you sure that you want to Confirm ' + Title + ' ?',
-        header: 'Confirmation',
-        icon: 'pi pi-exclamation-triangle',
-        accept: () => {
+      this.commonService.confirmMessageDialog( 'Confirmation', 'Are you sure that you want to Confirm ' + Title + ' ?', null, ['Yes', 'No'], false).then(async Confirmation => {
+        if (Confirmation === 'Yes') {
           this.selectedSubMilestone = rowData;
           const validateNextMilestone = this.validateNextMilestone(this.selectedSubMilestone);
           if (validateNextMilestone) {
             this.loaderenable = true;
             setTimeout(() => { this.setAsNextMilestone(this.selectedSubMilestone); }, 200);
           }
-        },
-        reject: () => {
         }
       });
     }

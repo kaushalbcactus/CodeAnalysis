@@ -4,7 +4,7 @@ import { PMObjectService } from 'src/app/projectmanagement/services/pmobject.ser
 import { PmconstantService } from 'src/app/projectmanagement/services/pmconstant.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { DatePipe } from '@angular/common';
-import { ConfirmationService, DynamicDialogConfig, MessageService, DynamicDialogRef, SelectItem } from 'primeng';
+import {  DynamicDialogConfig, MessageService, DynamicDialogRef, SelectItem } from 'primeng';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.service';
 import { CommonService } from 'src/app/Services/common.service';
@@ -168,7 +168,6 @@ export class ManageFinanceComponent implements OnInit {
     private spServices: SPOperationService,
     private constant: ConstantsService,
     private datePipe: DatePipe,
-    private confirmationService: ConfirmationService,
     private config: DynamicDialogConfig,
     private dynamicDialogRef: DynamicDialogRef,
     private messageService: MessageService,
@@ -1145,11 +1144,9 @@ export class ManageFinanceComponent implements OnInit {
    */
   removePO(poObj) {
     this.selectedPo = poObj.poInfo[0].poId;
-    this.confirmationService.confirm({
-      header: 'Remove PO from project',
-      icon: 'pi pi-info-circle',
-      message: 'Are you sure you want to remove the po from project ?',
-      accept: () => {
+
+    this.commonService.confirmMessageDialog( 'Remove PO from project', 'Are you sure you want to remove the po from project ?', null, ['Yes', 'No'], false).then(async Confirmation => {
+      if (Confirmation === 'Yes') {
         if (poObj.poInfo[0].status === 'Not Saved') {
           const arrayIndex = this.poData.findIndex(x => x.Id === this.selectedPo);
           this.poData.splice(arrayIndex, 1);
@@ -1182,7 +1179,8 @@ export class ManageFinanceComponent implements OnInit {
           this.showSave = true;
         }
       }
-    });
+  });
+
   }
 
   lineItemConfirmAllowed(invoice) {
@@ -1611,11 +1609,8 @@ export class ManageFinanceComponent implements OnInit {
   confirmInvoiceItem(rowData) {
     this.invoiceObj = rowData;
     console.log(rowData);
-    this.confirmationService.confirm({
-      header: 'Confirm Invoice',
-      icon: 'pi pi-exclamation-triangle',
-      message: 'Are you sure you want to confirm the invoice ?',
-      accept: () => {
+    this.commonService.confirmMessageDialog( 'Confirm Invoice', 'Are you sure you want to confirm the invoice ?', null, ['Yes', 'No'], false).then(async Confirmation => {
+      if (Confirmation === 'Yes') {
         this.commitInvoiceItem(rowData);
       }
     });

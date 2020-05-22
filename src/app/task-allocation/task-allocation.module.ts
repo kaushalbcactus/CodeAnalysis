@@ -8,7 +8,7 @@ import { CustomMaterialModule } from '../shared/material.module';
 import { TimelineComponent } from './timeline/timeline.component';
 import { NgGanttEditorModule } from 'ng-gantt';
 import { TreeTableModule } from 'primeng/treetable';
-import { ConfirmationService, DynamicDialogConfig, DynamicDialogRef } from 'primeng';
+import {  DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 import { PrimengModule } from '../primeng/primeng.module';
 import { DragDropComponent } from './drag-drop/drag-drop.component';
 import { DndModule } from 'ngx-drag-drop';
@@ -42,7 +42,7 @@ import { CascadeDialogComponent } from './cascade-dialog/cascade-dialog.componen
   exports: [
     TimelineComponent
   ],
-  providers: [DatePipe, DynamicDialogConfig, DynamicDialogRef, ConfirmationService],
+  providers: [DatePipe, DynamicDialogConfig, DynamicDialogRef],
   entryComponents: [UsercapacityComponent, DragDropComponent, TaskDetailsDialogComponent]
   // providers: [TaskAllocationAPI]
 })

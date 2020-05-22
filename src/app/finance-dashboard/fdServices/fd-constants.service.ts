@@ -333,6 +333,9 @@ export class FdConstantsService {
             top: 4500
           },
 
+
+          InvoiceTypeArray : [{ label: 'Tag to existing invoice', value: 'existing' },
+          { label: 'New invoice', value: 'new' }],
         // Authors
         // authors: {
         //     select: "ID,Title,FirstName, LastName, Address, EmailAddress, AuthorType",

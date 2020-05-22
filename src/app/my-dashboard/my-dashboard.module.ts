@@ -15,7 +15,7 @@ import { TimeSpentDialogComponent } from './time-spent-dialog/time-spent-dialog.
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
 import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
-import { ConfirmationService, DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng';
+import {DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 import { MyCurrentCompletedTasksComponent } from './my-current-completed-tasks/my-current-completed-tasks.component';
 import { PreviosNextTasksDialogComponent } from './previos-next-tasks-dialog/previos-next-tasks-dialog.component';
 import { CustomMaterialModule } from '../shared/material.module';
@@ -88,7 +88,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     QmsModule
   ],
 
-  providers: [ConfirmationService, DatePipe, DialogService, DynamicDialogConfig, DynamicDialogRef, {
+  providers: [ DatePipe, DialogService, DynamicDialogConfig, DynamicDialogRef, {
     provide: PERFECT_SCROLLBAR_CONFIG,
     useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG
   }],

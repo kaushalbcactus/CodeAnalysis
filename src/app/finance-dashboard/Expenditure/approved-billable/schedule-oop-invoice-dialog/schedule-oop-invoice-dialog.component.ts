@@ -44,8 +44,7 @@ export class ScheduleOopInvoiceDialogComponent implements OnInit {
   advanceInvArray: any[];
   arrAdvanceInvoices: any;
   PoAdvanceInvoiceList = [];
-  InvoiceTypeArray = [{ label: 'Tag to existing invoice', value: 'existing' },
-  { label: 'New invoice', value: 'new' }]
+  InvoiceTypeArray:any;
   addressTypes = [
     { label: 'Client', value: 'Client' },
     { label: 'POC', value: 'POC' },
@@ -90,10 +89,9 @@ export class ScheduleOopInvoiceDialogComponent implements OnInit {
   }
 
   ngOnInit() {
-
+    this.InvoiceTypeArray = this.fdConstantsService.fdComponent.InvoiceTypeArray;
     this.selectedAllRowsItem = this.config.data.selectedAllRowsItem;
     this.projectInfoData = this.config.data.projectInfoData;
-
     this.poInfo();
     this.projectContacts();
     const pInfo = this.getCleFromPC();
@@ -101,9 +99,18 @@ export class ScheduleOopInvoiceDialogComponent implements OnInit {
       this.getPONumberFromCLE(pInfo);
       this.getPOCFromPCLE(pInfo);
     }
+    // else {
+    //   this.purchaseOrdersList = this.config.data.purchaseOrdersList;
+    //   this.projectContactsData = this.config.data.projectContactsData;
+    //   this.poNames.push(this.selectedAllRowsItem[0].PO);
+    //   this.poChange({ label: 'PO', value: this.poNames[0] });
+    //   this.listOfPOCs.push(this.selectedAllRowsItem[0].POC);
+    //   this.ScheduleInvoiceForm.get('PONumber').setValue(this.poNames[0]);
+    //   this.ScheduleInvoiceForm.get('ScheduledType').setValue('Hourly');
+    //   this.ScheduleInvoiceForm.get('ScheduledDate').setValue(new Date());
+    // }
 
-    const currentYear = new Date();
-    this.yearRange = (currentYear.getFullYear() - 10) + ':' + (currentYear.getFullYear() + 10);
+   this.yearRange = this.common.getyearRange();
     this.setValInScheduleOop(this.selectedAllRowsItem);
     this.modalloaderenable = false;
   }
@@ -192,7 +199,7 @@ export class ScheduleOopInvoiceDialogComponent implements OnInit {
   }
 
   getPONumberFromCLE(cli) {
-
+    debugger;
     this.purchaseOrdersList.map((x) => {
       if (x.ClientLegalEntity === cli.ClientLegalEntity) {
         if (this.matchCurrency(x)) {
@@ -214,6 +221,7 @@ export class ScheduleOopInvoiceDialogComponent implements OnInit {
 
 
   getPOCFromPCLE(cle) {
+    debugger;
     this.listOfPOCs = [];
     for (let i = 0; i < this.projectContactsData.length; i++) {
       const element = this.projectContactsData[i];
@@ -296,15 +304,16 @@ export class ScheduleOopInvoiceDialogComponent implements OnInit {
 
   setValInScheduleOop(selectedLineItems: any) {
     let amt = 0;
+    debugger;
     for (let i = 0; i < this.selectedAllRowsItem.length; i++) {
       const element = this.selectedAllRowsItem[i];
-      amt += parseFloat(element.ClientAmount);
+      amt += parseFloat(element.ClientAmount ? element.ClientAmount : element.TotalInvoice);
     }
     if (selectedLineItems.length) {
       console.log('', this.selectedAllRowsItem[0].ProjectCode);
       this.ScheduleInvoiceForm.controls['ProjectCode'].setValue(this.selectedAllRowsItem[0].ProjectCode);
       this.ScheduleInvoiceForm.controls['ScheduledType'].setValue('oop');
-      this.ScheduleInvoiceForm.controls['Currency'].setValue(this.selectedAllRowsItem[0].ClientCurrency);
+      this.ScheduleInvoiceForm.controls['Currency'].setValue(this.selectedAllRowsItem[0].ClientCurrency ? this.selectedAllRowsItem[0].ClientCurrency : this.selectedAllRowsItem[0].Currency);
       this.ScheduleInvoiceForm.controls['Amount'].setValue(amt);
       console.log('this.ScheduleInvoiceForm ', this.ScheduleInvoiceForm.getRawValue());
     }
@@ -358,6 +367,7 @@ export class ScheduleOopInvoiceDialogComponent implements OnInit {
       this.ScheduleInvoiceForm.get('AddressType').clearValidators();
       this.ScheduleInvoiceForm.get('TagAmount').setValidators([Validators.required, this.common.checkGTZeroNumberValidator()]);
       this.ScheduleInvoiceForm.get('InvoiceId').setValidators([Validators.required]);
+      this.setInvData();
     }
 
     this.ScheduleInvoiceForm.get('ScheduledDate').updateValueAndValidity();

@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild, ViewEncapsulation, OnDestroy, HostListener, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
 import { MessageService, Message, SelectItem } from 'primeng/api';
 import { Calendar, Table } from 'primeng';
-import { ConfirmationService } from 'primeng/api';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
 import { formatDate, DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
@@ -22,7 +21,6 @@ import { Router } from '@angular/router';
 })
 export class DeliverableBasedComponent implements OnInit, OnDestroy {
     constructor(
-        private confirmationService: ConfirmationService,
         private fb: FormBuilder,
         private globalService: GlobalService,
         private spServices: SPOperationService,
@@ -511,17 +509,13 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     }
 
     confirm1() {
-        this.confirmationService.confirm({
-            message: 'Are you sure that you want to confirm the invoice scheduled for the project?',
-            header: 'Confirmation',
-            icon: 'pi pi-exclamation-triangle',
-            key: 'deliverableBased',
-            accept: () => {
+        this.commonService.confirmMessageDialog('Confirmation', 'Are you sure that you want to confirm the invoice scheduled for the project?', null, ['Yes', 'No'], false).then(async Confirmation => {
+            if (Confirmation === 'Yes') {
                 this.msgs = [{ severity: 'info', summary: 'Confirmed', detail: 'You have Confirmed' }];
                 // Call server service here
                 this.onSubmit('confirmInvoice');
-            },
-            reject: () => {
+            }
+            else if (Confirmation === 'No') {
                 this.msgs = [{ severity: 'info', summary: 'Cancel', detail: 'You have canceled' }];
             }
         });

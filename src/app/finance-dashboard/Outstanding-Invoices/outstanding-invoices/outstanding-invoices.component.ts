@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ViewEncapsulation, OnDestroy, HostListener, ElementRef, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
-import { Message, ConfirmationService, MessageService } from 'primeng/api';
+import { Message, MessageService } from 'primeng/api';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -81,7 +81,6 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     DisplayInvoiceWithAuxiliaryArray = [];
 
     constructor(
-        private confirmationService: ConfirmationService,
         private fb: FormBuilder,
         private globalService: GlobalService,
         private spServices: SPOperationService,

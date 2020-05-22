@@ -27,7 +27,6 @@ export class AddEditClientlegalentityDialogComponent implements OnInit {
     private constantsService: ConstantsService,
     private spServices: SPOperationService,
     private adminObject: AdminObjectService,
-    // private confirmationService: ConfirmationService,
     // private platformLocation: PlatformLocation,
     // private router: Router,
     // private applicationRef: ApplicationRef,

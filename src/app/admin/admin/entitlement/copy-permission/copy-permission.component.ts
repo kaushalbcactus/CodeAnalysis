@@ -1,5 +1,5 @@
 import { Component, OnInit, ApplicationRef, NgZone } from '@angular/core';
-import { SelectItem, MenuItem, MessageService, ConfirmationService } from 'primeng/api';
+import { SelectItem, MenuItem, MessageService } from 'primeng/api';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
 import { AdminObjectService } from 'src/app/admin/services/admin-object.service';
@@ -48,7 +48,6 @@ export class CopyPermissionComponent implements OnInit {
    * @param adminConstants This is instance referance of `AdminConstantService` component.
    * @param adminObject This is instance referance of `AdminObjectService` component.
    * @param constants This is instance referance of `ConstantsService` component.
-   * @param confirmationService This is instance referance of `ConfirmationService` component.
    * @param platformLocation This is instance referance of `PlatformLocation` component.
    * @param router This is instance referance of `Router` component.
    * @param applicationRef This is instance referance of `ApplicationRef` component.
@@ -60,7 +59,6 @@ export class CopyPermissionComponent implements OnInit {
     private adminConstants: AdminConstantService,
     private adminObject: AdminObjectService,
     private constants: ConstantsService,
-    private confirmationService: ConfirmationService,
     private platformLocation: PlatformLocation,
     private router: Router,
     private applicationRef: ApplicationRef,
@@ -224,17 +222,14 @@ export class CopyPermissionComponent implements OnInit {
     this.messageService.clear();
     const isValid = this.validateForms();
     if (isValid) {
-      this.confirmationService.confirm({
-        message: 'Are you sure that you want to copy permission? '
-          + '\nNote: It will remove all the previous permission and copy '
-          + 'the same permission levels of all selected users.',
-        header: 'Confirmation',
-        icon: 'pi pi-exclamation-triangle',
-        key: 'confirm',
-        accept: () => {
-          this.savePermission(this.adminConstants.ACTION.COPY);
-        }
-      });
+
+      this.common.confirmMessageDialog('Confirmation', 'Are you sure that you want to copy permission? '
+        + '\nNote: It will remove all the previous permission and copy '
+        + 'the same permission levels of all selected users.', null, ['Yes', 'No'], false).then(async Confirmation => {
+          if (Confirmation === 'Yes') {
+            this.savePermission(this.adminConstants.ACTION.COPY);
+          }
+        });
     }
   }
   /**
@@ -253,14 +248,10 @@ export class CopyPermissionComponent implements OnInit {
     // this.messageService.clear();
     const isValid = this.validateForms();
     if (isValid) {
-      this.confirmationService.confirm({
-        message: 'Are you sure that you want to add permission? '
-          + '\n Note: It will not remove previous permission instead it will add '
-          + 'additional permission of selected users.',
-        header: 'Confirmation',
-        icon: 'pi pi-exclamation-triangle',
-        key: 'confirm',
-        accept: () => {
+      this.common.confirmMessageDialog('Confirmation', 'Are you sure that you want to add permission? '
+      + '\n Note: It will not remove previous permission instead it will add '
+      + 'additional permission of selected users.', null, ['Yes', 'No'], false).then(async Confirmation => {
+        if (Confirmation === 'Yes') {
           this.savePermission(this.adminConstants.ACTION.ADD);
         }
       });

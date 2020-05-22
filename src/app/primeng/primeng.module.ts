@@ -12,7 +12,7 @@ import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { DropdownModule } from 'primeng/dropdown';
-import { MessageService, ConfirmationService } from 'primeng/api';
+import { MessageService } from 'primeng/api';
 import { TabViewModule } from 'primeng/tabview';
 import {
   MenubarModule, OverlayPanelModule, InputTextareaModule, InputTextModule, AutoComplete, TieredMenuModule, SelectButtonModule
@@ -84,6 +84,6 @@ import { InputSwitchModule } from 'primeng/inputswitch';
     InputSwitchModule, DragDropModule,
     SelectButtonModule
   ],
-  providers: [ConfirmationService, DialogService, MessageService]
+  providers: [ DialogService, MessageService]
 })
 export class PrimengModule { }

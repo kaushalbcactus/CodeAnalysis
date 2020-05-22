@@ -215,6 +215,9 @@ export class AddReduceSowbudgetDialogComponent implements OnInit {
     }
     else {
       this.changeBudgetForm.get('total').setValidators([this.common.checkZeroNumberValidator()]);
+      this.changeBudgetForm.get('oop').clearValidators();
+      this.changeBudgetForm.get('net').clearValidators();
+      this.changeBudgetForm.get('tax').clearValidators();
     }
     this.changeBudgetForm.get('total').updateValueAndValidity();
     this.changeBudgetForm.get('oop').updateValueAndValidity();

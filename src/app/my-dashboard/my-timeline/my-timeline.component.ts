@@ -3,7 +3,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import bootstrapPlugin from '@fullcalendar/bootstrap';
 import interactionPlugin from '@fullcalendar/interaction';
-import { MenuItem, MessageService, DialogService, SelectItem, ConfirmationService } from 'primeng';
+import { MenuItem, MessageService, DialogService, SelectItem } from 'primeng';
 import { MenuModule, Button } from 'primeng';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -90,7 +90,6 @@ export class MyTimelineComponent implements OnInit {
     private spServices: SPOperationService,
     public messageService: MessageService,
     public dialogService: DialogService,
-    private confirmationService: ConfirmationService,
     private datePipe: DatePipe,
     public spOperations: SPOperationService,
     private commonService: CommonService,

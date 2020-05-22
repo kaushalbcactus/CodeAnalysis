@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation, ComponentFactoryResolver, ViewContainerRef, ViewChild, HostListener, ApplicationRef, NgZone } from '@angular/core';
-import { MessageService, DialogService, ConfirmationService } from 'primeng';
+import { MessageService, DialogService } from 'primeng';
 import { MenuItem } from 'primeng';
 import { FormBuilder, FormGroup, Validators, FormControl, MaxLengthValidator } from '@angular/forms';
 import { SPOperationService } from '../../Services/spoperation.service';
@@ -36,7 +36,6 @@ export class PubsupportComponent implements OnInit {
         private router: Router,
         private dialogService: DialogService,
         private datePipe: DatePipe,
-        private confirmationService: ConfirmationService,
         private componentFactoryResolver: ComponentFactoryResolver,
         private titlecasePipe: TitleCasePipe,
         private platformLocation: PlatformLocation,
@@ -931,11 +930,8 @@ export class PubsupportComponent implements OnInit {
         }
 
         // confirm() {
-        this.confirmationService.confirm({
-            message: 'Are you sure that you want to Cancel Journal Conference Details?',
-            accept: () => {
-                // Project status empty, journalConference pubsuport status cancelled, jcSubmission Status Cancelled
-                // Update ProjectInformation
+        this.common.confirmMessageDialog('Confirmation', 'Are you sure that you want to Cancel Journal Conference Details?', null, ['Yes', 'No'], false).then(async Confirmation => {
+            if (Confirmation === 'Yes') {
                 const piObj = {
                     PubSupportStatus: ''
                 };
@@ -978,11 +974,9 @@ export class PubsupportComponent implements OnInit {
                 ];
                 this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
                 this.submit(data, 'cancelJC');
-            },
-            reject: () => {
-                console.log('User cancel current action.');
-            },
+            }
         });
+
     }
 
     onChangeSelectedType(type: any) {
@@ -1805,7 +1799,7 @@ export class PubsupportComponent implements OnInit {
         }
     }
 
-    errorMessage(){
+    errorMessage() {
         this.messageService.add({
             key: 'myKey1', severity: 'error', summary: 'Error Message',
             detail: 'Unable to upload file, size of ' + this.selectedFile.name + ' is 0 KB.', life: 4000

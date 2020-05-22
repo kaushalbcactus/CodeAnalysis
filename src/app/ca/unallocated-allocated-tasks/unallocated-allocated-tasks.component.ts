@@ -82,7 +82,6 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     private route: ActivatedRoute,
     private usercapacityComponent: UsercapacityComponent,
     private datePipe: DatePipe,
-    // private confirmationService: ConfirmationService,
     private messageService: MessageService,
     private commonService: CommonService,
     private cdr: ChangeDetectorRef,

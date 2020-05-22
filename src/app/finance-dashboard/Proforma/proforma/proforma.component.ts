@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation, ViewChild, OnDestroy, HostListener, ElementRef, ApplicationRef, NgZone, TemplateRef, ChangeDetectorRef } from '@angular/core';
-import { Message, ConfirmationService, MessageService, SelectItem } from 'primeng/api';
+import { Message, MessageService, SelectItem } from 'primeng/api';
 import { Calendar, Table, DialogService } from 'primeng';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -86,7 +86,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
 
 
     constructor(
-        private confirmationService: ConfirmationService,
         private fb: FormBuilder,
         private globalService: GlobalService,
         private spServices: SPOperationService,
@@ -499,21 +498,17 @@ export class ProformaComponent implements OnInit, OnDestroy {
     }
 
     confirm1(obj) {
-        this.confirmationService.confirm({
-            message: obj.msg,
-            header: obj.title,
-            icon: 'pi pi-exclamation-triangle',
-            key: 'proforma',
-            accept: () => {
+
+        this.commonService.confirmMessageDialog(obj.title, obj.msg, null, ['Yes', 'No'], false).then(async Confirmation => {
+            if (Confirmation === 'Yes') {
                 this.msgs = [{ severity: 'info', summary: 'Confirmed', detail: 'You have Confirmed' }];
-                // Call server service here
-                // console.log('obj ', obj);
                 this.onSubmit(obj.type);
-            },
-            reject: () => {
+            }
+            else if (Confirmation === 'No') {
                 this.msgs = [{ severity: 'info', summary: 'Cancel', detail: 'You have canceled' }];
             }
         });
+
     }
 
     items: any[];

@@ -1,7 +1,7 @@
 import { Component, OnInit, ApplicationRef, NgZone, ViewEncapsulation, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { FormBuilder, FormGroup, FormControl, Validators, NgForm, ControlContainer } from '@angular/forms';
-import { MessageService, ConfirmationService } from 'primeng/api';
+import { MessageService } from 'primeng/api';
 import { AdminCommonService } from '../../services/admin-common.service';
 import { AdminConstantService } from '../../services/admin-constant.service';
 import { AdminObjectService } from '../../services/admin-object.service';
@@ -46,7 +46,6 @@ export class ClientMasterdataComponent implements OnInit {
    * @param adminObject This is instance referance of `AdminObjectService` component.
    * @param constants This is instance referance of `ConstantsService` component.
    * @param spServices This is instance referance of `SPOperationService` component.
-   * @param confirmationService This is instance referance of `ConfirmationService` component.
    * @param platformLocation This is instance referance of `PlatformLocation` component.
    * @param router This is instance referance of `Router` component.
    * @param applicationRef This is instance referance of `ApplicationRef` component.
@@ -63,7 +62,6 @@ export class ClientMasterdataComponent implements OnInit {
     public adminObject: AdminObjectService,
     private constantsService: ConstantsService,
     private spServices: SPOperationService,
-    private confirmationService: ConfirmationService,
     private platformLocation: PlatformLocation,
     private router: Router,
     private applicationRef: ApplicationRef,
@@ -420,20 +418,16 @@ export class ClientMasterdataComponent implements OnInit {
    */
   deleteClient() {
     console.log(this.currClientObj);
-    this.confirmationService.confirm({
-      message: 'Do you want to delete this record?',
-      header: 'Delete Confirmation',
-      icon: 'pi pi-info-circle',
-      key: 'confirm',
-      accept: () => {
+
+    this.common.confirmMessageDialog('Delete Confirmation','Do you want to delete this record?',null,['Yes','No'],false).then(async Confirmation => {
+      if (Confirmation === 'Yes') {
         const updateData = {
           IsActive: this.adminConstants.LOGICAL_FIELD.NO
         };
         this.confirmUpdate(this.currClientObj, updateData, this.constantsService.listNames.ClientLegalEntity.name,
           this.constantsService.listNames.ClientLegalEntity.type, this.adminConstants.DELETE_LIST_ITEM.CLIENT_LEGAL_ENTITY);
-      },
+	  }
     });
-
   }
   /**
    * Construct a method to save the update the data.
@@ -591,19 +585,16 @@ export class ClientMasterdataComponent implements OnInit {
    */
   deleteSubDivision() {
     console.log(this.currClientObj);
-    this.confirmationService.confirm({
-      message: 'Do you want to delete this record?',
-      header: 'Delete Confirmation',
-      icon: 'pi pi-info-circle',
-      key: 'confirm',
-      accept: () => {
+
+    this.common.confirmMessageDialog('Delete Confirmation','Do you want to delete this record?',null,['Yes','No'],false).then(async Confirmation => {
+      if (Confirmation === 'Yes') {
         const updateData = {
           IsActive: this.adminConstants.LOGICAL_FIELD.NO
         };
         this.confirmUpdate(this.currSubDivisionObj, updateData, this.constantsService.listNames.ClientSubdivision.name,
           this.constantsService.listNames.ClientSubdivision.type, this.adminConstants.DELETE_LIST_ITEM.SUB_DIVISION);
-      },
-    });
+	  }
+	  });
   }
   /**
    * construct a request to SharePoint based API using REST-CALL to provide the result based on query.
@@ -723,19 +714,18 @@ export class ClientMasterdataComponent implements OnInit {
   */
   deletePOC() {
     console.log(this.currPOCObj);
-    this.confirmationService.confirm({
-      message: 'Do you want to delete this record?',
-      header: 'Delete Confirmation',
-      icon: 'pi pi-info-circle',
-      key: 'confirm',
-      accept: () => {
+
+
+
+    this.common.confirmMessageDialog('Delete Confirmation','Do you want to delete this record?',null,['Yes','No'],false).then(async Confirmation => {
+      if (Confirmation === 'Yes') {
         const updateData = {
           Status: this.adminConstants.LOGICAL_FIELD.INACTIVE
         };
         this.confirmUpdate(this.currPOCObj, updateData, this.constantsService.listNames.ProjectContacts.name,
           this.constantsService.listNames.ProjectContacts.type, this.adminConstants.DELETE_LIST_ITEM.POINT_OF_CONTACT);
-      },
-    });
+	  }
+	  });
   }
   /**
    * construct a request to SharePoint based API using REST-CALL to provide the result based on query.
@@ -1012,19 +1002,16 @@ export class ClientMasterdataComponent implements OnInit {
    * It will first confirm from user to delete or not.
    */
   deletePO(Obj) {
-    this.confirmationService.confirm({
-      message: 'Do you want to delete this record?',
-      header: 'Delete Confirmation',
-      icon: 'pi pi-info-circle',
-      key: 'confirm',
-      accept: () => {
+
+    this.common.confirmMessageDialog('Delete Confirmation','Do you want to delete this record?',null,['Yes','No'],false).then(async Confirmation => {
+      if (Confirmation === 'Yes') {
         const updateData = {
           Status: this.adminConstants.LOGICAL_FIELD.INACTIVE
         };
         this.confirmUpdate(Obj, updateData, this.constantsService.listNames.PO.name,
           this.constantsService.listNames.PO.type, this.adminConstants.DELETE_LIST_ITEM.PURCHASE_ORDER);
-      },
-    });
+	  }
+	  });
   }
   /**
    * Construct a method to call REST API based on query `ID='this.currPOObj.ID'`to show the all the properties in right overlay.

@@ -1016,7 +1016,7 @@ export class CommonService {
 
     checkGTZeroNumberValidator(): ValidatorFn {
         return (control: AbstractControl): { [key: string]: boolean } | null => {
-            if( control.value !== null &&  !isNaN(control.value)){
+            if (control.value !== null && !isNaN(control.value)) {
                 if (Number(control.value) <= 0) {
                     return { gtZeroNumber: true };
                 }
@@ -1024,5 +1024,19 @@ export class CommonService {
             }
             return null;
         };
+    }
+
+    setBatchObject(batchUrl, url, body, type, listName) {
+        const obj = Object.assign({}, this.queryConfig);
+        obj.url = url;
+        obj.listName = listName;
+        obj.type = type;
+        obj.data = body;
+        batchUrl.push(obj);
+    }
+
+    getyearRange() {
+        const currentYear = new Date();
+        return (currentYear.getFullYear() - 10) + ':' + (currentYear.getFullYear() + 10);
     }
 }

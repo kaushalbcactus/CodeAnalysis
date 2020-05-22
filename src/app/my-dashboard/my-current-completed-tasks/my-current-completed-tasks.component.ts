@@ -9,7 +9,7 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { SelectItem, MenuItem, DialogService } from 'primeng';
 import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
-import { MessageService, ConfirmationService } from 'primeng/api';
+import { MessageService } from 'primeng/api';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TimeSpentDialogComponent } from '../time-spent-dialog/time-spent-dialog.component';
 import { AddEditCommentComponent } from '../add-edit-comment-dialog/add-edit-comment-dialog.component';
@@ -46,7 +46,6 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     public messageService: MessageService,
     private route: ActivatedRoute,
     public dialogService: DialogService,
-    private confirmationService: ConfirmationService,
     public spOperations: SPOperationService,
     private cdr: ChangeDetectorRef,
     private platformLocation: PlatformLocation,

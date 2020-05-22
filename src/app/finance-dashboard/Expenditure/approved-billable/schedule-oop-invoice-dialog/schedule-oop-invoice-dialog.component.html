@@ -21,6 +21,7 @@
             <div class="p-grid p-col">
                 <div class="p-col-4"><span class="compulsory">*</span>Po Number</div>
                 <div class="p-col-8">
+
                     <p-dropdown resetFilterOnHide="true" [options]="poNames" filter="true" formControlName="PONumber" [style]="{'width':'100%'}" placeholder="Select PO Number" optionLabel="Number" (onChange)="poChange($event)">
                         <ng-template let-item pTemplate="selectedItem">
                             <span style="vertical-align:middle">{{item.label}}
@@ -122,6 +123,7 @@
             <div class="p-grid p-col">
                 <div class="p-col-4"><span class="compulsory">*</span>POC Name</div>
                 <div class="p-col-8">
+
                     <p-dropdown [options]="listOfPOCs" formControlName="POCName" placeholder="Select POC Name" optionLabel="FullName" filter="true" resetFilterOnHide="true" (onChange)="pocChange($event)" [style]="{'width':'100%'}"> </p-dropdown>
                     <div class="error" *ngIf="isScheduleInvoiceFormSubmit && ScheduleInvoiceForm.controls.POCName.errors">
                         <div *ngIf="ScheduleInvoiceForm.controls.POCName.errors.required">

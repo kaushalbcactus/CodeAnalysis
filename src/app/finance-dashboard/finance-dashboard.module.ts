@@ -34,6 +34,7 @@ import { InvTableAttributeComponent } from './Outstanding-Invoices/inv-table-att
 import { ScheduleOopInvoiceDialogComponent } from './Expenditure/approved-billable/schedule-oop-invoice-dialog/schedule-oop-invoice-dialog.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MarkAsPaymentDialogComponent } from './Expenditure/mark-as-payment-dialog/mark-as-payment-dialog.component';
+import { ApproveBillingDialogComponent } from './Scheduled/hourly-based/approve-billing-dialog/approve-billing-dialog.component';
 
 @NgModule({
   declarations: [
@@ -61,6 +62,7 @@ import { MarkAsPaymentDialogComponent } from './Expenditure/mark-as-payment-dial
     InvTableAttributeComponent,
     ScheduleOopInvoiceDialogComponent,
     MarkAsPaymentDialogComponent,
+    ApproveBillingDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -87,7 +89,8 @@ import { MarkAsPaymentDialogComponent } from './Expenditure/mark-as-payment-dial
     TableAttributeComponent,
     EditorComponent,
     ScheduleOopInvoiceDialogComponent,
-    MarkAsPaymentDialogComponent
+    MarkAsPaymentDialogComponent,
+    ApproveBillingDialogComponent
   ],
   providers: [
     FDResolve,
