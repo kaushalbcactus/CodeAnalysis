@@ -4021,8 +4021,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       });
 
       if (milSubMil) {
-        capacity = await this.usercapacityComponent.afterMilestoneTaskModified(element, element.start_date,
-          element.end_date, element.resources, [])
+        capacity = await this.usercapacityComponent.afterResourceChange(element, element.start_date,
+          element.end_date, element.resources, [], false)
       } else {
         capacity = await this.usercapacityComponent.factoringTimeForAllocation(element.start_date, element.end_date,
           element.resources, [], [], this.taskAllocateCommonService.adhocStatus);
