@@ -646,4 +646,10 @@ export class ConstantsService {
     RECOMMENDED: 'Recommended'
   };
 
+  public batchType = {
+    POST : 'POST',
+    GET : 'GET',
+    PATCH : 'PATCH'
+  };
+
 }

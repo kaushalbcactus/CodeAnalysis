@@ -102,13 +102,7 @@ export class UsercapacityComponent implements OnInit {
       summary: 'Info Message', detail: 'Fetching data...'
     });
     this.enableDownload = data.type === 'CapacityDashboard' ? true : false;
-    // setTimeout(() => {
-
-
-    // }, 500);
-
     if (data.type === 'CapacityDashboard') {
-
       this.displayCount = data.resourceType === 'OnJob' ? 'Total On Job Resource: ' + data.task.resources.length : 'Total Trainee: ' + data.task.resources.length;
       this.taskStatus = data.taskStatus
     }
@@ -140,16 +134,11 @@ export class UsercapacityComponent implements OnInit {
       this.globalService.oCapacity = oCapacity;
       this.oCapacity = oCapacity;
     }
-
-    console.log(this.oCapacity)
-
-
     if (data.Module) {
       if (data.Module === 'PM') {
         this.disableCamera = true;
       }
     }
-
     this.calc(oCapacity);
   }
 
@@ -623,7 +612,7 @@ export class UsercapacityComponent implements OnInit {
       }
       const capacity = this.globalService.oCapacity;
       return capacity;
-    } 
+    }
   }
 
   async afterMilestoneTaskModified(task, startDate, endDate, resource, []) {
@@ -1108,7 +1097,7 @@ export class UsercapacityComponent implements OnInit {
 
     if (arrDateRange <= 10) {
 
-      setTimeout(() => {
+      // setTimeout(() => {
         let tableWidth = document.getElementById('capacityTable').offsetWidth;
 
         tableWidth = tableWidth === 0 ? (document.getElementsByClassName("userCapacity").length ? document.getElementsByClassName("userCapacity")[0].parentElement.offsetWidth : 1192) : tableWidth;
@@ -1158,7 +1147,7 @@ export class UsercapacityComponent implements OnInit {
         setTimeout(() => {
           this.messageService.clear('myKey1');
         }, 500);
-      }, 500);
+      // }, 500);
 
     } else {
       this.height = 'inherit';
