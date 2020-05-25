@@ -6,7 +6,7 @@
 margin: 20px 0px 10px 0px;">
 
 <div class="ui-dialog-footer" style="border: none;">
-    <button type="button" pButton icon="pi pi-check" label="Yes" (click)="Confirm(true)"></button>
-    <button type="button" pButton icon="pi pi-times" label="No" (click)="Confirm(false)"></button>
+    <button type="button" pButton [icon]="confirmButtonName === 'Yes' ? 'pi pi-check' :''" [label]="confirmButtonName" (click)="Confirm(confirmButtonName)"></button>
+    <button type="button" pButton [icon]="confirmButtonName === 'No' ? 'pi pi-times' : ''" [label]="rejectButtonName" (click)="Confirm(rejectButtonName)"></button>
 
 </div>

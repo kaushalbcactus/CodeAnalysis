@@ -1331,18 +1331,18 @@ export class PMCommonService {
     });
     return invoiceArray;
   }
-  getSowItemData(projectfinaceObj) {
+  getSowItemData(projectfinanceObj) {
     const sowObj: any = this.pmObject.addProject.SOWSelect.SOWSelectedItem;
     const data = {
       __metadata: { type: this.constant.listNames.SOW.type },
-      TotalLinked: sowObj.TotalLinked + projectfinaceObj.Budget,
-      RevenueLinked: sowObj.RevenueLinked + projectfinaceObj.RevenueBudget,
-      OOPLinked: sowObj.OOPLinked + projectfinaceObj.OOPBudget,
-      TaxLinked: sowObj.TaxLinked + projectfinaceObj.TaxBudget,
-      TotalScheduled: sowObj.TotalScheduled + projectfinaceObj.InvoicesScheduled,
-      ScheduledRevenue: sowObj.ScheduledRevenue + projectfinaceObj.ScheduledRevenue,
-      TotalInvoiced: sowObj.TotalInvoiced + projectfinaceObj.Invoiced,
-      InvoicedRevenue: sowObj.InvoicedRevenue + projectfinaceObj.InvoicedRevenue,
+      TotalLinked: sowObj.TotalLinked + projectfinanceObj.Budget,
+      RevenueLinked: sowObj.RevenueLinked + projectfinanceObj.RevenueBudget,
+      OOPLinked: sowObj.OOPLinked + projectfinanceObj.OOPBudget,
+      TaxLinked: sowObj.TaxLinked + projectfinanceObj.TaxBudget,
+      TotalScheduled: sowObj.TotalScheduled + projectfinanceObj.InvoicesScheduled,
+      ScheduledRevenue: sowObj.ScheduledRevenue + projectfinanceObj.ScheduledRevenue,
+      TotalInvoiced: sowObj.TotalInvoiced + projectfinanceObj.Invoiced,
+      InvoicedRevenue: sowObj.InvoicedRevenue + projectfinanceObj.InvoicedRevenue,
     };
     return data;
   }
@@ -1980,7 +1980,6 @@ export class PMCommonService {
   }
 
   async reloadPMPage() {
-
     setTimeout(() => {
       this.pmObject.isAddProjectVisible = false;
       this.pmObject.isMainLoaderHidden = true;

@@ -15,6 +15,7 @@ import { MessageService } from 'primeng/api';
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component';
 import { PrimengModule } from './primeng/primeng.module';
 import { FileUploadProgressDialogComponent } from './shared/file-upload-progress-dialog/file-upload-progress-dialog.component';
+import { ConfirmationDialogComponent } from './shared/confirmation-dialog/confirmation-dialog.component';
 
 @NgModule({
   imports: [
@@ -33,7 +34,7 @@ import { FileUploadProgressDialogComponent } from './shared/file-upload-progress
     AppComponent,
     PageNotFoundComponent
   ],
-  entryComponents: [FileUploadProgressDialogComponent],
+  entryComponents:[FileUploadProgressDialogComponent,ConfirmationDialogComponent],
   providers: [DataService, TimelineHistoryComponent, DatePipe, MessageService, Title],
   bootstrap: [AppComponent]
 })

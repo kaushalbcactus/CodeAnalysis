@@ -182,59 +182,11 @@ export class SendToClientComponent implements OnInit {
   async closeTaskWithStatus(task, options, unt) {
     const isActionRequired = await this.commonService.checkTaskStatus(task);
     if (isActionRequired) {
-
+      const project = this.pmObject.allProjectItems.find(item => item.ProjectCode === task.ProjectCode);
+      let projectStatus = project.Status;
       let batchUrl = [];
-
-      if (task.SubMilestones) {
-        const objMilestone = Object.assign({}, this.pmConstant.milestoneOptions);
-        objMilestone.filter = objMilestone.filter.replace(/{{projectCode}}/gi,
-          task.ProjectCode).replace(/{{milestone}}/gi,
-            task.Milestone);
-        this.commonService.SetNewrelic('projectManagment', 'send to Client', 'fetchMilestone');
-        const response = await this.spServices.readItems(this.Constant.listNames.Schedules.name, objMilestone);
-
-        if (response.length > 0) {
-
-          const SubMilestonesObj = [];
-          let modifiedSubMilestones = null;
-          const SubMilestones = response[0].SubMilestones.split(';#');
-          if (SubMilestones) {
-            SubMilestones.forEach(element => {
-              if (element.split(':')[0] === task.SubMilestones) {
-                SubMilestonesObj.push(element.split(':')[0] + ':' + element.split(':')[1] + ':Completed');
-              }
-              else {
-                SubMilestonesObj.push(element);
-              }
-            });
-            modifiedSubMilestones = SubMilestonesObj.length > 1 ? SubMilestonesObj.join(';#') : SubMilestonesObj.toString();
-          }
-          const milestoneObj = Object.assign({}, this.options);
-          milestoneObj.url = this.spServices.getItemURL(this.Constant.listNames.Schedules.name, response[0].Id);
-          milestoneObj.data = { SubMilestones: modifiedSubMilestones, __metadata: { type: this.Constant.listNames.Schedules.type } };
-          milestoneObj.listName = this.Constant.listNames.Schedules.name;
-          milestoneObj.type = 'PATCH';
-          batchUrl.push(milestoneObj);
-        }
-      }
-
-      // update Task
-      const taskObj = Object.assign({}, this.options);
-      taskObj.url = this.spServices.getItemURL(this.Constant.listNames.Schedules.name, task.ID);
-      taskObj.data = options;
-      taskObj.listName = this.Constant.listNames.Schedules.name;
-      taskObj.type = 'PATCH';
-      batchUrl.push(taskObj);
-
       if (task.NextTasks) {
-        const projectID = this.pmObject.allProjectItems.filter(item => item.ProjectCode === task.ProjectCode);
-        const projectObj = Object.assign({}, this.options);
-        projectObj.url = this.spServices.getItemURL(this.Constant.listNames.ProjectInformation.name, projectID[0].ID);
-        projectObj.data = { Status: 'Author Review', __metadata: { type: this.Constant.listNames.ProjectInformation.type } };
-        projectObj.listName = this.Constant.listNames.ProjectInformation.name;
-        projectObj.type = 'PATCH';
-        batchUrl.push(projectObj);
-
+        projectStatus = this.Constant.STATUS.AUTHOR_REVIEW;
         const nextTask = this.scArrays.nextTaskArray.filter(item => item.Title === task.NextTasks);
         if (nextTask && nextTask.length) {
 
@@ -245,19 +197,19 @@ export class SendToClientComponent implements OnInit {
           taskObj.type = 'PATCH';
           batchUrl.push(taskObj);
         }
+        await this.ContinoueCloseTaskWithStatus(task, project, options, projectStatus, batchUrl);
+      } else {
+        this.loaderView.nativeElement.classList.remove('show');
+        this.spannerView.nativeElement.classList.remove('show');
+        this.commonService.confirmMessageDialog("Do you want to change project status from '" + project.Status + "' to '" + this.Constant.STATUS.AUTHOR_REVIEW + "' or '" + this.Constant.STATUS.IN_PROGRESS + "' ?", [this.Constant.STATUS.AUTHOR_REVIEW, this.Constant.STATUS.IN_PROGRESS], true).then(async projectstatus => {
+          if (projectstatus) {
+            this.loaderView.nativeElement.classList.add('show');
+            this.spannerView.nativeElement.classList.add('show');
+            projectStatus = projectstatus;
+            await this.ContinoueCloseTaskWithStatus(task, project, options, projectStatus, batchUrl);
+          }
+        });
       }
-      await this.spServices.executeBatch(batchUrl);
-      this.messageService.add({
-        key: 'custom', severity: 'success', sticky: true,
-        summary: 'Success Message', detail: task.Title + ' is completed Sucessfully'
-      });
-
-      this.loaderView.nativeElement.classList.remove('show');
-      this.spannerView.nativeElement.classList.remove('show');
-      const index = this.pmObject.sendToClientArray.findIndex(item => item.ID === task.ID);
-      this.pmObject.sendToClientArray.splice(index, 1);
-      this.pmObject.sendToClientArray =[...this.pmObject.sendToClientArray];
-      this.pmObject.countObj.scCount = this.pmObject.countObj.scCount - 1;
     } else {
 
       this.loaderView.nativeElement.classList.remove('show');
@@ -272,6 +224,71 @@ export class SendToClientComponent implements OnInit {
       }, 3000);
     }
   }
+
+  async ContinoueCloseTaskWithStatus(task, project, options, projectStatus, batchUrl) {
+    const projectObj = Object.assign({}, this.options);
+    projectObj.url = this.spServices.getItemURL(this.Constant.listNames.ProjectInformation.name, project.ID);
+    projectObj.data = { Status: projectStatus, __metadata: { type: this.Constant.listNames.ProjectInformation.type } };
+    projectObj.listName = this.Constant.listNames.ProjectInformation.name;
+    projectObj.type = 'PATCH';
+    batchUrl.push(projectObj);
+
+    if (task.SubMilestones) {
+      const objMilestone = Object.assign({}, this.pmConstant.milestoneOptions);
+      objMilestone.filter = objMilestone.filter.replace(/{{projectCode}}/gi,
+        task.ProjectCode).replace(/{{milestone}}/gi,
+          task.Milestone);
+      this.commonService.SetNewrelic('projectManagment', 'send to Client', 'fetchMilestone');
+      const response = await this.spServices.readItems(this.Constant.listNames.Schedules.name, objMilestone);
+
+      if (response.length > 0) {
+
+        const SubMilestonesObj = [];
+        let modifiedSubMilestones = null;
+        const SubMilestones = response[0].SubMilestones.split(';#');
+        if (SubMilestones) {
+          SubMilestones.forEach(element => {
+            if (element.split(':')[0] === task.SubMilestones) {
+              SubMilestonesObj.push(element.split(':')[0] + ':' + element.split(':')[1] + ':Completed');
+            }
+            else {
+              SubMilestonesObj.push(element);
+            }
+          });
+          modifiedSubMilestones = SubMilestonesObj.length > 1 ? SubMilestonesObj.join(';#') : SubMilestonesObj.toString();
+        }
+        const milestoneObj = Object.assign({}, this.options);
+        milestoneObj.url = this.spServices.getItemURL(this.Constant.listNames.Schedules.name, response[0].Id);
+        milestoneObj.data = { SubMilestones: modifiedSubMilestones, __metadata: { type: this.Constant.listNames.Schedules.type } };
+        milestoneObj.listName = this.Constant.listNames.Schedules.name;
+        milestoneObj.type = 'PATCH';
+        batchUrl.push(milestoneObj);
+      }
+    }
+
+    // update Task
+    const taskObj = Object.assign({}, this.options);
+    taskObj.url = this.spServices.getItemURL(this.Constant.listNames.Schedules.name, task.ID);
+    taskObj.data = options;
+    taskObj.listName = this.Constant.listNames.Schedules.name;
+    taskObj.type = 'PATCH';
+    batchUrl.push(taskObj);
+
+
+    await this.spServices.executeBatch(batchUrl);
+    this.messageService.add({
+      key: 'custom', severity: 'success', sticky: true,
+      summary: 'Success Message', detail: task.Title + ' is completed Sucessfully'
+    });
+
+    this.loaderView.nativeElement.classList.remove('show');
+    this.spannerView.nativeElement.classList.remove('show');
+    const index = this.pmObject.sendToClientArray.findIndex(item => item.ID === task.ID);
+    this.pmObject.sendToClientArray.splice(index, 1);
+    this.pmObject.sendToClientArray = [...this.pmObject.sendToClientArray];
+    this.pmObject.countObj.scCount = this.pmObject.countObj.scCount - 1;
+  }
+
   async callSendToClient() {
     this.getCheckedCheckbox();
   }
