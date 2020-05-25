@@ -45,10 +45,11 @@ export class PreStackAllocationComponent implements OnInit {
     ];
     const allocationData: DailyAllocationTask = this.popupData.data;
     this.resourceCapacity = {};
-    if (allocationData) {
+    if (allocationData && allocationData.resource.length && allocationData.startDate && allocationData.endDate) {
       this.showLoader();
       setTimeout(async () => {
         this.resourceCapacity = await this.getResourceCapacity(allocationData);
+
         await this.initialize(this.resourceCapacity, allocationData);
         this.hideTable = false;
         this.showTable();
