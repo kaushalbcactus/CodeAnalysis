@@ -27,3 +27,10 @@
 .hourlyTable {
     margin: 10px 0px;
 }
+
+.overlaypanel>.ui-overlaypanel {
+    top: 30px !important;
+    left: inherit !important;
+    right: 0px !important;
+    width: 450px !important;
+}

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef, MessageService } from 'primeng';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 
@@ -21,6 +21,7 @@ export class FileUploadProgressDialogComponent implements OnInit {
     public dialogref: DynamicDialogRef,
     public globalService: GlobalService,
     public spoperationService: SPOperationService,
+    public messageService: MessageService
   ) { }
 
   ngOnInit() {

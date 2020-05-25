@@ -7,7 +7,7 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { MyDashboardConstantsService } from 'src/app/my-dashboard/services/my-dashboard-constants.service';
 import { CommonService } from 'src/app/Services/common.service';
-import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
+
 import { FileUploadProgressDialogComponent } from '../file-upload-progress-dialog/file-upload-progress-dialog.component';
 
 
@@ -34,6 +34,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   dbcols: { field: string; header: string; }[];
   cols: { field: string; header: string; }[];
   selectedDocuments: any = [];
+  uploadedFiles: any[] = [];
   fileReader = new FileReader();
   prevTask: string;
   enableNotification = false;
@@ -471,22 +472,15 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     }
   }
 
-  // **************************************************************************************************************************************
+  // *************************************************************************************************
   //   upload documents
-  // **************************************************************************************************************************************
-
-
-
+  // *************************************************************************************************
 
   uploadDocs(event, type) {
     if (this.ModifiedSelectedTaskName === 'Client Review' && this.closeCRTaskEnable && this.selectedTab === 'My Drafts') {
-      const confirmref = this.dialogService.open(ConfirmationDialogComponent, {
-        header: 'Confirmation',
-        data: 'Are you sure that you want to close current task with selected documents?',
-        closable: false
-      });
-      confirmref.onClose.subscribe((Confirmation: any) => {
-        if (Confirmation) {
+      const message = 'Are you sure that you want to close current task with selected documents?';
+      this.commonService.confirmMessageDialog(message, ['Yes', 'No'],false).then(async Confirmation => {
+        if (Confirmation === 'Yes') {
           this.uploadDocuments(event, type);
         }
       });
@@ -504,48 +498,54 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       switch (type) {
         case 'Source Docs':
           docFolder = 'Source Documents';
-          //  sVal = 'source documents';
           break;
         case 'References':
           docFolder = 'References';
-          //  sVal = 'references';
           break;
         case 'meetingNotes':
           docFolder = 'Communications';
-          // sVal = 'meeting notes';
           break;
         case 'Meeting Notes':
           docFolder = 'Communications';
-          // sVal = 'meeting notes & comments';
           break;
         default:
           docFolder = 'Drafts/Internal/' + this.selectedTask.Milestone;
-          //  sVal = 'current task documents';
           break;
       }
       const readers = [];
       let bUpload = true;
+      let filesizeerror = false;
       event.files.forEach(async element => {
 
-        let file = element;
-        let filename = element.name;
-        const sNewFileName = filename.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
-        if (filename !== sNewFileName) {
+        if(element.size > 0){
+          let file = element;
+          let filename = element.name;
+          const sNewFileName = filename.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
+          if (filename !== sNewFileName) {
+            bUpload = false;
+            return;
+          }
+          if (existingFiles.includes(element.name.toLowerCase())) {
+            filename = filename.split(/\.(?=[^\.]+$)/)[0] + '.' + this.datePipe.transform(new Date(),
+              'ddMMyyyyhhmmss') + '.' + filename.split(/\.(?=[^\.]+$)/)[1];
+          }
+          const fileObj = {
+            file: file,
+            name: filename
+          };
+  
+          readers.push(fileObj);
+          existingFiles.push(filename.toLowerCase());
+        }
+        else{
+          filesizeerror = true;
           bUpload = false;
+          this.messageService.add({
+            key: 'custom', severity: 'info',
+            summary: 'Info Message', detail: element.name + ' file size should be greater than 0 KB.'
+          });
           return;
         }
-        if (existingFiles.includes(element.name.toLowerCase())) {
-          filename = filename.split(/\.(?=[^\.]+$)/)[0] + '.' + this.datePipe.transform(new Date(),
-            'ddMMyyyyhhmmss') + '.' + filename.split(/\.(?=[^\.]+$)/)[1];
-        }
-        const fileObj = {
-          file: file,
-          name: filename
-        };
-
-        readers.push(fileObj);
-
-        existingFiles.push(filename.toLowerCase());
       });
       if (bUpload) {
         const ref = this.dialogService.open(FileUploadProgressDialogComponent, {
@@ -576,11 +576,13 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
           }
         });
       } else {
-        this.messageService.add({
-          key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
-          // tslint:disable-next-line: max-line-length
-          detail: 'There are certain files with special characters. Please rename them. List of special characters ~ # % & * { } \ : / + < > ? " @ \''
-        });
+        if(!filesizeerror){
+          this.messageService.add({
+            key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
+            // tslint:disable-next-line: max-line-length
+            detail: 'There are certain files with special characters. Please rename them. List of special characters ~ # % & * { } \ : / + < > ? " @ \''
+          });
+        }
       }
     }
   }

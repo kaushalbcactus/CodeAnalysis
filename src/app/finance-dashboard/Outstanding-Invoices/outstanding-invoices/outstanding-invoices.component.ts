@@ -25,7 +25,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     outstandingInvoicesRes: any = [];
     outstandingInCols: any[];
     msgs: Message[] = [];
-
+    SelectedAuxInvoiceName = '';
     // Row Selection Array
     selectedRowData: any = [];
 
@@ -77,6 +77,8 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     private subscription: Subscription = new Subscription();
     SelectedFile: any;
     FolderName: string;
+    editAuxiliary = false;
+    DisplayInvoiceWithAuxiliaryArray = [];
 
     constructor(
         private confirmationService: ConfirmationService,
@@ -264,9 +266,9 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
 
     createOutstandingInvoiceCols() {
         this.outstandingInCols = [
-            { field: 'ClientLegalEntity', header: 'Client LE', visibility: true },
+            { field: 'ClientLegalEntity', header: 'Client', visibility: true },
             { field: 'InvoiceStatus', header: 'Invoice Status', visibility: true },
-            { field: 'InvoiceNumber', header: 'Invoice Number', visibility: true },
+            { field: 'DisplayInvoiceWithAuxiliary', header: 'Invoice Number', visibility: true },
             { field: 'POName', header: 'PO Name', visibility: true },
             { field: 'PONumber', header: 'PO Number', visibility: true },
             { field: 'InvoiceDate', header: 'Invoice Date', visibility: true, exportable: false },
@@ -341,11 +343,13 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         const arrResults = res.length ? res : [];
         // if (arrResults.length) {
         this.formatData(arrResults);
-        // }
-        this.isPSInnerLoaderHidden = true;
-        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
         this.setCurrentPage(0);
-        // });
+
+        setTimeout(() => {
+            this.isPSInnerLoaderHidden = true;
+            this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
+        }, 300);
+
     }
 
     async formatData(data: any[]) {
@@ -369,6 +373,8 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 InvoiceDate: new Date(this.datePipe.transform(element.InvoiceDate, 'MMM dd, yyyy')),
                 InvoiceDateFormat: this.datePipe.transform(element.InvoiceDate, 'MMM dd, yyyy, hh:mm a'),
                 InvoiceNumber: element.InvoiceNumber,
+                AuxiliaryInvoiceName: element.AuxiliaryInvoiceName ? element.AuxiliaryInvoiceName : '',
+                DisplayInvoiceWithAuxiliary: element.AuxiliaryInvoiceName ? element.InvoiceNumber + ' - ' + element.AuxiliaryInvoiceName : element.InvoiceNumber,
                 MainPOC: element.MainPOC,
                 InvoiceStatus: element.Status,
                 PONumber: poItem.Number,
@@ -396,8 +402,11 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             });
         }
         this.outstandingInvoicesRes = [...this.outstandingInvoicesRes];
-        this.isPSInnerLoaderHidden = true;
         this.createColFieldValues(this.outstandingInvoicesRes);
+        if (this.outInvTable.filteredValue && this.outInvTable.filters.DisplayInvoiceWithAuxiliary) {
+            this.DisplayInvoiceWithAuxiliaryArray = this.outstandingInvoicesRes.filter(c => this.outInvTable.filters.DisplayInvoiceWithAuxiliary.value.includes(c.DisplayInvoiceWithAuxiliary)) ? this.outstandingInvoicesRes.filter(c => this.outInvTable.filters.DisplayInvoiceWithAuxiliary.value.includes(c.DisplayInvoiceWithAuxiliary)).map(c => c.DisplayInvoiceWithAuxiliary) : [];
+            this.outInvTable.filter(this.DisplayInvoiceWithAuxiliaryArray, 'DisplayInvoiceWithAuxiliary', 'in')
+        }
     }
 
     // Project PO
@@ -430,7 +439,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     outInvoiceColArray = {
         ClientLegalEntity: [],
         InvoiceStatus: [],
-        InvoiceNumber: [],
+        DisplayInvoiceWithAuxiliary: [],
         PONumber: [],
         POName: [],
         InvoiceDate: [],
@@ -443,7 +452,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     createColFieldValues(resArray) {
         this.outInvoiceColArray.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
         this.outInvoiceColArray.InvoiceStatus = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.InvoiceStatus, value: a.InvoiceStatus }; return b; }).filter(ele => ele.label)));
-        this.outInvoiceColArray.InvoiceNumber = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.InvoiceNumber, value: a.InvoiceNumber }; return b; }).filter(ele => ele.label)));
+        this.outInvoiceColArray.DisplayInvoiceWithAuxiliary = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.DisplayInvoiceWithAuxiliary, value: a.DisplayInvoiceWithAuxiliary }; return b; }).filter(ele => ele.label)));
         this.outInvoiceColArray.PONumber = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }).filter(ele => ele.label)));
         this.outInvoiceColArray.POName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POName, value: a.POName }; return b; }).filter(ele => ele.label)));
         this.outInvoiceColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
@@ -530,6 +539,14 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 break;
             }
         }
+        if (!data.FileURL && data.ProformaLookup && (data.Template === 'US' || data.Template === 'India' || data.Template === 'Japan')) {
+            this.items.push({ label: 'Regenerate Invoice', command: (e) => this.openMenuContent(e, data) });
+        }
+
+        if (data.InvoiceStatus === this.constantService.STATUS.GENERATED || data.InvoiceStatus === this.constantService.STATUS.SENTTOAP) {
+            this.items.push({ label: 'Edit Invoice Number', command: (e) => this.openMenuContent(e, data) })
+        }
+
         this.items.push(
             { label: 'Details', command: (e) => this.openMenuContent(e, data) },
             { label: 'Show History', command: (e) => this.openMenuContent(e, data) },
@@ -628,6 +645,14 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             }
             // this.pdfEditor.getInvoiceData(JSON.parse(data.ProformaHtml));
         }
+        else if (this.confirmDialog.title === 'Edit Invoice Number') {
+
+            this.SelectedAuxInvoiceName = this.selectedRowItem.AuxiliaryInvoiceName;
+            this.editAuxiliary = true;
+        } else if (this.confirmDialog.title === 'Regenerate Invoice') {
+            this.generateExistingInvoice(data);
+        }
+
     }
 
     setAppendixCol(sContent) {
@@ -734,7 +759,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
 
         this.commonService.UploadFilesProgress(this.SelectedFile, this.FolderName, true).then(async uploadedfile => {
             if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
-                if (uploadedfile[0].hasOwnProperty('odata.error')) {
+                if (uploadedfile[0].hasOwnProperty('odata.error') || uploadedfile[0].hasError) {
                     this.submitBtn.isClicked = false;
                     this.messageService.add({
                         key: 'outstandingInfoToast', severity: 'error', summary: 'Error message',
@@ -848,6 +873,9 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         if (type === 'paymentResoved') {
             if (this.paymentResoved_form.invalid) {
                 return;
+            } else if (this.selectedFile && this.selectedFile.size === 0) {
+                this.errorMessage();
+                return;
             }
 
             this.submitBtn.isClicked = true;
@@ -877,11 +905,19 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             if (this.replaceInvoice_form.invalid) {
                 return;
             }
+            else if (this.selectedFile && this.selectedFile.size === 0) {
+                this.errorMessage();
+                return;
+            }
             // console.log('form is submitting ..... & Form data is ', this.replaceInvoice_form.value);
             this.submitBtn.isClicked = true;
             this.uploadFileData(type);
         } else if (type === 'creditDebit') {
             if (this.creditOrDebitNote_form.invalid) {
+                return;
+            }
+            else if (this.selectedFile && this.selectedFile.size === 0) {
+                this.errorMessage();
                 return;
             }
             this.uploadFileData(type);
@@ -906,6 +942,43 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             this.commonService.SetNewrelic('Finance-Dashboard', 'outstanding-invoices', 'submitForm');
             this.submitForm(batchUrl, type);
         }
+        else if (type === 'AuxiliaryUpdate') {
+
+            if (this.SelectedAuxInvoiceName.trim() === '' || this.SelectedAuxInvoiceName.length > 30) {
+
+                const errorMessage = this.SelectedAuxInvoiceName.trim() === '' ? 'Please enter Auxiliary Name' : 'Maximum 30 character allowed.'
+                this.messageService.add({ key: 'outstandingInfoToast', severity: 'error', summary: 'Error message', detail: errorMessage, life: 3000 });
+                return false;
+            }
+            else {
+                this.editAuxiliary = false;
+                this.isPSInnerLoaderHidden = false;
+                this.submitBtn.isClicked = true;
+                const invObj = Object.assign({}, this.queryConfig);
+                invObj.url = this.spServices.getItemURL(this.constantService.listNames.Invoices.name, +this.selectedRowItem.Id);
+                invObj.listName = this.constantService.listNames.Invoices.name;
+                invObj.type = 'PATCH';
+                invObj.data = {
+                    __metadata: {
+                        type: this.constantService.listNames.Invoices.type
+                    },
+                    AuxiliaryInvoiceName: this.SelectedAuxInvoiceName
+                };
+                batchUrl.push(invObj);
+
+                this.commonService.SetNewrelic('Finance-Dashboard', 'outstanding-invoices', 'submitForm');
+                this.submitForm(batchUrl, type);
+            }
+
+        }
+    }
+
+
+    errorMessage() {
+        this.messageService.add({
+            key: 'outstandingInfoToast', severity: 'error',
+            summary: 'Error message', detail: 'Unable to upload file, size of ' + this.selectedFile.name + ' is 0 KB.', life: 2000
+        });
     }
 
     submitDebitCreditNoteForm(type: string, pathURL) {
@@ -1018,7 +1091,17 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             this.replaceInvoiceModal = false;
             this.reFetchData();
         }
-        this.isPSInnerLoaderHidden = true;
+        else if (type === "AuxiliaryUpdate") {
+
+            this.messageService.add({
+                key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message',
+                detail: 'Auxiliary Name for ' + this.selectedRowItem.InvoiceNumber + ' ' + ' updated sucessfully.', life: 20000
+            });
+            this.formSubmit.isSubmit = false;
+            this.submitBtn.isClicked = false;
+            this.reFetchData();
+        }
+
         // });
     }
 
@@ -1089,5 +1172,40 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         }
         this.cdr.detectChanges();
     }
+
+
+    //*************************************************************************************************
+    // regenerate invoice for line item  
+    // ************************************************************************************************
+
+
+    async  generateExistingInvoice(lineItem) {
+
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
+        const prfObj = Object.assign({}, this.fdConstantsService.fdComponent.proformaForUser);
+        prfObj.filter = prfObj.filter.replace('{{ItemID}}', lineItem.ProformaLookup);
+        this.commonService.SetNewrelic('Finance-Dashboard', 'outstanding-invoices', 'generateExistingInvoice');
+        const res = await this.spServices.readItems(this.constantService.listNames.Proforma.name, prfObj);
+        const proforma = res.length ? res[0] : [];
+        if (proforma.ProformaHtml) {
+            proforma.ProformaNumber = proforma.Title;
+            const response = await this.fdDataShareServie.createInvoice(proforma.ProformaHtml, proforma, lineItem, this.cleData);
+            if (response) {
+                this.reFetchData();
+                this.messageService.add({ key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message', detail: lineItem.InvoiceNumber + 'created sucessfully.', life: 20000 });
+            }
+            else {
+                console.log('Json parse Issue');
+                this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
+            }
+        }
+        else {
+            this.messageService.add({ key: 'outstandingSuccessToast', severity: 'error', summary: 'Error Message', detail:'Unable to generate invoice for '+ lineItem.InvoiceNumber +', proforma html not found.', life: 20000 });
+            this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
+        }
+
+    }
+
+
 
 }

@@ -154,7 +154,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
     // Upload Client Approval File
     selectedCAFile: any;
     cafilePathUrl: any;
-    caSelectedFile = [];
+    caSelectedFile: any;
     cafileReader: any;
     caFileUploadedUrl: any;
 
@@ -732,8 +732,24 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
                 });
                 return;
             }
-            // console.log('form is submitting ..... this.addExpenditure_form ', this.addExpenditure_form.value);
-            // this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
+            if (this.SelectedFile[0].file.size === 0) {
+                this.messageService.add({
+                    key: 'expenseInfoToast', severity: 'info', summary: 'Info message',
+                    detail: 'Unable to upload file, size of ' + this.SelectedFile[0].file.name + ' is 0 KB.', life: 4000
+                });
+                return;
+            }
+            else if (this.caSelectedFile[0].file.size === 0) {
+                this.messageService.add({
+                    key: 'expenseInfoToast', severity: 'info', summary: 'Info message',
+                    detail: 'Unable to upload file, size of ' + this.caSelectedFile[0].file.name + ' is 0 KB.', life: 4000
+                });
+                return;
+            }
+            this.submitBtn.isClicked = true;
+            this.getResCatByCMLevel();
+            this.formSubmit.isSubmit = true;
+            this.projectClientIsEmpty = this.isEmpty(this.totalLineItems);
             this.uploadFileData();
 
         } else if (type === 'createFreelancer') {
@@ -764,13 +780,6 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             getPrjContactItemData.type = 'POST';
             getPrjContactItemData.data = formValue;
             batchUrl.push(getPrjContactItemData);
-            // let data = [
-            //     {
-            //         objData: formValue,
-            //         endpoint: endpoint,
-            //         requestPost: true
-            //     }
-            // ]
             this.submitForm(batchUrl, type);
         }
     }
@@ -864,21 +873,6 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             this.FolderName = folderName;
             this.SelectedFile.push(new Object({ name: sNewFileName, file: this.selectedFile }));
 
-            // this.fileReader.readAsArrayBuffer(this.selectedFile);
-            // this.fileReader.onload = () => {
-            //     console.log('selectedFile ', this.selectedFile);
-            //     console.log('this.fileReader  ', this.fileReader.result);
-            //     const date = new Date();
-
-            //     const folderPath: string = this.globalService.sharePointPageObject.webRelativeUrl + '/SpendingInfoFiles/'
-            //         + folderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM') + '/';
-
-            //     this.filePathUrl = this.globalService.sharePointPageObject.webRelativeUrl + '/_api/web/GetFolderByServerRelativeUrl(' + '\'' + folderPath
-            //         + '\'' + ')/Files/add(url=@TargetFileName,overwrite=\'true\')?' + '&@TargetFileName=\'' + this.selectedFile.name + '\'';
-
-
-            // };
-
         }
     }
 
@@ -889,7 +883,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'FileUpolad');
         this.commonService.UploadFilesProgress(this.SelectedFile, 'SpendingInfoFiles/' + this.FolderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM'), true).then(async uploadedfile => {
             if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
-                if (uploadedfile[0].hasOwnProperty('odata.error')) {
+                if (uploadedfile[0].hasOwnProperty('odata.error') || uploadedfile[0].hasError) {
                     this.submitBtn.isClicked = false;
                     this.messageService.add({
                         key: 'expenseErrorToast', severity: 'error', summary: 'Error message',
@@ -942,7 +936,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'UploadCAFiles');
         this.commonService.UploadFilesProgress(this.caSelectedFile, 'SpendingInfoFiles/' + this.caFolderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM'), true).then(async uploadedfile => {
             if (this.caSelectedFile.length > 0 && this.caSelectedFile.length === uploadedfile.length) {
-                if (uploadedfile[0].hasOwnProperty('odata.error')) {
+                if (uploadedfile[0].hasOwnProperty('odata.error') || uploadedfile[0].hasError) {
                     this.submitBtn.isClicked = false;
                     this.messageService.add({
                         key: 'expenseErrorToast', severity: 'error', summary: 'Error message',

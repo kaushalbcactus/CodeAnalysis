@@ -2,7 +2,7 @@
     float: right;
 }
 
-::ng-deep .addNewClientBtnPosition{
+::ng-deep .addNewClientBtnPosition {
     float: right;
     padding: 5px 5px 0px 0px;
 }

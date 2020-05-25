@@ -20,12 +20,10 @@
           <label for="float-input">By Short Title</label>
         </span>
 
-        <button pButton type="button" (click)="SearchProject()" [disabled]="ProjectCode && ProjectTitle"
-          [ngStyle]="{'cursor': ProjectCode && ProjectTitle ? 'not-allowed':'pointer'}" icon="pi pi-search"
-          label="Search" class="ui-button-danger"></button>
-      </div>
-    </form>
-    <div></div>
+                <button pButton type="button" (click)="SearchProject()" [disabled]="ProjectCode && ProjectTitle" [ngStyle]="{'cursor': ProjectCode && ProjectTitle ? 'not-allowed':'pointer'}" icon="pi pi-search" label="Search" class="ui-button-danger"></button>
+            </div>
+        </form>
+        <div></div>
 
   </div>
 
@@ -34,9 +32,8 @@
 ********************************************************************************************************** -->
 
 
-  <p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom" [hideTransitionOptions]="'0ms'"
-    position="bottom-center">
-  </p-toast>
+    <p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom" [hideTransitionOptions]="'0ms'" position="bottom-center">
+    </p-toast>
 
 
 
@@ -54,9 +51,8 @@
                                                           Table View Data
 ************************************************************************************************ -->
 
-  <div *ngIf="!loaderenable && tableviewenable" class="SearchProjectTable" style="padding-top: 5px;">
-    <p-table #project [columns]="cols" [value]="ProjectList" [exportFilename]="ProjectList" [paginator]="true"
-      [rows]="10" [style]="{'font-size':'12px','min-height':'500px'}">
+    <div *ngIf="!loaderenable && tableviewenable" class="SearchProjectTable" style="padding-top: 5px;">
+        <p-table #project [columns]="cols" [value]="ProjectList" [exportFilename]="ProjectList" [paginator]="true" [rows]="10" [style]="{'font-size':'12px','min-height':'500px'}">
 
       <ng-template pTemplate="header" let-columns>
         <tr>
@@ -71,65 +67,46 @@
           <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" style="overflow: visible;">
             <ng-container *ngIf="col.field">
 
-              <p-multiSelect filter="true" resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()"
-                *ngSwitchCase="'SOWCode'" [options]="ProjectColArray.SOWCode" defaultLabel="All"
-                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
-                (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-              <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true"
-                *ngSwitchCase="'ProjectCode'" [options]="ProjectColArray.ProjectCode" defaultLabel="All"
-                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
-                (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-              <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true"
-                *ngSwitchCase="'WBJID'" defaultLabel="All" [options]="ProjectColArray.WBJID"
-                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
-                (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-              <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true"
-                *ngSwitchCase="'ClientLegalEntity'" [options]="ProjectColArray.ClientLegalEntity" defaultLabel="All"
-                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
-                (onPanelShow)="isOptionFilter=true;">
-              </p-multiSelect>
-              <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true"
-                *ngSwitchCase="'DeliverableType'" [options]="ProjectColArray.DeliverableType" defaultLabel="All"
-                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
-                (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-              <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true"
-                *ngSwitchCase="'ProjectType'" [options]="ProjectColArray.ProjectType" defaultLabel="All"
-                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
-                (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-              <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true"
-                *ngSwitchCase="'Status'" [options]="ProjectColArray.Status" defaultLabel="All"
-                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
-                (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-              <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true"
-                *ngSwitchCase="'CreatedBy'" [options]="ProjectColArray.CreatedBy" defaultLabel="All"
-                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
-                (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-              <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true"
-                *ngSwitchCase="'CreatedDate'" [options]="ProjectColArray.CreatedDate" defaultLabel="All"
-                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
-                (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-            </ng-container>
-          </th>
-          <th></th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-node="rowData" let-rowData let-columns="columns" let-rowIndex="rowIndex">
-        <tr style="font-size: 12px;">
-          <td *ngFor="let col of columns;index as i">
-            <span *ngIf="col.field === 'CreatedDate'"> {{rowData[col.field] | date:' MMM d, y, h:mm a'}} </span>
-            <span *ngIf="col.field !== 'CreatedDate'"> {{rowData[col.field]}} </span>
-          </td>
-          <td>
-            <div>
-              <p-menu #popupMenu [popup]="true" [model]="projectMenu">
-              </p-menu>
+                            <p-multiSelect filter="true" resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" *ngSwitchCase="'SOWCode'" [options]="ProjectColArray.SOWCode" defaultLabel="All" (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                                (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                            <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true" *ngSwitchCase="'ProjectCode'" [options]="ProjectColArray.ProjectCode" defaultLabel="All" (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                                (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                            <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true" *ngSwitchCase="'WBJID'" defaultLabel="All" [options]="ProjectColArray.WBJID" (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                                (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                            <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true" *ngSwitchCase="'ClientLegalEntity'" [options]="ProjectColArray.ClientLegalEntity" defaultLabel="All" (onChange)="project.filter($event.value, col.field, 'in')"
+                                (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                            </p-multiSelect>
+                            <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true" *ngSwitchCase="'DeliverableType'" [options]="ProjectColArray.DeliverableType" defaultLabel="All" (onChange)="project.filter($event.value, col.field, 'in')"
+                                (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                            <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true" *ngSwitchCase="'ProjectType'" [options]="ProjectColArray.ProjectType" defaultLabel="All" (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                                (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                            <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true" *ngSwitchCase="'Status'" [options]="ProjectColArray.Status" defaultLabel="All" (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                                (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                            <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true" *ngSwitchCase="'CreatedBy'" [options]="ProjectColArray.CreatedBy" defaultLabel="All" (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                                (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                            <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true" *ngSwitchCase="'CreatedDate'" [options]="ProjectColArray.CreatedDate" defaultLabel="All" (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                                (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                        </ng-container>
+                    </th>
+                    <th></th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-node="rowData" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                <tr style="font-size: 12px;">
+                    <td *ngFor="let col of columns;index as i">
+                        <span *ngIf="col.field === 'CreatedDate'"> {{rowData[col.field] | date:' MMM d, y, h:mm a'}} </span>
+                        <span *ngIf="col.field !== 'CreatedDate'"> {{rowData[col.field]}} </span>
+                    </td>
+                    <td>
+                        <div>
+                            <p-menu #popupMenu [popup]="true" [model]="projectMenu">
+                            </p-menu>
 
-              <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
-                (click)="openPopup(rowData, popupMenu);popupMenu.toggle($event);"></i>
-            </div>
-          </td>
-        </tr>
-      </ng-template>
+                            <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData, popupMenu);popupMenu.toggle($event);"></i>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
 
     </p-table>
   </div>
@@ -140,88 +117,83 @@
                                                            View Details
 ************************************************************************************************ -->
 
-<p-dialog *ngIf="showDetailsenable" header="{{projectDisplayTitle}}" [contentStyle]="{'max-height':'90vh'}"
-  [style]="{'width':'100vw'}" [positionTop]="0" [modal]="true" [draggable]="false" appendTo='body'
-  [(visible)]="showDetailsenable">
+<p-dialog *ngIf="showDetailsenable" header="{{projectDisplayTitle}}" [contentStyle]="{'max-height':'90vh'}" [style]="{'width':'100vw'}" [positionTop]="0" [modal]="true" [draggable]="false" appendTo='body' [(visible)]="showDetailsenable">
 
 
-  <mat-accordion>
+    <mat-accordion>
 
-    <mat-expansion-panel [expanded]="step === 0" (opened)="setStep(0)">
-      <mat-expansion-panel-header>
-        <mat-panel-title style="color:#000000;padding: 5px 0px 0px 0px;">
-          <mat-icon>event_note</mat-icon>&nbsp;&nbsp; Project Properties
-        </mat-panel-title>
-        <ng-template matExpansionPanelContent>
+        <mat-expansion-panel [expanded]="step === 0" (opened)="setStep(0)">
+            <mat-expansion-panel-header>
+                <mat-panel-title style="color:#000000;padding: 5px 0px 0px 0px;">
+                    <mat-icon>event_note</mat-icon>&nbsp;&nbsp; Project Properties
+                </mat-panel-title>
+                <ng-template matExpansionPanelContent>
 
 
-          <div fxLayout="column" style="padding: 2vw;" fxLayoutAlign="center center" [hidden]="!modalloaderenable">
-            <div id="modalInnerLoader"></div>
-            <div id="modalInnerLoaderText">Loading...</div>
-          </div>
+                    <div fxLayout="column" style="padding: 2vw;" fxLayoutAlign="center center" [hidden]="!modalloaderenable">
+                        <div id="modalInnerLoader"></div>
+                        <div id="modalInnerLoaderText">Loading...</div>
+                    </div>
 
-          <table [hidden]="modalloaderenable" class="ProjectDetails" style="width:100%;margin:10px 0px 0px 0px;">
-            <tbody>
-              <tr>
-                <th>Client / Subdivision </th>
-                <td>{{ProjectPopupDetails.ClientLegalEntity}} <span *ngIf="ProjectPopupDetails.SubDivision">/</span>
-                  {{ProjectPopupDetails.SubDivision}}</td>
-                <th>POC </th>
-                <td>{{ProjectPopupDetails.POC}}</td>
-              </tr>
-              <tr>
-                <th>Project Title </th>
-                <td>{{ProjectPopupDetails.Title}}</td>
-                <th>Status </th>
-                <td>{{ProjectPopupDetails.Status}}</td>
-              </tr>
-              <tr>
-                <th>Deliverable Type </th>
-                <td>{{ProjectPopupDetails.DeliverableType}}</td>
-                <th>Sub-Deliverable / Service </th>
-                <td>{{ProjectPopupDetails.SubDeliverable}} <span *ngIf="ProjectPopupDetails.ServiceLevel"> / </span>
-                  {{ProjectPopupDetails.ServiceLevel}} </td>
-              </tr>
-              <tr>
-                <th>TA & Indication </th>
-                <td>{{ProjectPopupDetails.TA}} <span *ngIf="ProjectPopupDetails.Indication"> & </span>
-                  {{ProjectPopupDetails.Indication}}</td>
-                <th>Molecule </th>
-                <td>{{ProjectPopupDetails.Molecule}}</td>
-              </tr>
-              <tr>
-                <th>Practice Area </th>
-                <td>{{ProjectPopupDetails.BusinessVertical}}</td>
-                <th>Priority </th>
-                <td>{{ProjectPopupDetails.Priority}}</td>
-              </tr>
-              <tr>
-                <th>Proposed Start Date </th>
+                    <table [hidden]="modalloaderenable" class="ProjectDetails" style="width:100%;margin:10px 0px 0px 0px;">
+                        <tbody>
+                            <tr>
+                                <th>Client / Subdivision </th>
+                                <td>{{ProjectPopupDetails.ClientLegalEntity}} <span *ngIf="ProjectPopupDetails.SubDivision">/</span> {{ProjectPopupDetails.SubDivision}}
+                                </td>
+                                <th>POC </th>
+                                <td>{{ProjectPopupDetails.POC}}</td>
+                            </tr>
+                            <tr>
+                                <th>Project Title / Scope </th>
+                                <td>{{ProjectPopupDetails.Title}} /
+                                    <a style="cursor: pointer; color:#b11e1e;" (click)="goToProjectScope(ProjectPopupDetails)">{{ProjectPopupDetails.ProjectCode}}_scope.docx</a>
+                                </td>
+                                <th>Status </th>
+                                <td>{{ProjectPopupDetails.Status}}</td>
+                            </tr>
+                            <tr>
+                                <th>Deliverable Type </th>
+                                <td>{{ProjectPopupDetails.DeliverableType}}</td>
+                                <th>Sub-Deliverable / Service </th>
+                                <td>{{ProjectPopupDetails.SubDeliverable}} <span *ngIf="ProjectPopupDetails.ServiceLevel"> / </span> {{ProjectPopupDetails.ServiceLevel}} </td>
+                            </tr>
+                            <tr>
+                                <th>TA & Indication </th>
+                                <td>{{ProjectPopupDetails.TA}} <span *ngIf="ProjectPopupDetails.Indication"> & </span> {{ProjectPopupDetails.Indication}}
+                                </td>
+                                <th>Molecule </th>
+                                <td>{{ProjectPopupDetails.Molecule}}</td>
+                            </tr>
+                            <tr>
+                                <th>Practice Area </th>
+                                <td>{{ProjectPopupDetails.BusinessVertical}}</td>
+                                <th>Priority </th>
+                                <td>{{ProjectPopupDetails.Priority}}</td>
+                            </tr>
+                            <tr>
+                                <th>Proposed Start Date </th>
 
-                <td>
-                  <span
-                    *ngIf="ProjectPopupDetails.ProposedStartDate !== null">{{ProjectPopupDetails.ProposedStartDate | date:'medium'}}
+                                <td>
+                                    <span *ngIf="ProjectPopupDetails.ProposedStartDate !== null">{{ProjectPopupDetails.ProposedStartDate | date:'medium'}}
                   </span>
-                </td>
-                <th>Proposed End Date </th>
-                <td>
-                  <span
-                    *ngIf="ProjectPopupDetails.ProposedEndDate !== null">{{ProjectPopupDetails.ProposedEndDate | date:'medium'}}
+                                </td>
+                                <th>Proposed End Date </th>
+                                <td>
+                                    <span *ngIf="ProjectPopupDetails.ProposedEndDate !== null">{{ProjectPopupDetails.ProposedEndDate | date:'medium'}}
                   </span>
-                </td>
-              </tr>
-              <tr>
-                <th>Confirmation Date</th>
-                <td>
-                  <span
-                    *ngIf="ProjectPopupDetails.ActualStartDate !== null">{{ProjectPopupDetails.ActualStartDate | date:'medium'}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Confirmation Date</th>
+                                <td>
+                                    <span *ngIf="ProjectPopupDetails.ActualStartDate !== null">{{ProjectPopupDetails.ActualStartDate | date:'medium'}}
                   </span>
 
-                </td>
-                <th>Actual End Date </th>
-                <td>
-                  <span
-                    *ngIf="ProjectPopupDetails.ActualEndDate !== null">{{ProjectPopupDetails.ActualEndDate | date:'medium'}}
+                                </td>
+                                <th>Actual End Date </th>
+                                <td>
+                                    <span *ngIf="ProjectPopupDetails.ActualEndDate !== null">{{ProjectPopupDetails.ActualEndDate | date:'medium'}}
                   </span>
                 </td>
               </tr>

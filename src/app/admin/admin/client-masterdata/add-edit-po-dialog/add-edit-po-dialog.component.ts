@@ -384,21 +384,31 @@ export class AddEditPoDialogComponent implements OnInit {
 
   async SavePODetails() {
     if (this.PoForm.valid) {
-      if (!this.showeditPO) {
-        if (this.PORows.some(a =>
-          a.PoNumber.toLowerCase() === this.PoForm.value.poNumber.toLowerCase())) {
-          this.messageService.add({
-            key: 'adminCustom', severity: 'error',
-            summary: 'Error Message', detail: 'This PO number is already exist. Please enter another PO number.'
-          });
-          return false;
+      if (this.selectedFile[0].size > 0) {
+        if (!this.showeditPO) {
+          if (this.PORows.some(a =>
+            a.PoNumber.toLowerCase() === this.PoForm.value.poNumber.toLowerCase())) {
+            this.messageService.add({
+              key: 'adminCustom', severity: 'error',
+              summary: 'Error Message', detail: 'This PO number is already exist. Please enter another PO number.'
+            });
+            return false;
+          }
         }
+        const data = {
+          poDetails: this.PoForm,
+          selectedFile: this.selectedFile
+        }
+        this.ref.close(data);
       }
-      const data = {
-        poDetails: this.PoForm,
-        selectedFile: this.selectedFile
+      else {
+        this.messageService.add({
+          key: 'adminCustom', severity: 'error',
+          summary: 'Error Message', detail: 'Unable to upload file, size of ' + this.selectedFile[0].name + ' is 0 KB.'
+        });
+        return false;
       }
-      this.ref.close(data);
+
     } else {
       this.isPOFormSubmit = true;
     }

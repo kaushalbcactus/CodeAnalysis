@@ -24,6 +24,7 @@ export class ManageFinanceComponent implements OnInit {
   @Input() billedBy: any;
   @Output() budgetOutputData = new EventEmitter<any>();
   addPOForm: FormGroup;
+  reasonsArray = [];
   existBudgetArray: any = [];
   existPBBBudgetArray: any = [];
   existPOArray: any = [];
@@ -895,6 +896,7 @@ export class ManageFinanceComponent implements OnInit {
     const tempPOObj = $.extend(true, {}, this.poAddObj);
     tempPOObj.poId = this.selectedPo;
     tempPOObj.inv_number = oInv.InvoiceNumber;
+    tempPOObj.auxiliaryInvoiceName = oInv.AuxiliaryInvoiceName;
     tempPOObj.prf_number = '';
     tempPOObj.invUrl = oInv.FileURL;
     tempPOObj.prfUrl = '';
@@ -1181,7 +1183,7 @@ export class ManageFinanceComponent implements OnInit {
   }
 
   lineItemConfirmAllowed(invoice) {
-
+    invoice.reasonsArray = [];
     const POObj = this.poArray.find(c => c.Id === invoice.poId);
     const currentDate = new Date();
     const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
@@ -1191,6 +1193,21 @@ export class ManageFinanceComponent implements OnInit {
       POObj.POCategory !== 'Client PO Pending' && new Date(POObj.POExpiryDate) >= new Date()) {
       return true;
     } else {
+      if (invoice.date < last3Days) {
+        invoice.reasonsArray.push('Invoice date should be greater than ' + this.datePipe.transform(last3Days, 'MMM dd,yyyy'));
+      }
+      if (invoice.date >= lastDay) {
+        invoice.reasonsArray.push('Invoice date should be less than ' + this.datePipe.transform(lastDay, 'MMM dd,yyyy'));
+      }
+      if (invoice.amount <= 0) {
+        this.reasonsArray.push('Invoice amount should be greater than 0');
+      }
+      if (new Date(POObj.POExpiryDate) < new Date()) {
+        invoice.reasonsArray.push('Po expiry date should be greater than or equal to today');
+      }
+      if (POObj.POCategory === 'Client PO Pending') {
+        invoice.reasonsArray.push('Po category should not be equal to Client PO Pending');
+      }
       return false;
     }
   }
@@ -1259,21 +1276,21 @@ export class ManageFinanceComponent implements OnInit {
 
     // Get Project Finance  ##0;
     const projectFinanceGet = Object.assign({}, options);
-    const projectFinaceFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.PROJECT_FINANCE_BY_PROJECTCODE);
-    projectFinaceFilter.filter = projectFinaceFilter.filter.replace(/{{projectCode}}/gi,
+    const projectFinanceFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.PROJECT_FINANCE_BY_PROJECTCODE);
+    projectFinanceFilter.filter = projectFinanceFilter.filter.replace(/{{projectCode}}/gi,
       projObj.ProjectCode);
     projectFinanceGet.url = this.spServices.getReadURL(this.constant.listNames.ProjectFinances.name,
-      projectFinaceFilter);
+      projectFinanceFilter);
     projectFinanceGet.type = 'GET';
     projectFinanceGet.listName = this.constant.listNames.ProjectFinances.name;
     batchURL.push(projectFinanceGet);
     // Get Project Finance Breakup  ##1;
     const projectFinanceBreakupGet = Object.assign({}, options);
-    const projectFinaceBreakupFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.PROJECT_FINANCE_BREAKUP_BY_PROJECTCODE);
-    projectFinaceBreakupFilter.filter = projectFinaceBreakupFilter.filter.replace(/{{projectCode}}/gi,
+    const projectFinanceBreakupFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.PROJECT_FINANCE_BREAKUP_BY_PROJECTCODE);
+    projectFinanceBreakupFilter.filter = projectFinanceBreakupFilter.filter.replace(/{{projectCode}}/gi,
       projObj.ProjectCode);
     projectFinanceBreakupGet.url = this.spServices.getReadURL(this.constant.listNames.ProjectFinanceBreakup.name,
-      projectFinaceBreakupFilter);
+      projectFinanceBreakupFilter);
     projectFinanceBreakupGet.type = 'GET';
     projectFinanceBreakupGet.listName = this.constant.listNames.ProjectFinanceBreakup.name;
     batchURL.push(projectFinanceBreakupGet);
@@ -1396,6 +1413,7 @@ export class ManageFinanceComponent implements OnInit {
         this.poData.push(tempObj);
         const inoviceItems = this.existPOInvoiceArray.retItems.filter(x => x.PO === poItem.POLookup);
         // get Invoice number & performa number.
+        let count = 0;
         const invoicePermormaNumberArray = await this.getInvoiceProformaNumber(inoviceItems);
         inoviceItems.forEach(invoiceItem => {
           const invoiceObj = $.extend(true, {}, this.poAddObj);
@@ -1406,12 +1424,15 @@ export class ManageFinanceComponent implements OnInit {
             .filter(c => c.listName === this.constant.listNames.Proforma.name)
             .filter(d => d.retItems && d.retItems.length && d.retItems[0].ID === invoiceItem.ProformaLookup);
           invoiceObj.Id = invoiceItem.ID;
+          invoiceObj.lineitemCount = "lineitem" + count++;
           invoiceObj.poId = invoiceItem.PO;
           invoiceObj.inv_number = invoiceNumber && invoiceNumber.length && invoiceNumber[0].retItems && invoiceNumber[0].retItems.length
             ? invoiceNumber[0].retItems[0].InvoiceNumber : '';
           if (invoiceObj.inv_number) {
             invoiceObj.invUrl = invoiceNumber && invoiceNumber.length && invoiceNumber[0].retItems && invoiceNumber[0].retItems.length
               ? invoiceNumber[0].retItems[0].FileURL : '';
+            invoiceObj.auxiliaryInvoiceName =invoiceNumber && invoiceNumber.length && invoiceNumber[0].retItems && invoiceNumber[0].retItems.length
+            ? invoiceNumber[0].retItems[0].AuxiliaryInvoiceName : '';
           }
           invoiceObj.prf_number = proformaNumber && proformaNumber.length && proformaNumber[0].retItems && proformaNumber[0].retItems.length
             ? proformaNumber[0].retItems[0].Title : '';
@@ -1430,7 +1451,7 @@ export class ManageFinanceComponent implements OnInit {
           invoiceObj.currency = this.existBudgetArray.retItems[0].Currency;
           invoiceObj.proformaLookup = invoiceItem.ProformaLookup;
           invoiceObj.invoiceLookup = invoiceItem.InvoiceLookup;
-
+          this.reasonsArray = [];
           if (invoiceObj.status === 'Scheduled' && invoiceObj.type === 'revenue') {
 
             if (this.projectStatus === this.constant.projectStatus.Unallocated
@@ -1440,6 +1461,10 @@ export class ManageFinanceComponent implements OnInit {
               || this.projectStatus === this.constant.projectStatus.AuthorReview
               || this.projectStatus === this.constant.projectStatus.PendingClosure) {
               invoiceObj.isInvoiceItemConfirm = this.lineItemConfirmAllowed(invoiceObj);
+            }
+            else {
+              invoiceObj.reasonsArray = [];
+              invoiceObj.reasonsArray.push('Project status should not be ' + this.projectStatus);
             }
             if (this.projectStatus === this.constant.projectStatus.Unallocated
               || this.projectStatus === this.constant.projectStatus.InProgress
@@ -1720,19 +1745,19 @@ export class ManageFinanceComponent implements OnInit {
         const projectFinanceBreakupData = this.getProjectFinanceBreakupData(po, this.projObj, poInfoObj);
         if (projectFinanceBreakupData.hasOwnProperty('Status')) {
           if (po.isExsitPO) {
-            const projectFinaceBreakUpdate = Object.assign({}, options);
-            projectFinaceBreakUpdate.url = this.spServices.getItemURL(this.constant.listNames.ProjectFinanceBreakup.name, poInfoObj.Id);
-            projectFinaceBreakUpdate.data = projectFinanceBreakupData;
-            projectFinaceBreakUpdate.type = 'PATCH';
-            projectFinaceBreakUpdate.listName = this.constant.listNames.ProjectFinanceBreakup.name;
-            batchURL.push(projectFinaceBreakUpdate);
+            const projectFinanceBreakUpdate = Object.assign({}, options);
+            projectFinanceBreakUpdate.url = this.spServices.getItemURL(this.constant.listNames.ProjectFinanceBreakup.name, poInfoObj.Id);
+            projectFinanceBreakUpdate.data = projectFinanceBreakupData;
+            projectFinanceBreakUpdate.type = 'PATCH';
+            projectFinanceBreakUpdate.listName = this.constant.listNames.ProjectFinanceBreakup.name;
+            batchURL.push(projectFinanceBreakUpdate);
           } else {
-            const projectFinaceBreakcreate = Object.assign({}, options);
-            projectFinaceBreakcreate.url = this.spServices.getReadURL(this.constant.listNames.ProjectFinanceBreakup.name, null);
-            projectFinaceBreakcreate.data = projectFinanceBreakupData;
-            projectFinaceBreakcreate.type = 'POST';
-            projectFinaceBreakcreate.listName = this.constant.listNames.ProjectFinanceBreakup.name;
-            batchURL.push(projectFinaceBreakcreate);
+            const projectFinanceBreakcreate = Object.assign({}, options);
+            projectFinanceBreakcreate.url = this.spServices.getReadURL(this.constant.listNames.ProjectFinanceBreakup.name, null);
+            projectFinanceBreakcreate.data = projectFinanceBreakupData;
+            projectFinanceBreakcreate.type = 'POST';
+            projectFinanceBreakcreate.listName = this.constant.listNames.ProjectFinanceBreakup.name;
+            batchURL.push(projectFinanceBreakcreate);
           }
           const pfbData = Object.assign({}, projectFinanceBreakupData);
           pfbData.POID = po.poId;
@@ -1758,21 +1783,21 @@ export class ManageFinanceComponent implements OnInit {
       }
 
       if (this.budgetData[0].edited || this.unassignedBudget[0].revenue !== 0) {
-        const projectFinaceData = this.getProjectFinanceData(this.poData, this.budgetData, this.projObj);
+        const projectFinanceData = this.getProjectFinanceData(this.poData, this.budgetData, this.projObj);
         const currentBudget = this.existBudgetArray.retItems[0];
-        if (projectFinaceData.RevenueBudget !== currentBudget.RevenueBudget
-          || projectFinaceData.ScheduledRevenue !== currentBudget.ScheduledRevenue
-          || projectFinaceData.InvoicedRevenue !== currentBudget.InvoicedRevenue
-          || projectFinaceData.BudgetHrs !== currentBudget.BudgetHrs
+        if (projectFinanceData.RevenueBudget !== currentBudget.RevenueBudget
+          || projectFinanceData.ScheduledRevenue !== currentBudget.ScheduledRevenue
+          || projectFinanceData.InvoicedRevenue !== currentBudget.InvoicedRevenue
+          || projectFinanceData.BudgetHrs !== currentBudget.BudgetHrs
           || this.unassignedBudget[0].revenue !== 0) {
-          const projectFinaceUpdate = Object.assign({}, options);
-          projectFinaceUpdate.url = this.spServices.getItemURL(this.constant.listNames.ProjectFinances.name,
+          const projectFinanceUpdate = Object.assign({}, options);
+          projectFinanceUpdate.url = this.spServices.getItemURL(this.constant.listNames.ProjectFinances.name,
             +this.existBudgetArray.retItems[0].ID);
-          projectFinaceUpdate.data = projectFinaceData;
-          projectFinaceUpdate.type = 'PATCH';
-          projectFinaceUpdate.listName = this.constant.listNames.ProjectFinances.name;
-          batchURL.push(projectFinaceUpdate);
-          returnObj.pfObj = projectFinaceData;
+          projectFinanceUpdate.data = projectFinanceData;
+          projectFinanceUpdate.type = 'PATCH';
+          projectFinanceUpdate.listName = this.constant.listNames.ProjectFinances.name;
+          batchURL.push(projectFinanceUpdate);
+          returnObj.pfObj = projectFinanceData;
           if (this.projectStatus === this.constant.projectStatus.InDiscussion) {
             const projectBudgetBreakupData = this.getProjectBudgetBreakupData(this.budgetData, this.projObj, false, true);
             const projectBudgetBreakupUpdate = Object.assign({}, options);
@@ -1825,7 +1850,7 @@ export class ManageFinanceComponent implements OnInit {
           }
           // SOW update
           const sowObj = this.sowObj;
-          const sowUpdateData = this.getSOWData(this.projObj, projectFinaceData);
+          const sowUpdateData = this.getSOWData(this.projObj, projectFinanceData);
           if (sowUpdateData.hasOwnProperty('TotalLinked')) {
             const sowUpdate = Object.assign({}, options);
             sowUpdate.url = this.spServices.getItemURL(this.constant.listNames.SOW.name, +sowObj.ID);
@@ -1877,7 +1902,7 @@ export class ManageFinanceComponent implements OnInit {
         });
       }
 
-      if (this.projObj.ProjectType === this.pmConstant.PROJECT_TYPE.FTE.value && this.projObj.projectStatus !== this.constant.projectList.status.InDiscussion && this.datePipe.transform(new Date(this.dbProposedDate), 'MMM dd, yyyy') !== this.datePipe.transform(new Date(this.selectedProposedEndDate), 'MMM dd, yyyy')) {
+      if (this.projectType === this.pmConstant.PROJECT_TYPE.FTE.value && this.projectStatus !== this.constant.projectList.status.InDiscussion && this.datePipe.transform(new Date(this.dbProposedDate), 'MMM dd, yyyy') !== this.datePipe.transform(new Date(this.selectedProposedEndDate), 'MMM dd, yyyy')) {
 
         const months = budgetType === 'IncreaseBudget' ? this.pmCommonService.getMonths(this.dbProposedDate, this.selectedProposedEndDate) : this.pmCommonService.getMonths(this.selectedProposedEndDate, this.dbProposedDate);
 
@@ -2094,8 +2119,13 @@ export class ManageFinanceComponent implements OnInit {
     if (batchURL.length) {
       this.commonService.SetNewrelic('projectManagment', 'manageFinance', 'addupdateSchedulesFTEBudget');
       const res = await this.spServices.executeBatch(batchURL);
-    }
+      console.log(res);
 
+      if (res && res.filter(c => c.listName === 'Schedules')) {
+        const Schedules = res.filter(c => c.listName === 'Schedules')
+        await this.pmCommonService.moveMilestoneAndTask(Schedules, this.projObj.ProjectCode);
+      }
+    }
     this.pmObject.isMainLoaderHidden = true;
     this.messageService.add({
       key: 'manageFinance', severity: 'success', summary: 'Success Message', sticky: true,
@@ -2328,26 +2358,26 @@ export class ManageFinanceComponent implements OnInit {
   /**
    * The method is used to get SOW object.
    * @param projObj the project object as parameter.
-   * @param projectfinaceObj pass project finance object as parameter.
+   * @param projectfinanceObj pass project finance object as parameter.
    */
-  getSOWData(projObj, projectfinaceObj) {
+  getSOWData(projObj, projectfinanceObj) {
     const sowObj = this.sowObj;
     let data = {};
     if (sowObj) {
-      if (projectfinaceObj.RevenueBudget !== this.existBudgetArray.retItems[0].RevenueBudget
-        || projectfinaceObj.ScheduledRevenue !== this.existBudgetArray.retItems[0].ScheduledRevenue
-        || projectfinaceObj.InvoicedRevenue !== this.existBudgetArray.retItems[0].InvoicedRevenue) {
+      if (projectfinanceObj.RevenueBudget !== this.existBudgetArray.retItems[0].RevenueBudget
+        || projectfinanceObj.ScheduledRevenue !== this.existBudgetArray.retItems[0].ScheduledRevenue
+        || projectfinanceObj.InvoicedRevenue !== this.existBudgetArray.retItems[0].InvoicedRevenue) {
         data = {
           __metadata: { type: this.constant.listNames.SOW.type },
-          TotalLinked: sowObj.TotalLinked + projectfinaceObj.Budget - this.existBudgetArray.retItems[0].Budget,
-          RevenueLinked: sowObj.RevenueLinked + projectfinaceObj.RevenueBudget - this.existBudgetArray.retItems[0].RevenueBudget,
-          OOPLinked: sowObj.OOPLinked + projectfinaceObj.OOPBudget - this.existBudgetArray.retItems[0].OOPBudget,
-          TaxLinked: sowObj.TaxLinked + projectfinaceObj.TaxBudget - this.existBudgetArray.retItems[0].TaxBudget,
-          TotalScheduled: sowObj.TotalScheduled + projectfinaceObj.InvoicesScheduled - this.existBudgetArray.retItems[0].InvoicesScheduled,
-          ScheduledRevenue: sowObj.ScheduledRevenue + projectfinaceObj.ScheduledRevenue -
+          TotalLinked: sowObj.TotalLinked + projectfinanceObj.Budget - this.existBudgetArray.retItems[0].Budget,
+          RevenueLinked: sowObj.RevenueLinked + projectfinanceObj.RevenueBudget - this.existBudgetArray.retItems[0].RevenueBudget,
+          OOPLinked: sowObj.OOPLinked + projectfinanceObj.OOPBudget - this.existBudgetArray.retItems[0].OOPBudget,
+          TaxLinked: sowObj.TaxLinked + projectfinanceObj.TaxBudget - this.existBudgetArray.retItems[0].TaxBudget,
+          TotalScheduled: sowObj.TotalScheduled + projectfinanceObj.InvoicesScheduled - this.existBudgetArray.retItems[0].InvoicesScheduled,
+          ScheduledRevenue: sowObj.ScheduledRevenue + projectfinanceObj.ScheduledRevenue -
             this.existBudgetArray.retItems[0].ScheduledRevenue,
-          TotalInvoiced: sowObj.TotalInvoiced + projectfinaceObj.Invoiced - this.existBudgetArray.retItems[0].Invoiced,
-          InvoicedRevenue: sowObj.InvoicedRevenue + projectfinaceObj.InvoicedRevenue - this.existBudgetArray.retItems[0].InvoicedRevenue,
+          TotalInvoiced: sowObj.TotalInvoiced + projectfinanceObj.Invoiced - this.existBudgetArray.retItems[0].Invoiced,
+          InvoicedRevenue: sowObj.InvoicedRevenue + projectfinanceObj.InvoicedRevenue - this.existBudgetArray.retItems[0].InvoicedRevenue,
         };
       }
 
@@ -2444,6 +2474,5 @@ export class ManageFinanceComponent implements OnInit {
         return data;
       }
     }
-
   }
 }

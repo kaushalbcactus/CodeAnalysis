@@ -129,6 +129,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
 
     deliverableBasedColArray = {
         ProjectCode: [],
+        ShortTitle: [],
         SOWValue: [],
         ProjectMileStone: [],
         POValues: [],
@@ -163,33 +164,6 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
 
     selectedProjectInof: any;
     cleForselectedPI: any;
-    // getPIorClient(rowItem) {
-    //     if (rowItem.ProjectCode.includes(' / ')) {
-    //         let pc = rowItem.ProjectCode.substr(0, rowItem.ProjectCode.indexOf(' / '));
-    //         console.log('Project Code is ', pc);
-    //         this.selectedProjectInof = this.getPIByTitle(pc);
-    //         console.log('this.selectedProjectInof ', this.selectedProjectInof);
-    //         this.getResCatByCMLevel();
-    //         this.cleForselectedPI = this.getCleByPC(rowItem.ProjectCode);
-    //     } else {
-    //         this.cleForselectedPI = this.getCleByPC(rowItem.ProjectCode);
-    //         console.log('this.cleForselectedPI ', this.cleForselectedPI);
-    //         this.getResCatByCMLevel();
-    //     }
-    // }
-
-    // getCleByPC(title) {
-    //     let found = this.cleData.find((x) => {
-    //         if (x.Title == title) {
-    //             if (x.CMLevel1.hasOwnProperty('results')) {
-    //                 this.selectedPI = x.CMLevel1.results;
-    //             }
-    //             return x;
-    //         }
-    //     })
-    //     return found ? found : ''
-    // }
-
     selectedPI: any = [];
 
     cmLevelIdList: any = [];
@@ -313,10 +287,11 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         this.deliverableBasedCols = [
             { field: 'ProjectCode', header: 'Project Code', visibility: true },
             { field: 'ProjectTitle', header: 'Project Title', visibility: false },
+            { field: 'ShortTitle', header: 'Short Title', visibility: true },
             { field: 'SOWValue', header: 'SOW Code/ Name', visibility: true },
             { field: 'ProjectMileStone', header: 'Project Milestone', visibility: true },
             { field: 'POValues', header: 'PO Number/ Name', visibility: true },
-            { field: 'ClientName', header: 'Client LE', visibility: true },
+            { field: 'ClientName', header: 'Client', visibility: true },
             { field: 'ScheduledDateFormat', header: 'Scheduled Date', visibility: false },
             { field: 'ScheduledDate', header: 'Scheduled Date', visibility: true, exportable: false },
             { field: 'Amount', header: 'Amount', visibility: true },
@@ -345,8 +320,6 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     async getRequiredData() {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         this.deliverableBasedRes = [];
-        // const batchContents = new Array();
-        // const batchGuid = this.spServices.generateUUID();
         const groups = this.globalService.userInfo.Groups.results.map(x => x.LoginName);
         let isManager = false;
         if (groups.indexOf('Invoice_Team') > -1 || groups.indexOf('Managers') > -1) {
@@ -360,28 +333,8 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         }
         this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-DeliverableBased', 'GetInvoiceLineItem');
         const res = await this.spServices.readItems(this.constantService.listNames.InvoiceLineItems.name, obj);
-        // const invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.InvoiceLineItems.name + '', obj);
-        // // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
-
-        // let endPoints = [invoicesQuery];
-        // let userBatchBody = '';
-        // for (let i = 0; i < endPoints.length; i++) {
-        //     const element = endPoints[i];
-        //     this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
-        // }
-        // batchContents.push('--batch_' + batchGuid + '--');
-        // userBatchBody = batchContents.join('\r\n');
-        // let arrResults: any = [];
-        // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
-        // console.log('REs in deliverable based ', res);
         const arrResults = res.length ? res : [];
-        // if (arrResults.length) {
-        //     for (let j = 0; j < arrResults.length; j++) {
-        //         const element = arrResults[j];
-        // console.log('-- deliverable based ', element);
         this.formatData(arrResults);
-        //     }
-        // }
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
 
@@ -425,6 +378,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
                 Id: element.ID,
                 ProjectCode: element.Title,
                 ProjectTitle: piInfo.Title ? piInfo.Title : '',
+                ShortTitle: piInfo && piInfo.WBJID ? piInfo.WBJID : '',
                 SOWCode: element.SOWCode,
                 SOWValue: sowcn,
                 SOWName: sowItem.Title,
@@ -523,6 +477,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
 
     createColFieldValues(resArray) {
         this.deliverableBasedColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
+        this.deliverableBasedColArray.ShortTitle = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ShortTitle, value: a.ShortTitle }; return b; }).filter(ele => ele.label)));
         this.deliverableBasedColArray.SOWValue = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.SOWValue, value: a.SOWValue }; return b; }).filter(ele => ele.label)));
         this.deliverableBasedColArray.ProjectMileStone = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }).filter(ele => ele.label)));
         this.deliverableBasedColArray.POCName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.POCName, value: a.POCName }; return b; }).filter(ele => ele.label)));
@@ -593,7 +548,15 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
                 projectData.Status !== this.constantService.projectList.status.OnHold)) {
             this.items.push({ label: 'Confirm Invoice', command: (e) => this.openMenuContent(e, data) });
         } else {
-            if (!(date >= last3Days && date <= lastDay)) {
+            if (projectData.Status === this.constantService.projectList.status.InDiscussion ||
+                projectData.Status === this.constantService.projectList.status.AwaitingCancelApproval ||
+                projectData.Status === this.constantService.projectList.status.OnHold) {
+                    this.messageService.add({
+                        key: 'deliverableInfoToast', severity: 'info', summary: 'Info message',
+                        detail: 'Project status is '+ projectData.Status +', so can not confirm the line item.',
+                        life: 4000
+                    });
+            } else if (!(date >= last3Days && date <= lastDay)) {
                 this.messageService.add({
                     key: 'deliverableInfoToast', severity: 'info', summary: 'Info message',
                     detail: 'To confirm the line item, scheduled Date should be between last 3 working days & last date of the current month.',

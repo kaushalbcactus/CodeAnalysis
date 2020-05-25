@@ -65,6 +65,7 @@ export class TimeBookingDialogComponent implements OnInit {
   FinalTotal = '00:00';
   displayComment = false;
   displayFileUpload = false;
+  timebookingRow: any;
 
   constructor(
     public config: DynamicDialogConfig,
@@ -673,6 +674,7 @@ export class TimeBookingDialogComponent implements OnInit {
   openDialog(rowData, type) {
     if (type === 'comments') {
       this.displayComment = true;
+      this.timebookingRow = rowData;
     } else {
       console.log(rowData);
       const ref = this.dialogService.open(ViewUploadDocumentDialogComponent, {

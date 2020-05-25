@@ -207,15 +207,6 @@
                             <span [title]="rowData.pUserStart |  date:' d MMM, y, h:mm a'" *ngIf="(!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat === true) || rowData.type === 'milestone' || rowData.type === 'submilestone'">{{rowData.pStart |  date:' d MMM, y' }}</span>
                             <span [title]="rowData.pUserStart |  date:' d MMM, y, h:mm a'" *ngIf="(!rowData.editMode && rowData.type === 'task' &&  rowData.tat !== true) || (rowData.type === 'task' && rowData.editMode && rowData.status === 'In Progress')">{{rowData.pStart |  date:' d MMM, y, h:mm a' }}</span>
 
-                            <!-- <span *ngIf="rowData.editMode && rowData.type === 'task' && rowData.itemType ==='Client Review' ">
-                                <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserStartDatePart"
-                                    [disabledDays]="[0,6]" [readonlyInput]="true" dateFormat="dd M , yy"
-                                    yearRange="{{yearsRange}}" hideOnDateTimeSelect="true" [stepMinute]="15"
-                                    [showIcon]="true" [showOnFocus]="false" [monthNavigator]="true"
-                                    [yearNavigator]="true" (onClose)="DateChangePart(rowData,'start')" appendTo="body"
-                                    [inputStyle]="{'width': '78%', 'min-width': '78%','padding':'0px','border':'none'}">
-                                </p-calendar>
-                            </span> -->
                             <span *ngIf="rowData.editMode && rowData.type === 'task'  && rowData.status !== 'In Progress'">
                                 <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserStartDatePart"
                                     [disabledDays]="[0,6]" [readonlyInput]="true" dateFormat="dd M , yy"
@@ -239,16 +230,6 @@
                             <span [title]="rowData.pUserEnd |  date:' d MMM, y, h:mm a'" *ngIf="(!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat === true) || rowData.type === 'milestone' || rowData.type === 'submilestone'">{{rowData.pEnd |  date:' d MMM, y' }}</span>
                             <span [title]="rowData.pUserEnd |  date:' d MMM, y, h:mm a'" *ngIf="!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat !== true">{{rowData.pEnd |  date:' d MMM, y, h:mm a' }}</span>
 
-                            <!-- <span *ngIf="rowData.editMode && rowData.type === 'task' && rowData.itemType ==='Client Review' ">
-                                <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserEndDatePart"
-                                    [disabledDays]="[0,6]" [readonlyInput]="true" dateFormat="dd M , yy"
-                                    yearRange="{{yearsRange}}" hideOnDateTimeSelect="true" [stepMinute]="15"
-                                    [showIcon]="true" [showOnFocus]="false" [monthNavigator]="true"
-                                    [yearNavigator]="true" (onClose)="DateChangePart(rowData,'end')" appendTo="body"
-                                    [inputStyle]="{'width': '78%', 'min-width': '78%','padding':'0px','border':'none'}">
-                                </p-calendar>
-
-                            </span> -->
                             <span *ngIf="rowData.editMode && rowData.type === 'task'">
 
                                 <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserEndDatePart"

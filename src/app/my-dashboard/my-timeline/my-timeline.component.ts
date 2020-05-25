@@ -16,7 +16,6 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { CommonService } from 'src/app/Services/common.service';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
-import { ConfirmationDialogComponent } from 'src/app/shared/confirmation-dialog/confirmation-dialog.component';
 
 declare var Tooltip: any;
 
@@ -701,12 +700,9 @@ export class MyTimelineComponent implements OnInit {
       } else {
         this.CalendarLoader = false;
         if (task.Status === "Completed") {
-          const confirmref = this.dialogService.open(ConfirmationDialogComponent, {
-            header: 'Confirmation',
-            data : 'Are you sure that you want to proceed?'
-          });
-          confirmref.onClose.subscribe(async (Confirmation: any) => {
-            if (Confirmation) {
+
+          this.commonService.confirmMessageDialog('Are you sure that you want to proceed?', ['Yes', 'No'],false).then(async Confirmation => {
+            if (Confirmation === 'Yes') {
               task.parent = 'Dashboard';
               const qmsTasks = await this.myDashboardConstantsService.callQMSPopup(task);
               if (qmsTasks.length) {
@@ -719,6 +715,13 @@ export class MyTimelineComponent implements OnInit {
             }
           });
         } else {
+          const batchURL = [];
+          const options = {
+            data: null,
+            url: '',
+            type: '',
+            listName: ''
+          };
 
           if (this.task.StartTime) {
             const startTime = this.commonService.ConvertTimeformat(24, this.task.StartTime);
@@ -729,10 +732,13 @@ export class MyTimelineComponent implements OnInit {
             this.task.DueDate = this.datePipe.transform(this.task.DueDateDT, 'yyyy-MM-dd' + 'T' + endTime + ':00.000');
           }
 
+          const ProjectInformation = await this.myDashboardConstantsService.getCurrentTaskProjectInformation(task.ProjectCode);
+
           this.SelectedStatus = undefined;
           this.taskdisplay = false;
           this.CalendarLoader = true;
           const jsonData = {
+            __metadata: { type: this.constants.listNames.Schedules.type },
             Actual_x0020_Start_x0020_Date: task.Actual_x0020_Start_x0020_Date !== null ? task.Actual_x0020_Start_x0020_Date : new Date(),
             Status: task.Status,
             StartDate: this.task.StartDate,
@@ -740,9 +746,21 @@ export class MyTimelineComponent implements OnInit {
           };
 
           this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'UpdateTask');
-          await this.spServices.updateItem(this.constants.listNames.Schedules.name, task.ID, jsonData, this.constants.listNames.Schedules.type);
+          const taskUpdate = Object.assign({}, options);
+          taskUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, task.ID);
+          taskUpdate.data = jsonData;
+          taskUpdate.type = 'PATCH';
+          taskUpdate.listName = this.constants.listNames.Schedules.name;
+          batchURL.push(taskUpdate);
 
-
+          const projectInfoUpdate = Object.assign({}, options);
+          projectInfoUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, ProjectInformation.ID);
+          projectInfoUpdate.data =  { Status: this.constants.STATUS.IN_PROGRESS, __metadata: { type: this.constants.listNames.ProjectInformation.type } };;
+          projectInfoUpdate.type = 'PATCH';
+          projectInfoUpdate.listName = this.constants.listNames.ProjectInformation.name;
+          batchURL.push(projectInfoUpdate);
+          await this.spServices.executeBatch(batchURL);
+          
           if (task.ParentSlot) {
             await this.myDashboardConstantsService.getCurrentAndParentTask(task, jsonData.Status);
           }
@@ -890,6 +908,27 @@ export class MyTimelineComponent implements OnInit {
   ngOnDestroy() {
     if (this.subscription) {
       this.subscription.unsubscribe()
+    }
+  }
+
+
+
+
+
+  // **************************************************************************************************
+  //   This function is used to open or download project scope 
+  // **************************************************************************************************
+  async goToProjectScope(task) {
+    const ProjectInformation = await this.myDashboardConstantsService.getCurrentTaskProjectInformation(task.ProjectCode);
+    const response = await this.commonService.goToProjectScope(ProjectInformation, ProjectInformation.Status);
+    if (response === 'No Document Found.') {
+      this.messageService.add({
+        key: 'custom', severity: 'error', summary: 'Error Message',
+        detail: task.ProjectCode + ' - Project Scope not found.'
+      });
+    }
+    else {
+      window.open(response);
     }
   }
 

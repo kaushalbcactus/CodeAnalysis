@@ -432,7 +432,8 @@ export class ActionsPopupComponent implements OnInit {
     const allResources = this.global.allResources;
     const emails = [];
     const ids = [];
-    resources.forEach(element => {
+    const arrResources = resources && resources.results ? resources.results : []
+    arrResources.forEach(element => {
       const resourceDetail = allResources.filter(r => r.UserNamePG.ID === element.ID);
       emails.push(resourceDetail.length > 0 ? resourceDetail[0].UserNamePG.EMail : '');
       ids.push(resourceDetail.length > 0 ? resourceDetail[0].UserNamePG.ID : '');

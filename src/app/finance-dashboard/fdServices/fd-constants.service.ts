@@ -33,7 +33,7 @@ export class FdConstantsService {
         isPSInnerLoaderHidden: false,
         projectInfo: {
             select: "ID,ProjectCode,ProjectType,WBJID,Title,ClientLegalEntity,SOWCode,ProposedEndDate,PrimaryPOC,Status,Milestone,Milestones,BusinessVertical,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail",
-            filter: "Status ne 'In Discussion' and Status ne 'cancelled' and Status ne 'Pending Closure' and Status ne 'closed' and Status ne 'Awaiting Cancel Approval'",
+            filter: "Status ne 'cancelled' and Status ne 'Pending Closure' and Status ne 'closed' and Status ne 'Awaiting Cancel Approval'",
             orderby: "ProjectCode",
             top: 4500,
             expand: "CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail"

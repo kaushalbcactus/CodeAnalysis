@@ -4,11 +4,11 @@
 </div>
 
 
-<div class='UserButton' fxLayout="row" fxLayoutAlign="end center" [hidden]="isProjectAttributeTableHidden">
+<div *ngIf="showEditSave" class='UserButton' fxLayout="row" fxLayoutAlign="end center" [hidden]="isProjectAttributeTableHidden">
 
-    <button *ngIf="showEditSave" type="button" pButton icon="pi pi-save" id="saveClient" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="saveEditProject()" label="Update"></button>
+    <button type="button" pButton icon="pi pi-save" id="saveClient" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="saveEditProject()" label="Update"></button>
 
-    <button *ngIf="showEditSave" type="button" pButton icon="pi pi-times" (click)="cancel();" label="Cancel" class="ui-button-secondary" style="background-color:ghostwhite;"></button>
+    <button type="button" pButton icon="pi pi-times" (click)="cancel();" label="Cancel" class="ui-button-secondary" style="background-color:ghostwhite;"></button>
 
 </div>
 
@@ -22,8 +22,7 @@
             </div>
             <div class="ui-grid-col-2">Sub-Division</div>
             <div class="ui-grid-col-4">
-                <p-dropdown formControlName="subDivision" [options]="subDivisionArray" placeholder="Please Select"
-                    [showClear]="true"></p-dropdown>
+                <p-dropdown formControlName="subDivision" [options]="subDivisionArray" placeholder="Please Select" [showClear]="true"></p-dropdown>
             </div>
         </div>
         <div class="ui-grid-row mt-20">
@@ -33,8 +32,7 @@
             </div>
             <div class="ui-grid-col-2"><span class="compulsory">*</span>Billed By</div>
             <div class="ui-grid-col-4">
-                <p-dropdown [options]="pmObject.billedBy" (onChange)="onBilledByChanged()" formControlName="billedBy"
-                    placeholder="Please Select" [showClear]="true">
+                <p-dropdown [options]="pmObject.billedBy" (onChange)="onBilledByChanged()" formControlName="billedBy" placeholder="Please Select" [showClear]="true">
                 </p-dropdown>
             </div>
         </div>

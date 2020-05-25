@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, OnDestroy, HostListener, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
-import { Message, ConfirmationService, MessageService } from 'primeng/api';
+import { Message, MessageService } from 'primeng/api';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -77,7 +77,6 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
     private subscription: Subscription = new Subscription();
 
     constructor(
-        private confirmationService: ConfirmationService,
         private fb: FormBuilder,
         private globalService: GlobalService,
         private spServices: SPOperationService,
@@ -303,9 +302,9 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
     createOutstandingInvoiceCols() {
         this.outstandingInCols = [
             // { field: 'InvoiceStatus', header: 'Invoice Status', visibility: true },
-            { field: 'InvoiceNumber', header: 'Invoice Number', visibility: true },
+            { field: 'DisplayInvoiceWithAuxiliary', header: 'Invoice Number', visibility: true },
             { field: 'POValues', header: 'PO Name/ Number', visibility: true },
-            { field: 'ClientLegalEntity', header: 'Client LE', visibility: true },
+            { field: 'ClientLegalEntity', header: 'Client', visibility: true },
             { field: 'InvoiceDate', header: 'Invoice Date', visibility: true, exportable: false },
             { field: 'InvoiceDateFormat', header: 'Invoice Date', visibility: false },
             { field: 'Amount', header: 'Amount', visibility: true },
@@ -388,6 +387,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
                 Id: element.ID,
                 InvoiceStatus: element.Status,
                 InvoiceNumber: element.InvoiceNumber,
+                DisplayInvoiceWithAuxiliary: element.AuxiliaryInvoiceName ?  element.InvoiceNumber + ' - ' + element.AuxiliaryInvoiceName : element.InvoiceNumber,
                 POValues: POValues,
                 PONumber: poItem.Number,
                 POName: poItem.NameST,
@@ -457,7 +457,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
 
     outInvoiceColArray = {
         InvoiceStatus: [],
-        InvoiceNumber: [],
+        DisplayInvoiceWithAuxiliary: [],
         PONumber: [],
         POValues: [],
         ClientLegalEntity: [],
@@ -470,7 +470,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
 
     createColFieldValues(resArray) {
         // this.outInvoiceColArray.InvoiceStatus = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.InvoiceStatus, value: a.InvoiceStatus }; return b; }).filter(ele => ele.label));
-        this.outInvoiceColArray.InvoiceNumber = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.InvoiceNumber, value: a.InvoiceNumber }; return b; }).filter(ele => ele.label)));
+        this.outInvoiceColArray.DisplayInvoiceWithAuxiliary = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.DisplayInvoiceWithAuxiliary, value: a.DisplayInvoiceWithAuxiliary }; return b; }).filter(ele => ele.label)));
         // this.outInvoiceColArray.PONumber this.commonService.sortData(= this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }).filter(ele => ele.label)));
         this.outInvoiceColArray.POValues = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POValues, value: a.POValues }; return b; }).filter(ele => ele.label)));
         this.outInvoiceColArray.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));

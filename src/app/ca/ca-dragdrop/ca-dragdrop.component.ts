@@ -3,7 +3,8 @@ import { DynamicDialogRef, DynamicDialogConfig, MessageService, DialogService } 
 import { GlobalService } from 'src/app/Services/global.service';
 import * as shape from 'd3-shape';
 import { CACommonService } from '../caservices/cacommon.service';
-import { ConfirmationDialogComponent } from 'src/app/shared/confirmation-dialog/confirmation-dialog.component';
+import { CommonService } from 'src/app/Services/common.service';
+
 
 @Component({
   selector: 'app-ca-dragdrop',
@@ -55,7 +56,8 @@ export class CaDragdropComponent implements OnInit {
     public sharedObject: GlobalService,
     private caCommonService: CACommonService,
     public dialogService: DialogService,
-    private messageService: MessageService) { }
+    private messageService: MessageService,
+    private commonService : CommonService) { }
 
   async ngOnInit() {
 
@@ -643,13 +645,9 @@ export class CaDragdropComponent implements OnInit {
 
     if (sourceArray.length > 1 || (this.links.length === 0 && this.nodes.length > 1)) {
 
-
-      const confirmref = this.dialogService.open(ConfirmationDialogComponent, {
-        header: 'Confirmation',
-        data : 'There are multiple end tasks for current slot. Are you sure that you want to continue?'
-      });
-      confirmref.onClose.subscribe((Confirmation: any) => {
-        if (Confirmation) {
+      const message = 'There are multiple end tasks for current slot. Are you sure that you want to continue?';
+      this.commonService.confirmMessageDialog(message, ['Yes', 'No'],false).then(async Confirmation => {
+        if (Confirmation === 'Yes') {
           this.NodePosition();
           this.nodes.sort((a, b) => {
             return parseInt(a.left, 10) - parseInt(b.left, 10);
@@ -667,18 +665,6 @@ export class CaDragdropComponent implements OnInit {
 
         }
       });
-
-      // this.confirmationService.confirm({
-      //   message: 'There are multiple end tasks for current slot. Are you sure that you want to continue?',
-      //   accept: () => {
-
-      //     if (errorM <= 0) {
-
-
-      //     }
-
-      //   }
-      // });
     } else {
       if (errorM <= 0) {
 

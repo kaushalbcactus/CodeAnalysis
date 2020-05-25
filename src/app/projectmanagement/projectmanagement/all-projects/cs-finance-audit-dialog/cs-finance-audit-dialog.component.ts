@@ -72,6 +72,7 @@ export class CsFinanceAuditDialogComponent implements OnInit {
   EmailTemplate: any;
   dbProjectList: never[];
   buttonloader = false;
+  ErrorProjectCodes = [];
   constructor(public config: DynamicDialogConfig,
     public csref: DynamicDialogRef,
     public messageService: MessageService,
@@ -315,12 +316,16 @@ export class CsFinanceAuditDialogComponent implements OnInit {
             detail: UniqueInvalidExpenses.join(', ') + ' expense are not invoiced.'
           })
         }
+
+        this.ErrorProjectCodes.push.apply(this.ErrorProjectCodes, [...new Set([].concat(UniqueInvalidInvoices, UniqueInvalidExpenses))]);
+        this.selectedProjects = this.selectedProjects.filter(c => !this.ErrorProjectCodes.includes(c.ProjectCode));
+        this.checked = this.selectedProjects.length >= 10 ? true : false;
         this.messageService.addAll(errorMessage);
         this.modalloaderenable = false;
         this.buttonloader = false;
       }
       else {
-
+        this.ErrorProjectCodes = [];
         const addRollingProjectArray = [
           { checked: false, parameter: 'All invoices are generated', comments: '', hideCheckBox: false },
           { checked: false, parameter: 'All expenses are billed', comments: '', hideCheckBox: false },
@@ -535,6 +540,11 @@ export class CsFinanceAuditDialogComponent implements OnInit {
       this.allProjectRef.filter(this.columnFilter.Molecule, 'Molecule', 'in')
     }
 
+  }
+
+
+  GetTaskBackrgoundColor(projectCode) {
+    return this.ErrorProjectCodes.find(c => c === projectCode) ? '#ffcacf' : '';
   }
 
 }

@@ -437,7 +437,11 @@ export class ConstantsService {
     IN_PROGRESS: 'In Progress',
     ON_HOLD: 'On Hold',
     AUTO_CLOSED: 'Auto Closed',
-    COMPLETED: 'Completed'
+    COMPLETED: 'Completed',
+    AUTHOR_REVIEW : 'Author Review',
+    UNALLOCATED:'Unallocated',
+    SENTTOAP:'Sent to AP',
+    GENERATED: 'Generated'
   };
   public SKILL_LEVEL = {
     WRITER: 'Writer',

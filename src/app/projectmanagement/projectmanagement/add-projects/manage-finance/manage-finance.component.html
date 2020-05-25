@@ -87,6 +87,10 @@
                 </ng-template>
             </p-table>
         </p-accordionTab>
+
+
+
+
         <p-accordionTab>
             <p-header class="financeHeader">
                 <div class="ui-grid-row">
@@ -181,15 +185,15 @@
                                     <th></th>
                                 </tr>
                             </ng-template>
-                            <ng-template pTemplate="body" let-rowData>
+                            <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
                                 <tr>
                                     <td>
                                         <span *ngIf="rowData.inv_number && rowData.invUrl">
-                      <a [href]="rowData.invUrl" target="_blank"> {{rowData.inv_number}}</a>
-                    </span>
+                      <a [href]="rowData.invUrl" target="_blank"> {{rowData.inv_number}} <span *ngIf="rowData.auxiliaryInvoiceName"> -  {{rowData.auxiliaryInvoiceName}}</span></a>
+                                        </span>
                                         <span *ngIf="rowData.inv_number && !rowData.invUrl">
-                      {{rowData.inv_number}}
-                    </span>
+                      {{rowData.inv_number}}  <span *ngIf="rowData.auxiliaryInvoiceName"> - {{rowData.auxiliaryInvoiceName}}</span>
+                                        </span>
                                     </td>
                                     <td>
                                         <span *ngIf="rowData.prf_number && rowData.prfUrl">
@@ -206,8 +210,20 @@
                                     <td>{{rowData.pocText}}</td>
                                     <td>{{rowData.address}}</td>
                                     <td>
-                                        <i *ngIf="rowData.isInvoiceItemConfirm"  class="pi pi-check"  style="font-size:2em;cursor: pointer;" (click)="confirmInvoiceItem(rowData)"></i>
-                                        <i *ngIf="rowData.isInvoiceItemEdit"  class="pi pi-pencil"  style="font-size:2em;cursor: pointer;" (click)="editInvoiceItem(rowData)"></i>
+
+                                        <i *ngIf="rowData.isInvoiceItemConfirm"  class="pi pi-check"  style="font-size:2em;cursor: pointer;vertical-align: middle;" (click)="confirmInvoiceItem(rowData)"></i>
+                                        <i *ngIf="!rowData.isInvoiceItemConfirm && rowData.reasonsArray " class="pi pi-info-circle" (click)="op2.toggle($event)" style="font-size:2em;cursor: pointer; vertical-align: middle;"></i>
+                                        <span class="infoindicator" style="position: relative;">
+                                            <p-overlayPanel class="overlaypanel" #op2 [dismissable]="true">
+                                                <ul *ngIf="rowData.reasonsArray">
+                                                    <li *ngFor='let reson of rowData.reasonsArray'>{{reson}}</li>
+                                                </ul>
+                                            </p-overlayPanel>
+                                        </span>
+
+                                        <i *ngIf="rowData.isInvoiceItemEdit"  class="pi pi-pencil"  style="font-size:2em;cursor: pointer;vertical-align: middle;" (click)="editInvoiceItem(rowData)"></i>
+
+
                                     </td>
                                 </tr>
                             </ng-template>
@@ -270,9 +286,11 @@
 
         </p-accordionTab>
     </p-accordion>
+
+
     <div class="col-grid" *ngIf="!isPOEdit">
         <div class="p-col-12">
-            <p-button *ngIf="showSave" type="button"  styleClass="pmBtn" (click)="savePo()" label="Save"></p-button>
+            <p-button *ngIf="showSave" type="button" styleClass="pmBtn" (click)="savePo()" label="Save"></p-button>
             <!-- <p-button class="mr-5" type="button" styleClass="pmBtn"  label="Cancel"></p-button> -->
         </div>
     </div>

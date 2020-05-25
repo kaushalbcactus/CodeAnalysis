@@ -333,5 +333,22 @@
         <button pButton type="button" class="fdBtn" label="Cancel" (click)="cancelFormSub('creditDebit')"></button>
     </p-footer>
 </p-dialog>
+
+
+<!-- *****************************************************************************************
+                                        AuxInvoiceName Popup
+  ****************************************************************************************** -->
+<p-dialog *ngIf="selectedRowItem" [header]="selectedRowItem.InvoiceNumber" [closable]="false" [modal]="true" [style]="{width: '450px', minWidth: '300px'}" [(visible)]="editAuxiliary">
+    <div class="p-col" style="padding: 30px 0px 20px 15px;">
+        <span class="ui-float-label" *ngIf="editAuxiliary">
+        <input id="float-input" type="text" size="30" pInputText [(ngModel)]="SelectedAuxInvoiceName"> 
+        <label for="float-input">Auxiliary Name</label>
+    </span>
+    </div>
+    <p-footer>
+        <button type="button" pButton icon="pi pi-check" style="background-color: #af0b14;border-color:#af0b14;cursor:pointer;" (click)="onSubmit('AuxiliaryUpdate');" label="Save"></button>
+        <button type="button" pButton icon="pi pi-times" (click)="editAuxiliary=false" label="Cancel"></button>
+    </p-footer>
+</p-dialog>
 <app-editor #editorRef></app-editor>
 <app-timeline-history #timelineRef></app-timeline-history>

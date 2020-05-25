@@ -690,16 +690,6 @@ export class AllProjectsComponent implements OnInit {
 
     this.GetprojectFinanceBatch(projectObj, options, batchURL);
 
-    // const projectFinanceGet = Object.assign({}, options);
-    // const projectFinaceFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.PROJECT_FINANCE_BY_PROJECTCODE);
-    // projectFinaceFilter.filter = projectFinaceFilter.filter.replace(/{{projectCode}}/gi,
-    //   projectObj.ProjectCode);
-    // projectFinanceGet.url = this.spServices.getReadURL(this.constants.listNames.ProjectFinances.name,
-    //   projectFinaceFilter);
-    // projectFinanceGet.type = 'GET';
-    // projectFinanceGet.listName = this.constants.listNames.ProjectFinances.name;
-    // batchURL.push(projectFinanceGet);
-
     // Get PBB  ##1;
     const pbbGet = Object.assign({}, options);
     const pbbFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.PROJECT_BUDGET_BREAKUP);
@@ -761,13 +751,13 @@ export class AllProjectsComponent implements OnInit {
           pfData.Budget = existPF.Budget + pbb.OriginalBudget;
           pfData.RevenueBudget = existPF.RevenueBudget + pbb.NetBudget;
 
-          const projectFinaceUpdate = Object.assign({}, options);
-          projectFinaceUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectFinances.name,
+          const projectFinanceUpdate = Object.assign({}, options);
+          projectFinanceUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectFinances.name,
             existPF.ID);
-          projectFinaceUpdate.data = pfData;
-          projectFinaceUpdate.type = 'PATCH';
-          projectFinaceUpdate.listName = this.constants.listNames.ProjectFinances.name;
-          batchURL.push(projectFinaceUpdate);
+          projectFinanceUpdate.data = pfData;
+          projectFinanceUpdate.type = 'PATCH';
+          projectFinanceUpdate.listName = this.constants.listNames.ProjectFinances.name;
+          batchURL.push(projectFinanceUpdate);
 
           projectBudgetBreakupData.Status = this.constants.projectBudgetBreakupList.status.Approved;
         } else if (selectedStatus === this.pmConstant.ACTION.REJECTED) {
