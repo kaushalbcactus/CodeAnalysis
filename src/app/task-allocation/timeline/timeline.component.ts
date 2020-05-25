@@ -4159,7 +4159,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         this.visualgraph = false;
         this.sharedObject.resSectionShow = false;
 
-        await this.checkConflictsAllocations(true);
+        await this.checkConflictsAllocations(null);
 
         if (!this.capacityObj.conflictAllocation) {
           setTimeout(async () => {
@@ -4481,10 +4481,46 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     // }
   }
   ////// Refactor code
+  async updateTaskObject(milestoneTask) {
+    return { PreviousAssignedUserId: milestoneTask.previousAssignedUser ? milestoneTask.previousAssignedUser : -1 }
+  }
+
+  async addTaskObject(milestoneTask, slotTaskName) {
+    return {
+      Title: milestoneTask.slotType !== 'Both' && milestoneTask.slotType !== 'Slot' ? this.oProjectDetails.projectCode + ' ' + milestoneTask.milestone + ' ' + milestoneTask.title :
+        this.oProjectDetails.projectCode + ' ' + milestoneTask.milestone + ' ' + slotTaskName,
+      SubMilestones: milestoneTask.submilestone,
+      Milestone: milestoneTask.milestone,
+      Task: milestoneTask.itemType,
+      ProjectCode: this.oProjectDetails.projectCode,
+    }
+  }
+  async addUpdateTaskObject(milestoneTask) {
+    return {
+      __metadata: { type: this.constants.listNames.Schedules.type },
+      StartDate: milestoneTask.start_date,
+      DueDate: milestoneTask.end_date,
+      ExpectedTime: '' + milestoneTask.budgetHours,
+      TATStatus: milestoneTask.tat === true || milestoneTask.tat === 'Yes' ? 'Yes' : 'No',
+      TATBusinessDays: milestoneTask.tatVal,
+      AssignedToId: milestoneTask.AssignedTo ? milestoneTask.AssignedTo.hasOwnProperty('ID') ? milestoneTask.AssignedTo.ID : -1 : -1,
+      TimeZone: milestoneTask.assignedUserTimeZone.toString(),
+      Status: milestoneTask.status,
+      NextTasks: this.setPreviousAndNext(milestoneTask.nextTask, milestoneTask.milestone, this.oProjectDetails.projectCode),
+      PrevTasks: this.setPreviousAndNext(milestoneTask.previousTask, milestoneTask.milestone, this.oProjectDetails.projectCode),
+      SkillLevel: milestoneTask.skillLevel,
+      IsCentrallyAllocated: milestoneTask.slotType === 'Both' && milestoneTask.AssignedTo.ID ? 'No' : milestoneTask.IsCentrallyAllocated,
+      CentralAllocationDone: milestoneTask.CentralAllocationDone,
+      ActiveCA: milestoneTask.ActiveCA,
+      DisableCascade: milestoneTask.DisableCascade === true ? 'Yes' : 'No',
+      AllocationPerDay: milestoneTask.allocationPerDay ? milestoneTask.allocationPerDay : ''
+
+    };
+  }
+  ////// Refactor code - Done
   async setMilestoneTaskForAddUpdate(milestoneTask, bAdd) {
-    const batchUrl = [];
     let url = '';
-    let data = {};
+    //let data = {};
     if (milestoneTask.status === 'Not Saved') {
       if (milestoneTask.isCurrent) {
         milestoneTask.status = 'Not Started';
@@ -4504,68 +4540,74 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       milestoneTask.ActiveCA = 'Yes';
       await this.sendCentralTaskMail(this.oProjectDetails, milestoneTask, milestoneTask.title + ' Created', 'CentralTaskCreation');
     }
+    let addUpdateTask;
     if (bAdd) {
       const taskCount = milestoneTask.title.match(/\d+$/) ? ' ' + milestoneTask.title.match(/\d+$/)[0] : '';
-      milestoneTask.itemType = milestoneTask.itemType;
+      // milestoneTask.itemType = milestoneTask.itemType;
       const slotTaskName = milestoneTask.itemType + taskCount;
-      const addData = {
-        __metadata: { type: 'SP.Data.SchedulesListItem' },
-        StartDate: milestoneTask.start_date,
-        DueDate: milestoneTask.end_date,
-        ExpectedTime: '' + milestoneTask.budgetHours,
-        //AllowCompletion: milestoneTask.allowStart === true ? 'Yes' : 'No',
-        TATStatus: milestoneTask.tat === true || milestoneTask.tat === 'Yes' ? 'Yes' : 'No',
-        TATBusinessDays: milestoneTask.tatVal,
-        AssignedToId: milestoneTask.AssignedTo ? milestoneTask.AssignedTo.hasOwnProperty('ID') ? milestoneTask.AssignedTo.ID : -1 : -1,
-        TimeZone: milestoneTask.assignedUserTimeZone.toString(),
-        // Comments: milestoneTask.scope,
-        Status: milestoneTask.status,
-        NextTasks: this.setPreviousAndNext(milestoneTask.nextTask, milestoneTask.milestone, this.oProjectDetails.projectCode),
-        PrevTasks: this.setPreviousAndNext(milestoneTask.previousTask, milestoneTask.milestone, this.oProjectDetails.projectCode),
-        ProjectCode: this.oProjectDetails.projectCode,
-        Task: milestoneTask.itemType,
-        Milestone: milestoneTask.milestone,
-        SubMilestones: milestoneTask.submilestone,
-        Title: milestoneTask.slotType !== 'Both' && milestoneTask.slotType !== 'Slot' ? this.oProjectDetails.projectCode + ' ' + milestoneTask.milestone + ' ' + milestoneTask.title :
-          this.oProjectDetails.projectCode + ' ' + milestoneTask.milestone + ' ' + slotTaskName,
-        SkillLevel: milestoneTask.skillLevel,
-        IsCentrallyAllocated: milestoneTask.slotType === 'Both' && milestoneTask.AssignedTo.ID ? 'No' : milestoneTask.IsCentrallyAllocated,
-        CentralAllocationDone: milestoneTask.CentralAllocationDone,
-        ActiveCA: milestoneTask.ActiveCA,
-        DisableCascade: milestoneTask.DisableCascade === true ? 'Yes' : 'No',
-        AllocationPerDay: milestoneTask.allocationPerDay ? milestoneTask.allocationPerDay : ''
-      };
+      addUpdateTask = await this.addUpdateTaskObject(milestoneTask);
+      addUpdateTask = Object.assign(addUpdateTask, await this.addTaskObject(milestoneTask, slotTaskName));
+      // const addData = {
+      //   __metadata: { type: 'SP.Data.SchedulesListItem' },
+      //   StartDate: milestoneTask.start_date,
+      //   DueDate: milestoneTask.end_date,
+      //   ExpectedTime: '' + milestoneTask.budgetHours,
+      //   //AllowCompletion: milestoneTask.allowStart === true ? 'Yes' : 'No',
+      //   TATStatus: milestoneTask.tat === true || milestoneTask.tat === 'Yes' ? 'Yes' : 'No',
+      //   TATBusinessDays: milestoneTask.tatVal,
+      //   AssignedToId: milestoneTask.AssignedTo ? milestoneTask.AssignedTo.hasOwnProperty('ID') ? milestoneTask.AssignedTo.ID : -1 : -1,
+      //   TimeZone: milestoneTask.assignedUserTimeZone.toString(),
+      //   // Comments: milestoneTask.scope,
+      //   Status: milestoneTask.status,
+      //   NextTasks: this.setPreviousAndNext(milestoneTask.nextTask, milestoneTask.milestone, this.oProjectDetails.projectCode),
+      //   PrevTasks: this.setPreviousAndNext(milestoneTask.previousTask, milestoneTask.milestone, this.oProjectDetails.projectCode),
+      //   ProjectCode: this.oProjectDetails.projectCode,
+      //   Task: milestoneTask.itemType,
+      //   Milestone: milestoneTask.milestone,
+      //   SubMilestones: milestoneTask.submilestone,
+      //   Title: milestoneTask.slotType !== 'Both' && milestoneTask.slotType !== 'Slot' ? this.oProjectDetails.projectCode + ' ' + milestoneTask.milestone + ' ' + milestoneTask.title :
+      //     this.oProjectDetails.projectCode + ' ' + milestoneTask.milestone + ' ' + slotTaskName,
+      //   SkillLevel: milestoneTask.skillLevel,
+      //   IsCentrallyAllocated: milestoneTask.slotType === 'Both' && milestoneTask.AssignedTo.ID ? 'No' : milestoneTask.IsCentrallyAllocated,
+      //   CentralAllocationDone: milestoneTask.CentralAllocationDone,
+      //   ActiveCA: milestoneTask.ActiveCA,
+      //   DisableCascade: milestoneTask.DisableCascade === true ? 'Yes' : 'No',
+      //   AllocationPerDay: milestoneTask.allocationPerDay ? milestoneTask.allocationPerDay : ''
+      // };
       url = this.spServices.getReadURL(this.constants.listNames.Schedules.name);
-      data = addData;
+      //data = addData;
     } else {
-      const updateData = {
-        __metadata: { type: 'SP.Data.SchedulesListItem' },
-        StartDate: milestoneTask.start_date,
-        DueDate: milestoneTask.end_date,
-        ExpectedTime: '' + milestoneTask.budgetHours,
-        //AllowCompletion: milestoneTask.allowStart === true ? 'Yes' : 'No',
-        TATStatus: milestoneTask.tat === true || milestoneTask.tat === 'Yes' ? 'Yes' : 'No',
-        TATBusinessDays: milestoneTask.tatVal,
-        AssignedToId: milestoneTask.AssignedTo ? milestoneTask.AssignedTo.ID ? milestoneTask.AssignedTo.ID : -1 : -1,
-        TimeZone: milestoneTask.assignedUserTimeZone.toString(),
-        // Comments: milestoneTask.scope ? milestoneTask.scope : '',
-        Status: milestoneTask.status,
-        NextTasks: this.setPreviousAndNext(milestoneTask.nextTask, milestoneTask.milestone, this.oProjectDetails.projectCode),
-        PrevTasks: this.setPreviousAndNext(milestoneTask.previousTask, milestoneTask.milestone, this.oProjectDetails.projectCode),
-        SkillLevel: milestoneTask.skillLevel,
-        IsCentrallyAllocated: milestoneTask.IsCentrallyAllocated,
-        CentralAllocationDone: milestoneTask.CentralAllocationDone,
-        ActiveCA: milestoneTask.ActiveCA,
-        DisableCascade: milestoneTask.DisableCascade === true ? 'Yes' : 'No',
-        PreviousAssignedUserId: milestoneTask.previousAssignedUser ? milestoneTask.previousAssignedUser : -1,
-        SubMilestones: milestoneTask.submilestone,
-        AllocationPerDay: milestoneTask.allocationPerDay ? milestoneTask.allocationPerDay : ''
-      };
+      // const updateData = {
+      //   __metadata: { type: 'SP.Data.SchedulesListItem' },
+      //   StartDate: milestoneTask.start_date,
+      //   DueDate: milestoneTask.end_date,
+      //   ExpectedTime: '' + milestoneTask.budgetHours,
+      //   //AllowCompletion: milestoneTask.allowStart === true ? 'Yes' : 'No',
+      //   TATStatus: milestoneTask.tat === true || milestoneTask.tat === 'Yes' ? 'Yes' : 'No',
+      //   TATBusinessDays: milestoneTask.tatVal,
+      //   AssignedToId: milestoneTask.AssignedTo ? milestoneTask.AssignedTo.ID ? milestoneTask.AssignedTo.ID : -1 : -1,
+      //   TimeZone: milestoneTask.assignedUserTimeZone.toString(),
+      //   // Comments: milestoneTask.scope ? milestoneTask.scope : '',
+      //   Status: milestoneTask.status,
+      //   NextTasks: this.setPreviousAndNext(milestoneTask.nextTask, milestoneTask.milestone, this.oProjectDetails.projectCode),
+      //   PrevTasks: this.setPreviousAndNext(milestoneTask.previousTask, milestoneTask.milestone, this.oProjectDetails.projectCode),
+      //   SkillLevel: milestoneTask.skillLevel,
+      //   IsCentrallyAllocated: milestoneTask.IsCentrallyAllocated,
+      //   CentralAllocationDone: milestoneTask.CentralAllocationDone,
+      //   ActiveCA: milestoneTask.ActiveCA,
+      //   DisableCascade: milestoneTask.DisableCascade === true ? 'Yes' : 'No',
+      //   PreviousAssignedUserId: milestoneTask.previousAssignedUser ? milestoneTask.previousAssignedUser : -1,
+      //   SubMilestones: milestoneTask.submilestone,
+      //   AllocationPerDay: milestoneTask.allocationPerDay ? milestoneTask.allocationPerDay : ''
+      // };
+      addUpdateTask = await this.addUpdateTaskObject(milestoneTask);
+      addUpdateTask = Object.assign(addUpdateTask, await this.updateTaskObject(milestoneTask));
       url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +milestoneTask.id);
-      data = updateData;
+      //data = updateData;
     }
+    //data = addUpdateTask;
     return {
-      body: data,
+      body: addUpdateTask,
       url
     };
   }
@@ -4585,52 +4627,78 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
     return sVal;
   }
-  ////// Refactor code
+  addMilestoneObject(currentMilestone) {
+    return {
+      ProjectCode: this.oProjectDetails.projectCode,
+      Title: currentMilestone.title.split('(')[0].trim(),
+      FileSystemObjectType: 1,
+      ContentTypeId: "0x0120",
+    }
+  }
+  addUpdateMilestoneObject(currentMilestone, milestoneStartDate, milestoneEndDate) {
+    return {
+      __metadata: { type: this.constants.listNames.Schedules.type },
+      Actual_x0020_Start_x0020_Date: milestoneStartDate,
+      Actual_x0020_End_x0020_Date: milestoneEndDate,
+      StartDate: milestoneStartDate,
+      DueDate: milestoneEndDate,
+      ExpectedTime: '' + currentMilestone.budgetHours,
+      Status: currentMilestone.status === 'Not Saved' ?
+        currentMilestone.isCurrent ? 'Not Started' : 'Not Confirmed' :
+        currentMilestone.status,
+      TATBusinessDays: currentMilestone.tatBusinessDays,
+      SubMilestones: currentMilestone.submilestone,
+    };
+  }
+  ////// Refactor code - Done
   setMilestoneForAddUpdate(sentMilestone, bAdd) {
     let currentMilestone = sentMilestone.data;
     let url = '';
     let data;
-    currentMilestone.submilestone = this.getSubMilestoneStatus(sentMilestone, '');//.join(';#');
+    currentMilestone.submilestone = this.getSubMilestoneStatus(sentMilestone, '').join(';#');
     const milestoneStartDate = new Date(currentMilestone.start_date);
     const milestoneEndDate = new Date(currentMilestone.end_date);
     currentMilestone.tatBusinessDays = this.commonService.calcBusinessDays(milestoneStartDate, milestoneEndDate);
-    if (!bAdd) {
-      let updateData: any = {
-        __metadata: { type: 'SP.Data.SchedulesListItem' },
-        Actual_x0020_Start_x0020_Date: milestoneStartDate,
-        Actual_x0020_End_x0020_Date: milestoneEndDate,
-        StartDate: milestoneStartDate,
-        DueDate: milestoneEndDate,
-        ExpectedTime: '' + currentMilestone.budgetHours,
-        Status: currentMilestone.status === 'Not Saved' ? currentMilestone.isCurrent ? 'Not Started' : 'Not Confirmed' : currentMilestone.status,
-        TATBusinessDays: currentMilestone.tatBusinessDays,
-        SubMilestones: currentMilestone.submilestone,
-      };
-      url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +currentMilestone.id);
-      data = updateData;
-    } else {
-      const addData = {
-        __metadata: { type: 'SP.Data.SchedulesListItem' },
-        Actual_x0020_Start_x0020_Date: milestoneStartDate,
-        Actual_x0020_End_x0020_Date: milestoneEndDate,
-        StartDate: milestoneStartDate,
-        DueDate: milestoneEndDate,
-        ExpectedTime: '' + currentMilestone.budgetHours,
-        Status: currentMilestone.status === 'Not Saved' ? currentMilestone.isCurrent ? 'Not Started' : 'Not Confirmed' : currentMilestone.status,
-        TATBusinessDays: currentMilestone.tatBusinessDays,
-        ProjectCode: this.oProjectDetails.projectCode,
-        Title: currentMilestone.title.split(' (')[0],
-        FileSystemObjectType: 1,
-        ContentTypeId: "0x0120",
-        SubMilestones: currentMilestone.submilestone
-      };
+    if (bAdd) {
+      // let updateData: any = {
+      //   __metadata: { type: 'SP.Data.SchedulesListItem' },
+      //   Actual_x0020_Start_x0020_Date: milestoneStartDate,
+      //   Actual_x0020_End_x0020_Date: milestoneEndDate,
+      //   StartDate: milestoneStartDate,
+      //   DueDate: milestoneEndDate,
+      //   ExpectedTime: '' + currentMilestone.budgetHours,
+      //   Status: currentMilestone.status === 'Not Saved' ? currentMilestone.isCurrent ? 'Not Started' : 'Not Confirmed' : currentMilestone.status,
+      //   TATBusinessDays: currentMilestone.tatBusinessDays,
+      //   SubMilestones: currentMilestone.submilestone,
+      // };
+      data = this.addUpdateMilestoneObject(currentMilestone, milestoneStartDate, milestoneEndDate);
+      data = Object.assign(data, this.addMilestoneObject(currentMilestone));
       url = this.spServices.getReadURL(this.constants.listNames.Schedules.name);
-      data = addData;
+      // data = updateData;
+    } else {
+      // const addData = {
+      //   __metadata: { type: 'SP.Data.SchedulesListItem' },
+      //   Actual_x0020_Start_x0020_Date: milestoneStartDate,
+      //   Actual_x0020_End_x0020_Date: milestoneEndDate,
+      //   StartDate: milestoneStartDate,
+      //   DueDate: milestoneEndDate,
+      //   ExpectedTime: '' + currentMilestone.budgetHours,
+      //   Status: currentMilestone.status === 'Not Saved' ? currentMilestone.isCurrent ? 'Not Started' : 'Not Confirmed' : currentMilestone.status,
+      //   TATBusinessDays: currentMilestone.tatBusinessDays,
+      //   ProjectCode: this.oProjectDetails.projectCode,
+      //   Title: currentMilestone.title.split(' (')[0],
+      //   FileSystemObjectType: 1,
+      //   ContentTypeId: "0x0120",
+      //   SubMilestones: currentMilestone.submilestone
+      // };
+      data = this.addUpdateMilestoneObject(currentMilestone, milestoneStartDate, milestoneEndDate);
+      url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +currentMilestone.id);
+      // data = addData;
     }
     return {
       body: data,
       url,
-      Title: currentMilestone.Title
+      Title: currentMilestone.title
     };
 
   }
@@ -4873,17 +4941,17 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
     this.setMilestone(addedTasks, updatedTasks, addedMilestones, updatedMilestones, currentMilestoneTaskUpdated);
 
-    let allTasks = this.milestoneData.filter((e => e.children));
-    allTasks.forEach((e) => {
-      e.children.forEach((task: any) => {
-        if (task.data.itemType !== 'Client Review' && task.data.itemType !== 'Send to client' && task.data.slotType.indexOf('Slot') < 0 || task.data.added == false) {
-          task.data.resources = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
-            return objt.UserName.ID === task.data.AssignedTo.ID;
-          });
-          this.usercapacityComponent.factoringTimeForAllocation(task.data.start_date, task.data.end_date, task.data.resources, [], this.taskAllocateCommonService.taskStatus, this.taskAllocateCommonService.adhocStatus);
-        }
-      })
-    })
+    // let allTasks = this.milestoneData.filter((e => e.children));
+    // allTasks.forEach((e) => {
+    //   e.children.forEach((task: any) => {
+    //     if (task.data.itemType !== 'Client Review' && task.data.itemType !== 'Send to client' && task.data.slotType.indexOf('Slot') < 0 || task.data.added == false) {
+    //       task.data.resources = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
+    //         return objt.UserName.ID === task.data.AssignedTo.ID;
+    //       });
+    //       this.usercapacityComponent.factoringTimeForAllocation(task.data.start_date, task.data.end_date, task.data.resources, [], this.taskAllocateCommonService.taskStatus, this.taskAllocateCommonService.adhocStatus);
+    //     }
+    //   })
+    // })
   }
 
   // tslint:enable
@@ -5201,7 +5269,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           // let allTasks = rowNode.node;
           const validateNextMilestone = this.validateNextMilestone(this.selectedSubMilestone);
           if (validateNextMilestone) {
-            await this.checkConflictsAllocations(false);
+            await this.checkConflictsAllocations(rowNode.node);
             if (!this.capacityObj.conflictAllocation) {
               this.loaderenable = true;
               setTimeout(() => { this.setAsNextMilestone(this.selectedSubMilestone); }, 200);
