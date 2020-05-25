@@ -4655,7 +4655,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     let currentMilestone = sentMilestone.data;
     let url = '';
     let data;
-    currentMilestone.submilestone = this.getSubMilestoneStatus(sentMilestone, '').join(';#');
+    currentMilestone.submilestone = this.getSubMilestoneStatus(sentMilestone, '');//.join(';#');
     const milestoneStartDate = new Date(currentMilestone.start_date);
     const milestoneEndDate = new Date(currentMilestone.end_date);
     currentMilestone.tatBusinessDays = this.commonService.calcBusinessDays(milestoneStartDate, milestoneEndDate);
