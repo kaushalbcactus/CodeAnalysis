@@ -4,9 +4,9 @@
 </div>
 
 
-<div class='UserButton' fxLayout="row" fxLayoutAlign="end center" [hidden]="isProjectAttributeTableHidden">
+<div *ngIf="showEditSave" class='UserButton' fxLayout="row" fxLayoutAlign="end center" [hidden]="isProjectAttributeTableHidden">
 
-    <button *ngIf="showEditSave" type="button" pButton icon="pi pi-save" id="saveClient" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="saveEditProject()" label="Update"></button>
+    <button type="button" pButton icon="pi pi-save" id="saveClient" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="saveEditProject()" label="Update"></button>
 
     <button type="button" pButton icon="pi pi-times" (click)="cancel();" label="Cancel" class="ui-button-secondary" style="background-color:ghostwhite;"></button>
 

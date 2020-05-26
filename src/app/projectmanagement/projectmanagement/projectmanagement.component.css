@@ -1139,13 +1139,14 @@ body .ui-dialog .ui-dialog-titlebar {
     font-size: 20px;
 }
 
-.ui-dialog .ui-dialog-titlebar-icon span {
+
+/* .ui-dialog .ui-dialog-titlebar-icon span {
     background: #c53e3e !important;
     color: #fff;
     border-radius: 50%;
     width: 25px;
     height: 25px;
-}
+} */
 
 body .ui-radiobutton .ui-radiobutton-box.ui-state-focus {
     background-color: #C53E3E !important;

@@ -75,7 +75,7 @@
                 <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
             </td>
             <td>{{task.SOWCode}}</td>
-            <td>{{task.ProjectCode}}</td>
+            <td [style.backgroundColor]="GetTaskBackrgoundColor(task.ProjectCode)">{{task.ProjectCode}}</td>
             <td>{{task.ShortTitle}}</td>
             <td>{{task.ClientLegalEntity}}</td>
             <td>{{task.ProjectType}}</td>

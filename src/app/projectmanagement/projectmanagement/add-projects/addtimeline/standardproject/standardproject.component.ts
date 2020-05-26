@@ -2104,7 +2104,15 @@ export class StandardprojectComponent implements OnInit {
    * This set all the milestone and other object so that it will directly available on angular 1 or js file.
    */
   async saveTimelineData() {
-    const isTrue = this.validateRequiredField(true);
+    let isTrue = this.validateRequiredField(true);
+
+    if (this.pmObject.addProject.FinanceManagement.selectedFile && this.pmObject.addProject.FinanceManagement.selectedFile.size === 0) {
+      this.messageService.add({
+        key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
+        detail: 'Unable to upload file, size of ' + this.pmObject.addProject.FinanceManagement.selectedFile.name + ' is 0 KB.'
+      });
+    }
+
     if (isTrue) {
       this.disableField();
       // $('.standardMilestoneByType').hide();
