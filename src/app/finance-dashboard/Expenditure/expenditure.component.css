@@ -38,9 +38,10 @@
     width: 100% !important;
 }
 
-::ng-deep .pCalendarBtn>input {
+
+/* ::ng-deep .pCalendarBtn>input {
     width: 89% !important;
-}
+} */
 
 
 /* 

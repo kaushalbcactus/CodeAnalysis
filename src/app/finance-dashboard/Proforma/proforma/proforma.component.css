@@ -1,12 +1,24 @@
-#cle .ng-tns-c5-21 .ui-dropdown .ui-widget .ui-state-default .ui-corner-all .ui-helper-clearfix .ui-dropdown-clearable{
+#cle .ng-tns-c5-21 .ui-dropdown .ui-widget .ui-state-default .ui-corner-all .ui-helper-clearfix .ui-dropdown-clearable {
     width: 200px !important;
 }
 
-.ui-dialog-content .ui-widget-content{
+.UserButton {
+    position: fixed !important;
+    width: 85% !important;
+    margin: -50px !important;
+}
+
+#saveClient,
+#cancelClient {
+    background-color: #C53E3E !important;
+    border-color: #C53E3E !important;
+}
+
+.ui-dialog-content .ui-widget-content {
     height: 140px !important;
 }
 
-.ui-dialog-resizable .ui-dialog-content{
+.ui-dialog-resizable .ui-dialog-content {
     height: 140px !important;
 }
 
@@ -14,9 +26,31 @@
     max-height: 530px;
 }
 
-::ng-deep .financeTable .ui-table table, .ui-table table
-{  table-layout:auto !important;
+
+/* .cls_addproformadate>.ui-datepicker {
+    overflow: visible;
+    z-index: 999;
+} */
+
+
+/* .calendarDemo {
+    overflow: visible !important;
+} */
+
+.addProformaHeight>div {
+    padding: 0.5rem !important;
 }
+
+::ng-deep .dropdownClass,
+.textfeildClass {
+    width: 100% !important;
+}
+
+::ng-deep .financeTable .ui-table table,
+.ui-table table {
+    table-layout: auto !important;
+}
+
 ::ng-deep .ui-table-tablewrapper {
     width: auto!important;
 }
@@ -26,7 +60,10 @@
     /* overflow: auto; */
     width: auto !important;
 }
-.ui-table .ui-table-tbody > tr, .ui-table .ui-table-thead > tr > th, .ui-table .ui-table-tfoot > tr > td{
+
+.ui-table .ui-table-tbody>tr,
+.ui-table .ui-table-thead>tr>th,
+.ui-table .ui-table-tfoot>tr>td {
     max-width: 300px !important;
     font-size: 12px;
     padding: 0px !important;
@@ -39,4 +76,6 @@
     border-width: 1px;
 }
 
-  table td {border:inset 1px #000;}
+table td {
+    border: inset 1px #000;
+}

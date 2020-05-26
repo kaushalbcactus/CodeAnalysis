@@ -1,8 +1,8 @@
 <div class='UserButton' fxLayout="row" fxLayoutAlign="end center">
 
-    <button type="button" pButton icon="pi pi-save" id="saveClient" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="SaveDetails()" label="Add To Schedule Invoice"></button>
+    <button type="button" pButton icon="pi pi-save" class="cls_addTSConfirm" id="saveClient" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="SaveDetails()" label="Add To Schedule Invoice"></button>
 
-    <button type="button" pButton icon="pi pi-times" id="cancelClient" (click)="cancel();" label="Cancel"></button>
+    <button type="button" class="cls_addTSCancel" pButton icon="pi pi-times" id="cancelClient" (click)="cancel();" label="Cancel"></button>
 
 </div>
 
@@ -15,14 +15,14 @@
             <div class="p-grid p-col">
                 <div class="p-col-4">Project Code</div>
                 <div class="p-col-8">
-                    <input type="text" style="width: 100%;" formControlName="ProjectCode" placeholder="Project Code" pInputText>
+                    <input type="text" class="cls_addTSprojectCode" style="width: 100%;" formControlName="ProjectCode" placeholder="Project Code" pInputText>
                 </div>
             </div>
             <div class="p-grid p-col">
                 <div class="p-col-4"><span class="compulsory">*</span>Po Number</div>
                 <div class="p-col-8">
 
-                    <p-dropdown resetFilterOnHide="true" [options]="poNames" filter="true" formControlName="PONumber" [style]="{'width':'100%'}" placeholder="Select PO Number" optionLabel="Number" (onChange)="poChange($event)">
+                    <p-dropdown resetFilterOnHide="true" class="cls_addTsPoSelect" [options]="poNames" filter="true" formControlName="PONumber" [style]="{'width':'100%'}" placeholder="Select PO Number" optionLabel="Number" (onChange)="poChange($event)">
                         <ng-template let-item pTemplate="selectedItem">
                             <span style="vertical-align:middle">{{item.label}}
                             {{item.value.Name ? ' -- '+ item.value.Name:'' }}
@@ -50,7 +50,7 @@
             <div class="p-grid p-col">
                 <div class="p-col-4">&nbsp;Schedule Type</div>
                 <div class="p-col-8">
-                    <input type="text" size="30" style="width: 100%;" formControlName="ScheduledType" placeholder="Schedule Type" pInputText>
+                    <input type="text" class="cls_addTSScheduleType" size="30" style="width: 100%;" formControlName="ScheduledType" placeholder="Schedule Type" pInputText>
                     <div class="error" *ngIf="isScheduleInvoiceFormSubmit && ScheduleInvoiceForm.controls.ScheduledType.errors">
                         <div *ngIf="ScheduleInvoiceForm.controls.ScheduledType.errors.required">Schedule Type is required</div>
                     </div>
@@ -59,7 +59,7 @@
             <div class="p-grid p-col">
                 <div class="p-col-4">&nbsp;OOP Balance</div>
                 <div class="p-col-8">
-                    <input type="number" size="30" style="width: 100%;opacity: 0.5;" formControlName="OOPBalance" placeholder="OOP Balance" readonly pInputText>
+                    <input type="number" class="cls_addTSOOPBalance" size="30" style="width: 100%;opacity: 0.5;" formControlName="OOPBalance" placeholder="OOP Balance" readonly pInputText>
                     <div class="error" *ngIf="isScheduleInvoiceFormSubmit && ScheduleInvoiceForm.controls.OOPBalance.errors">
                         <div *ngIf="ScheduleInvoiceForm.controls.OOPBalance.errors.required">OOP Balance is required</div>
                         <div *ngIf="ScheduleInvoiceForm.controls.OOPBalance.errors.min">Must be greater than amount</div>
@@ -73,7 +73,7 @@
             <div class="p-grid p-col">
                 <div class="p-col-4">&nbsp;Amount</div>
                 <div class="p-col-8">
-                    <input type="number" size="30" style="width: 100%;" formControlName="Amount" placeholder="Amount" pInputText>
+                    <input type="number" class="cls_addTSAmount" size="30" style="width: 100%;" formControlName="Amount" placeholder="Amount" pInputText>
                     <div class="error" *ngIf="isScheduleInvoiceFormSubmit && ScheduleInvoiceForm.controls.Amount.errors">
                         <div *ngIf="ScheduleInvoiceForm.controls.Amount.errors.required">Amount is required</div>
                     </div>
@@ -82,7 +82,7 @@
             <div class="p-grid p-col">
                 <div class="p-col-4">&nbsp;Currency</div>
                 <div class="p-col-8">
-                    <input type="text" size="30" style="width: 100%;" formControlName="Currency" placeholder="Currency" pInputText>
+                    <input type="text" class="cls_addTSCurrency" size="30" style="width: 100%;" formControlName="Currency" placeholder="Currency" pInputText>
                     <div class="error" *ngIf="isScheduleInvoiceFormSubmit && ScheduleInvoiceForm.controls.Currency.errors">
                         <div *ngIf="ScheduleInvoiceForm.controls.Currency.errors.required">
                             Currency is required</div>
@@ -94,7 +94,7 @@
         <!-- forth Row html if new   -->
         <div class="p-grid" *ngIf="!modalloaderenable && advanceInvArray && advanceInvArray.length > 0">
             <div class="p-grid p-col">
-                <p-selectButton [options]="InvoiceTypeArray" class="p-col selectButton" [style]="{width : '100%'}" formControlName="InvoiceType" (onChange)="UpdateValidator($event.value)"></p-selectButton>
+                <p-selectButton [options]="InvoiceTypeArray" class="p-col selectButton" [style]="{width : '100%'}" class="cls_addTSSelectButton" formControlName="InvoiceType" (onChange)="UpdateValidator($event.value)"></p-selectButton>
             </div>
         </div>
 
@@ -110,8 +110,8 @@
                 <div class="p-col-4"><span class="compulsory">*</span>Schedule Date</div>
                 <div class="p-col-8">
 
-                    <p-calendar styleClass="pCalendarBtn" formControlName="ScheduledDate" [showIcon]="true" dateFormat="M dd, yy"   [showOnFocus]="false"   [monthNavigator]="true" yearRange="{{yearRange}}" [disabledDays]="[0,6]" [yearNavigator]="true" [readonlyInput]="true"
-                        placeholder="Select schedule date">
+                    <p-calendar class="cls_addTSScheduleDate" styleClass="pCalendarBtn" formControlName="ScheduledDate" [showIcon]="true" dateFormat="M dd, yy"   [showOnFocus]="false"   [monthNavigator]="true" yearRange="{{yearRange}}" [disabledDays]="[0,6]" [yearNavigator]="true"
+                        [readonlyInput]="true" placeholder="Select schedule date">
                     </p-calendar>
 
                     <div class="error" *ngIf="isScheduleInvoiceFormSubmit && ScheduleInvoiceForm.controls.ScheduledDate.errors">
@@ -124,7 +124,7 @@
                 <div class="p-col-4"><span class="compulsory">*</span>POC Name</div>
                 <div class="p-col-8">
 
-                    <p-dropdown [options]="listOfPOCs" formControlName="POCName" placeholder="Select POC Name" optionLabel="FullName" filter="true" resetFilterOnHide="true" (onChange)="pocChange($event)" [style]="{'width':'100%'}"> </p-dropdown>
+                    <p-dropdown class="cls_addTSPOCName" [options]="listOfPOCs" formControlName="POCName" placeholder="Select POC Name" optionLabel="FullName" filter="true" resetFilterOnHide="true" (onChange)="pocChange($event)" [style]="{'width':'100%'}"> </p-dropdown>
                     <div class="error" *ngIf="isScheduleInvoiceFormSubmit && ScheduleInvoiceForm.controls.POCName.errors">
                         <div *ngIf="ScheduleInvoiceForm.controls.POCName.errors.required">
                             Please provide POC Name.</div>
@@ -139,7 +139,7 @@
                 <div class="p-col-4"><span class="compulsory">*</span>Address Type</div>
                 <div class="p-col-8">
 
-                    <p-dropdown resetFilterOnHide="true" [options]="addressTypes" formControlName="AddressType" placeholder="Select a Address Type" optionLabel="label" [style]="{'width':'100%'}"></p-dropdown>
+                    <p-dropdown class="cls_adTSAddType" resetFilterOnHide="true" [options]="addressTypes" formControlName="AddressType" placeholder="Select a Address Type" optionLabel="label" [style]="{'width':'100%'}"></p-dropdown>
 
                     <div class="error" *ngIf="isScheduleInvoiceFormSubmit && ScheduleInvoiceForm.controls.AddressType.errors">
                         <div *ngIf="ScheduleInvoiceForm.controls.AddressType.errors.required">
@@ -159,7 +159,7 @@
                 <div class="p-col-4"><span class="compulsory">*</span>Invoice List</div>
                 <div class="p-col-8">
 
-                    <p-dropdown [options]="advanceInvArray" placeholder="Select Invoice" formControlName="InvoiceId" [showClear]="true" (onChange)="setInvData()" filter="true" resetFilterOnHide="true" [style]="{'width':'100%'}">
+                    <p-dropdown class="cls_addTSInvoiceList" [options]="advanceInvArray" placeholder="Select Invoice" formControlName="InvoiceId" [showClear]="true" (onChange)="setInvData()" filter="true" resetFilterOnHide="true" [style]="{'width':'100%'}">
                     </p-dropdown>
 
                     <div class="error" *ngIf="isScheduleInvoiceFormSubmit && ScheduleInvoiceForm.controls.InvoiceId.errors">
@@ -172,7 +172,7 @@
                 <div class="p-col-4"><span class="compulsory">*</span>Invoice Date</div>
                 <div class="p-col-8">
 
-                    <input type="text" style="width: 100%;opacity: 0.5;" formControlName="InvoiceDate" placeholder="Invoice Date" readonly pInputText>
+                    <input class="cls_addTSInvoiceDate" type="text" style="width: 100%;opacity: 0.5;" formControlName="InvoiceDate" placeholder="Invoice Date" readonly pInputText>
 
                     <div class="error" *ngIf="isScheduleInvoiceFormSubmit && ScheduleInvoiceForm.controls.InvoiceDate.errors">
                         <div *ngIf="ScheduleInvoiceForm.controls.InvoiceDate.errors.required">
@@ -189,7 +189,7 @@
             <div class="p-grid p-col">
                 <div class="p-col-4"><span class="compulsory">*</span>Invoice Amount</div>
                 <div class="p-col-8">
-                    <input type="text" style="width: 100%;opacity: 0.5;" formControlName="InvoiceAmount" placeholder="Invoice Amount" readonly pInputText>
+                    <input type="text" style="width: 100%;opacity: 0.5;" class="cls_addTSInvoiceAmount" formControlName="InvoiceAmount" placeholder="Invoice Amount" readonly pInputText>
 
                     <div class="error" *ngIf="isScheduleInvoiceFormSubmit && ScheduleInvoiceForm.controls.InvoiceAmount.errors">
                         <div *ngIf="ScheduleInvoiceForm.controls.InvoiceAmount.errors.required">
@@ -201,7 +201,7 @@
             <div class="p-grid p-col">
                 <div class="p-col-4"><span class="compulsory">*</span>Balance Amount</div>
                 <div class="p-col-8">
-                    <input type="text" style="width: 100%;opacity: 0.5;" formControlName="BalanceAmount" placeholder="Balance Amount" readonly pInputText>
+                    <input type="text" class="cls_addTSBalanceAmount" style="width: 100%;opacity: 0.5;" formControlName="BalanceAmount" placeholder="Balance Amount" readonly pInputText>
 
                     <div class="error" *ngIf="isScheduleInvoiceFormSubmit && ScheduleInvoiceForm.controls.BalanceAmount.errors">
                         <div *ngIf="ScheduleInvoiceForm.controls.BalanceAmount.errors.required">
@@ -218,7 +218,7 @@
             <div class="p-grid p-col">
                 <div class="p-col-4"><span class="compulsory">*</span>Tag Amount</div>
                 <div class="p-col-8">
-                    <input type="number" style="width: 100%;opacity: 0.5;" formControlName="TagAmount" placeholder="Tag Amount" readonly pInputText>
+                    <input class="cls_addTSTaggAmount" type="number" style="width: 100%;opacity: 0.5;" formControlName="TagAmount" placeholder="Tag Amount" readonly pInputText>
 
                     <div class="error" *ngIf="isScheduleInvoiceFormSubmit && ScheduleInvoiceForm.controls.TagAmount.errors">
                         <div *ngIf="ScheduleInvoiceForm.controls.TagAmount.errors.required">

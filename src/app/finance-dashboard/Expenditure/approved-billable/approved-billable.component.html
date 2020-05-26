@@ -2,13 +2,13 @@
     <div class="p-col-12 p-md-12 p-lg-12 f-right">
         <div style="display: -webkit-inline-box;">
             <div class="box" style="margin-right: 20px;" *ngIf="constantService.userPermission.isFDUserAdmin">
-                <button pButton type="button" class="fdBtn" label="Schedule OOP Invoice" (click)="openPopup('scheduleOopModal')" style="float:left"></button>
+                <button pButton type="button" class="fdBtn cls_schoopInv" label="Schedule OOP Invoice" (click)="openPopup('scheduleOopModal')" style="float:left"></button>
             </div>
             <div class="box" style="margin-right: 20px;" *ngIf="constantService.userPermission.isFDUserAdmin">
-                <button pButton type="button" class="fdBtn" label="Mark As Payment" (click)="openPopup('markAsPaymentModal')" style="float:left"></button>
+                <button pButton type="button" class="fdBtn cls_mafab" label="Mark As Payment" (click)="openPopup('markAsPaymentModal')" style="float:left"></button>
             </div>
             <div class="box">
-                <i [hidden]="isLoaderenable && approvedBillableRes.length === 0" style="font-size: 1.8em;cursor: pointer;vertical-align: -webkit-baseline-middle;" (click)=" fdDataShareServie.convertToExcelFile(ab)" title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
+                <i [hidden]="isLoaderenable && approvedBillableRes.length === 0" style="font-size: 1.8em;cursor: pointer;vertical-align: -webkit-baseline-middle;" (click)=" fdDataShareServie.convertToExcelFile(ab)" title="Export To Excel" class="fa fa-fw fa-file-excel-o cls_exportab"></i>
             </div>
         </div>
     </div>
@@ -29,13 +29,14 @@
 
 
 <div class="financeTable" [hidden]="isLoaderenable && approvedBillableRes.length === 0">
-    <p-table #ab [columns]="approvedBillableCols" [value]="approvedBillableRes" [paginator]="true" [rows]="10" [(selection)]="selectedAllRowsItem" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)" selectionMode="" exportFilename="Approved_Billable_Expenses">
+    <p-table #ab [columns]="approvedBillableCols" [value]="approvedBillableRes" [paginator]="true" [rows]="10" [(selection)]="selectedAllRowsItem" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)" selectionMode="" exportFilename="Approved_Billable_Expenses"
+        class="cls_abmaintable">
         <ng-template pTemplate="header" let-columns let-rowData="rowData">
 
             <tr>
                 <th>S.No</th>
                 <th style="width: 2.25em">
-                    <p-tableHeaderCheckbox (click)="selectAllRows()"></p-tableHeaderCheckbox>
+                    <p-tableHeaderCheckbox (click)="selectAllRows()" class="cls_abselectallcb"></p-tableHeaderCheckbox>
                 </th>
                 <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
                     {{col.header}}
@@ -48,53 +49,53 @@
                 <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
                     <ng-container *ngIf="col.field">
                         <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'ProjectCode'" [options]="appBillableColArray.ProjectCode" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="ab.filter($event.value, col.field, 'in')"
-                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" class="cls_abProjectCode">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'SOWCode'" [options]="appBillableColArray.SOWCode" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="ab.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
-                            (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
+                        <!-- <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'SOWCode'" [options]="appBillableColArray.SOWCode" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="ab.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                            (onPanelShow)="isOptionFilter=true;" class="cls_abSowCode">
+                        </p-multiSelect> -->
                         <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Number'" [options]="appBillableColArray.Number" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="ab.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
-                            (onPanelShow)="isOptionFilter=true;">
+                            (onPanelShow)="isOptionFilter=true;" class="cls_abNumber">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'DateSpend'" [options]="appBillableColArray.DateSpend" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="ab.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
-                            (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
+                        <!-- <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'DateSpend'" [options]="appBillableColArray.DateSpend" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="ab.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                            (onPanelShow)="isOptionFilter=true;" class="cls_abDateSpend">
+                        </p-multiSelect> -->
                         <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'VendorName'" [options]="appBillableColArray.VendorName" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="ab.filter($event.value, col.field, 'in')"
-                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" class="cls_abVendorName">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'RequestType'" [options]="appBillableColArray.RequestType" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="ab.filter($event.value, col.field, 'in')"
-                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
+                        <!-- <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'RequestType'" [options]="appBillableColArray.RequestType" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="ab.filter($event.value, col.field, 'in')"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" class="cls_ab">
+                        </p-multiSelect> -->
                         <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'ExpenseType'" [options]="appBillableColArray.ExpenseType" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="ab.filter($event.value, col.field, 'in')"
-                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" class="cls_abExpenseType">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'PaymentMode'" [options]="appBillableColArray.PaymentMode" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="ab.filter($event.value, col.field, 'in')"
-                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
+                        <!-- <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'PaymentMode'" [options]="appBillableColArray.PaymentMode" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="ab.filter($event.value, col.field, 'in')"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" class="cls_ab">
+                        </p-multiSelect> -->
                         <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'ClientAmount'" [options]="appBillableColArray.ClientAmount" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="ab.filter($event.value, col.field, 'in')"
-                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" class="cls_abClientAmount">
                         </p-multiSelect>
                         <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'ClientCurrency'" [options]="appBillableColArray.ClientCurrency" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="ab.filter($event.value, col.field, 'in')"
-                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" class="cls_abClientCurrency">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'PayingEntity'" [options]="appBillableColArray.PayingEntity" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="ab.filter($event.value, col.field, 'in')"
-                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
+                        <!-- <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'PayingEntity'" [options]="appBillableColArray.PayingEntity" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="ab.filter($event.value, col.field, 'in')"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"> -->
+                        <!-- </p-multiSelect> -->
                         <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Status'" [options]="appBillableColArray.Status" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="ab.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
-                            (onPanelShow)="isOptionFilter=true;">
+                            (onPanelShow)="isOptionFilter=true;" class="cls_abStatus">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'SpendDate'" [options]="appBillableColArray.SpendDate" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="ab.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                        <!-- <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'SpendDate'" [options]="appBillableColArray.SpendDate" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="ab.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
                             (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Created'" [options]="appBillableColArray.Created" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="ab.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                        </p-multiSelect> -->
+                        <!-- <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Created'" [options]="appBillableColArray.Created" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="ab.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
                             (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'ModifiedBy'" [options]="appBillableColArray.ModifiedBy" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="ab.filter($event.value, col.field, 'in')"
                             (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Modified'" [options]="appBillableColArray.Modified" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="ab.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
-                            (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
+                            (onPanelShow)="isOptionFilter=true;"> -->
+                        <!-- </p-multiSelect> -->
                     </ng-container>
                 </th>
             </tr>
@@ -105,15 +106,15 @@
             <tr>
                 <td>{{rowIndex+1}}</td>
                 <td>
-                    <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+                    <p-tableCheckbox class="cls_abcheckbox{{rowIndex+1}}" [value]="rowData"></p-tableCheckbox>
                 </td>
 
                 <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility">
                     {{rowData[col.field]}}
                     <ng-container *ngIf="col.field == ''">
                         <div>
-                            <p-menu #popupMenu [popup]="true" [model]="items" styleClass="borderMenu"></p-menu>
-                            <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;" (click)="openTableAtt(rowData, popupMenu);popupMenu.show($event);"></i>
+                            <p-menu #popupMenu [popup]="true" [model]="items" styleClass="borderMenu cls_abpopupMenu"></p-menu>
+                            <i class="pi pi-ellipsis-v cls_expandMenu" style="font-size:2em;top: 100px !important;cursor: pointer;" (click)="openTableAtt(rowData, popupMenu);popupMenu.show($event);"></i>
                         </div>
                     </ng-container>
                 </td>

@@ -75,7 +75,7 @@ export class ApproveBillingDialogComponent implements OnInit {
     this.arrAdvanceInvoices = [];
     let invoiceCall = Object.assign({}, this.fdConstantsService.fdComponent.ADV_INVOICES);
     invoiceCall.filter = invoiceCall.filter.replace(/{{clientLegalEntity}}/gi,
-      this.poItem.ClientLegalEntity);
+      this.poItem.ClientLegalEntity).replace(/{{invoiceType}}/gi,'revenue');
     this.common.SetNewrelic('Finance-Dashboard', 'Expenditure-approvebillable-scheduleoop', 'pochange-getInvoices');
     const response = await this.spServices.readItems(this.constantsService.listNames.Invoices.name, invoiceCall);
     const arrINV = response.filter(e => e.PO === this.poItem.ID);
@@ -134,7 +134,12 @@ export class ApproveBillingDialogComponent implements OnInit {
     if (this.ApproveInvoiceForm.valid) {
       if ((this.ApproveInvoiceForm.get('TagAmount').value <= this.config.data.sowObj.availableSOWBudget) && (this.ApproveInvoiceForm.get('TagAmount').value <= this.config.data.poLookupDataObj.availablePOBudget)) {
 
-        this.ref.close(this.ApproveInvoiceForm);
+        const data ={
+          ApproveInvoiceForm : this.ApproveInvoiceForm,
+          Invoice: this.arrAdvanceInvoices.length > 0 ? this.arrAdvanceInvoices.find(e => e.ID === this.ApproveInvoiceForm.get('InvoiceId').value) : null
+        }
+
+        this.ref.close(data);
       } else {
         this.messageService.add({
           key: 'hourlyInfoToast', severity: 'info',

@@ -497,9 +497,9 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                 closable: false,
             });
 
-            ref.onClose.subscribe((scheduleInvoice: any) => {
-                if (scheduleInvoice) {
-                    this.onSubmit(scheduleInvoice, 'confirmInvoice');
+            ref.onClose.subscribe((confirmInvoice: any) => {
+                if (confirmInvoice) {
+                    this.onSubmit(confirmInvoice, 'confirmInvoice');
                 }
             })
             this.getConfirmMailContent('ConfirmInvoice');
@@ -613,17 +613,18 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         this.sowObj.availableSOWBudget = parseFloat(sow.NetBudget ? sow.NetBudget : 0) - parseFloat(sow.RevenueLinked ? sow.RevenueLinked : 0);
         this.sowData.TotalLinked = sow.TotalLinked ? sow.TotalLinked : 0;
         this.sowData.ScheduledRevenue = sow.ScheduledRevenue ? sow.ScheduledRevenue : 0;
-        this.sowData.TotalScheduled = sow.TotalScheduled = sow.TotalScheduled ? sow.TotalScheduled : 0;
+        this.sowData.TotalScheduled = sow.TotalScheduled ? sow.TotalScheduled : 0;
         this.sowData.RevenueLinked = sow.RevenueLinked ? sow.RevenueLinked : 0;
     }
-    updateSelectedLineItem(Invoiceform) {
+    updateSelectedLineItem(invoiceform) {
 
+
+        const Invoiceform = invoiceform.ApproveInvoiceForm;
         this.isPSInnerLoaderHidden = false;
         const batchUrl = [];
         const rate = this.selectedRowItem.Rate ? this.selectedRowItem.Rate : 0;
         const hrs = this.selectedRowItem.HoursSpent ? this.selectedRowItem.HoursSpent : 0;
         const totalVal = rate * hrs;
-
 
         // PI Id
         const piId = this.getProjectId(this.selectedRowItem);
@@ -636,34 +637,16 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
             this.pcmLevels.push(piId.CMLevel2);
         }
 
-        // Update SOW Total Linked
-        const updatedTotalLinkedValue = parseFloat(this.sowData.TotalLinked) + totalVal;
-        const updatedSOWScheduledRevenue = parseFloat(this.sowData.ScheduledRevenue) + totalVal;
-        const updatedSOWTotalScheduled = parseFloat(this.sowData.TotalScheduled) + totalVal;
-        const updatedSOWRevenueLinked = parseFloat(this.sowData.RevenueLinked) + totalVal;
-
-        // Update PO Linked
-        const updatedPOTotalLinkedValue = parseFloat(this.poLookupDataObj.TotalLinked) + totalVal;
-        const updatedPORevenueLinked = parseFloat(this.poLookupDataObj.RevenueLinked) + totalVal;
-        const updatedPOTotalScheduled = parseFloat(this.poLookupDataObj.TotalScheduled) + totalVal;
-        const updatedScheduledRevenue = parseFloat(this.poLookupDataObj.ScheduledRevenue) + totalVal;
-
-
         // Update ProjectInformation
         const piData = {
             __metadata: { type: this.constantService.listNames.ProjectInformation.type },
             Status: this.constantService.projectStatus.AuditInProgress,
             ProposeClosureDate: new Date(),
             IsApproved: 'Yes',
-
         };
 
         let url = this.spServices.getItemURL(this.constantService.listNames.ProjectInformation.name, +piId.Id);
-        this.commonService.setBatchObject(batchUrl, url, piData, 'PATCH', this.constantService.listNames.ProjectInformation.name);
-
-
-
-
+        this.commonService.setBatchObject(batchUrl, url, piData, this.constantService.Method.PATCH, this.constantService.listNames.ProjectInformation.name);
 
         // Update ProjectFinanceBreakup
         const pfbData = {
@@ -676,7 +659,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
 
         url = this.spServices.getItemURL(this.constantService.listNames.ProjectFinanceBreakup.name,
             +this.ProjectFinanceBreakupData.ID);
-        this.commonService.setBatchObject(batchUrl, url, pfbData, 'PATCH', this.constantService.listNames.ProjectFinanceBreakup.name);
+        this.commonService.setBatchObject(batchUrl, url, pfbData, this.constantService.Method.PATCH, this.constantService.listNames.ProjectFinanceBreakup.name);
 
         ///Update ProjectBudgetBreakup
         let pbbData = {
@@ -690,24 +673,26 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
 
         url = this.spServices.getItemURL(this.constantService.listNames.ProjectBudgetBreakup.name,
             +this.projectBudgetBreakupData.ID);
-        this.commonService.setBatchObject(batchUrl, url, pbbData, 'PATCH', this.constantService.listNames.ProjectBudgetBreakup.name);
+        this.commonService.setBatchObject(batchUrl, url, pbbData, this.constantService.Method.PATCH, this.constantService.listNames.ProjectBudgetBreakup.name);
 
 
         // Update SOW
-        const sowData = {
-            __metadata: { type: this.constantService.listNames.SOW.type },
-            TotalLinked: updatedTotalLinkedValue,
-            ScheduledRevenue: updatedSOWScheduledRevenue,
-            TotalScheduled: updatedSOWTotalScheduled,
-            RevenueLinked: updatedSOWRevenueLinked
-        };
+
 
         url = this.spServices.getItemURL(this.constantService.listNames.SOW.name,
             +this.sowData.ID);
-        this.commonService.setBatchObject(batchUrl, url, sowData, 'PATCH', this.constantService.listNames.SOW.name);
+        this.commonService.setBatchObject(batchUrl, url, this.getSowData(totalVal, Invoiceform.InvoiceType), this.constantService.Method.PATCH, this.constantService.listNames.SOW.name);
 
         if (Invoiceform.value.InvoiceType === 'new') {
+
+            // Update PO Linked
+            const updatedPOTotalLinkedValue = parseFloat(this.poLookupDataObj.TotalLinked) + totalVal;
+            const updatedPORevenueLinked = parseFloat(this.poLookupDataObj.RevenueLinked) + totalVal;
+            const updatedPOTotalScheduled = parseFloat(this.poLookupDataObj.TotalScheduled) + totalVal;
+            const updatedScheduledRevenue = parseFloat(this.poLookupDataObj.ScheduledRevenue) + totalVal;
+
             // update PO
+
             const poData = {
                 __metadata: { type: this.constantService.listNames.PO.type },
                 TotalLinked: updatedPOTotalLinkedValue,
@@ -715,29 +700,23 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                 TotalScheduled: updatedPOTotalScheduled,
                 ScheduledRevenue: updatedScheduledRevenue,
             };
+
             url = this.spServices.getItemURL(this.constantService.listNames.PO.name, +this.poLookupDataObj.ID);
-            this.commonService.setBatchObject(batchUrl, url, poData, 'PATCH', this.constantService.listNames.PO.name);
+            this.commonService.setBatchObject(batchUrl, url, poData, this.constantService.Method.PATCH, this.constantService.listNames.PO.name);
+        }
+        else {
+            const TaggedAmount = parseFloat(invoiceform.Invoice.TaggedAmount) + totalVal;
+            const invoiceData = {
+                TaggedAmount: TaggedAmount,
+                IsTaggedFully: invoiceform.Invoice.Amount === TaggedAmount ? 'Yes' : 'No'
+            }
+            url = this.spServices.getReadURL(this.constantService.listNames.Invoices.name, invoiceform.Invoice.ID);
+            this.commonService.setBatchObject(batchUrl, url, invoiceData, this.constantService.Method.PATCH, this.constantService.listNames.Invoices.name)
         }
 
-          // Add InvoiceLineItem
-          const iliData = {
-            __metadata: { type: this.constantService.listNames.InvoiceLineItems.type },
-            Title: this.selectedRowItem.ProjectCode,
-            Status:  this.constantService.STATUS.CONFIRMED,
-            ScheduledDate: Invoiceform.value.approvalDate,
-            Amount: totalVal,
-            Currency: this.selectedRowItem.Currency,
-            PO: this.poLookupDataObj.ID,
-            MainPOC: piId.PrimaryPOC,
-            ScheduleType: 'revenue',
-            AddressType: 'Client',
-            Template: this.selectedRowItem.Template,
-            CSId: { results: this.pcmLevels.map(x => x.ID) },
-            SOWCode: this.selectedRowItem.SOWCode,
-        };
-
+        // Add InvoiceLineItem
         url = this.spServices.getReadURL(this.constantService.listNames.InvoiceLineItems.name);
-        this.commonService.setBatchObject(batchUrl, url, iliData, 'POST', this.constantService.listNames.InvoiceLineItems.name);
+        this.commonService.setBatchObject(batchUrl, url, this.getInvoiceLineItemData(invoiceform, piId, totalVal), this.constantService.Method.POST, this.constantService.listNames.InvoiceLineItems.name);
 
 
 
@@ -750,7 +729,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
             InvoicesScheduled: totalVal
         };
         url = this.spServices.getItemURL(this.constantService.listNames.ProjectFinances.name, +this.selectedRowItem.PFID);
-        this.commonService.setBatchObject(batchUrl, url, pfData, 'PATCH', this.constantService.listNames.ProjectFinances.name);
+        this.commonService.setBatchObject(batchUrl, url, pfData, this.constantService.Method.PATCH, this.constantService.listNames.ProjectFinances.name);
 
 
         const item = this.projectInfoData.find((x) => {
@@ -764,6 +743,54 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         this.projectInfoData.splice(projIndex, 1, item);
         this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-hourlyBased', 'updatePOPBBPFBSow');
         this.submitForm(Invoiceform, batchUrl, 'confirmInvoice');
+    }
+
+
+
+
+    getInvoiceLineItemData(invoiceform, piId, totalVal) {
+
+        const Invoiceform = invoiceform.ApproveInvoiceForm;
+        const Invoice = invoiceform.Invoice;
+        const InvoiceType = Invoiceform.value.InvoiceType;
+        const iliData = {
+            __metadata: { type: this.constantService.listNames.InvoiceLineItems.type },
+            Title: this.selectedRowItem.ProjectCode,
+            Status: InvoiceType === 'new' ? this.constantService.STATUS.CONFIRMED : this.constantService.STATUS.APPROVED,
+            ScheduledDate: InvoiceType === 'new' ? Invoiceform.value.approvalDate : Invoice.InvoiceDate,
+            Amount: totalVal,
+            Currency: this.selectedRowItem.Currency,
+            PO: this.poLookupDataObj.ID,
+            MainPOC: InvoiceType === 'new' ? piId.PrimaryPOC : Invoice.MainPOC,
+            ScheduleType: 'revenue',
+            AddressType: InvoiceType === 'new' ? 'Client' : Invoice.AddressType,
+            Template: this.selectedRowItem.Template,
+            CSId: { results: this.pcmLevels.map(x => x.ID) },
+            SOWCode: this.selectedRowItem.SOWCode,
+        };
+
+        if (InvoiceType !== 'new') {
+            iliData['ProformaLookup'] = Invoice.ProformaLookup;
+            iliData['InvoiceLookup'] = Invoiceform.value.InvoiceId;
+        }
+        return iliData;
+    }
+
+
+    getSowData(totalVal: number, InvoiceType: string) {
+        const sowData = {
+            __metadata: { type: this.constantService.listNames.SOW.type },
+            TotalLinked: parseFloat(this.sowData.TotalLinked) + totalVal,
+            RevenueLinked: parseFloat(this.sowData.RevenueLinked) + totalVal
+        };
+        if (InvoiceType === 'new') {
+            sowData['ScheduledRevenue'] = parseFloat(this.sowData.ScheduledRevenue) + totalVal;
+            sowData['TotalScheduled'] = parseFloat(this.sowData.TotalScheduled) + totalVal;
+        } else {
+            sowData['InvoicedRevenue'] = parseFloat(this.sowData.InvoicedRevenue) + totalVal;
+            sowData['TotalInvoiced'] = parseFloat(this.sowData.TotalInvoiced) + totalVal;
+        }
+        return sowData;
     }
 
     getProjectId(pc: any) {
@@ -827,7 +854,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         return found;
     }
 
-    async submitForm(Invoiceform, batchUrl, type: string) {
+    async submitForm(invoiceform, batchUrl, type: string) {
         const res = await this.spServices.executeBatch(batchUrl);
         const arrResults = res.length ? res.map(a => a.retItems) : [];
         console.log('--oo ', arrResults);
@@ -837,7 +864,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                 summary: 'Success message', detail: 'Invoice is Confirmed.', life: 2000
             });
             // this.cancelFormSub('confirmationModal');
-            this.sendConfirmInvoiceMail(Invoiceform);
+            this.sendConfirmInvoiceMail(invoiceform);
         }
     }
 

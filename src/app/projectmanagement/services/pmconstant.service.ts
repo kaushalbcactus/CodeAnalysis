@@ -502,7 +502,7 @@ export class PmconstantService {
     ADV_INVOICES: {
       select: 'ID, ClientLegalEntity, Amount, AddressType, InvoiceNumber, PO, ProformaLookup, IsTaggedFully, TaggedAmount,AuxiliaryInvoiceName,'
         + ' InvoiceDate, MainPOC, FileURL',
-      filter: 'ClientLegalEntity eq \'{{clientLegalEntity}}\' and IsTaggedFully eq \'No\'',
+      filter: 'ClientLegalEntity eq \'{{clientLegalEntity}}\' and InvoiceType eq \'revenue\' and IsTaggedFully eq \'No\'',
       top: 4500
     },
     GET_PROJECT_TYPE: {

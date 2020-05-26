@@ -42,6 +42,14 @@ th {
     padding: 8px;
 }
 
+.pCalendarBtn {
+    width: 100% !important;
+}
+
+.pCalendarBtn>input {
+    width: calc(100% - 30px) !important;
+}
+
 
 /* p-dialog .ui-dialog {
     overflow: scroll;

@@ -32,14 +32,6 @@
     background-color: #fbfbfb !important;
 }
 
-::ng-deep .pCalendarBtn {
-    width: 100% !important;
-}
-
-::ng-deep .pCalendarBtn>input {
-    width: 89% !important;
-}
-
 #modalInnerLoader {
     border: 5px solid #f3f3f3;
     border-radius: 50%;

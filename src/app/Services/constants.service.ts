@@ -337,12 +337,12 @@ export class ConstantsService {
     Galleyed: 'Galleyed',
     Published: 'Published',
     AuditInProgress: 'Audit In Progress',
-    NewAuditInProgress : 'CS Audit',
+    NewAuditInProgress: 'CS Audit',
     Closed: 'Closed',
     Cancelled: 'Cancelled',
     AwaitingCancelApproval: 'Awaiting Cancel Approval',
     PendingClosure: 'Pending Closure',
-    NewPendingClosure : 'Finance Audit',
+    NewPendingClosure: 'Finance Audit',
     SentToAMForApproval: 'Sent to AM for Approval'
   };
 
@@ -409,9 +409,9 @@ export class ConstantsService {
     ON_HOLD: 'On Hold',
     AUTO_CLOSED: 'Auto Closed',
     COMPLETED: 'Completed',
-    AUTHOR_REVIEW : 'Author Review',
-    UNALLOCATED:'Unallocated',
-    SENTTOAP:'Sent to AP',
+    AUTHOR_REVIEW: 'Author Review',
+    UNALLOCATED: 'Unallocated',
+    SENTTOAP: 'Sent to AP',
     GENERATED: 'Generated',
   };
   public SKILL_LEVEL = {
@@ -649,5 +649,11 @@ export class ConstantsService {
     BEST_FIT: 'Best Fit',
     RECOMMENDED: 'Recommended'
   };
+
+  public Method = {
+    POST: 'POST',
+    PATCH: 'PATCH',
+    GET: 'GET'
+  }
 
 }

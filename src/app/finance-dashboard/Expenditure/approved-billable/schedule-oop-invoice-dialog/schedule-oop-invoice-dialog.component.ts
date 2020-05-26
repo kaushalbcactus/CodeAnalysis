@@ -133,7 +133,7 @@ export class ScheduleOopInvoiceDialogComponent implements OnInit {
       if (!PoExist) {
         let invoiceCall = Object.assign({}, this.fdConstantsService.fdComponent.ADV_INVOICES);
         invoiceCall.filter = invoiceCall.filter.replace(/{{clientLegalEntity}}/gi,
-          this.poItem.ClientLegalEntity);
+          this.poItem.ClientLegalEntity).replace(/{{invoiceType}}/gi,'oop');
         this.common.SetNewrelic('Finance-Dashboard', 'Expenditure-approvebillable-scheduleoop', 'pochange-getInvoices');
         const response = await this.spServices.readItems(this.constantsService.listNames.Invoices.name, invoiceCall);
         const arrINV = response.filter(e => e.PO === this.poItem.ID);

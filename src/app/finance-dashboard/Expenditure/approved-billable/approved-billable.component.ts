@@ -24,6 +24,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
 
     yearRange: string;
     invoice: any;
+    SOW: any;
 
     constructor(
         private messageService: MessageService,
@@ -282,6 +283,8 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
             const sowCodeFromPI = await this.fdDataShareServie.getSowCodeFromPI(this.projectInfoData, element);
             const sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(sowCodeFromPI.SOWCode);
 
+
+
             this.approvedBillableRes.push({
                 Id: element.ID,
                 ProjectCode: element.Title,
@@ -295,6 +298,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                 ClientCurrency: element.ClientCurrency,
                 VendorName: this.getVendorNameById(element),
                 Notes: element.Notes,
+                SOW: sowItem,
                 RequestType: element.RequestType,
                 PaymentMode: element.PaymentMode,
                 PayingEntity: element.PayingEntity,
@@ -410,6 +414,9 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
             });
             return;
         }
+
+
+        console.log(this.selectedAllRowsItem)
         // if (this.pcFound) {
         if (modal === 'scheduleOopModal') {
             this.checkUniquePC();
@@ -430,6 +437,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
 
                     ref.onClose.subscribe((scheduleInvoice: any) => {
                         if (scheduleInvoice) {
+                            this.SOW = this.selectedAllRowsItem[0].SOW
                             this.poItem = scheduleInvoice.poItem;
                             this.pfListItem = scheduleInvoice.pfListItem;
                             this.pfbListItem = scheduleInvoice.pfbListItem;
@@ -438,8 +446,6 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                             this.invoice = scheduleInvoice.Invoice;
                             const ScheduleInvoiceForm = scheduleInvoice.ScheduleInvoiceForm
                             this.onSubmit(ScheduleInvoiceForm, ScheduleInvoiceForm.get('InvoiceType').value, 'scheduledOOP')
-
-
                         }
                     })
                 }
@@ -656,26 +662,21 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
 
     MarkAsPayment(markAsPayment_form, type: string, fileUploadedUrl) {
 
-        const data = [];
+        const batchURL = [];
         for (let j = 0; j < this.selectedAllRowsItem.length; j++) {
             const element = this.selectedAllRowsItem[j];
             const speInfoObj = {
+                __metadata: { type: this.constantService.listNames.SpendingInfo.type },
                 Number: markAsPayment_form.value.Number,
                 DateSpend: markAsPayment_form.value.DateSpend,
                 PaymentMode: markAsPayment_form.value.PaymentMode.value,
                 ApproverFileUrl: fileUploadedUrl,
                 Status: element.Status.replace(' Payment Pending', '')
             };
-            speInfoObj['__metadata'] = { type: this.constantService.listNames.SpendingInfo.type };
-            const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace('{{Id}}', element.Id);;
-            data.push({
-                data: speInfoObj,
-                url: spEndpoint,
-                type: 'PATCH',
-                listName: this.constantService.listNames.SpendingInfo.name
-            });
+            const url = this.spServices.getItemURL(this.constantService.listNames.SpendingInfo.name, element.Id);
+            this.commonService.setBatchObject(batchURL, url, speInfoObj, this.constantService.Method.PATCH, this.constantService.listNames.SpendingInfo.name)
         }
-        this.submitForm(data, type);
+        this.submitForm(batchURL, type);
     }
 
     // batchContents: any = [];
@@ -704,24 +705,20 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         }
     }
     updateStsToBilled(arrRet: any) {
-        this.updateSpeLineItems = [];
+        const batchURL = [];
         for (let j = 0; j < this.selectedAllRowsItem.length; j++) {
             const element = this.selectedAllRowsItem[j];
             const spObj = {
+                __metadata: { type: this.constantService.listNames.SpendingInfo.type },
                 Status: element.Status.replace('Approved', 'Billed'),
                 InvoiceID: arrRet[0].retItems.ID.toString()
             };
-            spObj['__metadata'] = { type: this.constantService.listNames.SpendingInfo.type };
-            const speEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace('{{Id}}', element.Id);
-            this.updateSpeLineItems.push({
-                data: spObj,
-                url: speEndpoint,
-                type: 'PATCH',
-                listName: this.constantService.listNames.SpendingInfo.name
-            });
+
+            const url = this.spServices.getItemURL(this.constantService.listNames.SpendingInfo.name, element.Id);
+            this.commonService.setBatchObject(batchURL, url, spObj, this.constantService.Method.PATCH, this.constantService.listNames.SpendingInfo.name)
         }
         console.log('this.updateSpeLineItems ', this.updateSpeLineItems);
-        this.submitForm(this.updateSpeLineItems, 'updateScheduledOopLineItem');
+        this.submitForm(batchURL, 'updateScheduledOopLineItem');
     }
 
     async reFetchData() {
@@ -782,87 +779,97 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
 
 
     onSubmit(scheduleOopInvoice_form, InvoiceType: string, type: string) {
-        const batchURL = [];
-        const options = {
-            data: null,
-            url: '',
-            type: '',
-            listName: ''
-        };
 
-        const createInvoiceLineItemObj = Object.assign({}, options);
-        createInvoiceLineItemObj.url = this.spServices.getReadURL(this.constantService.listNames.InvoiceLineItems.name, null);
-        createInvoiceLineItemObj.data = this.getInvLineItemData(scheduleOopInvoice_form, InvoiceType);
-        createInvoiceLineItemObj.type = 'POST';
-        createInvoiceLineItemObj.listName = this.constantService.listNames.InvoiceLineItems.name;
-        batchURL.push(createInvoiceLineItemObj);
+        debugger
+        const batchURL = [];
+
+        let url = this.spServices.getReadURL(this.constantService.listNames.InvoiceLineItems.name, null);
+        this.commonService.setBatchObject(batchURL, url, this.getInvLineItemData(scheduleOopInvoice_form, InvoiceType), this.constantService.Method.POST, this.constantService.listNames.InvoiceLineItems.name)
+
 
         if (InvoiceType === 'new') {
-            const updatePOData = Object.assign({}, options);
-            updatePOData.data = this.getPOData(this.poItem, scheduleOopInvoice_form.getRawValue().Amount);
-            updatePOData.listName = this.constantService.listNames.PO.name;
-            updatePOData.type = 'PATCH';
-            updatePOData.url = this.spServices.getItemURL(this.constantService.listNames.PO.name, this.poItem.ID);
-            batchURL.push(updatePOData);
+            url = this.spServices.getItemURL(this.constantService.listNames.PO.name, this.poItem.ID);
+            this.commonService.setBatchObject(batchURL, url, this.getPOData(this.poItem, scheduleOopInvoice_form.getRawValue().Amount), this.constantService.Method.PATCH, this.constantService.listNames.PO.name)
 
             // PFBB
-            const createPBBObj = Object.assign({}, options);
-            createPBBObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectBudgetBreakup.name, null);
-            createPBBObj.data = this.getPBBData(scheduleOopInvoice_form);
-            createPBBObj.type = 'POST';
-            createPBBObj.listName = this.constantService.listNames.ProjectBudgetBreakup.name;
-            batchURL.push(createPBBObj);
+            url = this.spServices.getReadURL(this.constantService.listNames.ProjectBudgetBreakup.name, null);
+            this.commonService.setBatchObject(batchURL, url, this.getPBBData(scheduleOopInvoice_form), this.constantService.Method.POST, this.constantService.listNames.ProjectBudgetBreakup.name)
+        }
+        else {
+            const TaggedAmount = parseFloat(this.invoice.TaggedAmount) + parseFloat(scheduleOopInvoice_form.getRawValue().Amount)
+            const invoiceData = {
+                TaggedAmount: TaggedAmount,
+                IsTaggedFully: this.invoice.Amount === TaggedAmount ? 'Yes' : 'No' 
+            }
+            url = this.spServices.getReadURL(this.constantService.listNames.Invoices.name, scheduleOopInvoice_form.getRawValue().InvoiceId);
+            this.commonService.setBatchObject(batchURL, url, invoiceData, this.constantService.Method.PATCH, this.constantService.listNames.Invoices.name)
         }
 
-        const updatePFData = Object.assign({}, options);
-        updatePFData.data = this.getPFData(scheduleOopInvoice_form, InvoiceType);
-        updatePFData.listName = this.constantService.listNames.ProjectFinances.name;
-        updatePFData.type = 'PATCH';
-        updatePFData.url = this.spServices.getItemURL(this.constantService.listNames.ProjectFinances.name, this.pfListItem[0].Id);
-        batchURL.push(updatePFData);
+        //ProjectFinances update
+        url = this.spServices.getItemURL(this.constantService.listNames.ProjectFinances.name, this.pfListItem[0].Id);
+        this.commonService.setBatchObject(batchURL, url, this.getPFData(scheduleOopInvoice_form, InvoiceType), this.constantService.Method.PATCH, this.constantService.listNames.ProjectFinances.name)
 
 
-        const CORUPBBData = Object.assign({}, options);
-        CORUPBBData.data = this.getPFBData(scheduleOopInvoice_form, InvoiceType);
-        CORUPBBData.listName = this.constantService.listNames.ProjectFinanceBreakup.name;
-        CORUPBBData.type = this.pfbListItem.length > 0 ? 'PATCH' : 'POST';
-        CORUPBBData.url = this.spServices.getItemURL(this.constantService.listNames.ProjectFinanceBreakup.name, this.pfbListItem.length > 0 ? this.pfbListItem[0].Id : null);
-        batchURL.push(CORUPBBData);
+        // ProjectFinanceBreakup add/update
+        url = this.spServices.getItemURL(this.constantService.listNames.ProjectFinanceBreakup.name, this.pfbListItem.length > 0 ? this.pfbListItem[0].Id : null);
+        const Type = this.pfbListItem.length > 0 ? this.constantService.Method.PATCH : this.constantService.Method.POST;
+        this.commonService.setBatchObject(batchURL, url, this.getPFBData(scheduleOopInvoice_form, InvoiceType), Type, this.constantService.listNames.ProjectFinances.name)
 
 
-        // this.submitForm(batchURL, type);
+        // sowUpdate
+
+        url = this.spServices.getItemURL(this.constantService.listNames.SOW.name, this.SOW.ID);
+        this.commonService.setBatchObject(batchURL, url, this.getsowData(scheduleOopInvoice_form, InvoiceType), this.constantService.Method.PATCH, this.constantService.listNames.SOW.name)
+
+        this.submitForm(batchURL, type);
+
+    }
 
 
 
-        // sowUpdateRequired
+    getsowData(scheduleOopInvoice_form, InvoiceType: string) {
+
+        const Amount = parseFloat(scheduleOopInvoice_form.getRawValue().Amount);
+        const Data = {
+            __metadata: { type: this.constantService.listNames.SOW.type },
+            TotalLinked: this.SOW.TotalLinked ? parseFloat(this.SOW.TotalLinked) + Amount : Amount,
+            OOPLinked: this.SOW.OOPLinked ? parseFloat(this.SOW.OOPLinked) + Amount : Amount,
+        }
+
+        if (InvoiceType === 'new') {
+            Data['TotalScheduled'] = this.SOW.TotalScheduled ? parseFloat(this.SOW.TotalScheduled) + Amount : Amount;
+            Data['ScheduledOOP'] = this.SOW.ScheduledOOP ? parseFloat(this.SOW.ScheduledOOP) + Amount : Amount;
+        }
+        else {
+            Data['TotalInvoiced'] = this.SOW.TotalInvoiced ? parseFloat(this.SOW.TotalInvoiced) + Amount : Amount;
+            Data['InvoicedOOP'] = this.SOW.InvoicedOOP ? parseFloat(this.SOW.InvoicedOOP) + Amount : Amount;
+        }
+        return Data;
     }
 
 
     getInvLineItemData(scheduleOopInvoice_form, InvoiceType: string) {
-        if (InvoiceType === 'new') {
-            return {
-                __metadata: { type: this.constantService.listNames.InvoiceLineItems.type },
-                Title: scheduleOopInvoice_form.getRawValue().ProjectCode,
-                PO: scheduleOopInvoice_form.getRawValue().PONumber.Id,
-                ScheduleType: scheduleOopInvoice_form.getRawValue().ScheduledType,
-                ScheduledDate: scheduleOopInvoice_form.getRawValue().ScheduledDate,
-                Amount: scheduleOopInvoice_form.getRawValue().Amount,
-                AddressType: scheduleOopInvoice_form.getRawValue().AddressType.value,
-                Currency: scheduleOopInvoice_form.getRawValue().Currency,
-                MainPOC: scheduleOopInvoice_form.getRawValue().POCName.Id,
-                SOWCode: this.projectInfoLineItem.SOWCode,
-                CSId: { results: this.pcmLevels.map(x => x.ID) },
-                Template: this.pfListItem[0].Template,
-                Status: this.constantService.STATUS.SCHEDUELD
-            };
-        } else {
-            return {
-                __metadata: { type: this.constantService.listNames.InvoiceLineItems.type },
-                ProformaLookup: this.invoice.ProformaLookup,
-                InvoiceLookup: scheduleOopInvoice_form.getRawValue().InvoiceId,
-                Status: this.constantService.STATUS.APPROVED
-            };
+
+        const Data = {
+            __metadata: { type: this.constantService.listNames.InvoiceLineItems.type },
+            Title: scheduleOopInvoice_form.getRawValue().ProjectCode,
+            PO: scheduleOopInvoice_form.getRawValue().PONumber.Id,
+            ScheduleType: scheduleOopInvoice_form.getRawValue().ScheduledType,
+            ScheduledDate: InvoiceType === 'new' ? scheduleOopInvoice_form.getRawValue().ScheduledDate : this.invoice.InvoiceDate,
+            Amount: scheduleOopInvoice_form.getRawValue().Amount,
+            AddressType: InvoiceType === 'new' ? scheduleOopInvoice_form.getRawValue().AddressType.value : this.invoice.AddressType,
+            Currency: scheduleOopInvoice_form.getRawValue().Currency,
+            MainPOC: InvoiceType === 'new' ? scheduleOopInvoice_form.getRawValue().POCName.Id : this.invoice.MainPOC,
+            SOWCode: this.projectInfoLineItem.SOWCode,
+            CSId: { results: this.pcmLevels.map(x => x.ID) },
+            Template: this.pfListItem[0].Template,
+            Status: InvoiceType === 'new' ? this.constantService.STATUS.SCHEDUELD : this.constantService.STATUS.APPROVED
+        };
+        if (InvoiceType !== 'new') {
+            Data['ProformaLookup'] = this.invoice.ProformaLookup;
+            Data['InvoiceLookup'] = scheduleOopInvoice_form.getRawValue().InvoiceId;
         }
+        return Data;
 
     }
 }

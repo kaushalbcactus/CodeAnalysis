@@ -222,7 +222,7 @@ export class FDDataShareService {
             const obj = [{
                 url: this.spServices.getReadURL(this.constantService.listNames.SOW.name, this.fdConstantsService.fdComponent.sowList),
                 type: 'GET',
-                listName: this.constantService.listNames.ProjectFinances
+                listName: this.constantService.listNames.SOW
             }];
             this.commonService.SetNewrelic('Finance-Dashboard', 'fd-shareData', 'GetSowData');
             const res = await this.spServices.executeBatch(obj);

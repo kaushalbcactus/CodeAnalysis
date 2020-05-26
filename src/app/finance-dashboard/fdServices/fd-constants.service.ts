@@ -95,7 +95,7 @@ export class FdConstantsService {
             select: "Title"
         },
         sowList: {
-            select: "ID,SOWCode,Title,ClientLegalEntity,Currency,BillingEntity",
+            select: "ID,SOWCode,Title,ClientLegalEntity,Currency,BillingEntity,TotalLinked,OOPLinked,InvoicedOOP,TotalInvoiced,TotalScheduled,ScheduledOOP",
             filter: "Status ne 'CLosed' or Status ne 'Cancelled' ",
             top: 4500
         },
@@ -329,7 +329,7 @@ export class FdConstantsService {
         ADV_INVOICES: {
             select: 'ID, ClientLegalEntity, Amount, AddressType, InvoiceNumber, PO, ProformaLookup, IsTaggedFully, TaggedAmount,AuxiliaryInvoiceName,'
               + ' InvoiceDate, MainPOC, FileURL',
-            filter: 'ClientLegalEntity eq \'{{clientLegalEntity}}\' and IsTaggedFully eq \'No\'',
+            filter: 'ClientLegalEntity eq \'{{clientLegalEntity}}\' and InvoiceType eq \'{{invoiceType}}\' and IsTaggedFully eq \'No\'',
             top: 4500
           },
 
