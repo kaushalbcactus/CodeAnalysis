@@ -398,4 +398,15 @@ export class TaskAllocationCommonService {
     //ganttObject.showAllocationSplit = data.AllocationPerDay ? true : false;
     return ganttObject;
   }
+
+  setMinutesAfterDrag(date) {
+    let time: any = this.getTimePart(date);
+    time = time.split(':')
+    let h = parseInt(time[0])
+    let m = parseInt(time[1].split(' ')[0])
+    let ampm = time[1].split(' ')[1]
+    let minutes = (Math.round(m / 15) * 15) % 60;
+    return h + ':' + minutes + ' ' + ampm;
+  }
+  
 }
