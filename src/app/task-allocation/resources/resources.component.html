@@ -105,8 +105,9 @@
         </p-autoComplete>
     </div>
     <div class="ui-fluid" fxLayout="column" fxFlex="7" style="align-items: flex-end;margin-right: 0px;">
-        <button style="margin: 18px 0px 0px 0px;" mat-raised-button type="button" [disabled]="disableSave" (click)="saveResources()">
-            <mat-icon>save</mat-icon> Save 
+        <button style="margin: 18px 0px 0px 0px;" mat-raised-button type="button"  (click)="saveResources()">
+          <!-- [disabled]="disableSave" -->
+            <mat-icon>save</mat-icon> Save
           </button>
     </div>
 </div>

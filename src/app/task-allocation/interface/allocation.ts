@@ -67,3 +67,27 @@ export interface IMilestoneTask {
     'allocationPerDay': string;
 
 }
+
+export interface IConflictTask {
+  allocatedHrs: string;
+  allocationDate: Date;
+  projects: any;
+}
+
+export interface IConflictProject {
+    projectCode: string;
+    shortTitle: string;
+    allocatedhrs: number;
+}
+
+export interface IConflictResource {
+  userName: string;
+  userId: number;
+  userCapacity: any;
+  tasks: any;
+}
+
+export interface IPopupConflictData {
+    conflict: boolean;
+    action: string;
+}

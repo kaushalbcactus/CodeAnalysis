@@ -206,35 +206,6 @@ export class TaskAllocationCommonService {
     return tasksName;
   }
 
-  // getAllLinkPaths(link, allSubmilestone) {
-  //   const allSubmilestoneLinks = allSubmilestone.links;
-  //   const allNodes = allSubmilestone.nodes;
-  //   const allLinkedPaths = [];
-  //   let currentLink = link;
-  //   const source = {
-  //     label: allNodes.find(node => node.id === currentLink.source).label,
-  //     type: allNodes.find(node => node.id === currentLink.source).taskType
-  //   };
-  //   const target = {
-  //     label: allNodes.find(node => node.id === currentLink.target).label,
-  //     type: allNodes.find(node => node.id === currentLink.target).taskType
-  //   };
-  //   allLinkedPaths.push(source);
-  //   allLinkedPaths.push(target);
-  //   for (const nextLink of allSubmilestoneLinks) {
-  //     const nextTarget = this.compareTo(currentLink, nextLink);
-  //     if (nextTarget) {
-  //       const obj = {
-  //         label: allNodes.find(node => node.id === nextLink.target).label,
-  //         type: allNodes.find(node => node.id === nextLink.target).taskType
-  //       };
-  //       allLinkedPaths.push(obj);
-  //       currentLink = nextLink;
-  //     }
-  //   }
-  //   return allLinkedPaths;
-  // }
-
   compareTo(currentLink, nextLink) {
     return this.compareSourceWithTarget(currentLink.target, nextLink.source);
   }
@@ -297,7 +268,7 @@ export class TaskAllocationCommonService {
     milestone.tat = task ? task.tat : milestone.tat;
     milestone.tatVal = this.commonService.calcBusinessDays(new Date(milestone.start_date), new Date(milestone.end_date));
     milestone.AssignedTo = task ? task.AssignedTo : milestone.AssignedTo;
-   // milestone.allowStart = task ? task.allowStart : milestone.allowStart;
+    // milestone.allowStart = task ? task.allowStart : milestone.allowStart;
     milestone.budgetHours = task ? task.budgetHours : milestone.budgetHours;
     milestone.slotColor = task ? task.slotColor : milestone.slotColor;
     milestone.DisableCascade = task ? task.DisableCascade : milestone.DisableCascade;
@@ -333,18 +304,18 @@ export class TaskAllocationCommonService {
       'status': data.Status,
       'id': data.Id,
       'text': data.type == 'submilestone' ? data.subMile :
-      data.type == 'task' ? data.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + data.Milestone + ' ', '') :
-      data.Title,
+        data.type == 'task' ? data.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + data.Milestone + ' ', '') :
+          data.Title,
       'title': data.type == 'submilestone' ? data.subMile :
-      data.type == 'task' ? data.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + data.Milestone + ' ', '') :
-      this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === data.Title ? data.Title + " (Current)" : data.Title,
+        data.type == 'task' ? data.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + data.Milestone + ' ', '') :
+          this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === data.Title ? data.Title + " (Current)" : data.Title,
       'milestone': data.type == 'milestone' ? '' : data.Milestone,
       'start_date': data.type == 'submilestone' ? '' :
-      data.type == 'task' ? new Date(convertedDate.jsLocalStartDate) :
-      new Date(data.startDate !== "" ? data.startDate.date.year + "/" + (data.startDate.date.month < 10 ? "0" + data.startDate.date.month : data.startDate.date.month) + "/" + (data.startDate.date.day < 10 ? "0" + data.startDate.date.day : data.startDate.date.day) : ''),
+        data.type == 'task' ? new Date(convertedDate.jsLocalStartDate) :
+          new Date(data.startDate !== "" ? data.startDate.date.year + "/" + (data.startDate.date.month < 10 ? "0" + data.startDate.date.month : data.startDate.date.month) + "/" + (data.startDate.date.day < 10 ? "0" + data.startDate.date.day : data.startDate.date.day) : ''),
       'end_date': data.type == 'submilestone' ? '' :
-      data.type == 'task' ? new Date(convertedDate.jsLocalEndDate) :
-      new Date(data.endDate !== "" ? data.endDate.date.year + "/" + (data.endDate.date.month < 10 ? "0" + data.endDate.date.month : data.endDate.date.month) + "/" + (data.endDate.date.day < 10 ? "0" + data.endDate.date.day : data.endDate.date.day) : ''),
+        data.type == 'task' ? new Date(convertedDate.jsLocalEndDate) :
+          new Date(data.endDate !== "" ? data.endDate.date.year + "/" + (data.endDate.date.month < 10 ? "0" + data.endDate.date.month : data.endDate.date.month) + "/" + (data.endDate.date.day < 10 ? "0" + data.endDate.date.day : data.endDate.date.day) : ''),
       'user': data.AssignedTo ? data.AssignedTo.Title !== undefined ? data.AssignedTo.Title : '' : '  ',
       'open': data.type == 'task' ? data.IsCentrallyAllocated === 'Yes' ? 0 : 1 : this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === data.Title ? 1 : 0,
       'parent': data.type == 'submilestone' ? milestone.Id : data.type == 'task' ? data.Task === 'Client Review' ? 0 : data.ParentSlot ? data.ParentSlot : milestone.Id : 0,
@@ -354,10 +325,10 @@ export class TaskAllocationCommonService {
       'previousTask': data.type == 'task' ? this.fetchTaskName(data.PrevTasks, this.sharedObject.oTaskAllocation.oProjectDetails.projectCode, data.Milestone) : '',
       'budgetHours': data.type == 'task' ? data.ExpectedTime : data.ExpectedTime ? data.ExpectedTime.toString() : '0',
       'spentTime': data.Task == 'Client Review' ? '' : data.type == 'task' ? this.commonService.addHrsMins([hrsMinObject]) : '0:0',
-     // 'allowStart': true,//data.type == 'task' ? data.AllowCompletion === true || data.AllowCompletion === 'Yes' ? true : false : false,
+      // 'allowStart': true,//data.type == 'task' ? data.AllowCompletion === true || data.AllowCompletion === 'Yes' ? true : false : false,
       'tat': data.type == 'submilestone' ? false : data.type == 'task' ? data.TATStatus === true || data.TATStatus === 'Yes' ? true : false : true,
       'tatVal': data.type == 'submilestone' ? 0 : data.type == 'task' ? this.commonService.calcBusinessDays(convertedDate.jsLocalStartDate, convertedDate.jsLocalEndDate)
-      : this.commonService.calcBusinessDays(new Date(data.Actual_x0020_Start_x0020_Date), new Date(data.Actual_x0020_End_x0020_Date)),
+        : this.commonService.calcBusinessDays(new Date(data.Actual_x0020_Start_x0020_Date), new Date(data.Actual_x0020_End_x0020_Date)),
       'milestoneStatus': (data.type == 'task' || data.type == 'submilestone') ? milestone.Status : '',
       'type': data.type,
       'editMode': false,
@@ -392,10 +363,48 @@ export class TaskAllocationCommonService {
       'allocationColor': '',
       'showAllocationSplit': data.AllocationPerDay ? true : false
     };
-    // ganttObject.showAllocationSplit = ganttObject.type === 'task' && ganttObject.itemType !== 'Client Review' && ganttObject.itemType !== 'Send to client'
-    // && ganttObject.IsCentrallyAllocated === 'No' && +ganttObject.budgetHours &&
-    // new Date(ganttObject.pUserStartDatePart).getTime() !== new Date(ganttObject.pUserEndDatePart).getTime() ? true : false;
-    //ganttObject.showAllocationSplit = data.AllocationPerDay ? true : false;
     return ganttObject;
+  }
+
+  getTasksFromMilestones(milestone, includeSubTasks, data, getMilSubMil?) {
+    let tasks = [];
+    if (getMilSubMil) {
+      tasks.push(milestone.data);
+    }
+    if (milestone.children && milestone.children.length) {
+      const submilestone = milestone.children[0];
+      if (submilestone.data.type === 'task') {
+        tasks = this.getTasksSubTasks(tasks, includeSubTasks, milestone);
+      } else if (submilestone.children && submilestone.children.length) {
+        milestone.children.forEach(submil => {
+          if (getMilSubMil) {
+            tasks.push(submil.data);
+          }
+          tasks = this.getTasksSubTasks(tasks, includeSubTasks, submil);
+        });
+      }
+    }
+    // const milData = bOld ? originalData : updatedData;
+
+    const clTask = milestone.data.type === 'milestone' || milestone.data.type === 'task' ? data.filter((obj) => {
+      return obj.data.type === 'task' && obj.data.itemType === 'Client Review' && obj.data.milestone === milestone.data.title.split(' (')[0];
+    }) : milestone.parent ? data.filter((obj) => {
+      return obj.data.type === 'task' && obj.data.itemType === 'Client Review' && obj.data.milestone === milestone.parent.data.title.split(' (')[0];
+    }) : [];
+
+    if (clTask.length && !getMilSubMil) {
+      tasks.push(clTask[0].data);
+    }
+    return this.commonService.removeEmptyItems(tasks);
+  }
+
+  getTasksSubTasks(tasks, includeSubTasks, milestone) {
+    const milTasks = milestone.children.map(e => e.data);
+    tasks = [...tasks, ...milTasks];
+    if (includeSubTasks) {
+      const subTask = milestone.children.map(e => (e.children ? e.children.map(c => c.data) : null));
+      tasks = [...tasks, ...subTask];
+    }
+    return tasks;
   }
 }

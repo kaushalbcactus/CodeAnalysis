@@ -149,10 +149,9 @@
 
         <div fxLayout="column" style="padding: 10vw;width: 100%;" fxLayoutAlign="center center" *ngIf="loaderenable">
             <div id="scInnerLoader"></div>
-            <div id="scInnerLoaderText">Loading...</div>
+            <div id="scInnerLoaderText" *ngIf="!confirmMilestoneLoader">Loading...</div>
+            <div id="scConfirmLoaderText" *ngIf="confirmMilestoneLoader">Checking for allocation more than 10 hours...</div>
         </div>
-
-
         <p-confirmDialog #cd header="Confirmation" [style]="{width: '50vw'}" icon="pi pi-exclamation-triangle">
             <p-footer>
                 <button type="button" style="background-color: #C53E3E;border-color:#C53E3E;" pButton icon="pi pi-check" label="Yes" (click)="cd.accept()"></button>
@@ -209,7 +208,7 @@
 
                             <div id="nextMilestone"
                                 [title]=" rowData.type==='milestone' ? 'Set as Current Milestone':'Set as Current Sub-Milestone'"
-                                (click)=" setAsNextMilestoneCall(rowData,rowNode)"
+                                (click)=" confirmMilestone(rowData,rowNode)"
                                 *ngIf="(rowData.isNext === true && !rowData.subMilestonePresent && !changeInRestructure) || (rowData.type==='submilestone' && rowData.isCurrent && !changeInRestructure) || (rowData.type==='submilestone' && rowData.isNext &&   !changeInRestructure)  "
                                 style="display: inline;"
                                 [hidden]=" (rowData.type==='milestone' && (oProjectDetails.status ==='In Discussion' || oProjectDetails.projectType === 'FTE-Writing' || rowData.status === 'Completed' || rowData.id === -1)) || (rowData.type==='submilestone' &&  rowData.status !== 'Not Confirmed') || projectDetails ">
@@ -223,7 +222,9 @@
                                 style="float: left;margin-left: 22px;">{{rowData.budgetHours}}</div>
                             <input type="number" class="form-control budgetHr" required="required" min="0" max= {{maxBudgetHrs}} value="0"
                                 onchange="validity.valid||(value='0');" step="0.25"
-                                *ngIf="(rowData.type !=='milestone' && rowData.type !=='submilestone' && rowData.editMode && (rowData.itemType !== 'Client Review' &&  rowData.itemType !== 'Send to client')) || ((rowData.status ==='In Progress' || rowData.status ==='Not Started' || rowData.status ==='Not Confirmed' || rowData.status ==='Not Saved') && rowData.type === 'milestone')"
+                                *ngIf="(rowData.type !=='milestone' && rowData.type !=='submilestone' && rowData.editMode
+                                && (rowData.itemType !== 'Client Review' &&  rowData.itemType !== 'Send to client')) ||
+                                ((rowData.status ==='In Progress' || rowData.status ==='Not Started' || rowData.status ==='Not Confirmed' || rowData.status ==='Not Saved') && rowData.type === 'milestone')"
                                 required="required"
                                 style="border:none;border-radius: 0px;height: 25px;text-align: center;padding:0px;float: left;"
                                 [id]="rowData.id"

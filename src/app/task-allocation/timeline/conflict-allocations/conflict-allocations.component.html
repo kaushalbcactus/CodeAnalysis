@@ -1,0 +1,94 @@
+<div class="footer" fxLayout="row" fxLayoutAlign="end center">
+  <div
+    class="input-color"
+    fxLayoutAlign="end center"
+    style="margin-right: 10px;"
+  >
+    <button mat-raised-button type="button" title="Refresh" (click)="refresh()">
+      <mat-icon>refresh</mat-icon>
+    </button>
+  </div>
+  <button
+    type="button"
+    pButton
+    icon="pi pi-save"
+    [ngStyle]="{ 'margin-right': '5px', cursor: 'pointer' }"
+    label="Save"
+    class="saveTaskButton"
+    (click)="save()"
+  ></button>
+  <button
+    type="button"
+    pButton
+    icon="pi pi-times"
+    label="Cancel"
+    class="ui-button-secondary"
+    style="background-color: ghostwhite;"
+    (click)="close()"
+  ></button>
+</div>
+
+  <div fxLayout="column" style="padding: 10vw;width: 100%;" fxLayoutAlign="center center" [hidden]="!hideLoader">
+    <div id="scInnerLoader"></div>
+    <div id="scInnerLoaderText">Loading...</div>
+  </div>
+  <div [hidden]="hideLoader">
+  <p-accordion>
+    <p-accordionTab *ngFor="let task of conflicTasks">
+      <p-header>
+        <span>{{ task.userName }}</span>
+      </p-header>
+      <div>
+        <p-table [columns]="cols" [value]="task.tasks" class="conflictTable">
+          <ng-template pTemplate="header" let-columns>
+            <tr>
+              <th class="allocatedHrs">
+                Hours Allocated
+              </th>
+              <th class="date">
+                Dates
+              </th>
+              <th class="projectCode">
+                Project Code
+              </th>
+              <th class="shortTitle">
+                Short Title
+              </th>
+              <th class="hrsAllocated">
+                Hrs allocated within 10 hrs
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-rowData let-columns="columns">
+            <tr>
+              <td>
+                {{ rowData.allocatedHrs }}
+              </td>
+              <td>
+                {{ rowData.allocationDate | date: " d MMM, y" }}
+              </td>
+              <td [attr.colSpan]="3">
+              <p-table [value]="rowData.projects">
+                <ng-template pTemplate="body" let-innerRowData let-columns="innercolumns">
+                  <tr>
+                    <td>
+                      <a [href]="goToProjectDetails(innerRowData)" target="_blank" style="color:#c53e3e;" target="_blank"> {{ innerRowData.projectCode }}</a>
+                    </td>
+                    <td>
+                      <span> {{ innerRowData.shortTitle }} </span>
+                    </td>
+                    <td>
+                      <span> {{ innerRowData.allocatedhrs }} </span>
+                    </td>
+                  </tr>
+                </ng-template>
+                </p-table>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+        <app-usercapacity #UserCapacity [userCapacity]="task.userCapacity"></app-usercapacity>
+      </div>
+    </p-accordionTab>
+  </p-accordion>
+</div>
