@@ -12,7 +12,7 @@ import { TreeNode, MessageService, DialogService, ConfirmationService, DynamicDi
 import { MenuItem } from 'primeng/api';
 import { DragDropComponent } from '../drag-drop/drag-drop.component';
 import { TaskDetailsDialogComponent } from '../task-details-dialog/task-details-dialog.component';
-import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
+import { NgxMaterialTimepickerTheme, NgxMaterialTimepickerComponent } from 'ngx-material-timepicker';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { UsercapacityComponent } from 'src/app/shared/usercapacity/usercapacity.component';
 import { TaskAllocationCommonService } from '../services/task-allocation-common.service';
@@ -53,6 +53,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   @ViewChild('ganttcontainer', { read: ViewContainerRef, static: false }) ganttChart: ViewContainerRef;
   // @ViewChild('resourceSelect', { static: false }) resourceSelect: ResourceSelectionComponent;
   @ViewChild('dailyAllocateOP', { static: false }) dailyAllocateOP: AllocationOverlayComponent;
+  @ViewChild('ganttPicker', { static: false }) picker: NgxMaterialTimepickerComponent;
   Today = new Date();
   tempComment;
   minDateValue = new Date();
@@ -200,6 +201,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   resourceSeletion: any;
   header: string;
   hideResourceSelection = false;
+  taskTime;
+  ganttSetTime: boolean = false;
+  singleTask;
   constructor(
     private constants: ConstantsService,
     public sharedObject: GlobalService,
@@ -1770,7 +1774,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
               return false;
             }
           }
-          // return true;
         }
       } else {
         return false;
@@ -1781,7 +1784,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     const onTaskClick = gantt.attachEvent("onTaskClick", (id, e) => {
       let task = gantt.getTask(id);
       if (task.itemType !== "Send to client" && task.itemType !== "Client Review" && task.slotType !== 'Slot' && task.type !== "milestone" && task.type !== "submilestone") {
-        if (e.target.className === "gantt_tree_content" && e.target.parentElement.className == "gantt_cell gantt_last_cell") {
+        if (e.target.parentElement.className === "gantt_cell gantt_last_cell") {
           this.header = task.submilestone ? task.milestone + ' ' + task.submilestone + ' ' + task.text
             : task.milestone + ' ' + task.text;
           this.sharedObject.resourceHeader = this.header;
@@ -1796,11 +1799,32 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
     const onTaskDrag = gantt.attachEvent("onAfterTaskDrag", (id, mode, e) => {
       let task = this.currentTask;
+      this.ganttSetTime = false;
       //gantt.getTask(id);
       const isStartDate = this.dragClickedInput.indexOf('start_date') > -1 ? true : false;
       // this.updateDates(e, task, isStartDate);
       if (task.status !== 'Completed' || task.type == 'milestone') {
-        isStartDate ? this.openPopupOnGanttTask(task, 'start') : this.openPopupOnGanttTask(task, 'end');
+        if (mode === 'resize') {
+          this.taskTime = isStartDate ? this.taskAllocateCommonService.setMinutesAfterDrag(task.start_date) : this.taskAllocateCommonService.setMinutesAfterDrag(task.end_date);
+          this.singleTask = task;
+          if (this.singleTask.tat) {
+            if (isStartDate) {
+              this.singleTask.start_date = new Date(task.start_date.getFullYear(), task.start_date.getMonth(), task.start_date.getDate(), 9, 0)
+              this.singleTask.pUserStart = new Date(this.datepipe.transform(this.singleTask.start_date, 'MMM d, y') + ' ' + this.singleTask.pUserStartTimePart);
+              this.singleTask.pUserStartDatePart = this.getDatePart(this.singleTask.start_date);
+            } else {
+              this.singleTask.end_date = new Date(task.end_date.getFullYear(), task.end_date.getMonth(), task.end_date.getDate(), 19, 0);
+              this.singleTask.pUserEnd = this.singleTask.pUserEnd = new Date(this.datepipe.transform(this.singleTask.end_date, 'MMM d, y') + ' ' + this.singleTask.pUserEndTimePart);
+              this.singleTask.pUserEndDatePart = this.getDatePart(this.singleTask.end_date);
+            }
+            this.ganttSetTime = true;
+            this.timeChange();
+          } else {
+            this.picker.open();
+          }
+        } else {
+          isStartDate ? this.openPopupOnGanttTask(task, 'start') : this.openPopupOnGanttTask(task, 'end');
+        }
         return true;
       } else {
         return false;
@@ -1808,6 +1832,68 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     });
     this.taskAllocateCommonService.attachedEvents.push(onTaskDrag);
 
+  }
+
+  async timeChange() {
+    const isStartDate = this.dragClickedInput.indexOf('start_date') > -1 ? true : false;
+    let type = isStartDate ? 'start' : 'end'
+    let allTasks = {
+      data: []
+    };
+    if (this.ganttSetTime) {
+      this.setDateToCurrent(this.singleTask);
+      this.DateChange(this.singleTask, type);
+
+      allTasks.data = this.getGanttTasksFromMilestones(this.milestoneData, true);
+      allTasks.data.forEach((task) => {
+        if (task.type == "milestone") {
+          if (task.title.replace(' (Current)', '') == this.singleTask.milestone) {
+            task.edited = true;
+            task.open = true;
+          }
+        }
+      });
+
+      this.GanttchartData = allTasks.data;
+      this.ganttNotification();
+    } else {
+      allTasks.data = this.getGanttTasksFromMilestones(this.milestoneData, true);
+      allTasks.data.forEach((task) => {
+        if (task.type == "milestone") {
+          if (task.title.replace(' (Current)', '') == this.singleTask.milestone) {
+            task.edited = false;
+            task.open = true;
+          }
+        }
+        if (task.id == this.resetTask.id) {
+          task = this.resetTask;
+          task.start_date = this.startDate;
+          task.end_date = this.endDate;
+        }
+      });
+
+      this.GanttchartData = allTasks.data;
+    }
+    this.showGanttChart(false);
+    setTimeout(() => {
+      this.scrollToTaskDate(this.singleTask.end_date);
+    }, 1000);
+  }
+
+  setTime(time) {
+    this.ganttSetTime = true;
+    const isStartDate = this.dragClickedInput.indexOf('start_date') > -1 ? true : false;
+    if (isStartDate) {
+      this.singleTask.start_date = new Date(this.datepipe.transform(this.singleTask.start_date, 'MMM d, y') + ' ' + time);
+      this.singleTask.pUserStart = new Date(this.datepipe.transform(this.singleTask.start_date, 'MMM d, y') + ' ' + time);
+      this.singleTask.pUserStartDatePart = this.getDatePart(this.singleTask.start_date);
+      this.singleTask.pUserStartTimePart = time;
+    } else {
+      this.singleTask.end_date = new Date(this.datepipe.transform(this.singleTask.end_date, 'MMM d, y') + ' ' + time);
+      this.singleTask.pUserEnd = this.singleTask.pUserEnd = new Date(this.datepipe.transform(this.singleTask.end_date, 'MMM d, y') + ' ' + time);
+      this.singleTask.pUserEndDatePart = this.getDatePart(this.singleTask.end_date);
+      this.singleTask.pUserEndTimePart = time;
+    }
   }
 
   openPopupOnGanttTask(task, clickedInputType) {
@@ -2280,7 +2366,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
   scrollToTaskDate(date) {
-    let endDate = date.setDate(date.getDate() + 1)
+    let endDate = new Date(date);
+    endDate = new Date(endDate.setDate(endDate.getDate() - 3));
     gantt.showDate(new Date(endDate));
   }
 
