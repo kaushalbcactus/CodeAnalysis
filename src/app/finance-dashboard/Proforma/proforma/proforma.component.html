@@ -145,15 +145,14 @@
 <!-- Replace Proforma End-->
 
 <!-- Generate Invoice -->
-<p-dialog header="Generate Invoice" [(visible)]="generateInvoiceModal" [modal]="true" [draggable]="false" [responsive]="true" [style]="{'width': '40%'}" [maximizable]="false" (onHide)="cancelFormSub('generateInvoice')" [responsive]="true">
+<p-dialog header="Generate Invoice" [(visible)]="generateInvoiceModal" [modal]="true" [draggable]="false" [responsive]="true" [style]="{'width': '40%'}" [maximizable]="false" (onHide)="cancelFormSub('generateInvoice')" [responsive]="true" [contentStyle]="{'overflow' : 'visible'}">
     <form id="myform" [formGroup]="generateInvoice_form">
         <div class="ui-g">
             <div class="ui-g-6">
                 Invoice Date
             </div>
             <div class="ui-g-6">
-                <p-calendar styleClass="pCalendarBtn" [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy" yearRange="2019:2030" [disabledDays]="[0,6]" [yearNavigator]="true" [style]="{'position': 'fixed', 'overflow': 'visible', 'z-index': '999'}"
-                    [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}" formControlName="InvoiceDate">
+                <p-calendar styleClass="pCalendarBtn" [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy" yearRange="2019:2030" [disabledDays]="[0,6]" [yearNavigator]="true" formControlName="InvoiceDate">
                 </p-calendar>
                 <div *ngIf="formSubmit.isSubmit && isValidGenerateInvoiceForm.InvoiceDate.errors">
                     <div *ngIf="isValidReplaceProformaForm.file.errors.required" style="color:red;">Please provide Invoice Date.
@@ -207,11 +206,7 @@
                     <div *ngIf="isValidCreateProformaForm.POName.errors.required" style="color:red;">Please select PO.
                     </div>
                 </div>
-
             </div>
-
-
-
             <div class="p-col-6 p-md-4 p-lg-2">
                 Currency
             </div>

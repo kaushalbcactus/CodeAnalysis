@@ -707,6 +707,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         else {
             const TaggedAmount = parseFloat(invoiceform.Invoice.TaggedAmount) + totalVal;
             const invoiceData = {
+                __metadata : {type : this.constantService.listNames.Invoices.type},
                 TaggedAmount: TaggedAmount,
                 IsTaggedFully: invoiceform.Invoice.Amount === TaggedAmount ? 'Yes' : 'No'
             }

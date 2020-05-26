@@ -798,8 +798,9 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         else {
             const TaggedAmount = parseFloat(this.invoice.TaggedAmount) + parseFloat(scheduleOopInvoice_form.getRawValue().Amount)
             const invoiceData = {
+                __metadata: { type: this.constantService.listNames.Invoices.type },
                 TaggedAmount: TaggedAmount,
-                IsTaggedFully: this.invoice.Amount === TaggedAmount ? 'Yes' : 'No' 
+                IsTaggedFully: this.invoice.Amount === TaggedAmount ? 'Yes' : 'No'
             }
             url = this.spServices.getItemURL(this.constantService.listNames.Invoices.name, scheduleOopInvoice_form.getRawValue().InvoiceId);
             this.commonService.setBatchObject(batchURL, url, invoiceData, this.constantService.Method.PATCH, this.constantService.listNames.Invoices.name)
@@ -821,7 +822,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         url = this.spServices.getItemURL(this.constantService.listNames.SOW.name, this.SOW.ID);
         this.commonService.setBatchObject(batchURL, url, this.getsowData(scheduleOopInvoice_form, InvoiceType), this.constantService.Method.PATCH, this.constantService.listNames.SOW.name)
 
-         this.submitForm(batchURL, type);
+        this.submitForm(batchURL, type);
 
     }
 
