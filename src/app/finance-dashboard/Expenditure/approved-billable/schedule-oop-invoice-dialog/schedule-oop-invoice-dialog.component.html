@@ -94,7 +94,7 @@
         <!-- forth Row html if new   -->
         <div class="p-grid" *ngIf="!modalloaderenable && advanceInvArray && advanceInvArray.length > 0">
             <div class="p-grid p-col">
-                <p-selectButton [options]="InvoiceTypeArray" class="p-col selectButton" [style]="{width : '100%'}" class="cls_addTSSelectButton" formControlName="InvoiceType" (onChange)="UpdateValidator($event.value)"></p-selectButton>
+                <p-selectButton [options]="InvoiceTypeArray" class="p-col selectButton cls_addTSSelectButton" [style]="{width : '100%'}" formControlName="InvoiceType" (onChange)="UpdateValidator($event.value)"></p-selectButton>
             </div>
         </div>
 

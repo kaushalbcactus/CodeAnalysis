@@ -801,7 +801,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                 TaggedAmount: TaggedAmount,
                 IsTaggedFully: this.invoice.Amount === TaggedAmount ? 'Yes' : 'No' 
             }
-            url = this.spServices.getReadURL(this.constantService.listNames.Invoices.name, scheduleOopInvoice_form.getRawValue().InvoiceId);
+            url = this.spServices.getItemURL(this.constantService.listNames.Invoices.name, scheduleOopInvoice_form.getRawValue().InvoiceId);
             this.commonService.setBatchObject(batchURL, url, invoiceData, this.constantService.Method.PATCH, this.constantService.listNames.Invoices.name)
         }
 
@@ -821,7 +821,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         url = this.spServices.getItemURL(this.constantService.listNames.SOW.name, this.SOW.ID);
         this.commonService.setBatchObject(batchURL, url, this.getsowData(scheduleOopInvoice_form, InvoiceType), this.constantService.Method.PATCH, this.constantService.listNames.SOW.name)
 
-        this.submitForm(batchURL, type);
+         this.submitForm(batchURL, type);
 
     }
 

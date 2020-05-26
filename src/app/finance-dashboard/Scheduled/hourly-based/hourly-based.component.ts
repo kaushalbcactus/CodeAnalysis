@@ -710,7 +710,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                 TaggedAmount: TaggedAmount,
                 IsTaggedFully: invoiceform.Invoice.Amount === TaggedAmount ? 'Yes' : 'No'
             }
-            url = this.spServices.getReadURL(this.constantService.listNames.Invoices.name, invoiceform.Invoice.ID);
+            url = this.spServices.getItemURL(this.constantService.listNames.Invoices.name, invoiceform.Invoice.ID);
             this.commonService.setBatchObject(batchUrl, url, invoiceData, this.constantService.Method.PATCH, this.constantService.listNames.Invoices.name)
         }
 

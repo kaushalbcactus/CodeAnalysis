@@ -171,7 +171,7 @@
 <!-- Generate Invoice End-->
 
 <!-- Create Proforma Modal -->
-<p-dialog header="Create Proforma Form" [(visible)]="proformaModal" [modal]="true" [draggable]="false" [responsive]="true" [positionTop]="15" [style]="{'width': '85%'}" [contentStyle]="{ 'overflow' : 'visible', 'max-height': '82vh'}" [maximizable]="false"
+<p-dialog header="Create Proforma Form" [(visible)]="proformaModal" [modal]="true" [draggable]="false" [responsive]="true" [positionTop]="15" [style]="{'width': '85%'}" [contentStyle]="{ 'overflow' : 'visible', 'max-height': '90vh'}" [maximizable]="false"
     (onHide)="cancelFormSub('createProforma')" [closable]='false'>
 
     <div class='UserButton' fxLayout="row" fxLayoutAlign="end center">
@@ -349,7 +349,7 @@
             <div class="p-col-6 p-md-8 p-lg-4">
 
 
-                <textarea rows="5" class="textfeildClass cls_addproformatitle" pInputTextarea formControlName="ProformaTitle"></textarea>
+                <textarea rows="4" class="textfeildClass cls_addproformatitle" pInputTextarea formControlName="ProformaTitle"></textarea>
                 <div *ngIf="formSubmit.isSubmit && isValidCreateProformaForm.ProformaTitle.errors">
                     <div *ngIf="isValidCreateProformaForm.ProformaTitle.errors.required" style="color:red;">Please provide Proforma Title.</div>
                 </div>
@@ -361,7 +361,7 @@
             </div>
             <div class="p-col-6 p-md-8 p-lg-4">
 
-                <textarea rows="5" class="textfeildClass cls_addproformacomment" pInputTextarea formControlName="AdditionalComments"></textarea>
+                <textarea rows="4" class="textfeildClass cls_addproformacomment" pInputTextarea formControlName="AdditionalComments"></textarea>
 
             </div>
         </div>
