@@ -103,8 +103,8 @@ export class ConflictAllocationsComponent implements OnInit, AfterViewInit {
       });
       element.resources = this.commonService.unique(element.resources, 'UserName.ID');
       if (milSubMil) {
-        capacity = await this.usercapacityComponent.afterMilestoneTaskModified(element, element.start_date,
-          element.end_date, element.resources, []);
+        capacity = await this.usercapacityComponent.afterResourceChange(element, element.start_date,
+          element.end_date, element.resources, [], false);
       } else {
         capacity = await this.usercapacityComponent.factoringTimeForAllocation(element.start_date, element.end_date,
           element.resources, [], [], this.allocationCommon.adhocStatus);
