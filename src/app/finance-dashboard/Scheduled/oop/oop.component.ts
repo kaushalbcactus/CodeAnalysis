@@ -124,6 +124,7 @@ export class OopComponent implements OnInit, OnDestroy {
 
     oopColArray = {
         ProjectCode: [],
+        ShortTitle: [],
         SOWValue: [],
         ProjectMileStone: [],
         POValues: [],
@@ -261,10 +262,11 @@ export class OopComponent implements OnInit, OnDestroy {
         this.oopBasedCols = [
             { field: 'ProjectCode', header: 'Project Code', visibility: true },
             { field: 'ProjectTitle', header: 'Project Title', visibility: false },
+            { field: 'ShortTitle', header: 'Short Title', visibility: true },
             { field: 'SOWValue', header: 'SOW Code/ Name', visibility: true },
             { field: 'ProjectMileStone', header: 'Project Milestone', visibility: true },
             { field: 'POValues', header: 'PO Number/ Name', visibility: true },
-            { field: 'ClientName', header: 'Client LE', visibility: true },
+            { field: 'ClientName', header: 'Client', visibility: true },
             { field: 'ScheduledDateFormat', header: 'Scheduled Date', visibility: false },
             { field: 'ScheduledDate', header: 'Scheduled Date', visibility: true, exportable: false },
             { field: 'Amount', header: 'Amount', visibility: true },
@@ -353,6 +355,7 @@ export class OopComponent implements OnInit, OnDestroy {
                 Id: element.ID,
                 ProjectCode: element.Title,
                 ProjectTitle: piInfo.Title ? piInfo.Title : '',
+                ShortTitle: piInfo && piInfo.WBJID ? piInfo.WBJID : '',
                 SOWCode: element.SOWCode,
                 SOWName: sowItem.Title,
                 SOWValue: sowcn,
@@ -452,6 +455,7 @@ export class OopComponent implements OnInit, OnDestroy {
 
     createColFieldValues(resArray) {
         this.oopColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
+        this.oopColArray.ShortTitle = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ShortTitle, value: a.ShortTitle }; return b; }).filter(ele => ele.label)));
         this.oopColArray.SOWValue = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.SOWValue, value: a.SOWValue }; return b; }).filter(ele => ele.label)));
         this.oopColArray.ProjectMileStone = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }).filter(ele => ele.label)));
         this.oopColArray.POValues = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.POValues, value: a.POValues }; return b; }).filter(ele => ele.label)));
@@ -524,14 +528,22 @@ export class OopComponent implements OnInit, OnDestroy {
         const todaysDateTimeZero = new Date();
         const projectData = this.projectInfoData.find(e => e.ProjectCode === data.ProjectCode);
         todaysDateTimeZero.setHours(0, 0, 0, 0);
-        if (date >= last3Days && date < lastDay && retPO && new Date(retPO.POExpiryDate) >= todaysDateTimeZero && 
-        (projectData && projectData.Status !== this.constantService.projectList.status.InDiscussion &&
-            projectData.Status !== this.constantService.projectList.status.AwaitingCancelApproval && 
-            projectData.Status !== this.constantService.projectList.status.OnHold)) {
+        if (date >= last3Days && date < lastDay && retPO && new Date(retPO.POExpiryDate) >= todaysDateTimeZero &&
+            (projectData && projectData.Status !== this.constantService.projectList.status.InDiscussion &&
+                projectData.Status !== this.constantService.projectList.status.AwaitingCancelApproval &&
+                projectData.Status !== this.constantService.projectList.status.OnHold)) {
             // if (date > last3Days && retPO && new Date(retPO.POExpiryDate) >= new Date()) {
             this.items.push({ label: 'Confirm Invoice', command: (e) => this.openMenuContent(e, data) });
         } else {
-            if (!(date >= last3Days && date <= lastDay)) {
+            if (projectData.Status === this.constantService.projectList.status.InDiscussion ||
+                projectData.Status === this.constantService.projectList.status.AwaitingCancelApproval ||
+                projectData.Status === this.constantService.projectList.status.OnHold) {
+                this.messageService.add({
+                    key: 'oopInfoToast', severity: 'info', summary: 'Info message',
+                    detail: 'Project status is ' + projectData.Status + ', so can not confirm the line item.',
+                    life: 4000
+                });
+            } else if (!(date >= last3Days && date <= lastDay)) {
                 this.messageService.add({
                     key: 'oopInfoToast', severity: 'info', summary: 'Info message',
                     detail: 'To confirm the line item, scheduled Date should be between last 3 working days & last date of the current month.',

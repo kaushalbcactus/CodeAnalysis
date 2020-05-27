@@ -8,6 +8,7 @@ import { PMObjectService } from '../projectmanagement/services/pmobject.service'
 import { DatePipe } from '@angular/common';
 import { Table, DialogService } from 'primeng';
 import { FileUploadProgressDialogComponent } from '../shared/file-upload-progress-dialog/file-upload-progress-dialog.component';
+import { ConfirmationDialogComponent } from '../shared/confirmation-dialog/confirmation-dialog.component';
 declare var $;
 
 declare const newrelic;
@@ -937,7 +938,6 @@ export class CommonService {
         });
     }
 
-
     roundToPrecision(x, precision) {
         // const y = +x + (precision === undefined ? 0.5 : precision / 2);
         // return y - (y % (precision === undefined ? 1 : +precision));
@@ -962,7 +962,7 @@ export class CommonService {
 
     removeEmptyItems(array) {
         array = array.filter((el) => {
-            return el != null;
+            return el != null && !Array.isArray(el)  
         });
 
         return array;
@@ -990,4 +990,20 @@ export class CommonService {
         batchUrl.push(obj);
     }
 
+    confirmMessageDialog(message,buttons,Closable): Promise<any> {
+        return new Promise((resolve, reject) => {
+            const ref = this.dialogService.open(ConfirmationDialogComponent, {
+                header: 'Confirmation',
+                data: {
+                    message,
+                    buttons
+                },
+                contentStyle: { 'overflow-y': 'visible', 'background-color': '#f4f3ef' },
+                closable: Closable,
+            });
+            ref.onClose.subscribe((Confirmation: any) => {
+                resolve(Confirmation);
+            });
+        });
+    }
 }

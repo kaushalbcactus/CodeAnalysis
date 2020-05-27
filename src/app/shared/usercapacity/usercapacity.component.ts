@@ -130,8 +130,8 @@ export class UsercapacityComponent implements OnInit {
         oCapacity.arrUserDetails = tempUserDetailsArray;
       }
       if (this.globalService.isResourceChange) {
-        const capacity: any = this.afterResourceChange(this.globalService.data.startTime, this.globalService.data.endTime, this.globalService.data.task);
-        this.oCapacity = capacity.__zone_symbol__value;
+        const capacity: any = await this.afterResourceChange(this.globalService.data.task, this.globalService.data.startTime, this.globalService.data.endTime, this.globalService.data.task.resources, [], true);
+        this.oCapacity = capacity;
       } else {
         this.globalService.oCapacity = oCapacity;
         this.oCapacity = oCapacity;
@@ -589,10 +589,14 @@ export class UsercapacityComponent implements OnInit {
     this.resourceSelect.emit(user.uid)
   }
 
-  async afterResourceChange(startDate, endDate, task) {
-    var Task: any;
-    if (this.globalService.oCapacity.arrUserDetails) {
-      this.globalService.oCapacity.arrUserDetails.forEach((e) => {
+  // fetch capacity for after task resource change and milestone task added and/or changed
+  async afterResourceChange(task: any, startDate: Date, endDate: Date, resource: any, [], isResourceChange: boolean) {
+
+    let capacity = await this.applyFilter(startDate, endDate, resource, []);
+
+    if (isResourceChange) {
+      let Task: any;
+      capacity.arrUserDetails.forEach((e) => {
         e.tasks.forEach((c) => {
           if (task.id && c.Id == task.id) {
             Task = c;
@@ -600,51 +604,40 @@ export class UsercapacityComponent implements OnInit {
         });
       })
 
-      this.globalService.oCapacity.arrUserDetails.forEach(e => e.tasks = e.tasks.filter(c => c.Id !== Task.Id))
+      capacity.arrUserDetails.forEach(e => e.tasks = e.tasks.filter(c => c.Id !== Task.Id))
 
-      this.globalService.oCapacity.arrUserDetails.forEach((e) => {
+      capacity.arrUserDetails.forEach((e) => {
         if (e.uid == task.AssignedTo.ID && e.tasks.indexOf(task) === -1) {
           e.tasks.push(Task)
         }
       })
 
-      for (var index in this.globalService.oCapacity.arrUserDetails) {
-        if (this.globalService.oCapacity.arrUserDetails.hasOwnProperty(index)) {
-          this.fetchUserCapacity(this.globalService.oCapacity.arrUserDetails[index]);
-        }
+    } else {
+      let taskObj: any = {
+        Title: task.taskFullName,
+        Milestone: task.milestone,
+        SubMilestones: task.submilestone,
+        Task: task.title,
+        StartDate: task.start_date,
+        DueDate: task.end_date,
+        AllocationPerDay: task.allocationPerDay,
+        Status: task.status,
+        ExpectedTime: task.budgetHours,
+        ID: task.id,
+        TimeSpent: task.spentTime,
+        TimeZone: task.assignedUserTimeZone,
+        parentSlot: task.parentSlot
       }
-      const capacity = this.globalService.oCapacity;
-      return capacity;
-    }
-  }
 
-  async afterMilestoneTaskModified(task, startDate, endDate, resource, []) {
-    let capacity = await this.applyFilter(startDate, endDate, resource, []);
-
-    let taskObj: any = {
-      Title: task.taskFullName,
-      Milestone: task.milestone,
-      SubMilestones: task.submilestone,
-      Task: task.title,
-      StartDate: task.start_date,
-      DueDate: task.end_date,
-      AllocationPerDay: task.allocationPerDay,
-      Status: task.status,
-      ExpectedTime: task.budgetHours,
-      ID: task.id,
-      TimeSpent: task.spentTime,
-      TimeZone: task.assignedUserTimeZone,
-      parentSlot: task.parentSlot
-    }
-
-    for (var index in capacity.arrUserDetails) {
-      if (capacity.arrUserDetails.hasOwnProperty(index)) {
-        if (capacity.arrUserDetails[index].uid == task.AssignedTo.ID && capacity.arrUserDetails[index].tasks.indexOf(task) === -1) {
-          let taskIndex = capacity.arrUserDetails[index].tasks.findIndex(x => x.ID === task.id);
-          if (taskIndex !== -1) {
-            capacity.arrUserDetails[index].tasks.splice(taskIndex, 1, taskObj);
-          } else {
-            capacity.arrUserDetails[index].tasks.push(taskObj)
+      for (var index in capacity.arrUserDetails) {
+        if (capacity.arrUserDetails.hasOwnProperty(index)) {
+          if (capacity.arrUserDetails[index].uid == task.AssignedTo.ID && capacity.arrUserDetails[index].tasks.indexOf(task) === -1) {
+            let taskIndex = capacity.arrUserDetails[index].tasks.findIndex(x => x.ID === task.id);
+            if (taskIndex !== -1) {
+              capacity.arrUserDetails[index].tasks.splice(taskIndex, 1, taskObj);
+            } else {
+              capacity.arrUserDetails[index].tasks.push(taskObj)
+            }
           }
         }
       }
@@ -655,9 +648,50 @@ export class UsercapacityComponent implements OnInit {
         this.fetchUserCapacity(capacity.arrUserDetails[index]);
       }
     }
-
     return capacity;
+
   }
+
+  // async afterMilestoneTaskModified(task, startDate, endDate, resource, []) {
+  //   let capacity = await this.applyFilter(startDate, endDate, resource, []);
+
+  //     let taskObj: any = {
+  //       Title: task.taskFullName,
+  //       Milestone: task.milestone,
+  //       SubMilestones: task.submilestone,
+  //       Task: task.title,
+  //       StartDate: task.start_date,
+  //       DueDate: task.end_date,
+  //       AllocationPerDay: task.allocationPerDay,
+  //       Status: task.status,
+  //       ExpectedTime: task.budgetHours,
+  //       ID: task.id,
+  //       TimeSpent: task.spentTime,
+  //       TimeZone: task.assignedUserTimeZone,
+  //       parentSlot: task.parentSlot
+  //     }
+
+  //     for (var index in capacity.arrUserDetails) {
+  //       if (capacity.arrUserDetails.hasOwnProperty(index)) {
+  //         if (capacity.arrUserDetails[index].uid == task.AssignedTo.ID && capacity.arrUserDetails[index].tasks.indexOf(task) === -1) {
+  //           let taskIndex = capacity.arrUserDetails[index].tasks.findIndex(x => x.ID === task.id);
+  //           if(taskIndex !== -1) {
+  //             capacity.arrUserDetails[index].tasks.splice(taskIndex, 1, taskObj);
+  //           } else {
+  //             capacity.arrUserDetails[index].tasks.push(taskObj)
+  //           }
+  //         }
+  //       }
+  //     }
+
+  //     for (var index in capacity.arrUserDetails) {
+  //       if (capacity.arrUserDetails.hasOwnProperty(index)) {
+  //         this.fetchUserCapacity(capacity.arrUserDetails[index]);
+  //       }
+  //     }
+
+  //   return capacity;
+  // }
 
   filterCapacityByDates(startDate, endDate, task) {
     const usercapacity = Object.assign({}, this.globalService.oCapacity.arrUserDetails.find(e => e.uid == task.userId));

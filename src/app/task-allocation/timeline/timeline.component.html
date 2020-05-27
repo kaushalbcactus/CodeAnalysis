@@ -432,6 +432,12 @@
   <!-- <ng-gantt style="width:100%;" *ngIf='visualgraph' [options]="editorOptions" [data]="GanttchartData"
                 #gantteditor></ng-gantt> -->
         <app-allocation-overlay #dailyAllocateOP></app-allocation-overlay>
+
+        <input [hidden]='true' readonly [ngxTimepicker]="ganttPicker"
+        [(ngModel)]="taskTime" class="timePicker">
+        <ngx-material-timepicker [preventOverlayClick]="true" (closed)="timeChange()" #ganttPicker
+        (timeSet)="setTime($event)" [ngxMaterialTimepickerTheme]="darkTheme" [minutesGap]="15">
+        </ngx-material-timepicker>
     </div>
 
 
@@ -536,7 +542,7 @@
 </p-overlayPanel> -->
 
 
-<p-sidebar [(visible)]="displayBody" position="bottom" styleClass="ui-sidebar-lg" [showCloseIcon]="false" [closeOnEscape]="false">
-    <app-usercapacity #userCapacity (resourceSelect)="confirmChangeResource($event)"></app-usercapacity>
+<p-sidebar [(visible)]="displayBody" position="bottom" styleClass="ui-sidebar-lg resourcePanel" [showCloseIcon]="false" [closeOnEscape]="false" (onHide)="onClose()">
+    <app-resource-selection *ngIf="hideResourceSelection" #resourceSelect></app-resource-selection>
 </p-sidebar>
 

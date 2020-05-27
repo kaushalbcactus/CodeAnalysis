@@ -26,9 +26,10 @@ import { Ng5SliderModule } from 'ng5-slider';
 import { PreStackAllocationModule } from '../shared/pre-stack-allocation/pre-stack-allocation.module';
 import { PreStackAllocationComponent } from '../shared/pre-stack-allocation/pre-stack-allocation.component';
 import { ConflictAllocationsComponent } from './timeline/conflict-allocations/conflict-allocations.component';
+import { ResourceSelectionComponent } from './resource-selection/resource-selection.component';
 @NgModule({
   declarations: [TaskAllocationComponent, TimelineComponent, DragDropComponent,
-                  TaskDetailsDialogComponent, ResourcesComponent, GanttEdittaskComponent, ConflictAllocationsComponent],
+                  TaskDetailsDialogComponent, ResourcesComponent, GanttEdittaskComponent, ConflictAllocationsComponent,ResourceSelectionComponent],
   imports: [
     CommonModule,
     TaskAllocationRoutingModule,
@@ -53,6 +54,6 @@ import { ConflictAllocationsComponent } from './timeline/conflict-allocations/co
   ],
   providers: [DatePipe, DynamicDialogConfig, DynamicDialogRef, ConfirmationService],
   entryComponents: [UsercapacityComponent, DragDropComponent, TaskDetailsDialogComponent, GanttChartComponent, PreStackAllocationComponent,
-                     GanttEdittaskComponent, ConflictAllocationsComponent]
+                     GanttEdittaskComponent, ConflictAllocationsComponent,ResourceSelectionComponent]
 })
 export class TaskAllocationModule { }

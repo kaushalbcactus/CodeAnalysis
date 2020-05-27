@@ -429,6 +429,7 @@ export class FDDataShareService {
         const oProformaObj: any = this.getProformaPDFObject(oProforma, cleData, projectContactsData, purchaseOrdersList, projectAppendix);
         const objReturn: any = this.callInvoiceTemplate(oProformaObj, editorRef);
         if (objReturn) {
+
             const pdfContent: any = objReturn.pdf;
             pdfContent.Code = oProformaObj.invoice_no;
             pdfContent.WebUrl = this.globalObject.sharePointPageObject.webRelativeUrl;
@@ -520,10 +521,10 @@ export class FDDataShareService {
 
         return {
             Template: oProformaObj.Template,
-            ID: oProformaObj.ID,
+            ID: oProformaObj.ID ? oProformaObj.ID : oProformaObj.Id,
             ClientLegalEntity: oProformaObj.ClientLegalEntity,
             invoice: 'Proforma',
-            invoice_no: oProformaObj.Title,
+            invoice_no: oProformaObj.Title ? oProformaObj.Title : oProformaObj.ProformaNumber,
             invoice_date: this.datePipe.transform(oProformaObj.ProformaDate, 'MMM d, y'),
             usCurrencyName: oProformaObj.Currency, // 'USD',
             usCurrencySymbol: currencyObj.Symbol, // '$',
@@ -585,6 +586,37 @@ export class FDDataShareService {
             return result;
         });
         return data;
+    }
+
+
+    async  createInvoice(proformHtml, selectedRowItem, oInv, cleData) {
+        let response = true;
+        const proformaDate = this.datePipe.transform(selectedRowItem.ProformaDate, 'MMM dd, yyyy');
+        const proformaDateSingle = this.datePipe.transform(selectedRowItem.ProformaDate, 'MMM d, yyyy');
+        proformHtml = proformHtml.replace(new RegExp("Proforma", "g"), "Invoice");
+        proformHtml = proformHtml.replace(new RegExp("PROFORMA", "g"), "INVOICE");
+        proformHtml = proformHtml.replace(new RegExp("proforma", "g"), "invoice");
+        proformHtml = proformHtml.replace(new RegExp(selectedRowItem.ProformaNumber, "g"), oInv.InvoiceNumber);
+        proformHtml = proformHtml.replace(new RegExp(proformaDate, "g"), this.datePipe.transform(oInv.InvoiceDate, 'MMM dd, yyyy'));
+        proformHtml = proformHtml.replace(new RegExp(proformaDateSingle, "g"), this.datePipe.transform(oInv.InvoiceDate, 'MMM dd, yyyy'));
+
+        try {
+            const invObject = JSON.parse(proformHtml);
+            const pdfCall = invObject.pdf;
+            pdfCall.Code = oInv.InvoiceNumber;
+            pdfCall.WebUrl = this.globalObject.sharePointPageObject.webRelativeUrl;
+            pdfCall.ID = oInv.ID ? oInv.ID : oInv.Id;
+            pdfCall.Type = 'Invoice';
+            const oCLE = cleData.find(e => e.Title === oInv.ClientLegalEntity);
+            pdfCall.ListName = oCLE.ListName;
+            pdfCall.HtmlContent = proformHtml;
+            this.commonService.SetNewrelic('Finance-Dashboard', 'proforma', 'executeJS');
+            const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
+            await this.spServices.executeJS(pdfService, pdfCall);
+        } catch (e) {
+            response = false; // error in the above string (in this case, yes)!
+        }
+        return response;
     }
 
 

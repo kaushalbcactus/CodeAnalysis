@@ -87,18 +87,7 @@ export class TimeSpentDialogComponent implements OnInit {
 
   async getDatesForTimespent(task) {
     this.task = task;
-    // var previousStatus =  this.data.status;
-    // if (previousStatus === "Completed" || previousStatus === "AllowCompletion" || previousStatus === "Auto Closed") {
-
-    // this.batchContents = new Array();
-    // const batchGuid = this.spServices.generateUUID();
-
     let TimeSpent = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.TimeSpent);
-    //TimeSpent.filter = TimeSpent.filter.replace(/{{taskId}}/gi, task.ID);
-
-    // const myTimeSpentUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', TimeSpent);
-    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTimeSpentUrl);
-    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
     this.commonService.SetNewrelic('MyDashboard', 'timeSpentDialog', 'GetSchedulesByTaskId');
     this.response = await this.spServices.readItem(this.constants.listNames.Schedules.name, task.ID, TimeSpent);
 
@@ -121,7 +110,6 @@ export class TimeSpentDialogComponent implements OnInit {
 
       endDate = task.Status === 'Auto Closed' ? new Date(this.datePipe.transform(task.DueDate, 'MMM d, y')) : endDate;
 
-      // var days = this.CalculateWorkingDays(startDate, endDate);
       this.dateArray = await this.CalculatePastBusinessDays(new Date(startDate), new Date(endDate));
       this.dateArray.reverse();
     } else {
@@ -181,10 +169,7 @@ export class TimeSpentDialogComponent implements OnInit {
         });
 
       }
-
-
     }
-    //  }
 
     this.modalloaderenable = false;
   }
@@ -275,7 +260,13 @@ export class TimeSpentDialogComponent implements OnInit {
 
 
   async saveTimeSpentdb(task, dateArray) {
-
+    const batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
     let ActualStartDate;
     if (dateArray.find(c => c.time !== '00:00') !== undefined) {
       //   this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Updating...' });
@@ -296,20 +287,44 @@ export class TimeSpentDialogComponent implements OnInit {
     const timeSpentMin = dateArray.map(c => c.time.split(':')).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) % 60;
     const totalTimeSpent = timeSpentMin < 10 ? timeSpentHours + '.' + '0' + timeSpentMin : timeSpentHours + '.' + timeSpentMin;
     const jsonData = {
+      __metadata: { type: this.constants.listNames.Schedules.type },
       Actual_x0020_Start_x0020_Date: ActualStartDate,
       TimeSpent: totalTimeSpent,
       TimeSpentPerDay: timeSpentString,
-      Status: task.Status === 'Not Started' ? 'In Progress' : task.Status,
-
+      Status: task.Status === this.constants.STATUS.NOT_STARTED ? this.constants.STATUS.IN_PROGRESS : task.Status,
       ActiveCA: 'No'
     };
+
+
     this.commonService.SetNewrelic('MyDashboard', 'timeSpentDialog', 'UpdateTaskTimepent');
-    await this.spServices.updateItem(this.constants.listNames.Schedules.name, task.ID, jsonData, 'SP.Data.SchedulesListItem');
+    // await this.spServices.updateItem(this.constants.listNames.Schedules.name, task.ID, jsonData, 'SP.Data.SchedulesListItem');
+
+    const taskUpdate = Object.assign({}, options);
+    taskUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, task.ID);
+    taskUpdate.data = jsonData;
+    taskUpdate.type = 'PATCH';
+    taskUpdate.listName = this.constants.listNames.Schedules.name;
+    batchURL.push(taskUpdate);
+
+
+    if (task.Status === this.constants.STATUS.NOT_STARTED) {
+
+      const ProjectInformation = await this.myDashboardConstantsService.getCurrentTaskProjectInformation(task.ProjectCode);
+
+      const projectInfoUpdate = Object.assign({}, options);
+      projectInfoUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, ProjectInformation.ID);
+      projectInfoUpdate.data = { Status: this.constants.STATUS.IN_PROGRESS, __metadata: { type: this.constants.listNames.ProjectInformation.type } };;
+      projectInfoUpdate.type = 'PATCH';
+      projectInfoUpdate.listName = this.constants.listNames.ProjectInformation.name;
+      batchURL.push(projectInfoUpdate);
+    }
+
+    await this.spServices.executeBatch(batchURL);
+
 
     if (task.ParentSlot) {
       await this.myDashboardConstantsService.getCurrentAndParentTask(task, jsonData.Status);
-    }
-
+    }  
     this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Task Time updated successfully.' });
   }
 

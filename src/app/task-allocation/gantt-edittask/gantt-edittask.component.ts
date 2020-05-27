@@ -160,9 +160,9 @@ export class GanttEdittaskComponent implements OnInit {
     } 
 
 
-    const startTime = this.setMinutesAfterDrag(task.start_date);
+    const startTime = this.taskAllocateCommonService.setMinutesAfterDrag(task.start_date);
     task.start_date = new Date(this.datepipe.transform(task.start_date, 'MMM d, y') + ' ' + startTime);
-    const endTime = this.setMinutesAfterDrag(task.end_date);
+    const endTime = this.taskAllocateCommonService.setMinutesAfterDrag(task.end_date);
     task.end_date = new Date(this.datepipe.transform(task.end_date, 'MMM d, y') + ' ' + endTime);
     this.updateDates(task);
     this.task = task;
@@ -320,15 +320,15 @@ export class GanttEdittaskComponent implements OnInit {
     }
   }
 
-  setMinutesAfterDrag(date) {
-    let time: any = this.getTimePart(date);
-    time = time.split(':')
-    let h = parseInt(time[0])
-    let m = parseInt(time[1].split(' ')[0])
-    let ampm = time[1].split(' ')[1]
-    let minutes = (Math.round(m / 15) * 15) % 60;
-    return h + ':' + minutes + ' ' + ampm;
-  }
+  // setMinutesAfterDrag(date) {
+  //   let time: any = this.getTimePart(date);
+  //   time = time.split(':')
+  //   let h = parseInt(time[0])
+  //   let m = parseInt(time[1].split(' ')[0])
+  //   let ampm = time[1].split(' ')[1]
+  //   let minutes = (Math.round(m / 15) * 15) % 60;
+  //   return h + ':' + minutes + ' ' + ampm;
+  // }
 
   isViewAllocationBtn(task) {
     if (task.itemType !== 'Client Review' && task.itemType !== 'Send to client' && task.slotType !== 'Slot') {
