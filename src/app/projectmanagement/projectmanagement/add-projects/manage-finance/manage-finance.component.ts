@@ -160,6 +160,7 @@ export class ManageFinanceComponent implements OnInit {
   selectedProposedEndDate: Date;
   maxEndDate: Date;
   minDate: any;
+  BudgetType: string = '';
 
   constructor(
     private frmbuilder: FormBuilder,
@@ -266,7 +267,6 @@ export class ManageFinanceComponent implements OnInit {
     sowGet.listName = this.constant.listNames.SOW.name;
     batchURL.push(sowGet);
 
-    debugger;
     // Get Advance Invoices ##2
     const invGet = Object.assign({}, options);
     const invFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.ADV_INVOICES);
@@ -647,6 +647,7 @@ export class ManageFinanceComponent implements OnInit {
         return;
       }
       this.showBudgetIncrease = false;
+      this.BudgetType='IncreaseBudget';
       this.assignBudgetToProject(this.selectedReason, this.selectedReasonType);
     } else {
       if (!this.selectedReasonType) {
@@ -891,7 +892,6 @@ export class ManageFinanceComponent implements OnInit {
       });
       return;
     }
-    debugger;
     const tempPOObj = $.extend(true, {}, this.poAddObj);
     tempPOObj.poId = this.selectedPo;
     tempPOObj.inv_number = oInv.InvoiceNumber;
@@ -1322,7 +1322,6 @@ export class ManageFinanceComponent implements OnInit {
 
       this.existBudgetArray = result[0];
       this.existPOArray = result[1];
-      debugger;
       this.existPOInvoiceArray = result[2];
       this.existPBBBudgetArray = result[3];
       await this.getInitData(projObj.ProjectCode, projObj.ClientLegalEntity,
@@ -1425,15 +1424,13 @@ export class ManageFinanceComponent implements OnInit {
           invoiceObj.Id = invoiceItem.ID;
           invoiceObj.lineitemCount = "lineitem" + count++;
           invoiceObj.poId = invoiceItem.PO;
-
-          debugger;
           invoiceObj.inv_number = invoiceNumber && invoiceNumber.length && invoiceNumber[0].retItems && invoiceNumber[0].retItems.length
             ? invoiceNumber[0].retItems[0].InvoiceNumber : '';
           if (invoiceObj.inv_number) {
             invoiceObj.invUrl = invoiceNumber && invoiceNumber.length && invoiceNumber[0].retItems && invoiceNumber[0].retItems.length
               ? invoiceNumber[0].retItems[0].FileURL : '';
-            invoiceObj.auxiliaryInvoiceName =invoiceNumber && invoiceNumber.length && invoiceNumber[0].retItems && invoiceNumber[0].retItems.length
-            ? invoiceNumber[0].retItems[0].AuxiliaryInvoiceName : '';
+            invoiceObj.auxiliaryInvoiceName = invoiceNumber && invoiceNumber.length && invoiceNumber[0].retItems && invoiceNumber[0].retItems.length
+              ? invoiceNumber[0].retItems[0].AuxiliaryInvoiceName : '';
           }
           invoiceObj.prf_number = proformaNumber && proformaNumber.length && proformaNumber[0].retItems && proformaNumber[0].retItems.length
             ? proformaNumber[0].retItems[0].Title : '';
@@ -1723,6 +1720,10 @@ export class ManageFinanceComponent implements OnInit {
   }
 
 
+  saveEditedPo() {
+    this.saveUpdatePO(this.BudgetType)
+  }
+
   async saveUpdatePO(budgetType) {
     const returnObj = {
       pfObj: {},
@@ -1905,7 +1906,10 @@ export class ManageFinanceComponent implements OnInit {
         });
       }
 
-      if (this.projectType === this.pmConstant.PROJECT_TYPE.FTE.value && this.projectStatus !== this.constant.projectList.status.InDiscussion && this.datePipe.transform(new Date(this.dbProposedDate), 'MMM dd, yyyy') !== this.datePipe.transform(new Date(this.selectedProposedEndDate), 'MMM dd, yyyy')) {
+      if (this.projectType === this.pmConstant.PROJECT_TYPE.FTE.value && this.projectStatus !== this.constant.projectList.status.InDiscussion && budgetType) {
+
+
+        // if (this.projectType === this.pmConstant.PROJECT_TYPE.FTE.value && this.projectStatus !== this.constant.projectList.status.InDiscussion && this.datePipe.transform(new Date(this.dbProposedDate), 'MMM dd, yyyy') !== this.datePipe.transform(new Date(this.selectedProposedEndDate), 'MMM dd, yyyy')) {
 
         const months = budgetType === 'IncreaseBudget' ? this.pmCommonService.getMonths(this.dbProposedDate, this.selectedProposedEndDate) : this.pmCommonService.getMonths(this.selectedProposedEndDate, this.dbProposedDate);
 

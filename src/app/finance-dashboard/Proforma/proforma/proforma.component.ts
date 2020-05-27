@@ -1531,7 +1531,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
             this.reFetchData(type);
 
         } else if (type === "generateInvoice") {
-            debugger;
             const oInv = arrResults[0];
             let proformHtml = this.selectedRowItem.ProformaHtml;
             const batchUrl = [];
