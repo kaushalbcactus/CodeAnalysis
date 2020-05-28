@@ -1,10 +1,13 @@
 import { Component, OnInit, ViewChild, AfterViewInit, Output, EventEmitter } from '@angular/core';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
-import { IConflictTask, IPopupConflictData, IConflictResource } from '../../interface/allocation';
+import { IConflictTask, IPopupConflictData, IConflictResource, IQueryOptions } from '../../interface/allocation';
 import { GlobalService } from 'src/app/Services/global.service';
 import { TaskAllocationCommonService } from '../../services/task-allocation-common.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { UsercapacityComponent } from 'src/app/shared/usercapacity/usercapacity.component';
+import { TaskAllocationConstantsService } from '../../services/task-allocation-constants.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
+import { ConstantsService } from 'src/app/Services/constants.service';
 
 @Component({
   selector: 'app-conflict-allocations',
@@ -21,11 +24,12 @@ export class ConflictAllocationsComponent implements OnInit, AfterViewInit {
   public hideLoader: boolean;
   @ViewChild('UserCapacity', { static: false }) userCapacity: UsercapacityComponent;
   constructor(public popupData: DynamicDialogConfig, public globalService: GlobalService,
-    public popupConfig: DynamicDialogRef, public allocationCommon: TaskAllocationCommonService,
-    public commonService: CommonService, private usercapacityComponent: UsercapacityComponent) { }
+              public popupConfig: DynamicDialogRef, public allocationCommon: TaskAllocationCommonService,
+              public commonService: CommonService, private usercapacityComponent: UsercapacityComponent,
+              private allocationConstant: TaskAllocationConstantsService, private spServices: SPOperationService,
+              private globalConstant: ConstantsService) { }
   public conflictResolved = false;
   ngOnInit() {
-
     this.cols = [
       { field: 'allocatedHrs', header: 'Hours Allocated' },
       { field: 'allocationDate', header: 'Dates' },
@@ -38,7 +42,7 @@ export class ConflictAllocationsComponent implements OnInit, AfterViewInit {
     this.milestoneData = this.popupData.data.originalData ? this.popupData.data.originalData : {};
     this.popupData.data = null;
     this.activeIndex = 0;
-
+    this.hideLoader = true;
   }
 
   ngAfterViewInit() {
@@ -48,7 +52,7 @@ export class ConflictAllocationsComponent implements OnInit, AfterViewInit {
     return this.globalService.sharePointPageObject.webAbsoluteUrl + '/dashboard#/taskAllocation?ProjectCode=' + data.projectCode;
   }
 
-  save() {
+  save(): void {
     this.hideLoader = false;
     setTimeout(() => {
       const obj: IPopupConflictData = { conflict: this.conflictResolved, action: 'save' };
@@ -58,13 +62,17 @@ export class ConflictAllocationsComponent implements OnInit, AfterViewInit {
     }, 100);
   }
 
-  close() {
+  close(): void {
     const obj: IPopupConflictData = { conflict: this.conflictResolved, action: 'close' };
     this.popupConfig.close(obj);
   }
 
-  async refresh() {
-    this.conflicTasks = await this.checkConflictsAllocations(this.node, this.milestoneData);
+  refresh(): void {
+    this.hideLoader = false;
+    setTimeout(async () => {
+      this.conflicTasks = await this.checkConflictsAllocations(this.node, this.milestoneData);
+      this.hideLoader = true;
+    }, 100);
   }
 
   getAllTasks(milSubMil, originalData) {
@@ -91,47 +99,43 @@ export class ConflictAllocationsComponent implements OnInit, AfterViewInit {
     return allTasks;
   }
 
-  async checkConflictsAllocations(milSubMil, originalData): Promise<any[]> {
+  async checkConflictsAllocations(milSubMil: Node, originalData: Node): Promise<IConflictResource[]> {
     let allTasks = [];
     const conflictDetails = [];
+    let projectInformation = [];
     allTasks = this.getAllTasks(milSubMil, originalData);
     let capacity;
     const maxHrs = 10;
     for (const element of allTasks) {
-      element.resources = this.globalService.oTaskAllocation.oResources.filter((objt) => {
-        return objt.UserName.ID === element.AssignedTo.ID;
-      });
-      element.resources = this.commonService.unique(element.resources, 'UserName.ID');
-      if (milSubMil) {
-        capacity = await this.usercapacityComponent.afterResourceChange(element, element.start_date,
-          element.end_date, element.resources, [], false);
-      } else {
-        capacity = await this.usercapacityComponent.factoringTimeForAllocation(element.start_date, element.end_date,
-          element.resources, [], [], this.allocationCommon.adhocStatus);
-      }
-
+      capacity = this.getResourceCapacity(element, milSubMil);
       for (const user of capacity.arrUserDetails) {
         const oExistingResource: IConflictResource = conflictDetails.length ? conflictDetails.find(ct => ct.userId === user.uid) : {};
-        const dates = user.dates.filter(d => d.totalTimeAllocated >= maxHrs && d.userCapacity !== 'Leave');
+        this.updateUserCapacity(element, user);
+        const dates = user.dates.filter(d => d.totalTimeAllocated > maxHrs && d.userCapacity !== 'Leave');
         const tasks = [];
-        for (const date of dates) {
-          // tslint:disable-next-line: max-line-length
-          const resourceDateExists = oExistingResource && Object.keys(oExistingResource).length && conflictDetails.findIndex(ct => ct.tasks.find(t => t.allocationDate.getTime() === date.date.getTime())) > -1 ? true : false;
-          if (!resourceDateExists) {
-            const conflictTask: IConflictTask = {
-              allocatedHrs: date.totalTimeAllocated,
-              allocationDate: date.date,
-              projects: [],
-            };
-            date.tasksDetails.forEach(task => {
-              const projectDetail = {
-                projectCode: task.projectCode,
-                shortTitle: task.shortTitle,
-                allocatedhrs: this.commonService.convertFromHrsMins(task.timeAllocatedPerDay)
+        if (dates.length) {
+          const projectCodes = this.getProjectCodes(dates);
+          projectInformation = await this.getProjectShortTitle(projectCodes, projectInformation);
+          for (const date of dates) {
+            // tslint:disable-next-line: max-line-length
+            const resourceDateExists = oExistingResource && Object.keys(oExistingResource).length && conflictDetails.findIndex(ct => ct.tasks.find(t => t.allocationDate.getTime() === date.date.getTime())) > -1 ? true : false;
+            if (!resourceDateExists) {
+              const conflictTask: IConflictTask = {
+                allocatedHrs: date.totalTimeAllocated,
+                allocationDate: date.date,
+                projects: [],
               };
-              conflictTask.projects.push(projectDetail);
-            });
-            tasks.push(conflictTask);
+              date.tasksDetails.forEach(task => {
+                const project = projectInformation.find(p => p.ProjectCode === task.projectCode);
+                const projectDetail = {
+                  projectCode: task.projectCode,
+                  shortTitle: project ? project.WBJID : '',
+                  allocatedhrs: this.commonService.convertFromHrsMins(task.timeAllocatedPerDay)
+                };
+                conflictTask.projects.push(projectDetail);
+              });
+              tasks.push(conflictTask);
+            }
           }
         }
         if (tasks.length) {
@@ -150,6 +154,73 @@ export class ConflictAllocationsComponent implements OnInit, AfterViewInit {
       }
     }
     return conflictDetails;
+  }
+
+  async getResourceCapacity(task, milSubMil) {
+    let capacity: any;
+    task.resources = this.globalService.oTaskAllocation.oResources.filter((objt) => {
+      return objt.UserName.ID === task.AssignedTo.ID;
+    });
+    task.resources = this.commonService.unique(task.resources, 'UserName.ID');
+    if (milSubMil) {
+      capacity = await this.usercapacityComponent.afterResourceChange(task, task.start_date,
+        task.end_date, task.resources, [], false);
+    } else {
+      capacity = await this.usercapacityComponent.factoringTimeForAllocation(task.start_date, task.end_date,
+        task.resources, [], [], this.allocationCommon.adhocStatus);
+    }
+    return capacity;
+  }
+
+  updateUserCapacity(currentTask, user) {
+    const matchedTask = user.tasks.find(t => t.Title === currentTask.taskFullName && currentTask.edited);
+    if (matchedTask) {
+      const strAllocationPerDay = matchedTask && currentTask ? currentTask.allocationPerDay : '';
+      matchedTask.AllocationPerDay = strAllocationPerDay;
+      matchedTask.ExpectedTime = matchedTask.TotalAllocated = currentTask.budgetHours;
+      this.usercapacityComponent.fetchUserCapacity(user);
+    }
+  }
+
+  getProjectCodes(dates) {
+    const projectCodes = [];
+    dates.forEach(date => {
+      const projects = date.tasksDetails.map(t => t.projectCode);
+      projectCodes.push(projects);
+    });
+    const mergedCodes = [].concat.apply([], projectCodes);
+    const uniqueProjectCodes = [...new Set(mergedCodes)];
+    return uniqueProjectCodes;
+  }
+
+  async getProjectShortTitle(projectCodes, existingProjectInfo)   {
+    const batchUrl = [];
+    let projectInformation = [];
+    const options: IQueryOptions = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    projectCodes.forEach(projectCode => {
+      const existingProject = existingProjectInfo.find(p => p.ProjectCode === projectCode);
+      if (existingProject) {
+        projectInformation.push(existingProject);
+      } else {
+        const projObj = Object.assign({}, options);
+        const projFilter = Object.assign({}, this.allocationConstant.taskallocationComponent.projectShortTitle);
+        projFilter.filter = projFilter.filter.replace('{{projectCode}}', projectCode);
+        projObj.url = this.spServices.getReadURL(this.globalConstant.listNames.ProjectInformation.name, projFilter);
+        projObj.listName = this.globalConstant.listNames.ProjectInformation.name;
+        projObj.type = 'GET';
+        batchUrl.push(projObj);
+      }
+    });
+    this.commonService.SetNewrelic('Allocation', 'Conflict Check component', 'GetProjectShortTitle');
+    const arrResults = await this.spServices.executeBatch(batchUrl);
+    const projects = arrResults.length > 0 ? arrResults.map(a => a.retItems.length ? a.retItems[0] : []) : [];
+    projectInformation = [...projectInformation, ...projects];
+    return projectInformation;
   }
 
   recalculateUserCapacity(user, dates) {

@@ -67,7 +67,7 @@
                                                 <div class="center">{{user.displayTotalAllocated}}</div>
                                             </td>
                                         </tr>
-                                        <tr *ngIf="user.dates.length<=10">
+                                        <tr *ngIf="user.dates.length<=10 && !this.userCapacity">
                                             <td>
                                                 <div class="taskBar" *ngFor="let task of user.tasks" [ngStyle]="{'width':task.cssWidth,'left':task.cssLeft,'top':task.cssTop,'display':task.cssHide}" [ngClass]="{'plannedTask':task.Status==='Not Confirmed','confirmedTask':task.Status!=='Not confirmed'}">
                                                     {{task.TotalAllocated}} : {{task.ProjectCode}}

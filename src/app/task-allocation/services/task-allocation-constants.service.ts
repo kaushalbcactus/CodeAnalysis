@@ -22,6 +22,10 @@ export class TaskAllocationConstantsService {
             filter: "ProjectCode eq '{{ProjectCode}}'",
             top: 4500
         },
+        projectShortTitle: {
+          select: 'ProjectCode, WBJID',
+          filter: 'ProjectCode eq \'{{projectCode}}\''
+        },
         Resources: {
             select: "ID,MaxHrs,TAVisibility,PrimarySkill,UserName/ID,UserName/EMail,UserName/Title,UserName/Name,TimeZone/Title,SkillLevel/Title,Tasks/Title,Tasks/Status,Deliverables/Title,DeliverableExclusion/Title,TA/Title,TAExclusion/Title,Account/Title",
             expand: "UserName/ID,UserName/EMail,UserName/Title,UserName/Name,TimeZone/Title,SkillLevel/Title,Tasks/Title,Tasks/Status,Deliverables/Title,DeliverableExclusion/Title,TA/Title,TAExclusion/Title,Account/Title",
