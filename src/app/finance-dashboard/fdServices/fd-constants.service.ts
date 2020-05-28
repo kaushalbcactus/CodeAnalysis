@@ -236,7 +236,7 @@ export class FdConstantsService {
         },
 
         sowByProjectCode: {
-            select: "ID, Title, ClientLegalEntity, SOWTitle, Currency, TotalBudget, NetBudget, OOPBudget, TaxBudget, Status, PrimaryPOC, TotalLinked, TotalScheduled, ScheduledRevenue, TotalInvoiced, RevenueLinked,AuthorId,EditorId",
+            select: "ID, Title, ClientLegalEntity, SOWTitle, Currency, TotalBudget, NetBudget, OOPBudget, TaxBudget, Status, PrimaryPOC, TotalLinked, TotalScheduled, ScheduledRevenue, TotalInvoiced, RevenueLinked,InvoicedRevenue,AuthorId,EditorId",
             filter: "SOWCode eq '{{SOWCode}}' and Status ne 'Deleted'",
             top: 1
         },

@@ -62,7 +62,7 @@ export class MarkAsPaymentDialogComponent implements OnInit {
       const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
       if (fileName !== sNewFileName) {
         this.markAsPayment_form.get('FileUrl').setValue('');
-        this.messageService.add({ key: 'approvedToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
+        this.messageService.add({ key: 'markAsPayment', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
         return false;
       }
       this.SelectedFile.push(new Object({ name: sNewFileName, file: event.target.files[0] }));
@@ -79,9 +79,9 @@ export class MarkAsPaymentDialogComponent implements OnInit {
 
   onSubmit() {
     if (this.markAsPayment_form.valid) {
-      if (this.SelectedFile && this.SelectedFile[0].size === 0) {
+      if (this.SelectedFile && this.SelectedFile[0].file.size === 0) {
         this.messageService.add({
-          key: 'approvedToast', severity: 'error',
+          key: 'markAsPayment', severity: 'error',
           summary: 'Error message', detail: 'Unable to upload file, size of ' + this.SelectedFile[0].name + ' is 0 KB.', life: 2000
         });
         return;
@@ -92,7 +92,7 @@ export class MarkAsPaymentDialogComponent implements OnInit {
           if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
               if (uploadedfile[0].hasOwnProperty('odata.error')  || uploadedfile[0].hasError) {
                   this.messageService.add({
-                      key: 'approvedToast', severity: 'error', summary: 'Error message',
+                      key: 'markAsPayment', severity: 'error', summary: 'Error message',
                       detail: 'File not uploaded, Folder / File Not Found', life: 3000
                   });
               }
@@ -112,14 +112,6 @@ export class MarkAsPaymentDialogComponent implements OnInit {
       this.isPaymentFormSubmit = true;
     }
   }
-
-
-
-  async uploadFileData(markAsPayment_form,type: string) {
-  
-}
-
-
 
   Cancel() {
     this.ref.close();

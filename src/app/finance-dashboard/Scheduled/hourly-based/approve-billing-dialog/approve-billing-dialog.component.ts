@@ -124,7 +124,7 @@ export class ApproveBillingDialogComponent implements OnInit {
     this.ApproveInvoiceForm.get('InvoiceDate').setValue(oInv ? this.datePipe.transform(oInv.InvoiceDate, 'MMM, dd, yyyy') : '')
     this.ApproveInvoiceForm.get('InvoiceAmount').setValue(oInv ? oInv.Amount : '');
     this.ApproveInvoiceForm.get('BalanceAmount').setValue(oInv ? (oInv.Amount - oInv.TaggedAmount) : '');
-    this.ApproveInvoiceForm.get('TagAmount').setValue(parseInt(this.selectedRowItem.TotalInvoice));
+    this.ApproveInvoiceForm.get('TagAmount').setValue(parseFloat(this.selectedRowItem.TotalInvoice));
     this.ApproveInvoiceForm.get('TagAmount').setValidators([Validators.required, this.common.checkGTZeroNumberValidator(), Validators.max(oInv ? (oInv.Amount - oInv.TaggedAmount) : 0)]);
     this.ApproveInvoiceForm.get('TagAmount').updateValueAndValidity();
   }

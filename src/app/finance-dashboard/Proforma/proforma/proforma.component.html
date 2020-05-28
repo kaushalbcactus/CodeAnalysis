@@ -170,8 +170,8 @@
 <!-- Generate Invoice End-->
 
 <!-- Create Proforma Modal -->
-<p-dialog header="Create Proforma Form" [(visible)]="proformaModal" [modal]="true" [draggable]="false" [responsive]="true" [positionTop]="15" [style]="{'width': '85%'}" [contentStyle]="{ 'overflow' : 'visible', 'max-height': '90vh'}" [maximizable]="false"
-    (onHide)="cancelFormSub('createProforma')" [closable]='false'>
+<p-dialog header="Create Proforma Form" [(visible)]="proformaModal" [modal]="true" [draggable]="false" [responsive]="true" [positionTop]="15" [style]="{'width': '85%'}" [contentStyle]="{ 'max-height': '90vh'}" [maximizable]="false" (onHide)="cancelFormSub('createProforma')"
+    [closable]='false'>
 
     <div class='UserButton' fxLayout="row" fxLayoutAlign="end center">
 
@@ -313,7 +313,7 @@
             </div>
             <div class="p-col-6 p-md-8 p-lg-4">
 
-                <p-calendar styleClass="pCalendarBtn" [showIcon]="true" class="cls_addproformadate" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy" yearRange="2019:2030" [disabledDays]="[0,6]" [yearNavigator]="true" panelStyleClass="calendarDemo"
+                <p-calendar styleClass="pCalendarBtn" [showIcon]="true" class="cls_addproformadate" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy" yearRange="2019:2030" appendTo="body" [disabledDays]="[0,6]" [yearNavigator]="true" panelStyleClass="calendarDemo"
                     [minDate]="minProformDate" (onFocus)="updateCalendarUI(fromCalendar)" (onClose)="updatePrformaNumFromPT(createProforma_form.value.ClientLegalEntity,$event)" #fromCalendar formControlName="ProformaDate">
                 </p-calendar>
                 <div *ngIf="formSubmit.isSubmit && isValidCreateProformaForm.ProformaDate.errors">

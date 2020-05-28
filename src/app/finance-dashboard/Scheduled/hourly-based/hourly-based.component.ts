@@ -707,7 +707,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         else {
             const TaggedAmount = parseFloat(invoiceform.Invoice.TaggedAmount) + totalVal;
             const invoiceData = {
-                __metadata : {type : this.constantService.listNames.Invoices.type},
+                __metadata: { type: this.constantService.listNames.Invoices.type },
                 TaggedAmount: TaggedAmount,
                 IsTaggedFully: invoiceform.Invoice.Amount === TaggedAmount ? 'Yes' : 'No'
             }
@@ -743,7 +743,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         item.Status = this.constantService.SOW_STATUS.AUDIT_IN_PROGRESS;
         this.projectInfoData.splice(projIndex, 1, item);
         this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-hourlyBased', 'updatePOPBBPFBSow');
-        this.submitForm(Invoiceform, batchUrl, 'confirmInvoice');
+        // this.submitForm(Invoiceform, batchUrl, 'confirmInvoice');
     }
 
 
@@ -781,15 +781,15 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     getSowData(totalVal: number, InvoiceType: string) {
         const sowData = {
             __metadata: { type: this.constantService.listNames.SOW.type },
-            TotalLinked: parseFloat(this.sowData.TotalLinked) + totalVal,
-            RevenueLinked: parseFloat(this.sowData.RevenueLinked) + totalVal
+            TotalLinked: this.sowData.TotalLinked ? parseFloat(this.sowData.TotalLinked) + totalVal : totalVal,
+            RevenueLinked: this.sowData.RevenueLinked ? parseFloat(this.sowData.RevenueLinked) + totalVal : totalVal,
         };
         if (InvoiceType === 'new') {
-            sowData['ScheduledRevenue'] = parseFloat(this.sowData.ScheduledRevenue) + totalVal;
-            sowData['TotalScheduled'] = parseFloat(this.sowData.TotalScheduled) + totalVal;
+            sowData['ScheduledRevenue'] = this.sowData.ScheduledRevenue ? (parseFloat(this.sowData.ScheduledRevenue) + totalVal) : totalVal;
+            sowData['TotalScheduled'] = this.sowData.TotalScheduled ? (parseFloat(this.sowData.TotalScheduled) + totalVal) : totalVal;
         } else {
-            sowData['InvoicedRevenue'] = parseFloat(this.sowData.InvoicedRevenue) + totalVal;
-            sowData['TotalInvoiced'] = parseFloat(this.sowData.TotalInvoiced) + totalVal;
+            sowData['InvoicedRevenue'] = this.sowData.InvoicedRevenue ? parseFloat(this.sowData.InvoicedRevenue) + totalVal : 0;
+            sowData['TotalInvoiced'] = this.sowData.TotalInvoiced ? parseFloat(this.sowData.TotalInvoiced) + totalVal : totalVal;
         }
         return sowData;
     }
