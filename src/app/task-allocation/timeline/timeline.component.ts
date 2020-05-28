@@ -2012,14 +2012,20 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   }
 
+  getNode(task) {
+    const milestone = this.milestoneData.find(m => m.data.title === task.milestone);
+    if (task.itemType === 'submilestone') {
+      const submilestone = milestone.children.find(sm => sm.data.title === task.title);
+      return submilestone;
+    }
+    return milestone;
+  }
+
   confirmMilestone(task) {
     this.loaderenable = true;
     this.confirmMilestoneLoader = true;
     setTimeout(async () => {
-      let data = this.milestoneData.filter(e => e.data.id === task.id)
-      let rowNode = {
-        node: data[0]
-      }
+      const rowNode = this.getNode(task);
       if (task.editMode) {
         this.messageService.add({
           key: 'custom', severity: 'warn', summary: 'Warning Message',
@@ -2028,12 +2034,12 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         return false;
 
       } else {
-        const Title = rowNode.node ? rowNode.node.data.title + ' - ' + task.title : task.title;
+        const Title = task.itemType === 'submilestone' && task.milestone ? task.milestone + ' - ' + task.title : task.title;
         const message = 'Are you sure that you want to Confirm ' + Title + ' ?';
-        const conflictDetails = await this.conflictAllocation.checkConflictsAllocations(rowNode.node, this.milestoneData);
+        const conflictDetails = await this.conflictAllocation.checkConflictsAllocations(rowNode, this.milestoneData);
         if (conflictDetails.length) {
-          this.capacityObj.conflictAllocation = true;
-          this.showConflictAllocations(task, conflictDetails, rowNode.node);
+          // this.capacityObj.conflictAllocation = true;
+          this.showConflictAllocations(task, conflictDetails, rowNode);
         } else {
           this.setAsNextMilestoneCall(task, message)
         }
@@ -4302,10 +4308,17 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       closable: false,
     });
 
-    ref.onClose.subscribe((conflictDetail: any) => {
-      if (conflictDetail.action.toLowerCase() === 'save') {
-        const conflictMessage = conflictDetail.conflict ? '' : 'Conflict unresolved.';
-        this.setAsNextMilestoneCall(task, conflictMessage);
+    ref.onClose.subscribe(async (detail: any) => {
+      if (detail.action.toLowerCase() === 'save') {
+        if (task) {
+          const Title = task.itemType === 'submilestone' && task.milestone ? task.milestone + ' - ' + task.title : task.title;
+          const msg = 'Are you sure that you want to Confirm ' + Title + ' ?';
+          const conflictMessage = detail.conflict ? '' + msg : 'Conflict unresolved. ' + msg;
+          this.setAsNextMilestoneCall(task, conflictMessage);
+        } else {
+          this.loaderenable = true;
+          await this.generateSaveTasks();
+        }
       }
     });
   }
@@ -4425,12 +4438,20 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         this.loaderenable = true;
         this.visualgraph = false;
         this.sharedObject.resSectionShow = false;
-        // const conflictDetails = await this.conflictAllocation.checkConflictsAllocations(null, this.milestoneData);
-        // if (conflictDetails.length) {
-        setTimeout(async () => {
-          await this.generateSaveTasks();
-        }, 300);
-      // }
+        const currentMilestoneEdited = this.milestoneData.find(m => m.data.type === 'milestone' && m.data.isCurrent && m.data.edited);
+        // tslint:disable-next-line: max-line-length
+        const conflictDetails = currentMilestoneEdited ? await this.conflictAllocation.checkConflictsAllocations(null, this.milestoneData) : [];
+        if (conflictDetails.length) {
+          this.disableSave = false;
+          this.loaderenable = false;
+          this.visualgraph = this.graphFlag !== undefined ? this.graphFlag : true;
+          this.GanttChartView = true;
+          this.showConflictAllocations(null, conflictDetails, currentMilestoneEdited);
+        } else {
+          setTimeout(async () => {
+            await this.generateSaveTasks();
+          }, 300);
+        }
       } else {
         this.disableSave = false;
       }
@@ -5165,7 +5186,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
                   task.data.id = deletedTask[0].ID
                   task.data.added = false;
                 }
-                if(task.data.edited) {
+                if (task.data.edited) {
 
                   if (task.data.added == true) {
                     task.data.status = submilestone.data.status === 'In Progress' ? 'Not Started' : submilestone.data.status === 'Not Saved' ? milestone.data.isCurrent ? 'Not Started' : 'Not Confirmed' : task.data.status;
@@ -5184,7 +5205,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
                       subtask.data.id = deletedSubTask[0].ID
                       subtask.data.added = false;
                     }
-                    if(subtask.data.edited) {
+                    if (subtask.data.edited) {
                       if (subtask.data.added == true) {
                         subtask.data.status = subtask.data.status;
                         addedTasks.push(subtask.data);
@@ -5495,20 +5516,21 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
     return validateNextMilestone;
   }
+
+
+
   async setAsNextMilestoneCall(task, msg) {
     this.confirmationService.confirm({
-      message: msg + 'Are you sure that you want to Confirm ?',
+      message: msg,
       header: 'Confirmation',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
         this.selectedSubMilestone = task;
         const validateNextMilestone = this.validateNextMilestone(this.selectedSubMilestone);
         if (validateNextMilestone) {
-          // if (!this.capacityObj.conflictAllocation) {
           this.loaderenable = true;
-          setTimeout(() => { this.setAsNextMilestone(this.selectedSubMilestone); }, 200);
+          setTimeout(async () => { await this.setAsNextMilestone(this.selectedSubMilestone); }, 200);
         }
-        // }
       },
       reject: () => {
       }

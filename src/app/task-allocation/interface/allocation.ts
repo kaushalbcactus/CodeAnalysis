@@ -91,3 +91,11 @@ export interface IPopupConflictData {
     conflict: boolean;
     action: string;
 }
+
+export interface IQueryOptions {
+    data: any;
+    url: string;
+    type: string;
+    listName: string;
+}
+

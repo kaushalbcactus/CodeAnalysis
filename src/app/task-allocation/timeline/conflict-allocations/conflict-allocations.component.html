@@ -28,11 +28,11 @@
   ></button>
 </div>
 
-  <div fxLayout="column" style="padding: 10vw;width: 100%;" fxLayoutAlign="center center" [hidden]="!hideLoader">
+  <div fxLayout="column" style="padding: 10vw;width: 100%;" fxLayoutAlign="center center" [hidden]="hideLoader">
     <div id="scInnerLoader"></div>
     <div id="scInnerLoaderText">Loading...</div>
   </div>
-  <div [hidden]="hideLoader">
+  <div [hidden]="!hideLoader">
   <p-accordion>
     <p-accordionTab *ngFor="let task of conflicTasks">
       <p-header>
