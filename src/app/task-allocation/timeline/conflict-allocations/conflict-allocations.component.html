@@ -4,7 +4,7 @@
     fxLayoutAlign="end center"
     style="margin-right: 10px;"
   >
-    <button mat-raised-button type="button" title="Refresh" (click)="refresh()">
+    <button mat-raised-button type="button" title="Refresh" class="cls_conflict_refresh" (click)="refresh()">
       <mat-icon>refresh</mat-icon>
     </button>
   </div>
@@ -16,6 +16,7 @@
     label="Save"
     class="saveTaskButton"
     (click)="save()"
+    class="cls_conflict_save"
   ></button>
   <button
     type="button"
@@ -25,6 +26,7 @@
     class="ui-button-secondary"
     style="background-color: ghostwhite;"
     (click)="close()"
+    class="cls_conflict_close"
   ></button>
 </div>
 
@@ -33,13 +35,13 @@
     <div id="scInnerLoaderText">Loading...</div>
   </div>
   <div [hidden]="!hideLoader">
-  <p-accordion>
+  <p-accordion class="cls_conflict_accordion" [activeIndex]="activeIndex">
     <p-accordionTab *ngFor="let task of conflicTasks">
       <p-header>
-        <span>{{ task.userName }}</span>
+        <span >{{ task.userName }}</span>
       </p-header>
       <div>
-        <p-table [columns]="cols" [value]="task.tasks" class="conflictTable">
+        <p-table [columns]="cols" [value]="task.tasks" class="conflictTable cls_conflict_conflictTable">
           <ng-template pTemplate="header" let-columns>
             <tr>
               <th class="allocatedHrs">
@@ -62,10 +64,10 @@
           <ng-template pTemplate="body" let-rowData let-columns="columns">
             <tr>
               <td>
-                {{ rowData.allocatedHrs }}
+                <span>{{ rowData.allocatedHrs }} </span>
               </td>
               <td>
-                {{ rowData.allocationDate | date: " d MMM, y" }}
+                <span>{{ rowData.allocationDate | date: " d MMM, y" }}</span>
               </td>
               <td [attr.colSpan]="3">
               <p-table [value]="rowData.projects">

@@ -24,10 +24,10 @@ export class ConflictAllocationsComponent implements OnInit, AfterViewInit {
   public hideLoader: boolean;
   @ViewChild('UserCapacity', { static: false }) userCapacity: UsercapacityComponent;
   constructor(public popupData: DynamicDialogConfig, public globalService: GlobalService,
-    public popupConfig: DynamicDialogRef, public allocationCommon: TaskAllocationCommonService,
-    public commonService: CommonService, private usercapacityComponent: UsercapacityComponent,
-    private allocationConstant: TaskAllocationConstantsService, private spServices: SPOperationService,
-    private globalConstant: ConstantsService) { }
+              public popupConfig: DynamicDialogRef, public allocationCommon: TaskAllocationCommonService,
+              public commonService: CommonService, private usercapacityComponent: UsercapacityComponent,
+              private allocationConstant: TaskAllocationConstantsService, private spServices: SPOperationService,
+              private globalConstant: ConstantsService) { }
   public conflictResolved = false;
   ngOnInit() {
     this.cols = [
@@ -52,7 +52,7 @@ export class ConflictAllocationsComponent implements OnInit, AfterViewInit {
     return this.globalService.sharePointPageObject.webAbsoluteUrl + '/dashboard#/taskAllocation?ProjectCode=' + data.projectCode;
   }
 
-  save() {
+  save(): void {
     this.hideLoader = false;
     setTimeout(() => {
       const obj: IPopupConflictData = { conflict: this.conflictResolved, action: 'save' };
@@ -62,12 +62,12 @@ export class ConflictAllocationsComponent implements OnInit, AfterViewInit {
     }, 100);
   }
 
-  close() {
+  close(): void {
     const obj: IPopupConflictData = { conflict: this.conflictResolved, action: 'close' };
     this.popupConfig.close(obj);
   }
 
-  refresh() {
+  refresh(): void {
     this.hideLoader = false;
     setTimeout(async () => {
       this.conflicTasks = await this.checkConflictsAllocations(this.node, this.milestoneData);
@@ -99,7 +99,7 @@ export class ConflictAllocationsComponent implements OnInit, AfterViewInit {
     return allTasks;
   }
 
-  async checkConflictsAllocations(milSubMil, originalData): Promise<any[]> {
+  async checkConflictsAllocations(milSubMil: Node, originalData: Node): Promise<IConflictResource[]> {
     let allTasks = [];
     const conflictDetails = [];
     let projectInformation = [];
@@ -193,7 +193,7 @@ export class ConflictAllocationsComponent implements OnInit, AfterViewInit {
     return uniqueProjectCodes;
   }
 
-  async getProjectShortTitle(projectCodes, existingProjectInfo) {
+  async getProjectShortTitle(projectCodes, existingProjectInfo)   {
     const batchUrl = [];
     let projectInformation = [];
     const options: IQueryOptions = {

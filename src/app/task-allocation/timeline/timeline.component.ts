@@ -22,7 +22,7 @@ import { gantt, Gantt } from '../../dhtmlx-gantt/codebase/source/dhtmlxgantt';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 declare let dhtmlXMenuObject: any;
 // import { DailyAllocationComponent } from '../daily-allocation/daily-allocation.component';
-import { IMilestoneTask, IConflictTask } from '../interface/allocation';
+import { IMilestoneTask, IConflictTask, IConflictResource } from '../interface/allocation';
 import { DailyAllocationTask } from 'src/app/shared/pre-stack-allocation/interface/prestack';
 import { PreStackAllocationComponent } from 'src/app/shared/pre-stack-allocation/pre-stack-allocation.component';
 import { AllocationOverlayComponent } from 'src/app/shared/pre-stack-allocation/allocation-overlay/allocation-overlay.component';
@@ -2012,10 +2012,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   }
 
-  getNode(task) {
-    const milestone = this.milestoneData.find(m => m.data.title === task.milestone);
+  getNode(task): TreeNode {
+    const milestone: TreeNode = this.milestoneData.find(m => m.data.title === task.milestone);
     if (task.itemType === 'submilestone') {
-      const submilestone = milestone.children.find(sm => sm.data.title === task.title);
+      const submilestone: TreeNode = milestone.children.find(sm => sm.data.title === task.title);
       return submilestone;
     }
     return milestone;
@@ -2025,7 +2025,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.loaderenable = true;
     this.confirmMilestoneLoader = true;
     setTimeout(async () => {
-      const rowNode = this.getNode(task);
+      const rowNode: TreeNode  = this.getNode(task);
       if (task.editMode) {
         this.messageService.add({
           key: 'custom', severity: 'warn', summary: 'Warning Message',
@@ -2036,7 +2036,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       } else {
         const Title = task.itemType === 'submilestone' && task.milestone ? task.milestone + ' - ' + task.title : task.title;
         const message = 'Are you sure that you want to Confirm ' + Title + ' ?';
-        const conflictDetails = await this.conflictAllocation.checkConflictsAllocations(rowNode, this.milestoneData);
+        const conflictDetails: IConflictResource[] = await this.conflictAllocation.checkConflictsAllocations(rowNode, this.milestoneData);
         if (conflictDetails.length) {
           // this.capacityObj.conflictAllocation = true;
           this.showConflictAllocations(task, conflictDetails, rowNode);
@@ -4440,7 +4440,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         this.sharedObject.resSectionShow = false;
         const currentMilestoneEdited = this.milestoneData.find(m => m.data.type === 'milestone' && m.data.isCurrent && m.data.edited);
         // tslint:disable-next-line: max-line-length
-        const conflictDetails = currentMilestoneEdited ? await this.conflictAllocation.checkConflictsAllocations(null, this.milestoneData) : [];
+        const conflictDetails: IConflictResource[] = currentMilestoneEdited ? await this.conflictAllocation.checkConflictsAllocations(null, this.milestoneData) : [];
         if (conflictDetails.length) {
           this.disableSave = false;
           this.loaderenable = false;
