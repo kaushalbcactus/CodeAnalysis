@@ -962,7 +962,7 @@ export class CommonService {
 
     removeEmptyItems(array) {
         array = array.filter((el) => {
-            return el != null && !Array.isArray(el)  
+            return el != null && !Array.isArray(el)
         });
 
         return array;
@@ -984,7 +984,7 @@ export class CommonService {
     setBatchObject(batchUrl, url, body, listName, type, ) {
         const obj = Object.assign({}, this.queryConfig);
         obj.url = url;
-        obj.listName = listName; 
+        obj.listName = listName;
         obj.type = type;
         obj.data = body;
         batchUrl.push(obj);
@@ -1005,5 +1005,35 @@ export class CommonService {
                 resolve(Confirmation);
             });
         });
+    }
+
+    getAllocationByDate(date: Date, strAllocation: string, optionalValToSet: number): number {
+      const strDate = this.datePipe.transform(new Date(date), 'EE,MMMd,y');
+      if (strAllocation) {
+        const arrAllocation = strAllocation ? strAllocation.split(/\n/) : [];
+        const strDay = arrAllocation.find(a => a.indexOf(strDate) > -1);
+        const value = strDay ? this.getDateTimeFromString(strDay).value : 0;
+        return value ? this.common.convertFromHrsMins(value.hours + ':' + value.mins) : optionalValToSet;
+       } else {
+        return optionalValToSet;
+      }
+    }
+
+    getDateTimeFromString(hrsDate: Date | string) {
+      const day = hrsDate instanceof Date ? this.datePipe.transform(new Date(hrsDate), 'EE,MMMd,y') : hrsDate;
+      const arrDateTime: string[] = day.indexOf(':') > -1 ? day.split(':') : [];
+      const date: Date = arrDateTime.length ? new Date(arrDateTime[0]) : new Date();
+      const time: string = arrDateTime.length > 1 ? arrDateTime[1] + ':' + arrDateTime[2] : '';
+      const value = this.getHrsMinsObj(time, false);
+      return { date, value };
+    }
+
+    getHrsMinsObj(hrs: string, isSliderRange: boolean): any {
+      const strhrs = '' + hrs;
+      const hours = strhrs.indexOf(':') > -1 ? +strhrs.split(':')[0] : +strhrs;
+      const mins = strhrs.indexOf(':') > 0 ? +strhrs.split(':')[1] : isSliderRange ? 45 : 0;
+      return {
+        hours, mins
+      };
     }
 }

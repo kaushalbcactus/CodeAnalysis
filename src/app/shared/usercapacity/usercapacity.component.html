@@ -16,7 +16,7 @@
 
 
 
-<table [hidden]="loaderenable" class="col-md-12 table-bordered table-striped header-fixed" id="capacityTable">
+<table  class="col-md-12 table-bordered table-striped header-fixed" id="capacityTable">
     <thead class="tableHeader">
         <tr>
             <th [ngStyle]="{'width':'6%'}">
@@ -25,10 +25,10 @@
             <th title="{{date | date : 'EEE d MMM yyyy'}}" *ngFor="let date of oCapacity.arrDateFormat">
                 {{date | date : "d MMM"}}
             </th>
-            <th class="unallocated">
+            <th  *ngIf="!this.userCapacity" class="unallocated">
                 Total Un-Allocated / Bench
             </th>
-            <th class="allocated">
+            <th  *ngIf="!this.userCapacity" class="allocated">
                 Total Allocated / Spent
             </th>
         </tr>
@@ -60,14 +60,14 @@
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td class="unallocated" [ngStyle]="{'vertical-align':verticalAlign}">
+                                            <td class="unallocated" *ngIf="!this.userCapacity" [ngStyle]="{'vertical-align':verticalAlign}">
                                                 <div class="center"> {{user.displayTotalUnAllocated}}</div>
                                             </td>
-                                            <td class="allocated" [ngStyle]="{'vertical-align':verticalAlign}">
+                                            <td class="allocated" *ngIf="!this.userCapacity" [ngStyle]="{'vertical-align':verticalAlign}">
                                                 <div class="center">{{user.displayTotalAllocated}}</div>
                                             </td>
                                         </tr>
-                                        <tr *ngIf="user.dates.length<=10">
+                                        <tr *ngIf="user.dates.length<=10 && !this.userCapacity">
                                             <td>
                                                 <div class="taskBar" *ngFor="let task of user.tasks" [ngStyle]="{'width':task.cssWidth,'left':task.cssLeft,'top':task.cssTop,'display':task.cssHide}" [ngClass]="{'plannedTask':task.Status==='Not Confirmed','confirmedTask':task.Status!=='Not confirmed'}">
                                                     {{task.TotalAllocated}} : {{task.ProjectCode}}

@@ -94,7 +94,7 @@ body .ui-chkbox .ui-chkbox-box.ui-state-active:not(.ui-state-disabled):hover {
   right: 56px !important;
 }
 
-#scInnerLoaderText {
+#scInnerLoaderText, #scConfirmLoaderText {
   -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
   -o-animation: loading-text-opacity 2s linear 0s infinite normal;
   -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;

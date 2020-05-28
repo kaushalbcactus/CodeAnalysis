@@ -25,7 +25,7 @@ import { GanttEdittaskComponent } from './gantt-edittask/gantt-edittask.componen
 import { Ng5SliderModule } from 'ng5-slider';
 import { PreStackAllocationModule } from '../shared/pre-stack-allocation/pre-stack-allocation.module';
 import { PreStackAllocationComponent } from '../shared/pre-stack-allocation/pre-stack-allocation.component';
-import { ConflictAllocationsComponent } from './conflict-allocations/conflict-allocations.component';
+import { ConflictAllocationsComponent } from './timeline/conflict-allocations/conflict-allocations.component';
 import { ResourceSelectionComponent } from './resource-selection/resource-selection.component';
 @NgModule({
   declarations: [TaskAllocationComponent, TimelineComponent, DragDropComponent,

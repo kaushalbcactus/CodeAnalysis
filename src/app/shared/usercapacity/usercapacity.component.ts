@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, HostListener, ChangeDetectorRef, ViewChild, ViewContainerRef, ComponentFactoryResolver, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, ElementRef, HostListener, ChangeDetectorRef, ViewChild, ViewContainerRef, ComponentFactoryResolver, Output, EventEmitter, Input } from '@angular/core';
 import { DatePipe, CommonModule } from '@angular/common';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -47,6 +47,7 @@ export class UsercapacityComponent implements OnInit {
   taskStatus = 'All';
   tableLoaderenable = false;
   @Output() resourceSelect = new EventEmitter<string>();
+  @Input() userCapacity: any;
   constructor(
     public datepipe: DatePipe, public config: DynamicDialogConfig,
     private spService: SPOperationService,
@@ -70,7 +71,8 @@ export class UsercapacityComponent implements OnInit {
     if (this.data) {
       this.dynamicload = true;
       this.Onload(this.data);
-
+    } else if (this.userCapacity) {
+      this.showCapacity(this.userCapacity);
     }
   }
 
@@ -96,50 +98,51 @@ export class UsercapacityComponent implements OnInit {
 
 
   async Onload(data) {
+    if (data.task) {
+      this.messageService.add({
+        key: 'myKey1', severity: 'warn', sticky: true,
+        summary: 'Info Message', detail: 'Fetching data...'
+      });
+      this.enableDownload = data.type === 'CapacityDashboard' ? true : false;
+      if (data.type === 'CapacityDashboard') {
+        this.displayCount = data.resourceType === 'OnJob' ? 'Total On Job Resource: ' + data.task.resources.length : 'Total Trainee: ' + data.task.resources.length;
+        this.taskStatus = data.taskStatus
+      }
+      let setResourcesExtn = $.extend(true, [], data.task.resources);
 
-    this.messageService.add({
-      key: 'myKey1', severity: 'warn', sticky: true,
-      summary: 'Info Message', detail: 'Fetching data...'
-    });
-    this.enableDownload = data.type === 'CapacityDashboard' ? true : false;
-    if (data.type === 'CapacityDashboard') {
-      this.displayCount = data.resourceType === 'OnJob' ? 'Total On Job Resource: ' + data.task.resources.length : 'Total Trainee: ' + data.task.resources.length;
-      this.taskStatus = data.taskStatus
-    }
-    let setResourcesExtn = $.extend(true, [], data.task.resources);
+      const oCapacity = await this.applyFilterReturn(data.startTime, data.endTime, setResourcesExtn, []);
+      const tempUserDetailsArray = [];
 
-    const oCapacity = await this.applyFilterReturn(data.startTime, data.endTime, setResourcesExtn, []);
-    const tempUserDetailsArray = [];
-
-    if (data.task.selectedResources) {
-      for (const user of data.task.selectedResources) {
-        if ((user.userType === this.globalConstantService.userType.BEST_FIT ||
-          user.userType === this.globalConstantService.userType.RECOMMENDED) &&
-          (data.item.taskDetails.uid !== user.taskDetails.uid)) {
-          const retResource = oCapacity.arrUserDetails.filter(
-            arrdt => arrdt.uid === user.taskDetails.uid);
-          tempUserDetailsArray.push(retResource[0]);
+      if (data.task.selectedResources) {
+        for (const user of data.task.selectedResources) {
+          if ((user.userType === this.globalConstantService.userType.BEST_FIT ||
+            user.userType === this.globalConstantService.userType.RECOMMENDED) &&
+            (data.item.taskDetails.uid !== user.taskDetails.uid)) {
+            const retResource = oCapacity.arrUserDetails.filter(
+              arrdt => arrdt.uid === user.taskDetails.uid);
+            tempUserDetailsArray.push(retResource[0]);
+          }
+          if (data.item.taskDetails.uid === user.taskDetails.uid) {
+            const retResource = oCapacity.arrUserDetails.filter(arrdt => arrdt.uid === user.taskDetails.uid);
+            tempUserDetailsArray.splice(0, 0, retResource[0]);
+          }
         }
-        if (data.item.taskDetails.uid === user.taskDetails.uid) {
-          const retResource = oCapacity.arrUserDetails.filter(arrdt => arrdt.uid === user.taskDetails.uid);
-          tempUserDetailsArray.splice(0, 0, retResource[0]);
+        oCapacity.arrUserDetails = tempUserDetailsArray;
+      }
+      if (this.globalService.isResourceChange) {
+        const capacity: any = await this.afterResourceChange(this.globalService.data.task, this.globalService.data.startTime, this.globalService.data.endTime, this.globalService.data.task.resources, [], true);
+        this.oCapacity = capacity;
+      } else {
+        this.globalService.oCapacity = oCapacity;
+        this.oCapacity = oCapacity;
+      }
+      if (data.Module) {
+        if (data.Module === 'PM') {
+          this.disableCamera = true;
         }
       }
-      oCapacity.arrUserDetails = tempUserDetailsArray;
+      this.calc(oCapacity);
     }
-    if (this.globalService.isResourceChange) {
-      const capacity: any = await this.afterResourceChange(this.globalService.data.task , this.globalService.data.startTime, this.globalService.data.endTime, this.globalService.data.task.resources, [], true);
-      this.oCapacity = capacity;
-    } else {
-      this.globalService.oCapacity = oCapacity;
-      this.oCapacity = oCapacity;
-    }
-    if (data.Module) {
-      if (data.Module === 'PM') {
-        this.disableCamera = true;
-      }
-    }
-    this.calc(oCapacity);
   }
 
 
@@ -478,8 +481,8 @@ export class UsercapacityComponent implements OnInit {
         } else if (taskStatus && taskStatus.length) {
           if (!taskStatus.find(status => tasks[index].Status === status)) {
             tasks[index].TotalAllocated = tasks[index].Task !== 'Adhoc' ?
-            this.commonservice.convertToHrsMins('' + tasks[index].ExpectedTime).replace('.', ':')
-            : tasks[index].TimeSpent.replace('.', ':');
+              this.commonservice.convertToHrsMins('' + tasks[index].ExpectedTime).replace('.', ':')
+              : tasks[index].TimeSpent.replace('.', ':');
             const sTimeZone = tasks[index].TimeZone === null ? '+5.5' : tasks[index].TimeZone;
             const currentUserTimeZone = (new Date()).getTimezoneOffset() / 60 * -1;
             tasks[index].StartDate = this.commonservice.calcTimeForDifferentTimeZone(new Date(tasks[index].StartDate), currentUserTimeZone, sTimeZone);
@@ -586,16 +589,16 @@ export class UsercapacityComponent implements OnInit {
     this.resourceSelect.emit(user.uid)
   }
 
-  // fetch capacity for after task resource change and milestone task added and/or changed   
+  // fetch capacity for after task resource change and milestone task added and/or changed
   async afterResourceChange(task: any, startDate: Date, endDate: Date, resource: any, [], isResourceChange: boolean) {
 
     let capacity = await this.applyFilter(startDate, endDate, resource, []);
 
-    if(isResourceChange) {
+    if (isResourceChange) {
       let Task: any;
       capacity.arrUserDetails.forEach((e) => {
         e.tasks.forEach((c) => {
-          if(task.id && c.Id == task.id) {
+          if (task.id && c.Id == task.id) {
             Task = c;
           }
         });
@@ -630,14 +633,14 @@ export class UsercapacityComponent implements OnInit {
         if (capacity.arrUserDetails.hasOwnProperty(index)) {
           if (capacity.arrUserDetails[index].uid == task.AssignedTo.ID && capacity.arrUserDetails[index].tasks.indexOf(task) === -1) {
             let taskIndex = capacity.arrUserDetails[index].tasks.findIndex(x => x.ID === task.id);
-            if(taskIndex !== -1) {
+            if (taskIndex !== -1) {
               capacity.arrUserDetails[index].tasks.splice(taskIndex, 1, taskObj);
             } else {
               capacity.arrUserDetails[index].tasks.push(taskObj)
             }
           }
         }
-      }      
+      }
     }
 
     for (var index in capacity.arrUserDetails) {
@@ -645,7 +648,6 @@ export class UsercapacityComponent implements OnInit {
         this.fetchUserCapacity(capacity.arrUserDetails[index]);
       }
     }
-  
     return capacity;
 
   }
@@ -694,8 +696,8 @@ export class UsercapacityComponent implements OnInit {
   filterCapacityByDates(startDate, endDate, task) {
     const usercapacity = Object.assign({}, this.globalService.oCapacity.arrUserDetails.find(e => e.uid == task.userId));
     const dateRangeTasks = usercapacity.tasks.filter(t =>
-       (t.StartDate >= startDate && t.StartDate <= endDate) || (t.DueDate >= startDate && t.DueDate <= endDate)
-       || (t.StartDate <= startDate && t.DueDate >= endDate))
+      (t.StartDate >= startDate && t.StartDate <= endDate) || (t.DueDate >= startDate && t.DueDate <= endDate)
+      || (t.StartDate <= startDate && t.DueDate >= endDate))
     usercapacity.tasks = dateRangeTasks;
     const updatedCapacity = this.fetchUserCapacity(usercapacity);
     return updatedCapacity;
@@ -722,7 +724,7 @@ export class UsercapacityComponent implements OnInit {
           timeHrs: '',
           timeMins: ''
         };
-        let taskCount = 0, totalTimeAllocatedPerDay = '0';
+        let taskCount = 0, totalTimeAllocatedPerDay = '0', totalTimeAllocated = 0;
         for (const j in oUser.tasks) {
           if (oUser.tasks.hasOwnProperty(j)) {
             const taskStartDate = new Date(this.datepipe.transform(new Date(oUser.tasks[j].StartDate), 'MMM dd, yyyy'));
@@ -749,7 +751,7 @@ export class UsercapacityComponent implements OnInit {
                     oUser.tasks[j].timeAllocatedPerDay = allocationTime;
                   }
                 });
-                if(!oUser.tasks[j].timeAllocatedPerDay) {
+                if (!oUser.tasks[j].timeAllocatedPerDay) {
                   oUser.tasks[j].timeAllocatedPerDay = this.commonservice.convertToHrsMins('' + this.getPerDayTime(oUser.tasks[j].ExpectedTime !== null ?
                     oUser.tasks[j].ExpectedTime : '0', taskBusinessDays - arrLeaveDays.length));
                 }
@@ -799,6 +801,7 @@ export class UsercapacityComponent implements OnInit {
         oUser.dates[i].tasksDetails = tasksDetails;
         totalTimeAllocatedPerDay = arrHoursMins.length > 0 ? this.commonservice.ajax_addHrsMins(arrHoursMins) : '0:0';
         oUser.dates[i].totalTimeAllocatedPerDay = totalTimeAllocatedPerDay;
+        oUser.dates[i].totalTimeAllocated = this.common.convertFromHrsMins(totalTimeAllocatedPerDay);
         objTotalAllocatedPerUser.timeHrs = oUser.dates[i].totalTimeAllocatedPerDay.indexOf(':')
           ? oUser.dates[i].totalTimeAllocatedPerDay.split(':')[0] : 0;
         objTotalAllocatedPerUser.timeMins = oUser.dates[i].totalTimeAllocatedPerDay.indexOf(':')
@@ -840,6 +843,7 @@ export class UsercapacityComponent implements OnInit {
         oUser.dates[i].taskCount = taskCount;
         if (bLeave) {
           oUser.dates[i].totalTimeAllocatedPerDay = 0;
+          oUser.dates[i].totalTimeAllocated = 0;
           oUser.dates[i].availableHrs = 0;
           oUser.dates[i].userCapacity = 'Leave';
         }
@@ -1133,55 +1137,55 @@ export class UsercapacityComponent implements OnInit {
     if (arrDateRange <= 10) {
 
       // setTimeout(() => {
-        let tableWidth = document.getElementById('capacityTable').offsetWidth;
+      let tableWidth = document.getElementById('capacityTable').offsetWidth;
 
-        tableWidth = tableWidth === 0 ? (document.getElementsByClassName("userCapacity").length ? document.getElementsByClassName("userCapacity")[0].parentElement.offsetWidth : 1192) : tableWidth;
+      tableWidth = tableWidth === 0 ? (document.getElementsByClassName("userCapacity").length ? document.getElementsByClassName("userCapacity")[0].parentElement.offsetWidth : 1192) : tableWidth;
 
-        this.pageWidth = tableWidth + 'px';
+      this.pageWidth = tableWidth + 'px';
 
-        const totalCellWidth = tableWidth - (tableWidth * 18 / 100);
-        const firstCellWidth = tableWidth * 6 / 100;
-        const eachColumnWidth = totalCellWidth / arrDateRange;
-        const users = oCapacity.arrUserDetails;
-        for (const i in users) {
-          if (users.hasOwnProperty(i)) {
-            let top = 0;
-            this.height = '80px';
-            users[i].height = '80px';
-            users[i].maxHeight = (users[i].tasks.length * 18) + 27 + 'px';
-            this.verticalAlign = 'top';
-            for (const j in users[i].tasks) {
-              if (users[i].tasks.hasOwnProperty(j)) {
-                const startDate = new Date(new Date(users[i].tasks[j].StartDate).toDateString()); // format('MMM dd, yyyy'));
-                let dateIndex = oCapacity.arrUserDetails[0].businessDays.findIndex(function (x) {
-                  return x.valueOf() === startDate.valueOf();
-                });
-                let nBusinessDays = users[i].tasks[j].taskTotalDays;
-                if (dateIndex < 0) {
-                  const tblStartDate = new Date(users[i].businessDays[0]);
-                  const taskStartDate = new Date(this.datepipe.transform(users[i].tasks[j].StartDate, 'MMM dd yyyy')); // .format('MMM dd yyyy')
-                  const nDays = this.commonservice.calcBusinessDays(taskStartDate, tblStartDate) - 1;
-                  nBusinessDays = nBusinessDays - nDays;
-                }
-                dateIndex = dateIndex < 0 ? 0 : dateIndex;
-                let availableIndex = arrDateRange - dateIndex;
-                availableIndex = availableIndex >= nBusinessDays ? nBusinessDays : availableIndex;
-                const left = eachColumnWidth * (dateIndex) + firstCellWidth;
-                const width = eachColumnWidth * availableIndex;
-                users[i].tasks[j].cssWidth = width + 'px';
-                users[i].tasks[j].cssLeft = left + 'px';
-                users[i].tasks[j].cssTop = top + 'px';
-                if (+j >= 3) {
-                  users[i].tasks[j].cssHide = 'none';
-                }
-                top = top + 18;
+      const totalCellWidth = tableWidth - (tableWidth * 18 / 100);
+      const firstCellWidth = tableWidth * 6 / 100;
+      const eachColumnWidth = totalCellWidth / arrDateRange;
+      const users = oCapacity.arrUserDetails;
+      for (const i in users) {
+        if (users.hasOwnProperty(i)) {
+          let top = 0;
+          this.height = '80px';
+          users[i].height = '80px';
+          users[i].maxHeight = (users[i].tasks.length * 18) + 27 + 'px';
+          this.verticalAlign = 'top';
+          for (const j in users[i].tasks) {
+            if (users[i].tasks.hasOwnProperty(j)) {
+              const startDate = new Date(new Date(users[i].tasks[j].StartDate).toDateString()); // format('MMM dd, yyyy'));
+              let dateIndex = oCapacity.arrUserDetails[0].businessDays.findIndex(function (x) {
+                return x.valueOf() === startDate.valueOf();
+              });
+              let nBusinessDays = users[i].tasks[j].taskTotalDays;
+              if (dateIndex < 0) {
+                const tblStartDate = new Date(users[i].businessDays[0]);
+                const taskStartDate = new Date(this.datepipe.transform(users[i].tasks[j].StartDate, 'MMM dd yyyy')); // .format('MMM dd yyyy')
+                const nDays = this.commonservice.calcBusinessDays(taskStartDate, tblStartDate) - 1;
+                nBusinessDays = nBusinessDays - nDays;
               }
+              dateIndex = dateIndex < 0 ? 0 : dateIndex;
+              let availableIndex = arrDateRange - dateIndex;
+              availableIndex = availableIndex >= nBusinessDays ? nBusinessDays : availableIndex;
+              const left = eachColumnWidth * (dateIndex) + firstCellWidth;
+              const width = eachColumnWidth * availableIndex;
+              users[i].tasks[j].cssWidth = width + 'px';
+              users[i].tasks[j].cssLeft = left + 'px';
+              users[i].tasks[j].cssTop = top + 'px';
+              if (+j >= 3) {
+                users[i].tasks[j].cssHide = 'none';
+              }
+              top = top + 18;
             }
           }
         }
-        setTimeout(() => {
-          this.messageService.clear('myKey1');
-        }, 500);
+      }
+      setTimeout(() => {
+        this.messageService.clear('myKey1');
+      }, 500);
       // }, 500);
 
     } else {
@@ -1310,6 +1314,10 @@ export class UsercapacityComponent implements OnInit {
     return ReturnTasks;
   }
 
+  applyCapacity(oCapacity) {
+    this.oCapacity = Object.assign({}, true, oCapacity);
+    this.calc(this.oCapacity);
+  }
 
 
 

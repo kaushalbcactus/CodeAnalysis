@@ -1,0 +1,34 @@
+.footer {
+  position: fixed !important;
+  width: 95vw !important;
+  margin: -50px !important;
+}
+/* ::ng-deep a .ui-accordion-toggle-icon {
+  color: #333333!important;
+} */
+::ng-deep .ui-accordion .ui-accordion-header:not(.ui-state-disabled).ui-state-active a,
+body .ui-accordion .ui-accordion-header:not(.ui-state-disabled).ui-state-active:hover a  {
+  background-color: #c53e3e !important;
+  border: 1px solid #c53e3e !important;
+  color: #ffffff !important;
+}
+.header{
+  font-weight: 700 !important;
+  border-bottom: 0 none !important;
+}
+::ng-deep .ui-accordion .ui-accordion-content {
+  border: 0 !important;
+}
+::ng-deep .ui-dialog .ui-dialog-titlebar-icon span {
+  background: #c53e3e !important;
+  color: #fff;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+}
+.conflictTable tr td:last-child {
+  padding: 0;
+}
+::ng-deep #capacityTable {
+  margin-top: 10px!important;
+}
