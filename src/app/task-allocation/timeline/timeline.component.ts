@@ -1630,50 +1630,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.menu.setSkin("dhx_terrace");
     this.menu.loadStruct(menus);
 
-    // this.menu.hideItem(menus[0].id);
-    // this.menu.hideItem(menus[3].id);
-    // this.menu.hideItem(menus[4].id);
-    // this.menu.hideItem(menus[5].id);
-    // this.menu.hideItem(menus[6].id);
-    // this.menu.showItem(menus[7].id);
-    // this.menu.showItem(menus[8].id);
-    // this.menu.hideItem(menus[9].id);
-    // this.menu.hideItem(menus[10].id);
-    // this.menu.hideItem(menus[11].id);
-    // this.menu.hideItem(menus[12].id);
-    gantt.attachEvent("onContextMenu", (taskId, linkId, event) => {
-      if (gantt.ext.zoom.getCurrentLevel() < 3) {
-        if (taskId) {
-          let task = gantt.getTask(taskId);
-          const menus = this.showMenus(task);
-          this.menu.clearAll();
-          this.menu.loadStruct(menus);
-          this.currentTaskId = taskId;
-          this.startDate = task.start_date;
-          this.endDate = task.end_date;
-          this.resetTask = task;
-          let x = event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft,
-            y = event.clientY + document.body.scrollTop + document.documentElement.scrollTop;
-
-          if (task.status !== 'Completed' || task.status !== "Auto Closed") {
-            this.menu.showContextMenu(x, y);
-          } else if (linkId) {
-            this.menu.showContextMenu(x, y);
-          }
-
-          if (task || linkId) {
-            return false;
-          }
-
-          return true;
-        }
-      } else {
-        return false;
-      }
-    });
-
-
-
     this.menu.attachEvent("onClick", (id, zoneId, cas) => {
       let task = gantt.getTask(this.currentTaskId);
       switch (id) {
@@ -1731,6 +1687,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         //   break;
         case 'editTask':
           this.openPopupOnGanttTask(task, '');
+          break;
+        case 'budgetHrs':
+          this.changeBudgetHrs(task);
           break;
         default:
           break;
@@ -1791,18 +1750,47 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     });
     this.taskAllocateCommonService.attachedEvents.push(onBeforeTaskDrag);
 
-    const onTaskClick = gantt.attachEvent("onTaskClick", (id, e) => {
-      let task = gantt.getTask(id);
+    const onTaskClick = gantt.attachEvent("onTaskClick", (taskId, e) => {
+      let task = gantt.getTask(taskId);
       if (task.itemType !== "Send to client" && task.itemType !== "Client Review" && task.slotType !== 'Slot' && task.type !== "milestone" && task.type !== "submilestone") {
-        if (e.target.parentElement.className === "gantt_cell gantt_last_cell") {
+        if (e.target.parentElement.className === "gantt_cell cell_user") {
           this.header = task.submilestone ? task.milestone + ' ' + task.submilestone + ' ' + task.text
             : task.milestone + ' ' + task.text;
           this.sharedObject.resourceHeader = this.header;
           this.onResourceClick(task);
         }
       }
-
-      return true;
+      var button = e.target.closest("[data-action]")
+      if(button) {
+        if (gantt.ext.zoom.getCurrentLevel() < 3) {
+          if (taskId) {
+            let task = gantt.getTask(taskId);
+            const menus = this.showMenus(task);
+            this.menu.clearAll();
+            this.menu.loadStruct(menus);
+            this.currentTaskId = taskId;
+            this.startDate = task.start_date;
+            this.endDate = task.end_date;
+            this.resetTask = task;
+            let x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft,
+              y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+            
+            if (task.status !== 'Completed' || task.status !== "Auto Closed") {
+              this.menu.showContextMenu(x, y);
+              setTimeout(() => {
+                let contextMenu: any = document.getElementsByClassName("dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon")[0];
+                contextMenu.style.display = "block";
+              }, 500);
+            }     
+            if (task) {
+              return false;
+            }
+          return true;
+          }
+        } else {
+          return false;
+        }
+      }
     });
 
     this.taskAllocateCommonService.attachedEvents.push(onTaskClick);
@@ -1842,6 +1830,35 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     });
     this.taskAllocateCommonService.attachedEvents.push(onTaskDrag);
 
+  }
+
+  onLeftClick(event, taskId) {
+    if (gantt.ext.zoom.getCurrentLevel() < 3) {
+      if (taskId) {
+        let task = gantt.getTask(taskId);
+        const menus = this.showMenus(task);
+        this.menu.clearAll();
+        this.menu.loadStruct(menus);
+        this.currentTaskId = taskId;
+        this.startDate = task.start_date;
+        this.endDate = task.end_date;
+        this.resetTask = task;
+        let x = event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft,
+          y = event.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+
+        if (task.status !== 'Completed' || task.status !== "Auto Closed") {
+          this.menu.showContextMenu(x, y);
+        } 
+
+        if (task) {
+          return false;
+        }
+
+        return true;
+      }
+    } else {
+      return false;
+    }
   }
 
   async timeChange() {
@@ -2166,26 +2183,31 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         if (task.id == this.updatedTasks.id) {
           task.budgetHours = this.budgetHrs;
           task.edited = true;
-          task.open = true;
+        }
+        if(task.type == 'milestone') {
+          if (task.title.replace(' (Current)', '') == this.updatedTasks.milestone) {
+            task.edited = true;
+            task.open = true;
+          }
         }
       })
 
       this.GanttchartData = allTasks.data;
-      this.taskAllocateCommonService.ganttParseObject = allTasks;
+      // this.taskAllocateCommonService.ganttParseObject = allTasks;
 
-      allTasks = allTasks.data.filter(e => e.edited == true);
+      // allTasks = allTasks.data.filter(e => e.edited == true);
 
-      allTasks.forEach((task) => {
-        this.milestoneData.forEach((item: any) => {
-          if (task.type == "milestone" && task.id == item.data.id) {
-            item.data.budgetHours = task.budgetHours
-            item.data.edited = true;
-          }
-        })
-      });
+      // allTasks.forEach((task) => {
+      //   this.milestoneData.forEach((item: any) => {
+      //     if (task.type == "milestone" && task.id == item.data.id) {
+      //       item.data.budgetHours = task.budgetHours
+      //       item.data.edited = true;
+      //     }
+      //   })
+      // });
       this.showBudgetHrs = false;
       this.ganttNotification();
-      await this.loadComponent()
+      this.showGanttChart(false);
       setTimeout(() => {
         this.scrollToTaskDate(this.updatedTasks.end_date);
       }, 1000);
@@ -4811,8 +4833,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       PSMembersId: { results: updatedResources.pubSupportMembers.results },
       Milestones: restructureMilstoneStr,
       Milestone: currentMilestone,
-      Status : projectStatus,
-      PrevStatus : previosProjectStatus
+      Status: projectStatus,
+      PrevStatus: previosProjectStatus
       // Status: currentMilestoneTaskUpdated ? projectStatus :  currentMilestoneUpdated ? this.constants.STATUS.IN_PROGRESS : this.sharedObject.oTaskAllocation.oProjectDetails.status,
       // PrevStatus:currentMilestoneTaskUpdated && projectStatus !== this.sharedObject.oTaskAllocation.oProjectDetails.status  ?  this.sharedObject.oTaskAllocation.oProjectDetails.status :  currentMilestoneUpdated ? this.sharedObject.oTaskAllocation.oProjectDetails.status : this.sharedObject.oTaskAllocation.oProjectDetails.prevstatus
     };
@@ -5756,7 +5778,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   linkScToClientReview(milestoneTasks) {
 
-    milestoneTasks.filter(c=>c.itemType ==='Send to client' && c.nextTask && c.nextTask === 'Client Review').forEach(sc => {
+    milestoneTasks.filter(c => c.itemType === 'Send to client' && c.nextTask && c.nextTask === 'Client Review').forEach(sc => {
       sc.nextTask = null;
       sc.edited = true;
     });
