@@ -22,6 +22,6 @@ export interface DailyAllocationObject {
     maxHrs: number;
     maxMins: number;
   };
+  hideTasksTable: boolean;
   tasks: any;
 }
-

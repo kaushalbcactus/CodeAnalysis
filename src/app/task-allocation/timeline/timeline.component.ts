@@ -1427,7 +1427,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       { "id": "confirmMilestone", "text": "Confirm Milestone", "enabled": true },
       { "id": "confirmSubmilestone", "text": "Confirm SubMilestone", "enabled": true },
       { "id": "editAllocation", "text": "Edit Allocation", "enabled": true },
-      { "id": "equalSplit", "text": "Equal Split", "enabled": true }
+      { "id": "equalSplit", "text": "Over allocation", "enabled": true }
 
     ]
 
@@ -1765,14 +1765,14 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
             this.resetTask = task;
             let x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft,
               y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
-            
+
             if (task.status !== 'Completed' || task.status !== "Auto Closed") {
               this.menu.showContextMenu(x, y);
               setTimeout(() => {
                 let contextMenu: any = document.getElementsByClassName("dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon")[0];
                 contextMenu.style.display = "block";
               }, 500);
-            }     
+            }
             if (task) {
               return false;
             }
@@ -1841,7 +1841,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
         if (task.status !== 'Completed' || task.status !== "Auto Closed") {
           this.menu.showContextMenu(x, y);
-        } 
+        }
 
         if (task) {
           return false;
@@ -2734,7 +2734,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         if (data.showAllocationSplit) {
           this.taskMenu.push(
             { label: 'Edit Allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, '') },
-            { label: 'Equal Split', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, 'Equal') }
+            { label: 'Over allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, 'Equal') }
           );
         }
         if (data.AssignedTo.ID !== undefined && data.AssignedTo.ID > -1) {
@@ -6258,7 +6258,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     milestoneTask.resources = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
       return objt.UserName.ID === milestoneTask.AssignedTo.ID;
     });
-
+    let header = milestoneTask.submilestone ? milestoneTask.milestone + ' ' + milestoneTask.title
+    + ' ( ' + milestoneTask.submilestone + ' )' : milestoneTask.milestone + ' ' + milestoneTask.title;
+    header = header + ' - ' + milestoneTask.AssignedTo.Title;
     const ref = this.dialogService.open(PreStackAllocationComponent, {
       data: {
         ID: milestoneTask.id,
@@ -6275,8 +6277,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       } as DailyAllocationTask,
       width: '90vw',
 
-      header: milestoneTask.submilestone ? milestoneTask.milestone + ' ' + milestoneTask.title
-        + ' ( ' + milestoneTask.submilestone + ' )' : milestoneTask.milestone + ' ' + milestoneTask.title,
+      header: header,
       contentStyle: { 'max-height': '90vh', 'overflow-y': 'auto' },
       closable: false
     });
@@ -6300,10 +6301,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     task.allocationPerDay = allocation.allocationPerDay;
     task.showAllocationSplit = new Date(task.StartDatePart).getTime() !== new Date(task.EndDatePart).getTime() ? true : false;
     task.edited = true;
-    if (allocation.allocationType === 'Equal Split') {
+    if (allocation.allocationType === 'Over allocation') {
       task.allocationColor = 'indianred';
     } else if (allocation.allocationType === 'Daily Allocation') {
-      task.allocationColor = 'rgb(160, 247, 142)';
+      task.allocationColor = '';
     }
   }
 

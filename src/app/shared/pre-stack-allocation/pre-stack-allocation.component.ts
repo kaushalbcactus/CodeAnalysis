@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DailyAllocationTask, DailyAllocationObject } from './interface/prestack';
 import { UsercapacityComponent } from 'src/app/shared/usercapacity/usercapacity.component';
-import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef, MessageService } from 'primeng';
 import { CommonService } from 'src/app/Services/common.service';
 import { DatePipe } from '@angular/common';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
@@ -20,6 +20,7 @@ export class PreStackAllocationComponent implements OnInit {
   public allocationType = '';
   public hideTable = false;
   public hideLoader = false;
+  public hideTasks = true;
   darkTheme: NgxMaterialTimepickerTheme = {
     container: {
       bodyBackgroundColor: '#424242',
@@ -36,7 +37,7 @@ export class PreStackAllocationComponent implements OnInit {
   };
   constructor(private usercapacityComponent: UsercapacityComponent, private popupData: DynamicDialogConfig,
     public common: CommonService, private datePipe: DatePipe, public popupConfig: DynamicDialogRef,
-    public allocationCommon: TaskAllocationCommonService) { }
+    public allocationCommon: TaskAllocationCommonService, public messageService: MessageService) { }
 
   ngOnInit() {
     this.cols = [
@@ -81,7 +82,7 @@ export class PreStackAllocationComponent implements OnInit {
     const isDailyAllocationValid = !allocationData.allocationType ? this.checkDailyAllocation(resource, allocationData) : false;
     if (!isDailyAllocationValid) {
       await this.equalSplitAllocation(allocationData);
-      this.allocationType = objAllocation.allocationType = 'Equal Split';
+      this.allocationType = objAllocation.allocationType = 'Over allocation';
     } else {
       this.allocationType = objAllocation.allocationType = 'Daily Allocation';
     }
@@ -108,7 +109,8 @@ export class PreStackAllocationComponent implements OnInit {
             maxHrs: this.common.getHrsMinsObj(resourceSliderMaxHrs, true).hours,
             maxMins: 45
           },
-          tasks: allocatedDate.tasksDetails
+          tasks: allocatedDate.tasksDetails,
+          hideTasksTable: true
         };
         this.newAllocation.push(obj);
       }
@@ -163,7 +165,8 @@ export class PreStackAllocationComponent implements OnInit {
           maxHrs: this.common.getHrsMinsObj(resourceSliderMaxHrs, true).hours,
           maxMins: 45
         },
-        tasks: detail.tasksDetails
+        tasks: detail.tasksDetails,
+        hideTasksTable: true
       };
       if (flag) {
         if (i === 0) {
@@ -259,7 +262,8 @@ export class PreStackAllocationComponent implements OnInit {
           maxHrs: this.common.getHrsMinsObj(strMaximumHrs, true).hours,
           maxMins: 45
         },
-        tasks: detail.tasksDetails
+        tasks: detail.tasksDetails,
+        hideTasksTable: true
       };
 
       this.newAllocation.push(obj);
@@ -337,5 +341,12 @@ export class PreStackAllocationComponent implements OnInit {
   }
   async cancel() {
     this.popupConfig.close({ allocationPerDay: this.popupData.data.strAllocation, allocationAlert: false });
+  }
+  showTasks(rowData) {
+    if (rowData.tasks.length) {
+      rowData.hideTasksTable = !rowData.hideTasksTable;
+    } else {
+      this.messageService.add({ key: 'custom', severity: 'info', summary: 'Warning Message', detail: 'No Tasks found' });
+    }
   }
 }

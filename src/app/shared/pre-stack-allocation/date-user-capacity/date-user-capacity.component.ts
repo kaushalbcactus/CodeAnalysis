@@ -1,4 +1,5 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { GlobalService } from 'src/app/Services/global.service';
 
 @Component({
   selector: 'app-date-user-capacity',
@@ -7,10 +8,18 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class DateUserCapacityComponent implements OnInit {
   @Input() tasks: any;
-  constructor() { }
+  @Output() collapse = new EventEmitter<boolean>();
+  constructor(public globalService: GlobalService) { }
 
   ngOnInit() {
     this.tasks = [...this.tasks];
   }
 
+  goToProjectDetails(data: any): string {
+    return this.globalService.sharePointPageObject.webAbsoluteUrl + '/dashboard#/taskAllocation?ProjectCode=' + data.projectCode;
+  }
+
+  collapseTable() {
+    this.collapse.emit(true);
+  }
 }

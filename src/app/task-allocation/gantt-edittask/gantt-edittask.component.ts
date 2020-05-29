@@ -109,7 +109,7 @@ export class GanttEdittaskComponent implements OnInit {
   }
 
   async onLoad(task, clickedInputType) {
-    let sTime = this.getTimePart(this.startDate); 
+    let sTime = this.getTimePart(this.startDate);
     let eTime = this.getTimePart(this.endDate);
     if (task.itemType === 'Client Review' || task.itemType === 'Send to client') {
       let bHrs = 0 || task.budgetHours;
@@ -157,7 +157,7 @@ export class GanttEdittaskComponent implements OnInit {
         this.editTaskForm.controls['endDate'].enable();
         this.editTaskForm.controls['endDateTimePart'].enable();
       }
-    } 
+    }
 
 
     const startTime = this.taskAllocateCommonService.setMinutesAfterDrag(task.start_date);
@@ -219,7 +219,7 @@ export class GanttEdittaskComponent implements OnInit {
       const resources = this.globalService.oTaskAllocation.oResources.filter((objt) => {
         return this.task.AssignedTo.ID === objt.UserName.ID;
       });
-      
+
       this.maxBudgetHrs = '';
       let time: any = this.commonService.getHrsAndMins(this.task.start_date , this.task.end_date);
 
@@ -314,7 +314,7 @@ export class GanttEdittaskComponent implements OnInit {
     let hrs = bhrs.split(':')[0];
     let min = bhrs.split(':')[1];
 
-    if (hrs > maxHrs || min > maxMin) { 
+    if (hrs > maxHrs || min > maxMin) {
       let budgetHrs: number = 0;
       this.editTaskForm.get('budgetHrs').setValue(budgetHrs);
     }
@@ -455,10 +455,10 @@ export class GanttEdittaskComponent implements OnInit {
     task.allocationPerDay = allocation.allocationPerDay;
     task.showAllocationSplit = true;
     task.edited = true;
-    if (allocation.allocationType === 'Equal Split') {
+    if (allocation.allocationType === 'Over allocation') {
       task.allocationColor = 'indianred';
     } else if (allocation.allocationType === 'Daily Allocation') {
-      task.allocationColor = 'rgb(160, 247, 142)';
+      task.allocationColor = '';
     }
   }
 
