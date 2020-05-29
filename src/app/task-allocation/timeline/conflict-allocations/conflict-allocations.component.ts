@@ -107,7 +107,7 @@ export class ConflictAllocationsComponent implements OnInit, AfterViewInit {
     let capacity;
     const maxHrs = 10;
     for (const element of allTasks) {
-      capacity = this.getResourceCapacity(element, milSubMil);
+      capacity = await this.getResourceCapacity(element, milSubMil);
       for (const user of capacity.arrUserDetails) {
         const oExistingResource: IConflictResource = conflictDetails.length ? conflictDetails.find(ct => ct.userId === user.uid) : {};
         this.updateUserCapacity(element, user);

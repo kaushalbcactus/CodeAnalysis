@@ -68,3 +68,7 @@
   background-color: #db1721 !important;
   border: 1px solid #db1721 !important;
 }
+::ng-deep .allocationDate {
+  cursor: pointer!important;
+  color: #db1721 !important;
+}

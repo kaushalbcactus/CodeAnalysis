@@ -1,0 +1,12 @@
+.minimise {
+  font-size: 18px;
+  margin-left: 50px;
+  cursor: pointer;
+}
+::ng-deep .taskTitle a{
+  color: #db1721 !important;
+}
+::ng-deep .table td {
+  padding: 0.75rem;
+  border: 1px solid #dee2e6;
+}

@@ -2319,7 +2319,7 @@ export class StandardprojectComponent implements OnInit {
     this.taskMenu = [];
     this.taskMenu.push(
       { label: 'Edit Allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, '') },
-      { label: 'Equal Split', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, 'Equal') }
+      { label: 'Over allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, 'Equal') }
     );
   }
 
@@ -2394,10 +2394,10 @@ export class StandardprojectComponent implements OnInit {
     milestoneTask.allocationPerDay = allocation.allocationPerDay;
     milestoneTask.edited = true;
     milestoneTask.showAllocationSplit = new Date(milestoneTask.StartDatePart).getTime() !== new Date(milestoneTask.EndDatePart).getTime() ? true : false;
-    if (allocation.allocationType === 'Equal Split') {
+    if (allocation.allocationType === 'Over allocation') {
       milestoneTask.allocationColor = 'indianred';
     } else if (allocation.allocationType === 'Daily Allocation') {
-      milestoneTask.allocationColor = 'rgb(160, 247, 142)';
+      milestoneTask.allocationColor = '';
     }
   }
 
