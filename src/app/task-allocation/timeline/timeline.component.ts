@@ -1251,7 +1251,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     data.forEach((item, index) => {
       item.parent = 0;
       if (item.type === 'submilestone') {
-        const mil = milestones.find(e => e.text === item.milestone)
+        const mil = milestones.find(e => e.title === item.milestone)
         item.parent = mil.id;
         const subMils = data.filter(e => (e.position ? parseInt(e.position) : 0) === parseInt(item.position) + 1);
         subMils.forEach(submil => {
@@ -1262,8 +1262,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           item.parent = item.parentSlot;
         } else {
           const taskParent = data.find(e => item.submilestone ?
-            e.text === item.submilestone && e.milestone === item.milestone :
-            e.text === item.milestone);
+            e.title === item.submilestone && e.milestone === item.milestone :
+            e.title === item.milestone);
           item.parent = taskParent.id;
         }
         if (item.nextTask && item.nextTask.indexOf('Client Review') === -1) {
@@ -1278,12 +1278,12 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         const milIndex = arrMilestones.indexOf(item.milestone);
         const nextMilesone = arrMilestones.length - 1 === milIndex ? '' : arrMilestones[milIndex + 1];
         if (nextMilesone) {
-          const nextMil = data.find(e => e.text === nextMilesone);
+          const nextMil = data.find(e => e.title === nextMilesone);
           linkArray.push(this.createLinkArrayObject(item, nextMil));
         }
       }
       else if (item.type === 'milestone') {
-        const crTask = data.find(e => e.itemType === 'Client Review' && e.milestone === item.text);
+        const crTask = data.find(e => e.itemType === 'Client Review' && e.milestone === item.title);
         linkArray.push(this.createLinkArrayObject(item, crTask));
       }
       if (item.AssignedTo && item.AssignedTo.ID >= 0) {
@@ -1782,7 +1782,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           return false;
         }
       }
-      
+
       return true;
     });
 
@@ -3587,7 +3587,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         newName = milestoneTask.itemType;
         newName = this.getNewTaskName(milestoneTask, newName);
       }
-      milestoneTask.title = milestoneTask.text = newName;
+      milestoneTask.title = milestoneTask.title = newName;
 
       if (milestoneTask.nextTask) {
         this.changeNextTaskPrevTask(milestoneTask.nextTask, subMilestone, currentTask, newName, 'previousTask');
@@ -3677,7 +3677,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
   checkNameExists(tasks, milestoneTask, originalName) {
-    tasks = this.allRestructureTasks.filter(e => e.text === originalName && e.milestone === milestoneTask.milestone);
+    tasks = this.allRestructureTasks.filter(e => e.title === originalName && e.milestone === milestoneTask.milestone);
     if (!tasks.length) {
       tasks = this.allTasks.filter(e => {
         const taskName = e.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + e.Milestone + ' ', '');
@@ -3726,10 +3726,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       selectedMil = clientReviewIndex;
     }
     else {
-      selectedMil = this.milestoneData.findIndex(e => e.data.text === previousNode.milestone);
+      selectedMil = this.milestoneData.findIndex(e => e.data.title === previousNode.milestone);
       if (previousNode.submilestone) {
         const milestone = this.milestoneData[selectedMil];
-        const subMil = milestone.children.find(e => e.data.text === previousNode.submilestone);
+        const subMil = milestone.children.find(e => e.data.title === previousNode.submilestone);
         subMilestonePosition = parseInt(subMil.data.position, 10);
       }
     }
@@ -6137,7 +6137,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   ////// Refactor code
   getTaskObjectByValue(task, className, milestone, nextTasks, previousTasks, submilestone, tempID) {
-    const submilestoneLabel = submilestone ? submilestone.text : '';
+    const submilestoneLabel = submilestone ? submilestone.title : '';
     return {
       'pUserStart': new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 9, 0),
       'pUserEnd': new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 9, 0),
