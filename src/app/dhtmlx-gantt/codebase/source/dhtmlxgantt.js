@@ -24361,7 +24361,7 @@ function createGridLineRender(gantt){
 				textValue = value;
 				value = "<div class='gantt_tree_content'>" + value + "</div>";
 			}
-			var css = "gantt_cell" + (last ? " gantt_last_cell" : "");
+			var css = "gantt_cell" + (last ? " gantt_last_cell" : "") + (col.name == 'user' ? ' cell_user' : '');
 
 			var tree = [];
 			if (col.tree) {

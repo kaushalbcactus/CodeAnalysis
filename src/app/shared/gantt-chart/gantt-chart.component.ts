@@ -214,6 +214,9 @@ export class GanttChartComponent implements OnInit {
       "taskBg"
     ];
 
+    let colContent = function(task) {
+      return ('<i class="fa fa-ellipsis-v contextMenu" data-action="contextmenu"></i>');
+    }
     var mainGridConfig = {
       columns: [
         { name: "text", tree: true, width: 150 },
@@ -222,7 +225,8 @@ export class GanttChartComponent implements OnInit {
             if (!task.user) return "";
             return task.user
           }
-        }
+        },
+        {name: "buttons" ,align: 'right' , width: 75,template: colContent}
         // { name: "start_date", width: 150 },
         // { name: "end_date", width: 150 },
       ]
