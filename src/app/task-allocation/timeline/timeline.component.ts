@@ -1782,6 +1782,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           return false;
         }
       }
+      
+      return true;
     });
 
     this.taskAllocateCommonService.attachedEvents.push(onTaskClick);
