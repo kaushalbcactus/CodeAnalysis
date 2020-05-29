@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, AfterViewInit, Output, EventEmitter } from '@angular/core';
-import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef, TreeNode } from 'primeng';
 import { IConflictTask, IPopupConflictData, IConflictResource, IQueryOptions } from '../../interface/allocation';
 import { GlobalService } from 'src/app/Services/global.service';
 import { TaskAllocationCommonService } from '../../services/task-allocation-common.service';
@@ -19,8 +19,8 @@ export class ConflictAllocationsComponent implements OnInit, AfterViewInit {
   cols = [];
   activeIndex = -1;
   public conflicTasks: any;
-  public node: Node;
-  public milestoneData: Node;
+  public node: TreeNode;
+  public milestoneData: TreeNode[];
   public hideLoader: boolean;
   @ViewChild('UserCapacity', { static: false }) userCapacity: UsercapacityComponent;
   constructor(public popupData: DynamicDialogConfig, public globalService: GlobalService,
@@ -99,7 +99,7 @@ export class ConflictAllocationsComponent implements OnInit, AfterViewInit {
     return allTasks;
   }
 
-  async checkConflictsAllocations(milSubMil: Node, originalData: Node): Promise<IConflictResource[]> {
+  async checkConflictsAllocations(milSubMil: TreeNode, originalData: TreeNode[]): Promise<IConflictResource[]> {
     let allTasks = [];
     const conflictDetails = [];
     let projectInformation = [];

@@ -5,7 +5,7 @@ import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 import { CommonService } from 'src/app/Services/common.service';
 import { DatePipe } from '@angular/common';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
-import { TaskAllocationCommonService } from 'src/app/task-allocation/services/task-allocation-common.service';
+import { TaskAllocationCommonService } from 'src/app/task-allocation/services/task-allocation-common.service'
 
 @Component({
   selector: 'app-pre-stack-allocation',
@@ -96,10 +96,6 @@ export class PreStackAllocationComponent implements OnInit {
     allocationDays.forEach(day => {
       if (day) {
         const resourceDailyAllocation: any[] = resource.dates;
-        // const arrDateTime: string[] = day.indexOf(':') > -1 ? day.split(':') : [];
-        // const date: Date = arrDateTime.length ? new Date(arrDateTime[0]) : new Date();
-        // const time: string = arrDateTime.length > 1 ? arrDateTime[1] + ':' + arrDateTime[2] : '';
-        // const value = this.getHrsMinsObj(time, false);
         const allocation = this.common.getDateTimeFromString(day);
         const allocatedDate: any = resourceDailyAllocation.find(d => d.date.getTime() === allocation.date.getTime());
         let resourceSliderMaxHrs: string = this.getResourceMaxHrs(sliderMaxHrs, allocatedDate, allocation.value.hours);
@@ -111,29 +107,13 @@ export class PreStackAllocationComponent implements OnInit {
             valueMins: allocation.value.mins,
             maxHrs: this.common.getHrsMinsObj(resourceSliderMaxHrs, true).hours,
             maxMins: 45
-          }
+          },
+          tasks: allocatedDate.tasksDetails
         };
         this.newAllocation.push(obj);
       }
     });
   }
-
-  // getDateTimeFromString(hrsDate: Date | string) {
-  //   const day = hrsDate instanceof Date ? this.datePipe.transform(new Date(hrsDate), 'EE,MMMd,y') : hrsDate;
-  //   const arrDateTime: string[] = day.indexOf(':') > -1 ? day.split(':') : [];
-  //   const date: Date = arrDateTime.length ? new Date(arrDateTime[0]) : new Date();
-  //   const time: string = arrDateTime.length > 1 ? arrDateTime[1] + ':' + arrDateTime[2] : '';
-  //   const value = this.getHrsMinsObj(time, false);
-  //   return { date, value };
-  // }
-  // getHrsMinsObj(hrs: string, isSliderRange: boolean): any {
-  //   const strhrs = '' + hrs;
-  //   const hours = strhrs.indexOf(':') > -1 ? +strhrs.split(':')[0] : +strhrs;
-  //   const mins = strhrs.indexOf(':') > 0 ? +strhrs.split(':')[1] : isSliderRange ? 45 : 0;
-  //   return {
-  //     hours, mins
-  //   };
-  // }
 
   checkDailyAllocation(resource, allocationData): boolean {
     const autoAllocateAddHrs = '0:30';
@@ -175,14 +155,15 @@ export class PreStackAllocationComponent implements OnInit {
     let flag = true;
     let i = 0;
     for (const detail of resourceDailyDetails) {
-      const obj = {
+      const obj: DailyAllocationObject = {
         Date: detail.date,
         Allocation: {
           valueHrs: 0,
           valueMins: 0,
           maxHrs: this.common.getHrsMinsObj(resourceSliderMaxHrs, true).hours,
           maxMins: 45
-        }
+        },
+        tasks: detail.tasksDetails
       };
       if (flag) {
         if (i === 0) {
@@ -216,30 +197,12 @@ export class PreStackAllocationComponent implements OnInit {
     return newBudgetHrs;
   }
 
-  // getAllocationByDate(date: Date, optionalValToSet): number {
-  //   const strDate = this.datePipe.transform(new Date(date), 'EE,MMMd,y');
-  //   if (this.popupData.data) {
-  //     const arrAllocation = this.popupData.data.strAllocation ? this.popupData.data.strAllocation.split(/\n/) : '';
-  //     const strDay = arrAllocation.find(a => a.indexOf(strDate) > -1);
-  //     const value = strDay ? this.getDateTimeFromString(strDay).value : 0;
-  //     return value ? this.common.convertFromHrsMins(value.hours + ':' + value.mins) : optionalValToSet;
-  //    } else {
-  //     return optionalValToSet;
-  //   }
-  // }
-
   compareHrs(firstElement, day) {
     const secondElement = day.availableHrs;
     const result = this.common.convertFromHrsMins(firstElement) <= this.common.convertFromHrsMins(secondElement) ? true : false;
     day.mandatoryHrs = result ? true : false;
     return result;
   }
-
-  // getResourceSliderMaxHrs(defaultResourceMaxHrs, day): string {
-  //   const numtotalAllocated = this.common.convertFromHrsMins(day.totalTimeAllocatedPerDay);
-  //   const maxHrsMins = this.common.roundToPrecision(defaultResourceMaxHrs - numtotalAllocated, 0.25);
-  //   return this.common.convertToHrsMins('' + maxHrsMins);
-  // }
 
   getResourceMaxHrs(defaultResourceMaxHrs, day, allocatedHours) {
     const numtotalAllocated = this.common.convertFromHrsMins(day.totalTimeAllocatedPerDay);
@@ -288,14 +251,15 @@ export class PreStackAllocationComponent implements OnInit {
       const maximumHrs = totalHrs < resourceSliderMaxHrs ? resourceSliderMaxHrs : totalHrs;
       const strTotalHrs = this.common.convertToHrsMins(totalHrs);
       const strMaximumHrs = this.common.convertToHrsMins(maximumHrs);
-      const obj = {
+      const obj: DailyAllocationObject = {
         Date: detail.date,
         Allocation: {
           valueHrs: this.common.getHrsMinsObj(strTotalHrs, false).hours,
           valueMins: this.common.getHrsMinsObj(strTotalHrs, false).mins,
           maxHrs: this.common.getHrsMinsObj(strMaximumHrs, true).hours,
           maxMins: 45
-        }
+        },
+        tasks: detail.tasksDetails
       };
 
       this.newAllocation.push(obj);

@@ -3,25 +3,25 @@
   <div id="dailyAllocationLoaderText">Loading...</div>
 </div>
 <div id="mainContent" [hidden]="hideTable">
-  <!-- <div
-    fxLayout="row"
-    fxLayoutAlign="space-between center"
-    class=""
-    style="width: 100%; padding: 0px 0px 5px;"
-  >
-    <div class="input-color">
-      <label>Above maximum working Hrs</label>
-      <div class="color-box" style="background-color: orange;"></div>
-    </div>
-  </div> -->
-
-  <div class='footer' fxLayout="row" fxLayoutAlign="end center">
-
-    <button type="button" pButton icon="pi pi-save" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }"
-      (click)="saveAllocation()" label="Save" class="saveTaskButton"></button>
-    <button type="button" pButton icon="pi pi-times" (click)="cancel();" label="Cancel" class="ui-button-secondary"
-      style="background-color:ghostwhite;"></button>
-
+  <div class="footer" fxLayout="row" fxLayoutAlign="end center">
+    <button
+      type="button"
+      pButton
+      icon="pi pi-save"
+      [ngStyle]="{ 'margin-right': '5px', cursor: 'pointer' }"
+      (click)="saveAllocation()"
+      label="Save"
+      class="saveTaskButton"
+    ></button>
+    <button
+      type="button"
+      pButton
+      icon="pi pi-times"
+      (click)="cancel()"
+      label="Cancel"
+      class="ui-button-secondary"
+      style="background-color: ghostwhite;"
+    ></button>
   </div>
   <div class="table">
     <p-table [columns]="cols" [value]="newAllocation">
@@ -47,26 +47,42 @@
             {{ rowData["Date"] | date: " d MMM, y" }}
           </td>
           <td>
-            <app-allocation-slider (changedValue)="checkAllocation($event, rowData)" type="hrs"
-              [value]="rowData.Allocation.valueHrs" [range]="rowData.Allocation.maxHrs"></app-allocation-slider>
+            <app-allocation-slider
+              (changedValue)="checkAllocation($event, rowData)"
+              type="hrs"
+              [value]="rowData.Allocation.valueHrs"
+              [range]="rowData.Allocation.maxHrs"
+            ></app-allocation-slider>
           </td>
           <td>
-            <app-allocation-slider (changedValue)="checkAllocation($event, rowData)" type="mins"
-              [value]="rowData.Allocation.valueMins" [range]="rowData.Allocation.maxMins"></app-allocation-slider>
+            <app-allocation-slider
+              (changedValue)="checkAllocation($event, rowData)"
+              type="mins"
+              [value]="rowData.Allocation.valueMins"
+              [range]="rowData.Allocation.maxMins"
+            ></app-allocation-slider>
           </td>
           <td>
             <div>
               {{
-                rowData.Allocation.valueHrs + '.' + common.getMinsValue(rowData.Allocation.valueMins)
+                rowData.Allocation.valueHrs +
+                  "." +
+                  common.getMinsValue(rowData.Allocation.valueMins)
               }}
             </div>
             <div class="timepicker">
-              <ngx-material-timepicker-toggle [for]="picker"></ngx-material-timepicker-toggle>
+              <ngx-material-timepicker-toggle
+                [for]="picker"
+              ></ngx-material-timepicker-toggle>
               <ngx-material-timepicker
                 [preventOverlayClick]="true"
                 #picker
                 (closed)="checkAllocation(picker, rowData)"
-                [defaultTime]="rowData.Allocation.valueHrs + ':' + rowData.Allocation.valueMins"
+                [defaultTime]="
+                  rowData.Allocation.valueHrs +
+                  ':' +
+                  rowData.Allocation.valueMins
+                "
                 [ngxMaterialTimepickerTheme]="darkTheme"
                 [minutesGap]="15"
                 [format]="24"
@@ -75,8 +91,14 @@
             </div>
           </td>
         </tr>
+        <tr>
+          <td [attr.colspan]="4">
+            <app-date-user-capacity
+              [tasks]="rowData.tasks"
+            ></app-date-user-capacity>
+          </td>
+        </tr>
       </ng-template>
     </p-table>
-
   </div>
 </div>

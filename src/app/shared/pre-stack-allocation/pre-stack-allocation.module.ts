@@ -9,8 +9,9 @@ import { UsercapacityComponent } from '../usercapacity/usercapacity.component';
 import { AllocationOverlayComponent } from './allocation-overlay/allocation-overlay.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
+import { DateUserCapacityComponent } from './date-user-capacity/date-user-capacity.component';
 @NgModule({
-  declarations: [PreStackAllocationComponent, AllocationSliderComponent, AllocationOverlayComponent],
+  declarations: [PreStackAllocationComponent, AllocationSliderComponent, AllocationOverlayComponent, DateUserCapacityComponent],
   imports: [
     CommonModule,
     UserCapacityModule,
@@ -22,7 +23,8 @@ import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
   exports: [
     PreStackAllocationComponent,
     AllocationSliderComponent,
-    AllocationOverlayComponent
+    AllocationOverlayComponent,
+    DateUserCapacityComponent
   ],
   entryComponents: [
     UsercapacityComponent

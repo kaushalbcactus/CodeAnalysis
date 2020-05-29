@@ -1,0 +1,62 @@
+<p-table [value]="tasks">
+  <ng-template pTemplate="header" let-columns>
+    <tr class="tableHeader">
+      <td>
+          Resource
+      </td>
+      <td>
+          Task Name (Short Title)
+      </td>
+      <td>
+          Start Date
+      </td>
+      <td>
+          Due Date
+      </td>
+      <td>
+          Milestone Deadline
+      </td>
+      <td>
+          Per Day (Total Allocated)
+      </td>
+      <td>
+          Status
+
+      </td>
+      <td> <span><i class="pi pi-window-minimize"></i>
+              </span>
+      </td>
+  </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-rowData let-columns="columns">
+    <tr class="UserTasksRow">
+      <td>
+         {{rowData.userName}}
+      </td>
+      <td style="border: 1px solid #ddd;">
+          <span>{{rowData.title}} <span *ngIf='rowData.SubMilestones'> -
+                      {{rowData.SubMilestones}} </span><span *ngIf='rowData.shortTitle'>({{rowData.shortTitle}})</span></span>
+      </td>
+      <td>
+          <span>{{(rowData.startDate | date:'dd MMM yy h:mm a') || '--' }}</span>
+      </td>
+      <td>
+          <span>{{rowData.dueDate | date : "dd MMM yy h:mm a" || '--'}}</span>
+      </td>
+      <td>
+          <span>{{(rowData.milestoneDeadline!='--') ? (rowData.milestoneDeadline | date : "dd MMM yy h:mm a") : '--'}}</span>
+      </td>
+      <td>
+          <span>{{rowData.displayTimeAllocatedPerDay}}
+                  ({{rowData.displayTotalAllocatedTime}})</span>
+      </td>
+      <td>
+          <span>{{rowData.status}}</span>
+      </td>
+
+      <td>
+          <!-- <i *ngIf="rowData.projectCode !=='Adhoc' && !disableCamera" class="pi pi-camera" title="Milestone Tasks" (click)="getMilestoneTasks(rowData)" style="font-size: 3em;cursor: pointer;"></i> -->
+      </td>
+  </tr>
+  </ng-template>
+</p-table>

@@ -2034,8 +2034,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         return false;
 
       } else {
-        const Title = task.itemType === 'submilestone' && task.milestone ? task.milestone + ' - ' + task.title : task.title;
-        const message = 'Are you sure that you want to Confirm ' + Title + ' ?';
+        const Title: string = task.itemType === 'submilestone' && task.milestone ? task.milestone + ' - ' + task.title : task.title;
+        const message: string = 'Are you sure that you want to Confirm ' + Title + ' ?';
         const conflictDetails: IConflictResource[] = await this.conflictAllocation.checkConflictsAllocations(rowNode, this.milestoneData);
         if (conflictDetails.length) {
           // this.capacityObj.conflictAllocation = true;
