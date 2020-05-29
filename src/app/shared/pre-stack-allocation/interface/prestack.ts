@@ -22,4 +22,6 @@ export interface DailyAllocationObject {
     maxHrs: number;
     maxMins: number;
   };
-};
+  tasks: any;
+}
+
