@@ -1,0 +1,127 @@
+::ng-deep .selectedDateButton {
+    background-color: #C53E3E !important;
+    border: 1px solid #C53E3E !important;
+    color: #ffffff !important;
+}
+
+::ng-deep p-calendar>span>input {
+    width: 15em !important;
+}
+
+#scTableInnerLoader {
+    border: 3px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 3px solid red;
+    border-bottom: 3px solid red;
+    width: 20px;
+    display: inline-block;
+    height: 20px;
+    vertical-align: middle;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    position: relative;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+@-webkit-keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg)
+    }
+    100% {
+        -webkit-transform: rotate(360deg)
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg)
+    }
+    100% {
+        transform: rotate(360deg)
+    }
+}
+
+ ::ng-deep .ui-dialog-title {
+    color: #C53E3E !important;
+    font-size: 1em !important;
+}
+
+ ::ng-deep .ui-table .ui-sortable-column.ui-state-highlight,
+ ::ng-deep .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active,
+ ::ng-deep .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight {
+    background-color: #C53E3E !important;
+}
+
+ ::ng-deep .ui-state-focus,
+ ::ng-deep .ui-table>tbody>.ui-state-highlight {
+    border-color: #C53E3E !important;
+}
+
+ ::ng-deep p-calendar>span>.ui-button {
+    background-color: #C53E3E !important;
+    border-color: #C53E3E !important;
+    padding: 1px;
+}
+
+ ::ng-deep .ui-multiselect-panel .ui-multiselect-items .ui-multiselect-item.ui-state-highlight,
+ ::ng-deep .ui-chkbox .ui-chkbox-box.ui-state-active {
+    background-color: #C53E3E !important;
+    border-color: #C53E3E !important;
+}
+
+ ::ng-deep .ui-multiselect-label {
+    font-size: 12px;
+}
+
+ ::ng-deep .ui-multiselect-panel .ui-multiselect-header .ui-multiselect-filter-container .ui-multiselect-filter-icon {
+    color: #C53E3E !important;
+}
+
+
+/* :host ::ng-deep .ui-menuitem 
+{
+  width:20em !important;
+}
+::ng-deep .ui-slidemenu-content {
+	min-height: 200px  !important;
+} */
+
+:host ::ng-deep .ui-calendar-w-btn .ui-inputtext {
+    width: 80% !important;
+}
+
+ ::ng-deep .ui-slidemenu ul {
+    width: 20em !important;
+}
+
+body .ui-chkbox .ui-chkbox-box.ui-state-active,
+body .ui-button,
+body .ui-button.ui-state-default.ui-button-secondary,
+body .ui-buttonset.ui-button-secondary>.ui-button.ui-state-default {
+    color: #333333 !important;
+    background-color: #f4f4f4 !important;
+    border: 1px solid #f4f4f4 !important;
+}
+
+:host ::ng-deep .ui-slidemenu-wrapper {
+    height: 130px !important;
+}
+
+ ::ng-deep .MyCurrentCompletedTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child {
+    overflow: visible;
+}
+
+ ::ng-deep .MyCurrentCompletedTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div {
+    position: relative;
+}
+
+ ::ng-deep .MyCurrentCompletedTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div>i {
+    top: 0px !important;
+}
+
+ ::ng-deep .MyCurrentCompletedTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div div.ui-menu {
+    top: 0px !important;
+    left: inherit !important;
+    right: 40px !important;
+}

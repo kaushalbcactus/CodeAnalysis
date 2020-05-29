@@ -1,104 +1,71 @@
 <!-- Modal Dialog for Rating Feedback-->
-<p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom" [hideTransitionOptions]="'0ms'"
-position="bottom-center"></p-toast>
-<p-dialog
-  popupContent
-  [(visible)]="display"
-  [modal]="true"
-  [responsive]="true"
-  [closable]="false"
-  [style]="{ width: '800px' }"
-  positionTop="10"
->
-  <p-header>
-    <div class="ratework-popup">
-      <div class="modal-title popup-header">Rate Work</div>
-    </div>
-  </p-header>
-
-  <p-accordion [activeIndex] = "activeIndex">
-    <p-accordionTab
-      *ngFor="let task of scorecardTasks.tasks;"
-    >
+<p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom" [hideTransitionOptions]="'0ms'" position="bottom-center"></p-toast>
+<!-- <p-dialog popupContent [(visible)]="display" [modal]="true" [responsive]="true" [closable]="false" [style]="{ width: '800px' }" positionTop="10">
     <p-header>
-      <span>{{task.submilestones ? task.task + '-' + task.submilestones : task.task}}</span>
-      <span *ngIf="task?.milestone !== 'Draft 1' && scorecardTasks.tasks.length > 1" title="Ignore Feedback" class="ignoreIcon"><p-inputSwitch (onChange)="onIgnoreClicked(task, $event)" [(ngModel)]="task.ignoreFeedback"></p-inputSwitch></span>
+        <div class="ratework-popup">
+            <div class="modal-title popup-header">Rate Work</div>
+        </div>
+    </p-header> -->
 
-    </p-header>
-      <div class="ratework-popup">
-        <table class="table popup-rating-row" id="templates">
-          <tbody>
-            <tr>
-              <td>Template</td>
-              <td>
-                <p-dropdown
-                  [options]="scorecardTemplates.templates"
-                  filter="true"
-                  resetFilterOnHide="true"
-                  class="filterBy"
-                  optionLabel="Title"
-                  placeholder="Select Template"
-                  (onChange)="getTemplateMatrix(task.taskID)"
-                  [(ngModel)]="task.selectedTemplate"
-                  appendTo="body"
-                >
-                  <ng-template let-items pTemplate="selectedItem">
-                    <span style="vertical-align:middle">{{
+<p-accordion [activeIndex]="activeIndex">
+    <p-accordionTab *ngFor="let task of scorecardTasks.tasks;">
+        <p-header>
+            <span>{{task.submilestones ? task.task + '-' + task.submilestones : task.task}}</span>
+            <span *ngIf="task?.milestone !== 'Draft 1' && scorecardTasks.tasks.length > 1" title="Ignore Feedback" class="ignoreIcon"><p-inputSwitch (onChange)="onIgnoreClicked(task, $event)" [(ngModel)]="task.ignoreFeedback"></p-inputSwitch></span>
+
+        </p-header>
+        <div class="ratework-popup">
+            <table class="table popup-rating-row" id="templates">
+                <tbody>
+                    <tr>
+                        <td>Template</td>
+                        <td>
+                            <p-dropdown [options]="scorecardTemplates.templates" filter="true" resetFilterOnHide="true" class="filterBy" optionLabel="Title" placeholder="Select Template" (onChange)="getTemplateMatrix(task.taskID)" [(ngModel)]="task.selectedTemplate" appendTo="body">
+                                <ng-template let-items pTemplate="selectedItem">
+                                    <span style="vertical-align:middle">{{
                       items.value.Title
                     }}</span>
-                  </ng-template>
-                  <ng-template let-item pTemplate="item">
-                    <div
-                      class="ui-helper-clearfix"
-                      style="position: relative;height:25px;"
-                    >
-                      <div
-                        title="{{ item.value.Tooltip }}"
-                        style="font-size:14px;margin-top:4px"
-                      >
-                        {{ item.value.Title }}
-                      </div>
-                    </div>
-                  </ng-template>
-                </p-dropdown>
-              </td>
-            </tr>
-            <tr>
-              <td>Average rating</td>
-              <td>
-                <div class="customer-detail popup">
-                  <div class="cd-rating ">
-                    <span id="#">{{ task.averageRating }}</span>
-                    <div class="star-white fa-star fa"></div>
-                  </div>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>Resource</td>
-              <td>
-                {{ task.assignedTo }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <table class="table popup-rating-row scrollTable" id="templateMatrix">
-          <tbody>
-            <tr *ngFor="let matrixObj of task.templateMatrix">
-              <ng-container *ngIf="matrixObj.question !== ''">
-                <td [title]="matrixObj.tooltip">
-                  {{ matrixObj.question }}
-                </td>
-                <td class="stars">
-                  <ngb-rating
-                    [(rate)]="matrixObj.rating"
-                    min="0"
-                    max="5"
-                    (rateChange)="updateRating(task)"
-                  >
-                    <ng-template let-fill="fill" let-index="index">
-                      <span class="star" [class.filled]="fill === 100"
-                        >&#9733;</span
+                                </ng-template>
+                                <ng-template let-item pTemplate="item">
+                                    <div class="ui-helper-clearfix" style="position: relative;height:25px;">
+                                        <div title="{{ item.value.Tooltip }}" style="font-size:14px;margin-top:4px">
+                                            {{ item.value.Title }}
+                                        </div>
+                                    </div>
+                                </ng-template>
+                            </p-dropdown>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Average rating</td>
+                        <td>
+                            <div class="customer-detail popup">
+                                <div class="cd-rating ">
+                                    <span id="#">{{ task.averageRating }}</span>
+                                    <div class="star-white fa-star fa"></div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Resource</td>
+                        <td>
+                            {{ task.assignedTo }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="table popup-rating-row scrollTable" id="templateMatrix">
+                <tbody>
+                    <tr *ngFor="let matrixObj of task.templateMatrix">
+                        <ng-container *ngIf="matrixObj.question !== ''">
+                            <td [title]="matrixObj.tooltip">
+                                {{ matrixObj.question }}
+                            </td>
+                            <td class="stars">
+                                <ngb-rating [(rate)]="matrixObj.rating" min="0" max="5" (rateChange)="updateRating(task)">
+                                    <ng-template let-fill="fill" let-index="index">
+                                        <span class="star" [class.filled]="fill === 100">&#9733;</span
                       >
                     </ng-template>
                   </ngb-rating>
@@ -145,4 +112,4 @@ position="bottom-center"></p-toast>
       </button>
     </div>
   </div>
-</p-dialog>
+<!-- </p-dialog> -->

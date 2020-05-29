@@ -519,14 +519,14 @@ export class TimeBookingDialogComponent implements OnInit {
 
           if (!dbTasks[i].ProjectCode) {
             this.messageService.add({
-              key: 'custom-booking', severity: 'warn', summary: 'Warnin Message',
+              key: 'mydashboard', severity: 'warn', summary: 'Warnin Message',
               detail: 'Please Select Project / To remove unwanted line, please unselect Client'
             });
 
             return false;
           } else if (!dbTasks[i].Milestone) {
             this.messageService.add({
-              key: 'custom-booking', severity: 'warn', summary: 'Warning Message',
+              key: 'mydashboard', severity: 'warn', summary: 'Warning Message',
               detail: 'Please Select Milestone / To remove unwanted line, please unselect Client'
             });
             return false;
@@ -586,7 +586,7 @@ export class TimeBookingDialogComponent implements OnInit {
         this.UserMilestones.splice(index, 1);
       }
       this.messageService.add({
-        key: 'custom-booking', severity: 'warn', summary: 'Warning Message',
+        key: 'mydashboard', severity: 'warn', summary: 'Warning Message',
         detail: 'Selected combination already exist. Please check above'
       });
     }

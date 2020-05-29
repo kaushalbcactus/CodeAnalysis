@@ -89,9 +89,6 @@
 // full calendar 
 ************************************************************************************************** -->
 
-<p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom" [hideTransitionOptions]="'0ms'" position="bottom-center">
-</p-toast>
-
 <p-fullCalendar #calendar [ngStyle]="{'margin':'1em;'}" [events]="events" [options]="options">
 </p-fullCalendar>
 
@@ -370,4 +367,4 @@
 </p-dialog>
 
 
-<app-feedback-popup #feedbackPopup (popupClosed)='saveTask($event)'></app-feedback-popup>
+<!-- <app-feedback-popup #feedbackPopup (popupClosed)='saveTask($event)'></app-feedback-popup> -->

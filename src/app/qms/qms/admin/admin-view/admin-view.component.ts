@@ -12,6 +12,8 @@ import { QMSCommonService } from '../../services/qmscommon.service';
 import { MessageService } from 'primeng/api';
 import { Table } from 'primeng/table';
 import { Router } from '@angular/router';
+import { FeedbackPopupComponent } from '../../reviewer-detail-view/feedback-popup/feedback-popup.component';
+import { DialogService } from 'primeng';
 
 @Component({
   selector: 'app-admin-view',
@@ -74,6 +76,7 @@ export class AdminViewComponent implements OnInit, OnDestroy {
     private spService: SPOperationService, private globalConstant: ConstantsService,
     public datepipe: DatePipe, private global: GlobalService, private qmsConstant: QMSConstantsService,
     private qmsCommon: QMSCommonService, private messageService: MessageService,
+    private dialogService: DialogService,
     private platformLocation: PlatformLocation,
     private locationStrategy: LocationStrategy,
     private readonly _router: Router,
@@ -367,4 +370,23 @@ export class AdminViewComponent implements OnInit, OnDestroy {
       this.cdr.detectChanges();
     }
   }
+
+  openfeedbackpopup(qmsTasks,task){
+    const ref = this.dialogService.open(FeedbackPopupComponent, {
+      data: {
+        qmsTasks,
+        task
+      },
+      header: 'Rate Work',
+      width: '70vw',
+      contentStyle: { 'min-height': '30vh', 'max-height': '90vh', 'overflow-y': 'auto' }
+    });
+    ref.onClose.subscribe((feedbackdata: any) => {
+      if(feedbackdata){
+        this.updateReviewerTable(feedbackdata.task);
+        this.showToastMsg(feedbackdata.message);
+      }
+     });
+  }
+
 }

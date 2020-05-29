@@ -32,8 +32,6 @@ import { NgGanttEditorModule } from 'ng-gantt';
 import { ProjectmanagementModule } from '../projectmanagement/projectmanagement.module';
 import { TaskAllocationModule } from '../task-allocation/task-allocation.module';
 import { QmsModule } from './../qms/qms.module';
-// import { FeedbackPopupComponent } from '../qms/qms/reviewer-detail-view/feedback-popup/feedback-popup.component';
-// import {QmsModule} from '../qms/qms.module';
 import { MyprojectsComponent } from './myprojects/myprojects.component';
 import { DisplayProjectsComponent } from './myprojects/display-projects/display-projects.component';
 import { TimelineModule } from '../timeline/timeline.module';
@@ -41,6 +39,8 @@ import { SharedModule } from '../shared/shared.module';
 import { ViewUploadDocumentDialogComponent } from '../shared/view-upload-document-dialog/view-upload-document-dialog.component';
 import { ViewUploadDocumentModule } from '../shared/view-upload-document-dialog/view-upload-document.module';
 import { CreateTaskComponent } from './fte/create-task/create-task.component';
+import { CurrentCompletedTasksTableComponent } from './current-completed-tasks-table/current-completed-tasks-table.component';
+import { FeedbackPopupComponent } from '../qms/qms/reviewer-detail-view/feedback-popup/feedback-popup.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
@@ -63,6 +63,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     MyprojectsComponent,
     DisplayProjectsComponent,
     CreateTaskComponent,
+    CurrentCompletedTasksTableComponent,
   ],
   imports: [
     NgxMaterialTimepickerModule,
@@ -101,6 +102,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     ProjectDraftsComponent,
     ViewUploadDocumentDialogComponent,
     CreateTaskComponent,
+    CurrentCompletedTasksTableComponent,
+    FeedbackPopupComponent
   ]
 })
 export class MyDashboardModule { }

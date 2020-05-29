@@ -1056,7 +1056,12 @@ export class MyDashboardConstantsService {
   async callQMSPopup(currentTask) {
     const qmsTasks = [];
     const batchUrl = [];
-    let previousTasks = currentTask.prevTaskDetails ? currentTask.prevTaskDetails : [];
+    let prevTasks = [];
+    if (!currentTask.prevTaskDetails) {
+      const nextPreviousTasks = await this.getNextPreviousTask(currentTask);
+      prevTasks = nextPreviousTasks.length ? nextPreviousTasks.filter(c => c.TaskType === 'Previous Task') : [];
+    }
+    let previousTasks = currentTask.prevTaskDetails ? currentTask.prevTaskDetails : prevTasks;
     if (previousTasks.length) {
       previousTasks = previousTasks.filter(pt => pt.Status === 'Completed' || pt.Status === 'Auto Closed');
       const project = this.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === currentTask.ProjectCode);
@@ -1124,7 +1129,7 @@ export class MyDashboardConstantsService {
               reviewTask: {
                 ID: currentTask.ID,
                 Title: currentTask.Title ? currentTask.Title : currentTask.Title,
-                PrevTasks: currentTask.prevTaskDetails,
+                PrevTasks: previousTasks,
                 Rated: currentTask.Rated,
                 defaultSkill: currentTask.defaultSkill
               },
@@ -1162,8 +1167,76 @@ export class MyDashboardConstantsService {
     }
     return tempDate;
   }
-  
+
+
+  async getOpenTaskForDialog() {
+
+    const Dates = await this.CalculateDatesDiffernce('Past', 30, null);
+    this.common.SetNewrelic('MyCurrentCompletedTask', status, 'GetTasks');
+    const mytasks = Object.assign({}, this.mydashboardComponent.MyTasks);
+    mytasks.filter = mytasks.filter.replace(/{{userId}}/gi, this.sharedObject.currentUser.userId.toString());
+    mytasks.filter += mytasks.filterStatus;
+    // mytasks.filter += mytasks.filterStatus;
+    mytasks.filter += mytasks.filterDate.replace(/{{startDateString}}/gi, Dates[0]).replace(/{{endDateString}}/gi, Dates[1]);
+    this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, mytasks);
+    const res = this.response.length ? this.response : [];
+    return res;
+
+  }
+
+
+
+  // ****************************************************************************************
+  // get the dates based on working days past and future and custom dates  
+  // ****************************************************************************************
+
+  CalculateDatesDiffernce(nextLast, days, rangeDates) {
+    const filterDates = [];
+    let startDate = new Date(new Date().setDate(new Date().getDate() + 1));
+    let endDate = new Date(new Date().setDate(new Date().getDate() - 1));
+    if (nextLast === 'Next') {
+      startDate = startDate.getDay() === 6 ? new Date(startDate.setDate(startDate.getDate() + 2)) :
+        startDate.getDay() === 0 ? new Date(startDate.setDate(startDate.getDate() + 1)) :
+          new Date(startDate.setDate(startDate.getDate()));
+      endDate = this.addBusinessDays(startDate, days - 1);
+    } else if (nextLast === 'Past') {
+      endDate = endDate.getDay() === 6 ? new Date(endDate.setDate(endDate.getDate() - 1)) :
+        endDate.getDay() === 0 ? new Date(endDate.setDate(endDate.getDate() - 2)) :
+          new Date(endDate.setDate(endDate.getDate()));
+
+      startDate = this.RemoveBusinessDays(endDate, days - 1);
+    } else if (nextLast === 'Custom') {
+
+      startDate = rangeDates[0];
+      endDate = rangeDates[1];
+
+    } else if (nextLast === 'Today') {
+      startDate = new Date();
+      endDate = new Date();
+    }
+
+    const startmonth = startDate.getMonth() + 1;
+    const endMonth = endDate.getMonth() + 1;
+    filterDates.push(startDate.getFullYear() + '-' + (startmonth < 10 ? '0' + startmonth : startmonth) +
+      '-' + (startDate.getDate() < 10 ? '0' + startDate.getDate() : startDate.getDate()) + 'T00:00:01.000Z');
+    filterDates.push(endDate.getFullYear() + '-' + (endMonth < 10 ? '0' + endMonth : endMonth) + '-' +
+      (endDate.getDate() < 10 ? '0' + endDate.getDate() : endDate.getDate()) + 'T23:59:00.000Z');
+
+    return filterDates;
+  }
+
+  // ********************************************************************************************************
+  // Add days to get end date for next days
+  // *********************************************************************************************************
+  addBusinessDays(date, days) {
+    date = new Date(date.getTime());
+    const day = date.getDay();
+    date.setDate(date.getDate() + days + (day === 6 ? 2 : +!day) + (Math.floor((days - 1 + (day % 6 || 1)) / 5) * 2));
+    return date;
+  }
+
 }
+
 
 
 

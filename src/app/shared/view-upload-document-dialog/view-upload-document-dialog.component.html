@@ -6,12 +6,6 @@
     <div id="modalInnerLoaderText">Loading...</div>
 </div>
 
-<!-- 
-    <p-toast styleClass="custom-toast" key="custom" [hideTransitionOptions]="'0ms'"
-    position="bottom-center">
-    </p-toast> -->
-
-
 <p-fileUpload [style]="{'margin-top':'1vh'}" *ngIf="!loaderenable && (selectedTab === 'My Drafts' || selectedTab ==='Source Docs' || selectedTab ==='References' || selectedTab ==='Meeting Notes')" customUpload="true" (uploadHandler)="uploadDocs($event,selectedTab)"
     multiple="multiple" maxFileSize="500000000">
 </p-fileUpload>

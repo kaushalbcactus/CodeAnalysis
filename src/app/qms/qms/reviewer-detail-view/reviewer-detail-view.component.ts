@@ -10,6 +10,7 @@ import { QMSCommonService } from '../services/qmscommon.service';
 import { MessageService } from 'primeng/api';
 import { Table } from 'primeng/table';
 import { Router } from '@angular/router';
+import { DialogService } from 'primeng';
 
 @Component({
   selector: 'app-reviewer-detail-view',
@@ -54,6 +55,7 @@ export class ReviewerDetailViewComponent implements OnInit {
     private qmsCommon: QMSCommonService,
     private messageService: MessageService,
     private cdr: ChangeDetectorRef,
+    private dialogService : DialogService,
     private platformLocation: PlatformLocation,
     private locationStrategy: LocationStrategy,
     private readonly _router: Router,
@@ -414,6 +416,25 @@ export class ReviewerDetailViewComponent implements OnInit {
       }
       this.cdr.detectChanges();
     }
+  }
+
+
+  openfeedbackpopup(qmsTasks,task){
+    const ref = this.dialogService.open(FeedbackPopupComponent, {
+      data: {
+        qmsTasks,
+        task
+      },
+      header: 'Rate Work',
+      width: '70vw',
+      contentStyle: { 'min-height': '30vh', 'max-height': '90vh', 'overflow-y': 'auto' }
+    });
+    ref.onClose.subscribe((feedbackdata: any) => {
+      if(feedbackdata){
+        this.bindReviewerTable(feedbackdata.task);
+        this.callParentSuccessMsg(feedbackdata.message);
+      }
+     });
   }
 
 }

@@ -600,7 +600,7 @@ export class MyTimelineComponent implements OnInit {
           const arrResults = await this.spServices.executeBatch(batchURL);
 
           this.messageService.add({
-            key: 'custom', severity: 'success',
+            key: 'mydashboard', severity: 'success',
             summary: 'Success Message', detail: 'Leave created successfully.'
           });
         } else {
@@ -609,7 +609,7 @@ export class MyTimelineComponent implements OnInit {
             this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'CreateAndMoveTask');
             await this.spServices.createItemAndMove(this.constants.listNames.Schedules.name, blockTimeobj, this.constants.listNames.Schedules.type, folderUrl);
 
-            this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Time Booking created successfully.' });
+            this.messageService.add({ key: 'mydashboard', severity: 'success', summary: 'Success Message', detail: 'Time Booking created successfully.' });
           } else {
 
             if (blockTimeobj.IsDeleted !== undefined) {
@@ -619,7 +619,7 @@ export class MyTimelineComponent implements OnInit {
               await this.spServices.updateItem(this.constants.listNames.Schedules.name, task.ID, blockTimeobj,
                 this.constants.listNames.Schedules.type);
               this.messageService.add({
-                key: 'custom', severity: 'success', summary: 'Success Message',
+                key: 'mydashboard', severity: 'success', summary: 'Success Message',
                 detail: 'Time Booking updated successfully.'
               });
             }
@@ -645,7 +645,7 @@ export class MyTimelineComponent implements OnInit {
     };
     this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'DeleteTask');
     await this.spServices.updateItem(this.constants.listNames.Schedules.name, this.task.ID, data, this.constants.listNames.Schedules.type);
-    this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Adhoc  deleted successfully' });
+    this.messageService.add({ key: 'mydashboard', severity: 'success', summary: 'Success Message', detail: 'Adhoc  deleted successfully' });
     this.getEvents(false, this.fullCalendar.calendar.state.dateProfile.currentRange.start,
       this.fullCalendar.calendar.state.dateProfile.currentRange.end);
 
@@ -692,7 +692,7 @@ export class MyTimelineComponent implements OnInit {
     const allowedStatus = ["Completed", "AllowCompletion", "Auto Closed"];
     if (allowedStatus.includes(stval)) {
       if (task.Status === 'Completed' && !task.FinalDocSubmit) {
-        this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: 'No Final Document Found' });
+        this.messageService.add({ key: 'mydashboard', severity: 'error', summary: 'Error Message', detail: 'No Final Document Found' });
         task.Status = earlierStaus;
         this.CalendarLoader = false;
         return false;
@@ -705,7 +705,21 @@ export class MyTimelineComponent implements OnInit {
               task.parent = 'Dashboard';
               const qmsTasks = await this.myDashboardConstantsService.callQMSPopup(task);
               if (qmsTasks.length) {
-                this.feedbackPopupComponent.openPopup(qmsTasks, task);
+
+                const ref = this.dialogService.open(FeedbackPopupComponent, {
+                  data: {
+                    qmsTasks,
+                    task
+                  },
+                  header: 'Rate Work',
+                  width: '70vw',
+                  contentStyle: { 'min-height': '30vh', 'max-height': '90vh', 'overflow-y': 'auto' }
+                });
+                ref.onClose.subscribe((feedbacktask: any) => {
+                  if(feedbacktask){
+                    this.saveTask(feedbacktask);
+                  }
+                 });
               } else {
                 this.saveTask(task);
               }
@@ -762,7 +776,7 @@ export class MyTimelineComponent implements OnInit {
           if (task.ParentSlot) {
             await this.myDashboardConstantsService.getCurrentAndParentTask(task, jsonData.Status);
           }
-          this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Task updated successfully.' });
+          this.messageService.add({ key: 'mydashboard', severity: 'success', summary: 'Success Message', detail: 'Task updated successfully.' });
           this.getEvents(false, this.fullCalendar.calendar.state.dateProfile.currentRange.start,
             this.fullCalendar.calendar.state.dateProfile.currentRange.end);
 
@@ -770,7 +784,7 @@ export class MyTimelineComponent implements OnInit {
       }
 
     } else {
-      this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: 'Previous task should be completed.' });
+      this.messageService.add({ key: 'mydashboard', severity: 'error', summary: 'Error Message', detail: 'Previous task should be completed.' });
       task.Status = earlierStaus;
       this.CalendarLoader = false;
     }
@@ -783,11 +797,11 @@ export class MyTimelineComponent implements OnInit {
     const response = await this.myDashboardConstantsService.CompleteTask(task);
 
     if (response) {
-      this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: response });
+      this.messageService.add({ key: 'mydashboard', severity: 'error', summary: 'Error Message', detail: response });
 
     } else {
       this.messageService.add({
-        key: 'custom', severity: 'success', summary: 'Success Message',
+        key: 'mydashboard', severity: 'success', summary: 'Success Message',
         detail: task.Title + 'Task updated successfully.'
       });
     }
@@ -898,7 +912,7 @@ export class MyTimelineComponent implements OnInit {
     this.getEvents(false, this.fullCalendar.calendar.state.dateProfile.currentRange.start,
       this.fullCalendar.calendar.state.dateProfile.currentRange.end);
 
-    this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Leaves deleted successfully.' });
+    this.messageService.add({ key: 'mydashboard', severity: 'success', summary: 'Success Message', detail: 'Leaves deleted successfully.' });
   }
 
   // tslint:disable-next-line: use-life-cycle-interface
@@ -920,7 +934,7 @@ export class MyTimelineComponent implements OnInit {
     const response = await this.commonService.goToProjectScope(ProjectInformation, ProjectInformation.Status);
     if (response === 'No Document Found.') {
       this.messageService.add({
-        key: 'custom', severity: 'error', summary: 'Error Message',
+        key: 'mydashboard', severity: 'error', summary: 'Error Message',
         detail: task.ProjectCode + ' - Project Scope not found.'
       });
     }

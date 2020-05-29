@@ -681,7 +681,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
 
         url = this.spServices.getItemURL(this.constantService.listNames.SOW.name,
             +this.sowData.ID);
-        this.commonService.setBatchObject(batchUrl, url, this.getSowData(totalVal, Invoiceform.InvoiceType), this.constantService.Method.PATCH, this.constantService.listNames.SOW.name);
+        this.commonService.setBatchObject(batchUrl, url, this.getSowData(totalVal, Invoiceform.value.InvoiceType), this.constantService.Method.PATCH, this.constantService.listNames.SOW.name);
 
         if (Invoiceform.value.InvoiceType === 'new') {
 
@@ -743,7 +743,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         item.Status = this.constantService.SOW_STATUS.AUDIT_IN_PROGRESS;
         this.projectInfoData.splice(projIndex, 1, item);
         this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-hourlyBased', 'updatePOPBBPFBSow');
-        // this.submitForm(Invoiceform, batchUrl, 'confirmInvoice');
+         this.submitForm(Invoiceform, batchUrl, 'confirmInvoice');
     }
 
 

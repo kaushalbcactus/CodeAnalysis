@@ -157,13 +157,13 @@ export class AddEditCommentComponent implements OnInit {
           this.editor.setData('');
           this.common.SetNewrelic('MyDashboard', 'AddEditCommentDialog', 'SaveComment');
           await this.spServices.updateItem(this.constants.listNames.Schedules.name, this.data.ID, data, 'SP.Data.SchedulesListItem');
-          this.messageService.add({ key: 'custom-comment', severity: 'success', summary: 'Success Message', detail: 'Comment saved successfully' });
+          this.messageService.add({ key: 'mydashboard', severity: 'success', summary: 'Success Message', detail: 'Comment saved successfully' });
 
           this.getComments(this.data, false);
         }
 
       } else {
-        this.messageService.add({ key: 'custom-comment', severity: 'warn',
+        this.messageService.add({ key: 'mydashboard', severity: 'warn',
          summary: 'Warning Message', detail: 'Please enter the comment' });
       }
     }
@@ -178,16 +178,6 @@ export class AddEditCommentComponent implements OnInit {
     milestone.filter = milestone.filter.replace(/{{ProjectCode}}/gi, oCurrentTask.ProjectCode).replace(/{{Milestone}}/gi, oCurrentTask.Milestone);
     this.common.SetNewrelic('MyDashboard', 'AddEditCommentDialog', 'fetchMilestoneComments');
     this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, milestone);
-
-    // this.batchContents = new Array();
-    // const batchGuid = this.spServices.generateUUID();
-
-    // let milestone = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.Milestone);
-    // milestone.filter = milestone.filter.replace(/{{ProjectCode}}/gi, oCurrentTask.ProjectCode).replace(/{{Milestone}}/gi, oCurrentTask.Milestone);
-
-    // const MilestoneUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', milestone);
-    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, MilestoneUrl);
-    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
 
     this.commentsdb = this.response.length ? this.response : [];
     if (this.commentsdb.filter(c => c.TaskComments !== null) !== undefined) {

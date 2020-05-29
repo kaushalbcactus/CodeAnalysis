@@ -3,9 +3,6 @@
     <div id="modalInnerLoaderText">Loading...</div>
 </div>
 
-<p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom-booking" [hideTransitionOptions]="'0ms'" position="bottom-center">
-</p-toast>
-
 <div class='blockBookingButton' fxLayout="row" fxLayoutAlign="end center" [hidden]="modalloaderenable">
 
     <button type="button" pButton icon="pi pi-save" id="saveBooking" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="SaveTimeBooking()" label="Save"></button>

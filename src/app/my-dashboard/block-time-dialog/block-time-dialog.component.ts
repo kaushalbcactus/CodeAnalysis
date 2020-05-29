@@ -139,29 +139,29 @@ export class BlockTimeDialogComponent implements OnInit {
     if ((!this.SelectedClientLegalEntity && this.data.timeblockType !== 'Admin') &&
       (!this.SelectedClientLegalEntity && this.data.timeblockType !== 'Internal Meeting') &&
       (!this.SelectedClientLegalEntity && this.data.timeblockType !== 'Training')) {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select Client.' });
+      this.messageService.add({ key: 'mydashboard', severity: 'warn', summary: 'Warning Message', detail: 'Please Select Client.' });
       return false;
     } else if (!this.eventDate) {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select  Date.' });
+      this.messageService.add({ key: 'mydashboard', severity: 'warn', summary: 'Warning Message', detail: 'Please Select  Date.' });
       return false;
     } else if (!this.starttime) {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Define Start Time.' });
+      this.messageService.add({ key: 'mydashboard', severity: 'warn', summary: 'Warning Message', detail: 'Please Define Start Time.' });
       return false;
     } else if (!this.endtime && this.data.timeblockType !== 'Admin') {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Define End Time.' });
+      this.messageService.add({ key: 'mydashboard', severity: 'warn', summary: 'Warning Message', detail: 'Please Define End Time.' });
       return false;
     } else if (!this.commment) {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please add Comments.' });
+      this.messageService.add({ key: 'mydashboard', severity: 'warn', summary: 'Warning Message', detail: 'Please add Comments.' });
       return false;
     } else if (this.starttime === this.endtime) {
       this.messageService.add({
-        key: 'custom', severity: 'warn', summary: 'Warning Message',
+        key: 'mydashboard', severity: 'warn', summary: 'Warning Message',
         detail: 'End Time should be Greater than Start Time.'
       });
       return false;
     } else if (this.starttime === '0:00') {
       this.messageService.add({
-        key: 'custom', severity: 'warn', summary: 'Warning Message',
+        key: 'mydashboard', severity: 'warn', summary: 'Warning Message',
         detail: 'Total hours should be Greater than 0.'
       });
       return false;
@@ -231,13 +231,13 @@ export class BlockTimeDialogComponent implements OnInit {
 
 
     if (!this.eventDate) {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select Start Date.' });
+      this.messageService.add({ key: 'mydashboard', severity: 'warn', summary: 'Warning Message', detail: 'Please Select Start Date.' });
       return false;
     } else if (!this.eventEndDate) {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select End Date.' });
+      this.messageService.add({ key: 'mydashboard', severity: 'warn', summary: 'Warning Message', detail: 'Please Select End Date.' });
       return false;
     } else if (!this.commment) {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please add Comments.' });
+      this.messageService.add({ key: 'mydashboard', severity: 'warn', summary: 'Warning Message', detail: 'Please add Comments.' });
       return false;
     } else {
       const obj = {
@@ -261,7 +261,7 @@ export class BlockTimeDialogComponent implements OnInit {
       } else {
 
         this.messageService.add({
-          key: 'custom', severity: 'warn', summary: 'Warning Message',
+          key: 'mydashboard', severity: 'warn', summary: 'Warning Message',
           detail: 'Leave already exist between ' +
             this.datePipe.transform(this.eventDate, 'MMM dd, yyyy') + ' and ' + this.datePipe.transform(this.eventEndDate, 'MMM dd, yyyy')
         });

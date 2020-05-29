@@ -422,13 +422,13 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       if (!bSelectedNewFiles) {
         if (this.selectedDocuments.length > 1) {
           this.messageService.add({
-            key: 'custom', severity: 'warn', summary: 'Warning Message',
+            key: 'commontoastr', severity: 'warn', summary: 'Warning Message',
             detail: 'All the selected files are already marked as final.'
           });
         } else {
 
           this.messageService.add({
-            key: 'custom', severity: 'warn', summary: 'Warning Message',
+            key: 'commontoastr', severity: 'warn', summary: 'Warning Message',
             detail: 'Selected file already marked as final.'
           });
         }
@@ -436,7 +436,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       }
 
     } else {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select Files.', life: 4000 });
+      this.messageService.add({ key: 'commontoastr', severity: 'warn', summary: 'Warning Message', detail: 'Please Select Files.', life: 4000 });
     }
   }
 
@@ -461,7 +461,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       }
 
     } else {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select Files.', life: 4000 });
+      this.messageService.add({ key: 'commontoastr', severity: 'warn', summary: 'Warning Message', detail: 'Please Select Files.', life: 4000 });
     }
   }
 
@@ -534,7 +534,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
           filesizeerror = true;
           bUpload = false;
           this.messageService.add({
-            key: 'custom', severity: 'info',
+            key: 'commontoastr', severity: 'info',
             summary: 'Info Message', detail: element.name + ' file size should be greater than 0 KB.'
           });
           return;
@@ -562,7 +562,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
               } else {
                 this.loadDraftDocs(this.selectedTab);
                 this.messageService.add({
-                  key: 'custom', severity: 'success',
+                  key: 'commontoastr', severity: 'success',
                   summary: 'Success Message', detail: 'Document updated successfully.'
                 });
               }
@@ -572,7 +572,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       } else {
         if (!filesizeerror) {
           this.messageService.add({
-            key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
+            key: 'commontoastr', severity: 'error', summary: 'Error Message', sticky: true,
             // tslint:disable-next-line: max-line-length
             detail: 'There are certain files with special characters. Please rename them. List of special characters ~ # % & * { } \ : / + < > ? " @ \''
           });
@@ -606,14 +606,14 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     await this.spServices.executeBatch(batchUrl);
 
     if (this.ModifiedSelectedTaskName === 'Client Review' && this.selectedTab === 'My Drafts') {
-      this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Documents uploaded successfully.' });
+      this.messageService.add({ key: 'commontoastr', severity: 'success', summary: 'Success Message', detail: 'Documents uploaded successfully.' });
       this.selectedDocuments = uploadedFiles;
       this.selectedDocuments.map(c => c.status = '-');
       this.markAsFinal();
     }
     else {
       this.loadDraftDocs(this.selectedTab);
-      this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Document updated successfully.' });
+      this.messageService.add({ key: 'commontoastr', severity: 'success', summary: 'Success Message', detail: 'Document updated successfully.' });
     }
 
   }

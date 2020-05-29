@@ -39,6 +39,7 @@ export class TimeSpentDialogComponent implements OnInit {
   };
   task: any;
   SelectedTabType: any;
+  buttonloader: boolean= false;
   constructor(
     public config: DynamicDialogConfig,
     public ref: DynamicDialogRef,
@@ -242,9 +243,11 @@ export class TimeSpentDialogComponent implements OnInit {
       dateArray: this.dateArray
     };
     if (this.config.data) {
+      this.buttonloader = true;
       await this.saveTimeSpentdb(this.task, this.dateArray)
       this.ref.close(data);
     } else {
+      
       this.modalloaderenable = true;
       await this.saveTimeSpentdb(this.task, this.dateArray)
       this.modalloaderenable = false;
@@ -273,7 +276,7 @@ export class TimeSpentDialogComponent implements OnInit {
       ActualStartDate = this.datePipe.transform(dateArray.find(c => c.time !== '00:00').actualDate, 'yyyy-MM-dd') + 'T09:00:00.000';
 
     } else {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please define time.' });
+      this.messageService.add({ key: 'mydashboard', severity: 'warn', summary: 'Warning Message', detail: 'Please define time.' });
       return false;
     }
     if (task !== undefined) {
@@ -325,7 +328,7 @@ export class TimeSpentDialogComponent implements OnInit {
     if (task.ParentSlot) {
       await this.myDashboardConstantsService.getCurrentAndParentTask(task, jsonData.Status);
     }  
-    this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Task Time updated successfully.' });
+    this.messageService.add({ key: 'mydashboard', severity: 'success', summary: 'Success Message', detail: 'Task Time updated successfully.' });
   }
 
 
