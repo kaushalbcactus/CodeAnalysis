@@ -3998,7 +3998,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
       const getNodes = this.taskAllocateCommonService.getTasksFromMilestones(node, false, this.milestoneData);
       const bEditedNode = getNodes.find(e => e.edited === true);
-      if(bEditedNode) {
+      if (bEditedNode) {
         node.data.edited = true;
       }
       // node.data.pUserStartDatePart = this.getDatePart(node.data.pUserStart);
@@ -6141,23 +6141,27 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     });
   }
 
+  getDefaultDate() {
+    return new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 9, 0)
+  }
 
   ////// Refactor code
   getTaskObjectByValue(task, className, milestone, nextTasks, previousTasks, submilestone, tempID) {
     const submilestoneLabel = submilestone ? submilestone.title : '';
+    const defaultDate = this.getDefaultDate();
     return {
-      'pUserStart': new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 9, 0),
-      'pUserEnd': new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 9, 0),
+      'pUserStart': new Date(defaultDate),
+      'pUserEnd': new Date(defaultDate),
       'pUserStartDatePart': this.getDatePart(this.Today),
-      'pUserStartTimePart': this.getTimePart(new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 9, 0)),
+      'pUserStartTimePart': this.getTimePart(new Date(defaultDate)),
       'pUserEndDatePart': this.getDatePart(this.Today),
-      'pUserEndTimePart': this.getTimePart(new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 9, 0)),
+      'pUserEndTimePart': this.getTimePart(new Date(defaultDate)),
       'status': 'Not Saved',
       'id': task.dbId === undefined || task.dbId === 0 ? tempID : task.dbId,
       'text': task.label,
       'title': task.label,
-      'start_date': new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 9, 0),
-      'end_date': new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 9, 0),
+      'start_date': new Date(defaultDate),
+      'end_date': new Date(defaultDate),
       'user': '',
       'open': 1,
       'parent': task.taskType === 'Client Review' ? 0 : milestone.Id,
@@ -6194,22 +6198,22 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       'allocationPerDay': task.allocationPerDay ? task.allocationPerDay : ''
     };
   }
-
+ 
   getObjectByValue(milestone, type, tempID, TempSubmilePositionArray, mil) {
-
+    const defaultDate = this.getDefaultDate();
     return {
-      'pUserStart': new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 9, 0),
-      'pUserEnd': new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 9, 0),
+      'pUserStart': new Date(defaultDate),
+      'pUserEnd': new Date(defaultDate),
       'pUserStartDatePart': this.getDatePart(this.Today),
-      'pUserStartTimePart': this.getTimePart(new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 9, 0)),
+      'pUserStartTimePart': this.getTimePart(new Date(defaultDate)),
       'pUserEndDatePart': this.getDatePart(this.Today),
-      'pUserEndTimePart': this.getTimePart(new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 9, 0)),
+      'pUserEndTimePart': this.getTimePart(new Date(defaultDate)),
       'status': 'Not Saved',
       'id': milestone.dbId === undefined || milestone.dbId === 0 ? tempID : milestone.dbId,
       'text': milestone.label,
       'title': milestone.label,
-      'start_date': new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 9, 0),
-      'end_date': new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 9, 0),
+      'start_date': new Date(defaultDate),
+      'end_date': new Date(defaultDate),
       'user': '',
       'open': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.label ? 1 : 0,
       'parent': 0,
