@@ -6,7 +6,7 @@ import { ConstantsService } from './constants.service';
 import { PmconstantService } from '../projectmanagement/services/pmconstant.service';
 import { PMObjectService } from '../projectmanagement/services/pmobject.service';
 import { DatePipe } from '@angular/common';
-import { Table, DialogService } from 'primeng';
+import { Table, DialogService, MessageService } from 'primeng';
 import { FileUploadProgressDialogComponent } from '../shared/file-upload-progress-dialog/file-upload-progress-dialog.component';
 import { ConfirmationDialogComponent } from '../shared/confirmation-dialog/confirmation-dialog.component';
 import { ControlContainer, ValidatorFn, AbstractControl } from '@angular/forms';
@@ -36,7 +36,8 @@ export class CommonService {
         public taskAllocationService: TaskAllocationConstantsService,
         private datePipe: DatePipe,
         public common: CommonService,
-        public dialogService: DialogService
+        public dialogService: DialogService,
+        private messageService: MessageService
     ) { }
 
     tableToExcel = (function () {
@@ -1038,5 +1039,23 @@ export class CommonService {
     getyearRange() {
         const currentYear = new Date();
         return (currentYear.getFullYear() - 10) + ':' + (currentYear.getFullYear() + 10);
+    }
+
+    showToastrMessage(type: string, message: string, stickyenable: boolean) {
+        let summaryMessage = '';
+        if (type === this.constants.MessageType.warn) {
+            summaryMessage = 'Warn Message';
+        } else if (type === this.constants.MessageType.error) {
+            summaryMessage = 'Error Message';
+        } else if (type === this.constants.MessageType.success) {
+            summaryMessage = 'Success Message';
+        } else if (type === this.constants.MessageType.info) {
+            summaryMessage = 'Info Message';
+        }
+        this.messageService.add({ key: 'cls_toastrMessage', severity: type, summary: summaryMessage, detail: message, sticky: stickyenable });
+    }
+
+    clearToastrMessage(){
+        this.messageService.clear();
     }
 }

@@ -3,7 +3,6 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { GlobalService } from 'src/app/Services/global.service';
-import { MessageService, SelectItem } from 'primeng/api';
 import { Router, RouterStateSnapshot, ActivatedRoute } from '@angular/router';
 import { MyDashboardConstantsService } from '../../services/my-dashboard-constants.service';
 import { DatePipe } from '@angular/common';
@@ -81,7 +80,6 @@ export class CreateTaskComponent implements OnInit {
     public constantsService: ConstantsService,
     public globalService: GlobalService,
     private myDashboardConstantsService: MyDashboardConstantsService,
-    private messageService: MessageService,
     private router: Router,
     private datePipe: DatePipe,
     private commonService: CommonService,
@@ -403,7 +401,7 @@ export class CreateTaskComponent implements OnInit {
       if (res.length) {
         if (res[0].retItems.hasError) {
           const errorMsg = res[0].retItems.message.value;
-          this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error message', detail: errorMsg });
+          this.commonService.showToastrMessage(this.constantsService.MessageType.error,errorMsg,false);
           return false;
         }
         const response = res[0].retItems;
@@ -424,7 +422,8 @@ export class CreateTaskComponent implements OnInit {
         this.commonService.SetNewrelic('MyDashboard', 'fteCreateTask', 'CreateTask');
         const moveToMilestoneRes: any = await this.spOperationsService.executeBatch(batchUrl);
         console.log('res ', moveToMilestoneRes);
-        this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success message', detail: 'Task created.' });
+
+        this.commonService.showToastrMessage(this.constantsService.MessageType.success,'Task Created',false);
         this.refetchTaskList();
         this.constantsService.loader.isPSInnerLoaderHidden = true;
         this.createTaskModal = false;

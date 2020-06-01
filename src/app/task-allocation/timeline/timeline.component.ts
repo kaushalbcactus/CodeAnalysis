@@ -21,7 +21,7 @@ import { TaskAllocationCommonService } from '../services/task-allocation-common.
   selector: 'app-timeline',
   templateUrl: './timeline.component.html',
   styleUrls: ['./timeline.component.css'],
-  providers: [MessageService, DialogService, DragDropComponent, UsercapacityComponent, DynamicDialogRef],
+  providers: [DialogService, DragDropComponent, UsercapacityComponent, DynamicDialogRef],
   encapsulation: ViewEncapsulation.None
 })
 export class TimelineComponent implements OnInit, OnDestroy {

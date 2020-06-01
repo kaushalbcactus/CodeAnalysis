@@ -3,7 +3,7 @@ import { ConstantsService } from 'src/app/Services/constants.service';
 import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
 import { DatePipe } from '@angular/common';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
-import { MessageService, DialogService, MenuItem, Table, DynamicDialogConfig } from 'primeng';
+import { DialogService, MenuItem, Table, DynamicDialogConfig } from 'primeng';
 import { CommonService } from 'src/app/Services/common.service';
 import { ActivatedRoute } from '@angular/router';
 import { TimeSpentDialogComponent } from '../time-spent-dialog/time-spent-dialog.component';
@@ -42,7 +42,6 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
     private datePipe: DatePipe,
     private spServices: SPOperationService,
     private commonService: CommonService,
-    public messageService: MessageService,
     private route: ActivatedRoute,
     public dialogService: DialogService,
     private cdr: ChangeDetectorRef,
@@ -334,7 +333,7 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
     });
   }
 
- // ****************************************************************************************
+  // ****************************************************************************************
   //  show feedback popup
   // ****************************************************************************************
 
@@ -367,12 +366,9 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
     if (response) {
       this.loaderenable = false;
       this.reloadTableData.emit();
-      this.messageService.add({ key: 'mydashboard', severity: 'error', summary: 'Error Message', detail: response });
+      this.commonService.showToastrMessage(this.constants.MessageType.error, response, false);
     } else {
-      this.messageService.add({
-        key: 'mydashboard', severity: 'success', summary: 'Success Message',
-        detail: task.Title + 'Task Updated Successfully.'
-      });
+      this.commonService.showToastrMessage(this.constants.MessageType.success, task.Title + 'Task Updated Successfully.', false);
       this.refreshData();
     }
   }
@@ -387,8 +383,8 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
     };
 
     this.commonService.SetNewrelic('MyCurrentCompletedTask', this.route.snapshot.data.type, 'UpdateComment');
-    await this.spServices.updateItem(this.constants.listNames.Schedules.name, task.ID, data, 'SP.Data.SchedulesListItem');
-    this.messageService.add({ key: 'mydashboard', severity: 'success', summary: 'Success Message', detail: 'Comment saved successfully' });
+    await this.spServices.updateItem(this.constants.listNames.Schedules.name, task.ID, data, this.constants.listNames.Schedules.type);
+    this.commonService.showToastrMessage(this.constants.MessageType.success, 'Comment saved successfully', false)
   }
 
   async getAddUpdateDocument(task) {
@@ -428,7 +424,7 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
     // if (stval === 'Completed' || stval === 'AllowCompletion' || stval === 'Auto Closed') {
     if (allowedStatus.includes(stval)) {
       if (!task.FinalDocSubmit) {
-        this.messageService.add({ key: 'mydashboard', severity: 'error', summary: 'Error Message', detail: 'No Final Document Found' });
+        this.commonService.showToastrMessage(this.constants.MessageType.error, 'No Final Document Found', false)
         return false;
       }
       if (task.TaskComments) {
@@ -449,10 +445,7 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
         this.getAddUpdateComment(task, true);
       }
     } else {
-      this.messageService.add({
-        key: 'mydashboard', severity: 'error', summary: 'Error Message',
-        detail: 'Previous task should be completed.'
-      });
+      this.commonService.showToastrMessage(this.constants.MessageType.error, 'Previous task should be completed.', false);
     }
   }
 
@@ -463,10 +456,8 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
     const ProjectInformation = await this.myDashboardConstantsService.getCurrentTaskProjectInformation(task.ProjectCode);
     const response = await this.commonService.goToProjectScope(ProjectInformation, ProjectInformation.Status);
     if (response === 'No Document Found.') {
-      this.messageService.add({
-        key: 'mydashboard', severity: 'error', summary: 'Error Message',
-        detail: task.ProjectCode + ' - Project Scope not found.'
-      });
+
+      this.commonService.showToastrMessage(this.constants.MessageType.error, task.ProjectCode + ' - Project Scope not found.', false)
     }
     else {
       window.open(response);
@@ -502,7 +493,7 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
           DisplayTitle = task.Title;
         }
       }
-  
+
       data.push({
         Id: task.Id,
         AssignedTo: task.AssignedTo,

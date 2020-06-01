@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { PmconstantService } from 'src/app/projectmanagement/services/pmconstant.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { MessageService, DynamicDialogConfig, DynamicDialogRef } from 'primeng';
+import {  DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { CommonService } from 'src/app/Services/common.service';
@@ -33,7 +33,6 @@ export class AddReduceSowbudgetDialogComponent implements OnInit {
   constructor(
     private pmconstant: PmconstantService,
     private frmbuilder: FormBuilder,
-    private messageService: MessageService,
     public config: DynamicDialogConfig,
     public ref: DynamicDialogRef,
     private constantsService: ConstantsService,
@@ -92,49 +91,32 @@ export class AddReduceSowbudgetDialogComponent implements OnInit {
 
   async saveBudget() {
     if (!this.changeBudgetForm.value.selectedValue) {
-      this.messageService.add({
-        key: 'custom', severity: 'info',
-        summary: 'Info Message', detail: 'Please define budget type.'
-      });
+
+      this.common.showToastrMessage(this.constantsService.MessageType.info,'Please define budget type.',false);
       return;
     }
     else {
       if (this.changeBudgetForm.valid) {
         let sowItemResult = [];
         if (this.selectedFile && this.selectedFile.size === 0) {
-          this.messageService.add({
-            key: 'custom', severity: 'error',
-            summary: 'Error Message', detail: 'Unable to upload file, size of ' + this.selectedFile.name + ' is 0 KB.'
-          });
+
+          this.common.showToastrMessage(this.constantsService.MessageType.error,this.constantsService.Messages.ZeroKbFile.replace('{{fileName}}',this.selectedFile.name),false);
           return;
         }
         if (this.changeBudgetForm.value.selectedValue === this.pmconstant.ACTION.RESTRUCTURE && Math.abs(this.changeBudgetForm.value.total) > this.pmObject.addSOW.Budget.TotalBalance) {
-          this.messageService.add({
-            key: 'custom',
-            severity: 'error', summary: 'Error Message',
-            detail: 'Total Amount must be less than or equal to existing Total'
-          });
+          this.common.showToastrMessage(this.constantsService.MessageType.error,'Total Amount must be less than or equal to existing Total.',false);
           return false;
         } else if (this.changeBudgetForm.value.selectedValue === this.pmconstant.ACTION.RESTRUCTURE && Math.abs(this.changeBudgetForm.value.net) > this.pmObject.addSOW.Budget.NetBalance) {
-          this.messageService.add({
-            key: 'custom',
-            severity: 'error', summary: 'Error Message',
-            detail: 'Net amount must be less than or equal to existing net amount'
-          });
+
+          this.common.showToastrMessage(this.constantsService.MessageType.error,'Net amount must be less than or equal to existing net amount.',false);
           return false;
         } else if (this.changeBudgetForm.value.selectedValue === this.pmconstant.ACTION.RESTRUCTURE && Math.abs(this.changeBudgetForm.value.oop) > this.pmObject.addSOW.Budget.OOPBalance) {
-          this.messageService.add({
-            key: 'custom',
-            severity: 'error', summary: 'Error Message',
-            detail: 'OOP must be less than or equal to existing OOP Value'
-          });
+
+          this.common.showToastrMessage(this.constantsService.MessageType.error,'OOP must be less than or equal to existing OOP Value.',false);
           return false;
         } else if (this.changeBudgetForm.value.selectedValue === this.pmconstant.ACTION.RESTRUCTURE && Math.abs(this.changeBudgetForm.value.tax) > this.pmObject.addSOW.Budget.TaxBalance) {
-          this.messageService.add({
-            key: 'adminCustom',
-            severity: 'error', summary: 'Error Message',
-            detail: 'Tax Amount must be less than or equal to existing Tax'
-          });
+
+          this.common.showToastrMessage(this.constantsService.MessageType.error,'Tax Amount must be less than or equal to existing Tax',false);
           return false;
         }
         this.constantsService.loader.isPSInnerLoaderHidden = false;
@@ -144,10 +126,8 @@ export class AddReduceSowbudgetDialogComponent implements OnInit {
         sowItemResult = await this.spServices.readItems(this.constantsService.listNames.SOW.name, sowItemFilter);
 
         if (sowItemResult[0].SOWLink && sowItemResult[0].SOWLink.indexOf(this.selectedFile.name) > -1) {
-          this.messageService.add({
-            key: 'custom', severity: 'error',
-            summary: 'Error Message', detail: 'Addendum SOW document name same as original document name.'
-          });
+
+          this.common.showToastrMessage(this.constantsService.MessageType.error,'Addendum SOW document name same as original document name.',false);
           this.constantsService.loader.isPSInnerLoaderHidden = true;
           return;
         }

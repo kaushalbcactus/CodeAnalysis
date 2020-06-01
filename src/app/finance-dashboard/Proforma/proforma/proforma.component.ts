@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation, ViewChild, OnDestroy, HostListener, ElementRef, ApplicationRef, NgZone, TemplateRef, ChangeDetectorRef } from '@angular/core';
-import { Message, MessageService, SelectItem } from 'primeng/api';
+import { SelectItem } from 'primeng/api';
 import { Calendar, Table, DialogService } from 'primeng';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -25,7 +25,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
     tempClick: any;
     proformaRes: any = [];
     proformaCols: any[];
-    msgs: Message[] = [];
 
     // Row Selection Array
     selectedRowData: any = [];
@@ -93,7 +92,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
         private fdConstantsService: FdConstantsService,
         public fdDataShareServie: FDDataShareService,
         private datePipe: DatePipe,
-        private messageService: MessageService,
         private commonService: CommonService,
         private cdr: ChangeDetectorRef,
         private platformLocation: PlatformLocation,
@@ -501,11 +499,13 @@ export class ProformaComponent implements OnInit, OnDestroy {
 
         this.commonService.confirmMessageDialog(obj.title, obj.msg, null, ['Yes', 'No'], false).then(async Confirmation => {
             if (Confirmation === 'Yes') {
-                this.msgs = [{ severity: 'info', summary: 'Confirmed', detail: 'You have Confirmed' }];
+
+                this.commonService.showToastrMessage(this.constantService.MessageType.info,'You have Confirmed',false);
                 this.onSubmit(obj.type);
             }
             else if (Confirmation === 'No') {
-                this.msgs = [{ severity: 'info', summary: 'Cancel', detail: 'You have canceled' }];
+
+                this.commonService.showToastrMessage(this.constantService.MessageType.info,'You have canceled',false);
             }
         });
 
@@ -1184,7 +1184,8 @@ export class ProformaComponent implements OnInit, OnDestroy {
             // let fileName = file.substr(0, file.indexOf('.'));
             // console.log('fileName  ', file);
             if (file === event.target.files[0].name) {
-                this.messageService.add({ key: 'proformaInfoToast', severity: 'info', summary: 'Info message', detail: 'This file name already exit.Please select another file name.', life: 4000 });
+
+                this.commonService.showToastrMessage(this.constantService.MessageType.error,this.constantService.Messages.FileAlreadyExist,false);
                 this.replaceProforma_form.reset();
                 return;
             }
@@ -1198,7 +1199,8 @@ export class ProformaComponent implements OnInit, OnDestroy {
             if (fileName !== sNewFileName) {
                 this.fileInput.nativeElement.value = '';
                 this.replaceProforma_form.get('file').setValue('');
-                this.messageService.add({ key: 'proformaInfoToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
+
+                this.commonService.showToastrMessage(this.constantService.MessageType.error,this.constantService.Messages.SpecialCharMsg,false);
                 return false;
             }
             let cleListName = this.getCLEListNameFromCLE(this.selectedRowItem.ClientLegalEntity)
@@ -1217,10 +1219,8 @@ export class ProformaComponent implements OnInit, OnDestroy {
             if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
                 if (uploadedfile[0].hasOwnProperty('odata.error') || uploadedfile[0].hasError) {
                     this.submitBtn.isClicked = false;
-                    this.messageService.add({
-                        key: 'proformaInfoToast', severity: 'error', summary: 'Error message',
-                        detail: 'File not uploaded, Folder / File Not Found', life: 3000
-                    });
+
+                    this.commonService.showToastrMessage(this.constantService.MessageType.error,this.constantService.Messages.FileNotUploaded,false);
                 } else if (uploadedfile[0].ServerRelativeUrl) {
                     this.isPSInnerLoaderHidden = false;
                     let prfData = {
@@ -1489,10 +1489,8 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 return;
             }
             else if (this.selectedFile && this.selectedFile.size === 0) {
-                this.messageService.add({
-                    key: 'proformaSuccessToast', severity: 'error',
-                    summary: 'Error message', detail: 'Unable to upload file, size of ' + this.selectedFile.name + ' is 0 KB.', life: 2000
-                });
+
+                this.commonService.showToastrMessage(this.constantService.MessageType.error,this.constantService.Messages.ZeroKbFile.replace('{{fileName}}',this.selectedFile.name),false);
                 return;
             }
             this.submitBtn.isClicked = true;
@@ -1517,12 +1515,14 @@ export class ProformaComponent implements OnInit, OnDestroy {
         if (type === "Mark as Sent to Client" || type === "Reject Proforma") {
             let sts = '';
             sts = type === 'Mark as Sent to Client' ? 'Sent' : 'Rejected'
-            this.messageService.add({ key: 'proformaSuccessToast', severity: 'success', summary: 'Success message', detail: this.selectedRowItem.ProformaNumber + ' ' + 'Status changed to "' + sts + '" Successfully.', life: 20000 });
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.success,this.selectedRowItem.ProformaNumber + ' ' + 'Status changed to "' + sts + '" Successfully.',true);
             this.reFetchData(type);
         } else if (type === "createProforma") {
             this.proformaModal = false;
             await this.fdDataShareServie.callProformaCreation(arrResults[0], this.cleData, this.projectContactsData, this.purchaseOrdersList, this.editorRef, []);
-            this.messageService.add({ key: 'proformaSuccessToast', severity: 'success', summary: 'Success message', detail: arrResults[0].Title + ' ' + 'Proforma Created.', life: 20000 });
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.success,arrResults[0].Title + ' ' + 'Proforma Created.',true);
             this.reFetchData(type);
 
         } else if (type === "generateInvoice") {
@@ -1565,10 +1565,11 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 await this.fdDataShareServie.createInvoice(proformHtml, this.selectedRowItem, oInv, this.cleData)
             }
             this.generateInvoiceModal = false;
-            this.messageService.add({ key: 'custom', severity: 'success', summary: 'Invoice Generated', detail: 'Invoice Number: ' + oInv.InvoiceNumber, life: 20000 });
+            this.commonService.showToastrMessage(this.constantService.MessageType.error,'Invoice Number: ' + oInv.InvoiceNumber,true);
             this.reFetchData(type);
         } else if (type === "replaceProforma") {
-            this.messageService.add({ key: 'proformaSuccessToast', severity: 'success', summary: 'Success message', detail: this.selectedRowItem.ProformaNumber + ' ' + 'Success.', life: 20000 });
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.success,this.selectedRowItem.ProformaNumber + ' ' + 'Success.',true);
             this.replaceProformaModal = false;
             this.reFetchData(type);
         }
@@ -1722,7 +1723,8 @@ export class ProformaComponent implements OnInit, OnDestroy {
             const res = await this.spServices.checkFileExist(this.globalService.sharePointPageObject.webAbsoluteUrl + '/' + this.cleData.find(c => c.Title === rowItem.ClientLegalEntity).ListName);
             if (res.hasOwnProperty('status')) {
                 if (res.status === 404) {
-                    this.messageService.add({ key: 'proformaSuccessToast', severity: 'error', summary: 'Error message', detail: rowItem.ProformaNumber + ' Proforma not created. Folder Not Found.', life: 20000 });
+
+                    this.commonService.showToastrMessage(this.constantService.MessageType.error,rowItem.ProformaNumber + ' Proforma not created. Folder Not Found.',true);
                     this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
                 }
                 else {
@@ -1731,12 +1733,14 @@ export class ProformaComponent implements OnInit, OnDestroy {
                     // tslint:disable-next-line: max-line-length
                     await this.fdDataShareServie.callProformaCreation(rowItem, this.cleData, this.projectContactsData, this.purchaseOrdersList, this.editorRef, projectAppendix);
                     this.reFetchData('createProforma');
-                    this.messageService.add({ key: 'proformaSuccessToast', severity: 'success', summary: 'Success message', detail: rowItem.ProformaNumber + ' Proforma Created.', life: 20000 });
+                    this.commonService.showToastrMessage(this.constantService.MessageType.success,rowItem.ProformaNumber + ' Proforma Created.',false);
                 }
             }
         }
         else {
-            this.messageService.add({ key: 'proformaSuccessToast', severity: 'error', summary: 'Error message', detail: rowItem.ProformaNumber + ' Proforma not created. Client Not Found.', life: 20000 });
+
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.error,rowItem.ProformaNumber + ' Proforma not created. Client Not Found.',true);
             this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
 
         }

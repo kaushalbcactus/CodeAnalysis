@@ -10,7 +10,7 @@ import { Table } from 'primeng/table';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { CommonService } from 'src/app/Services/common.service';
-import { DialogService, MessageService, MenuItem, SelectItem } from 'primeng';
+import { DialogService, MenuItem, SelectItem } from 'primeng';
 import { CaDragdropComponent } from '../ca-dragdrop/ca-dragdrop.component';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
 
@@ -73,7 +73,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   arrMilestoneTasks = [];
   constructor(
     private spServices: SPOperationService,
-    private globalConstant: ConstantsService,
+    private constants: ConstantsService,
     private caConstant: CAConstantService,
     public globalService: GlobalService,
     public caGlobal: CAGlobalService,
@@ -82,7 +82,6 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     private route: ActivatedRoute,
     private usercapacityComponent: UsercapacityComponent,
     private datePipe: DatePipe,
-    private messageService: MessageService,
     private commonService: CommonService,
     private cdr: ChangeDetectorRef,
     public datepipe: DatePipe,
@@ -105,9 +104,9 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
 
 
-  private scheduleList = this.globalConstant.listNames.Schedules.name;
-  private resourceCategorizationList = this.globalConstant.listNames.ResourceCategorization.name;
-  private projectInformationList = this.globalConstant.listNames.ProjectInformation.name;
+  private scheduleList = this.constants.listNames.Schedules.name;
+  private resourceCategorizationList = this.constants.listNames.ResourceCategorization.name;
+  private projectInformationList = this.constants.listNames.ProjectInformation.name;
   public allocatedHideLoader = false;
   public allocatedHideTable = true;
   public allocatedHideNoDataMessage = true;
@@ -208,7 +207,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         this.caCommonService.getCaProperties(taskCounter, schedulesItemFetch, task, this.projects,
           this.resourceList, this.completeTaskArray, acTempArrays);
       }
-      this.arrMilestoneTasks = await this.caCommonService.getMilestoneSchedules(this.globalConstant.listNames.Schedules.name, schedulesItemFetch);
+      this.arrMilestoneTasks = await this.caCommonService.getMilestoneSchedules(this.constants.listNames.Schedules.name, schedulesItemFetch);
 
       this.caCommonService.getScheduleItems(this.completeTaskArray, this.arrMilestoneTasks);
       this.caArrays.clientLegalEntityArray = this.caCommonService.sortByAttribute(this.commonService.unique
@@ -363,10 +362,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
   fetchResources(task) {
     if (!this.selectOpened) {
-      this.messageService.add({
-        key: 'tc', severity: 'warn', sticky: true,
-        summary: 'Info Message', detail: 'Fetching available resources...'
-      });
+
+      this.commonService.showToastrMessage(this.constants.MessageType.warn,'Fetching available resources...',true);
       setTimeout(async () => {
         const setResourcesExtn = $.extend(true, [], task.resources);
         const startTime = new Date(new Date(task.StartTime).setHours(0, 0, 0, 0));
@@ -433,7 +430,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
             task.displayselectedResources.push({ label: retRes, items: Items });
           }
         }
-        this.messageService.clear();
+       this.commonService.clearToastrMessage();
         if (this.selectedUser) {
           this.selectedButton = Array.from(document.querySelectorAll('li'))
             .find(el => el.textContent.indexOf(this.selectedUser.UserName.Title) > -1);
@@ -523,15 +520,10 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     });
     // tslint:disable-next-line: no-shadowed-variable
     ref.onClose.subscribe((task: any) => {
-
-
-      this.messageService.add({
-        severity: 'info', summary: 'Info Message',
-        detail: 'Please wait..'
-      });
+      this.commonService.showToastrMessage(this.constants.MessageType.info,'Please wait..',true);
       this.selectedUser = item;
       this.openedTask.allocatedResource = '';
-      this.messageService.clear();
+      this.commonService.clearToastrMessage();
       this.openedSelect.show();
       this.selectOpened = false;
     });
@@ -604,7 +596,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     const mailObj = this.caConstant.getMailTemplate;
     mailObj.filter = mailObj.filter.replace('{{templateName}}', templateName);
     this.commonService.SetNewrelic('unallocated-allocated', 'CA-GetMailContent', 'readItems');
-    const templateData = await this.spServices.readItems(this.globalConstant.listNames.MailContent.name,
+    const templateData = await this.spServices.readItems(this.constants.listNames.MailContent.name,
       mailObj);
     mailContent = templateData.length > 0 ? templateData[0].Content : [];
     return mailContent;
@@ -719,12 +711,12 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
               if (this.BudgetHoursTaskenable) {
                 const batchUrl = [];
                 const tasksObj = Object.assign({}, this.queryConfig);
-                tasksObj.url = this.spServices.getReadURL(this.globalConstant.listNames.MilestoneSubTaskMatrix.name,
+                tasksObj.url = this.spServices.getReadURL(this.constants.listNames.MilestoneSubTaskMatrix.name,
                   this.caConstant.GetTaskBudgetHours);
                 tasksObj.url = tasksObj.url.replace(/{{ClientLegalEntity}}/gi, projectItem.ClientLegalEntity)
                   .replace(/{{StandardService}}/gi, projectItem.StandardService)
                   .replace(/{{Milestone}}/gi, RowData.Milestone);
-                tasksObj.listName = this.globalConstant.listNames.MilestoneSubTaskMatrix.name;
+                tasksObj.listName = this.constants.listNames.MilestoneSubTaskMatrix.name;
                 tasksObj.type = 'GET';
                 batchUrl.push(tasksObj);
                 this.commonService.SetNewrelic('unallocated-allocated', 'CA', 'AddRowMilestoneSubTaskMatrix');
@@ -1096,7 +1088,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         task.displayselectedResources.push({ label: retRes, items: Items });
       }
     }
-    this.messageService.clear();
+    this.commonService.clearToastrMessage();
     if (this.selectedUser) {
       this.selectedButton = Array.from(document.querySelectorAll('li'))
         .find(el => el.textContent.indexOf(this.selectedUser.UserName.Title) > -1);
@@ -1276,11 +1268,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     if (isValid) {
       this.loaderenable = true;
       setTimeout(() => {
-
-        this.messageService.add({
-          key: 'tc', severity: 'warn', sticky: true,
-          summary: 'Info Message', detail: 'Updating...'
-        });
+        this.commonService.showToastrMessage(this.constants.MessageType.info,'Updating...',true);
         this.generateSaveTasks(unt);
       }, 300);
     }
@@ -1305,10 +1293,10 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     if (UniqueProjectCodeArray.length) {
       UniqueProjectCodeArray.forEach(element => {
         const projectObj = Object.assign({}, this.queryConfig);
-        projectObj.url = this.spServices.getReadURL(this.globalConstant.listNames.Schedules.name,
+        projectObj.url = this.spServices.getReadURL(this.constants.listNames.Schedules.name,
           this.caConstant.tasks);
         projectObj.url = projectObj.url.replace(/{{ProjectCode}}/gi, element);
-        projectObj.listName = this.globalConstant.listNames.Schedules.name;
+        projectObj.listName = this.constants.listNames.Schedules.name;
         projectObj.type = 'GET';
         batchUrl.push(projectObj);
       });
@@ -1328,23 +1316,16 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           && e.Status !== 'Completed');
         // tslint:enable
         if (checkTaskAllocatedTime.length > 0) {
-          this.messageService.add({
-            key: 'custom', severity: 'warn', summary: 'Warning Message',
-            detail: 'Allocated time for task cannot be equal or less than 0 for '
-              + slot.ProjectCode + '-' + slot.Milestone + ' - ' + checkTaskAllocatedTime[0].Task
-          });
+          this.commonService.showToastrMessage(this.constants.MessageType.error,'Allocated time for task cannot be equal or less than 0 for '
+          + slot.ProjectCode + '-' + slot.Milestone + ' - ' + checkTaskAllocatedTime[0].Task,false);
           return false;
         }
 
         const compareDates = slot.SlotTasks.filter(e => (e.UserEnd <= e.UserStart && e.Status !== 'Completed'));
         if (compareDates.length > 0) {
 
-
-          this.messageService.add({
-            key: 'custom', severity: 'warn', summary: 'Warning Message',
-            detail: 'End date should be greater than start date of ' + compareDates[0].TaskName + ' task of '
-              + slot.ProjectCode + '-' + slot.Milestone + ' - ' + slot.Task
-          });
+          this.commonService.showToastrMessage(this.constants.MessageType.warn,'End date should be greater than start date of ' + compareDates[0].TaskName + ' task of '
+          + slot.ProjectCode + '-' + slot.Milestone + ' - ' + slot.Task,false);
           return false;
         }
 
@@ -1361,10 +1342,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
         });
         if (!validateAllocation) {
-          this.messageService.add({
-            key: 'custom', severity: 'warn', summary: 'Warning Message',
-            detail: 'All tasks of ' + slot.ProjectCode + '-' + slot.Milestone + ' - ' + slot.Task + ' should be assigned to   resource.'
-          });
+
+          this.commonService.showToastrMessage(this.constants.MessageType.warn,'All tasks of ' + slot.ProjectCode + '-' + slot.Milestone + ' - ' + slot.Task + ' should be assigned to   resource.',false);
           return false;
         }
         const errorPresnet = this.validateTaskDates(slot.SlotTasks, slot);
@@ -1375,22 +1354,14 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         const compareTaskDates = slot.SlotTasks.filter(e => (slot.StartDate > e.UserStart && e.Status !== 'Completed'));
         if (compareTaskDates.length > 0) {
 
-          this.messageService.add({
-            key: 'custom', severity: 'warn', summary: 'Warning Message',
-            // tslint:disable-next-line: max-line-length
-            detail: 'start date of ' + compareTaskDates[0].TaskName + ' task  should be greater than start date of ' + slot.ProjectCode + '-' + slot.Milestone + ' - ' + slot.Task
-          });
+          this.commonService.showToastrMessage(this.constants.MessageType.warn, 'start date of ' + compareTaskDates[0].TaskName + ' task  should be greater than start date of ' + slot.ProjectCode + '-' + slot.Milestone + ' - ' + slot.Task,false);
           return false;
         }
 
         const compareTaskEndDates = slot.SlotTasks.filter(e => (e.UserEnd > slot.DueDate && e.Status !== 'Completed'));
         if (compareTaskEndDates.length > 0) {
 
-          this.messageService.add({
-            key: 'custom', severity: 'warn', summary: 'Warning Message',
-            // tslint:disable-next-line: max-line-length
-            detail: 'end date of ' + compareTaskEndDates[0].TaskName + ' task  should be less than end date of ' + slot.ProjectCode + '-' + slot.Milestone + ' - ' + slot.Task
-          });
+          this.commonService.showToastrMessage(this.constants.MessageType.warn, 'end date of ' + compareTaskEndDates[0].TaskName + ' task  should be less than end date of ' + slot.ProjectCode + '-' + slot.Milestone + ' - ' + slot.Task,false);
           return false;
         }
 
@@ -1401,11 +1372,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           const ExisitingTasks = slot.SlotTasks.filter(c => c.Status === 'Not Saved').map(c => c.TaskName).filter(c => dbProjectTasks.includes(c))
 
           if (ExisitingTasks.length > 0) {
-            this.messageService.add({
-              key: 'custom', severity: 'warn', summary: 'Warning Message',
-              // tslint:disable-next-line: max-line-length
-              detail: ExisitingTasks.join(', ') + ' task of ' + slot.ProjectCode + '-' + slot.Milestone + ' is already exist.'
-            });
+
+            this.commonService.showToastrMessage(this.constants.MessageType.warn,ExisitingTasks.join(', ') + ' task of ' + slot.ProjectCode + '-' + slot.Milestone + ' is already exist.',false);
             return false;
           }
         }
@@ -1434,11 +1402,9 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           && c.Status !== 'Auto Closed' && c.Status !== 'Deleted' && c.allowStart === false);
         if (SDTask) {
           // this.errorMessageCount++;
-          this.messageService.add({
-            key: 'custom', severity: 'warn', summary: 'Warning Message',
-            detail: 'Start Date of ' + SDTask.TaskName + '  should be greater than end date of ' +
-              task.TaskName + ' in ' + slot.ProjectCode + '-' + slot.Milestone + ' - ' + slot.Task,
-          });
+
+          this.commonService.showToastrMessage(this.constants.MessageType.warn,'Start Date of ' + SDTask.TaskName + '  should be greater than end date of ' +
+          task.TaskName + ' in ' + slot.ProjectCode + '-' + slot.Milestone + ' - ' + slot.Task,false);
           errorPresnet = true;
           break;
           // this.taskerrorMessage = 'Start Date of ' + SDTask.pName + '  should be greater than end date of ' + task.pName;
@@ -1479,10 +1445,10 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
             const batchUrl = [];
             const tasksObj = Object.assign({}, this.queryConfig);
-            tasksObj.url = this.spServices.getReadURL(this.globalConstant.listNames.projectInfo.name,
+            tasksObj.url = this.spServices.getReadURL(this.constants.listNames.projectInfo.name,
               this.caConstant.projectResources);
             tasksObj.url = tasksObj.url.replace(/{{ProjectCode}}/gi, slot.ProjectCode);
-            tasksObj.listName = this.globalConstant.listNames.projectInfo.name;
+            tasksObj.listName = this.constants.listNames.projectInfo.name;
             tasksObj.type = 'GET';
             batchUrl.push(tasksObj);
             this.commonService.SetNewrelic('unallocated-allocated', 'CA', 'GetProjectInfoByProjectCode');
@@ -1650,7 +1616,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       // this.spServices.getChangeSetBodySC(batchContents, changeSetId, tasks.url, tasks.body, true);
       const TaskObj = Object.assign({}, this.queryConfig);
       TaskObj.url = tasks.url;
-      TaskObj.listName = this.globalConstant.listNames.Schedules.name;
+      TaskObj.listName = this.constants.listNames.Schedules.name;
       TaskObj.type = 'POST';
       TaskObj.data = tasks.body;
       batchUrl.push(TaskObj);
@@ -1659,7 +1625,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     for (const tasks of updatedTasks) {
       const taskObj = Object.assign({}, this.queryConfig);
       taskObj.url = tasks.url;
-      taskObj.listName = this.globalConstant.listNames.Schedules.name;
+      taskObj.listName = this.constants.listNames.Schedules.name;
       taskObj.type = 'PATCH';
       taskObj.data = tasks.body;
       batchUrl.push(taskObj);
@@ -1675,9 +1641,9 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           slot.Id = slot.id;
         }
         const taskObj = Object.assign({}, this.queryConfig);
-        taskObj.url = this.spServices.getItemURL(this.globalConstant.listNames.Schedules.name, +slot.Id);
+        taskObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +slot.Id);
         taskObj.data = updateProjectBody;
-        taskObj.listName = this.globalConstant.listNames.Schedules.name;
+        taskObj.listName = this.constants.listNames.Schedules.name;
         taskObj.type = 'PATCH';
         batchUrl.push(taskObj);
       }
@@ -1691,8 +1657,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       for (const resp of responseInLines) {
 
         // tslint:disable: max-line-length
-        const fileUrl = this.globalService.sharePointPageObject.serverRelativeUrl + '/Lists/' + this.globalConstant.listNames.Schedules.name + '/' + resp.ID + '_.000';
-        let moveFileUrl = this.globalService.sharePointPageObject.serverRelativeUrl + '/Lists/' + this.globalConstant.listNames.Schedules.name + '/' + resp.ProjectCode;
+        const fileUrl = this.globalService.sharePointPageObject.serverRelativeUrl + '/Lists/' + this.constants.listNames.Schedules.name + '/' + resp.ID + '_.000';
+        let moveFileUrl = this.globalService.sharePointPageObject.serverRelativeUrl + '/Lists/' + this.constants.listNames.Schedules.name + '/' + resp.ProjectCode;
         if (counter < endIndex) {
           moveFileUrl = moveFileUrl + '/' + resp.Milestone + '/' + resp.ID + '_.000';
           const url = this.globalService.sharePointPageObject.webAbsoluteUrl + "/_api/web/getfilebyserverrelativeurl('" + fileUrl + "')/moveto(newurl='" + moveFileUrl + "',flags=1)";
@@ -1712,13 +1678,10 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       this.commonService.SetNewrelic('unallocated-allocated', 'CA', 'MoveSaveTask');
       await this.spServices.executeBatch(respBatchUrl);
     }
-    this.messageService.clear();
+    this.commonService.clearToastrMessage();
     await this.getProperties();
 
-    this.messageService.add({
-      severity: 'success', summary: 'Success Message',
-      detail: ' Slots updated Sucessfully '
-    });
+    this.commonService.showToastrMessage(this.constants.MessageType.success,'Slots updated Sucessfully.',false);
 
     if (unt) {
       this.caGlobal.loading = true;
@@ -1743,8 +1706,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         PSMembersId: { results: project.updatedResources.pubSupportMembers.results },
       };
       const updatePrjObj = Object.assign({}, this.queryConfig);
-      updatePrjObj.url = this.spServices.getItemURL(this.globalConstant.listNames.ProjectInformation.name, +projectID);
-      updatePrjObj.listName = this.globalConstant.listNames.ProjectInformation.name;
+      updatePrjObj.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, +projectID);
+      updatePrjObj.listName = this.constants.listNames.ProjectInformation.name;
       updatePrjObj.type = 'PATCH';
       updatePrjObj.data = updateProjectRes;
       batchUrl.push(updatePrjObj);
@@ -1795,7 +1758,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         IsCentrallyAllocated: 'No',
         DisableCascade: task.DisableCascade === true ? 'Yes' : 'No'
       };
-      url = this.spServices.getReadURL(this.globalConstant.listNames.Schedules.name);
+      url = this.spServices.getReadURL(this.constants.listNames.Schedules.name);
       data = addData;
     } else {
       const updateData = {
@@ -1819,7 +1782,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         PreviousAssignedUserId: task.PreviousAssignedUser ? task.PreviousAssignedUser.hasOwnProperty('ID') ?
           task.PreviousAssignedUser.ID : -1 : -1,
       };
-      url = this.spServices.getItemURL(this.globalConstant.listNames.Schedules.name, +task.Id);
+      url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +task.Id);
       data = updateData;
     }
     return {

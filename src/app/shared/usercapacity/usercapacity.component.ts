@@ -3,7 +3,7 @@ import { DatePipe, CommonModule } from '@angular/common';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
-import { DynamicDialogConfig, MessageService, DialogService } from 'primeng';
+import { DynamicDialogConfig, DialogService } from 'primeng';
 import { CAGlobalService } from 'src/app/ca/caservices/caglobal.service';
 import { CACommonService } from 'src/app/ca/caservices/cacommon.service';
 import { SharedConstantsService } from '../services/shared-constants.service';
@@ -51,7 +51,6 @@ export class UsercapacityComponent implements OnInit {
     private commonservice: CACommonService,
     elRef: ElementRef,
     private globalService: GlobalService,
-    private messageService: MessageService,
     private sharedConstant: SharedConstantsService,
     private cdRef: ChangeDetectorRef,
     public dialogService: DialogService,
@@ -92,10 +91,7 @@ export class UsercapacityComponent implements OnInit {
 
   async Onload(data) {
 
-    this.messageService.add({
-      key: 'myKey1', severity: 'warn', sticky: true,
-      summary: 'Info Message', detail: 'Fetching data...'
-    });
+    this.common.showToastrMessage(this.globalConstantService.MessageType.warn,'Fetching data...',true);
     this.enableDownload = data.type === 'CapacityDashboard' ? true : false;
     // setTimeout(() => {
 
@@ -1000,7 +996,7 @@ export class UsercapacityComponent implements OnInit {
           }
         }
         setTimeout(() => {
-          this.messageService.clear('myKey1');
+          this.common.clearToastrMessage();
         }, 500);
       }, 500);
 
@@ -1008,7 +1004,7 @@ export class UsercapacityComponent implements OnInit {
       this.height = 'inherit';
       this.verticalAlign = 'middle';
       setTimeout(() => {
-        this.messageService.clear('myKey1');
+        this.common.clearToastrMessage();
       }, 500);
     }
 

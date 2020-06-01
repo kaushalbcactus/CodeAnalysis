@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ViewEncapsulation, OnDestroy, HostListener, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
-import { MessageService, Message, SelectItem } from 'primeng/api';
+import { SelectItem } from 'primeng/api';
 import { Calendar, Table } from 'primeng';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -28,7 +28,6 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         public fdConstantsService: FdConstantsService,
         public fdDataShareServie: FDDataShareService,
         private datePipe: DatePipe,
-        private messageService: MessageService,
         private commonService: CommonService,
         private cdr: ChangeDetectorRef,
         private platformLocation: PlatformLocation,
@@ -61,7 +60,6 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     tempClick: any;
     deliverableBasedRes: any = [];
     deliverableBasedCols: any[];
-    msgs: Message[] = [];
 
     // Address Type
     addressTypes: any = [];
@@ -368,7 +366,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
                 ponn = pnumber + ' / ' + pname;
             }
             const POValues = ponn;
-          
+
             this.deliverableBasedRes.push({
                 Id: element.ID,
                 ProjectCode: element.Title,
@@ -511,12 +509,13 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     confirm1() {
         this.commonService.confirmMessageDialog('Confirmation', 'Are you sure that you want to confirm the invoice scheduled for the project?', null, ['Yes', 'No'], false).then(async Confirmation => {
             if (Confirmation === 'Yes') {
-                this.msgs = [{ severity: 'info', summary: 'Confirmed', detail: 'You have Confirmed' }];
+
+                this.commonService.showToastrMessage(this.constantService.MessageType.info, 'You have Confirmed', false);
                 // Call server service here
                 this.onSubmit('confirmInvoice');
             }
             else if (Confirmation === 'No') {
-                this.msgs = [{ severity: 'info', summary: 'Cancel', detail: 'You have canceled' }];
+                this.commonService.showToastrMessage(this.constantService.MessageType.info, 'You have Cancelled', false);
             }
         });
     }
@@ -542,27 +541,17 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             if (projectData.Status === this.constantService.projectList.status.InDiscussion ||
                 projectData.Status === this.constantService.projectList.status.AwaitingCancelApproval ||
                 projectData.Status === this.constantService.projectList.status.OnHold) {
-                    this.messageService.add({
-                        key: 'deliverableInfoToast', severity: 'info', summary: 'Info message',
-                        detail: 'Project status is '+ projectData.Status +', so can not confirm the line item.',
-                        life: 4000
-                    });
+
+                this.commonService.showToastrMessage(this.constantService.MessageType.info, 'Project status is ' + projectData.Status + ', so can not confirm the line item.', false);
             } else if (!(date >= last3Days && date <= lastDay)) {
-                this.messageService.add({
-                    key: 'deliverableInfoToast', severity: 'info', summary: 'Info message',
-                    detail: 'To confirm the line item, scheduled Date should be between last 3 working days & last date of the current month.',
-                    life: 4000
-                });
+
+                this.commonService.showToastrMessage(this.constantService.MessageType.info, 'To confirm the line item, scheduled Date should be between last 3 working days & last date of the current month.', false);
             } else if (!retPO) {
-                this.messageService.add({
-                    key: 'deliverableInfoToast', severity: 'info', summary: 'Info message',
-                    detail: 'PO not available for the selected line item.', life: 4000
-                });
+
+                this.commonService.showToastrMessage(this.constantService.MessageType.info, 'PO not available for the selected line item.', false);
             } else if (!(new Date(retPO.POExpiryDate) >= todaysDateTimeZero)) {
-                this.messageService.add({
-                    key: 'deliverableInfoToast', severity: 'info', summary: 'Info message',
-                    detail: 'PO expired on' + this.datePipe.transform(retPO.POExpiryDate, 'MMM dd, yyyy'), life: 4000
-                });
+
+                this.commonService.showToastrMessage(this.constantService.MessageType.info, 'PO expired on' + this.datePipe.transform(retPO.POExpiryDate, 'MMM dd, yyyy'), false);
             }
         }
         this.items.push({ label: 'Edit Invoice', command: (e) => this.openMenuContent(e, data) });
@@ -697,16 +686,12 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     async submitForm(batchUrl, type: string) {
         await this.spServices.executeBatch(batchUrl);
         if (type === 'confirmInvoice') {
-            this.messageService.add({
-                key: 'deliverableSuccessToast', severity: 'success',
-                summary: 'Success message', detail: 'Invoice is Confirmed.', life: 2000
-            });
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Invoice is Confirmed.', false);
             this.invoiceConfirmMail();
         } else if (type === 'editInvoice') {
-            this.messageService.add({
-                key: 'deliverableSuccessToast', severity: 'success',
-                summary: 'Success message', detail: 'Invoice Updated.', life: 2000
-            });
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Invoice Updated.', false);
             this.reFetchData();
         }
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;

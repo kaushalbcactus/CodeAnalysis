@@ -1,5 +1,5 @@
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
-import { DynamicDialogRef, DynamicDialogConfig, SelectItem, MessageService, DialogService } from 'primeng';
+import { DynamicDialogRef, DynamicDialogConfig, SelectItem, DialogService } from 'primeng';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -70,7 +70,6 @@ export class TimeBookingDialogComponent implements OnInit {
   constructor(
     public config: DynamicDialogConfig,
     public ref: DynamicDialogRef,
-    public messageService: MessageService,
     private constants: ConstantsService,
     private myDashboardConstantsService: MyDashboardConstantsService,
     private spServices: SPOperationService,
@@ -518,17 +517,12 @@ export class TimeBookingDialogComponent implements OnInit {
         if (dbTasks[i].Entity) {
 
           if (!dbTasks[i].ProjectCode) {
-            this.messageService.add({
-              key: 'mydashboard', severity: 'warn', summary: 'Warnin Message',
-              detail: 'Please Select Project / To remove unwanted line, please unselect Client'
-            });
 
+            this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please Select Project / To remove unwanted line, please unselect Client.',false);
             return false;
           } else if (!dbTasks[i].Milestone) {
-            this.messageService.add({
-              key: 'mydashboard', severity: 'warn', summary: 'Warning Message',
-              detail: 'Please Select Milestone / To remove unwanted line, please unselect Client'
-            });
+
+            this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please Select Milestone / To remove unwanted line, please unselect Client.',false);
             return false;
           } else if (totalTimeSpent !== '00.00') {
             this.modalloaderenable = true;
@@ -536,7 +530,7 @@ export class TimeBookingDialogComponent implements OnInit {
               const obj = {
                 __metadata: {
                   // tslint:disable-next-line: object-literal-key-quotes
-                  'type': 'SP.Data.SchedulesListItem'
+                  'type':this.constants.listNames.Schedules.type
                 },
                 Actual_x0020_End_x0020_Date: new Date(this.datePipe.transform(dbTasks[i].TimeSpents[6]
                   .date, 'yyyy-MM-dd') + 'T09:00:00.000'),
@@ -585,10 +579,7 @@ export class TimeBookingDialogComponent implements OnInit {
       if (index > -1) {
         this.UserMilestones.splice(index, 1);
       }
-      this.messageService.add({
-        key: 'mydashboard', severity: 'warn', summary: 'Warning Message',
-        detail: 'Selected combination already exist. Please check above'
-      });
+      this.commonService.showToastrMessage(this.constants.MessageType.warn,'Selected combination already exist. Please check above.',false);
     }
   }
 
@@ -674,16 +665,8 @@ export class TimeBookingDialogComponent implements OnInit {
       });
       ref.onClose.subscribe((uploadFile: any) => {
         if (uploadFile) {
-
         }
-
       });
-
-      // this.displayFileUpload = true;
-      // this.timebookingRow = {
-      //   ...rowData,
-      //   task: rowData
-      // };
     }
   }
 

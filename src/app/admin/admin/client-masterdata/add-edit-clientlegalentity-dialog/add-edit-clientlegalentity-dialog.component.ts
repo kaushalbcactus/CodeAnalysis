@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DynamicDialogConfig, DynamicDialogRef, MessageService } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
@@ -19,7 +19,6 @@ export class AddEditClientlegalentityDialogComponent implements OnInit {
   constructor(
     public config: DynamicDialogConfig,
     public ref: DynamicDialogRef,
-    public messageService: MessageService,
     private datepipe: DatePipe,
     private frmbuilder: FormBuilder,
     private adminCommonService: AdminCommonService,
@@ -435,18 +434,12 @@ export class AddEditClientlegalentityDialogComponent implements OnInit {
       if (!this.showEditClient) {
         if (this.clientMasterDataRows.some(a =>
           a.ClientLegalEntity && a.ClientLegalEntity.toLowerCase() === this.addClient.value.name.toLowerCase())) {
-          this.messageService.add({
-            key: 'adminCustom', severity: 'error',
-            summary: 'Error Message', detail: 'This Client is already exist. Please enter another client name.'
-          });
+            this.common.showToastrMessage(this.constantsService.MessageType.error,'This Client is already exist. Please enter another client name.',false);
           return false;
         }
         if (this.clientMasterDataRows.some(a =>
           a.Acronym && a.Acronym.toLowerCase() === this.addClient.value.acronym.toLowerCase())) {
-          this.messageService.add({
-            key: 'adminCustom', severity: 'error',
-            summary: 'Error Message', detail: 'This Acronym is already exist. Please enter another acronym.'
-          });
+            this.common.showToastrMessage(this.constantsService.MessageType.error, 'This Acronym is already exist. Please enter another acronym.',false);
           return false;
         }
       }

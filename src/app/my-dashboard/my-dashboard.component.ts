@@ -3,7 +3,7 @@ import {
   ComponentFactoryResolver,
   ViewEncapsulation,
 } from '@angular/core';
-import { MenuItem, DialogService, MessageService } from 'primeng';
+import { MenuItem, DialogService } from 'primeng';
 import { SPOperationService } from '../Services/spoperation.service';
 import { GlobalService } from '../Services/global.service';
 import { ConstantsService } from '../Services/constants.service';
@@ -50,7 +50,6 @@ export class MyDashboardComponent implements OnInit {
     private myDashboardConstantsService: MyDashboardConstantsService,
     private router: Router,
     public dialogService: DialogService,
-    public messageService: MessageService,
     private componentFactoryResolver: ComponentFactoryResolver,
     private commonService: CommonService,
     private datePipe: DatePipe
@@ -110,10 +109,8 @@ export class MyDashboardComponent implements OnInit {
     });
     ref.onClose.subscribe(async (TimeBookingobjCount: any) => {
       if (TimeBookingobjCount > 0) {
-        this.messageService.add({
-          key: 'mydashboard', severity: 'success', summary: 'Success Message',
-          detail: 'Time booking updated successfully.'
-        });
+
+        this.commonService.showToastrMessage(this.constants.MessageType.success,'Time booking updated successfully.',false);
       }
     });
   }

@@ -59,11 +59,4 @@ export class CommonService {
 
   }
 
-  SetNewrelic(moduleType, routeType, value) {
-    if (typeof newrelic === 'object') {
-      newrelic.setCustomAttribute('spModuleType', moduleType);
-      newrelic.setCustomAttribute('spRouteType', routeType);
-      newrelic.setCustomAttribute('spCallType', value);
-    }
-  }
 }

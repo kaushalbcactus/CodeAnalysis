@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewEncapsulation, ApplicationRef, NgZone, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { DatePipe, PlatformLocation } from '@angular/common';
-import { MessageService, Message } from 'primeng/api';
 import { CommonService } from '../../../../Services/common.service';
 import { AdminObjectService } from 'src/app/admin/services/admin-object.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -43,7 +42,6 @@ export class BucketMasterdataComponent implements OnInit {
   editClient = false;
   clientList: any = [];
   bucketData: any;
-  msgs: Message[] = [];
   selectedClient: any = [];
   selectedRowItems: any = [];
   selectedBucket: any;
@@ -61,7 +59,6 @@ export class BucketMasterdataComponent implements OnInit {
    * Construct a method to create an instance of required component.
    *
    * @param datepipe This is instance referance of `DatePipe` component.
-   * @param messageService This is instance referance of `MessageService` component.
    * @param adminObject This is instance referance of `AdminObjectService` component.
    * @param spServices This is instance referance of `SPOperationService` component.
    * @param constants This is instance referance of `ConstantsService` component.
@@ -74,9 +71,10 @@ export class BucketMasterdataComponent implements OnInit {
    * @common zone This is instance referance of `CommonService` component.
    *
    */
+
+   
   constructor(
     private datepipe: DatePipe,
-    private messageService: MessageService,
     private adminObject: AdminObjectService,
     private spServices: SPOperationService,
     private constants: ConstantsService,
@@ -133,10 +131,8 @@ export class BucketMasterdataComponent implements OnInit {
     if (results && results.length) {
       this.bucketArray = results[0].retItems;
       if (results[1].retItems.hasError) {
-        this.messageService.add({
-          key: 'adminCustomError', severity: 'error', summary: 'Error Message',
-          detail: results[1].retItems.message.value
-        });
+
+        this.common.showToastrMessage(this.constants.MessageType.error,results[1].retItems.message.value,false);
         this.adminObject.isMainLoaderHidden = true;
         return false;
       }
@@ -371,26 +367,17 @@ export class BucketMasterdataComponent implements OnInit {
    */
   async addBucketData() {
     const alphaExp = this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL;
-    this.messageService.clear();
+    this.common.clearToastrMessage();
     if (!this.bucketData) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error',
-        summary: 'Error Message', detail: 'Please enter bucket name.'
-      });
+      this.common.showToastrMessage(this.constants.MessageType.error,'Please enter bucket name.',false);
       return false;
     }
     if (!this.bucketData.match(alphaExp)) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error', summary: 'Error Message',
-        detail: 'Special characters are allowed between alphabets. Allowed special characters are \'-\' and \'_\'.'
-      });
+      this.common.showToastrMessage(this.constants.MessageType.error,'Special characters are allowed between alphabets. Allowed special characters are \'-\' and \'_\'.',false);
       return false;
     }
     if (this.bucketDataRows.some(a => a.Bucket.toLowerCase() === this.bucketData.toLowerCase())) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error',
-        summary: 'Error Message', detail: 'This bucket is already exist. Please enter another bucket name.'
-      });
+      this.common.showToastrMessage(this.constants.MessageType.error,'This bucket is already exist. Please enter another bucket name.',false);
       return false;
     }
     this.adminObject.isMainLoaderHidden = false;
@@ -401,10 +388,8 @@ export class BucketMasterdataComponent implements OnInit {
     const result = await this.spServices.createItem(this.constants.listNames.FocusGroup.name, data,
       this.constants.listNames.FocusGroup.type);
     console.log(result);
-    this.messageService.add({
-      key: 'adminCustom', severity: 'success', sticky: true,
-      summary: 'Success Message', detail: 'The bucket ' + this.bucketData + ' has added successfully.'
-    });
+
+    this.common.showToastrMessage(this.constants.MessageType.success,'The bucket ' + this.bucketData + ' has added successfully.',true)
     this.bucketData = '';
     await this.loadBucketTable();
     this.adminObject.isMainLoaderHidden = true;
@@ -442,10 +427,8 @@ export class BucketMasterdataComponent implements OnInit {
     this.adminObject.isMainLoaderHidden = false;
     this.common.SetNewrelic('admin', 'admin-attribute-bucketMasterData', 'updateFocusGroup');
     const result = await this.spServices.updateItem(listName, data.ID, updateData, type);
-    this.messageService.add({
-      key: 'adminCustom', severity: 'success', sticky: true,
-      summary: 'Success Message', detail: 'The bucket ' + data.Bucket + ' has deleted successfully.'
-    });
+
+    this.common.showToastrMessage(this.constants.MessageType.success,'The bucket ' + data.Bucket + ' has deleted successfully.',true);
     this.loadBucketTable();
     this.adminObject.isMainLoaderHidden = true;
   }
@@ -466,10 +449,8 @@ export class BucketMasterdataComponent implements OnInit {
     console.log(this.selectedBucket);
     console.log(this.selectedRowItems);
     if (!this.selectedClient.length) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error',
-        summary: 'Error Message', detail: 'Please select atleast one client.'
-      });
+
+      this.common.showToastrMessage(this.constants.MessageType.error,'Please select atleast one client.',false);
       return false;
     }
     const batchURL = [];
@@ -500,10 +481,8 @@ export class BucketMasterdataComponent implements OnInit {
       // const results = await this.spServices.executeBatch(batchURL);
       const updateResult = await this.updateCLEMapping(batchURL);
       this.editClient = false;
-      this.messageService.add({
-        key: 'adminCustom', severity: 'success', sticky: true,
-        summary: 'Success Message', detail: 'The selected clients are updated successfully.'
-      });
+
+      this.common.showToastrMessage(this.constants.MessageType.success,'The selected clients are updated successfully.',true)
       this.loadBucketTable();
       this.adminObject.isMainLoaderHidden = true;
     }

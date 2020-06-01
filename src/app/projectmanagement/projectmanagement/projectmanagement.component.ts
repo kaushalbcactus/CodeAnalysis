@@ -1,7 +1,7 @@
 import { Component, OnInit, NgZone, ViewEncapsulation, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { GlobalService } from 'src/app/Services/global.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
-import { MenuItem, MessageService } from 'primeng/api';
+import { MenuItem } from 'primeng/api';
 import { PmconstantService } from '../services/pmconstant.service';
 import { PMObjectService } from '../services/pmobject.service';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
@@ -54,7 +54,6 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     private spServices: SPOperationService,
     private pmConstant: PmconstantService,
     private frmbuilder: FormBuilder,
-    public messageService: MessageService,
     public pmService: PMCommonService,
     private router: Router,
     private dataService: DataService,
@@ -324,10 +323,8 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
   async createSOW() {
 
     if (this.selectedFile && this.selectedFile.size === 0) {
-      this.messageService.add({
-        key: 'custom', severity: 'error',
-        summary: 'Error Message', detail: 'Unable to upload file, size of ' + this.selectedFile.name + ' is 0 KB.'
-      });
+
+      this.commonService.showToastrMessage(this.constant.MessageType.error,this.constant.Messages.ZeroKbFile.replace('{{fileName}}', this.selectedFile.name),false);
       return false;
     }
     else {
@@ -335,10 +332,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       if (this.addSowForm.valid) {
         this.pmObject.isSOWFormSubmit = false;
         if (!this.selectedFile && !this.pmObject.addSOW.ID) {
-          this.messageService.add({
-            key: 'custom', severity: 'error',
-            summary: 'Error Message', detail: 'Please select SOW document.'
-          });
+          this.commonService.showToastrMessage(this.constant.MessageType.error,'Please select SOW document.',false);
           return false;
         }
         // get all the value from form.
@@ -357,10 +351,8 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
           const creationDate = new Date(this.pmObject.addSOW.SOWCreationDate);
           const expirtyDate = new Date(this.pmObject.addSOW.SOWExpiryDate);
           if (expirtyDate <= creationDate) {
-            this.messageService.add({
-              key: 'custom', severity: 'error',
-              summary: 'Error Message', detail: 'SOW expiry date should be greater than sow creation date.'
-            });
+
+            this.commonService.showToastrMessage(this.constant.MessageType.error,'SOW expiry date should be greater than sow creation date.',false);
             return;
           }
         }
@@ -738,10 +730,8 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
           this.constant.listNames.ClientLegalEntity.type);
         this.addUpdateSOWsendEmail(sowObj, this.constant.SOW_STATUS.APPROVED);
         this.pmObject.isMainLoaderHidden = true;
-        this.messageService.add({
-          key: 'custom', severity: 'success', sticky: true,
-          summary: 'Success Message', detail: 'SOW Created - ' + sowObj.SOWCode + ' Successfully.'
-        });
+
+        this.commonService.showToastrMessage(this.constant.MessageType.success,'SOW Created - ' + sowObj.SOWCode + ' Successfully.',true);
         setTimeout(() => {
           this.pmObject.isAddSOWVisible = false;
           this.pmObject.isSOWFormSubmit = false;
@@ -762,10 +752,8 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.commonService.SetNewrelic('projectManagment', 'projectManagement', 'updateSow');
       await this.spServices.updateItem(this.constant.listNames.SOW.name, sowObj.ID, data, this.constant.listNames.SOW.type);
       this.addUpdateSOWsendEmail(sowObj, this.constant.SOW_STATUS.UPDATE);
-      this.messageService.add({
-        key: 'custom', severity: 'success', sticky: true,
-        summary: 'Success Message', detail: 'SOW Updated - ' + sowObj.SOWCode + ' Successfully.'
-      });
+
+      this.commonService.showToastrMessage(this.constant.MessageType.success,'SOW Updated - ' + sowObj.SOWCode + ' Successfully.',true);
       this.pmObject.isMainLoaderHidden = true;
       setTimeout(() => {
         if (this.router.url === '/projectMgmt/allSOW') {
@@ -1199,10 +1187,8 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       const sowItem = arrResults[0].retItems[0];
       this.pmService.setGlobalVariable(sowItem);
       this.pmObject.addSOW.ID = currSelectedSOW.ID;
-      this.messageService.add({
-        key: 'custom', severity: 'success', sticky: true,
-        summary: 'Success Message', detail: 'SOW ' + currSelectedSOW.SOWCode + ' Closed Successfully.'
-      });
+
+      this.commonService.showToastrMessage(this.constant.MessageType.success,'SOW ' + currSelectedSOW.SOWCode + ' Closed Successfully.',true);
       setTimeout(() => {
         this.addUpdateSOWsendEmail(this.pmObject.addSOW, this.constant.SOW_STATUS.CLOSED);
         if (this.router.url === '/projectMgmt/allSOW') {

@@ -1,8 +1,9 @@
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MessageService, DynamicDialogConfig, DynamicDialogRef } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 import { DatePipe } from '@angular/common';
 import { CommonService } from 'src/app/Services/common.service';
+import { ConstantsService } from 'src/app/Services/constants.service';
 
 @Component({
   selector: 'app-mark-as-payment-dialog',
@@ -26,11 +27,11 @@ export class MarkAsPaymentDialogComponent implements OnInit {
 
 
   constructor(private frmbuilder: FormBuilder,
-    private messageService: MessageService,
-    private datePipe : DatePipe,
+    private datePipe: DatePipe,
     private commonService: CommonService,
     public config: DynamicDialogConfig,
     public ref: DynamicDialogRef,
+    public constantService: ConstantsService
   ) {
 
     this.markAsPayment_form = this.frmbuilder.group({
@@ -62,7 +63,8 @@ export class MarkAsPaymentDialogComponent implements OnInit {
       const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
       if (fileName !== sNewFileName) {
         this.markAsPayment_form.get('FileUrl').setValue('');
-        this.messageService.add({ key: 'markAsPayment', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
+
+        this.commonService.showToastrMessage(this.constantService.MessageType.error, 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', false);
         return false;
       }
       this.SelectedFile.push(new Object({ name: sNewFileName, file: event.target.files[0] }));
@@ -80,33 +82,28 @@ export class MarkAsPaymentDialogComponent implements OnInit {
   onSubmit() {
     if (this.markAsPayment_form.valid) {
       if (this.SelectedFile && this.SelectedFile[0].file.size === 0) {
-        this.messageService.add({
-          key: 'markAsPayment', severity: 'error',
-          summary: 'Error message', detail: 'Unable to upload file, size of ' + this.SelectedFile[0].name + ' is 0 KB.', life: 2000
-        });
+        this.commonService.showToastrMessage(this.constantService.MessageType.error, 'Unable to upload file, size of ' + this.SelectedFile[0].name + ' is 0 KB.', false);
         return;
       }
       const date = new Date();
       this.commonService.SetNewrelic('Finance-Dashboard', 'mark-as-payment', 'UploadFile');
       this.commonService.UploadFilesProgress(this.SelectedFile, 'SpendingInfoFiles/ApprovedExpenseFiles/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM'), true).then(async uploadedfile => {
-          if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
-              if (uploadedfile[0].hasOwnProperty('odata.error')  || uploadedfile[0].hasError) {
-                  this.messageService.add({
-                      key: 'markAsPayment', severity: 'error', summary: 'Error message',
-                      detail: 'File not uploaded, Folder / File Not Found', life: 3000
-                  });
-              }
-              else{
-                this.isPaymentFormSubmit= false;
-                const data = {
-                  paymentForm: this.markAsPayment_form,
-                  fileUrl : uploadedfile[0].ServerRelativeUrl
-                }
-                this.ref.close(data);
-              } 
+        if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
+          if (uploadedfile[0].hasOwnProperty('odata.error') || uploadedfile[0].hasError) {
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.error, 'File not uploaded, Folder / File Not Found', false);
           }
+          else {
+            this.isPaymentFormSubmit = false;
+            const data = {
+              paymentForm: this.markAsPayment_form,
+              fileUrl: uploadedfile[0].ServerRelativeUrl
+            }
+            this.ref.close(data);
+          }
+        }
       });
-    
+
     }
     else {
       this.isPaymentFormSubmit = true;

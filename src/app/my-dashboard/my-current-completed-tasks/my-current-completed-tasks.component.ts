@@ -9,7 +9,6 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { SelectItem, MenuItem, DialogService } from 'primeng';
 import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
-import { MessageService } from 'primeng/api';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { CurrentCompletedTasksTableComponent } from '../current-completed-tasks-table/current-completed-tasks-table.component';
@@ -24,8 +23,6 @@ interface DateObj {
   selector: 'app-my-current-completed-tasks',
   templateUrl: './my-current-completed-tasks.component.html',
   styleUrls: ['./my-current-completed-tasks.component.css'],
-  providers: [DatePipe, MessageService],
-
 })
 
 export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
@@ -42,7 +39,6 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
     private datePipe: DatePipe,
     private spServices: SPOperationService,
     private commonService: CommonService,
-    public messageService: MessageService,
     private route: ActivatedRoute,
     public dialogService: DialogService,
     public spOperations: SPOperationService,
@@ -155,24 +151,16 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
       this.getStatusFilterDropDownValue(this.TabName, dates);
     }
     else{
-      this.messageService.add({
-        key: 'mydashboard', severity: 'error', summary: 'Error Message',
-        detail: 'Please select proper dates for custom search'
-      });
+
+      this.commonService.showToastrMessage(this.constants.MessageType.error,'Please select proper dates for custom search.',false);
       this.loaderenable = false;
       this.enableTableView = true;
     }
   }
 
-
- 
-
-
-
-
-  // *********************************************************************************************************
+  // **********************************************************************************************
   // Get Data based on date selected
-  // *********************************************************************************************************
+  // **********************************************************************************************
 
   async getStatusFilterDropDownValue(status, filterDates) {
 

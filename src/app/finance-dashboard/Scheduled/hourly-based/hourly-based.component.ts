@@ -1,5 +1,4 @@
 import { Component, OnInit, ViewChild, OnDestroy, HostListener, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
-import { Message, MessageService } from 'primeng/api';
 import { Calendar, Table, DialogService } from 'primeng';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -28,7 +27,6 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         private fdConstantsService: FdConstantsService,
         public fdDataShareServie: FDDataShareService,
         private datePipe: DatePipe,
-        private messageService: MessageService,
         private commonService: CommonService,
         private cdr: ChangeDetectorRef,
         private platformLocation: PlatformLocation,
@@ -61,7 +59,6 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     hourlyBasedRes: any = [];
 
     hourlyBasedCols: any[];
-    msgs: Message[] = [];
 
     // Edit hourly Form
     editHourly_form: FormGroup;
@@ -480,7 +477,8 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         if (this.hourlyDialog.title.toLowerCase() === 'confirm invoice') {
             await this.getSelectedLineItemDetails();
             if (new Date(this.poLookupDataObj.ExpiryDate) < (new Date())) {
-                this.messageService.add({ key: 'hourlyInfoToast', severity: 'info', summary: 'Info message', detail: 'PO is expired.', life: 4000 });
+
+                this.commonService.showToastrMessage(this.constantService.MessageType.info, 'PO is expired.', false);
                 return;
             }
             const ref = this.dialogService.open(ApproveBillingDialogComponent, {
@@ -743,7 +741,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         item.Status = this.constantService.SOW_STATUS.AUDIT_IN_PROGRESS;
         this.projectInfoData.splice(projIndex, 1, item);
         this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-hourlyBased', 'updatePOPBBPFBSow');
-         this.submitForm(Invoiceform, batchUrl, 'confirmInvoice');
+        this.submitForm(Invoiceform, batchUrl, 'confirmInvoice');
     }
 
 
@@ -834,10 +832,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
             this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-hourlyBased', 'updatePFLItem');
             await this.spServices.updateItem(this.constantService.listNames.ProjectFinances.name, +this.selectedRowItem.PFID,
                 pfData, this.constantService.listNames.ProjectFinances.type);
-            this.messageService.add({
-                key: 'hourlySuccessToast', severity: 'success',
-                summary: 'Success message', detail: 'Invoice Updated.', life: 2000
-            });
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Invoice Updated.', false);
             this.cancelFormSub('editInvoice');
             this.reFetchData('edit');
         }
@@ -860,11 +855,8 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         const arrResults = res.length ? res.map(a => a.retItems) : [];
         console.log('--oo ', arrResults);
         if (type === 'confirmInvoice') {
-            this.messageService.add({
-                key: 'hourlySuccessToast', severity: 'success',
-                summary: 'Success message', detail: 'Invoice is Confirmed.', life: 2000
-            });
-            // this.cancelFormSub('confirmationModal');
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Invoice is Confirmed.', false);
             this.sendConfirmInvoiceMail(invoiceform);
         }
     }

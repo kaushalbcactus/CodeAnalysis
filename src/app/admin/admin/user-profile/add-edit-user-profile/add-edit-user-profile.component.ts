@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DynamicDialogConfig, DynamicDialogRef, MessageService } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
 import { AdminCommonService } from 'src/app/admin/services/admin-common.service';
@@ -68,7 +68,6 @@ export class AddEditUserProfileComponent implements OnInit {
     public config: DynamicDialogConfig,
     private fb: FormBuilder,
     public ref: DynamicDialogRef,
-    public messageService: MessageService,
     private adminCommonService: AdminCommonService,
     private constants: ConstantsService,
     private adminConstants: AdminConstantService,
@@ -78,7 +77,7 @@ export class AddEditUserProfileComponent implements OnInit {
   ngOnInit() {
     this.minPastMonth = new Date(new Date().setDate(new Date().getDate() - 30));
     const currentYear = new Date();
-    this.yearRange = (currentYear.getFullYear() - 10) + ':' + (currentYear.getFullYear() + 10);
+    this.yearRange = this.common.getyearRange();
     this.initialAddUserForm();
     this.loadDropDownValue();
     if (this.config.data) {
@@ -222,10 +221,7 @@ export class AddEditUserProfileComponent implements OnInit {
   */
   onManagerChange() {
     if (this.addUser.value.manager && !this.addUser.value.manager.hasOwnProperty('EntityData')) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error',
-        summary: 'Error Message', detail: 'Please select proper manager name.'
-      });
+      this.common.showToastrMessage(this.constants.MessageType.error,'Please select proper manager name.',false);
     } else {
       const managerEffectiveDateControl = this.addUser.get('managerEffectiveDate');
       if (this.showeditUser && this.currUserObj.ManagerEmail !== this.addUser.value.manager.EntityData.Email) {
@@ -1133,24 +1129,18 @@ export class AddEditUserProfileComponent implements OnInit {
        * Need to validate if username and manager is properly selected or entered.
        */
       if (UserDetails.value.username && !UserDetails.value.username.hasOwnProperty('EntityData')) {
-        this.messageService.add({
-          key: 'adminCustom', severity: 'error',
-          summary: 'Error Message', detail: 'Please select proper username name.'
-        });
+
+        this.common.showToastrMessage(this.constants.MessageType.error,'Please select proper username name.',false);
         return false;
       }
       if (UserDetails.value.manager && !UserDetails.value.manager.hasOwnProperty('EntityData')) {
-        this.messageService.add({
-          key: 'adminCustom', severity: 'error',
-          summary: 'Error Message', detail: 'Please select proper manager name.'
-        });
+
+        this.common.showToastrMessage(this.constants.MessageType.error,'Please select proper manager name.',false);
         return false;
       }
       if (new Date(UserDetails.value.dateofjoin) > new Date(UserDetails.value.liveDate)) {
-        this.messageService.add({
-          key: 'adminCustom', severity: 'error',
-          summary: 'Error Message', detail: 'Date of joining cannot be greater than go live date.'
-        });
+
+        this.common.showToastrMessage(this.constants.MessageType.error,'Date of joining cannot be greater than go live date.',false);
         return false;
       }
 

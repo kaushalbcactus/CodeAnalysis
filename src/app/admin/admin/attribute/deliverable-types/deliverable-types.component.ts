@@ -1,6 +1,5 @@
 import { Component, OnInit, ApplicationRef, NgZone, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { DatePipe, PlatformLocation } from '@angular/common';
-import { MessageService, Message } from 'primeng/api';
 import { AdminCommonService } from 'src/app/admin/services/admin-common.service';
 import { AdminObjectService } from 'src/app/admin/services/admin-object.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -55,7 +54,6 @@ export class DeliverableTypesComponent implements OnInit {
    * Construct a method to create an instance of required component.
    *
    * @param datepipe This is instance referance of `DatePipe` component.
-   * @param messageService This is instance referance of `MessageService` component.
    * @param adminCommonService This is instance referance of `AdminCommonService` component.
    * @param adminObject This is instance referance of `AdminObjectService` component.
    * @param spServices This is instance referance of `SPOperationService` component.
@@ -69,7 +67,6 @@ export class DeliverableTypesComponent implements OnInit {
    */
   constructor(
     private datepipe: DatePipe,
-    private messageService: MessageService,
     private adminCommonService: AdminCommonService,
     private adminObject: AdminObjectService,
     private spServices: SPOperationService,
@@ -192,7 +189,7 @@ export class DeliverableTypesComponent implements OnInit {
    *
    */
   async addDeliverableData() {
-    this.messageService.clear();
+    this.common.clearToastrMessage();
     const isValid = await this.isFormValid();
     if (isValid) {
       this.adminObject.isMainLoaderHidden = false;
@@ -204,10 +201,8 @@ export class DeliverableTypesComponent implements OnInit {
       const result = await this.spServices.createItem(this.constants.listNames.DeliverableType.name, data,
         this.constants.listNames.DeliverableType.type);
       console.log(result);
-      this.messageService.add({
-        key: 'adminCustom', severity: 'success', sticky: true,
-        summary: 'Success Message', detail: 'The Deliverable Type ' + this.deliverableTypes + ' has added successfully.'
-      });
+
+      this.common.showToastrMessage(this.constants.MessageType.success,'The Deliverable Type ' + this.deliverableTypes + ' has added successfully.',true);
       this.deliverableTypes = '';
       this.acronym = '';
       await this.loadDeliverableTypeTable();
@@ -236,52 +231,36 @@ export class DeliverableTypesComponent implements OnInit {
     const alphaSpecialExp = this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL_WITHSPACE;
     const alphaExp = this.adminConstants.REG_EXPRESSION.ALPHA;
     if (!this.deliverableTypes) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error',
-        summary: 'Error Message', detail: 'Please enter Deliverable Type.'
-      });
+
+      this.common.showToastrMessage(this.constants.MessageType.error,'Please enter Deliverable Type.',false);
       return false;
     }
     if (!this.deliverableTypes.match(alphaSpecialExp)) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error', summary: 'Error Message',
-        detail: 'Special characters are allowed between alphabets. Allowed special characters are \'-\' and \'_\'.'
-      });
+
+      this.common.showToastrMessage(this.constants.MessageType.error,'Special characters are allowed between alphabets. Allowed special characters are \'-\' and \'_\'.',false);
       return false;
     }
     if (this.deliverableTypesRows.some(a => a.DeliverableType.toLowerCase() === this.deliverableTypes.toLowerCase())) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error',
-        summary: 'Error Message', detail: 'This Deliverable Type is already exist. Please enter another Deliverable Type.'
-      });
+      this.common.showToastrMessage(this.constants.MessageType.error,'This Deliverable Type is already exist. Please enter another Deliverable Type.',false);
       return false;
     }
     if (!this.acronym) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error',
-        summary: 'Error Message', detail: 'Please enter acronym Type.'
-      });
+      this.common.showToastrMessage(this.constants.MessageType.error,'Please enter acronym Type.',false);
       return false;
     }
     if (!this.acronym.match(alphaExp)) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error', summary: 'Error Message',
-        detail: 'Please enter only alphabets.'
-      });
+      this.common.showToastrMessage(this.constants.MessageType.error,'Please enter only alphabets.',false);
       return false;
     }
     if (this.acronym.length !== 3) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error',
-        summary: 'Error Message', detail: 'Please enter 3 character as acronym.'
-      });
+
+      this.common.showToastrMessage(this.constants.MessageType.error,'Please enter 3 character as acronym.',false);
       return false;
     }
     if (this.deliverableTypesRows.some(a => a.Acronym.toLowerCase() === this.acronym.toLowerCase())) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error',
-        summary: 'Error Message', detail: 'This acronym is already exist. Please enter another acronym.'
-      });
+
+      this.common.showToastrMessage(this.constants.MessageType.error,'This acronym is already exist. Please enter another acronym.',false);
+
       return false;
     }
     return true;
@@ -319,10 +298,8 @@ export class DeliverableTypesComponent implements OnInit {
     this.adminObject.isMainLoaderHidden = false;
     this.common.SetNewrelic('admin', 'admin-attribute-deliverableTypes', 'updateDeliverableType');
     const result = await this.spServices.updateItem(listName, data.ID, updateData, type);
-    this.messageService.add({
-      key: 'adminCustom', severity: 'success', sticky: true,
-      summary: 'Success Message', detail: 'The deliverable type ' + data.DeliverableType + ' has deleted successfully.'
-    });
+
+    this.common.showToastrMessage(this.constants.MessageType.error,'The deliverable type ' + data.DeliverableType + ' has deleted successfully.',true);
     this.loadDeliverableTypeTable();
     this.adminObject.isMainLoaderHidden = true;
   }

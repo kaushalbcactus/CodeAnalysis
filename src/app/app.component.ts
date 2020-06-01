@@ -4,7 +4,7 @@ import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { environment } from '../environments/environment';
 import { ConstantsService } from './Services/constants.service';
 import { SPOperationService } from './Services/spoperation.service';
-import { MenuItem } from 'primeng/api';
+import { MenuItem, MessageService } from 'primeng/api';
 import { Title } from '@angular/platform-browser';
 import { filter, map } from 'rxjs/operators';
 import { CommonService } from './Services/common.service';
@@ -15,7 +15,7 @@ declare const newrelic;
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnDestroy {
   title = 'Medcom SPA';

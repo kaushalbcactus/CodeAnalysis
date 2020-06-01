@@ -3,7 +3,6 @@ import { ConstantsService } from '../../Services/constants.service';
 import { GlobalService } from '../../Services/global.service';
 import { DatePipe } from '@angular/common';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
-import { MessageService } from 'primeng/api';
 import { CommonService } from 'src/app/Services/common.service';
 import { Subject, Observable } from 'rxjs';
 import { ISPRequest } from 'src/app/qms/interfaces/qms';
@@ -33,7 +32,6 @@ export class MyDashboardConstantsService {
     public sharedObject: GlobalService,
     private datePipe: DatePipe,
     private spServices: SPOperationService,
-    public messageService: MessageService,
     public common: CommonService,
     public qmsConstant: QMSConstantsService) { }
 
@@ -69,7 +67,8 @@ export class MyDashboardConstantsService {
       filter: 'AssignedTo eq  {{userId}} and (Task ne \'Send to client\') and (Task ne \'Follow up\') and (Task ne \'Client Review\') and (Task ne \'Time Booking\') and (Task ne \'Blocking\') and ',
       filterStatus: '(Status ne \'Completed\') and (Status ne \'Auto Closed\')  and (Status ne \'Deleted\') and (Status ne \'Abandon\') and (Status ne \'Hold Request\') and (Status ne \'Abandon Request\') and (Status ne \'Hold\') and (Status ne \'Project on Hold\')',
       filterCompleted: '(Status eq \'Completed\' or Status eq \'Auto Closed\') and (Task ne \'Adhoc\')',
-      filterDate: 'and((StartDate ge \'{{startDateString}}\' and StartDate le \'{{endDateString}}\') or (DueDate ge \'{{startDateString}}\' and DueDate le \'{{endDateString}}\') or (StartDate le \'{{startDateString}}\' and DueDate ge \'{{endDateString}}\'))',
+      filterNotStartedInProgress:'(Status eq \'Not Started\' or Status eq \'In Progress\')',
+      filterDate: 'and ((StartDate ge \'{{startDateString}}\' and StartDate le \'{{endDateString}}\') or (DueDate ge \'{{startDateString}}\' and DueDate le \'{{endDateString}}\') or (StartDate le \'{{startDateString}}\' and DueDate ge \'{{endDateString}}\'))',
       expand: 'AssignedTo/Title'
 
     },
@@ -367,7 +366,7 @@ export class MyDashboardConstantsService {
         this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'GetNextPreviousTasksFromParentSlot');
         let res: any = await this.spServices.readItems(this.constants.listNames.Schedules.name, previousNextTaskChild);
         if (res.hasError) {
-          this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: res.message.value });
+          this.common.showToastrMessage(this.constants.MessageType.error,res.message.value,false);
           return;
         }
         res = res.length ? res : [];
@@ -1175,7 +1174,7 @@ export class MyDashboardConstantsService {
     this.common.SetNewrelic('MyCurrentCompletedTask', status, 'GetTasks');
     const mytasks = Object.assign({}, this.mydashboardComponent.MyTasks);
     mytasks.filter = mytasks.filter.replace(/{{userId}}/gi, this.sharedObject.currentUser.userId.toString());
-    mytasks.filter += mytasks.filterStatus;
+    mytasks.filter += mytasks.filterNotStartedInProgress;
     // mytasks.filter += mytasks.filterStatus;
     mytasks.filter += mytasks.filterDate.replace(/{{startDateString}}/gi, Dates[0]).replace(/{{endDateString}}/gi, Dates[1]);
     this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, mytasks);

@@ -1,7 +1,6 @@
 import { Component, OnInit, ApplicationRef, NgZone, ViewEncapsulation, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { FormBuilder, FormGroup, FormControl, Validators, NgForm, ControlContainer } from '@angular/forms';
-import { MessageService } from 'primeng/api';
 import { AdminCommonService } from '../../services/admin-common.service';
 import { AdminConstantService } from '../../services/admin-constant.service';
 import { AdminObjectService } from '../../services/admin-object.service';
@@ -40,7 +39,6 @@ export class ClientMasterdataComponent implements OnInit {
    *
    * @param datepipe This is instance referance of `DatePipe` component.
    * @param frmbuilder This is instance referance of `FormBuilder` component.
-   * @param messageService This is instance referance of `MessageService` component.
    * @param adminCommonService This is instance referance of `AdminCommonService` component.
    * @param adminConstants This is instance referance of `AdminConstantService` component.
    * @param adminObject This is instance referance of `AdminObjectService` component.
@@ -56,7 +54,6 @@ export class ClientMasterdataComponent implements OnInit {
   constructor(
     private datepipe: DatePipe,
     private frmbuilder: FormBuilder,
-    private messageService: MessageService,
     private adminCommonService: AdminCommonService,
     private adminConstants: AdminConstantService,
     public adminObject: AdminObjectService,
@@ -82,12 +79,9 @@ export class ClientMasterdataComponent implements OnInit {
     });
 
     if (this.adminConstants.toastMsg.SPMAA || this.adminConstants.toastMsg.SPMAD || this.adminConstants.toastMsg.EAPA) {
-      // this.messageService.clear();
       setTimeout(() => {
-        this.messageService.add({
-          key: 'adminAuth1', severity: 'info', sticky: true,
-          summary: 'Info Message', detail: 'You don\'\t have permission,please contact SP Team.'
-        });
+
+        this.common.showToastrMessage(this.constantsService.MessageType.info, 'You don\'\t have permission,please contact SP Team.', true);
         this.adminConstants.toastMsg.SPMAD = false;
         this.adminConstants.toastMsg.EAPA = false;
       }, 300);
@@ -419,14 +413,14 @@ export class ClientMasterdataComponent implements OnInit {
   deleteClient() {
     console.log(this.currClientObj);
 
-    this.common.confirmMessageDialog('Delete Confirmation','Do you want to delete this record?',null,['Yes','No'],false).then(async Confirmation => {
+    this.common.confirmMessageDialog('Delete Confirmation', 'Do you want to delete this record?', null, ['Yes', 'No'], false).then(async Confirmation => {
       if (Confirmation === 'Yes') {
         const updateData = {
           IsActive: this.adminConstants.LOGICAL_FIELD.NO
         };
         this.confirmUpdate(this.currClientObj, updateData, this.constantsService.listNames.ClientLegalEntity.name,
           this.constantsService.listNames.ClientLegalEntity.type, this.adminConstants.DELETE_LIST_ITEM.CLIENT_LEGAL_ENTITY);
-	  }
+      }
     });
   }
   /**
@@ -443,37 +437,25 @@ export class ClientMasterdataComponent implements OnInit {
     const result = await this.spServices.updateItem(listName, data.ID, updateData, type);
     switch (itemName) {
       case this.adminConstants.DELETE_LIST_ITEM.CLIENT_LEGAL_ENTITY:
-        this.messageService.add({
-          key: 'adminCustom', severity: 'success', sticky: true,
-          summary: 'Success Message', detail: 'The client legal entity ' + data.ClientLegalEntity + ' has deleted successfully.'
-        });
+        this.common.showToastrMessage(this.constantsService.MessageType.success, 'The client legal entity ' + data.ClientLegalEntity + ' has deleted successfully.', true);
         const clientIndex = this.clientMasterDataRows.findIndex(x => x.ID === data.ID);
         this.clientMasterDataRows.splice(clientIndex, 1);
         this.colFilters(this.clientMasterDataRows);
         break;
       case this.adminConstants.DELETE_LIST_ITEM.SUB_DIVISION:
-        this.messageService.add({
-          key: 'adminCustom', severity: 'success', sticky: true,
-          summary: 'Success Message', detail: 'The sub division ' + data.SubDivision + ' has deleted successfully.'
-        });
+        this.common.showToastrMessage(this.constantsService.MessageType.success, 'The sub division ' + data.SubDivision + ' has deleted successfully.', true);
         const subDivisionindex = this.subDivisionDetailsRows.findIndex(x => x.ID === data.ID);
         this.subDivisionDetailsRows.splice(subDivisionindex, 1);
         this.subDivisionFilters(this.subDivisionDetailsRows);
         break;
       case this.adminConstants.DELETE_LIST_ITEM.POINT_OF_CONTACT:
-        this.messageService.add({
-          key: 'adminCustom', severity: 'success', sticky: true,
-          summary: 'Success Message', detail: 'The point of contact ' + data.FullName + ' has deleted successfully.'
-        });
+        this.common.showToastrMessage(this.constantsService.MessageType.success, 'The point of contact ' + data.FullName + ' has deleted successfully.', true);
         const pocindex = this.POCRows.findIndex(x => x.ID === data.ID);
         this.POCRows.splice(pocindex, 1);
         this.POCFilters(this.POCRows);
         break;
       case this.adminConstants.DELETE_LIST_ITEM.PURCHASE_ORDER:
-        this.messageService.add({
-          key: 'adminCustom', severity: 'success', sticky: true,
-          summary: 'Success Message', detail: 'The po ' + data.PoNumber + ' has deleted successfully.'
-        });
+        this.common.showToastrMessage(this.constantsService.MessageType.success, 'The po ' + data.PoNumber + ' has deleted successfully.', true);
         const poindex = this.PORows.findIndex(x => x.ID === data.ID);
         this.PORows.splice(poindex, 1);
         this.POFilters(this.PORows);
@@ -586,15 +568,15 @@ export class ClientMasterdataComponent implements OnInit {
   deleteSubDivision() {
     console.log(this.currClientObj);
 
-    this.common.confirmMessageDialog('Delete Confirmation','Do you want to delete this record?',null,['Yes','No'],false).then(async Confirmation => {
+    this.common.confirmMessageDialog('Delete Confirmation', 'Do you want to delete this record?', null, ['Yes', 'No'], false).then(async Confirmation => {
       if (Confirmation === 'Yes') {
         const updateData = {
           IsActive: this.adminConstants.LOGICAL_FIELD.NO
         };
         this.confirmUpdate(this.currSubDivisionObj, updateData, this.constantsService.listNames.ClientSubdivision.name,
           this.constantsService.listNames.ClientSubdivision.type, this.adminConstants.DELETE_LIST_ITEM.SUB_DIVISION);
-	  }
-	  });
+      }
+    });
   }
   /**
    * construct a request to SharePoint based API using REST-CALL to provide the result based on query.
@@ -717,15 +699,15 @@ export class ClientMasterdataComponent implements OnInit {
 
 
 
-    this.common.confirmMessageDialog('Delete Confirmation','Do you want to delete this record?',null,['Yes','No'],false).then(async Confirmation => {
+    this.common.confirmMessageDialog('Delete Confirmation', 'Do you want to delete this record?', null, ['Yes', 'No'], false).then(async Confirmation => {
       if (Confirmation === 'Yes') {
         const updateData = {
           Status: this.adminConstants.LOGICAL_FIELD.INACTIVE
         };
         this.confirmUpdate(this.currPOCObj, updateData, this.constantsService.listNames.ProjectContacts.name,
           this.constantsService.listNames.ProjectContacts.type, this.adminConstants.DELETE_LIST_ITEM.POINT_OF_CONTACT);
-	  }
-	  });
+      }
+    });
   }
   /**
    * construct a request to SharePoint based API using REST-CALL to provide the result based on query.
@@ -1003,15 +985,15 @@ export class ClientMasterdataComponent implements OnInit {
    */
   deletePO(Obj) {
 
-    this.common.confirmMessageDialog('Delete Confirmation','Do you want to delete this record?',null,['Yes','No'],false).then(async Confirmation => {
+    this.common.confirmMessageDialog('Delete Confirmation', 'Do you want to delete this record?', null, ['Yes', 'No'], false).then(async Confirmation => {
       if (Confirmation === 'Yes') {
         const updateData = {
           Status: this.adminConstants.LOGICAL_FIELD.INACTIVE
         };
         this.confirmUpdate(Obj, updateData, this.constantsService.listNames.PO.name,
           this.constantsService.listNames.PO.type, this.adminConstants.DELETE_LIST_ITEM.PURCHASE_ORDER);
-	  }
-	  });
+      }
+    });
   }
   /**
    * Construct a method to call REST API based on query `ID='this.currPOObj.ID'`to show the all the properties in right overlay.
@@ -1113,11 +1095,7 @@ export class ClientMasterdataComponent implements OnInit {
 
       if (!results.hasOwnProperty('hasError') && !results.hasError) {
         await this.createCLEMapping(clientDetails);
-        this.messageService.add({
-          key: 'adminCustom', severity: 'success',
-          summary: 'Success Message', detail: 'The Client ' + clientDetails.value.name + ' is created successfully.'
-        });
-
+        this.common.showToastrMessage(this.constantsService.MessageType.success, 'The Client ' + clientDetails.value.name + ' is created successfully.', false);
         if (!this.adminObject.dropdown.ClientGroupArray.some(a =>
           a.label && a.label.toLowerCase() === clientDetails.value.group.toLowerCase())) {
           const clientGroupdata = {
@@ -1140,10 +1118,7 @@ export class ClientMasterdataComponent implements OnInit {
       if (this.currClientObj.Bucket !== clientDetails.value.bucket) {
         await this.updateCLEMapping(clientDetails);
       }
-      this.messageService.add({
-        key: 'adminCustom', severity: 'success',
-        summary: 'Success Message', detail: 'The Client ' + this.currClientObj.ClientLegalEntity + ' is updated successfully.'
-      });
+      this.common.showToastrMessage(this.constantsService.MessageType.success, 'The Client ' + this.currClientObj.ClientLegalEntity + ' is updated successfully.', false);
 
       if (!this.adminObject.dropdown.ClientGroupArray.some(a =>
         a.label && a.label.toLowerCase() === clientDetails.value.group.toLowerCase())) {
@@ -1276,10 +1251,7 @@ export class ClientMasterdataComponent implements OnInit {
       const results = await this.spServices.createItem(this.constantsService.listNames.ClientSubdivision.name,
         subDivisionData, this.constantsService.listNames.ClientSubdivision.type);
       if (!results.hasOwnProperty('hasError') && !results.hasError) {
-        this.messageService.add({
-          key: 'adminCustom', severity: 'success', summary: 'Success Message',
-          detail: 'The subdivision ' + subDivisionDetails.value.subDivision_Name + ' is created successfully.'
-        });
+        this.common.showToastrMessage(this.constantsService.MessageType.success, 'The subdivision ' + subDivisionDetails.value.subDivision_Name + ' is created successfully.', false);
         await this.loadRecentSubDivisionRecords(results.ID, this.showeditSubDivision);
       }
     }
@@ -1287,10 +1259,7 @@ export class ClientMasterdataComponent implements OnInit {
       this.common.SetNewrelic('admin', 'admin-clientMaster', 'updateClientSubdivision');
       const results = await this.spServices.updateItem(this.constantsService.listNames.ClientSubdivision.name, this.currSubDivisionObj.ID,
         subDivisionData, this.constantsService.listNames.ClientSubdivision.type);
-      this.messageService.add({
-        key: 'adminCustom', severity: 'success',
-        summary: 'Success Message', detail: 'The subdivision ' + this.currSubDivisionObj.SubDivision + ' is updated successfully.'
-      });
+      this.common.showToastrMessage(this.constantsService.MessageType.success, 'The subdivision ' + this.currSubDivisionObj.SubDivision + ' is updated successfully.', false);
       await this.loadRecentSubDivisionRecords(this.currSubDivisionObj.ID, this.showeditSubDivision);
     }
   }
@@ -1382,10 +1351,7 @@ export class ClientMasterdataComponent implements OnInit {
       const results = await this.spServices.createItem(this.constantsService.listNames.ProjectContacts.name,
         pocData, this.constantsService.listNames.ProjectContacts.type);
       if (!results.hasOwnProperty('hasError') && !results.hasError) {
-        this.messageService.add({
-          key: 'adminCustom', severity: 'success', summary: 'Success Message',
-          detail: 'The Poc ' + pocDetails.value.fname + ' ' + pocDetails.value.lname + ' is created successfully.'
-        });
+        this.common.showToastrMessage(this.constantsService.MessageType.success, 'The Poc ' + pocDetails.value.fname + ' ' + pocDetails.value.lname + ' is created successfully.', false);
         await this.loadRecentPOCRecords(results.ID, this.showeditPOC);
       }
     }
@@ -1393,11 +1359,8 @@ export class ClientMasterdataComponent implements OnInit {
       this.common.SetNewrelic('admin', 'admin-clientMaster', 'updateProjectContacts');
       const results = await this.spServices.updateItem(this.constantsService.listNames.ProjectContacts.name, this.currPOCObj.ID,
         pocData, this.constantsService.listNames.ProjectContacts.type);
-      this.messageService.add({
-        key: 'adminCustom', severity: 'success',
-        summary: 'Success Message', detail: 'The Poc ' + pocDetails.value.fname + ' ' + pocDetails.value.lname +
-          ' is updated successfully.'
-      });
+      this.common.showToastrMessage(this.constantsService.MessageType.success, 'The Poc ' + pocDetails.value.fname + ' ' + pocDetails.value.lname +
+        ' is updated successfully.', false);
       await this.loadRecentPOCRecords(this.currPOCObj.ID, this.showeditPOC);
     }
   }
@@ -1529,10 +1492,7 @@ export class ClientMasterdataComponent implements OnInit {
       if (selectedFile.length > 0 && selectedFile.length === uploadedfile.length) {
         if (!uploadedfile[0].hasOwnProperty('odata.error')) {
           this.modalloaderenable = true;
-          this.messageService.add({
-            key: 'adminCustom', severity: 'success',
-            summary: 'Success Message', detail: 'File uploaded sucessfully.'
-          });
+          this.common.showToastrMessage(this.constantsService.MessageType.success, 'File uploaded sucessfully.', false);
           const poData = await this.getPOData(poDetails, selectedFile[0]);
           if (!this.showeditPO) {
             this.common.SetNewrelic('admin', 'client-masterdata', 'savePO');
@@ -1544,10 +1504,7 @@ export class ClientMasterdataComponent implements OnInit {
               const poBreakUPResult = await this.spServices.createItem(this.constantsService.listNames.POBudgetBreakup.name,
                 poBreakUPData, this.constantsService.listNames.POBudgetBreakup.type);
               if (!poBreakUPResult.hasOwnProperty('hasError') && !poBreakUPResult.hasError) {
-                this.messageService.add({
-                  key: 'adminCustom', severity: 'success', summary: 'Success Message',
-                  detail: 'The Po ' + poDetails.value.poNumber + ' is created successfully.'
-                });
+                this.common.showToastrMessage(this.constantsService.MessageType.success, 'The Po ' + poDetails.value.poNumber + ' is created successfully.', false);
               }
               await this.loadRecentPORecords(results.ID, this.adminConstants.ACTION.ADD);
             }
@@ -1556,26 +1513,18 @@ export class ClientMasterdataComponent implements OnInit {
             this.common.SetNewrelic('admin', 'admin-clientMaster', 'updatePO');
             const results = await this.spServices.updateItem(this.constantsService.listNames.PO.name, this.currPOObj.ID,
               poData, this.constantsService.listNames.PO.type);
-            this.messageService.add({
-              key: 'adminCustom', severity: 'success',
-              summary: 'Success Message', detail: 'The Po ' + this.currPOObj.PoNumber + ' is updated successfully.'
-            });
+            this.common.showToastrMessage(this.constantsService.MessageType.success, 'The Po ' + this.currPOObj.PoNumber + ' is updated successfully.', false);
             await this.loadRecentPORecords(this.currPOObj.ID, this.adminConstants.ACTION.EDIT);
           }
         }
         else {
-          this.messageService.add({
-            key: 'adminCustom', severity: 'error',
-            summary: 'Error Message', detail: 'Error while uploading file.'
-          });
+          this.common.showToastrMessage(this.constantsService.MessageType.error, 'Error while uploading file.', false);
         }
       }
     }).catch(error => {
       console.log("Error while uploading" + error)
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error',
-        summary: 'Error Message', detail: 'Error while uploading file.'
-      });
+      this.common.showToastrMessage(this.constantsService.MessageType.error, 'Error while uploading file.', false);
+
     });
   }
 
@@ -1680,12 +1629,7 @@ export class ClientMasterdataComponent implements OnInit {
     this.common.SetNewrelic('admin', 'admin-clientMaster', 'getPOPOBudgetBreakup');
     await this.spServices.executeBatch(batchURL);
 
-    this.messageService.add({
-      key: 'adminCustom', severity: 'success', sticky: true,
-      summary: 'Success Message', detail: 'The budget updated sucessfully for ' + this.currPOObj.PoName
-    });
-
-
+    this.common.showToastrMessage(this.constantsService.MessageType.success, 'The budget updated sucessfully for ' + this.currPOObj.PoName, true);
     await this.loadRecentPORecords(this.currPOObj.ID, this.adminConstants.ACTION.EDIT);
   }
 

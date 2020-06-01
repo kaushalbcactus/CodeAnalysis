@@ -2,8 +2,9 @@ import { Component, OnInit, Output, Input, EventEmitter, OnChanges, SimpleChange
 import { PMObjectService } from 'src/app/projectmanagement/services/pmobject.service';
 import { PmconstantService } from 'src/app/projectmanagement/services/pmconstant.service';
 import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.service';
-import { MessageService } from 'primeng/api';
+
 import { CommonService } from 'src/app/Services/common.service';
+import { ConstantsService } from 'src/app/Services/constants.service';
 @Component({
   selector: 'app-finance-management',
   templateUrl: './finance-management.component.html',
@@ -39,8 +40,8 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
     public pmObject: PMObjectService,
     private pmConstant: PmconstantService,
     private pmCommon: PMCommonService,
-    public messageService: MessageService,
-    private commonService: CommonService
+    private commonService: CommonService,
+    private constants: ConstantsService
   ) { }
   ngOnInit() {
     this.loadFinanceManagementInit();
@@ -116,10 +117,8 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
    */
   showPOTable() {
     if (!this.billedBy) {
-      this.messageService.add({
-        key: 'custom', severity: 'error',
-        summary: 'Error Message', detail: 'Please select Billed by.'
-      });
+
+      this.commonService.showToastrMessage(this.constants.MessageType.error,'Please select Billed by.',false);
       return false;
     } else if (this.pmObject.addProject.FinanceManagement.isBudgetRateAdded) {
 
@@ -163,10 +162,8 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
    */
   validateForm() {
     if (!this.pmObject.addProject.FinanceManagement.POArray.length) {
-      this.messageService.add({
-        key: 'custom', severity: 'error',
-        summary: 'Error Message', detail: 'Please assign budget / rate for project'
-      });
+
+      this.commonService.showToastrMessage(this.constants.MessageType.error,'Please assign budget / rate for project.',false);
       return false;
     }
     return true;

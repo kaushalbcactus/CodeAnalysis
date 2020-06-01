@@ -6,7 +6,7 @@ import { PMObjectService } from 'src/app/projectmanagement/services/pmobject.ser
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { PmconstantService } from 'src/app/projectmanagement/services/pmconstant.service';
-import { DynamicDialogConfig, MessageService, DynamicDialogRef } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.service';
 import { Router } from '@angular/router';
 import { DataService } from 'src/app/Services/data.service';
@@ -51,7 +51,6 @@ export class ProjectAttributesComponent implements OnInit {
     private pmConstant: PmconstantService,
     private config: DynamicDialogConfig,
     private pmCommonService: PMCommonService,
-    private messageService: MessageService,
     private dynamicDialogRef: DynamicDialogRef,
     private router: Router,
     private dataService: DataService,
@@ -473,6 +472,8 @@ export class ProjectAttributesComponent implements OnInit {
    * @param projObj Pass the projObj as parameter.
    */
   editProject(projObj) {
+
+    debugger;
     if (projObj.ActualStartDate) {
       const actualStartDate = new Date(projObj.ActualStartDate);
       const allowedDate = this.commonService.CalculateminstartDateValue(new Date(), 3);
@@ -552,10 +553,8 @@ export class ProjectAttributesComponent implements OnInit {
   async saveEditProject() {
 
     if (this.selectedFile && this.selectedFile.size === 0) {
-      this.messageService.add({
-        key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
-        detail: 'Unable to upload file, size of ' + this.selectedFile.name + ' is 0 KB.'
-      });
+
+      this.commonService.showToastrMessage(this.constant.MessageType.error,this.constant.Messages.ZeroKbFile.replace('{{fileName}}', this.selectedFile.name),true);
     }
     else {
       if (this.enableCountFields) {
@@ -640,10 +639,8 @@ export class ProjectAttributesComponent implements OnInit {
     await this.spServices.updateItem(this.constant.listNames.ProjectInformation.name, this.projObj.ID, projectInfo,
       this.constant.listNames.ProjectInformation.type);
     this.pmObject.isMainLoaderHidden = true;
-    this.messageService.add({
-      key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
-      detail: 'Project Updated Successfully for the projectcode - ' + this.projObj.ProjectCode
-    });
+
+    this.commonService.showToastrMessage(this.constant.MessageType.success,'Project Updated Successfully for the projectcode - ' + this.projObj.ProjectCode,false);
     setTimeout(() => {
       this.dynamicDialogRef.close();
       if (this.router.url === '/projectMgmt/allProjects') {
@@ -728,10 +725,8 @@ export class ProjectAttributesComponent implements OnInit {
       val = val.trim();
       const molecule = this.pmObject.oProjectCreation.oProjectInfo.molecule.find(e => e.label === val);
       if (molecule) {
-        this.messageService.add({
-          key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
-          detail: 'Molecule already exists'
-        });
+
+        this.commonService.showToastrMessage(this.constant.MessageType.error,'Molecule already exists.',false);
         return;
       }
       const batchURL = [];
@@ -755,10 +750,8 @@ export class ProjectAttributesComponent implements OnInit {
       this.commonService.SetNewrelic('projectManagment', 'addproj-projectAttributes', 'GetMolecules');
       await this.spServices.executeBatch(batchURL);
 
-      this.messageService.add({
-        key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
-        detail: 'Molecule added successfully'
-      });
+
+      this.commonService.showToastrMessage(this.constant.MessageType.success,'Molecule added successfully',true);
 
       this.showMoleculeAdd = false;
       this.addMolecule.get('addMoleculeItem').setValue('');

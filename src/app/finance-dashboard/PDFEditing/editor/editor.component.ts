@@ -1,13 +1,12 @@
 import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import DecoupledEditor from '@ckeditor/ckeditor5-build-decoupled-document';
-import { CommonService } from '../services/common.service';
 import { FdConstantsService } from '../../fdServices/fd-constants.service';
 import { FDDataShareService } from '../../fdServices/fd-shareData.service';
-import { MessageService } from 'primeng/api';
 import { GlobalService } from 'src/app/Services/global.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { Subscription } from 'rxjs';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
+import { CommonService } from 'src/app/Services/common.service';
 
 
 declare var $: any;
@@ -59,7 +58,6 @@ export class EditorComponent implements OnInit {
         private common: CommonService,
         private fdConstantsService: FdConstantsService,
         private fdShareDataService: FDDataShareService,
-        private messageService: MessageService,
         private globalObject: GlobalService,
         private spOperationsServices: SPOperationService,
         private constantsService: ConstantsService,
@@ -2916,7 +2914,8 @@ export class EditorComponent implements OnInit {
             this.displayJapan = false;
             this.displayUS = false;
             this.displayIndia = false;
-            this.messageService.add({ key: 'editToast', severity: 'success', summary: 'Success message', detail: this.fdConstantsService.fdComponent.selectedEditObject.Code + ', ' + this.fdConstantsService.fdComponent.selectedEditObject.Type + ' edited successfully.', life: 20000 });
+
+            this.common.showToastrMessage(this.constantsService.MessageType.success,this.fdConstantsService.fdComponent.selectedEditObject.Code + ', ' + this.fdConstantsService.fdComponent.selectedEditObject.Type + ' edited successfully.',true);
         }, 300);
     }
 
@@ -3063,7 +3062,8 @@ export class EditorComponent implements OnInit {
 
         if (this.SelectedJapanDays > 0) {
             if (Math.floor(this.SelectedJapanDays) !== this.SelectedJapanDays) {
-                this.messageService.add({ key: 'editToast', severity: 'info', summary: 'Info message', detail: 'Payment days allowd only numeric value, decimal point not allowed.', life: 4000 });
+
+                this.common.showToastrMessage(this.constantsService.MessageType.info,'Payment days allowd only numeric value, decimal point not allowed.',false);
                 return false;
             }
             else {
@@ -3073,7 +3073,8 @@ export class EditorComponent implements OnInit {
         }
         else {
 
-            this.messageService.add({ key: 'editToast', severity: 'info', summary: 'Info message', detail: 'Payment days should be greater than 0', life: 4000 });
+
+            this.common.showToastrMessage(this.constantsService.MessageType.info,'Payment days should be greater than 0',false);
             return false;
 
         }

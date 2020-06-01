@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy, HostListener, ElementRef, ViewChild, ChangeDetectorRef, ApplicationRef, NgZone } from '@angular/core';
-import { MessageService } from 'primeng/api';
 import { SPOperationService } from '../../../Services/spoperation.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ConstantsService } from '../../../Services/constants.service';
@@ -24,7 +23,6 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
     SelectedFile = [];
 
     constructor(
-        private messageService: MessageService,
         private fb: FormBuilder,
         private spServices: SPOperationService,
         public constantService: ConstantsService,
@@ -355,7 +353,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
             const sts = this.selectedAllRowsItem[0].Status;
             if (element.Status !== sts) {
                 this.approvedSts = false;
-                this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Info message', detail: 'Please select line item with status containing "Payment Pending" & try again.', life: 4000 });
+                this.commonService.showToastrMessage(this.constantService.MessageType.info,'Please select line item with status containing "Payment Pending" & try again.',false);
             }
         }
     }
@@ -376,7 +374,8 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         console.log('selectedAllRowsItem ', this.selectedAllRowsItem);
         this.checkUniqueVF();
         if (!this.selectedAllRowsItem.length) {
-            this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Info message', detail: 'Please select at least 1 Projects & try again', life: 4000 });
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.info,'Please select at least 1 Projects & try again',false);
             return;
         }
         if (this.vfUnique) {
@@ -385,7 +384,8 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
                 const sts = this.checkPPStatus();
                 console.log('Sts ', sts);
                 if (!this.approvedSts) {
-                    this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Info message', detail: 'Please select line item with status containing "Payment Pending".', life: 4000 });
+
+                    this.commonService.showToastrMessage(this.constantService.MessageType.info,'Please select line item with status containing "Payment Pending".',false);
                     return false;
                 }
                 if (sts) {
@@ -401,11 +401,12 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
                         }
                     });
                 } else {
-                    this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Info message', detail: 'Please select line item with status containing "Payment Pending".', life: 4000 });
+
+                    this.commonService.showToastrMessage(this.constantService.MessageType.info,'Please select line item with status containing "Payment Pending".',false);
                 }
             }
         } else {
-            this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Info message', detail: 'Please select same Vendor/Freelance name', life: 4000 });
+            this.commonService.showToastrMessage(this.constantService.MessageType.info,'Please select same Vendor/Freelance name.',false);
         }
     }
 
@@ -471,10 +472,8 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         this.commonService.SetNewrelic('Finance-Dashboard', 'approve-nonbillable', 'submitForm');
         await this.spServices.executeBatch(batchUrl);
         if (type === 'markAsPayment_form') {
-            this.messageService.add({
-                key: 'approvedNonBToast', severity: 'success', summary: 'Success message',
-                detail: 'Payment marked.', life: 2000
-            });
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.success,'Payment marked.',false);
             this.reFetchData();
         }
         this.isPSInnerLoaderHidden = true;

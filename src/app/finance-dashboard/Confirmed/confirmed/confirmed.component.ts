@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation, ViewChild, OnDestroy, HostListener, ChangeDetectorRef, ApplicationRef, NgZone } from '@angular/core';
-import { Message, MessageService, SelectItem } from 'primeng/api';
+import { Message, SelectItem } from 'primeng/api';
 import { Calendar, Table } from 'primeng';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -21,6 +21,7 @@ import { Subscription } from 'rxjs';
     // encapsulation: ViewEncapsulation.None
 })
 export class ConfirmedComponent implements OnInit, OnDestroy {
+    yearRange: any;
 
 
     constructor(
@@ -31,7 +32,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         private fdConstantsService: FdConstantsService,
         public fdDataShareServie: FDDataShareService,
         private datePipe: DatePipe,
-        private messageService: MessageService,
         private commonService: CommonService,
         private router: Router,
         private cdr: ChangeDetectorRef,
@@ -151,7 +151,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         POCName: []
     };
 
-
     // On Row Selection
     // Row Selection Array
     selectedTotalAmt = 0;
@@ -184,6 +183,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
 
     async ngOnInit() {
 
+        this.yearRange = this.commonService.getyearRange();
         this.createANBCols();
         // this.getApprovedNonBillable();
         this.createAddToProformaFormField();
@@ -751,10 +751,8 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
     addProforma() {
         if (!this.selectedPurchaseNumber) {
-            this.messageService.add({
-                key: 'confirmInfoToast', severity: 'info', summary: 'Info message',
-                detail: 'Please select Purchase order Number & try again.', life: 2000
-            });
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.info,'Please select Purchase order Number & try again.',false);
         } else {
             if (this.selectedAllRowData.length) {
                 for (let i = 0; i < this.selectedAllRowData.length; i++) {
@@ -762,10 +760,8 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
 
                     const scheduleType = this.selectedAllRowData[0].ScheduleType;
                     if (element.ScheduleType !== scheduleType) {
-                        this.messageService.add({
-                            key: 'confirmInfoToast', severity: 'info', summary: 'Info message',
-                            detail: 'Please select same Schedule type & try again.', life: 2000
-                        });
+
+                        this.commonService.showToastrMessage(this.constantService.MessageType.info,'Please select same Schedule type & try again.',false);
                         return;
                     }
                 }
@@ -800,17 +796,12 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                     this.generateProformaNumber(cle);
                     this.getPOCNamesForEditInv(cle);
                 } else {
-                    this.messageService.add({
-                        key: 'confirmInfoToast', severity: 'info', summary: 'Info message',
-                        detail: 'Proforma cant be generated on Expired PO', life: 2000
-                    });
+
+                    this.commonService.showToastrMessage(this.constantService.MessageType.info,'Proforma cant be generated on Expired PO',false);
                 }
 
             } else {
-                this.messageService.add({
-                    key: 'confirmInfoToast', severity: 'info', summary: 'Info message',
-                    detail: 'Please select one of Row Item & try again.', life: 2000
-                });
+                this.commonService.showToastrMessage(this.constantService.MessageType.info,'Please select one of Row Item & try again.',false);
             }
         }
     }
@@ -1076,24 +1067,17 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             this.proformaModal = false;
             this.isPSInnerLoaderHidden = true;
             this.reFetchData();
-            this.messageService.add({
-                key: 'custom', severity: 'success', summary: 'Proforma Added',
-                detail: 'Proforma Number: ' + this.addToProforma_form.getRawValue().ProformaNumber, life: 20000
-            });
 
+            this.commonService.showToastrMessage(this.constantService.MessageType.success,'Proforma Number: ' + this.addToProforma_form.getRawValue().ProformaNumber +' - Added Sucessfully  ',false);
         } else {
             await this.spServices.executeBatch(batchUrl);
             if (type === 'revertInvoice') {
-                this.messageService.add({
-                    key: 'confirmSuccessToast', severity: 'success', summary: 'Success message',
-                    detail: 'Reverted the invoice of ' + this.selectedRowItem.ProjectCode + ' from Confirmed to Scheduled.', life: 20000
-                });
+
+                this.commonService.showToastrMessage(this.constantService.MessageType.success,'Reverted the invoice of ' + this.selectedRowItem.ProjectCode + ' from Confirmed to Scheduled.',false);
                 this.reFetchData();
             } else if (type === 'editInvoice') {
-                this.messageService.add({
-                    key: 'confirmSuccessToast', severity: 'success', summary: 'Success message',
-                    detail: 'Invoice Updated.', life: 20000
-                });
+
+                this.commonService.showToastrMessage(this.constantService.MessageType.success,'Invoice Updated.',false);
                 this.reFetchData();
             }
             this.isPSInnerLoaderHidden = true;

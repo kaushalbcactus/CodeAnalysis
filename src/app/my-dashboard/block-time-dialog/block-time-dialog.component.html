@@ -88,7 +88,8 @@
             <th>Start Date:</th>
             <td>
 
-                <p-calendar [style]="{'min-width':'100%'}" [minDate]="minDateValue" placeholder="Select Start Date" [(ngModel)]="eventDate" [disabledDays]="[0,6]" dateFormat="M dd, yy" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true" [yearNavigator]="true"></p-calendar>
+                <p-calendar [style]="{'min-width':'100%'}" [minDate]="minDateValue" placeholder="Select Start Date" [(ngModel)]="eventDate" [disabledDays]="[0,6]" dateFormat="M dd, yy" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true" [yearNavigator]="true"
+                    (onClose)="EnableHalfDay()"></p-calendar>
 
             </td>
         </tr>

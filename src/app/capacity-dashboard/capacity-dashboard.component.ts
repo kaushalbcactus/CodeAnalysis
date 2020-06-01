@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChildren, QueryList, ViewChild } from '@angular/core';
 import { SelectItem } from 'primeng/api';
-import { MultiSelect, MessageService } from 'primeng';
+import { MultiSelect } from 'primeng';
 import { FormBuilder, Validators } from '@angular/forms';
 import { GlobalService } from '../Services/global.service';
 import { SPOperationService } from '../Services/spoperation.service';
@@ -33,7 +33,6 @@ export class CapacityDashboardComponent implements OnInit {
   fetchDataloader = false;
   constructor(
     public fb: FormBuilder,
-    public messageService: MessageService,
     public sharedObject: GlobalService,
     private spServices: SPOperationService,
     private commonService: CommonService,
@@ -231,9 +230,10 @@ export class CapacityDashboardComponent implements OnInit {
 
     if (!this.searchCapacityForm.valid) {
       if (!this.searchCapacityForm.value.resources) {
-        this.messageService.add({ key: 'toastMessage', severity: 'warn', summary: 'Warn Message', detail: 'Please select Resource.' });
+
+        this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please select Resource.',false);
       } else {
-        this.messageService.add({ key: 'toastMessage', severity: 'warn', summary: 'Warn Message', detail: 'Please select dates.' });
+        this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please select dates.',false);
       }
       return false;
 

@@ -656,4 +656,19 @@ export class ConstantsService {
     GET: 'GET'
   }
 
+  public MessageType = {
+    success: 'success',
+    info: 'info',
+    warn: 'warn',
+    error: 'error'
+  }
+
+  public Messages = {
+
+    SpecialCharMsg : 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'',
+    ZeroKbFile : 'Unable to upload file, size of  {{fileName}} is 0 KB.',
+    FileNotUploaded : 'File not uploaded, Folder / File Not Found',
+    FileAlreadyExist : 'This file name already exit.Please select another file name.'
+  }
+
 }

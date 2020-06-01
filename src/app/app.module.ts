@@ -16,7 +16,7 @@ import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.com
 import { PrimengModule } from './primeng/primeng.module';
 import { FileUploadProgressDialogComponent } from './shared/file-upload-progress-dialog/file-upload-progress-dialog.component';
 import { ConfirmationDialogComponent } from './shared/confirmation-dialog/confirmation-dialog.component';
-
+import {ToastModule} from 'primeng/toast';
 
 @NgModule({
   imports: [
@@ -29,7 +29,8 @@ import { ConfirmationDialogComponent } from './shared/confirmation-dialog/confir
     HttpClientModule,
     CommonModule,
     NgbModule,
-    PrimengModule
+    PrimengModule,
+    ToastModule
   ],
   declarations: [
     AppComponent,

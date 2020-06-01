@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MessageService, DynamicDialogConfig, DynamicDialogRef } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { CommonService } from 'src/app/Services/common.service';
@@ -54,13 +54,9 @@ export class ScheduleOopInvoiceDialogComponent implements OnInit {
 
   isScheduleInvoiceFormSubmit = false;
   constructor(private frmbuilder: FormBuilder,
-    private messageService: MessageService,
-    // private adminCommonService: AdminCommonService,
-    // private adminConstants: AdminConstantService,
     public config: DynamicDialogConfig,
     public ref: DynamicDialogRef,
     private datePipe: DatePipe,
-    // public adminObject: AdminObjectService,
     public fdDataShareServie: FDDataShareService,
     private constantsService: ConstantsService,
     private spServices: SPOperationService,
@@ -99,16 +95,6 @@ export class ScheduleOopInvoiceDialogComponent implements OnInit {
       this.getPONumberFromCLE(pInfo);
       this.getPOCFromPCLE(pInfo);
     }
-    // else {
-    //   this.purchaseOrdersList = this.config.data.purchaseOrdersList;
-    //   this.projectContactsData = this.config.data.projectContactsData;
-    //   this.poNames.push(this.selectedAllRowsItem[0].PO);
-    //   this.poChange({ label: 'PO', value: this.poNames[0] });
-    //   this.listOfPOCs.push(this.selectedAllRowsItem[0].POC);
-    //   this.ScheduleInvoiceForm.get('PONumber').setValue(this.poNames[0]);
-    //   this.ScheduleInvoiceForm.get('ScheduledType').setValue('Hourly');
-    //   this.ScheduleInvoiceForm.get('ScheduledDate').setValue(new Date());
-    // }
 
    this.yearRange = this.common.getyearRange();
     this.setValInScheduleOop(this.selectedAllRowsItem);
@@ -177,7 +163,7 @@ export class ScheduleOopInvoiceDialogComponent implements OnInit {
       this.modalloaderenable = false;
       this.ScheduleInvoiceForm.get('OOPBalance').setValidators([Validators.required, Validators.min(+(this.ScheduleInvoiceForm.get('Amount').value))]);
       this.ScheduleInvoiceForm.get('OOPBalance').updateValueAndValidity();
-      this.messageService.add({ key: 'approvedToast', severity: 'info', summary: 'Info message', detail: 'OOP Balance must be greater than Scheduled oop Amount.', life: 4000 });
+      this.common.showToastrMessage(this.constantsService.MessageType.info,'OOP Balance must be greater than Scheduled oop Amount.',false);
       return;
     }
 

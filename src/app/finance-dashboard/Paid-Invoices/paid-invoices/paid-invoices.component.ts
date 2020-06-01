@@ -1,5 +1,4 @@
 import { Component, OnInit, ViewChild, OnDestroy, HostListener, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
-import { Message, MessageService } from 'primeng/api';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -23,7 +22,6 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
     tempClick: any;
     paidInvoicesRes: any = [];
     outstandingInCols: any[];
-    msgs: Message[] = [];
 
     // Row Selection Array
     selectedRowData: any[];
@@ -85,7 +83,6 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         private fdConstantsService: FdConstantsService,
         public fdDataShareServie: FDDataShareService,
         private datePipe: DatePipe,
-        private messageService: MessageService,
         private commonService: CommonService,
         private router: Router,
         private cdr: ChangeDetectorRef,
@@ -498,8 +495,10 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         })
     }
     onTableClick() {
-        this.messageService.add({ key: 'pmenuToast', severity: 'success', summary: 'Summary Text', detail: 'Detail Text', });
-        this.messageService.clear('pmenuToast');
+
+
+        this.commonService.showToastrMessage(this.constantService.MessageType.success,'Detail Text',false);
+        this.commonService.clearToastrMessage();
         if (this.pMenu && !this.popupMenu.visible) {
             console.log('in menuOnHide function');
             this.popupMenu.visible = false;

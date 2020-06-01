@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MessageService, DynamicDialogConfig, DynamicDialogRef } from 'primeng';
+import {  DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 import { DatePipe, formatDate } from '@angular/common';
 import { FdConstantsService } from 'src/app/finance-dashboard/fdServices/fd-constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -25,7 +25,6 @@ export class ApproveBillingDialogComponent implements OnInit {
   modalloaderenable = true;
   yearRange: string;
   constructor(private frmbuilder: FormBuilder,
-    private messageService: MessageService,
     public config: DynamicDialogConfig,
     public ref: DynamicDialogRef,
     private datePipe: DatePipe,
@@ -141,12 +140,8 @@ export class ApproveBillingDialogComponent implements OnInit {
 
         this.ref.close(data);
       } else {
-        this.messageService.add({
-          key: 'hourlyInfoToast', severity: 'info',
-          summary: 'Info message',
-          detail: 'Project budget cannot be more than SOW available budget or PO available budget.',
-          life: 4000
-        });
+
+        this.common.showToastrMessage(this.constantsService.MessageType.info,'Project budget cannot be more than SOW available budget or PO available budget.',false);
         return;
       }
     }

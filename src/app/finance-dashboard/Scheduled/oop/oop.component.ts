@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, OnDestroy, HostListener, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
-import { Message, SelectItem, MessageService } from 'primeng/api';
+import { Message, SelectItem } from 'primeng/api';
 import { Calendar, Table } from 'primeng';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { formatDate, DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
@@ -20,7 +20,7 @@ import { Router } from '@angular/router';
 })
 export class OopComponent implements OnInit, OnDestroy {
     constructor(
-   
+
         private fb: FormBuilder,
         private globalService: GlobalService,
         private spServices: SPOperationService,
@@ -28,7 +28,6 @@ export class OopComponent implements OnInit, OnDestroy {
         private fdConstantsService: FdConstantsService,
         public fdDataShareServie: FDDataShareService,
         private datePipe: DatePipe,
-        private messageService: MessageService,
         private commonService: CommonService,
         private spOperationsService: SPOperationService,
         private cdr: ChangeDetectorRef,
@@ -533,27 +532,18 @@ export class OopComponent implements OnInit, OnDestroy {
             if (projectData.Status === this.constantService.projectList.status.InDiscussion ||
                 projectData.Status === this.constantService.projectList.status.AwaitingCancelApproval ||
                 projectData.Status === this.constantService.projectList.status.OnHold) {
-                this.messageService.add({
-                    key: 'oopInfoToast', severity: 'info', summary: 'Info message',
-                    detail: 'Project status is ' + projectData.Status + ', so can not confirm the line item.',
-                    life: 4000
-                });
+
+                this.commonService.showToastrMessage(this.constantService.MessageType.info, 'Project status is ' + projectData.Status + ', so can not confirm the line item.', false);
             } else if (!(date >= last3Days && date <= lastDay)) {
-                this.messageService.add({
-                    key: 'oopInfoToast', severity: 'info', summary: 'Info message',
-                    detail: 'To confirm the line item, scheduled Date should be between last 3 working days & last date of the current month.',
-                    life: 4000
-                });
+
+                this.commonService.showToastrMessage(this.constantService.MessageType.info, 'To confirm the line item, scheduled Date should be between last 3 working days & last date of the current month.', false);
             } else if (!retPO) {
-                this.messageService.add({
-                    key: 'oopInfoToast', severity: 'info', summary: 'Info message',
-                    detail: 'PO not available for the selected line item.', life: 4000
-                });
+
+                this.commonService.showToastrMessage(this.constantService.MessageType.info, 'PO not available for the selected line item.', false);
+
             } else if (!(new Date(retPO.POExpiryDate) >= todaysDateTimeZero)) {
-                this.messageService.add({
-                    key: 'oopInfoToast', severity: 'info', summary: 'Info message',
-                    detail: 'PO expired on' + this.datePipe.transform(retPO.POExpiryDate, 'MMM dd, yyyy'), life: 4000
-                });
+
+                this.commonService.showToastrMessage(this.constantService.MessageType.info, 'PO expired on' + this.datePipe.transform(retPO.POExpiryDate, 'MMM dd, yyyy'), false);
             }
         }
         this.items.push({ label: 'Edit Invoice', command: (e) => this.openMenuContent(e, data) });
@@ -692,17 +682,13 @@ export class OopComponent implements OnInit, OnDestroy {
     async submitForm(batchUrl, type: string) {
         await this.spServices.executeBatch(batchUrl);
         if (type === 'confirmInvoice') {
-            this.messageService.add({
-                key: 'oopSuccessToast', severity: 'success',
-                summary: 'Success message', detail: 'Invoice is Confirmed.', life: 2000
-            });
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Invoice is Confirmed.', false);
             this.sendCreateExpenseMail();
             this.reFetchData();
         } else if (type === 'editDeliverable') {
-            this.messageService.add({
-                key: 'oopSuccessToast', severity: 'success',
-                summary: 'Success message', detail: 'Invoice Updated.', life: 2000
-            });
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Invoice Updated.', false);
             this.cancelFormSub('editDeliverable');
             this.reFetchData();
         }

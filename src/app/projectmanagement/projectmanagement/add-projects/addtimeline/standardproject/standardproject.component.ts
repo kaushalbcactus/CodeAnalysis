@@ -1,5 +1,5 @@
 import { Component, OnInit, NgZone, ViewEncapsulation, ViewChild } from '@angular/core';
-import { TreeNode, SelectItemGroup, MessageService } from 'primeng/api';
+import { TreeNode, SelectItemGroup } from 'primeng/api';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
@@ -96,7 +96,6 @@ export class StandardprojectComponent implements OnInit {
     private pmConstant: PmconstantService,
     private pmCommonService: PMCommonService,
     private sharedObject: GlobalService,
-    public messageService: MessageService,
     private router: Router,
     private commonService: CommonService,
     private dialogService: DialogService,
@@ -501,10 +500,8 @@ export class StandardprojectComponent implements OnInit {
    */
   getInitialUserCapactiy(userCapacityRef) {
     if (this.selectedService === undefined) {
-      this.messageService.add({
-        key: 'custom', severity: 'error',
-        summary: 'Error Message', detail: 'Please select the service.'
-      });
+
+      this.commonService.showToastrMessage(this.constants.MessageType.error,'Please select the service.',false);
     } else {
       $('.initialUserCapacity-section').hide();
       $('.standard-spinner-section').show();
@@ -1208,10 +1205,8 @@ export class StandardprojectComponent implements OnInit {
     if (ngPrimeSubmilestoneObj && ngPrimeSubmilestoneObj.children && ngPrimeSubmilestoneObj.children.children && ngPrimeSubmilestoneObj.children.children.tasks.length) {
       for (let milestoneTaskObj of ngPrimeSubmilestoneObj.children.children.tasks) {
         if (milestoneTaskObj.data.Task !== this.pmConstant.task.SEND_TO_CLIENT && milestoneTaskObj.data.EndDate > ngPrimeSubmilestoneObj.data.EndDate) {
-          this.messageService.add({
-            key: 'custom', severity: 'error',
-            summary: 'Error Message', detail: 'Task end date cannot be greater than milestone end date.'
-          });
+
+          this.commonService.showToastrMessage(this.constants.MessageType.error,'Task end date cannot be greater than milestone end date.',false);
           milestoneTaskObj.isClassErrorRedVisible = true;
         }
       }
@@ -1902,56 +1897,41 @@ export class StandardprojectComponent implements OnInit {
    */
   private validateRequiredField(isRegisterClick) {
     if (!this.selectedService) {
-      this.messageService.add({
-        key: 'custom', severity: 'error',
-        summary: 'Error Message', detail: 'Please select the service.'
-      });
+      this.commonService.showToastrMessage(this.constants.MessageType.error,'Please select the service.',false);
       return false;
     }
     if (!this.selectedSkillObject || !this.selectedSkillObject.value.userType) {
-      this.messageService.add({
-        key: 'custom', severity: 'error',
-        summary: 'Error Message', detail: 'Please select the resource.'
-      });
+
+      this.commonService.showToastrMessage(this.constants.MessageType.error,'Please select the resource.',false);
       return false;
     }
     if (!this.selectedResourceObject || !this.selectedResourceObject.value.userType) {
-      this.messageService.add({
-        key: 'custom', severity: 'error',
-        summary: 'Error Message', detail: 'Please select the reviewer.'
-      });
+
+      this.commonService.showToastrMessage(this.constants.MessageType.error,'Please select the reviewer.',false);
       return false;
     }
     if (this.selectedSkillObject.value.userType === 'Type') {
       if (!this.ngStandardProposedStartDate) {
-        this.messageService.add({
-          key: 'custom', severity: 'error',
-          summary: 'Error Message', detail: 'Please select the proposed start date.'
-        });
+
+        this.commonService.showToastrMessage(this.constants.MessageType.error,'Please select the proposed start date.',false);
         return false;
       }
     }
     if (!this.standardProjectBudgetHrs) {
-      this.messageService.add({
-        key: 'custom', severity: 'error',
-        summary: 'Error Message', detail: 'Please enter the project Budget Hrs.'
-      });
+
+      this.commonService.showToastrMessage(this.constants.MessageType.error,'Please enter the project Budget Hrs.',false);
       return false;
     }
     if (this.standardProjectBudgetHrs) {
       // tslint:disable
       if (parseFloat(this.standardProjectBudgetHrs) <= 0) {
-        this.messageService.add({
-          key: 'custom', severity: 'error',
-          summary: 'Error Message', detail: 'Please enter the valid Budget Hrs.'
-        });
+
+        this.commonService.showToastrMessage(this.constants.MessageType.error,'Please enter the valid Budget Hrs.',false);
         return false;
       }
       if (isNaN(parseFloat(this.standardProjectBudgetHrs))) {
-        this.messageService.add({
-          key: 'custom', severity: 'error',
-          summary: 'Error Message', detail: 'Please enter the Budget Hrs in number.'
-        });
+
+        this.commonService.showToastrMessage(this.constants.MessageType.error,'Please enter the Budget Hrs in number.',false);
         return false;
       }
     }
@@ -2029,10 +2009,8 @@ export class StandardprojectComponent implements OnInit {
     let isTrue = this.validateRequiredField(true);
 
     if (this.pmObject.addProject.FinanceManagement.selectedFile && this.pmObject.addProject.FinanceManagement.selectedFile.size === 0) {
-      this.messageService.add({
-        key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
-        detail: 'Unable to upload file, size of ' + this.pmObject.addProject.FinanceManagement.selectedFile.name + ' is 0 KB.'
-      });
+
+      this.commonService.showToastrMessage(this.constants.MessageType.error,this.constants.Messages.ZeroKbFile.replace('{{fileName}}', this.pmObject.addProject.FinanceManagement.selectedFile.name),false);
     }
 
     if (isTrue) {
@@ -2090,10 +2068,8 @@ export class StandardprojectComponent implements OnInit {
   async CallAddUpdateProject() {
     this.pmObject.isMainLoaderHidden = false;
     await this.pmCommonService.addUpdateProject();
-    this.messageService.add({
-      key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
-      detail: 'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode
-    });
+
+    this.commonService.showToastrMessage(this.constants.MessageType.success,'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode,true);
     this.pmCommonService.reloadPMPage();
   }
 

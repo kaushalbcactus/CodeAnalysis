@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, SimpleChanges } from '@angular/core';
 import DecoupledEditor from '@ckeditor/ckeditor5-build-decoupled-document';
-import { DynamicDialogConfig, DynamicDialogRef, MessageService } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
@@ -28,7 +28,6 @@ export class AddEditCommentComponent implements OnInit {
   constructor(
     public config: DynamicDialogConfig,
     public ref: DynamicDialogRef,
-    public messageService: MessageService,
     private constants: ConstantsService,
     private myDashboardConstantsService: MyDashboardConstantsService,
     private spServices: SPOperationService,
@@ -156,22 +155,20 @@ export class AddEditCommentComponent implements OnInit {
           };
           this.editor.setData('');
           this.common.SetNewrelic('MyDashboard', 'AddEditCommentDialog', 'SaveComment');
-          await this.spServices.updateItem(this.constants.listNames.Schedules.name, this.data.ID, data, 'SP.Data.SchedulesListItem');
-          this.messageService.add({ key: 'mydashboard', severity: 'success', summary: 'Success Message', detail: 'Comment saved successfully' });
-
+          await this.spServices.updateItem(this.constants.listNames.Schedules.name, this.data.ID, data, this.constants.listNames.Schedules.type);
+          this.common.showToastrMessage(this.constants.MessageType.success, 'Comment saved successfully',false);
           this.getComments(this.data, false);
         }
 
       } else {
-        this.messageService.add({ key: 'mydashboard', severity: 'warn',
-         summary: 'Warning Message', detail: 'Please enter the comment' });
+        this.common.showToastrMessage(this.constants.MessageType.warn, 'Please enter the comment',false);
       }
     }
   }
 
-  // *********************************************************************************************************
+  // **********************************************************************************************
   //  Get all comments of milestones
-  // ***********************************************************************************************************
+  // **********************************************************************************************
   async fetchCommentsForMilestone(oCurrentTask) {
 
     const milestone = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.Milestone);

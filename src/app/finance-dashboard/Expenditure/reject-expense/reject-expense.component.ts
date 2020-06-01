@@ -1,5 +1,4 @@
 import { Component, OnInit, Input, OnDestroy, HostListener, ApplicationRef, NgZone, ChangeDetectorRef, ViewChild } from '@angular/core';
-import { MessageService } from 'primeng/api';
 import { FormBuilder } from '@angular/forms';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
@@ -41,8 +40,7 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
     private subscription: Subscription = new Subscription();
     @ViewChild('rc', { static: false }) canRejExpenseTable: Table;
 
-    constructor(
-        private messageService: MessageService,
+    constructor( 
         private fb: FormBuilder,
         private spServices: SPOperationService,
         private constantService: ConstantsService,

@@ -1,5 +1,4 @@
 import { Component, OnInit, ViewChild, ViewEncapsulation, OnDestroy, HostListener, ElementRef, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
-import { Message, MessageService } from 'primeng/api';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -24,7 +23,6 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     tempClick: any;
     outstandingInvoicesRes: any = [];
     outstandingInCols: any[];
-    msgs: Message[] = [];
     SelectedAuxInvoiceName = '';
     // Row Selection Array
     selectedRowData: any = [];
@@ -88,7 +86,6 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         private fdConstantsService: FdConstantsService,
         public fdDataShareServie: FDDataShareService,
         private datePipe: DatePipe,
-        private messageService: MessageService,
         private commonService: CommonService,
         private cdr: ChangeDetectorRef,
         private platformLocation: PlatformLocation,
@@ -686,7 +683,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             if (fileName !== sNewFileName) {
                 this.replaceInvoiceFile.nativeElement.value = '';
                 this.paymentResoved_form.get('file').setValue('');
-                this.messageService.add({ key: 'outstandingInfoToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
+                this.commonService.showToastrMessage(this.constantService.MessageType.error, this.constantService.Messages.SpecialCharMsg, false);
                 return false;
             }
             let cleListName = this.getCLEListNameFromCLE(this.selectedRowItem.ClientLegalEntity)
@@ -706,7 +703,8 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             // let fileName = file.substr(0, file.indexOf('.'));
             console.log('fileName  ', file);
             if (file === event.target.files[0].name) {
-                this.messageService.add({ key: 'outstandingInfoToast', severity: 'info', summary: 'Info message', detail: 'This file name already exit.Please select another file name.', life: 4000 });
+
+                this.commonService.showToastrMessage(this.constantService.MessageType.error, this.constantService.Messages.FileAlreadyExist, false);
                 this.replaceInvoice_form.reset();
                 return;
             }
@@ -720,7 +718,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             if (fileName !== sNewFileName) {
                 this.replaceInvoiceFile.nativeElement.value = '';
                 this.replaceInvoice_form.get('file').setValue('');
-                this.messageService.add({ key: 'outstandingInfoToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
+                this.commonService.showToastrMessage(this.constantService.MessageType.error, this.constantService.Messages.SpecialCharMsg, false);
                 return false;
             }
             let cleListName = this.getCLEListNameFromCLE(this.selectedRowItem.ClientLegalEntity)
@@ -737,10 +735,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
                 if (uploadedfile[0].hasOwnProperty('odata.error') || uploadedfile[0].hasError) {
                     this.submitBtn.isClicked = false;
-                    this.messageService.add({
-                        key: 'outstandingInfoToast', severity: 'error', summary: 'Error message',
-                        detail: 'File not uploaded, Folder / File Not Found', life: 3000
-                    });
+                    this.commonService.showToastrMessage(this.constantService.MessageType.error, this.constantService.Messages.FileNotUploaded, false);
                 } else if (uploadedfile[0].ServerRelativeUrl) {
                     let invData;
                     this.isPSInnerLoaderHidden = false;
@@ -888,7 +883,8 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             if (this.SelectedAuxInvoiceName.trim() === '' || this.SelectedAuxInvoiceName.length > 30) {
 
                 const errorMessage = this.SelectedAuxInvoiceName.trim() === '' ? 'Please enter Auxiliary Name' : 'Maximum 30 character allowed.'
-                this.messageService.add({ key: 'outstandingInfoToast', severity: 'error', summary: 'Error message', detail: errorMessage, life: 3000 });
+
+                this.commonService.showToastrMessage(this.constantService.MessageType.error, errorMessage, false);
                 return false;
             }
             else {
@@ -916,10 +912,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
 
 
     errorMessage() {
-        this.messageService.add({
-            key: 'outstandingInfoToast', severity: 'error',
-            summary: 'Error message', detail: 'Unable to upload file, size of ' + this.selectedFile.name + ' is 0 KB.', life: 2000
-        });
+        this.commonService.showToastrMessage(this.constantService.MessageType.error, this.constantService.Messages.ZeroKbFile.replace('{{fileName}}', this.selectedFile.name), false);
     }
 
     submitDebitCreditNoteForm(type: string, pathURL) {
@@ -975,46 +968,34 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     async submitForm(batchUrl, type: string) {
         await this.spServices.executeBatch(batchUrl);
         if (type === "creditDebit") {
-            this.messageService.add({
-                key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message',
-                detail: this.selectedRowItem.InvoiceNumber + ' ' + 'Success.', life: 20000
-            });
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, this.selectedRowItem.InvoiceNumber + ' ' + 'Success.', true);
             this.creditOrDebitModal = false;
             this.reFetchData();
         } else if (type === "sentToAP") {
-            this.messageService.add({
-                key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message',
-                detail: this.selectedRowItem.InvoiceNumber + ' ' + 'Invoice Status Changed.', life: 20000
-            });
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, this.selectedRowItem.InvoiceNumber + ' ' + 'Invoice Status Changed.', true);
             this.sentToAPModal = false;
             this.reFetchData();
         } else if (type === "disputeInvoice") {
-            this.messageService.add({
-                key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message',
-                detail: this.selectedRowItem.InvoiceNumber + ' ' + 'Submitted.', life: 20000
-            });
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, this.selectedRowItem.InvoiceNumber + ' ' + 'Submitted.', true);
             this.disputeInvoiceModal = false;
         } else if (type === "paymentResoved") {
-            this.messageService.add({
-                key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message',
-                detail: this.selectedRowItem.InvoiceNumber + ' ' + 'Success.', life: 20000
-            });
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, this.selectedRowItem.InvoiceNumber + ' ' + 'Success.', true);
             this.paymentResovedModal = false;
             this.reFetchData();
         } else if (type === "replaceInvoice") {
-            this.messageService.add({
-                key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message',
-                detail: this.selectedRowItem.InvoiceNumber + ' ' + 'Success.', life: 20000
-            });
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, this.selectedRowItem.InvoiceNumber + ' ' + 'Success.', true);
             this.replaceInvoiceModal = false;
             this.reFetchData();
         }
         else if (type === "AuxiliaryUpdate") {
 
-            this.messageService.add({
-                key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message',
-                detail: 'Auxiliary Name for ' + this.selectedRowItem.InvoiceNumber + ' ' + ' updated sucessfully.', life: 20000
-            });
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Auxiliary Name for ' + this.selectedRowItem.InvoiceNumber + ' ' + ' updated sucessfully.', true);
             this.formSubmit.isSubmit = false;
             this.submitBtn.isClicked = false;
             this.reFetchData();
@@ -1110,7 +1091,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             const response = await this.fdDataShareServie.createInvoice(proforma.ProformaHtml, proforma, lineItem, this.cleData);
             if (response) {
                 this.reFetchData();
-                this.messageService.add({ key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message', detail: lineItem.InvoiceNumber + 'created sucessfully.', life: 20000 });
+                this.commonService.showToastrMessage(this.constantService.MessageType.success, lineItem.InvoiceNumber + 'created sucessfully.', true);
             }
             else {
                 console.log('Json parse Issue');
@@ -1118,7 +1099,8 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             }
         }
         else {
-            this.messageService.add({ key: 'outstandingSuccessToast', severity: 'error', summary: 'Error Message', detail:'Unable to generate invoice for '+ lineItem.InvoiceNumber +', proforma html not found.', life: 20000 });
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.error, 'Unable to generate invoice for ' + lineItem.InvoiceNumber + ', proforma html not found.', true);
             this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
         }
 

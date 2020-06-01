@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { DynamicDialogRef, DynamicDialogConfig, MessageService, DialogService } from 'primeng';
+import { DynamicDialogRef, DynamicDialogConfig, DialogService } from 'primeng';
 import { GlobalService } from 'src/app/Services/global.service';
 import * as shape from 'd3-shape';
 import { CACommonService } from '../caservices/cacommon.service';
 import { CommonService } from 'src/app/Services/common.service';
+import { ConstantsService } from 'src/app/Services/constants.service';
 
 
 @Component({
@@ -56,8 +57,8 @@ export class CaDragdropComponent implements OnInit {
     public sharedObject: GlobalService,
     private caCommonService: CACommonService,
     public dialogService: DialogService,
-    private messageService: MessageService,
-    private commonService: CommonService) { }
+    private commonService: CommonService,
+    private constants : ConstantsService) { }
 
   async ngOnInit() {
 
@@ -534,7 +535,8 @@ export class CaDragdropComponent implements OnInit {
 
         this.links.push(link);
       } else {
-        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warn Message', detail: 'Start and end node cant be same.' });
+
+        this.commonService.showToastrMessage(this.constants.MessageType.warn,'Start and end node cant be same.',false);
       }
       this.taskDown.color = '#e2e2e2';
       if (this.taskUp !== null) {
@@ -585,7 +587,8 @@ export class CaDragdropComponent implements OnInit {
         }
         this.links = this.links.filter(value => !RemoveLinks.includes(value));
         this.links = [... this.links];
-        this.messageService.add({ key: 'custom', severity: 'error', summary: 'Deleted', detail: 'Task Deleted' });
+
+        this.commonService.showToastrMessage(this.constants.MessageType.info,'Task Deleted',false);
         if (RemoveLinks.filter(c => c.source === node.id).length > 0) {
           this.previousSource = RemoveLinks.filter(c => c.source === node.id).map(c => c.target);
           if (this.links.filter(c => this.previousSource.includes(c.source)).length > 0) {
@@ -602,7 +605,8 @@ export class CaDragdropComponent implements OnInit {
       event.preventDefault();
       this.GraphResize();
     } else {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warn Message', detail: 'Task can  not be deleted' });
+
+      this.commonService.showToastrMessage(this.constants.MessageType.warn,'Task can  not be deleted',false);
       event.preventDefault();
     }
 
@@ -611,7 +615,8 @@ export class CaDragdropComponent implements OnInit {
 
 
   ErrorMessage(event, type) {
-    this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warn Message', detail: type + ' can  not be deleted' });
+
+    this.commonService.showToastrMessage(this.constants.MessageType.warn,type + ' can  not be deleted',false);
     event.preventDefault();
   }
 
@@ -631,10 +636,8 @@ export class CaDragdropComponent implements OnInit {
       });
       if (circularPresent) {
         errorM++;
-        this.messageService.add({
-          key: 'custom', severity: 'warn', summary: 'Warning Message',
-          detail: 'Circular links present. Please delete the circular links.'
-        });
+
+        this.commonService.showToastrMessage(this.constants.MessageType.warn,'Circular links present. Please delete the circular links.',false);
         return false;
       }
     }

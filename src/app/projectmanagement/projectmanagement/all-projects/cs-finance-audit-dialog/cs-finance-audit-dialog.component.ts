@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
-import { DynamicDialogConfig, DynamicDialogRef, MessageService, Table, DialogService } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef, Table, DialogService } from 'primeng';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { AuditProjectDialogComponent } from '../audit-project-dialog/audit-project-dialog.component';
@@ -75,7 +75,6 @@ export class CsFinanceAuditDialogComponent implements OnInit {
   ErrorProjectCodes = [];
   constructor(public config: DynamicDialogConfig,
     public csref: DynamicDialogRef,
-    public messageService: MessageService,
     public dialogService: DialogService,
     public pmObject: PMObjectService,
     private globalObject: GlobalService,
@@ -205,11 +204,7 @@ export class CsFinanceAuditDialogComponent implements OnInit {
 
   onRowSelect() {
     if (this.selectedProjects.length > 10 && this.AuditType === 'Finance') {
-
-      this.messageService.add({
-        key: 'custom', severity: 'error', summary: 'Error Message',
-        detail: 'Maximum 10 projects allowed for audit.'
-      });
+      this.commonService.showToastrMessage(this.constants.MessageType.error,'Maximum 10 projects allowed for audit.',false);
     }
     else if (this.AuditType === 'Finance') {
       if (this.selectedProjects.length === 10) {
@@ -267,10 +262,8 @@ export class CsFinanceAuditDialogComponent implements OnInit {
           };
 
           await this.UpdateProjects(piUdpate);
-          this.messageService.add({
-            key: 'custom', severity: 'success', summary: 'Success Message',
-            detail: 'Selected Projects Updated Successfully.'
-          });
+
+          this.commonService.showToastrMessage(this.constants.MessageType.success,'Selected Projects Updated Successfully.',false);
         }
       });
     } else {
@@ -307,23 +300,18 @@ export class CsFinanceAuditDialogComponent implements OnInit {
       const errorMessage = [];
       if (UniqueInvalidExpenses.length > 0 || UniqueInvalidInvoices.length > 0) {
         if (UniqueInvalidInvoices.length > 0) {
-          errorMessage.push({
-            key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
-            detail: UniqueInvalidInvoices.join(', ') + ' line items are not invoiced.'
-          });
+          this.commonService.showToastrMessage(this.constants.MessageType.error,UniqueInvalidInvoices.join(', ') + ' line items are not invoiced.',true);
         }
 
         if (UniqueInvalidExpenses.length > 0) {
-          errorMessage.push({
-            key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
-            detail: UniqueInvalidExpenses.join(', ') + ' expense are not invoiced.'
-          })
+
+          this.commonService.showToastrMessage(this.constants.MessageType.error, UniqueInvalidExpenses.join(', ') + ' expense are not invoiced.',true);
         }
 
         this.ErrorProjectCodes.push.apply(this.ErrorProjectCodes, [...new Set([].concat(UniqueInvalidInvoices, UniqueInvalidExpenses))]);
         this.selectedProjects = this.selectedProjects.filter(c => !this.ErrorProjectCodes.includes(c.ProjectCode));
         this.checked = this.selectedProjects.length >= 10 ? true : false;
-        this.messageService.addAll(errorMessage);
+        // this.messageService.addAll(errorMessage);
         this.modalloaderenable = false;
         this.buttonloader = false;
       }
@@ -352,11 +340,8 @@ export class CsFinanceAuditDialogComponent implements OnInit {
               __metadata: { type: this.constants.listNames.ProjectInformation.type }
             };
             await this.UpdateProjects(piUdpate);
-            this.messageService.add({
-              key: 'custom', severity: 'success', summary: 'Success Message',
-              detail: 'Selected projects closed successfully.'
-            });
 
+            this.commonService.showToastrMessage(this.constants.MessageType.success,'Selected projects closed successfully.',false);
           }
         });
       }

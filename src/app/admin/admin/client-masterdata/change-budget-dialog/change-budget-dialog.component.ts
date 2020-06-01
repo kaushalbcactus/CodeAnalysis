@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MessageService, DynamicDialogConfig, DynamicDialogRef } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 import { AdminCommonService } from 'src/app/admin/services/admin-common.service';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
 import { AdminObjectService } from 'src/app/admin/services/admin-object.service';
@@ -40,8 +40,7 @@ export class ChangeBudgetDialogComponent implements OnInit {
     { label: 'USD', value: '$' },
   ]
   currency: string;
-  constructor(private frmbuilder: FormBuilder,
-    private messageService: MessageService,
+  constructor(private frmbuilder: FormBuilder, 
     private adminCommonService: AdminCommonService,
     private adminConstants: AdminConstantService,
     public config: DynamicDialogConfig,
@@ -95,10 +94,7 @@ export class ChangeBudgetDialogComponent implements OnInit {
   async saveBudget() {
     if (!this.selectedValue.length) {
       this.checkBudgetValue = true;
-      this.messageService.add({
-        key: 'adminCustom', severity: 'info',  
-        summary: 'Info Message', detail: 'Please define budget type.'
-      });
+      this.common.showToastrMessage(this.constantsService.MessageType.info,'Please define budget type.',false);
     } else {
       this.checkBudgetValue = false;
     }
@@ -158,31 +154,21 @@ export class ChangeBudgetDialogComponent implements OnInit {
     this.adminObject.newBudget.AmountOOP = this.changeBudgetForm.controls.oop.value;
     this.adminObject.newBudget.AmountTax = this.changeBudgetForm.controls.tax.value;
     if (this.adminObject.newBudget.AmountRevenue < 0) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error', summary: 'Error Message',
-        detail: 'Revenue should be Positive Number'
-      });
+      this.common.showToastrMessage(this.constantsService.MessageType.error,'Revenue should be Positive Number',false);
       return false;
     }
     if (this.adminObject.newBudget.AmountOOP < 0) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error', summary: 'Error Message',
-        detail: 'OOP should be Positive Number'
-      });
+      this.common.showToastrMessage(this.constantsService.MessageType.error,'OOP should be Positive Number',false);
       return false;
     }
     if (this.adminObject.newBudget.AmountTax < 0) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error', summary: 'Error Message',
-        detail: 'Tax should be Positive Number'
-      });
+
+      this.common.showToastrMessage(this.constantsService.MessageType.error,'Tax should be Positive Number',false);
       return false;
     }
     if (this.adminObject.newBudget.Amount < 0) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error', summary: 'Error Message',
-        detail: 'Total should be Positive Number'
-      });
+
+      this.common.showToastrMessage(this.constantsService.MessageType.error,'Total should be Positive Number',false);
       return false;
     }
     this.ref.close(true);
@@ -225,63 +211,42 @@ export class ChangeBudgetDialogComponent implements OnInit {
     this.adminObject.newBudget.AmountOOP = this.changeBudgetForm.controls.oop.value;
     this.adminObject.newBudget.AmountTax = this.changeBudgetForm.controls.tax.value;
     if (this.adminObject.newBudget.AmountRevenue > 0) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error', summary: 'Error Message',
-        detail: 'Revenue amount should be negative number'
-      });
+
+      this.common.showToastrMessage(this.constantsService.MessageType.error,'Revenue amount should be negative number',false);
       return false;
     }
     if (this.adminObject.newBudget.AmountOOP > 0) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error', summary: 'Error Message',
-        detail: 'OOP amount should be negative number'
-      });
+
+      this.common.showToastrMessage(this.constantsService.MessageType.error,'OOP amount should be negative number',false);
       return false;
     }
     if (this.adminObject.newBudget.AmountTax > 0) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error', summary: 'Error Message',
-        detail: 'Tax amount should be negative number'
-      });
+
+      this.common.showToastrMessage(this.constantsService.MessageType.error,'Tax amount should be negative number',false);
       return false;
     }
     if (this.adminObject.newBudget.Amount > 0) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error', summary: 'Error Message',
-        detail: 'Total should be negative number'
-      });
+      this.common.showToastrMessage(this.constantsService.MessageType.error,'Total should be negative number',false);
       return false;
     }
     if (Math.abs(this.adminObject.newBudget.Amount) > this.adminObject.oldBudget.Amount) {
-      this.messageService.add({
-        key: 'adminCustom',
-        severity: 'error', summary: 'Error Message',
-        detail: 'Total Amount must be less than or equal to existing Total'
-      });
+
+      this.common.showToastrMessage(this.constantsService.MessageType.error,'Total Amount must be less than or equal to existing Total',false);
       return false;
     }
     if (Math.abs(this.adminObject.newBudget.AmountRevenue) > this.adminObject.oldBudget.AmountRevenue) {
-      this.messageService.add({
-        key: 'adminCustom',
-        severity: 'error', summary: 'Error Message',
-        detail: 'Revenue must be less than or equal to existing Revenue'
-      });
+
+      this.common.showToastrMessage(this.constantsService.MessageType.error,'Revenue must be less than or equal to existing Revenue',false);
       return false;
     }
     if (Math.abs(this.adminObject.newBudget.AmountOOP) > this.adminObject.oldBudget.AmountOOP) {
-      this.messageService.add({
-        key: 'adminCustom',
-        severity: 'error', summary: 'Error Message',
-        detail: 'OOP must be less than or equal to existing OOP Value'
-      });
+
+      this.common.showToastrMessage(this.constantsService.MessageType.error,'OOP must be less than or equal to existing OOP Value',false);
       return false;
     }
     if (Math.abs(this.adminObject.newBudget.AmountTax) > this.adminObject.oldBudget.AmountTax) {
-      this.messageService.add({
-        key: 'adminCustom',
-        severity: 'error', summary: 'Error Message',
-        detail: 'Tax Amount must be less than or equal to existing Tax'
-      });
+
+      this.common.showToastrMessage(this.constantsService.MessageType.error,'Tax Amount must be less than or equal to existing Tax',false);
       return false;
     }
     this.ref.close(true);
@@ -337,39 +302,28 @@ export class ChangeBudgetDialogComponent implements OnInit {
     this.adminObject.newBudget.AmountOOP = this.changeBudgetForm.controls.oop.value;
     this.adminObject.newBudget.AmountTax = this.changeBudgetForm.controls.tax.value;
     if (Math.abs(this.adminObject.newBudget.Amount) > this.adminObject.oldBudget.Amount) {
-      this.messageService.add({
-        key: 'adminCustom',
-        severity: 'error', summary: 'Error Message',
-        detail: 'Total Amount must be less than or equal to existing Total'
-      });
+
+      this.common.showToastrMessage(this.constantsService.MessageType.error,'Total Amount must be less than or equal to existing Total',false);
       return false;
     }
     if (this.adminObject.newBudget.AmountRevenue < 0 && Math.abs(this.adminObject.newBudget.AmountRevenue) > this.adminObject.oldBudget.AmountRevenue) {
-      this.messageService.add({
-        key: 'adminCustom',
-        severity: 'error', summary: 'Error Message',
-        detail: 'Revenue must be less than or equal to existing Revenue'
-      });
+
+      this.common.showToastrMessage(this.constantsService.MessageType.error,'Revenue must be less than or equal to existing Revenue',false);
       return false;
     }
     if (this.adminObject.newBudget.AmountOOP < 0 && Math.abs(this.adminObject.newBudget.AmountOOP) > this.adminObject.oldBudget.AmountOOP) {
-      this.messageService.add({
-        key: 'adminCustom',
-        severity: 'error', summary: 'Error Message',
-        detail: 'OOP must be less than or equal to existing OOP Value'
-      });
+
+      this.common.showToastrMessage(this.constantsService.MessageType.error,'OOP must be less than or equal to existing OOP Value',false);
       return false;
     }
     if (this.adminObject.newBudget.AmountTax < 0 && Math.abs(this.adminObject.newBudget.AmountTax) > this.adminObject.oldBudget.AmountTax) {
-      this.messageService.add({
-        key: 'adminCustom',
-        severity: 'error', summary: 'Error Message',
-        detail: 'Tax Amount must be less than or equal to existing Tax'
-      });
+
+      this.common.showToastrMessage(this.constantsService.MessageType.error,'Tax Amount must be less than or equal to existing Tax',false);
       return false;
     }
     if (this.adminObject.newBudget.Amount !== 0) {
-      this.messageService.add({ key: 'adminCustom', severity: 'error', summary: 'Error Message', detail: 'Total Should be Zero' });
+
+      this.common.showToastrMessage(this.constantsService.MessageType.error,'Total Should be Zero',false);
       return false;
     }
     this.ref.close(true);

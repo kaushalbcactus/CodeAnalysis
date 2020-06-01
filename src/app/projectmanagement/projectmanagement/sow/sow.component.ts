@@ -4,7 +4,7 @@ import { CommonService } from 'src/app/Services/common.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { PmconstantService } from '../../services/pmconstant.service';
 import { PMObjectService } from '../../services/pmobject.service';
-import { MenuItem, DialogService, MessageService } from 'primeng';
+import { MenuItem, DialogService } from 'primeng';
 import { DataService } from 'src/app/Services/data.service';
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -154,7 +154,6 @@ export class SOWComponent implements OnInit, OnDestroy {
     private locationStrategy: LocationStrategy,
     _applicationRef: ApplicationRef,
     zone: NgZone,
-    public messageService: MessageService,
   ) {
 
     // Browser back button disabled & bookmark issue solution
@@ -851,7 +850,8 @@ export class SOWComponent implements OnInit, OnDestroy {
 
             // this.updateBudgetEmail(this.pmObject.addSOW);
             this.constants.loader.isPSInnerLoaderHidden = true;
-            this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Budget updated Successfully.' });
+
+            this.commonService.showToastrMessage(this.constants.MessageType.success,'Budget updated Successfully.',false);
             console.log(res);
             setTimeout(() => {
               if (this.router.url === '/projectMgmt/allSOW') {

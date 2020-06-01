@@ -5,7 +5,6 @@ import { PmconstantService } from 'src/app/projectmanagement/services/pmconstant
 import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.service';
 import { AddTimelineComponent } from '../addtimeline.component';
 import { ConstantsService } from 'src/app/Services/constants.service';
-import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { DataService } from 'src/app/Services/data.service';
 import { CommonService } from 'src/app/Services/common.service';
@@ -27,7 +26,6 @@ export class NonStandardprojectComponent implements OnInit {
     private pmCommonService: PMCommonService,
     private constants: ConstantsService,
     private timelineObject: AddTimelineComponent,
-    private messageService: MessageService,
     private commonService: CommonService,
     private dialogService: DialogService,
     private globalObject: GlobalService,
@@ -239,78 +237,53 @@ export class NonStandardprojectComponent implements OnInit {
   }
   private validateRequiredField() {
     if (!this.selectedDeliverableType) {
-      this.messageService.add({
-        key: 'custom', severity: 'error',
-        summary: 'Error Message', detail: 'Please select the delivery Type.'
-      });
+
+      this.commonService.showToastrMessage(this.constants.MessageType.error, 'Please select the delivery Type.', false);
       return false;
     }
     if (!this.selectedServices) {
-      this.messageService.add({
-        key: 'custom', severity: 'error',
-        summary: 'Error Message', detail: 'Please select the service.'
-      });
+      this.commonService.showToastrMessage(this.constants.MessageType.error, 'Please select the service.', false);
       return false;
     }
     if (!this.selectedResource) {
-      this.messageService.add({
-        key: 'custom', severity: 'error',
-        summary: 'Error Message', detail: 'Please select the resource.'
-      });
+
+      this.commonService.showToastrMessage(this.constants.MessageType.error, 'Please select the resource.', false);
       return false;
     }
     if (!this.ngNonStandardProposedStartDate) {
-      this.messageService.add({
-        key: 'custom', severity: 'error',
-        summary: 'Error Message', detail: 'Please select the Proposed Start Date.'
-      });
+
+      this.commonService.showToastrMessage(this.constants.MessageType.error, 'Please select the Proposed Start Date.', false);
       return false;
     }
     if (!this.ngNonStandardProposedEndDate) {
-      this.messageService.add({
-        key: 'custom', severity: 'error',
-        summary: 'Error Message', detail: 'Please select the Proposed End Date.'
-      });
+      this.commonService.showToastrMessage(this.constants.MessageType.error, 'Please select the Proposed End Date.', false);
       return false;
     }
     if (!this.nonstandardProjectBudgetHrs) {
-      this.messageService.add({
-        key: 'custom', severity: 'error',
-        summary: 'Error Message', detail: 'Please select the project budget hrs.'
-      });
+      this.commonService.showToastrMessage(this.constants.MessageType.error, 'Please select the project budget hrs.', false);
       return false;
     }
     if (this.nonstandardProjectBudgetHrs) {
       if (parseFloat(this.nonstandardProjectBudgetHrs) <= 0) {
-        this.messageService.add({
-          key: 'custom', severity: 'error',
-          summary: 'Error Message', detail: 'Please enter the valid Budget Hrs.'
-        });
+        this.commonService.showToastrMessage(this.constants.MessageType.error, 'Please enter the valid Budget Hrs.', false);
         return false;
       }
       if (isNaN(parseFloat(this.nonstandardProjectBudgetHrs))) {
-        this.messageService.add({
-          key: 'custom', severity: 'error',
-          summary: 'Error Message', detail: 'Please enter the Budget Hrs in number.'
-        });
+        this.commonService.showToastrMessage(this.constants.MessageType.error, 'Please enter the Budget Hrs in number.', false);
         return false;
       }
     }
     if (this.ngNonStandardProposedStartDate && this.ngNonStandardProposedEndDate) {
       if (this.ngNonStandardProposedStartDate > this.ngNonStandardProposedEndDate) {
-        this.messageService.add({
-          key: 'custom', severity: 'error',
-          summary: 'Error Message', detail: 'Proposed Start date cannot be greater than proposed end date.'
-        });
+
+        this.commonService.showToastrMessage(this.constants.MessageType.error, 'Proposed Start date cannot be greater than proposed end date.', false);
         return false;
       }
       if (this.pmObject.addProject.FinanceManagement.BilledBy === this.pmConstant.PROJECT_TYPE.FTE.value) {
         this.pmObject.addProject.Timeline.NonStandard.months = this.pmCommonService.getMonths(this.ngNonStandardProposedStartDate, this.ngNonStandardProposedEndDate);
         if (this.pmObject.addProject.Timeline.NonStandard.months.length > 12) {
-          this.messageService.add({
-            key: 'custom', severity: 'error',
-            summary: 'Error Message', detail: 'FTE Project cannot be created more than 1 year.'
-          });
+
+          this.commonService.showToastrMessage(this.constants.MessageType.error, 'FTE Project cannot be created more than 1 year.', false);
           return false;
         }
       }
@@ -365,13 +338,11 @@ export class NonStandardprojectComponent implements OnInit {
     }
   }
   async nonStandardConfirm() {
-    let  isValid = this.validateRequiredField();
+    let isValid = this.validateRequiredField();
 
-    if(this.pmObject.addProject.FinanceManagement.selectedFile && this.pmObject.addProject.FinanceManagement.selectedFile.size === 0 ){
-      this.messageService.add({
-        key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
-        detail: 'Unable to upload file, size of ' + this.pmObject.addProject.FinanceManagement.selectedFile.name + ' is 0 KB.'
-      });
+    if (this.pmObject.addProject.FinanceManagement.selectedFile && this.pmObject.addProject.FinanceManagement.selectedFile.size === 0) {
+
+      this.commonService.showToastrMessage(this.constants.MessageType.error, this.constants.Messages.ZeroKbFile.replace('{{fileName}}', this.pmObject.addProject.FinanceManagement.selectedFile.name), true);
       isValid = false;
     }
     if (isValid) {
@@ -422,10 +393,8 @@ export class NonStandardprojectComponent implements OnInit {
   async callAddUpdateProject() {
     this.pmObject.isMainLoaderHidden = false;
     await this.pmCommonService.addUpdateProject();
-    this.messageService.add({
-      key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
-      detail: 'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode
-    });
+
+    this.commonService.showToastrMessage(this.constants.MessageType.success, 'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode, true);
     this.pmCommonService.reloadPMPage();
   }
 
@@ -433,11 +402,4 @@ export class NonStandardprojectComponent implements OnInit {
     this.pmObject.activeIndex = 2;
   }
 
-  // goToFinanceMang() {
-  //   if(this.pmObject.addProject.Timeline.NonStandard.IsStandard) {
-  //     this.pmObject.activeIndex = 3;
-  //   } else {
-  //     this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: 'Please register the timeline.' });
-  //   }
-  // }
 }

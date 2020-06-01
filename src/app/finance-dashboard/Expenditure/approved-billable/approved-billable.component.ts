@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy, HostListener, ElementRef, ViewChild, ChangeDetectorRef, ApplicationRef, NgZone } from '@angular/core';
-import { MessageService } from 'primeng/api';
 import { SPOperationService } from '../../../Services/spoperation.service';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { ConstantsService } from '../../../Services/constants.service';
@@ -27,7 +26,6 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     SOW: any;
 
     constructor(
-        private messageService: MessageService,
         private fb: FormBuilder,
         private spServices: SPOperationService,
         public constantService: ConstantsService,
@@ -408,10 +406,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     openPopup(modal: string) {
         console.log('selectedAllRowsItem ', this.selectedAllRowsItem);
         if (!this.selectedAllRowsItem.length) {
-            this.messageService.add({
-                key: 'approvedToast', severity: 'info', summary: 'Info message',
-                detail: 'Please select at least 1 Projects & try again', life: 4000
-            });
+            this.commonService.showToastrMessage(this.constantService.MessageType.info, 'Please select at least 1 Projects & try again', false);
             return;
         }
 
@@ -450,16 +445,12 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                     })
                 }
                 else {
-                    this.messageService.add({
-                        key: 'approvedToast', severity: 'info', summary: 'Info message',
-                        detail: 'Please select only those Projects whose scheduling is pending', life: 4000
-                    });
+
+                    this.commonService.showToastrMessage(this.constantService.MessageType.info, 'Please select only those Projects whose scheduling is pending.', false);
                 }
             } else {
-                this.messageService.add({
-                    key: 'approvedToast', severity: 'info', summary: 'Info message',
-                    detail: 'Please select same Projects', life: 4000
-                });
+
+                this.commonService.showToastrMessage(this.constantService.MessageType.info, 'Please select same Projects.', false);
             }
 
         } else if (modal === 'markAsPaymentModal') {
@@ -481,17 +472,11 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                         }
                     });
                 } else {
-                    this.messageService.add({
-                        key: 'approvedToast', severity: 'info', summary: 'Info message',
-                        detail: 'Please select only those Projects whose payment is pending', life: 4000
-                    });
+
+                    this.commonService.showToastrMessage(this.constantService.MessageType.info, 'Please select only those Projects whose payment is pending.', false);
                 }
             } else {
-
-                this.messageService.add({
-                    key: 'approvedToast', severity: 'info', summary: 'Info message',
-                    detail: 'Please select same Vendor/Freelance name', life: 4000
-                });
+                this.commonService.showToastrMessage(this.constantService.MessageType.info, 'Please select same Vendor/Freelance name.', false);
             }
         }
     }
@@ -691,16 +676,12 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         if (type === 'scheduledOOP') {
             this.updateStsToBilled(arrResults);
         } else if (type === 'updateScheduledOopLineItem') {
-            this.messageService.add({
-                key: 'approvedToast', severity: 'success',
-                summary: 'Success message', detail: 'OOP Invoice is Scheduled.', life: 2000
-            });
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, 'OOP Invoice is Scheduled.', false);
             this.reFetchData();
         } else if (type === 'markAsPayment_form') {
-            this.messageService.add({
-                key: 'approvedToast', severity: 'success',
-                summary: 'Success message', detail: 'Payment marked.', life: 5000
-            });
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Payment marked.', true);
             this.reFetchData();
         }
     }
@@ -812,7 +793,8 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
 
 
         // ProjectFinanceBreakup add/update
-        url = this.spServices.getItemURL(this.constantService.listNames.ProjectFinanceBreakup.name, this.pfbListItem.length > 0 ? this.pfbListItem[0].Id : null);
+
+        url = this.pfbListItem.length > 0 ? this.spServices.getItemURL(this.constantService.listNames.ProjectFinanceBreakup.name, this.pfbListItem[0].Id) : this.spServices.getReadURL(this.constantService.listNames.ProjectFinanceBreakup.name, null);
         const Type = this.pfbListItem.length > 0 ? this.constantService.Method.PATCH : this.constantService.Method.POST;
         this.commonService.setBatchObject(batchURL, url, this.getPFBData(scheduleOopInvoice_form, InvoiceType), Type, this.constantService.listNames.ProjectFinances.name)
 
@@ -821,6 +803,10 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
 
         url = this.spServices.getItemURL(this.constantService.listNames.SOW.name, this.SOW.ID);
         this.commonService.setBatchObject(batchURL, url, this.getsowData(scheduleOopInvoice_form, InvoiceType), this.constantService.Method.PATCH, this.constantService.listNames.SOW.name)
+
+
+
+        console.log(batchURL)
 
         this.submitForm(batchURL, type);
 

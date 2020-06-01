@@ -3,7 +3,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import bootstrapPlugin from '@fullcalendar/bootstrap';
 import interactionPlugin from '@fullcalendar/interaction';
-import { MenuItem, MessageService, DialogService, SelectItem } from 'primeng';
+import { MenuItem, DialogService, SelectItem } from 'primeng';
 import { MenuModule, Button } from 'primeng';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -88,7 +88,6 @@ export class MyTimelineComponent implements OnInit {
     private constants: ConstantsService,
     public sharedObject: GlobalService,
     private spServices: SPOperationService,
-    public messageService: MessageService,
     public dialogService: DialogService,
     private datePipe: DatePipe,
     public spOperations: SPOperationService,
@@ -220,7 +219,6 @@ export class MyTimelineComponent implements OnInit {
           self.SelectedStatus = undefined;
           self.taskName = eventInfo.event.title.split(':')[0];
           self.task = self.allTasks.find(c => c.Id === parseInt(eventInfo.event.id));
-
           self.tasks = [];
           if (self.task.Task !== 'Adhoc') {
             self.taskdisplay = true;
@@ -260,14 +258,21 @@ export class MyTimelineComponent implements OnInit {
             self.task.ProjectName = self.task.ProjectCode;
           }
         } else {
-          // tslint:disable-next-line: radix
-          self.leave = self.allLeaves.find(c => c.Id === parseInt(eventInfo.event.id));
-          self.displayleave = true;
 
+          debugger;
+          self.leave = self.allLeaves.find(c => c.Id === parseInt(eventInfo.event.id));
+
+          const actualStartDate = new Date(self.leave.EventDate);
+          const allowedDate = self.commonService.CalculateminstartDateValue(new Date(), 3);
+          if (actualStartDate.getFullYear() >= allowedDate.getFullYear() &&
+            actualStartDate.getMonth() >= allowedDate.getMonth()) {
+            self.displayleave = true;
+          } else {
+            self.commonService.showToastrMessage(self.constants.MessageType.warn, 'Unable to delete  leaves for '+ self.datePipe.transform(new Date(self.leave.EventDate),'MMM d , yyyy'), false);
+          }
         }
       },
       customButtons: {
-
         AddnewEvent: {
           click: () => {
             document.getElementById('hiddenButton').click();
@@ -295,11 +300,9 @@ export class MyTimelineComponent implements OnInit {
   }
 
 
-  // *************************************************************************************************************************************
+  // **********************************************************************************************
   // Get Events based on dates
-  // *************************************************************************************************************************************
-
-
+  // **********************************************************************************************
 
   async getEvents(firstLoad, startDate, endDate) {
 
@@ -392,9 +395,9 @@ export class MyTimelineComponent implements OnInit {
   }
 
 
-  // *************************************************************************************************************************************
+  // ********************************************************************************************
   //  convert date into string
-  // *************************************************************************************************************************************
+  // ********************************************************************************************
 
   async getStartEndDates(startDate, endDate) {
     const filterDates = [];
@@ -405,9 +408,9 @@ export class MyTimelineComponent implements OnInit {
 
     return filterDates;
   }
-  // *************************************************************************************************************************************
+  // *********************************************************************************************
   //   to get event on button click
-  // *************************************************************************************************************************************
+  // *********************************************************************************************
 
   bindEvents() {
 
@@ -457,9 +460,9 @@ export class MyTimelineComponent implements OnInit {
   }
 
 
-  // *************************************************************************************************************************************
+  // *********************************************************************************************
   //   to get event on title click
-  // *************************************************************************************************************************************
+  // *********************************************************************************************
 
 
   async setStep(index: number) {
@@ -548,9 +551,9 @@ export class MyTimelineComponent implements OnInit {
       this.fullCalendar.calendar.state.dateProfile.currentRange.end);
   }
 
-  // *************************************************************************************************************************************
+  // **********************************************************************************************
   //  dialog for time booking
-  // *************************************************************************************************************************************
+  // **********************************************************************************************
   async loadBlockTimeDialog(event, task) {
     const ref = this.dialogService.open(BlockTimeDialogComponent, {
       data: {
@@ -599,17 +602,15 @@ export class MyTimelineComponent implements OnInit {
 
           const arrResults = await this.spServices.executeBatch(batchURL);
 
-          this.messageService.add({
-            key: 'mydashboard', severity: 'success',
-            summary: 'Success Message', detail: 'Leave created successfully.'
-          });
+          this.commonService.showToastrMessage(this.constants.MessageType.success, 'Leave created successfully.', false);
         } else {
           if (task === undefined) {
             const folderUrl = this.sharedObject.sharePointPageObject.serverRelativeUrl + "/Lists/Schedules/AdhocTasks";
             this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'CreateAndMoveTask');
             await this.spServices.createItemAndMove(this.constants.listNames.Schedules.name, blockTimeobj, this.constants.listNames.Schedules.type, folderUrl);
 
-            this.messageService.add({ key: 'mydashboard', severity: 'success', summary: 'Success Message', detail: 'Time Booking created successfully.' });
+            this.commonService.showToastrMessage(this.constants.MessageType.success, 'Time Booking created successfully.', false);
+
           } else {
 
             if (blockTimeobj.IsDeleted !== undefined) {
@@ -618,10 +619,8 @@ export class MyTimelineComponent implements OnInit {
               this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'UpdateTask');
               await this.spServices.updateItem(this.constants.listNames.Schedules.name, task.ID, blockTimeobj,
                 this.constants.listNames.Schedules.type);
-              this.messageService.add({
-                key: 'mydashboard', severity: 'success', summary: 'Success Message',
-                detail: 'Time Booking updated successfully.'
-              });
+
+              this.commonService.showToastrMessage(this.constants.MessageType.success, 'Time Booking updated successfully.', false);
             }
 
           }
@@ -645,11 +644,11 @@ export class MyTimelineComponent implements OnInit {
     };
     this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'DeleteTask');
     await this.spServices.updateItem(this.constants.listNames.Schedules.name, this.task.ID, data, this.constants.listNames.Schedules.type);
-    this.messageService.add({ key: 'mydashboard', severity: 'success', summary: 'Success Message', detail: 'Adhoc  deleted successfully' });
+
+
+    this.commonService.showToastrMessage(this.constants.MessageType.success, 'Adhoc  deleted successfully', false);
     this.getEvents(false, this.fullCalendar.calendar.state.dateProfile.currentRange.start,
       this.fullCalendar.calendar.state.dateProfile.currentRange.end);
-
-
   }
 
   onCloseStartDate() {
@@ -692,7 +691,8 @@ export class MyTimelineComponent implements OnInit {
     const allowedStatus = ["Completed", "AllowCompletion", "Auto Closed"];
     if (allowedStatus.includes(stval)) {
       if (task.Status === 'Completed' && !task.FinalDocSubmit) {
-        this.messageService.add({ key: 'mydashboard', severity: 'error', summary: 'Error Message', detail: 'No Final Document Found' });
+
+        this.commonService.showToastrMessage(this.constants.MessageType.error, 'No Final Document Found', false);
         task.Status = earlierStaus;
         this.CalendarLoader = false;
         return false;
@@ -716,10 +716,10 @@ export class MyTimelineComponent implements OnInit {
                   contentStyle: { 'min-height': '30vh', 'max-height': '90vh', 'overflow-y': 'auto' }
                 });
                 ref.onClose.subscribe((feedbacktask: any) => {
-                  if(feedbacktask){
+                  if (feedbacktask) {
                     this.saveTask(feedbacktask);
                   }
-                 });
+                });
               } else {
                 this.saveTask(task);
               }
@@ -776,15 +776,14 @@ export class MyTimelineComponent implements OnInit {
           if (task.ParentSlot) {
             await this.myDashboardConstantsService.getCurrentAndParentTask(task, jsonData.Status);
           }
-          this.messageService.add({ key: 'mydashboard', severity: 'success', summary: 'Success Message', detail: 'Task updated successfully.' });
+          this.commonService.showToastrMessage(this.constants.MessageType.success, 'Task updated successfully.', false);
           this.getEvents(false, this.fullCalendar.calendar.state.dateProfile.currentRange.start,
             this.fullCalendar.calendar.state.dateProfile.currentRange.end);
-
         }
       }
 
     } else {
-      this.messageService.add({ key: 'mydashboard', severity: 'error', summary: 'Error Message', detail: 'Previous task should be completed.' });
+      this.commonService.showToastrMessage(this.constants.MessageType.error, 'Previous task should be completed.', false);
       task.Status = earlierStaus;
       this.CalendarLoader = false;
     }
@@ -797,13 +796,9 @@ export class MyTimelineComponent implements OnInit {
     const response = await this.myDashboardConstantsService.CompleteTask(task);
 
     if (response) {
-      this.messageService.add({ key: 'mydashboard', severity: 'error', summary: 'Error Message', detail: response });
-
+      this.commonService.showToastrMessage(this.constants.MessageType.error, response, false);
     } else {
-      this.messageService.add({
-        key: 'mydashboard', severity: 'success', summary: 'Success Message',
-        detail: task.Title + 'Task updated successfully.'
-      });
+      this.commonService.showToastrMessage(this.constants.MessageType.success, task.Title + 'Task updated successfully.', false)
     }
     this.getEvents(false, this.fullCalendar.calendar.state.dateProfile.currentRange.start, this.fullCalendar.calendar.state.dateProfile.currentRange.end);
   }
@@ -912,7 +907,7 @@ export class MyTimelineComponent implements OnInit {
     this.getEvents(false, this.fullCalendar.calendar.state.dateProfile.currentRange.start,
       this.fullCalendar.calendar.state.dateProfile.currentRange.end);
 
-    this.messageService.add({ key: 'mydashboard', severity: 'success', summary: 'Success Message', detail: 'Leaves deleted successfully.' });
+    this.commonService.showToastrMessage(this.constants.MessageType.success, 'Leaves deleted successfully.', false);
   }
 
   // tslint:disable-next-line: use-life-cycle-interface
@@ -933,10 +928,8 @@ export class MyTimelineComponent implements OnInit {
     const ProjectInformation = await this.myDashboardConstantsService.getCurrentTaskProjectInformation(task.ProjectCode);
     const response = await this.commonService.goToProjectScope(ProjectInformation, ProjectInformation.Status);
     if (response === 'No Document Found.') {
-      this.messageService.add({
-        key: 'mydashboard', severity: 'error', summary: 'Error Message',
-        detail: task.ProjectCode + ' - Project Scope not found.'
-      });
+
+      this.commonService.showToastrMessage(this.constants.MessageType.error, task.ProjectCode + ' - Project Scope not found.', false);
     }
     else {
       window.open(response);
