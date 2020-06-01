@@ -1782,7 +1782,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           return false;
         }
       }
-      
+
       return true;
     });
 
@@ -4650,7 +4650,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       //   __metadata: { type: 'SP.Folder' },
       //   ServerRelativeUrl: projectFolder + '/Drafts/Internal/' + mil.data.title
       // };
-      const folderUrl = projectFolder + '/Drafts/Internal/' + mil.data.title;
+      const folderUrl = projectFolder + '/Drafts/Internal/' + mil.title;
       // const addMilObj = Object.assign({}, this.queryConfig);
       // addMilObj.url = this.spServices.getFolderCreationURL();
       // addMilObj.listName = 'Milestone Folder Creation';

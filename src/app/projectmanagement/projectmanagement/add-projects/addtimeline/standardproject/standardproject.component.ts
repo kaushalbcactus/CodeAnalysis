@@ -654,8 +654,11 @@ export class StandardprojectComponent implements OnInit {
     if (this.selectedSkillObject.value.userType != 'Type') {
       let endDate = this.calcBusinessNextDate(startDate, 90);
       let resource = [];
+      resource.push(this.selectedSkillObject.value, this.selectedResourceObject.value);
       const currentUser = this.pmObject.oProjectManagement.oResourcesCat.find(u => u.UserName.ID === this.userProperties.Id);
-      resource.push(this.selectedSkillObject.value, this.selectedResourceObject.value, currentUser);
+      if(currentUser) {
+        resource.push(currentUser);
+      }
       this.pmObject.oTaskAllocation.oAllSelectedResource = resource;
       this.sharedObject.oCapacity = await this.userCapacity.applyFilterReturn(startDate, endDate, resource, []);
     }
