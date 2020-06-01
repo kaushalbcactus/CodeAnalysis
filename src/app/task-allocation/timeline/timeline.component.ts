@@ -2032,7 +2032,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
   getNode(task): TreeNode {
-    const milestone: TreeNode = this.milestoneData.find(m => m.data.title === task.milestone);
+    const tasktitle = task.itemType === 'milestone' ? task.title : task.milestone;
+    const milestone: TreeNode = this.milestoneData.find(m => m.data.title ===  tasktitle);
     if (task.itemType === 'submilestone') {
       const submilestone: TreeNode = milestone.children.find(sm => sm.data.title === task.title);
       return submilestone;
