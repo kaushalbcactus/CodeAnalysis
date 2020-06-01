@@ -333,24 +333,17 @@
                         </td>
                         <!--Daily Allocation Type-->
                         <td [style.backgroundColor]="rowData?.allocationColor">
+                            <!-- <div fxLayout="column" style="padding: 2vw;" fxLayoutAlign="center center" *ngIf="allocationTypeLoader">
+                              <div id="allocationTypeLoader"></div>
+                              <div id="allocationTypeLoaderText">Loading...</div>
+                            </div> -->
                         </td>
-                        <!-- Allow start
-                        <td [ngStyle]="{'text-align': 'rowData.editMode' ? 'center':'left'}">
-                            <span *ngIf="((rowData.editMode || !rowData.editMode) && rowData.type ==='milestone'  && rowData.type !=='submilestone') || (!rowData.editMode && rowData.type !=='milestone'  && rowData.type !=='submilestone' ) ">{{rowData.allowStart === true ? 'Yes':'No'}}</span>
-                            <p-inputSwitch *ngIf="rowData.editMode && (rowData.type !== 'milestone' && rowData.type !=='submilestone') && (rowData.itemType !=='Client Review' && rowData.itemType !=='Send to client')" [(ngModel)]="rowData.allowStart"></p-inputSwitch>
-                         </td> -->
-                        <!-- Disable cascade -->
-
                         <td [ngStyle]="{'text-align': 'rowData.editMode' ? 'center':'left'}">
                             <span *ngIf="rowData.type==='task' && !rowData.editMode">{{rowData.DisableCascade === true  ? 'Yes':'No'}}</span>
 
                             <p-inputSwitch
                                 *ngIf="rowData.editMode && rowData.type==='task' && rowData.itemType !== 'Client Review'"
                                 [(ngModel)]="rowData.DisableCascade"></p-inputSwitch>
-
-                            <!-- {{rowData.DisableCascade}} -->
-
-                            <!-- <span *ngIf="rowData.type==='task'"> {{rowData.DisableCascade === 'Yes' ? 'No':'Yes'}}</span> -->
                         </td>
 
                         <!-- Menu option -->

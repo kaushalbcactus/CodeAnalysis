@@ -88,7 +88,7 @@ export interface IConflictResource {
 }
 
 export interface IPopupConflictData {
-    conflict: boolean;
+    conflictResolved: boolean;
     action: string;
 }
 

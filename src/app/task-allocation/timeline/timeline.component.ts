@@ -4364,7 +4364,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         if (task) {
           const Title = task.itemType === 'submilestone' && task.milestone ? task.milestone + ' - ' + task.title : task.title;
           const msg = 'Are you sure that you want to Confirm ' + Title + ' ?';
-          const conflictMessage = detail.conflict ? '' + msg : 'Conflict unresolved. ' + msg;
+          const conflictMessage = detail.conflictResolved ? '' + msg : 'Conflict unresolved. ' + msg;
           this.setAsNextMilestoneCall(task, conflictMessage);
         } else {
           this.loaderenable = true;
