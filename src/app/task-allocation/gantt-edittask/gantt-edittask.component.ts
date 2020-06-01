@@ -224,7 +224,7 @@ export class GanttEdittaskComponent implements OnInit {
       let time: any = this.commonService.getHrsAndMins(this.task.start_date , this.task.end_date);
 
       this.maxBudgetHrs = time.maxBudgetHrs;
-      this.task.budgetHours = budgetHrs;
+      // this.task.budgetHours = budgetHrs;
 
       this.isViewAllocationBtn(task)
 

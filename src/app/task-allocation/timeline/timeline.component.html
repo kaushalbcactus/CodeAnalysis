@@ -201,10 +201,10 @@
                             <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
                             <span
                                 *ngIf="rowData.type !=='task' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.title.indexOf('Slot') > -1)">
-                                {{rowData.title}}</span>
+                                {{rowData.text}}</span>
                             <span style="color:#dc2038;cursor: pointer;"
                                 *ngIf="(rowData.type ==='task' && rowData.IsCentrallyAllocated !== 'Yes') || (rowData.IsCentrallyAllocated === 'Yes' && rowData.title.indexOf('Slot') < 0)"
-                                (click)="ViewTaskDetails(rowData)"> {{rowData.title}}</span>
+                                (click)="ViewTaskDetails(rowData)"> {{rowData.text}}</span>
 
                             <div id="nextMilestone"
                                 [title]=" rowData.type==='milestone' ? 'Set as Current Milestone':'Set as Current Sub-Milestone'"
@@ -516,7 +516,7 @@
 </div>
 
 <p-dialog [(visible)]="showBudgetHrs" [modal]="true" [draggable]="false" [responsive]="true"
-    [style]="{height: '40%' , 'width': '30%', 'top':'0px'}" [closeOnEscape]="false" [closable]="false">
+    [style]="{'width': '30%', 'top':'0px'}" [closeOnEscape]="false" [closable]="false">
     <p-header>
         Change Budget Hours
     </p-header>
