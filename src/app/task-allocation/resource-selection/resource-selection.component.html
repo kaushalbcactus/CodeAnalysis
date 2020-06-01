@@ -2,11 +2,12 @@
     <p-toast key="toastMessage" [style]="{marginTop: '80px'}" position="top-center"></p-toast>
     <p-card class="p-col">
         <form class="p-grid" #searchForm="ngForm" [formGroup]="searchCapacityForm" (ngSubmit)="onSubmit()">
-            <div class="p-col-12">
-                <h5>{{header}}</h5>
-            </div>
             <div class="p-col-12 p-justify-between p-align-center" style="padding: 20px 0px 20px 0px;">
-                <span class="p-col ui-float-label ui-fluid evenrow" style="width:11%;">
+                <div class="p-col-2 evenrow resourceView">
+                    <label class="mainlable">Task</label>
+                    <h5>{{header}}</h5>
+                </div>
+                <span class="p-col-2 ui-float-label ui-fluid evenrow" style="width:11%;">
                     <p-multiSelect [options]="Buckets" formControlName="bucket" (onChange)="onChange($event,'bucket')"
                         resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" defaultLabel="Select"
                         [style]="{width:'100%'}">

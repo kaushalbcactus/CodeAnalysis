@@ -50,7 +50,7 @@ export class ResourceSelectionComponent implements OnInit {
 
   async onLoad(data: any) {
     await this.GetResources();
-    // this.searchCapacityForm.patchValue({ resources: data.task.resources, rangeDates: [data.startTime,data.endTime]});
+    this.searchCapacityForm.patchValue({ rangeDates: [data.startTime,data.endTime]});
     // this.Resources = data.task.resources;
     this.userCapacity.loaderenable = true;
     this.userCapacity.Onload(data)
@@ -216,7 +216,11 @@ export class ResourceSelectionComponent implements OnInit {
   }
 
   confirmChangeResource(event: Event) {
-    this.timeline.confirmChangeResource(event);
+    if(this.sharedObject.data.task.AssignedTo.ID == event) {
+      this.messageService.add({ key: 'toastMessage', severity: 'error', summary: 'Error Message', detail: 'Please select different resource name to change the resource' });
+    } else {
+      this.timeline.confirmChangeResource(event);
+    }
   }
 
 }

@@ -741,7 +741,7 @@ div.sticky {
 }
 
 .footerBtn {
-  margin-top: 15px;
+  /* margin-top: 15px; */
   float: right;
 }
 
@@ -784,7 +784,7 @@ div.sticky {
 }
 
 .resourcePanel #capacityTable > .capacityBody {
-  overflow-y: auto !important;
+  /* overflow-y: auto !important; */
   height: 200px !important;
-  display: block !important;
+  /* display: block !important; */
 }

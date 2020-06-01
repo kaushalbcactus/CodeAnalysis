@@ -359,6 +359,12 @@ export class GanttEdittaskComponent implements OnInit {
         cascadingObject: this.cascadingObject
       };
       this.editTaskRef.close(obj);
+    } else {
+      if(!this.editTaskForm.value.resource){
+        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please select Resource.' });
+      } else if(!this.editTaskForm.value.budgetHrs) {
+        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Add Budget Hours' });
+      }
     }
   }
 

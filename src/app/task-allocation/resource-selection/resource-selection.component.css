@@ -44,3 +44,10 @@
 .search {
     padding: 0.429em !important;
 }
+
+.resourceView {
+    float: left;
+    margin: 0px 15px;
+    margin-top: -2.0em;
+    width: 9%;    
+}

@@ -1689,6 +1689,24 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   }
 
+  isDragEnable(isStartDate,status) {
+    switch(status) {
+      case 'Not Started' :
+      case 'Not Confirmed' :
+      case 'Not Saved' :
+      return true;            
+      
+      case 'In Progress' :
+      if(!isStartDate)
+        return true;
+      else
+        return false;
+
+      default:
+        return false;
+    }
+  }
+
   ganttAttachEvents() {
 
     if (this.taskAllocateCommonService.attachedEvents.length) {
@@ -1717,18 +1735,23 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       this.endDate = task.end_date;
       this.resetTask = task;
       this.dragClickedInput = e.srcElement.className;
+      const isStartDate = this.dragClickedInput.indexOf('start_date') > -1 ? true : false;
       if (gantt.ext.zoom.getCurrentLevel() < 3) {
         if (task.status == 'Completed' || task.status == "Auto Closed" || task.type == "milestone" || task.type === 'submilestone') {
           return false;
         } else {
           if (task.itemType == 'Client Review') {
             if (mode === 'resize') {
-              return true;
+              let isDrag = this.isDragEnable(isStartDate, task.status)
+              return isDrag;
             } else {
               return false;
             }
           } else {
-            if (mode === 'resize' || mode === 'move') {
+            if (mode === 'resize') {
+              let isDrag = this.isDragEnable(isStartDate, task.status)
+              return isDrag;
+            } else if(mode === 'move') {
               return true;
             } else {
               return false;
@@ -1750,6 +1773,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           this.sharedObject.resourceHeader = this.header;
           this.onResourceClick(task);
         }
+      } else if(task.itemType == "Send to client" || task.itemType == "Client Review") {
+        this.messageService.add({ key: 'gantt-message', severity: 'error', summary: 'Error Message', detail: 'Resource view is unavailable for these tasks please edit the task to change resource' });
       }
       var button = e.target.closest("[data-action]")
       if(button) {
