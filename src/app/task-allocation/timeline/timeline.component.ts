@@ -1777,7 +1777,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         this.messageService.add({ key: 'gantt-message', severity: 'error', summary: 'Error Message', detail: 'Resource view is unavailable for these tasks please edit the task to change resource' });
       }
       var button = e.target.closest("[data-action]")
-      if(button) {
+      if (button) {
         if (gantt.ext.zoom.getCurrentLevel() < 3) {
           if (taskId) {
             let task = gantt.getTask(taskId);
@@ -1801,7 +1801,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
             if (task) {
               return false;
             }
-          return true;
+            return true;
           }
         } else {
           return false;
@@ -2058,7 +2058,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   getNode(task): TreeNode {
     const tasktitle = task.itemType === 'milestone' ? task.title : task.milestone;
-    const milestone: TreeNode = this.milestoneData.find(m => m.data.title ===  tasktitle);
+    const milestone: TreeNode = this.milestoneData.find(m => m.data.title === tasktitle);
     if (task.itemType === 'submilestone') {
       const submilestone: TreeNode = milestone.children.find(sm => sm.data.title === task.title);
       return submilestone;
@@ -2070,7 +2070,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.loaderenable = true;
     this.confirmMilestoneLoader = true;
     setTimeout(async () => {
-      const rowNode: TreeNode  = this.getNode(task);
+      const rowNode: TreeNode = this.getNode(task);
       if (task.editMode) {
         this.messageService.add({
           key: 'custom', severity: 'warn', summary: 'Warning Message',
@@ -2226,7 +2226,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           task.budgetHours = this.budgetHrs;
           task.edited = true;
         }
-        if(task.type == 'milestone') {
+        if (task.type == 'milestone') {
           if (task.title.replace(' (Current)', '') == this.updatedTasks.milestone) {
             task.edited = true;
             task.open = true;
@@ -4020,6 +4020,12 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       node.data.pUserStart = node.data.start_date;
       node.data.pUserEnd = node.data.end_date;
       this.setDatePartAndTimePart(node.data);
+
+      const getNodes = this.taskAllocateCommonService.getTasksFromMilestones(node, false, this.milestoneData);
+      const bEditedNode = getNodes.find(e => e.edited === true);
+      if (bEditedNode) {
+        node.data.edited = true;
+      }
       // node.data.pUserStartDatePart = this.getDatePart(node.data.pUserStart);
       // node.data.pUserStartTimePart = this.getTimePart(node.data.pUserStart);
       // node.data.pUserEndDatePart = this.getDatePart(node.data.pUserEnd);
@@ -4739,7 +4745,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     ...updatedResources.reviewer.results, ...updatedResources.pubSupportMembers.results,
     ...updatedResources.primaryResources.results];
 
-    const restructureMilstoneStr = listOfMilestones.length > 0 ?listOfMilestones.join(';#') : '';
+    const restructureMilstoneStr = listOfMilestones.length > 0 ? listOfMilestones.join(';#') : '';
     const mile = updateMilestoneItems.find(c => c.title.split(' (')[0] === this.oProjectDetails.currentMilestone);
     const task = addTaskItems.filter(c => c.milestone === this.oProjectDetails.currentMilestone);
 
@@ -5020,8 +5026,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     const milestoneEndDate = new Date(currentMilestone.end_date);
     currentMilestone.tatBusinessDays = this.commonService.calcBusinessDays(milestoneStartDate, milestoneEndDate);
 
-    if(currentMilestone.status !== 'Deleted') {
-      const getCurrentMilestone = this.milestoneData.find(e=>e.data.id === currentMilestone.id);
+    if (currentMilestone.status !== 'Deleted') {
+      const getCurrentMilestone = this.milestoneData.find(e => e.data.id === currentMilestone.id);
       currentMilestone.submilestone = this.getSubMilestoneStatus(getCurrentMilestone, '');//.join(';#');
     }
     if (bAdd) {
@@ -5255,7 +5261,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     let allTasks = this.getGanttTasksFromMilestones(this.milestoneData, true);
     const allTasksItem = allTasks.filter(e => e.type !== 'submilestone');
     allTasksItem.forEach(element => {
-      if(element.type === 'milestone') {
+      if (element.type === 'milestone') {
         listOfMilestones.push(element.title.split(' (')[0]);
       }
       if (element.edited && element.status !== 'Completed' && element.status !== 'Auto Closed') {
@@ -5436,7 +5442,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           }
         } else if (element.type === 'milestone') {
           const milestoneReturn = this.milestoneData.find(dataEl => dataEl.data.id === element.id);
-          const existMilReturn = this.milestoneDataCopy.find(dataEl =>dataEl.data.id === element.id);
+          const existMilReturn = this.milestoneDataCopy.find(dataEl => dataEl.data.id === element.id);
 
           const newSub = this.getSubMilestoneStatus(milestoneReturn, '');
           const existingSub = this.getSubMilestoneStatus(existMilReturn, '');
@@ -6160,23 +6166,27 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     });
   }
 
+  getDefaultDate() {
+    return new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 9, 0)
+  }
 
   ////// Refactor code
   getTaskObjectByValue(task, className, milestone, nextTasks, previousTasks, submilestone, tempID) {
     const submilestoneLabel = submilestone ? submilestone.title : '';
+    const defaultDate = this.getDefaultDate();
     return {
-      'pUserStart': new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 9, 0),
-      'pUserEnd': new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 9, 0),
+      'pUserStart': new Date(defaultDate),
+      'pUserEnd': new Date(defaultDate),
       'pUserStartDatePart': this.getDatePart(this.Today),
-      'pUserStartTimePart': this.getTimePart(new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 9, 0)),
+      'pUserStartTimePart': this.getTimePart(new Date(defaultDate)),
       'pUserEndDatePart': this.getDatePart(this.Today),
-      'pUserEndTimePart': this.getTimePart(new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 9, 0)),
+      'pUserEndTimePart': this.getTimePart(new Date(defaultDate)),
       'status': 'Not Saved',
       'id': task.dbId === undefined || task.dbId === 0 ? tempID : task.dbId,
       'text': task.label,
       'title': task.label,
-      'start_date': new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 9, 0),
-      'end_date': new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 9, 0),
+      'start_date': new Date(defaultDate),
+      'end_date': new Date(defaultDate),
       'user': '',
       'open': 1,
       'parent': task.taskType === 'Client Review' ? 0 : milestone.Id,
@@ -6213,22 +6223,22 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       'allocationPerDay': task.allocationPerDay ? task.allocationPerDay : ''
     };
   }
-
+ 
   getObjectByValue(milestone, type, tempID, TempSubmilePositionArray, mil) {
-
+    const defaultDate = this.getDefaultDate();
     return {
-      'pUserStart': new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 9, 0),
-      'pUserEnd': new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 9, 0),
+      'pUserStart': new Date(defaultDate),
+      'pUserEnd': new Date(defaultDate),
       'pUserStartDatePart': this.getDatePart(this.Today),
-      'pUserStartTimePart': this.getTimePart(new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 9, 0)),
+      'pUserStartTimePart': this.getTimePart(new Date(defaultDate)),
       'pUserEndDatePart': this.getDatePart(this.Today),
-      'pUserEndTimePart': this.getTimePart(new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 9, 0)),
+      'pUserEndTimePart': this.getTimePart(new Date(defaultDate)),
       'status': 'Not Saved',
       'id': milestone.dbId === undefined || milestone.dbId === 0 ? tempID : milestone.dbId,
       'text': milestone.label,
       'title': milestone.label,
-      'start_date': new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 9, 0),
-      'end_date': new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 9, 0),
+      'start_date': new Date(defaultDate),
+      'end_date': new Date(defaultDate),
       'user': '',
       'open': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.label ? 1 : 0,
       'parent': 0,
@@ -6285,7 +6295,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       return objt.UserName.ID === milestoneTask.AssignedTo.ID;
     });
     let header = milestoneTask.submilestone ? milestoneTask.milestone + ' ' + milestoneTask.title
-    + ' ( ' + milestoneTask.submilestone + ' )' : milestoneTask.milestone + ' ' + milestoneTask.title;
+      + ' ( ' + milestoneTask.submilestone + ' )' : milestoneTask.milestone + ' ' + milestoneTask.title;
     header = header + ' - ' + milestoneTask.AssignedTo.Title;
     const ref = this.dialogService.open(PreStackAllocationComponent, {
       data: {
