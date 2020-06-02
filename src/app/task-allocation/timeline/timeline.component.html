@@ -333,10 +333,9 @@
                         </td>
                         <!--Daily Allocation Type-->
                         <td [style.backgroundColor]="rowData?.allocationColor">
-                            <!-- <div fxLayout="column" style="padding: 2vw;" fxLayoutAlign="center center" *ngIf="allocationTypeLoader">
+                            <div fxLayout="column" fxLayoutAlign="center center" *ngIf="rowData?.allocationTypeLoader">
                               <div id="allocationTypeLoader"></div>
-                              <div id="allocationTypeLoaderText">Loading...</div>
-                            </div> -->
+                            </div>
                         </td>
                         <td [ngStyle]="{'text-align': 'rowData.editMode' ? 'center':'left'}">
                             <span *ngIf="rowData.type==='task' && !rowData.editMode">{{rowData.DisableCascade === true  ? 'Yes':'No'}}</span>

@@ -1689,18 +1689,18 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   }
 
-  isDragEnable(isStartDate,status) {
-    switch(status) {
-      case 'Not Started' :
-      case 'Not Confirmed' :
-      case 'Not Saved' :
-      return true;            
-      
-      case 'In Progress' :
-      if(!isStartDate)
+  isDragEnable(isStartDate, status) {
+    switch (status) {
+      case 'Not Started':
+      case 'Not Confirmed':
+      case 'Not Saved':
         return true;
-      else
-        return false;
+
+      case 'In Progress':
+        if (!isStartDate)
+          return true;
+        else
+          return false;
 
       default:
         return false;
@@ -1751,7 +1751,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
             if (mode === 'resize') {
               let isDrag = this.isDragEnable(isStartDate, task.status)
               return isDrag;
-            } else if(mode === 'move') {
+            } else if (mode === 'move') {
               return true;
             } else {
               return false;
@@ -1773,7 +1773,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           this.sharedObject.resourceHeader = this.header;
           this.onResourceClick(task);
         }
-      } else if(task.itemType == "Send to client" || task.itemType == "Client Review") {
+      } else if (task.itemType == "Send to client" || task.itemType == "Client Review") {
         this.messageService.add({ key: 'gantt-message', severity: 'error', summary: 'Error Message', detail: 'Resource view is unavailable for these tasks please edit the task to change resource' });
       }
       var button = e.target.closest("[data-action]")
@@ -3537,35 +3537,43 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     }
   }
 
-  async dailyAllocateTask(resource, milestoneTask) {
-    const eqgTasks = ['Edit', 'Quality', 'Graphics', 'Client Review', 'Send to client'];
-    if (!eqgTasks.find(t => t === milestoneTask.itemType) && milestoneTask.pUserStartDatePart &&
-      resource.length && milestoneTask.pUserEndDatePart && milestoneTask.budgetHours &&
-      milestoneTask.pUserEnd > milestoneTask.pUserStart) {
-      const allocationData: DailyAllocationTask = {
-        ID: milestoneTask.id,
-        task: milestoneTask.taskFullName,
-        startDate: milestoneTask.pUserStartDatePart,
-        endDate: milestoneTask.pUserEndDatePart,
-        startTime: milestoneTask.pUserStartTimePart,
-        endTime: milestoneTask.pUserEndTimePart,
-        budgetHrs: milestoneTask.budgetHours,
-        resource,
-        status: milestoneTask.status,
-        strAllocation: '',
-        allocationType: ''
-      };
-      const resourceCapacity = await this.dailyAllocation.getResourceCapacity(allocationData);
-      const objDailyAllocation = await this.dailyAllocation.initialize(resourceCapacity, allocationData);
-      this.setAllocationPerDay(objDailyAllocation, milestoneTask);
-      if (objDailyAllocation.allocationAlert) {
-        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Resource is over allocated' });
+  dailyAllocateTask(resource, milestoneTask) {
+    milestoneTask.allocationTypeLoader = true;
+    milestoneTask.allocationColor = '';
+    this.disableSave = true;
+    setTimeout(async () => {
+      const eqgTasks = ['Edit', 'Quality', 'Graphics', 'Client Review', 'Send to client'];
+      if (!eqgTasks.find(t => t === milestoneTask.itemType) && milestoneTask.pUserStartDatePart &&
+        resource.length && milestoneTask.pUserEndDatePart && milestoneTask.budgetHours &&
+        milestoneTask.pUserEnd > milestoneTask.pUserStart) {
+        const allocationData: DailyAllocationTask = {
+          ID: milestoneTask.id,
+          task: milestoneTask.taskFullName,
+          startDate: milestoneTask.pUserStartDatePart,
+          endDate: milestoneTask.pUserEndDatePart,
+          startTime: milestoneTask.pUserStartTimePart,
+          endTime: milestoneTask.pUserEndTimePart,
+          budgetHrs: milestoneTask.budgetHours,
+          resource,
+          status: milestoneTask.status,
+          strAllocation: '',
+          allocationType: ''
+        };
+        const resourceCapacity = await this.dailyAllocation.getResourceCapacity(allocationData);
+        const objDailyAllocation = await this.dailyAllocation.initialize(resourceCapacity, allocationData);
+        this.setAllocationPerDay(objDailyAllocation, milestoneTask);
+        if (objDailyAllocation.allocationAlert) {
+          this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Resource is over allocated' });
+        }
+      } else {
+        milestoneTask.showAllocationSplit = false;
+        milestoneTask.allocationColor = '';
+        milestoneTask.allocationPerDay = '';
       }
-    } else {
-      milestoneTask.showAllocationSplit = false;
-      milestoneTask.allocationColor = '';
-      milestoneTask.allocationPerDay = '';
-    }
+      milestoneTask.allocationTypeLoader = false;
+      this.disableSave = false;
+    }, 100);
+
   }
 
   changeNextTaskPrevTask(sNextPrev, subMilestone, currentTask, newName, sParam) {
@@ -6223,7 +6231,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       'allocationPerDay': task.allocationPerDay ? task.allocationPerDay : ''
     };
   }
- 
+
   getObjectByValue(milestone, type, tempID, TempSubmilePositionArray, mil) {
     const defaultDate = this.getDefaultDate();
     return {

@@ -275,6 +275,7 @@ export class TaskAllocationCommonService {
     milestone.allocationColor = '';
     milestone.showAllocationSplit = task ? task.showAllocationSplit : false;
     milestone.allocationPerDay = task ? task.allocationPerDay : '';
+    milestone.allocationTypeLoader = false;
     return milestone;
   }
 
@@ -361,7 +362,8 @@ export class TaskAllocationCommonService {
       'subMilestonePresent': dbSubMilestones.length > 0 ? true : false,
       'allocationPerDay': data.AllocationPerDay ? data.AllocationPerDay : '',
       'allocationColor': '',
-      'showAllocationSplit': data.AllocationPerDay ? true : false
+      'showAllocationSplit': data.AllocationPerDay ? true : false,
+      'allocationTypeLoader': false
     };
     return ganttObject;
   }
