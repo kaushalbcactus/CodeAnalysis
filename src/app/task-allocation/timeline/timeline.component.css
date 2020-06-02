@@ -109,7 +109,8 @@ body .ui-chkbox .ui-chkbox-box.ui-state-active:not(.ui-state-disabled):hover {
   right: 56px !important;
 }
 
-#scInnerLoaderText, #scConfirmLoaderText {
+#scInnerLoaderText,
+#scConfirmLoaderText {
   -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
   -o-animation: loading-text-opacity 2s linear 0s infinite normal;
   -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
@@ -781,25 +782,30 @@ div.sticky {
   font-size: 0.85em !important;
 }
 .overlayIcon {
-  float: right!important;
-  margin-right: 22px!important;
-  font-size: 0.75em!important;
-  margin-top: 1px!important;
+  float: right !important;
+  margin-right: 22px !important;
+  font-size: 0.75em !important;
+  margin-top: 1px !important;
 }
 .budgetHr {
-  width: 70%!important;
+  width: 70% !important;
 }
 .ui-overlaypanel-close {
   background-color: #db1721 !important;
 }
 
 /* .ui-sidebar-top.ui-sidebar-lg, .resourcePanel .ui-sidebar-bottom.ui-sidebar-lg */
-.ui-sidebar-top.ui-sidebar-lg,.ui-sidebar-bottom.ui-sidebar-lg {
+.ui-sidebar-top.ui-sidebar-lg,
+.ui-sidebar-bottom.ui-sidebar-lg {
   height: 35em !important;
 }
 
 .resourcePanel #capacityTable > .capacityBody {
   /* overflow-y: auto !important; */
-  height: 200px !important;
+  height: 265px !important;
   /* display: block !important; */
+}
+
+.resourcePanel .ui-card-content > form > div {
+  padding-bottom: 0px !important;
 }
