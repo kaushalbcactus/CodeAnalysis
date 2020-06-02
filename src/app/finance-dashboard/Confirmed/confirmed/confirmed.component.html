@@ -301,7 +301,7 @@
             </div>
             <div class="p-col-6 p-md-8 p-lg-4">
                 <p-calendar styleClass="pCalendarBtn" [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy" yearRange="{{yearRange}}" [disabledDays]="[0,6]" [yearNavigator]="true" [minDate]="minProformaDate" (onFocus)="updateCalendarUI(fromCalendar)"
-                    #fromCalendar (onClose)="updatePrformaNumFromPT()" [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}" formControlName="ProformaDate">
+                    appendTo="body" #fromCalendar (onClose)="updatePrformaNumFromPT()" formControlName="ProformaDate">
                 </p-calendar>
                 <div *ngIf="formSubmit.isSubmit && isValidAddToProformaForm.ProformaDate.errors">
                     <div *ngIf="isValidAddToProformaForm.ProformaDate.errors.required" style="color:red;">Please provide Proforma Date.</div>

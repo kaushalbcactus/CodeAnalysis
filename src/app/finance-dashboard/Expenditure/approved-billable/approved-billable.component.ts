@@ -281,8 +281,6 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
             const sowCodeFromPI = await this.fdDataShareServie.getSowCodeFromPI(this.projectInfoData, element);
             const sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(sowCodeFromPI.SOWCode);
 
-
-
             this.approvedBillableRes.push({
                 Id: element.ID,
                 ProjectCode: element.Title,
@@ -808,7 +806,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
 
         console.log(batchURL)
 
-        this.submitForm(batchURL, type);
+        // this.submitForm(batchURL, type);
 
     }
 

@@ -12,6 +12,7 @@ import { TimelineHistoryComponent } from './../../../timeline/timeline-history/t
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { ApproveBillingDialogComponent } from './approve-billing-dialog/approve-billing-dialog.component';
+import { EditInvoiceDialogComponent } from '../../edit-invoice-dialog/edit-invoice-dialog.component';
 
 @Component({
     selector: 'app-hourly-based',
@@ -503,9 +504,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
             this.getConfirmMailContent('ConfirmInvoice');
             this.getPIByTitle(this.selectedRowItem);
         } else if (this.hourlyDialog.title.toLowerCase() === 'edit invoice') {
-            // this.hourlyDialog.text = event.item.label.replace('Expense', '');
-            this.hourlyModal = true;
-            this.updateInvoice();
+            this.EditInvoiceDialog();
         } else if (this.hourlyDialog.title.toLowerCase() === 'view project details') {
             this.goToProjectDetails(this.selectedRowItem);
         } else if (this.hourlyDialog.title.toLowerCase() === 'show history') {
@@ -563,15 +562,6 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     goToProjectDetails(data: any) {
         console.log(data);
         window.open(this.globalService.sharePointPageObject.webAbsoluteUrl + '/dashboard#/projectMgmt/allProjects?ProjectCode=' + data.ProjectCode);
-    }
-
-    updateInvoice() {
-        this.editHourly_form.get('ProjectCode').setValue(this.selectedRowItem.ProjectCode);
-        // this.editHourly_form.get('PONumber').setValue(this.selectedRowItem.PONumber);
-        this.editHourly_form.get('POCName').setValue(this.selectedRowItem.POCName);
-        this.editHourly_form.get('Currency').setValue(this.selectedRowItem.Currency);
-        this.editHourly_form.get('Rate').setValue(this.selectedRowItem.Rate);
-        this.editHourly_form.get('HoursSpent').setValue(this.selectedRowItem.HoursSpent);
     }
 
     getProjectInfoLineItem() {
@@ -801,14 +791,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         return found ? found : '';
     }
 
-    cancelFormSub(formType) {
-        if (formType === 'editHourly') {
-            this.editHourly_form.reset();
-            this.hourlyModal = false;
-        }
-        this.formSubmit.isSubmit = false;
-        this.submitBtn.isClicked = false;
-    }
+
 
     async onSubmit(Invoiceform, type: string) {
         this.formSubmit.isSubmit = true;
@@ -817,24 +800,6 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
             this.isPSInnerLoaderHidden = false;
             this.submitBtn.isClicked = true;
             this.updateSelectedLineItem(Invoiceform);
-        } else if (type === 'editInvoice') {
-            if (this.editHourly_form.invalid) {
-                return;
-            }
-            this.submitBtn.isClicked = true;
-            this.isPSInnerLoaderHidden = false;
-            this.updateHourlyData();
-            const pfData = {
-                __metadata: { type: this.constantService.listNames.ProjectFinances.type },
-                Budget: this.editHourly_form.value.Rate,
-                HoursSpent: this.editHourly_form.value.HoursSpent
-            };
-            this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-hourlyBased', 'updatePFLItem');
-            await this.spServices.updateItem(this.constantService.listNames.ProjectFinances.name, +this.selectedRowItem.PFID,
-                pfData, this.constantService.listNames.ProjectFinances.type);
-            this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Invoice Updated.', false);
-            this.cancelFormSub('editInvoice');
-            this.reFetchData('edit');
         }
     }
 
@@ -858,6 +823,13 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
 
             this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Invoice is Confirmed.', false);
             this.sendConfirmInvoiceMail(invoiceform);
+        } else if (type === 'editInvoice') {
+            this.isPSInnerLoaderHidden = true;
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Invoice Updated.', false);
+
+            this.isPSInnerLoaderHidden = true;
+            this.reFetchData('edit');
         }
     }
 
@@ -1094,5 +1066,36 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         }
         this.cdr.detectChanges();
     }
+
+
+    EditInvoiceDialog() {
+        const ref = this.dialogService.open(EditInvoiceDialogComponent, {
+            header: 'Edit Invoice',
+            width: '75vw',
+            data: {
+                InvoiceType: 'hourly',
+                projectContactsData: this.projectContactsData,
+                selectedRowItem: this.selectedRowItem,
+            },
+            contentStyle: { 'max-height': '80vh', 'overflow-y': 'auto' },
+            closable: false,
+        });
+        ref.onClose.subscribe((editInvoice: any) => {
+            if (editInvoice) {
+                const batchUrl = [];
+                this.isPSInnerLoaderHidden = false;
+                const pfData = {
+                    __metadata: { type: this.constantService.listNames.ProjectFinances.type },
+                    Budget: editInvoice.value.Rate,
+                    HoursSpent: editInvoice.value.HoursSpent
+                };
+                const url = this.spServices.getItemURL(this.constantService.listNames.ProjectFinances.name, +this.selectedRowItem.PFID);
+                this.commonService.setBatchObject(batchUrl, url, pfData, this.constantService.Method.PATCH, this.constantService.listNames.ProjectFinances.name)
+                this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-hourlyBased', 'updatePFLItem');
+                this.submitForm(editInvoice,batchUrl, 'editInvoice');
+            }
+        });
+    }
+
 
 }

@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ViewEncapsulation, OnDestroy, HostListener, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
 import { SelectItem } from 'primeng/api';
-import { Calendar, Table } from 'primeng';
+import { Calendar, Table, DialogService } from 'primeng';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
 import { formatDate, DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
@@ -12,6 +12,7 @@ import { FDDataShareService } from '../../fdServices/fd-shareData.service';
 import { TimelineHistoryComponent } from './../../../timeline/timeline-history/timeline-history.component';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
+import { EditInvoiceDialogComponent } from '../../edit-invoice-dialog/edit-invoice-dialog.component';
 
 @Component({
     selector: 'app-deliverable-based',
@@ -30,6 +31,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         private datePipe: DatePipe,
         private commonService: CommonService,
         private cdr: ChangeDetectorRef,
+        public dialogService: DialogService,
         private platformLocation: PlatformLocation,
         private locationStrategy: LocationStrategy,
         private readonly _router: Router,
@@ -54,9 +56,6 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
 
     }
 
-    get isValidEditDeliverableForm() {
-        return this.editDeliverable_form.controls;
-    }
     tempClick: any;
     deliverableBasedRes: any = [];
     deliverableBasedCols: any[];
@@ -181,7 +180,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
 
         this.createDBICols();
         // this.getApprovedNonBillable();
-        this.createEditDeliverableFormField();
+        // this.createEditDeliverableFormField();
 
         // Get Projects
         await this.projectInfo();
@@ -264,18 +263,6 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         ];
     }
 
-    createEditDeliverableFormField() {
-        this.editDeliverable_form = this.fb.group({
-            ProjectCode: [{ value: '', disabled: true }, Validators.required],
-            PONumber: [{ value: '', disabled: true }, Validators.required],
-            ScheduledType: [{ value: '', disabled: true }, Validators.required],
-            Amount: [{ value: '', disabled: true }, Validators.required],
-            Currency: [{ value: '', disabled: true }, Validators.required],
-            ScheduledDate: ['', Validators.required],
-            POCName: ['', Validators.required],
-            AddressType: ['', Validators.required],
-        });
-    }
 
     createDBICols() {
         this.deliverableBasedCols = [
@@ -538,9 +525,9 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
                 projectData.Status !== this.constantService.projectList.status.OnHold)) {
             this.items.push({ label: 'Confirm Invoice', command: (e) => this.openMenuContent(e, data) });
         } else {
-            if (projectData.Status === this.constantService.projectList.status.InDiscussion ||
+            if (projectData && (projectData.Status === this.constantService.projectList.status.InDiscussion ||
                 projectData.Status === this.constantService.projectList.status.AwaitingCancelApproval ||
-                projectData.Status === this.constantService.projectList.status.OnHold) {
+                projectData.Status === this.constantService.projectList.status.OnHold)) {
 
                 this.commonService.showToastrMessage(this.constantService.MessageType.info, 'Project status is ' + projectData.Status + ', so can not confirm the line item.', false);
             } else if (!(date >= last3Days && date <= lastDay)) {
@@ -570,9 +557,10 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             this.getPIByTitle(this.selectedRowItem);
         } else if (this.deliverableDialog.title.toLowerCase() === 'edit invoice') {
             // this.deliverableDialog.text = event.item.label.replace('Expense', '');
-            this.deliverableModal = true;
-            this.updateInvoice();
-            this.getPOCNamesForEditInv(data);
+            // this.deliverableModal = true;
+            // this.updateInvoice();
+            // this.getPOCNamesForEditInv(data);
+            this.EditInvoiceDialog();
         } else if (this.deliverableDialog.title.toLowerCase() === 'view project details') {
             this.goToProjectDetails(this.selectedRowItem);
         } else if (this.deliverableDialog.title.toLowerCase() === 'show history') {
@@ -588,56 +576,6 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         window.open(this.globalService.sharePointPageObject.webAbsoluteUrl + '/dashboard#/projectMgmt?ProjectCode=' + data.ProjectCode);
     }
 
-    updateInvoice() {
-        const format = 'dd MMM , yyyy';
-        const myDate = new Date(this.selectedRowItem.ScheduledDate);
-        const locale = 'en-IN';
-        const formattedDate = formatDate(myDate, format, locale);
-        this.editDeliverable_form.patchValue({
-            ProjectCode: this.selectedRowItem.ProjectCode,
-            PONumber: this.selectedRowItem.PONumber,
-            ScheduledType: 'revenue',
-            Amount: this.selectedRowItem.Amount,
-            Currency: this.selectedRowItem.Currency,
-            ScheduledDate: formattedDate,
-            AddressType: { label: this.selectedRowItem.AddressType, value: this.selectedRowItem.AddressType }
-        });
-
-        const last3Days = this.commonService.getLastWorkingDay(3, new Date());
-        this.minScheduleDate = last3Days;
-    }
-    getPOCNamesForEditInv(rowItem: any) {
-
-        this.listOfPOCNames = [];
-        let rowVal: any = {};
-        this.projectContactsData.filter((item) => {
-            if (item.ClientLegalEntity === rowItem.ClientName) {
-                this.listOfPOCNames.push(item);
-                if (item.ID === rowItem.POCId) {
-                    rowVal = item;
-                }
-            }
-        });
-        console.log('this.listOfPOCNames ', this.listOfPOCNames);
-        if (Object.keys(rowVal).length) {
-            this.editDeliverable_form.patchValue({
-                POCName: rowVal
-            });
-        }
-    }
-
-    pocChange(event) {
-        console.log('event ', event);
-    }
-
-    cancelFormSub(formType) {
-        if (formType === 'editDeliverable') {
-            this.editDeliverable_form.reset();
-            this.deliverableModal = false;
-        }
-        this.formSubmit.isSubmit = false;
-        this.submitBtn.isClicked = false;
-    }
 
     onSubmit(type: string) {
         this.formSubmit.isSubmit = true;
@@ -658,27 +596,6 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-DeliverableBased', 'updateInvoiceLineItem');
             this.submitForm(batchUrl, type);
 
-        } else if (type === 'editInvoice') {
-            if (this.editDeliverable_form.invalid) {
-                return;
-            }
-            this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
-            // console.log('form is submitting ..... for selected row Item i.e ', this.editDeliverable_form.value);
-            const iliData = {
-                AddressType: this.editDeliverable_form.value.AddressType.value,
-                ScheduledDate: this.editDeliverable_form.value.ScheduledDate,
-                MainPOC: this.editDeliverable_form.value.POCName.ID
-            };
-            iliData['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
-            const iliObj = Object.assign({}, this.queryConfig);
-            iliObj.url = this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, +this.selectedRowItem.Id);
-            iliObj.listName = this.constantService.listNames.InvoiceLineItems.name;
-            iliObj.type = 'PATCH';
-            iliObj.data = iliData;
-            batchUrl.push(iliObj);
-            this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-DeliverableBased', 'updateInvoiceLineItem');
-            this.submitForm(batchUrl, type);
-            this.cancelFormSub('editDeliverable');
         }
     }
 
@@ -864,6 +781,37 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             }
         }
         this.cdr.detectChanges();
+    }
+
+
+    EditInvoiceDialog() {
+        const ref = this.dialogService.open(EditInvoiceDialogComponent, {
+            header: 'Edit Invoice',
+            width: '75vw',
+            data: {
+                InvoiceType: 'revenue',
+                projectContactsData: this.projectContactsData,
+                selectedRowItem: this.selectedRowItem,
+            },
+            contentStyle: { 'max-height': '80vh', 'overflow-y': 'auto' },
+            closable: false,
+        });
+        ref.onClose.subscribe((editInvoice: any) => {
+            if (editInvoice) {
+                const batchUrl = [];
+                this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
+                const iliData = {
+                    __metadata: { type: this.constantService.listNames.InvoiceLineItems.type },
+                    AddressType: editInvoice.value.AddressType.value,
+                    ScheduledDate: editInvoice.value.ScheduledDate,
+                    MainPOC: editInvoice.value.POCName.ID
+                };
+                const url = this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, +this.selectedRowItem.Id);
+                this.commonService.setBatchObject(batchUrl, url, iliData, this.constantService.Method.PATCH, this.constantService.listNames.InvoiceLineItems.name)
+                this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-DeliverableBased', 'updateInvoiceLineItem');
+                this.submitForm(batchUrl, 'editInvoice');
+            }
+        });
     }
 
 }

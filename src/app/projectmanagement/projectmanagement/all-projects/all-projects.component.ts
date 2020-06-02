@@ -235,7 +235,7 @@ export class AllProjectsComponent implements OnInit {
       for (const element of sResult) {
         const projectCSArray = element.ProjectCS.results;
 
-        this.commonService.showToastrMessage(this.constants.MessageType.error,'Early task ' + element.Title + ' has completed successfully.',true);
+        this.commonService.showToastrMessage(this.constants.MessageType.success,'Early task ' + element.Title + ' has completed successfully.',true);
         remainingUserId = projectCSArray.filter(x => x.ID !== this.globalObject.currentUser.userId).map(x => x.ID);
         if (remainingUserId.length) {
           earlyTask = {

@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, OnDestroy, HostListener, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
 import { Message, SelectItem } from 'primeng/api';
-import { Calendar, Table } from 'primeng';
+import { Calendar, Table, DialogService } from 'primeng';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { formatDate, DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { FDDataShareService } from '../../fdServices/fd-shareData.service';
@@ -12,6 +12,7 @@ import { CommonService } from 'src/app/Services/common.service';
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
+import { EditInvoiceDialogComponent } from '../../edit-invoice-dialog/edit-invoice-dialog.component';
 
 @Component({
     selector: 'app-oop',
@@ -31,6 +32,7 @@ export class OopComponent implements OnInit, OnDestroy {
         private commonService: CommonService,
         private spOperationsService: SPOperationService,
         private cdr: ChangeDetectorRef,
+        private dialogService: DialogService,
         private platformLocation: PlatformLocation,
         private locationStrategy: LocationStrategy,
         private readonly _router: Router,
@@ -55,9 +57,6 @@ export class OopComponent implements OnInit, OnDestroy {
 
     }
 
-    get isValidEditDeliverableForm() {
-        return this.editOop_form.controls;
-    }
     tempClick: any;
     oopBasedRes: any = [];
     oopBasedCols: any[];
@@ -176,7 +175,6 @@ export class OopComponent implements OnInit, OnDestroy {
 
         this.createANBCols();
         // this.getApprovedNonBillable();
-        this.createEditDeliverableFormField();
 
         // Get Projects
         await this.projectInfo();
@@ -189,15 +187,12 @@ export class OopComponent implements OnInit, OnDestroy {
         // get OOP Invocies
         this.getRequiredData();
 
-        // Load address type
-        this.getAddressType();
+
         this.currentUserInfoData = await this.fdDataShareServie.getCurrentUserInfo();
         this.groupInfo = await this.fdDataShareServie.getGroupInfo();
         this.groupITInfo = await this.fdDataShareServie.getITInfo();
     }
-    updateCalendarUI(calendar: Calendar) {
-        calendar.updateUI();
-    }
+
     async projectInfo() {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         // Check PI list
@@ -235,27 +230,6 @@ export class OopComponent implements OnInit, OnDestroy {
         }));
     }
 
-
-
-    getAddressType() {
-        this.addressTypes = [
-            { label: 'Client', value: 'Client' },
-            { label: 'POC', value: 'POC' },
-        ];
-    }
-
-    createEditDeliverableFormField() {
-        this.editOop_form = this.fb.group({
-            ProjectCode: [{ value: '', disabled: true }, Validators.required],
-            PONumber: [{ value: '', disabled: true }, Validators.required],
-            ScheduledType: [{ value: '', disabled: true }, Validators.required],
-            Amount: [{ value: '', disabled: true }, Validators.required],
-            Currency: [{ value: '', disabled: true }, Validators.required],
-            ScheduledDate: ['', Validators.required],
-            POCName: ['', Validators.required],
-            AddressType: ['', Validators.required],
-        });
-    }
 
     createANBCols() {
         this.oopBasedCols = [
@@ -561,10 +535,7 @@ export class OopComponent implements OnInit, OnDestroy {
             this.getApproveExpenseMailContent('ConfirmInvoice');
             this.getPIByTitle(this.selectedRowItem);
         } else if (this.deliverableDialog.title.toLowerCase() === 'edit invoice') {
-            // this.deliverableDialog.text = event.item.label.replace('Expense', '');
-            this.deliverableModal = true;
-            this.updateInvoice();
-            this.getPOCNamesForEditInv(data);
+            this.EditInvoiceDialog();
         } else if (this.deliverableDialog.title.toLowerCase() === 'view project details') {
             this.goToProjectDetails(this.selectedRowItem);
         } else if (this.deliverableDialog.title.toLowerCase() === 'show history') {
@@ -582,63 +553,6 @@ export class OopComponent implements OnInit, OnDestroy {
             + '/dashboard#/projectMgmt?ProjectCode=' + data.ProjectCode);
     }
 
-    // Update Form
-    updateInvoice() {
-        const format = 'dd MMM , yyyy';
-        const myDate = new Date(this.selectedRowItem.ScheduledDate);
-        const locale = 'en-IN';
-        const formattedDate = formatDate(myDate, format, locale);
-        console.log('formatted Date ', formattedDate);
-        this.editOop_form.patchValue({
-            ProjectCode: this.selectedRowItem.ProjectCode,
-            PONumber: this.selectedRowItem.PONumber,
-            ScheduledType: 'oop',
-            Amount: this.selectedRowItem.Amount,
-            Currency: this.selectedRowItem.Currency,
-            ScheduledDate: formattedDate,
-            AddressType: { label: this.selectedRowItem.AddressType, value: this.selectedRowItem.AddressType }
-        });
-        const last3Days = this.commonService.getLastWorkingDay(3, new Date());
-        this.minScheduleDate = last3Days;
-    }
-
-    getPOCNamesForEditInv(rowItem: any) {
-        this.listOfPOCNames = [];
-        let rowVal: any = {};
-        this.projectContactsData.filter((item) => {
-            if (item.ClientLegalEntity === rowItem.ClientName) {
-                this.listOfPOCNames.push(item);
-                if (item.ID === rowItem.POCId) {
-                    rowVal = item;
-                }
-            }
-        });
-        console.log('this.listOfPOCNames ', this.listOfPOCNames);
-        if (Object.keys(rowVal).length) {
-            this.editOop_form.patchValue({
-                POCName: rowVal
-            });
-        }
-    }
-
-    getPOCItemByName(poc: any) {
-        const found = this.projectContactsData.find((x) => {
-            if (x.ID === poc.MainPOC) {
-                return x;
-            }
-        });
-        // return found ? found.FName + ' ' + found.LName : ''
-        return found ? found : '';
-    }
-
-    cancelFormSub(formType) {
-        if (formType === 'editDeliverable') {
-            this.editOop_form.reset();
-            this.deliverableModal = false;
-        }
-        this.formSubmit.isSubmit = false;
-        this.submitBtn.isClicked = false;
-    }
 
     onSubmit(type: string) {
         this.formSubmit.isSubmit = true;
@@ -646,50 +560,29 @@ export class OopComponent implements OnInit, OnDestroy {
         if (type === 'confirmInvoice') {
             this.isPSInnerLoaderHidden = false;
             const iliData = {
-                Status: 'Confirmed'
+                __metadata: { type: this.constantService.listNames.InvoiceLineItems.type },
+                Status: this.constantService.STATUS.CONFIRMED
             };
-            iliData['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
-            const invObj = Object.assign({}, this.queryConfig);
-            invObj.url = this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, +this.selectedRowItem.Id);
-            invObj.listName = this.constantService.listNames.InvoiceLineItems.name;
-            invObj.type = 'PATCH';
-            invObj.data = iliData;
-            batchUrl.push(invObj);
-            this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-oop', 'UpdateInvoiceLineItem');
-            this.submitForm(batchUrl, type);
-        } else if (type === 'editDeliverable') {
-            // console.log('form is submitting .....', this.editOop_form.value);
-            if (this.editOop_form.invalid) {
-                return;
-            }
-            this.isPSInnerLoaderHidden = false;
-            const iliData = {
-                AddressType: this.editOop_form.value.AddressType.value,
-                ScheduledDate: this.editOop_form.value.ScheduledDate,
-                MainPOC: this.editOop_form.value.POCName.ID
-            };
-            iliData['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
-            const invObj = Object.assign({}, this.queryConfig);
-            invObj.url = this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, +this.selectedRowItem.Id);
-            invObj.listName = this.constantService.listNames.InvoiceLineItems.name;
-            invObj.type = 'PATCH';
-            invObj.data = iliData;
-            batchUrl.push(invObj);
+            const url = this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, +this.selectedRowItem.Id);
+            this.commonService.setBatchObject(batchUrl, url, iliData, this.constantService.Method.PATCH, this.constantService.listNames.InvoiceLineItems.name)
             this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-oop', 'UpdateInvoiceLineItem');
             this.submitForm(batchUrl, type);
         }
     }
+
+
+
     async submitForm(batchUrl, type: string) {
         await this.spServices.executeBatch(batchUrl);
+        this.isPSInnerLoaderHidden = true;
         if (type === 'confirmInvoice') {
-
             this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Invoice is Confirmed.', false);
+            this.isPSInnerLoaderHidden = false;
             this.sendCreateExpenseMail();
             this.reFetchData();
-        } else if (type === 'editDeliverable') {
-
+        } else if (type === 'editInvoice') {
             this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Invoice Updated.', false);
-            this.cancelFormSub('editDeliverable');
+            this.isPSInnerLoaderHidden = false;
             this.reFetchData();
         }
         this.isPSInnerLoaderHidden = true;
@@ -860,4 +753,34 @@ export class OopComponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
     }
 
+
+    EditInvoiceDialog() {
+        const ref = this.dialogService.open(EditInvoiceDialogComponent, {
+            header: 'Edit Invoice',
+            width: '75vw',
+            data: {
+                InvoiceType: 'oop',
+                projectContactsData: this.projectContactsData,
+                selectedRowItem: this.selectedRowItem,
+            },
+            contentStyle: { 'max-height': '80vh', 'overflow-y': 'auto' },
+            closable: false,
+        });
+        ref.onClose.subscribe((editInvoice: any) => {
+            if (editInvoice) {
+                const batchUrl = [];
+                this.isPSInnerLoaderHidden = false;
+                const iliData = {
+                    __metadata: { type: this.constantService.listNames.InvoiceLineItems.type },
+                    AddressType: editInvoice.value.AddressType.value,
+                    ScheduledDate: editInvoice.value.ScheduledDate,
+                    MainPOC: editInvoice.value.POCName.ID
+                };
+                const url = this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, +this.selectedRowItem.Id);
+                this.commonService.setBatchObject(batchUrl, url, iliData, this.constantService.Method.PATCH, this.constantService.listNames.InvoiceLineItems.name)
+                this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-OOP', 'updateInvoiceLineItem');
+                this.submitForm(batchUrl, 'editInvoice');
+            }
+        });
+    }
 }
