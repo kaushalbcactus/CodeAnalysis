@@ -6110,8 +6110,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         // previousNode - Milestone
         // milestone.data. - client review
         if (previousNode !== undefined && previousNode.status !== 'Completed' &&
-          new Date(milestone.data.start_date).getTime() <
-          new Date(previousNode.end_date).getTime()) {
+          new Date(previousNode.end_date).getTime() > new Date(milestone.data.start_date).getTime()
+        ) {
           let errormessage = previousNode.milestone + ' Client Review';
           if (previousNode.title !== 'Client Review') {
             errormessage = previousNode.title;
