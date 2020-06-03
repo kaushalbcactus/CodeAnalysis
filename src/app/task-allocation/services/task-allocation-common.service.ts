@@ -304,7 +304,7 @@ export class TaskAllocationCommonService {
       'pUserEndTimePart': data.type == 'task' ? this.getTimePart(convertedDate.convertedEndDate) : '',
       'status': data.Status,
       'id': data.Id,
-      'text': data.type == 'submilestone' ? milestoneObj.isNext && NextSubMilestone.position === data.position && NextSubMilestone.status === data.status ? data.subMile + ' (Next)' : data.subMile :
+      'text': data.type == 'submilestone' ? milestoneObj.isCurrent && NextSubMilestone.position === data.position && NextSubMilestone.status === data.status ? data.subMile + ' (Next)' : milestoneObj.isNext && NextSubMilestone.position === data.position && NextSubMilestone.status === data.status ? data.subMile + ' (Next)' : data.subMile :
         data.type == 'task' ? data.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + data.Milestone + ' ', '') :
           this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === data.Title ? data.Title + " (Current)" : this.sharedObject.oTaskAllocation.oProjectDetails.nextMilestone === data.Title ? dbSubMilestones.length > 0 ?  data.Title : data.Title + ' (Next)' : data.Title,
       'title':  data.type == 'submilestone' ? data.subMile :
