@@ -44,6 +44,7 @@ export class StandardprojectComponent implements OnInit {
   registerReviewerList = [];
   public userProperties;
   public allMilestoneTask = [];
+  public allTasks = [];
   public isStandardLoaderHidden = false;
   public isStandardTableHidden = true;
   public isStandardFetchTableHidden = true;
@@ -646,6 +647,7 @@ export class StandardprojectComponent implements OnInit {
    */
   public async generateSkillMilestones() {
     this.pmObject.addProject.Timeline.Standard.Milestones = [];
+    this.allTasks = [];
     // let startDate = this.calcBusinessNextDate(new Date(), 1);
     let startDate: Date;
     if (this.ngStandardProposedStartDate) {
@@ -670,6 +672,7 @@ export class StandardprojectComponent implements OnInit {
     this.ngStandardProposedEndDate = this.standardFiles[this.standardFiles.length - 1].data.EndDate;
     this.OverallTATDays = this.pmCommonService.calcBusinessDays(this.standardFiles[0].data.StartDate, this.standardFiles[this.standardFiles.length - 1].data.EndDate);
     this.standardFiles = [... this.standardFiles];
+    this.overAllocationAlert();
   }
   /**
    * This method is used to get submilestone for particular milestone
@@ -1132,6 +1135,7 @@ export class StandardprojectComponent implements OnInit {
           await this.dailyAllocateTask(resource, taskObj.data);
           tempTaskArray.push(taskObj);
           endateArray.push(taskObj);
+          this.allTasks.push(taskObj);
           if (submilestoneObj) {
             submilestoneObj.children.push(taskObj);
           } else {
@@ -1198,6 +1202,7 @@ export class StandardprojectComponent implements OnInit {
           await this.dailyAllocateTask(resource, taskObj.data);
           endateArray.push(taskObj);
           tempTaskArray.push(taskObj);
+          this.allTasks.push(taskObj);
           let taskIndex;
           if (submilestoneObj && submilestoneObj.children) {
             taskIndex = submilestoneObj.children.findIndex(function (obj) {
@@ -1220,6 +1225,18 @@ export class StandardprojectComponent implements OnInit {
         await this.createTask(element.EndDate, isCreate, element.data.Title, element.data.UseTaskDays, element.data.assignedUserTimeZone, milestoneObj, submilestoneObj);
       }
     }
+
+  }
+
+  overAllocationAlert() {
+    const overAllocatedTasks = this.allTasks.filter(t => t.data.allocationAlert);
+    // const resources = overAllocatedTasks.map(t => t.data.AssignedTo);
+    const errorMsg = [];
+    overAllocatedTasks.forEach((resource) => {
+      const msg = resource.data.AssignedTo + ' is over allocated for task \'' + resource.data.Milestone + '-' + resource.data.SubMilestone + '-' + resource.data.TaskName + '\'';
+      errorMsg.push(msg);
+    })
+    this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: errorMsg.join('/\n'), life: 3000 });
   }
   /**
    * This function is used to calculate the deviation between taskend date and milestone end date.
@@ -2322,7 +2339,7 @@ export class StandardprojectComponent implements OnInit {
     this.taskMenu = [];
     this.taskMenu.push(
       { label: 'Edit Allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, '') },
-      { label: 'Over allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, 'Equal') }
+      { label: 'Equal allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, 'Equal') }
     );
   }
 
@@ -2383,7 +2400,8 @@ export class StandardprojectComponent implements OnInit {
       const objDailyAllocation = await this.dailyAllocation.initialize(resourceCapacity, allocationData);
       this.setAllocationPerDay(objDailyAllocation, milestoneTask);
       if (objDailyAllocation.allocationAlert) {
-        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Resource is over allocated' });
+        milestoneTask.allocationAlert = true;
+        // this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Resource is over allocated' });
       }
     } else {
       milestoneTask.showAllocationSplit = false;
@@ -2397,7 +2415,7 @@ export class StandardprojectComponent implements OnInit {
     milestoneTask.allocationPerDay = allocation.allocationPerDay;
     milestoneTask.edited = true;
     milestoneTask.showAllocationSplit = new Date(milestoneTask.StartDatePart).getTime() !== new Date(milestoneTask.EndDatePart).getTime() ? true : false;
-    if (allocation.allocationType === 'Over allocation') {
+    if (allocation.allocationType === 'Equal allocation per day') {
       milestoneTask.allocationColor = 'indianred';
     } else if (allocation.allocationType === 'Daily Allocation') {
       milestoneTask.allocationColor = '';

@@ -1427,7 +1427,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       { "id": "confirmMilestone", "text": "Confirm Milestone", "enabled": true },
       { "id": "confirmSubmilestone", "text": "Confirm SubMilestone", "enabled": true },
       { "id": "editAllocation", "text": "Edit Allocation", "enabled": true },
-      { "id": "equalSplit", "text": "Over allocation", "enabled": true }
+      { "id": "equalSplit", "text": "Equal allocation", "enabled": true }
 
     ]
 
@@ -2766,7 +2766,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         if (data.showAllocationSplit) {
           this.taskMenu.push(
             { label: 'Edit Allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, '') },
-            { label: 'Over allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, 'Equal') }
+            { label: 'Equal allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, 'Equal') }
           );
         }
         if (data.AssignedTo.ID !== undefined && data.AssignedTo.ID > -1) {
@@ -2774,6 +2774,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         }
       }
       if (data.editMode) {
+        this.taskMenu.splice(this.taskMenu.findIndex(t => t.label === 'Edit'), 1);
         this.taskMenu.push({ label: 'Cancel', icon: 'pi pi-times-circle', command: (event) => this.CancelChanges(data, 'task') });
       }
     }
@@ -6360,9 +6361,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       task = milestoneTask;
     }
     task.allocationPerDay = allocation.allocationPerDay;
-    task.showAllocationSplit = new Date(task.StartDatePart).getTime() !== new Date(task.EndDatePart).getTime() ? true : false;
+    task.showAllocationSplit = new Date(task.pUserStartDatePart).getTime() !== new Date(task.pUserEndDatePart).getTime() ? true : false;
     task.edited = true;
-    if (allocation.allocationType === 'Over allocation') {
+    if (allocation.allocationType === 'Equal allocation per day') {
       task.allocationColor = 'indianred';
     } else if (allocation.allocationType === 'Daily Allocation') {
       task.allocationColor = '';
