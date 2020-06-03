@@ -218,9 +218,8 @@ export class PreStackAllocationComponent implements OnInit {
   getResourceMaxHrs(defaultResourceMaxHrs, day, allocatedHours) {
     const numtotalAllocated = this.common.convertFromHrsMins(day.totalTimeAllocatedPerDay);
     const availableHrs = defaultResourceMaxHrs - numtotalAllocated;
-    const maxHrs = availableHrs < allocatedHours ?
-                   availableHrs < 0 ? allocatedHours : (defaultResourceMaxHrs + allocatedHours) - numtotalAllocated
-                   : availableHrs;
+    const maxHrs = availableHrs < allocatedHours ? allocatedHours : availableHrs;
+    //  availableHrs < 0 ? allocatedHours : (defaultResourceMaxHrs + allocatedHours) - numtotalAllocated
     const maxHrsMins = this.common.roundToPrecision(maxHrs, 0.25);
     return this.common.convertToHrsMins('' + maxHrsMins);
   }
@@ -308,7 +307,7 @@ export class PreStackAllocationComponent implements OnInit {
     });
     const resourceCapacity = this.resourceCapacity.totalUnAllocated;
     const allocationAlert = (new Date(allocationData.startDate).getTime() === new Date(allocationData.endDate).getTime()
-      && +allocationData.budgetHrs < 1 && +resourceCapacity < +allocationData.budgetHrs) ? true : false;
+      && +resourceCapacity < +allocationData.budgetHrs) ? true : false;
     return ({
       allocationPerDay,
       allocationAlert,
