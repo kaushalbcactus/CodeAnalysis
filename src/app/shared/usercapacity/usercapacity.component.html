@@ -88,7 +88,8 @@
                                                     <div id="modalInnerLoader"></div>
                                                     <div id="modalInnerLoaderText">Loading...</div>
                                                 </div>
-                                                <table class="table-bordered table-striped" id="TasksPerDay" style="width: 100%;">
+                                                <app-capacity-tasks (collapse)="collpaseTable($event, user, 'available')" [componentName]="'usercapacity'" [disableCamera]="disableCamera" [tasks]="user.dayTasks"></app-capacity-tasks>
+                                                <!-- <table class="table-bordered table-striped" id="TasksPerDay" style="width: 100%;">
                                                     <thead>
                                                         <tr class="tableHeader">
                                                             <td>
@@ -147,7 +148,7 @@
                                                             </td>
                                                         </tr>
                                                     </tbody>
-                                                </table>
+                                                </table> -->
                                             </td>
                                         </tr>
                                         <tr *ngIf="enableDownload" class="spenttaskRow" [ngStyle]="{'height':'40px','width': '100%','display': 'inline-table','table-layout': 'fixed'}">

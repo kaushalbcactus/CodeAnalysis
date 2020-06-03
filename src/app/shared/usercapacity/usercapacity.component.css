@@ -382,7 +382,7 @@ tr[class$="taskrow"]+tr>td
 .capacityBody #TasksPerDay>tbody>tr>td:first-child,
 .capacityBody #spentTasksPerDay>thead>tr>td:first-child,
 .capacityBody #spentTasksPerDay>tbody>tr>td:first-child {
-    width: 34%; 
+    width: 34%;
 }
 
 .capacityBody>tr>td,
@@ -398,7 +398,7 @@ tr[class$="taskrow"]+tr>td
 
 #capacityTable > .capacityBody{
     max-height: calc(100vh - 355px);
-    display: block; 
+    display: block;
 }
 
 

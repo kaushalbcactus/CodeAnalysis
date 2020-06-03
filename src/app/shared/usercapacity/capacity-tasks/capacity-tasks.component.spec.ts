@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DateUserCapacityComponent } from './date-user-capacity.component';
+import { CapacityTasksComponent } from './capacity-tasks.component';
 
-describe('DateUserCapacityComponent', () => {
-  let component: DateUserCapacityComponent;
-  let fixture: ComponentFixture<DateUserCapacityComponent>;
+describe('CapacityTasksComponent', () => {
+  let component: CapacityTasksComponent;
+  let fixture: ComponentFixture<CapacityTasksComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DateUserCapacityComponent ]
+      declarations: [ CapacityTasksComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(DateUserCapacityComponent);
+    fixture = TestBed.createComponent(CapacityTasksComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
