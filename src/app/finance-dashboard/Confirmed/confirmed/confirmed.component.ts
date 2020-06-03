@@ -13,7 +13,6 @@ import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/time
 import { EditorComponent } from 'src/app/finance-dashboard/PDFEditing/editor/editor.component';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { EditInvoiceDialogComponent } from '../../edit-invoice-dialog/edit-invoice-dialog.component';
 
 @Component({
     selector: 'app-confirmed',
@@ -378,6 +377,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             this.getPOListItems(arrResults);
         }
         this.isPSInnerLoaderHidden = true;
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
         // });
     }
     getPOListItems(data) {
@@ -506,6 +506,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 POValues,
                 PONumber: poItem.Number,
                 POName: poItem.Name,
+                ClientName: this.selectedPurchaseNumber.ClientLegalEntity,
                 ClientLegalEntity: this.selectedPurchaseNumber.ClientLegalEntity,
                 ScheduledDate: new Date(this.datePipe.transform(element.ScheduledDate, 'MMM dd, yyyy')), // this.datePipe.transform(element.ScheduledDate, 'MMM dd, yyyy'),
                 ScheduledDateFormat: this.datePipe.transform(element.ScheduledDate, 'MMM dd, yyyy'),
@@ -729,7 +730,16 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             return;
         }
         else if (this.confirmDialog.title.toLowerCase() === 'edit invoice') {
-            this.EditInvoiceDialog();
+           
+           const  data= {
+                InvoiceType: this.selectedRowItem.ScheduleType,
+                projectContactsData: this.projectContactsData,
+                selectedRowItem: this.selectedRowItem,
+            };
+            this.fdDataShareServie.showEditInvoiceDialog(data).then(batchUrl=>{
+                this.commonService.SetNewrelic('Finance-Dashboard', 'confirmed', 'updateInvoiceLineItem');
+                this.submitForm(batchUrl, 'editInvoice');
+            })
         }
     }
     addProforma() {
@@ -1054,7 +1064,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Proforma Number: ' + this.addToProforma_form.getRawValue().ProformaNumber + ' - Added Sucessfully  ', false);
         } else {
             await this.spServices.executeBatch(batchUrl);
-            this.isPSInnerLoaderHidden = true;
+            this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
             if (type === 'revertInvoice') {
 
                 this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Reverted the invoice of ' + this.selectedRowItem.ProjectCode + ' from Confirmed to Scheduled.', false);
@@ -1134,7 +1144,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
 
         setTimeout(async () => {
             // Refetch PO/CLE Data
-            this.isPSInnerLoaderHidden = false;
+            this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
             await this.fdDataShareServie.getClePO('confirm');
             // Fetch latest PO & CLE
             this.poInfo();
@@ -1228,40 +1238,4 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         }
         this.cdr.detectChanges();
     }
-
-
-    async EditInvoiceDialog() {
-
-        // const cle = await this.getCLEObj(this.selectedRowItem.ClientLegalEntity);
-        // this.selectedRowItem.ClientName = cle.Title;
-        this.selectedRowItem.ClientName = this.selectedRowItem.ClientLegalEntity;
-        const ref = this.dialogService.open(EditInvoiceDialogComponent, {
-            header: 'Edit Invoice',
-            width: '75vw',
-            data: {
-                InvoiceType: this.selectedRowItem.ScheduleType,
-                projectContactsData: this.projectContactsData,
-                selectedRowItem: this.selectedRowItem,
-            },
-            contentStyle: { 'max-height': '80vh', 'overflow-y': 'auto' },
-            closable: false,
-        });
-        ref.onClose.subscribe((editInvoice: any) => {
-            if (editInvoice) {
-                const batchUrl = [];
-                this.isPSInnerLoaderHidden = false;
-                const iliData = {
-                    __metadata: { type: this.constantService.listNames.InvoiceLineItems.type },
-                    AddressType: editInvoice.value.AddressType.value,
-                    ScheduledDate: editInvoice.value.ScheduledDate,
-                    MainPOC: editInvoice.value.POCName.ID
-                };
-                const url = this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, +this.selectedRowItem.Id);
-                this.commonService.setBatchObject(batchUrl, url, iliData, this.constantService.Method.PATCH, this.constantService.listNames.InvoiceLineItems.name)
-                this.commonService.SetNewrelic('Finance-Dashboard', 'confirmed', 'updateInvoiceLineItem');
-                this.submitForm(batchUrl, 'editInvoice');
-            }
-        });
-    }
-
 }

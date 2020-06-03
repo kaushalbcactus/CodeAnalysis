@@ -626,6 +626,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
 
     // PBB
     getPBBData(ScheduleInvoiceForm) {
+
         return {
             __metadata: { type: this.constantService.listNames.ProjectBudgetBreakup.type },
             ProjectLookup: this.projectInfoLineItem.Id,
@@ -635,6 +636,8 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
             OOPBudget: parseFloat(ScheduleInvoiceForm.getRawValue().Amount),
             ProjectCode: ScheduleInvoiceForm.getRawValue().ProjectCode,
         };
+
+
     }
 
     selectedPaymentMode(val: any) {
@@ -765,10 +768,6 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         if (InvoiceType === 'new') {
             url = this.spServices.getItemURL(this.constantService.listNames.PO.name, this.poItem.ID);
             this.commonService.setBatchObject(batchURL, url, this.getPOData(this.poItem, scheduleOopInvoice_form.getRawValue().Amount), this.constantService.Method.PATCH, this.constantService.listNames.PO.name)
-
-            // PFBB
-            url = this.spServices.getReadURL(this.constantService.listNames.ProjectBudgetBreakup.name, null);
-            this.commonService.setBatchObject(batchURL, url, this.getPBBData(scheduleOopInvoice_form), this.constantService.Method.POST, this.constantService.listNames.ProjectBudgetBreakup.name)
         }
         else {
             const TaggedAmount = parseFloat(this.invoice.TaggedAmount) + parseFloat(scheduleOopInvoice_form.getRawValue().Amount)
@@ -780,6 +779,10 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
             url = this.spServices.getItemURL(this.constantService.listNames.Invoices.name, scheduleOopInvoice_form.getRawValue().InvoiceId);
             this.commonService.setBatchObject(batchURL, url, invoiceData, this.constantService.Method.PATCH, this.constantService.listNames.Invoices.name)
         }
+
+        // PFBB
+        url = this.spServices.getReadURL(this.constantService.listNames.ProjectBudgetBreakup.name, null);
+        this.commonService.setBatchObject(batchURL, url, this.getPBBData(scheduleOopInvoice_form), this.constantService.Method.POST, this.constantService.listNames.ProjectBudgetBreakup.name)
 
         //ProjectFinances update
         url = this.spServices.getItemURL(this.constantService.listNames.ProjectFinances.name, this.pfListItem[0].Id);

@@ -7,6 +7,8 @@ import { GlobalService } from 'src/app/Services/global.service';
 import { DatePipe } from '@angular/common';
 import { Observable, Subject } from 'rxjs';
 import { CommonService } from 'src/app/Services/common.service';
+import { EditInvoiceDialogComponent } from '../edit-invoice-dialog/edit-invoice-dialog.component';
+import { DialogService } from 'primeng';
 
 @Injectable({
     providedIn: 'root'
@@ -18,7 +20,8 @@ export class FDDataShareService {
         private fdConstantsService: FdConstantsService,
         private globalObject: GlobalService,
         private datePipe: DatePipe,
-        private commonService: CommonService
+        private commonService: CommonService,
+        private dialogService: DialogService
     ) { }
     private subject = new Subject<any>();
     private expenseCreate = new Subject<any>();
@@ -620,5 +623,63 @@ export class FDDataShareService {
     }
 
 
+    // EditInvoiceDialog(data) {
+    //     this.showEditInvoiceDialog(data).then(editInvoice => {
+    //         if (editInvoice) {
+    //             const batchUrl = [];
+    //             this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
+    //             const iliData = {
+    //                 __metadata: { type: this.constantService.listNames.InvoiceLineItems.type },
+    //                 AddressType: editInvoice.value.AddressType.value,
+    //                 ScheduledDate: editInvoice.value.ScheduledDate,
+    //                 MainPOC: editInvoice.value.POCName.ID
+    //             };
+    //             const url = this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, +data.selectedRowItem.Id);
+    //             this.commonService.setBatchObject(batchUrl, url, iliData, this.constantService.Method.PATCH, this.constantService.listNames.InvoiceLineItems.name)
+    //             this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-DeliverableBased', 'updateInvoiceLineItem');
+    //             this.submitForm(batchUrl, 'editInvoice');
+    //         }
+    //     })
+    // }
 
+
+
+    showEditInvoiceDialog(data): Promise<any> {
+        return new Promise((resolve, reject) => {
+            const ref = this.dialogService.open(EditInvoiceDialogComponent, {
+                header: 'Edit Invoice',
+                width: '75vw',
+                data: data,
+                contentStyle: { 'max-height': '80vh', 'overflow-y': 'auto' },
+                closable: false,
+            });
+            ref.onClose.subscribe((editInvoice: any) => {
+                if (editInvoice) {
+                    const batchUrl = [];
+                    let iliData;
+                    this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
+                    if (data.InvoiceType === 'hourly') {
+                        iliData = {
+                            __metadata: { type: this.constantService.listNames.ProjectFinances.type },
+                            Budget: editInvoice.value.Rate,
+                            HoursSpent: editInvoice.value.HoursSpent
+                        }
+                    }
+                    else {
+                        iliData = {
+                            __metadata: { type: this.constantService.listNames.InvoiceLineItems.type },
+                            AddressType: editInvoice.value.AddressType.value,
+                            ScheduledDate: editInvoice.value.ScheduledDate,
+                            MainPOC: editInvoice.value.POCName.ID
+                        };
+                    }
+                    const url = data.InvoiceType === 'hourly' ? this.spServices.getItemURL(this.constantService.listNames.ProjectFinances.name, +data.selectedRowItem.PFID) : this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, +data.selectedRowItem.Id);
+                    const ListName = data.InvoiceType === 'hourly' ? this.constantService.listNames.ProjectFinances.name : this.constantService.listNames.InvoiceLineItems.name
+                    this.commonService.setBatchObject(batchUrl, url, iliData, this.constantService.Method.PATCH, ListName)
+                    resolve(batchUrl);
+                }
+
+            });
+        });
+    }
 }

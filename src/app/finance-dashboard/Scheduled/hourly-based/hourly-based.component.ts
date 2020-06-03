@@ -12,7 +12,6 @@ import { TimelineHistoryComponent } from './../../../timeline/timeline-history/t
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { ApproveBillingDialogComponent } from './approve-billing-dialog/approve-billing-dialog.component';
-import { EditInvoiceDialogComponent } from '../../edit-invoice-dialog/edit-invoice-dialog.component';
 
 @Component({
     selector: 'app-hourly-based',
@@ -504,7 +503,16 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
             this.getConfirmMailContent('ConfirmInvoice');
             this.getPIByTitle(this.selectedRowItem);
         } else if (this.hourlyDialog.title.toLowerCase() === 'edit invoice') {
-            this.EditInvoiceDialog();
+
+            const data = {
+                InvoiceType: 'hourly',
+                projectContactsData: this.projectContactsData,
+                selectedRowItem: this.selectedRowItem,
+            };
+            this.fdDataShareServie.showEditInvoiceDialog(data).then(batchUrl => {
+                this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-hourlyBased', 'updatePFLItem');
+                this.submitForm(null, batchUrl, 'editInvoice');
+            });
         } else if (this.hourlyDialog.title.toLowerCase() === 'view project details') {
             this.goToProjectDetails(this.selectedRowItem);
         } else if (this.hourlyDialog.title.toLowerCase() === 'show history') {
@@ -819,13 +827,12 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         const arrResults = res.length ? res.map(a => a.retItems) : [];
         console.log('--oo ', arrResults);
         if (type === 'confirmInvoice') {
-
             this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Invoice is Confirmed.', false);
             this.sendConfirmInvoiceMail(invoiceform);
         } else if (type === 'editInvoice') {
-            this.isPSInnerLoaderHidden = true;
+            this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
             this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Invoice Updated.', false);
-            this.isPSInnerLoaderHidden = true;
+           
             this.reFetchData('edit');
         }
     }
@@ -1000,6 +1007,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                 // this.projectInfo();
                 // this.getPCForSentToAMForApproval();
             } else {
+                this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
                 this.getPCForSentToAMForApproval();
             }
             this.isPSInnerLoaderHidden = true;
@@ -1063,36 +1071,5 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         }
         this.cdr.detectChanges();
     }
-
-
-    EditInvoiceDialog() {
-        const ref = this.dialogService.open(EditInvoiceDialogComponent, {
-            header: 'Edit Invoice',
-            width: '75vw',
-            data: {
-                InvoiceType: 'hourly',
-                projectContactsData: this.projectContactsData,
-                selectedRowItem: this.selectedRowItem,
-            },
-            contentStyle: { 'max-height': '80vh', 'overflow-y': 'auto' },
-            closable: false,
-        });
-        ref.onClose.subscribe((editInvoice: any) => {
-            if (editInvoice) {
-                const batchUrl = [];
-                this.isPSInnerLoaderHidden = false;
-                const pfData = {
-                    __metadata: { type: this.constantService.listNames.ProjectFinances.type },
-                    Budget: editInvoice.value.Rate,
-                    HoursSpent: editInvoice.value.HoursSpent
-                };
-                const url = this.spServices.getItemURL(this.constantService.listNames.ProjectFinances.name, +this.selectedRowItem.PFID);
-                this.commonService.setBatchObject(batchUrl, url, pfData, this.constantService.Method.PATCH, this.constantService.listNames.ProjectFinances.name)
-                this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-hourlyBased', 'updatePFLItem');
-                this.submitForm(editInvoice,batchUrl, 'editInvoice');
-            }
-        });
-    }
-
 
 }

@@ -218,7 +218,7 @@ export class FdConstantsService {
         // ,TotalBudget,NetBudget,TotalLinked,TotalInvoiced,TotalScheduled,ScheduledRevenue,RevenueLinked
 
         projectBudgetBreakup: {
-            select: "ID, ProjectLookup, BudgetHours,AuthorId,EditorId",
+            select: "ID, ProjectLookup, BudgetHours,AuthorId,EditorId,OriginalBudget,OOPBudget",
             filter: "ProjectCode eq '{{ProjectCode}}' ",
             // top: 1
         },

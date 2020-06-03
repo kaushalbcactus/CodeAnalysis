@@ -12,7 +12,6 @@ import { CommonService } from 'src/app/Services/common.service';
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
-import { EditInvoiceDialogComponent } from '../../edit-invoice-dialog/edit-invoice-dialog.component';
 
 @Component({
     selector: 'app-oop',
@@ -535,7 +534,15 @@ export class OopComponent implements OnInit, OnDestroy {
             this.getApproveExpenseMailContent('ConfirmInvoice');
             this.getPIByTitle(this.selectedRowItem);
         } else if (this.deliverableDialog.title.toLowerCase() === 'edit invoice') {
-            this.EditInvoiceDialog();
+            const data= {
+                InvoiceType: 'oop',
+                projectContactsData: this.projectContactsData,
+                selectedRowItem: this.selectedRowItem,
+            };
+            this.fdDataShareServie.showEditInvoiceDialog(data).then(batchUrl =>{
+                this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-OOP', 'updateInvoiceLineItem');
+                this.submitForm(batchUrl, 'editInvoice');
+            })
         } else if (this.deliverableDialog.title.toLowerCase() === 'view project details') {
             this.goToProjectDetails(this.selectedRowItem);
         } else if (this.deliverableDialog.title.toLowerCase() === 'show history') {
@@ -574,15 +581,14 @@ export class OopComponent implements OnInit, OnDestroy {
 
     async submitForm(batchUrl, type: string) {
         await this.spServices.executeBatch(batchUrl);
-        this.isPSInnerLoaderHidden = true;
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
         if (type === 'confirmInvoice') {
             this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Invoice is Confirmed.', false);
-            this.isPSInnerLoaderHidden = false;
+            this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
             this.sendCreateExpenseMail();
-            this.reFetchData();
+
         } else if (type === 'editInvoice') {
             this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Invoice Updated.', false);
-            this.isPSInnerLoaderHidden = false;
             this.reFetchData();
         }
         this.isPSInnerLoaderHidden = true;
@@ -601,7 +607,7 @@ export class OopComponent implements OnInit, OnDestroy {
         return mailContent.replace(new RegExp(key, 'g'), value);
     }
 
-    sendCreateExpenseMail() {
+    async sendCreateExpenseMail() {
         const mailSubject = this.selectedRowItem.ProjectCode + '/' + this.selectedRowItem.ClientName + ': Confirmed line item for billing';
         let mailContent = this.mailContentRes.Content;
         mailContent = this.replaceContent(mailContent, '@@Val1@@', 'Hello Invoice Team');
@@ -616,7 +622,7 @@ export class OopComponent implements OnInit, OnDestroy {
         const ccUser = this.getCCList();
         const tos = this.getTosList();
         this.commonService.SetNewrelic('Finance-Dashboard', 'oop-CreateExpense', 'SendMail');
-        this.spOperationsService.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
+        await this.spOperationsService.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
         this.reFetchData();
     }
 
@@ -751,36 +757,5 @@ export class OopComponent implements OnInit, OnDestroy {
             }
         }
         this.cdr.detectChanges();
-    }
-
-
-    EditInvoiceDialog() {
-        const ref = this.dialogService.open(EditInvoiceDialogComponent, {
-            header: 'Edit Invoice',
-            width: '75vw',
-            data: {
-                InvoiceType: 'oop',
-                projectContactsData: this.projectContactsData,
-                selectedRowItem: this.selectedRowItem,
-            },
-            contentStyle: { 'max-height': '80vh', 'overflow-y': 'auto' },
-            closable: false,
-        });
-        ref.onClose.subscribe((editInvoice: any) => {
-            if (editInvoice) {
-                const batchUrl = [];
-                this.isPSInnerLoaderHidden = false;
-                const iliData = {
-                    __metadata: { type: this.constantService.listNames.InvoiceLineItems.type },
-                    AddressType: editInvoice.value.AddressType.value,
-                    ScheduledDate: editInvoice.value.ScheduledDate,
-                    MainPOC: editInvoice.value.POCName.ID
-                };
-                const url = this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, +this.selectedRowItem.Id);
-                this.commonService.setBatchObject(batchUrl, url, iliData, this.constantService.Method.PATCH, this.constantService.listNames.InvoiceLineItems.name)
-                this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-OOP', 'updateInvoiceLineItem');
-                this.submitForm(batchUrl, 'editInvoice');
-            }
-        });
     }
 }
