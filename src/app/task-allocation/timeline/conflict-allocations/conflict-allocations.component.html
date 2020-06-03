@@ -55,7 +55,7 @@
                 Short Title
               </th>
               <th class="hrsAllocated">
-                Hrs allocated within 10 hrs
+                Hrs allocated
               </th>
             </tr>
           </ng-template>
@@ -68,7 +68,7 @@
                 <span>{{ rowData.allocationDate | date: " d MMM, y" }}</span>
               </td>
               <td [attr.colSpan]="3">
-              <p-table [value]="rowData.projects">
+              <p-table class="conflictProjectSection" [value]="rowData.projects">
                 <ng-template pTemplate="body" let-innerRowData let-columns="innercolumns">
                   <tr>
                     <td>
