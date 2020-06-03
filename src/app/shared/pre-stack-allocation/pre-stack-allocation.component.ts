@@ -82,7 +82,7 @@ export class PreStackAllocationComponent implements OnInit {
     const isDailyAllocationValid = !allocationData.allocationType ? this.checkDailyAllocation(resource, allocationData) : false;
     if (!isDailyAllocationValid) {
       await this.equalSplitAllocation(allocationData);
-      this.allocationType = objAllocation.allocationType = 'Over allocation';
+      this.allocationType = objAllocation.allocationType = 'Equal allocation per day';
     } else {
       this.allocationType = objAllocation.allocationType = 'Daily Allocation';
     }

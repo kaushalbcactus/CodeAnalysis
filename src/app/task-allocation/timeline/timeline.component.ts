@@ -188,6 +188,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   assignedUsers = [];
   showBudgetHrs = false;
   budgetHrs = 0;
+  budgetHrsTask: any;
   selectedTask: any;
   displayBody = false;
   graphFlag: boolean;
@@ -1427,15 +1428,18 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       { "id": "confirmMilestone", "text": "Confirm Milestone", "enabled": true },
       { "id": "confirmSubmilestone", "text": "Confirm SubMilestone", "enabled": true },
       { "id": "editAllocation", "text": "Edit Allocation", "enabled": true },
-      { "id": "equalSplit", "text": "Over allocation", "enabled": true }
+      { "id": "equalSplit", "text": "Equal allocation per day", "enabled": true }
 
     ]
 
     let menuItems = [];
-
-    indices.forEach(element => {
-      menuItems.push(menus[element]);
-    });
+    if (!indices) {
+      this.messageService.add({ key: 'gantt-message', severity: 'error', summary: 'Error Message', detail: 'No menus available' });
+    } else {
+      indices.forEach(element => {
+        menuItems.push(menus[element]);
+      });
+    }
 
     return menuItems;
   }
@@ -1544,6 +1548,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   // }
 
   showMenus(task) {
+    task.showAllocationSplit = task.allocationPerDay ? true : false;
     let index;
     if (task.type == "task") {
       if (task.itemType === 'Client Review') {
@@ -1689,18 +1694,18 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   }
 
-  isDragEnable(isStartDate,status) {
-    switch(status) {
-      case 'Not Started' :
-      case 'Not Confirmed' :
-      case 'Not Saved' :
-      return true;            
-      
-      case 'In Progress' :
-      if(!isStartDate)
+  isDragEnable(isStartDate, status) {
+    switch (status) {
+      case 'Not Started':
+      case 'Not Confirmed':
+      case 'Not Saved':
         return true;
-      else
-        return false;
+
+      case 'In Progress':
+        if (!isStartDate)
+          return true;
+        else
+          return false;
 
       default:
         return false;
@@ -1751,8 +1756,12 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
             if (mode === 'resize') {
               let isDrag = this.isDragEnable(isStartDate, task.status)
               return isDrag;
-            } else if(mode === 'move') {
-              return true;
+            } else if (mode === 'move') {
+              if (task.status == 'In Progress') {
+                return false;
+              } else {
+                return true;
+              }
             } else {
               return false;
             }
@@ -1766,14 +1775,14 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
     const onTaskClick = gantt.attachEvent("onTaskClick", (taskId, e) => {
       let task = gantt.getTask(taskId);
-      if (task.itemType !== "Send to client" && task.itemType !== "Client Review" && task.slotType !== 'Slot' && task.type !== "milestone" && task.type !== "submilestone") {
+      if (task.itemType !== "Send to client" && task.itemType !== "Client Review" && task.slotType !== 'Slot' && task.type !== "milestone" && task.type !== "submilestone" && task.AssignedTo.ID !== -1) {
         if (e.target.parentElement.className === "gantt_cell cell_user") {
           this.header = task.submilestone ? task.milestone + ' ' + task.submilestone + ' ' + task.text
             : task.milestone + ' ' + task.text;
           this.sharedObject.resourceHeader = this.header;
           this.onResourceClick(task);
         }
-      } else if(task.itemType == "Send to client" || task.itemType == "Client Review") {
+      } else if ((task.itemType == "Send to client" || task.itemType == "Client Review") && e.target.parentElement.className === "gantt_cell cell_user") {
         this.messageService.add({ key: 'gantt-message', severity: 'error', summary: 'Error Message', detail: 'Resource view is unavailable for these tasks please edit the task to change resource' });
       }
       var button = e.target.closest("[data-action]")
@@ -1850,34 +1859,34 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   }
 
-  onLeftClick(event, taskId) {
-    if (gantt.ext.zoom.getCurrentLevel() < 3) {
-      if (taskId) {
-        let task = gantt.getTask(taskId);
-        const menus = this.showMenus(task);
-        this.menu.clearAll();
-        this.menu.loadStruct(menus);
-        this.currentTaskId = taskId;
-        this.startDate = task.start_date;
-        this.endDate = task.end_date;
-        this.resetTask = task;
-        let x = event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft,
-          y = event.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+  // onLeftClick(event, taskId) {
+  //   if (gantt.ext.zoom.getCurrentLevel() < 3) {
+  //     if (taskId) {
+  //       let task = gantt.getTask(taskId);
+  //       const menus = this.showMenus(task);
+  //       this.menu.clearAll();
+  //       this.menu.loadStruct(menus);
+  //       this.currentTaskId = taskId;
+  //       this.startDate = task.start_date;
+  //       this.endDate = task.end_date;
+  //       this.resetTask = task;
+  //       let x = event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft,
+  //         y = event.clientY + document.body.scrollTop + document.documentElement.scrollTop;
 
-        if (task.status !== 'Completed' || task.status !== "Auto Closed") {
-          this.menu.showContextMenu(x, y);
-        }
+  //       if (task.status !== 'Completed' || task.status !== "Auto Closed") {
+  //         this.menu.showContextMenu(x, y);
+  //       }
 
-        if (task) {
-          return false;
-        }
+  //       if (task) {
+  //         return false;
+  //       }
 
-        return true;
-      }
-    } else {
-      return false;
-    }
-  }
+  //       return true;
+  //     }
+  //   } else {
+  //     return false;
+  //   }
+  // }
 
   async timeChange() {
     const isStartDate = this.dragClickedInput.indexOf('start_date') > -1 ? true : false;
@@ -1962,6 +1971,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.showBudgetHrs = true;
     this.updatedTasks = task;
     this.budgetHrs = task.budgetHours;
+    this.budgetHrsTask = task;
   }
 
   ganttNotification() {
@@ -2216,6 +2226,12 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       }
     }
   }
+  setBudgetHours(task) {
+    if (task.type !== 'milestone' && task.type !== 'submilestone') {
+      let time: any = this.commonService.getHrsAndMins(task.start_date, task.end_date);
+      this.maxBudgetHrs = time.maxBudgetHrs;
+    }
+  }
 
   async saveTask(isBudgetHrs, updatedDataObj) {
     if (isBudgetHrs) {
@@ -2223,6 +2239,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
       allTasks.data.forEach((task) => {
         if (task.id == this.updatedTasks.id) {
+          // let time: any = this.commonService.getHrsAndMins(task.start_date, task.end_date);
+          // this.maxBudgetHrs = time.maxBudgetHrs;
           task.budgetHours = this.budgetHrs;
           task.edited = true;
         }
@@ -2410,7 +2428,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     })
     // this.taskAllocateCommonService.ganttParseObject = allTasks;
     this.GanttchartData = allTasks.data;
-    await this.loadComponent();
+    this.showGanttChart(false);
     setTimeout(() => {
       this.scrollToTaskDate(this.resetTask.pUserEnd);
     }, 1000);
@@ -2760,7 +2778,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         if (data.showAllocationSplit) {
           this.taskMenu.push(
             { label: 'Edit Allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, '') },
-            { label: 'Over allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, 'Equal') }
+            { label: 'Equal allocation per day', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, 'Equal') }
           );
         }
         if (data.AssignedTo.ID !== undefined && data.AssignedTo.ID > -1) {
@@ -2827,7 +2845,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
       return event.AssignedTo && event.AssignedTo.ID === objt.UserName.ID;
     });
-    if (event.type !== 'milestone' || event.type !== 'submilestone') {
+    if (event.type !== 'milestone' && event.type !== 'submilestone') {
       let time: any = this.commonService.getHrsAndMins(event.start_date, event.end_date);
 
       this.maxBudgetHrs = time.maxBudgetHrs;
@@ -3734,7 +3752,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     let min = bhrs.split(':')[1];
 
     if (hrs > maxHrs || min > maxMin) {
-      node.budgetHours = 0
+      node.budgetHours = 0;
+      this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: 'Budget hours is set to zero because given budget hours is greater than task time period.' });
+      this.messageService.add({ key: 'gantt-message', severity: 'error', summary: 'Error Message', detail: 'Budget hours is set to zero because given budget hours is greater than task time period.' });
     }
     this.changeDateOfEditedTask(node, type);
     await this.dailyAllocateTask(resource, node);
@@ -6223,7 +6243,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       'allocationPerDay': task.allocationPerDay ? task.allocationPerDay : ''
     };
   }
- 
+
   getObjectByValue(milestone, type, tempID, TempSubmilePositionArray, mil) {
     const defaultDate = this.getDefaultDate();
     return {
@@ -6337,7 +6357,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     task.allocationPerDay = allocation.allocationPerDay;
     task.showAllocationSplit = new Date(task.StartDatePart).getTime() !== new Date(task.EndDatePart).getTime() ? true : false;
     task.edited = true;
-    if (allocation.allocationType === 'Over allocation') {
+    if (allocation.allocationType === 'Equal allocation per day') {
       task.allocationColor = 'indianred';
     } else if (allocation.allocationType === 'Daily Allocation') {
       task.allocationColor = '';
