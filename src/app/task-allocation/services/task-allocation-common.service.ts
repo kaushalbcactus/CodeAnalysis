@@ -275,6 +275,7 @@ export class TaskAllocationCommonService {
     milestone.allocationColor = '';
     milestone.showAllocationSplit = task ? task.showAllocationSplit : false;
     milestone.allocationPerDay = task ? task.allocationPerDay : '';
+    milestone.allocationTypeLoader = false;
     return milestone;
   }
 
@@ -303,7 +304,7 @@ export class TaskAllocationCommonService {
       'pUserEndTimePart': data.type == 'task' ? this.getTimePart(convertedDate.convertedEndDate) : '',
       'status': data.Status,
       'id': data.Id,
-      'text': data.type == 'submilestone' ? milestoneObj.isNext && NextSubMilestone.position === data.position && NextSubMilestone.status === data.status ? data.subMile + ' (Next)' : data.subMile :
+      'text': data.type == 'submilestone' ? milestoneObj.isCurrent && NextSubMilestone.position === data.position && NextSubMilestone.status === data.status ? data.subMile + ' (Next)' : milestoneObj.isNext && NextSubMilestone.position === data.position && NextSubMilestone.status === data.status ? data.subMile + ' (Next)' : data.subMile :
         data.type == 'task' ? data.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + data.Milestone + ' ', '') :
           this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === data.Title ? data.Title + " (Current)" : this.sharedObject.oTaskAllocation.oProjectDetails.nextMilestone === data.Title ? dbSubMilestones.length > 0 ?  data.Title : data.Title + ' (Next)' : data.Title,
       'title':  data.type == 'submilestone' ? data.subMile :
@@ -361,7 +362,8 @@ export class TaskAllocationCommonService {
       'subMilestonePresent': dbSubMilestones.length > 0 ? true : false,
       'allocationPerDay': data.AllocationPerDay ? data.AllocationPerDay : '',
       'allocationColor': '',
-      'showAllocationSplit': data.AllocationPerDay ? true : false
+      'showAllocationSplit': data.AllocationPerDay ? true : false,
+      'allocationTypeLoader': false
     };
     return ganttObject;
   }

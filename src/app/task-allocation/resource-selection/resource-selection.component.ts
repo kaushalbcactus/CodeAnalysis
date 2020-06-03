@@ -40,6 +40,7 @@ export class ResourceSelectionComponent implements OnInit {
     if(this.sharedObject.data) {
       let data = this.sharedObject.data;
       this.header = this.sharedObject.resourceHeader;
+      console.log(data);
       await this.onLoad(data);
     }
   }
@@ -50,8 +51,25 @@ export class ResourceSelectionComponent implements OnInit {
 
   async onLoad(data: any) {
     await this.GetResources();
-    this.searchCapacityForm.patchValue({ rangeDates: [data.startTime,data.endTime]});
-    // this.Resources = data.task.resources;
+    let resArr = [];
+    this.sharedObject.data.task.resources.forEach((e)=>{ resArr.push(this.Resources.find(r=> r.value.UserName.Id == e.UserName.ID )) })
+    this.Resources = resArr;
+    resArr = resArr.map(({ value }) => value);
+   
+    let filterBuckets = [];
+    let filterPracticeArea = [];
+
+    let bucket = [...new Map(resArr.filter(e=> e.Bucket).map(t=> t.Bucket).map(item => [item,item])).values()]
+    bucket.forEach((e)=>{ filterBuckets.push(this.Buckets.find(r=> r.value == e )) })
+    this.Buckets = filterBuckets;
+
+    let practiceArea = [...new Map(resArr.filter(e=> e.Practice_x0020_Area).map(t=> t.Practice_x0020_Area).map(item => [item,item])).values()]
+    practiceArea.forEach((e)=>{ filterPracticeArea.push(this.PracticeAreas.find(r=> r.value == e )) })
+    this.PracticeAreas = filterPracticeArea
+
+    console.log(filterBuckets ,filterPracticeArea)
+   
+    this.searchCapacityForm.patchValue({bucket: bucket, practicearea: practiceArea, resources: resArr ,rangeDates: [data.startTime,data.endTime]});
     this.userCapacity.loaderenable = true;
     this.userCapacity.Onload(data)
   }

@@ -2,6 +2,7 @@
   font-size: 18px;
   margin-left: 50px;
   cursor: pointer;
+  vertical-align: text-top;
 }
 ::ng-deep .taskTitle a{
   color: #db1721 !important;

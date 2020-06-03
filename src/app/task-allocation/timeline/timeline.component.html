@@ -106,7 +106,7 @@
             </div>
             <div>
               <div class="input-color">
-                  <label>Over allocation</label>
+                  <label>Equal allocation per day</label>
                   <div class="color-box" style="background-color: indianred;"></div>
               </div>
               <!-- <div class="input-color">
@@ -333,10 +333,9 @@
                         </td>
                         <!--Daily Allocation Type-->
                         <td [style.backgroundColor]="rowData?.allocationColor">
-                            <!-- <div fxLayout="column" style="padding: 2vw;" fxLayoutAlign="center center" *ngIf="allocationTypeLoader">
+                            <div fxLayout="column" fxLayoutAlign="center center" *ngIf="rowData?.allocationTypeLoader">
                               <div id="allocationTypeLoader"></div>
-                              <div id="allocationTypeLoaderText">Loading...</div>
-                            </div> -->
+                            </div>
                         </td>
                         <td [ngStyle]="{'text-align': 'rowData.editMode' ? 'center':'left'}">
                             <span *ngIf="rowData.type==='task' && !rowData.editMode">{{rowData.DisableCascade === true  ? 'Yes':'No'}}</span>
@@ -523,7 +522,7 @@
                 Budget Hrs
             </div>
             <div class="p-col-4">
-                <input type="number" pInputText [(ngModel)]="budgetHrs" [ngModelOptions]="{standalone: true}" min="0" value="0" step="0.25">
+                <input type="number" pInputText [(ngModel)]="budgetHrs" [ngModelOptions]="{standalone: true}" (change)="setBudgetHours(budgetHrsTask)" min="0"  max={{maxBudgetHrs}} value="0" step="0.25">
             </div>
         </div>
     </form>

@@ -51,3 +51,7 @@
     margin-top: -2.0em;
     width: 9%;    
 }
+
+.ui-float-label> label {
+    top: -13px !important;
+}
