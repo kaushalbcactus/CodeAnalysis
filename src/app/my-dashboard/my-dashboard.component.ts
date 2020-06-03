@@ -117,7 +117,6 @@ export class MyDashboardComponent implements OnInit {
 
 
   async checkTaskAvailable() {
- debugger;
     const res = await this.myDashboardConstantsService.getOpenTaskForDialog();
     if (res.length > 0) { 
       const ref = this.dialogService.open(CurrentCompletedTasksTableComponent, { 

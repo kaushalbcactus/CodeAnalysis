@@ -96,7 +96,7 @@
             <div class="p-col-12 p-md-12 p-lg-6 p-grid" *ngIf="InvoiceType === 'hourly'">
                 <div class="p-col-6 p-md-4 p-lg-4 editInvoiceitem">Rate</div>
                 <div class="p-col-6 p-md-8 p-lg-8 editInvoiceitem">
-                    <input type="number" class="cls_editInvRate" style="width: 100%;" formControlName="Rate" placeholder="Rate" readonly pInputText>
+                    <input type="number" class="cls_editInvRate" style="width: 100%;" formControlName="Rate" placeholder="Rate" pInputText>
                     <div class="error" *ngIf="isEditInvoiceFormSubmit && EditInvoiceForm.controls.Rate.errors">
                         <div *ngIf="EditInvoiceForm.controls.Rate.errors.required">
                             Please define rate.</div>

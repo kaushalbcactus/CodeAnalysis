@@ -104,8 +104,6 @@ export class EditInvoiceDialogComponent implements OnInit {
 
 
   getPOCNamesForEditInv(rowItem: any) {
-
-    debugger;
     this.listOfPOCNames = [];
     let rowVal: any = {};
     this.projectContactsData.filter((item) => {

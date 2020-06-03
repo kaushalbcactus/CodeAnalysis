@@ -583,7 +583,6 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     }
 
     getPOObj(poObj) {
-        debugger;
         this.poLookupDataObj.ID = poObj.ID;
         this.poLookupDataObj.ExpiryDate = poObj.POExpiryDate;
         this.poLookupDataObj.TotalLinked = poObj.TotalLinked ? poObj.TotalLinked : 0;
@@ -825,9 +824,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
             this.sendConfirmInvoiceMail(invoiceform);
         } else if (type === 'editInvoice') {
             this.isPSInnerLoaderHidden = true;
-
             this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Invoice Updated.', false);
-
             this.isPSInnerLoaderHidden = true;
             this.reFetchData('edit');
         }

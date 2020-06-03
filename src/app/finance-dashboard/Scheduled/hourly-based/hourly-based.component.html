@@ -162,7 +162,7 @@
 <!-- <button type="button" (click)="confirm1()" pButton icon="pi pi-check" label="Confirm"></button> -->
 
 <!-- Approve Accept Reject Modal -->
-<p-dialog header="Edit Invoice" [(visible)]="hourlyModal" [modal]="true" [draggable]="false" [responsive]="true" [style]="{'width': '40%', 'top':'0px'}" [maximizable]="false" [baseZIndex]="10000" (onHide)="cancelFormSub('editDeliverable')">
+<!-- <p-dialog header="Edit Invoice" [(visible)]="hourlyModal" [modal]="true" [draggable]="false" [responsive]="true" [style]="{'width': '40%', 'top':'0px'}" [maximizable]="false" [baseZIndex]="10000" (onHide)="cancelFormSub('editDeliverable')">
 
     <form id="myform" [formGroup]="editHourly_form">
         <div class="ui-g">
@@ -205,5 +205,5 @@
         <button pButton type="button" class="fdBtn" label="Save" [disabled]="submitBtn.isClicked" (click)="onSubmit(null,'editInvoice')"></button>
         <button pButton type="button" class="fdBtn" label="Cancel" (click)="cancelFormSub('editHourly')"></button>
     </p-footer>
-</p-dialog>
+</p-dialog> -->
 <app-timeline-history #timelineRef></app-timeline-history>

@@ -512,8 +512,6 @@ export class FeedbackPopupComponent implements OnInit {
    */
   async openPopup(tasks: any, reviewTask: {}) {
     const previousTasks = [];
-
-    debugger;
     this.scorecardTasks.currentTask = reviewTask;
     this.scorecardTemplates.templates = await this.getTemplates();
     for (const element of tasks) {

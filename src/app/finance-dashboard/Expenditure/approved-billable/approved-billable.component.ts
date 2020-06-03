@@ -600,30 +600,28 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
             totalInvoiced = parseFloat(oldtotalInvoiced) + parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
             oopInvoiced = parseFloat(oldoopInvoiced) + parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
         }
+
+        let Data;
         if (InvoiceType === 'new') {
-            const Data = {
-                __metadata: { type: this.constantService.listNames.ProjectFinanceBreakup.type },
-                Amount: pfbAmount,
-                AmountOOP: pfbAmountOOP,
+            Data = {
                 ScheduledOOP: pfbScheduledOOP,
                 TotalScheduled: pfbTotalScheduled,
             }
-            if (!this.pfbListItem.length) {
-                Data['POLookup'] = ScheduleInvoiceForm.getRawValue().PONumber.Id;
-                Data['ProjectNumber'] = ScheduleInvoiceForm.getRawValue().ProjectCode;
-                Data['Status'] = this.constantService.projectFinanceBreakupList.status.Active;
-            }
-            return Data;
-
-        }
-        else {
-            return {
-                __metadata: { type: this.constantService.listNames.ProjectFinanceBreakup.type },
+        } else {
+            Data = {
                 TotalInvoiced: totalInvoiced,
                 InvoicedOOP: oopInvoiced
             }
         }
-
+        Data['__metadata'] = { type: this.constantService.listNames.ProjectFinanceBreakup.type };
+        Data['Amount'] = pfbAmount;
+        Data['AmountOOP'] = pfbAmountOOP;
+        if (!this.pfbListItem.length) {
+            Data['POLookup'] = ScheduleInvoiceForm.getRawValue().PONumber.Id;
+            Data['ProjectNumber'] = ScheduleInvoiceForm.getRawValue().ProjectCode;
+            Data['Status'] = this.constantService.projectFinanceBreakupList.status.Active;
+        }
+        return Data;
     }
 
     // PBB
@@ -631,7 +629,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         return {
             __metadata: { type: this.constantService.listNames.ProjectBudgetBreakup.type },
             ProjectLookup: this.projectInfoLineItem.Id,
-            Status: 'Approved',
+            Status: this.constantService.STATUS.APPROVED,
             ApprovalDate: new Date().toISOString(),
             OriginalBudget: parseFloat(ScheduleInvoiceForm.getRawValue().Amount),
             OOPBudget: parseFloat(ScheduleInvoiceForm.getRawValue().Amount),
@@ -758,8 +756,6 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
 
 
     onSubmit(scheduleOopInvoice_form, InvoiceType: string, type: string) {
-
-        debugger
         const batchURL = [];
 
         let url = this.spServices.getReadURL(this.constantService.listNames.InvoiceLineItems.name, null);
@@ -802,11 +798,8 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         url = this.spServices.getItemURL(this.constantService.listNames.SOW.name, this.SOW.ID);
         this.commonService.setBatchObject(batchURL, url, this.getsowData(scheduleOopInvoice_form, InvoiceType), this.constantService.Method.PATCH, this.constantService.listNames.SOW.name)
 
-
-
         console.log(batchURL)
-
-        // this.submitForm(batchURL, type);
+        this.submitForm(batchURL, type);
 
     }
 

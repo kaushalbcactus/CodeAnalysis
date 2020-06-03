@@ -51,7 +51,6 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
 
   async ngOnInit() {
 
-    debugger;
     this.TabName = this.route.snapshot.data.type;
     this.cols = [
       { field: 'MainStatus', header: 'Status', visibility: true, exportable: true },
@@ -65,7 +64,6 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
       { field: 'TimeSpent', header: 'Time Spent', visibility: true, exportable: true },
     ];
 
-    debugger;
     await this.processData(this.config.data ? this.config.data.allpopupTasks : this.allTasksData);
     // if (this.config.data) {
     //   await this.processData(this.config.data.allpopupTasks);
@@ -152,7 +150,6 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
   }
 
   exportTasks() {
-    debugger;
     this.TasksTable.exportCSV();
   }
 

@@ -473,7 +473,6 @@ export class ProjectAttributesComponent implements OnInit {
    */
   editProject(projObj) {
 
-    debugger;
     if (projObj.ActualStartDate) {
       const actualStartDate = new Date(projObj.ActualStartDate);
       const allowedDate = this.commonService.CalculateminstartDateValue(new Date(), 3);

@@ -113,7 +113,6 @@ export class ScheduleOopInvoiceDialogComponent implements OnInit {
     this.poItem.OOPLinked = this.poItem.OOPLinked ? this.poItem.OOPLinked : 0;
 
     if (this.poItem) {
-      debugger;
       this.arrAdvanceInvoices = [];
       const PoExist = this.PoAdvanceInvoiceList.find(c => c.Id === this.poItem.ID);
       if (!PoExist) {
@@ -185,7 +184,6 @@ export class ScheduleOopInvoiceDialogComponent implements OnInit {
   }
 
   getPONumberFromCLE(cli) {
-    debugger;
     this.purchaseOrdersList.map((x) => {
       if (x.ClientLegalEntity === cli.ClientLegalEntity) {
         if (this.matchCurrency(x)) {
@@ -207,7 +205,6 @@ export class ScheduleOopInvoiceDialogComponent implements OnInit {
 
 
   getPOCFromPCLE(cle) {
-    debugger;
     this.listOfPOCs = [];
     for (let i = 0; i < this.projectContactsData.length; i++) {
       const element = this.projectContactsData[i];
@@ -290,7 +287,6 @@ export class ScheduleOopInvoiceDialogComponent implements OnInit {
 
   setValInScheduleOop(selectedLineItems: any) {
     let amt = 0;
-    debugger;
     for (let i = 0; i < this.selectedAllRowsItem.length; i++) {
       const element = this.selectedAllRowsItem[i];
       amt += parseFloat(element.ClientAmount ? element.ClientAmount : element.TotalInvoice);
