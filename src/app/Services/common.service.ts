@@ -34,7 +34,6 @@ export class CommonService {
         private pmConstant: PmconstantService, public sharedObject: GlobalService,
         public taskAllocationService: TaskAllocationConstantsService,
         private datePipe: DatePipe,
-        public common: CommonService,
         public dialogService: DialogService
     ) { }
 
@@ -1013,7 +1012,7 @@ export class CommonService {
         const arrAllocation = strAllocation ? strAllocation.split(/\n/) : [];
         const strDay = arrAllocation.find(a => a.indexOf(strDate) > -1);
         const value = strDay ? this.getDateTimeFromString(strDay).value : 0;
-        return value ? this.common.convertFromHrsMins(value.hours + ':' + value.mins) : optionalValToSet;
+        return value ? this.convertFromHrsMins(value.hours + ':' + value.mins) : optionalValToSet;
        } else {
         return optionalValToSet;
       }
