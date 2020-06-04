@@ -2092,7 +2092,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
       } else {
         const Title: string = task.itemType === 'submilestone' && task.milestone ? task.milestone + ' - ' + task.title : task.title;
-        const message: string = 'Are you sure that you want to Confirm ' + Title + ' ?';
+        const message: string = 'Are you sure that you want to Confirm \'' + Title + '\' milestone ?';
         const conflictDetails: IConflictResource[] = await this.conflictAllocation.checkConflictsAllocations(rowNode, this.milestoneData);
         if (conflictDetails.length) {
           // this.capacityObj.conflictAllocation = true;
@@ -4423,13 +4423,17 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
   showConflictAllocations(task, conflictDetail, node) {
+    let header = task.itemType.submilestone ? task.milestone + ' ( ' + task.title + ' )'
+                  : task.title;
+    header = 'Conflicting Allocations - ' + this.oProjectDetails.projectCode + '-' + header;
     const ref = this.dialogService.open(ConflictAllocationsComponent, {
       data: {
         conflictDetail,
         node,
-        originalData: this.milestoneData
+        originalData: this.milestoneData,
+        project: this.oProjectDetails.projectCode
       },
-      header: 'Conflicting Allocations ',
+      header,
       width: '95vw',
       height: '80vh',
       contentStyle: { "height": "80vh", "overflow": "auto" },
@@ -4440,7 +4444,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       if (detail.action.toLowerCase() === 'save') {
         if (task) {
           const Title = task.itemType === 'submilestone' && task.milestone ? task.milestone + ' - ' + task.title : task.title;
-          const msg = 'Are you sure that you want to Confirm ' + Title + ' ?';
+          const msg = 'Are you sure that you want to Confirm \'' + Title + '\' milestone ?';
           const conflictMessage = detail.conflictResolved ? '' + msg : 'Conflict unresolved. ' + msg;
           this.setAsNextMilestoneCall(task, conflictMessage);
         } else {

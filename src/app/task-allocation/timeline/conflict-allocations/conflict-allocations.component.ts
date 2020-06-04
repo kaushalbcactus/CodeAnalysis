@@ -21,13 +21,14 @@ export class ConflictAllocationsComponent implements OnInit, AfterViewInit {
   public conflicTasks: any;
   public node: TreeNode;
   public milestoneData: TreeNode[];
+  public projectCode: string;
   public hideLoader: boolean;
   @ViewChild('UserCapacity', { static: false }) userCapacity: UsercapacityComponent;
   constructor(public popupData: DynamicDialogConfig, public globalService: GlobalService,
-              public popupConfig: DynamicDialogRef, public allocationCommon: TaskAllocationCommonService,
-              public commonService: CommonService, private usercapacityComponent: UsercapacityComponent,
-              private allocationConstant: TaskAllocationConstantsService, private spServices: SPOperationService,
-              private globalConstant: ConstantsService) { }
+    public popupConfig: DynamicDialogRef, public allocationCommon: TaskAllocationCommonService,
+    public commonService: CommonService, private usercapacityComponent: UsercapacityComponent,
+    private allocationConstant: TaskAllocationConstantsService, private spServices: SPOperationService,
+    private globalConstant: ConstantsService) { }
   public conflictResolved = false;
   ngOnInit() {
     this.cols = [
@@ -40,6 +41,7 @@ export class ConflictAllocationsComponent implements OnInit, AfterViewInit {
     this.conflicTasks = this.popupData.data.conflictDetail ? this.popupData.data.conflictDetail : [];
     this.node = this.popupData.data.node ? this.popupData.data.node : {};
     this.milestoneData = this.popupData.data.originalData ? this.popupData.data.originalData : {};
+    this.projectCode = this.popupData.data.project ? this.popupData.data.project : '';
     this.popupData.data = null;
     this.activeIndex = 0;
     this.hideLoader = true;
@@ -49,7 +51,9 @@ export class ConflictAllocationsComponent implements OnInit, AfterViewInit {
   }
 
   goToProjectDetails(data: any): string {
-    return this.globalService.sharePointPageObject.webAbsoluteUrl + '/dashboard#/taskAllocation?ProjectCode=' + data.projectCode;
+    if (this.projectCode !== data.projectCode) {
+      return this.globalService.sharePointPageObject.webAbsoluteUrl + '/dashboard#/taskAllocation?ProjectCode=' + data.projectCode;
+    }
   }
 
   save(): void {
@@ -193,7 +197,7 @@ export class ConflictAllocationsComponent implements OnInit, AfterViewInit {
     return uniqueProjectCodes;
   }
 
-  async getProjectShortTitle(projectCodes, existingProjectInfo)   {
+  async getProjectShortTitle(projectCodes, existingProjectInfo) {
     const batchUrl = [];
     let projectInformation = [];
     const options: IQueryOptions = {
