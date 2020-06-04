@@ -47,9 +47,6 @@ body .ui-accordion .ui-accordion-header:not(.ui-state-disabled).ui-state-active:
   border-bottom: 0px;
 }
 
-
-
-
 ::ng-deep #capacityTable {
   margin-top: 10px!important;
 }
