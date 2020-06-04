@@ -1909,6 +1909,11 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         }
       });
 
+      const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
+        return this.singleTask.AssignedTo.ID === objt.UserName.ID;
+      });
+      await this.dailyAllocateTask(resource, this.singleTask);
+
       this.GanttchartData = allTasks.data;
       this.ganttNotification();
     } else {
@@ -2235,61 +2240,89 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     }
   }
 
+  updateMilestoneTaskObject(updatedTask, milestoneTask) {
+    let task = updatedTask.value;
+
+    milestoneTask.start_date = task.startDate;
+    milestoneTask.pUserStartDatePart = this.getDatePart(task.startDate);
+    milestoneTask.pUserStartTimePart = task.startDateTimePart
+    milestoneTask.end_date = task.endDate;
+    milestoneTask.pUserEndDatePart = this.getDatePart(task.endDate);
+    milestoneTask.pUserEndTimePart = task.endDateTimePart;
+    milestoneTask.budgetHours = task.budgetHrs;
+    milestoneTask.DisableCascade = task.disableCascade;
+    milestoneTask.AssignedTo = task.resource
+    milestoneTask.user = task.resource.Title
+    milestoneTask.tat = task.tat
+
+    return milestoneTask;
+  }
+
   async saveTask(isBudgetHrs, updatedDataObj) {
     if (isBudgetHrs) {
       let allTasks = gantt.serialize();
 
-      allTasks.data.forEach((task) => {
-        if (task.id == this.updatedTasks.id) {
-          // let time: any = this.commonService.getHrsAndMins(task.start_date, task.end_date);
-          // this.maxBudgetHrs = time.maxBudgetHrs;
-          task.budgetHours = this.budgetHrs;
-          task.edited = true;
-        }
-        if (task.type == 'milestone') {
-          if (task.title == this.updatedTasks.milestone) {
-            //if (task.title.replace(' (Current)', '') == this.updatedTasks.milestone) {
+      if(this.budgetHrs == 0 && this.updatedTasks.type !== 'milestone'){ 
+        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Add Budget Hours' });
+      } else {
+        allTasks.data.forEach((task) => {
+          if (task.id == this.updatedTasks.id) {
+            // let time: any = this.commonService.getHrsAndMins(task.start_date, task.end_date);
+            // this.maxBudgetHrs = time.maxBudgetHrs;
+            task.budgetHours = this.budgetHrs;
             task.edited = true;
-            task.open = true;
           }
-        }
-      })
-
-      this.GanttchartData = allTasks.data;
-      // this.taskAllocateCommonService.ganttParseObject = allTasks;
-
-      // allTasks = allTasks.data.filter(e => e.edited == true);
-
-      // allTasks.forEach((task) => {
-      //   this.milestoneData.forEach((item: any) => {
-      //     if (task.type == "milestone" && task.id == item.data.id) {
-      //       item.data.budgetHours = task.budgetHours
-      //       item.data.edited = true;
-      //     }
-      //   })
-      // });
-      this.showBudgetHrs = false;
-      this.ganttNotification();
-      this.showGanttChart(false);
-      setTimeout(() => {
-        this.scrollToTaskDate(this.updatedTasks.end_date);
-      }, 1000);
-
+          if (task.type == 'milestone') {
+            if (task.title == this.updatedTasks.milestone) {
+              //if (task.title.replace(' (Current)', '') == this.updatedTasks.milestone) {
+              task.edited = true;
+              task.open = true;
+            }
+          }
+        })
+  
+        this.GanttchartData = allTasks.data;
+        // this.taskAllocateCommonService.ganttParseObject = allTasks;
+  
+        // allTasks = allTasks.data.filter(e => e.edited == true);
+  
+        // allTasks.forEach((task) => {
+        //   this.milestoneData.forEach((item: any) => {
+        //     if (task.type == "milestone" && task.id == item.data.id) {
+        //       item.data.budgetHours = task.budgetHours
+        //       item.data.edited = true;
+        //     }
+        //   })
+        // });
+        this.showBudgetHrs = false;
+        this.ganttNotification();
+        this.showGanttChart(false);
+        setTimeout(() => {
+          this.scrollToTaskDate(this.updatedTasks.end_date);
+        }, 1000);
+  
+      }
 
     } else if (updatedDataObj.reset) {
       this.close();
     } else {
-      // let updatedTask = updatedDataObj.updatedTask
-      const cascadingObject = updatedDataObj.cascadingObject;
-      const scrollDate = new Date(cascadingObject.node.end_date);
-      if (Object.keys(cascadingObject).length) {
-        this.setDateToCurrent(cascadingObject.node);
-        ////// Cascade future  dates
-        this.DateChange(cascadingObject.node, cascadingObject.type);
-      }
       let allTasks = {
         data: []
       };
+      let scrollDate;
+      // let updatedTask = updatedDataObj.updatedTask
+      const cascadingObject = updatedDataObj.cascadingObject;
+      if (Object.keys(cascadingObject).length && !Object.values(cascadingObject).some(x => (x == '')) ) {
+        scrollDate = new Date(cascadingObject.node.end_date);
+        this.setDateToCurrent(cascadingObject.node);
+        ////// Cascade future  dates
+        this.DateChange(cascadingObject.node, cascadingObject.type);
+      } else {
+        let updatedTask = this.updateMilestoneTaskObject(updatedDataObj.updatedTask , this.updatedTasks);
+        scrollDate = new Date(updatedTask.end_date);
+        this.setDateToCurrent(updatedTask)
+      }
+     
       allTasks.data = this.getGanttTasksFromMilestones(this.milestoneData, true);
       allTasks.data.forEach((task) => {
         if (task.type == "milestone") {
