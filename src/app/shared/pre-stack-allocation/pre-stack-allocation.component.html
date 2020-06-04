@@ -48,7 +48,7 @@
                 rowData.Allocation.valueHrs + '.' + common.getMinsValue(rowData.Allocation.valueMins)
               }}
             </div>
-            <div class="timepicker">
+            <div class="timepicker" *ngIf="rowData.Allocation.maxMins">
               <ngx-material-timepicker-toggle [for]="picker"></ngx-material-timepicker-toggle>
               <ngx-material-timepicker
                 [preventOverlayClick]="true"

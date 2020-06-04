@@ -28,7 +28,8 @@
   <ng-template pTemplate="body" let-rowData let-columns="columns">
     <tr class="tableBody">
       <td class="taskTitle UserTasksRow">
-          <a [href]="goToProjectDetails(rowData)">{{rowData.title}} <span *ngIf='rowData.SubMilestones'> - {{rowData.SubMilestones}} </span><span *ngIf='rowData.shortTitle'>({{rowData.shortTitle}})</span></a>
+          <a *ngIf="rowData.projectCode !== 'Adhoc'; else elseblock" [href]="goToProjectDetails(rowData)">{{rowData.title}} <span *ngIf='rowData.SubMilestones'> - {{rowData.SubMilestones}} </span><span *ngIf='rowData.shortTitle'>({{rowData.shortTitle}})</span></a>
+          <ng-template #elseblock>{{rowData.title}}</ng-template>
       </td>
       <td>
           <span>{{(rowData.startDate | date:'dd MMM yy h:mm a') || '--' }}</span>

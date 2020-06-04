@@ -164,8 +164,8 @@ export class PreStackAllocationComponent implements OnInit {
         Allocation: {
           valueHrs: 0,
           valueMins: 0,
-          maxHrs: this.common.getHrsMinsObj(resourceSliderMaxHrs, true).hours,
-          maxMins: 45
+          maxHrs: 0,
+          maxMins: 0
         },
         tasks: detail.tasksDetails,
         hideTasksTable: true
@@ -185,7 +185,7 @@ export class PreStackAllocationComponent implements OnInit {
         // const numhrs = this.getResourceMaxHrs(resourceSliderMaxHrs, detail, preAllocatedHrs);
         const numhrs = this.getResourceSliderMaxHrs(resourceSliderMaxHrs, detail);
         obj.Allocation.maxHrs = numhrs.indexOf('-') > -1 ? 0 : this.common.getHrsMinsObj(numhrs, true).hours;
-        obj.Allocation.maxMins = availableHrs === '0:0' ? 0 : 45;
+        obj.Allocation.maxMins = availableHrs === '0:0' && detail.totalTimeAllocated >= maxLimit ? 0 : 45;
         if (newBudgetHrs.indexOf('-') > -1) {
           obj.Allocation.valueHrs = this.common.getHrsMinsObj(availableHrs, false).hours;
           obj.Allocation.valueMins = this.common.getHrsMinsObj(availableHrs, false).mins;
