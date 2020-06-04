@@ -235,7 +235,7 @@ export class AllProjectsComponent implements OnInit {
       for (const element of sResult) {
         const projectCSArray = element.ProjectCS.results;
 
-        this.commonService.showToastrMessage(this.constants.MessageType.success,'Early task ' + element.Title + ' has completed successfully.',true);
+        this.commonService.showToastrMessage(this.constants.MessageType.success, 'Early task ' + element.Title + ' has completed successfully.', true);
         remainingUserId = projectCSArray.filter(x => x.ID !== this.globalObject.currentUser.userId).map(x => x.ID);
         if (remainingUserId.length) {
           earlyTask = {
@@ -408,15 +408,15 @@ export class AllProjectsComponent implements OnInit {
               await this.changeProjectStatusCancelled(projectObj[0]);
             } else {
 
-              this.commonService.showToastrMessage(this.constants.MessageType.error,'Cancellation action on this project - ' + this.params.ProjectCode + ' is already completed.',true);
+              this.commonService.showToastrMessage(this.constants.MessageType.error, 'Cancellation action on this project - ' + this.params.ProjectCode + ' is already completed.', true);
             }
           } else {
-            this.commonService.showToastrMessage(this.constants.MessageType.error,'You are not authorized to Approve cancellation for this project - ' + this.params.ProjectCode + ' .',true);
+            this.commonService.showToastrMessage(this.constants.MessageType.error, 'You are not authorized to Approve cancellation for this project - ' + this.params.ProjectCode + ' .', true);
           }
 
         } else if (!projectObj.length && this.isApprovalAction && this.params.ProjectCode && this.params.ActionStatus) {
 
-          this.commonService.showToastrMessage(this.constants.MessageType.error,'Cancellation action on this project - ' + this.params.ProjectCode + ' is already completed.',true);
+          this.commonService.showToastrMessage(this.constants.MessageType.error, 'Cancellation action on this project - ' + this.params.ProjectCode + ' is already completed.', true);
         }
 
         if (projectObj && projectObj.length && this.params.ActionStatus === this.pmConstant.ACTION.REJECTED) {
@@ -434,10 +434,10 @@ export class AllProjectsComponent implements OnInit {
               this.reloadAllProject();
             } else if (this.isApprovalAction) {
 
-              this.commonService.showToastrMessage(this.constants.MessageType.error,'Cancellation action on this project - ' + projectObj[0].ProjectCode + ' is already completed.',true);
+              this.commonService.showToastrMessage(this.constants.MessageType.error, 'Cancellation action on this project - ' + projectObj[0].ProjectCode + ' is already completed.', true);
             }
           } else {
-            this.commonService.showToastrMessage(this.constants.MessageType.error,'You are not authorized to Reject cancellation for this project - ' + this.params.ProjectCode + ' .',true);
+            this.commonService.showToastrMessage(this.constants.MessageType.error, 'You are not authorized to Reject cancellation for this project - ' + this.params.ProjectCode + ' .', true);
           }
         }
       }
@@ -446,12 +446,12 @@ export class AllProjectsComponent implements OnInit {
           if (this.pmObject.userRights.isMangers || projectObj[0].CMLevel2.ID === this.globalObject.currentUser.userId) {
             await this.approveRejectBudgetReduction(this.params.ProjectBudgetStatus, projectObj[0]);
           } else {
-            this.commonService.showToastrMessage(this.constants.MessageType.error,'You are not authorized to Approve / Reject budget reduction for this project - ' + this.params.ProjectCode + ' .',true);
+            this.commonService.showToastrMessage(this.constants.MessageType.error, 'You are not authorized to Approve / Reject budget reduction for this project - ' + this.params.ProjectCode + ' .', true);
           }
 
         } else {
 
-          this.commonService.showToastrMessage(this.constants.MessageType.error,'You dont have access to this project - ' + this.params.ProjectCode + '.',true);
+          this.commonService.showToastrMessage(this.constants.MessageType.error, 'You dont have access to this project - ' + this.params.ProjectCode + '.', true);
         }
       }
 
@@ -780,7 +780,7 @@ export class AllProjectsComponent implements OnInit {
         this.pmCommonService.getTemplate(this.constants.EMAIL_TEMPLATE_NAME.BUDGET_APPROVAL, objEmailBody, mailSubject, arrayTo,
           ccIDs);
       } else {
-      this.commonService.showToastrMessage(this.constants.MessageType.error,'No un-apporved budget reduction request found for project - ' + this.params.ProjectCode + ' .',true);
+        this.commonService.showToastrMessage(this.constants.MessageType.error, 'No un-apporved budget reduction request found for project - ' + this.params.ProjectCode + ' .', true);
       }
 
     }
@@ -951,7 +951,7 @@ export class AllProjectsComponent implements OnInit {
           if (pbbItems) {
             if (pbbItems.find(c => c.Status === 'Approval Pending')) {
 
-              this.commonService.showToastrMessage(this.constants.MessageType.error,'Budget approval still pending for ' + selectedProjectObj.ProjectCode,true);
+              this.commonService.showToastrMessage(this.constants.MessageType.error, 'Budget approval still pending for ' + selectedProjectObj.ProjectCode, true);
               this.loaderView.nativeElement.classList.remove('show');
               this.spannerView.nativeElement.classList.remove('show');
               break;
@@ -962,7 +962,7 @@ export class AllProjectsComponent implements OnInit {
           if (InvoiceLineItems) {
             if (InvoiceLineItems.find(c => c.Status === 'Scheduled')) {
 
-              this.commonService.showToastrMessage(this.constants.MessageType.error,selectedProjectObj.ProjectCode + ' line item is not Confirmed.',true);
+              this.commonService.showToastrMessage(this.constants.MessageType.error, selectedProjectObj.ProjectCode + ' line item is not Confirmed.', true);
               this.loaderView.nativeElement.classList.remove('show');
               this.spannerView.nativeElement.classList.remove('show');
               break;
@@ -975,7 +975,7 @@ export class AllProjectsComponent implements OnInit {
             if (AllBillable) {
               if (AllBillable.find(c => c.Status.indexOf('Billed') === -1 && c.Status !== 'Rejected' && c.Status !== 'Cancelled')) {
 
-                this.commonService.showToastrMessage(this.constants.MessageType.error,selectedProjectObj.ProjectCode + ' expense not scheduled / confirmed.',true);
+                this.commonService.showToastrMessage(this.constants.MessageType.error, selectedProjectObj.ProjectCode + ' expense not scheduled / confirmed.', true);
                 this.loaderView.nativeElement.classList.remove('show');
                 this.spannerView.nativeElement.classList.remove('show');
                 break;
@@ -986,7 +986,7 @@ export class AllProjectsComponent implements OnInit {
               if (AllNonBillable.find(c => c.Status.indexOf('Approved') === -1 && c.Status !== 'Rejected' && c.Status !== 'Cancelled')) {
 
 
-                this.commonService.showToastrMessage(this.constants.MessageType.error,selectedProjectObj.ProjectCode + ' expense not scheduled / confirmed.',true);
+                this.commonService.showToastrMessage(this.constants.MessageType.error, selectedProjectObj.ProjectCode + ' expense not scheduled / confirmed.', true);
                 this.loaderView.nativeElement.classList.remove('show');
                 this.spannerView.nativeElement.classList.remove('show');
                 break;
@@ -1045,7 +1045,7 @@ export class AllProjectsComponent implements OnInit {
             for (const item of invoiceItems) {
               if (item.Status !== this.constants.STATUS.SCHEDUELD) {
 
-                this.commonService.showToastrMessage(this.constants.MessageType.error,'Cancellation not allowed as there is confirmed invoice line items.',true);
+                this.commonService.showToastrMessage(this.constants.MessageType.error, 'Cancellation not allowed as there is confirmed invoice line items.', true);
                 return;
               }
             }
@@ -1057,7 +1057,7 @@ export class AllProjectsComponent implements OnInit {
 
             if (SpentHours > 0) {
 
-              this.commonService.showToastrMessage(this.constants.MessageType.error,'Cancellation not allowed as there is spent hours on the project.',true);
+              this.commonService.showToastrMessage(this.constants.MessageType.error, 'Cancellation not allowed as there is spent hours on the project.', true);
               return;
             }
 
@@ -1132,9 +1132,9 @@ export class AllProjectsComponent implements OnInit {
       }
     } else {
       if (!this.selectedReasonType) {
-        this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please select reason Type.',false);
+        this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please select reason Type.', false);
       } else if (!this.selectedReason) {
-        this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please select reason.',false);
+        this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please select reason.', false);
       }
     }
   }
@@ -1191,7 +1191,7 @@ export class AllProjectsComponent implements OnInit {
     this.pmObject.isMainLoaderHidden = true;
     this.pmObject.isReasonSectionVisible = false;
 
-    this.commonService.showToastrMessage(this.constants.MessageType.success,'Email has been sent for approval to concerned person.',true);
+    this.commonService.showToastrMessage(this.constants.MessageType.success, 'Email has been sent for approval to concerned person.', true);
     setTimeout(() => {
       this.pmObject.allProjectItems = [];
       if (this.router.url === '/projectMgmt/allProjects') {
@@ -1401,7 +1401,7 @@ export class AllProjectsComponent implements OnInit {
     }
     this.pmObject.isMainLoaderHidden = true;
     this.pmObject.isReasonSectionVisible = false;
-    this.commonService.showToastrMessage(this.constants.MessageType.success,'Project - ' + selectedProjectObj.ProjectCode + ' cancelled successfully.',true);
+    this.commonService.showToastrMessage(this.constants.MessageType.success, 'Project - ' + selectedProjectObj.ProjectCode + ' cancelled successfully.', true);
     setTimeout(() => {
       if (this.router.url === '/projectMgmt/allProjects') {
         this.pmObject.allProjectItems = [];
@@ -1445,7 +1445,7 @@ export class AllProjectsComponent implements OnInit {
     const sResult = await this.spServices.executeBatch(batchURL);
 
 
-    this.commonService.showToastrMessage(this.constants.MessageType.success,'Project - ' + selectedProjectObj.ProjectCode + ' closed Successfully.',true);
+    this.commonService.showToastrMessage(this.constants.MessageType.success, 'Project - ' + selectedProjectObj.ProjectCode + ' closed Successfully.', true);
     setTimeout(() => {
       if (this.router.url === '/projectMgmt/allProjects') {
         this.pmObject.allProjectItems = [];
@@ -1514,7 +1514,7 @@ export class AllProjectsComponent implements OnInit {
     const sResult = await this.spServices.executeBatch(batchURL);
     this.sendEmailBasedOnStatus(this.constants.projectStatus.Unallocated, selectedProjectObj);
 
-    this.commonService.showToastrMessage(this.constants.MessageType.success,'Project - ' + selectedProjectObj.ProjectCode + ' Updated Successfully.',true);
+    this.commonService.showToastrMessage(this.constants.MessageType.success, 'Project - ' + selectedProjectObj.ProjectCode + ' Updated Successfully.', true);
     setTimeout(() => {
       if (this.router.url === '/projectMgmt/allProjects') {
         this.pmObject.allProjectItems = [];
@@ -1696,7 +1696,7 @@ export class AllProjectsComponent implements OnInit {
     } else {
       this.sendEmailBasedOnStatus(this.constants.projectStatus.AuditInProgress, selectedProjectObj);
     }
-    this.commonService.showToastrMessage(this.constants.MessageType.success,'Project - ' + this.selectedProjectObj.ProjectCode + ' Updated Successfully.',true);
+    this.commonService.showToastrMessage(this.constants.MessageType.success, 'Project - ' + this.selectedProjectObj.ProjectCode + ' Updated Successfully.', true);
     setTimeout(() => {
       if (this.router.url === '/projectMgmt/allProjects') {
         this.pmObject.allProjectItems = [];
@@ -1820,7 +1820,7 @@ export class AllProjectsComponent implements OnInit {
     if (batchURL.length) {
       this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'setProjectOnHold');
       await this.spServices.executeBatch(batchURL);
-      this.commonService.showToastrMessage(this.constants.MessageType.success,'Project - ' + selectedProjectObj.ProjectCode + ' Updated Successfully.',true);
+      this.commonService.showToastrMessage(this.constants.MessageType.success, 'Project - ' + selectedProjectObj.ProjectCode + ' Updated Successfully.', true);
       this.sendEmailBasedOnStatus(this.constants.projectStatus.OnHold, selectedProjectObj);
     }
 
@@ -1878,7 +1878,7 @@ export class AllProjectsComponent implements OnInit {
       this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'undoOnHold');
       await this.spServices.executeBatch(batchURL);
 
-      this.commonService.showToastrMessage(this.constants.MessageType.success,'Project - ' + selectedProjectObj.ProjectCode + ' Updated Successfully.',true);
+      this.commonService.showToastrMessage(this.constants.MessageType.success, 'Project - ' + selectedProjectObj.ProjectCode + ' Updated Successfully.', true);
     }
 
     setTimeout(() => {
@@ -2248,7 +2248,7 @@ export class AllProjectsComponent implements OnInit {
     this.spannerView.nativeElement.classList.add('show');
     const response = await this.commonService.goToProjectScope(task, task.Status);
     if (response === 'No Document Found.') {
-      this.commonService.showToastrMessage(this.constants.MessageType.error, task.ProjectCode + ' - Project Scope not found.',false);
+      this.commonService.showToastrMessage(this.constants.MessageType.error, task.ProjectCode + ' - Project Scope not found.', false);
     }
     else {
       window.open(response);
@@ -2635,7 +2635,7 @@ export class AllProjectsComponent implements OnInit {
   async performSOWMove() {
     const projObject = this.selectedProjectObj;
     if (projObject.SOWCode === this.newSelectedSOW) {
-      this.commonService.showToastrMessage(this.constants.MessageType.error,'Source sow code ' + projObject.SOWCode + ' and destination sow ' + this.newSelectedSOW + ' cannot be same.',false);
+      this.commonService.showToastrMessage(this.constants.MessageType.error, 'Source sow code ' + projObject.SOWCode + ' and destination sow ' + this.newSelectedSOW + ' cannot be same.', false);
       return;
     }
     this.pmObject.isMainLoaderHidden = false;
@@ -2644,7 +2644,7 @@ export class AllProjectsComponent implements OnInit {
     if (isValid) {
       if (isValid === 'InvoiceNotScheduled') {
 
-        this.commonService.showToastrMessage(this.constants.MessageType.error,'Project Movement to selected SOW ' + this.newSelectedSOW + ' is not possible due to confirmed invoice',false);
+        this.commonService.showToastrMessage(this.constants.MessageType.error, 'Project Movement to selected SOW ' + this.newSelectedSOW + ' is not possible due to confirmed invoice', false);
         this.pmObject.isMainLoaderHidden = true;
         return;
       }
@@ -2716,25 +2716,33 @@ export class AllProjectsComponent implements OnInit {
         projectInfoUpdate.type = 'PATCH';
         projectInfoUpdate.listName = this.constants.listNames.ProjectInformation.name;
         batchURL.push(projectInfoUpdate);
-      }
-      this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetSowInvoiceLineItemProjectInfo');
-      const sResult = await this.spServices.executeBatch(batchURL);
-      this.pmObject.isMainLoaderHidden = true;
 
-      this.commonService.showToastrMessage(this.constants.MessageType.success,'Project move to under new SOW Code - ' + this.newSelectedSOW + '',true);
-      setTimeout(() => {
-        if (this.router.url === '/projectMgmt/allProjects') {
-          this.pmObject.allProjectItems = [];
-          this.reloadAllProject();
-        } else {
-          this.router.navigate(['/projectMgmt/allProjects']);
+        this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetSowInvoiceLineItemProjectInfo');
+        const sResult = await this.spServices.executeBatch(batchURL);
+        this.pmObject.isMainLoaderHidden = true;
+
+        this.commonService.showToastrMessage(this.constants.MessageType.success, 'Project move to under new SOW Code - ' + this.newSelectedSOW + '', true);
+        setTimeout(() => {
+          if (this.router.url === '/projectMgmt/allProjects') {
+            this.pmObject.allProjectItems = [];
+            this.reloadAllProject();
+          } else {
+            this.router.navigate(['/projectMgmt/allProjects']);
+          }
+          this.closeMoveSOW();
+        }, this.pmConstant.TIME_OUT);
+      } else {
+        this.pmObject.isMainLoaderHidden = true;
+        if (newSOWObj.length === 0){
+          this.commonService.showToastrMessage(this.constants.MessageType.error, 'Can\'t move Project - ' + projObject.ProjectCode + 'under new SOW Code as new sow' + this.newSelectedSOW + ' is closed / cancelled', true);
         }
-        this.closeMoveSOW();
-      }, this.pmConstant.TIME_OUT);
+        else  if (newSOWObj.length === 0){
+          this.commonService.showToastrMessage(this.constants.MessageType.error, 'Can\'t move Project - ' + projObject.ProjectCode + 'under new SOW Code as old sow - ' + projObject.SOWCode + ' is closed / cancelled', true);
+        }
+      }
     } else {
       this.pmObject.isMainLoaderHidden = true;
-
-      this.commonService.showToastrMessage(this.constants.MessageType.error,'Project Movement to selected SOW ' + this.newSelectedSOW + ' is not possible due to insufficient amount',false);
+      this.commonService.showToastrMessage(this.constants.MessageType.error, 'Project Movement to selected SOW ' + this.newSelectedSOW + ' is not possible due to insufficient amount', false);
     }
   }
   /**
