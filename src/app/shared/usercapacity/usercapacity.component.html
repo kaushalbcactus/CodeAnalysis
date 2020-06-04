@@ -47,7 +47,7 @@
                                             <th [ngStyle]="{'vertical-align':verticalAlign, 'width':'6%',     'border-bottom': 'none' }">
                                                 <div (click)="onResourceClick(user)" style="cursor: pointer;" title="Joining Date :  {{user.JoiningDate | date :'EEE d MMM yyyy'}}&#013;Go Live Date : {{user.GoLiveDate | date :'EEE d MMM yyyy'}} ">{{user.userName}}
                                                 </div>
-                                                <div style="color:#c53e3e;font-weight: 600;font-size: 13px;">Capacity </div>
+                                                <div style="color:#c53e3e;font-weight: 600;font-size: 13px;" *ngIf="!this.disableOverlay">Capacity </div>
                                                 <div class="{{user.uid}}more more" (click)="changeHeight(user,$event)" *ngIf="user.tasks.length > 3 && user.dates.length <= 10">More
                                                 </div>
                                                 <div class="{{user.uid}}less less hide" (click)="changeHeight(user,$event)">Less</div>
@@ -67,7 +67,7 @@
                                                 <div class="center">{{user.displayTotalAllocated}}</div>
                                             </td>
                                         </tr>
-                                        <tr *ngIf="user.dates.length<=10 && !this.userCapacity">
+                                        <tr *ngIf="user.dates.length<=10 && !this.disableOverlay">
                                             <td>
                                                 <div class="taskBar" *ngFor="let task of user.tasks" [ngStyle]="{'width':task.cssWidth,'left':task.cssLeft,'top':task.cssTop,'display':task.cssHide}" [ngClass]="{'plannedTask':task.Status==='Not Confirmed','confirmedTask':task.Status!=='Not confirmed'}">
                                                     {{task.TotalAllocated}} : {{task.ProjectCode}}

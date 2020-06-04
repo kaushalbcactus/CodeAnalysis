@@ -46,6 +46,7 @@ export class UsercapacityComponent implements OnInit {
   displayCount: any;
   taskStatus = 'All';
   tableLoaderenable = false;
+  public disableOverlay = false;
   @Output() resourceSelect = new EventEmitter<string>();
   @Input() userCapacity: any;
   constructor(
@@ -72,6 +73,7 @@ export class UsercapacityComponent implements OnInit {
       this.dynamicload = true;
       this.Onload(this.data);
     } else if (this.userCapacity) {
+      this.disableOverlay = true;
       this.showCapacity(this.userCapacity);
     }
   }
@@ -138,6 +140,7 @@ export class UsercapacityComponent implements OnInit {
       }
       if (data.Module) {
         if (data.Module === 'PM') {
+          this.disableOverlay = true;
           this.disableCamera = true;
         }
       }
@@ -415,6 +418,7 @@ export class UsercapacityComponent implements OnInit {
 
     if (Module) {
       if (Module === 'PM') {
+        this.disableOverlay = true;
         this.disableCamera = true;
       }
     }
@@ -1134,7 +1138,7 @@ export class UsercapacityComponent implements OnInit {
     this.loaderenable = false;
 
 
-    if (arrDateRange <= 10) {
+    if (arrDateRange <= 10 && !this.disableOverlay) {
 
       // setTimeout(() => {
       let tableWidth = document.getElementById('capacityTable').offsetWidth;
