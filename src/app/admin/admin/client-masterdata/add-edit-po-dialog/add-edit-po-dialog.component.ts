@@ -387,7 +387,7 @@ export class AddEditPoDialogComponent implements OnInit {
         if (!this.showeditPO) {
           if (this.PORows.some(a =>
             a.PoNumber.toLowerCase() === this.PoForm.value.poNumber.toLowerCase())) {
-            this.common.showToastrMessage(this.constantsService.MessageType.error, 'This PO number is already exist. Please enter another PO number.', false);
+            this.common.showToastrMessage(this.constantsService.MessageType.warn, 'This PO number is already exist. Please enter another PO number.', false);
             return false;
           }
         }
@@ -399,7 +399,7 @@ export class AddEditPoDialogComponent implements OnInit {
       }
       else {
 
-        this.common.showToastrMessage(this.constantsService.MessageType.error, 'Unable to upload file, size of ' + this.selectedFile[0].name + ' is 0 KB.', false);
+        this.common.showToastrMessage(this.constantsService.MessageType.warn, 'Unable to upload file, size of ' + this.selectedFile[0].name + ' is 0 KB.', false);
         return false;
       }
 

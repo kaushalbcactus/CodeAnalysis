@@ -289,16 +289,16 @@ export class AddUserToProjectsComponent implements OnInit {
     };
     if (!this.selectedUser || !this.selectedUser.hasOwnProperty('UserName')) {
 
-      this.common.showToastrMessage(this.constants.MessageType.error,'Please select the user.',true);
+      this.common.showToastrMessage(this.constants.MessageType.warn,'Please select the user.',true);
       return false;
     }
     if (!this.selectedClient) {
-      this.common.showToastrMessage(this.constants.MessageType.error,'Please select the client',true);
+      this.common.showToastrMessage(this.constants.MessageType.warn,'Please select the client',true);
       return false;
     }
     if (!this.selectedProject.length) {
 
-      this.common.showToastrMessage(this.constants.MessageType.error,'Please select atleast one project.',true);
+      this.common.showToastrMessage(this.constants.MessageType.warn,'Please select atleast one project.',true);
       return false;
     }
     if (this.selectedProject.length) {

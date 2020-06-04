@@ -106,12 +106,12 @@ export class GroupDescriptionComponent implements OnInit {
    */
   async saveDescription() {
     if (!this.selectedGroup) {
-      this.common.showToastrMessage(this.constants.MessageType.error,'Please select the group.',false);
+      this.common.showToastrMessage(this.constants.MessageType.warn,'Please select the group.',false);
       return false;
     }
     if (!this.description) {
 
-      this.common.showToastrMessage(this.constants.MessageType.error,'Please enter the group description.',false);
+      this.common.showToastrMessage(this.constants.MessageType.warn,'Please enter the group description.',false);
       return false;
     }
     this.adminObject.isMainLoaderHidden = false;

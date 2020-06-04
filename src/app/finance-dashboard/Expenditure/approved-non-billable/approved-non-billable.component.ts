@@ -385,7 +385,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
                 console.log('Sts ', sts);
                 if (!this.approvedSts) {
 
-                    this.commonService.showToastrMessage(this.constantService.MessageType.info,'Please select line item with status containing "Payment Pending".',false);
+                    this.commonService.showToastrMessage(this.constantService.MessageType.warn,'Please select line item with status containing "Payment Pending".',false);
                     return false;
                 }
                 if (sts) {
@@ -406,7 +406,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
                 }
             }
         } else {
-            this.commonService.showToastrMessage(this.constantService.MessageType.info,'Please select same Vendor/Freelance name.',false);
+            this.commonService.showToastrMessage(this.constantService.MessageType.warn,'Please select same Vendor/Freelance name.',false);
         }
     }
 

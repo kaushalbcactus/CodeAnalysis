@@ -3,6 +3,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { DynamicDialogRef, DynamicDialogConfig } from 'primeng';
 import { CommonService } from 'src/app/Services/common.service';
 import { formatDate } from '@angular/common';
+import { FdConstantsService } from '../fdServices/fd-constants.service';
 
 @Component({
   selector: 'app-edit-invoice-dialog',
@@ -18,20 +19,19 @@ export class EditInvoiceDialogComponent implements OnInit {
   listOfPOCNames: any[];
   projectContactsData: any;
   isEditInvoiceFormSubmit = false;
-  addressTypes = [
-    { label: 'Client', value: 'Client' },
-    { label: 'POC', value: 'POC' },
-  ];
+  addressTypes=[]
   yearRange: string;
   InvoiceType: any;
   constructor(
     public ref: DynamicDialogRef,
     public config: DynamicDialogConfig,
     public common: CommonService,
+    public fdConstantsService : FdConstantsService,
     private frmbuilder: FormBuilder) {
   }
 
   ngOnInit() {
+    this.addressTypes = this.fdConstantsService.fdComponent.addressTypes;
     this.InvoiceType = this.config.data.InvoiceType;
     this.yearRange = this.common.getyearRange();
     this.selectedRowItem = this.config.data.selectedRowItem;

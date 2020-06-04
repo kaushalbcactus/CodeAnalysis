@@ -118,7 +118,7 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
   showPOTable() {
     if (!this.billedBy) {
 
-      this.commonService.showToastrMessage(this.constants.MessageType.error,'Please select Billed by.',false);
+      this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please select Billed by.',false);
       return false;
     } else if (this.pmObject.addProject.FinanceManagement.isBudgetRateAdded) {
 
@@ -163,7 +163,7 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
   validateForm() {
     if (!this.pmObject.addProject.FinanceManagement.POArray.length) {
 
-      this.commonService.showToastrMessage(this.constants.MessageType.error,'Please assign budget / rate for project.',false);
+      this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please assign budget / rate for project.',false);
       return false;
     }
     return true;

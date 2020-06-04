@@ -183,18 +183,19 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     isOptionFilter: boolean;
 
     async ngOnInit() {
-
+        this.proformatTemplates = this.fdConstantsService.fdComponent.ProformaTemplates;
         this.yearRange = this.commonService.getyearRange();
+        this.addressTypes = this.fdConstantsService.fdComponent.addressTypes;
         this.createANBCols();
         // this.getApprovedNonBillable();
         this.createAddToProformaFormField();
 
         // Address & Proforma type
-        this.getAddressType();
+      
         this.getProformaType();
         this.usStatesInfo();
         this.currencyInfo();
-        this.getProformaTemplates();
+       
 
         // Get Projects
         await this.projectInfo();
@@ -240,13 +241,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         }));
     }
 
-    // Set Address type
-    getAddressType() {
-        this.addressTypes = [
-            { label: 'Client', value: 'Client' },
-            { label: 'POC', value: 'POC' },
-        ];
-    }
 
     getProformaType() {
         this.listOfproformaType = [
@@ -296,16 +290,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         }));
     }
 
-    getProformaTemplates() {
-        this.proformatTemplates = [
-            { label: 'US', value: 'US' },
-            { label: 'India', value: 'India' },
-            { label: 'China', value: 'China' },
-            { label: 'Japan', value: 'Japan' },
-            { label: 'Korea', value: 'Korea' },
-            { label: 'ROW', value: 'ROW' }
-        ];
-    }
+   
 
     createAddToProformaFormField() {
         this.addToProforma_form = this.fb.group({
@@ -517,7 +502,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 POCId: element.MainPOC,
                 AddressType: element.AddressType,
                 ProjectTitle: project ? project.Title : '',
-                CS: this.getCSDetails(element),
+                CS: this.fdDataShareServie.getCSDetails(element),
                 PracticeArea: this.getPracticeArea(element).BusinessVertical,
                 TaggedDate: element.TaggedDate,
                 Status: element.Status,
@@ -585,18 +570,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         return found ? found.FName + ' ' + found.LName : '';
     }
 
-    getCSDetails(res) {
-        if (res.hasOwnProperty('CS') && res.CS.hasOwnProperty('results') && res.CS.results.length) {
-            const title = [];
-            for (let i = 0; i < res.CS.results.length; i++) {
-                const element = res.CS.results[i];
-                title.push(element.Title);
-            }
-            return title.toString();
-        } else {
-            return '';
-        }
-    }
 
     // Project PO
     getPONumber(poId) {

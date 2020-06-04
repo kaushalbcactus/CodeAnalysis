@@ -169,12 +169,12 @@ export class RoleUserMappingComponent implements OnInit {
     const groupName = this.selectedGroup;
     const usersArray = this.selectedUsers;
     if (!groupName) {
-      this.common.showToastrMessage(this.constants.MessageType.error,'Please select group.',true);
+      this.common.showToastrMessage(this.constants.MessageType.warn,'Please select group.',true);
       return false;
     }
     if (!usersArray) {
 
-      this.common.showToastrMessage(this.constants.MessageType.error,'Please select atleast one user.',true);
+      this.common.showToastrMessage(this.constants.MessageType.warn,'Please select atleast one user.',true);
       return false;
     }
     this.adminObject.isMainLoaderHidden = false;

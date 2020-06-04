@@ -92,7 +92,7 @@ export class AddReduceSowbudgetDialogComponent implements OnInit {
   async saveBudget() {
     if (!this.changeBudgetForm.value.selectedValue) {
 
-      this.common.showToastrMessage(this.constantsService.MessageType.info,'Please define budget type.',false);
+      this.common.showToastrMessage(this.constantsService.MessageType.warn,'Please define budget type.',false);
       return;
     }
     else {

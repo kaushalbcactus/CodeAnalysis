@@ -238,38 +238,38 @@ export class NonStandardprojectComponent implements OnInit {
   private validateRequiredField() {
     if (!this.selectedDeliverableType) {
 
-      this.commonService.showToastrMessage(this.constants.MessageType.error, 'Please select the delivery Type.', false);
+      this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please select the delivery Type.', false);
       return false;
     }
     if (!this.selectedServices) {
-      this.commonService.showToastrMessage(this.constants.MessageType.error, 'Please select the service.', false);
+      this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please select the service.', false);
       return false;
     }
     if (!this.selectedResource) {
 
-      this.commonService.showToastrMessage(this.constants.MessageType.error, 'Please select the resource.', false);
+      this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please select the resource.', false);
       return false;
     }
     if (!this.ngNonStandardProposedStartDate) {
 
-      this.commonService.showToastrMessage(this.constants.MessageType.error, 'Please select the Proposed Start Date.', false);
+      this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please select the Proposed Start Date.', false);
       return false;
     }
     if (!this.ngNonStandardProposedEndDate) {
-      this.commonService.showToastrMessage(this.constants.MessageType.error, 'Please select the Proposed End Date.', false);
+      this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please select the Proposed End Date.', false);
       return false;
     }
     if (!this.nonstandardProjectBudgetHrs) {
-      this.commonService.showToastrMessage(this.constants.MessageType.error, 'Please select the project budget hrs.', false);
+      this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please select the project budget hrs.', false);
       return false;
     }
     if (this.nonstandardProjectBudgetHrs) {
       if (parseFloat(this.nonstandardProjectBudgetHrs) <= 0) {
-        this.commonService.showToastrMessage(this.constants.MessageType.error, 'Please enter the valid Budget Hrs.', false);
+        this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please enter the valid Budget Hrs.', false);
         return false;
       }
       if (isNaN(parseFloat(this.nonstandardProjectBudgetHrs))) {
-        this.commonService.showToastrMessage(this.constants.MessageType.error, 'Please enter the Budget Hrs in number.', false);
+        this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please enter the Budget Hrs in number.', false);
         return false;
       }
     }

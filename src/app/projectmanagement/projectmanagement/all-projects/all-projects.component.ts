@@ -1132,9 +1132,9 @@ export class AllProjectsComponent implements OnInit {
       }
     } else {
       if (!this.selectedReasonType) {
-        this.commonService.showToastrMessage(this.constants.MessageType.error,'Please select reason Type.',false);
+        this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please select reason Type.',false);
       } else if (!this.selectedReason) {
-        this.commonService.showToastrMessage(this.constants.MessageType.error,'Please select reason.',false);
+        this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please select reason.',false);
       }
     }
   }

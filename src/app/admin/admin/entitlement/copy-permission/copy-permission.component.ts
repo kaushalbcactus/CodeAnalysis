@@ -283,7 +283,7 @@ export class CopyPermissionComponent implements OnInit {
     if (!actionResult.length) {
       this.adminObject.isMainLoaderHidden = true;
 
-      this.common.showToastrMessage(this.constants.MessageType.error,'The selected source users doesn\'t\ have any permission.',true);
+      this.common.showToastrMessage(this.constants.MessageType.warn,'The selected source users doesn\'t\ have any permission.',true);
       return false;
     }
     if (actionResult.length) {
@@ -335,7 +335,7 @@ export class CopyPermissionComponent implements OnInit {
         if (result && result.length && action === this.adminConstants.ACTION.COPY) {
           this.viewArray.finalResultArray = this.permission.addGroups;
 
-          this.common.showToastrMessage(this.constants.MessageType.error,'The permission has copied successfully to the user - ' + destinationUser.Title + '.',true);
+          this.common.showToastrMessage(this.constants.MessageType.success,'The permission has copied successfully to the user - ' + destinationUser.Title + '.',true);
         }
       }
       this.adminObject.isMainLoaderHidden = true;

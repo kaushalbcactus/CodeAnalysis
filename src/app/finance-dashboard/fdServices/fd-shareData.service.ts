@@ -350,7 +350,7 @@ export class FDDataShareService {
             const obj = [{
                 url: this.spServices.getReadURL(this.constantService.listNames.ProjectInformation.name, this.fdConstantsService.fdComponent.projectInfo),
                 type: 'GET',
-                listName: this.constantService.listNames.ProjectFinances
+                listName: this.constantService.listNames.ProjectInformation.name
             }];
             this.commonService.SetNewrelic('Finance-Dashboard', 'fd-shareData', 'checkProjectAvailability');
             const res = await this.spServices.executeBatch(obj);
@@ -681,5 +681,19 @@ export class FDDataShareService {
 
             });
         });
+    }
+
+
+    getCSDetails(res) {
+        if (res.hasOwnProperty('CS') && res.CS.hasOwnProperty('results') && res.CS.results.length) {
+            const title = [];
+            for (let i = 0; i < res.CS.results.length; i++) {
+                const element = res.CS.results[i];
+                title.push(element.Title);
+            }
+            return title.toString();
+        } else {
+            return '';
+        }
     }
 }

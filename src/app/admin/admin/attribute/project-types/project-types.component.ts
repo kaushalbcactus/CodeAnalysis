@@ -183,7 +183,7 @@ export class ProjectTypesComponent implements OnInit {
     const alphaExp = this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL;
     this.common.clearToastrMessage();
     if (!this.projectType) {
-      this.common.showToastrMessage(this.constants.MessageType.error,'Please enter Project Type.',false);
+      this.common.showToastrMessage(this.constants.MessageType.warn,'Please enter Project Type.',false);
       return false;
     }
     if (!this.projectType.match(alphaExp)) {

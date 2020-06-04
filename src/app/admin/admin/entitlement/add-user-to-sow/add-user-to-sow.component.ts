@@ -298,17 +298,17 @@ export class AddUserToSowComponent implements OnInit {
     };
     if (!this.selectedUser || !this.selectedUser.hasOwnProperty('UserName')) {
 
-      this.common.showToastrMessage(this.constants.MessageType.error,'Please select the user.',false);
+      this.common.showToastrMessage(this.constants.MessageType.warn,'Please select the user.',false);
       return false;
     }
     if (!this.selectedClient) {
 
-      this.common.showToastrMessage(this.constants.MessageType.error,'Please select the client',true);
+      this.common.showToastrMessage(this.constants.MessageType.warn,'Please select the client',true);
       return false;
     }
     if (!this.selectedSow.length) {
 
-      this.common.showToastrMessage(this.constants.MessageType.error,'Please select atleast one SOW.',false);
+      this.common.showToastrMessage(this.constants.MessageType.warn,'Please select atleast one SOW.',false);
       return false;
     }
     if (this.selectedSow.length) {

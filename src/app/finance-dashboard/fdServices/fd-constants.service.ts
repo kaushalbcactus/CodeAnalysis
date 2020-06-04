@@ -319,6 +319,13 @@ export class FdConstantsService {
             top: 4500
         },
 
+        invoiceLineItemProforma:{
+            select:"ID,Title,TaggedDate,ScheduledDate,Amount,Currency,PO,Status,ProformaLookup,ScheduleType,InvoiceLookup,FiscalYear,MainPOC,AddressType,Template,SOWCode,Modified,Modified,CS,CS/ID,CS/Title,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title",
+            filter: "ProformaLookup eq '{{ProformaLookup}}' ",
+            top: 4500,
+            expand: "CS/ID,CS/Title,Editor,Author"
+        },
+
         // Mail Content
         mailContent: {
             select: "ID,Title,Content",
@@ -328,14 +335,14 @@ export class FdConstantsService {
 
         ADV_INVOICES: {
             select: 'ID, ClientLegalEntity, Amount, AddressType, InvoiceNumber, PO, ProformaLookup, IsTaggedFully, TaggedAmount,AuxiliaryInvoiceName,'
-              + ' InvoiceDate, MainPOC, FileURL',
+                + ' InvoiceDate, MainPOC, FileURL',
             filter: 'ClientLegalEntity eq \'{{clientLegalEntity}}\' and InvoiceType eq \'{{invoiceType}}\' and IsTaggedFully eq \'No\'',
             top: 4500
-          },
+        },
 
 
-          InvoiceTypeArray : [{ label: 'Tag to existing invoice', value: 'existing' },
-          { label: 'New invoice', value: 'new' }],
+        InvoiceTypeArray: [{ label: 'Tag to existing invoice', value: 'existing' },
+        { label: 'New invoice', value: 'new' }],
         // Authors
         // authors: {
         //     select: "ID,Title,FirstName, LastName, Address, EmailAddress, AuthorType",
@@ -394,6 +401,19 @@ export class FdConstantsService {
             // create: this.globalObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constantService.listNames.SpendingInfo.name + "')/items",
             update: this.globalObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constantService.listNames.ClientLegalEntity.name + "')/items({{Id}})",
         },
+        ProformaTemplates: [
+            { label: 'US', value: 'US' },
+            { label: 'Japan', value: 'Japan' },
+            { label: 'India', value: 'India' },
+            { label: 'Korea', value: 'Korea' },
+            { label: 'China', value: 'China' },
+            { label: 'ROW', value: 'ROW' }
+        ],
+
+        addressTypes: [
+            { label: 'Client', value: 'Client' },
+            { label: 'POC', value: 'POC' },
+        ]
 
     }
 }

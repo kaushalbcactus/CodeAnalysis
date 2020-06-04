@@ -517,7 +517,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         if (found) {
             // console.log('this.totalLineItems ', this.totalLineItems);
             // console.log('this.selectedPCArrays ', this.selectedPCArrays);
-            this.commonService.showToastrMessage(this.constantService.MessageType.info,'You have already selected this project/client please select another one.',false);
+            this.commonService.showToastrMessage(this.constantService.MessageType.warn,'You have already selected this project/client please select another one.',false);
             this.totalLineItems[index] = {};
             this.selectedPCArrays[index].ProjectCode = '';
 
@@ -573,7 +573,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             // console.log(arrResults[0]);
             if (!arrResults.length) {
 
-                this.commonService.showToastrMessage(this.constantService.MessageType.info,'Currency not found for selected project / client.',false);
+                this.commonService.showToastrMessage(this.constantService.MessageType.warn,'Currency not found for selected project / client.',false);
                 this.totalLineItems[index] = {};
                 this.selectedPCArrays[index].ProjectCode = '';
                 this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
@@ -713,12 +713,12 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             }
             if (this.SelectedFile[0].file.size === 0) {
 
-                this.commonService.showToastrMessage(this.constantService.MessageType.info,'Unable to upload file, size of ' + this.SelectedFile[0].file.name + ' is 0 KB.',false);
+                this.commonService.showToastrMessage(this.constantService.MessageType.warn,'Unable to upload file, size of ' + this.SelectedFile[0].file.name + ' is 0 KB.',false);
                 return;
             }
             else if (this.caSelectedFile[0].file.size === 0) {
 
-                this.commonService.showToastrMessage(this.constantService.MessageType.info,'Unable to upload file, size of ' + this.caSelectedFile[0].file.name + ' is 0 KB.',false);
+                this.commonService.showToastrMessage(this.constantService.MessageType.warn,'Unable to upload file, size of ' + this.caSelectedFile[0].file.name + ' is 0 KB.',false);
                 return;
             }
             this.submitBtn.isClicked = true;

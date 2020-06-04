@@ -345,7 +345,7 @@ export class OopComponent implements OnInit, OnDestroy {
                 AddressType: element.AddressType,
                 showMenu: this.showMenu(element),
 
-                CS: this.getCSDetails(element),
+                CS: this.fdDataShareServie.getCSDetails(element),
                 PracticeArea: this.getPracticeArea(element).BusinessVertical,
                 POName: poItem.Name,
                 TaggedDate: element.TaggedDate,
@@ -412,19 +412,7 @@ export class OopComponent implements OnInit, OnDestroy {
         return found ? found.ClientLegalEntity : '';
     }
 
-    getCSDetails(res) {
-        if (res.hasOwnProperty('CS') && res.CS.hasOwnProperty('results') && res.CS.results.length) {
-            const title = [];
-            for (let i = 0; i < res.CS.results.length; i++) {
-                const element = res.CS.results[i];
-                title.push(element.Title);
-            }
-            return title.toString();
-        } else {
-            return '';
-        }
-    }
-
+    
     createColFieldValues(resArray) {
         this.oopColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
         this.oopColArray.ShortTitle = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ShortTitle, value: a.ShortTitle }; return b; }).filter(ele => ele.label)));

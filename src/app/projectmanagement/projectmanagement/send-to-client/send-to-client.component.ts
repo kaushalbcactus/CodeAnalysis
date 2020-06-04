@@ -211,7 +211,7 @@ export class SendToClientComponent implements OnInit {
       this.loaderView.nativeElement.classList.remove('show');
       this.spannerView.nativeElement.classList.remove('show');
 
-      this.commonService.showToastrMessage(this.Constant.MessageType.success,task.Title + ' is already completed or closed or auto closed. Hence record is refreshed in 30 sec.',true);
+      this.commonService.showToastrMessage(this.Constant.MessageType.info,task.Title + ' is already completed or closed or auto closed. Hence record is refreshed in 30 sec.',true);
       setTimeout(() => {
         this.ngOnInit();
       }, 3000);

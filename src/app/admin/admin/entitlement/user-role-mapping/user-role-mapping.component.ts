@@ -262,13 +262,13 @@ export class UserRoleMappingComponent implements OnInit {
    */
   async save() {
     if (!this.selectedUser) {
-      this.common.showToastrMessage(this.constants.MessageType.error,'Please select user.',true);
+      this.common.showToastrMessage(this.constants.MessageType.warn,'Please select user.',true);
       return false;
     }
     const removeGroups = this.userExistGroupArray.filter(x => !this.selectedRoles.includes(x));
     const groups = this.selectedRoles;
     if (!groups.length && !removeGroups.length) {
-      this.common.showToastrMessage(this.constants.MessageType.error,'Please select any one group.',true);
+      this.common.showToastrMessage(this.constants.MessageType.warn,'Please select any one group.',true);
       return false;
     }
     this.adminObject.isMainLoaderHidden = false;

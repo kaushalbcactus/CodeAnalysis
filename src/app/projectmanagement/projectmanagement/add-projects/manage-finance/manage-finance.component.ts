@@ -488,16 +488,16 @@ export class ManageFinanceComponent implements OnInit {
     } else {
       if (!this.selectedReasonType) {
 
-        this.commonService.showToastrMessage(this.constant.MessageType.error,'Please select reason type.',true);
+        this.commonService.showToastrMessage(this.constant.MessageType.warn,'Please select reason type.',true);
         return;
       }
       if (!this.selectedReason) {
 
-        this.commonService.showToastrMessage(this.constant.MessageType.error,'Please enter reason.',true);
+        this.commonService.showToastrMessage(this.constant.MessageType.warn,'Please enter reason.',true);
         return;
       }
       if (!this.newBudgetHrs) {
-        this.commonService.showToastrMessage(this.constant.MessageType.error,'New Budget hours cant be zero.',true);
+        this.commonService.showToastrMessage(this.constant.MessageType.warn,'New Budget hours cant be zero.',true);
         return;
       }
 
@@ -627,12 +627,12 @@ export class ManageFinanceComponent implements OnInit {
     } else {
       if (!this.selectedReasonType) {
 
-        this.commonService.showToastrMessage(this.constant.MessageType.error,'Please select reason type.',true);
+        this.commonService.showToastrMessage(this.constant.MessageType.warn,'Please select reason type.',true);
         return;
       }
       if (!this.selectedReason) {
 
-        this.commonService.showToastrMessage(this.constant.MessageType.error,'Please enter reason.',true);
+        this.commonService.showToastrMessage(this.constant.MessageType.warn,'Please enter reason.',true);
         return;
       }
 

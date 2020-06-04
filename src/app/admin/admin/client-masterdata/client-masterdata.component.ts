@@ -81,7 +81,7 @@ export class ClientMasterdataComponent implements OnInit {
     if (this.adminConstants.toastMsg.SPMAA || this.adminConstants.toastMsg.SPMAD || this.adminConstants.toastMsg.EAPA) {
       setTimeout(() => {
 
-        this.common.showToastrMessage(this.constantsService.MessageType.info, 'You don\'\t have permission,please contact SP Team.', true);
+        this.common.showToastrMessage(this.constantsService.MessageType.warn, 'You don\'\t have permission,please contact SP Team.', true);
         this.adminConstants.toastMsg.SPMAD = false;
         this.adminConstants.toastMsg.EAPA = false;
       }, 300);

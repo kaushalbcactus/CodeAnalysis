@@ -434,12 +434,12 @@ export class AddEditClientlegalentityDialogComponent implements OnInit {
       if (!this.showEditClient) {
         if (this.clientMasterDataRows.some(a =>
           a.ClientLegalEntity && a.ClientLegalEntity.toLowerCase() === this.addClient.value.name.toLowerCase())) {
-            this.common.showToastrMessage(this.constantsService.MessageType.error,'This Client is already exist. Please enter another client name.',false);
+            this.common.showToastrMessage(this.constantsService.MessageType.warn,'This Client is already exist. Please enter another client name.',false);
           return false;
         }
         if (this.clientMasterDataRows.some(a =>
           a.Acronym && a.Acronym.toLowerCase() === this.addClient.value.acronym.toLowerCase())) {
-            this.common.showToastrMessage(this.constantsService.MessageType.error, 'This Acronym is already exist. Please enter another acronym.',false);
+            this.common.showToastrMessage(this.constantsService.MessageType.warn, 'This Acronym is already exist. Please enter another acronym.',false);
           return false;
         }
       }

@@ -221,7 +221,7 @@ export class AddEditUserProfileComponent implements OnInit {
   */
   onManagerChange() {
     if (this.addUser.value.manager && !this.addUser.value.manager.hasOwnProperty('EntityData')) {
-      this.common.showToastrMessage(this.constants.MessageType.error,'Please select proper manager name.',false);
+      this.common.showToastrMessage(this.constants.MessageType.warn,'Please select proper manager name.',false);
     } else {
       const managerEffectiveDateControl = this.addUser.get('managerEffectiveDate');
       if (this.showeditUser && this.currUserObj.ManagerEmail !== this.addUser.value.manager.EntityData.Email) {
@@ -1130,17 +1130,17 @@ export class AddEditUserProfileComponent implements OnInit {
        */
       if (UserDetails.value.username && !UserDetails.value.username.hasOwnProperty('EntityData')) {
 
-        this.common.showToastrMessage(this.constants.MessageType.error,'Please select proper username name.',false);
+        this.common.showToastrMessage(this.constants.MessageType.warn,'Please select proper username name.',false);
         return false;
       }
       if (UserDetails.value.manager && !UserDetails.value.manager.hasOwnProperty('EntityData')) {
 
-        this.common.showToastrMessage(this.constants.MessageType.error,'Please select proper manager name.',false);
+        this.common.showToastrMessage(this.constants.MessageType.warn,'Please select proper manager name.',false);
         return false;
       }
       if (new Date(UserDetails.value.dateofjoin) > new Date(UserDetails.value.liveDate)) {
 
-        this.common.showToastrMessage(this.constants.MessageType.error,'Date of joining cannot be greater than go live date.',false);
+        this.common.showToastrMessage(this.constants.MessageType.warn,'Date of joining cannot be greater than go live date.',false);
         return false;
       }
 

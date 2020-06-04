@@ -152,7 +152,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
     }
     else{
 
-      this.commonService.showToastrMessage(this.constants.MessageType.error,'Please select proper dates for custom search.',false);
+      this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please select proper dates for custom search.',false);
       this.loaderenable = false;
       this.enableTableView = true;
     }

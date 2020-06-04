@@ -577,7 +577,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         // let uniqueRT = this.checkSameRT();
         // console.log('uniqueRT ', uniqueRT);
         if (!this.selectedAllRowsItem.length) {
-            this.commonService.showToastrMessage(this.constantService.MessageType.info,'Please select at least one line item try agian.',false);
+            this.commonService.showToastrMessage(this.constantService.MessageType.warn,'Please select at least one line item try agian.',false);
             return false;
         }
         let uniqueRT = false;
@@ -782,8 +782,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 return;
             }
             else if (this.selectedFile && this.selectedFile.size === 0) {
-
-                this.commonService.showToastrMessage(this.constantService.MessageType.error,'Unable to upload file, size of ' + this.selectedFile.name + ' is 0 KB.',false);
+                this.commonService.showToastrMessage(this.constantService.MessageType.error,this.constantService.Messages.ZeroKbFile.replace('{{fileName}}',this.selectedFile.name),false);
                 return;
             }
 

@@ -45,10 +45,7 @@ export class ScheduleOopInvoiceDialogComponent implements OnInit {
   arrAdvanceInvoices: any;
   PoAdvanceInvoiceList = [];
   InvoiceTypeArray:any;
-  addressTypes = [
-    { label: 'Client', value: 'Client' },
-    { label: 'POC', value: 'POC' },
-  ];
+  addressTypes=[];
   yearRange: string;
   private subscription: Subscription = new Subscription();
 
@@ -85,6 +82,7 @@ export class ScheduleOopInvoiceDialogComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.addressTypes = this.fdConstantsService.fdComponent.addressTypes;
     this.InvoiceTypeArray = this.fdConstantsService.fdComponent.InvoiceTypeArray;
     this.selectedAllRowsItem = this.config.data.selectedAllRowsItem;
     this.projectInfoData = this.config.data.projectInfoData;
@@ -162,7 +160,7 @@ export class ScheduleOopInvoiceDialogComponent implements OnInit {
       this.modalloaderenable = false;
       this.ScheduleInvoiceForm.get('OOPBalance').setValidators([Validators.required, Validators.min(+(this.ScheduleInvoiceForm.get('Amount').value))]);
       this.ScheduleInvoiceForm.get('OOPBalance').updateValueAndValidity();
-      this.common.showToastrMessage(this.constantsService.MessageType.info,'OOP Balance must be greater than Scheduled oop Amount.',false);
+      this.common.showToastrMessage(this.constantsService.MessageType.warn,'OOP Balance must be greater than Scheduled oop Amount.',false);
       return;
     }
 

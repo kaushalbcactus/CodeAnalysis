@@ -192,7 +192,7 @@ export class TherapeuticAreasComponent implements OnInit {
     const alphaExp = this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL_WITHSPACE;
     this.common.clearToastrMessage();
     if (!this.therapeuticArea) {
-      this.common.showToastrMessage(this.constants.MessageType.error,'Please enter ta.',false);
+      this.common.showToastrMessage(this.constants.MessageType.warn,'Please enter ta.',false);
       return false;
     }
     if (!this.therapeuticArea.match(alphaExp)) {
@@ -200,7 +200,7 @@ export class TherapeuticAreasComponent implements OnInit {
       return false;
     }
     if (this.therapeuticAreaRows.some(a => a.TherapeuticArea.toLowerCase() === this.therapeuticArea.toLowerCase())) {
-      this.common.showToastrMessage(this.constants.MessageType.error,'This ta is already exist. Please enter another ta.',false);
+      this.common.showToastrMessage(this.constants.MessageType.warn,'This ta is already exist. Please enter another ta.',false);
       return false;
     }
     this.adminObject.isMainLoaderHidden = false;

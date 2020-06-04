@@ -205,7 +205,7 @@ export class AddEditSubdivisionComponent implements OnInit {
         if (this.subDivisionDetailsRows.some(a =>
           a.SubDivision.toLowerCase() === this.subDivisionform.value.subDivision_Name.toLowerCase())) {
 
-          this.common.showToastrMessage(this.constantsService.MessageType.error, 'This client sub-division is already exist. Please enter another client sub-division.', false);
+          this.common.showToastrMessage(this.constantsService.MessageType.warn, 'This client sub-division is already exist. Please enter another client sub-division.', false);
           return false;
         }
       }

@@ -442,7 +442,7 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
         this.getAddUpdateComment(task, true);
       }
     } else {
-      this.commonService.showToastrMessage(this.constants.MessageType.error, 'Previous task should be completed.', false);
+      this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Previous task should be completed.', false);
     }
   }
 

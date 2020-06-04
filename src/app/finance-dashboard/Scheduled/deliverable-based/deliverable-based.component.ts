@@ -165,6 +165,8 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     isOptionFilter: boolean;
 
     async ngOnInit() {
+
+        this.addressTypes =  this.fdConstantsService.fdComponent.addressTypes;
         // SetDefault Values
         if (this.fdDataShareServie.scheduleDateRange.startDate) {
             this.DateRange = this.fdDataShareServie.scheduleDateRange;
@@ -191,10 +193,6 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
 
         // Get Deliverable-based Invoices
         this.getRequiredData();
-
-        // Load address type
-        this.getAddressType();
-
         // For Mail
         this.currentUserInfoData = await this.fdDataShareServie.getCurrentUserInfo();
         console.log('this.currentUserInfoData  ', this.currentUserInfoData);
@@ -253,15 +251,6 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             }
         }));
     }
-
-
-    getAddressType() {
-        this.addressTypes = [
-            { label: 'Client', value: 'Client' },
-            { label: 'POC', value: 'POC' },
-        ];
-    }
-
 
     createDBICols() {
         this.deliverableBasedCols = [
@@ -375,7 +364,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
                 AddressType: element.AddressType,
                 showMenu: this.showMenu(element),
 
-                CS: this.getCSDetails(element),
+                CS: this.fdDataShareServie.getCSDetails(element),
                 PracticeArea: this.getPracticeArea(element).BusinessVertical,
                 POName: poItem.Name,
                 TaggedDate: element.TaggedDate,
@@ -441,19 +430,6 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         return found ? found : '';
     }
 
-    getCSDetails(res) {
-        if (res.hasOwnProperty('CS') && res.CS.hasOwnProperty('results') && res.CS.results.length) {
-            const title = [];
-            for (let i = 0; i < res.CS.results.length; i++) {
-                const element = res.CS.results[i];
-                title.push(element.Title);
-            }
-            return title.toString();
-        } else {
-            return '';
-        }
-    }
-
     createColFieldValues(resArray) {
         this.deliverableBasedColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
         this.deliverableBasedColArray.ShortTitle = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ShortTitle, value: a.ShortTitle }; return b; }).filter(ele => ele.label)));
@@ -495,8 +471,6 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     confirm1() {
         this.commonService.confirmMessageDialog('Confirmation', 'Are you sure that you want to confirm the invoice scheduled for the project?', null, ['Yes', 'No'], false).then(async Confirmation => {
             if (Confirmation === 'Yes') {
-
-                this.commonService.showToastrMessage(this.constantService.MessageType.info, 'You have Confirmed', false);
                 // Call server service here
                 this.onSubmit('confirmInvoice');
             }

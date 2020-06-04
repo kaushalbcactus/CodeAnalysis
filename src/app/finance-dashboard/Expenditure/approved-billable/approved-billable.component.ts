@@ -471,10 +471,10 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                     });
                 } else {
 
-                    this.commonService.showToastrMessage(this.constantService.MessageType.info, 'Please select only those Projects whose payment is pending.', false);
+                    this.commonService.showToastrMessage(this.constantService.MessageType.warn, 'Please select only those Projects whose payment is pending.', false);
                 }
             } else {
-                this.commonService.showToastrMessage(this.constantService.MessageType.info, 'Please select same Vendor/Freelance name.', false);
+                this.commonService.showToastrMessage(this.constantService.MessageType.warn, 'Please select same Vendor/Freelance name.', false);
             }
         }
     }

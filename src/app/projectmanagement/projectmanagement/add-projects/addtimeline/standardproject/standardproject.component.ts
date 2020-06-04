@@ -501,7 +501,7 @@ export class StandardprojectComponent implements OnInit {
   getInitialUserCapactiy(userCapacityRef) {
     if (this.selectedService === undefined) {
 
-      this.commonService.showToastrMessage(this.constants.MessageType.error,'Please select the service.',false);
+      this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please select the service.',false);
     } else {
       $('.initialUserCapacity-section').hide();
       $('.standard-spinner-section').show();
@@ -1897,29 +1897,29 @@ export class StandardprojectComponent implements OnInit {
    */
   private validateRequiredField(isRegisterClick) {
     if (!this.selectedService) {
-      this.commonService.showToastrMessage(this.constants.MessageType.error,'Please select the service.',false);
+      this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please select the service.',false);
       return false;
     }
     if (!this.selectedSkillObject || !this.selectedSkillObject.value.userType) {
 
-      this.commonService.showToastrMessage(this.constants.MessageType.error,'Please select the resource.',false);
+      this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please select the resource.',false);
       return false;
     }
     if (!this.selectedResourceObject || !this.selectedResourceObject.value.userType) {
 
-      this.commonService.showToastrMessage(this.constants.MessageType.error,'Please select the reviewer.',false);
+      this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please select the reviewer.',false);
       return false;
     }
     if (this.selectedSkillObject.value.userType === 'Type') {
       if (!this.ngStandardProposedStartDate) {
 
-        this.commonService.showToastrMessage(this.constants.MessageType.error,'Please select the proposed start date.',false);
+        this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please select the proposed start date.',false);
         return false;
       }
     }
     if (!this.standardProjectBudgetHrs) {
 
-      this.commonService.showToastrMessage(this.constants.MessageType.error,'Please enter the project Budget Hrs.',false);
+      this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please enter the project Budget Hrs.',false);
       return false;
     }
     if (this.standardProjectBudgetHrs) {
