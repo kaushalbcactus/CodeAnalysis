@@ -14,6 +14,7 @@
     icon="pi pi-save"
     [ngStyle]="{ 'margin-right': '5px', cursor: 'pointer' }"
     label="Save"
+    [hidden]="!hideLoader"
     class="saveTaskButton cls_conflict_save"
     (click)="save()"
   ></button>
@@ -22,6 +23,7 @@
     pButton
     icon="pi pi-times"
     label="Cancel"
+    [hidden]="!hideLoader"
     class="ui-button-secondary cls_conflict_close"
     style="background-color: ghostwhite;"
     (click)="close()"
@@ -72,7 +74,8 @@
                 <ng-template pTemplate="body" let-innerRowData let-columns="innercolumns">
                   <tr>
                     <td>
-                      <a [href]="goToProjectDetails(innerRowData)" target="_blank" style="color:#c53e3e;" target="_blank"> {{ innerRowData.projectCode }}</a>
+                      <a [href]="goToProjectDetails(innerRowData)" *ngIf="innerRowData.projectCode !== projectCode && innerRowData.projectCode !== 'Adhoc' ; else elseBlock" target="_blank" style="color:#c53e3e;" target="_blank"> {{ innerRowData.projectCode }}</a>
+                      <ng-template #elseBlock>{{innerRowData.projectCode}}</ng-template>
                     </td>
                     <td>
                       <span> {{ innerRowData.shortTitle }} </span>

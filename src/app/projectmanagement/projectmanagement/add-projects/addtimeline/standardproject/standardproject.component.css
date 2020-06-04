@@ -85,3 +85,6 @@
   left: inherit !important;
   right: 56px !important;
 }
+::ng-deep tr:nth-child(even) {
+  background-color: #ffffff!important;
+}

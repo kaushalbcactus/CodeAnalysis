@@ -54,8 +54,8 @@
   position: relative;
 }
 ::ng-deep .ng5-slider .ng5-slider-pointer  {
-  background-color: #ffffff !important;
-  border: 1px solid;
+  background-color: transparent !important;
+  /* border: 1px solid; */
 }
 ::ng-deep .ng5-slider .ng5-slider-pointer:after {
   background: black !important;

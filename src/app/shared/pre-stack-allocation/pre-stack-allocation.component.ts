@@ -95,12 +95,13 @@ export class PreStackAllocationComponent implements OnInit {
     this.newAllocation.length = 0;
     const sliderMaxHrs: number = resource.maxHrs ? resource.maxHrs + 3 : 0;
     const allocationDays = strAllocation.split(/\n/);
-    allocationDays.forEach(day => {
+    allocationDays.forEach((day, index) => {
       if (day) {
+        const betweenDays = index > 0 && index < allocationDays.length - 1 ? true : false;
         const resourceDailyAllocation: any[] = resource.dates;
         const allocation = this.common.getDateTimeFromString(day);
         const allocatedDate: any = resourceDailyAllocation.find(d => d.date.getTime() === allocation.date.getTime());
-        let resourceSliderMaxHrs: string = this.getResourceMaxHrs(sliderMaxHrs, allocatedDate, allocation.value.hours);
+        let resourceSliderMaxHrs: string = this.getResourceMaxHrs(sliderMaxHrs, allocatedDate, allocation.value.hours, index);
         resourceSliderMaxHrs = resourceSliderMaxHrs.indexOf('-') > -1 ? '0:0' : resourceSliderMaxHrs;
         const obj: DailyAllocationObject = {
           Date: allocation.date,
@@ -159,13 +160,14 @@ export class PreStackAllocationComponent implements OnInit {
     let flag = true;
     let i = 0;
     for (const detail of resourceDailyDetails) {
+      let betweenDays = false;
       const obj: DailyAllocationObject = {
         Date: detail.date,
         Allocation: {
           valueHrs: 0,
           valueMins: 0,
-          maxHrs: this.common.getHrsMinsObj(resourceSliderMaxHrs, true).hours,
-          maxMins: 45
+          maxHrs: 0,
+          maxMins: 0
         },
         tasks: detail.tasksDetails,
         hideTasksTable: true
@@ -175,6 +177,8 @@ export class PreStackAllocationComponent implements OnInit {
           detail.availableHrs = this.compareHrs(availableStartDayHrs, detail) ? availableStartDayHrs : detail.availableHrs;
         } else if (i === resourceDailyDetails.length - 1) {
           detail.availableHrs = this.compareHrs(availableEndDayHrs, detail) ? availableEndDayHrs : detail.availableHrs;
+        } else {
+          betweenDays = true;
         }
         let availableHrs = detail.availableHrs.indexOf('-') > -1 ? '0:0' : detail.availableHrs;
         availableHrs = detail.mandatoryHrs || detail.totalTimeAllocated >= maxLimit ? availableHrs :
@@ -183,9 +187,9 @@ export class PreStackAllocationComponent implements OnInit {
         // const strAllocation = this.popupData.data && this.popupData.data.strAllocation ? this.popupData.data.strAllocation : '';
         // const preAllocatedHrs = this.common.getAllocationByDate(detail.date, strAllocation, resourceSliderMaxHrs);
         // const numhrs = this.getResourceMaxHrs(resourceSliderMaxHrs, detail, preAllocatedHrs);
-        const numhrs = this.getResourceSliderMaxHrs(resourceSliderMaxHrs, detail);
+        const numhrs = this.getResourceSliderMaxHrs(resourceSliderMaxHrs, detail, betweenDays);
         obj.Allocation.maxHrs = numhrs.indexOf('-') > -1 ? 0 : this.common.getHrsMinsObj(numhrs, true).hours;
-        obj.Allocation.maxMins = availableHrs === '0:0' ? 0 : 45;
+        obj.Allocation.maxMins = availableHrs === '0:0' && detail.totalTimeAllocated >= maxLimit && !betweenDays ? 0 : 45;
         if (newBudgetHrs.indexOf('-') > -1) {
           obj.Allocation.valueHrs = this.common.getHrsMinsObj(availableHrs, false).hours;
           obj.Allocation.valueMins = this.common.getHrsMinsObj(availableHrs, false).mins;
@@ -211,19 +215,22 @@ export class PreStackAllocationComponent implements OnInit {
     return result;
   }
 
-  getResourceSliderMaxHrs(defaultResourceMaxHrs, day): string {
+  getResourceSliderMaxHrs(defaultResourceMaxHrs, day, betweenDays: boolean): string {
     const numtotalAllocated = this.common.convertFromHrsMins(day.totalTimeAllocatedPerDay);
-    const maxHrsMins = this.common.roundToPrecision(defaultResourceMaxHrs - numtotalAllocated, 0.5);
-    return this.common.convertToHrsMins('' + maxHrsMins);
+    const maxHrsMins = this.common.roundToPrecision(defaultResourceMaxHrs - numtotalAllocated, 0.25);
+    const sliderMaxHrs = betweenDays ? maxHrsMins > -1 && (24 - maxHrsMins < 12) ?
+                            24 - maxHrsMins : defaultResourceMaxHrs : maxHrsMins;
+    return this.common.convertToHrsMins('' + sliderMaxHrs);
   }
 
-  getResourceMaxHrs(defaultResourceMaxHrs, day, allocatedHours) {
+  getResourceMaxHrs(defaultResourceMaxHrs, day, allocatedHours, betweenDays) {
     const numtotalAllocated = this.common.convertFromHrsMins(day.totalTimeAllocatedPerDay);
     const availableHrs = defaultResourceMaxHrs - numtotalAllocated;
     const maxHrs = availableHrs < allocatedHours ? allocatedHours : availableHrs;
-    //  availableHrs < 0 ? allocatedHours : (defaultResourceMaxHrs + allocatedHours) - numtotalAllocated
     const maxHrsMins = this.common.roundToPrecision(maxHrs, 0.25);
-    return this.common.convertToHrsMins('' + maxHrsMins);
+    const sliderMaxHrs = betweenDays ? maxHrsMins > -1 && (24 - maxHrsMins < 12) ?
+                            24 - maxHrsMins : defaultResourceMaxHrs : maxHrsMins;
+    return this.common.convertToHrsMins('' + sliderMaxHrs);
   }
 
   getDailyAvailableHours(resourceAvailableHrs: string, budgetHrs: string): string {

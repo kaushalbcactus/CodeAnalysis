@@ -132,7 +132,7 @@
 
                 <div *ngIf="oProjectDetails.status !== 'On Hold' && oProjectDetails.status !== 'In Discussion' && oProjectDetails.status !== 'Closed' &&oProjectDetails.status !== 'Cancelled' && oProjectDetails.status !== 'Awaiting Cancel Approval' && oProjectDetails.status !== 'Pending Closure' && oProjectDetails.status !== 'Audit In Progress' && oProjectDetails.projectType !== 'FTE-Writing'"
                     class="input-color" fxLayoutAlign="end center">
-                    <button *ngIf="!projectDetails" mat-raised-button type="button" [disabled]="disableSave"
+                    <button *ngIf="!projectDetails && !this.confirmMilestoneLoader" mat-raised-button type="button" [disabled]="disableSave"
                         (click)="saveTasks()">
                         <mat-icon>save</mat-icon> Save
                     </button>

@@ -13,33 +13,8 @@
 ::ng-deep .tableHeader>td:first-child {
   background-color: #80808038;
   font-weight: bold;
-  width: 34%;
+   width: 34%;
 }
- /* .UserTasksRow,
-.tableHeader {
-    width: 100%;
-    display: inline-table;
-    table-layout: fixed;
-}
-.UserTasksRow>td:first-child {
-  padding: 0px;
-  background-color: transparent;
-  border: none;
-}
-.UserTasksRow table tr:first-child>td:first-child {
-  padding: 3px;
-}
-.UserTasksRow,
-.TaskPerDayRow {
-    background-color: white;
-}
-#TasksPerDay {
-  margin-bottom: 0px;
-}
-
-#TasksPerDay {
-  border: none !important;
-} */
 ::ng-deep .tableHeader>td {
   font-weight: bold;
 }
@@ -55,3 +30,12 @@
 ::ng-deep .tableBody>td:first-child {
   width: 34%;
 }
+
+#TasksPerDay > .ui-table .ui-table-tbody > tr:nth-child(even) {
+  background-color: #ffffff !important;
+  color: #333333 !important;
+}
+::ng-deep tr:nth-child(even) {
+  background-color: #ffffff!important;
+}
+
