@@ -74,7 +74,7 @@
                 <ng-template pTemplate="body" let-innerRowData let-columns="innercolumns">
                   <tr>
                     <td>
-                      <a [href]="goToProjectDetails(innerRowData)" *ngIf="innerRowData.projectCode !== projectCode; else elseBlock" target="_blank" style="color:#c53e3e;" target="_blank"> {{ innerRowData.projectCode }}</a>
+                      <a [href]="goToProjectDetails(innerRowData)" *ngIf="innerRowData.projectCode !== projectCode && innerRowData.projectCode !== 'Adhoc' ; else elseBlock" target="_blank" style="color:#c53e3e;" target="_blank"> {{ innerRowData.projectCode }}</a>
                       <ng-template #elseBlock>{{innerRowData.projectCode}}</ng-template>
                     </td>
                     <td>
