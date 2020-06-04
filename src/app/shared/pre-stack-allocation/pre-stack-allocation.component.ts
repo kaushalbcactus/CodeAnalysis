@@ -21,6 +21,7 @@ export class PreStackAllocationComponent implements OnInit {
   public hideTable = false;
   public hideLoader = false;
   public hideTasks = true;
+  public projects = [];
   darkTheme: NgxMaterialTimepickerTheme = {
     container: {
       bodyBackgroundColor: '#424242',
@@ -107,7 +108,7 @@ export class PreStackAllocationComponent implements OnInit {
             valueHrs: allocation.value.hours,
             valueMins: allocation.value.mins,
             maxHrs: this.common.getHrsMinsObj(resourceSliderMaxHrs, true).hours,
-            maxMins: 45
+            maxMins: resourceSliderMaxHrs === '0:0' ? 0 : 45
           },
           tasks: allocatedDate.tasksDetails,
           hideTasksTable: true
@@ -126,7 +127,7 @@ export class PreStackAllocationComponent implements OnInit {
     let remainingBudgetHrs: string;
     while (maxAvailableHrs <= maxLimit) {
       remainingBudgetHrs = '' + budgetHrs;
-      remainingBudgetHrs = this.checkResourceAvailability(resource, extraHrs, remainingBudgetHrs, allocationData);
+      remainingBudgetHrs = this.checkResourceAvailability(resource, extraHrs, remainingBudgetHrs, allocationData, maxLimit);
       if (remainingBudgetHrs.indexOf('-') > -1) {
         extraHrs = this.common.addHrsMins([extraHrs, autoAllocateAddHrs]);
         maxAvailableHrs = maxAvailableHrs + 0.5;
@@ -146,7 +147,7 @@ export class PreStackAllocationComponent implements OnInit {
     return resource;
   }
 
-  checkResourceAvailability(resource, extraHrs, taskBudgetHrs, allocationData): string {
+  checkResourceAvailability(resource, extraHrs, taskBudgetHrs, allocationData, maxLimit): string {
     const startTime = allocationData.startTime ? this.common.convertTo24Hour(allocationData.startTime) : '0:0';
     const endTime = allocationData.endTime ? this.common.convertTo24Hour(allocationData.endTime) : '0:0';
     const availableStartDayHrs = this.common.subtractHrsMins(startTime, '24:00', false);
@@ -176,14 +177,15 @@ export class PreStackAllocationComponent implements OnInit {
           detail.availableHrs = this.compareHrs(availableEndDayHrs, detail) ? availableEndDayHrs : detail.availableHrs;
         }
         let availableHrs = detail.availableHrs.indexOf('-') > -1 ? '0:0' : detail.availableHrs;
-        availableHrs = detail.mandatoryHrs ? availableHrs : this.common.addHrsMins([availableHrs, extraHrs]);
+        availableHrs = detail.mandatoryHrs || detail.totalTimeAllocated >= maxLimit ? availableHrs :
+                       this.common.addHrsMins([availableHrs, extraHrs]);
         newBudgetHrs = this.getDailyAvailableHours(availableHrs, taskBudgetHrs);
         // const strAllocation = this.popupData.data && this.popupData.data.strAllocation ? this.popupData.data.strAllocation : '';
         // const preAllocatedHrs = this.common.getAllocationByDate(detail.date, strAllocation, resourceSliderMaxHrs);
         // const numhrs = this.getResourceMaxHrs(resourceSliderMaxHrs, detail, preAllocatedHrs);
         const numhrs = this.getResourceSliderMaxHrs(resourceSliderMaxHrs, detail);
-        obj.Allocation.maxHrs = this.common.getHrsMinsObj(numhrs, true).hours;
-        obj.Allocation.maxMins = 45;
+        obj.Allocation.maxHrs = numhrs.indexOf('-') > -1 ? 0 : this.common.getHrsMinsObj(numhrs, true).hours;
+        obj.Allocation.maxMins = availableHrs === '0:0' ? 0 : 45;
         if (newBudgetHrs.indexOf('-') > -1) {
           obj.Allocation.valueHrs = this.common.getHrsMinsObj(availableHrs, false).hours;
           obj.Allocation.valueMins = this.common.getHrsMinsObj(availableHrs, false).mins;
@@ -218,9 +220,8 @@ export class PreStackAllocationComponent implements OnInit {
   getResourceMaxHrs(defaultResourceMaxHrs, day, allocatedHours) {
     const numtotalAllocated = this.common.convertFromHrsMins(day.totalTimeAllocatedPerDay);
     const availableHrs = defaultResourceMaxHrs - numtotalAllocated;
-    const maxHrs = availableHrs < allocatedHours ?
-                   availableHrs < 0 ? allocatedHours : (defaultResourceMaxHrs + allocatedHours) - numtotalAllocated
-                   : availableHrs;
+    const maxHrs = availableHrs < allocatedHours ? allocatedHours : availableHrs;
+    //  availableHrs < 0 ? allocatedHours : (defaultResourceMaxHrs + allocatedHours) - numtotalAllocated
     const maxHrsMins = this.common.roundToPrecision(maxHrs, 0.25);
     return this.common.convertToHrsMins('' + maxHrsMins);
   }
@@ -308,7 +309,7 @@ export class PreStackAllocationComponent implements OnInit {
     });
     const resourceCapacity = this.resourceCapacity.totalUnAllocated;
     const allocationAlert = (new Date(allocationData.startDate).getTime() === new Date(allocationData.endDate).getTime()
-      && +allocationData.budgetHrs < 1 && +resourceCapacity < +allocationData.budgetHrs) ? true : false;
+      && +resourceCapacity < +allocationData.budgetHrs) ? true : false;
     return ({
       allocationPerDay,
       allocationAlert,
@@ -359,4 +360,6 @@ export class PreStackAllocationComponent implements OnInit {
       this.messageService.add({ key: 'custom', severity: 'info', summary: 'Warning Message', detail: 'No Tasks found' });
     }
   }
+
+
 }

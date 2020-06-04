@@ -65,7 +65,8 @@
         </tr>
         <tr [hidden]="rowData.hideTasksTable">
           <td [attr.colspan]="4">
-          <app-date-user-capacity (collapse)="showTasks(rowData)" [tasks]="rowData.tasks"></app-date-user-capacity>
+            <app-capacity-tasks (collapse)="showTasks(rowData)" [componentName]="'prestack'" [disableCamera]="false" [tasks]="rowData.tasks"></app-capacity-tasks>
+          <!-- <app-date-user-capacity (collapse)="showTasks(rowData)" [tasks]="rowData.tasks"></app-date-user-capacity> -->
         </td>
         </tr>
       </ng-template>
