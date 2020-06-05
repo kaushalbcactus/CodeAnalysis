@@ -346,16 +346,16 @@ export class ProformaComponent implements OnInit, OnDestroy {
         ];
 
         this.invoiceCols = [
-            { field: 'projectCode', header: 'Project Code', },
-            { field: 'shortTitle', header: 'Short Title', },
-            { field: 'sow', header: 'SOW Code / Name', },
-            { field: 'milestone', header: 'Milestone', },
-            { field: 'PO', header: 'PO No / Name', },
-            { field: 'client', header: 'Client', },
-            { field: 'scheduleDate', header: 'Schedule Date', },
-            { field: 'amount', header: 'Amount', },
-            { field: 'currency', header: 'Currency', },
-            { field: 'poc', header: 'POC Name', },
+            { field: 'ProjectCode', header: 'Project Code', },
+            { field: 'ShortTitle', header: 'Short Title', },
+            { field: 'SOWValue', header: 'SOW Code / Name', },
+            { field: 'ProjectMileStone', header: 'Milestone', },
+            { field: 'POValues', header: 'PO No / Name', },
+            { field: 'ClientName', header: 'Client', },
+            { field: 'ScheduledDateFormat', header: 'Schedule Date', },
+            { field: 'Amount', header: 'Amount', },
+            { field: 'Currency', header: 'Currency', },
+            { field: 'POCName', header: 'POC Name', },
         ]
     }
 

@@ -124,9 +124,15 @@
 
                         </ng-template>
 
-                        <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
+                        <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex" let-columns="columns">
                             <tr class="milestoneTable" *ngIf="!proforma.loaderenable">
-                                <td style="text-align:left;">{{rowData.ProjectCode}}</td>
+                                <td *ngFor="let col of columns;index as i">
+                                    <ng-container>
+                                        {{rowData[col.field]}}
+                                    </ng-container>
+
+                                </td>
+                                <!-- <td style="text-align:left;">{{rowData.ProjectCode}}</td>
                                 <td style="text-align:left;">{{rowData.ShortTitle}}</td>
                                 <td style="text-align:left;">{{rowData.SOWValue}}</td>
                                 <td style="text-align:left;">{{rowData.ProjectMileStone}}</td>
@@ -135,7 +141,7 @@
                                 <td style="text-align:left;">{{rowData.ScheduledDateFormat}}</td>
                                 <td style="text-align:left;">{{rowData.Amount}}</td>
                                 <td style="text-align:left;">{{rowData.Currency}}</td>
-                                <td style="text-align:left;">{{rowData.POCName}}</td>
+                                <td style="text-align:left;">{{rowData.POCName}}</td> -->
                                 <!-- Menu option -->
                                 <td>
                                     <div>
