@@ -1236,7 +1236,9 @@ export class StandardprojectComponent implements OnInit {
       const msg = resource.data.AssignedTo + ' is over allocated for task \'' + resource.data.Milestone + '-' + resource.data.SubMilestone + '-' + resource.data.TaskName + '\'';
       errorMsg.push(msg);
     })
-    this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: errorMsg.join('\n'), life: 3000 });
+    if(errorMsg.length) {
+      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: errorMsg.join('\n'), sticky: true });
+    }
   }
   /**
    * This function is used to calculate the deviation between taskend date and milestone end date.
