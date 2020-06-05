@@ -2288,10 +2288,16 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           let maxHrs = time.hrs;
           let maxMin = time.minutes;
 
-          let hrs = bhrs.split(':')[0];
-          let min = bhrs.split(':')[1];
+          let hrs = parseInt(bhrs.split(':')[0]);
+          let min = parseInt(bhrs.split(':')[1]);
 
-          if (hrs > maxHrs || min > maxMin) {
+          let maxTime: any = new Date();
+          let bHrsTime: any = new Date();
+
+          maxTime = maxTime.setHours(time.hrs ,time.minutes, 0 ,0);
+          bHrsTime = bHrsTime.setHours(time.hrs ,time.minutes, 0 ,0);
+
+          if (bHrsTime > maxTime) {
             this.budgetHrs = 0;
             this.messageService.add({ key: 'gantt-message', severity: 'error', summary: 'Error Message', detail: 'Budget hours is set to zero because given budget hours is greater than task time period.' });
           }
