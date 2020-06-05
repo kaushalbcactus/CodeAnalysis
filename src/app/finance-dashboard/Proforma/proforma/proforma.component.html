@@ -182,17 +182,6 @@
 </p-sidebar>
 
 
-<!-- Context Menu Start -->
-<!-- <p-contextMenu #cm [model]="items"></p-contextMenu> -->
-<!-- Context Menu End -->
-
-<!-- Toast Messages -->
-<p-toast position="bottom-center" key="proformaInfoToast"></p-toast>
-<p-toast position="bottom-center" key="proformaSuccessToast"></p-toast>
-<p-toast position="bottom-center" key="myKey1"></p-toast>
-<!-- Toast Message End -->
-
-
 <!-- Replace Proforma -->
 <p-dialog header="Replace Proforma" [(visible)]="replaceProformaModal" [modal]="true" [draggable]="false" [responsive]="true" [style]="{'width': '30%'}" [maximizable]="false" (onHide)="cancelFormSub('replaceProforma')">
     <form id="myform" [formGroup]="replaceProforma_form">
@@ -441,8 +430,6 @@
     </p-footer> -->
 </p-dialog>
 
-<!-- To Display Proforma Number -->
-<p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom" position="bottom-center"></p-toast>
 <!-- <router-outlet></router-outlet> -->
 <app-editor #editorRef></app-editor>
 <app-timeline-history #timelineRef></app-timeline-history>

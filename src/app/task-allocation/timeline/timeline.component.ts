@@ -5,7 +5,7 @@ import { GlobalService } from 'src/app/Services/global.service';
 import { TaskAllocationConstantsService } from '../services/task-allocation-constants.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { GanttEditorComponent, GanttEditorOptions } from 'ng-gantt';
-import { TreeNode, MessageService, DialogService, DynamicDialogRef } from 'primeng';
+import { TreeNode, DialogService, DynamicDialogRef } from 'primeng';
 import { MenuItem } from 'primeng/api';
 import { DragDropComponent } from '../drag-drop/drag-drop.component';
 import { TaskDetailsDialogComponent } from '../task-details-dialog/task-details-dialog.component';
@@ -158,7 +158,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
     private taskAllocationService: TaskAllocationConstantsService,
     public datepipe: DatePipe,
     public dialogService: DialogService,
-    private messageService: MessageService,
     private taskAllocateCommonService: TaskAllocationCommonService,
     private usercapacityComponent: UsercapacityComponent,
   ) {
@@ -1108,7 +1107,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     if (!bFirstLoad) {
       setTimeout(() => {
         this.changeInRestructure = false;
-        this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Tasks Saved Successfully' });
+        this.commonService.showToastrMessage(this.constants.MessageType.success,'Tasks Saved Successfully.',false);
       }, 300);
     }
   }
@@ -1908,9 +1907,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         this.changeInRestructure = this.milestoneData.find(c => c.data.editMode === true) !== undefined ? true : false;
         if (this.changeInRestructure) {
           setTimeout(() => {
-
-            this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'There are some unsaved changes, Please save them.' });
-
+            this.commonService.showToastrMessage(this.constants.MessageType.warn,'There are some unsaved changes, Please save them.',false);
           }, 300);
         }
 
@@ -2260,10 +2257,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         const SDTask = AllNextTasks.find(c => c.pStart < task.pEnd && c.status !== 'Completed'
           && c.status !== 'Auto Closed' && c.status !== 'Deleted' && c.allowStart === false);
         if (SDTask) {
-          this.messageService.add({
-            key: 'custom', severity: 'warn', summary: 'Warning Message',
-            detail: 'Start Date of ' + SDTask.pName + '  should be greater than end date of ' + task.pName + ' in ' + task.milestone
-          });
+          this.commonService.showToastrMessage(this.constants.MessageType.warn,'Start Date of ' + SDTask.pName + '  should be greater than end date of ' + task.pName + ' in ' + task.milestone,false);
           errorPresnet = true;
           break;
         }
@@ -2776,7 +2770,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       }
     } else {
       this.disableSave = true;
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Add Task.' });
+      this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please Add Task.',false);
     }
   }
 
@@ -3700,10 +3694,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         });
       } else {
         if (subMile.budgetHours === '' || +subMile.budgetHours <= 0) {
-          this.messageService.add({
-            key: 'custom', severity: 'warn', summary: 'Warning Message',
-            detail: 'Budget hours for the milestone cannot be less than or equal to 0'
-          });
+          this.commonService.showToastrMessage(this.constants.MessageType.warn,'Budget hours for the milestone cannot be less than or equal to 0',false);
           return false;
         }
       }
@@ -3715,11 +3706,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         }
       });
       if (!validateNextMilestone) {
-        this.messageService.add({
-          key: 'custom', severity: 'warn', summary: 'Warning Message',
-          detail: 'All tasks should be assigned to either a resource or skill before setting the milestone / submilestone as current.'
-        });
-
+        this.commonService.showToastrMessage(this.constants.MessageType.warn,'All tasks should be assigned to either a resource or skill before setting the milestone / submilestone as current.',false);
         return false;
       }
 
@@ -3728,11 +3715,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
         && e.itemType !== 'Send to client' && e.itemType !== 'Client Review' && e.itemType !== 'Follow up' && e.status !== 'Completed' && !e.parentSlot);
       // tslint:enable
       if (checkTaskAllocatedTime.length > 0) {
-        this.messageService.add({
-          key: 'custom', severity: 'warn', summary: 'Warning Message',
-          detail: 'Allocated time for task cannot be equal or less than 0 for ' + checkTaskAllocatedTime[0].pName
-        });
 
+        this.commonService.showToastrMessage(this.constants.MessageType.warn,'Allocated time for task cannot be equal or less than 0 for ' + checkTaskAllocatedTime[0].pName,false);
         return false;
       }
 
@@ -3741,11 +3725,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         e.itemType !== 'Follow up' && e.status !== 'Completed'));
       if (compareDates.length > 0) {
 
-        this.messageService.add({
-          key: 'custom', severity: 'warn', summary: 'Warning Message',
-          detail: 'End date should be greater than start date of ' + compareDates[0].pName
-        });
-
+        this.commonService.showToastrMessage(this.constants.MessageType.warn,'End date should be greater than start date of ' + compareDates[0].pName,false);
         return false;
       }
 
@@ -3760,10 +3740,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
   setAsNextMilestoneCall(rowData, rowNode) {
 
     if (rowData.editMode) {
-      this.messageService.add({
-        key: 'custom', severity: 'warn', summary: 'Warning Message',
-        detail: 'There are some unsaved changes, Please save them.'
-      });
+
+      this.commonService.showToastrMessage(this.constants.MessageType.warn,'There are some unsaved changes, Please save them.',false);
       return false;
 
     } else {
@@ -4040,20 +4018,14 @@ export class TimelineComponent implements OnInit, OnDestroy {
     const allMilestones = milestonesData.filter(c => c.data.type === 'milestone' && c.data.status !== 'Deleted').map(c => c.data);
     const milestoneBudgetHrs = allMilestones.reduce((a, b) => a + +b.budgetHours, 0);
     if (projectBudgetHours < milestoneBudgetHrs) {
-
-      this.messageService.add({
-        key: 'custom', severity: 'warn', summary: 'Warning Message',
-        detail: 'Sum of milestone budget hours cannot be greater than project budget hours.'
-      });
+      this.commonService.showToastrMessage(this.constants.MessageType.warn,'Sum of milestone budget hours cannot be greater than project budget hours.',false);
       return false;
     }
     const tempMilestones = allMilestones.filter(e => e.status !== 'Completed');
     const checkMilestoneAllocatedTime = tempMilestones.filter(e => (e.budgetHours === '' || +e.budgetHours === 0) && e.status !== 'Not Confirmed');
     if (checkMilestoneAllocatedTime.length > 0 && checkMilestoneAllocatedTime[0].status !== 'Not Saved') {
-      this.messageService.add({
-        key: 'custom', severity: 'warn', summary: 'Warning Message',
-        detail: 'Budget hours for ' + checkMilestoneAllocatedTime[0].pName + ' milestone cannot be less than or equal to 0'
-      });
+
+      this.commonService.showToastrMessage(this.constants.MessageType.warn,'Budget hours for ' + checkMilestoneAllocatedTime[0].pName + ' milestone cannot be less than or equal to 0',false);
       return false;
     }
     let previousNode;
@@ -4084,12 +4056,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
             && e.itemType !== 'Send to client' && e.itemType !== 'Client Review' && e.itemType !== 'Follow up' && e.status !== 'Completed');
           // tslint:enable
           if (checkTaskAllocatedTime.length > 0) {
-            this.messageService.add({
-              key: 'custom', severity: 'warn', summary: 'Warning Message',
-              detail: 'Allocated time for task cannot be equal or less than 0 for '
-                + milestone.data.pName + ' - ' + checkTaskAllocatedTime[0].pName
-            });
 
+            this.commonService.showToastrMessage(this.constants.MessageType.warn,'Allocated time for task cannot be equal or less than 0 for '
+            + milestone.data.pName + ' - ' + checkTaskAllocatedTime[0].pName,false);
             return false;
           }
           const compareDates = checkTasks.filter(e => (e.pEnd <= e.pStart && e.tat === false
@@ -4097,11 +4066,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
             e.itemType !== 'Follow up' && e.status !== 'Completed'));
           if (compareDates.length > 0) {
 
-            this.messageService.add({
-              key: 'custom', severity: 'warn', summary: 'Warning Message',
-              detail: 'End date should be greater than start date of ' + milestone.data.pName + ' - ' + compareDates[0].pName
-            });
-
+            this.commonService.showToastrMessage(this.constants.MessageType.warn,'End date should be greater than start date of ' + milestone.data.pName + ' - ' + compareDates[0].pName,false);
             return false;
           }
           let validateAllocation = true;
@@ -4113,11 +4078,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
             }
           });
           if (!validateAllocation) {
-            this.messageService.add({
-              key: 'custom', severity: 'warn', summary: 'Warning Message',
-              detail: 'All tasks should be assigned to either a resource or skill for active milestone.'
-            });
 
+            this.commonService.showToastrMessage(this.constants.MessageType.warn, 'All tasks should be assigned to either a resource or skill for active milestone.',false);
             return false;
           }
           const errorPresnet = this.validateTaskDates(checkTasks);
@@ -4132,10 +4094,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
             errormessage = previousNode.pName;
           }
 
-          this.messageService.add({
-            key: 'custom', severity: 'warn', summary: 'Warning Message',
-            detail: 'Start Date of ' + milestone.data.pName + ' should be greater than end date of ' + errormessage
-          });
+          this.commonService.showToastrMessage(this.constants.MessageType.warn,'Start Date of ' + milestone.data.pName + ' should be greater than end date of ' + errormessage,false);
           return false;
         }
         const milestoneTasksRelink = AllTasks.filter(t => t.status !== 'Abandon' && t.itemType !== 'Adhoc');

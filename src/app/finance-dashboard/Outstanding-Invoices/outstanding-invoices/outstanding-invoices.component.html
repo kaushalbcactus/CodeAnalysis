@@ -115,16 +115,6 @@
 </p-sidebar>
 
 
-<!-- Toast Messages -->
-<p-toast position="bottom-center" key="outstandingInfoToast"></p-toast>
-<p-toast position="bottom-center" key="outstandingSuccessToast"></p-toast>
-<p-toast position="bottom-center" key="myKey1"></p-toast>
-<!-- Toast Message End -->
-
-<!-- Context Menu Start -->
-<!-- <p-contextMenu #cm [model]="items" [hidden]="contextMenu"></p-contextMenu> -->
-<!-- Context Menu End -->
-
 <!-- Payment Resolved -->
 <p-dialog header="Payment Resolved" [(visible)]="paymentResovedModal" [modal]="true" [draggable]="false" [responsive]="true" [style]="{'width': '30%', 'top':'0px'}" [maximizable]="false" (onHide)="cancelFormSub('paymentResoved')">
     <form id="myform" [formGroup]="paymentResoved_form">

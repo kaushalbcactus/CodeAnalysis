@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation, ComponentFactoryResolver, ViewContainerRef, ViewChild, HostListener, ApplicationRef, NgZone } from '@angular/core';
-import { MessageService, DialogService } from 'primeng';
+import { DialogService } from 'primeng';
 import { MenuItem } from 'primeng';
 import { FormBuilder, FormGroup, Validators, FormControl, MaxLengthValidator } from '@angular/forms';
 import { SPOperationService } from '../../Services/spoperation.service';
@@ -32,7 +32,6 @@ export class PubsupportComponent implements OnInit {
         public constantService: ConstantsService,
         public globalObject: GlobalService,
         public pubsupportService: PubsuportConstantsService,
-        private messageService: MessageService,
         private router: Router,
         private dialogService: DialogService,
         private datePipe: DatePipe,
@@ -877,8 +876,6 @@ export class PubsupportComponent implements OnInit {
                 });
             } else {
                 this.noFileMsg = 'There is no file to copy from selected project.';
-                // this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'There is no file to copy from selected project.', detail: '', life: 4000 });
-                // document.getElementById("closeModalButton").click();
             }
         }
     }
@@ -906,26 +903,19 @@ export class PubsupportComponent implements OnInit {
             if (this.jc_jcSubId[0].retItems.length) {
                 SelectedRowJCItemId = this.jc_jcSubId[0].retItems[0].ID;
             } else {
-                this.messageService.add({
-                    key: 'myKey1', severity: 'error', summary: 'Error message',
-                    detail: 'There is no line item available in Journal Conference Listname.', life: 4000
-                });
+
+                this.common.showToastrMessage(this.constantService.MessageType.error, 'There is no line item available in Journal Conference Listname.', false)
                 return;
             }
             if (this.jc_jcSubId[1].retItems.length) {
                 SelectedRowJCSubItemId = this.jc_jcSubId[1].retItems[0].ID;
             } else {
-                this.messageService.add({
-                    key: 'myKey1', severity: 'error', summary: 'Error message',
-                    detail: 'There is no line item available in JCSubmission Listname.', life: 4000
-                });
+
+                this.common.showToastrMessage(this.constantService.MessageType.error, 'There is no line item available in JCSubmission Listname.', false)
                 return;
             }
         } else {
-            this.messageService.add({
-                key: 'myKey1', severity: 'error', summary: 'Error message',
-                detail: 'There is no line item available in Journal Conference / JCSubmission  Listname.', life: 4000
-            });
+            this.common.showToastrMessage(this.constantService.MessageType.error, 'There is no line item available in Journal Conference / JCSubmission  Listname.', false)
             return;
         }
 
@@ -933,23 +923,23 @@ export class PubsupportComponent implements OnInit {
         this.common.confirmMessageDialog('Confirmation', 'Are you sure that you want to Cancel Journal Conference Details?', null, ['Yes', 'No'], false).then(async Confirmation => {
             if (Confirmation === 'Yes') {
                 const piObj = {
+                    __metadata: { type: this.constantService.listNames.ProjectInformation.type },
                     PubSupportStatus: ''
                 };
-                piObj['__metadata'] = { type: this.constantService.listNames.ProjectInformation.type };
                 const piEndpoint = this.spOperationsService.getItemURL(this.constantService.listNames.ProjectInformation.name, this.selectedProject.Id);
 
                 // Update JC
                 const jcObj = {
+                    __metadata: { type: this.constantService.listNames.JournalConf.type },
                     Status: 'Cancelled'
                 };
-                jcObj['__metadata'] = { type: this.constantService.listNames.JournalConf.type };
                 const jcEndpoint = this.spOperationsService.getItemURL(this.constantService.listNames.JournalConf.name, SelectedRowJCItemId);
 
                 // Update JCSubmission
                 const jcSubObj = {
+                    __metadata: { type: this.constantService.listNames.JCSubmission.type },
                     Status: 'Cancelled'
                 };
-                jcSubObj['__metadata'] = { type: this.constantService.listNames.JCSubmission.type };
                 const jcSubEndpoint = this.spOperationsService.getItemURL(this.constantService.listNames.JCSubmission.name, SelectedRowJCSubItemId);
 
                 const data = [
@@ -1012,7 +1002,8 @@ export class PubsupportComponent implements OnInit {
         }
         const res = await this.spOperationsService.executeBatch(jcObj);
         if (res.length && res[0].retItems.hasError) {
-            this.messageService.add({ key: 'myKey1', severity: 'error', summary: 'Error message', detail: res[0].retItems.message.value, life: 4000 });
+
+            this.common.showToastrMessage(this.constantService.MessageType.error, res[0].retItems.message.value, false);
             this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
             return;
         } else if (res.length && res[0].retItems) {
@@ -1123,10 +1114,7 @@ export class PubsupportComponent implements OnInit {
 
             ref.onClose.subscribe((journal) => {
                 if (journal) {
-                    this.messageService.add({
-                        key: 'myKey1', severity: 'success', summary: 'Success message',
-                        detail: 'Journal Created.', life: 4000
-                    });
+                    this.common.showToastrMessage(this.constantService.MessageType.success, 'Journal Created.', false)
                     this.getJCList('journal');
                 }
             });
@@ -1141,19 +1129,13 @@ export class PubsupportComponent implements OnInit {
 
             ref.onClose.subscribe((conference) => {
                 if (conference) {
-                    this.messageService.add({
-                        key: 'myKey1', severity: 'success', summary: 'Success message',
-                        detail: 'Conference Created.', life: 4000
-                    });
+                    this.common.showToastrMessage(this.constantService.MessageType.success, 'Conference Created.', false);
                     this.getJCList('conference');
                 }
             });
 
         } else {
-            this.messageService.add({
-                key: 'myKey1', severity: 'info', summary: 'Info message',
-                detail: 'Please select document type & try again.', life: 4000
-            });
+            this.common.showToastrMessage(this.constantService.MessageType.warn, 'Please select document type & try again.', false);
             return;
         }
     }
@@ -1204,54 +1186,34 @@ export class PubsupportComponent implements OnInit {
                 res = result[0].retItems;
             }
             if (res.hasOwnProperty('hasError')) {
-                this.messageService.add({
-                    key: 'myKey1', severity: 'error', summary: 'Error message',
-                    detail: res.message.value, life: 4000
-                });
+                this.common.showToastrMessage(this.constantService.MessageType.error, res.message.value, false);
             } else if (type === 'addJCDetailsModal') {
                 console.log('res ', res);
                 this.updateProjectSts_JCSubmissionDetails(res, type);
-
             } else if (type === 'editJCDetailsModal') {
-                this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Success message', detail: 'Journal/Conference details updated.', life: 4000 });
+                this.common.showToastrMessage(this.constantService.MessageType.success, 'Journal/Conference details updated.', false);
                 this.editJCDetailsModal = false;
                 this.reload();
             } else if (type === 'updateDecision') {
                 this.update_decision_details.reset();
-                this.messageService.add({
-                    key: 'myKey1', severity: 'success', summary: 'Success message',
-                    detail: 'Updated Decision', life: 4000
-                });
+                this.common.showToastrMessage(this.constantService.MessageType.success, 'Updated Decision', false);
                 this.updateDecisionModal = false;
                 this.reload();
             } else if (type === 'galley') {
                 this.galley_form.reset();
-                this.messageService.add({
-                    key: 'myKey1', severity: 'success', summary: 'Success message',
-                    detail: 'Galley Overrided.', life: 4000
-                });
+                this.common.showToastrMessage(this.constantService.MessageType.success, 'Galley Overrided.', false);
                 this.overrideGalleyModal = false;
                 this.reload();
             } else if (type === 'updatePublication') {
                 this.update_publication_form.reset();
-
-                this.messageService.add({
-                    key: 'myKey1', severity: 'success', summary: 'Success message',
-                    detail: 'Publication details Updated.', life: 4000
-                });
+                this.common.showToastrMessage(this.constantService.MessageType.success, 'Publication details Updated.', false);
                 this.updatePublicatoinModal = false;
                 this.reload();
             } else if (type === 'cancelJC') {
-                this.messageService.add({
-                    key: 'myKey1', severity: 'success', summary: 'Success message',
-                    detail: 'Journal Conference Cancelled', life: 4000
-                });
+                this.common.showToastrMessage(this.constantService.MessageType.success, 'Journal Conference Cancelled.', false);
                 this.reload();
             } else if (type === 'updateJCRequirementModal') {
-                this.messageService.add({
-                    key: 'myKey1', severity: 'success', summary: 'Success message',
-                    detail: 'Journal requirement response document updated.', life: 4000
-                });
+                this.common.showToastrMessage(this.constantService.MessageType.success, 'Journal requirement response document updated.', false);
                 this.updateJCRequirementModal = false;
                 this.reload();
             }
@@ -1261,11 +1223,6 @@ export class PubsupportComponent implements OnInit {
     }
 
     async updateProjectSts_JCSubmissionDetails(res: any, type: string) {
-        // Update PI
-        // tslint:disable-next-line: max-line-length
-        // const projEndpoint = this.spOperationsService.getItemURL(this.pubsupportService.pubsupportComponent.updateProjectInfo.updateProjInfo)
-        //     .replace('{{projectId}}', this.selectedProject.Id);
-        // tslint:disable-next-line: max-line-length
         const projEndpoint = this.spOperationsService.getItemURL(this.constantService.listNames.ProjectInformation.name, this.selectedProject.Id);
         const projObj: any = {
             __metadata: {
@@ -1302,7 +1259,7 @@ export class PubsupportComponent implements OnInit {
         const result = await this.spOperationsService.executeBatch(arr);
         const result1 = result[0].retItems;
         if (result1.hasError) {
-            this.messageService.add({ key: 'myKey1', severity: 'error', summary: 'Error message', detail: res.message.value, life: 4000 });
+            this.common.showToastrMessage(this.constantService.MessageType.error, res.message.value, false);
         } else if (type === 'addJCDetailsModal') {
             let entryTypeJC = '';
             if (this.journal_Conference_Detail_form.value.EntryType.toLowerCase() === 'journal') {
@@ -1310,7 +1267,7 @@ export class PubsupportComponent implements OnInit {
             } else if (this.journal_Conference_Detail_form.value.EntryType.toLowerCase() === 'conference') {
                 entryTypeJC = 'Conference Submitted.';
             }
-            this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Success message', detail: entryTypeJC, life: 4000 });
+            this.common.showToastrMessage(this.constantService.MessageType.success, entryTypeJC, false);
             this.addJCDetailsModal = false;
             this.reload();
         }
@@ -1560,22 +1517,20 @@ export class PubsupportComponent implements OnInit {
         console.log('File ', fileName);
         // console.log('File ', JSON.stringify(fileName));
         if (file) {
-            this.messageService.add({
-                key: 'myKey1', severity: 'success', summary: 'Success message',
-                detail: 'Files are downloading...', life: 2000
-            });
+            this.common.showToastrMessage(this.constantService.MessageType.success, 'Files are downloading...', false);
             const fileArray = file.split(';#');
             this.common.SetNewrelic('pubsupport', 'downloadFile', 'createZip');
             this.spOperationsService.createZip(fileArray, fileName);
         } else {
-            this.messageService.add({ key: 'myKey1', severity: 'warn', summary: 'Info message', detail: 'No file avaliable.', life: 4000 });
+
+            this.common.showToastrMessage(this.constantService.MessageType.warn, 'No file avaliable.', false);
         }
     }
 
 
-    //*************************************************************************************************
+    //********************************************************************************************
     // new File uplad function updated by Maxwell
-    // ************************************************************************************************
+    // *******************************************************************************************
 
     onFileChange(event) {
         // this.fileReader = new FileReader();
@@ -1602,10 +1557,7 @@ export class PubsupportComponent implements OnInit {
                 if (uploadedfile[0].hasOwnProperty('odata.error')) {
                     this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
                     this.submitBtn.isClicked = false;
-                    this.messageService.add({
-                        key: 'myKey1', severity: 'error', summary: 'File not uploaded.',
-                        detail: 'Folder / File Not Found', life: 3000
-                    });
+                    this.common.showToastrMessage(this.constantService.MessageType.error, this.constantService.Messages.FileNotUploaded, false);
                     return;
                 } else if (uploadedfile[0].ServerRelativeUrl && type !== 'updateAuthors') {
 
@@ -1652,10 +1604,7 @@ export class PubsupportComponent implements OnInit {
                 }
 
                 if (type === 'updateAuthors') {
-                    this.messageService.add({
-                        key: 'myKey1', severity: 'success', summary: 'Success message',
-                        detail: 'Author details updated.', life: 4000
-                    });
+                    this.common.showToastrMessage(this.constantService.MessageType.success, 'Author details updated.', false);
                     this.updateAuthorModal_1 = false;
                     this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
                 }
@@ -1732,20 +1681,12 @@ export class PubsupportComponent implements OnInit {
             this.submitBtn.isSubmit = true;
             // this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
             if (this.filesToCopy.length) {
-                this.messageService.add({
-                    key: 'myKey1', severity: 'warn', summary: 'Info message',
-                    detail: 'Files are copying from ' + this.selectedType.ProjectCode + ' to ' + this.selectedProject.ProjectCode
-                });
+                this.common.showToastrMessage(this.constantService.MessageType.warn, 'Files are copying from ' + this.selectedType.ProjectCode + ' to ' + this.selectedProject.ProjectCode, false);
                 this.update_author_form.removeControl('file');
                 this.common.SetNewrelic('Pubsupport', 'pubsupport-onsubmit', 'copyFiles');
                 const fileCopyEndPoint = await this.spOperationsService.copyFiles(this.fileSourcePath, this.fileDestinationPath);
-                this.messageService.clear();
-                this.messageService.add({
-                    key: 'myKey1', severity: 'success', summary: 'Success message',
-                    detail: 'Author details updated.', life: 4000
-                });
-
-                // this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
+                this.common.clearToastrMessage();
+                this.common.showToastrMessage(this.constantService.MessageType.success, 'Author details updated.', false);
                 this.updateAuthorModal_1 = false;
                 // this.reload();
             } else {
@@ -1800,236 +1741,10 @@ export class PubsupportComponent implements OnInit {
     }
 
     errorMessage() {
-        this.messageService.add({
-            key: 'myKey1', severity: 'error', summary: 'Error Message',
-            detail: 'Unable to upload file, size of ' + this.selectedFile.name + ' is 0 KB.', life: 4000
-        });
+
+        this.common.showToastrMessage(this.constantService.MessageType.error, this.constantService.Messages.ZeroKbFile.replace('{{fileName}}', this.selectedFile.name), false);
         this.submitBtn.isClicked = false;
     }
-
-    //*************************************************************************************************
-    // commented old file upload function
-    // ************************************************************************************************
-
-
-    // onFileChange(event) {
-    //     this.fileReader = new FileReader();
-    //     if (event.target.files && event.target.files.length > 0) {
-    //         this.selectedFile = event.target.files[0];
-    //         this.fileReader.readAsArrayBuffer(this.selectedFile);
-    //         this.fileReader.onload = () => {
-    //             let folderPath = '/Publication Support/Published Papers';
-    //             if (event.target.placeholder === 'updateAuthorForms') {
-    //                 folderPath = '/Publication Support/Forms';
-    //                 // this.update_author_form.value.
-    //                 this.update_author_form.removeControl('existingAuthorList');
-    //             }
-    //             this.filePathUrl = this.globalObject.sharePointPageObject.webRelativeUrl +
-    //                 '/_api/web/GetFolderByServerRelativeUrl(' + '\'' + this.selectedProject.ProjectFolder + '' +
-    //                 folderPath + '\'' + ')/Files/add(url=@TargetFileName,overwrite=\'true\')?' +
-    //                 '&@TargetFileName=\'' + this.selectedFile.name + '\'';
-    //         };
-    //         this.update_author_form.updateValueAndValidity();
-    //     }
-    // }
-
-
-    // async uploadFileData(type: string) {
-    //     this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
-    //     this.common.SetNewrelic('PubSupport', 'pubsupport', 'UploadFile');
-    //     const res = await this.spOperationsService.uploadFile(this.filePathUrl, this.fileReader.result);
-    //     console.log('selectedFile uploaded .', res.ServerRelativeUrl);
-    //     if (res.hasError) {
-    //         this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
-    //         // document.getElementById('closeModalButton').click();
-    //         this.messageService.add({
-    //             key: 'myKey1', severity: 'info', summary: 'File not uploaded.',
-    //             detail: 'Folder / ' + res.message.value + '', life: 4000
-    //         });
-    //         return;
-    //     }
-    //     if (res.ServerRelativeUrl && type !== 'updateAuthors') {
-    //         const arrayUpdateData = [];
-    //         const data1 = this.updateProjectInfo(res.ServerRelativeUrl, type);
-    //         const data2 = this.updateJCSubmissionDetails(res.ServerRelativeUrl, type);
-    //         const data3 = this.updateJCDetails(res.ServerRelativeUrl, type);
-    //         let data4 = {};
-    //         if (this.update_decision_details.value.Decision === 'Resubmit to same journal') {
-    //             data4 = this.addJCSubmission();
-    //         }
-    //         if (type === 'galley') {
-    //             data4 = this.addJCGalley(res.ServerRelativeUrl);
-    //         }
-    //         arrayUpdateData.push(data1, data2, data3, data4);
-    //         this.submit(arrayUpdateData, type);
-    //     }
-    //     if (type === 'updateAuthors') {
-    //         this.messageService.add({
-    //             key: 'myKey1', severity: 'success', summary: 'Success message',
-    //             detail: 'Author details updated.', life: 4000
-    //         });
-    //         // this.reload();
-    //         this.updateAuthorModal_1 = false;
-    //         // document.getElementById('closeModalButton').click();
-    //         this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
-    //     }
-    // }
-
-
-    // async onSubmit(type: string) {
-    //     this.formSubmit.isSubmit = true;
-    //     this.submitBtn.isClicked = true;
-    //     this.submitted = true;
-    //     if (type === 'addJCDetailsModal') {
-    //         if (this.journal_Conference_Detail_form.invalid) {
-    //             this.submitBtn.isClicked = false;
-    //             return;
-    //         }
-    //         this.submitBtn.isClicked = true;
-    //         this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
-    //         const obj = this.journal_Conference_Detail_form.getRawValue();
-    //         /* tslint:disable:no-string-literal */
-    //         obj['Status'] = 'Selected';
-    //         obj['Title'] = this.selectedProject.ProjectCode;
-    //         delete obj['jcLineItem'];
-    //         obj['JournalConferenceId'] = this.journal_Conference_Detail_form.getRawValue().jcLineItem.ID;
-    //         obj['__metadata'] = { type: this.constantService.listNames.JournalConf.type };
-    //         /* tslint:enable:no-string-literal */
-    //         const endpoint = this.spOperationsService.getReadURL(this.constantService.listNames.JournalConf.name);
-    //         const data = [{
-    //             data: obj,
-    //             url: endpoint,
-    //             type: 'POST',
-    //             listName: this.constantService.listNames.JournalConf.name
-    //         }];
-    //         this.submit(data, type);
-    //     } else if (type === 'editJCDetailsModal') {
-    //         if (this.journal_Conference_Edit_Detail_form.invalid) {
-    //             this.submitBtn.isClicked = false;
-    //             return;
-    //         }
-    //         this.submitBtn.isClicked = true;
-    //         this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
-    //         const obj = this.journal_Conference_Edit_Detail_form.getRawValue();
-    //         /* tslint:disable:no-string-literal */
-    //         delete obj['jcLineItemName'];
-    //         delete obj['EntryType'];
-    //         obj['__metadata'] = { type: this.constantService.listNames.JournalConf.type };
-    //         /* tslint:enable:no-string-literal */
-    //         const endpoint = this.spOperationsService.getItemURL(this.constantService.listNames.JournalConf.name, this.journal_Conf_data[0].element.ID);
-    //         const data = [{
-    //             data: obj,
-    //             url: endpoint,
-    //             type: 'PATCH',
-    //             listName: this.constantService.listNames.JournalConf.name
-    //         }];
-    //         this.submit(data, type);
-    //     } else if (type === 'updateJCRequirementModal') {
-    //         if (this.update_Journal_Requirement_form.invalid) {
-    //             this.submitBtn.isClicked = false;
-    //             return;
-    //         }
-    //         this.submitBtn.isClicked = true;
-    //         this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
-    //         this.common.SetNewrelic('pubsupport', 'pubsupport-updateJCRequirementModal', 'uploadFile');
-    //         const res = await this.spOperationsService.uploadFile(this.filePathUrl, this.fileReader.result);
-    //         console.log('selectedFile uploaded .', res.ServerRelativeUrl);
-    //         if (res.hasError) {
-    //             this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
-    //             this.messageService.add({
-    //                 key: 'myKey1', severity: 'info', summary: 'File not uploaded.',
-    //                 detail: 'Folder / ' + res.message.value + '', life: 3000
-    //             });
-    //             return;
-    //         }
-    //         const objData = {
-    //             JournalRequirementResponse: res.ServerRelativeUrl
-    //         };
-    //         objData['__metadata'] = { type: this.constantService.listNames.JournalConf.type };
-
-    //         // Get Selected Line item JournalConference Id
-    //         this.jc_jcSubId[0].retItems.forEach(element => {
-    //             if (element) {
-    //                 this.jcId = element.ID;
-    //             }
-    //         });
-    //         // const endpoint = this.pubsupportService.pubsupportComponent.addJC.updateJCDetails.replace('{{Id}}', this.jcId);
-    //         const endpoint = this.spOperationsService.getItemURL(this.constantService.listNames.JournalConf.name, this.jcId);
-    //         let data = [];
-    //         if (res.ServerRelativeUrl) {
-    //             data = [{
-    //                 data: objData,
-    //                 url: endpoint,
-    //                 type: 'PATCH',
-    //                 listName: this.constantService.listNames.JournalConf.name
-    //             }];
-    //         }
-    //         this.submit(data, type);
-    //     } else if (type === 'updateAuthor') {
-
-    //         // stop here if form is invalid
-    //         if (this.update_author_form.invalid) {
-    //             this.submitBtn.isClicked = false;
-    //             return;
-    //         }
-    //         this.submitBtn.isSubmit = true;
-    //         // this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
-    //         if (this.filesToCopy.length) {
-    //             this.messageService.add({
-    //                 key: 'myKey1', severity: 'warn', summary: 'Info message',
-    //                 detail: 'Files are copying from ' + this.selectedType.ProjectCode + ' to ' + this.selectedProject.ProjectCode
-    //             });
-    //             this.update_author_form.removeControl('file');
-    //             this.common.SetNewrelic('Pubsupport', 'pubsupport-onsubmit', 'copyFiles');
-    //             const fileCopyEndPoint = await this.spOperationsService.copyFiles(this.fileSourcePath, this.fileDestinationPath);
-    //             this.messageService.clear();
-    //             this.messageService.add({
-    //                 key: 'myKey1', severity: 'success', summary: 'Success message',
-    //                 detail: 'Author details updated.', life: 4000
-    //             });
-
-    //             // this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
-    //             this.updateAuthorModal_1 = false;
-    //             // this.reload();
-    //         } else {
-    //             this.uploadFileData('updateAuthors');
-    //         }
-
-    //     } else if (type === 'updateDecision') {
-
-    //         // stop here if form is invalid
-    //         if (this.update_decision_details.invalid) {
-    //             this.submitBtn.isClicked = false;
-    //             return;
-    //         }
-    //         this.submitBtn.isClicked = true;
-    //         this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
-    //         this.uploadFileData('updateDecision');
-
-    //     } else if (type === 'updatePublication') {
-
-    //         // stop here if form is invalid
-    //         if (this.update_publication_form.invalid) {
-    //             this.submitBtn.isClicked = false;
-    //             return;
-    //         }
-    //         this.submitBtn.isClicked = true;
-    //         this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
-    //         this.uploadFileData('updatePublication');
-
-    //     } else if (type === 'galley') {
-
-    //         // stop here if form is invalid
-    //         if (this.galley_form.invalid) {
-    //             this.submitBtn.isClicked = false;
-    //             return;
-    //         }
-    //         this.submitBtn.isClicked = true;
-    //         this.submitBtn.isSubmit = true;
-    //         this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
-    //         this.uploadFileData('galley');
-    //     }
-    // }
 
     // TO update data after submit just call method name in DoCheck mothod
     // tslint:disable-next-line:use-life-cycle-interface

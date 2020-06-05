@@ -1,5 +1,6 @@
 import { Directive, ElementRef, HostListener, OnInit } from '@angular/core';
-import { MessageService } from 'primeng/api';
+import { CommonService } from 'src/app/Services/common.service';
+import { ConstantsService } from 'src/app/Services/constants.service';
 
 @Directive({
   selector: '[appNumberOnly]'
@@ -9,7 +10,9 @@ export class NumberOnlyDirective implements OnInit {
   private element: HTMLInputElement;
   constructor(
     private el: ElementRef,
-    private messageService: MessageService
+    public common:CommonService,
+    public constants:ConstantsService
+
   ) {
     //elRef will get a reference to the element where
     //the directive is placed
@@ -22,7 +25,7 @@ export class NumberOnlyDirective implements OnInit {
   @HostListener('keypress', ['$event']) keypress(e) {
     let charCode = (e.which) ? e.which : e.keyCode;
     if (charCode != 46 && charCode > 31 && (charCode < 48 || charCode > 57)) {
-      this.messageService.add({ key: 'fdToast', severity: 'error', summary: 'Error message', detail: 'Please enter only numbers.', life: 3000 });
+      this.common.showToastrMessage(this.constants.MessageType.error,'Please enter only numbers.',false);
       return false;
     }
     return true;

@@ -160,17 +160,6 @@
     </ng-container>
 </p-sidebar>
 
-<!-- Context Menu Start -->
-<!-- <p-contextMenu #cm [model]="items"></p-contextMenu> -->
-<!-- Context Menu End -->
-
-<!-- Toast Messages -->
-<p-toast position="bottom-center" key="confirmInfoToast"></p-toast>
-<p-toast position="bottom-center" key="confirmSuccessToast"></p-toast>
-<!-- Toast Message End -->
-
-
-
 <!-- Confirmation -->
 <p-dialog header="Confirmation" [(visible)]="revertInvModal" [modal]="true" [draggable]="false" [style]="{'width': '30%'}" [maximizable]="false" [baseZIndex]="10000" [contentStyle]="{'height': '150px'}" (onHide)="cancelFormSub('revertInvoice')">
     <form id="myform">
@@ -342,8 +331,6 @@
 
 </p-dialog>
 
-<!-- To Display Proforma Number -->
-<p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom" position="bottom-center"></p-toast>
 <!-- <router-outlet></router-outlet> -->
 <app-editor #editorRef></app-editor>
 <app-timeline-history #timelineRef></app-timeline-history>

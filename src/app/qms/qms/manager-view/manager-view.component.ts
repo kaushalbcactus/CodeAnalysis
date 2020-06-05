@@ -8,7 +8,6 @@ import { GlobalService } from '../../../Services/global.service';
 // import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-import { TreeNode, MessageService } from 'primeng/api';
 import { UserFeedbackComponent } from '../user-feedback/user-feedback.component';
 import { QMSConstantsService } from '../services/qmsconstants.service';
 import { PlatformLocation, LocationStrategy } from '@angular/common';
@@ -83,7 +82,7 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
     type: '',
     listName: ''
   };
-  constructor(private spService: SPOperationService, private globalConstant: ConstantsService, private messageService: MessageService,
+  constructor(private spService: SPOperationService, private globalConstant: ConstantsService,
     private common: CommonService, private data: DataService, private router: Router, private global: GlobalService,
     private qmsConstant: QMSConstantsService, private platformLocation: PlatformLocation,
     private locationStrategy: LocationStrategy, private readonly _router: Router, _applicationRef: ApplicationRef, zone: NgZone
@@ -405,6 +404,6 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
   }
 
   showSuccessMsg() {
-    this.messageService.add({ severity: 'success', summary: 'No Reportees present', detail: '' });
+    this.common.showToastrMessage(this.globalConstant.MessageType.success,'No Reportees present',false)
   }
 }

@@ -9,7 +9,6 @@ import { GlobalService } from '../../../../Services/global.service';
 import { SPCommonService } from '../../../../Services/spcommon.service';
 import { QMSConstantsService } from '../../services/qmsconstants.service';
 import { QMSCommonService } from '../../services/qmscommon.service';
-import { MessageService } from 'primeng/api';
 import { Table } from 'primeng/table';
 import { Router } from '@angular/router';
 import { FeedbackPopupComponent } from '../../reviewer-detail-view/feedback-popup/feedback-popup.component';
@@ -75,7 +74,7 @@ export class AdminViewComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private spService: SPOperationService, private globalConstant: ConstantsService,
     public datepipe: DatePipe, private global: GlobalService, private qmsConstant: QMSConstantsService,
-    private qmsCommon: QMSCommonService, private messageService: MessageService,
+    private qmsCommon: QMSCommonService,
     private dialogService: DialogService,
     private platformLocation: PlatformLocation,
     private locationStrategy: LocationStrategy,
@@ -345,7 +344,7 @@ export class AdminViewComponent implements OnInit, OnDestroy {
   }
 
   showToastMsg(objMsg) {
-    this.messageService.add({ severity: objMsg.type, summary: objMsg.msg, detail: objMsg.detail });
+    this.commonService.showToastrMessage(objMsg.type,objMsg.detail,false);
   }
 
   isOptionFilter: boolean;

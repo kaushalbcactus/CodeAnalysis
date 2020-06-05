@@ -5,7 +5,6 @@ import { SPOperationService } from '../../../../../Services/spoperation.service'
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { QMSConstantsService } from '../../../services/qmsconstants.service';
-import { MessageService } from 'primeng/api';
 import { CommonService } from 'src/app/Services/common.service';
 
 @Component({
@@ -105,7 +104,6 @@ export class ActionsPopupComponent implements OnInit {
   constructor(private globalConstant: ConstantsService, private spService: SPOperationService,
     private global: GlobalService,
     private qmsConstant: QMSConstantsService,
-    private messageService: MessageService,
     private commonService: CommonService,
     _applicationRef: ApplicationRef,
     zone: NgZone
@@ -338,7 +336,7 @@ export class ActionsPopupComponent implements OnInit {
         this.resetAccountableResource();
       } else {
         // this.setPopupSuccessMsg('Data saved!');
-        this.showToastMsg('success', 'Success', 'Data saved!');
+        this.commonService.showToastrMessage(this.globalConstant.MessageType.success,'Data Saved.',false);
       }
       this.hidePopupLoader = true;
       this.hidePopupTable = false;
@@ -569,9 +567,5 @@ export class ActionsPopupComponent implements OnInit {
       res.EMail = resource.length > 0 ? resource[0].UserName.EMail : '';
       return res;
     });
-  }
-
-  showToastMsg(type, msg, detail) {
-    this.messageService.add({ severity: type, summary: msg, detail: detail });
   }
 }

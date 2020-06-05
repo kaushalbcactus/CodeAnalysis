@@ -7,7 +7,6 @@ import { CommonService } from '../../../Services/common.service';
 import { FeedbackPopupComponent } from './feedback-popup/feedback-popup.component';
 import { QMSConstantsService } from '../services/qmsconstants.service';
 import { QMSCommonService } from '../services/qmscommon.service';
-import { MessageService } from 'primeng/api';
 import { Table } from 'primeng/table';
 import { Router } from '@angular/router';
 import { DialogService } from 'primeng';
@@ -53,7 +52,6 @@ export class ReviewerDetailViewComponent implements OnInit {
     private qmsConstant: QMSConstantsService,
     private commonService: CommonService,
     private qmsCommon: QMSCommonService,
-    private messageService: MessageService,
     private cdr: ChangeDetectorRef,
     private dialogService : DialogService,
     private platformLocation: PlatformLocation,
@@ -376,7 +374,7 @@ export class ReviewerDetailViewComponent implements OnInit {
   }
 
   showToastMsg(type, msg, detail) {
-    this.messageService.add({ severity: type, summary: msg, detail: detail });
+    this.commonService.showToastrMessage(type,detail,false);
   }
 
 

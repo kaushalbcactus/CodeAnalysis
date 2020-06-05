@@ -7,7 +7,6 @@
 </div>
 
 <div class="p-row p-dir-col" *ngIf="!mainloaderenable">
-    <p-toast key="toastMessage" [style]="{marginTop: '80px'}" position="top-center"></p-toast>
     <p-card class="p-col topCardPosition">
         <form class="p-grid" #searchForm="ngForm" [formGroup]="searchCapacityForm" (ngSubmit)="onSubmit()">
             <div class="p-col-12 p-justify-between p-align-center" style="padding: 20px 0px 20px 0px;">
@@ -57,7 +56,7 @@
                     <label for="float-input" style="top: -.75em;" class="mainlable">Custom Dates</label>
                 </span>
 
-               
+
             </div>
             <div style="width: 100%;">
                 <div class="ui-card-title" style="font-size: 15px; float: left;">Selected User Capacity</div>
@@ -84,10 +83,10 @@
                             <label>Trainee</label>
                             <div class="color-box" style="background-color: #ffffff;border: 1px solid #cdcdcd;"></div>
                         </div>
-                    <!-- </div> -->
-                <!-- </div>
+                        <!-- </div> -->
+                        <!-- </div>
                 <div class="col-3 ui-card-title p-col-align-center p-justify-end" style="padding: 0px;"> -->
-                    <!-- <div style="float: right;"> -->
+                        <!-- <div style="float: right;"> -->
                         <span style="float: left;font-size: 14px;padding-right: 10px; padding-left: 25px;  font-weight: 700;"> Tasks : </span>
                         <div class="input-color">
                             <label>Confirmed</label>
@@ -100,13 +99,13 @@
 
                     </div>
                 </div>
-                 <!-- <p-footer> -->
-                    <div  style="padding: 0px;float: right">
+                <!-- <p-footer> -->
+                <div style="padding: 0px;float: right">
                     <button pButton type="submit" icon="pi pi-search" class="ui-button-raised ui-button-danger" style="float: right;margin: 0px 12px 0px 4px !important;"></button>
                     <button pButton type="button" icon="pi pi-refresh" style="float: right !important;" class="ui-button-raised ui-button-danger" (click)="onChange($event,'');searchForm.reset()"></button>
                     <!-- </p-footer> -->
-                    </div>
-                    <div style="clear: both"></div>
+                </div>
+                <div style="clear: both"></div>
             </div>
         </form>
         <div class="p-col" [hidden]="!fetchDataloader">

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DynamicDialogConfig, DynamicDialogRef, MessageService } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { MyDashboardConstantsService } from 'src/app/my-dashboard/services/my-dashboard-constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -45,7 +45,6 @@ export class TaskDetailsDialogComponent implements OnInit {
     private spServices: SPOperationService,
     private datePipe: DatePipe,
     public sharedObject: GlobalService,
-    public messageService: MessageService,
     public commonService: CommonService
   ) { }
 
@@ -215,10 +214,7 @@ export class TaskDetailsDialogComponent implements OnInit {
       this.commonService.SetNewrelic('task-allocation', 'downloadFile', 'createZip');
       this.spServices.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), this.currentTask.Title);
     } else {
-      this.messageService.add({
-        key: 'task-details', severity: 'warn', summary: 'Warning Message',
-        detail: 'Please Select Files.', life: 4000
-      });
+      this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please Select Files.',false);
     }
   }
 }

@@ -3,10 +3,6 @@
     <div id="modalInnerLoaderText">Loading...</div>
 </div>
 
-
-<p-toast [style]="{marginTop: '80px'}" position="top-center" key="tc" [modal]="true" [baseZIndex]="5000" closable="false"></p-toast>
-
-
 <div fxLayout="row" fxLayoutAlign="start center" style="width:100%;">
 
     <div *ngIf="GanttChartView" fxLayout="column" fxLayoutAlign="center start" style="margin-top: 1vh;width: 100%;">
@@ -120,12 +116,8 @@
                                                           Table View Data
            ********************************************************************************************************** -->
         <div fxLayout="row" class="taskAllocationTimeline" fxLayoutAlign="center start" [hidden]="visualgraph === true" *ngIf="!loaderenable">
-            <p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom" position="bottom-center">
-            </p-toast>
-            <!-- <p-treeTable [value]="milestoneData" [(contextMenuSelection)]="selectedNode" [contextMenu]="!projectDetails ? milestones : ''" (onContextMenuSelect)="milestoneContextMenuEvent($event, milestones)"> -->
 
             <p-treeTable [value]="milestoneData">
-
 
                 <ng-template pTemplate="header">
                     <tr>

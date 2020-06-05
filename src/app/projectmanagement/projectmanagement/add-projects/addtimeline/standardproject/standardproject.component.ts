@@ -2208,11 +2208,4 @@ export class StandardprojectComponent implements OnInit {
     this.pmObject.activeIndex = 2;
   }
 
-  // goToFinanceMang() {
-  //   if (this.pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked) {
-  //     this.pmObject.activeIndex = 3;
-  //   } else {
-  //     this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: 'Please generate and register the task.' });
-  //   }
-  // }
 }

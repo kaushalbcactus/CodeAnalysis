@@ -5,7 +5,7 @@ import { SPOperationService } from '../../../../Services/spoperation.service';
 import { QMSConstantsService } from '../../services/qmsconstants.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { IScorecard, IScorecardTemplate } from '../../../interfaces/qms';
-import { MessageService, DynamicDialogConfig, DynamicDialogRef } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 import { MyDashboardConstantsService } from 'src/app/my-dashboard/services/my-dashboard-constants.service';
 import { DatePipe } from '@angular/common';
 import { isArray } from 'util';
@@ -46,7 +46,6 @@ export class FeedbackPopupComponent implements OnInit {
     private qmsConstant: QMSConstantsService,
     public global: GlobalService,
     private common: CommonService,
-    private messageService: MessageService,
     private dashbaordService: MyDashboardConstantsService,
     private datePipe: DatePipe,
     private cdr: ChangeDetectorRef,
@@ -132,29 +131,20 @@ export class FeedbackPopupComponent implements OnInit {
     const emptyScorecard = this.scorecardTasks.tasks.filter(t => !t.ignoreFeedback && t.averageRating <= 0);
     const milestone = this.scorecardTasks.currentTask.Milestone ? this.scorecardTasks.currentTask.Milestone : this.scorecardTasks.currentTask.milestone;
     if (milestone === 'Draft 1' && emptyScorecard.length) {
-      this.messageService.add({
-        key: 'custom', severity: 'warn', summary: 'Warning Message', life: 10000,
-        detail: 'Rating Draft 1 milestone task is mandatory.'
-      });
+      this.common.showToastrMessage(this.constantsService.MessageType.warn,'Rating Draft 1 milestone task is mandatory.',false);
       return false;
     }
     const emptyCommentSC = this.scorecardTasks.tasks.filter(t => !t.ignoreFeedback && !t.feedbackComment.length && t.averageRating < 3);
     if (emptyCommentSC.length) {
       const tasksNames = emptyCommentSC.map(s => s.task);
       const taskString = tasksNames.join(',');
-      this.messageService.add({
-        key: 'custom', severity: 'warn', summary: 'Warning Message', life: 10000,
-        detail: 'Please provide comments for tasks ' + taskString + ' as rating is less than 3'
-      });
+      this.common.showToastrMessage(this.constantsService.MessageType.warn,'Please provide comments for tasks ' + taskString + ' as rating is less than 3',false);
       return false;
     }
     if (emptyScorecard.length) {
       const tasksNames = emptyScorecard.map(s => s.task);
       const taskString = tasksNames.join(',');
-      this.messageService.add({
-        key: 'custom', severity: 'warn', summary: 'Warning Message', life: 10000,
-        detail: 'Please mark ignore to scorecard of task ' + taskString
-      });
+      this.common.showToastrMessage(this.constantsService.MessageType.warn,'Please mark ignore to scorecard of task ' + taskString,true);
       return false;
     }
     return true;
@@ -190,7 +180,7 @@ export class FeedbackPopupComponent implements OnInit {
             case 'Retrospective':
               const Retodata = {
                 task: previousTasks[0],
-                message: { type: 'success', msg: 'Success', detail: 'Rating updated!' }
+                message: { type: this.constantsService.MessageType.success, msg: 'Success', detail: 'Rating updated!' }
               }
               this.ref.close(Retodata);
               // this.bindTableEvent.emit(previousTasks[0]);
@@ -203,7 +193,7 @@ export class FeedbackPopupComponent implements OnInit {
               const reviewerPendingTasks = JSON.parse(JSON.stringify(this.global.oReviewerPendingTasks));
               const Reviewerdata = {
                 task: reviewerPendingTasks,
-                message: { type: 'success', msg: 'Success', detail: 'Rating updated!' }
+                message: { type: this.constantsService.MessageType.success, msg: 'Success', detail: 'Rating updated!' }
               }
               this.ref.close(Reviewerdata);
               break;
@@ -426,7 +416,7 @@ export class FeedbackPopupComponent implements OnInit {
         this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'GetNextPreviousTasksFromParentSlot');
         let res: any = await this.spService.readItems(this.constantsService.listNames.Schedules.name, previousNextTaskChild);
         if (res.hasError) {
-          this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: res.message.value });
+          this.common.showToastrMessage(this.constantsService.MessageType.error,res.message.value,false);
           return;
         }
         res = res.length ? res : [];

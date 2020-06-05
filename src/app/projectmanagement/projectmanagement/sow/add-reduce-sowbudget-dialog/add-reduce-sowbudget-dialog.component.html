@@ -3,8 +3,6 @@
     <div id="modalInnerLoaderText">Loading...</div>
 </div>
 
-<p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom-booking" [hideTransitionOptions]="'0ms'" position="bottom-center">
-</p-toast>
 
 <div class='UserButton' fxLayout="row" fxLayoutAlign="end center" [hidden]="modalloaderenable">
 
@@ -222,69 +220,3 @@
         </form>
     </p-card>
 </div>
-
-<!-- 
-
-<div class="add-additional-budget-sow-section" *ngIf="pmObject.isAdditionalBudgetVisible">
-    <p-dialog [(visible)]="pmObject.isAdditionalBudgetVisible" [modal]="true"
-        [style]="{width: '600px', height: '500px'}" [contentStyle]="{'max-height':'450px'}"
-        (onHide)="closeAdditonalPop();">
-        <p-header>
-            Add Budget <span *ngIf="pmObject.selectedSOWTask"> ({{pmObject.selectedSOWTask.SOWCode}}) </span>
-        </p-header>
-        <form [formGroup]='addAdditionalBudgetForm'>
-            <div class="ui-g mt-20">
-                <div class="ui-g-5">Additional Budget</div>
-                <div class="ui-g-5">
-                    <input formControlName="addTotal" type="number" [attr.disabled]="true" placeholder="Total"
-                        pInputText>
-                    <div class="error"
-                        *ngIf="pmObject.isSOWFormSubmit && !addAdditionalBudgetForm.controls['addTotal'].valid">
-                        Total is required</div>
-                </div>
-            </div>
-            <div class="ui-g mt-20">
-                <div class="ui-g-5">Additional Net Budget</div>
-                <div class="ui-g-5">
-                    <input formControlName="addNet" min="0" (change)="setAddSOWTotal()" type="number" placeholder="Net"
-                        pInputText>
-                    <div class="error"
-                        *ngIf="pmObject.isSOWFormSubmit && !addAdditionalBudgetForm.controls['addNet'].valid">
-                        Additional Net should be greater than zero </div>
-                </div>
-            </div>
-            <div class="ui-g mt-20">
-                <div class="ui-g-5">Additional OOP Budget</div>
-                <div class="ui-g-5">
-                    <input formControlName="addOOP" min="0" (change)="setAddSOWTotal()" type="number" placeholder="OOP"
-                        pInputText>
-                    <div class="error"
-                        *ngIf="pmObject.isSOWFormSubmit && !addAdditionalBudgetForm.controls['addOOP'].valid">
-                        Additional OOP should be Non negative </div>
-                </div>
-            </div>
-            <div class="ui-g mt-20">
-                <div class="ui-g-5">Additional Tax Budget</div>
-                <div class="ui-g-5">
-                    <input formControlName="addTax" min="0" (change)="setAddSOWTotal()" type="number" placeholder="Tax"
-                        pInputText>
-                    <div class="error"
-                        *ngIf="pmObject.isSOWFormSubmit && !addAdditionalBudgetForm.controls['addTax'].valid">
-                        Additional Tax should be Non negative </div>
-                </div>
-            </div>
-            <div class="ui-g mt-20">
-                <div class="ui-g-5">SOW Document</div>
-                <div class="ui-g-5">
-                    <input type="file" #myInput name="myfile" class="form-control" (change)="onFileChange($event)"
-                        formControlName="sowDocumentsAdd" />
-
-                </div>
-            </div>
-        </form>
-        <p-footer>
-            <button type="button" pButton (click)="addAdditionalBudget()" label="Add"></button>
-            <button type="button" pButton (click)="closeAdditonalPop()" label="Cancel"></button>
-        </p-footer>
-    </p-dialog>
-</div> -->

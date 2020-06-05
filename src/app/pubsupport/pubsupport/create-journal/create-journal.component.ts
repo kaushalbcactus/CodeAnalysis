@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { PubsuportConstantsService } from '../../Services/pubsuport-constants.service';
-import { DynamicDialogRef, MessageService, DynamicDialogConfig } from 'primeng';
+import { DynamicDialogRef, DynamicDialogConfig } from 'primeng';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { CommonService } from 'src/app/Services/common.service';
 // import { Journal } from "./journal-interface";
@@ -20,7 +20,6 @@ export class CreateJournalComponent implements OnInit {
         public psConstantService: PubsuportConstantsService,
         private spOperationsService: SPOperationService,
         private constantService: ConstantsService,
-        private messageService: MessageService,
         public config: DynamicDialogConfig,
         public common: CommonService
 
@@ -78,7 +77,7 @@ export class CreateJournalComponent implements OnInit {
         const result = await this.spOperationsService.executeBatch(data);
         const res = result[0].retItems;
         if (res.hasError) {
-            this.messageService.add({ key: 'myKey1', severity: 'error', summary: 'Error', detail: res.message.value, life: 4000 });
+            this.common.showToastrMessage(this.constantService.MessageType.error,res.message.value,false);
         } else {
             this.journalListArray = res;
             console.log('journalListArray ', this.journalListArray);
