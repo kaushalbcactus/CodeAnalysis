@@ -16,7 +16,7 @@
 
 
 
-<table  class="col-md-12 table-bordered table-striped header-fixed" id="capacityTable">
+<table  class="col-md-12 table-bordered header-fixed" id="capacityTable">
     <thead class="tableHeader">
         <tr>
             <th [ngStyle]="{'width':'6%'}">
@@ -36,7 +36,7 @@
     <tbody class="capacityBody">
         <tr *ngFor="let user of oCapacity.arrUserDetails">
             <td>
-                <table class="table-bordered table-striped tbl">
+                <table class="table-bordered tbl">
                     <tbody>
                         <tr class="UserTasksRow">
                             <td>
@@ -188,7 +188,7 @@
                                                     <div id="modalInnerLoader"></div>
                                                     <div id="modalInnerLoaderText">Loading...</div>
                                                 </div>
-                                                <table class="table-bordered table-striped" id="spentTasksPerDay" style="width: 100%;">
+                                                <table class="table-bordered" id="spentTasksPerDay" style="width: 100%;">
                                                     <thead>
                                                         <tr class="tableHeader" style="display: table-row;">
                                                             <td>

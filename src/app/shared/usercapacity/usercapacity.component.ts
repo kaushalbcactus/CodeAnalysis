@@ -49,6 +49,7 @@ export class UsercapacityComponent implements OnInit {
   public disableOverlay = false;
   @Output() resourceSelect = new EventEmitter<string>();
   @Input() userCapacity: any;
+  @Input() parentModule: string;
   constructor(
     public datepipe: DatePipe, public config: DynamicDialogConfig,
     private spService: SPOperationService,
@@ -69,15 +70,20 @@ export class UsercapacityComponent implements OnInit {
   ngOnInit() {
     this.loaderenable = true;
     this.data = this.config.data;
+    this.hideOverlay(this.data, this.parentModule);
     if (this.data) {
       this.dynamicload = true;
       this.Onload(this.data);
     } else if (this.userCapacity) {
-      this.disableOverlay = true;
       this.showCapacity(this.userCapacity);
     }
   }
 
+  hideOverlay(dynamicPopupData: any, inputData: string): void {
+    const arrShowOverlayComponents = ['capacity', 'ca'];
+    inputData = dynamicPopupData && dynamicPopupData.parentModule ? dynamicPopupData.parentModule : inputData;
+    this.disableOverlay = arrShowOverlayComponents.indexOf(inputData) > -1 ? false : true;
+  }
 
   downloadExcel() {
     this.common.tableToExcel('capacityTable1', 'Capacity Dashboard');
@@ -1133,7 +1139,8 @@ export class UsercapacityComponent implements OnInit {
 
   showCapacity(oCapacity) {
     this.oCapacity = oCapacity;
-    this.calc(this.oCapacity);
+    this.loaderenable = false;
+    // this.calc(this.oCapacity);
   }
 
   calc(oCapacity) {

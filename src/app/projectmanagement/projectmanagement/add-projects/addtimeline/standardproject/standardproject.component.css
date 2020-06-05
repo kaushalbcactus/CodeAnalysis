@@ -88,6 +88,6 @@
 ::ng-deep tr:nth-child(even) {
   background-color: #ffffff!important;
 }
-::ng-deep .ui-toast-detail {
-  white-space: pre-line;
+::ng-deep tr:nth-child(odd) {
+  background-color: #ffffff!important;
 }

@@ -103,7 +103,7 @@
         <div class="">
             <div class="col-lg-12 col-xs-12 col-lg-12">
                 <div class="margin-top25 initialUserCapacity-section" [hidden]="hideCapacity">
-                    <app-usercapacity #InitialUserCapacity></app-usercapacity>
+                    <app-usercapacity #InitialUserCapacity [parentModule]="'pm'"></app-usercapacity>
                 </div>
             </div>
             <div class="col-lg-12 col-xs-12 col-lg-12">
@@ -186,7 +186,7 @@
                             </tr>
                             <tr class="userCapacity" [hidden]="rowData.toggleCapacity">
                                 <td colspan="8">
-                                    <app-usercapacity #UserCapacity></app-usercapacity>
+                                    <app-usercapacity #UserCapacity [parentModule]="'pm'"></app-usercapacity>
                                 </td>
                             </tr>
                         </ng-template>
