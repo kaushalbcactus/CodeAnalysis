@@ -2633,6 +2633,10 @@ export class AllProjectsComponent implements OnInit {
    * This method is used to transfer the project from one sow code to another sow code.
    */
   async performSOWMove() {
+    if (!this.newSelectedSOW) {
+      this.commonService.showToastrMessage(this.constants.MessageType.error, 'Please select sow.', false);
+      return;
+    }
     const projObject = this.selectedProjectObj;
     if (projObject.SOWCode === this.newSelectedSOW) {
       this.commonService.showToastrMessage(this.constants.MessageType.error, 'Source sow code ' + projObject.SOWCode + ' and destination sow ' + this.newSelectedSOW + ' cannot be same.', false);
@@ -2734,10 +2738,10 @@ export class AllProjectsComponent implements OnInit {
       } else {
         this.pmObject.isMainLoaderHidden = true;
         if (newSOWObj.length === 0){
-          this.commonService.showToastrMessage(this.constants.MessageType.error, 'Can\'t move Project - ' + projObject.ProjectCode + 'under new SOW Code as new sow' + this.newSelectedSOW + ' is closed / cancelled', true);
+          this.commonService.showToastrMessage(this.constants.MessageType.error, 'Can\'t move Project - ' + projObject.ProjectCode + ' under new SOW Code as new sow - ' + this.newSelectedSOW + ' is closed / cancelled', true);
         }
         else  if (newSOWObj.length === 0){
-          this.commonService.showToastrMessage(this.constants.MessageType.error, 'Can\'t move Project - ' + projObject.ProjectCode + 'under new SOW Code as old sow - ' + projObject.SOWCode + ' is closed / cancelled', true);
+          this.commonService.showToastrMessage(this.constants.MessageType.error, 'Can\'t move Project - ' + projObject.ProjectCode + ' under new SOW Code as old sow - ' + projObject.SOWCode + ' is closed / cancelled', true);
         }
       }
     } else {
