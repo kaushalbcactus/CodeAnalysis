@@ -2038,49 +2038,49 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
 
-  showCapacity(task) {
+  // showCapacity(task) {
 
-    let resources = [];
-    task.assignedUsers.forEach((c) => {
-      c.items.forEach((item) => {
-        this.sharedObject.oTaskAllocation.oResources.forEach((objt) => {
-          if (objt.UserName.ID === item.value.ID) {
-            resources.push(objt)
-          }
-        })
-      })
-    });
+  //   let resources = [];
+  //   task.assignedUsers.forEach((c) => {
+  //     c.items.forEach((item) => {
+  //       this.sharedObject.oTaskAllocation.oResources.forEach((objt) => {
+  //         if (objt.UserName.ID === item.value.ID) {
+  //           resources.push(objt)
+  //         }
+  //       })
+  //     })
+  //   });
 
-    task.resources = resources;
+  //   task.resources = resources;
 
-    let startDate = new Date(new Date(task.start_date).setDate(new Date(task.start_date).getDate() - 1))
-    if (startDate.getDay() === 6 || startDate.getDay() === 0) {
-      startDate = new Date(new Date(startDate).setDate(new Date(startDate).getDate() - 2))
-    }
-    let endDate = new Date(new Date(task.end_date).setDate(new Date(task.end_date).getDate() + 1));
-    if (endDate.getDay() === 6 || endDate.getDay() === 0) {
-      endDate = new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 2));
-    }
-    const startTime = new Date(new Date(startDate).setHours(0, 0, 0, 0));
-    const endTime = new Date(new Date(endDate).setHours(23, 59, 59, 0));
+  //   let startDate = new Date(new Date(task.start_date).setDate(new Date(task.start_date).getDate() - 1))
+  //   if (startDate.getDay() === 6 || startDate.getDay() === 0) {
+  //     startDate = new Date(new Date(startDate).setDate(new Date(startDate).getDate() - 2))
+  //   }
+  //   let endDate = new Date(new Date(task.end_date).setDate(new Date(task.end_date).getDate() + 1));
+  //   if (endDate.getDay() === 6 || endDate.getDay() === 0) {
+  //     endDate = new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 2));
+  //   }
+  //   const startTime = new Date(new Date(startDate).setHours(0, 0, 0, 0));
+  //   const endTime = new Date(new Date(endDate).setHours(23, 59, 59, 0));
 
-    this.selectedTask = task;
+  //   this.selectedTask = task;
 
-    const ref = this.dialogService.open(UsercapacityComponent, {
-      data: {
-        task,
-        startTime,
-        endTime,
-      },
-      width: '90vw',
+  //   const ref = this.dialogService.open(UsercapacityComponent, {
+  //     data: {
+  //       task,
+  //       startTime,
+  //       endTime,
+  //     },
+  //     width: '90vw',
 
-      header: task.milestone + ' ' + task.title,
-      contentStyle: { 'max-height': '90vh', 'overflow-y': 'auto' }
-    });
-    ref.onClose.subscribe((userCapacity: any) => {
-    });
+  //     header: task.milestone + ' ' + task.title,
+  //     contentStyle: { 'max-height': '90vh', 'overflow-y': 'auto' }
+  //   });
+  //   ref.onClose.subscribe((userCapacity: any) => {
+  //   });
 
-  }
+  // }
 
   getNode(task): TreeNode {
     const tasktitle = task.itemType === 'milestone' ? task.title : task.milestone;
@@ -2973,15 +2973,14 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     milestoneTask.resources = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
       return objt.UserName.ID === milestoneTask.AssignedTo.ID;
     });
-
     const ref = this.dialogService.open(UsercapacityComponent, {
       data: {
         task: milestoneTask,
         startTime: milestoneTask.pUserStart,
         endTime: milestoneTask.pUserEnd,
+        parentModule: 'allocation'
       },
       width: '90vw',
-
       header: milestoneTask.submilestone ? milestoneTask.milestone + ' ' + milestoneTask.title
         + ' ( ' + milestoneTask.submilestone + ' )' : milestoneTask.milestone + ' ' + milestoneTask.title,
       contentStyle: { 'max-height': '90vh', 'overflow-y': 'auto' }

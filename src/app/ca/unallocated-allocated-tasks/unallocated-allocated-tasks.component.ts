@@ -516,7 +516,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         startTime,
         endTime,
         item,
-
+        parentModule: 'ca'
       },
       width: '90vw',
       header: task.title,
