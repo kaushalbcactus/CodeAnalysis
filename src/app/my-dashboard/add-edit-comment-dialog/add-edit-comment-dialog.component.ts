@@ -161,7 +161,7 @@ export class AddEditCommentComponent implements OnInit {
         }
 
       } else {
-        this.common.showToastrMessage(this.constants.MessageType.warn, 'Please enter the comment',false);
+        this.common.showToastrMessage(this.constants.MessageType.warn, 'Please enter the comment.',false);
       }
     }
   }

@@ -683,7 +683,8 @@ export class ProformaComponent implements OnInit, OnDestroy {
                     if (this.selectedProforma) {
                         const proformaData = {
                             __metadata: { type: this.constantService.listNames.Proforma.type },
-                            FileURL: null
+                            FileURL: null,
+                            ProformaHtml: null
                         }
                         const url = this.spServices.getItemURL(this.constantService.listNames.Proforma.name, +this.selectedProforma.Id);
                         this.commonService.setBatchObject(batchUrl, url, proformaData, this.constantService.Method.PATCH, this.constantService.listNames.Proforma.name);
