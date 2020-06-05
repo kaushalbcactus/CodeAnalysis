@@ -984,11 +984,11 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         this.commonService.SetNewrelic('Finance-Dashboard', 'approve-billable', 'UploadFile');
         this.commonService.UploadFilesProgress(this.SelectedFile, 'SpendingInfoFiles/' + this.FolderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM'), true).then(async uploadedfile => {
             if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
-                if (uploadedfile[0].hasOwnProperty('odata.error')) {
+                if (uploadedfile[0].hasOwnProperty('odata.error') || uploadedfile[0].hasError) {
                     this.submitBtn.isClicked = false;
                     this.messageService.add({
                         key: 'approvedToast', severity: 'error', summary: 'Error message',
-                        detail: 'File not uploaded,Folder / File Not Found', life: 3000
+                        detail: 'File not uploaded, Folder / File Not Found', life: 3000
                     });
                 } else if (uploadedfile[0].ServerRelativeUrl) {
                     this.fileUploadedUrl = uploadedfile[0].ServerRelativeUrl;
@@ -1168,9 +1168,14 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         } else if (type === 'markAsPayment_form') {
             if (this.markAsPayment_form.invalid) {
                 return;
+            } else if (this.selectedFile && this.selectedFile.size === 0) {
+                this.messageService.add({
+                    key: 'approvedToast', severity: 'error',
+                    summary: 'Error message', detail: 'Unable to upload file, size of ' + this.selectedFile.name + ' is 0 KB.', life: 2000
+                });
+                return;
             }
-            // this.isPSInnerLoaderHidden = false;
-            // console.log('form is submitting ..... for selected row Item i.e ', this.markAsPayment_form.value);
+
             this.uploadFileData(type);
         }
     }

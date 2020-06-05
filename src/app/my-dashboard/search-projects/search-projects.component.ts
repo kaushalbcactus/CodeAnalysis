@@ -6,7 +6,7 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { ProjectDraftsComponent } from './project-drafts/project-drafts.component';
 import { TimelineComponent } from 'src/app/task-allocation/timeline/timeline.component';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { CommonService } from 'src/app/Services/common.service';
 import { ViewUploadDocumentDialogComponent } from 'src/app/shared/view-upload-document-dialog/view-upload-document-dialog.component';
@@ -96,6 +96,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     private datePipe: DatePipe,
     public sharedObject: GlobalService,
     public router: Router,
+    private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
     private platformLocation: PlatformLocation,
     private locationStrategy: LocationStrategy,
@@ -116,14 +117,22 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
 
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     const route = this.router.url;
-
-    if (route.indexOf('search-projects') > -1) {
+    this.ProjectCode = this.route.snapshot.queryParams['ProjectCode'];
+    if (this.ProjectCode !== undefined) {
+      await this.SearchProject();  
+      if(this.ProjectList){
+        this.getProjectDetails(this.ProjectList[0]);
+        this.router.navigate([]);
+      }
+    }
+    if (route.indexOf('search-projects') > -1 ) {
       this.onSearchProject = true;
     } else {
       this.onSearchProject = false;
     }
+   
     this.cols = [
       { field: 'SOWCode', header: 'SOW Code' },
       { field: 'ProjectCode', header: 'Project Code' },

@@ -2154,7 +2154,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   // tslint:enable
 
   setStartAndEnd(node) {
-    if(node.data.itemType == 'Client Review') {
+    if (node.data.itemType == 'Client Review') {
       node.data.pEnd = node.children !== undefined && node.children.length > 0 ? this.sortDates(node, 'end') : node.data.pEnd;
       node.data.pStart = node.children !== undefined && node.children.length > 0 ? this.sortDates(node, 'start') : node.data.pStart;
       //node.data.pUserStart = node.data.pStart;
@@ -2165,7 +2165,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       node.data.pUserEndTimePart = this.getTimePart(node.data.pUserEnd);
       node.data.tatVal = this.commonService.calcBusinessDays(new Date(node.data.pStart), new Date(node.data.pEnd));
     }
-    else if (node.data.status !== 'Completed' ) {
+    else if (node.data.status !== 'Completed') {
       node.data.pEnd = node.children !== undefined && node.children.length > 0 ? this.sortDates(node, 'end') : node.data.pEnd;
       node.data.pStart = node.children !== undefined && node.children.length > 0 ? this.sortDates(node, 'start') : node.data.pStart;
       node.data.pUserStart = node.data.pStart;
@@ -2331,7 +2331,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     let sentPrevNode = undefined;
     if (previousNode.nextTask && previousNode.nextTask.indexOf('Client Review') === -1) {
       const currMil = this.milestoneData[selectedMil];
-      const allMilestoneTasks = this.getTasksFromMilestones(currMil, false, false);
+      const allMilestoneTasks = this.getTasksFromMilestones(currMil, false, true);
       const nextTasks = previousNode.nextTask.split(';');
       let retNodes = undefined;
       if (subMilestonePosition !== 0) {
@@ -2790,7 +2790,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     return arrData;
   }
 
-  async setMilestone(addTaskItems, updateTaskItems, addMilestoneItems, updateMilestoneItems) {
+  async setMilestone(addTaskItems, updateTaskItems, addMilestoneItems, updateMilestoneItems, currentMilestoneTaskUpdated) {
     let updatedCurrentMilestone = false;
     // tslint:disable-next-line: one-variable-per-declaration
     let writers = [], arrWriterIDs = [],
@@ -3004,9 +3004,40 @@ export class TimelineComponent implements OnInit, OnDestroy {
     const task = addTaskItems.filter(c => c.milestone === this.oProjectDetails.currentMilestone);
 
     updatedCurrentMilestone = mile && task && task.length ? true : false;
+    let projectStatus = this.sharedObject.oTaskAllocation.oProjectDetails.status;
+    let previousProjectStatus = this.sharedObject.oTaskAllocation.oProjectDetails.prevstatus;
+
+    if ((updatedCurrentMilestone || currentMilestoneTaskUpdated) && this.sharedObject.oTaskAllocation.oProjectDetails.status === this.constants.STATUS.AUTHOR_REVIEW) {
+
+      this.commonService.confirmMessageDialog("Do you want to keep project in 'Author Review' or 'In Progress' ?", [this.constants.STATUS.AUTHOR_REVIEW, this.constants.STATUS.IN_PROGRESS], false).then(async projectstatus => {
+        if (projectstatus) {
+          projectStatus = projectstatus;
+          if (projectstatus !== this.sharedObject.oTaskAllocation.oProjectDetails.status) {
+            previousProjectStatus = this.sharedObject.oTaskAllocation.oProjectDetails.status;
+          }
+          await this.continueSetMilestone(restructureMilstoneStr, updatedResources, batchUrl, addMilestones, addTasks, projectStatus, previousProjectStatus);
+        }
+      });
+    }
+    else {
+
+      projectStatus = updatedCurrentMilestone ? this.constants.STATUS.IN_PROGRESS : projectStatus;
+      previousProjectStatus = updatedCurrentMilestone ? this.sharedObject.oTaskAllocation.oProjectDetails.status : previousProjectStatus;
+      await this.continueSetMilestone(restructureMilstoneStr, updatedResources, batchUrl, addMilestones, addTasks, projectStatus, previousProjectStatus);
+    }
+
+
+
+    // }
+  }
+  // **************************************************************************************************
+  // Split because of confirmation message popup 
+  // this function is continou part of setMilestone 
+  // **************************************************************************************************
+  async continueSetMilestone(restructureMilstoneStr, updatedResources, batchUrl, addMilestones, addTasks, projectStatus, previousProjectStatus) {
     this.commonService.SetNewrelic('TaskAllocation', 'Timeline', 'SaveTasksMilestones');
-    const responseInLines = await this.executeBulkRequests(updatedCurrentMilestone, restructureMilstoneStr,
-      updatedResources, batchUrl);
+    const responseInLines = await this.executeBulkRequests(restructureMilstoneStr,
+      updatedResources, batchUrl, projectStatus, previousProjectStatus);
     if (responseInLines.length > 0) {
       let counter = 0;
       const addMilLength = addMilestones.length;
@@ -3068,10 +3099,10 @@ export class TimelineComponent implements OnInit, OnDestroy {
     this.getMilestones(false);
 
     this.reloadResources.emit();
-
-
-    // }
   }
+
+
+
   async setMilestoneTaskForAddUpdate(milestoneTask, bAdd) {
     const batchUrl = [];
     let url = '';
@@ -3236,7 +3267,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
 
   // executing bulk batch requests
-  async executeBulkRequests(currentMilestoneUpdated, restructureMilstoneStr, updatedResources, batchUrl) {
+  async executeBulkRequests(restructureMilstoneStr, updatedResources, batchUrl, projectStatus, previosProjectStatus) {
     let updateProjectRes = {};
     const projectID = this.oProjectDetails.projectID;
     let currentMilestone = this.oProjectDetails.currentMilestone;
@@ -3256,8 +3287,10 @@ export class TimelineComponent implements OnInit, OnDestroy {
       PSMembersId: { results: updatedResources.pubSupportMembers.results },
       Milestones: restructureMilstoneStr,
       Milestone: currentMilestone,
-      Status: currentMilestoneUpdated ? 'In Progress' : this.sharedObject.oTaskAllocation.oProjectDetails.status,
-      PrevStatus: currentMilestoneUpdated ? this.sharedObject.oTaskAllocation.oProjectDetails.status : this.sharedObject.oTaskAllocation.oProjectDetails.prevstatus
+      Status : projectStatus,
+      PrevStatus : previosProjectStatus
+      // Status: currentMilestoneTaskUpdated ? projectStatus :  currentMilestoneUpdated ? this.constants.STATUS.IN_PROGRESS : this.sharedObject.oTaskAllocation.oProjectDetails.status,
+      // PrevStatus:currentMilestoneTaskUpdated && projectStatus !== this.sharedObject.oTaskAllocation.oProjectDetails.status  ?  this.sharedObject.oTaskAllocation.oProjectDetails.status :  currentMilestoneUpdated ? this.sharedObject.oTaskAllocation.oProjectDetails.status : this.sharedObject.oTaskAllocation.oProjectDetails.prevstatus
     };
     const updatePrjObj = Object.assign({}, this.queryConfig);
     updatePrjObj.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, +projectID);
@@ -3369,6 +3402,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   public generateSaveTasks() {
 
     var listOfMilestones = [];
+    let currentMilestoneTaskUpdated = false;
     var addedTasks = [], updatedTasks = [], addedMilestones = [], updatedMilestones = []
     for (var nCount = 0; nCount < this.milestoneData.length; nCount = nCount + 1) {
       var milestone = this.milestoneData[nCount];
@@ -3418,6 +3452,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                 }
                 else {
                   updatedTasks.push(submilestone.data);
+                  currentMilestoneTaskUpdated = milestone.data.pName.indexOf('(Current)') > -1 ? true : false;
                 }
               }
               if (submilestone.children !== undefined) {
@@ -3434,6 +3469,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                   }
                   else {
                     updatedTasks.push(task.data);
+                    currentMilestoneTaskUpdated = milestone.data.pName.indexOf('(Current)') > -1 ? true : false;
                   }
                   if (task.children) {
                     for (var nSubTaskTaskCount = 0; nSubTaskTaskCount < task.children.length; nSubTaskTaskCount = nSubTaskTaskCount + 1) {
@@ -3449,6 +3485,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                       }
                       else {
                         updatedTasks.push(subtask.data);
+                        currentMilestoneTaskUpdated = milestone.data.pName.indexOf('(Current)') > -1 ? true : false;
                       }
 
                     }
@@ -3464,7 +3501,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
     this.sharedObject.oTaskAllocation.oProjectDetails.allMilestones = listOfMilestones;
 
     this.getDeletedMilestoneTasks(updatedTasks, updatedMilestones);
-    this.setMilestone(addedTasks, updatedTasks, addedMilestones, updatedMilestones);
+
+    this.setMilestone(addedTasks, updatedTasks, addedMilestones, updatedMilestones, currentMilestoneTaskUpdated);
 
   }
 
@@ -4107,7 +4145,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
           });
           return false;
         }
-        const milestoneTasksRelink = AllTasks.filter(t => t.status !== 'Abandon' && t.status !== 'Completed' && t.itemType !== 'Adhoc');
+        const milestoneTasksRelink = AllTasks.filter(t => t.status !== 'Abandon' && t.itemType !== 'Adhoc');
         if (milestoneTasksRelink.length > 0) {
           this.LinkScToClientReview(milestoneTasksRelink);
         }
@@ -4122,6 +4160,10 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   LinkScToClientReview(milestoneTasks) {
 
+    milestoneTasks.filter(c=>c.itemType ==='Send to client' && c.nextTask && c.nextTask === 'Client Review').forEach(sc => {
+      sc.nextTask = null;
+      sc.edited = true;
+    });
     const LatestSCDate = new Date(Math.max.apply(null, milestoneTasks.filter(c => c.itemType === 'Send to client').map(c => c.pUserEnd)));
 
     const LatestSC = milestoneTasks.find(c => c.itemType === 'Send to client' &&

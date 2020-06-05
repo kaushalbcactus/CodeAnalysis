@@ -6,8 +6,7 @@
 <p-sidebar class="sidenav" [(visible)]="visibleSidebar" [showCloseIcon]="false" [style]="{width:'19em'}">
     <div>
         <a [routerLink]="" (click)="goToEmpDashboard()" class="logo">
-            <img class="ng-tns-c0-0" alt="logo"
-                src="https://cactusglobal.sharepoint.com/sites/medcomcdn/PublishingImages/Images/CACTUSRLogo3.png">
+            <img class="ng-tns-c0-0" alt="logo" src="https://cactusglobal.sharepoint.com/sites/medcomcdn/PublishingImages/Images/CACTUSRLogo3.png">
         </a>
     </div>
     <a target="_blank" *ngFor="let link of leftNavigation" [href]="link.href">{{link.title}}</a>
@@ -16,8 +15,7 @@
     <div class="float-left img-bg">
         <i (click)="visibleSidebar = true" class="pi pi-list sidebar-icon"></i>
         <a [routerLink]="" (click)="goToEmpDashboard()" class="logo">
-            <img class="ng-tns-c0-0" alt="logo"
-                src="https://cactusglobal.sharepoint.com/sites/medcomcdn/PublishingImages/Images/CACTUSRLogo3.png">
+            <img class="ng-tns-c0-0" alt="logo" src="https://cactusglobal.sharepoint.com/sites/medcomcdn/PublishingImages/Images/CACTUSRLogo3.png">
         </a>
     </div>
     <div class="title">
@@ -26,11 +24,13 @@
     <div class="topbar-menu">
         <!-- <span>Welcome {{globalService.currentUser.title}}</span> -->
         <p-menu #menu [popup]="true" [model]="items"></p-menu>
-        <button pButton type="button" class="btn-menu" label="{{globalService.currentUser.title}}"
-            (click)="menu.toggle($event)"></button>
+        <button pButton type="button" class="btn-menu" label="{{globalService.currentUser.title}}" (click)="menu.toggle($event)"></button>
         <a href="mailto:sp.support@cactusglobal.com?subject=SP issue:"><i class="pi pi-envelope help-icon"></i></a>
     </div>
 </div>
 <div class="routerOutlet">
     <router-outlet></router-outlet>
 </div>
+
+
+<p-toast position="bottom-right" key="fileuploadMessage"></p-toast>

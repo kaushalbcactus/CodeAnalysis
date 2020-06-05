@@ -5,8 +5,10 @@
     text-align: left !important;
 }
 
-::ng-deep .pi pi-times {
-    background: #f4f4f4 !important;
-    color: #848484 !important;
-    height: 20px !important;
+::ng-deep .ui-dialog-content {
+    background-color: #ffffff !important;
+}
+
+::ng-deep .ui-dialog-footer {
+    padding: 0em !important;
 }

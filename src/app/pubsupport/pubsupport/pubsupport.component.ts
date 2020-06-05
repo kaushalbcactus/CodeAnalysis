@@ -1594,7 +1594,7 @@ export class PubsupportComponent implements OnInit {
                 folderPath = '/Publication Support/Forms';
                 this.update_author_form.removeControl('existingAuthorList');
             }
-            this.FolderName = this.selectedProject.ProjectFolder.replace(this.globalObject.sharePointPageObject.webRelativeUrl + '/','') + folderPath;
+            this.FolderName = this.selectedProject.ProjectFolder.replace(this.globalObject.sharePointPageObject.webRelativeUrl + '/', '') + folderPath;
             this.SelectedFile.push(new Object({ name: this.selectedFile.name, file: this.selectedFile }));
             this.update_author_form.updateValueAndValidity();
         }
@@ -1721,6 +1721,9 @@ export class PubsupportComponent implements OnInit {
             if (this.update_Journal_Requirement_form.invalid) {
                 this.submitBtn.isClicked = false;
                 return;
+            } else if (this.selectedFile && this.selectedFile.size === 0) {
+                this.errorMessage();
+                return;
             }
             this.submitBtn.isClicked = true;
             this.uploadFileData('updateJCRequirementModal');
@@ -1752,6 +1755,11 @@ export class PubsupportComponent implements OnInit {
                 this.updateAuthorModal_1 = false;
                 // this.reload();
             } else {
+                if (this.selectedFile && this.selectedFile.size === 0) {
+                    this.errorMessage();
+                    this.submitBtn.isClicked = false;
+                    return;
+                }
                 this.uploadFileData('updateAuthors');
             }
 
@@ -1760,6 +1768,9 @@ export class PubsupportComponent implements OnInit {
             // stop here if form is invalid
             if (this.update_decision_details.invalid) {
                 this.submitBtn.isClicked = false;
+                return;
+            } else if (this.selectedFile && this.selectedFile.size === 0) {
+                this.errorMessage();
                 return;
             }
             this.submitBtn.isClicked = true;
@@ -1771,6 +1782,9 @@ export class PubsupportComponent implements OnInit {
             if (this.update_publication_form.invalid) {
                 this.submitBtn.isClicked = false;
                 return;
+            } else if (this.selectedFile && this.selectedFile.size === 0) {
+                this.errorMessage();
+                return;
             }
             this.submitBtn.isClicked = true;
             this.uploadFileData('updatePublication');
@@ -1781,11 +1795,22 @@ export class PubsupportComponent implements OnInit {
             if (this.galley_form.invalid) {
                 this.submitBtn.isClicked = false;
                 return;
+            } else if (this.selectedFile && this.selectedFile.size === 0) {
+                this.errorMessage();
+                return;
             }
             this.submitBtn.isClicked = true;
             this.submitBtn.isSubmit = true;
             this.uploadFileData('galley');
         }
+    }
+
+    errorMessage(){
+        this.messageService.add({
+            key: 'myKey1', severity: 'error', summary: 'Error Message',
+            detail: 'Unable to upload file, size of ' + this.selectedFile.name + ' is 0 KB.', life: 4000
+        });
+        this.submitBtn.isClicked = false;
     }
 
     //*************************************************************************************************

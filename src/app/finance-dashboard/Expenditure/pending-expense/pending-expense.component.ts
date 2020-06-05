@@ -698,11 +698,11 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
 
         this.commonService.UploadFilesProgress(this.SelectedFile, 'SpendingInfoFiles/' + this.FolderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM'), true).then(async uploadedfile => {
             if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
-                if (uploadedfile[0].hasOwnProperty('odata.error')) {
+                if (uploadedfile[0].hasOwnProperty('odata.error') || uploadedfile[0].hasError) {
                     this.submitBtn.isClicked = false;
                     this.messageService.add({
                         key: 'pendingExpenseToast', severity: 'error', summary: 'Error message',
-                        detail: 'File not uploaded,Folder / File Not Found', life: 3000
+                        detail: 'File not uploaded, Folder / File Not Found', life: 3000
                     });
                 } else if (uploadedfile[0].ServerRelativeUrl) {
                     this.isPSInnerLoaderHidden = false;
@@ -877,6 +877,14 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             if (this.approveExpense_form.invalid) {
                 return;
             }
+            else if (this.selectedFile && this.selectedFile.size === 0) {
+                this.messageService.add({
+                    key: 'pendingExpenseToast', severity: 'error',
+                    summary: 'Error message', detail: 'Unable to upload file, size of ' + this.selectedFile.name + ' is 0 KB.', life: 2000
+                });
+                return;
+            }
+
             this.isPSInnerLoaderHidden = false;
             this.submitBtn.isClicked = true;
             // console.log('form is submitting ..... this.approveExpense_form ', this.approveExpense_form.value);
