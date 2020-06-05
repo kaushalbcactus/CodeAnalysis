@@ -1192,7 +1192,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.createGanttDataAndLinks(bCreateLinks);
     // this.taskAllocateCommonService.ganttParseObject.data = this.GanttchartData;
     // this.taskAllocateCommonService.ganttParseObject.links = this.linkArray;
-    this.sharedObject.allocatedTask = this.taskAllocateCommonService.ganttParseObject.data.filter(e => e.type !== 'milestone' && e.slotType !== 'Slot' && e.title !== 'Client Review' && e.itemType !== 'Send to client')
+    // this.sharedObject.allocatedTask = this.taskAllocateCommonService.ganttParseObject.data.filter(e => e.type !== 'milestone' && e.slotType !== 'Slot' && e.title !== 'Client Review' && e.itemType !== 'Send to client')
     this.loadComponent();
   }
 
@@ -1789,7 +1789,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           this.header = task.submilestone ? task.milestone + ' ' + task.submilestone + ' ' + task.text
             : task.milestone + ' ' + task.text;
           this.sharedObject.resourceHeader = this.header;
-          this.onResourceClick(task);
+
+          let resourceTask = this.sharedObject.currentTaskData ? this.sharedObject.currentTaskData : task;
+          this.onResourceClick(resourceTask);
         }
       } else if ((task.itemType == "Send to client" || task.itemType == "Client Review") && e.target.parentElement.className === "gantt_cell cell_user") {
         this.messageService.add({ key: 'gantt-message', severity: 'error', summary: 'Error Message', detail: 'Resource view is unavailable for these tasks please edit the task to change resource' });
@@ -1907,6 +1909,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       this.setDateToCurrent(this.singleTask);
       this.DateChange(this.singleTask, type);
 
+      let time: any = this.commonService.getHrsAndMins(this.singleTask.start_date, this.singleTask.end_date);
+
+      this.maxBudgetHrs = time.maxBudgetHrs;
+
       allTasks.data = this.getGanttTasksFromMilestones(this.milestoneData, true);
       allTasks.data.forEach((task) => {
         if (task.type == "milestone") {
@@ -1987,6 +1993,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.showBudgetHrs = true;
     this.updatedTasks = task;
     this.budgetHrs = task.budgetHours;
+    let time: any = this.commonService.getHrsAndMins(task.start_date, task.end_date);
+    this.maxBudgetHrs = time.maxBudgetHrs;
     this.budgetHrsTask = task;
   }
 
@@ -2277,27 +2285,17 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       if (this.budgetHrs == 0 && this.updatedTasks.type !== 'milestone') {
         this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Add Budget Hours' });
       } else {
-        // if(this.budgetHrs == 0) {
-        //   this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: 'Budget hours is set to zero because given budget hours is greater than task time period.' });
-        // }
-
         if (this.updatedTasks.type !== 'milestone') {
           let time: any = this.commonService.getHrsAndMins(this.updatedTasks.pUserStart, this.updatedTasks.pUserEnd)
           let bhrs = this.commonService.convertToHrsMins('' + this.updatedTasks.budgetHours).replace('.', ':')
 
-          let maxHrs = time.hrs;
-          let maxMin = time.minutes;
-
           let hrs = parseInt(bhrs.split(':')[0]);
           let min = parseInt(bhrs.split(':')[1]);
 
-          let maxTime: any = new Date();
           let bHrsTime: any = new Date();
-
-          maxTime = maxTime.setHours(time.hrs ,time.minutes, 0 ,0);
           bHrsTime = bHrsTime.setHours(hrs ,min, 0 ,0);
 
-          if (bHrsTime > maxTime) {
+          if (bHrsTime > time.maxTime) {
             this.budgetHrs = 0;
             this.messageService.add({ key: 'gantt-message', severity: 'error', summary: 'Error Message', detail: 'Budget hours is set to zero because given budget hours is greater than task time period.' });
           }
@@ -2311,12 +2309,11 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
               const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
                 return task.AssignedTo && task.AssignedTo.ID === objt.UserName.ID;
               });
-
               if (this.budgetHrs !== 0) {
                 this.dailyAllocateTask(resource, task);
               }
               this.setDateToCurrent(task)
-
+              this.sharedObject.currentTaskData = task;
             }
           } else if (task.type == 'milestone') {
             if (task.id == this.updatedTasks.id) {
@@ -2334,20 +2331,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           }
         });
 
-
         this.GanttchartData = allTasks.data;
         // this.taskAllocateCommonService.ganttParseObject = allTasks;
-
-        // allTasks = allTasks.data.filter(e => e.edited == true);
-
-        // allTasks.forEach((task) => {
-        //   this.milestoneData.forEach((item: any) => {
-        //     if (task.type == "milestone" && task.id == item.data.id) {
-        //       item.data.budgetHours = task.budgetHours
-        //       item.data.edited = true;
-        //     }
-        //   })
-        // });
         this.showBudgetHrs = false;
         this.ganttNotification();
         this.showGanttChart(false);
@@ -2364,24 +2349,24 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         data: []
       };
       let scrollDate;
-      // let updatedTask = updatedDataObj.updatedTask
       const cascadingObject = updatedDataObj.cascadingObject;
       if (Object.keys(cascadingObject).length && !Object.values(cascadingObject).some(x => (x == ''))) {
         scrollDate = new Date(cascadingObject.node.end_date);
         this.setDateToCurrent(cascadingObject.node);
         ////// Cascade future  dates
         this.DateChange(cascadingObject.node, cascadingObject.type);
+        this.sharedObject.currentTaskData = cascadingObject.node;
       } else {
         let updatedTask = this.updateMilestoneTaskObject(updatedDataObj.updatedTask, this.updatedTasks);
         scrollDate = new Date(updatedTask.end_date);
         this.setDateToCurrent(updatedTask)
+        this.sharedObject.currentTaskData = updatedTask;
       }
 
       allTasks.data = this.getGanttTasksFromMilestones(this.milestoneData, true);
       allTasks.data.forEach((task) => {
         if (task.type == "milestone") {
           if (task.title == this.updatedTasks.milestone) {
-            //if (task.title.replace(' (Current)', '') == this.updatedTasks.milestone) {
             task.edited = true;
             task.open = true;
           }
@@ -2948,7 +2933,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
 
   async modelChanged(event) {
-    this.maxBudgetHrs = '';
     event.editMode = true;
     event.edited = true;
     const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
@@ -2970,15 +2954,20 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   getUserCapacity(milestoneTask) {
 
-    milestoneTask.resources = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
-      return objt.UserName.ID === milestoneTask.AssignedTo.ID;
+    // let resourceTask = this.sharedObject.currentTaskData ? this.sharedObject.currentTaskData : milestoneTask;
+    this.sharedObject.currentTaskData = milestoneTask;
+
+    let resourceTask = this.sharedObject.currentTaskData;
+
+    resourceTask.resources = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
+      return objt.UserName.ID === resourceTask.AssignedTo.ID;
     });
 
     const ref = this.dialogService.open(UsercapacityComponent, {
       data: {
-        task: milestoneTask,
-        startTime: milestoneTask.pUserStart,
-        endTime: milestoneTask.pUserEnd,
+        task: resourceTask,
+        startTime: resourceTask.pUserStart,
+        endTime: resourceTask.pUserEnd,
       },
       width: '90vw',
 
@@ -3864,13 +3853,14 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     let time: any = this.commonService.getHrsAndMins(node.pUserStart, node.pUserEnd)
     let bhrs = this.commonService.convertToHrsMins('' + node.budgetHours).replace('.', ':')
 
-    let maxHrs = time.hrs;
-    let maxMin = time.minutes;
+    this.maxBudgetHrs = time.maxBudgetHrs
+    let hrs = parseInt(bhrs.split(':')[0]);
+    let min = parseInt(bhrs.split(':')[1]);
 
-    let hrs = bhrs.split(':')[0];
-    let min = bhrs.split(':')[1];
+    let bHrsTime: any = new Date();
+    bHrsTime = bHrsTime.setHours(hrs ,min, 0 ,0);
 
-    if (hrs > maxHrs || min > maxMin) {
+    if (bHrsTime > time.maxTime) {
       node.budgetHours = 0;
       this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: 'Budget hours is set to zero because given budget hours is greater than task time period.' });
       this.messageService.add({ key: 'gantt-message', severity: 'error', summary: 'Error Message', detail: 'Budget hours is set to zero because given budget hours is greater than task time period.' });

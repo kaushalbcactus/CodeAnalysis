@@ -973,9 +973,10 @@ export class CommonService {
         let minutes: number = mins % 60;
         let hrs: number = Math.floor(mins / 60);
         let maxBudgetHrs = mins / 60;
+        let maxTime: any = new Date();
+        maxTime = maxTime.setHours(hrs ,minutes, 0 ,0);
         return {
-            hrs,
-            minutes,
+            maxTime,
             maxBudgetHrs
         }
     }

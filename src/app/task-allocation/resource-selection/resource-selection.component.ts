@@ -71,7 +71,10 @@ export class ResourceSelectionComponent implements OnInit {
    
     this.searchCapacityForm.patchValue({bucket: bucket, practicearea: practiceArea, resources: resArr ,rangeDates: [data.startTime,data.endTime]});
     this.userCapacity.loaderenable = true;
-    this.userCapacity.Onload(data)
+    // this.userCapacity.Onload(data)
+    let capacity: any = await this.userCapacity.afterResourceChange(data.task, data.startTime, data.endTime, data.task.resources, [], false);
+    // this.userCapacity.oCapacity = capacity;
+    this.userCapacity.showCapacity(capacity);
   }
 
   async GetResources() {
