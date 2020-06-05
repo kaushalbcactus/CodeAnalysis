@@ -2295,7 +2295,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           let bHrsTime: any = new Date();
 
           maxTime = maxTime.setHours(time.hrs ,time.minutes, 0 ,0);
-          bHrsTime = bHrsTime.setHours(time.hrs ,time.minutes, 0 ,0);
+          bHrsTime = bHrsTime.setHours(hrs ,min, 0 ,0);
 
           if (bHrsTime > maxTime) {
             this.budgetHrs = 0;
