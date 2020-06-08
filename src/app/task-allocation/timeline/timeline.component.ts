@@ -2485,6 +2485,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         task = this.resetTask;
         task.start_date = this.startDate;
         task.end_date = this.endDate;
+        task.user = this.resetTask.AssignedTo ? this.resetTask.AssignedTo.Title : '';
         // task.pUserStart = this.resetTask.pUserStart;
         // task.pUserEnd = this.resetTask.pUserEnd;
         // task.pUserStartDatePart = this.resetTask.pUserStartDatePart;
