@@ -1696,7 +1696,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         //   this.openPopupOnGanttTask(task, 'end');
         //   break;
         case 'editTask':
-          this.openPopupOnGanttTask(task, '');
+          this.openPopupOnGanttTask(task, 'end');
           break;
         case 'budgetHrs':
           this.changeBudgetHrs(task);
