@@ -4476,7 +4476,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
       }
     }
-    ////// Refactor code
+    ////// Refactor code - Done
     // If slot needs to be deallocated then form table with new and old values for table
     // this.deallocationMailArray is used to store all values of table to trigger single mail for slot which is used in savetask function
     if (!deallocateSlot) {
