@@ -573,7 +573,9 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
             return {
                 __metadata: { type: this.constantService.listNames.ProjectFinances.type },
                 Invoiced: totalInvoiced,
-                InvoicedOOP: oopInvoiced
+                InvoicedOOP: oopInvoiced,
+                Budget: totalBudget,
+                OOPBudget: oopBudget
             };
         }
     }
