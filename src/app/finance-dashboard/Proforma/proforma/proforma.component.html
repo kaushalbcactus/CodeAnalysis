@@ -366,7 +366,7 @@
             </div>
             <div class="p-col-6 p-md-8 p-lg-4">
 
-                <p-dropdown resetFilterOnHide="true" styleClass="dropdownClass" class="cls_addproformaaddtype" [options]="proformaAddressType" formControlName="AddressType" placeholder="Select One" optionLabel="lable" [showClear]="true"></p-dropdown>
+                <p-dropdown resetFilterOnHide="true" styleClass="dropdownClass" class="cls_addproformaaddtype" [options]="proformaAddressType" formControlName="AddressType" placeholder="Select One" optionLabel="label" [showClear]="true"></p-dropdown>
                 <div *ngIf="formSubmit.isSubmit && isValidCreateProformaForm.AddressType.errors">
                     <div *ngIf="isValidCreateProformaForm.AddressType.errors.required" style="color:red;">Please provide Address Type.</div>
                 </div>

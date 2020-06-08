@@ -122,6 +122,8 @@ export class ProformaComponent implements OnInit, OnDestroy {
 
     async ngOnInit() {
         // Create FOrm Field
+        
+        debugger;
         this.proformaAddressType = this.fdConstantsService.fdComponent.addressTypes;
         this.proformatTemplates = this.fdConstantsService.fdComponent.ProformaTemplates;
         this.createProformaFormField();
