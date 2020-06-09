@@ -12,6 +12,7 @@ import { CommonService } from 'src/app/Services/common.service';
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
+import { EditInvoiceDialogComponent } from '../../edit-invoice-dialog/edit-invoice-dialog.component';
 
 @Component({
     selector: 'app-oop',
@@ -522,15 +523,24 @@ export class OopComponent implements OnInit, OnDestroy {
             this.getApproveExpenseMailContent('ConfirmInvoice');
             this.getPIByTitle(this.selectedRowItem);
         } else if (this.deliverableDialog.title.toLowerCase() === 'edit invoice') {
-            const data= {
-                InvoiceType: 'oop',
+            const ref = this.dialogService.open(EditInvoiceDialogComponent, {
+                header: 'Edit Invoice',
+                width: '75vw',
+                data: {
+                    InvoiceType: 'oop',
                 projectContactsData: this.projectContactsData,
                 selectedRowItem: this.selectedRowItem,
-            };
-            this.fdDataShareServie.showEditInvoiceDialog(data).then(batchUrl =>{
-                this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-OOP', 'updateInvoiceLineItem');
+                },
+                contentStyle: { 'max-height': '80vh', 'overflow-y': 'auto' },
+                closable: false,
+            });
+            ref.onClose.subscribe((editInvoice: any) => {
+                if (editInvoice) {
+                    const batchUrl = this.fdDataShareServie.EditInvoiceDialogProcess(data, editInvoice)
+                    this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-OOP', 'updateInvoiceLineItem');
                 this.submitForm(batchUrl, 'editInvoice');
-            })
+                }
+            });
         } else if (this.deliverableDialog.title.toLowerCase() === 'view project details') {
             this.goToProjectDetails(this.selectedRowItem);
         } else if (this.deliverableDialog.title.toLowerCase() === 'show history') {

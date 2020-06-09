@@ -12,6 +12,7 @@ import { FDDataShareService } from '../../fdServices/fd-shareData.service';
 import { TimelineHistoryComponent } from './../../../timeline/timeline-history/timeline-history.component';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
+import { EditInvoiceDialogComponent } from '../../edit-invoice-dialog/edit-invoice-dialog.component';
 
 @Component({
     selector: 'app-deliverable-based',
@@ -166,7 +167,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
 
     async ngOnInit() {
 
-        this.addressTypes =  this.fdConstantsService.fdComponent.addressTypes;
+        this.addressTypes = this.fdConstantsService.fdComponent.addressTypes;
         // SetDefault Values
         if (this.fdDataShareServie.scheduleDateRange.startDate) {
             this.DateRange = this.fdDataShareServie.scheduleDateRange;
@@ -529,14 +530,23 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             this.getApproveExpenseMailContent('ConfirmInvoice');
             this.getPIByTitle(this.selectedRowItem);
         } else if (this.deliverableDialog.title.toLowerCase() === 'edit invoice') {
-            const data = {
-                InvoiceType: 'revenue',
-                projectContactsData: this.projectContactsData,
-                selectedRowItem: this.selectedRowItem,
-            };
-            this.fdDataShareServie.showEditInvoiceDialog(data).then(batchUrl => {
-                this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-DeliverableBased', 'updateInvoiceLineItem');
-                this.submitForm(batchUrl, 'editInvoice');
+            const ref = this.dialogService.open(EditInvoiceDialogComponent, {
+                header: 'Edit Invoice',
+                width: '75vw',
+                data: {
+                    InvoiceType: 'revenue',
+                    projectContactsData: this.projectContactsData,
+                    selectedRowItem: this.selectedRowItem,
+                },
+                contentStyle: { 'max-height': '80vh', 'overflow-y': 'auto' },
+                closable: false,
+            });
+            ref.onClose.subscribe((editInvoice: any) => {
+                if (editInvoice) {
+                    const batchURL = this.fdDataShareServie.EditInvoiceDialogProcess(data, editInvoice)
+                    this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-DeliverableBased', 'updateInvoiceLineItem');
+                    this.submitForm(batchURL, 'editInvoice');
+                }
             });
         } else if (this.deliverableDialog.title.toLowerCase() === 'view project details') {
             this.goToProjectDetails(this.selectedRowItem);
@@ -582,13 +592,13 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
         if (type === 'confirmInvoice') {
             this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Invoice is Confirmed.', false);
-         
+
             this.invoiceConfirmMail();
         } else if (type === 'editInvoice') {
             this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Invoice Updated.', false);
             this.reFetchData();
         }
-       
+
     }
 
     async getApproveExpenseMailContent(type) {
@@ -704,7 +714,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     }
 
     reFetchData() {
-       
+
         setTimeout(() => {
             this.getRequiredData();
         }, 3000);

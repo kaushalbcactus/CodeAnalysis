@@ -13,6 +13,7 @@ import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/time
 import { EditorComponent } from 'src/app/finance-dashboard/PDFEditing/editor/editor.component';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
+import { EditInvoiceDialogComponent } from '../../edit-invoice-dialog/edit-invoice-dialog.component';
 
 
 @Component({
@@ -122,8 +123,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
 
     async ngOnInit() {
         // Create FOrm Field
-        
-        debugger;
         this.proformaAddressType = this.fdConstantsService.fdComponent.addressTypes;
         this.proformatTemplates = this.fdConstantsService.fdComponent.ProformaTemplates;
         this.createProformaFormField();
@@ -674,24 +673,34 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 return;
             }
             else if (event.item.label === 'Edit Invoice') {
-                const Invdata = {
-                    InvoiceType: this.selectedRowItem.ScheduleType,
-                    projectContactsData: this.projectContactsData,
-                    selectedRowItem: this.selectedRowItem,
-                };
-                this.fdDataShareServie.showEditInvoiceDialog(Invdata).then(batchUrl => {
-                    this.commonService.SetNewrelic('Finance-Dashboard', 'Proforma', 'updateInvoiceLineItem');
 
-                    if (this.selectedProforma) {
-                        const proformaData = {
-                            __metadata: { type: this.constantService.listNames.Proforma.type },
-                            FileURL: null,
-                            ProformaHtml: null
+                const ref = this.dialogService.open(EditInvoiceDialogComponent, {
+                    header: 'Edit Invoice',
+                    width: '75vw',
+                    data: {
+                        InvoiceType: this.selectedRowItem.ScheduleType,
+                        projectContactsData: this.projectContactsData,
+                        selectedRowItem: this.selectedRowItem,
+                    },
+                    contentStyle: { 'max-height': '80vh', 'overflow-y': 'auto' },
+                    closable: false,
+                });
+                ref.onClose.subscribe((editInvoice: any) => {
+                    if (editInvoice) {
+                        const batchURL = this.fdDataShareServie.EditInvoiceDialogProcess(data, editInvoice)
+                        this.commonService.SetNewrelic('Finance-Dashboard', 'Proforma', 'updateInvoiceLineItem');
+
+                        if (this.selectedProforma) {
+                            const proformaData = {
+                                __metadata: { type: this.constantService.listNames.Proforma.type },
+                                FileURL: null,
+                                ProformaHtml: null
+                            }
+                            const url = this.spServices.getItemURL(this.constantService.listNames.Proforma.name, +this.selectedProforma.Id);
+                            this.commonService.setBatchObject(batchURL, url, proformaData, this.constantService.Method.PATCH, this.constantService.listNames.Proforma.name);
                         }
-                        const url = this.spServices.getItemURL(this.constantService.listNames.Proforma.name, +this.selectedProforma.Id);
-                        this.commonService.setBatchObject(batchUrl, url, proformaData, this.constantService.Method.PATCH, this.constantService.listNames.Proforma.name);
+                        this.submitForm(batchURL, 'editInvoice');
                     }
-                    this.submitForm(batchUrl, 'editInvoice');
                 });
             } else if (event.item.label === 'View Project Details') {
                 window.open(this.globalService.sharePointPageObject.webAbsoluteUrl + '/dashboard#/projectMgmt?ProjectCode=' + data.ProjectCode);
@@ -1760,7 +1769,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
                     setTimeout(() => {
                         this.commonService.showToastrMessage(this.constantService.MessageType.success, rowItem.ProformaNumber + ' Proforma Created.', false);
                     }, 500);
-                 
+
                 }
             }
         }
@@ -1892,12 +1901,12 @@ export class ProformaComponent implements OnInit, OnDestroy {
                     SOWCode: Invoices[i].SOWCode,
                     SOWValue: sowcn,
                     SOWName: sowItem.Title,
-                    ProjectMileStone: piInfo && piInfo.Milestone ? piInfo.Milestone:'' ,
+                    ProjectMileStone: piInfo && piInfo.Milestone ? piInfo.Milestone : '',
                     POValues: ponn,
                     PONumber: poItem.Number,
                     PO: Invoices[i].PO,
                     POCId: Invoices[i].MainPOC,
-                    ClientName: piInfo && piInfo.ClientLegalEntity ? piInfo.ClientLegalEntity : '', 
+                    ClientName: piInfo && piInfo.ClientLegalEntity ? piInfo.ClientLegalEntity : '',
                     ScheduledDate: new Date(this.datePipe.transform(Invoices[i].ScheduledDate, 'MMM dd, yyyy')),
                     ScheduledDateFormat: this.datePipe.transform(Invoices[i].ScheduledDate, 'MMM dd, yyyy'),
                     Amount: Invoices[i].Amount,

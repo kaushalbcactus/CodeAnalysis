@@ -2740,7 +2740,7 @@ export class AllProjectsComponent implements OnInit {
         if (newSOWObj.length === 0){
           this.commonService.showToastrMessage(this.constants.MessageType.error, 'Can\'t move Project - ' + projObject.ProjectCode + ' under new SOW Code as new sow - ' + this.newSelectedSOW + ' is closed / cancelled', true);
         }
-        else  if (newSOWObj.length === 0){
+        else  if (oldSOWObj.length === 0){
           this.commonService.showToastrMessage(this.constants.MessageType.error, 'Can\'t move Project - ' + projObject.ProjectCode + ' under new SOW Code as old sow - ' + projObject.SOWCode + ' is closed / cancelled', true);
         }
       }

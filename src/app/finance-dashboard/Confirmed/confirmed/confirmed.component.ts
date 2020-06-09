@@ -13,6 +13,7 @@ import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/time
 import { EditorComponent } from 'src/app/finance-dashboard/PDFEditing/editor/editor.component';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { EditInvoiceDialogComponent } from '../../edit-invoice-dialog/edit-invoice-dialog.component';
 
 @Component({
     selector: 'app-confirmed',
@@ -191,11 +192,11 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         this.createAddToProformaFormField();
 
         // Address & Proforma type
-      
+
         this.getProformaType();
         this.usStatesInfo();
         this.currencyInfo();
-       
+
 
         // Get Projects
         await this.projectInfo();
@@ -290,7 +291,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         }));
     }
 
-   
+
 
     createAddToProformaFormField() {
         this.addToProforma_form = this.fb.group({
@@ -703,16 +704,25 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             return;
         }
         else if (this.confirmDialog.title.toLowerCase() === 'edit invoice') {
-           
-           const  data= {
-                InvoiceType: this.selectedRowItem.ScheduleType,
-                projectContactsData: this.projectContactsData,
-                selectedRowItem: this.selectedRowItem,
-            };
-            this.fdDataShareServie.showEditInvoiceDialog(data).then(batchUrl=>{
-                this.commonService.SetNewrelic('Finance-Dashboard', 'confirmed', 'updateInvoiceLineItem');
-                this.submitForm(batchUrl, 'editInvoice');
-            })
+
+            const ref = this.dialogService.open(EditInvoiceDialogComponent, {
+                header: 'Edit Invoice',
+                width: '75vw',
+                data: {
+                    InvoiceType: this.selectedRowItem.ScheduleType,
+                    projectContactsData: this.projectContactsData,
+                    selectedRowItem: this.selectedRowItem,
+                },
+                contentStyle: { 'max-height': '80vh', 'overflow-y': 'auto' },
+                closable: false,
+            });
+            ref.onClose.subscribe((editInvoice: any) => {
+                if (editInvoice) {
+                    const batchURL = this.fdDataShareServie.EditInvoiceDialogProcess(data, editInvoice)
+                    this.commonService.SetNewrelic('Finance-Dashboard', 'confirmed', 'updateInvoiceLineItem');
+                    this.submitForm(batchURL, 'editInvoice');
+                }
+            });
         }
     }
     addProforma() {
