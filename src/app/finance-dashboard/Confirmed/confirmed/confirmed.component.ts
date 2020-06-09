@@ -166,7 +166,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         text: ''
     };
 
-    revertInvModal = false;
     isHourlyProject = false;
     selectedRowItem: any;
 
@@ -471,16 +470,16 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 sowcn = sowCode + ' / ' + sowName;
             }
             const poItem = await this.getPONumber(element);
-            let pnumber = poItem.Number ? poItem.Number : '';
-            const pname = poItem.Name ? poItem.Name : '';
-            if (pnumber === 'NA') {
-                pnumber = '';
-            }
-            let ponn = pnumber + ' ' + pname;
-            if (pname && pnumber) {
-                ponn = pnumber + ' / ' + pname;
-            }
-            const POValues = ponn;
+            // let pnumber = poItem.Number ? poItem.Number : '';
+            // const pname = poItem.Name ? poItem.Name : '';
+            // if (pnumber === 'NA') {
+            //     pnumber = '';
+            // }
+            // let ponn = pnumber + ' ' + pname;
+            // if (pname && pnumber) {
+            //     ponn = pnumber + ' / ' + pname;
+            // }
+            // const POValues = ponn;
 
             this.confirmedRes.push({
                 Id: element.ID,
@@ -488,8 +487,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 SOWCode: element.SOWCode,
                 SOWValue: sowcn,
                 SOWName: sowItem.Title,
-                ProjectMileStone: project ? project.Milestone : '', // this.getMilestones(element),
-                POValues,
+                ProjectMileStone: project ? project.Milestone : '',
                 PONumber: poItem.Number,
                 POName: poItem.Name,
                 ClientName: this.selectedPurchaseNumber.ClientLegalEntity,
@@ -654,20 +652,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         cnf1.exportCSV();
     }
 
-    confirm1() {
-        const pInfo = this.getPIByPC(this.selectedRowItem);
-        console.log('pInfo ', pInfo);
-        this.commonService.confirmMessageDialog('Confirmation', 'Are you sure that you want to revert the invoice from confirmed to scheduled status?', null, ['Yes', 'No'], false).then(async Confirmation => {
-            if (Confirmation === 'Yes') {
-                this.msgs = [{ severity: 'info', summary: 'Confirmed', detail: 'You have Confirmed' }];
-                // Call server service here
-                this.onSubmit('revertInvoice');
-            }
-            else if (Confirmation === 'No') {
-                this.msgs = [{ severity: 'info', summary: 'Cancel', detail: 'You have canceled' }];
-            }
-        });
-    }
     // Open popups
     openPopup(data, popUpData) {
         // console.log('Row data  ', data);
@@ -689,14 +673,23 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         this.confirmDialog.title = event.item.label;
         if (this.confirmDialog.title.toLowerCase() === 'revert invoice') {
             // this.confirm1();
+            let additionalMessage = null;
             const pInfo = this.getPIByPC(this.selectedRowItem);
             if (pInfo.hasOwnProperty('ProjectType')) {
                 if (pInfo.ProjectType.includes('Rolling')) {
                     this.isHourlyProject = true;
+                    additionalMessage = 'Note: This hourly billed project will be converted to delivery based project with Budget' + this.selectedRowItem.Currency + ' ' + this.selectedRowItem.Amount
                 }
             }
-            // console.log('pInfo ', pInfo);
-            this.revertInvModal = true;
+            this.commonService.confirmMessageDialog('Confirmation', ' Are you sure that you want to revert the invoice of ' + this.selectedRowItem.ProjectCode + ' from confirmed to scheduled status?', additionalMessage, ['Yes', 'No'], false).then(async Confirmation => {
+                if (Confirmation === 'Yes') {
+                    this.commonService.showToastrMessage(this.constantService.MessageType.info, 'You have Confirmed', false);
+                    this.onSubmit('revertInvoice');
+                }
+                else if (Confirmation === 'No') {
+                    this.commonService.showToastrMessage(this.constantService.MessageType.info, 'You have Cancelled.', false);
+                }
+            });
         } else if (this.confirmDialog.title.toLowerCase() === 'show history') {
             this.timeline.showTimeline(data.Id, 'FD', 'InvoiceLineItems');
         } else if (event.item.label === 'Details') {
@@ -821,8 +814,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         if (formType === 'editDeliverable') {
             this.addToProforma_form.reset();
             this.proformaModal = false;
-        } else if (formType === 'revertInvoice') {
-            this.revertInvModal = false;
         }
         this.formSubmit.isSubmit = false;
         this.submitBtn.isClicked = false;
@@ -905,7 +896,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             // const data = [];
             const batchUrl = [];
             this.isPSInnerLoaderHidden = false;
-            this.revertInvModal = false;
             // console.log('form is submitting ..... for selected row Item i.e ', this.selectedRowItem);
             const iliData = {
                 __metadata: {
