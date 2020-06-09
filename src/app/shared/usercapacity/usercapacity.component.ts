@@ -721,7 +721,7 @@ export class UsercapacityComponent implements OnInit {
       if (oUser.dates.hasOwnProperty(i)) {
         const tasksDetails = [];
 
-        if (oUser.dates[i].date.getDay() === 6 || oUser.dates[i].date.getDay() === 0) {
+        if (new Date(oUser.dates[i].date).getDay() === 6 || new Date(oUser.dates[i].date).getDay() === 0) {
           oUser.dates[i].userCapacity = 'Leave';
           oUser.dates[i].maxAvailableHours = 0;
         }
@@ -757,7 +757,7 @@ export class UsercapacityComponent implements OnInit {
                   const allocationDate = arrAllocation.length && new Date(arrAllocation[0]) instanceof Date ? new Date(arrAllocation[0]) : new Date();
                   let allocationTime = arrAllocation.length > 0 ? arrAllocation[1] : '0';
                   allocationTime = arrAllocation.length > 1 ? arrAllocation[1] + ':' + arrAllocation[2] : '0';
-                  if (allocationDate.getTime() === oUser.dates[i].date.getTime()) {
+                  if (allocationDate.getTime() === new Date(oUser.dates[i].date).getTime()) {
                     oUser.tasks[j].timeAllocatedPerDay = allocationTime;
                   }
                 });

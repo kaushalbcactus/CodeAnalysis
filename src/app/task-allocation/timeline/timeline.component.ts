@@ -1437,7 +1437,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       { "id": "confirmMilestone", "text": "Confirm Milestone", "enabled": true },
       { "id": "confirmSubmilestone", "text": "Confirm SubMilestone", "enabled": true },
       { "id": "editAllocation", "text": "Edit Allocation", "enabled": true },
-      { "id": "equalSplit", "text": "Equal allocation", "enabled": true }
+      { "id": "equalSplit", "text": "Equal Allocation", "enabled": true }
 
     ]
 
@@ -2886,7 +2886,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         if (data.showAllocationSplit) {
           this.taskMenu.push(
             { label: 'Edit Allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, '') },
-            { label: 'Equal allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, 'Equal') }
+            { label: 'Equal Allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, 'Equal') }
           );
         }
         if (data.AssignedTo.ID !== undefined && data.AssignedTo.ID > -1) {
