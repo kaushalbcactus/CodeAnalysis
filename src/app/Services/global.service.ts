@@ -14,7 +14,7 @@ export class GlobalService {
   public data: any;
   public resourceHeader = "";
   public user;
-  public allocatedTask;
+  public currentTaskData: any;
   public oTask = {
     resource: '',
     taskTitle: '',

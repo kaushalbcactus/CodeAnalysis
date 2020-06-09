@@ -111,8 +111,13 @@ export class GanttEdittaskComponent implements OnInit {
   async onLoad(task, clickedInputType) {
     let sTime = this.getTimePart(this.startDate);
     let eTime = this.getTimePart(this.endDate);
+
+    let time: any = this.commonService.getHrsAndMins(task.start_date, task.end_date);
+    this.maxBudgetHrs = time.maxBudgetHrs;
+
     if (task.itemType === 'Client Review' || task.itemType === 'Send to client') {
       let bHrs = 0 || task.budgetHours;
+      this.maxBudgetHrs = '';
       this.editTaskForm.get('budgetHrs').setValue(bHrs);
       this.editTaskForm.controls['budgetHrs'].disable();
     }
@@ -134,6 +139,7 @@ export class GanttEdittaskComponent implements OnInit {
       // task.start_date = this.startDate;
       task.end_date = task.start_date;
     } else if (task.slotType === 'Slot') {
+      this.maxBudgetHrs = '';
       this.editTaskObject.isDisableCascade = true;
       this.editTaskObject.isTat = false;
     }
@@ -179,7 +185,7 @@ export class GanttEdittaskComponent implements OnInit {
       endDate: task.end_date,
       tat: task.tat,
       disableCascade: task.DisableCascade,
-      resource: task.AssignedTo,
+      resource: task.AssignedTo.ID ? task.AssignedTo : null,
       startDateTimePart: startTime,
       endDateTimePart: endTime,
     });
@@ -197,21 +203,23 @@ export class GanttEdittaskComponent implements OnInit {
     this.editTaskForm.get('resource').valueChanges.subscribe(async resource => {
       this.task.AssignedTo = resource;
       this.task.res_id = resource;
-      this.task.user = resource.Title;
-      const resources = this.globalService.oTaskAllocation.oResources.filter((objt) => {
-        return this.task.AssignedTo.ID === objt.UserName.ID;
-      });
-      await this.dailyAllocateTask(resources, this.task);
-      let task = await this.assignedToUserChanged();
+      this.task.user = resource ? resource.Title : '';
+      if (resource) {
+        const resources = this.globalService.oTaskAllocation.oResources.filter((objt) => {
+          return this.task.AssignedTo.ID === objt.UserName.ID;
+        });
+        await this.dailyAllocateTask(resources, this.task);
+        let task = await this.assignedToUserChanged();
 
-      let startDate = task.pUserStart;
-      let endDate = task.pUserEnd;
-      this.editTaskForm.patchValue({
-        startDate: startDate,
-        endDate: endDate,
-        startDateTimePart: this.getTimePart(task.pUserStart),
-        endDateTimePart: this.getTimePart(task.pUserEnd),
-      });
+        let startDate = task.pUserStart;
+        let endDate = task.pUserEnd;
+        this.editTaskForm.patchValue({
+          startDate: startDate,
+          endDate: endDate,
+          startDateTimePart: this.getTimePart(task.pUserStart),
+          endDateTimePart: this.getTimePart(task.pUserEnd),
+        });
+      }
     });
 
 
@@ -220,16 +228,16 @@ export class GanttEdittaskComponent implements OnInit {
         return this.task.AssignedTo.ID === objt.UserName.ID;
       });
 
-      this.maxBudgetHrs = '';
+      // this.maxBudgetHrs = '';
       let time: any = this.commonService.getHrsAndMins(this.task.start_date, this.task.end_date);
 
       this.maxBudgetHrs = time.maxBudgetHrs;
-      // this.task.budgetHours = budgetHrs;
+      this.task.budgetHours = budgetHrs;
 
       this.isViewAllocationBtn(task)
 
-      if(budgetHrs > 0) { 
-      await this.dailyAllocateTask(resources, this.task);
+      if (budgetHrs > 0) {
+        await this.dailyAllocateTask(resources, this.task);
       }
     });
 
@@ -318,13 +326,15 @@ export class GanttEdittaskComponent implements OnInit {
     let time: any = this.commonService.getHrsAndMins(task.pUserStart, task.pUserEnd)
     let bhrs = this.commonService.convertToHrsMins('' + task.budgetHours).replace('.', ':')
 
-    let maxHrs = time.hrs;
-    let maxMin = time.minutes;
+    this.maxBudgetHrs = time.maxBudgetHrs;
 
-    let hrs = bhrs.split(':')[0];
-    let min = bhrs.split(':')[1];
+    let hrs = parseInt(bhrs.split(':')[0]);
+    let min = parseInt(bhrs.split(':')[1]);
 
-    if (hrs > maxHrs || min > maxMin) {
+    let bHrsTime: any = new Date();
+    bHrsTime = bHrsTime.setHours(hrs, min, 0, 0);
+
+    if (bHrsTime > time.maxTime) {
       let budgetHrs: number = 0;
       this.editTaskForm.get('budgetHrs').setValue(budgetHrs);
       this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: 'Budget hours is set to zero because given budget hours is greater than task time period.' });

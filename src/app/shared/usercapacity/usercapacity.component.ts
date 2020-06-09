@@ -140,6 +140,9 @@ export class UsercapacityComponent implements OnInit {
       if (this.globalService.isResourceChange) {
         const capacity: any = await this.afterResourceChange(this.globalService.data.task, this.globalService.data.startTime, this.globalService.data.endTime, this.globalService.data.task.resources, [], true);
         this.oCapacity = capacity;
+      } else if(this.globalService.currentTaskData) {
+        const capacity: any = await this.afterResourceChange(this.globalService.currentTaskData, this.globalService.currentTaskData.start_date, this.globalService.currentTaskData.end_date, this.globalService.currentTaskData.resources, [], false);
+        this.oCapacity = capacity;
       } else {
         this.globalService.oCapacity = oCapacity;
         this.oCapacity = oCapacity;
