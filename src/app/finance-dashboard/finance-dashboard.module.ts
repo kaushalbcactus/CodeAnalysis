@@ -2,7 +2,6 @@
 
 import { NgModule } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-
 import { FinanceDashboardRoutingModule } from './finance-dashboard-routing.module';
 import { FinanceDashboardComponent } from './finance-dashboard/finance-dashboard.component';
 import { PrimengModule } from '../primeng/primeng.module';
@@ -36,6 +35,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { MarkAsPaymentDialogComponent } from './Expenditure/mark-as-payment-dialog/mark-as-payment-dialog.component';
 import { ApproveBillingDialogComponent } from './Scheduled/hourly-based/approve-billing-dialog/approve-billing-dialog.component';
 import { EditInvoiceDialogComponent } from './edit-invoice-dialog/edit-invoice-dialog.component';
+import { AddUpdateProformaDialogComponent } from './add-update-proforma-dialog/add-update-proforma-dialog.component';
 
 @NgModule({
   declarations: [
@@ -65,6 +65,7 @@ import { EditInvoiceDialogComponent } from './edit-invoice-dialog/edit-invoice-d
     MarkAsPaymentDialogComponent,
     ApproveBillingDialogComponent,
     EditInvoiceDialogComponent,
+    AddUpdateProformaDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -77,8 +78,6 @@ import { EditInvoiceDialogComponent } from './edit-invoice-dialog/edit-invoice-d
   ],
   entryComponents: [
     RejectExpenseComponent,
-    ApprovedNonBillableComponent,
-    ApprovedBillableComponent,
     PendingExpenseComponent,
     DeliverableBasedComponent,
     HourlyBasedComponent,
@@ -93,6 +92,7 @@ import { EditInvoiceDialogComponent } from './edit-invoice-dialog/edit-invoice-d
     ScheduleOopInvoiceDialogComponent,
     MarkAsPaymentDialogComponent,
     ApproveBillingDialogComponent,
+    AddUpdateProformaDialogComponent,
     EditInvoiceDialogComponent
   ],
   providers: [
@@ -100,4 +100,5 @@ import { EditInvoiceDialogComponent } from './edit-invoice-dialog/edit-invoice-d
     EditorComponent
   ]
 })
-export class FinanceDashboardModule { }
+export class FinanceDashboardModule {
+ }

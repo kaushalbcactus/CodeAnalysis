@@ -41,11 +41,6 @@
     padding: 0.5rem !important;
 }
 
-::ng-deep .dropdownClass,
-.textfeildClass {
-    width: 100% !important;
-}
-
 ::ng-deep .financeTable .ui-table table,
 .ui-table table {
     table-layout: auto !important;

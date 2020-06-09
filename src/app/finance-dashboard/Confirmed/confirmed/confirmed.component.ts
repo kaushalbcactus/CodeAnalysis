@@ -13,6 +13,8 @@ import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/time
 import { EditorComponent } from 'src/app/finance-dashboard/PDFEditing/editor/editor.component';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { EditInvoiceDialogComponent } from '../../edit-invoice-dialog/edit-invoice-dialog.component';
+import { AddUpdateProformaDialogComponent } from '../../add-update-proforma-dialog/add-update-proforma-dialog.component';
 
 @Component({
     selector: 'app-confirmed',
@@ -191,11 +193,11 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         this.createAddToProformaFormField();
 
         // Address & Proforma type
-      
+
         this.getProformaType();
         this.usStatesInfo();
         this.currencyInfo();
-       
+
 
         // Get Projects
         await this.projectInfo();
@@ -290,7 +292,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         }));
     }
 
-   
+
 
     createAddToProformaFormField() {
         this.addToProforma_form = this.fb.group({
@@ -703,16 +705,26 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             return;
         }
         else if (this.confirmDialog.title.toLowerCase() === 'edit invoice') {
-           
-           const  data= {
+
+            const data = {
                 InvoiceType: this.selectedRowItem.ScheduleType,
                 projectContactsData: this.projectContactsData,
                 selectedRowItem: this.selectedRowItem,
             };
-            this.fdDataShareServie.showEditInvoiceDialog(data).then(batchUrl=>{
-                this.commonService.SetNewrelic('Finance-Dashboard', 'confirmed', 'updateInvoiceLineItem');
-                this.submitForm(batchUrl, 'editInvoice');
-            })
+
+            const ref = this.dialogService.open(EditInvoiceDialogComponent, {
+                header: 'Edit Invoice',
+                width: '75vw',
+                data: data,
+                contentStyle: { 'max-height': '80vh', 'overflow-y': 'auto' },
+                closable: false,
+            });
+            ref.onClose.subscribe(async (editInvoice: any) => {
+                if (editInvoice) {
+                    const batchUrl = await this.fdDataShareServie.EditInvoiceProcessData(data, editInvoice);
+                    this.submitForm(batchUrl, 'editInvoice');
+                }
+            });
         }
     }
     addProforma() {
@@ -732,35 +744,25 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                     }
                 }
                 if (new Date(this.selectedPurchaseNumber.POExpiryDate) >= new Date()) {
-                    const format = 'dd MMM , yyyy';
-                    let myDate = new Date();
-                    const locale = 'en-IN';
-                    this.minProformaDate = new Date(Math.max.apply(null, this.selectedAllRowData.map(e => e.ScheduledDate)));
-                    myDate = this.minProformaDate > myDate ? this.minProformaDate : myDate;
-                    const formattedDate = formatDate(myDate, format, locale);
-                    this.addToProforma_form.patchValue({
-                        ClientLegalEntity: this.selectedPurchaseNumber.ClientLegalEntity,
-                        POName: this.selectedPurchaseNumber.Number,
-                        Currency: this.selectedPurchaseNumber.Currency,
-                        Amount: this.selectedTotalAmt,
-                        ProformaType: this.selectedAllRowData[0].ScheduleType,
-                        ProformaTitle: this.selectedAllRowData.length > 1 ? '' : this.selectedAllRowData[0].ProjectTitle,
-                        ProformaDate: formattedDate,
-                        Template: { label: this.selectedAllRowData[0].Template, value: this.selectedAllRowData[0].Template },
+                    const ref = this.dialogService.open(AddUpdateProformaDialogComponent, {
+                        header: 'Add to Proforma Form',
+                        width: '75vw',
+                        data: {
+                            Type: 'Add to proforma',
+                            selectedTotalAmt: this.selectedTotalAmt,
+                            cleData: this.getCLEObj(this.selectedPurchaseNumber.ClientLegalEntity),
+                            selectedPurchaseNumber: this.selectedPurchaseNumber,
+                            selectedAllRowData: this.selectedAllRowData,
+                            projectContactsData:this.projectContactsData,
+                        },
+                        contentStyle: { 'max-height': '80vh', 'overflow-y': 'auto' },
+                        closable: false,
                     });
-
-                    this.minProformaDate = new Date(Math.max.apply(null, this.selectedAllRowData.map(e => e.ScheduledDate)));
-                    this.proformaModal = true;
-                    this.isTemplate4US = this.selectedAllRowData[0].Template === 'US' ? true : false;
-                    if (this.isTemplate4US) {
-                        this.addToProforma_form.addControl('State', new FormControl('', Validators.required));
-                    } else {
-                        this.addToProforma_form.removeControl('State');
-                    }
-
-                    const cle = this.getCLEObj(this.selectedPurchaseNumber.ClientLegalEntity);
-                    this.generateProformaNumber(cle);
-                    this.getPOCNamesForEditInv(cle);
+                    ref.onClose.subscribe((proformaForm: any) => {
+                        if (proformaForm) {
+                            this.AddToProforma(proformaForm, 'add2Proforma');
+                        }
+                    });
                 } else {
 
                     this.commonService.showToastrMessage(this.constantService.MessageType.info, 'Proforma cant be generated on Expired PO', false);
@@ -949,56 +951,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             }
             this.submitForm(batchUrl, type);
 
-        } else if (type === 'add2Proforma') {
-            const batchUrl = [];
-            if (this.addToProforma_form.invalid) {
-                return;
-            }
-            this.isPSInnerLoaderHidden = false;
-            this.submitBtn.isClicked = true;
-            // console.log('form is submitting ..... & Form data is ', this.addToProforma_form.getRawValue());
-            // let obj: any = {};
-            const prfData = {
-                __metadata: {
-                    type: this.constantService.listNames.Proforma.type
-                },
-                ClientLegalEntity: this.addToProforma_form.getRawValue().ClientLegalEntity,
-                PO: this.selectedPurchaseNumber.ID, // this.addToProforma_form.value.POName.Id,
-                MainPOC: this.addToProforma_form.value.POCName.ID,
-                Title: this.addToProforma_form.getRawValue().ProformaNumber,
-                ProformaTitle: this.addToProforma_form.value.ProformaTitle,
-                Template: this.addToProforma_form.value.Template.value,
-                State: this.addToProforma_form.value.State ? this.addToProforma_form.value.State.Title : '',
-                Amount: this.addToProforma_form.getRawValue().Amount,
-                Currency: this.addToProforma_form.getRawValue().Currency,
-                AddressType: this.addToProforma_form.value.AddressType.value,
-                ProformaType: this.addToProforma_form.getRawValue().ProformaType,
-                AdditionalInfo: this.addToProforma_form.value.AdditionalComments,
-                ProformaDate: this.addToProforma_form.value.ProformaDate,
-                Status: 'Created'
-            };
-            const proformaObj = Object.assign({}, this.queryConfig);
-            proformaObj.url = this.spServices.getReadURL(this.constantService.listNames.Proforma.name);
-            proformaObj.listName = this.constantService.listNames.Proforma.name;
-            proformaObj.type = 'POST';
-            proformaObj.data = prfData;
-            batchUrl.push(proformaObj);
-            // Get Cle
-            const currentCle = this.getCLEObj(prfData.ClientLegalEntity);
-            const cleData = {
-                __metadata: {
-                    type: this.constantService.listNames.ClientLegalEntity.type
-                },
-                ID: currentCle.Id,
-                ProformaCounter: currentCle.ProformaCounter ? currentCle.ProformaCounter + 1 : 1
-            };
-            const cleObj = Object.assign({}, this.queryConfig);
-            cleObj.url = this.spServices.getItemURL(this.constantService.listNames.ClientLegalEntity.name, currentCle.Id);
-            cleObj.listName = this.constantService.listNames.ClientLegalEntity.name;
-            cleObj.type = 'PATCH';
-            cleObj.data = cleData;
-            batchUrl.push(cleObj);
-            this.submitForm(batchUrl, type);
         }
     }
     async submitForm(batchUrl, type: string) {
@@ -1210,5 +1162,43 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             }
         }
         this.cdr.detectChanges();
+    }
+
+
+
+    AddToProforma(proformaForm, type: string) {
+        const batchUrl = [];
+        this.isPSInnerLoaderHidden = false;
+        this.submitBtn.isClicked = true;
+        const prfData = {
+            __metadata: { type: this.constantService.listNames.Proforma.type },
+            ClientLegalEntity: proformaForm.value.ClientLegalEntity,
+            PO: this.selectedPurchaseNumber.ID, // this.addToProforma_form.value.POName.Id,
+            MainPOC: proformaForm.value.POCName.ID,
+            Title: proformaForm.value.ProformaNumber,
+            ProformaTitle: proformaForm.value.ProformaTitle,
+            Template: proformaForm.value.Template.value,
+            State: proformaForm.value.State ? proformaForm.value.State.Title : '',
+            Amount: proformaForm.value.Amount,
+            Currency: proformaForm.value.Currency,
+            AddressType: proformaForm.value.AddressType.value,
+            ProformaType: proformaForm.value.ProformaType,
+            AdditionalInfo: proformaForm.value.AdditionalComments,
+            ProformaDate: proformaForm.value.ProformaDate,
+            Status: this.constantService.cdStatus.Created
+        };
+
+        this.commonService.setBatchObject(batchUrl, this.spServices.getReadURL(this.constantService.listNames.Proforma.name), prfData, this.constantService.Method.POST, this.constantService.listNames.Proforma.name);
+
+        // Get Cle
+        const currentCle = this.getCLEObj(prfData.ClientLegalEntity);
+        const cleData = {
+            __metadata: { type: this.constantService.listNames.ClientLegalEntity.type },
+            ID: currentCle.Id,
+            ProformaCounter: currentCle.ProformaCounter ? currentCle.ProformaCounter + 1 : 1
+        };
+
+        this.commonService.setBatchObject(batchUrl,this.spServices.getItemURL(this.constantService.listNames.ClientLegalEntity.name, currentCle.Id), cleData, this.constantService.Method.PATCH, this.constantService.listNames.ClientLegalEntity.name);
+        this.submitForm(batchUrl, type);
     }
 }

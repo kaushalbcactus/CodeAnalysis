@@ -17,7 +17,6 @@ import { PrimengModule } from './primeng/primeng.module';
 import { FileUploadProgressDialogComponent } from './shared/file-upload-progress-dialog/file-upload-progress-dialog.component';
 import { ConfirmationDialogComponent } from './shared/confirmation-dialog/confirmation-dialog.component';
 import {ToastModule} from 'primeng/toast';
-import { EditInvoiceDialogComponent } from './finance-dashboard/edit-invoice-dialog/edit-invoice-dialog.component';
 
 @NgModule({
   imports: [
@@ -37,7 +36,7 @@ import { EditInvoiceDialogComponent } from './finance-dashboard/edit-invoice-dia
     AppComponent,
     PageNotFoundComponent,
   ],
-  entryComponents:[FileUploadProgressDialogComponent,ConfirmationDialogComponent,EditInvoiceDialogComponent],
+  entryComponents:[FileUploadProgressDialogComponent,ConfirmationDialogComponent],
   providers: [DataService, TimelineHistoryComponent, DatePipe, MessageService, Title],
   bootstrap: [AppComponent]
 })

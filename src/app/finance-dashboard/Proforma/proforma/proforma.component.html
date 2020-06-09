@@ -8,7 +8,7 @@
     <div class="p-col-12 p-md-12 p-lg-12 f-right">
         <div style="display: -webkit-inline-box;">
             <div class="box" style="margin-right: 20px;">
-                <button type="button" class="fdBtn" pButton icon="fa fa-plus-circle" iconPos="left" label="Create Proforma" (click)="createProforma()"></button>
+                <button type="button" class="fdBtn" pButton icon="fa fa-plus-circle" iconPos="left" label="Create Proforma" (click)="showProformaDialog()"></button>
             </div>
             <div class="box">
                 <!-- <button type="button" pButton label="Export" (click)="fdDataShareServie.convertToExcelFile(pfc)"></button> -->
@@ -222,7 +222,7 @@
 <!-- Generate Invoice End-->
 
 <!-- Create Proforma Modal -->
-<p-dialog header="Create Proforma Form" [(visible)]="proformaModal" [modal]="true" [draggable]="false" [responsive]="true" [positionTop]="15" [style]="{'width': '85%'}" [contentStyle]="{ 'max-height': '90vh'}" [maximizable]="false" (onHide)="cancelFormSub('createProforma')"
+<!-- <p-dialog header="Create Proforma Form" [(visible)]="proformaModal" [modal]="true" [draggable]="false" [responsive]="true" [positionTop]="15" [style]="{'width': '85%'}" [contentStyle]="{ 'max-height': '90vh'}" [maximizable]="false" (onHide)="cancelFormSub('createProforma')"
     [closable]='false'>
 
     <div class='UserButton' fxLayout="row" fxLayoutAlign="end center">
@@ -339,7 +339,7 @@
             </div>
             <div class="p-col-6 p-md-8 p-lg-4">
 
-                <p-dropdown resetFilterOnHide="true" styleClass="dropdownClass" class="cls_addproformaaddtype" [options]="proformaAddressType" formControlName="AddressType" placeholder="Select One" optionLabel="lable" [showClear]="true"></p-dropdown>
+                <p-dropdown resetFilterOnHide="true" styleClass="dropdownClass" class="cls_addproformaaddtype" [options]="proformaAddressType" formControlName="AddressType" placeholder="Select One" optionLabel="label" [showClear]="true"></p-dropdown>
                 <div *ngIf="formSubmit.isSubmit && isValidCreateProformaForm.AddressType.errors">
                     <div *ngIf="isValidCreateProformaForm.AddressType.errors.required" style="color:red;">Please provide Address Type.</div>
                 </div>
@@ -414,11 +414,8 @@
         </div>
 
     </form>
-    <!-- <p-footer>
-        <button type="button" class="fdBtn" pButton label="Add Proforma" [disabled]="submitBtn.isClicked" (click)="onSubmit('createProforma')"></button>
-        <button type="button" class="fdBtn" pButton label="Cancel" (click)="cancelFormSub('createProforma')"></button>
-    </p-footer> -->
-</p-dialog>
+  
+</p-dialog> -->
 
 <!-- <router-outlet></router-outlet> -->
 <app-editor #editorRef></app-editor>

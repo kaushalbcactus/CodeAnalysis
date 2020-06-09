@@ -294,6 +294,7 @@ export class ManageFinanceComponent implements OnInit {
    * This method is used to set the default value for all the budget value.
    */
   async setBudget() {
+    debugger;
     await this.getInitData(this.pmObject.addProject.ProjectAttributes.ProjectCode,
       this.pmObject.addProject.ProjectAttributes.ClientLegalEntity,
       this.pmObject.addProject.FinanceManagement.Currency);

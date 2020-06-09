@@ -642,45 +642,30 @@ export class FDDataShareService {
     //     })
     // }
 
+    async EditInvoiceProcessData(data,editInvoice){
+        const batchUrl = [];
+        let iliData;
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
+        if (data.InvoiceType === 'hourly') {
+            iliData = {
+                __metadata: { type: this.constantService.listNames.ProjectFinances.type },
+                Budget: editInvoice.value.Rate,
+                HoursSpent: editInvoice.value.HoursSpent
+            }
+        }
+        else {
+            iliData = {
+                __metadata: { type: this.constantService.listNames.InvoiceLineItems.type },
+                AddressType: editInvoice.value.AddressType.value,
+                ScheduledDate: editInvoice.value.ScheduledDate,
+                MainPOC: editInvoice.value.POCName.ID
+            };
+        }
+        const url = data.InvoiceType === 'hourly' ? this.spServices.getItemURL(this.constantService.listNames.ProjectFinances.name, +data.selectedRowItem.PFID) : this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, +data.selectedRowItem.Id);
+        const ListName = data.InvoiceType === 'hourly' ? this.constantService.listNames.ProjectFinances.name : this.constantService.listNames.InvoiceLineItems.name
+        this.commonService.setBatchObject(batchUrl, url, iliData, this.constantService.Method.PATCH, ListName)
 
-
-    showEditInvoiceDialog(data): Promise<any> {
-        return new Promise((resolve, reject) => {
-            const ref = this.dialogService.open(EditInvoiceDialogComponent, {
-                header: 'Edit Invoice',
-                width: '75vw',
-                data: data,
-                contentStyle: { 'max-height': '80vh', 'overflow-y': 'auto' },
-                closable: false,
-            });
-            ref.onClose.subscribe((editInvoice: any) => {
-                if (editInvoice) {
-                    const batchUrl = [];
-                    let iliData;
-                    this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
-                    if (data.InvoiceType === 'hourly') {
-                        iliData = {
-                            __metadata: { type: this.constantService.listNames.ProjectFinances.type },
-                            Budget: editInvoice.value.Rate,
-                            HoursSpent: editInvoice.value.HoursSpent
-                        }
-                    }
-                    else {
-                        iliData = {
-                            __metadata: { type: this.constantService.listNames.InvoiceLineItems.type },
-                            AddressType: editInvoice.value.AddressType.value,
-                            ScheduledDate: editInvoice.value.ScheduledDate,
-                            MainPOC: editInvoice.value.POCName.ID
-                        };
-                    }
-                    const url = data.InvoiceType === 'hourly' ? this.spServices.getItemURL(this.constantService.listNames.ProjectFinances.name, +data.selectedRowItem.PFID) : this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, +data.selectedRowItem.Id);
-                    const ListName = data.InvoiceType === 'hourly' ? this.constantService.listNames.ProjectFinances.name : this.constantService.listNames.InvoiceLineItems.name
-                    this.commonService.setBatchObject(batchUrl, url, iliData, this.constantService.Method.PATCH, ListName)
-                    resolve(batchUrl);
-                }
-
-            });
-        });
+        return batchUrl;
     }
 
 

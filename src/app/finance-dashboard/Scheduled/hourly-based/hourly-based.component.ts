@@ -12,6 +12,7 @@ import { TimelineHistoryComponent } from './../../../timeline/timeline-history/t
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { ApproveBillingDialogComponent } from './approve-billing-dialog/approve-billing-dialog.component';
+import { EditInvoiceDialogComponent } from '../../edit-invoice-dialog/edit-invoice-dialog.component';
 
 @Component({
     selector: 'app-hourly-based',
@@ -504,14 +505,27 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
             this.getPIByTitle(this.selectedRowItem);
         } else if (this.hourlyDialog.title.toLowerCase() === 'edit invoice') {
 
+
+
             const data = {
                 InvoiceType: 'hourly',
                 projectContactsData: this.projectContactsData,
                 selectedRowItem: this.selectedRowItem,
             };
-            this.fdDataShareServie.showEditInvoiceDialog(data).then(batchUrl => {
-                this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-hourlyBased', 'updatePFLItem');
-                this.submitForm(null, batchUrl, 'editInvoice');
+
+            const ref = this.dialogService.open(EditInvoiceDialogComponent, {
+                header: 'Edit Invoice',
+                width: '75vw',
+                data: data,
+                contentStyle: { 'max-height': '80vh', 'overflow-y': 'auto' },
+                closable: false,
+            });
+            ref.onClose.subscribe(async (editInvoice: any) => {
+                if (editInvoice) {
+                    const batchUrl = await this.fdDataShareServie.EditInvoiceProcessData(data,editInvoice);
+                    this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-hourlyBased', 'updatePFLItem');
+                    this.submitForm(null, batchUrl, 'editInvoice');
+                }
             });
         } else if (this.hourlyDialog.title.toLowerCase() === 'view project details') {
             this.goToProjectDetails(this.selectedRowItem);
