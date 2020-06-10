@@ -642,7 +642,7 @@ export class FDDataShareService {
     //     })
     // }
 
-    async EditInvoiceProcessData(data,editInvoice){
+    async EditInvoiceProcessData(data, editInvoice) {
         const batchUrl = [];
         let iliData;
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
@@ -680,5 +680,39 @@ export class FDDataShareService {
         } else {
             return '';
         }
+    }
+
+
+    AddToProformaProcessData(proformaForm) {
+
+        const batchUrl = [];
+        const prfData = {
+            __metadata: { type: this.constantService.listNames.Proforma.type },
+            ClientLegalEntity: proformaForm.value.ClientLegalEntity.Title,
+            PO: proformaForm.value.POName.Id,
+            MainPOC: proformaForm.value.POCName.ID,
+            Title: proformaForm.value.ProformaNumber,
+            ProformaTitle: proformaForm.value.ProformaTitle,
+            Template: proformaForm.value.Template.value,
+            State: proformaForm.value.State ? proformaForm.value.State.Title : '',
+            Amount: proformaForm.value.Amount,
+            Currency: proformaForm.value.Currency,
+            AddressType: proformaForm.value.AddressType.value,
+            ProformaType: proformaForm.value.ProformaType.value,
+            AdditionalInfo: proformaForm.value.AdditionalComments,
+            ProformaDate: proformaForm.value.ProformaDate,
+            Status: this.constantService.proformaList.status.Created
+        }
+
+        this.commonService.setBatchObject(batchUrl, this.spServices.getReadURL(this.constantService.listNames.Proforma.name), prfData, this.constantService.Method.POST, this.constantService.listNames.Proforma.name);
+
+        let cleData = {
+            __metadata: { type: this.constantService.listNames.ClientLegalEntity.type },
+            ID: proformaForm.value.ClientLegalEntity.Id,
+            ProformaCounter: proformaForm.value.ClientLegalEntity.ProformaCounter ? proformaForm.value.ClientLegalEntity.ProformaCounter + 1 : 1
+        }
+        this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constantService.listNames.ClientLegalEntity.name, +proformaForm.value.ClientLegalEntity.Id), cleData, this.constantService.Method.PATCH, this.constantService.listNames.ClientLegalEntity.name);
+
+        return batchUrl;
     }
 }

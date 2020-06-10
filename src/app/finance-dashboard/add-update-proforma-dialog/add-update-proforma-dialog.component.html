@@ -1,4 +1,11 @@
-<div class='UserButton' fxLayout="row" fxLayoutAlign="end center">
+<div fxLayout="column" style="padding: 12vw;" fxLayoutAlign="center center" [hidden]="!modalloaderenable">
+    <div id="modalInnerLoader"></div>
+    <div id="modalInnerLoaderText">Loading...</div>
+</div>
+
+
+
+<div class='UserButton' fxLayout="row" fxLayoutAlign="end center" *ngIf="!modalloaderenable">
 
     <button type="button" pButton icon="pi pi-save" class="cls_proformaSave" id="saveClient" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="SaveDetails()" label="Save"></button>
 
@@ -6,7 +13,7 @@
 
 </div>
 
-<div fxLayout="row" #scrollDown fxLayoutAlign="space-between start" fxLayoutGap="5px">
+<div fxLayout="row" #scrollDown fxLayoutAlign="space-between start" fxLayoutGap="5px" *ngIf="!modalloaderenable">
 
     <form [formGroup]='ProformaForm' class="p-col">
 
@@ -15,7 +22,8 @@
             <div class="p-col-12 p-md-12 p-lg-6 p-grid">
                 <div class="p-col-6 p-md-4 p-lg-4 proformaitem">Client Legal Entity</div>
                 <div class="p-col-6 p-md-8 p-lg-8 proformaitem">
-                    <p-dropdown resetFilterOnHide="true" id="cle" [style]="{'width':'100%'}" class="cleClass  cls_addproformacle" [options]="cleData" formControlName="ClientLegalEntity" placeholder="Select Client" [filter]="true" optionLabel="Title" [showClear]="true" (onChange)="onCLIChange($event)"></p-dropdown>
+                    <p-dropdown resetFilterOnHide="true" id="cle" [style]="{'width':'100%'}" class="cleClass  cls_addproformacle" [options]="cleData" [readonly]="Type !== 'create proforma' ?  true : false" [ngClass]="Type !== 'create proforma' ? 'readonlyField':''  " [showClear]="Type === 'create proforma' ?  true : false"
+                        formControlName="ClientLegalEntity" placeholder="Select Client" [filter]="true" optionLabel="Title" (onChange)="onCLIChange($event)"></p-dropdown>
                     <div *ngIf="isProformaFormSubmit && ProformaForm.controls.ClientLegalEntity.errors">
                         <div *ngIf="ProformaForm.controls.ClientLegalEntity.errors.required" style="color:red;">
                             Please provide Client Legal Entity.</div>
@@ -26,7 +34,8 @@
             <div class="p-col-12 p-md-12 p-lg-6 p-grid">
                 <div class="p-col-6 p-md-4 p-lg-4 proformaitem">PO</div>
                 <div class="p-col-6 p-md-8 p-lg-8 proformaitem">
-                    <p-dropdown resetFilterOnHide="true" [style]="{'width':'100%'}" class="cls_addproformapo" [options]="poNames" formControlName="POName" placeholder="Select PO " optionLabel="Number" [filter]="true" [showClear]="true" (onChange)="onPOChange($event)">
+                    <p-dropdown resetFilterOnHide="true" [style]="{'width':'100%'}" class="cls_addproformapo" [options]="poNames" formControlName="POName" placeholder="Select PO " optionLabel="Number" [filter]="true" [readonly]="Type !== 'create proforma' ?  true : false"
+                        [ngClass]="Type !== 'create proforma' ? 'readonlyField':''  " [showClear]="Type === 'create proforma' ?  true : false" (onChange)="onPOChange($event)">
                     </p-dropdown>
                     <div *ngIf="isProformaFormSubmit && ProformaForm.controls.POName.errors">
                         <div *ngIf="ProformaForm.controls.POName.errors.required" style="color:red;">Please select PO.
@@ -44,7 +53,7 @@
             <div class="p-col-12 p-md-12 p-lg-6 p-grid">
                 <div class="p-col-6 p-md-4 p-lg-4 proformaitem">Amount</div>
                 <div class="p-col-6 p-md-8 p-lg-8 proformaitem">
-                    <input type="number" class="textfeildClass cls_addproformaAmount" formControlName="Amount" placeholder="Amount" pInputText>
+                    <input type="number" class="textfeildClass cls_addproformaAmount" formControlName="Amount" placeholder="Amount" [readonly]="Type !== 'create proforma' ?  true : false" [ngClass]="Type !== 'create proforma' ? 'readonlyField':''" pInputText>
                     <div *ngIf="isProformaFormSubmit && ProformaForm.controls.Amount.errors">
                         <div *ngIf="ProformaForm.controls.Amount.errors.required" style="color:red;">Please provide Amount.
                         </div>
@@ -61,7 +70,8 @@
                 <div class="p-col-6 p-md-4 p-lg-4 proformaitem">Proforma Type</div>
                 <div class="p-col-6 p-md-8 p-lg-8 proformaitem">
 
-                    <p-dropdown resetFilterOnHide="true" [style]="{'width':'100%'}" class="cls_addproformatype" [options]="proformaTypes" formControlName="ProformaType" placeholder="Select One" optionLabel="label" [showClear]="true" (onChange)="generateProformaNumber(ProformaForm.value.ClientLegalEntity)">
+                    <p-dropdown resetFilterOnHide="true" [style]="{'width':'100%'}" class="cls_addproformatype" [options]="proformaTypes" formControlName="ProformaType" placeholder="Select One" optionLabel="label" [readonly]="Type !== 'create proforma' ?  true : false" [ngClass]="Type !== 'create proforma' ? 'readonlyField':''  "
+                        [showClear]="Type === 'create proforma' ?  true : false" (onChange)="generateProformaNumber(ProformaForm.value.ClientLegalEntity)">
                     </p-dropdown>
 
                     <div *ngIf="isProformaFormSubmit && ProformaForm.controls.ProformaType.errors">
@@ -121,8 +131,8 @@
             <div class="p-col-12 p-md-12 p-lg-6 p-grid">
                 <div class="p-col-6 p-md-4 p-lg-4 proformaitem">Proforma Date</div>
                 <div class="p-col-6 p-md-8 p-lg-8 proformaitem">
-                    <p-calendar styleClass="pCalendarBtn" [showIcon]="true" class="cls_addproformadate" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy" yearRange="2019:2030" appendTo="body" [disabledDays]="[0,6]" [yearNavigator]="true" panelStyleClass="calendarDemo"
-                        [minDate]="minProformDate" (onClose)="generateProformaNumber(ProformaForm.value.ClientLegalEntity)" #fromCalendar formControlName="ProformaDate">
+                    <p-calendar styleClass="pCalendarBtn" [showIcon]="true" class="cls_addproformadate" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy" yearRange="{{yearRange}}" appendTo="body" [disabledDays]="[0,6]" [yearNavigator]="true" panelStyleClass="calendarDemo"
+                        [minDate]="minProformaDate" (onClose)="generateProformaNumber(ProformaForm.value.ClientLegalEntity)" #fromCalendar formControlName="ProformaDate">
                     </p-calendar>
                     <div *ngIf="isProformaFormSubmit && ProformaForm.controls.ProformaDate.errors">
                         <div *ngIf="ProformaForm.controls.ProformaDate.errors.required" style="color:red;">Please provide Proforma Date.</div>

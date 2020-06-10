@@ -1735,10 +1735,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
         }
         event.data.loaderenable = false;
     }
-
-
-
-
     showProformaDialog() {
 
         const ref = this.dialogService.open(AddUpdateProformaDialogComponent, {
@@ -1756,46 +1752,9 @@ export class ProformaComponent implements OnInit, OnDestroy {
         ref.onClose.subscribe((proformaForm: any) => {
             if (proformaForm) {
                 this.isPSInnerLoaderHidden = false;
-                const batchUrl = [];
-                const prfData = {
-                    __metadata: { type: this.constantService.listNames.Proforma.type },
-                    ClientLegalEntity: proformaForm.value.ClientLegalEntity.Title,
-                    PO: proformaForm.value.POName.Id,
-                    MainPOC: proformaForm.value.POCName.ID,
-                    Title: proformaForm.value.ProformaNumber,
-                    ProformaTitle: proformaForm.value.ProformaTitle,
-                    Template: proformaForm.value.Template.value,
-                    State: proformaForm.value.State ? proformaForm.value.State.Title : '',
-                    Amount: proformaForm.value.Amount,
-                    Currency: proformaForm.value.Currency,
-                    AddressType: proformaForm.value.AddressType.value,
-                    ProformaType: proformaForm.value.ProformaType.value,
-                    AdditionalInfo: proformaForm.value.AdditionalComments,
-                    ProformaDate: proformaForm.value.ProformaDate,
-                    Status: this.constantService.proformaList.status.Created
-                }
-
-                this.commonService.setBatchObject(batchUrl, this.spServices.getReadURL(this.constantService.listNames.Proforma.name), prfData, this.constantService.Method.POST, this.constantService.listNames.Proforma.name);
-
-                // Get Cle
-                let currentCle = this.getCLEObj(prfData.ClientLegalEntity);
-                let cleData = {
-                    __metadata: { type: this.constantService.listNames.ClientLegalEntity.type },
-                    ID: currentCle.Id,
-                    ProformaCounter: currentCle.ProformaCounter ? currentCle.ProformaCounter + 1 : 1
-                }
-                this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constantService.listNames.ClientLegalEntity.name, +currentCle.Id), cleData, this.constantService.Method.PATCH, this.constantService.listNames.ClientLegalEntity.name);
+                const batchUrl = this.fdDataShareServie.AddToProformaProcessData(proformaForm)
                 this.submitForm(batchUrl, 'createProforma');
             }
         });
     }
-
-
-
-    // this.isPSInnerLoaderHidden = false;
-    // this.submitBtn.isClicked = true;
-    // // console.log('form is submitting ..... & Form data is ', this.createProforma_form.getRawValue());
-    // // let obj: any = {};
-
-
 }

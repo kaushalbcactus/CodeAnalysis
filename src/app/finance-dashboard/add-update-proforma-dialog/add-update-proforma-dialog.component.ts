@@ -18,6 +18,7 @@ export class AddUpdateProformaDialogComponent implements OnInit {
   projectContactsData: any;
   purchaseOrdersList: any;
   cleData: any;
+  modalloaderenable: boolean = true;
   proformaAddressType: { label: string; value: string; }[];
   private subscription: Subscription = new Subscription();
   proformaTemplates: { label: string; value: string; }[];
@@ -28,6 +29,10 @@ export class AddUpdateProformaDialogComponent implements OnInit {
   isTemplate4US: boolean = false;
   minProformaDate: any;
   selectedPurchaseNumber: any;
+  listOfPOCNames: any[];
+  yearRange: string;
+  Type: any;
+
   constructor(
     public fdConstantsService: FdConstantsService,
     private ref: DynamicDialogRef,
@@ -41,6 +46,8 @@ export class AddUpdateProformaDialogComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.Type = this.config.data.Type;
+    this.yearRange = this.commonService.getyearRange();
     this.proformaAddressType = this.fdConstantsService.fdComponent.addressTypes;
     this.proformaTemplates = this.fdConstantsService.fdComponent.ProformaTemplates;
     this.projectContactsData = this.config.data.projectContactsData;
@@ -48,8 +55,9 @@ export class AddUpdateProformaDialogComponent implements OnInit {
     this.cleData = this.config.data.cleData;
     this.InitializeForm();
     this.usStatesInfo();
-    if (this.config.data.Type === 'create proforma') {
+    if (this.Type === 'create proforma') {
       this.minProformaDate = this.commonService.getLastWorkingDay(3, new Date());
+      this.modalloaderenable = false;
     }
     else {
       this.updateFormValueEdit();
@@ -76,28 +84,25 @@ export class AddUpdateProformaDialogComponent implements OnInit {
 
   updateFormValueEdit() {
     this.selectedPurchaseNumber = this.config.data.selectedPurchaseNumber;
-    const format = 'dd MMM , yyyy';
-    let myDate = new Date();
-    const locale = 'en-IN';
-    this.minProformaDate = new Date(Math.max.apply(null, this.config.data.selectedAllRowData.map(e => e.ScheduledDate)));
-    myDate = this.minProformaDate > myDate ? this.minProformaDate : myDate;
-    const formattedDate = formatDate(myDate, format, locale);
     this.ProformaForm.patchValue({
-      ClientLegalEntity: this.selectedPurchaseNumber.ClientLegalEntity,
-      POName: this.selectedPurchaseNumber.Number,
+      ClientLegalEntity: this.config.data.selectedCLEData,
+      POName: this.selectedPurchaseNumber,
       Currency: this.selectedPurchaseNumber.Currency,
       Amount: this.config.data.selectedTotalAmt,
-      ProformaType: this.config.data.selectedAllRowData[0].ScheduleType,
+      ProformaType: this.proformaTypes.find(c => c.value === this.config.data.selectedAllRowData[0].ScheduleType) ? this.proformaTypes.find(c => c.value === this.config.data.selectedAllRowData[0].ScheduleType) : '',
       ProformaTitle: this.config.data.selectedAllRowData.length > 1 ? '' : this.config.data.selectedAllRowData[0].ProjectTitle,
-      ProformaDate: formattedDate,
+      ProformaDate: new Date(),
       Template: { label: this.config.data.selectedAllRowData[0].Template, value: this.config.data.selectedAllRowData[0].Template },
     });
 
     this.minProformaDate = new Date(Math.max.apply(null, this.config.data.selectedAllRowData.map(e => e.ScheduledDate)));
-
     this.showHideState({ value: this.config.data.selectedAllRowData[0].Template })
-    this.generateProformaNumber(this.cleData);
-    this.getPOCNamesForEditInv(this.cleData);
+    this.generateProformaNumber(this.config.data.selectedCLEData);
+    this.getPOCNamesForEditInv(this.config.data.selectedCLEData);
+    this.getPONumberFromCLE(this.config.data.selectedCLEData.Title);
+    this.ProformaForm.get('POCName').setValue(this.listOfPOCNames.find(c => c.ID === this.selectedPurchaseNumber.POCLookup))
+
+    this.modalloaderenable = false;
   }
 
 
@@ -111,7 +116,6 @@ export class AddUpdateProformaDialogComponent implements OnInit {
     }
   }
 
-  listOfPOCNames: SelectItem[];
   getPOCNamesForEditInv(rowItem: any) {
     this.listOfPOCNames = [];
     this.projectContactsData.filter((item) => {
@@ -121,6 +125,8 @@ export class AddUpdateProformaDialogComponent implements OnInit {
     });
     // console.log('this.listOfPOCNames ', this.listOfPOCNames);
   }
+
+
   // Project PO
   poNames: any = [];
   getPONumberFromCLE(cli) {
@@ -175,7 +181,7 @@ export class AddUpdateProformaDialogComponent implements OnInit {
     let proformaDate = '';
     let isOOP: boolean = false;
     if (this.ProformaForm.value.ProformaType) {
-      isOOP = this.ProformaForm.value.ProformaType.toLowerCase() === 'oop' ? true : false;
+      isOOP = this.ProformaForm.value.ProformaType.value.toLowerCase() === 'oop' ? true : false;
     }
     if (cle) {
       cleAcronym = cle.Acronym ? cle.Acronym : '';
