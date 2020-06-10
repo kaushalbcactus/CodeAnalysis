@@ -463,8 +463,8 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         // console.log('pubSupportSts  ', pubSupportSts);
 
         this.items = [
-            { label: 'Confirm Invoice', command: (e) => this.openMenuContent(e, data) },
-            { label: 'Edit Invoice', command: (e) => this.openMenuContent(e, data) },
+            { label: 'Confirm Project', command: (e) => this.openMenuContent(e, data) },
+            { label: 'Edit Line item', command: (e) => this.openMenuContent(e, data) },
             { label: 'View Project Details', command: (e) => this.openMenuContent(e, data) },
             { label: 'Details', command: (e) => this.openMenuContent(e, data) },
             { label: 'Show History', command: (e) => this.openMenuContent(e, data) },
@@ -475,7 +475,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         this.selectedRowItem = data;
         console.log(event);
         this.hourlyDialog.title = event.item.label;
-        if (this.hourlyDialog.title.toLowerCase() === 'confirm invoice') {
+        if (this.hourlyDialog.title.toLowerCase() === 'confirm project') {
             await this.getSelectedLineItemDetails();
             if (new Date(this.poLookupDataObj.ExpiryDate) < (new Date())) {
 
@@ -503,9 +503,9 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
             })
             this.getConfirmMailContent('ConfirmInvoice');
             this.getPIByTitle(this.selectedRowItem);
-        } else if (this.hourlyDialog.title.toLowerCase() === 'edit invoice') {
+        } else if (this.hourlyDialog.title === 'Edit Line item') {
             const ref = this.dialogService.open(EditInvoiceDialogComponent, {
-                header: 'Edit Invoice',
+                header: 'Edit Line item',
                 width: '75vw',
                 data: {
                     InvoiceType: 'hourly',

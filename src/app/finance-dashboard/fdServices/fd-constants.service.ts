@@ -33,7 +33,7 @@ export class FdConstantsService {
         isPSInnerLoaderHidden: false,
         projectInfo: {
             select: "ID,ProjectCode,ProjectType,WBJID,Title,Year,ClientLegalEntity,SOWCode,ProposedEndDate,PrimaryPOC,NextSCDate,Status,Milestone,Milestones,BusinessVertical,AdditionalPOCLookup/ID,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail",
-            filter: "Status ne 'cancelled' and Status ne 'Pending Closure' and Status ne 'closed' and Status ne 'Awaiting Cancel Approval'",
+            filter: "Status ne 'cancelled' and Status ne 'closed' and Status ne 'Awaiting Cancel Approval'",
             orderby: "ProjectCode",
             top: 4500,
             expand: "AdditionalPOCLookup,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail"
@@ -341,16 +341,7 @@ export class FdConstantsService {
         },
 
 
-        InvoiceTypeArray: [{ label: 'Tag to existing invoice', value: 'existing' },
-        { label: 'New invoice', value: 'new' }],
-        // Authors
-        // authors: {
-        //     select: "ID,Title,FirstName, LastName, Address, EmailAddress, AuthorType",
-        //     filter: "ID eq '{{Id}}' ",
-        //     top: 1
-        // },
-
-        // Add Update
+              // Add Update
         addUpdateProjectInformation: {
             // createProject: this.globalObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constantService.listNames.projectInfo.name + "')/items",
             update: this.globalObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constantService.listNames.projectInfo.name + "')/items({{Id}})",

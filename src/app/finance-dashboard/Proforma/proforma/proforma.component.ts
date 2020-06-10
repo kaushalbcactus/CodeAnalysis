@@ -512,7 +512,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         }
         else {
             this.items.push(
-                { label: 'Edit Invoice', command: (e) => this.openMenuContent(e, data) },
+                { label: 'Edit Line item', command: (e) => this.openMenuContent(e, data) },
                 { label: 'View Project Details', command: (e) => this.openMenuContent(e, data) },
             )
         }
@@ -650,10 +650,10 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 this.rightSideBarInvoice = !this.rightSideBarInvoice;
                 return;
             }
-            else if (event.item.label === 'Edit Invoice') {
-
+            else if (event.item.label === 'Edit Line item') {
+                this.selectedRowItem.ProformaDate = this.selectedProforma.ProformaDate;
                 const ref = this.dialogService.open(EditInvoiceDialogComponent, {
-                    header: 'Edit Invoice',
+                    header: 'Edit Line item',
                     width: '75vw',
                     data: {
                         InvoiceType: this.selectedRowItem.ScheduleType,

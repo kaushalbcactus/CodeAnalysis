@@ -1,34 +1,35 @@
-import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { DynamicDialogRef, DynamicDialogConfig } from 'primeng';
-import { CommonService } from 'src/app/Services/common.service';
-import { formatDate } from '@angular/common';
-import { FdConstantsService } from '../fdServices/fd-constants.service';
+import { Component, OnInit } from "@angular/core";
+import { FormGroup, FormBuilder, Validators } from "@angular/forms";
+import { DynamicDialogRef, DynamicDialogConfig } from "primeng";
+import { CommonService } from "src/app/Services/common.service";
+import { formatDate } from "@angular/common";
+import { FdConstantsService } from "../fdServices/fd-constants.service";
+import { Router } from "@angular/router";
 
 @Component({
-  selector: 'app-edit-invoice-dialog',
-  templateUrl: './edit-invoice-dialog.component.html',
-  styleUrls: ['./edit-invoice-dialog.component.css']
+  selector: "app-edit-invoice-dialog",
+  templateUrl: "./edit-invoice-dialog.component.html",
+  styleUrls: ["./edit-invoice-dialog.component.css"],
 })
 export class EditInvoiceDialogComponent implements OnInit {
-
-
   EditInvoiceForm: FormGroup;
   selectedRowItem: any;
   minScheduleDate: Date;
   listOfPOCNames: any[];
   projectContactsData: any;
   isEditInvoiceFormSubmit = false;
-  addressTypes=[]
+  addressTypes = [];
   yearRange: string;
   InvoiceType: any;
+  maxScheduleDate: Date;
   constructor(
     public ref: DynamicDialogRef,
     public config: DynamicDialogConfig,
     public common: CommonService,
-    public fdConstantsService : FdConstantsService,
-    private frmbuilder: FormBuilder) {
-  }
+    public fdConstantsService: FdConstantsService,
+    private frmbuilder: FormBuilder,
+    public router: Router
+  ) {}
 
   ngOnInit() {
     this.addressTypes = this.fdConstantsService.fdComponent.addressTypes;
@@ -36,53 +37,60 @@ export class EditInvoiceDialogComponent implements OnInit {
     this.yearRange = this.common.getyearRange();
     this.selectedRowItem = this.config.data.selectedRowItem;
     this.projectContactsData = this.config.data.projectContactsData;
-    if (this.InvoiceType === 'hourly') {
+    if (this.InvoiceType === "hourly") {
       this.EditInvoiceForm = this.frmbuilder.group({
-        ProjectCode: [''],
-        Currency: ['', Validators.required],
-        POCName: ['', Validators.required],
-        Rate: ['', [Validators.required, this.common.checkPositiveNumberValidator()]],
-        HoursSpent: ['', [Validators.required, this.common.checkPositiveNumberValidator()]]
+        ProjectCode: [""],
+        Currency: ["", Validators.required],
+        POCName: ["", Validators.required],
+        Rate: [
+          "",
+          [Validators.required, this.common.checkPositiveNumberValidator()],
+        ],
+        HoursSpent: [
+          "",
+          [Validators.required, this.common.checkPositiveNumberValidator()],
+        ],
       });
     } else {
       this.EditInvoiceForm = this.frmbuilder.group({
-        ProjectCode: [''],
-        PONumber: [''],
-        ScheduledType: [''],
-        Amount: ['', Validators.required],
-        Currency: ['', Validators.required],
-        ScheduledDate: ['', Validators.required],
-        POCName: ['', Validators.required],
-        AddressType: ['', Validators.required],
+        ProjectCode: [""],
+        PONumber: [""],
+        ScheduledType: [""],
+        Amount: ["", Validators.required],
+        Currency: ["", Validators.required],
+        ScheduledDate: ["", Validators.required],
+        POCName: ["", Validators.required],
+        AddressType: ["", Validators.required],
       });
 
       this.getPOCNamesForEditInv(this.selectedRowItem);
     }
 
-
-   
+    if (this.router.url.indexOf("confirmed") > -1) {
+      this.maxScheduleDate = new Date(
+        new Date().getFullYear(),
+        new Date().getMonth(),
+        new Date().getDate()
+      );
+    } else if (this.router.url.indexOf("proforma") > -1) {
+      this.maxScheduleDate = this.selectedRowItem.ProformaDate;
+    }
     this.setValueEditInvoiceForm();
-   
-
   }
 
-
-
   setValueEditInvoiceForm() {
-
-    if (this.InvoiceType === 'hourly') {
+    if (this.InvoiceType === "hourly") {
       this.EditInvoiceForm.patchValue({
         ProjectCode: this.selectedRowItem.ProjectCode,
         Currency: this.selectedRowItem.Currency,
-        POCName : this.selectedRowItem.POCName,
+        POCName: this.selectedRowItem.POCName,
         Rate: this.selectedRowItem.Rate,
         HoursSpent: this.selectedRowItem.HoursSpent,
       });
-    }
-    else {
-      const format = 'dd MMM , yyyy';
+    } else {
+      const format = "dd MMM , yyyy";
       const myDate = new Date(this.selectedRowItem.ScheduledDate);
-      const locale = 'en-IN';
+      const locale = "en-IN";
       const formattedDate = formatDate(myDate, format, locale);
       this.EditInvoiceForm.patchValue({
         ProjectCode: this.selectedRowItem.ProjectCode,
@@ -91,17 +99,15 @@ export class EditInvoiceDialogComponent implements OnInit {
         ScheduledType: this.InvoiceType,
         Amount: this.selectedRowItem.Amount,
         ScheduledDate: formattedDate,
-        AddressType: { label: this.selectedRowItem.AddressType, value: this.selectedRowItem.AddressType }
+        AddressType: {
+          label: this.selectedRowItem.AddressType,
+          value: this.selectedRowItem.AddressType,
+        },
       });
       const last3Days = this.common.getLastWorkingDay(3, new Date());
       this.minScheduleDate = last3Days;
     }
-
-
-
   }
-
-
 
   getPOCNamesForEditInv(rowItem: any) {
     this.listOfPOCNames = [];
@@ -116,21 +122,17 @@ export class EditInvoiceDialogComponent implements OnInit {
     });
     if (Object.keys(rowVal).length) {
       this.EditInvoiceForm.patchValue({
-        POCName: rowVal
+        POCName: rowVal,
       });
     }
   }
 
-
   SaveDetails() {
-
     if (this.EditInvoiceForm.valid) {
       this.ref.close(this.EditInvoiceForm);
-    }
-    else {
+    } else {
       this.isEditInvoiceFormSubmit = true;
     }
-
   }
 
   cancel() {

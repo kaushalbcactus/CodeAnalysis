@@ -1012,7 +1012,6 @@ export class CommonService {
 
     showToastrMessage(type: string, message: string, stickyenable: boolean, showmodal?:boolean) {
         let summaryMessage = '';
-        debugger;
         if (type === this.constants.MessageType.warn) {
             summaryMessage = 'Warn Message';
         } else if (type === this.constants.MessageType.error) {
