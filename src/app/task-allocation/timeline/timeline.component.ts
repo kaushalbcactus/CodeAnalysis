@@ -2298,7 +2298,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           let min = parseInt(bhrs.split(':')[1]);
 
           let bHrsTime: any = new Date();
-          bHrsTime = bHrsTime.setHours(hrs ,min, 0 ,0);
+          bHrsTime = bHrsTime.setHours(hrs, min, 0, 0);
 
           if (bHrsTime > time.maxTime) {
             this.budgetHrs = 0;
@@ -3489,9 +3489,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
         this.restructureGanttData(restructureMilestones, tempmilestoneData, milestonesList, allReturnedTasks);
         const updatedtempmilestoneData = this.updateMilestoneSubMilestonesDate(tempmilestoneData);
-
+        const updatedTaskData = this.updateRestructureDates(updatedtempmilestoneData);
         this.milestoneData = [];
-        this.milestoneData.push.apply(this.milestoneData, updatedtempmilestoneData);
+        this.milestoneData.push.apply(this.milestoneData, updatedTaskData);
         // this.loaderenable = false;
         this.milestoneData = [...this.milestoneData];
         this.changeInRestructure = this.milestoneData.find(c => c.data.editMode === true) !== undefined ? true : false;
@@ -3529,6 +3529,74 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         this.CancelChanges(tempSubmilestones, 'discardAll');
       }
     });
+  }
+
+  setTaskDates(milestoneTaskObj , updatedDate) {
+    milestoneTaskObj.pUserStart = new Date(updatedDate);
+    milestoneTaskObj.pUserStartDatePart = this.getDatePart(new Date(updatedDate));
+    milestoneTaskObj.pUserStartTimePart = this.getTimePart(new Date(updatedDate));
+    milestoneTaskObj.pUserEnd = new Date(updatedDate);
+    milestoneTaskObj.pUserEndDatePart = this.getDatePart(new Date(updatedDate));
+    milestoneTaskObj.pUserEndTimePart = this.getTimePart(new Date(updatedDate));
+    milestoneTaskObj.start_date = new Date(updatedDate);
+    milestoneTaskObj.end_date = new Date(updatedDate);
+
+    // return milestoneTaskObj;
+  }
+
+  updateRestructureDates(milestoneData) {
+    const defaultDate = this.getDefaultDate();
+    milestoneData.forEach((mil, index) => {
+
+      let milestone = mil.data.type == 'milestone' && mil.data.added == true ? mil.data : '';
+      let subMilestone = mil.children ? mil.children.filter(e => e.data.type == 'submilestone' && e.data.added == true): '';
+      let CRtask = mil.data.itemType == 'Client Review' && mil.data.added == true ? mil.data : '';
+
+      //new added milestone
+      if (milestone) {
+        let prevCRTask = milestoneData[milestoneData.findIndex(m => m.data == milestone) - 1] ? milestoneData[milestoneData.findIndex(m => m.data == milestone) - 1].data : '';
+        prevCRTask ? this.setTaskDates(milestone , prevCRTask.end_date) :  this.setTaskDates(milestone , new Date(defaultDate));
+      }
+
+      //new added submilestone
+      if (subMilestone) {
+        subMilestone.forEach(sub => {
+          let previousSubMilestones = mil.children[mil.children.findIndex(e => e == sub) - 1] ? mil.children[mil.children.findIndex(e => e.data == sub.data) - 1].data : '';
+          let parentMilestone = milestoneData.find(m => m.data.title === sub.data.milestone);
+          previousSubMilestones ? this.setTaskDates(sub.data , previousSubMilestones.end_date) : new Date(parentMilestone.data.end_date) > new Date(defaultDate) ? this.setTaskDates(sub.data , parentMilestone.data.end_date) :  this.setTaskDates(sub.data , new Date(defaultDate));
+
+        })
+      }
+      // new added milestone/submilestone task
+      if (mil.children) {
+        let tasks = mil.children.find(e=> e.children) ? mil.children.filter(e=> e.children.find(c=> c.data.added)) : mil.children.filter(c => c.data.added == true);
+        if (tasks) {
+          tasks.forEach(t => {
+            if (t.data.type == 'submilestone') {
+              t.children.forEach(subTask => {
+                if (subTask.data.added) {
+                let prevTask = t.children.find(e => e.data.title == subTask.data.previousTask);
+                let parentSubMilestone = mil.children.filter(e=> e.data.title).find(c=> c.data.title == subTask.data.submilestone).data
+                // let parentSubMilestone = milestoneData.find(m => m.children.filter(e=> e.data.title)).children.find(c=> c.data.title == subTask.data.submilestone).data;
+                prevTask ? this.setTaskDates(subTask.data , prevTask.data.end_date) : new Date(parentSubMilestone.end_date) > new Date(defaultDate) ?  this.setTaskDates(subTask.data , parentSubMilestone.end_date) :   this.setTaskDates(subTask.data , new Date(defaultDate));
+                }
+              })
+            } else if(t.data.type == 'task'){
+              let prevTask = mil.children.find(e => e.data.title == t.data.previousTask)
+              let parentMilestone = milestoneData.find(m => m.data.title === t.data.milestone);
+              prevTask ?  this.setTaskDates(t.data , prevTask.data.end_date) : new Date(parentMilestone.data.end_date) > new Date(defaultDate) ?  this.setTaskDates(t.data , parentMilestone.data.end_date) :  this.setTaskDates(t.data , new Date(defaultDate));
+            }
+          });
+        }
+      }
+
+      //new added CR task
+      if (CRtask) {
+        let parentMilestone = milestoneData.find(m => m.data.title === CRtask.milestone);
+        this.setTaskDates(CRtask , parentMilestone.data.end_date);
+      }
+    })
+    return milestoneData
   }
 
   ////// Refactor code - Done
@@ -3889,7 +3957,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     let min = parseInt(bhrs.split(':')[1]);
 
     let bHrsTime: any = new Date();
-    bHrsTime = bHrsTime.setHours(hrs ,min, 0 ,0);
+    bHrsTime = bHrsTime.setHours(hrs, min, 0, 0);
 
     if (bHrsTime > time.maxTime) {
       node.budgetHours = 0;
