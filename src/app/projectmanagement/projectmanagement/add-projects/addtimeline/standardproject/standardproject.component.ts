@@ -2341,7 +2341,7 @@ export class StandardprojectComponent implements OnInit {
     this.taskMenu = [];
     this.taskMenu.push(
       { label: 'Edit Allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, '') },
-      { label: 'Equal allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, 'Equal') }
+      { label: 'Equal Allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, 'Equal') }
     );
   }
 
@@ -2397,8 +2397,9 @@ export class StandardprojectComponent implements OnInit {
         allocationType: ''
       };
       // console.log(this.userCapacity.afterResourceChange(allocationData.startDate,allocationData.endDate, milestoneTask));
-      const resourceCapacity = await this.dailyAllocation.getResourceCapacity(allocationData);
-      // const resourceCapacity = this.userCapacity.filterCapacityByDates(allocationData.startDate,allocationData.endDate, milestoneTask);
+      // const resourceCapacity = await this.dailyAllocation.getResourceCapacity(allocationData);
+      // const resourceCapacity = this.recalculateUserCapacity(resource[0], milestoneTask.StartDatePart, milestoneTask.EndDatePart)
+      const resourceCapacity = this.userCapacity.filterCapacityByDates(allocationData.startDate,allocationData.endDate, milestoneTask);
       const objDailyAllocation = await this.dailyAllocation.initialize(resourceCapacity, allocationData);
       this.setAllocationPerDay(objDailyAllocation, milestoneTask);
       if (objDailyAllocation.allocationAlert) {
@@ -2412,6 +2413,14 @@ export class StandardprojectComponent implements OnInit {
     }
   }
 
+  recalculateUserCapacity(resource, startDate, endDate) {
+    const businessDays = this.userCapacity.getDates(startDate, endDate, true);
+    const userCapacity = JSON.parse(JSON.stringify(this.sharedObject.oCapacity.arrUserDetails.find(u => u.uid === resource.UserName.ID)));
+    userCapacity.businessDays = businessDays.dateArray;
+    userCapacity.dates = userCapacity.dates.filter(u => businessDays.dateArray.find(b => b.getTime() === new Date(u.date).getTime()));
+    const newUserCapacity = this.userCapacity.fetchUserCapacity(userCapacity);
+    return newUserCapacity;
+  }
 
   setAllocationPerDay(allocation, milestoneTask) {
     milestoneTask.allocationPerDay = allocation.allocationPerDay;
