@@ -11,11 +11,11 @@ export interface ICapacity {
 }
 
 export interface IMilestoneTask {
-    'pUserStart': string;
-    'pUserEnd': string;
-    'pUserStartDatePart': string;
+    'pUserStart': Date;
+    'pUserEnd': Date;
+    'pUserStartDatePart': Date;
     'pUserStartTimePart': string;
-    'pUserEndDatePart': string;
+    'pUserEndDatePart': Date;
     'pUserEndTimePart': string;
     'status': string;
     'id': number;
@@ -25,16 +25,16 @@ export interface IMilestoneTask {
     'start_date': Date;
     'end_date': Date;
     'user': string;
-    'open': string;
-    'parent': string;
-    'res_id': number;
-    'owner_id': number;
+    'open': number;
+    'parent': number;
+    'res_id': any;
+    // 'owner_id': number;
     'nextTask': string;
     'previousTask': string;
     'budgetHours': string;
     'spentTime': string;
    // 'allowStart': string;
-    'tat': string;
+    'tat': boolean;
     'tatVal': string;
     'milestoneStatus': string;
     'type': string;
@@ -45,7 +45,7 @@ export interface IMilestoneTask {
    // 'isFuture': boolean;
     'assignedUsers': any [];
     'AssignedTo': any;
-    'userCapacityEnable': string;
+    'userCapacityEnable': boolean;
     'position': string;
     'color': string;
     'itemType': string;
@@ -53,19 +53,21 @@ export interface IMilestoneTask {
     'edited': boolean;
     'added': boolean;
     'slotColor': string;
-    'IsCentrallyAllocated': boolean;
+    'IsCentrallyAllocated': string;
     'submilestone': string;
     'skillLevel': string;
     'CentralAllocationDone': boolean;
     'ActiveCA': boolean;
     'assignedUserTimeZone': number;
-    'parentSlot': string;
+    'parentSlot': number;
     'DisableCascade': boolean;
     'deallocateSlot': boolean;
     'taskFullName': string;
     'subMilestonePresent': boolean;
     'allocationPerDay': string;
-
+    'allocationColor': string;
+    'showAllocationSplit': boolean;
+    allocationTypeLoader: boolean;
 }
 
 export interface IConflictTask {

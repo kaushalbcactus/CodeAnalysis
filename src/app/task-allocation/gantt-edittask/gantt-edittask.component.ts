@@ -112,8 +112,7 @@ export class GanttEdittaskComponent implements OnInit {
     let sTime = this.getTimePart(this.startDate);
     let eTime = this.getTimePart(this.endDate);
 
-    let time: any = this.commonService.getHrsAndMins(task.start_date, task.end_date);
-    this.maxBudgetHrs = time.maxBudgetHrs;
+    this.maxBudgetHrs = this.taskAllocateCommonService.setMaxBudgetHrs(task);
 
     if (task.itemType === 'Client Review' || task.itemType === 'Send to client') {
       let bHrs = 0 || task.budgetHours;
@@ -229,9 +228,8 @@ export class GanttEdittaskComponent implements OnInit {
       });
 
       // this.maxBudgetHrs = '';
-      let time: any = this.commonService.getHrsAndMins(this.task.start_date, this.task.end_date);
 
-      this.maxBudgetHrs = time.maxBudgetHrs;
+      this.maxBudgetHrs = this.taskAllocateCommonService.setMaxBudgetHrs(this.task);
       this.task.budgetHours = budgetHrs;
 
       this.isViewAllocationBtn(task)
@@ -326,7 +324,7 @@ export class GanttEdittaskComponent implements OnInit {
     let time: any = this.commonService.getHrsAndMins(task.pUserStart, task.pUserEnd)
     let bhrs = this.commonService.convertToHrsMins('' + task.budgetHours).replace('.', ':')
 
-    this.maxBudgetHrs = time.maxBudgetHrs;
+    this.maxBudgetHrs = this.taskAllocateCommonService.setMaxBudgetHrs(task);
 
     let hrs = parseInt(bhrs.split(':')[0]);
     let min = parseInt(bhrs.split(':')[1]);
