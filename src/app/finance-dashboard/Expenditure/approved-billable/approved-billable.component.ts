@@ -811,8 +811,6 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
 
 
     getsowData(scheduleOopInvoice_form, InvoiceType: string) {
-
-        debugger;
         const Amount = parseFloat(scheduleOopInvoice_form.getRawValue().Amount);
         const Data = {
             __metadata: { type: this.constantService.listNames.SOW.type },

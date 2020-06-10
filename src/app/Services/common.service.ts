@@ -957,37 +957,6 @@ export class CommonService {
         });
     }
 
-
-
-    //     /**
-    //  * This method is used to validate the number.
-    //  *
-    //  * @param control Pass the form control.
-    //  *
-    //  * @returns `positiveNumber` if conditions fails else `null`
-    //  */
-    //     checkPositiveNumber(control: ControlContainer): { [key: string]: boolean; } | null {
-    //         debugger
-    //         if (isNaN(control.value) || Number(control.value) < 0) {
-    //             return { positiveNumber: true };
-    //         }
-    //         return null;
-    //     }
-    //     /**
-    //      * This method is used to validate the number.
-    //      *
-    //      * @param control Pass the form control.
-    //      *
-    //      * @returns `positiveNumber` if conditions fails else `null`
-    //      */
-    //     lessThanZero(control: ControlContainer): { [key: string]: boolean; } | null {
-    //         if (isNaN(control.value) || Number(control.value) <= 0) {
-    //             return { nonZeroNumber: true };
-    //         }
-    //         return null;
-    //     }
-
-
     checkPositiveNumberValidator(): ValidatorFn {
         return (control: AbstractControl): { [key: string]: boolean } | null => {
             if (isNaN(control.value) || Number(control.value) < 0) {
