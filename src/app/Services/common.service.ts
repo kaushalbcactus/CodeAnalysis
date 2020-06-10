@@ -1043,6 +1043,7 @@ export class CommonService {
 
     showToastrMessage(type: string, message: string, stickyenable: boolean, showmodal?:boolean) {
         let summaryMessage = '';
+        debugger;
         if (type === this.constants.MessageType.warn) {
             summaryMessage = 'Warn Message';
         } else if (type === this.constants.MessageType.error) {
@@ -1052,11 +1053,8 @@ export class CommonService {
         } else if (type === this.constants.MessageType.info) {
             summaryMessage = 'Info Message';
         }
-        if(showmodal){
-            this.messageService.add({ key: 'cls_ModaltoastrMessage', severity: type, summary: summaryMessage, detail: message, sticky: stickyenable });
-        }else{
-            this.messageService.add({ key: 'cls_toastrMessage', severity: type, summary: summaryMessage, detail: message, sticky: stickyenable });
-        }
+      
+            this.messageService.add({ key: showmodal ? 'cls_ModaltoastrMessage' :'cls_toastrMessage', severity: type, summary: summaryMessage, detail: message, sticky: stickyenable });
        
     }
 
