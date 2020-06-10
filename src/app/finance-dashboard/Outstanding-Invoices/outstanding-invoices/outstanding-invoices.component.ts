@@ -487,7 +487,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 ];
 
                 if (data.InvoiceHtml) {
-                    this.items.push({ label: 'Edit Invoice', command: (e) => this.openMenuContent(e, data) });
+                    this.items.push({ label: 'Edit Line item', command: (e) => this.openMenuContent(e, data) });
                 }
                 break;
             }
@@ -497,7 +497,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                     { label: 'Replace Invoice', command: (e) => this.openMenuContent(e, data) },
                 ];
                 if (data.InvoiceHtml) {
-                    this.items.push({ label: 'Edit Invoice', command: (e) => this.openMenuContent(e, data) });
+                    this.items.push({ label: 'Edit Line item', command: (e) => this.openMenuContent(e, data) });
                 }
                 break;
             }
@@ -556,7 +556,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         } else if (event.item.label === 'Details') {
             this.rightSideBar = !this.rightSideBar;
             return;
-        } else if (this.confirmDialog.title.toLowerCase() === 'edit invoice') {
+        } else if (this.confirmDialog.title === 'Edit Line item') {
             const invObj = JSON.parse(data.InvoiceHtml);
             if (invObj.hasOwnProperty('saveObj')) {
                 this.fdConstantsService.fdComponent.selectedEditObject.Code = data.InvoiceNumber;

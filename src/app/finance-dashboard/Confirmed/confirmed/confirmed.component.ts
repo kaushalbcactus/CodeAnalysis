@@ -658,7 +658,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         // console.log('pubSupportSts  ', pubSupportSts);
 
         this.items = [
-            { label: 'Edit Invoice', command: (e) => this.openMenuContent(e, data) },
+            { label: 'Edit Line item', command: (e) => this.openMenuContent(e, data) },
             { label: 'Revert Invoice', command: (e) => this.openMenuContent(e, data) },
             { label: 'Details', command: (e) => this.openMenuContent(e, data) },
             { label: 'Show History', command: (e) => this.openMenuContent(e, data) },
@@ -696,10 +696,10 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             this.rightSideBar = !this.rightSideBar;
             return;
         }
-        else if (this.confirmDialog.title.toLowerCase() === 'edit invoice') {
+        else if (this.confirmDialog.title === 'Edit Line item') {
 
             const ref = this.dialogService.open(EditInvoiceDialogComponent, {
-                header: 'Edit Invoice',
+                header: 'Edit Line item',
                 width: '75vw',
                 data: {
                     InvoiceType: this.selectedRowItem.ScheduleType,

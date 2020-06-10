@@ -508,7 +508,7 @@ export class OopComponent implements OnInit, OnDestroy {
                 this.commonService.showToastrMessage(this.constantService.MessageType.info, 'PO expired on' + this.datePipe.transform(retPO.POExpiryDate, 'MMM dd, yyyy'), false);
             }
         }
-        this.items.push({ label: 'Edit Invoice', command: (e) => this.openMenuContent(e, data) });
+        this.items.push({ label: 'Edit Line item', command: (e) => this.openMenuContent(e, data) });
         this.items.push({ label: 'View Project Details', command: (e) => this.openMenuContent(e, data) });
         this.items.push({ label: 'Details', command: (e) => this.openMenuContent(e, data) });
         this.items.push({ label: 'Show History', command: (e) => this.openMenuContent(e, data) }); // Added by kaushal on 10.6.19
@@ -522,9 +522,9 @@ export class OopComponent implements OnInit, OnDestroy {
             this.confirm1();
             this.getApproveExpenseMailContent('ConfirmInvoice');
             this.getPIByTitle(this.selectedRowItem);
-        } else if (this.deliverableDialog.title.toLowerCase() === 'edit invoice') {
+        } else if (this.deliverableDialog.title === 'Edit Line item') {
             const ref = this.dialogService.open(EditInvoiceDialogComponent, {
-                header: 'Edit Invoice',
+                header: 'Edit Line item',
                 width: '75vw',
                 data: {
                     InvoiceType: 'oop',

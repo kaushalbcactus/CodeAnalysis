@@ -82,7 +82,7 @@
                 <div class="p-col-6 p-md-8 p-lg-8 editInvoiceitem">
 
                     <p-calendar class="cls_editInvScheduleDate" styleClass="pCalendarBtn" formControlName="ScheduledDate" [showIcon]="true" dateFormat="dd M , yy"   [showOnFocus]="false"   [monthNavigator]="true" yearRange="{{yearRange}}" [disabledDays]="[0,6]" [yearNavigator]="true"
-                        appendTo="body" [minDate]="minScheduleDate" [readonlyInput]="true" placeholder="Select schedule date">
+                        appendTo="body" [minDate]="minScheduleDate" [maxDate]="maxScheduleDate" [readonlyInput]="true" placeholder="Select schedule date">
                     </p-calendar>
 
                     <div class="error" *ngIf="isEditInvoiceFormSubmit && EditInvoiceForm.controls.ScheduledDate.errors">

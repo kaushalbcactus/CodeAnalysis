@@ -57,7 +57,8 @@ export class ApproveBillingDialogComponent implements OnInit {
     const locale = 'en-IN';
     const formattedDate = formatDate(myDate, format, locale);
 
-    this.InvoiceTypeArray = this.fdConstantsService.fdComponent.InvoiceTypeArray;
+    this.InvoiceTypeArray =  [{ label: 'Tag to existing invoice', value: 'existing' },
+    { label: 'Confirm Line Item', value: 'new' }];
     this.selectedRowItem = this.config.data.selectedRowItem;
     this.poItem = this.selectedRowItem.PO;
     this.checkAdvanceInvoice();
