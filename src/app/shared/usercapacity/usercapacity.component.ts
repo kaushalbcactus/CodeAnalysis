@@ -91,7 +91,7 @@ export class UsercapacityComponent implements OnInit {
 
   async Onload(data) {
 
-    this.common.showToastrMessage(this.globalConstantService.MessageType.warn,'Fetching data...',true);
+    this.common.showToastrMessage(this.globalConstantService.MessageType.warn,'Fetching data...',true,true);
     this.enableDownload = data.type === 'CapacityDashboard' ? true : false;
     // setTimeout(() => {
 
