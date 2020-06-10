@@ -231,9 +231,9 @@ export class CapacityDashboardComponent implements OnInit {
     if (!this.searchCapacityForm.valid) {
       if (!this.searchCapacityForm.value.resources) {
 
-        this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please select Resource.',false);
+        this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please select Resource.',false,true);
       } else {
-        this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please select dates.',false);
+        this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please select dates.',false,true);
       }
       return false;
 

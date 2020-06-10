@@ -363,7 +363,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   fetchResources(task) {
     if (!this.selectOpened) {
 
-      this.commonService.showToastrMessage(this.constants.MessageType.warn,'Fetching available resources...',true);
+      this.commonService.showToastrMessage(this.constants.MessageType.warn,'Fetching available resources...',true,true);
       setTimeout(async () => {
         const setResourcesExtn = $.extend(true, [], task.resources);
         const startTime = new Date(new Date(task.StartTime).setHours(0, 0, 0, 0));
@@ -520,7 +520,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     });
     // tslint:disable-next-line: no-shadowed-variable
     ref.onClose.subscribe((task: any) => {
-      this.commonService.showToastrMessage(this.constants.MessageType.info,'Please wait..',true);
+      this.commonService.showToastrMessage(this.constants.MessageType.info,'Please wait..',true,true);
       this.selectedUser = item;
       this.openedTask.allocatedResource = '';
       this.commonService.clearToastrMessage();
@@ -1268,7 +1268,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     if (isValid) {
       this.loaderenable = true;
       setTimeout(() => {
-        this.commonService.showToastrMessage(this.constants.MessageType.info,'Updating...',true);
+        this.commonService.showToastrMessage(this.constants.MessageType.info,'Updating...',true,true);
         this.generateSaveTasks(unt);
       }, 300);
     }
