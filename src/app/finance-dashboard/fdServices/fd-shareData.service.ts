@@ -622,28 +622,8 @@ export class FDDataShareService {
         return response;
     }
 
-
-    // EditInvoiceDialog(data) {
-    //     this.showEditInvoiceDialog(data).then(editInvoice => {
-    //         if (editInvoice) {
-    //             const batchUrl = [];
-    //             this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
-    //             const iliData = {
-    //                 __metadata: { type: this.constantService.listNames.InvoiceLineItems.type },
-    //                 AddressType: editInvoice.value.AddressType.value,
-    //                 ScheduledDate: editInvoice.value.ScheduledDate,
-    //                 MainPOC: editInvoice.value.POCName.ID
-    //             };
-    //             const url = this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, +data.selectedRowItem.Id);
-    //             this.commonService.setBatchObject(batchUrl, url, iliData, this.constantService.Method.PATCH, this.constantService.listNames.InvoiceLineItems.name)
-    //             this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-DeliverableBased', 'updateInvoiceLineItem');
-    //             this.submitForm(batchUrl, 'editInvoice');
-    //         }
-    //     })
-    // }
-
-    async EditInvoiceProcessData(data, editInvoice) {
-        const batchUrl = [];
+    EditInvoiceDialogProcess(data,editInvoice) {
+        const batchUrl=[];
         let iliData;
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         if (data.InvoiceType === 'hourly') {

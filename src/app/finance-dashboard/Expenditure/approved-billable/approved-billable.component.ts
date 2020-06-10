@@ -24,6 +24,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     yearRange: string;
     invoice: any;
     SOW: any;
+    sowList: any = [];
 
     constructor(
         private fb: FormBuilder,
@@ -175,6 +176,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         this.createABCols();
         this.freelancerVendersRes = await this.fdDataShareServie.getVendorFreelanceData();
         await this.projectInfo();
+
         this.resourceCInfo();
 
     }
@@ -279,13 +281,12 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
             const sowCodeFromPI = await this.fdDataShareServie.getSowCodeFromPI(this.projectInfoData, element);
-            const sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(sowCodeFromPI.SOWCode);
-
+            const sowItem = await this.getSowDetails(sowCodeFromPI.SOWCode);
             this.approvedBillableRes.push({
                 Id: element.ID,
                 ProjectCode: element.Title,
                 SOWCode: sowCodeFromPI.SOWCode,
-                SOWName: sowItem.Title,
+                SOWName: sowItem && sowItem.Title ? sowItem.Title :'',
                 ClientLegalEntity: sowCodeFromPI.ClientLegalEntity,
                 Category: element.Category,
                 Number: element.Number,
@@ -704,6 +705,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     }
 
     async reFetchData() {
+        this.sowList=[];
         await this.fdDataShareServie.getClePO('approved');
         this.getRequiredData();
     }
@@ -853,5 +855,14 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         }
         return Data;
 
+    }
+
+    async getSowDetails(sowCode) {
+        if (this.sowList.length === 0) {
+            const res = await this.spServices.readItems(this.constantService.listNames.SOW.name, this.fdConstantsService.fdComponent.sowList);
+            this.sowList = res.length ? res : [];
+        }
+
+        return this.sowList.find(c => c.SOWCode === sowCode) ? this.sowList.find(c => c.SOWCode === sowCode) : '';
     }
 }

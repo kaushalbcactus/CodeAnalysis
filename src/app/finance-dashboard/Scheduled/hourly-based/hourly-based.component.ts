@@ -504,27 +504,22 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
             this.getConfirmMailContent('ConfirmInvoice');
             this.getPIByTitle(this.selectedRowItem);
         } else if (this.hourlyDialog.title.toLowerCase() === 'edit invoice') {
-
-
-
-            const data = {
-                InvoiceType: 'hourly',
-                projectContactsData: this.projectContactsData,
-                selectedRowItem: this.selectedRowItem,
-            };
-
             const ref = this.dialogService.open(EditInvoiceDialogComponent, {
                 header: 'Edit Invoice',
                 width: '75vw',
-                data: data,
+                data: {
+                    InvoiceType: 'hourly',
+                    projectContactsData: this.projectContactsData,
+                    selectedRowItem: this.selectedRowItem,
+                },
                 contentStyle: { 'max-height': '80vh', 'overflow-y': 'auto' },
                 closable: false,
             });
-            ref.onClose.subscribe(async (editInvoice: any) => {
+            ref.onClose.subscribe((editInvoice: any) => {
                 if (editInvoice) {
-                    const batchUrl = await this.fdDataShareServie.EditInvoiceProcessData(data,editInvoice);
+                    const batchURL = this.fdDataShareServie.EditInvoiceDialogProcess(data, editInvoice)
                     this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-hourlyBased', 'updatePFLItem');
-                    this.submitForm(null, batchUrl, 'editInvoice');
+                    this.submitForm(null, batchURL, 'editInvoice');
                 }
             });
         } else if (this.hourlyDialog.title.toLowerCase() === 'view project details') {

@@ -413,7 +413,7 @@ export class OopComponent implements OnInit, OnDestroy {
         return found ? found.ClientLegalEntity : '';
     }
 
-    
+
     createColFieldValues(resArray) {
         this.oopColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
         this.oopColArray.ShortTitle = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ShortTitle, value: a.ShortTitle }; return b; }).filter(ele => ele.label)));
@@ -523,238 +523,237 @@ export class OopComponent implements OnInit, OnDestroy {
             this.getApproveExpenseMailContent('ConfirmInvoice');
             this.getPIByTitle(this.selectedRowItem);
         } else if (this.deliverableDialog.title.toLowerCase() === 'edit invoice') {
-            const data= {
-                InvoiceType: 'oop',
-                projectContactsData: this.projectContactsData,
-                selectedRowItem: this.selectedRowItem,
-            };
             const ref = this.dialogService.open(EditInvoiceDialogComponent, {
                 header: 'Edit Invoice',
                 width: '75vw',
-                data: data,
+                data: {
+                    InvoiceType: 'oop',
+                    projectContactsData: this.projectContactsData,
+                    selectedRowItem: this.selectedRowItem,
+                },
                 contentStyle: { 'max-height': '80vh', 'overflow-y': 'auto' },
                 closable: false,
-            });
-            ref.onClose.subscribe(async (editInvoice: any) => {
-                if (editInvoice) {
-                    const batchUrl = await this.fdDataShareServie.EditInvoiceProcessData(data,editInvoice);
-                    this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-OOP', 'updateInvoiceLineItem');
-                    this.submitForm(batchUrl, 'editInvoice');
-                }
-            });
-        } else if (this.deliverableDialog.title.toLowerCase() === 'view project details') {
-            this.goToProjectDetails(this.selectedRowItem);
-        } else if (this.deliverableDialog.title.toLowerCase() === 'show history') {
-            // Added by kaushal on 10.6.19
-            this.timeline.showTimeline(data.Id, 'FD', 'InvoiceLineItems');
-        } else if (event.item.label === 'Details') {
-            this.rightSideBar = !this.rightSideBar;
-            return;
+                });
+                ref.onClose.subscribe((editInvoice: any) => {
+                    if (editInvoice) {
+                        const batchUrl = this.fdDataShareServie.EditInvoiceDialogProcess(data, editInvoice)
+                        this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-OOP', 'updateInvoiceLineItem');
+                        this.submitForm(batchUrl, 'editInvoice');
+                    }
+                });
+            } else if (this.deliverableDialog.title.toLowerCase() === 'view project details') {
+                this.goToProjectDetails(this.selectedRowItem);
+            } else if (this.deliverableDialog.title.toLowerCase() === 'show history') {
+                // Added by kaushal on 10.6.19
+                this.timeline.showTimeline(data.Id, 'FD', 'InvoiceLineItems');
+            } else if (event.item.label === 'Details') {
+                this.rightSideBar = !this.rightSideBar;
+                return;
+            }
         }
-    }
 
-    // Go to Project Details Page
-    goToProjectDetails(data: any) {
-        window.open(this.globalService.sharePointPageObject.webAbsoluteUrl
-            + '/dashboard#/projectMgmt?ProjectCode=' + data.ProjectCode);
-    }
-
-
-    onSubmit(type: string) {
-        this.formSubmit.isSubmit = true;
-        const batchUrl = [];
-        if (type === 'confirmInvoice') {
-            this.isPSInnerLoaderHidden = false;
-            const iliData = {
-                __metadata: { type: this.constantService.listNames.InvoiceLineItems.type },
-                Status: this.constantService.STATUS.CONFIRMED
-            };
-            const url = this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, +this.selectedRowItem.Id);
-            this.commonService.setBatchObject(batchUrl, url, iliData, this.constantService.Method.PATCH, this.constantService.listNames.InvoiceLineItems.name)
-            this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-oop', 'UpdateInvoiceLineItem');
-            this.submitForm(batchUrl, type);
+        // Go to Project Details Page
+        goToProjectDetails(data: any) {
+            window.open(this.globalService.sharePointPageObject.webAbsoluteUrl
+                + '/dashboard#/projectMgmt?ProjectCode=' + data.ProjectCode);
         }
-    }
+
+
+        onSubmit(type: string) {
+            this.formSubmit.isSubmit = true;
+            const batchUrl = [];
+            if (type === 'confirmInvoice') {
+                this.isPSInnerLoaderHidden = false;
+                const iliData = {
+                    __metadata: { type: this.constantService.listNames.InvoiceLineItems.type },
+                    Status: this.constantService.STATUS.CONFIRMED
+                };
+                const url = this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, +this.selectedRowItem.Id);
+                this.commonService.setBatchObject(batchUrl, url, iliData, this.constantService.Method.PATCH, this.constantService.listNames.InvoiceLineItems.name)
+                this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-oop', 'UpdateInvoiceLineItem');
+                this.submitForm(batchUrl, type);
+            }
+        }
 
 
 
-    async submitForm(batchUrl, type: string) {
-        await this.spServices.executeBatch(batchUrl);
-        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
-        if (type === 'confirmInvoice') {
-            this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Invoice is Confirmed.', false);
-            this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
-            this.sendCreateExpenseMail();
+        async submitForm(batchUrl, type: string) {
+            await this.spServices.executeBatch(batchUrl);
+            this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
+            if (type === 'confirmInvoice') {
+                this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Invoice is Confirmed.', false);
+                this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
+                this.sendCreateExpenseMail();
 
-        } else if (type === 'editInvoice') {
-            this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Invoice Updated.', false);
+            } else if (type === 'editInvoice') {
+                this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Invoice Updated.', false);
+                this.reFetchData();
+            }
+            this.isPSInnerLoaderHidden = true;
+        }
+
+        async getApproveExpenseMailContent(type) {
+            // const mailContentEndpoint = this.fdConstantsService.fdComponent.mailContent;
+            const objMailContent = Object.assign({}, this.fdConstantsService.fdComponent.mailContent);
+            objMailContent.filter = objMailContent.filter.replace('{{MailType}}', type);
+            this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-oop', 'GetEmailTemplate');
+            const res = await this.spServices.readItems(this.constantService.listNames.MailContent.name, objMailContent);
+            this.mailContentRes = res.length ? res[0] : {};
+        }
+
+        replaceContent(mailContent, key, value) {
+            return mailContent.replace(new RegExp(key, 'g'), value);
+        }
+
+        async sendCreateExpenseMail() {
+            const mailSubject = this.selectedRowItem.ProjectCode + '/' + this.selectedRowItem.ClientName + ': Confirmed line item for billing';
+            let mailContent = this.mailContentRes.Content;
+            mailContent = this.replaceContent(mailContent, '@@Val1@@', 'Hello Invoice Team');
+            mailContent = this.replaceContent(mailContent, '@@Val2@@', this.selectedRowItem.ProjectCode);
+            mailContent = this.replaceContent(mailContent, '@@Val3@@', this.selectedRowItem.ClientName);
+            mailContent = this.replaceContent(mailContent, '@@Val4@@', this.selectedRowItem.PONumber);
+            mailContent = this.replaceContent(mailContent, '@@Val5@@',
+                this.datePipe.transform(this.selectedRowItem.ScheduledDate, 'MMM dd, yyyy'));
+            mailContent = this.replaceContent(mailContent, '@@Val6@@', this.selectedRowItem.Currency + ' ' + this.selectedRowItem.Amount);
+            mailContent = this.replaceContent(mailContent, '@@Val7@@', this.selectedRowItem.SOWCode);
+
+            const ccUser = this.getCCList();
+            const tos = this.getTosList();
+            this.commonService.SetNewrelic('Finance-Dashboard', 'oop-CreateExpense', 'SendMail');
+            await this.spOperationsService.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
             this.reFetchData();
         }
-        this.isPSInnerLoaderHidden = true;
-    }
 
-    async getApproveExpenseMailContent(type) {
-        // const mailContentEndpoint = this.fdConstantsService.fdComponent.mailContent;
-        const objMailContent = Object.assign({}, this.fdConstantsService.fdComponent.mailContent);
-        objMailContent.filter = objMailContent.filter.replace('{{MailType}}', type);
-        this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-oop', 'GetEmailTemplate');
-        const res = await this.spServices.readItems(this.constantService.listNames.MailContent.name, objMailContent);
-        this.mailContentRes = res.length ? res[0] : {};
-    }
-
-    replaceContent(mailContent, key, value) {
-        return mailContent.replace(new RegExp(key, 'g'), value);
-    }
-
-    async sendCreateExpenseMail() {
-        const mailSubject = this.selectedRowItem.ProjectCode + '/' + this.selectedRowItem.ClientName + ': Confirmed line item for billing';
-        let mailContent = this.mailContentRes.Content;
-        mailContent = this.replaceContent(mailContent, '@@Val1@@', 'Hello Invoice Team');
-        mailContent = this.replaceContent(mailContent, '@@Val2@@', this.selectedRowItem.ProjectCode);
-        mailContent = this.replaceContent(mailContent, '@@Val3@@', this.selectedRowItem.ClientName);
-        mailContent = this.replaceContent(mailContent, '@@Val4@@', this.selectedRowItem.PONumber);
-        mailContent = this.replaceContent(mailContent, '@@Val5@@',
-            this.datePipe.transform(this.selectedRowItem.ScheduledDate, 'MMM dd, yyyy'));
-        mailContent = this.replaceContent(mailContent, '@@Val6@@', this.selectedRowItem.Currency + ' ' + this.selectedRowItem.Amount);
-        mailContent = this.replaceContent(mailContent, '@@Val7@@', this.selectedRowItem.SOWCode);
-
-        const ccUser = this.getCCList();
-        const tos = this.getTosList();
-        this.commonService.SetNewrelic('Finance-Dashboard', 'oop-CreateExpense', 'SendMail');
-        await this.spOperationsService.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
-        this.reFetchData();
-    }
-
-    getTosList() {
-        const itApprovers = this.groupITInfo.results;
-        let arrayTo = [];
-        if (itApprovers.length) {
-            for (const i in itApprovers) {
-                if (itApprovers[i].Email !== undefined && itApprovers[i].Email !== '') {
-                    arrayTo.push(itApprovers[i].Email);
+        getTosList() {
+            const itApprovers = this.groupITInfo.results;
+            let arrayTo = [];
+            if (itApprovers.length) {
+                for (const i in itApprovers) {
+                    if (itApprovers[i].Email !== undefined && itApprovers[i].Email !== '') {
+                        arrayTo.push(itApprovers[i].Email);
+                    }
                 }
             }
+            arrayTo = arrayTo.filter(this.onlyUnique);
+            console.log('arrayTo ', arrayTo);
+            return arrayTo;
         }
-        arrayTo = arrayTo.filter(this.onlyUnique);
-        console.log('arrayTo ', arrayTo);
-        return arrayTo;
-    }
 
-    getCCList() {
-        let arrayCC = [];
-        arrayCC.push(this.currentUserInfoData.Email);
-        if (this.resCatEmails.length) {
-            arrayCC = arrayCC.concat(this.fdDataShareServie.getCSMember(this.resCatEmails));
+        getCCList() {
+            let arrayCC = [];
+            arrayCC.push(this.currentUserInfoData.Email);
+            if (this.resCatEmails.length) {
+                arrayCC = arrayCC.concat(this.fdDataShareServie.getCSMember(this.resCatEmails));
+            }
+            arrayCC = arrayCC.filter(this.onlyUnique);
+            console.log('arrayCC ', arrayCC);
+            return arrayCC;
         }
-        arrayCC = arrayCC.filter(this.onlyUnique);
-        console.log('arrayCC ', arrayCC);
-        return arrayCC;
-    }
 
-    onlyUnique(value, index, self) {
-        return self.indexOf(value) === index;
-    }
-    getPIByTitle(title) {
-        const found = this.projectInfoData.find((x) => {
-            if (x.ProjectCode === title.ProjectCode) {
-                if (x.CMLevel1.hasOwnProperty('results')) {
-                    this.selectedPI = x.CMLevel1.results;
+        onlyUnique(value, index, self) {
+            return self.indexOf(value) === index;
+        }
+        getPIByTitle(title) {
+            const found = this.projectInfoData.find((x) => {
+                if (x.ProjectCode === title.ProjectCode) {
+                    if (x.CMLevel1.hasOwnProperty('results')) {
+                        this.selectedPI = x.CMLevel1.results;
+                    }
+                    console.log('this.selectedPI ', this.selectedPI);
+                    this.getResCatByCMLevel();
+                    return x;
                 }
-                console.log('this.selectedPI ', this.selectedPI);
-                this.getResCatByCMLevel();
-                return x;
-            }
-        });
-        return found ? found : '';
-    }
-    getResCatByCMLevel() {
-        this.cmLevelIdList = [];
-        for (let l = 0; l < this.selectedPI.length; l++) {
-            const elements = this.selectedPI[l];
-            if (Array.isArray(elements)) {
-                for (let e = 0; e < elements.length; e++) {
-                    const ele = elements[e];
-                    this.cmLevelIdList.push(ele);
+            });
+            return found ? found : '';
+        }
+        getResCatByCMLevel() {
+            this.cmLevelIdList = [];
+            for (let l = 0; l < this.selectedPI.length; l++) {
+                const elements = this.selectedPI[l];
+                if (Array.isArray(elements)) {
+                    for (let e = 0; e < elements.length; e++) {
+                        const ele = elements[e];
+                        this.cmLevelIdList.push(ele);
+                    }
+                } else {
+                    this.cmLevelIdList.push(elements);
                 }
-            } else {
-                this.cmLevelIdList.push(elements);
             }
+            console.log('this.cmLevelIdList ', this.cmLevelIdList);
+            this.resCatEmails = [];
+            this.resourceCatData();
         }
-        console.log('this.cmLevelIdList ', this.cmLevelIdList);
-        this.resCatEmails = [];
-        this.resourceCatData();
-    }
-    resourceCatData() {
-        for (let c = 0; c < this.cmLevelIdList.length; c++) {
-            const element = this.cmLevelIdList[c];
-            const item = this.getResourceData(element);
-            item ? this.resCatEmails.push(item) : '';
-        }
-        console.log('resCatEmails ', this.resCatEmails);
-    }
-
-    getResourceData(ele) {
-        const found = this.rcData.find((x) => {
-            if (x.UserName.ID === ele.ID) {
-                return x;
+        resourceCatData() {
+            for (let c = 0; c < this.cmLevelIdList.length; c++) {
+                const element = this.cmLevelIdList[c];
+                const item = this.getResourceData(element);
+                item ? this.resCatEmails.push(item) : '';
             }
-        });
-        return found ? found : '';
-    }
+            console.log('resCatEmails ', this.resCatEmails);
+        }
 
-    reFetchData() {
-        setTimeout(() => {
-            this.getRequiredData();
-        }, 3000);
-    }
+        getResourceData(ele) {
+            const found = this.rcData.find((x) => {
+                if (x.UserName.ID === ele.ID) {
+                    return x;
+                }
+            });
+            return found ? found : '';
+        }
 
-    ngOnDestroy() {
-        // unsubscribe to ensure no memory leaks
-        this.subscription.unsubscribe();
-    }
+        reFetchData() {
+            setTimeout(() => {
+                this.getRequiredData();
+            }, 3000);
+        }
 
-    @HostListener('document:click', ['$event'])
-    clickout(event) {
-        if (event.target.className === 'pi pi-ellipsis-v') {
-            if (this.tempClick) {
-                this.tempClick.style.display = 'none';
-                if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
+        ngOnDestroy() {
+            // unsubscribe to ensure no memory leaks
+            this.subscription.unsubscribe();
+        }
+
+        @HostListener('document:click', ['$event'])
+        clickout(event) {
+            if (event.target.className === 'pi pi-ellipsis-v') {
+                if (this.tempClick) {
+                    this.tempClick.style.display = 'none';
+                    if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
+                        this.tempClick = event.target.parentElement.children[0].children[0];
+                        this.tempClick.style.display = '';
+                    } else {
+                        this.tempClick = undefined;
+                    }
+                } else {
                     this.tempClick = event.target.parentElement.children[0].children[0];
                     this.tempClick.style.display = '';
-                } else {
+                }
+
+            } else {
+                if (this.tempClick) {
+                    this.tempClick.style.display = 'none';
                     this.tempClick = undefined;
                 }
-            } else {
-                this.tempClick = event.target.parentElement.children[0].children[0];
-                this.tempClick.style.display = '';
-            }
-
-        } else {
-            if (this.tempClick) {
-                this.tempClick.style.display = 'none';
-                this.tempClick = undefined;
             }
         }
-    }
-    optionFilter(event: any) {
-        if (event.target.value) {
-            this.isOptionFilter = false;
-        }
-    }
-
-    ngAfterViewChecked() {
-        if (this.oopBasedRes.length && this.isOptionFilter) {
-            const obj = {
-                tableData: this.oopTable,
-                colFields: this.oopColArray
-            };
-            if (obj.tableData.filteredValue) {
-                this.commonService.updateOptionValues(obj);
-            } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
-                this.createColFieldValues(obj.tableData.value);
+        optionFilter(event: any) {
+            if (event.target.value) {
                 this.isOptionFilter = false;
             }
         }
-        this.cdr.detectChanges();
+
+        ngAfterViewChecked() {
+            if (this.oopBasedRes.length && this.isOptionFilter) {
+                const obj = {
+                    tableData: this.oopTable,
+                    colFields: this.oopColArray
+                };
+                if (obj.tableData.filteredValue) {
+                    this.commonService.updateOptionValues(obj);
+                } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+                    this.createColFieldValues(obj.tableData.value);
+                    this.isOptionFilter = false;
+                }
+            }
+            this.cdr.detectChanges();
+        }
     }
-}

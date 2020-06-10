@@ -651,23 +651,21 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 return;
             }
             else if (event.item.label === 'Edit Invoice') {
-                const Invdata = {
-                    InvoiceType: this.selectedRowItem.ScheduleType,
-                    projectContactsData: this.projectContactsData,
-                    selectedRowItem: this.selectedRowItem,
-                };
 
                 const ref = this.dialogService.open(EditInvoiceDialogComponent, {
                     header: 'Edit Invoice',
                     width: '75vw',
-                    data: Invdata,
+                    data: {
+                        InvoiceType: this.selectedRowItem.ScheduleType,
+                        projectContactsData: this.projectContactsData,
+                        selectedRowItem: this.selectedRowItem,
+                    },
                     contentStyle: { 'max-height': '80vh', 'overflow-y': 'auto' },
                     closable: false,
                 });
-                ref.onClose.subscribe(async (editInvoice: any) => {
+                ref.onClose.subscribe((editInvoice: any) => {
                     if (editInvoice) {
-                        const batchUrl = await this.fdDataShareServie.EditInvoiceProcessData(Invdata, editInvoice);
-
+                        const batchURL = this.fdDataShareServie.EditInvoiceDialogProcess(data, editInvoice)
                         this.commonService.SetNewrelic('Finance-Dashboard', 'Proforma', 'updateInvoiceLineItem');
 
                         if (this.selectedProforma) {
@@ -677,9 +675,9 @@ export class ProformaComponent implements OnInit, OnDestroy {
                                 ProformaHtml: null
                             }
                             const url = this.spServices.getItemURL(this.constantService.listNames.Proforma.name, +this.selectedProforma.Id);
-                            this.commonService.setBatchObject(batchUrl, url, proformaData, this.constantService.Method.PATCH, this.constantService.listNames.Proforma.name);
+                            this.commonService.setBatchObject(batchURL, url, proformaData, this.constantService.Method.PATCH, this.constantService.listNames.Proforma.name);
                         }
-                        this.submitForm(batchUrl, 'editInvoice');
+                        this.submitForm(batchURL, 'editInvoice');
                     }
                 });
             } else if (event.item.label === 'View Project Details') {

@@ -160,26 +160,76 @@
     </ng-container>
 </p-sidebar>
 
-<!-- Confirmation -->
-<p-dialog header="Confirmation" [(visible)]="revertInvModal" [modal]="true" [draggable]="false" [style]="{'width': '30%'}" [maximizable]="false" [baseZIndex]="10000" [contentStyle]="{'height': '150px'}" (onHide)="cancelFormSub('revertInvoice')">
-    <form id="myform">
-        <div class="ui-g" *ngIf="selectedRowItem">
-            <div>
-                Are you sure that you want to revert the invoice of {{selectedRowItem.ProjectCode}} from confirmed to scheduled status?
-            </div><br>
-            <div style="color: red;" *ngIf="isHourlyProject">
-                Note: This hourly billed project will be converted to delivery based project with Budget
-                <b>{{selectedRowItem.Currency }}</b>&nbsp; <b>{{selectedRowItem.Amount}}</b>
+<!-- Context Menu Start -->
+<!-- <p-contextMenu #cm [model]="items"></p-contextMenu> -->
+<!-- Context Menu End -->
+
+<!-- Toast Messages -->
+<p-toast position="bottom-center" key="confirmInfoToast"></p-toast>
+<p-toast position="bottom-center" key="confirmSuccessToast"></p-toast>
+<!-- Toast Message End -->
+
+
+<!-- Add to Proforma Modal -->
+<p-dialog header="Add to Proforma Form" [(visible)]="proformaModal" [modal]="true" [draggable]="false" [responsive]="true" [positionTop]="15" [style]="{'width': '85%'}" [contentStyle]="{ 'max-height': '90vh'}" [maximizable]="false" (onHide)="cancelFormSub('editDeliverable')"
+    [closable]='false'>
+
+    <div class='UserButton' fxLayout="row" fxLayoutAlign="end center">
+
+        <button type="button" class="fdBtn cls_addproforma" pButton icon="pi pi-save" id="saveClient" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" label="Add Proforma" [disabled]="submitBtn.isClicked" (click)="onSubmit('add2Proforma')"></button>
+
+        <button type="button" class="fdBtn cls_cancelproforma" pButton icon="pi pi-times" id="cancelClient" (click)="cancelFormSub('editDeliverable')" label="Cancel"></button>
+
+    </div>
+
+    <form id="myform" [formGroup]="addToProforma_form">
+
+        <div class="addProformaHeight p-grid">
+
+            <div class="p-col-6 p-md-4 p-lg-2">
+                Client Legal Entity
             </div>
-        </div>
-    </form>
-    <p-footer>
-        <button pButton type="button" class="fdBtn" label="Yes" [disabled]="submitBtn.isClicked" (click)="onSubmit('revertInvoice')"></button>
-        <button pButton type="button" class="fdBtn" label="No" (click)="cancelFormSub('revertInvoice')"></button>
-    </p-footer>
+            <div class="p-col-6 p-md-8 p-lg-4">
+                <input class="textfeildClass" id="disabled-input" type="text" pInputText formControlName="ClientLegalEntity" />
+            </div>
 
-</p-dialog>
+            <div class="p-col-6 p-md-4 p-lg-2">
+                PO
+            </div>
+            <div class="p-col-6 p-md-8 p-lg-4">
+                <input class="textfeildClass" id="disabled-input" type="text" pInputText formControlName="POName" />
+            </div>
 
 
-<app-editor #editorRef></app-editor>
-<app-timeline-history #timelineRef></app-timeline-history>
+            <div class="p-col-6 p-md-4 p-lg-2">
+                Currency
+            </div>
+            <div class="p-col-6 p-md-8 p-lg-4">
+                <input class="textfeildClass" id="disabled-input" type="text" pInputText formControlName="Currency" />
+            </div>
+
+            <div class="p-col-6 p-md-4 p-lg-2">
+                Amount
+            </div>
+            <div class="p-col-6 p-md-8 p-lg-4">
+                <input class="textfeildClass" id="disabled-input" type="text" appNumberOnly pInputText formControlName="Amount" maxlength="15" (input)="enteredPOAmt($event.target.value)" />
+                <div *ngIf="formSubmit.isSubmit && isValidAddToProformaForm.Amount.errors">
+                    <div *ngIf="isValidAddToProformaForm.Amount.errors.required" style="color:red;">Please provide Amount.</div>
+                </div>
+                <div *ngIf="enterPOAmtMsg">
+                    <div style="color:red;">Entered amount can't be greater than Avaliable Budget.
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-col-6 p-md-4 p-lg-2">
+                Proforma Type
+            </div>
+            <div class="p-col-6 p-md-8 p-lg-4">
+                <input class="textfeildClass" id="disabled-input" type="text" pInputText formControlName="ProformaType" />
+            </div>
+
+
+
+            <app-editor #editorRef></app-editor>
+            <app-timeline-history #timelineRef></app-timeline-history>
