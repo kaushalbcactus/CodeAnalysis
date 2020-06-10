@@ -253,15 +253,10 @@ export class CapacityDashboardComponent implements OnInit {
         }
 
       } else {
-        // if (this.searchCapacityForm.value.rangeDates[1]) {
         const nullResources = Resources.filter(c => c.GoLiveDate === null);
         Resources = Resources.filter(c => c.GoLiveDate !== null).filter(c => new Date(c.GoLiveDate)
           > startDate);
         Resources.push.apply(Resources, nullResources);
-        // } else {
-        //   Resources = Resources.filter(c => this.searchCapacityForm.value.rangeDates[0] > new Date
-        //     (c.GoLiveDate));
-        // }
       }
       const data = {
         task: { resources: Resources },

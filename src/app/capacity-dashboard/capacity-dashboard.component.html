@@ -59,9 +59,9 @@
 
             </div>
             <div style="width: 100%;">
-                <div class="ui-card-title" style="font-size: 15px; float: left;">Selected User Capacity</div>
+
                 <div style="float: left;">
-                    <div style="padding: 0px 0px 0px 50px;">
+                    <div>
                         <span style="float: left;font-size: 14px;padding-right: 10px; font-weight: 700;"> Days : </span>
                         <div class="input-color">
                             <label>Available</label>
@@ -101,8 +101,10 @@
                 </div>
                 <!-- <p-footer> -->
                 <div style="padding: 0px;float: right">
-                    <button pButton type="submit" icon="pi pi-search" class="ui-button-raised ui-button-danger" style="float: right;margin: 0px 12px 0px 4px !important;"></button>
-                    <button pButton type="button" icon="pi pi-refresh" style="float: right !important;" class="ui-button-raised ui-button-danger" (click)="onChange($event,'');searchForm.reset()"></button>
+                    <button pButton type="submit" title="Search" icon="pi pi-search" class="ui-button-raised ui-button-danger" style="float: right !important;margin: 0px 12px 0px 4px !important;"></button>
+                    <button pButton type="button" title="Block Resource" icon="fa fa-user-plus" style="float: right !important;margin: 0px 4px 0px 4px !important;" class="ui-button-raised ui-button-danger" (click)="onChange($event,'')"></button>
+
+                    <button pButton type="button" title="Refresh" icon="pi pi-refresh" style="float: right !important;margin: 0px 4px 0px 4px !important;" class="ui-button-raised ui-button-danger" (click)="onChange($event,'');searchForm.reset()"></button>
                     <!-- </p-footer> -->
                 </div>
                 <div style="clear: both"></div>
@@ -110,6 +112,7 @@
         </form>
         <div class="p-col" [hidden]="!fetchDataloader">
             <div [hidden]="!userCapacityEnable">
+                <div class="ui-card-title" style="font-size: 15px; float: left;">Selected User Capacity</div>
                 <app-usercapacity #InitialUserCapacity></app-usercapacity>
             </div>
 
