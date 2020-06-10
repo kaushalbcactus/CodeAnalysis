@@ -170,29 +170,6 @@
 <!-- Toast Message End -->
 
 
-
-<!-- Confirmation -->
-<p-dialog header="Confirmation" [(visible)]="revertInvModal" [modal]="true" [draggable]="false" [style]="{'width': '30%'}" [maximizable]="false" [baseZIndex]="10000" [contentStyle]="{'height': '150px'}" (onHide)="cancelFormSub('revertInvoice')">
-    <form id="myform">
-        <div class="ui-g" *ngIf="selectedRowItem">
-            <div>
-                Are you sure that you want to revert the invoice of {{selectedRowItem.ProjectCode}} from confirmed to scheduled status?
-            </div><br>
-            <div style="color: red;" *ngIf="isHourlyProject">
-                Note: This hourly billed project will be converted to delivery based project with Budget
-                <b>{{selectedRowItem.Currency }}</b>&nbsp; <b>{{selectedRowItem.Amount}}</b>
-            </div>
-        </div>
-    </form>
-    <p-footer>
-        <button pButton type="button" class="fdBtn" label="Yes" [disabled]="submitBtn.isClicked" (click)="onSubmit('revertInvoice')"></button>
-        <button pButton type="button" class="fdBtn" label="No" (click)="cancelFormSub('revertInvoice')"></button>
-    </p-footer>
-
-</p-dialog>
-<!-- Replace Proforma End-->
-
-
 <!-- Add to Proforma Modal -->
 <p-dialog header="Add to Proforma Form" [(visible)]="proformaModal" [modal]="true" [draggable]="false" [responsive]="true" [positionTop]="15" [style]="{'width': '85%'}" [contentStyle]="{ 'max-height': '90vh'}" [maximizable]="false" (onHide)="cancelFormSub('editDeliverable')"
     [closable]='false'>
