@@ -8,7 +8,7 @@
 
 <div class="p-row p-dir-col" *ngIf="!mainloaderenable">
     <p-card class="p-col topCardPosition">
-        <form class="p-grid" #searchForm="ngForm" [formGroup]="searchCapacityForm" (ngSubmit)="onSubmit()">
+        <form class="p-grid" #searchForm="ngForm" [formGroup]="searchCapacityForm" (ngSubmit)="onSubmit('search')">
             <div class="p-col-12 p-justify-between p-align-center" style="padding: 20px 0px 20px 0px;">
                 <span class="p-col ui-float-label ui-fluid evenrow" style="width:11%;">
                     <p-multiSelect [options]="Buckets" formControlName="bucket" (onChange)="onChange($event,'bucket')" 
@@ -102,7 +102,7 @@
                 <!-- <p-footer> -->
                 <div style="padding: 0px;float: right">
                     <button pButton type="submit" title="Search" icon="pi pi-search" class="ui-button-raised ui-button-danger" style="float: right !important;margin: 0px 12px 0px 4px !important;"></button>
-                    <button pButton type="button" title="Block Resource" icon="fa fa-user-plus" style="float: right !important;margin: 0px 4px 0px 4px !important;" class="ui-button-raised ui-button-danger" (click)="onChange($event,'')"></button>
+                    <button pButton type="button" title="Block Resource" icon="fa fa-user-plus" style="float: right !important;margin: 0px 4px 0px 4px !important;" class="ui-button-raised ui-button-danger" (click)="onSubmit('blockResource')"></button>
 
                     <button pButton type="button" title="Refresh" icon="pi pi-refresh" style="float: right !important;margin: 0px 4px 0px 4px !important;" class="ui-button-raised ui-button-danger" (click)="onChange($event,'');searchForm.reset()"></button>
                     <!-- </p-footer> -->
