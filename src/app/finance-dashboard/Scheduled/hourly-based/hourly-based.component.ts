@@ -517,7 +517,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
             });
             ref.onClose.subscribe((editInvoice: any) => {
                 if (editInvoice) {
-                    const batchURL = this.fdDataShareServie.EditInvoiceDialogProcess(data, editInvoice)
+                    const batchURL = this.fdDataShareServie.EditInvoiceDialogProcess('hourly',this.selectedRowItem, editInvoice)
                     this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-hourlyBased', 'updatePFLItem');
                     this.submitForm(null, batchURL, 'editInvoice');
                 }

@@ -543,7 +543,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             });
             ref.onClose.subscribe((editInvoice: any) => {
                 if (editInvoice) {
-                    const batchURL = this.fdDataShareServie.EditInvoiceDialogProcess(data, editInvoice)
+                    const batchURL = this.fdDataShareServie.EditInvoiceDialogProcess('revenue',this.selectedRowItem, editInvoice)
                     this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-DeliverableBased', 'updateInvoiceLineItem');
                     this.submitForm(batchURL, 'editInvoice');
                 }

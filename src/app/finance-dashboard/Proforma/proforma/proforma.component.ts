@@ -687,7 +687,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 });
                 ref.onClose.subscribe((editInvoice: any) => {
                     if (editInvoice) {
-                        const batchURL = this.fdDataShareServie.EditInvoiceDialogProcess(data, editInvoice)
+                        const batchURL = this.fdDataShareServie.EditInvoiceDialogProcess(this.selectedRowItem.ScheduleType,this.selectedRowItem, editInvoice)
                         this.commonService.SetNewrelic('Finance-Dashboard', 'Proforma', 'updateInvoiceLineItem');
 
                         if (this.selectedProforma) {
