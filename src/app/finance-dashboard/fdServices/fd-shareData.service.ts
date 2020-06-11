@@ -622,11 +622,11 @@ export class FDDataShareService {
         return response;
     }
 
-    EditInvoiceDialogProcess(data,editInvoice) {
+    EditInvoiceDialogProcess(InvoiceType,data,editInvoice) {
         const batchUrl=[];
         let iliData;
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
-        if (data.InvoiceType === 'hourly') {
+        if (InvoiceType === 'hourly') {
             iliData = {
                 __metadata: { type: this.constantService.listNames.ProjectFinances.type },
                 Budget: editInvoice.value.Rate,
@@ -641,8 +641,8 @@ export class FDDataShareService {
                 MainPOC: editInvoice.value.POCName.ID
             };
         }
-        const url = data.InvoiceType === 'hourly' ? this.spServices.getItemURL(this.constantService.listNames.ProjectFinances.name, +data.selectedRowItem.PFID) : this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, +data.selectedRowItem.Id);
-        const ListName = data.InvoiceType === 'hourly' ? this.constantService.listNames.ProjectFinances.name : this.constantService.listNames.InvoiceLineItems.name
+        const url = InvoiceType === 'hourly' ? this.spServices.getItemURL(this.constantService.listNames.ProjectFinances.name, +data.PFID) : this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, +data.Id);
+        const ListName = InvoiceType === 'hourly' ? this.constantService.listNames.ProjectFinances.name : this.constantService.listNames.InvoiceLineItems.name
         this.commonService.setBatchObject(batchUrl, url, iliData, this.constantService.Method.PATCH, ListName)
 
         return batchUrl;

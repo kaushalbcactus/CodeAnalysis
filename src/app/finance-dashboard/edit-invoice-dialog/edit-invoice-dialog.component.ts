@@ -66,15 +66,6 @@ export class EditInvoiceDialogComponent implements OnInit {
       this.getPOCNamesForEditInv(this.selectedRowItem);
     }
 
-    if (this.router.url.indexOf("confirmed") > -1) {
-      this.maxScheduleDate = new Date(
-        new Date().getFullYear(),
-        new Date().getMonth(),
-        new Date().getDate()
-      );
-    } else if (this.router.url.indexOf("proforma") > -1) {
-      this.maxScheduleDate = this.selectedRowItem.ProformaDate;
-    }
     this.setValueEditInvoiceForm();
   }
 
@@ -106,6 +97,17 @@ export class EditInvoiceDialogComponent implements OnInit {
       });
       const last3Days = this.common.getLastWorkingDay(3, new Date());
       this.minScheduleDate = last3Days;
+    }
+    if (this.router.url.indexOf("confirmed") > -1) {
+      this.maxScheduleDate = new Date(
+        new Date().getFullYear(),
+        new Date().getMonth(),
+        new Date().getDate()
+      );
+      this.minScheduleDate = null;
+    } else if (this.router.url.indexOf("proforma") > -1) {
+      this.maxScheduleDate = this.selectedRowItem.ProformaDate;
+      this.minScheduleDate = null;
     }
   }
 
