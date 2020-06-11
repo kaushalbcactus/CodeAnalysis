@@ -337,7 +337,7 @@ export class CapacityDashboardComponent implements OnInit {
         : this.searchCapacityForm.value.status;
 
     if (!this.searchCapacityForm.valid) {
-      if (!this.searchCapacityForm.value.resources) {
+      if (this.searchCapacityForm.controls.resources.status === "INVALID") {
         this.commonService.showToastrMessage(
           this.constants.MessageType.warn,
           "Please select Resource.",

@@ -352,7 +352,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
         this.formatData(arrResults);
         // console.log(arrResults);
         // }
-        this.isPSInnerLoaderHidden = true;
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
 
