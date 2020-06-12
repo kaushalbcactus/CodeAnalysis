@@ -148,7 +148,7 @@ export class CommonService {
         date.setDate(date.getDate() + num);
         return new Date(date);
     }
-    calcBusinessDate(nextLasts, number) {
+    calcBusinessDate(nextLasts, number, initDate?) {
         const filterDates = {
             startDate: new Date(),
             endDate: new Date()
@@ -157,7 +157,7 @@ export class CommonService {
         const nextLast = nextLasts;
         const days = number - 1;
         if (nextLast === 'Next') {
-            const oCurrent = new Date();
+            const oCurrent = initDate ? new Date(initDate) : new Date();
             const oCurrentDay = oCurrent.getDay();
             switch (oCurrentDay) {
                 case 5:
