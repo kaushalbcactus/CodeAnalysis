@@ -16,6 +16,9 @@ export class TaskAllocationCommonService {
   ganttParseObject: any = {}
   allTasks: any = {}
   attachedEvents = [];
+  allocationSplitColumn = `<span #ganttoverlay' class='ganttOverlayIcon' style="cursor: pointer;"title="Click to see allocation split">
+  <i class="fa fa-info-circle" aria-hidden="true"></i></span>`;
+  contextMenu = `<i class="fa fa-ellipsis-v contextMenu" data-action="contextmenu"></i>`;
 
   adhocStatus = [
     'Administrative Work',
@@ -364,7 +367,9 @@ export class TaskAllocationCommonService {
       allocationPerDay : data.AllocationPerDay ? data.AllocationPerDay : '',
       allocationColor : '',
       showAllocationSplit : data.AllocationPerDay ? true : false,
-      allocationTypeLoader : false
+      allocationTypeLoader : false,
+      ganttOverlay: data.AllocationPerDay ? this.allocationSplitColumn : '',
+      ganttMenu: ''
     };
     return ganttObject;
   }

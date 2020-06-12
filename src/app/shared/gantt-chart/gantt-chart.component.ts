@@ -226,7 +226,9 @@ export class GanttChartComponent implements OnInit {
             return task.user
           }
         },
-        {name: "buttons" ,align: 'right' , width: 75,template: colContent}
+        {name: "ganttOverlay" ,align: 'right' , width: 75},
+        {name: "ganttMenu" ,align: 'right' , width: 75}
+        // {name: "buttons" ,align: 'right' , width: 75,template: colContent}
         // { name: "start_date", width: 150 },
         // { name: "end_date", width: 150 },
       ]

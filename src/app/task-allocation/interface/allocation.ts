@@ -67,7 +67,9 @@ export interface IMilestoneTask {
     'allocationPerDay': string;
     'allocationColor': string;
     'showAllocationSplit': boolean;
-    allocationTypeLoader: boolean;
+    'allocationTypeLoader': boolean;
+    'ganttOverlay': string;
+    'ganttMenu':string;
 }
 
 export interface IConflictTask {

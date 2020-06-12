@@ -487,6 +487,7 @@ export class GanttEdittaskComponent implements OnInit {
     }
     task.allocationPerDay = allocation.allocationPerDay;
     task.showAllocationSplit = true;
+    task.ganttOverlay = task.showAllocationSplit ? this.taskAllocateCommonService.allocationSplitColumn : '';
     task.edited = true;
     if (allocation.allocationType === 'Equal allocation per day') {
       task.allocationColor = 'indianred';
