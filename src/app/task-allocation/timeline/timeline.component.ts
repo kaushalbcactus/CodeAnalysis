@@ -1934,10 +1934,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     if (this.ganttSetTime) {
       this.setDateToCurrent(this.singleTask);
       this.DateChange(this.singleTask, type);
-
-      let time: any = this.commonService.getHrsAndMins(this.singleTask.start_date, this.singleTask.end_date);
-
-      this.maxBudgetHrs = time.maxBudgetHrs;
+     
+      this.maxBudgetHrs = this.taskAllocateCommonService.setMaxBudgetHrs(this.singleTask);
 
       allTasks.data = this.getGanttTasksFromMilestones(this.milestoneData, true);
       allTasks.data.forEach((task) => {
@@ -2020,7 +2018,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.updatedTasks = task;
     this.budgetHrs = task.budgetHours;
     let time: any = this.commonService.getHrsAndMins(task.start_date, task.end_date);
-    this.maxBudgetHrs = time.maxBudgetHrs;
+    this.maxBudgetHrs = this.taskAllocateCommonService.setMaxBudgetHrs(task);
     this.budgetHrsTask = task;
   }
 
@@ -2278,8 +2276,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
   setBudgetHours(task) {
     if (task.type !== 'milestone' && task.type !== 'submilestone') {
-      let time: any = this.commonService.getHrsAndMins(task.start_date, task.end_date);
-      this.maxBudgetHrs = time.maxBudgetHrs;
+      this.maxBudgetHrs = this.taskAllocateCommonService.setMaxBudgetHrs(task);
     }
   }
 
@@ -2992,9 +2989,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       return event.AssignedTo && event.AssignedTo.ID === objt.UserName.ID;
     });
     if (event.type !== 'milestone' && event.type !== 'submilestone') {
-      let time: any = this.commonService.getHrsAndMins(event.start_date, event.end_date);
-
-      this.maxBudgetHrs = time.maxBudgetHrs;
+      this.maxBudgetHrs = this.taskAllocateCommonService.setMaxBudgetHrs(event);
     }
     await this.dailyAllocation.calcPrestackAllocation(resource, event);
   }
@@ -3997,7 +3992,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     let time: any = this.commonService.getHrsAndMins(node.pUserStart, node.pUserEnd)
     let bhrs = this.commonService.convertToHrsMins('' + node.budgetHours).replace('.', ':')
 
-    this.maxBudgetHrs = time.maxBudgetHrs
+    this.maxBudgetHrs = this.taskAllocateCommonService.setMaxBudgetHrs(node);
     let hrs = parseInt(bhrs.split(':')[0]);
     let min = parseInt(bhrs.split(':')[1]);
 
@@ -6463,96 +6458,132 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   getTaskObjectByValue(task, className, milestone, nextTasks, previousTasks, submilestone, tempID) {
     const submilestoneLabel = submilestone ? submilestone.title : '';
     const defaultDate = this.getDefaultDate();
-    return {
-      'pUserStart': new Date(defaultDate),
-      'pUserEnd': new Date(defaultDate),
-      'pUserStartDatePart': this.getDatePart(this.Today),
-      'pUserStartTimePart': this.getTimePart(new Date(defaultDate)),
-      'pUserEndDatePart': this.getDatePart(this.Today),
-      'pUserEndTimePart': this.getTimePart(new Date(defaultDate)),
-      'status': 'Not Saved',
-      'id': task.dbId === undefined || task.dbId === 0 ? tempID : task.dbId,
-      'text': task.label,
-      'title': task.label,
-      'start_date': new Date(defaultDate),
-      'end_date': new Date(defaultDate),
-      'user': '',
-      'open': 1,
-      'parent': task.taskType === 'Client Review' ? 0 : milestone.Id,
-      'res_id': '',
-      'budgetHours': 0,
-      'tat': false,
-      'tatVal': 0,
-      'milestoneStatus': className === 'gtaskred' ? 'Not Saved' : null,
-      'type': 'task',
-      'slotType': task.slotType ? task.slotType : '',
-      'editMode': true,
-      'scope': null,
-      'spentTime': '0:0',
-      'isCurrent': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.label ? true : false,
-      //'isFuture': '',
-      'assignedUsers': [{ Title: '', userType: '' }],
-      'AssignedTo': {},
-      'userCapacityEnable': false,
-      // 'subtype': submilestone ? submilestone.label === 'Default' ? '' : 'submilestone' : '',
-      'nextTask': nextTasks === "" ? null : nextTasks,
-      'previousTask': previousTasks === "" ? null : previousTasks,
-      'itemType': task.taskType,
-      'IsCentrallyAllocated': task.IsCentrallyAllocated,
-      'edited': true,
-      'added': true,
-      'submilestone': submilestoneLabel,
-      'milestone': milestone.label,
-      'skillLevel': task.skillLevel,
-      'CentralAllocationDone': task.CentralAllocationDone,
-      'ActiveCA': task.ActiveCA,
-      'assignedUserTimeZone': '5.5',
-      'DisableCascade': task.DisableCascade && task.DisableCascade === 'Yes' ? true : false,
-      'taskFullName': this.oProjectDetails.projectCode + ' ' + milestone.label + ' ' + task.label,
-      'allocationPerDay': task.allocationPerDay ? task.allocationPerDay : ''
+    let taskObj: IMilestoneTask = {
+      pUserStart : new Date(defaultDate),
+      pUserEnd : new Date(defaultDate),
+      pUserStartDatePart : this.getDatePart(this.Today),
+      pUserStartTimePart : this.getTimePart(new Date(defaultDate)),
+      pUserEndDatePart : this.getDatePart(this.Today),
+      pUserEndTimePart : this.getTimePart(new Date(defaultDate)),
+      status : 'Not Saved',
+      id : task.dbId === undefined || task.dbId === 0 ? tempID : task.dbId,
+      text : task.label,
+      title : task.label,
+      start_date : new Date(defaultDate),
+      end_date : new Date(defaultDate),
+      user : '',
+      open : 1,
+      parent : task.taskType === 'Client Review' ? 0 : milestone.Id,
+      res_id : '',
+      budgetHours : '0',
+      tat : false,
+      tatVal : '0',
+      milestoneStatus : className === 'gtaskred' ? 'Not Saved' : null,
+      type : 'task',
+      slotType : task.slotType ? task.slotType : '',
+      editMode : true,
+      scope : null,
+      spentTime : '0:0',
+      isCurrent : this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.label ? true : false,
+      // isFuture : '',
+      assignedUsers : [{ Title: '', userType: '' }],
+      AssignedTo : {},
+      userCapacityEnable : false,
+      // subtype : submilestone ? submilestone.label === 'Default' ? '' : 'submilestone' : '',
+      nextTask : nextTasks === "" ? null : nextTasks,
+      previousTask : previousTasks === "" ? null : previousTasks,
+      itemType : task.taskType,
+      IsCentrallyAllocated : task.IsCentrallyAllocated,
+      edited : true,
+      added : true,
+      submilestone : submilestoneLabel,
+      milestone : milestone.label,
+      skillLevel : task.skillLevel,
+      CentralAllocationDone : task.CentralAllocationDone,
+      ActiveCA : task.ActiveCA,
+      assignedUserTimeZone : 5.5,
+      DisableCascade : task.DisableCascade && task.DisableCascade === 'Yes' ? true : false,
+      taskFullName : this.oProjectDetails.projectCode + ' ' + milestone.label + ' ' + task.label,
+      allocationPerDay : task.allocationPerDay ? task.allocationPerDay : '',
+      isNext: false,
+      position: '',
+      color: '',
+      slotColor: '',
+      parentSlot: 0,
+      deallocateSlot : false,
+      subMilestonePresent: false,
+      showAllocationSplit: false,
+      allocationColor: '',
+      allocationTypeLoader: false 
     };
+
+    return taskObj;
   }
 
   getObjectByValue(milestone, type, tempID, TempSubmilePositionArray, mil) {
     const defaultDate = this.getDefaultDate();
-    return {
-      'pUserStart': new Date(defaultDate),
-      'pUserEnd': new Date(defaultDate),
-      'pUserStartDatePart': this.getDatePart(this.Today),
-      'pUserStartTimePart': this.getTimePart(new Date(defaultDate)),
-      'pUserEndDatePart': this.getDatePart(this.Today),
-      'pUserEndTimePart': this.getTimePart(new Date(defaultDate)),
-      'status': 'Not Saved',
-      'id': milestone.dbId === undefined || milestone.dbId === 0 ? tempID : milestone.dbId,
-      'text': milestone.label,
-      'title': milestone.label,
-      'start_date': new Date(defaultDate),
-      'end_date': new Date(defaultDate),
-      'user': '',
-      'open': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.label ? 1 : 0,
-      'parent': 0,
-      'res_id': '',
-      'budgetHours': '0',
-      'tat': null,
-      'tatVal': 0,
-      'milestoneStatus': '',
-      'type': type,
-      'slotType': '',
-      'editMode': true,
-      'scope': null,
-      'spentTime': '0:0',
-      'milestone': mil ? mil.label : '',
-      'position': type === 'submilestone' ? TempSubmilePositionArray.find(c => c.name === milestone.label) !== undefined ? TempSubmilePositionArray.find(c => c.name === milestone.label).position : 1 : '',
-      'isCurrent': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.label ? true : false,
-      // 'isFuture': this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones !== undefined ?
+    let taskObj: IMilestoneTask = {
+      pUserStart : new Date(defaultDate),
+      pUserEnd : new Date(defaultDate),
+      pUserStartDatePart : this.getDatePart(this.Today),
+      pUserStartTimePart : this.getTimePart(new Date(defaultDate)),
+      pUserEndDatePart : this.getDatePart(this.Today),
+      pUserEndTimePart : this.getTimePart(new Date(defaultDate)),
+      status : 'Not Saved',
+      id : milestone.dbId === undefined || milestone.dbId === 0 ? tempID : milestone.dbId,
+      text : milestone.label,
+      title : milestone.label,
+      start_date : new Date(defaultDate),
+      end_date : new Date(defaultDate),
+      user : '',
+      open : this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.label ? 1 : 0,
+      parent : 0,
+      res_id : '',
+      budgetHours : '0',
+      tat : null,
+      tatVal : '0',
+      milestoneStatus : '',
+      type : type,
+      slotType : '',
+      editMode : true,
+      scope : null,
+      spentTime : '0:0',
+      milestone : mil ? mil.label : '',
+      position : type === 'submilestone' ? TempSubmilePositionArray.find(c => c.name === milestone.label) !== undefined ? TempSubmilePositionArray.find(c => c.name === milestone.label).position : 1 : '',
+      isCurrent : this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.label ? true : false,
+      // isFuture : this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones !== undefined ?
       //   this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones.indexOf(milestone.label)
       //     > -1 ? true : false : false,
-      'isNext': this.sharedObject.oTaskAllocation.oProjectDetails.nextMilestone === milestone.label ? true : false,
-      'userCapacityEnable': false,
-      'edited': true,
-      'added': true,
-      'taskFullName': milestone.label
+      isNext : this.sharedObject.oTaskAllocation.oProjectDetails.nextMilestone === milestone.label ? true : false,
+      userCapacityEnable : false,
+      edited : true,
+      added : true,
+      taskFullName : milestone.label,
+      //check below
+      nextTask : '',
+      previousTask : '',
+      assignedUsers : [{ Title: '', userType: '' }],
+      AssignedTo : {},
+      color: '',
+      slotColor: '',
+      itemType : '',
+      IsCentrallyAllocated : '',
+      submilestone: '',
+      skillLevel : '',
+      CentralAllocationDone: false,
+      ActiveCA : false,
+      assignedUserTimeZone : 5.5,
+      parentSlot : 0,
+      DisableCascade: false,
+      deallocateSlot: false ,
+      subMilestonePresent: false,
+      allocationPerDay: '' ,
+      showAllocationSplit: false,
+      allocationColor: '',
+      allocationTypeLoader: false 
     };
+
+    return taskObj;
   }
 
   ////// Refactor - Done

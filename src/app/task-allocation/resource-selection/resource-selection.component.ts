@@ -127,7 +127,11 @@ export class ResourceSelectionComponent implements OnInit {
 
   filterData(callType, dataType) {
 
-    const arrValue = this.AlldbResources;
+    // const arrValue = this.AlldbResources;
+    let arrValue = [];
+    this.sharedObject.data.task.resources.forEach((e)=>{ arrValue.push(this.Resources.find(r=> r.value.UserName.Id == e.UserName.ID )) })
+    // this.Resources = arrValue;
+    arrValue = arrValue.map(({ value }) => value);
     let bucket = this.searchCapacityForm.controls['bucket'].value;
     let practiceArea = this.searchCapacityForm.controls['practicearea'].value;
     bucket = bucket ? bucket : [];
@@ -222,16 +226,22 @@ export class ResourceSelectionComponent implements OnInit {
         //     (c.GoLiveDate));
         // }
       // }
+      let taskObj = this.sharedObject.data.task;
       const data = {
-        task: { resources: Resources },
+        task: taskObj,
         startTime: this.searchCapacityForm.value.rangeDates[0],
         endTime: this.searchCapacityForm.value.rangeDates[1] ?
           this.searchCapacityForm.value.rangeDates[1] : startDate,
       };
 
+      this.userCapacity.loaderenable = true;
+  
+    let capacity: any = await this.userCapacity.afterResourceChange(data.task, data.startTime, data.endTime, Resources, [], false);
+
+    this.userCapacity.showCapacity(capacity);
       // this.userCapacity.loaderenable = true;
       // this.userCapacity.Onload(data);
-      this.onLoad(data);
+      // this.onLoad(data);
     }
 
   }
