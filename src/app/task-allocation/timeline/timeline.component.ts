@@ -2657,7 +2657,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       if (index > -1 && index < this.milestoneData.length - 1) {
         const notCancelled = this.milestoneData.splice(0, index);
         const dbmilestones = this.tempmilestoneData.slice(index, this.tempmilestoneData.length);
-        this.milestoneData = [];
         this.milestoneData = [...notCancelled, ...dbmilestones];
         // this.milestoneData.push.apply();
         //  this.convertDateString();
