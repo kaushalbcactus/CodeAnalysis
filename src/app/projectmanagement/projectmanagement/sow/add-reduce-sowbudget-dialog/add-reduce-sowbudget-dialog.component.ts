@@ -106,19 +106,20 @@ export class AddReduceSowbudgetDialogComponent implements OnInit {
         if (this.changeBudgetForm.value.selectedValue === this.pmconstant.ACTION.RESTRUCTURE && Math.abs(this.changeBudgetForm.value.total) > this.pmObject.addSOW.Budget.TotalBalance) {
           this.common.showToastrMessage(this.constantsService.MessageType.error,'Total Amount must be less than or equal to existing Total.',false);
           return false;
-        } else if (this.changeBudgetForm.value.selectedValue === this.pmconstant.ACTION.RESTRUCTURE && Math.abs(this.changeBudgetForm.value.net) > this.pmObject.addSOW.Budget.NetBalance) {
+        } 
+        // else if (this.changeBudgetForm.value.selectedValue === this.pmconstant.ACTION.RESTRUCTURE && Math.abs(this.changeBudgetForm.value.net) > this.pmObject.addSOW.Budget.NetBalance) {
 
-          this.common.showToastrMessage(this.constantsService.MessageType.error,'Net amount must be less than or equal to existing net amount.',false);
-          return false;
-        } else if (this.changeBudgetForm.value.selectedValue === this.pmconstant.ACTION.RESTRUCTURE && Math.abs(this.changeBudgetForm.value.oop) > this.pmObject.addSOW.Budget.OOPBalance) {
+        //   this.common.showToastrMessage(this.constantsService.MessageType.error,'Net amount must be less than or equal to existing net amount.',false);
+        //   return false;
+        // } else if (this.changeBudgetForm.value.selectedValue === this.pmconstant.ACTION.RESTRUCTURE && Math.abs(this.changeBudgetForm.value.oop) > this.pmObject.addSOW.Budget.OOPBalance) {
 
-          this.common.showToastrMessage(this.constantsService.MessageType.error,'OOP must be less than or equal to existing OOP Value.',false);
-          return false;
-        } else if (this.changeBudgetForm.value.selectedValue === this.pmconstant.ACTION.RESTRUCTURE && Math.abs(this.changeBudgetForm.value.tax) > this.pmObject.addSOW.Budget.TaxBalance) {
+        //   this.common.showToastrMessage(this.constantsService.MessageType.error,'OOP must be less than or equal to existing OOP Value.',false);
+        //   return false;
+        // } else if (this.changeBudgetForm.value.selectedValue === this.pmconstant.ACTION.RESTRUCTURE && Math.abs(this.changeBudgetForm.value.tax) > this.pmObject.addSOW.Budget.TaxBalance) {
 
-          this.common.showToastrMessage(this.constantsService.MessageType.error,'Tax Amount must be less than or equal to existing Tax',false);
-          return false;
-        }
+        //   this.common.showToastrMessage(this.constantsService.MessageType.error,'Tax Amount must be less than or equal to existing Tax',false);
+        //   return false;
+        // }
         this.constantsService.loader.isPSInnerLoaderHidden = false;
         const sowItemFilter = Object.assign({}, this.pmconstant.SOW_QUERY.SOW_BY_ID);
         sowItemFilter.filter = sowItemFilter.filter.replace(/{{Id}}/gi, this.currSOW.ID);
