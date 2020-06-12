@@ -1031,7 +1031,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     this.commonService.setBatchObject(
       batchUrl,
       url,
-      this.getpfData(invoiceform, totalVal, hrs),
+      this.getpfData(Invoiceform, totalVal, hrs),
       this.constantService.Method.PATCH,
       this.constantService.listNames.ProjectFinances.name
     );
