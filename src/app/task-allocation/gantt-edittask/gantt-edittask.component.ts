@@ -5,7 +5,7 @@ import { DatePipe } from '@angular/common';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
 import { GlobalService } from 'src/app/Services/global.service';
 import { IMilestoneTask } from '../interface/allocation';
-import { DailyAllocationTask } from 'src/app/shared/pre-stack-allocation/interface/prestack';
+import { IDailyAllocationTask } from 'src/app/shared/pre-stack-allocation/interface/prestack';
 // import { DailyAllocationComponent } from '../daily-allocation/daily-allocation.component';
 import { PreStackAllocationComponent } from 'src/app/shared/pre-stack-allocation/pre-stack-allocation.component';
 import { TaskAllocationCommonService } from '../services/task-allocation-common.service';
@@ -430,7 +430,7 @@ export class GanttEdittaskComponent implements OnInit {
         status: this.task.status,
         strAllocation: this.task.allocationPerDay,
         allocationType
-      } as DailyAllocationTask,
+      } as IDailyAllocationTask,
       width: '90vw',
 
       header: this.task.submilestone ? this.task.milestone + ' ' + this.task.title
@@ -451,7 +451,7 @@ export class GanttEdittaskComponent implements OnInit {
     if (!eqgTasks.find(t => t === milestoneTask.itemType) && milestoneTask.pUserStartDatePart &&
       resource.length && milestoneTask.pUserEndDatePart && milestoneTask.budgetHours &&
       milestoneTask.pUserEnd > milestoneTask.pUserStart) {
-      const allocationData: DailyAllocationTask = {
+      const allocationData: IDailyAllocationTask = {
         ID: milestoneTask.id,
         task: milestoneTask.taskFullName,
         startDate: milestoneTask.pUserStartDatePart,

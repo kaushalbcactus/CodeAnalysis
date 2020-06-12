@@ -23,7 +23,7 @@ import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms'
 declare let dhtmlXMenuObject: any;
 // import { DailyAllocationComponent } from '../daily-allocation/daily-allocation.component';
 import { IMilestoneTask, IConflictTask, IConflictResource } from '../interface/allocation';
-import { DailyAllocationTask } from 'src/app/shared/pre-stack-allocation/interface/prestack';
+import { IDailyAllocationTask } from 'src/app/shared/pre-stack-allocation/interface/prestack';
 import { PreStackAllocationComponent } from 'src/app/shared/pre-stack-allocation/pre-stack-allocation.component';
 import { AllocationOverlayComponent } from 'src/app/shared/pre-stack-allocation/allocation-overlay/allocation-overlay.component';
 import { GanttEdittaskComponent } from '../gantt-edittask/gantt-edittask.component';
@@ -264,8 +264,28 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     await this.getMilestones(true);
   }
 
-  public async callReloadRes() {
+  async getResourceCapacity() {
+    const users = [];
+    if (this.milestoneData.length) {
+      const currentMilestone = this.milestoneData.find(m => m.data.itemType === 'milestone' && m.data.isCurrent);
+      const stDate = currentMilestone ? currentMilestone.data.pUserStart : this.milestoneData[0].data.pUserStart;
+      const resources = this.getAllResources(this.allTasks);
+      resources.forEach(resource => {
+        users.push(this.sharedObject.oTaskAllocation.oResources.find(r => r.UserName.ID === resource));
+      });
+      const newdate = this.commonService.calcBusinessDate('Next', 90, new Date(stDate));
+      this.sharedObject.oCapacity = await this.usercapacityComponent.applyFilterReturn(stDate, newdate.endDate, users, []);
+    }
+  }
 
+  public getAllResources(tasks) {
+    const validTasks = tasks.filter(t => t.Status !== 'Deleted');
+    let resources = validTasks.map(t => t.AssignedTo.ID);
+    resources = [...new Set(resources)].filter(res => res && res > 0);
+    return resources;
+  }
+
+  public async callReloadRes() {
     this.commonService.SetNewrelic('TaskAllocation', 'Timeline', 'GetProjectResources');
     await this.commonService.getProjectResources(this.oProjectDetails.projectCode, false, false);
   }
@@ -1068,6 +1088,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.loaderenable = false;
     this.visualgraph = this.graphFlag !== undefined ? this.graphFlag : true;
     this.GanttChartView = true;
+    await this.getResourceCapacity();
   }
 
   assignProjectHours(projectHoursSpent, projectHoursAllocated, projectAvailableHours, totalMilestoneBudgetHours) {
@@ -1903,7 +1924,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     if (this.ganttSetTime) {
       this.setDateToCurrent(this.singleTask);
       this.DateChange(this.singleTask, type);
-     
+
       this.maxBudgetHrs = this.taskAllocateCommonService.setMaxBudgetHrs(this.singleTask);
 
       allTasks.data = this.getGanttTasksFromMilestones(this.milestoneData, true);
@@ -1920,7 +1941,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
         return this.singleTask.AssignedTo.ID === objt.UserName.ID;
       });
-      await this.dailyAllocateTask(resource, this.singleTask);
+      await this.dailyAllocation.calcPrestackAllocation(resource, this.singleTask);
 
       this.GanttchartData = allTasks.data;
       this.ganttNotification();
@@ -2158,7 +2179,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
       return this.selectedTask.AssignedTo.ID === objt.UserName.ID;
     });
-    await this.dailyAllocateTask(resource, this.selectedTask);
+    await this.dailyAllocation.calcPrestackAllocation(resource, this.selectedTask);
     this.refreshGantt();
     this.ganttNotification();
   }
@@ -2301,7 +2322,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
                 return task.AssignedTo && task.AssignedTo.ID === objt.UserName.ID;
               });
               if (this.budgetHrs !== 0) {
-                await this.dailyAllocateTask(resource, task);
+                await this.dailyAllocation.calcPrestackAllocation(resource, task);
               }
               this.setDateToCurrent(task)
               this.sharedObject.currentTaskData = task;
@@ -2615,22 +2636,24 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   /////// Refactor code
   CancelChanges(milestone, type) {
+    this.loaderenable = true;
     if (type === "discardAll") {
-      this.loaderenable = false;
+      //this.loaderenable = false;
       this.changeInRestructure = false;
-      this.milestoneData = JSON.parse(JSON.stringify(this.tempmilestoneData));
-      this.GanttchartData = this.oldGantChartData;
+      this.milestoneData = [...this.tempmilestoneData]; /// JSON.parse(JSON.stringify(this.tempmilestoneData));
+      this.GanttchartData = [...this.oldGantChartData]; //// this.oldGantChartData ;
       // this.convertDateString();
     }
     else if (type === 'task' && milestone.itemType === 'Client Review') {
       const tempMile = this.tempmilestoneData.find(c => c.data.id === milestone.id);
       //milestone = this.taskAllocateCommonService.milestoneObject(milestone, tempMile.data);
       milestone = tempMile.data;
-      var index = this.milestoneData.indexOf(this.milestoneData.find(c => c.data === milestone));
+      var index = this.milestoneData.indexOf(this.milestoneData.find(c => c.data.id === milestone.id));
       if (index > -1 && index < this.milestoneData.length - 1) {
-        this.milestoneData = this.milestoneData.splice(0, index + 1);
-        var dbmilestones = this.tempmilestoneData.slice(index + 1, this.tempmilestoneData.length);
-        this.milestoneData.push.apply(this.milestoneData, dbmilestones);
+        const notCancelled = this.milestoneData.splice(0, index);
+        const dbmilestones = this.tempmilestoneData.slice(index, this.tempmilestoneData.length);
+        this.milestoneData = [...notCancelled, ...dbmilestones];
+        // this.milestoneData.push.apply();
         //  this.convertDateString();
       }
     }
@@ -2643,66 +2666,60 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         }
       });
       // .split('(')[0]
-      var milestoneIndex = this.milestoneData.indexOf(this.milestoneData.find(c => c.data.title === milestone.milestone));
+      const milestoneIndex = this.milestoneData.findIndex(c => c.data.title === milestone.milestone);
       if (milestoneIndex > -1) {
         if (milestone.submilestone !== null && milestone.submilestone !== "Default") {
-          var submilestoneIndex = this.milestoneData[milestoneIndex].children.indexOf(this.milestoneData[milestoneIndex].children.find(c => c.data.title === milestone.submilestone));
+          const submilestoneIndex = this.milestoneData[milestoneIndex].children.findIndex(c => c.data.title === milestone.submilestone);
 
           if (submilestoneIndex > -1) {
-            var taskindex = this.milestoneData[milestoneIndex].children[submilestoneIndex].children.indexOf(this.milestoneData[milestoneIndex].children[submilestoneIndex].children.find(c => c.data === milestone));
-
+            const taskindex = this.milestoneData[milestoneIndex].children[submilestoneIndex].children.findIndex(c => c.data.id === milestone.id);
 
             // replace all milestone from edited milestone
-            this.milestoneData = this.milestoneData.splice(0, milestoneIndex + 1);
-            var dbmilestones = this.tempmilestoneData.slice(milestoneIndex + 1, this.tempmilestoneData.length);
-            this.milestoneData.push.apply(this.milestoneData, dbmilestones);
+            const currentMilestone = this.milestoneData.splice(0, milestoneIndex + 1);
+            const dbmilestones = this.tempmilestoneData.slice(milestoneIndex + 1, this.tempmilestoneData.length);
+            this.milestoneData = [...currentMilestone, ...dbmilestones];
 
             // replace all submilestone from edited submilestone
-            var submilestones = this.milestoneData[milestoneIndex].children.splice(0, submilestoneIndex + 1);
-            var dbsubmilestones = this.tempmilestoneData[milestoneIndex].children.slice(submilestoneIndex + 1, this.tempmilestoneData[milestoneIndex].children.length);
-            this.milestoneData[milestoneIndex].children = [];
-            this.milestoneData[milestoneIndex].children.push.apply(this.milestoneData[milestoneIndex].children, submilestones);
-            this.milestoneData[milestoneIndex].children.push.apply(this.milestoneData[milestoneIndex].children, dbsubmilestones);
+            const submilestones = this.milestoneData[milestoneIndex].children.splice(0, submilestoneIndex + 1);
+            const dbsubmilestones = this.tempmilestoneData[milestoneIndex].children.slice(submilestoneIndex + 1, this.tempmilestoneData[milestoneIndex].children.length);
+            this.milestoneData[milestoneIndex].children = [...submilestones, ...dbsubmilestones];
+            // this.milestoneData[milestoneIndex].children.push.apply(this.milestoneData[milestoneIndex].children, submilestones);
+            // this.milestoneData[milestoneIndex].children.push.apply(this.milestoneData[milestoneIndex].children, dbsubmilestones);
 
             // replace all tasks from edited task
-            var tasks = this.milestoneData[milestoneIndex].children[submilestoneIndex].children.splice(0, taskindex + 1);
-            var dbtasks = this.tempmilestoneData[milestoneIndex].children[submilestoneIndex].children.slice(taskindex + 1, this.tempmilestoneData[milestoneIndex].children[submilestoneIndex].children.length);
-            this.milestoneData[milestoneIndex].children[submilestoneIndex].children = [];
-            this.milestoneData[milestoneIndex].children[submilestoneIndex].children.push.apply(this.milestoneData[milestoneIndex].children[submilestoneIndex].children, tasks);
-            this.milestoneData[milestoneIndex].children[submilestoneIndex].children.push.apply(this.milestoneData[milestoneIndex].children[submilestoneIndex].children, dbtasks);
+            const tasks = this.milestoneData[milestoneIndex].children[submilestoneIndex].children.splice(0, taskindex);
+            const dbtasks = this.tempmilestoneData[milestoneIndex].children[submilestoneIndex].children.slice(taskindex, this.tempmilestoneData[milestoneIndex].children[submilestoneIndex].children.length);
+            this.milestoneData[milestoneIndex].children[submilestoneIndex].children = [...tasks, ...dbtasks];
 
             if (this.milestoneData[milestoneIndex].children[submilestoneIndex].children[taskindex].data.slotType === 'Slot') {
               // replace all subtasks from edited task
-              var dbtasks = this.tempmilestoneData[milestoneIndex].children[submilestoneIndex].children[taskindex].children;
-              this.milestoneData[milestoneIndex].children[submilestoneIndex].children[taskindex].children = [];
-              this.milestoneData[milestoneIndex].children[submilestoneIndex].children[taskindex].children.push.apply(this.milestoneData[milestoneIndex].children[submilestoneIndex].children[taskindex].children, dbtasks);
+              const dbSubtasks = this.tempmilestoneData[milestoneIndex].children[submilestoneIndex].children[taskindex].children;
+              this.milestoneData[milestoneIndex].children[submilestoneIndex].children[taskindex].children = [...dbSubtasks];
+              ///  this.milestoneData[milestoneIndex].children[submilestoneIndex].children[taskindex].children.push.apply(this.milestoneData[milestoneIndex].children[submilestoneIndex].children[taskindex].children, dbtasks);
             }
 
             // this.convertDateString();
           }
         }
         else {
-          var submilestoneIndex = this.milestoneData[milestoneIndex].children.indexOf(this.milestoneData[milestoneIndex].children.find(c => c.data.title === milestone.title));
-          const subTaskIndex = 0;
+          const submilestoneIndex = this.milestoneData[milestoneIndex].children.findIndex(c => c.data.id === milestone.id);
           if (submilestoneIndex > -1) {
 
             // replace all milestone from edited milestone
-            this.milestoneData = this.milestoneData.splice(0, milestoneIndex + 1);
-            var dbmilestones = this.tempmilestoneData.slice(milestoneIndex + 1, this.tempmilestoneData.length);
-            this.milestoneData.push.apply(this.milestoneData, dbmilestones);
+            const tillCurrent = this.milestoneData.splice(0, milestoneIndex + 1);
+            const dbmilestones = this.tempmilestoneData.slice(milestoneIndex + 1, this.tempmilestoneData.length);
+            this.milestoneData = [...tillCurrent, ...dbmilestones];
 
             // replace all submilestone from edited submilestone
-            var submilestones = this.milestoneData[milestoneIndex].children.splice(0, submilestoneIndex + 1);
-            var dbsubmilestones = this.tempmilestoneData[milestoneIndex].children.slice(submilestoneIndex + 1, this.tempmilestoneData[milestoneIndex].children.length);
-            this.milestoneData[milestoneIndex].children = [];
-            this.milestoneData[milestoneIndex].children.push.apply(this.milestoneData[milestoneIndex].children, submilestones);
-            this.milestoneData[milestoneIndex].children.push.apply(this.milestoneData[milestoneIndex].children, dbsubmilestones);
+            const submilestones = this.milestoneData[milestoneIndex].children.splice(0, submilestoneIndex);
+            const dbsubmilestones = this.tempmilestoneData[milestoneIndex].children.slice(submilestoneIndex, this.tempmilestoneData[milestoneIndex].children.length);
+            this.milestoneData[milestoneIndex].children = [...submilestones, ...dbsubmilestones];
+            ///this.milestoneData[milestoneIndex].children.push.apply();
 
             if (this.milestoneData[milestoneIndex].children[submilestoneIndex].data.slotType === 'Slot') {
               // replace all tasks from edited task
-              var dbtasks = this.tempmilestoneData[milestoneIndex].children[submilestoneIndex].children;
-              this.milestoneData[milestoneIndex].children[submilestoneIndex].children = [];
-              this.milestoneData[milestoneIndex].children[submilestoneIndex].children.push.apply(this.milestoneData[milestoneIndex].children[submilestoneIndex].children, dbtasks);
+              const dbtasks = this.tempmilestoneData[milestoneIndex].children[submilestoneIndex].children;
+              this.milestoneData[milestoneIndex].children[submilestoneIndex].children = [...dbtasks];
             }
             // this.convertDateString();
           }
@@ -2719,9 +2736,14 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
     this.assignUsers(allReturnedTasks);
     this.convertDateString();
-    this.milestoneData = [...this.milestoneData];
 
-    this.showGanttChart(true);
+    setTimeout(() => {
+      this.milestoneData = [...this.milestoneData];
+      this.GanttchartData = this.getGanttTasksFromMilestones(this.milestoneData, true);
+      this.createGanttDataAndLinks(true);
+      //this.showGanttChart(true);
+      this.loaderenable = false;
+    }, 200);
 
   }
   // tslint:enable
@@ -2965,8 +2987,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     if (event.type !== 'milestone' && event.type !== 'submilestone') {
       this.maxBudgetHrs = this.taskAllocateCommonService.setMaxBudgetHrs(event);
     }
-
-    await this.dailyAllocateTask(resource, event);
+    await this.dailyAllocation.calcPrestackAllocation(resource, event);
   }
 
   // **************************************************************************************************
@@ -3521,7 +3542,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     });
   }
 
-  setTaskDates(milestoneTaskObj , updatedDate) {
+  setTaskDates(milestoneTaskObj, updatedDate) {
     milestoneTaskObj.pUserStart = new Date(updatedDate);
     milestoneTaskObj.pUserStartDatePart = this.getDatePart(new Date(updatedDate));
     milestoneTaskObj.pUserStartTimePart = this.getTimePart(new Date(updatedDate));
@@ -3539,13 +3560,13 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     milestoneData.forEach((mil, index) => {
 
       let milestone = mil.data.type == 'milestone' && mil.data.added == true ? mil.data : '';
-      let subMilestone = mil.children ? mil.children.filter(e => e.data.type == 'submilestone' && e.data.added == true): '';
+      let subMilestone = mil.children ? mil.children.filter(e => e.data.type == 'submilestone' && e.data.added == true) : '';
       let CRtask = mil.data.itemType == 'Client Review' && mil.data.added == true ? mil.data : '';
 
       //new added milestone
       if (milestone) {
         let prevCRTask = milestoneData[milestoneData.findIndex(m => m.data == milestone) - 1] ? milestoneData[milestoneData.findIndex(m => m.data == milestone) - 1].data : '';
-        prevCRTask ? this.setTaskDates(milestone , prevCRTask.end_date) :  this.setTaskDates(milestone , new Date(defaultDate));
+        prevCRTask ? this.setTaskDates(milestone, prevCRTask.end_date) : this.setTaskDates(milestone, new Date(defaultDate));
       }
 
       //new added submilestone
@@ -3553,28 +3574,28 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         subMilestone.forEach(sub => {
           let previousSubMilestones = mil.children[mil.children.findIndex(e => e == sub) - 1] ? mil.children[mil.children.findIndex(e => e.data == sub.data) - 1].data : '';
           let parentMilestone = milestoneData.find(m => m.data.title === sub.data.milestone);
-          previousSubMilestones ? this.setTaskDates(sub.data , previousSubMilestones.end_date) : new Date(parentMilestone.data.end_date) > new Date(defaultDate) ? this.setTaskDates(sub.data , parentMilestone.data.end_date) :  this.setTaskDates(sub.data , new Date(defaultDate));
+          previousSubMilestones ? this.setTaskDates(sub.data, previousSubMilestones.end_date) : new Date(parentMilestone.data.end_date) > new Date(defaultDate) ? this.setTaskDates(sub.data, parentMilestone.data.end_date) : this.setTaskDates(sub.data, new Date(defaultDate));
 
         })
       }
       // new added milestone/submilestone task
       if (mil.children) {
-        let tasks = mil.children.find(e=> e.children) ? mil.children.filter(e=> e.children.find(c=> c.data.added)) : mil.children.filter(c => c.data.added == true);
+        let tasks = mil.children.find(e => e.children) ? mil.children.filter(e => e.children.find(c => c.data.added)) : mil.children.filter(c => c.data.added == true);
         if (tasks) {
           tasks.forEach(t => {
             if (t.data.type == 'submilestone') {
               t.children.forEach(subTask => {
                 if (subTask.data.added) {
-                let prevTask = t.children.find(e => e.data.title == subTask.data.previousTask);
-                let parentSubMilestone = mil.children.filter(e=> e.data.title).find(c=> c.data.title == subTask.data.submilestone).data
-                // let parentSubMilestone = milestoneData.find(m => m.children.filter(e=> e.data.title)).children.find(c=> c.data.title == subTask.data.submilestone).data;
-                prevTask ? this.setTaskDates(subTask.data , prevTask.data.end_date) : new Date(parentSubMilestone.end_date) > new Date(defaultDate) ?  this.setTaskDates(subTask.data , parentSubMilestone.end_date) :   this.setTaskDates(subTask.data , new Date(defaultDate));
+                  let prevTask = t.children.find(e => e.data.title == subTask.data.previousTask);
+                  let parentSubMilestone = mil.children.filter(e => e.data.title).find(c => c.data.title == subTask.data.submilestone).data
+                  // let parentSubMilestone = milestoneData.find(m => m.children.filter(e=> e.data.title)).children.find(c=> c.data.title == subTask.data.submilestone).data;
+                  prevTask ? this.setTaskDates(subTask.data, prevTask.data.end_date) : new Date(parentSubMilestone.end_date) > new Date(defaultDate) ? this.setTaskDates(subTask.data, parentSubMilestone.end_date) : this.setTaskDates(subTask.data, new Date(defaultDate));
                 }
               })
-            } else if(t.data.type == 'task'){
+            } else if (t.data.type == 'task') {
               let prevTask = mil.children.find(e => e.data.title == t.data.previousTask)
               let parentMilestone = milestoneData.find(m => m.data.title === t.data.milestone);
-              prevTask ?  this.setTaskDates(t.data , prevTask.data.end_date) : new Date(parentMilestone.data.end_date) > new Date(defaultDate) ?  this.setTaskDates(t.data , parentMilestone.data.end_date) :  this.setTaskDates(t.data , new Date(defaultDate));
+              prevTask ? this.setTaskDates(t.data, prevTask.data.end_date) : new Date(parentMilestone.data.end_date) > new Date(defaultDate) ? this.setTaskDates(t.data, parentMilestone.data.end_date) : this.setTaskDates(t.data, new Date(defaultDate));
             }
           });
         }
@@ -3583,7 +3604,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       //new added CR task
       if (CRtask) {
         let parentMilestone = milestoneData.find(m => m.data.title === CRtask.milestone);
-        this.setTaskDates(CRtask , parentMilestone.data.end_date);
+        this.setTaskDates(CRtask, parentMilestone.data.end_date);
       }
     })
     return milestoneData
@@ -3703,7 +3724,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
           return assignedTo.ID === objt.UserName.ID;
         });
-        await this.dailyAllocateTask(resource, milestoneTask);
+        await this.dailyAllocation.calcPrestackAllocation(resource, milestoneTask);
         milestoneTask.assignedUserTimeZone = resource && resource.length > 0
           ? resource[0].TimeZone.Title ?
             resource[0].TimeZone.Title : '+5.5' : '+5.5';
@@ -3742,44 +3763,69 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     }
   }
 
-  dailyAllocateTask(resource, milestoneTask) {
-    milestoneTask.allocationTypeLoader = true;
-    milestoneTask.allocationColor = '';
-    this.disableSave = true;
-    setTimeout(async () => {
-      const eqgTasks = ['Edit', 'Quality', 'Graphics', 'Client Review', 'Send to client'];
-      if (!eqgTasks.find(t => t === milestoneTask.itemType) && milestoneTask.pUserStartDatePart &&
-        resource.length && milestoneTask.pUserEndDatePart && milestoneTask.budgetHours &&
-        milestoneTask.pUserEnd > milestoneTask.pUserStart) {
-        const allocationData: DailyAllocationTask = {
-          ID: milestoneTask.id,
-          task: milestoneTask.taskFullName,
-          startDate: milestoneTask.pUserStartDatePart,
-          endDate: milestoneTask.pUserEndDatePart,
-          startTime: milestoneTask.pUserStartTimePart,
-          endTime: milestoneTask.pUserEndTimePart,
-          budgetHrs: milestoneTask.budgetHours,
-          resource,
-          status: milestoneTask.status,
-          strAllocation: '',
-          allocationType: ''
-        };
-        const resourceCapacity = await this.dailyAllocation.getResourceCapacity(allocationData);
-        const objDailyAllocation = await this.dailyAllocation.initialize(resourceCapacity, allocationData);
-        this.setAllocationPerDay(objDailyAllocation, milestoneTask);
-        if (objDailyAllocation.allocationAlert) {
-          this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Resource is over allocated' });
-        }
-      } else {
-        milestoneTask.showAllocationSplit = false;
-        milestoneTask.allocationColor = '';
-        milestoneTask.allocationPerDay = '';
-      }
-      milestoneTask.allocationTypeLoader = false;
-      this.disableSave = false;
-    }, 100);
+  // dailyAllocateTask(resource, milestoneTask) {
+  //   milestoneTask.allocationTypeLoader = true;
+  //   milestoneTask.allocationColor = '';
+  //   this.disableSave = true;
+  //   setTimeout(async () => {
+  //     const eqgTasks = ['Edit', 'Quality', 'Graphics', 'Client Review', 'Send to client'];
+  //     if (!eqgTasks.find(t => t === milestoneTask.itemType) && milestoneTask.pUserStartDatePart &&
+  //       resource.length && milestoneTask.pUserEndDatePart && milestoneTask.budgetHours &&
+  //       milestoneTask.pUserEnd > milestoneTask.pUserStart) {
+  //       const allocationData: DailyAllocationTask = {
+  //         ID: milestoneTask.id,
+  //         task: milestoneTask.taskFullName,
+  //         startDate: milestoneTask.pUserStartDatePart,
+  //         endDate: milestoneTask.pUserEndDatePart,
+  //         startTime: milestoneTask.pUserStartTimePart,
+  //         endTime: milestoneTask.pUserEndTimePart,
+  //         budgetHrs: milestoneTask.budgetHours,
+  //         resource,
+  //         status: milestoneTask.status,
+  //         strAllocation: '',
+  //         allocationType: ''
+  //       };
 
-  }
+  //       const resourceCapacity = await this.recalculateUserCapacity(allocationData);
+  //       const objDailyAllocation = await this.dailyAllocation.initialize(resourceCapacity, allocationData);
+  //       this.setAllocationPerDay(objDailyAllocation, milestoneTask);
+  //       if (objDailyAllocation.allocationAlert) {
+  //         this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Resource is over allocated' });
+  //       }
+  //     } else {
+  //       milestoneTask.showAllocationSplit = false;
+  //       milestoneTask.allocationColor = '';
+  //       milestoneTask.allocationPerDay = '';
+  //     }
+  //     milestoneTask.allocationTypeLoader = false;
+  //     this.disableSave = false;
+  //   }, 100);
+
+  // }
+
+  // async recalculateUserCapacity(allocationData: DailyAllocationTask) {
+  //   // tslint:disable: max-line-length
+  //   const taskStatus = this.taskAllocateCommonService.taskStatus.indexOf(allocationData.status) > -1 ? this.taskAllocateCommonService.taskStatus : [];
+  //   const adhoc = this.taskAllocateCommonService.adhocStatus;
+  //   const resource = allocationData.resource.length ? allocationData.resource[0].UserName.ID : -1;
+  //   const businessDays = this.usercapacityComponent.getDates(allocationData.startDate, allocationData.endDate, true);
+  //   const userCapacity = JSON.parse(JSON.stringify(this.sharedObject.oCapacity.arrUserDetails.find(u => u.uid === resource)));
+  //   userCapacity.businessDays = businessDays.dateArray;
+  //   const dates = userCapacity.dates.filter(u => businessDays.dateArray.find(b => b.getTime() === new Date(u.date).getTime()));
+  //   dates.forEach(date => {
+  //     date.tasksDetails = date.tasksDetails.filter(t => taskStatus.indexOf(t.status) < 0 && adhoc.indexOf(t.comments) < 0 && t.ID !== allocationData.ID);
+  //   });
+  //   userCapacity.dates = dates;
+  //   userCapacity.tasks = userCapacity.tasks.filter(t => taskStatus.indexOf(t.Status) < 0 && adhoc.indexOf(t.Comments) < 0 && t.ID !== allocationData.ID);
+  //   let newUserCapacity;
+  //   if (userCapacity.dates.length === userCapacity.businessDays.length) {
+  //     newUserCapacity = this.usercapacityComponent.fetchUserCapacity(userCapacity);
+  //   } else {
+  //     newUserCapacity = await this.dailyAllocation.getResourceCapacity(allocationData);
+  //   }
+  //   return newUserCapacity;
+  //   // tslint:enable: max-line-length
+  // }
 
   changeNextTaskPrevTask(sNextPrev, subMilestone, currentTask, newName, sParam) {
     const sTasks = sNextPrev.split(';');
@@ -3955,7 +4001,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       this.messageService.add({ key: 'gantt-message', severity: 'error', summary: 'Error Message', detail: 'Budget hours is set to zero because given budget hours is greater than task time period.' });
     }
     this.changeDateOfEditedTask(node, type);
-    await this.dailyAllocateTask(resource, node);
+    await this.dailyAllocation.calcPrestackAllocation(resource, node);
     this.DateChange(node, type);
   }
 
@@ -4211,8 +4257,11 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     //   nodeData.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
     // nodeData.tatVal = this.commonService.calcBusinessDays(new Date(nodeData.start_date), new Date(nodeData.end_date));
     nodeData.edited = true;
-
     this.changeDateProperties(nodeData);
+    const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
+      return node.AssignedTo && node.AssignedTo.ID === objt.UserName.ID;
+    });
+    await this.dailyAllocation.calcPrestackAllocation(resource, nodeData);
     if (nodeData.IsCentrallyAllocated === 'Yes' && node.slotType !== 'Slot' && !node.parentSlot) {
       nodeData.user = nodeData.skillLevel;
     }
@@ -4411,7 +4460,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       //   node.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
       // node.tatVal = this.commonService.calcBusinessDays(new Date(node.start_date), new Date(node.end_date));
       this.changeDateProperties(node);
-      await this.dailyAllocateTask(resource, node);
+      await this.dailyAllocation.calcPrestackAllocation(resource, node);
       this.DateChange(node, 'end');
     }
   }
@@ -4604,9 +4653,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
   showConflictAllocations(task, conflictDetail, node) {
-    let header = task.itemType.submilestone ? task.milestone + ' ( ' + task.title + ' )'
-      : task.title;
-    header = 'Conflicting Allocations - ' + this.oProjectDetails.projectCode + '-' + header;
+    let header = task ? '-' + task.itemType.submilestone ? task.milestone + ' ( ' + task.title + ' )'
+      : '-' + task.title : '';
+    header = 'Conflicting Allocations - ' + this.oProjectDetails.projectCode + header;
     const ref = this.dialogService.open(ConflictAllocationsComponent, {
       data: {
         conflictDetail,
@@ -5487,7 +5536,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     return currentMilTaskUpdated;
   }
 
-  getMilTaskData(addedTasks, updatedTasks, addedMilestones, updatedMilestones, listOfMilestones, ) {
+  getMilTaskData(addedTasks, updatedTasks, addedMilestones, updatedMilestones, listOfMilestones,) {
     let currentMilTaskUpdated = false;
     let allTasks = this.getGanttTasksFromMilestones(this.milestoneData, true);
     const allTasksItem = allTasks.filter(e => e.type !== 'submilestone');
@@ -6406,58 +6455,58 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     const submilestoneLabel = submilestone ? submilestone.title : '';
     const defaultDate = this.getDefaultDate();
     let taskObj: IMilestoneTask = {
-      pUserStart : new Date(defaultDate),
-      pUserEnd : new Date(defaultDate),
-      pUserStartDatePart : this.getDatePart(this.Today),
-      pUserStartTimePart : this.getTimePart(new Date(defaultDate)),
-      pUserEndDatePart : this.getDatePart(this.Today),
-      pUserEndTimePart : this.getTimePart(new Date(defaultDate)),
-      status : 'Not Saved',
-      id : task.dbId === undefined || task.dbId === 0 ? tempID : task.dbId,
-      text : task.label,
-      title : task.label,
-      start_date : new Date(defaultDate),
-      end_date : new Date(defaultDate),
-      user : '',
-      open : 1,
-      parent : task.taskType === 'Client Review' ? 0 : milestone.Id,
-      res_id : '',
-      budgetHours : '0',
-      tat : false,
-      tatVal : '0',
-      milestoneStatus : className === 'gtaskred' ? 'Not Saved' : null,
-      type : 'task',
-      slotType : task.slotType ? task.slotType : '',
-      editMode : true,
-      scope : null,
-      spentTime : '0:0',
-      isCurrent : this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.label ? true : false,
+      pUserStart: new Date(defaultDate),
+      pUserEnd: new Date(defaultDate),
+      pUserStartDatePart: this.getDatePart(this.Today),
+      pUserStartTimePart: this.getTimePart(new Date(defaultDate)),
+      pUserEndDatePart: this.getDatePart(this.Today),
+      pUserEndTimePart: this.getTimePart(new Date(defaultDate)),
+      status: 'Not Saved',
+      id: task.dbId === undefined || task.dbId === 0 ? tempID : task.dbId,
+      text: task.label,
+      title: task.label,
+      start_date: new Date(defaultDate),
+      end_date: new Date(defaultDate),
+      user: '',
+      open: 1,
+      parent: task.taskType === 'Client Review' ? 0 : milestone.Id,
+      res_id: '',
+      budgetHours: '0',
+      tat: false,
+      tatVal: '0',
+      milestoneStatus: className === 'gtaskred' ? 'Not Saved' : null,
+      type: 'task',
+      slotType: task.slotType ? task.slotType : '',
+      editMode: true,
+      scope: null,
+      spentTime: '0:0',
+      isCurrent: this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.label ? true : false,
       // isFuture : '',
-      assignedUsers : [{ Title: '', userType: '' }],
-      AssignedTo : {},
-      userCapacityEnable : false,
+      assignedUsers: [{ Title: '', userType: '' }],
+      AssignedTo: {},
+      userCapacityEnable: false,
       // subtype : submilestone ? submilestone.label === 'Default' ? '' : 'submilestone' : '',
-      nextTask : nextTasks === "" ? null : nextTasks,
-      previousTask : previousTasks === "" ? null : previousTasks,
-      itemType : task.taskType,
-      IsCentrallyAllocated : task.IsCentrallyAllocated,
-      edited : true,
-      added : true,
-      submilestone : submilestoneLabel,
-      milestone : milestone.label,
-      skillLevel : task.skillLevel,
-      CentralAllocationDone : task.CentralAllocationDone,
-      ActiveCA : task.ActiveCA,
-      assignedUserTimeZone : 5.5,
-      DisableCascade : task.DisableCascade && task.DisableCascade === 'Yes' ? true : false,
-      taskFullName : this.oProjectDetails.projectCode + ' ' + milestone.label + ' ' + task.label,
-      allocationPerDay : task.allocationPerDay ? task.allocationPerDay : '',
+      nextTask: nextTasks === "" ? null : nextTasks,
+      previousTask: previousTasks === "" ? null : previousTasks,
+      itemType: task.taskType,
+      IsCentrallyAllocated: task.IsCentrallyAllocated,
+      edited: true,
+      added: true,
+      submilestone: submilestoneLabel,
+      milestone: milestone.label,
+      skillLevel: task.skillLevel,
+      CentralAllocationDone: task.CentralAllocationDone,
+      ActiveCA: task.ActiveCA,
+      assignedUserTimeZone: 5.5,
+      DisableCascade: task.DisableCascade && task.DisableCascade === 'Yes' ? true : false,
+      taskFullName: this.oProjectDetails.projectCode + ' ' + milestone.label + ' ' + task.label,
+      allocationPerDay: task.allocationPerDay ? task.allocationPerDay : '',
       isNext: false,
       position: '',
       color: '',
       slotColor: '',
       parentSlot: 0,
-      deallocateSlot : false,
+      deallocateSlot: false,
       subMilestonePresent: false,
       showAllocationSplit: false,
       allocationColor: '',
@@ -6472,34 +6521,34 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   getObjectByValue(milestone, type, tempID, TempSubmilePositionArray, mil) {
     const defaultDate = this.getDefaultDate();
     let taskObj: IMilestoneTask = {
-      pUserStart : new Date(defaultDate),
-      pUserEnd : new Date(defaultDate),
-      pUserStartDatePart : this.getDatePart(this.Today),
-      pUserStartTimePart : this.getTimePart(new Date(defaultDate)),
-      pUserEndDatePart : this.getDatePart(this.Today),
-      pUserEndTimePart : this.getTimePart(new Date(defaultDate)),
-      status : 'Not Saved',
-      id : milestone.dbId === undefined || milestone.dbId === 0 ? tempID : milestone.dbId,
-      text : milestone.label,
-      title : milestone.label,
-      start_date : new Date(defaultDate),
-      end_date : new Date(defaultDate),
-      user : '',
-      open : this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.label ? 1 : 0,
-      parent : 0,
-      res_id : '',
-      budgetHours : '0',
-      tat : null,
-      tatVal : '0',
-      milestoneStatus : '',
-      type : type,
-      slotType : '',
-      editMode : true,
-      scope : null,
-      spentTime : '0:0',
-      milestone : mil ? mil.label : '',
-      position : type === 'submilestone' ? TempSubmilePositionArray.find(c => c.name === milestone.label) !== undefined ? TempSubmilePositionArray.find(c => c.name === milestone.label).position : 1 : '',
-      isCurrent : this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.label ? true : false,
+      pUserStart: new Date(defaultDate),
+      pUserEnd: new Date(defaultDate),
+      pUserStartDatePart: this.getDatePart(this.Today),
+      pUserStartTimePart: this.getTimePart(new Date(defaultDate)),
+      pUserEndDatePart: this.getDatePart(this.Today),
+      pUserEndTimePart: this.getTimePart(new Date(defaultDate)),
+      status: 'Not Saved',
+      id: milestone.dbId === undefined || milestone.dbId === 0 ? tempID : milestone.dbId,
+      text: milestone.label,
+      title: milestone.label,
+      start_date: new Date(defaultDate),
+      end_date: new Date(defaultDate),
+      user: '',
+      open: this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.label ? 1 : 0,
+      parent: 0,
+      res_id: '',
+      budgetHours: '0',
+      tat: null,
+      tatVal: '0',
+      milestoneStatus: '',
+      type: type,
+      slotType: '',
+      editMode: true,
+      scope: null,
+      spentTime: '0:0',
+      milestone: mil ? mil.label : '',
+      position: type === 'submilestone' ? TempSubmilePositionArray.find(c => c.name === milestone.label) !== undefined ? TempSubmilePositionArray.find(c => c.name === milestone.label).position : 1 : '',
+      isCurrent: this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.label ? true : false,
       // isFuture : this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones !== undefined ?
       //   this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones.indexOf(milestone.label)
       //     > -1 ? true : false : false,
@@ -6514,18 +6563,18 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       AssignedTo : {},
       color: '',
       slotColor: '',
-      itemType : '',
-      IsCentrallyAllocated : '',
+      itemType: '',
+      IsCentrallyAllocated: '',
       submilestone: '',
-      skillLevel : '',
+      skillLevel: '',
       CentralAllocationDone: false,
-      ActiveCA : false,
-      assignedUserTimeZone : 5.5,
-      parentSlot : 0,
+      ActiveCA: false,
+      assignedUserTimeZone: 5.5,
+      parentSlot: 0,
       DisableCascade: false,
-      deallocateSlot: false ,
+      deallocateSlot: false,
       subMilestonePresent: false,
-      allocationPerDay: '' ,
+      allocationPerDay: '',
       showAllocationSplit: false,
       allocationColor: '',
       allocationTypeLoader: false,
@@ -6580,39 +6629,27 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         status: milestoneTask.status,
         strAllocation: milestoneTask.allocationPerDay,
         allocationType
-      } as DailyAllocationTask,
+      } as IDailyAllocationTask,
       width: '90vw',
-
-      header: header,
+      header,
       contentStyle: { 'max-height': '90vh', 'overflow-y': 'auto' },
       closable: false
     });
     ref.onClose.subscribe((allocation: any) => {
-      this.setAllocationPerDay(allocation, milestoneTask);
+      let task: any;
+      if (milestoneTask.type === 'Milestone') {
+        const milestoneData: MilestoneTreeNode = this.milestoneData.find(m => m.data.title === milestoneTask.milestone);
+        const milestoneTasks: any[] = this.taskAllocateCommonService.getTasksFromMilestones(milestoneData, true, this.milestoneData, false);
+        milestoneData.data.edited = true;
+        task = milestoneTasks.find(t => t.id === milestoneTask.id);
+      } else {
+        task = milestoneTask;
+      }
+      this.dailyAllocation.setAllocationPerDay(allocation, milestoneTask);
       if (allocation.allocationAlert) {
         this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Resource is over allocated' });
       }
     });
-  }
-  setAllocationPerDay(allocation, milestoneTask: IMilestoneTask) {
-    let task: any;
-    if (milestoneTask.type === 'Milestone') {
-      const milestoneData: MilestoneTreeNode = this.milestoneData.find(m => m.data.title === milestoneTask.milestone);
-      const milestoneTasks: any[] = this.taskAllocateCommonService.getTasksFromMilestones(milestoneData, true, this.milestoneData, false);
-      milestoneData.data.edited = true;
-      task = milestoneTasks.find(t => t.id === milestoneTask.id);
-    } else {
-      task = milestoneTask;
-    }
-    task.allocationPerDay = allocation.allocationPerDay;
-    task.showAllocationSplit = new Date(task.pUserStartDatePart).getTime() !== new Date(task.pUserEndDatePart).getTime() ? true : false;
-    task.ganttOverlay = task.showAllocationSplit ? this.taskAllocateCommonService.allocationSplitColumn : '';
-    task.edited = true;
-    if (allocation.allocationType === 'Equal allocation per day') {
-      task.allocationColor = 'indianred';
-    } else if (allocation.allocationType === 'Daily Allocation') {
-      task.allocationColor = '';
-    }
   }
 
   showOverlayPanel(event, rowData, dailyAllocateOP, target?) {
