@@ -1,6 +1,6 @@
 // export interface Prestack {
 // }
-export interface DailyAllocationTask {
+export interface IDailyAllocationTask {
   ID: number;
   task: string;
   startDate: Date;
@@ -8,13 +8,13 @@ export interface DailyAllocationTask {
   startTime: string;
   endTime: string;
   budgetHrs: string;
-  resource: [number];
+  resource: [any];
   status: string;
   strAllocation: string;
   allocationType: string;
 }
 
-export interface DailyAllocationObject {
+export interface IDailyAllocationObject {
   Date: Date;
   Allocation: {
     valueHrs: number;

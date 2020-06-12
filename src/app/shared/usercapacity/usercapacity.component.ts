@@ -778,7 +778,7 @@ export class UsercapacityComponent implements OnInit {
             if (oUser.dates[i].userCapacity === 'Leave') {
               oUser.tasks[j].timeAllocatedPerDay = '0:0';
             }
-            if (oUser.dates[i].date >= taskStartDate && oUser.dates[i].date <= taskEndDate) {
+            if (new Date(oUser.dates[i].date) >= taskStartDate && new Date(oUser.dates[i].date) <= taskEndDate) {
               const TotalAllocatedTime = oUser.tasks[j].Task !== 'Adhoc' ? oUser.tasks[j].ExpectedTime : oUser.tasks[j].TimeSpent;
               taskCount++;
               const objTask = {
@@ -787,6 +787,8 @@ export class UsercapacityComponent implements OnInit {
                 milestone: oUser.tasks[j].Milestone,
                 SubMilestones: oUser.tasks[j].SubMilestones,
                 task: oUser.tasks[j].Task,
+                comments: oUser.tasks[j].Comments,
+                taskID: oUser.tasks[j].ID,
                 shortTitle: '',
                 milestoneDeadline: '',
                 startDate: oUser.tasks[j].StartDate,
@@ -846,8 +848,8 @@ export class UsercapacityComponent implements OnInit {
           }
         }
 
-        const allTimeSpentArray = oUser.TimeSpentTasks.filter(c => c.TimeSpentDate.getTime() === oUser.dates[i].date.getTime()) ?
-          oUser.TimeSpentTasks.filter(c => c.TimeSpentDate.getTime() === oUser.dates[i].date.getTime()).map(c =>
+        const allTimeSpentArray = oUser.TimeSpentTasks.filter(c => c.TimeSpentDate.getTime() === new Date(oUser.dates[i].date).getTime()) ?
+          oUser.TimeSpentTasks.filter(c => c.TimeSpentDate.getTime() === new Date(oUser.dates[i].date).getTime()).map(c =>
             new Object({ timeHrs: c.TimeSpentPerDay.split(':')[0], timeMins: c.TimeSpentPerDay.split(':')[1] })) : [];
 
         oUser.dates[i].TimeSpent = allTimeSpentArray.length > 0 ? this.commonservice.ajax_addHrsMins(allTimeSpentArray) : '0:0';
@@ -860,7 +862,7 @@ export class UsercapacityComponent implements OnInit {
           oUser.dates[i].availableHrs = 0;
           oUser.dates[i].userCapacity = 'Leave';
         }
-        oUser.businessDays.push(oUser.dates[i].date);
+        oUser.businessDays.push(new Date(oUser.dates[i].date));
       }
 
       if (oUser.dates[i].userCapacity == 'Available' || oUser.dates[i].userCapacity == "NotAvailable") {
@@ -1078,7 +1080,7 @@ export class UsercapacityComponent implements OnInit {
 
   async fetchTimeSpentTaskDetails(user, date, objt) {
     if (user.TimeSpentTasks.length > 0) {
-      const SpentTasks = user.TimeSpentTasks.filter(c => c.TimeSpentDate.getTime() === date.date.getTime() && c.TimeSpentPerDay !== '00:00' && c.TimeSpentPerDay !== '0:00');
+      const SpentTasks = user.TimeSpentTasks.filter(c => c.TimeSpentDate.getTime() === new Date(date.date).getTime() && c.TimeSpentPerDay !== '00:00' && c.TimeSpentPerDay !== '0:00');
       if (SpentTasks.length > 0) {
         user.TimeSpentDayTasks = SpentTasks;
         // $('.' + user.uid + 'spentloaderenable').show();

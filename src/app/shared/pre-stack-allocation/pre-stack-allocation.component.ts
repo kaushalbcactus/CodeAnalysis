@@ -1,11 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { DailyAllocationTask, DailyAllocationObject } from './interface/prestack';
+import { IDailyAllocationTask, IDailyAllocationObject } from './interface/prestack';
 import { UsercapacityComponent } from 'src/app/shared/usercapacity/usercapacity.component';
 import { DynamicDialogConfig, DynamicDialogRef, MessageService } from 'primeng';
 import { CommonService } from 'src/app/Services/common.service';
 import { DatePipe } from '@angular/common';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
 import { TaskAllocationCommonService } from 'src/app/task-allocation/services/task-allocation-common.service';
+import { MilestoneTreeNode } from 'src/app/task-allocation/timeline/timeline.component';
+import { IMilestoneTask } from 'src/app/task-allocation/interface/allocation';
+import { GlobalService } from 'src/app/Services/global.service';
 
 @Component({
   selector: 'app-pre-stack-allocation',
@@ -14,7 +17,6 @@ import { TaskAllocationCommonService } from 'src/app/task-allocation/services/ta
   providers: [UsercapacityComponent]
 })
 export class PreStackAllocationComponent implements OnInit {
-  public cols: any[];
   public resourceCapacity: any;
   public newAllocation = [];
   public allocationType = '';
@@ -37,21 +39,18 @@ export class PreStackAllocationComponent implements OnInit {
     }
   };
   constructor(private usercapacityComponent: UsercapacityComponent, private popupData: DynamicDialogConfig,
-              public common: CommonService, private datePipe: DatePipe, public popupConfig: DynamicDialogRef,
-              public allocationCommon: TaskAllocationCommonService, public messageService: MessageService) { }
+    public common: CommonService, private datePipe: DatePipe, public popupConfig: DynamicDialogRef,
+    public allocationCommon: TaskAllocationCommonService, public messageService: MessageService,
+    public global: GlobalService) { }
 
   ngOnInit() {
-    this.cols = [
-      { field: 'Date', header: 'Date' },
-      { field: 'Allocation', header: 'Hours' }
-    ];
-    const allocationData: DailyAllocationTask = this.popupData.data;
+    // retrieve data on popup open
+    const allocationData: IDailyAllocationTask = this.popupData.data;
     this.resourceCapacity = {};
     if (allocationData && allocationData.resource.length && allocationData.startDate && allocationData.endDate) {
       this.showLoader();
       setTimeout(async () => {
         this.resourceCapacity = await this.getResourceCapacity(allocationData);
-
         await this.initialize(this.resourceCapacity, allocationData);
         this.hideTable = false;
         this.showTable();
@@ -103,7 +102,7 @@ export class PreStackAllocationComponent implements OnInit {
         const allocatedDate: any = resourceDailyAllocation.find(d => d.date.getTime() === allocation.date.getTime());
         let resourceSliderMaxHrs: string = this.getResourceMaxHrs(sliderMaxHrs, allocatedDate, allocation.value.hours, index);
         resourceSliderMaxHrs = resourceSliderMaxHrs.indexOf('-') > -1 ? '0:0' : resourceSliderMaxHrs;
-        const obj: DailyAllocationObject = {
+        const obj: IDailyAllocationObject = {
           Date: allocation.date,
           Allocation: {
             valueHrs: allocation.value.hours,
@@ -139,9 +138,8 @@ export class PreStackAllocationComponent implements OnInit {
     return remainingBudgetHrs.indexOf('-') < 0 ? true : false;
   }
 
-  async getResourceCapacity(task: DailyAllocationTask) {
-    let taskStatus = [];
-    taskStatus = task.status === 'Not Confirmed' || task.status === 'Not Saved' ? this.allocationCommon.taskStatus : [];
+  async getResourceCapacity(task: IDailyAllocationTask) {
+    const taskStatus: string[] = this.allocationCommon.taskStatus.indexOf(task.status) > -1 ? this.allocationCommon.taskStatus : [];
     // tslint:disable-next-line: max-line-length
     const oCapacity = await this.usercapacityComponent.factoringTimeForAllocation(task.startDate, task.endDate, task.resource, [task], taskStatus, this.allocationCommon.adhocStatus);
     const resource = oCapacity.arrUserDetails.length ? oCapacity.arrUserDetails[0] : {};
@@ -161,7 +159,7 @@ export class PreStackAllocationComponent implements OnInit {
     let i = 0;
     for (const detail of resourceDailyDetails) {
       let betweenDays = false;
-      const obj: DailyAllocationObject = {
+      const obj: IDailyAllocationObject = {
         Date: detail.date,
         Allocation: {
           valueHrs: 0,
@@ -182,7 +180,7 @@ export class PreStackAllocationComponent implements OnInit {
         }
         let availableHrs = detail.availableHrs.indexOf('-') > -1 ? '0:0' : detail.availableHrs;
         availableHrs = detail.mandatoryHrs || detail.totalTimeAllocated >= maxLimit ? availableHrs :
-                       this.common.addHrsMins([availableHrs, extraHrs]);
+          this.common.addHrsMins([availableHrs, extraHrs]);
         newBudgetHrs = this.getDailyAvailableHours(availableHrs, taskBudgetHrs);
         // const strAllocation = this.popupData.data && this.popupData.data.strAllocation ? this.popupData.data.strAllocation : '';
         // const preAllocatedHrs = this.common.getAllocationByDate(detail.date, strAllocation, resourceSliderMaxHrs);
@@ -219,7 +217,7 @@ export class PreStackAllocationComponent implements OnInit {
     const numtotalAllocated = this.common.convertFromHrsMins(day.totalTimeAllocatedPerDay);
     const maxHrsMins = this.common.roundToPrecision(defaultResourceMaxHrs - numtotalAllocated, 0.25);
     const sliderMaxHrs = betweenDays ? maxHrsMins > -1 && (24 - maxHrsMins < 12) ?
-                            24 - maxHrsMins : defaultResourceMaxHrs : maxHrsMins;
+      24 - maxHrsMins : defaultResourceMaxHrs : maxHrsMins;
     return this.common.convertToHrsMins('' + sliderMaxHrs);
   }
 
@@ -229,7 +227,7 @@ export class PreStackAllocationComponent implements OnInit {
     const maxHrs = availableHrs < allocatedHours ? allocatedHours : availableHrs;
     const maxHrsMins = this.common.roundToPrecision(maxHrs, 0.25);
     const sliderMaxHrs = betweenDays ? maxHrsMins > -1 && (24 - maxHrsMins < 12) ?
-                            24 - maxHrsMins : defaultResourceMaxHrs : maxHrsMins;
+      24 - maxHrsMins : defaultResourceMaxHrs : maxHrsMins;
     return this.common.convertToHrsMins('' + sliderMaxHrs);
   }
 
@@ -240,7 +238,7 @@ export class PreStackAllocationComponent implements OnInit {
     return newBudgetHrs;
   }
 
-  async equalSplitAllocation(allocationData: DailyAllocationTask) {
+  async equalSplitAllocation(allocationData: IDailyAllocationTask) {
     this.newAllocation.length = 0;
 
     const businessDays = this.common.calcBusinessDays(allocationData.startDate, allocationData.endDate);
@@ -272,7 +270,7 @@ export class PreStackAllocationComponent implements OnInit {
       const maximumHrs = totalHrs < resourceSliderMaxHrs ? resourceSliderMaxHrs : totalHrs;
       const strTotalHrs = this.common.convertToHrsMins(totalHrs);
       const strMaximumHrs = this.common.convertToHrsMins(maximumHrs);
-      const obj: DailyAllocationObject = {
+      const obj: IDailyAllocationObject = {
         Date: detail.date,
         Allocation: {
           valueHrs: this.common.getHrsMinsObj(strTotalHrs, false).hours,
@@ -325,7 +323,7 @@ export class PreStackAllocationComponent implements OnInit {
   }
 
   saveAllocation(): void {
-    const allocationData: DailyAllocationTask = this.popupData.data;
+    const allocationData: IDailyAllocationTask = this.popupData.data;
     const objAllocation = this.getAllocationPerDay(allocationData);
     const allocationPerDay = objAllocation.allocationPerDay;
     const allocationAlert = objAllocation.allocationAlert;
@@ -368,5 +366,92 @@ export class PreStackAllocationComponent implements OnInit {
     }
   }
 
+  getData(milestoneTask) {
+    const task = {
+      ID: milestoneTask.id,
+      task: milestoneTask.taskFullName,
+      taskType: milestoneTask.Task ? milestoneTask.Task : milestoneTask.itemType,
+      startDatePart: milestoneTask.pUserStartDatePart ? milestoneTask.pUserStartDatePart : milestoneTask.StartDatePart,
+      endDatePart: milestoneTask.pUserEndDatePart ? milestoneTask.pUserEndDatePart : milestoneTask.EndDatePart,
+      startDate: milestoneTask.pUserStart ? milestoneTask.pUserStart : milestoneTask.StartDate ,
+      endDate: milestoneTask.pUserEnd ? milestoneTask.pUserEnd : milestoneTask.EndDate,
+      budgetHrs: milestoneTask.budgetHours ? milestoneTask.budgetHours : milestoneTask.Hours,
+      startTime: milestoneTask.pUserStartTimePart ? milestoneTask.pUserStartTimePart : milestoneTask.StartTimePart,
+      endTime: milestoneTask.pUserEndTimePart ? milestoneTask.pUserEndTimePart : milestoneTask.EndTimePart,
+      status: milestoneTask.Status ? milestoneTask.Status : milestoneTask.status
+    };
+    return task;
+  }
 
+  async calcPrestackAllocation(resource, milestoneTask) {
+    const task = this.getData(milestoneTask);
+    const eqgTasks = ['Edit', 'Quality', 'Graphics', 'Client Review', 'Send to client'];
+    if (!eqgTasks.find(t => t === task.taskType) && task.startDatePart &&
+      resource.length && task.endDatePart && task.budgetHrs &&
+      task.endDate > task.startDate) {
+      const allocationData: IDailyAllocationTask = {
+        ID: task.ID,
+        task: task.task,
+        startDate: task.startDatePart,
+        endDate: task.endDatePart,
+        startTime: task.startTime,
+        endTime: task.endTime,
+        budgetHrs: task.budgetHrs,
+        resource,
+        status: task.status,
+        strAllocation: '',
+        allocationType: ''
+      };
+      const resourceCapacity = await this.recalculateUserCapacity(allocationData);
+      const objDailyAllocation = await this.initialize(resourceCapacity, allocationData);
+      this.setAllocationPerDay(objDailyAllocation, milestoneTask);
+      if (objDailyAllocation.allocationAlert) {
+        milestoneTask.allocationAlert = true;
+      }
+    } else {
+      milestoneTask.showAllocationSplit = false;
+      milestoneTask.allocationColor = '';
+      milestoneTask.allocationPerDay = '';
+    }
+  }
+
+  async recalculateUserCapacity(allocationData: IDailyAllocationTask) {
+    const taskStatus = this.allocationCommon.taskStatus.indexOf(allocationData.status) > -1 ? this.allocationCommon.taskStatus : [];
+    const adhoc = this.allocationCommon.adhocStatus;
+    const resource = allocationData.resource.length ? allocationData.resource[0].UserName.ID : -1;
+    const businessDays = this.usercapacityComponent.getDates(allocationData.startDate, allocationData.endDate, true);
+    let newUserCapacity;
+    if (this.global.oCapacity.arrUserDetails.length) {
+      const userCapacity = JSON.parse(JSON.stringify(this.global.oCapacity.arrUserDetails.find(u => u && u.uid === resource)));
+      if (userCapacity) {
+        userCapacity.businessDays = businessDays.dateArray;
+        const dates = userCapacity.dates.filter(u => businessDays.dateArray.find(b => b.getTime() === new Date(u.date).getTime()));
+        dates.forEach(date => {
+          date.tasksDetails = date.tasksDetails.filter(t => taskStatus.indexOf(t.status) < 0 &&
+            adhoc.indexOf(t.comments) < 0 && t.ID !== allocationData.ID);
+        });
+        userCapacity.dates = dates;
+        userCapacity.tasks = userCapacity.tasks.filter(t => taskStatus.indexOf(t.Status) < 0 &&
+          adhoc.indexOf(t.Comments) < 0 && t.ID !== allocationData.ID);
+        if (userCapacity.dates.length === userCapacity.businessDays.length) {
+          newUserCapacity = this.usercapacityComponent.fetchUserCapacity(userCapacity);
+        } else {
+          newUserCapacity = await this.getResourceCapacity(allocationData);
+        }
+      } else {
+        newUserCapacity = await this.getResourceCapacity(allocationData);
+      }
+    } else {
+      newUserCapacity = await this.getResourceCapacity(allocationData);
+    }
+    return newUserCapacity;
+  }
+
+  setAllocationPerDay(allocation, task: IMilestoneTask) {
+    task.allocationPerDay = allocation.allocationPerDay;
+    task.showAllocationSplit = new Date(task.pUserStartDatePart).getTime() !== new Date(task.pUserEndDatePart).getTime() ? true : false;
+    task.edited = true;
+    task.allocationColor = allocation.allocationType === 'Equal allocation per day' ? 'indianred' : allocation.allocationType === 'Equal Allocation' ?
+                           '' : allocation.allocationType;
+  }
 }

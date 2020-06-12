@@ -13,9 +13,10 @@ import { DataService } from 'src/app/Services/data.service';
 import { UsercapacityComponent } from 'src/app/shared/usercapacity/usercapacity.component';
 import { CommonService } from 'src/app/Services/common.service';
 import { DialogService, DynamicDialogRef } from 'primeng';
-import { DailyAllocationTask } from 'src/app/shared/pre-stack-allocation/interface/prestack';
+import { IDailyAllocationTask } from 'src/app/shared/pre-stack-allocation/interface/prestack';
 import { PreStackAllocationComponent } from 'src/app/shared/pre-stack-allocation/pre-stack-allocation.component';
 import { AllocationOverlayComponent } from 'src/app/shared/pre-stack-allocation/allocation-overlay/allocation-overlay.component';
+import { TaskAllocationCommonService } from 'src/app/task-allocation/services/task-allocation-common.service';
 
 declare var $;
 @Component({
@@ -112,7 +113,8 @@ export class StandardprojectComponent implements OnInit {
     private dialogService: DialogService,
     private dataService: DataService,
     public dailyAllocation: PreStackAllocationComponent,
-    private dailyAllocateOP: AllocationOverlayComponent) {
+    private dailyAllocateOP: AllocationOverlayComponent,
+    private allocationCommon: TaskAllocationCommonService) {
   }
 
   getDatePart(date) {
@@ -175,8 +177,8 @@ export class StandardprojectComponent implements OnInit {
       listName: ''
     };
     const oCurrentDate = new Date();
-    let sYear = oCurrentDate.getFullYear();
-    //sYear = oCurrentDate.getMonth() > 2 ? sYear + 1 : sYear;
+    const sYear = oCurrentDate.getFullYear();
+    // sYear = oCurrentDate.getMonth() > 2 ? sYear + 1 : sYear;
     // Get ProjectPerYear
     const projectYearGet = Object.assign({}, options);
     const projectYearFilter = Object.assign({}, this.pmConstant.TIMELINE_QUERY.PROJECT_PER_YEAR);
@@ -281,7 +283,7 @@ export class StandardprojectComponent implements OnInit {
         cmLevel1: project[0].CMLevel1,
         currentMilestone: project[0].Milestone,
         nextMilestone: arrMilestones.length !== currentMilestoneIndex + 1 ? arrMilestones[currentMilestoneIndex + 1] : '',
-      //  futureMilestones: arrMilestones.slice(currentMilestoneIndex + 1, arrMilestones.length),
+        //  futureMilestones: arrMilestones.slice(currentMilestoneIndex + 1, arrMilestones.length),
         prevMilestone: arrMilestones.slice(currentMilestoneIndex - 1, currentMilestoneIndex),
         allMilestones: arrMilestones,
         budgetHours: oPrjFinance.length > 0 ? oPrjFinance[0].BudgetHrs : 0,
@@ -658,7 +660,7 @@ export class StandardprojectComponent implements OnInit {
       let resource = [];
       resource.push(this.selectedSkillObject.value, this.selectedResourceObject.value);
       const currentUser = this.pmObject.oProjectManagement.oResourcesCat.find(u => u.UserName.ID === this.userProperties.Id);
-      if(currentUser) {
+      if (currentUser) {
         resource.push(currentUser);
       }
       this.pmObject.oTaskAllocation.oAllSelectedResource = resource;
@@ -1132,7 +1134,7 @@ export class StandardprojectComponent implements OnInit {
           const resource = this.sharedTaskAllocateObj.oAllResource.filter((objt) => {
             return taskObj.data.userId === objt.UserName.ID;
           });
-          await this.dailyAllocateTask(resource, taskObj.data);
+          await this.dailyAllocation.calcPrestackAllocation(resource, taskObj.data);
           tempTaskArray.push(taskObj);
           endateArray.push(taskObj);
           this.allTasks.push(taskObj);
@@ -1199,7 +1201,7 @@ export class StandardprojectComponent implements OnInit {
           const resource = this.sharedTaskAllocateObj.oAllResource.filter((objt) => {
             return taskObj.data.userId === objt.UserName.ID;
           });
-          await this.dailyAllocateTask(resource, taskObj.data);
+          await this.dailyAllocation.calcPrestackAllocation(resource, taskObj.data);
           endateArray.push(taskObj);
           tempTaskArray.push(taskObj);
           this.allTasks.push(taskObj);
@@ -1236,7 +1238,7 @@ export class StandardprojectComponent implements OnInit {
       const msg = resource.data.AssignedTo + ' is over allocated for task \'' + resource.data.Milestone + '-' + resource.data.SubMilestone + '-' + resource.data.TaskName + '\'';
       errorMsg.push(msg);
     })
-    if(errorMsg.length) {
+    if (errorMsg.length) {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: errorMsg.join('\n'), sticky: true });
     }
   }
@@ -1430,7 +1432,7 @@ export class StandardprojectComponent implements OnInit {
       const resource = this.sharedTaskAllocateObj.oAllResource.filter((objt) => {
         return taskObj.data.userId === objt.UserName.ID;
       });
-      await this.dailyAllocateTask(resource, taskObj.data);
+      await this.dailyAllocation.calcPrestackAllocation(resource, taskObj.data);
       const taskEndDate = milestones_copy[milestoneIndex].children[subMilestoneIndex].children[milestones_copy[milestoneIndex].children[subMilestoneIndex].children.length - 1].data.EndDate;
       const subMilestoneEndDate = milestones_copy[milestoneIndex].children[subMilestoneIndex].data.EndDate;
       // check whether submilestone end date is greater than last task end date.
@@ -1527,7 +1529,7 @@ export class StandardprojectComponent implements OnInit {
       const resource = this.sharedTaskAllocateObj.oAllResource.filter((objt) => {
         return taskObj.data.userId === objt.UserName.ID;
       });
-      await this.dailyAllocateTask(resource, taskObj.data);
+      await this.dailyAllocation.calcPrestackAllocation(resource, taskObj.data);
       stardate = this.setDefaultPMHours(curObj.EndDate);
       this.sharedTaskAllocateObj.oTasks = milestones_copy[milestoneIndex].children[subMilestoneIndex].children;
       // It will cascade the remaining task in current submilestone
@@ -1577,7 +1579,7 @@ export class StandardprojectComponent implements OnInit {
       const resource = this.sharedTaskAllocateObj.oAllResource.filter((objt) => {
         return taskObj.data.userId === objt.UserName.ID;
       });
-      await this.dailyAllocateTask(resource, taskObj.data);
+      await this.dailyAllocation.calcPrestackAllocation(resource, taskObj.data);
       this.sharedTaskAllocateObj.oTasks = milestones_copy[milestoneIndex].children;
       // It will cascade the remaining task in current submilestone
       await this.createTask(stardate, false, taskObj.data.Title, taskObj.data.TaskDays, taskObj.data.assignedUserTimeZone, milestones_copy[milestoneIndex], null);
@@ -2362,7 +2364,7 @@ export class StandardprojectComponent implements OnInit {
         resource: milestoneTask.resources,
         strAllocation: milestoneTask.allocationPerDay,
         allocationType
-      } as DailyAllocationTask,
+      } as IDailyAllocationTask,
       width: '90vw',
 
       header: milestoneTask.SubMilestone ? milestoneTask.Milestone + ' ' + milestoneTask.TaskName
@@ -2371,67 +2373,20 @@ export class StandardprojectComponent implements OnInit {
       closable: false
     });
     ref.onClose.subscribe((allocation: any) => {
-      this.setAllocationPerDay(allocation, milestoneTask);
+      this.dailyAllocation.setAllocationPerDay(allocation, milestoneTask);
       if (allocation.allocationAlert) {
         this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Resource is over allocated' });
       }
     });
   }
 
-  async dailyAllocateTask(resource, milestoneTask) {
-    const eqgTasks = ['Edit', 'Quality', 'Graphics', 'Client Review', 'Send to client'];
-    if (!eqgTasks.find(t => t === milestoneTask.Task) && milestoneTask.StartDatePart &&
-      resource.length && milestoneTask.EndDatePart && milestoneTask.Hours &&
-      milestoneTask.EndDate > milestoneTask.StartDate) {
-      const allocationData: DailyAllocationTask = {
-        ID: milestoneTask.id,
-        task: milestoneTask.taskFullName,
-        startDate: milestoneTask.StartDatePart,
-        endDate: milestoneTask.EndDatePart,
-        startTime: milestoneTask.StartTimePart,
-        endTime: milestoneTask.EndTimePart,
-        budgetHrs: milestoneTask.Hours,
-        resource,
-        status: milestoneTask.Status,
-        strAllocation: '',
-        allocationType: ''
-      };
-      // console.log(this.userCapacity.afterResourceChange(allocationData.startDate,allocationData.endDate, milestoneTask));
-      // const resourceCapacity = await this.dailyAllocation.getResourceCapacity(allocationData);
-      // const resourceCapacity = this.recalculateUserCapacity(resource[0], milestoneTask.StartDatePart, milestoneTask.EndDatePart)
-      const resourceCapacity = this.userCapacity.filterCapacityByDates(allocationData.startDate,allocationData.endDate, milestoneTask);
-      const objDailyAllocation = await this.dailyAllocation.initialize(resourceCapacity, allocationData);
-      this.setAllocationPerDay(objDailyAllocation, milestoneTask);
-      if (objDailyAllocation.allocationAlert) {
-        milestoneTask.allocationAlert = true;
-        // this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Resource is over allocated' });
-      }
-    } else {
-      milestoneTask.showAllocationSplit = false;
-      milestoneTask.allocationColor = '';
-      milestoneTask.allocationPerDay = '';
-    }
-  }
-
-  recalculateUserCapacity(resource, startDate, endDate) {
-    const businessDays = this.userCapacity.getDates(startDate, endDate, true);
-    const userCapacity = JSON.parse(JSON.stringify(this.sharedObject.oCapacity.arrUserDetails.find(u => u.uid === resource.UserName.ID)));
-    userCapacity.businessDays = businessDays.dateArray;
-    userCapacity.dates = userCapacity.dates.filter(u => businessDays.dateArray.find(b => b.getTime() === new Date(u.date).getTime()));
-    const newUserCapacity = this.userCapacity.fetchUserCapacity(userCapacity);
-    return newUserCapacity;
-  }
-
-  setAllocationPerDay(allocation, milestoneTask) {
-    milestoneTask.allocationPerDay = allocation.allocationPerDay;
-    milestoneTask.edited = true;
-    milestoneTask.showAllocationSplit = new Date(milestoneTask.StartDatePart).getTime() !== new Date(milestoneTask.EndDatePart).getTime() ? true : false;
-    if (allocation.allocationType === 'Equal allocation per day') {
-      milestoneTask.allocationColor = 'indianred';
-    } else if (allocation.allocationType === 'Daily Allocation') {
-      milestoneTask.allocationColor = '';
-    }
-  }
+  // setAllocationPerDay(allocation, milestoneTask) {
+  //   milestoneTask.allocationPerDay = allocation.allocationPerDay;
+  //   milestoneTask.edited = true;
+  //   milestoneTask.showAllocationSplit = new Date(milestoneTask.StartDatePart).getTime() !== new Date(milestoneTask.EndDatePart).getTime() ?
+  //     true : false;
+  //   milestoneTask.allocationColor = allocation.allocationType === 'Daily Allocation' ? '' : 'indianred';
+  // }
 
   showOverlayPanel(event, rowData, dailyAllocateOP, target?) {
     const allocationPerDay = rowData.allocationPerDay ? rowData.allocationPerDay : '';
