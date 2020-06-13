@@ -6,13 +6,14 @@ import {
   ViewChild,
 } from "@angular/core";
 import { SelectItem } from "primeng/api";
-import { MultiSelect } from "primeng";
+import { MultiSelect, DialogService } from "primeng";
 import { FormBuilder, Validators } from "@angular/forms";
 import { GlobalService } from "../Services/global.service";
 import { SPOperationService } from "../Services/spoperation.service";
 import { ConstantsService } from "../Services/constants.service";
 import { CommonService } from "../Services/common.service";
 import { UsercapacityComponent } from "../shared/usercapacity/usercapacity.component";
+import { BlockResourceDialogComponent } from "./block-resource-dialog/block-resource-dialog.component";
 
 @Component({
   selector: "app-capacity-dashboard",
@@ -46,7 +47,8 @@ export class CapacityDashboardComponent implements OnInit {
     public sharedObject: GlobalService,
     private spServices: SPOperationService,
     private commonService: CommonService,
-    private constants: ConstantsService
+    private constants: ConstantsService,
+    public dialogService: DialogService
   ) {}
 
   searchCapacityForm = this.fb.group({
@@ -354,12 +356,46 @@ export class CapacityDashboardComponent implements OnInit {
       }
       return false;
     } else {
+      if(!this.searchCapacityForm.value.rangeDates[0] || !this.searchCapacityForm.value.rangeDates[1]){
+        this.commonService.showToastrMessage(
+          this.constants.MessageType.warn,
+          "Please select proper dates.",
+          false,
+          true
+        );
+        return false;
+      }
       if (type === "search") {
         this.SearchRecords();
       } else {
-        alert();
+        this.EnableBlockResourceDialog();
       }
     }
+  }
+
+  EnableBlockResourceDialog() {
+    const ref = this.dialogService.open(BlockResourceDialogComponent, {
+      header: "Block Resources",
+      width: "60vw",
+      data: {
+
+         Resources :this.searchCapacityForm.value.resources,
+         selectedMinDate:this.searchCapacityForm.value.rangeDates[0],
+         selectedMaxDate: this.searchCapacityForm.value.rangeDates[1]
+        // InvoiceType: this.selectedRowItem.ScheduleType,
+        // projectContactsData: this.projectContactsData,
+        // selectedRowItem: this.selectedRowItem,
+      },
+      contentStyle: { "max-height": "80vh", "overflow-y": "auto" },
+      closable: false,
+    });
+    ref.onClose.subscribe((blockResource: any) => {
+      if (blockResource) {
+        // const batchURL = this.fdDataShareServie.EditInvoiceDialogProcess(this.selectedRowItem.ScheduleType,this.selectedRowItem, editInvoice)
+        // this.commonService.SetNewrelic('Finance-Dashboard', 'confirmed', 'updateInvoiceLineItem');
+        // this.submitForm(batchURL, 'editInvoice');
+      }
+    });
   }
 
   SearchRecords() {

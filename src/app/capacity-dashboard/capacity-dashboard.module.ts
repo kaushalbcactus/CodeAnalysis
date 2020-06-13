@@ -7,6 +7,7 @@ import { PrimengModule } from "../primeng/primeng.module";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { UserCapacityModule } from "../shared/usercapacity/usercapacity.module";
 import { BlockResourceDialogComponent } from "./block-resource-dialog/block-resource-dialog.component";
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 @NgModule({
   declarations: [CapacityDashboardComponent, BlockResourceDialogComponent],
@@ -17,6 +18,7 @@ import { BlockResourceDialogComponent } from "./block-resource-dialog/block-reso
     PrimengModule,
     ReactiveFormsModule,
     UserCapacityModule,
+    FlexLayoutModule
   ],
 
   providers: [DialogService, DynamicDialogConfig, DynamicDialogRef],
