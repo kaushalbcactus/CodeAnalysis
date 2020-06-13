@@ -918,6 +918,21 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
       this.constantService.listNames.ProjectFinanceBreakup.name
     );
 
+     // Project Finance
+
+     url = this.spServices.getItemURL(
+      this.constantService.listNames.ProjectFinances.name,
+      +this.selectedRowItem.PFID
+    );
+    this.commonService.setBatchObject(
+      batchUrl,
+      url,
+      this.getpfData(Invoiceform, totalVal, hrs),
+      this.constantService.Method.PATCH,
+      this.constantService.listNames.ProjectFinances.name
+    );
+
+
     ///Update ProjectBudgetBreakup
     let pbbData = {
       __metadata: {
@@ -1022,20 +1037,6 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
       this.constantService.listNames.InvoiceLineItems.name
     );
 
-    // Project Finance
-
-    url = this.spServices.getItemURL(
-      this.constantService.listNames.ProjectFinances.name,
-      +this.selectedRowItem.PFID
-    );
-    this.commonService.setBatchObject(
-      batchUrl,
-      url,
-      this.getpfData(Invoiceform, totalVal, hrs),
-      this.constantService.Method.PATCH,
-      this.constantService.listNames.ProjectFinances.name
-    );
-
     const item = this.projectInfoData.find((x) => {
       return x.ProjectCode === this.selectedRowItem.ProjectCode;
     });
@@ -1050,7 +1051,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
       "Schedule-hourlyBased",
       "updatePOPBBPFBSow"
     );
-    this.submitForm(Invoiceform, batchUrl, "confirmInvoice");
+    // this.submitForm(Invoiceform, batchUrl, "confirmInvoice");
   }
 
   getpfbData(Invoiceform, totalVal) {
@@ -1081,9 +1082,11 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
       pfData["InvoicesScheduled"] = totalVal;
       pfData["ScheduledRevenue"] = totalVal;
     } else {
-      pfData["InvoicedRevenue"] = totalVal;
+      pfData["InvoicedRevenue"] = totalVal;  
       pfData["Invoiced"] = totalVal;
     }
+
+    return pfData;
   }
 
   getInvoiceLineItemData(invoiceform, piId, totalVal) {
