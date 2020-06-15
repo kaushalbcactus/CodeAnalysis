@@ -65,7 +65,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
   get isValidEdithourlyForm() {
     return this.editHourly_form.controls;
   }
-
+  confirmInvoiceType: string;
   tempClick: any;
   hourlyBasedRes: any = [];
 
@@ -664,6 +664,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         );
         return;
       }
+      this.confirmInvoiceType = "";
       const ref = this.dialogService.open(ApproveBillingDialogComponent, {
         header: "Approve for billing",
         width: "65vw",
@@ -918,9 +919,9 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
       this.constantService.listNames.ProjectFinanceBreakup.name
     );
 
-     // Project Finance
+    // Project Finance
 
-     url = this.spServices.getItemURL(
+    url = this.spServices.getItemURL(
       this.constantService.listNames.ProjectFinances.name,
       +this.selectedRowItem.PFID
     );
@@ -931,7 +932,6 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
       this.constantService.Method.PATCH,
       this.constantService.listNames.ProjectFinances.name
     );
-
 
     ///Update ProjectBudgetBreakup
     let pbbData = {
@@ -1051,7 +1051,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
       "Schedule-hourlyBased",
       "updatePOPBBPFBSow"
     );
-     this.submitForm(Invoiceform, batchUrl, "confirmInvoice");
+    this.submitForm(Invoiceform, batchUrl, "confirmInvoice");
   }
 
   getpfbData(Invoiceform, totalVal) {
@@ -1082,7 +1082,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
       pfData["InvoicesScheduled"] = totalVal;
       pfData["ScheduledRevenue"] = totalVal;
     } else {
-      pfData["InvoicedRevenue"] = totalVal;  
+      pfData["InvoicedRevenue"] = totalVal;
       pfData["Invoiced"] = totalVal;
     }
 
@@ -1189,9 +1189,13 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     const arrResults = res.length ? res.map((a) => a.retItems) : [];
     console.log("--oo ", arrResults);
     if (type === "confirmInvoice") {
+      const message =
+        this.confirmInvoiceType === "new"
+          ? " Invoice line item is confirmed."
+          : "Invoice line item tagged to invoice.";
       this.commonService.showToastrMessage(
         this.constantService.MessageType.success,
-        "Invoice is Confirmed.",
+        message,
         false
       );
       this.sendConfirmInvoiceMail(invoiceform);
