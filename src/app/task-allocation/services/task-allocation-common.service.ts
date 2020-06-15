@@ -16,7 +16,7 @@ export class TaskAllocationCommonService {
   ganttParseObject: any = {}
   allTasks: any = {}
   attachedEvents = [];
-  allocationSplitColumn = `<span #ganttoverlay' class='ganttOverlayIcon' style="cursor: pointer;"title="Click to see allocation split">
+  allocationSplitColumn = `<span class='ganttOverlayIcon' "title="Click to see allocation split">
   <i class="fa fa-info-circle" aria-hidden="true"></i></span>`;
   contextMenu = `<i class="fa fa-ellipsis-v contextMenu" data-action="contextmenu"></i>`;
 
