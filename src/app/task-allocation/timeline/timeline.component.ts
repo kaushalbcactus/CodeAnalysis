@@ -1328,7 +1328,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           "Name": item.AssignedTo.Name,
           "label": item.AssignedTo.Title,
           "Email": item.AssignedTo.EMail,
-          'textColor': '#fff'
+          'textColor': '#000'
         })
       }
       // else
@@ -1358,7 +1358,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     });
 
     this.taskAllocateCommonService.ganttParseObject.data = data;
-
+    this.renderGanttTemplates();
 
     // data.forEach((item, index) => {
     //   if()
@@ -1869,7 +1869,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       }
       let overlayIconButton = e.target.closest(".ganttOverlayIcon");
       if(overlayIconButton) {
-        this.showOverlayPanel(e, task, this.dailyAllocateOP,e.target.parentElement);
+        // overlayIconButton.addEventListener("click", () => { this.showOverlayPanel(e, task, this.dailyAllocateOP,e.target.parentElement) } , false);        
+        this.showOverlayPanel(e, task, this.dailyAllocateOP,e.target.parentElement)
       }
 
       return true;
@@ -1903,7 +1904,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
             this.picker.open();
           }
         } else {
-          isStartDate ? this.openPopupOnGanttTask(task, 'start') : this.openPopupOnGanttTask(task, 'end');
+          // isStartDate ? this.openPopupOnGanttTask(task, 'start') : this.openPopupOnGanttTask(task, 'end');
+          this.openPopupOnGanttTask(task, 'end');
         }
         return true;
       } else {
@@ -2486,11 +2488,15 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
   async close() {
+    let allTasks = {
+      data: []
+    };
+
     this.showBudgetHrs = false;
-    let allTasks = this.allTaskData;
+    allTasks.data = this.getGanttTasksFromMilestones(this.milestoneData, true);
 
     allTasks.data.forEach((task) => {
-      if (this.resetTask.itemType === 'milestone') {
+      if (this.resetTask.type === 'milestone') {
         if (task.id == this.resetTask.id) {
           task.open = true;
           task.edited = false;
@@ -2521,10 +2527,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         //   task.end_date = new Date(this.endDate.getFullYear(), this.endDate.getMonth(), this.endDate.getDate(), 19, 0);
         // }
       }
-      if (task.title === this.resetTask.milestone) {
+      // if (task.title === this.resetTask.milestone) {
         // if (task.title.replace(' (Current)', '') === this.resetTask.milestone || task.title === this.resetTask.milestone) {
-        task.open = true;
-      }
+        // task.open = true;
+      // }
     })
     // this.taskAllocateCommonService.ganttParseObject = allTasks;
     this.GanttchartData = allTasks.data;
