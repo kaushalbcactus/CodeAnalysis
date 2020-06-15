@@ -1051,7 +1051,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
       "Schedule-hourlyBased",
       "updatePOPBBPFBSow"
     );
-    // this.submitForm(Invoiceform, batchUrl, "confirmInvoice");
+     this.submitForm(Invoiceform, batchUrl, "confirmInvoice");
   }
 
   getpfbData(Invoiceform, totalVal) {
