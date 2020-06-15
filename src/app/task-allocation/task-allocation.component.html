@@ -32,7 +32,7 @@
     <div class="clearBoth"></div>
 </div>
 
-<div fxLayout="column" fxLayoutAlign="center center" *ngIf="!loaderenable  && timelineView">
+<div fxLayout="column" class="matSectionPanel" fxLayoutAlign="center center" *ngIf="!loaderenable  && timelineView">
     <!-- <app-resource-section (reloadResources)="reloadResourceArray($event)" fxLayout="row" style="width:98%;" fxLayoutAlign="center center"></app-resource-section> -->
     <mat-accordion fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="space-around center" style="width:99%;" [multi]="true">
         <!--********************************************************************************************

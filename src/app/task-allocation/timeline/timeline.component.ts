@@ -6394,7 +6394,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           });
           return false;
         }
-        if (milestone.data.title === 'Client Review' && milestone.data.status !== 'Not Confimed' && milestone.data.status !== 'Not Saved' &&
+        if (milestone.data.title === 'Client Review' && milestone.data.status !== 'Not Confirmed' && milestone.data.status !== 'Not Saved' &&
           new Date(milestone.data.start_date).getTime() >= new Date(milestone.data.end_date).getTime()) {
           this.messageService.add({
             key: 'custom', severity: 'warn', summary: 'Warning Message',

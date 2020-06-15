@@ -133,3 +133,8 @@ button {
 .searchPrj {
   border: 0px !important;
 }
+
+
+.matSectionPanel .mat-accordion>.mat-expansion-panel-spacing:last-child {
+  margin-top: 0px !important;
+}
