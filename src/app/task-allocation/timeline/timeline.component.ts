@@ -2265,6 +2265,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   setBudgetHours(task) {
     if (task.type !== 'milestone' && task.type !== 'submilestone') {
       this.maxBudgetHrs = this.taskAllocateCommonService.setMaxBudgetHrs(task);
+      if(this.maxBudgetHrs < this.budgetHrs) {
+        this.budgetHrs = 0;
+        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Budget hours is set to zero because given budget hours is greater than task time period.' });
+      }
     }
   }
 
@@ -2986,6 +2990,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     });
     if (event.type !== 'milestone' && event.type !== 'submilestone') {
       this.maxBudgetHrs = this.taskAllocateCommonService.setMaxBudgetHrs(event);
+      if(this.maxBudgetHrs < event.budgetHrs) {
+        event.budgetHrs = 0;
+        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Budget hours is set to zero because given budget hours is greater than task time period.' });
+      }
     }
     await this.dailyAllocation.calcPrestackAllocation(resource, event);
   }
@@ -6386,7 +6394,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           });
           return false;
         }
-        if (milestone.data.title === 'Client Review' &&
+        if (milestone.data.title === 'Client Review' && milestone.data.status !== 'Not Confimed' && milestone.data.status !== 'Not Saved' &&
           new Date(milestone.data.start_date).getTime() >= new Date(milestone.data.end_date).getTime()) {
           this.messageService.add({
             key: 'custom', severity: 'warn', summary: 'Warning Message',

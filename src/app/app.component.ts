@@ -84,7 +84,7 @@ export class AppComponent implements OnDestroy {
       : _spPageContextInfo.siteServerRelativeUrl;
     this.globalService.sharePointPageObject.serverRelativeUrl = this.globalService.sharePointPageObject.webRelativeUrl;
     this.globalService.sharePointPageObject.rootsite = window.origin;
-    this.globalService.url = window.location.href.indexOf('localhost') > -1 ? '#' : this.globalService.sharePointPageObject.webRelativeUrl + '/dashboard#';
+    this.globalService.url = window.location.href.indexOf('localhost') > -1 ? '#' : this.globalService.sharePointPageObject.webRelativeUrl + '/dashboardAllocation#';
 
     this.leftNavigation = [
       { title: 'My Dashboard', href: this.globalService.url + '/myDashboard', visible: true },

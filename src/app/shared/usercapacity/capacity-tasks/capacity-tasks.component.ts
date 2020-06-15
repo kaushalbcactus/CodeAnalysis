@@ -38,7 +38,7 @@ export class CapacityTasksComponent implements OnInit {
   }
 
   goToProjectDetails(data: any): string {
-    return this.globalService.sharePointPageObject.webAbsoluteUrl + '/dashboard#/taskAllocation?ProjectCode=' + data.projectCode;
+    return this.globalService.url + '/taskAllocation?ProjectCode=' + data.projectCode;
   }
 
   collapseTable(param) {

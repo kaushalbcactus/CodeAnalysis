@@ -428,7 +428,8 @@ export class TaskAllocationCommonService {
   setMaxBudgetHrs(task) {
     let time: any = this.commonService.getHrsAndMins(task.start_date, task.end_date);
     if(task.tat) {
-      return 24;
+      let businessDays = this.commonService.calcBusinessDays(task.start_date, task.end_date);
+      return businessDays * 24;
     } else {
       return time.maxBudgetHrs;
     }
