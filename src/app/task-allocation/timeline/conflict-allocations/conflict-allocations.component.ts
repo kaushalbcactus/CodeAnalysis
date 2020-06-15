@@ -52,7 +52,7 @@ export class ConflictAllocationsComponent implements OnInit, AfterViewInit {
 
   goToProjectDetails(data: any): string {
     if (this.projectCode !== data.projectCode) {
-      return this.globalService.sharePointPageObject.webAbsoluteUrl + '/dashboard#/taskAllocation?ProjectCode=' + data.projectCode;
+      return this.globalService.url + '/taskAllocation?ProjectCode=' + data.projectCode;
     }
   }
 
