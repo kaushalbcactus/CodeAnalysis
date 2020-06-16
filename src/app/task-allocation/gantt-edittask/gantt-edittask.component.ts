@@ -207,7 +207,7 @@ export class GanttEdittaskComponent implements OnInit {
         const resources = this.globalService.oTaskAllocation.oResources.filter((objt) => {
           return this.task.AssignedTo.ID === objt.UserName.ID;
         });
-        await this.dailyAllocateTask(resources, this.task);
+        await this.dailyAllocation.calcPrestackAllocation(resources, this.task);
         let task = await this.assignedToUserChanged();
 
         let startDate = task.pUserStart;
@@ -235,7 +235,7 @@ export class GanttEdittaskComponent implements OnInit {
       this.isViewAllocationBtn(task)
 
       if (budgetHrs > 0) {
-        await this.dailyAllocateTask(resources, this.task);
+        await this.dailyAllocation.calcPrestackAllocation(resources, this.task);
       }
     });
 
@@ -257,7 +257,7 @@ export class GanttEdittaskComponent implements OnInit {
         this.cascadingObject.type = 'start';
         this.validateBudgetHours(this.task);
         this.isViewAllocationBtn(task);
-        await this.dailyAllocateTask(resources, this.task);
+        await this.dailyAllocation.calcPrestackAllocation(resources, this.task);
       }
     });
 
@@ -279,8 +279,7 @@ export class GanttEdittaskComponent implements OnInit {
         this.cascadingObject.type = 'end';
         this.validateBudgetHours(this.task);
         this.isViewAllocationBtn(task);
-
-        await this.dailyAllocateTask(resources, this.task);
+        await this.dailyAllocation.calcPrestackAllocation(resources, this.task);
       }
     });
 
@@ -298,7 +297,7 @@ export class GanttEdittaskComponent implements OnInit {
       this.cascadingObject.node = this.task;
       this.cascadingObject.type = 'start';
       this.validateBudgetHours(this.task);
-      await this.dailyAllocateTask(resources, this.task);
+      await this.dailyAllocation.calcPrestackAllocation(resources, this.task);
     });
 
     this.editTaskForm.get('endDateTimePart').valueChanges.subscribe(async endTime => {
@@ -315,7 +314,7 @@ export class GanttEdittaskComponent implements OnInit {
       this.cascadingObject.node = this.task;
       this.cascadingObject.type = 'end';
       this.validateBudgetHours(this.task);
-      await this.dailyAllocateTask(resources, this.task);
+      await this.dailyAllocation.calcPrestackAllocation(resources, this.task);
     });
 
   }
@@ -415,128 +414,132 @@ export class GanttEdittaskComponent implements OnInit {
   }
 
   viewAllocation(allocationType) {
-    this.task.resources = this.globalService.oTaskAllocation.oResources.filter((objt) => {
+    const milestoneTask = this.task;
+    milestoneTask.resources = this.globalService.oTaskAllocation.oResources.filter((objt) => {
       return objt.UserName.ID === this.task.AssignedTo.ID;
     });
-
+    let header = milestoneTask.submilestone ? milestoneTask.milestone + ' ' + milestoneTask.title
+      + ' ( ' + milestoneTask.submilestone + ' )' : milestoneTask.milestone + ' ' + milestoneTask.title;
+    header = header + ' - ' + milestoneTask.AssignedTo.Title;
     const ref = this.dialogService.open(PreStackAllocationComponent, {
       data: {
-        ID: this.task.id,
-        task: this.task.taskFullName,
-        startDate: this.task.pUserStart,
-        endDate: this.task.pUserEnd,
-        budgetHrs: this.task.budgetHours,
-        resource: this.task.resources,
-        status: this.task.status,
-        strAllocation: this.task.allocationPerDay,
+        ID: milestoneTask.id,
+        task: milestoneTask.taskFullName,
+        startDate: milestoneTask.pUserStart,
+        endDate: milestoneTask.pUserEnd,
+        startTime: milestoneTask.pUserStartTimePart,
+        endTime: milestoneTask.pUserEndTimePart,
+        budgetHrs: milestoneTask.budgetHours,
+        resource: milestoneTask.resources,
+        status: milestoneTask.status,
+        strAllocation: milestoneTask.allocationPerDay,
         allocationType
       } as IDailyAllocationTask,
       width: '90vw',
 
-      header: this.task.submilestone ? this.task.milestone + ' ' + this.task.title
-        + ' ( ' + this.task.submilestone + ' )' : this.task.milestone + ' ' + this.task.title,
+      header,
       contentStyle: { 'max-height': '90vh', 'overflow-y': 'auto' },
       closable: false
     });
     ref.onClose.subscribe((allocation: any) => {
-      this.setAllocationPerDay(allocation, this.task);
+      this.dailyAllocation.setAllocationPerDay(allocation, milestoneTask);
       if (allocation.allocationAlert) {
         this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Resource is over allocated' });
       }
     });
   }
 
-  async dailyAllocateTask(resource, milestoneTask) {
-    const eqgTasks = ['Edit', 'Quality', 'Graphics', 'Client Review', 'Send to client'];
-    if (!eqgTasks.find(t => t === milestoneTask.itemType) && milestoneTask.pUserStartDatePart &&
-      resource.length && milestoneTask.pUserEndDatePart && milestoneTask.budgetHours &&
-      milestoneTask.pUserEnd > milestoneTask.pUserStart) {
-      const allocationData: IDailyAllocationTask = {
-        ID: milestoneTask.id,
-        task: milestoneTask.taskFullName,
-        startDate: milestoneTask.pUserStartDatePart,
-        endDate: milestoneTask.pUserEndDatePart,
-        startTime: milestoneTask.pUserStartTimePart,
-        endTime: milestoneTask.pUserEndTimePart,
-        budgetHrs: milestoneTask.budgetHours,
-        resource,
-        status: milestoneTask.status,
-        strAllocation: '',
-        allocationType: ''
-      };
-      const resourceCapacity = await this.dailyAllocation.getResourceCapacity(allocationData);
-      const objDailyAllocation = await this.dailyAllocation.initialize(resourceCapacity, allocationData);
-      this.setAllocationPerDay(objDailyAllocation, milestoneTask);
-      if (objDailyAllocation.allocationAlert) {
-        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Resource is over allocated' });
-      }
-    } else {
-      milestoneTask.allocationColor = '';
-    }
-  }
+  // async dailyAllocateTask(resource, milestoneTask) {
+  //   const eqgTasks = ['Edit', 'Quality', 'Graphics', 'Client Review', 'Send to client'];
+  //   if (!eqgTasks.find(t => t === milestoneTask.itemType) && milestoneTask.pUserStartDatePart &&
+  //     resource.length && milestoneTask.pUserEndDatePart && milestoneTask.budgetHours &&
+  //     milestoneTask.pUserEnd > milestoneTask.pUserStart) {
+  //     const allocationData: IDailyAllocationTask = {
+  //       ID: milestoneTask.id,
+  //       task: milestoneTask.taskFullName,
+  //       startDate: milestoneTask.pUserStartDatePart,
+  //       endDate: milestoneTask.pUserEndDatePart,
+  //       startTime: milestoneTask.pUserStartTimePart,
+  //       endTime: milestoneTask.pUserEndTimePart,
+  //       budgetHrs: milestoneTask.budgetHours,
+  //       resource,
+  //       status: milestoneTask.status,
+  //       strAllocation: '',
+  //       allocationType: ''
+  //     };
+  //     const resourceCapacity = await this.dailyAllocation.getResourceCapacity(allocationData);
+  //     const objDailyAllocation = await this.dailyAllocation.initialize(resourceCapacity, allocationData);
+  //     this.setAllocationPerDay(objDailyAllocation, milestoneTask);
+  //     if (objDailyAllocation.allocationAlert) {
+  //       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Resource is over allocated' });
+  //     }
+  //   } else {
+  //     milestoneTask.allocationColor = '';
+  //   }
+  // }
 
-  setAllocationPerDay(allocation, milestoneTask: IMilestoneTask) {
-    let task: any;
-    if (milestoneTask.type === 'Milestone') {
-      const milestoneData: MilestoneTreeNode = this.milestoneData.find(m => m.data.title === milestoneTask.milestone);
-      const milestoneTasks: any[] = this.getTasksFromMilestones(milestoneData, false, true);
-      milestoneData.data.edited = true;
-      task = milestoneTasks.find(t => t.id === milestoneTask.id);
-    } else {
-      task = milestoneTask;
-    }
-    task.allocationPerDay = allocation.allocationPerDay;
-    task.showAllocationSplit = true;
-    task.ganttOverlay = task.showAllocationSplit ? this.taskAllocateCommonService.allocationSplitColumn : '';
-    task.edited = true;
-    if (allocation.allocationType === 'Equal allocation per day') {
-      task.allocationColor = 'indianred';
-    } else if (allocation.allocationType === 'Daily Allocation') {
-      task.allocationColor = '';
-    }
-  }
+  // setAllocationPerDay(allocation, milestoneTask: IMilestoneTask) {
+  //   let task: any;
+  //   if (milestoneTask.type === 'Milestone') {
+  //     const milestoneData: MilestoneTreeNode = this.milestoneData.find(m => m.data.title === milestoneTask.milestone);
+  //     const milestoneTasks: any[] = this.getTasksFromMilestones(milestoneData, false, true);
+  //     milestoneData.data.edited = true;
+  //     task = milestoneTasks.find(t => t.id === milestoneTask.id);
+  //   } else {
+  //     task = milestoneTask;
+  //   }
+  //   task.allocationPerDay = allocation.allocationPerDay;
+  //   task.showAllocationSplit = true;
+  //   task.ganttOverlay = task.showAllocationSplit ? this.taskAllocateCommonService.allocationSplitColumn : '';
+  //   task.edited = true;
+  //   if (allocation.allocationType === 'Equal allocation per day') {
+  //     task.allocationColor = 'indianred';
+  //   } else if (allocation.allocationType === 'Daily Allocation') {
+  //     task.allocationColor = '';
+  //   }
+  // }
 
-  getTasksFromMilestones(milestone, bOld, includeSubTasks) {
-    let tasks = [];
-    if (milestone.children !== undefined) {
-      for (let nCountSub = 0; nCountSub < milestone.children.length; nCountSub = nCountSub + 1) {
-        let submilestone = milestone.children[nCountSub];
-        if (submilestone.data.type === 'task') {
-          tasks.push(submilestone.data);
-          if (includeSubTasks && submilestone.children) {
-            for (let nCountSubTask = 0; nCountSubTask < submilestone.children.length; nCountSubTask = nCountSubTask + 1) {
-              let subtask = submilestone.children[nCountSubTask];
-              tasks.push(subtask.data);
-            }
-          }
-        } else if (submilestone.children !== undefined) {
-          for (let nCountTask = 0; nCountTask < submilestone.children.length; nCountTask = nCountTask + 1) {
-            let task = submilestone.children[nCountTask];
-            tasks.push(task.data);
-            if (includeSubTasks && task.children) {
-              for (let nCountSubTask = 0; nCountSubTask < task.children.length; nCountSubTask = nCountSubTask + 1) {
-                let subtask = task.children[nCountSubTask];
-                tasks.push(subtask.data);
-              }
-            }
-          }
-        }
-      }
-    }
-    const milData = bOld ? this.milestoneDataCopy : this.milestoneData
-    const clTask = milestone.data.type === 'milestone' || milestone.data.type === 'task' ? milData.filter(function (obj) {
-      return obj.data.type === 'task' && obj.data.itemType === 'Client Review' && obj.data.milestone === milestone.data.title.split(' (')[0]
-    }) : milestone.parent ? milData.filter(function (obj) {
-      return obj.data.type === 'task' && obj.data.itemType === 'Client Review' && obj.data.milestone === milestone.parent.data.title.split(' (')[0]
-    }) : [];
+  // getTasksFromMilestones(milestone, bOld, includeSubTasks) {
+  //   let tasks = [];
+  //   if (milestone.children !== undefined) {
+  //     for (let nCountSub = 0; nCountSub < milestone.children.length; nCountSub = nCountSub + 1) {
+  //       let submilestone = milestone.children[nCountSub];
+  //       if (submilestone.data.type === 'task') {
+  //         tasks.push(submilestone.data);
+  //         if (includeSubTasks && submilestone.children) {
+  //           for (let nCountSubTask = 0; nCountSubTask < submilestone.children.length; nCountSubTask = nCountSubTask + 1) {
+  //             let subtask = submilestone.children[nCountSubTask];
+  //             tasks.push(subtask.data);
+  //           }
+  //         }
+  //       } else if (submilestone.children !== undefined) {
+  //         for (let nCountTask = 0; nCountTask < submilestone.children.length; nCountTask = nCountTask + 1) {
+  //           let task = submilestone.children[nCountTask];
+  //           tasks.push(task.data);
+  //           if (includeSubTasks && task.children) {
+  //             for (let nCountSubTask = 0; nCountSubTask < task.children.length; nCountSubTask = nCountSubTask + 1) {
+  //               let subtask = task.children[nCountSubTask];
+  //               tasks.push(subtask.data);
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  //   const milData = bOld ? this.milestoneDataCopy : this.milestoneData
+  //   const clTask = milestone.data.type === 'milestone' || milestone.data.type === 'task' ? milData.filter(function (obj) {
+  //     return obj.data.type === 'task' && obj.data.itemType === 'Client Review' && obj.data.milestone === milestone.data.title.split(' (')[0]
+  //   }) : milestone.parent ? milData.filter(function (obj) {
+  //     return obj.data.type === 'task' && obj.data.itemType === 'Client Review' && obj.data.milestone === milestone.parent.data.title.split(' (')[0]
+  //   }) : [];
 
 
 
-    if (clTask.length)
-      tasks.push(clTask[0].data);
+  //   if (clTask.length)
+  //     tasks.push(clTask[0].data);
 
-    return tasks;
-  }
+  //   return tasks;
+  // }
 
   async assignedToUserChanged() {
     let milestoneTask = this.task;
@@ -549,7 +552,7 @@ export class GanttEdittaskComponent implements OnInit {
         const resource = this.globalService.oTaskAllocation.oResources.filter((objt) => {
           return milestoneTask.AssignedTo.ID === objt.UserName.ID;
         });
-        await this.dailyAllocateTask(resource, milestoneTask);
+        await this.dailyAllocation.calcPrestackAllocation(resource, this.task);
         milestoneTask.assignedUserTimeZone = resource && resource.length > 0
           ? resource[0].TimeZone.Title ?
             resource[0].TimeZone.Title : '+5.5' : '+5.5';
