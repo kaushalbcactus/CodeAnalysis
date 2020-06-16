@@ -85,7 +85,7 @@ export class PreStackAllocationComponent implements OnInit {
     const isDailyAllocationValid = !allocationData.allocationType ? this.checkDailyAllocation(resource, allocationData) : false;
     if (!isDailyAllocationValid) {
       if (allocationChanged) {
-        this.common.confirmMessageDialog('Resource overallocated. Do you want to perform equal allocation?',
+        this.common.confirmMessageDialog('Cant accommodate pending hours on the subsequent days so equal allocation will be done. Should we do equal allocation ?',
           ['Yes', 'No'], false).then(async Confirmation => {
             if (Confirmation === 'Yes') {
               await this.equalSplitAllocation(allocationData, true);
