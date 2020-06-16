@@ -1610,8 +1610,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       }
       //index = [0, 1, 2, 3, 5, 7, 8, 11, 12];
     } else if (task.type == "milestone") {
-      if(task.status !== 'Completed' && task.status !== 'Auto Closed') {
-      index = [0];
+      if (task.status !== 'Completed' && task.status !== 'Auto Closed') {
+        index = [0];
       }
       if (task.isNext === true && !task.subMilestonePresent && !this.changeInRestructure &&
         this.oProjectDetails.status !== 'In Discussion' && this.oProjectDetails.projectType !== 'FTE-Writing'
@@ -1736,10 +1736,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.taskAllocateCommonService.ganttParseObject.data.forEach((e) => {
       e.ganttOverlay = e.showAllocationSplit ? this.taskAllocateCommonService.allocationSplitColumn : '';
       e.ganttMenu = e.type == 'milestone' ? e.isNext === true && !e.subMilestonePresent && !this.changeInRestructure &&
-      this.oProjectDetails.status !== 'In Discussion' && this.oProjectDetails.projectType !== 'FTE-Writing'
-      && e.status !== 'Completed' ? this.taskAllocateCommonService.contextMenu : e.status !== 'Completed' && e.status !== 'Auto Closed' ? this.taskAllocateCommonService.contextMenu : '' 
-      : e.type == 'submilestone' ? !this.changeInRestructure && e.status === 'Not Confirmed' &&
-      (e.isCurrent || e.isNext) ? this.taskAllocateCommonService.contextMenu : '' : this.taskAllocateCommonService.contextMenu;
+        this.oProjectDetails.status !== 'In Discussion' && this.oProjectDetails.projectType !== 'FTE-Writing'
+        && e.status !== 'Completed' ? this.taskAllocateCommonService.contextMenu : e.status !== 'Completed' && e.status !== 'Auto Closed' ? this.taskAllocateCommonService.contextMenu : ''
+        : e.type == 'submilestone' ? !this.changeInRestructure && e.status === 'Not Confirmed' &&
+          (e.isCurrent || e.isNext) ? this.taskAllocateCommonService.contextMenu : '' : this.taskAllocateCommonService.contextMenu;
     })
   }
 
@@ -1868,9 +1868,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         }
       }
       let overlayIconButton = e.target.closest(".ganttOverlayIcon");
-      if(overlayIconButton) {
+      if (overlayIconButton) {
         // overlayIconButton.addEventListener("click", () => { this.showOverlayPanel(e, task, this.dailyAllocateOP,e.target.parentElement) } , false);        
-        this.showOverlayPanel(e, task, this.dailyAllocateOP,e.target.parentElement)
+        this.showOverlayPanel(e, task, this.dailyAllocateOP, e.target.parentElement)
       }
 
       return true;
@@ -2267,7 +2267,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   setBudgetHours(task) {
     if (task.type !== 'milestone' && task.type !== 'submilestone') {
       this.maxBudgetHrs = this.taskAllocateCommonService.setMaxBudgetHrs(task);
-      if(this.maxBudgetHrs < this.budgetHrs) {
+      if (this.maxBudgetHrs < this.budgetHrs) {
         this.budgetHrs = 0;
         this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Budget hours is set to zero because given budget hours is greater than task time period.' });
       }
@@ -2320,7 +2320,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         allTasks.data = this.getGanttTasksFromMilestones(this.milestoneData, true);
 
         // allTasks.data.forEach((task) => {
-          for (const task of allTasks.data) {
+        for (const task of allTasks.data) {
           if (task.type == 'task') {
             if (task.id == this.updatedTasks.id) {
               task.budgetHours = this.budgetHrs;
@@ -2355,7 +2355,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         this.showBudgetHrs = false;
         this.ganttNotification();
         this.showGanttChart(false);
-        setTimeout(()=>{
+        setTimeout(() => {
           this.refreshGantt();
         }, 500)
         setTimeout(() => {
@@ -2528,8 +2528,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         // }
       }
       // if (task.title === this.resetTask.milestone) {
-        // if (task.title.replace(' (Current)', '') === this.resetTask.milestone || task.title === this.resetTask.milestone) {
-        // task.open = true;
+      // if (task.title.replace(' (Current)', '') === this.resetTask.milestone || task.title === this.resetTask.milestone) {
+      // task.open = true;
       // }
     })
     // this.taskAllocateCommonService.ganttParseObject = allTasks;
@@ -2996,7 +2996,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     });
     if (event.type !== 'milestone' && event.type !== 'submilestone') {
       this.maxBudgetHrs = this.taskAllocateCommonService.setMaxBudgetHrs(event);
-      if(this.maxBudgetHrs < event.budgetHrs) {
+      if (this.maxBudgetHrs < event.budgetHrs) {
         event.budgetHrs = 0;
         this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Budget hours is set to zero because given budget hours is greater than task time period.' });
       }
@@ -6566,15 +6566,15 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       // isFuture : this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones !== undefined ?
       //   this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones.indexOf(milestone.label)
       //     > -1 ? true : false : false,
-      isNext : this.sharedObject.oTaskAllocation.oProjectDetails.nextMilestone === milestone.label ? true : false,
-      userCapacityEnable : false,
-      edited : true,
-      added : true,
-      taskFullName : milestone.label,
-      nextTask : '',
-      previousTask : '',
-      assignedUsers : [{ Title: '', userType: '' }],
-      AssignedTo : {},
+      isNext: this.sharedObject.oTaskAllocation.oProjectDetails.nextMilestone === milestone.label ? true : false,
+      userCapacityEnable: false,
+      edited: true,
+      added: true,
+      taskFullName: milestone.label,
+      nextTask: '',
+      previousTask: '',
+      assignedUsers: [{ Title: '', userType: '' }],
+      AssignedTo: {},
       color: '',
       slotColor: '',
       itemType: '',
@@ -6669,6 +6669,12 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   showOverlayPanel(event, rowData, dailyAllocateOP, target?) {
     const allocationPerDay = rowData.allocationPerDay ? rowData.allocationPerDay : '';
     dailyAllocateOP.showOverlay(event, allocationPerDay, target);
+    console.log(event);
+    setTimeout(() => {
+      let panel: any = document.querySelector(".dailyAllocationOverlayComp > div");
+      panel.style.top = event.pageY + 'px';
+      panel.style.left = event.pageX + 'px';
+    }, 50);
   }
 
   hideOverlayPanel() {
