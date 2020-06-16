@@ -1357,7 +1357,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       //   }
     });
 
-    this.taskAllocateCommonService.ganttParseObject.data = data;
+    this.taskAllocateCommonService.ganttParseObject.data = [...data];
     this.renderGanttTemplates();
 
     // data.forEach((item, index) => {
@@ -1431,7 +1431,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     }, Object.create(null));
 
     if (createLinks) {
-      this.taskAllocateCommonService.ganttParseObject.links = linkArray;
+      this.taskAllocateCommonService.ganttParseObject.links = [...linkArray];
     }
   }
 
@@ -1770,11 +1770,13 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       this.taskAllocateCommonService.attachedEvents = [];
     }
 
-    const onTaskOpened = gantt.attachEvent("onTaskOpened", (id) => {
-      this.ganttComponentRef.instance.onLoad(this.taskAllocateCommonService.ganttParseObject, this.resource);
-      this.setScale(this.selectedScale);
-    });
-    this.taskAllocateCommonService.attachedEvents.push(onTaskOpened);
+    // const onTaskOpened = gantt.attachEvent("onTaskOpened", (id) => {
+    //   gantt.init(this.ganttComponentRef.instance.ganttContainer.nativeElement);
+    //   gantt.clearAll();
+    //   this.ganttComponentRef.instance.onLoad(this.taskAllocateCommonService.ganttParseObject, this.resource);
+    //   this.setScale(this.selectedScale);
+    // });
+    // this.taskAllocateCommonService.attachedEvents.push(onTaskOpened);
 
     const onBeforeTaskChanged = gantt.attachEvent("onBeforeTaskChanged", (id, mode, task) => {
       this.allTaskData = gantt.serialize();
@@ -1824,13 +1826,13 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
     const onTaskClick = gantt.attachEvent("onTaskClick", (taskId, e) => {
       let task = gantt.getTask(taskId);
-      if (task.itemType !== "Send to client" && task.itemType !== "Client Review" && task.slotType !== 'Slot' && task.type !== "milestone" && task.type !== "submilestone" && task.AssignedTo.ID !== -1) {
+      if (task.itemType !== "Send to client" && task.itemType !== "Client Review" && task.slotType !== 'Slot' && task.type !== "milestone" && task.type !== "submilestone") {
         if (e.target.parentElement.className === "gantt_cell cell_user") {
           this.header = task.submilestone ? task.milestone + ' ' + task.submilestone + ' ' + task.text
             : task.milestone + ' ' + task.text;
           this.sharedObject.resourceHeader = this.header;
 
-          let resourceTask = this.sharedObject.currentTaskData ? this.sharedObject.currentTaskData : task;
+          let resourceTask = task; // this.sharedObject.currentTaskData ? this.sharedObject.currentTaskData : ;
           this.onResourceClick(resourceTask);
         }
       } else if ((task.itemType == "Send to client" || task.itemType == "Client Review") && e.target.parentElement.className === "gantt_cell cell_user") {
@@ -2552,6 +2554,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         lastTaskEnd = new Date(lastTaskEnd.setDate(lastTaskEnd.getDate() + 31));
         gantt.config.end_date = new Date(lastTaskEnd.getFullYear(), lastTaskEnd.getMonth(), lastTaskEnd.getDate(), 0, 0);
       }
+      gantt.init(this.ganttComponentRef.instance.ganttContainer.nativeElement);
+      gantt.clearAll();
       this.ganttComponentRef.instance.onLoad(this.taskAllocateCommonService.ganttParseObject, this.resource);
       this.setScale(this.selectedScale);
       this.renderGanttTemplates();
