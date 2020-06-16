@@ -9,7 +9,7 @@ export class SharedConstantsService {
   // tslint:disable
   public userCapacity = {
     fetchTasks: {
-      select: 'ID,Milestone,ProjectCode,SubMilestones,Task,Status,Title,TimeSpent,ExpectedTime,StartDate,DueDate,TimeZone,ParentSlot',
+      select: 'ID,Milestone,ProjectCode,SubMilestones,Task,Status,Title,TimeSpent,ExpectedTime,StartDate,DueDate,TimeZone,ParentSlot,Comments,Entity',
       filter: "(AssignedTo/Id eq {{userID}}) and(" +
         "(StartDate ge '{{startDateString}}' and StartDate le '{{endDateString}}')" +
         "or (DueDate ge '{{startDateString}}' and DueDate le '{{endDateString}}')" +
@@ -20,7 +20,7 @@ export class SharedConstantsService {
     },
 
     fetchSpentTimeTasks: {
-      select: 'ID,Milestone,ProjectCode,SubMilestones,Task,Status,Title,TimeSpent,ExpectedTime,StartDate,DueDate,TimeZone,ParentSlot,TimeSpentPerDay,AssignedTo/Title,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date',
+      select: 'ID,Milestone,ProjectCode,SubMilestones,Task,Status,Title,TimeSpent,ExpectedTime,StartDate,DueDate,TimeZone,ParentSlot,TimeSpentPerDay,AssignedTo/Title,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,Comments,Entity',
       filter : "(AssignedTo/Id eq {{userID}}) and ((Status eq 'Completed' and(" +
       "(StartDate ge '{{startDateString}}' and StartDate le '{{endDateString}}')" +
       " or (DueDate ge '{{startDateString}}' and DueDate le '{{endDateString}}')" +

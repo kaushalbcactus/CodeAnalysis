@@ -20,6 +20,7 @@ export class BlockResourceDialogComponent implements OnInit {
   SDmaxDateValue: Date;
   SDminDateValue: Date;
   yearsRange: string;
+  Resources: any;
   constructor(
     public formBuilder: FormBuilder,
     public ref: DynamicDialogRef,
@@ -30,6 +31,7 @@ export class BlockResourceDialogComponent implements OnInit {
 
   ngOnInit() {
     this.yearsRange = this.common.getyearRange();
+    this.Resources = this.config.data.Resources;
     this.selectedMinDate = this.config.data.selectedMinDate;
     this.selectedMaxDate = this.config.data.selectedMaxDate;
     this.modalloaderenable = false;
@@ -43,6 +45,7 @@ export class BlockResourceDialogComponent implements OnInit {
       Title: ["", Validators.required],
       StartDate: ["", Validators.required],
       EndDate: ["", Validators.required],
+      ExpectedTime: ["", Validators.required],
     });
   }
 
@@ -59,6 +62,15 @@ export class BlockResourceDialogComponent implements OnInit {
       this.EDminDateValue = new Date(this.selectedMinDate);
       this.EDmaxDateValue = new Date(this.selectedMaxDate);
     }
+  }
+
+  setBudgetHoursValidation() {
+    this.BlockResourceForm.get("ExpectedTime").setValidators([
+      Validators.required,
+      this.common.checkGTZeroNumberValidator(),
+      Validators.max(this.BlockResourceForm.value.Resource.value.MaxHrs),
+    ]);
+    this.BlockResourceForm.get("ExpectedTime").updateValueAndValidity();
   }
 
   SaveDetails() {

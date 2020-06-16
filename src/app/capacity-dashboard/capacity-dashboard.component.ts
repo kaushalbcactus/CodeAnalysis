@@ -356,7 +356,10 @@ export class CapacityDashboardComponent implements OnInit {
       }
       return false;
     } else {
-      if(!this.searchCapacityForm.value.rangeDates[0] || !this.searchCapacityForm.value.rangeDates[1]){
+      if (
+        !this.searchCapacityForm.value.rangeDates[0] ||
+        !this.searchCapacityForm.value.rangeDates[1]
+      ) {
         this.commonService.showToastrMessage(
           this.constants.MessageType.warn,
           "Please select proper dates.",
@@ -372,19 +375,16 @@ export class CapacityDashboardComponent implements OnInit {
       }
     }
   }
-
   EnableBlockResourceDialog() {
     const ref = this.dialogService.open(BlockResourceDialogComponent, {
       header: "Block Resources",
       width: "60vw",
       data: {
-
-         Resources :this.searchCapacityForm.value.resources,
-         selectedMinDate:this.searchCapacityForm.value.rangeDates[0],
-         selectedMaxDate: this.searchCapacityForm.value.rangeDates[1]
-        // InvoiceType: this.selectedRowItem.ScheduleType,
-        // projectContactsData: this.projectContactsData,
-        // selectedRowItem: this.selectedRowItem,
+        Resources:  this.AlldbResources.filter((c) =>
+        this.searchCapacityForm.value.resources.includes(c)
+      ).map((o) => new Object({ label: o.UserName.Title, value: o })),
+        selectedMinDate: this.searchCapacityForm.value.rangeDates[0],
+        selectedMaxDate: this.searchCapacityForm.value.rangeDates[1],
       },
       contentStyle: { "max-height": "80vh", "overflow-y": "auto" },
       closable: false,
