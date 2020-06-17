@@ -118,20 +118,22 @@ export class PreStackAllocationComponent implements OnInit {
         const resourceDailyAllocation: any[] = resource.dates;
         const allocation = this.common.getDateTimeFromString(day);
         const allocatedDate: any = resourceDailyAllocation.find(d => new Date(d.date).getTime() === allocation.date.getTime());
-        let resourceSliderMaxHrs: string = this.getResourceMaxHrs(sliderMaxHrs, allocatedDate, allocation.value.hours, index);
-        resourceSliderMaxHrs = resourceSliderMaxHrs.indexOf('-') > -1 ? '0:0' : resourceSliderMaxHrs;
-        const obj: IDailyAllocationObject = {
-          Date: allocation.date,
-          Allocation: {
-            valueHrs: allocation.value.hours,
-            valueMins: allocation.value.mins,
-            maxHrs: this.common.getHrsMinsObj(resourceSliderMaxHrs, true).hours,
-            maxMins: resourceSliderMaxHrs === '0:0' ? 0 : 45
-          },
-          tasks: allocatedDate.tasksDetails,
-          hideTasksTable: true
-        };
-        this.newAllocation.push(obj);
+        if (allocatedDate) {
+          let resourceSliderMaxHrs: string = this.getResourceMaxHrs(sliderMaxHrs, allocatedDate, allocation.value.hours, index);
+          resourceSliderMaxHrs = resourceSliderMaxHrs.indexOf('-') > -1 ? '0:0' : resourceSliderMaxHrs;
+          const obj: IDailyAllocationObject = {
+            Date: allocation.date,
+            Allocation: {
+              valueHrs: allocation.value.hours,
+              valueMins: allocation.value.mins,
+              maxHrs: this.common.getHrsMinsObj(resourceSliderMaxHrs, true).hours,
+              maxMins: resourceSliderMaxHrs === '0:0' ? 0 : 45
+            },
+            tasks: allocatedDate.tasksDetails,
+            hideTasksTable: true
+          };
+          this.newAllocation.push(obj);
+        }
       }
     });
   }
@@ -258,7 +260,7 @@ export class PreStackAllocationComponent implements OnInit {
     const businessDays = this.common.calcBusinessDays(allocationData.startDate, allocationData.endDate);
     const budgetHours = +allocationData.budgetHrs;
     let allocationPerDay = this.common.roundToPrecision(budgetHours / businessDays, 0.25);
-    this.resourceCapacity = JSON.parse(JSON.stringify(this.resourceCapacityCopy));
+    this.resourceCapacity = {...this.resourceCapacityCopy};
     // Object.keys(this.resourceCapacity).length ? this.resourceCapacity : await this.getResourceCapacity(allocationData);
     const resourceSliderMaxHrs = this.resourceCapacity.maxHrs + 3;
     const resourceDailyDetails = this.resourceCapacity.dates.filter(d => d.userCapacity !== 'Leave');
@@ -301,7 +303,7 @@ export class PreStackAllocationComponent implements OnInit {
       i++;
     }
     if (allocationChanged) {
-      this.messageService.add({ key: 'custom', severity: 'info', summary: 'Warning Message', detail: 'Equal allocation performed. Please assign budget hours from first row if change is needed.', sticky: true});
+      this.messageService.add({ key: 'custom', severity: 'info', summary: 'Warning Message', detail: 'Equal allocation performed. Please assign budget hours from first row if change is needed.', sticky: true });
     }
   }
 
@@ -358,7 +360,7 @@ export class PreStackAllocationComponent implements OnInit {
     this.resourceCapacity = Object.keys(this.resourceCapacity).length ? this.resourceCapacity : await this.getResourceCapacity(objData);
     const resourceDailyAllocation = this.resourceCapacity.dates;
     const resourceChangedDate = resourceDailyAllocation.find(d => new Date(d.date).getTime() === new Date(changedDate.Date).getTime());
-    const oldValue = JSON.parse(JSON.stringify(resourceChangedDate));
+    const oldValue = {...resourceChangedDate};
     const oldAllocation = this.newAllocation.find(d => new Date(d.Date).getTime() === new Date(changedDate.Date).getTime());
     event.value = event.type ? event.value : event.selectedHour.time + ':' + event.selectedMinute.time;
     const strChangedValue = event.type ? event.type === 'hrs' ?
@@ -445,8 +447,9 @@ export class PreStackAllocationComponent implements OnInit {
     const businessDays = this.usercapacityComponent.getDates(allocationData.startDate, allocationData.endDate, true);
     let newUserCapacity;
     if (this.global.oCapacity.arrUserDetails.length) {
-      const userCapacity = JSON.parse(JSON.stringify(this.global.oCapacity.arrUserDetails.find(u => u && u.uid === resource)));
-      if (userCapacity) {
+      const resourceCapacity = this.global.oCapacity.arrUserDetails.find(u => u.uid === resource);
+      if (resourceCapacity) {
+        const userCapacity = {...resourceCapacity};
         userCapacity.businessDays = businessDays.dateArray;
         // tslint:disable-next-line: max-line-length
         const dates = userCapacity.dates.filter(u => businessDays.dateArray.find(b => new Date(b).getTime() === new Date(u.date).getTime()));
@@ -462,19 +465,19 @@ export class PreStackAllocationComponent implements OnInit {
         } else {
           allocationData.endDate = this.common.calcBusinessDate('Next', 90, allocationData.startDate).endDate;
           newUserCapacity = await this.getResourceCapacity(allocationData);
-          const capacity = this.global.oCapacity.arrUserDetails.find(u => u && u.uid === resource);
+          const capacity = this.global.oCapacity.arrUserDetails.find(u => u.uid === resource);
           capacity.dates = [...capacity.dates, ...newUserCapacity.dates];
           capacity.businessDays = [...capacity.businessDays, ...newUserCapacity.businessDays];
         }
       } else {
         allocationData.endDate = this.common.calcBusinessDate('Next', 90, allocationData.startDate).endDate;
         newUserCapacity = await this.getResourceCapacity(allocationData);
-        this.global.oCapacity.arrUserDetails = [...this.global.oCapacity.arrUserDetails, ...newUserCapacity];
+        this.global.oCapacity.arrUserDetails.push(newUserCapacity);
       }
     } else {
       allocationData.endDate = this.common.calcBusinessDate('Next', 90, allocationData.startDate).endDate;
       newUserCapacity = await this.getResourceCapacity(allocationData);
-      this.global.oCapacity.arrUserDetails = [...this.global.oCapacity.arrUserDetails, ...newUserCapacity];
+      this.global.oCapacity.arrUserDetails.push(newUserCapacity);
     }
     return newUserCapacity;
   }

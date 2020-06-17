@@ -90,7 +90,7 @@
                                                     <div id="modalInnerLoader"></div>
                                                     <div id="modalInnerLoaderText">Loading...</div>
                                                 </div>
-                                                <app-capacity-tasks (collapse)="collpaseTable($event, user, 'available')" [componentName]="'usercapacity'" [disableCamera]="disableCamera" [tasks]="user.dayTasks"></app-capacity-tasks>
+                                                <app-capacity-tasks *ngIf="user.dayTasks.length" (collapse)="collpaseTable($event, user, 'available')" [componentName]="'usercapacity'" [disableCamera]="disableCamera" [tasks]="user.dayTasks"></app-capacity-tasks>
                                                 <!-- <table class="table-bordered table-striped" id="TasksPerDay" style="width: 100%;">
                                                     <thead>
                                                         <tr class="tableHeader">
