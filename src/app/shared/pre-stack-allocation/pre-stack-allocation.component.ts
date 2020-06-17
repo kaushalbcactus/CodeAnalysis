@@ -413,7 +413,8 @@ export class PreStackAllocationComponent implements OnInit {
     const eqgTasks = ['Edit', 'Quality', 'Graphics', 'Client Review', 'Send to client'];
     if (!eqgTasks.find(t => t === task.taskType) && task.startDatePart &&
       resource.length && task.endDatePart && task.budgetHrs &&
-      task.endDate > task.startDate) {
+      task.endDate > task.startDate
+      && new Date(task.startDatePart).getTime() !==  new Date(task.endDatePart).getTime()) {
       const allocationData: IDailyAllocationTask = {
         ID: task.ID,
         task: task.task,
