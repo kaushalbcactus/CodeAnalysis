@@ -1655,6 +1655,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     }
 
     const onTaskOpened = gantt.attachEvent("onTaskOpened", (id) => {
+      gantt.init(this.ganttComponentRef.instance.ganttContainer.nativeElement);
+      gantt.clearAll();
       this.ganttComponentRef.instance.onLoad(this.taskAllocateCommonService.ganttParseObject, this.resource);
       this.setScale(this.selectedScale);
     });
@@ -1709,6 +1711,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
     const onTaskClick = gantt.attachEvent("onTaskClick", (taskId, e) => {
       let task = gantt.getTask(taskId);
+      let ganttOpenIcon = e.target.closest('.gantt_arrow_click');
+      if(!ganttOpenIcon) {
       if (task.itemType !== "Send to client" && task.itemType !== "Client Review" && task.slotType !== 'Slot' && task.type !== "milestone" && task.type !== "submilestone" && task.AssignedTo.ID !== -1) {
         if (e.target.parentElement.className === "gantt_cell cell_user") {
           this.header = task.submilestone ? task.milestone + ' ' + task.submilestone + ' ' + task.text
@@ -1755,11 +1759,12 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       }
       let overlayIconButton = e.target.closest(".ganttOverlayIcon");
       if (overlayIconButton) {
-        // overlayIconButton.addEventListener("click", () => { this.showOverlayPanel(e, task, this.dailyAllocateOP,e.target.parentElement) } , false);        
         this.showOverlayPanel(e, task, this.dailyAllocateOP, e.target.parentElement)
       }
-
+      return false;
+    } else {
       return true;
+    }
     });
 
     this.taskAllocateCommonService.attachedEvents.push(onTaskClick);

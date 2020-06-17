@@ -7679,7 +7679,7 @@ module.exports = function(gantt) {
 				return "<div class='gantt_tree_icon gantt_file'></div>";
 			},
 			grid_open: function (item) {
-				return "<div class='gantt_tree_icon gantt_" + (item.$open ? "close" : "open") + "'></div>";
+				return "<div class='gantt_tree_icon gantt_arrow_click gantt_" + (item.$open ? "close" : "open") + "'></div>";
 			},
 			grid_blank: function (item) {
 				return "<div class='gantt_tree_icon gantt_blank'></div>";
