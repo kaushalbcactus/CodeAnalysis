@@ -2004,16 +2004,14 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       });
     }
     this.selectedTask.user = this.selectedTask.AssignedTo.Title;
-    let allTasks = {
-      data: []
-    }
-    allTasks.data = this.getGanttTasksFromMilestones(this.milestoneData, true);
-    const editedTask = allTasks.data.find(task => task.id == this.selectedTask.id);
+    let allTasksData = [];
+    allTasksData= this.getGanttTasksFromMilestones(this.milestoneData, true);
+    const editedTask = allTasksData.find(task => task.id == this.selectedTask.id);
     editedTask.AssignedTo = editedTask ? this.selectedTask.AssignedTo : editedTask.AssignedTo;
     editedTask.user = editedTask ? this.selectedTask.AssignedTo.Title : editedTask.AssignedTo.Title;
     this.assignedToUserChanged(editedTask);
-    this.GanttchartData = allTasks.data;
-    this.taskAllocateCommonService.ganttParseObject = allTasks;
+    this.GanttchartData = allTasksData;
+    this.taskAllocateCommonService.ganttParseObject.data = [...allTasksData];
     // const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
     //   return this.selectedTask.AssignedTo.ID === objt.UserName.ID;
     // });
@@ -3051,7 +3049,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.oldGantChartData = ganttTempData;
     this.GanttchartData = this.getGanttTasksFromMilestones(this.milestoneData, true);
     this.createGanttDataAndLinks(true, milestonesList);
-    this.taskAllocateCommonService.ganttParseObject.data = this.GanttchartData;
+    this.taskAllocateCommonService.ganttParseObject.data = [...this.GanttchartData];
     if (this.visualgraph === true) {
       this.loadComponent();
     }
@@ -6503,7 +6501,15 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     console.log(event);
     setTimeout(() => {
       let panel: any = document.querySelector(".dailyAllocationOverlayComp > div");
-      panel.style.top = event.pageY + 'px';
+      let panelContainer: any = document.getElementById('s4-workspace');
+      let topAdject = 0;
+      if(panelContainer) {
+       topAdject =  panelContainer.scrollTop > 0 ? panelContainer.scrollTop - panel.clientHeight : 0;
+       if(topAdject < 0) {
+        topAdject =  panelContainer.scrollTop;
+       }
+      }
+      panel.style.top = event.pageY + topAdject + 'px';
       panel.style.left = event.pageX + 'px';
     }, 50);
   }
