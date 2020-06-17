@@ -1757,7 +1757,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       }
       let overlayIconButton = e.target.closest(".ganttOverlayIcon");
       if (overlayIconButton) {
-        // overlayIconButton.addEventListener("click", () => { this.showOverlayPanel(e, task, this.dailyAllocateOP,e.target.parentElement) } , false);        
+        // overlayIconButton.addEventListener("click", () => { this.showOverlayPanel(e, task, this.dailyAllocateOP,e.target.parentElement) } , false);
         this.showOverlayPanel(e, task, this.dailyAllocateOP, e.target.parentElement)
       }
 
@@ -2008,10 +2008,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.assignedToUserChanged(editedTask);
     this.GanttchartData = allTasks.data;
     this.taskAllocateCommonService.ganttParseObject = allTasks;
-    const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
-      return this.selectedTask.AssignedTo.ID === objt.UserName.ID;
-    });
-    await this.dailyAllocation.calcPrestackAllocation(resource, this.selectedTask);
+    // const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
+    //   return this.selectedTask.AssignedTo.ID === objt.UserName.ID;
+    // });
+    // await this.dailyAllocation.calcPrestackAllocation(resource, this.selectedTask);
     this.refreshGantt();
     this.ganttNotification();
   }
