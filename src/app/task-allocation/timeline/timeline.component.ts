@@ -3412,7 +3412,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       //new added milestone
       if (milestone) {
         let prevCRTask = milestoneData[milestoneData.findIndex(m => m.data == milestone) - 1] ? milestoneData[milestoneData.findIndex(m => m.data == milestone) - 1].data : '';
-        prevCRTask ? this.setTaskDates(milestone, prevCRTask.end_date) : this.setTaskDates(milestone, new Date(defaultDate));
+        prevCRTask ? new Date(prevCRTask.end_date) > new Date(defaultDate) ? this.setTaskDates(milestone, prevCRTask.end_date) : this.setTaskDates(milestone, new Date(defaultDate)) : this.setTaskDates(milestone, new Date(defaultDate));
       }
 
       //new added submilestone
