@@ -1064,7 +1064,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     else {
       this.milestoneData = [];
     }
-
+    this.visualgraph = this.graphFlag !== undefined ? this.graphFlag : true;
     if (this.visualgraph) {
       this.showGanttChart(true);
     } else {
@@ -1087,7 +1087,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       this.ganttAttachEvents();
     }
     this.loaderenable = false;
-    this.visualgraph = this.graphFlag !== undefined ? this.graphFlag : true;
+    //this.visualgraph = this.graphFlag !== undefined ? this.graphFlag : true;
     this.GanttChartView = true;
     await this.getResourceCapacity();
   }
@@ -1526,6 +1526,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.selectedScale = this.selectedScale || { label: 'Day Scale', value: '1' };
     this.ganttChart.clear();
     this.ganttChart.remove();
+    //this.ganttChart.clearAll();
     const factory = this.resolver.resolveComponentFactory(GanttChartComponent);
     this.ganttComponentRef = this.ganttChart.createComponent(factory);
     gantt.serverList("AssignedTo", this.resource);
@@ -1544,6 +1545,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.ganttComponentRef.instance.onLoad(this.taskAllocateCommonService.ganttParseObject, this.resource);
     this.setScale(this.selectedScale);
     this.allTaskData = this.taskAllocateCommonService.ganttParseObject;
+
+    gantt.refreshData();
     this.allocationColor();
     if (this.menu !== undefined) {
       this.menu.unload();
@@ -1654,17 +1657,19 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       this.taskAllocateCommonService.attachedEvents = [];
     }
 
-    // const onTaskOpened = gantt.attachEvent("onTaskOpened", (id) => {
-    //   gantt.init(this.ganttComponentRef.instance.ganttContainer.nativeElement);
-    //   gantt.clearAll();
-    //   this.ganttComponentRef.instance.onLoad(this.taskAllocateCommonService.ganttParseObject, this.resource);
-    //   this.setScale(this.selectedScale);
-    // });
-    // this.taskAllocateCommonService.attachedEvents.push(onTaskOpened);
+    const onTaskOpened = gantt.attachEvent("onTaskOpened", (id) => {
+      debugger;
+      // gantt.init(this.ganttComponentRef.instance.ganttContainer.nativeElement);
+      // gantt.clearAll();
+      // this.ganttComponentRef.instance.onLoad(this.taskAllocateCommonService.ganttParseObject, this.resource);
+      // this.setScale(this.selectedScale);
+      //this.loadComponent();
+    });
+    this.taskAllocateCommonService.attachedEvents.push(onTaskOpened);
 
     const onBeforeTaskChanged = gantt.attachEvent("onBeforeTaskChanged", (id, mode, task) => {
       this.allTaskData = gantt.serialize();
-      this.currentTask = task;
+      this.currentTask = {...task};
       return true;
     });
     this.taskAllocateCommonService.attachedEvents.push(onBeforeTaskChanged);
@@ -1674,7 +1679,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       this.startDate = task.start_date;
       this.endDate = task.end_date;
       this.bHrs = task.budgetHours;
-      this.resetTask = task;
+      this.resetTask = {...task};
       this.dragClickedInput = e.srcElement.className;
       const isStartDate = this.dragClickedInput.indexOf('start_date') > -1 ? true : false;
       if (gantt.ext.zoom.getCurrentLevel() < 3) {
@@ -1727,7 +1732,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       if (menuButton) {
         if (gantt.ext.zoom.getCurrentLevel() < 3) {
           if (taskId) {
-            let task = this.GanttchartData.find(e=> e.id == taskId);//gantt.getTask(taskId);
+            let task = this.GanttchartData.find(e => e.id == taskId);//gantt.getTask(taskId);
             const menus = this.showMenus(task);
             this.menu.clearAll();
             this.menu.loadStruct(menus);
@@ -1767,7 +1772,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.taskAllocateCommonService.attachedEvents.push(onTaskClick);
 
     const onTaskDrag = gantt.attachEvent("onAfterTaskDrag", (id, mode, e) => {
-      let task = this.currentTask;
+      let task = {...this.currentTask};
       this.ganttSetTime = false;
       const isStartDate = this.dragClickedInput.indexOf('start_date') > -1 ? true : false;
       if (task.status !== 'Completed' || task.type == 'milestone') {
@@ -1842,7 +1847,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           }
         }
         if (task.id == this.resetTask.id) {
-          task = this.resetTask;
+          //task = this.resetTask;
+          
           task.start_date = this.startDate;
           task.end_date = this.endDate;
         }
@@ -1852,7 +1858,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     }
     this.showGanttChart(false);
     setTimeout(() => {
-      this.scrollToTaskDate(this.singleTask.end_date);
+      this.scrollToTaskDate(this.ganttSetTime ? this.singleTask.end_date : this.resetTask.end_date);
     }, 1000);
   }
 
@@ -2012,7 +2018,13 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     //   return this.selectedTask.AssignedTo.ID === objt.UserName.ID;
     // });
     // await this.dailyAllocation.calcPrestackAllocation(resource, this.selectedTask);
-    this.refreshGantt();
+    //this.refreshGantt();
+    this.loadComponent();
+    // const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
+    //   return this.selectedTask.AssignedTo.ID === objt.UserName.ID;
+    // });
+    // await this.dailyAllocation.calcPrestackAllocation(resource, this.selectedTask);
+   // this.refreshGantt();
     this.ganttNotification();
   }
 
@@ -2152,6 +2164,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           if (task.type == 'task') {
             if (task.id == this.updatedTasks.id) {
               task.budgetHours = this.budgetHrs;
+              task.edited = true;
               const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
                 return task.AssignedTo && task.AssignedTo.ID === objt.UserName.ID;
               });
@@ -2164,6 +2177,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           } else if (task.type == 'milestone') {
             if (task.id == this.updatedTasks.id) {
               task.budgetHours = this.budgetHrs;
+              task.edited = true;
             }
           }
         }
@@ -2180,9 +2194,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         this.GanttchartData = allTasks.data;
         this.showBudgetHrs = false;
         this.ganttNotification();
-        this.showGanttChart(false);
         setTimeout(() => {
-          this.refreshGantt();
+          this.showGanttChart(false);
+          //this.refreshGantt();
         }, 500)
         setTimeout(() => {
           this.scrollToTaskDate(this.updatedTasks.end_date);
@@ -2225,7 +2239,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
       this.ganttNotification();
       this.showGanttChart(false);
-      await this.refreshGantt();
+      //await this.refreshGantt();
       setTimeout(() => {
         this.scrollToTaskDate(scrollDate);
       }, 1000);
@@ -2341,6 +2355,16 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     setTimeout(() => {
       this.scrollToTaskDate(this.resetTask.pUserEnd);
     }, 1000);
+  }
+
+  loadComponentRefresh() {
+    this.loaderenable = true;
+    this.visualgraph = false;
+    setTimeout(() => {
+      this.loadComponent();
+      this.loaderenable = false;
+      this.visualgraph = true;
+    });
   }
 
   refreshGantt() {
@@ -3028,7 +3052,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.GanttchartData = this.getGanttTasksFromMilestones(this.milestoneData, true);
     this.createGanttDataAndLinks(true, milestonesList);
     this.taskAllocateCommonService.ganttParseObject.data = this.GanttchartData;
-    this.loadComponent();
+    if (this.visualgraph === true) {
+      this.loadComponent();
+    }
   }
 
   ////// Refactor code- Done
