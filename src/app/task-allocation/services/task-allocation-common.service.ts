@@ -283,10 +283,6 @@ export class TaskAllocationCommonService {
     return milestone;
   }
 
-  generateDateFromParts() {
-
-  }
-
   ganttDataObject(data, milestoneObj?, NextSubMilestone?, milestone?, hrsMinObject?) {
 
     var milestoneSubmilestones = data.SubMilestones ? data.SubMilestones !== null ? data.SubMilestones.replace(/#/gi, "").split(';') : [] : [];
@@ -300,11 +296,11 @@ export class TaskAllocationCommonService {
         data.type == 'task' ? new Date(convertedDate.convertedStartDate) :
           new Date(data.startDate !== "" ? data.startDate.date.year + "/" + (data.startDate.date.month < 10 ? "0" + data.startDate.date.month : data.startDate.date.month) + "/" + (data.startDate.date.day < 10 ? "0" + data.startDate.date.day : data.startDate.date.day) : ''),
       pUserEnd: data.type == 'submilestone' ? null :
-        data.type == 'task' ? new Date(convertedDate.convertedEndDate) :
+        data.type == 'task' ? data.itemType=='Send to client' ? new Date(convertedDate.convertedStartDate) : new Date(convertedDate.convertedEndDate) :
           new Date(data.endDate !== "" ? data.endDate.date.year + "/" + (data.endDate.date.month < 10 ? "0" + data.endDate.date.month : data.endDate.date.month) + "/" + (data.endDate.date.day < 10 ? "0" + data.endDate.date.day : data.endDate.date.day) : ''),
       pUserStartDatePart : data.type == 'submilestone' ? null : data.type == 'task' ? this.getDatePart(convertedDate.convertedStartDate) : this.getDate(data.startDate),
       pUserStartTimePart : data.type == 'task' ? this.getTimePart(convertedDate.convertedStartDate) : '',
-      pUserEndDatePart : data.type == 'submilestone' ? null : data.type == 'task' ? this.getDatePart(convertedDate.convertedEndDate) : this.getDate(data.endDate),
+      pUserEndDatePart : data.type == 'submilestone' ? null : data.type == 'task' ? data.itemType=='Send to client' ? this.getDatePart(convertedDate.convertedStartDate) : this.getDatePart(convertedDate.convertedEndDate) : this.getDate(data.endDate),
       pUserEndTimePart : data.type == 'task' ? this.getTimePart(convertedDate.convertedEndDate) : '',
       status : data.Status,
       id : data.Id,
@@ -319,7 +315,7 @@ export class TaskAllocationCommonService {
         data.type == 'task' ? new Date(convertedDate.jsLocalStartDate) :
           new Date(data.startDate !== "" ? data.startDate.date.year + "/" + (data.startDate.date.month < 10 ? "0" + data.startDate.date.month : data.startDate.date.month) + "/" + (data.startDate.date.day < 10 ? "0" + data.startDate.date.day : data.startDate.date.day) : ''),
       end_date : data.type == 'submilestone' ? null :
-        data.type == 'task' ? new Date(convertedDate.jsLocalEndDate) :
+        data.type == 'task' ? data.itemType=='Send to client' ? new Date(convertedDate.jsLocalStartDate) : new Date(convertedDate.jsLocalEndDate) :
           new Date(data.endDate !== "" ? data.endDate.date.year + "/" + (data.endDate.date.month < 10 ? "0" + data.endDate.date.month : data.endDate.date.month) + "/" + (data.endDate.date.day < 10 ? "0" + data.endDate.date.day : data.endDate.date.day) : ''),
       user : data.AssignedTo ? data.AssignedTo.Title !== undefined ? data.AssignedTo.Title : '' : '  ',
       open : data.type == 'task' ? data.IsCentrallyAllocated === 'Yes' ? 0 : 1 : this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === data.Title ? 1 : 0,

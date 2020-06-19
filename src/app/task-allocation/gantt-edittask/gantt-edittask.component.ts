@@ -227,7 +227,6 @@ export class GanttEdittaskComponent implements OnInit {
         return this.task.AssignedTo.ID === objt.UserName.ID;
       });
 
-      // this.maxBudgetHrs = '';
 
       this.maxBudgetHrs = this.taskAllocateCommonService.setMaxBudgetHrs(this.task);
       this.task.budgetHours = budgetHrs;
@@ -253,6 +252,13 @@ export class GanttEdittaskComponent implements OnInit {
         this.task.pUserStart = start_date;
         this.task.pUserStartDatePart = this.getDatePart(start_date);
         this.task.pUserStartTimePart = this.getTimePart(start_date);
+        if(this.task.itemType == 'Send to client') {
+          this.editTaskForm.controls.endDate.setValue(this.task.start_date);
+          this.editTaskForm.controls.endDateTimePart.setValue(this.getTimePart(this.task.start_date));
+          this.task.pUserEnd = this.task.pUserStart;
+          this.task.pUserEndDatePart = this.getDatePart(this.task.pUserStart);
+          this.task.pUserEndTimePart = this.getTimePart(this.task.pUserStart);
+        }
         this.cascadingObject.node = this.task;
         this.cascadingObject.type = 'start';
         this.validateBudgetHours(this.task);
@@ -294,6 +300,13 @@ export class GanttEdittaskComponent implements OnInit {
       this.task.pUserStart = start_date;
       this.task.pUserStartDatePart = this.getDatePart(start_date);
       this.task.pUserStartTimePart = this.getTimePart(start_date);
+      if(this.task.itemType == 'Send to client') {
+        this.editTaskForm.controls.endDate.setValue(this.task.start_date);
+        this.editTaskForm.controls.endDateTimePart.setValue(this.getTimePart(this.task.start_date));
+        this.task.pUserEnd = this.task.pUserStart;
+        this.task.pUserEndDatePart = this.getDatePart(this.task.pUserStart);
+        this.task.pUserEndTimePart = this.getTimePart(this.task.pUserStart);
+      }
       this.cascadingObject.node = this.task;
       this.cascadingObject.type = 'start';
       this.validateBudgetHours(this.task);
@@ -337,16 +350,6 @@ export class GanttEdittaskComponent implements OnInit {
       this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: 'Budget hours is set to zero because given budget hours is greater than task time period.' });
     }
   }
-
-  // setMinutesAfterDrag(date) {
-  //   let time: any = this.getTimePart(date);
-  //   time = time.split(':')
-  //   let h = parseInt(time[0])
-  //   let m = parseInt(time[1].split(' ')[0])
-  //   let ampm = time[1].split(' ')[1]
-  //   let minutes = (Math.round(m / 15) * 15) % 60;
-  //   return h + ':' + minutes + ' ' + ampm;
-  // }
 
   isViewAllocationBtn(task) {
     if (task.itemType !== 'Client Review' && task.itemType !== 'Send to client' && task.slotType !== 'Slot') {
