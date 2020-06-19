@@ -1959,10 +1959,11 @@ export class PMCommonService {
 
 
   async getEmailTemplate(TemplateName) {
+    const contentFilter = Object.assign({}, this.pmConstant.SOW_QUERY.CONTENT_QUERY);
     this.commonService.SetNewrelic('ProjectManagement', 'PmCommon', 'GetEmailTemplate');
-    this.pmConstant.SOW_QUERY.CONTENT_QUERY.filter = this.pmConstant.SOW_QUERY.CONTENT_QUERY.filter.replace(/{{templateName}}/gi, TemplateName);
+    contentFilter.filter = contentFilter.filter.replace(/{{templateName}}/gi, TemplateName);
     const templateData = await this.spServices.readItems(this.constant.listNames.MailContent.name,
-      this.pmConstant.SOW_QUERY.CONTENT_QUERY);
+      contentFilter);
     return templateData.length > 0 ? templateData[0] : [];
   }
 
