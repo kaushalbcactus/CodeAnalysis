@@ -327,9 +327,18 @@ export class UsercapacityComponent implements OnInit {
     }
 
     if (blockResBatchUrl.length) {
-      this.common.SetNewrelic("Shared", "UserCapacity", "fetchBlockResourceData");
-      blockResbatchResults = await this.spService.executeBatch(blockResBatchUrl);
-      tempblockResFinalArray = [...tempblockResFinalArray, ...blockResbatchResults];
+      this.common.SetNewrelic(
+        "Shared",
+        "UserCapacity",
+        "fetchBlockResourceData"
+      );
+      blockResbatchResults = await this.spService.executeBatch(
+        blockResBatchUrl
+      );
+      tempblockResFinalArray = [
+        ...tempblockResFinalArray,
+        ...blockResbatchResults,
+      ];
     }
     if (TimeSpentbatchUrl.length) {
       this.common.SetNewrelic(
@@ -355,6 +364,11 @@ export class UsercapacityComponent implements OnInit {
     const arruserResults1 = tempTimeSpentFinalArray.length
       ? tempTimeSpentFinalArray.map((a) => a.retItems)
       : [];
+
+    const arrBlockResResults = tempblockResFinalArray.length
+      ? tempblockResFinalArray.map((a) => a.retItems)
+      : [];
+
     let batchURL = [];
     batchResults = [];
     finalArray = [];
@@ -371,10 +385,11 @@ export class UsercapacityComponent implements OnInit {
 
         const TempTasks = this.fetchTasks(
           oCapacity.arrUserDetails[indexUser],
-          arruserResults[indexUser]
+         [...arruserResults[indexUser],...arrBlockResResults[indexUser]] 
         );
 
         oCapacity.arrUserDetails[indexUser].tasks = this.filterData(TempTasks);
+
 
         if (
           oCapacity.arrUserDetails[indexUser].tasks &&

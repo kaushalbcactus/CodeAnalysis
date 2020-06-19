@@ -1,19 +1,19 @@
-<div fxLayout="column" style="padding: 12vw;" fxLayoutAlign="center center" [hidden]="!modalloaderenable">
+<div class="p-col-align-center" style="padding: 12vw;" [hidden]="!modalloaderenable">
     <div id="modalInnerLoader"></div>
     <div id="modalInnerLoaderText">Loading...</div>
 </div>
 
 
 
-<div class='UserButton' fxLayout="row" fxLayoutAlign="end center" *ngIf="!modalloaderenable">
+<div class="p-col-12 dialogSaveCancel" *ngIf="!modalloaderenable">
 
-    <button type="button" pButton icon="pi pi-save" class="cls_blockResSave" id="saveClient" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="SaveDetails()" label="Save"></button>
+    <button type="button" pButton icon="pi pi-save" class="cls_blockResSave dynamicDialogSave" (click)="SaveDetails()" label="Save"></button>
 
-    <button type="button" class="cls_blockResCancel" pButton icon="pi pi-times" id="cancelClient" (click)="cancel();" label="Cancel"></button>
+    <button type="button" class="cls_blockResCancel dynamicDialogCancel" pButton icon="pi pi-times" (click)="cancel();" label="Cancel"></button>
 
 </div>
 
-<div fxLayout="row" #scrollDown fxLayoutAlign="space-between start" fxLayoutGap="5px" *ngIf="!modalloaderenable">
+<div class="p-grid" *ngIf="!modalloaderenable">
 
     <form [formGroup]='BlockResourceForm' class="p-col">
 

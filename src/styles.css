@@ -184,3 +184,71 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
 .ui-toast-detail {
     white-space: pre-line;
 }
+
+
+/* Dynamic Dialog common Css  */
+
+.dialogSaveCancel {
+    text-align: right !important;
+}
+
+.dynamicDialogSave {
+    margin: -55px 0px 0px -160px !important;
+    position: fixed !important;
+    cursor: pointer !important;
+    background-color: #C53E3E !important;
+    border-color: #C53E3E !important;
+}
+
+.dynamicDialogCancel {
+    margin: -55px 0px 0px -75px !important;
+    position: fixed !important;
+    cursor: pointer !important;
+    background-color: #C53E3E !important;
+    border-color: #C53E3E !important;
+}
+
+#modalInnerLoader {
+    border: 5px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 5px solid red;
+    border-bottom: 5px solid red;
+    width: 50px;
+    height: 50px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    margin: 0 auto;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#modalInnerLoaderText {
+    -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
+    -o-animation: loading-text-opacity 2s linear 0s infinite normal;
+    -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
+    animation: loading-text-opacity 2s linear 0s infinite normal;
+    color: black;
+    font-family: "Helvetica Neue, "Helvetica", ""arial";
+    font-size: 10px;
+    font-weight: bold;
+    opacity: 0.5;
+    text-align: center;
+    text-transform: uppercase;
+    top: 0;
+}
+
+.textfeildClass {
+    width: 100% !important;
+}
+
+.pCalendarBtn {
+    width: 100% !important;
+}
+
+.pCalendarBtn>input {
+    width: calc(100% - 30px) !important;
+}
+
+
+/* Dynamic Dialog common Css end  */
