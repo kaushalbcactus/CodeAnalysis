@@ -1,5 +1,4 @@
 import { Component, OnInit, ComponentFactoryResolver, ViewChild, ElementRef, OnDestroy } from '@angular/core';
-import { MessageService } from 'primeng/api';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { SPOperationService } from '../../Services/spoperation.service';
 import { ConstantsService } from '../../Services/constants.service';
@@ -24,7 +23,6 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
     FolderName: any;
 
     constructor(
-        public messageService: MessageService,
         private fb: FormBuilder,
         private spServices: SPOperationService,
         private constantService: ConstantsService,
@@ -508,10 +506,8 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             this.selectedPCArrays.push({ ProjectCode: '' });
             console.log('this.totalLineItems ', this.totalLineItems);
         } else {
-            this.messageService.add({
-                key: 'expenseInfoToast', severity: 'info', summary: 'Info message',
-                detail: 'Your entered amount is equal to actual Amount. So you  cant asign further amount.', life: 2000
-            });
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.info,'Your entered amount is equal to actual Amount. So you  cant asign further amount.',false);
         }
     }
     selectedProjectCode(pItem: any, index: number) {
@@ -521,10 +517,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         if (found) {
             // console.log('this.totalLineItems ', this.totalLineItems);
             // console.log('this.selectedPCArrays ', this.selectedPCArrays);
-            this.messageService.add({
-                key: 'expenseInfoToast', severity: 'info', summary: 'Info message',
-                detail: 'You have already selected this project/client please select another one.', life: 4000
-            });
+            this.commonService.showToastrMessage(this.constantService.MessageType.warn,'You have already selected this project/client please select another one.',false);
             this.totalLineItems[index] = {};
             this.selectedPCArrays[index].ProjectCode = '';
 
@@ -579,10 +572,8 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         if (arrResults.length) {
             // console.log(arrResults[0]);
             if (!arrResults.length) {
-                this.messageService.add({
-                    key: 'expenseInfoToast', severity: 'info', summary: 'Info message',
-                    detail: 'Currency not found for selected project / client.', life: 4000
-                });
+
+                this.commonService.showToastrMessage(this.constantService.MessageType.warn,'Currency not found for selected project / client.',false);
                 this.totalLineItems[index] = {};
                 this.selectedPCArrays[index].ProjectCode = '';
                 this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
@@ -641,10 +632,8 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             this.addSts = false;
             val = 0;
             // this.totalLineItems[index].AmountPerProject = '';
-            this.messageService.add({
-                key: 'expenseInfoToast', severity: 'info', summary: 'Info message',
-                detail: 'Your entered amount greater than actual Amount.', life: 4000
-            });
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.info,'Your entered amount greater than actual Amount.',false);
             const obj: any = this.totalLineItems[index];
             obj.AmountPerProject = val;
             this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
@@ -705,10 +694,8 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
 
     contractEDate() {
         if (!this.createFreelancer_form.value.ContractStartDate) {
-            this.messageService.add({
-                key: 'expenseErrorToast', severity: 'error', summary: 'Error message',
-                detail: 'Please select Contract start date first & try again.', life: 3000
-            });
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.error,'Please select Contract start date first & try again.',false);
             this.createFreelancer_form.get('ContractEndDate').setValue('');
         }
     }
@@ -721,24 +708,17 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             }
             if (!this.addSts) {
                 // this.totalLineItems[index].AmountPerProject = '';
-                this.messageService.add({
-                    key: 'expenseInfoToast', severity: 'info', summary: 'Info message',
-                    detail: 'Your entered amount is less than actual Amount.', life: 4000
-                });
+                this.commonService.showToastrMessage(this.constantService.MessageType.info,'Your entered amount is less than actual Amount.',false);
                 return;
             }
             if (this.SelectedFile[0].file.size === 0) {
-                this.messageService.add({
-                    key: 'expenseInfoToast', severity: 'info', summary: 'Info message',
-                    detail: 'Unable to upload file, size of ' + this.SelectedFile[0].file.name + ' is 0 KB.', life: 4000
-                });
+
+                this.commonService.showToastrMessage(this.constantService.MessageType.warn,'Unable to upload file, size of ' + this.SelectedFile[0].file.name + ' is 0 KB.',false);
                 return;
             }
             else if (this.caSelectedFile[0].file.size === 0) {
-                this.messageService.add({
-                    key: 'expenseInfoToast', severity: 'info', summary: 'Info message',
-                    detail: 'Unable to upload file, size of ' + this.caSelectedFile[0].file.name + ' is 0 KB.', life: 4000
-                });
+
+                this.commonService.showToastrMessage(this.constantService.MessageType.warn,'Unable to upload file, size of ' + this.caSelectedFile[0].file.name + ' is 0 KB.',false);
                 return;
             }
             this.submitBtn.isClicked = true;
@@ -842,40 +822,6 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         console.log('finalAddEArray ', this.finalAddEArray);
     }
 
-    // onFileChange(event, folderName) {
-    //     console.log('Event ', event);
-    //     this.fileReader = new FileReader();
-    //     if (event.target.files && event.target.files.length > 0) {
-    //         this.selectedFile = event.target.files[0];
-    //         const fileName = this.selectedFile.name;
-    //         const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
-    //         if (fileName !== sNewFileName) {
-    //             this.fileInput.nativeElement.value = '';
-    //             this.addExpenditure_form.get('FileURL').setValue('');
-    //             this.messageService.add({
-    //                 key: 'expenseErrorToast', severity: 'error', summary: 'Error message',
-    //                 detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000
-    //             });
-    //             return false;
-    //         }
-    //         this.fileReader.readAsArrayBuffer(this.selectedFile);
-    //         this.fileReader.onload = () => {
-    //             console.log('selectedFile ', this.selectedFile);
-    //             console.log('this.fileReader  ', this.fileReader.result);
-    //             const date = new Date();
-
-    //             const folderPath: string = this.globalService.sharePointPageObject.webRelativeUrl + '/SpendingInfoFiles/'
-    //                 + folderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM') + '/';
-
-    //             this.filePathUrl = this.globalService.sharePointPageObject.webRelativeUrl + '/_api/web/GetFolderByServerRelativeUrl(' + '\'' + folderPath
-    //                 + '\'' + ')/Files/add(url=@TargetFileName,overwrite=\'true\')?' + '&@TargetFileName=\'' + this.selectedFile.name + '\'';
-    //         };
-
-    //     }
-    // }
-
-
-
     onFileChange(event, folderName) {
         console.log('Event ', event);
         this.fileReader = new FileReader();
@@ -887,10 +833,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             if (fileName !== sNewFileName) {
                 this.fileInput.nativeElement.value = '';
                 this.addExpenditure_form.get('FileURL').setValue('');
-                this.messageService.add({
-                    key: 'expenseErrorToast', severity: 'error', summary: 'Error message',
-                    detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000
-                });
+                this.commonService.showToastrMessage(this.constantService.MessageType.error,'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'',false);
                 return false;
             }
             this.FolderName = folderName;
@@ -908,10 +851,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
                 if (uploadedfile[0].hasOwnProperty('odata.error') || uploadedfile[0].hasError) {
                     this.submitBtn.isClicked = false;
-                    this.messageService.add({
-                        key: 'expenseErrorToast', severity: 'error', summary: 'Error message',
-                        detail: 'File not uploaded, Folder / File Not Found', life: 3000
-                    });
+                    this.commonService.showToastrMessage(this.constantService.MessageType.error,'File not uploaded, Folder / File Not Found',false);
                 } else if (uploadedfile[0].ServerRelativeUrl) {
                     this.fileUploadedUrl = uploadedfile[0].ServerRelativeUrl;
                     this.uploadCAFileData();
@@ -932,25 +872,12 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             if (fileName !== sNewFileName) {
                 this.caFileInput.nativeElement.value = '';
                 this.addExpenditure_form.get('CAFileURL').setValue('');
-                this.messageService.add({
-                    key: 'expenseErrorToast', severity: 'error', summary: 'Error message',
-                    detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000
-                });
+
+                this.commonService.showToastrMessage(this.constantService.MessageType.error,'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'',false);
                 return false;
             }
             this.caFolderName = folderName;
             this.caSelectedFile.push(new Object({ name: sNewFileName, file: this.selectedCAFile }));
-
-
-            // this.cafileReader.readAsArrayBuffer(this.selectedCAFile);
-            // this.cafileReader.onload = () => {
-            //     const date = new Date();
-            //     const folderPath: string = this.globalService.sharePointPageObject.webRelativeUrl + '/SpendingInfoFiles/' + folderName
-            //         + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM') + '/';
-            //     // tslint:disable-next-line: max-line-length
-            //     this.cafilePathUrl = this.globalService.sharePointPageObject.webRelativeUrl + '/_api/web/GetFolderByServerRelativeUrl(' + '\'' +
-            //         folderPath + '\'' + ')/Files/add(url=@TargetFileName,overwrite=\'true\')?' + '&@TargetFileName=\'' + this.selectedCAFile.name + '\'';
-            // };
         }
     }
 
@@ -961,10 +888,8 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             if (this.caSelectedFile.length > 0 && this.caSelectedFile.length === uploadedfile.length) {
                 if (uploadedfile[0].hasOwnProperty('odata.error') || uploadedfile[0].hasError) {
                     this.submitBtn.isClicked = false;
-                    this.messageService.add({
-                        key: 'expenseErrorToast', severity: 'error', summary: 'Error message',
-                        detail: 'Approve File not uploaded, Folder / File Not Found', life: 3000
-                    });
+
+                    this.commonService.showToastrMessage(this.constantService.MessageType.error,'Approve File not uploaded, Folder / File Not Found',false);
                 } else if (uploadedfile[0].ServerRelativeUrl) {
                     this.caFileUploadedUrl = uploadedfile[0].ServerRelativeUrl;
                     this.submitExpediture();
@@ -976,10 +901,8 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         let res = await this.spServices.executeBatch(batchUrl);
         res = res.length ? res.map(a => a.retItems) : [];
         if (type === 'addExpenditure') {
-            this.messageService.add({
-                key: 'expenseSuccessToast', severity: 'success', summary: 'Success message',
-                detail: 'Expense created.', life: 2000
-            });
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.success,'Expense created.',false);
             this.showHideREModal = false;
             for (let k = 0; k < res.length; k++) {
                 const element = res[k];
@@ -987,10 +910,8 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             }
 
         } else if (type === 'createFreelancer') {
-            this.messageService.add({
-                key: 'expenseSuccessToast', severity: 'success', summary: 'Success message',
-                detail: this.createFreelancer_form.value.RecordType + ' created.', life: 3000
-            });
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.success,this.createFreelancer_form.value.RecordType + ' created.',true);
             this.cancelFormSub(type);
             this.getVendorFreelanceData();
         }
@@ -1133,7 +1054,6 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
 
     // Tab Action
     onExpenditureTabs(event) {
-        // this.messageService.add({ key: 'expenseInfoToast', severity: 'info', summary: 'Tab Expanded' });
         console.log('Expenditure Tabs event ', event);
         if (event.index === 0) {
             // this.loadComponent('pec');
@@ -1152,10 +1072,8 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
 
     ngAfterContentInit() {
         if (this.constantService.userPermission.userPermissionMsg) {
-            this.messageService.add({
-                key: 'fdToast', severity: 'info', summary: 'Info message',
-                detail: 'You don\'t have access to the url. Please contact SP team.', sticky: true
-            });
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.warn,'You don\'t have access to the url. Please contact SP team.',true);
             this.constantService.userPermission.userPermissionMsg = false;
         }
     }

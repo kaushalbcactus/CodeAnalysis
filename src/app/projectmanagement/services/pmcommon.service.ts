@@ -5,7 +5,6 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { GlobalService } from 'src/app/Services/global.service';
-import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { DataService } from 'src/app/Services/data.service';
 import { DialogService } from 'primeng';
@@ -23,7 +22,6 @@ export class PMCommonService {
     private constant: ConstantsService,
     private commonService: CommonService,
     private globalObject: GlobalService,
-    public messageService: MessageService,
     private router: Router,
     private dialogService: DialogService,
     private dataService: DataService
@@ -1993,6 +1991,15 @@ export class PMCommonService {
   }
 
 
+
+  replaceContent(mailContent, key, value) {
+    return mailContent.replace(new RegExp(key, 'g'), value);
+  }
+
+
+
+  
+  
   // SendEmail(){
   //   var EmailTemplate = this.Emailtemplate.Content;
   //   var objEmailBody = [];

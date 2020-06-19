@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ConstantsService } from 'src/app/Services/constants.service';
-import { MessageService, DynamicDialogConfig, DynamicDialogRef } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 import { CommonService } from 'src/app/Services/common.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
@@ -26,7 +26,6 @@ export class AddEditPocComponent implements OnInit {
 
   constructor(private frmbuilder: FormBuilder,
     private constantsService: ConstantsService,
-    private messageService: MessageService,
     private common: CommonService,
     public config: DynamicDialogConfig,
     public ref: DynamicDialogRef,
@@ -35,7 +34,7 @@ export class AddEditPocComponent implements OnInit {
     private datepipe: DatePipe,
     public adminObject: AdminObjectService,
     private adminCommonService: AdminCommonService) {
-    
+
     /**
    * This is used to initialize the POC form.
    */
@@ -224,24 +223,21 @@ export class AddEditPocComponent implements OnInit {
       if (!this.showeditPOC) {
         if (this.POCRows.some(a =>
           a.EmailAddress.toLowerCase() === this.pocForm.value.email.toLowerCase())) {
-          this.messageService.add({
-            key: 'adminCustom', severity: 'error',
-            summary: 'Error Message', detail: 'This email id is already exist. Please enter another email id.'
-          });
+          this.common.showToastrMessage(this.constantsService.MessageType.warn, 'This email id is already exist. Please enter another email id.', false);
           return false;
         }
       }
-    
+
       this.ref.close(this.pocForm)
-  
+
     } else {
       this.isPOCFormSubmit = true;
     }
   }
 
-  
 
-  
+
+
 
   /**
    * Construct a method to map the array values into particular column dropdown.

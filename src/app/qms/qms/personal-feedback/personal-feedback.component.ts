@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { DataService } from '../../../Services/data.service';
 import { QMSConstantsService } from '../services/qmsconstants.service';
-import { MessageService } from 'primeng/api';
 import { QMSCommonService } from '../services/qmscommon.service';
 import { CommonService } from 'src/app/Services/common.service';
 
@@ -24,7 +23,6 @@ export class PersonalFeedbackComponent implements OnInit {
     private router: Router,
     private data: DataService,
     private qmsConstatsService: QMSConstantsService,
-    private messageService: MessageService,
     private qmsCommonService: QMSCommonService,
     private common: CommonService
   ) { }

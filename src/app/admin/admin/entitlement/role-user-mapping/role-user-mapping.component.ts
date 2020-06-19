@@ -2,11 +2,11 @@ import { Component, OnInit, ApplicationRef, NgZone } from '@angular/core';
 import { DatePipe, PlatformLocation } from '@angular/common';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { AdminObjectService } from 'src/app/admin/services/admin-object.service';
-import { MessageService } from 'primeng/api';
 import { AdminCommonService } from 'src/app/admin/services/admin-common.service';
 import { Router } from '@angular/router';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
 import { CommonService } from 'src/app/Services/common.service';
+import { ConstantsService } from 'src/app/Services/constants.service';
 
 @Component({
   selector: 'app-role-user-mapping',
@@ -27,7 +27,6 @@ export class RoleUserMappingComponent implements OnInit {
    * @param datepipe This is instance referance of `DatePipe` component.
    * @param spServices This is instance referance of `SPOperationService` component.
    * @param adminObject This is instance referance of `AdminObjectService` component.
-   * @param messageService This is instance referance of `MessageService` component.
    * @param adminCommonService This is instance referance of `AdminCommonService` component.
    * @param platformLocation This is instance referance of `PlatformLocation` component.
    * @param router This is instance referance of `Router` component.
@@ -39,14 +38,14 @@ export class RoleUserMappingComponent implements OnInit {
     private datepipe: DatePipe,
     private spServices: SPOperationService,
     private adminObject: AdminObjectService,
-    private messageService: MessageService,
     private adminCommonService: AdminCommonService,
     private platformLocation: PlatformLocation,
     private router: Router,
     private applicationRef: ApplicationRef,
     private zone: NgZone,
     private common: CommonService,
-    private adminConstants: AdminConstantService
+    private adminConstants: AdminConstantService,
+    private constants : ConstantsService
   ) {
     // Browser back button disabled & bookmark issue solution
     history.pushState(null, null, window.location.href);
@@ -142,7 +141,7 @@ export class RoleUserMappingComponent implements OnInit {
    * This method will get all the users exist into the selected groups.
    */
   async onGroupsChange() {
-    this.messageService.clear();
+    this.common.clearToastrMessage()
     this.adminObject.isMainLoaderHidden = false;
     const groupName = this.selectedGroup;
     this.common.SetNewrelic('Admin', 'entitlement-role-user-mapping', 'readGroupUsers');
@@ -152,10 +151,8 @@ export class RoleUserMappingComponent implements OnInit {
       this.usersArray = usersArrayResult;
       this.adminObject.isMainLoaderHidden = true;
     } else {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error',
-        summary: 'Error Message', detail: 'Users does not exist in this group.'
-      });
+
+      this.common.showToastrMessage(this.constants.MessageType.error,'Users does not exist in this group.',false);
       this.usersArray = [];
       this.adminObject.isMainLoaderHidden = true;
     }
@@ -172,17 +169,12 @@ export class RoleUserMappingComponent implements OnInit {
     const groupName = this.selectedGroup;
     const usersArray = this.selectedUsers;
     if (!groupName) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error', sticky: true,
-        summary: 'Error Message', detail: 'Please select group.'
-      });
+      this.common.showToastrMessage(this.constants.MessageType.warn,'Please select group.',true);
       return false;
     }
     if (!usersArray) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error', sticky: true,
-        summary: 'Error Message', detail: 'Please select atleast one user.'
-      });
+
+      this.common.showToastrMessage(this.constants.MessageType.warn,'Please select atleast one user.',true);
       return false;
     }
     this.adminObject.isMainLoaderHidden = false;
@@ -209,10 +201,8 @@ export class RoleUserMappingComponent implements OnInit {
       const sResult = await this.spServices.executeBatch(batchURL);
       this.adminObject.isMainLoaderHidden = true;
       setTimeout(() => {
-        this.messageService.add({
-          key: 'adminCustom', severity: 'success', sticky: true,
-          summary: 'Success Message', detail: 'Selected User has been removed from \'' + groupName + '\' group  successfully.'
-        });
+
+        this.common.showToastrMessage(this.constants.MessageType.success,'Selected User has been removed from \'' + groupName + '\' group  successfully.',true);
       }, 500);
       this.onGroupsChange();
     }

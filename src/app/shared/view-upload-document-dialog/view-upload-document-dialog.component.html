@@ -6,12 +6,6 @@
     <div id="modalInnerLoaderText">Loading...</div>
 </div>
 
-<!-- 
-    <p-toast styleClass="custom-toast" key="custom" [hideTransitionOptions]="'0ms'"
-    position="bottom-center">
-    </p-toast> -->
-
-
 <p-fileUpload [style]="{'margin-top':'1vh'}" *ngIf="!loaderenable && (selectedTab === 'My Drafts' || selectedTab ==='Source Docs' || selectedTab ==='References' || selectedTab ==='Meeting Notes')" customUpload="true" (uploadHandler)="uploadDocs($event,selectedTab)"
     multiple="multiple" maxFileSize="500000000">
 </p-fileUpload>
@@ -51,5 +45,3 @@
 </p-tabPanel>
 
 <div *ngIf="DocumentArray.length === 0 && !loaderenable && ModifiedSelectedTaskName !=='Client Review'" style="    padding: 30px 0px 0px 0px;color: #c53e3e;font-size: 1.2em;">* No Documents present for current task. </div>
-
-<p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle"></p-confirmDialog>

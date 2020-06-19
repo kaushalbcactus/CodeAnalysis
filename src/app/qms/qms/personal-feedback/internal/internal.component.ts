@@ -6,8 +6,8 @@ import { DataService } from '../../../../Services/data.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { PlatformLocation, LocationStrategy } from '@angular/common';
 import { QMSConstantsService } from '../../services/qmsconstants.service';
-import { MessageService } from 'primeng/api';
 import { QMSCommonService } from '../../services/qmscommon.service';
+import { ConstantsService } from 'src/app/Services/constants.service';
 
 
 @Component({
@@ -30,9 +30,9 @@ export class InternalComponent implements OnInit, OnDestroy {
     public common: CommonService,
     private data: DataService,
     private router: Router,
+    private constants: ConstantsService,
     private qmsConstatsService: QMSConstantsService,
     private qmsCommon: QMSCommonService,
-    private messageService: MessageService,
     private platformLocation: PlatformLocation,
     private locationStrategy: LocationStrategy,
     private readonly _router: Router,
@@ -83,10 +83,7 @@ export class InternalComponent implements OnInit, OnDestroy {
 
   showToastMsg() {
     setTimeout(() => {
-      this.messageService.add({
-        key: 'qmsAuth', severity: 'info', life: 3000,
-        summary: 'Info Message', detail: 'You don\'\t have permission'
-      });
+      this.common.showToastrMessage(this.constants.MessageType.warn,'You don\'\t have permission.',false);
       // this.qmsConstatsService.qmsToastMsg.hideManager = false;
       this.qmsConstatsService.qmsToastMsg.hideManager = false;
       this.qmsConstatsService.qmsToastMsg.hideAdmin = false;

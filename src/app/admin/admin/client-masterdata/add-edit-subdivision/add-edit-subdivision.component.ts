@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ConstantsService } from 'src/app/Services/constants.service';
-import { MessageService, DynamicDialogConfig, DynamicDialogRef } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 import { CommonService } from 'src/app/Services/common.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
@@ -28,7 +28,6 @@ export class AddEditSubdivisionComponent implements OnInit {
 
   constructor(private frmbuilder: FormBuilder,
     private constantsService: ConstantsService,
-    private messageService: MessageService,
     private common: CommonService,
     public config: DynamicDialogConfig,
     public ref: DynamicDialogRef,
@@ -63,7 +62,7 @@ export class AddEditSubdivisionComponent implements OnInit {
 
 
 
-  
+
 
   /**
    * Construct a method show the form to add new sub division.
@@ -205,10 +204,8 @@ export class AddEditSubdivisionComponent implements OnInit {
       if (!this.showeditSubDivision) {
         if (this.subDivisionDetailsRows.some(a =>
           a.SubDivision.toLowerCase() === this.subDivisionform.value.subDivision_Name.toLowerCase())) {
-          this.messageService.add({
-            key: 'adminCustom', severity: 'error',
-            summary: 'Error Message', detail: 'This client sub-division is already exist. Please enter another client sub-division.'
-          });
+
+          this.common.showToastrMessage(this.constantsService.MessageType.warn, 'This client sub-division is already exist. Please enter another client sub-division.', false);
           return false;
         }
       }

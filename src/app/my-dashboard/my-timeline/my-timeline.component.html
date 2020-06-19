@@ -89,9 +89,6 @@
 // full calendar 
 ************************************************************************************************** -->
 
-<p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom" [hideTransitionOptions]="'0ms'" position="bottom-center">
-</p-toast>
-
 <p-fullCalendar #calendar [ngStyle]="{'margin':'1em;'}" [events]="events" [options]="options">
 </p-fullCalendar>
 
@@ -105,7 +102,6 @@
 <!--**************************************************************************************************
 //  dialog to to display data
 ************************************************************************************************** -->
-<p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle"></p-confirmDialog>
 
 <p-dialog *ngIf="taskdisplay" header="{{taskName}}" [contentStyle]="{'max-height':'90vh'}" [style]="{'width':task.Task === 'Adhoc' ? '80vw': '100vw'}" [positionTop]="task.Task === 'Adhoc' ? '': '0'" [modal]="true" [draggable]="false" appendTo='body' [closable]="false"
     [(visible)]="taskdisplay">
@@ -371,4 +367,4 @@
 </p-dialog>
 
 
-<app-feedback-popup #feedbackPopup (popupClosed)='saveTask($event)'></app-feedback-popup>
+<!-- <app-feedback-popup #feedbackPopup (popupClosed)='saveTask($event)'></app-feedback-popup> -->

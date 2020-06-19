@@ -170,96 +170,49 @@
 <!-- Toast Message End -->
 
 
-<!-- Confirmation -->
-<p-confirmDialog key="confirm" [style]="{width: '50vw'}" appendTo="body"></p-confirmDialog>
-
-
-<!-- Confirmation -->
-<p-dialog header="Confirmation" [(visible)]="revertInvModal" [modal]="true" [draggable]="false" [style]="{'width': '30%'}" [maximizable]="false" [baseZIndex]="10000" [contentStyle]="{'height': '150px'}" (onHide)="cancelFormSub('revertInvoice')">
-    <form id="myform">
-        <div class="ui-g" *ngIf="selectedRowItem">
-            <div>
-                Are you sure that you want to revert the invoice of {{selectedRowItem.ProjectCode}} from confirmed to scheduled status?
-            </div><br>
-            <div style="color: red;" *ngIf="isHourlyProject">
-                Note: This hourly billed project will be converted to delivery based project with Budget
-                <b>{{selectedRowItem.Currency }}</b>&nbsp; <b>{{selectedRowItem.Amount}}</b>
-            </div>
-        </div>
-    </form>
-    <p-footer>
-        <button pButton type="button" class="fdBtn" label="Yes" [disabled]="submitBtn.isClicked" (click)="onSubmit('revertInvoice')"></button>
-        <button pButton type="button" class="fdBtn" label="No" (click)="cancelFormSub('revertInvoice')"></button>
-    </p-footer>
-
-</p-dialog>
-<!-- Replace Proforma End-->
-
-
 <!-- Add to Proforma Modal -->
-<p-dialog header="Add to Proforma Form" [(visible)]="proformaModal" [modal]="true" [draggable]="false" [responsive]="true" [style]="{'width': '85%', 'z-index': '999'}" [maximizable]="false" (onHide)="cancelFormSub('editDeliverable')">
+<p-dialog header="Add to Proforma Form" [(visible)]="proformaModal" [modal]="true" [draggable]="false" [responsive]="true" [positionTop]="15" [style]="{'width': '85%'}" [contentStyle]="{ 'max-height': '90vh'}" [maximizable]="false" (onHide)="cancelFormSub('editDeliverable')"
+    [closable]='false'>
+
+    <div class='UserButton' fxLayout="row" fxLayoutAlign="end center">
+
+        <button type="button" class="fdBtn cls_addproforma" pButton icon="pi pi-save" id="saveClient" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" label="Add Proforma" [disabled]="submitBtn.isClicked" (click)="onSubmit('add2Proforma')"></button>
+
+        <button type="button" class="fdBtn cls_cancelproforma" pButton icon="pi pi-times" id="cancelClient" (click)="cancelFormSub('editDeliverable')" label="Cancel"></button>
+
+    </div>
 
     <form id="myform" [formGroup]="addToProforma_form">
 
-        <div class="p-grid">
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">
-                    Client Legal Entity
-                </div>
-            </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">
-                    <!-- <p-dropdown resetFilterOnHide="true"id="cle" class="cleClass" [options]="cleData" formControlName="ClientLegalEntity"
-                        placeholder="Select Client" optionLabel="Title" [showClear]="true"
-                        (onChange)="onCLIChange($event)"></p-dropdown>
-                    <div *ngIf="formSubmit.isSubmit && isValidAddToProformaForm.ClientLegalEntity.errors">
-                        <div *ngIf="isValidAddToProformaForm.ClientLegalEntity.errors.required" style="color:red;">
-                            Please provide Client Legal Entity.</div> -->
-                    <input id="disabled-input" type="text" pInputText formControlName="ClientLegalEntity" />
-                    <!-- </div> -->
-                </div>
-            </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">PO</div>
-            </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">
-                    <!-- <p-dropdown resetFilterOnHide="true"[options]="poNames" formControlName="POName" placeholder="Select PO "
-                        optionLabel="Number" [showClear]="true" (onChange)="onPOChange($event)"></p-dropdown>
-                    <div *ngIf="formSubmit.isSubmit && isValidAddToProformaForm.POName.errors">
-                        <div *ngIf="isValidAddToProformaForm.POName.errors.required" style="color:red;">Please
-                            provide PO Name.</div>
-                    </div> -->
-                    <input id="disabled-input" type="text" pInputText formControlName="POName" />
-                </div>
-            </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">Currency</div>
-            </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <!-- <div class="box">
-                        <input id="disabled-input" type="text" pInputText formControlName="Currency" />
-                    </div> -->
-                <div class="box">
-                    <!-- <p-dropdown resetFilterOnHide="true"[options]="currencyData" formControlName="Currency" placeholder="Select One"
-                            optionLabel="Title" [showClear]="true"></p-dropdown>
-                        <div *ngIf="formSubmit.isSubmit && isValidAddToProformaForm.Currency.errors">
-                            <div *ngIf="isValidAddToProformaForm.Currency.errors.required" style="color:red;">Please
-                                provide Currency.</div>
-                        </div> -->
-                    <input id="disabled-input" type="text" pInputText formControlName="Currency" />
-                </div>
+        <div class="addProformaHeight p-grid">
 
+            <div class="p-col-6 p-md-4 p-lg-2">
+                Client Legal Entity
             </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">
-                    Amount
-                </div>
+            <div class="p-col-6 p-md-8 p-lg-4">
+                <input class="textfeildClass" id="disabled-input" type="text" pInputText formControlName="ClientLegalEntity" />
             </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">
-                    <input id="disabled-input" type="text" appNumberOnly pInputText formControlName="Amount" maxlength="15" (input)="enteredPOAmt($event.target.value)" />
-                </div>
+
+            <div class="p-col-6 p-md-4 p-lg-2">
+                PO
+            </div>
+            <div class="p-col-6 p-md-8 p-lg-4">
+                <input class="textfeildClass" id="disabled-input" type="text" pInputText formControlName="POName" />
+            </div>
+
+
+            <div class="p-col-6 p-md-4 p-lg-2">
+                Currency
+            </div>
+            <div class="p-col-6 p-md-8 p-lg-4">
+                <input class="textfeildClass" id="disabled-input" type="text" pInputText formControlName="Currency" />
+            </div>
+
+            <div class="p-col-6 p-md-4 p-lg-2">
+                Amount
+            </div>
+            <div class="p-col-6 p-md-8 p-lg-4">
+                <input class="textfeildClass" id="disabled-input" type="text" appNumberOnly pInputText formControlName="Amount" maxlength="15" (input)="enteredPOAmt($event.target.value)" />
                 <div *ngIf="formSubmit.isSubmit && isValidAddToProformaForm.Amount.errors">
                     <div *ngIf="isValidAddToProformaForm.Amount.errors.required" style="color:red;">Please provide Amount.</div>
                 </div>
@@ -268,140 +221,15 @@
                     </div>
                 </div>
             </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">Proforma Type</div>
-            </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">
-                    <!-- <p-dropdown resetFilterOnHide="true"id="ptdd" [options]="listOfproformaType" formControlName="ProformaType"
-                            placeholder="Select a Address Type" optionLabel="label"
-                            (onChange)="updatePrformaNumFromPT(addToProforma_form.value.ClientLegalEntity,$event)">
-                        </p-dropdown> -->
-                    <input id="disabled-input" type="text" pInputText formControlName="ProformaType" />
-                    <!-- <div *ngIf="formSubmit.isSubmit && isValidAddToProformaForm.ProformaType.errors">
-                            <div *ngIf="isValidAddToProformaForm.ProformaType.errors.required" style="color:red;">Please
-                                provide Proforma type.</div>
-                        </div> -->
-                </div>
-            </div>
 
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">
-                    POC Name
-                </div>
+            <div class="p-col-6 p-md-4 p-lg-2">
+                Proforma Type
             </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">
-                    <p-dropdown resetFilterOnHide="true" [options]="listOfPOCNames" formControlName="POCName" placeholder="Select POC Name" [filter]="true" optionLabel="FullName" (onChange)="pocChange($event)" [style]="{width: '215px'}">
-                        <ng-template let-item pTemplate="item">
-                            <div class="ui-helper-clearfix" style="position: relative;height: 35px;">
-                                <div style="font-size:14px;float:left;margin-top:4px">{{item.label }}</div>
-                            </div>
-                        </ng-template>
-                    </p-dropdown>
-                    <div *ngIf="formSubmit.isSubmit && isValidAddToProformaForm.POCName.errors">
-                        <div *ngIf="isValidAddToProformaForm.POCName.errors.required" style="color:red;">Please provide POC Name.</div>
-                    </div>
-                </div>
-            </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">
-                    Proforma Number
-                </div>
-            </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">
-                    <input id="disabled-input" type="text" pInputText formControlName="ProformaNumber" />
-                </div>
-            </div>
-
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">
-                    Address Type
-                </div>
-            </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">
-                    <p-dropdown resetFilterOnHide="true" [options]="addressTypes" formControlName="AddressType" placeholder="Select a Address Type" optionLabel="label">
-                    </p-dropdown>
-                    <div *ngIf="formSubmit.isSubmit && isValidAddToProformaForm.AddressType.errors">
-                        <div *ngIf="isValidAddToProformaForm.AddressType.errors.required" style="color:red;">Please provide Address type.</div>
-                    </div>
-                </div>
-            </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">
-                    Template
-                </div>
-            </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">
-                    <p-dropdown resetFilterOnHide="true" [options]="proformatTemplates" formControlName="Template" placeholder="Select One" optionLabel="label" [showClear]="true" (onChange)="showHideState(addToProforma_form.value.Template)">
-                    </p-dropdown>
-                    <div *ngIf="formSubmit.isSubmit && isValidAddToProformaForm.Template.errors">
-                        <div *ngIf="isValidAddToProformaForm.Template.errors.required" style="color:red;">Please provide Template.</div>
-                    </div>
-                </div>
-            </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">State</div>
-            </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box" *ngIf="isTemplate4US">
-                    <p-dropdown resetFilterOnHide="true" [options]="usStatesData" formControlName="State" placeholder="Select One" optionLabel="Title" [showClear]="true"></p-dropdown>
-                    <div *ngIf="formSubmit.isSubmit && isValidAddToProformaForm.State.errors">
-                        <div *ngIf="isValidAddToProformaForm.State.errors.required" style="color:red;">Please provide State.</div>
-                    </div>
-                </div>
+            <div class="p-col-6 p-md-8 p-lg-4">
+                <input class="textfeildClass" id="disabled-input" type="text" pInputText formControlName="ProformaType" />
             </div>
 
 
 
-
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">Proforma Date</div>
-            </div>
-            <div class="p-col-12 p-md-6 p-lg-9">
-                <div class="box">
-                    <p-calendar styleClass="pCalendarBtn" [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy" yearRange="2019:2030" [disabledDays]="[0,6]" [yearNavigator]="true" [minDate]="minProformaDate" (onFocus)="updateCalendarUI(fromCalendar)"
-                        #fromCalendar (onClose)="updatePrformaNumFromPT()" [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}" formControlName="ProformaDate">
-                    </p-calendar>
-                    <div *ngIf="formSubmit.isSubmit && isValidAddToProformaForm.ProformaDate.errors">
-                        <div *ngIf="isValidAddToProformaForm.ProformaDate.errors.required" style="color:red;">Please provide Proforma Date.</div>
-                    </div>
-                </div>
-            </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">Proforma Title</div>
-            </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">
-                    <!-- <input id="disabled-input" type="text" pInputText formControlName="ProformaTitle" /> -->
-                    <textarea rows="5" style="width:90%" pInputTextarea formControlName="ProformaTitle"></textarea>
-                    <div *ngIf="formSubmit.isSubmit && isValidAddToProformaForm.ProformaTitle.errors">
-                        <div *ngIf="isValidAddToProformaForm.ProformaTitle.errors.required" style="color:red;">Please provide Proforma Title.</div>
-                    </div>
-                </div>
-            </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">Additional Comments (optional)</div>
-            </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">
-                    <textarea rows="5" style="width:90%" pInputTextarea formControlName="AdditionalComments"></textarea>
-                </div>
-            </div>
-        </div>
-
-    </form>
-    <p-footer>
-        <button pButton type="button" class="fdBtn" label="Add Proforma" [disabled]="submitBtn.isClicked" (click)="onSubmit('add2Proforma')"></button>
-        <button pButton type="button" class="fdBtn" label="Cancel" (click)="cancelFormSub('editDeliverable')"></button>
-    </p-footer>
-</p-dialog>
-
-<!-- To Display Proforma Number -->
-<p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom" position="bottom-center"></p-toast>
-<!-- <router-outlet></router-outlet> -->
-<app-editor #editorRef></app-editor>
-<app-timeline-history #timelineRef></app-timeline-history>
+            <app-editor #editorRef></app-editor>
+            <app-timeline-history #timelineRef></app-timeline-history>

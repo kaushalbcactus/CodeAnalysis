@@ -1,0 +1,68 @@
+<div class='UserButton' fxLayout="row" fxLayoutAlign="end center">
+
+    <button type="button" pButton icon="pi pi-check" id="saveClient" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" class="cls_mapConfirm" label="Mark As Payment" (click)="onSubmit()"></button>
+
+    <button type="button" class="cls_mapCancel" pButton icon="pi pi-times" id="cancelClient" label="Cancel" (click)='Cancel()'></button>
+
+</div>
+
+<div fxLayout="row" fxLayoutAlign="space-between start" fxLayoutGap="5px">
+
+    <form [formGroup]="markAsPayment_form" class="p-col">
+
+        <div class="p-grid">
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>Reference Number</div>
+                <div class="p-col-8">
+                    <input type="text" class="cls_mapreferncenumber" pInputText formControlName="Number" style="width: 100%;" />
+                    <div class="error" *ngIf="isPaymentFormSubmit && markAsPayment_form.controls.Number.errors">
+                        <div *ngIf="markAsPayment_form.controls.Number.errors.required">Reference number is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>Payment Date</div>
+                <div class="p-col-8">
+
+                    <p-calendar class="cls_mapCalendar" styleClass="pCalendarBtn" formControlName="DateSpend" [showIcon]="true" dateFormat="M dd , yy"   [showOnFocus]="false"   [monthNavigator]="true" yearRange="{{yearRange}}" [disabledDays]="[0,6]" [yearNavigator]="true"
+                        [readonlyInput]="true" placeholder="Payment date">
+                    </p-calendar>
+
+                    <div class="error" *ngIf="isPaymentFormSubmit && markAsPayment_form.controls.DateSpend.errors">
+                        <div *ngIf="markAsPayment_form.controls.DateSpend.errors.required">Payment date is required</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="p-grid">
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>Payment Mode</div>
+                <div class="p-col-8">
+                    <p-dropdown class="cls_mapPaymentMode" resetFilterOnHide="true" [options]="paymentModeArray" [showClear]="false" placeholder="Select a Payment Mode" [style]="{'width':'100%'}" formControlName="PaymentMode" optionLabel="value" onfocus='this.size=10;'>
+                    </p-dropdown>
+                    <div class="error" *ngIf="isPaymentFormSubmit && markAsPayment_form.controls.PaymentMode.errors">
+                        <div *ngIf="markAsPayment_form.controls.PaymentMode.errors.required">Payment mode is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-grid p-col">
+                <div class="p-col-4"><span class="compulsory">*</span>Upload File</div>
+                <div class="p-col-8">
+
+                    <div class="file-upload" #fileuploderView>
+                        <div class="file-select">
+                            <div class="file-select-button" id="fileName">Choose File</div>
+                            <div class="file-select-name" id="noFile">No file chosen...</div>
+                            <input type="file" class="cls_mapfileSelector" name="chooseFile" id="chooseFile" (change)="onFileChange($event)" #fileInput formControlName="FileUrl">
+                        </div>
+                    </div>
+                    <div class="error" *ngIf="isPaymentFormSubmit && markAsPayment_form.controls.FileUrl.errors">
+                        <div *ngIf="markAsPayment_form.controls.FileUrl.errors.required">File is required</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

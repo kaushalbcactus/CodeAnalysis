@@ -4,17 +4,15 @@
     <div id="scInnerLoaderText">Loading...</div>
 </div>
 
-<div class="p-grid">
+<div class="p-col">
     <div class="p-col-12 p-md-12 p-lg-12 f-right">
         <div style="display: -webkit-inline-box;">
             <div class="box" style="margin-right: 20px;">
-                <button type="button" class="fdBtn" pButton icon="fa fa-plus-circle" iconPos="left" label="Create Proforma"
-                    (click)="createProforma()"></button>
+                <button type="button" class="fdBtn" pButton icon="fa fa-plus-circle" iconPos="left" label="Create Proforma" (click)="showProformaDialog()"></button>
             </div>
             <div class="box">
                 <!-- <button type="button" pButton label="Export" (click)="fdDataShareServie.convertToExcelFile(pfc)"></button> -->
-                <i style="font-size: 1.8em;cursor: pointer;" (click)="fdDataShareServie.convertToExcelFile(pfc)"
-                    title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
+                <i style="font-size: 1.8em;cursor: pointer;" (click)="fdDataShareServie.convertToExcelFile(pfc)" title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
             </div>
         </div>
     </div>
@@ -23,9 +21,9 @@
 
 <!-- <button (click)="checkSelectedRowData()">Check Data</button> -->
 <div class="financeTable">
-    <p-table #pfc [columns]="proformaCols" [value]="proformaRes" [paginator]="true" [rows]="10"
-        [(selection)]="selectedRowData" selectionMode="multiple" (onRowSelect)="onRowSelect($event)"
-        exportFilename="Proformas" [(first)]="pageNumber" (onPage)="paginate($event)">
+    <p-table #pfc [columns]="proformaCols" dataKey="Id" [value]="proformaRes" [paginator]="true" [rows]="10" [(selection)]="selectedRowData" selectionMode="multiple" exportFilename="Proformas" [(first)]="pageNumber" (onPage)="paginate($event)" rowExpandMode="multiple"
+        [expandedRowKeys]="expandedRows" (onRowExpand)="OnRowExpand($event)">
+
         <ng-template pTemplate="header" let-columns>
 
             <tr>
@@ -44,62 +42,49 @@
                 <th></th>
                 <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
                     <ng-container *ngIf="col.field">
-                <td></td>
-                <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                    *ngSwitchCase="'ProformaNumber'" [options]="proformaColArray.ProformaNumber" defaultLabel="All"
-                    [maxSelectedLabels]="1" (onChange)="pfc.filter($event.value, col.field, 'in')"
-                    (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                </p-multiSelect>
-                <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                    *ngSwitchCase="'PONumber'" [options]="proformaColArray.PONumber" defaultLabel="All"
-                    [maxSelectedLabels]="1" (onChange)="pfc.filter($event.value, col.field, 'in')"
-                    (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                </p-multiSelect>
-                <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                    *ngSwitchCase="'ProformaDate'" [options]="proformaColArray.ProformaDate" defaultLabel="All"
-                    [maxSelectedLabels]="1" (onChange)="pfc.filter($event.value, col.field, 'in')"
-                    (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                </p-multiSelect>
-                <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                    *ngSwitchCase="'ProformaType'" [options]="proformaColArray.ProformaType" defaultLabel="All"
-                    [maxSelectedLabels]="1" (onChange)="pfc.filter($event.value, col.field, 'in')"
-                    (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                </p-multiSelect>
-                <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                    *ngSwitchCase="'Amount'" [options]="proformaColArray.Amount" defaultLabel="All"
-                    [maxSelectedLabels]="1" (onChange)="pfc.filter($event.value, col.field, 'in')"
-                    (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                </p-multiSelect>
-                <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                    *ngSwitchCase="'Currency'" [options]="proformaColArray.Currency" defaultLabel="All"
-                    [maxSelectedLabels]="1" (onChange)="pfc.filter($event.value, col.field, 'in')"
-                    (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                </p-multiSelect>
-                <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'POC'"
-                    [options]="proformaColArray.POC" defaultLabel="All" [maxSelectedLabels]="1"
-                    (onChange)="pfc.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
-                    (onPanelShow)="isOptionFilter=true;">
-                </p-multiSelect>
-                <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                    *ngSwitchCase="'Status'" [options]="proformaColArray.Status" defaultLabel="All"
-                    [maxSelectedLabels]="1" (onChange)="pfc.filter($event.value, col.field, 'in')"
-                    (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                </p-multiSelect>
-                </ng-container>
+                        <td></td>
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'ProformaNumber'" [options]="proformaColArray.ProformaNumber" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="pfc.filter($event.value, col.field, 'in')"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        </p-multiSelect>
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'PONumber'" [options]="proformaColArray.PONumber" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="pfc.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                            (onPanelShow)="isOptionFilter=true;">
+                        </p-multiSelect>
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'ProformaDate'" [options]="proformaColArray.ProformaDate" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="pfc.filter($event.value, col.field, 'in')"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        </p-multiSelect>
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'ProformaType'" [options]="proformaColArray.ProformaType" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="pfc.filter($event.value, col.field, 'in')"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        </p-multiSelect>
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Amount'" [options]="proformaColArray.Amount" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="pfc.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                            (onPanelShow)="isOptionFilter=true;">
+                        </p-multiSelect>
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Currency'" [options]="proformaColArray.Currency" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="pfc.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                            (onPanelShow)="isOptionFilter=true;">
+                        </p-multiSelect>
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'POC'" [options]="proformaColArray.POC" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="pfc.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                            (onPanelShow)="isOptionFilter=true;">
+                        </p-multiSelect>
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Status'" [options]="proformaColArray.Status" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="pfc.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                            (onPanelShow)="isOptionFilter=true;">
+                        </p-multiSelect>
+                    </ng-container>
                 </th>
             </tr>
         </ng-template>
-        <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+
+        <ng-template pTemplate="body" let-rowData let-expanded="expanded" let-columns="columns" let-rowIndex="rowIndex">
             <tr>
                 <td>
                     {{rowIndex+1}}
+                    <a href="#" [pRowToggler]="rowData" style="vertical-align: middle;">
+                        <i [ngClass]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
+                    </a>
                 </td>
                 <td>
                     <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
                 </td>
                 <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility">
-                    <ng-container
-                        *ngIf="col.field != 'ProformaNumber' &&  col.field != '' && col.field !== 'ProformaDate' ">
+                    <ng-container *ngIf="col.field != 'ProformaNumber' &&  col.field != '' && col.field !== 'ProformaDate' ">
                         {{rowData[col.field]}}
                     </ng-container>
                     <ng-container *ngIf="col.field == 'ProformaDate'">
@@ -113,59 +98,98 @@
                     <ng-container *ngIf="col.field == ''">
                         <div>
                             <p-menu #popupMenu [popup]="true" [model]="items" styleClass="borderMenu"></p-menu>
-                            <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
-                                (click)="openPopup(rowData, popupMenu);popupMenu.show($event);"></i>
+                            <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;" (click)="openPopup(rowData, popupMenu);popupMenu.show($event);"></i>
                         </div>
                     </ng-container>
                 </td>
             </tr>
         </ng-template>
+
+        <ng-template pTemplate="rowexpansion" let-proforma let-columns="columns">
+            <tr *ngIf="proforma.loaderenable">
+                <td colspan="11">
+                    <div id="modalInnerLoader"></div>
+                    <div id="modalInnerLoaderText">Loading...</div>
+                </td>
+            </tr>
+            <tr *ngIf="!proforma.loaderenable">
+                <td [attr.colspan]="11" style="padding: 0px;">
+                    <p-table #invoicesTable [columns]="invoiceCols" class="invoicesTable" [style]="{'font-size':'13px'}" [value]="proforma.invoices">
+                        <ng-template pTemplate="header" let-columns>
+
+                            <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                                {{col.header}}
+                                <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
+                            </th>
+
+                        </ng-template>
+
+                        <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex" let-columns="columns">
+                            <tr class="milestoneTable" *ngIf="!proforma.loaderenable">
+                                <td *ngFor="let col of columns;index as i">
+                                    <ng-container>
+                                        {{rowData[col.field]}}
+                                    </ng-container>
+
+                                </td>
+                                <td>
+                                    <div>
+                                        <p-menu #popupMenu [popup]="true" [model]="items" [style]="{'text-align': 'left'}" styleClass="borderMenu"></p-menu>
+                                        <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;" (click)="openPopup(rowData, popupMenu,proforma);popupMenu.show($event);"></i>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage" let-columns>
+                            <tr>
+                                <td [attr.colspan]="columns.length">
+                                    No records found
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </td>
+            </tr>
+        </ng-template>
+
     </p-table>
 </div>
 <!-- Table End  -->
 
-<!-- Right Side Bar -->
-<p-sidebar [(visible)]="rightSideBar" position="right" [style]="{overflow:'auto'}" styleClass="ui-sidebar-md">
-    <ng-container *ngIf="rightSideBar">
+<!-- Right Side Bar Proforma -->
+<p-sidebar [(visible)]="rightSideBarProforma" position="right" [style]="{overflow:'auto'}" styleClass="ui-sidebar-md">
+    <ng-container *ngIf="rightSideBarProforma">
         <app-pro-table-attribute [rowItemData]="selectedRowItem"></app-pro-table-attribute>
     </ng-container>
 </p-sidebar>
 
-<!-- Context Menu Start -->
-<!-- <p-contextMenu #cm [model]="items"></p-contextMenu> -->
-<!-- Context Menu End -->
 
-<!-- Toast Messages -->
-<p-toast position="bottom-center" key="proformaInfoToast"></p-toast>
-<p-toast position="bottom-center" key="proformaSuccessToast"></p-toast>
-<p-toast position="bottom-center" key="myKey1"></p-toast>
-<!-- Toast Message End -->
+<!-- Right Side Bar Invoice -->
+<p-sidebar [(visible)]="rightSideBarInvoice" position="right" [style]="{overflow:'auto'}" styleClass="ui-sidebar-md">
+    <ng-container *ngIf="rightSideBarInvoice">
+        <app-ili-table-attribute [rowItemData]="selectedRowItem"></app-ili-table-attribute>
+    </ng-container>
+</p-sidebar>
 
-<!-- Confirmation -->
-<p-confirmDialog key="proforma" [style]="{width: '30vw'}"></p-confirmDialog>
 
 <!-- Replace Proforma -->
-<p-dialog header="Replace Proforma" [(visible)]="replaceProformaModal" [modal]="true" [draggable]="false"
-    [responsive]="true" [style]="{'width': '30%'}" [maximizable]="false" (onHide)="cancelFormSub('replaceProforma')">
+<p-dialog header="Replace Proforma" [(visible)]="replaceProformaModal" [modal]="true" [draggable]="false" [responsive]="true" [style]="{'width': '30%'}" [maximizable]="false" (onHide)="cancelFormSub('replaceProforma')">
     <form id="myform" [formGroup]="replaceProforma_form">
         <div class="ui-g">
             <div class="ui-g-6">
                 Uplaod File
             </div>
             <div class="ui-g-6">
-                <input type="file" name="myfile" class="form-control" id="myfile" (change)="onFileChange($event,'')"
-                    #fileInput formControlName="file" />
+                <input type="file" name="myfile" class="form-control" id="myfile" (change)="onFileChange($event,'')" #fileInput formControlName="file" />
                 <div *ngIf="formSubmit.isSubmit && isValidReplaceProformaForm.file.errors">
-                    <div *ngIf="isValidReplaceProformaForm.file.errors.required" style="color:red;">Please Select file &
-                        try again.
+                    <div *ngIf="isValidReplaceProformaForm.file.errors.required" style="color:red;">Please Select file & try again.
                     </div>
                 </div>
             </div>
         </div>
     </form>
     <p-footer>
-        <button pButton type="button" class="fdBtn" label="Save" [disabled]="submitBtn.isClicked"
-            (click)="onSubmit('replaceProforma')"></button>
+        <button pButton type="button" class="fdBtn" label="Save" [disabled]="submitBtn.isClicked" (click)="onSubmit('replaceProforma')"></button>
         <button pButton type="button" class="fdBtn" label="Cancel" (click)="cancelFormSub('replaceProforma')"></button>
     </p-footer>
 
@@ -173,31 +197,24 @@
 <!-- Replace Proforma End-->
 
 <!-- Generate Invoice -->
-<p-dialog header="Generate Invoice" [(visible)]="generateInvoiceModal" [modal]="true" [draggable]="false"
-    [responsive]="true" [style]="{'width': '40%'}" [maximizable]="false" (onHide)="cancelFormSub('generateInvoice')"
-    [responsive]="true">
+<p-dialog header="Generate Invoice" [(visible)]="generateInvoiceModal" [modal]="true" [draggable]="false" [responsive]="true" [style]="{'width': '40%'}" [maximizable]="false" (onHide)="cancelFormSub('generateInvoice')" [responsive]="true" [contentStyle]="{'overflow' : 'visible'}">
     <form id="myform" [formGroup]="generateInvoice_form">
         <div class="ui-g">
             <div class="ui-g-6">
                 Invoice Date
             </div>
             <div class="ui-g-6">
-                <p-calendar styleClass="pCalendarBtn" [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy"
-                    yearRange="2019:2030" [disabledDays]="[0,6]" [yearNavigator]="true"
-                    [style]="{'position': 'fixed', 'overflow': 'visible', 'z-index': '999'}"
-                    [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}" formControlName="InvoiceDate">
+                <p-calendar styleClass="pCalendarBtn" [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy" yearRange="2019:2030" [disabledDays]="[0,6]" [yearNavigator]="true" formControlName="InvoiceDate">
                 </p-calendar>
                 <div *ngIf="formSubmit.isSubmit && isValidGenerateInvoiceForm.InvoiceDate.errors">
-                    <div *ngIf="isValidReplaceProformaForm.file.errors.required" style="color:red;">Please provide
-                        Invoice Date.
+                    <div *ngIf="isValidReplaceProformaForm.file.errors.required" style="color:red;">Please provide Invoice Date.
                     </div>
                 </div>
             </div>
         </div>
     </form>
     <p-footer>
-        <button pButton type="button" class="fdBtn" label="Save" [disabled]="submitBtn.isClicked"
-            (click)="onSubmit('generateInvoice')"></button>
+        <button pButton type="button" class="fdBtn" label="Save" [disabled]="submitBtn.isClicked" (click)="onSubmit('generateInvoice')"></button>
         <button pButton type="button" class="fdBtn" label="Cancel" (click)="cancelFormSub('generateInvoice')"></button>
     </p-footer>
 
@@ -205,65 +222,63 @@
 <!-- Generate Invoice End-->
 
 <!-- Create Proforma Modal -->
-<p-dialog header="Create Proforma Form" [(visible)]="proformaModal" [modal]="true" [draggable]="false"
-    [responsive]="true" [style]="{'width': '85%', 'top':'0px'}" [maximizable]="false"
-    (onHide)="cancelFormSub('createProforma')">
+<!-- <p-dialog header="Create Proforma Form" [(visible)]="proformaModal" [modal]="true" [draggable]="false" [responsive]="true" [positionTop]="15" [style]="{'width': '85%'}" [contentStyle]="{ 'max-height': '90vh'}" [maximizable]="false" (onHide)="cancelFormSub('createProforma')"
+    [closable]='false'>
+
+    <div class='UserButton' fxLayout="row" fxLayoutAlign="end center">
+
+        <button type="button" class="fdBtn cls_addproforma" pButton icon="pi pi-save" id="saveClient" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" label="Add Proforma" [disabled]="submitBtn.isClicked" (click)="onSubmit('createProforma')"></button>
+
+        <button type="button" class="fdBtn cls_cancelproforma" pButton icon="pi pi-times" id="cancelClient" (click)="cancelFormSub('createProforma')" label="Cancel"></button>
+
+    </div>
 
     <form id="myform" [formGroup]="createProforma_form" novalidate>
 
         <div class="addProformaHeight p-grid">
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">
-                    Client Legal Entity
+
+            <div class="p-col-6 p-md-4 p-lg-2">
+                Client Legal Entity
+            </div>
+            <div class="p-col-6 p-md-8 p-lg-4">
+                <p-dropdown resetFilterOnHide="true" id="cle" styleClass="dropdownClass" class="cleClass  cls_addproformacle" [options]="cleData" formControlName="ClientLegalEntity" placeholder="Select Client" [filter]="true" optionLabel="Title" [showClear]="true" (onChange)="onCLIChange($event)"></p-dropdown>
+                <div *ngIf="formSubmit.isSubmit && isValidCreateProformaForm.ClientLegalEntity.errors">
+                    <div *ngIf="isValidCreateProformaForm.ClientLegalEntity.errors.required" style="color:red;">
+                        Please provide Client Legal Entity.</div>
                 </div>
             </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">
-                    <p-dropdown resetFilterOnHide="true" id="cle" class="cleClass" [options]="cleData"
-                        formControlName="ClientLegalEntity" placeholder="Select Client" [filter]="true"
-                        optionLabel="Title" [showClear]="true" (onChange)="onCLIChange($event)"></p-dropdown>
-                    <div *ngIf="formSubmit.isSubmit && isValidCreateProformaForm.ClientLegalEntity.errors">
-                        <div *ngIf="isValidCreateProformaForm.ClientLegalEntity.errors.required" style="color:red;">
-                            Please provide Client Legal Entity.</div>
+            <div class="p-col-6 p-md-4 p-lg-2">
+                PO
+            </div>
+            <div class="p-col-6 p-md-8 p-lg-4">
+
+                <p-dropdown resetFilterOnHide="true" styleClass="dropdownClass" class="cls_addproformapo" [options]="poNames" formControlName="POName" placeholder="Select PO " optionLabel="Number" [filter]="true" [showClear]="true" (onChange)="onPOChange($event)">
+                </p-dropdown>
+                <div *ngIf="formSubmit.isSubmit && isValidCreateProformaForm.POName.errors">
+                    <div *ngIf="isValidCreateProformaForm.POName.errors.required" style="color:red;">Please select PO.
                     </div>
                 </div>
             </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">PO</div>
+            <div class="p-col-6 p-md-4 p-lg-2">
+                Currency
             </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">
-                    <p-dropdown resetFilterOnHide="true" [options]="poNames" formControlName="POName"
-                        placeholder="Select PO " optionLabel="Number" [filter]="true" [showClear]="true"
-                        (onChange)="onPOChange($event)">
-                    </p-dropdown>
-                    <div *ngIf="formSubmit.isSubmit && isValidCreateProformaForm.POName.errors">
-                        <div *ngIf="isValidCreateProformaForm.POName.errors.required" style="color:red;">Please select
-                            PO.</div>
-                    </div>
-                </div>
+            <div class="p-col-6 p-md-8 p-lg-4">
+
+                <input type="text" class="textfeildClass cls_addproformacurrency" pInputText formControlName="Currency" />
+
             </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">Currency</div>
+            <div class="p-col-6 p-md-4 p-lg-2">
+
+                Amount
+
             </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">
-                    <input type="text" pInputText formControlName="Currency" />
-                </div>
-            </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">
-                    Amount
-                </div>
-            </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">
-                    <input id="disabled-input" type="text" appNumberOnly pInputText formControlName="Amount"
-                        maxlength="15" (input)="enteredPOAmt($event.target.value)" />
-                </div>
+            <div class="p-col-6 p-md-8 p-lg-4">
+
+                <input id="disabled-input" class="textfeildClass cls_addproformaamount" type="text" appNumberOnly pInputText formControlName="Amount" maxlength="15" (input)="enteredPOAmt($event.target.value)" />
+
                 <div *ngIf="formSubmit.isSubmit && isValidCreateProformaForm.Amount.errors">
-                    <div *ngIf="isValidCreateProformaForm.Amount.errors.required" style="color:red;">Please provide
-                        Amount.</div>
+                    <div *ngIf="isValidCreateProformaForm.Amount.errors.required" style="color:red;">Please provide Amount.
+                    </div>
                 </div>
                 <div *ngIf="enterPOAmtMsg">
                     <div style="color:red;">Entered amount can't be greater than Avaliable Budget.
@@ -272,159 +287,136 @@
             </div>
 
 
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">Proforma Type</div>
+            <div class="p-col-6 p-md-4 p-lg-2">
+                Proforma Type
             </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">
-                    <p-dropdown resetFilterOnHide="true" [options]="proformaTypes" formControlName="ProformaType"
-                        placeholder="Select One" optionLabel="lable" [showClear]="true"
-                        (onChange)="updatePrformaNumFromPT(createProforma_form.value.ClientLegalEntity,$event)">
-                    </p-dropdown>
-                </div>
+            <div class="p-col-6 p-md-8 p-lg-4">
+
+                <p-dropdown resetFilterOnHide="true" styleClass="dropdownClass" class="cls_addproformatype" [options]="proformaTypes" formControlName="ProformaType" placeholder="Select One" optionLabel="lable" [showClear]="true" (onChange)="updatePrformaNumFromPT(createProforma_form.value.ClientLegalEntity,$event)">
+                </p-dropdown>
+
                 <div *ngIf="formSubmit.isSubmit && isValidCreateProformaForm.ProformaType.errors">
-                    <div *ngIf="isValidCreateProformaForm.ProformaType.errors.required" style="color:red;">Please
-                        provide Proforma Type.</div>
+                    <div *ngIf="isValidCreateProformaForm.ProformaType.errors.required" style="color:red;">Please provide Proforma Type.</div>
                 </div>
             </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">
-                    POC Name
-                </div>
+            <div class="p-col-6 p-md-4 p-lg-2">
+
+                POC Name
+
             </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">
-                    <p-dropdown resetFilterOnHide="true" [options]="listOfPOCNames" formControlName="POCName"
-                        placeholder="Select POC Name" [filter]="true" optionLabel="FullName"
-                        (onChange)="pocChange($event)" [style]="{width: '215px'}">
-                        <ng-template let-item pTemplate="item">
-                            <div class="ui-helper-clearfix" style="position: relative;height: 35px;">
-                                <div style="font-size:14px;float:left;margin-top:4px">{{item.label }}</div>
-                            </div>
-                        </ng-template>
-                    </p-dropdown>
-                    <div *ngIf="formSubmit.isSubmit && isValidCreateProformaForm.POCName.errors">
-                        <div *ngIf="isValidCreateProformaForm.POCName.errors.required" style="color:red;">Please provide
-                            POC Name.</div>
-                    </div>
+            <div class="p-col-6 p-md-8 p-lg-4">
+
+                <p-dropdown resetFilterOnHide="true" styleClass="dropdownClass" class=" cls_addproformapoc" [options]="listOfPOCNames" formControlName="POCName" placeholder="Select POC Name" [filter]="true" optionLabel="FullName" (onChange)="pocChange($event)" [style]="{width: '215px'}">
+                    <ng-template let-item pTemplate="item">
+                        <div class="ui-helper-clearfix" style="position: relative;height: 35px;">
+                            <div style="font-size:14px;float:left;margin-top:4px">{{item.label }}</div>
+                        </div>
+                    </ng-template>
+                </p-dropdown>
+                <div *ngIf="formSubmit.isSubmit && isValidCreateProformaForm.POCName.errors">
+                    <div *ngIf="isValidCreateProformaForm.POCName.errors.required" style="color:red;">Please provide POC Name.</div>
                 </div>
+
             </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">
-                    Proforma Number
-                </div>
+            <div class="p-col-6 p-md-4 p-lg-2">
+
+                Proforma Number
+
             </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">
-                    <input type="text" pInputText formControlName="ProformaNumber" />
-                    <div *ngIf="formSubmit.isSubmit && isValidCreateProformaForm.ProformaNumber.errors">
-                        <div *ngIf="isValidCreateProformaForm.ProformaNumber.errors.required" style="color:red;">Please
-                            provide Proforma Number.</div>
-                    </div>
+            <div class="p-col-6 p-md-8 p-lg-4">
+
+                <input type="text" pInputText class="textfeildClass cls_addproformanumber" formControlName="ProformaNumber" />
+                <div *ngIf="formSubmit.isSubmit && isValidCreateProformaForm.ProformaNumber.errors">
+                    <div *ngIf="isValidCreateProformaForm.ProformaNumber.errors.required" style="color:red;">Please provide Proforma Number.</div>
                 </div>
+
             </div>
 
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">
-                    Address Type
-                </div>
-            </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">
-                    <p-dropdown resetFilterOnHide="true" [options]="proformaAddressType" formControlName="AddressType"
-                        placeholder="Select One" optionLabel="lable" [showClear]="true"></p-dropdown>
-                    <div *ngIf="formSubmit.isSubmit && isValidCreateProformaForm.AddressType.errors">
-                        <div *ngIf="isValidCreateProformaForm.AddressType.errors.required" style="color:red;">Please
-                            provide Address Type.</div>
-                    </div>
-                </div>
-            </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">
-                    Template
-                </div>
-            </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">
-                    <p-dropdown resetFilterOnHide="true" [options]="proformatTemplates" formControlName="Template"
-                        placeholder="Select One" optionLabel="label" [showClear]="true"
-                        (onChange)="showHideState(createProforma_form.value.Template)"></p-dropdown>
-                    <div *ngIf="formSubmit.isSubmit && isValidCreateProformaForm.Template.errors">
-                        <div *ngIf="isValidCreateProformaForm.Template.errors.required" style="color:red;">Please
-                            provide Template.</div>
-                    </div>
-                </div>
-            </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">State</div>
-            </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box" *ngIf="isTemplate4US">
-                    <p-dropdown resetFilterOnHide="true" [options]="usStatesData" formControlName="State"
-                        placeholder="Select One" optionLabel="Title" [filter]="true" [showClear]="true"></p-dropdown>
-                    <div *ngIf="formSubmit.isSubmit && isValidCreateProformaForm.State.errors">
-                        <div *ngIf="isValidCreateProformaForm.State.errors.required" style="color:red;">Please provide
-                            State.</div>
-                    </div>
-                </div>
-            </div>
+            <div class="p-col-6 p-md-4 p-lg-2">
 
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">Proforma Date</div>
+                Address Type
+
             </div>
-            <div class="p-col-12 p-md-6 p-lg-9">
-                <div class="box">
-                    <p-calendar styleClass="pCalendarBtn" [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy"
-                        yearRange="2019:2030" [disabledDays]="[0,6]" [yearNavigator]="true"
-                        [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}" [minDate]="minProformDate"
-                        (onFocus)="updateCalendarUI(fromCalendar)"
-                        (onClose)="updatePrformaNumFromPT(createProforma_form.value.ClientLegalEntity,$event)"
-                        #fromCalendar formControlName="ProformaDate">
-                    </p-calendar>
-                    <div *ngIf="formSubmit.isSubmit && isValidCreateProformaForm.ProformaDate.errors">
-                        <div *ngIf="isValidCreateProformaForm.ProformaDate.errors.required" style="color:red;">Please
-                            provide Proforma Date.</div>
-                    </div>
+            <div class="p-col-6 p-md-8 p-lg-4">
+
+                <p-dropdown resetFilterOnHide="true" styleClass="dropdownClass" class="cls_addproformaaddtype" [options]="proformaAddressType" formControlName="AddressType" placeholder="Select One" optionLabel="label" [showClear]="true"></p-dropdown>
+                <div *ngIf="formSubmit.isSubmit && isValidCreateProformaForm.AddressType.errors">
+                    <div *ngIf="isValidCreateProformaForm.AddressType.errors.required" style="color:red;">Please provide Address Type.</div>
                 </div>
+
+            </div>
+            <div class="p-col-6 p-md-4 p-lg-2">
+
+                Template
+
+            </div>
+            <div class="p-col-6 p-md-8 p-lg-4">
+
+                <p-dropdown resetFilterOnHide="true" styleClass="dropdownClass" class="cls_addproformatemplate" [options]="proformatTemplates" formControlName="Template" placeholder="Select One" optionLabel="label" [showClear]="true" (onChange)="showHideState(createProforma_form.value.Template)"></p-dropdown>
+                <div *ngIf="formSubmit.isSubmit && isValidCreateProformaForm.Template.errors">
+                    <div *ngIf="isValidCreateProformaForm.Template.errors.required" style="color:red;">Please provide Template.</div>
+                </div>
+
             </div>
 
 
+            <div class="p-col-6 p-md-4 p-lg-2">
+                Proforma Date
+            </div>
+            <div class="p-col-6 p-md-8 p-lg-4">
 
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">Proforma Title</div>
+                <p-calendar styleClass="pCalendarBtn" [showIcon]="true" class="cls_addproformadate" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy" yearRange="2019:2030" appendTo="body" [disabledDays]="[0,6]" [yearNavigator]="true" panelStyleClass="calendarDemo"
+                    [minDate]="minProformDate" (onFocus)="updateCalendarUI(fromCalendar)" (onClose)="updatePrformaNumFromPT(createProforma_form.value.ClientLegalEntity,$event)" #fromCalendar formControlName="ProformaDate">
+                </p-calendar>
+                <div *ngIf="formSubmit.isSubmit && isValidCreateProformaForm.ProformaDate.errors">
+                    <div *ngIf="isValidCreateProformaForm.ProformaDate.errors.required" style="color:red;">Please provide Proforma Date.</div>
+                </div>
+
             </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">
-                    <!-- <input id="disabled-input" type="text" pInputText formControlName="ProformaTitle" /> -->
-                    <textarea rows="5" style="width:90%" pInputTextarea formControlName="ProformaTitle"></textarea>
-                    <div *ngIf="formSubmit.isSubmit && isValidCreateProformaForm.ProformaTitle.errors">
-                        <div *ngIf="isValidCreateProformaForm.ProformaTitle.errors.required" style="color:red;">Please
-                            provide Proforma Title.</div>
+
+            <div class="p-col-6 p-md-4 p-lg-2" *ngIf="isTemplate4US">
+                State
+            </div>
+            <div class="p-col-6 p-md-8 p-lg-4" *ngIf="isTemplate4US">
+                <p-dropdown resetFilterOnHide="true" styleClass="dropdownClass" class="cls_addproformastate" [options]="usStatesData" formControlName="State" placeholder="Select One" optionLabel="Title" [filter]="true" [showClear]="true"></p-dropdown>
+                <div *ngIf="formSubmit.isSubmit && isValidCreateProformaForm.State.errors">
+                    <div *ngIf="isValidCreateProformaForm.State.errors.required" style="color:red;">Please provide State.
                     </div>
-                    <div *ngIf="createProforma_form.controls['ProformaTitle'].hasError('maxlength')">Proforma title
-                        should be less than 255 charcters</div>
                 </div>
             </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">Additional Comments (optional)</div>
+            <div class="p-col-6 p-md-4 p-lg-2" *ngIf="isTemplate4US">
+
             </div>
-            <div class="p-col-12 p-md-6 p-lg-3">
-                <div class="box">
-                    <textarea rows="5" style="width:90%" pInputTextarea formControlName="AdditionalComments"></textarea>
+            <div class="p-col-6 p-md-8 p-lg-4" *ngIf="isTemplate4US">
+            </div>
+
+            <div class="p-col-6 p-md-4 p-lg-2">
+                Proforma Title
+            </div>
+            <div class="p-col-6 p-md-8 p-lg-4">
+
+
+                <textarea rows="4" class="textfeildClass cls_addproformatitle" pInputTextarea formControlName="ProformaTitle"></textarea>
+                <div *ngIf="formSubmit.isSubmit && isValidCreateProformaForm.ProformaTitle.errors">
+                    <div *ngIf="isValidCreateProformaForm.ProformaTitle.errors.required" style="color:red;">Please provide Proforma Title.</div>
                 </div>
+                <div *ngIf="createProforma_form.controls['ProformaTitle'].hasError('maxlength')">Proforma title should be less than 255 charcters</div>
+
+            </div>
+            <div class="p-col-6 p-md-4 p-lg-2">
+                Additional Comments (optional)
+            </div>
+            <div class="p-col-6 p-md-8 p-lg-4">
+
+                <textarea rows="4" class="textfeildClass cls_addproformacomment" pInputTextarea formControlName="AdditionalComments"></textarea>
+
             </div>
         </div>
 
     </form>
-    <p-footer>
-        <button type="button" class="fdBtn" pButton label="Add Proforma" [disabled]="submitBtn.isClicked"
-            (click)="onSubmit('createProforma')"></button>
-        <button type="button" class="fdBtn" pButton label="Cancel" (click)="cancelFormSub('createProforma')"></button>
-    </p-footer>
-</p-dialog>
+  
+</p-dialog> -->
 
-<!-- To Display Proforma Number -->
-<p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom" position="bottom-center"></p-toast>
 <!-- <router-outlet></router-outlet> -->
 <app-editor #editorRef></app-editor>
 <app-timeline-history #timelineRef></app-timeline-history>

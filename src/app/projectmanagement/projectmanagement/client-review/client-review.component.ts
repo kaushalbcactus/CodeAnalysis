@@ -8,7 +8,7 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { PmconstantService } from '../../services/pmconstant.service';
 import { PMObjectService } from '../../services/pmobject.service';
-import { MenuItem, MessageService } from 'primeng/api';
+import { MenuItem} from 'primeng/api';
 import { PMCommonService } from '../../services/pmcommon.service';
 import { Router } from '@angular/router';
 import { Table } from 'primeng/table';
@@ -101,7 +101,6 @@ export class ClientReviewComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private platformLocation: PlatformLocation,
     private locationStrategy: LocationStrategy,
-    private messageService: MessageService,
     _applicationRef: ApplicationRef,
     zone: NgZone,
   ) {
@@ -419,12 +418,7 @@ export class ClientReviewComponent implements OnInit {
       this.closeTaskWithStatus(task, this.crRef);
     } else {
 
-      this.messageService.add({
-        key: 'custom', severity: 'warn', summary: 'Warning Message',
-        detail: 'Previous task should be Completed or Auto Closed'
-      });
-
-
+      this.commonService.showToastrMessage(this.Constant.MessageType.warn,'Previous task should be Completed or Auto Closed',false);
       // this.changeErrorMessage('Previous task should be Completed or Auto Closed');
     }
   }
@@ -483,10 +477,8 @@ export class ClientReviewComponent implements OnInit {
           await this.spServices.executeBatch(batchUrl);
 
           this.isCRInnerLoaderHidden = true;
-          this.messageService.add({
-            key: 'custom', severity: 'success', sticky: true,
-            summary: 'Success Message', detail: task.Title + ' is completed Sucessfully'
-          });
+
+          this.commonService.showToastrMessage(this.Constant.MessageType.success,task.Title + ' is completed Sucessfully.',true);
 
           const index = this.pmObject.clientReviewArray.findIndex(item => item.ID === task.ID);
           this.pmObject.clientReviewArray.splice(index, 1);
@@ -504,11 +496,8 @@ export class ClientReviewComponent implements OnInit {
     } else {
       this.loaderView.nativeElement.classList.remove('show');
       this.spannerView.nativeElement.classList.remove('show');
-      this.messageService.add({
-        key: 'custom', severity: 'success', sticky: true,
-        summary: 'Success Message', detail: task.Title + ' is already completed or closed or auto closed. Hence record is refreshed in 30 sec.'
-      });
 
+      this.commonService.showToastrMessage(this.Constant.MessageType.info,task.Title + ' is already completed or closed or auto closed. Hence record is refreshed in 30 sec.',true);
       setTimeout(() => {
         this.ngOnInit();
       }, 3000);

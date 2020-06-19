@@ -8,10 +8,7 @@ import { CommonService } from '../../../../Services/common.service';
 import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { DataService } from '../../../../Services/data.service';
 import { Router, NavigationEnd } from '@angular/router';
-// import { Subject } from 'rxjs';
-// import { debounceTime } from 'rxjs/operators';
-// import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { MenuItem, MessageService } from 'primeng/api';
+import { MenuItem } from 'primeng/api';
 import { ActionsPopupComponent } from './actions-popup/actions-popup.component';
 import { Table } from 'primeng/table';
 
@@ -66,7 +63,7 @@ export class CDComponent implements OnInit, OnDestroy {
     public commonService: CommonService,
     public data: DataService,
     private router: Router,
-    private messageService: MessageService,
+
     private qmsConstant: QMSConstantsService,
     private qmsCommon: QMSCommonService,
     private cdr: ChangeDetectorRef,
@@ -299,8 +296,9 @@ export class CDComponent implements OnInit, OnDestroy {
   //   this.success.next(message);
   // }
 
+  
   showToastMsg(obj) {
-    this.messageService.add({ severity: obj.type, summary: obj.msg, detail: obj.detail });
+    this.commonService.showToastrMessage(obj.type, obj.detail, false);
   }
 
   /**

@@ -3,7 +3,7 @@ import {
   ComponentFactoryResolver,
   ViewEncapsulation,
 } from '@angular/core';
-import { MenuItem, DialogService, MessageService } from 'primeng';
+import { MenuItem, DialogService } from 'primeng';
 import { SPOperationService } from '../Services/spoperation.service';
 import { GlobalService } from '../Services/global.service';
 import { ConstantsService } from '../Services/constants.service';
@@ -12,6 +12,8 @@ import { Router } from '@angular/router';
 import { TimeBookingDialogComponent } from './time-booking-dialog/time-booking-dialog.component';
 import { CreateTaskComponent } from './fte/create-task/create-task.component';
 import { CommonService } from '../Services/common.service';
+import { DatePipe } from '@angular/common';
+import { CurrentCompletedTasksTableComponent } from './current-completed-tasks-table/current-completed-tasks-table.component';
 
 @Component({
   selector: 'app-my-dashboard',
@@ -39,6 +41,7 @@ export class MyDashboardComponent implements OnInit {
   currentUserInfo: any;
 
   @ViewChild('createTaskcontainer', { read: ViewContainerRef, static: true }) createTaskcontainer: ViewContainerRef;
+  allTasks: any = [];
 
   constructor(
     private constants: ConstantsService,
@@ -47,9 +50,9 @@ export class MyDashboardComponent implements OnInit {
     private myDashboardConstantsService: MyDashboardConstantsService,
     private router: Router,
     public dialogService: DialogService,
-    public messageService: MessageService,
     private componentFactoryResolver: ComponentFactoryResolver,
     private commonService: CommonService,
+    private datePipe: DatePipe
   ) { }
 
   ngOnInit() {
@@ -68,6 +71,9 @@ export class MyDashboardComponent implements OnInit {
 
   async onActivate(componentRef) {
     if (this.firstload) {
+      if (this.router.url.indexOf('my-current-tasks') > -1) {
+        this.checkTaskAvailable();
+      }
       await this.executeCommonCalls();
     }
     if (this.router.url.includes('my-current-tasks') || this.router.url.includes('my-completed-tasks')) {
@@ -103,12 +109,27 @@ export class MyDashboardComponent implements OnInit {
     });
     ref.onClose.subscribe(async (TimeBookingobjCount: any) => {
       if (TimeBookingobjCount > 0) {
-        this.messageService.add({
-          key: 'custom', severity: 'success', summary: 'Success Message',
-          detail: 'Time booking updated successfully.'
-        });
+
+        this.commonService.showToastrMessage(this.constants.MessageType.success,'Time booking updated successfully.',false);
       }
     });
+  }
+
+
+  async checkTaskAvailable() {
+    const res = await this.myDashboardConstantsService.getOpenTaskForDialog();
+    if (res.length > 0) { 
+      const ref = this.dialogService.open(CurrentCompletedTasksTableComponent, { 
+          data: {
+            allpopupTasks  : res
+          },
+        header: 'Open Tasks',
+        width: '90vw',
+        contentStyle: { 'max-height': '80vh', 'overflow-y': 'auto' },
+      });
+      ref.onClose.subscribe(async (opentaskObj: any) => {
+      });
+    }
   }
 
   async executeCommonCalls() {

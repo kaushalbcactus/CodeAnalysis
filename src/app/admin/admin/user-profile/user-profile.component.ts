@@ -5,7 +5,6 @@ import { AdminCommonService } from '../../services/admin-common.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { AdminConstantService } from '../../services/admin-constant.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
-import { MessageService } from 'primeng/api';
 import { AdminObjectService } from '../../services/admin-object.service';
 import { Router } from '@angular/router';
 import { CommonService } from 'src/app/Services/common.service';
@@ -89,7 +88,6 @@ export class UserProfileComponent implements OnInit {
    * @param constants This is instance referance of `ConstantsService` component.
    * @param adminConstants This is instance referance of `AdminConstantService` component.
    * @param spServices This is instance referance of `SPOperationService` component.
-   * @param messageService This is instance referance of `MessageService` component.
    * @param adminObject This is instance referance of `AdminObjectService` component.
    * @param platformLocation This is instance referance of `PlatformLocation` component.
    * @param router This is instance referance of `Router` component.
@@ -103,7 +101,6 @@ export class UserProfileComponent implements OnInit {
     private constants: ConstantsService,
     private adminConstants: AdminConstantService,
     private spServices: SPOperationService,
-    private messageService: MessageService,
     private adminObject: AdminObjectService,
     private platformLocation: PlatformLocation,
     private router: Router,
@@ -682,7 +679,7 @@ export class UserProfileComponent implements OnInit {
     } else {
       // This will get called when user doesn't update the manager name.
       if (this.showeditUser) {
-        await  this.createOrUpdateItem(addUserForm.value, IdResults, this.showeditUser, date);
+        await this.createOrUpdateItem(addUserForm.value, IdResults, this.showeditUser, date);
       }
     }
 
@@ -701,14 +698,10 @@ export class UserProfileComponent implements OnInit {
       this.common.SetNewrelic('admin', 'admin-UserProfile', 'updateResourceCategorization');
       await this.spServices.updateItem(this.constants.listNames.ResourceCategorization.name,
         this.currUserObj.ID, data, this.constants.listNames.ResourceCategorization.type);
-     
-     
-      this.messageService.add({
-        key: 'adminCustom', severity: 'success', sticky: true,
-        summary: 'Success Message', detail: 'User - ' + this.currUserObj.User + ' is updated successfully'
-      });
+
+      this.common.showToastrMessage(this.constants.MessageType.success, 'User - ' + this.currUserObj.User + ' is updated successfully', true);
       await this.loadRecentRecords(this.currUserObj.ID, this.showeditUser);
-     
+
     } else {
       const data = await this.getResourceData(formValue, IdResults, this.showeditUser, date);
       this.common.SetNewrelic('admin', 'admin-UserProfile', 'CreateResourceCategorization');
@@ -716,16 +709,11 @@ export class UserProfileComponent implements OnInit {
         data, this.constants.listNames.ResourceCategorization.type);
 
       if (result.hasOwnProperty('hasError') && result.hasError && result.message.value.includes('duplicate')) {
-        this.messageService.add({
-          key: 'adminCustom', severity: 'error', sticky: true,
-          summary: 'Error Message', detail: 'User - ' + formValue.username.DisplayText + ' is already exist.'
-        });
+
+        this.common.showToastrMessage(this.constants.MessageType.error, 'User - ' + formValue.username.DisplayText + ' is already exist.', true);
       } else {
-     
-        this.messageService.add({
-          key: 'adminCustom', severity: 'success', sticky: true,
-          summary: 'Success Message', detail: 'User - ' + formValue.username.DisplayText + ' is added successfully'
-        });
+
+        this.common.showToastrMessage(this.constants.MessageType.success, 'User - ' + formValue.username.DisplayText + ' is added successfully', true);
         await this.loadRecentRecords(result.ID, this.showeditUser);
       }
     }

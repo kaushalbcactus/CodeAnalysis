@@ -7,7 +7,7 @@ import { GlobalService } from 'src/app/Services/global.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { PmconstantService } from '../../services/pmconstant.service';
 import { PMObjectService } from '../../services/pmobject.service';
-import { MenuItem, MessageService } from 'primeng/api';
+import { MenuItem } from 'primeng/api';
 import { PMCommonService } from '../../services/pmcommon.service';
 import { Router } from '@angular/router';
 import { Table } from 'primeng/table';
@@ -110,7 +110,6 @@ export class SendToClientComponent implements OnInit {
     private platformLocation: PlatformLocation,
     private locationStrategy: LocationStrategy,
     _applicationRef: ApplicationRef,
-    public messageService: MessageService,
     zone: NgZone,
   ) {
 
@@ -172,11 +171,8 @@ export class SendToClientComponent implements OnInit {
       const options = { Status: 'Completed', Actual_x0020_Start_x0020_Date: new Date(), Actual_x0020_End_x0020_Date: new Date(), __metadata: { type: this.Constant.listNames.Schedules.type } };
       this.closeTaskWithStatus(task, options, this.sct);
     } else {
-      this.messageService.add({
-        key: 'custom', severity: 'error',
-        summary: 'Error Message', detail: 'Previous task should be Completed or Auto Closed'
-      });
 
+      this.commonService.showToastrMessage(this.Constant.MessageType.error,'Previous task should be Completed or Auto Closed',false);
     }
   }
   async closeTaskWithStatus(task, options, unt) {
@@ -201,7 +197,7 @@ export class SendToClientComponent implements OnInit {
       } else {
         this.loaderView.nativeElement.classList.remove('show');
         this.spannerView.nativeElement.classList.remove('show');
-        this.commonService.confirmMessageDialog("Do you want to change project status from '" + project.Status + "' to '" + this.Constant.STATUS.AUTHOR_REVIEW + "' or '" + this.Constant.STATUS.IN_PROGRESS + "' ?", [this.Constant.STATUS.AUTHOR_REVIEW, this.Constant.STATUS.IN_PROGRESS], true).then(async projectstatus => {
+        this.commonService.confirmMessageDialog('Confirmation', "Do you want to change project status from '" + project.Status + "' to '" + this.Constant.STATUS.AUTHOR_REVIEW + "' or '" + this.Constant.STATUS.IN_PROGRESS + "' ?", null, [this.Constant.STATUS.AUTHOR_REVIEW, this.Constant.STATUS.IN_PROGRESS], true).then(async projectstatus => {
           if (projectstatus) {
             this.loaderView.nativeElement.classList.add('show');
             this.spannerView.nativeElement.classList.add('show');
@@ -215,10 +211,7 @@ export class SendToClientComponent implements OnInit {
       this.loaderView.nativeElement.classList.remove('show');
       this.spannerView.nativeElement.classList.remove('show');
 
-      this.messageService.add({
-        key: 'custom', severity: 'success', sticky: true,
-        summary: 'Success Message', detail: task.Title + ' is already completed or closed or auto closed. Hence record is refreshed in 30 sec.'
-      });
+      this.commonService.showToastrMessage(this.Constant.MessageType.info,task.Title + ' is already completed or closed or auto closed. Hence record is refreshed in 30 sec.',true);
       setTimeout(() => {
         this.ngOnInit();
       }, 3000);
@@ -276,11 +269,8 @@ export class SendToClientComponent implements OnInit {
 
 
     await this.spServices.executeBatch(batchUrl);
-    this.messageService.add({
-      key: 'custom', severity: 'success', sticky: true,
-      summary: 'Success Message', detail: task.Title + ' is completed Sucessfully'
-    });
 
+    this.commonService.showToastrMessage(this.Constant.MessageType.success, task.Title + ' is completed Sucessfully',true);
     this.loaderView.nativeElement.classList.remove('show');
     this.spannerView.nativeElement.classList.remove('show');
     const index = this.pmObject.sendToClientArray.findIndex(item => item.ID === task.ID);

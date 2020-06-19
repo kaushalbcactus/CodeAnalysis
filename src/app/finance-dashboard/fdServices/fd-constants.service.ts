@@ -33,7 +33,7 @@ export class FdConstantsService {
         isPSInnerLoaderHidden: false,
         projectInfo: {
             select: "ID,ProjectCode,ProjectType,WBJID,Title,Year,ClientLegalEntity,SOWCode,ProposedEndDate,PrimaryPOC,NextSCDate,Status,Milestone,Milestones,BusinessVertical,AdditionalPOCLookup/ID,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail",
-            filter: "Status ne 'cancelled' and Status ne 'Pending Closure' and Status ne 'closed' and Status ne 'Awaiting Cancel Approval'",
+            filter: "Status ne 'cancelled' and Status ne 'closed' and Status ne 'Awaiting Cancel Approval'",
             orderby: "ProjectCode",
             top: 4500,
             expand: "AdditionalPOCLookup,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail"
@@ -95,7 +95,7 @@ export class FdConstantsService {
             select: "Title"
         },
         sowList: {
-            select: "ID,SOWCode,Title,ClientLegalEntity,Currency,BillingEntity",
+            select: "ID,SOWCode,Title,ClientLegalEntity,Currency,BillingEntity,TotalLinked,OOPLinked,InvoicedOOP,TotalInvoiced,TotalScheduled,ScheduledOOP",
             filter: "Status ne 'CLosed' or Status ne 'Cancelled' ",
             top: 4500
         },
@@ -218,7 +218,7 @@ export class FdConstantsService {
         // ,TotalBudget,NetBudget,TotalLinked,TotalInvoiced,TotalScheduled,ScheduledRevenue,RevenueLinked
 
         projectBudgetBreakup: {
-            select: "ID, ProjectLookup, BudgetHours,AuthorId,EditorId",
+            select: "ID, ProjectLookup, BudgetHours,AuthorId,EditorId,OriginalBudget,OOPBudget",
             filter: "ProjectCode eq '{{ProjectCode}}' ",
             // top: 1
         },
@@ -236,7 +236,7 @@ export class FdConstantsService {
         },
 
         sowByProjectCode: {
-            select: "ID, Title, ClientLegalEntity, SOWTitle, Currency, TotalBudget, NetBudget, OOPBudget, TaxBudget, Status, PrimaryPOC, TotalLinked, TotalScheduled, ScheduledRevenue, TotalInvoiced, RevenueLinked,AuthorId,EditorId",
+            select: "ID, Title, ClientLegalEntity, SOWTitle, Currency, TotalBudget, NetBudget, OOPBudget, TaxBudget, Status, PrimaryPOC, TotalLinked, TotalScheduled, ScheduledRevenue, TotalInvoiced, RevenueLinked,InvoicedRevenue,AuthorId,EditorId",
             filter: "SOWCode eq '{{SOWCode}}' and Status ne 'Deleted'",
             top: 1
         },
@@ -319,6 +319,13 @@ export class FdConstantsService {
             top: 4500
         },
 
+        invoiceLineItemProforma:{
+            select:"ID,Title,TaggedDate,ScheduledDate,Amount,Currency,PO,Status,ProformaLookup,ScheduleType,InvoiceLookup,FiscalYear,MainPOC,AddressType,Template,SOWCode,Modified,Modified,CS,CS/ID,CS/Title,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title",
+            filter: "ProformaLookup eq '{{ProformaLookup}}' ",
+            top: 4500,
+            expand: "CS/ID,CS/Title,Editor,Author"
+        },
+
         // Mail Content
         mailContent: {
             select: "ID,Title,Content",
@@ -326,14 +333,15 @@ export class FdConstantsService {
             top: 1
         },
 
-        // Authors
-        // authors: {
-        //     select: "ID,Title,FirstName, LastName, Address, EmailAddress, AuthorType",
-        //     filter: "ID eq '{{Id}}' ",
-        //     top: 1
-        // },
+        ADV_INVOICES: {
+            select: 'ID, ClientLegalEntity, Amount, AddressType, InvoiceNumber, PO, ProformaLookup, IsTaggedFully, TaggedAmount,AuxiliaryInvoiceName,'
+                + ' InvoiceDate, MainPOC, FileURL',
+            filter: 'ClientLegalEntity eq \'{{clientLegalEntity}}\' and InvoiceType eq \'{{invoiceType}}\' and IsTaggedFully eq \'No\'',
+            top: 4500
+        },
 
-        // Add Update
+
+              // Add Update
         addUpdateProjectInformation: {
             // createProject: this.globalObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constantService.listNames.projectInfo.name + "')/items",
             update: this.globalObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constantService.listNames.projectInfo.name + "')/items({{Id}})",
@@ -384,6 +392,19 @@ export class FdConstantsService {
             // create: this.globalObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constantService.listNames.SpendingInfo.name + "')/items",
             update: this.globalObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constantService.listNames.ClientLegalEntity.name + "')/items({{Id}})",
         },
+        ProformaTemplates: [
+            { label: 'US', value: 'US' },
+            { label: 'Japan', value: 'Japan' },
+            { label: 'India', value: 'India' },
+            { label: 'Korea', value: 'Korea' },
+            { label: 'China', value: 'China' },
+            { label: 'ROW', value: 'ROW' }
+        ],
+
+        addressTypes: [
+            { label: 'Client', value: 'Client' },
+            { label: 'POC', value: 'POC' },
+        ]
 
     }
 }

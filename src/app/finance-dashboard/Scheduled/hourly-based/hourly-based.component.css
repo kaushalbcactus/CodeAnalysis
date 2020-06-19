@@ -1,0 +1,7 @@
+::ng-deep .pCalendarBtn {
+    width: 100% !important;
+}
+
+::ng-deep .pCalendarBtn>input {
+    width: calc(100% - 30px) !important;
+}

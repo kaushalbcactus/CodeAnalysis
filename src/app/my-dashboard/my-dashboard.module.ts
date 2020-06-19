@@ -15,7 +15,7 @@ import { TimeSpentDialogComponent } from './time-spent-dialog/time-spent-dialog.
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
 import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
-import { ConfirmationService, DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng';
+import {DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 import { MyCurrentCompletedTasksComponent } from './my-current-completed-tasks/my-current-completed-tasks.component';
 import { PreviosNextTasksDialogComponent } from './previos-next-tasks-dialog/previos-next-tasks-dialog.component';
 import { CustomMaterialModule } from '../shared/material.module';
@@ -32,8 +32,6 @@ import { NgGanttEditorModule } from 'ng-gantt';
 import { ProjectmanagementModule } from '../projectmanagement/projectmanagement.module';
 import { TaskAllocationModule } from '../task-allocation/task-allocation.module';
 import { QmsModule } from './../qms/qms.module';
-// import { FeedbackPopupComponent } from '../qms/qms/reviewer-detail-view/feedback-popup/feedback-popup.component';
-// import {QmsModule} from '../qms/qms.module';
 import { MyprojectsComponent } from './myprojects/myprojects.component';
 import { DisplayProjectsComponent } from './myprojects/display-projects/display-projects.component';
 import { TimelineModule } from '../timeline/timeline.module';
@@ -41,6 +39,8 @@ import { SharedModule } from '../shared/shared.module';
 import { ViewUploadDocumentDialogComponent } from '../shared/view-upload-document-dialog/view-upload-document-dialog.component';
 import { ViewUploadDocumentModule } from '../shared/view-upload-document-dialog/view-upload-document.module';
 import { CreateTaskComponent } from './fte/create-task/create-task.component';
+import { CurrentCompletedTasksTableComponent } from './current-completed-tasks-table/current-completed-tasks-table.component';
+import { FeedbackPopupComponent } from '../qms/qms/reviewer-detail-view/feedback-popup/feedback-popup.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
@@ -63,6 +63,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     MyprojectsComponent,
     DisplayProjectsComponent,
     CreateTaskComponent,
+    CurrentCompletedTasksTableComponent,
   ],
   imports: [
     NgxMaterialTimepickerModule,
@@ -88,7 +89,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     QmsModule
   ],
 
-  providers: [ConfirmationService, DatePipe, DialogService, DynamicDialogConfig, DynamicDialogRef, {
+  providers: [ DatePipe, DialogService, DynamicDialogConfig, DynamicDialogRef, {
     provide: PERFECT_SCROLLBAR_CONFIG,
     useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG
   }],
@@ -101,6 +102,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     ProjectDraftsComponent,
     ViewUploadDocumentDialogComponent,
     CreateTaskComponent,
+    CurrentCompletedTasksTableComponent,
+    FeedbackPopupComponent
   ]
 })
 export class MyDashboardModule { }

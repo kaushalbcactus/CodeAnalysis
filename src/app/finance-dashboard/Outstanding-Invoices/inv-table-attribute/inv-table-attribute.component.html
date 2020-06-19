@@ -21,7 +21,7 @@
             </tr>
             <tr>
                 <td [ngStyle]="{'color':'#d7181f'}">Invoice Date</td>
-                <td>{{rowItemData.InvoiceDate | date:'medium'}}</td>
+                <td>{{rowItemData.InvoiceDate | date:'mediumDate'}}</td>
             </tr>
             <tr>
                 <td [ngStyle]="{'color':'#d7181f'}">Invoice Status</td>
@@ -81,14 +81,12 @@
             </tr>
             <tr>
                 <td [ngStyle]="{'color':'#d7181f'}">File URL</td>
-                <td><a href="{{rowItemData.FileURL}}" target="_blank" style="color:red"
-                        *ngIf="rowItemData.FileURL">Click here</a>
+                <td><a href="{{rowItemData.FileURL}}" target="_blank" style="color:red" *ngIf="rowItemData.FileURL">Click here</a>
                 </td>
             </tr>
             <tr>
                 <td [ngStyle]="{'color':'#d7181f'}">Payment URL</td>
-                <td><a href="{{rowItemData.PaymentURL}}" target="_blank" style="color:red"
-                        *ngIf="rowItemData.PaymentURL">Click here</a>
+                <td><a href="{{rowItemData.PaymentURL}}" target="_blank" style="color:red" *ngIf="rowItemData.PaymentURL">Click here</a>
                 </td>
             </tr>
 

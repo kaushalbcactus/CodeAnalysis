@@ -9,7 +9,7 @@ import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { Subject } from 'rxjs/internal/Subject';
 import { SPOperationService } from '../../../../Services/spoperation.service';
 import { FilterComponent } from '../filter/filter.component';
-import { MenuItem, MessageService } from 'primeng/api';
+import { MenuItem } from 'primeng/api';
 import { PopupComponent } from './popup/popup.component';
 import { QMSConstantsService } from '../../services/qmsconstants.service';
 import { Table } from 'primeng/table';
@@ -27,7 +27,6 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
     private global: GlobalService,
     private datepipe: DatePipe,
     private spService: SPOperationService,
-    private messageService: MessageService,
     private qmsConstant: QMSConstantsService,
     private qmsCommon: QMSCommonService,
     private commonService: CommonService,
@@ -261,7 +260,7 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
   }
 
   showToastMsg(obj) {
-    this.messageService.add({ severity: obj.type, summary: obj.msg, detail: obj.detail });
+    this.commonService.showToastrMessage(obj.type,obj.detail,false);
   }
 
   showColumn(): string {

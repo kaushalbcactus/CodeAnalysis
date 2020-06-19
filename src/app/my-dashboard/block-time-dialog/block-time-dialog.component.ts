@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DynamicDialogConfig, DynamicDialogRef, MessageService } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -25,7 +25,7 @@ export class BlockTimeDialogComponent implements OnInit {
   endtime: any;
   eventDate: any;
   eventEndDate: any;
-  yearsRange = new Date().getFullYear() - 1+ ':' + (new Date().getFullYear() + 10);
+  yearsRange = new Date().getFullYear() - 1 + ':' + (new Date().getFullYear() + 10);
   darkTheme: NgxMaterialTimepickerTheme = {
     container: {
       bodyBackgroundColor: '#424242',
@@ -52,7 +52,6 @@ export class BlockTimeDialogComponent implements OnInit {
   constructor(
     public config: DynamicDialogConfig,
     public ref: DynamicDialogRef,
-    public messageService: MessageService,
     private constants: ConstantsService,
     private myDashboardConstantsService: MyDashboardConstantsService,
     private spServices: SPOperationService,
@@ -81,12 +80,20 @@ export class BlockTimeDialogComponent implements OnInit {
       if (this.data.timeblockType !== 'Leave') {
         this.minDateValue = await this.myDashboardConstantsService.CalculateminstartDateValue(new Date(), 3);
       } else {
-        const WeekDate = new Date(new Date().getTime() - 60 * 60 * 24 * 14 * 1000);
-        const day = WeekDate.getDay();
-        const monday = (WeekDate.getDate() - day + (day === 0 ? -6 : 1)) - 1;
-        const tempdate = new Date(WeekDate.setDate(monday));
-        const newDate = new Date(tempdate.getTime());
-        this.minDateValue = new Date(newDate.setDate(newDate.getDate() + 1));
+        // const WeekDate = new Date(new Date().getTime() - 60 * 60 * 24 * 14 * 1000);
+        // const day = WeekDate.getDay();
+        // const monday = (WeekDate.getDate() - day + (day === 0 ? -6 : 1)) - 1;
+        // const tempdate = new Date(WeekDate.setDate(monday));
+        // const newDate = new Date(tempdate.getTime());
+        // this.minDateValue = new Date(newDate.setDate(newDate.getDate() + 1));
+        const actualStartDate = new Date();
+        const allowedDate = this.common.CalculateminstartDateValue(new Date(), 3);
+        if (actualStartDate.getFullYear() >= allowedDate.getFullYear() &&
+          actualStartDate.getMonth() >= allowedDate.getMonth()) {
+            this.minDateValue = new Date(allowedDate.setDate(1));
+        }
+
+
       }
     }
     this.mode = this.data.mode;
@@ -139,31 +146,25 @@ export class BlockTimeDialogComponent implements OnInit {
     if ((!this.SelectedClientLegalEntity && this.data.timeblockType !== 'Admin') &&
       (!this.SelectedClientLegalEntity && this.data.timeblockType !== 'Internal Meeting') &&
       (!this.SelectedClientLegalEntity && this.data.timeblockType !== 'Training')) {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select Client.' });
+      this.common.showToastrMessage(this.constants.MessageType.warn, 'Please Select Client.', false);
       return false;
     } else if (!this.eventDate) {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select  Date.' });
+      this.common.showToastrMessage(this.constants.MessageType.warn, 'Please Select Date.', false);
       return false;
     } else if (!this.starttime) {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Define Start Time.' });
+      this.common.showToastrMessage(this.constants.MessageType.warn, 'Please Define Start Time.', false);
       return false;
     } else if (!this.endtime && this.data.timeblockType !== 'Admin') {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Define End Time.' });
+      this.common.showToastrMessage(this.constants.MessageType.warn, 'Please Define End Time.', false);
       return false;
     } else if (!this.commment) {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please add Comments.' });
+      this.common.showToastrMessage(this.constants.MessageType.warn, 'Please add Comments.', false);
       return false;
     } else if (this.starttime === this.endtime) {
-      this.messageService.add({
-        key: 'custom', severity: 'warn', summary: 'Warning Message',
-        detail: 'End Time should be Greater than Start Time.'
-      });
+      this.common.showToastrMessage(this.constants.MessageType.warn, 'End Time should be Greater than Start Time.', false);
       return false;
     } else if (this.starttime === '0:00') {
-      this.messageService.add({
-        key: 'custom', severity: 'warn', summary: 'Warning Message',
-        detail: 'Total hours should be Greater than 0.'
-      });
+      this.common.showToastrMessage(this.constants.MessageType.warn, 'Total hours should be Greater than 0.', false);
       return false;
     } else {
       let timeDifference;
@@ -186,7 +187,7 @@ export class BlockTimeDialogComponent implements OnInit {
       const obj = {
         __metadata: this.mode === 'create' ? {
           // tslint:disable-next-line: object-literal-key-quotes
-          'type': 'SP.Data.SchedulesListItem'
+          'type': this.constants.listNames.Schedules.type
         } : undefined,
         Title: 'Adhoc ' + this.datePipe.transform(this.eventDate, 'dd MMM') + ' ' + this.sharedObject.currentUser.title,
         Entity: this.data.timeblockType === 'Admin' || this.data.timeblockType === 'Training' ||
@@ -231,13 +232,17 @@ export class BlockTimeDialogComponent implements OnInit {
 
 
     if (!this.eventDate) {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select Start Date.' });
+
+      this.common.showToastrMessage(this.constants.MessageType.warn, 'Please Select Start Date.', false);
       return false;
     } else if (!this.eventEndDate) {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select End Date.' });
+      this.common.showToastrMessage(this.constants.MessageType.warn, 'Please Select End Date.', false);
       return false;
-    } else if (!this.commment) {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please add Comments.' });
+    } else if (this.eventEndDate < this.eventDate ) {
+      this.common.showToastrMessage(this.constants.MessageType.warn, 'End date should be greater than start date.', false);
+      return false;
+    }else if (!this.commment) {
+      this.common.showToastrMessage(this.constants.MessageType.warn, 'Please add Comments.', false);
       return false;
     } else {
       const obj = {
@@ -259,13 +264,8 @@ export class BlockTimeDialogComponent implements OnInit {
       if (validation) {
         this.ref.close(obj);
       } else {
-
-        this.messageService.add({
-          key: 'custom', severity: 'warn', summary: 'Warning Message',
-          detail: 'Leave already exist between ' +
-            this.datePipe.transform(this.eventDate, 'MMM dd, yyyy') + ' and ' + this.datePipe.transform(this.eventEndDate, 'MMM dd, yyyy')
-        });
-
+        this.common.showToastrMessage(this.constants.MessageType.warn, 'Leave already exist between ' +
+          this.datePipe.transform(this.eventDate, 'MMM dd, yyyy') + ' and ' + this.datePipe.transform(this.eventEndDate, 'MMM dd, yyyy'), false);
       }
 
     }
@@ -359,17 +359,13 @@ export class BlockTimeDialogComponent implements OnInit {
 
 
   EnableHalfDay() {
-
     if (new Date(this.datePipe.transform(this.eventDate, 'MMM dd, yyyy')).getTime() ===
       new Date(this.datePipe.transform(this.eventEndDate, 'MMM dd, yyyy')).getTime()) {
-
       this.halfDayEnable = true;
     } else {
       this.IsHalfDay = false;
       this.halfDayEnable = false;
     }
-
-
   }
 
 }

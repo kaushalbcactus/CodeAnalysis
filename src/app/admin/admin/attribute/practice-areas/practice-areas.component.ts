@@ -1,6 +1,5 @@
 import { Component, OnInit, ApplicationRef, NgZone, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { DatePipe, PlatformLocation } from '@angular/common';
-import { MessageService, Message, ConfirmationService } from 'primeng/api';
 import { AdminCommonService } from 'src/app/admin/services/admin-common.service';
 import { AdminObjectService } from 'src/app/admin/services/admin-object.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -46,8 +45,6 @@ export class PracticeAreasComponent implements OnInit {
   items = [
     { label: 'Delete', command: (e) => this.delete() }
   ];
-  msgs: Message[] = [];
-
   isOptionFilter: boolean;
   @ViewChild('pa', { static: false }) paTable: Table;
 
@@ -55,8 +52,6 @@ export class PracticeAreasComponent implements OnInit {
    * Construct a method to create an instance of required component.
    *
    * @param datepipe This is instance referance of `DatePipe` component.
-   * @param messageService This is instance referance of `MessageService` component.
-   * @param confirmationService This is instance referance of `ConfirmationService` component.
    * @param adminCommonService This is instance referance of `AdminCommonService` component.
    * @param adminObject This is instance referance of `AdminObjectService` component.
    * @param spServices This is instance referance of `SPOperationService` component.
@@ -70,8 +65,6 @@ export class PracticeAreasComponent implements OnInit {
    */
   constructor(
     private datepipe: DatePipe,
-    private messageService: MessageService,
-    private confirmationService: ConfirmationService,
     private adminCommonService: AdminCommonService,
     private adminObject: AdminObjectService,
     private spServices: SPOperationService,
@@ -191,26 +184,20 @@ export class PracticeAreasComponent implements OnInit {
    */
   async addPracticeArea() {
     const alphaExp = this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL_WITHSPACE;
-    this.messageService.clear();
+    this.common.clearToastrMessage();
     if (!this.practiceArea) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error',
-        summary: 'Error Message', detail: 'Please enter practice area.'
-      });
+
+      this.common.showToastrMessage(this.constants.MessageType.error,'Please enter practice area.',false);
       return false;
     }
     if (!this.practiceArea.match(alphaExp)) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error', summary: 'Error Message',
-        detail: 'Special characters are allowed between alphabets. Allowed special characters are \'-\' and \'_\'.'
-      });
+
+      this.common.showToastrMessage(this.constants.MessageType.error,'Special characters are allowed between alphabets. Allowed special characters are \'-\' and \'_\'.',false);
       return false;
     }
     if (this.practiceAreaRows.some(a => a.PracticeArea.toLowerCase() === this.practiceArea.toLowerCase())) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error',
-        summary: 'Error Message', detail: 'This practice area is already exist. Please enter another practice area.'
-      });
+      this.common.showToastrMessage(this.constants.MessageType.error,'This practice area is already exist. Please enter another practice area.',false);
+
       return false;
     }
     this.adminObject.isMainLoaderHidden = false;
@@ -221,10 +208,7 @@ export class PracticeAreasComponent implements OnInit {
     const result = await this.spServices.createItem(this.constants.listNames.BusinessVerticals.name, data,
       this.constants.listNames.BusinessVerticals.type);
     console.log(result);
-    this.messageService.add({
-      key: 'adminCustom', severity: 'success', sticky: true,
-      summary: 'Success Message', detail: 'The practice area ' + this.practiceArea + ' has added successfully.'
-    });
+    this.common.showToastrMessage(this.constants.MessageType.success,'The practice area ' + this.practiceArea + ' has added successfully.',true);
     this.practiceArea = '';
     await this.loadPractiveArea();
     this.adminObject.isMainLoaderHidden = true;
@@ -241,18 +225,14 @@ export class PracticeAreasComponent implements OnInit {
    */
   delete() {
     const data = this.currPracticeAreaObj;
-    this.confirmationService.confirm({
-      message: 'Do you want to delete this record?',
-      header: 'Delete Confirmation',
-      icon: 'pi pi-info-circle',
-      key: 'confirm',
-      accept: () => {
+    this.common.confirmMessageDialog('Delete Confirmation','Do you want to delete this record?',null,['Yes','No'],false).then(async Confirmation => {
+      if (Confirmation === 'Yes') {
         const updateData = {
           IsActive: this.adminConstants.LOGICAL_FIELD.NO
         };
         this.confirmUpdate(data, updateData, this.constants.listNames.BusinessVerticals.name,
           this.constants.listNames.BusinessVerticals.type);
-      },
+	  }
     });
   }
 
@@ -267,10 +247,8 @@ export class PracticeAreasComponent implements OnInit {
     this.adminObject.isMainLoaderHidden = false;
     this.common.SetNewrelic('admin', 'admin-attribute-practice-areas', 'updateBusinessVerticals');
     const result = await this.spServices.updateItem(listName, data.ID, updateData, type);
-    this.messageService.add({
-      key: 'adminCustom', severity: 'success', sticky: true,
-      summary: 'Success Message', detail: 'The practice area ' + data.PracticeArea + ' has deleted successfully.'
-    });
+
+    this.common.showToastrMessage(this.constants.MessageType.success,'The practice area ' + data.PracticeArea + ' has deleted successfully.',true);
     this.loadPractiveArea();
     this.adminObject.isMainLoaderHidden = true;
   }

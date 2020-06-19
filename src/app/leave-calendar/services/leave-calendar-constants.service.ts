@@ -3,7 +3,7 @@ import { ConstantsService } from '../../Services/constants.service';
 import { GlobalService } from '../../Services/global.service';
 import { DatePipe } from '@angular/common';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
-import { MessageService } from 'primeng/api';
+
 
 @Injectable({
   providedIn: 'root'
@@ -24,8 +24,7 @@ export class LeaveCalendarConstantsService {
     private constants: ConstantsService,
     public sharedObject: GlobalService,
     private datePipe: DatePipe,
-    private spServices: SPOperationService,
-    public messageService: MessageService, ) { }
+    private spServices: SPOperationService ) { }
 
   leaveCalendarComponent = {
 

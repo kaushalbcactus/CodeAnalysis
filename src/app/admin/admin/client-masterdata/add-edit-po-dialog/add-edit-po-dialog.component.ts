@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
-import { MessageService, DynamicDialogConfig, DynamicDialogRef } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
 import { AdminCommonService } from 'src/app/admin/services/admin-common.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
@@ -24,7 +24,6 @@ export class AddEditPoDialogComponent implements OnInit {
   modalloaderenable = true;
   constructor(
     private frmbuilder: FormBuilder,
-    private messageService: MessageService,
     private adminCommonService: AdminCommonService,
     private adminConstants: AdminConstantService,
     public config: DynamicDialogConfig,
@@ -388,10 +387,7 @@ export class AddEditPoDialogComponent implements OnInit {
         if (!this.showeditPO) {
           if (this.PORows.some(a =>
             a.PoNumber.toLowerCase() === this.PoForm.value.poNumber.toLowerCase())) {
-            this.messageService.add({
-              key: 'adminCustom', severity: 'error',
-              summary: 'Error Message', detail: 'This PO number is already exist. Please enter another PO number.'
-            });
+            this.common.showToastrMessage(this.constantsService.MessageType.warn, 'This PO number is already exist. Please enter another PO number.', false);
             return false;
           }
         }
@@ -402,10 +398,8 @@ export class AddEditPoDialogComponent implements OnInit {
         this.ref.close(data);
       }
       else {
-        this.messageService.add({
-          key: 'adminCustom', severity: 'error',
-          summary: 'Error Message', detail: 'Unable to upload file, size of ' + this.selectedFile[0].name + ' is 0 KB.'
-        });
+
+        this.common.showToastrMessage(this.constantsService.MessageType.warn, 'Unable to upload file, size of ' + this.selectedFile[0].name + ' is 0 KB.', false);
         return false;
       }
 

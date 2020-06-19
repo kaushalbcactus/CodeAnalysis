@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation, ViewChild, OnDestroy, HostListener, ElementRef, ApplicationRef, NgZone, TemplateRef, ChangeDetectorRef } from '@angular/core';
-import { Message, ConfirmationService, MessageService, SelectItem } from 'primeng/api';
+import { SelectItem } from 'primeng/api';
 import { Calendar, Table, DialogService } from 'primeng';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -13,6 +13,8 @@ import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/time
 import { EditorComponent } from 'src/app/finance-dashboard/PDFEditing/editor/editor.component';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
+import { AddUpdateProformaDialogComponent } from '../../add-update-proforma-dialog/add-update-proforma-dialog.component';
+import { EditInvoiceDialogComponent } from '../../edit-invoice-dialog/edit-invoice-dialog.component';
 
 
 @Component({
@@ -25,7 +27,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
     tempClick: any;
     proformaRes: any = [];
     proformaCols: any[];
-    msgs: Message[] = [];
 
     // Row Selection Array
     selectedRowData: any = [];
@@ -34,7 +35,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
     isTemplate4US: boolean = false;
 
     // Edit Deliverable Form
-    createProforma_form: FormGroup;
     replaceProforma_form: FormGroup;
     generateInvoice_form: FormGroup;
 
@@ -58,12 +58,12 @@ export class ProformaComponent implements OnInit, OnDestroy {
     isPSInnerLoaderHidden: boolean = false;
 
     // Right side bar
-    rightSideBar: boolean = false;
+    rightSideBarProforma: boolean = false;
+    rightSideBarInvoice: boolean = false;
 
     // Proforma Templates
     proformatTemplates: any = [];
     proformaAddressType: any = [];
-    proformaTypes: any = [];
     public queryConfig = {
         data: null,
         url: '',
@@ -72,6 +72,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
     };
     pageNumber: number = 0;
     generateInvoiceInProgress: boolean = false;
+    expandedRows: any = {};
 
     @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
     @ViewChild('editorRef', { static: false }) editorRef: EditorComponent;
@@ -83,10 +84,11 @@ export class ProformaComponent implements OnInit, OnDestroy {
     private subscription: Subscription = new Subscription();
     FolderName: string;
     SelectedFile: any;
+    invoiceCols: { field: string; header: string; }[];
+    selectedProforma: any;
 
 
     constructor(
-        private confirmationService: ConfirmationService,
         private fb: FormBuilder,
         private globalService: GlobalService,
         private spServices: SPOperationService,
@@ -94,7 +96,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
         private fdConstantsService: FdConstantsService,
         public fdDataShareServie: FDDataShareService,
         private datePipe: DatePipe,
-        private messageService: MessageService,
         private commonService: CommonService,
         private cdr: ChangeDetectorRef,
         private platformLocation: PlatformLocation,
@@ -118,7 +119,8 @@ export class ProformaComponent implements OnInit, OnDestroy {
 
     async ngOnInit() {
         // Create FOrm Field
-        this.createProformaFormField();
+        this.proformaAddressType = this.fdConstantsService.fdComponent.addressTypes;
+        this.proformatTemplates = this.fdConstantsService.fdComponent.ProformaTemplates;
         this.createRepProFormField()
         this.createInvoiceFormFiled();
 
@@ -131,7 +133,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
         this.projectContacts();
         await this.cleInfo();
         await this.poInfo();
-        this.usStatesInfo();
         this.currencyInfo();
         this.resourceCInfo();
 
@@ -139,15 +140,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         this.getRequiredData();
 
         this.createProformaCols();
-        // this.getProformaData();
-
-        // 
         this.getPurchaseOrderList();
-
-        // Initialize Proforma Templates & Address Type
-        this.getProformaTemplates();
-        this.getAddressType();
-        this.getProformaType();
     }
     updateCalendarUI(calendar: Calendar) {
         calendar.updateUI();
@@ -247,31 +240,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
         }))
     }
 
-    getProformaTemplates() {
-        this.proformatTemplates = [
-            { label: 'US', value: 'US' },
-            { label: 'Japan', value: 'Japan' },
-            { label: 'India', value: 'India' },
-            { label: 'Korea', value: 'Korea' },
-            { label: 'China', value: 'China' },
-            { label: 'ROW', value: 'ROW' }
-        ]
-    }
-
-    getAddressType() {
-        this.proformaAddressType = [
-            { lable: 'POC', value: 'POC' },
-            { lable: 'Client', value: 'Client' }
-        ]
-    }
-
-    getProformaType() {
-        this.proformaTypes = [
-            { lable: 'OOP', value: 'oop' },
-            { lable: 'Revenue', value: 'revenue' }
-        ]
-    }
-
     // Resource Categorization
     rcData: any = [];
     resourceCInfo() {
@@ -311,23 +279,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         ]
     }
 
-    createProformaFormField() {
-        this.createProforma_form = this.fb.group({
-            ClientLegalEntity: ['', Validators.required],
-            POName: ['', Validators.required],
-            POCName: ['', Validators.required],
-            ProformaNumber: [{ value: '', disabled: true }],
-            ProformaTitle: ['', Validators.required],
-            Template: ['', Validators.required],
-            State: ['', Validators.required],
-            Amount: ['', Validators.required],
-            Currency: [{ value: '', disabled: true }],
-            AddressType: ['', Validators.required],
-            ProformaType: ['', Validators.required],
-            AdditionalComments: [''],
-            ProformaDate: [new Date(), Validators.required],
-        })
-    }
+
 
     createRepProFormField() {
         this.replaceProforma_form = this.fb.group({
@@ -340,6 +292,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             InvoiceDate: [new Date(), [Validators.required]]
         })
     }
+
 
     createProformaCols() {
         this.proformaCols = [
@@ -370,11 +323,26 @@ export class ProformaComponent implements OnInit, OnDestroy {
             { field: 'ModifiedBy', header: 'Modified By', visibility: false },
             { field: '', header: '', visibility: true },
         ];
+
+        this.invoiceCols = [
+            { field: 'ProjectCode', header: 'Project Code', },
+            { field: 'ShortTitle', header: 'Short Title', },
+            { field: 'SOWValue', header: 'SOW Code / Name', },
+            { field: 'ProjectMileStone', header: 'Milestone', },
+            { field: 'POValues', header: 'PO No / Name', },
+            { field: 'ClientName', header: 'Client', },
+            { field: 'ScheduledDateFormat', header: 'Schedule Date', },
+            { field: 'Amount', header: 'Amount', },
+            { field: 'Currency', header: 'Currency', },
+            { field: 'POCName', header: 'POC Name', },
+        ]
     }
+
 
     // Get Proformas InvoiceItemList
     confirmedILIarray: any = [];
     async getRequiredData() {
+        this.expandedRows = {};
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         const prfObj = Object.assign({}, this.fdConstantsService.fdComponent.proformaForMangerIT);
         this.commonService.SetNewrelic('Finance-Dashboard', 'Proforma-proforma', 'performaForManager');
@@ -384,7 +352,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
         this.formatData(arrResults);
         // console.log(arrResults);
         // }
-        this.isPSInnerLoaderHidden = true;
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
 
@@ -421,7 +388,8 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 Reason: element.Reason,
                 State: element.State,
                 Modified: this.datePipe.transform(element.Modified, 'MMM dd, yyyy, hh:mm a'),
-                ModifiedBy: element.Editor ? element.Editor.Title : ''
+                ModifiedBy: element.Editor ? element.Editor.Title : '',
+                type: 'Proforma'
             })
         }
         this.proformaRes = [...this.proformaRes];
@@ -484,12 +452,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
     }
 
 
-
-    // On Row Selection
-    onRowSelect(event) {
-        // console.log('Event ', this.selectedRowData);
-    }
-
     checkSelectedRowData() {
         // console.log('Event ', this.selectedRowData);
     }
@@ -499,21 +461,17 @@ export class ProformaComponent implements OnInit, OnDestroy {
     }
 
     confirm1(obj) {
-        this.confirmationService.confirm({
-            message: obj.msg,
-            header: obj.title,
-            icon: 'pi pi-exclamation-triangle',
-            key: 'proforma',
-            accept: () => {
-                this.msgs = [{ severity: 'info', summary: 'Confirmed', detail: 'You have Confirmed' }];
-                // Call server service here
-                // console.log('obj ', obj);
+
+        this.commonService.confirmMessageDialog(obj.title, obj.msg, null, ['Yes', 'No'], false).then(async Confirmation => {
+            if (Confirmation === 'Yes') {
                 this.onSubmit(obj.type);
-            },
-            reject: () => {
-                this.msgs = [{ severity: 'info', summary: 'Cancel', detail: 'You have canceled' }];
+            }
+            else if (Confirmation === 'No') {
+
+                this.commonService.showToastrMessage(this.constantService.MessageType.info, 'You have canceled', false);
             }
         });
+
     }
 
     items: any[];
@@ -522,52 +480,48 @@ export class ProformaComponent implements OnInit, OnDestroy {
         text: ''
     }
     // Open popups
-    openPopup(data, popUpData) {
+    openPopup(data, popUpData, proforma) {
         // console.log('Row data  ', data);
+
+        this.selectedProforma = proforma ? proforma : undefined;
         let proformaSts: string = '';
         this.items = [];
-        if (data.Status) {
-            proformaSts = data.Status.toLowerCase();
-        }
-        switch (proformaSts) {
-            case 'created': {
-                this.items = [
-                    // { label: 'Export Proforma', command: (e) => this.openMenuContent(e, data) },
-                    { label: 'Mark as Sent to Client', command: (e) => this.openMenuContent(e, data) },
-                    { label: 'Reject Proforma', command: (e) => this.openMenuContent(e, data) },
-                    // { label: 'Replace Proforma', command: (e) => this.openMenuContent(e, data) },
-                ];
-                break;
+
+        if (data.type === 'Proforma') {
+            if (data.Status) {
+                proformaSts = data.Status.toLowerCase();
             }
-            case 'sent': {
-                this.items = [
-                    // { label: 'Export Proforma', command: (e) => this.openMenuContent(e, data) },
+
+            this.items = proformaSts === 'created' ? [
+                { label: 'Mark as Sent to Client', command: (e) => this.openMenuContent(e, data) },
+            ] : [
                     { label: 'Generate Invoice', command: (e) => this.openMenuContent(e, data) },
-                    { label: 'Reject Proforma', command: (e) => this.openMenuContent(e, data) },
-                    // { label: 'Replace Proforma', command: (e) => this.openMenuContent(e, data) },
                 ];
-                break;
+
+            if (data.ProformaHtml) {
+                this.items.push({ label: 'Edit Proforma', command: (e) => this.openMenuContent(e, data) });
+
             }
-            default: {
+
+            if (!data.FileURL && (data.Template === 'US' || data.Template === 'India' || data.Template === 'Japan')) {
+                this.items.push({ label: 'Regenerate Proforma', command: (e) => this.openMenuContent(e, data) });
             }
 
+            this.items.push({ label: 'Reject Proforma', command: (e) => this.openMenuContent(e, data) }, { label: 'Replace Proforma', command: (e) => this.openMenuContent(e, data) })
         }
-        if (data.ProformaHtml) {
-            this.items.push({ label: 'Edit Proforma', command: (e) => this.openMenuContent(e, data) });
+        else {
+            this.items.push(
+                { label: 'Edit Line item', command: (e) => this.openMenuContent(e, data) },
+                { label: 'View Project Details', command: (e) => this.openMenuContent(e, data) },
+            )
+        }
 
-        }
-
-        if (!data.FileURL && (data.Template === 'US' || data.Template === 'India' || data.Template === 'Japan')) {
-            this.items.push({ label: 'Regenerate Proforma', command: (e) => this.openMenuContent(e, data) });
-        }
         this.items.push(
-            { label: 'Replace Proforma', command: (e) => this.openMenuContent(e, data) },
             { label: 'Details', command: (e) => this.openMenuContent(e, data) },
             { label: 'Show History', command: (e) => this.openMenuContent(e, data) },
         )
 
         if (this.items.length === 0) {
-            // console.log('this.items ', this.items);
             popUpData.visible = false;
         }
 
@@ -591,100 +545,146 @@ export class ProformaComponent implements OnInit, OnDestroy {
 
     selectedRowItem: any;
     openMenuContent(event, data) {
-        // console.log(JSON.stringify(data));
-        this.selectedRowItem = data;
-        // console.log(event);
+
+
         this.confirmDialog.title = event.item.label;
         this.submitBtn.isClicked = false;
         this.formSubmit.isSubmit = false;
-        if (this.confirmDialog.title.toLowerCase() === 'mark as sent to client') {
-            this.proformaConfirmationModal.type = this.confirmDialog.title;
-            this.proformaConfirmationModal.msg = 'Are you sure you want to change proforma status to "Sent" ?';
-            this.proformaConfirmationModal.title = 'Update Proforma';
-            this.confirm1(this.proformaConfirmationModal);
-        } else if (this.confirmDialog.title.toLowerCase() === 'reject proforma') {
-            this.proformaConfirmationModal.type = this.confirmDialog.title;
-            this.proformaConfirmationModal.msg = 'Are you sure you want to reject this proforma?';
-            this.proformaConfirmationModal.title = 'Update Proforma';
-            this.getILIByPID();
-            this.confirm1(this.proformaConfirmationModal);
-        } else if (this.confirmDialog.title.toLowerCase() === 'replace proforma') {
-            this.replaceProformaModal = true;
+        this.selectedRowItem = data;
+        if (data.type === 'Proforma') {
 
-        } else if (this.confirmDialog.title.toLowerCase() === 'generate invoice') {
-            this.generateInvoiceModal = true;
-            this.getILIByPID();
+            if (this.confirmDialog.title.toLowerCase() === 'mark as sent to client') {
+                this.proformaConfirmationModal.type = this.confirmDialog.title;
+                this.proformaConfirmationModal.msg = 'Are you sure you want to change proforma status to "Sent" ?';
+                this.proformaConfirmationModal.title = 'Update Proforma';
+                this.confirm1(this.proformaConfirmationModal);
+            } else if (this.confirmDialog.title.toLowerCase() === 'reject proforma') {
+                this.proformaConfirmationModal.type = this.confirmDialog.title;
+                this.proformaConfirmationModal.msg = 'Are you sure you want to reject this proforma?';
+                this.proformaConfirmationModal.title = 'Update Proforma';
+                this.getILIByPID();
+                this.confirm1(this.proformaConfirmationModal);
+            } else if (this.confirmDialog.title.toLowerCase() === 'replace proforma') {
+                this.replaceProformaModal = true;
 
-        } else if (this.confirmDialog.title.toLowerCase() === 'show history') {
-            this.timeline.showTimeline(data.Id, 'FD', 'Proforma');
-        } else if (this.confirmDialog.title.toLowerCase() === 'edit proforma') {
-            const proformaObj = JSON.parse(data.ProformaHtml);
-            if (proformaObj.hasOwnProperty('saveObj')) {
-                this.fdConstantsService.fdComponent.selectedEditObject.Code = data.ProformaNumber;
-                const oCLE = this.cleData.find(e => e.Title === data.ClientLegalEntity);
-                this.fdConstantsService.fdComponent.selectedEditObject.ListName = oCLE.ListName;
-                this.fdConstantsService.fdComponent.selectedEditObject.ID = data.Id;
-                this.fdConstantsService.fdComponent.selectedEditObject.Type = 'Proforma';
-                this.fdConstantsService.fdComponent.selectedComp = this;
-                //proformaObj.saveObj.serviceDetailHeader = 'PROFORMA DETAILS';
-                this.editorRef.serviceDetailHeader = 'PROFORMA DETAILS';
-                switch (data.Template) {
-                    case 'US':
-                        this.editorRef.JapanTemplateCopy = {};
-                        this.editorRef.IndiaTemplateCopy = {};
-                        this.editorRef.USTemplateCopy = proformaObj.saveObj;
-                        if (this.editorRef.USTemplateCopy.appendix) {
-                            this.editorRef.showAppendix = true;
-                            this.setAppendixCol(this.editorRef.USTemplateCopy.appendix);
-                        } else {
-                            this.editorRef.showAppendix = false;
-                        }
-                        this.editorRef.displayJapan = false;
-                        this.editorRef.displayUS = true;
-                        this.editorRef.displayIndia = false;
-                        this.editorRef.enableButton();
-                        break;
-                    case 'Japan':
-                        this.editorRef.USTemplateCopy = {};
-                        this.editorRef.IndiaTemplateCopy = {};
-                        this.editorRef.JapanTemplateCopy = proformaObj.saveObj;
-                        if (this.editorRef.JapanTemplateCopy.appendix) {
-                            this.editorRef.showAppendix = true;
-                            this.setAppendixCol(this.editorRef.JapanTemplateCopy.appendix);
-                        } else {
-                            this.editorRef.showAppendix = false;
-                        }
-                        this.editorRef.displayJapan = true;
-                        this.editorRef.displayUS = false;
-                        this.editorRef.displayIndia = false;
-                        this.editorRef.enableButton();
-                        break;
-                    case 'India':
+            } else if (this.confirmDialog.title.toLowerCase() === 'generate invoice') {
+                this.generateInvoiceModal = true;
+                this.getILIByPID();
 
-                        this.editorRef.JapanTemplateCopy = {};
-                        this.editorRef.USTemplateCopy = {};
-                        this.editorRef.IndiaTemplateCopy = proformaObj.saveObj;
-                        if (this.editorRef.IndiaTemplateCopy.appendix) {
-                            this.editorRef.showAppendix = true;
-                            this.setAppendixCol(this.editorRef.IndiaTemplateCopy.appendix);
-                        } else {
-                            this.editorRef.showAppendix = false;
-                        }
-                        this.editorRef.displayJapan = false;
-                        this.editorRef.displayUS = false;
-                        this.editorRef.displayIndia = true;
-                        this.editorRef.enableButton();
-                        break;
+            } else if (this.confirmDialog.title.toLowerCase() === 'show history') {
+                this.timeline.showTimeline(data.Id, 'FD', 'Proforma');
+            } else if (this.confirmDialog.title.toLowerCase() === 'edit proforma') {
+                const proformaObj = JSON.parse(data.ProformaHtml);
+                if (proformaObj.hasOwnProperty('saveObj')) {
+                    this.fdConstantsService.fdComponent.selectedEditObject.Code = data.ProformaNumber;
+                    const oCLE = this.cleData.find(e => e.Title === data.ClientLegalEntity);
+                    this.fdConstantsService.fdComponent.selectedEditObject.ListName = oCLE.ListName;
+                    this.fdConstantsService.fdComponent.selectedEditObject.ID = data.Id;
+                    this.fdConstantsService.fdComponent.selectedEditObject.Type = 'Proforma';
+                    this.fdConstantsService.fdComponent.selectedComp = this;
+                    //proformaObj.saveObj.serviceDetailHeader = 'PROFORMA DETAILS';
+                    this.editorRef.serviceDetailHeader = 'PROFORMA DETAILS';
+                    switch (data.Template) {
+                        case 'US':
+                            this.editorRef.JapanTemplateCopy = {};
+                            this.editorRef.IndiaTemplateCopy = {};
+                            this.editorRef.USTemplateCopy = proformaObj.saveObj;
+                            if (this.editorRef.USTemplateCopy.appendix) {
+                                this.editorRef.showAppendix = true;
+                                this.setAppendixCol(this.editorRef.USTemplateCopy.appendix);
+                            } else {
+                                this.editorRef.showAppendix = false;
+                            }
+                            this.editorRef.displayJapan = false;
+                            this.editorRef.displayUS = true;
+                            this.editorRef.displayIndia = false;
+                            this.editorRef.enableButton();
+                            break;
+                        case 'Japan':
+                            this.editorRef.USTemplateCopy = {};
+                            this.editorRef.IndiaTemplateCopy = {};
+                            this.editorRef.JapanTemplateCopy = proformaObj.saveObj;
+                            if (this.editorRef.JapanTemplateCopy.appendix) {
+                                this.editorRef.showAppendix = true;
+                                this.setAppendixCol(this.editorRef.JapanTemplateCopy.appendix);
+                            } else {
+                                this.editorRef.showAppendix = false;
+                            }
+                            this.editorRef.displayJapan = true;
+                            this.editorRef.displayUS = false;
+                            this.editorRef.displayIndia = false;
+                            this.editorRef.enableButton();
+                            break;
+                        case 'India':
+
+                            this.editorRef.JapanTemplateCopy = {};
+                            this.editorRef.USTemplateCopy = {};
+                            this.editorRef.IndiaTemplateCopy = proformaObj.saveObj;
+                            if (this.editorRef.IndiaTemplateCopy.appendix) {
+                                this.editorRef.showAppendix = true;
+                                this.setAppendixCol(this.editorRef.IndiaTemplateCopy.appendix);
+                            } else {
+                                this.editorRef.showAppendix = false;
+                            }
+                            this.editorRef.displayJapan = false;
+                            this.editorRef.displayUS = false;
+                            this.editorRef.displayIndia = true;
+                            this.editorRef.enableButton();
+                            break;
+                    }
                 }
+                // this.pdfEditor.getInvoiceData(JSON.parse(data.ProformaHtml));
+            } else if (event.item.label === 'Details') {
+                this.rightSideBarProforma = !this.rightSideBarProforma;
+                return;
             }
-            // this.pdfEditor.getInvoiceData(JSON.parse(data.ProformaHtml));
-        } else if (event.item.label === 'Details') {
-            this.rightSideBar = !this.rightSideBar;
-            return;
+            else if (this.confirmDialog.title === 'Regenerate Proforma') {
+                this.generateExistingProforma(data);
+            }
+        } else {
+            if (this.confirmDialog.title.toLowerCase() === 'show history') {
+                this.timeline.showTimeline(data.Id, 'FD', 'InvoiceLineItems');
+
+            } else if (event.item.label === 'Details') {
+                this.rightSideBarInvoice = !this.rightSideBarInvoice;
+                return;
+            }
+            else if (event.item.label === 'Edit Line item') {
+                this.selectedRowItem.ProformaDate = this.selectedProforma.ProformaDate;
+                const ref = this.dialogService.open(EditInvoiceDialogComponent, {
+                    header: 'Edit Line item',
+                    width: '75vw',
+                    data: {
+                        InvoiceType: this.selectedRowItem.ScheduleType,
+                        projectContactsData: this.projectContactsData,
+                        selectedRowItem: this.selectedRowItem,
+                    },
+                    contentStyle: { 'max-height': '80vh', 'overflow-y': 'auto' },
+                    closable: false,
+                });
+                ref.onClose.subscribe((editInvoice: any) => {
+                    if (editInvoice) {
+                        const batchURL = this.fdDataShareServie.EditInvoiceDialogProcess(this.selectedRowItem.ScheduleType,this.selectedRowItem, editInvoice)
+                        this.commonService.SetNewrelic('Finance-Dashboard', 'Proforma', 'updateInvoiceLineItem');
+
+                        if (this.selectedProforma) {
+                            const proformaData = {
+                                __metadata: { type: this.constantService.listNames.Proforma.type },
+                                FileURL: null,
+                                ProformaHtml: null
+                            }
+                            const url = this.spServices.getItemURL(this.constantService.listNames.Proforma.name, +this.selectedProforma.Id);
+                            this.commonService.setBatchObject(batchURL, url, proformaData, this.constantService.Method.PATCH, this.constantService.listNames.Proforma.name);
+                        }
+                        this.submitForm(batchURL, 'editInvoice');
+                    }
+                });
+            } else if (event.item.label === 'View Project Details') {
+                window.open(this.globalService.sharePointPageObject.webAbsoluteUrl + '/dashboard#/projectMgmt?ProjectCode=' + data.ProjectCode);
+            }
+
         }
-        else if (this.confirmDialog.title === 'Regenerate Proforma') {
-            this.generateExistingProforma(data);
-        }
+
     }
 
     setAppendixCol(sContent) {
@@ -714,15 +714,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         }
     }
 
-    showHideState(val: any) {
-        // console.log('val ', val);
-        this.isTemplate4US = val.value == "US" ? this.isTemplate4US = true : this.isTemplate4US = false;
-        if (this.isTemplate4US) {
-            this.createProforma_form.addControl('State', new FormControl('', Validators.required));
-        } else {
-            this.createProforma_form.removeControl('State');
-        }
-    }
+
 
     // Generate Invoice Data start
     iliByPidRes: any = [];
@@ -1163,9 +1155,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
 
     //  Generate Invoice Data End
 
-    get isValidCreateProformaForm() {
-        return this.createProforma_form.controls;
-    }
     get isValidReplaceProformaForm() {
         return this.replaceProforma_form.controls;
     }
@@ -1189,7 +1178,8 @@ export class ProformaComponent implements OnInit, OnDestroy {
             // let fileName = file.substr(0, file.indexOf('.'));
             // console.log('fileName  ', file);
             if (file === event.target.files[0].name) {
-                this.messageService.add({ key: 'proformaInfoToast', severity: 'info', summary: 'Info message', detail: 'This file name already exit.Please select another file name.', life: 4000 });
+
+                this.commonService.showToastrMessage(this.constantService.MessageType.error, this.constantService.Messages.FileAlreadyExist, false);
                 this.replaceProforma_form.reset();
                 return;
             }
@@ -1203,7 +1193,8 @@ export class ProformaComponent implements OnInit, OnDestroy {
             if (fileName !== sNewFileName) {
                 this.fileInput.nativeElement.value = '';
                 this.replaceProforma_form.get('file').setValue('');
-                this.messageService.add({ key: 'proformaInfoToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
+
+                this.commonService.showToastrMessage(this.constantService.MessageType.error, this.constantService.Messages.SpecialCharMsg, false);
                 return false;
             }
             let cleListName = this.getCLEListNameFromCLE(this.selectedRowItem.ClientLegalEntity)
@@ -1222,10 +1213,8 @@ export class ProformaComponent implements OnInit, OnDestroy {
             if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
                 if (uploadedfile[0].hasOwnProperty('odata.error') || uploadedfile[0].hasError) {
                     this.submitBtn.isClicked = false;
-                    this.messageService.add({
-                        key: 'proformaInfoToast', severity: 'error', summary: 'Error message',
-                        detail: 'File not uploaded, Folder / File Not Found', life: 3000
-                    });
+
+                    this.commonService.showToastrMessage(this.constantService.MessageType.error, this.constantService.Messages.FileNotUploaded, false);
                 } else if (uploadedfile[0].ServerRelativeUrl) {
                     this.isPSInnerLoaderHidden = false;
                     let prfData = {
@@ -1261,77 +1250,21 @@ export class ProformaComponent implements OnInit, OnDestroy {
         this.proformaModal = true;
     }
 
-    onCLIChange(data: any) {
-        // console.log(data);
-        if (data) {
-            let cleItem = data.value;
-            this.getPONumberFromCLE(data.value.Title);
-            this.generateProformaNumber(cleItem);
-            this.getPOCNamesForEditInv(data.value);
-        }
-    }
-    selectedPOItem: any;
-    onPOChange(data: any) {
-        // console.log('Data ', data);
-        this.selectedPOItem = data;
-        this.createProforma_form.patchValue({
-            Currency: data.value.Currency
-        })
-    }
 
-    // Project PO
-    poNames: any = [];
-    getPONumberFromCLE(cli) {
-        this.poNames = [];
-        this.purchaseOrdersList.map((x) => {
-            if (x.ClientLegalEntity === cli) {
-                this.poNames.push(x);
-            }
-        });
-        // console.log(this.poNames);
-    }
 
-    generateProformaNumber(cle: any) {
-        let cleAcronym = '';
-        let proformaCounter: number = 0;
-        let proformaDate = '';
-        let isOOP: boolean = false;
-        if (this.createProforma_form.value.ProformaType) {
-            isOOP = this.createProforma_form.value.ProformaType.value.toLowerCase() === 'oop' ? true : false;
-        }
-        if (cle) {
-            cleAcronym = cle.Acronym ? cle.Acronym : '';
-            // console.log('cleAcronym,', cleAcronym);
-            proformaCounter = cle.ProformaCounter ? parseInt(cle.ProformaCounter) + 1 : 1;
-            let sNum = '000' + proformaCounter;
-            let sFinalNum = sNum.substr(sNum.length - 4);
-            // console.log('proformaCounter,', proformaCounter);
-            const date = this.createProforma_form.value.ProformaDate ? new Date(this.createProforma_form.value.ProformaDate) : new Date();
-            proformaDate = this.datePipe.transform(date, 'MM') + this.datePipe.transform(date, 'yy');
-            // console.log('proformaDate,', proformaDate);
-            let finalVal = isOOP ? (cleAcronym + '-PRF' + '-' + proformaDate + '-' + sFinalNum + '-OOP') :
-                (cleAcronym + '-PRF' + '-' + proformaDate + '-' + sFinalNum);
-            this.createProforma_form.get('ProformaNumber').setValue(finalVal);
-        }
-    }
 
-    updatePrformaNumFromPT(cle, ptVal: any) {
-        // console.log(cle);
-        // let pt = this.createProforma_form.value.ProformaType.value;
-        this.generateProformaNumber(cle);
-        // let isOOP = this.createProforma_form.value.ProformaType ? true : false;
-    }
 
-    listOfPOCNames: SelectItem[];
-    getPOCNamesForEditInv(rowItem: any) {
-        this.listOfPOCNames = [];
-        this.projectContactsData.filter((item) => {
-            if (item.ClientLegalEntity === rowItem.Title) {
-                this.listOfPOCNames.push(item)
-            }
-        });
-        // console.log('this.listOfPOCNames ', this.listOfPOCNames);
-    }
+
+
+
+    // updatePrformaNumFromPT(cle, ptVal: any) {
+    //     // console.log(cle);
+    //     // let pt = this.createProforma_form.value.ProformaType.value;
+    //     this.generateProformaNumber(cle);
+    //     // let isOOP = this.createProforma_form.value.ProformaType ? true : false;
+    // }
+
+
 
     pocChange(val) {
         // console.log(val)
@@ -1339,8 +1272,8 @@ export class ProformaComponent implements OnInit, OnDestroy {
 
     cancelFormSub(formType) {
         if (formType === 'createProforma') {
-            this.createProforma_form.reset();
-            this.enterPOAmtMsg = false;
+            // this.createProforma_form.reset();
+            // this.enterPOAmtMsg = false;
             this.proformaModal = false;
         } else if (formType === 'replaceProforma') {
             this.replaceProforma_form.reset();
@@ -1370,134 +1303,39 @@ export class ProformaComponent implements OnInit, OnDestroy {
         if (type === 'Mark as Sent to Client') {
             this.submitBtn.isClicked = true;
             this.isPSInnerLoaderHidden = false;
-            let sts = '';
-            sts = type === 'Mark as Sent to Client' ? 'Sent' : 'Rejected';
             let prfData = {
-                Status: sts
+                __metadata: { type: this.constantService.listNames.Proforma.type },
+                Status: type === 'Mark as Sent to Client' ? 'Sent' : 'Rejected'
             }
-            prfData['__metadata'] = { type: 'SP.Data.ProformaListItem' };
-            // const endpoint = this.fdConstantsService.fdComponent.addUpdateProforma.update.replace("{{Id}}", this.selectedRowItem.Id);
-            // let data = [
-            //     {
-            //         objData: obj,
-            //         endpoint: endpoint,
-            //         requestPost: false
-            //     }
-            // ];
-            const prfObj = Object.assign({}, this.queryConfig);
-            prfObj.url = this.spServices.getItemURL(this.constantService.listNames.Proforma.name, +this.selectedRowItem.Id);
-            prfObj.listName = this.constantService.listNames.Proforma.name;
-            prfObj.type = 'PATCH';
-            prfObj.data = prfData;
-            batchUrl.push(prfObj);
+            this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constantService.listNames.Proforma.name, +this.selectedRowItem.Id), prfData, this.constantService.Method.PATCH, this.constantService.listNames.Proforma.name);
+
             this.submitForm(batchUrl, type);
         } else if (type === 'Reject Proforma') {
-            let sts = '';
-            sts = 'Rejected'
             let prfData = {
-                Status: sts
+                __metadata: { type: this.constantService.listNames.Proforma.type },
+                Status: 'Rejected'
             }
-            prfData['__metadata'] = { type: 'SP.Data.ProformaListItem' };
-            // const endpoint = this.fdConstantsService.fdComponent.addUpdateProforma.update.replace("{{Id}}", this.selectedRowItem.Id);
-            // Get invoce line items & update sts  to all ids
-            const prfObj = Object.assign({}, this.queryConfig);
-            prfObj.url = this.spServices.getItemURL(this.constantService.listNames.Proforma.name, +this.selectedRowItem.Id);
-            prfObj.listName = this.constantService.listNames.Proforma.name;
-            prfObj.type = 'PATCH';
-            prfObj.data = prfData;
-            batchUrl.push(prfObj);
-            // let data = [
-            //     {
-            //         objData: obj,
-            //         endpoint: endpoint,
-            //         requestPost: false
-            //     }
-            // ];
+
+            this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constantService.listNames.Proforma.name, +this.selectedRowItem.Id), prfData, this.constantService.Method.PATCH, this.constantService.listNames.Proforma.name);
+          
             for (let j = 0; j < this.iliByPidRes.length; j++) {
                 let invData = {
+                    __metadata: { type: this.constantService.listNames.InvoiceLineItems.type },
                     Status: 'Confirmed',
                     ProformaLookup: null
                 }
-                invData['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
-
-                const prfObj = Object.assign({}, this.queryConfig);
-                prfObj.url = this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, + this.iliByPidRes[j].Id);
-                prfObj.listName = this.constantService.listNames.InvoiceLineItems.name;
-                prfObj.type = 'PATCH';
-                prfObj.data = invData;
-                batchUrl.push(prfObj);
-
-                // const iliEndpoint = this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.update.replace("{{Id}}", this.iliByPidRes[j].Id);
-                // data.push(
-                //     {
-                //         objData: invObj,
-                //         endpoint: iliEndpoint,
-                //         requestPost: false
-                //     }
-                // )
+                this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, + this.iliByPidRes[j].Id), invData, this.constantService.Method.PATCH, this.constantService.listNames.InvoiceLineItems.name);
             }
             this.submitBtn.isClicked = true;
             this.isPSInnerLoaderHidden = false;
-            this.submitForm(batchUrl, type);
-        } else if (type === 'createProforma') {
-            if (this.createProforma_form.invalid) {
-                return;
-            }
-            this.isPSInnerLoaderHidden = false;
-            this.submitBtn.isClicked = true;
-            // console.log('form is submitting ..... & Form data is ', this.createProforma_form.getRawValue());
-            // let obj: any = {};
-            const prfData = {
-                ClientLegalEntity: this.createProforma_form.value.ClientLegalEntity.Title,
-                PO: this.createProforma_form.value.POName.Id,
-                MainPOC: this.createProforma_form.value.POCName.ID,
-                Title: this.createProforma_form.getRawValue().ProformaNumber,
-                ProformaTitle: this.createProforma_form.value.ProformaTitle,
-                Template: this.createProforma_form.value.Template.value,
-                State: this.createProforma_form.value.State ? this.createProforma_form.value.State.Title : '',
-                Amount: this.createProforma_form.value.Amount,
-                Currency: this.createProforma_form.getRawValue().Currency,
-                AddressType: this.createProforma_form.value.AddressType.value,
-                ProformaType: this.createProforma_form.value.ProformaType.value,
-                AdditionalInfo: this.createProforma_form.value.AdditionalComments,
-                ProformaDate: this.createProforma_form.value.ProformaDate,
-                Status: this.constantService.proformaList.status.Created
-            }
-            // console.log('obj ', obj);
-            prfData['__metadata'] = { type: this.constantService.listNames.Proforma.type };
-
-            const prfObj = Object.assign({}, this.queryConfig);
-            prfObj.url = this.spServices.getReadURL(this.constantService.listNames.Proforma.name);
-            prfObj.listName = this.constantService.listNames.Proforma.name;
-            prfObj.type = 'POST';
-            prfObj.data = prfData;
-            batchUrl.push(prfObj);
-
-            // const endpoint = this.fdConstantsService.fdComponent.addUpdateProforma.createProforma;
-
-            // Get Cle
-            let currentCle = this.getCLEObj(prfData.ClientLegalEntity);
-            let cleData = {
-                ID: currentCle.Id,
-                ProformaCounter: currentCle.ProformaCounter ? currentCle.ProformaCounter + 1 : 1
-            }
-            cleData['__metadata'] = { type: this.constantService.listNames.ClientLegalEntity.type };
-            const cleObj = Object.assign({}, this.queryConfig);
-            cleObj.url = this.spServices.getItemURL(this.constantService.listNames.ClientLegalEntity.name, +currentCle.Id);
-            cleObj.listName = this.constantService.listNames.ClientLegalEntity.name;
-            cleObj.type = 'PATCH';
-            cleObj.data = cleData;
-            batchUrl.push(cleObj);
             this.submitForm(batchUrl, type);
         } else if (type === 'replaceProforma') {
             if (this.replaceProforma_form.invalid) {
                 return;
             }
             else if (this.selectedFile && this.selectedFile.size === 0) {
-                this.messageService.add({
-                    key: 'proformaSuccessToast', severity: 'error',
-                    summary: 'Error message', detail: 'Unable to upload file, size of ' + this.selectedFile.name + ' is 0 KB.', life: 2000
-                });
+
+                this.commonService.showToastrMessage(this.constantService.MessageType.error, this.constantService.Messages.ZeroKbFile.replace('{{fileName}}', this.selectedFile.name), false);
                 return;
             }
             this.submitBtn.isClicked = true;
@@ -1522,16 +1360,16 @@ export class ProformaComponent implements OnInit, OnDestroy {
         if (type === "Mark as Sent to Client" || type === "Reject Proforma") {
             let sts = '';
             sts = type === 'Mark as Sent to Client' ? 'Sent' : 'Rejected'
-            this.messageService.add({ key: 'proformaSuccessToast', severity: 'success', summary: 'Success message', detail: this.selectedRowItem.ProformaNumber + ' ' + 'Status changed to "' + sts + '" Successfully.', life: 20000 });
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, this.selectedRowItem.ProformaNumber + ' ' + 'Status changed to "' + sts + '" Successfully.', true);
             this.reFetchData(type);
         } else if (type === "createProforma") {
-            this.proformaModal = false;
             await this.fdDataShareServie.callProformaCreation(arrResults[0], this.cleData, this.projectContactsData, this.purchaseOrdersList, this.editorRef, []);
-            this.messageService.add({ key: 'proformaSuccessToast', severity: 'success', summary: 'Success message', detail: arrResults[0].Title + ' ' + 'Proforma Created.', life: 20000 });
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, arrResults[0].Title + ' ' + 'Proforma Created.', true);
             this.reFetchData(type);
 
         } else if (type === "generateInvoice") {
-            debugger;
             const oInv = arrResults[0];
             let proformHtml = this.selectedRowItem.ProformaHtml;
             const batchUrl = [];
@@ -1571,11 +1409,16 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 await this.fdDataShareServie.createInvoice(proformHtml, this.selectedRowItem, oInv, this.cleData)
             }
             this.generateInvoiceModal = false;
-            this.messageService.add({ key: 'custom', severity: 'success', summary: 'Invoice Generated', detail: 'Invoice Number: ' + oInv.InvoiceNumber, life: 20000 });
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Invoice Number: ' + oInv.InvoiceNumber, true);
             this.reFetchData(type);
         } else if (type === "replaceProforma") {
-            this.messageService.add({ key: 'proformaSuccessToast', severity: 'success', summary: 'Success message', detail: this.selectedRowItem.ProformaNumber + ' ' + 'Success.', life: 20000 });
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, this.selectedRowItem.ProformaNumber + ' ' + 'Success.', true);
             this.replaceProformaModal = false;
+            this.reFetchData(type);
+        }
+        else if (type === 'editInvoice') {
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Invoice Updated.', false);
             this.reFetchData(type);
         }
         this.isPSInnerLoaderHidden = true;
@@ -1583,7 +1426,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
     }
 
     async reFetchData(type: string) {
-        if (type === "Mark as Sent to Client" || type === "Reject Proforma" || type === "replaceProforma") {
+        if (type === "Mark as Sent to Client" || type === "Reject Proforma" || type === "replaceProforma" || type === 'editInvoice') {
             await this.getRequiredData();
         } else if (type === 'createProforma' || type === 'generateInvoice') {
             // Refetch PO/CLE Data
@@ -1608,20 +1451,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             return false;
         return true;
     }
-    enterPOAmtMsg: boolean = false;
-    enteredPOAmt(val) {
-        // console.log('val ', val);
-        let amt = parseInt(val);
-        let poScheduled = parseFloat(this.selectedPOItem.value.TotalScheduled ? this.selectedPOItem.value.TotalScheduled : 0);
-        let poInvoiced = parseFloat(this.selectedPOItem.value.TotalInvoiced ? this.selectedPOItem.value.TotalInvoiced : 0);
-        let availableBudget = (this.selectedPOItem.value.Amount ? this.selectedPOItem.value.Amount : 0) - (poScheduled + poInvoiced);
-        if (amt > availableBudget) {
-            this.enterPOAmtMsg = true;
-            this.createProforma_form.get('Amount').setValue('');
-        } else {
-            this.enterPOAmtMsg = false;
-        }
-    }
+
 
     //for Decimal you can use this as
 
@@ -1728,7 +1558,8 @@ export class ProformaComponent implements OnInit, OnDestroy {
             const res = await this.spServices.checkFileExist(this.globalService.sharePointPageObject.webAbsoluteUrl + '/' + this.cleData.find(c => c.Title === rowItem.ClientLegalEntity).ListName);
             if (res.hasOwnProperty('status')) {
                 if (res.status === 404) {
-                    this.messageService.add({ key: 'proformaSuccessToast', severity: 'error', summary: 'Error message', detail: rowItem.ProformaNumber + ' Proforma not created. Folder Not Found.', life: 20000 });
+
+                    this.commonService.showToastrMessage(this.constantService.MessageType.error, rowItem.ProformaNumber + ' Proforma not created. Folder Not Found.', true);
                     this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
                 }
                 else {
@@ -1737,19 +1568,18 @@ export class ProformaComponent implements OnInit, OnDestroy {
                     // tslint:disable-next-line: max-line-length
                     await this.fdDataShareServie.callProformaCreation(rowItem, this.cleData, this.projectContactsData, this.purchaseOrdersList, this.editorRef, projectAppendix);
                     this.reFetchData('createProforma');
-                    this.messageService.add({ key: 'proformaSuccessToast', severity: 'success', summary: 'Success message', detail: rowItem.ProformaNumber + ' Proforma Created.', life: 20000 });
+
+                    setTimeout(() => {
+                        this.commonService.showToastrMessage(this.constantService.MessageType.success, rowItem.ProformaNumber + ' Proforma Created.', false);
+                    }, 500);
+
                 }
             }
         }
         else {
-            this.messageService.add({ key: 'proformaSuccessToast', severity: 'error', summary: 'Error message', detail: rowItem.ProformaNumber + ' Proforma not created. Client Not Found.', life: 20000 });
+            this.commonService.showToastrMessage(this.constantService.MessageType.error, rowItem.ProformaNumber + ' Proforma not created. Client Not Found.', true);
             this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
-
         }
-
-
-
-
     }
 
 
@@ -1830,4 +1660,98 @@ export class ProformaComponent implements OnInit, OnDestroy {
         return arrResults;
     }
 
+
+
+
+    async OnRowExpand(event) {
+        event.data.loaderenable = true;
+        event.data.invoices = [];
+        let batchUrl = [];
+        const url = this.spServices.getReadURL(this.constantService.listNames.InvoiceLineItems.name,
+            this.fdConstantsService.fdComponent.invoiceLineItemProforma).replace('{{ProformaLookup}}', event.data.Id);
+        this.commonService.setBatchObject(batchUrl, url, null, this.constantService.Method.GET, this.constantService.listNames.InvoiceLineItems.type)
+        const response = await this.spServices.executeBatch(batchUrl);
+        const Invoices = response.length > 0 ? response[0].retItems : [];
+        if (Invoices.length > 0) {
+            if (this.projectInfoData.length === 0) {
+                await this.projectInfo();
+            }
+            for (let i = 0; i < Invoices.length; i++) {
+                let poItem = this.getPONumber(Invoices[i]);
+                let pnumber = poItem.Number ? poItem.Number : '';
+                const pname = poItem.Name ? poItem.Name : '';
+                if (pnumber === 'NA') {
+                    pnumber = '';
+                }
+                let ponn = pnumber + ' ' + pname;
+                if (pname && pnumber) {
+                    ponn = pnumber + ' / ' + pname;
+                }
+                const sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(Invoices[i].SOWCode);
+                const sowCode = Invoices[i].SOWCode ? Invoices[i].SOWCode : '';
+                const sowName = sowItem.Title ? sowItem.Title : '';
+                let sowcn = sowCode + ' ' + sowName;
+                if (sowCode && sowName) {
+                    sowcn = sowCode + ' / ' + sowName;
+                }
+                const projcd = this.projectContactsData.find(c => c.ID === Invoices[i].MainPOC);
+                const piInfo = this.projectInfoData.find(c => c.ProjectCode === Invoices[i].Title);
+                event.data.invoices.push({
+                    Id: Invoices[i].ID,
+                    ProjectCode: Invoices[i].Title,
+                    ProjectTitle: piInfo && piInfo.Title ? piInfo.Title : '',
+                    ShortTitle: piInfo && piInfo.WBJID ? piInfo.WBJID : '',
+                    SOWCode: Invoices[i].SOWCode,
+                    SOWValue: sowcn,
+                    SOWName: sowItem.Title,
+                    ProjectMileStone: piInfo && piInfo.Milestone ? piInfo.Milestone : '',
+                    POValues: ponn,
+                    PONumber: poItem.Number,
+                    PO: Invoices[i].PO,
+                    POCId: Invoices[i].MainPOC,
+                    ClientName: piInfo && piInfo.ClientLegalEntity ? piInfo.ClientLegalEntity : '',
+                    ScheduledDate: new Date(this.datePipe.transform(Invoices[i].ScheduledDate, 'MMM dd, yyyy')),
+                    ScheduledDateFormat: this.datePipe.transform(Invoices[i].ScheduledDate, 'MMM dd, yyyy'),
+                    Amount: Invoices[i].Amount,
+                    Currency: Invoices[i].Currency,
+                    POCName: projcd ? projcd.FName + ' ' + projcd.LName : '',
+                    AddressType: Invoices[i].AddressType,
+                    CS: this.fdDataShareServie.getCSDetails(Invoices[i]),
+                    PracticeArea: piInfo && piInfo.BusinessVertical ? piInfo.BusinessVertical : '',
+                    POName: poItem.Name,
+                    TaggedDate: Invoices[i].TaggedDate,
+                    Status: Invoices[i].Status,
+                    ProformaLookup: Invoices[i].ProformaLookup,
+                    ScheduleType: Invoices[i].ScheduleType,
+                    InvoiceLookup: Invoices[i].InvoiceLookup,
+                    Template: Invoices[i].Template,
+                    Modified: this.datePipe.transform(Invoices[i].Modified, 'MMM dd, yyyy'),
+                    ModifiedBy: Invoices[i].Editor ? Invoices[i].Editor.Title : ''
+                })
+            }
+        }
+        event.data.loaderenable = false;
+    }
+    showProformaDialog() {
+
+        const ref = this.dialogService.open(AddUpdateProformaDialogComponent, {
+            header: 'Create Proforma Form',
+            width: '75vw',
+            data: {
+                Type:'create proforma',
+                cleData: this.cleData,
+                purchaseOrdersList: this.purchaseOrdersList,
+                projectContactsData: this.projectContactsData
+            },
+            contentStyle: { 'max-height': '80vh', 'overflow-y': 'auto' },
+            closable: false,
+        });
+        ref.onClose.subscribe((proformaForm: any) => {
+            if (proformaForm) {
+                this.isPSInnerLoaderHidden = false;
+                const batchUrl = this.fdDataShareServie.AddToProformaProcessData(proformaForm)
+                this.submitForm(batchUrl, 'createProforma');
+            }
+        });
+    }
 }

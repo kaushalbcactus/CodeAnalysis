@@ -41,6 +41,8 @@ import { InvoiceLineitemsComponent } from './projectmanagement/all-projects/invo
 import { ConfirmationDialogComponent } from '../shared/confirmation-dialog/confirmation-dialog.component';
 import { PreStackAllocationModule } from '../shared/pre-stack-allocation/pre-stack-allocation.module';
 import { PreStackAllocationComponent } from '../shared/pre-stack-allocation/pre-stack-allocation.component';
+import { AddReduceSowbudgetDialogComponent } from './projectmanagement/sow/add-reduce-sowbudget-dialog/add-reduce-sowbudget-dialog.component';
+
 @NgModule({
   declarations: [
     ProjectmanagementComponent,
@@ -61,7 +63,8 @@ import { PreStackAllocationComponent } from '../shared/pre-stack-allocation/pre-
     ProjectTimelineComponent,
     CsFinanceAuditDialogComponent,
     AuditProjectDialogComponent,
-    InvoiceLineitemsComponent],
+    InvoiceLineitemsComponent,
+    AddReduceSowbudgetDialogComponent],
   imports: [
     SharedModule,
     CommonModule,
@@ -101,7 +104,8 @@ import { PreStackAllocationComponent } from '../shared/pre-stack-allocation/pre-
     AuditProjectDialogComponent,
     InvoiceLineitemsComponent,
     ConfirmationDialogComponent,
-    PreStackAllocationComponent
+    PreStackAllocationComponent,
+    AddReduceSowbudgetDialogComponent
   ]
 })
 export class ProjectmanagementModule { }

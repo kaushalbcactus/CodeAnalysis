@@ -296,7 +296,7 @@
     </div>
     <div class="col-grid" *ngIf="isPOEdit">
         <div class="p-col-12">
-            <p-button *ngIf="showSave" type="button" styleClass="pmBtn" (click)="saveUpdatePO('IncreaseBudget')" label="Save"></p-button>
+            <p-button *ngIf="showSave" type="button" styleClass="pmBtn" (click)="saveEditedPo()" label="Save"></p-button>
         </div>
     </div>
 </div>
@@ -441,7 +441,7 @@
     </p-footer>
 </p-dialog>
 
-<p-dialog *ngIf="relatedInvoiceLinkingPopup" [(visible)]="relatedInvoiceLinkingPopup" appendTo='body' [style]="{width: '500px'}">
+<!-- <p-dialog *ngIf="relatedInvoiceLinkingPopup" [(visible)]="relatedInvoiceLinkingPopup" appendTo='body' [style]="{width: '500px'}">
     <p-header>
         Advance invoice tagging decision
     </p-header>
@@ -460,7 +460,7 @@
         <button type="button" class="pmBtn" pButton (click)="scheduleNew()" label="Schedule New Invoice"></button>
         <button type="button" class="pmBtn" pButton (click)="relatedInvoiceLinkingPopup=false" label="Cancel"></button>
     </p-footer>
-</p-dialog>
+</p-dialog> -->
 
 <p-dialog *ngIf="tagExistingInvSection" [(visible)]="tagExistingInvSection" appendTo='body' [style]="{width: '500px'}">
     <p-header>
@@ -512,6 +512,3 @@
         <p-button type="button" styleClass="pmBtn" (click)="tagExistingInvSection=false" label="Cancel"></p-button>
     </p-footer>
 </p-dialog>
-
-
-<p-toast position="bottom-right" key="manageFinance"></p-toast>

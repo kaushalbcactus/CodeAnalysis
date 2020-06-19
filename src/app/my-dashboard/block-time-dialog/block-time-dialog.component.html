@@ -7,14 +7,6 @@
     <div id="modalInnerLoader"></div>
     <div id="modalInnerLoaderText">Loading...</div>
 </div>
-<!--**************************************************************************************************
-                                          toaster 
-************************************************************************************************** -->
-
-
-<!-- <p-toast styleClass="custom-toast" key="custom" [hideTransitionOptions]="'0ms'"
-position="bottom-center">
-</p-toast> -->
 
 
 <!--**************************************************************************************************
@@ -96,7 +88,8 @@ position="bottom-center">
             <th>Start Date:</th>
             <td>
 
-                <p-calendar [style]="{'min-width':'100%'}" [minDate]="minDateValue" placeholder="Select Start Date" [(ngModel)]="eventDate" [disabledDays]="[0,6]" dateFormat="M dd, yy" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true" [yearNavigator]="true"></p-calendar>
+                <p-calendar [style]="{'min-width':'100%'}" [minDate]="minDateValue" placeholder="Select Start Date" [(ngModel)]="eventDate" [disabledDays]="[0,6]" dateFormat="M dd, yy" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true" [yearNavigator]="true"
+                    (onClose)="EnableHalfDay()"></p-calendar>
 
             </td>
         </tr>

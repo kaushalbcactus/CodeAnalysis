@@ -2,8 +2,7 @@
     <div id="modalInnerLoader"></div>
     <div id="modalInnerLoaderText">Loading...</div>
 </div>
-<p-toast styleClass="custom-toast" key="custom-comment" [hideTransitionOptions]="'0ms'" position="bottom-center">
-</p-toast>
+
 <div [ngClass]="{'currentTaskButton' : config.data === undefined , 'timeLineButton': config.data !== undefined}" fxLayout="row" fxLayoutAlign="end center" *ngIf="!modalloaderenable">
 
     <button *ngIf="!MarkComplete" type="button" pButton icon="pi pi-check" id="savecomment" style="margin-right: 5px;" (click)="saveComment(false)" label="Save Comment"></button>

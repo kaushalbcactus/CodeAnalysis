@@ -1,5 +1,5 @@
 import { Component, OnInit, EventEmitter, Output, Input, SimpleChanges, OnDestroy } from '@angular/core';
-import { MenuItem, DynamicDialogConfig, MessageService, DynamicDialogRef, ConfirmationService, DialogService } from 'primeng';
+import { MenuItem, DynamicDialogConfig, DynamicDialogRef, DialogService } from 'primeng';
 import { DatePipe, CommonModule } from '@angular/common';
 import { ConstantsService } from 'src/app/Services/constants.service';
 
@@ -51,7 +51,6 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   constructor(
     public config: DynamicDialogConfig,
     public ref: DynamicDialogRef,
-    public messageService: MessageService,
     private constants: ConstantsService,
     private myDashboardConstantsService: MyDashboardConstantsService,
     private spServices: SPOperationService,
@@ -421,22 +420,16 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       }
       if (!bSelectedNewFiles) {
         if (this.selectedDocuments.length > 1) {
-          this.messageService.add({
-            key: 'custom', severity: 'warn', summary: 'Warning Message',
-            detail: 'All the selected files are already marked as final.'
-          });
+          this.commonService.showToastrMessage(this.constants.MessageType.warn,'All the selected files are already marked as final.',false);
         } else {
-
-          this.messageService.add({
-            key: 'custom', severity: 'warn', summary: 'Warning Message',
-            detail: 'Selected file already marked as final.'
-          });
+          this.commonService.showToastrMessage(this.constants.MessageType.warn,'Selected file already marked as final.',false);
         }
         return false;
       }
 
     } else {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select Files.', life: 4000 });
+
+      this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please Select Files.',false);
     }
   }
 
@@ -461,7 +454,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       }
 
     } else {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select Files.', life: 4000 });
+      this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please Select Files.',false);
     }
   }
 
@@ -472,7 +465,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   uploadDocs(event, type) {
     if (this.ModifiedSelectedTaskName === 'Client Review' && this.closeCRTaskEnable && this.selectedTab === 'My Drafts') {
       const message = 'Are you sure that you want to close current task with selected documents?';
-      this.commonService.confirmMessageDialog(message, ['Yes', 'No'],false).then(async Confirmation => {
+      this.commonService.confirmMessageDialog('Confirmation', message, null, ['Yes', 'No'], false).then(async Confirmation => {
         if (Confirmation === 'Yes') {
           this.uploadDocuments(event, type);
         }
@@ -510,7 +503,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       let filesizeerror = false;
       event.files.forEach(async element => {
 
-        if(element.size > 0){
+        if (element.size > 0) {
           let file = element;
           let filename = element.name;
           const sNewFileName = filename.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
@@ -526,17 +519,14 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
             file: file,
             name: filename
           };
-  
+
           readers.push(fileObj);
           existingFiles.push(filename.toLowerCase());
         }
-        else{
+        else {
           filesizeerror = true;
           bUpload = false;
-          this.messageService.add({
-            key: 'custom', severity: 'info',
-            summary: 'Info Message', detail: element.name + ' file size should be greater than 0 KB.'
-          });
+          this.commonService.showToastrMessage(this.constants.MessageType.warn,this.constants.Messages.ZeroKbFile.replace('{{fileName}}',element.name),false);
           return;
         }
       });
@@ -561,21 +551,14 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
                 this.LinkDocumentToProject(uploadedfiles);
               } else {
                 this.loadDraftDocs(this.selectedTab);
-                this.messageService.add({
-                  key: 'custom', severity: 'success',
-                  summary: 'Success Message', detail: 'Document updated successfully.'
-                });
+                this.commonService.showToastrMessage(this.constants.MessageType.success,'Document updated successfully.',false);
               }
             }
           }
         });
       } else {
-        if(!filesizeerror){
-          this.messageService.add({
-            key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
-            // tslint:disable-next-line: max-line-length
-            detail: 'There are certain files with special characters. Please rename them. List of special characters ~ # % & * { } \ : / + < > ? " @ \''
-          });
+        if (!filesizeerror) {
+          this.commonService.showToastrMessage(this.constants.MessageType.error,this.constants.Messages.SpecialCharMsg,false);
         }
       }
     }
@@ -606,14 +589,14 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     await this.spServices.executeBatch(batchUrl);
 
     if (this.ModifiedSelectedTaskName === 'Client Review' && this.selectedTab === 'My Drafts') {
-      this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Documents uploaded successfully.' });
+      this.commonService.showToastrMessage(this.constants.MessageType.success,'Documents uploaded successfully.',false);
       this.selectedDocuments = uploadedFiles;
       this.selectedDocuments.map(c => c.status = '-');
       this.markAsFinal();
     }
     else {
       this.loadDraftDocs(this.selectedTab);
-      this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Document updated successfully.' });
+      this.commonService.showToastrMessage(this.constants.MessageType.success,'Documents updated successfully.',false);
     }
 
   }

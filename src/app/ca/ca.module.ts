@@ -9,7 +9,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 import { CaRoutingModule } from './ca-routing.module';
 // import { CaComponent } from './ca.component';
-import { DynamicDialogRef, DynamicDialogConfig, ConfirmationService } from 'primeng';
+import { DynamicDialogRef, DynamicDialogConfig } from 'primeng';
 import { UnallocatedAllocatedTasksComponent } from './unallocated-allocated-tasks/unallocated-allocated-tasks.component';
 import { UserCapacityModule } from '../shared/usercapacity/usercapacity.module';
 import { UsercapacityComponent } from '../shared/usercapacity/usercapacity.component';
@@ -34,7 +34,7 @@ import { CaComponent } from './ca.component';
     NgxChartsModule,
     NgxMaterialTimepickerModule,
   ],
-  providers: [DynamicDialogConfig, DynamicDialogRef, ConfirmationService],
+  providers: [DynamicDialogConfig, DynamicDialogRef],
   entryComponents: [UsercapacityComponent, CaDragdropComponent],
 })
 export class CAModule { }

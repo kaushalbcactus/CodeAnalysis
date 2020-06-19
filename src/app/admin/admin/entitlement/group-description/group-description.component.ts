@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { AdminObjectService } from 'src/app/admin/services/admin-object.service';
-import { MessageService } from 'primeng/api';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { CommonService } from 'src/app/Services/common.service';
@@ -28,12 +27,10 @@ export class GroupDescriptionComponent implements OnInit {
    * @param constants This is instance referance of `ConstantsService` component.
    * @param adminConstants This is instance referance of `AdminConstantService` component.
    * @param adminObject This is instance referance of `AdminObjectService` component.
-   * @param messageService This is instance referance of `MessageService` component.
    */
   constructor(
     private spServices: SPOperationService,
     private adminObject: AdminObjectService,
-    private messageService: MessageService,
     private adminConstants: AdminConstantService,
     private constants: ConstantsService,
     private common: CommonService
@@ -109,17 +106,12 @@ export class GroupDescriptionComponent implements OnInit {
    */
   async saveDescription() {
     if (!this.selectedGroup) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error',
-        summary: 'Error Message', detail: 'Please select the group.'
-      });
+      this.common.showToastrMessage(this.constants.MessageType.warn,'Please select the group.',false);
       return false;
     }
     if (!this.description) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error',
-        summary: 'Error Message', detail: 'Please enter the group description.'
-      });
+
+      this.common.showToastrMessage(this.constants.MessageType.warn,'Please enter the group description.',false);
       return false;
     }
     this.adminObject.isMainLoaderHidden = false;
@@ -129,10 +121,8 @@ export class GroupDescriptionComponent implements OnInit {
     };
     this.common.SetNewrelic('admin', 'admin-entitlement-groupDescription', 'updateGroupItem');
     await this.spServices.updateGroupItem(this.selectedGroup, data);
-    this.messageService.add({
-      key: 'adminCustom', severity: 'success',
-      summary: 'Success Message', detail: 'Group description updated successfully.'
-    });
+
+    this.common.showToastrMessage(this.constants.MessageType.success,'Group description updated successfully.',false);
     this.adminObject.isMainLoaderHidden = true;
   }
 }

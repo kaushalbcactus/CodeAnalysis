@@ -7,9 +7,11 @@ import { DynamicDialogRef, DynamicDialogConfig } from 'primeng';
   styleUrls: ['./confirmation-dialog.component.css']
 })
 export class ConfirmationDialogComponent implements OnInit {
-  message ='';
+  message = '';
   confirmButtonName: any;
   rejectButtonName: any;
+  buttons: any;
+  note: any;
 
   constructor(
     public confirmref: DynamicDialogRef,
@@ -17,16 +19,15 @@ export class ConfirmationDialogComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-
-    this.message =this.config.data.message;
-    this.confirmButtonName = this.config.data.buttons[0];
-    this.rejectButtonName = this.config.data.buttons[1];
+    this.message = this.config.data.message;
+    this.note = this.config.data.note ? this.config.data.note : '';
+    this.buttons = this.config.data.buttons;
   }
 
 
 
-  Confirm(confimMessage) {  
-      this.confirmref.close(confimMessage);
+  Confirm(confimMessage) {
+    this.confirmref.close(confimMessage);
   }
 
 }

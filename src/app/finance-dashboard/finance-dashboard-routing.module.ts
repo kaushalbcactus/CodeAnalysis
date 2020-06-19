@@ -24,7 +24,8 @@ const routes: Routes = [
         component: FinanceDashboardComponent,
         canActivate: [FdAuthGuard],
         children: [
-            { path: '', redirectTo: 'expenditure', pathMatch: 'full' },
+            { path: '', redirectTo: 'expenditure', pathMatch: 'full', loadChildren: () => import('./finance-dashboard.module').then(m => m.FinanceDashboardModule) },
+
             {
                 path: 'expenditure',
                 component: ExpenditureComponent,
@@ -39,7 +40,7 @@ const routes: Routes = [
             },
 
             // Scheduled
-            { path: '', redirectTo: 'scheduled', pathMatch: 'full' },
+            { path: '', redirectTo: 'scheduled', pathMatch: 'full',  loadChildren: () => import('./finance-dashboard.module').then(m => m.FinanceDashboardModule) },
             {
                 path: 'scheduled',
                 component: ScheduledComponent,
@@ -66,6 +67,6 @@ const routes: Routes = [
 
 @NgModule({
     imports: [RouterModule.forChild(routes)],
-    exports: [RouterModule]
+    exports: [RouterModule],
 })
 export class FinanceDashboardRoutingModule { }

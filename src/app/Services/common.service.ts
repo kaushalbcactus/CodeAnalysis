@@ -6,9 +6,10 @@ import { ConstantsService } from './constants.service';
 import { PmconstantService } from '../projectmanagement/services/pmconstant.service';
 import { PMObjectService } from '../projectmanagement/services/pmobject.service';
 import { DatePipe } from '@angular/common';
-import { Table, DialogService } from 'primeng';
+import { Table, DialogService, MessageService } from 'primeng';
 import { FileUploadProgressDialogComponent } from '../shared/file-upload-progress-dialog/file-upload-progress-dialog.component';
 import { ConfirmationDialogComponent } from '../shared/confirmation-dialog/confirmation-dialog.component';
+import { ControlContainer, ValidatorFn, AbstractControl } from '@angular/forms';
 declare var $;
 
 declare const newrelic;
@@ -34,7 +35,9 @@ export class CommonService {
         private pmConstant: PmconstantService, public sharedObject: GlobalService,
         public taskAllocationService: TaskAllocationConstantsService,
         private datePipe: DatePipe,
-        public dialogService: DialogService
+        public common: CommonService,
+        public dialogService: DialogService,
+        private messageService: MessageService
     ) { }
 
     tableToExcel = (function () {
@@ -988,12 +991,13 @@ export class CommonService {
         batchUrl.push(obj);
     }
 
-    confirmMessageDialog(message,buttons,Closable): Promise<any> {
+    confirmMessageDialog(headerMessage, message, note, buttons, Closable): Promise<any> {
         return new Promise((resolve, reject) => {
             const ref = this.dialogService.open(ConfirmationDialogComponent, {
-                header: 'Confirmation',
+                header: headerMessage,
                 data: {
                     message,
+                    note,
                     buttons
                 },
                 contentStyle: { 'overflow-y': 'visible', 'background-color': '#f4f3ef' },
@@ -1033,5 +1037,68 @@ export class CommonService {
       return {
         hours, mins
       };
+    }
+    checkPositiveNumberValidator(): ValidatorFn {
+        return (control: AbstractControl): { [key: string]: boolean } | null => {
+            if (isNaN(control.value) || Number(control.value) < 0) {
+                return { positiveNumber: true };
+            }
+            return null;
+        };
+    }
+
+    checkNegativerNumberValidator(): ValidatorFn {
+        return (control: AbstractControl): { [key: string]: boolean } | null => {
+            if (isNaN(control.value) || Number(control.value) > 0) {
+                return { negativeNumber: true };
+            }
+            return null;
+        };
+    }
+
+    checkZeroNumberValidator(): ValidatorFn {
+        return (control: AbstractControl): { [key: string]: boolean } | null => {
+            if (isNaN(control.value) || Number(control.value) > 0 || Number(control.value) < 0) {
+                return { zeroNumber: true };
+            }
+            return null;
+        };
+    }
+
+    checkGTZeroNumberValidator(): ValidatorFn {
+        return (control: AbstractControl): { [key: string]: boolean } | null => {
+            if (control.value !== null && !isNaN(control.value)) {
+                if (Number(control.value) <= 0) {
+                    return { gtZeroNumber: true };
+                }
+                return null;
+            }
+            return null;
+        };
+    }
+   
+    getyearRange() {
+        const currentYear = new Date();
+        return (currentYear.getFullYear() - 10) + ':' + (currentYear.getFullYear() + 10);
+    }
+
+    showToastrMessage(type: string, message: string, stickyenable: boolean, showmodal?:boolean) {
+        let summaryMessage = '';
+        if (type === this.constants.MessageType.warn) {
+            summaryMessage = 'Warn Message';
+        } else if (type === this.constants.MessageType.error) {
+            summaryMessage = 'Error Message';
+        } else if (type === this.constants.MessageType.success) {
+            summaryMessage = 'Success Message';
+        } else if (type === this.constants.MessageType.info) {
+            summaryMessage = 'Info Message';
+        }
+      
+            this.messageService.add({ key: showmodal ? 'cls_ModaltoastrMessage' :'cls_toastrMessage', severity: type, summary: summaryMessage, detail: message, sticky: stickyenable });
+       
+    }
+
+    clearToastrMessage(){
+        this.messageService.clear();
     }
 }

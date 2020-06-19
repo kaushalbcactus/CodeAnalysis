@@ -502,7 +502,7 @@ export class PmconstantService {
     ADV_INVOICES: {
       select: 'ID, ClientLegalEntity, Amount, AddressType, InvoiceNumber, PO, ProformaLookup, IsTaggedFully, TaggedAmount,AuxiliaryInvoiceName,'
         + ' InvoiceDate, MainPOC, FileURL',
-      filter: 'ClientLegalEntity eq \'{{clientLegalEntity}}\' and IsTaggedFully eq \'No\'',
+      filter: 'ClientLegalEntity eq \'{{clientLegalEntity}}\' and InvoiceType eq \'revenue\' and IsTaggedFully eq \'No\'',
       top: 4500
     },
     GET_PROJECT_TYPE: {
@@ -618,8 +618,26 @@ export class PmconstantService {
     APPROVED: 'Approved',
     REJECTED: 'Rejected',
     ON_HOLD: 'On Hold',
-    OFF_HOLD: 'Off Hold'
+    OFF_HOLD: 'Off Hold',
+    ADD: 'Add',
+    REDUCE: 'Reduce',
+    RESTRUCTURE: 'Restructure'
   };
+
+  public CURRENCY = [
+    { label: 'AUD', value: '$' },
+    { label: 'BRL', value: 'R$' },
+    { label: 'CNY', value: '¥ /元' },
+    { label: 'DKK', value: 'kr' },
+    { label: 'EUR', value: '€' },
+    { label: 'GBP', value: '£' },
+    { label: 'INR', value: '₹' },
+    { label: 'JPY', value: '¥' },
+    { label: 'KRW', value: '₩' },
+    { label: 'NTD', value: 'NT$' },
+    { label: 'SGD', value: '$' },
+    { label: 'USD', value: '$' },
+  ]
   public PROJECT_BUDGET_DECREASE_REASON = {
     SCOPE_REDUCE: 'Scope reduction',
     QUALITY: 'Client discount - quality complaints',

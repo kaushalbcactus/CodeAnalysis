@@ -3,7 +3,6 @@ import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { AdminConstantService } from '../services/admin-constant.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
-import { MessageService } from 'primeng/api';
 import { CommonService } from 'src/app/Services/common.service';
 
 @Injectable({
@@ -16,7 +15,6 @@ export class AdminAuthService {
     private spOperationsServices: SPOperationService,
     private adminConstantService: AdminConstantService,
     private constantsService: ConstantsService,
-    public messageService: MessageService,
     public commonService: CommonService
   ) { }
 

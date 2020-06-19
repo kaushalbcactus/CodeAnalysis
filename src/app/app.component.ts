@@ -4,7 +4,7 @@ import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { environment } from '../environments/environment';
 import { ConstantsService } from './Services/constants.service';
 import { SPOperationService } from './Services/spoperation.service';
-import { MenuItem } from 'primeng/api';
+import { MenuItem, MessageService } from 'primeng/api';
 import { Title } from '@angular/platform-browser';
 import { filter, map } from 'rxjs/operators';
 import { CommonService } from './Services/common.service';
@@ -15,7 +15,7 @@ declare const newrelic;
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnDestroy {
   title = 'Medcom SPA';
@@ -95,7 +95,7 @@ export class AppComponent implements OnDestroy {
   }
 
   async initSPLoggedInUser() {
-    this.globalService.currentUser.userId = window.location.href.indexOf('localhost') > -1 ? 79 : _spPageContextInfo.userId;
+    this.globalService.currentUser.userId = window.location.href.indexOf('localhost') > -1 ? 287 : _spPageContextInfo.userId;
     this.globalService.currentUser.email = window.location.href.indexOf('localhost') > -1 ?
       'sneha.danduk@cactusglobal.com' : _spPageContextInfo.userEmail;
     this.globalService.currentUser.title = window.location.href.indexOf('localhost') > -1 ? 'Ashish' : _spPageContextInfo.userDisplayName;

@@ -1,5 +1,4 @@
 import { Component, OnInit, ApplicationRef, NgZone } from '@angular/core';
-import { MessageService } from 'primeng/api';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { AdminObjectService } from 'src/app/admin/services/admin-object.service';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
@@ -39,7 +38,6 @@ export class AddUserToProjectsComponent implements OnInit {
   /**
    * Construct a method to create an instance of required component.
    *
-   * @param messageService This is instance referance of `MessageService` component.
    * @param spServices This is instance referance of `SPOperationService` component.
    * @param adminObject This is instance referance of `AdminObjectService` component.
    * @param adminConstants This is instance referance of `AdminConstantService` component.
@@ -51,7 +49,6 @@ export class AddUserToProjectsComponent implements OnInit {
    * @param zone This is instance referance of `NgZone` component.
    */
   constructor(
-    private messageService: MessageService,
     private spServices: SPOperationService,
     private adminObject: AdminObjectService,
     private adminConstants: AdminConstantService,
@@ -231,15 +228,13 @@ export class AddUserToProjectsComponent implements OnInit {
    * @param projObj It required projObj as a parameter to check the user access type.
    */
   typeChange(projObj) {
-    this.messageService.clear();
+    this.common.clearToastrMessage();
     const userObj = this.selectedUser;
     if (projObj && projObj.CMLevel1 && projObj.CMLevel1.length && projObj.CMLevel1[0].ID === userObj.UserName.ID) {
       if (projObj.AccessType === this.adminConstants.ACCESS_TYPE.ACCOUNTABLE) {
-        this.messageService.add({
-          key: 'adminCustom', severity: 'error', sticky: true,
-          summary: 'Error Message', detail: 'The user ' + userObj.UserName.Title + ' cannot be made accountable.'
-            + ' Since he is only available in Access. Hence resetting the accessType to Access'
-        });
+
+        this.common.showToastrMessage(this.constants.MessageType.error, 'The user ' + userObj.UserName.Title + ' cannot be made accountable.'
+        + ' Since he is only available in Access. Hence resetting the accessType to Access',true);
         setTimeout(() => {
           projObj.AccessType = this.adminConstants.ACCESS_TYPE.ACCESS;
         }, 500);
@@ -284,7 +279,7 @@ export class AddUserToProjectsComponent implements OnInit {
     console.log(this.selectedUser);
     console.log(this.selectedClient);
     console.log(this.selectedProject);
-    this.messageService.clear();
+    this.common.clearToastrMessage();
     const batchURL = [];
     const options = {
       data: null,
@@ -293,24 +288,17 @@ export class AddUserToProjectsComponent implements OnInit {
       listName: ''
     };
     if (!this.selectedUser || !this.selectedUser.hasOwnProperty('UserName')) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error', sticky: true,
-        summary: 'Error Message', detail: 'Please select the user.'
-      });
+
+      this.common.showToastrMessage(this.constants.MessageType.warn,'Please select the user.',true);
       return false;
     }
     if (!this.selectedClient) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error', sticky: true,
-        summary: 'Error Message', detail: 'Please select the client'
-      });
+      this.common.showToastrMessage(this.constants.MessageType.warn,'Please select the client',true);
       return false;
     }
     if (!this.selectedProject.length) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error', sticky: true,
-        summary: 'Error Message', detail: 'Please select atleast one project.'
-      });
+
+      this.common.showToastrMessage(this.constants.MessageType.warn,'Please select atleast one project.',true);
       return false;
     }
     if (this.selectedProject.length) {
@@ -365,18 +353,12 @@ export class AddUserToProjectsComponent implements OnInit {
       if (batchURL && batchURL.length) {
         this.common.SetNewrelic('admin', 'admin-entitlement-adduserToProject', 'updateProjectInformation');
         const updateResult = await this.spServices.executeBatch(batchURL);
-        this.messageService.add({
-          key: 'adminCustom', severity: 'success', sticky: true,
-          summary: 'Success Message', detail: 'The user has been added into the selected Projects.'
-        });
+        this.common.showToastrMessage(this.constants.MessageType.success,'The user has been added into the selected Projects.',true);
         setTimeout(() => {
           this.clientChange();
         }, 500);
       } else {
-        this.messageService.add({
-          key: 'adminCustom', severity: 'info', sticky: true,
-          summary: 'Info Message', detail: 'The user NOT added into the selected Projects.'
-        });
+        this.common.showToastrMessage(this.constants.MessageType.info,'The user NOT added into the selected Projects.',false);
       }
     }
   }

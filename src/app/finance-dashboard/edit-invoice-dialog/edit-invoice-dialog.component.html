@@ -1,0 +1,130 @@
+<div class='UserButton' fxLayout="row" fxLayoutAlign="end center">
+
+    <button type="button" pButton icon="pi pi-save" class="cls_editInvoiceSave" id="saveClient" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="SaveDetails()" label="Save"></button>
+
+    <button type="button" class="cls_editInvoiceCancel" pButton icon="pi pi-times" id="cancelClient" (click)="cancel();" label="Cancel"></button>
+
+</div>
+
+<div fxLayout="row" #scrollDown fxLayoutAlign="space-between start" fxLayoutGap="5px">
+
+    <form [formGroup]='EditInvoiceForm' class="p-col">
+
+        <div class="editInvoiceHeight p-grid">
+            <!-- first row -->
+            <div class="p-col-12 p-md-12 p-lg-6 p-grid">
+                <div class="p-col-6 p-md-4 p-lg-4 editInvoiceitem">Project / SOW Code</div>
+                <div class="p-col-6 p-md-8 p-lg-8 editInvoiceitem">
+                    <input type="text" class="cls_editInvProjectCode readonlyField" style="width: 100%;" formControlName="ProjectCode" placeholder="Project Code" readonly pInputText>
+                </div>
+            </div>
+
+            <div class="p-col-12 p-md-12 p-lg-6 p-grid" *ngIf="InvoiceType !== 'hourly'">
+                <div class="p-col-6 p-md-4 p-lg-4 editInvoiceitem">PO Number</div>
+                <div class="p-col-6 p-md-8 p-lg-8 editInvoiceitem">
+                    <input type="text" class="cls_editInvPONumber readonlyField" style="width: 100%;" formControlName="PONumber" placeholder="PO Number" readonly pInputText>
+                </div>
+            </div>
+
+            <div class="p-col-12 p-md-12 p-lg-6 p-grid" *ngIf="InvoiceType !== 'hourly'">
+                <div class="p-col-6 p-md-4 p-lg-4 editInvoiceitem">Scheduled Type</div>
+                <div class="p-col-6 p-md-8 p-lg-8 editInvoiceitem">
+                    <input type="text" class="cls_editInvScheduledType readonlyField" style="width: 100%;" formControlName="ScheduledType" placeholder="Scheduled Type" readonly pInputText>
+                </div>
+            </div>
+            <div class="p-col-12 p-md-12 p-lg-6 p-grid" *ngIf="InvoiceType !== 'hourly'">
+                <div class="p-col-6 p-md-4 p-lg-4 editInvoiceitem">Amount</div>
+                <div class="p-col-6 p-md-8 p-lg-8 editInvoiceitem">
+                    <input type="text" class="cls_editInvAmount readonlyField" style="width: 100%;" formControlName="Amount" placeholder="Amount" readonly pInputText>
+                </div>
+            </div>
+            <div class="p-col-12 p-md-12 p-lg-6 p-grid">
+                <div class="p-col-6 p-md-4 p-lg-4 editInvoiceitem">POC Name</div>
+                <div class="p-col-6 p-md-8 p-lg-8 editInvoiceitem" *ngIf="InvoiceType !== 'hourly'">
+
+                    <p-dropdown [readonly]="InvoiceType === 'hourly' ? true : false" resetFilterOnHide="true" [options]="listOfPOCNames" formControlName="POCName" placeholder="Select POC Name" [filter]="true" optionLabel="FullName" [style]="{'width':'100%'}" appendTo="body">
+                        <ng-template let-item pTemplate="item">
+                            <div class="ui-helper-clearfix" style="position: relative;height: 25px;">
+                                <div style="font-size:14px;float:left;margin-top:4px">{{item.label }}</div>
+                            </div>
+                        </ng-template>
+                    </p-dropdown>
+                    <div class="error" *ngIf="isEditInvoiceFormSubmit && EditInvoiceForm.controls.POCName.errors">
+                        <div *ngIf="EditInvoiceForm.controls.POCName.errors.required">
+                            Please provide POC Name.</div>
+                    </div>
+
+                </div>
+                <div class="p-col-6 p-md-8 p-lg-8 editInvoiceitem" *ngIf="InvoiceType === 'hourly'">
+                    <input type="text" class="cls_editInvPOCName readonlyField" style="width: 100%;" formControlName="POCName" placeholder="POC Name" readonly pInputText>
+                </div>
+            </div>
+            <div class="p-col-12 p-md-12 p-lg-6 p-grid">
+                <div class="p-col-6 p-md-4 p-lg-4 editInvoiceitem">Currency</div>
+                <div class="p-col-6 p-md-8 p-lg-8 editInvoiceitem">
+                    <input type="text" class="cls_editInvCurrency readonlyField" style="width: 100%;" formControlName="Currency" placeholder="Currency" readonly pInputText>
+                </div>
+            </div>
+
+            <div class="p-col-12 p-md-12 p-lg-6 p-grid" *ngIf="InvoiceType !== 'hourly'">
+                <div class="p-col-6 p-md-4 p-lg-4 editInvoiceitem">Address Type</div>
+                <div class="p-col-6 p-md-8 p-lg-8 editInvoiceitem">
+                    <p-dropdown class="cls_editInvAddType" resetFilterOnHide="true" [options]="addressTypes" formControlName="AddressType" placeholder="Select a Address Type" optionLabel="label" [style]="{'width':'100%'}" appendTo="body"></p-dropdown>
+
+                    <div class="error" *ngIf="isEditInvoiceFormSubmit && EditInvoiceForm.controls.AddressType.errors">
+                        <div *ngIf="EditInvoiceForm.controls.AddressType.errors.required">
+                            Please provide address type.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-col-12 p-md-12 p-lg-6 p-grid" *ngIf="InvoiceType !== 'hourly'">
+                <div class="p-col-6 p-md-4 p-lg-4 editInvoiceitem">Schedule Date</div>
+                <div class="p-col-6 p-md-8 p-lg-8 editInvoiceitem">
+
+                    <p-calendar class="cls_editInvScheduleDate" styleClass="pCalendarBtn" formControlName="ScheduledDate" [showIcon]="true" dateFormat="dd M , yy"   [showOnFocus]="false"   [monthNavigator]="true" yearRange="{{yearRange}}" [disabledDays]="[0,6]" [yearNavigator]="true"
+                        appendTo="body" [minDate]="minScheduleDate" [maxDate]="maxScheduleDate" [readonlyInput]="true" placeholder="Select schedule date">
+                    </p-calendar>
+
+                    <div class="error" *ngIf="isEditInvoiceFormSubmit && EditInvoiceForm.controls.ScheduledDate.errors">
+                        <div *ngIf="EditInvoiceForm.controls.ScheduledDate.errors.required">
+                            Please select schedule date.</div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="p-col-12 p-md-12 p-lg-6 p-grid" *ngIf="InvoiceType === 'hourly'">
+                <div class="p-col-6 p-md-4 p-lg-4 editInvoiceitem">Rate</div>
+                <div class="p-col-6 p-md-8 p-lg-8 editInvoiceitem">
+                    <input type="number" class="cls_editInvRate" style="width: 100%;" formControlName="Rate" placeholder="Rate" pInputText>
+                    <div class="error" *ngIf="isEditInvoiceFormSubmit && EditInvoiceForm.controls.Rate.errors">
+                        <div *ngIf="EditInvoiceForm.controls.Rate.errors.required">
+                            Please define rate.</div>
+                        <div *ngIf="EditInvoiceForm.controls.Rate.errors.positiveNumber">
+                            Rate cannot be less than zero</div>
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="p-col-12 p-md-12 p-lg-6 p-grid" *ngIf="InvoiceType === 'hourly'">
+                <div class="p-col-6 p-md-4 p-lg-4 editInvoiceitem">Hours Spent</div>
+                <div class="p-col-6 p-md-8 p-lg-8 editInvoiceitem">
+                    <input type="number" class="cls_editInvHoursSpent" style="width: 100%;" formControlName="HoursSpent" placeholder="Hours Spent" pInputText>
+
+                    <div class="error" *ngIf="isEditInvoiceFormSubmit && EditInvoiceForm.controls.HoursSpent.errors">
+                        <div *ngIf="EditInvoiceForm.controls.HoursSpent.errors.required">
+                            Please define hours spent.</div>
+                        <div *ngIf="EditInvoiceForm.controls.HoursSpent.errors.positiveNumber">
+                            hours cannot be less than zero</div>
+                    </div>
+
+
+                </div>
+            </div>
+
+
+        </div>
+    </form>
+</div>
