@@ -64,14 +64,14 @@ export class BlockResourceDialogComponent implements OnInit {
     }
   }
 
-  setBudgetHoursValidation() {
-    this.BlockResourceForm.get("ExpectedTime").setValidators([
-      Validators.required,
-      this.common.checkGTZeroNumberValidator(),
-      Validators.max(this.BlockResourceForm.value.Resource.value.MaxHrs),
-    ]);
-    this.BlockResourceForm.get("ExpectedTime").updateValueAndValidity();
-  }
+  // setBudgetHoursValidation() {
+  //   this.BlockResourceForm.get("ExpectedTime").setValidators([
+  //     Validators.required,
+  //     this.common.checkGTZeroNumberValidator(),
+  //     Validators.max(this.BlockResourceForm.value.Resource.value.MaxHrs),
+  //   ]);
+  //   this.BlockResourceForm.get("ExpectedTime").updateValueAndValidity();
+  // }
 
   SaveDetails() {
     if (this.BlockResourceForm.valid) {

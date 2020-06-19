@@ -79,8 +79,8 @@ export class CapacityDashboardComponent implements OnInit {
     const Resources = {
       // tslint:disable
       select:
-        "ID,UserName/Id,UserName/Title,UserName/EMail,PrimarySkill,Bucket,Practice_x0020_Area,MaxHrs,GoLiveDate,DateOfJoining",
-      expand: "UserName/ID,UserName/EMail,UserName/Title",
+        "ID,UserName/Id,UserName/Title,UserName/EMail,PrimarySkill,Bucket,Practice_x0020_Area,MaxHrs,GoLiveDate,DateOfJoining,TimeZone/ID,TimeZone/Title,TimeZone/TimeZoneName",
+      expand: "UserName/ID,UserName/EMail,UserName/Title,TimeZone/ID,TimeZone/Title,TimeZone/TimeZoneName",
       filter: "IsActive eq 'Yes'",
       orderby: "UserName/Title asc",
       top: 4500,
@@ -389,11 +389,29 @@ export class CapacityDashboardComponent implements OnInit {
       contentStyle: { "max-height": "80vh", "overflow-y": "auto" },
       closable: false,
     });
-    ref.onClose.subscribe((blockResource: any) => {
+    ref.onClose.subscribe(async (blockResource: any) => {
       if (blockResource) {
-        // const batchURL = this.fdDataShareServie.EditInvoiceDialogProcess(this.selectedRowItem.ScheduleType,this.selectedRowItem, editInvoice)
-        // this.commonService.SetNewrelic('Finance-Dashboard', 'confirmed', 'updateInvoiceLineItem');
-        // this.submitForm(batchURL, 'editInvoice');
+        const data = {
+          __metadata: { type: this.constants.listNames.BlockResource.type },
+          Title : blockResource.value.Title,
+          StartDate:blockResource.value.StartDate,
+          DueDate:blockResource.value.EndDate,
+          Status : this.constants.blockResStatus.Active,
+          ResourceId:blockResource.value.Resource.value.UserName.Id,
+          TimeZone:parseFloat(blockResource.value.Resource.value.TimeZone.Title),
+          ExpectedTime :blockResource.value.ExpectedTime
+        }
+        console.log(blockResource);
+        this.commonService.SetNewrelic('capacity-dashboard', 'blockResource', 'CreateblockResource');
+        debugger;
+        const result = await this.spServices.createItem(this.constants.listNames.BlockResource.name, data,
+          this.constants.listNames.BlockResource.type);
+          if (!result.hasOwnProperty('hasError') && !result.hasError) {
+
+            this.commonService.showToastrMessage(this.constants.MessageType.success,'Resource block sucessfully.',false);
+            this.SearchRecords();
+
+          } 
       }
     });
   }

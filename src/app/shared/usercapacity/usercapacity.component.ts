@@ -227,8 +227,10 @@ export class UsercapacityComponent implements OnInit {
     const batchGuid = this.spService.generateUUID();
     let batchContents = new Array();
     let batchUrl = [];
+    let blockResBatchUrl = [];
     let TimeSpentbatchUrl = [];
-
+    let blockResbatchResults = [];
+    let tempblockResFinalArray = [];
     for (const userIndex in selectedUsers) {
       if (selectedUsers.hasOwnProperty(userIndex)) {
         if (selectedUsers[userIndex]) {
@@ -260,6 +262,12 @@ export class UsercapacityComponent implements OnInit {
             oUser.GoLiveDate = userDetail[0].GoLiveDate;
             oUser.JoiningDate = userDetail[0].DateOfJoining;
             this.fetchData(oUser, startDateString, endDateString, batchUrl);
+            this.fetchDataBlockResource(
+              oUser,
+              startDateString,
+              endDateString,
+              blockResBatchUrl
+            );
             if (this.enableDownload) {
               this.fetchDataForTimeSpent(
                 oUser,
@@ -279,6 +287,22 @@ export class UsercapacityComponent implements OnInit {
               console.log(batchResults);
               tempFinalArray = [...tempFinalArray, ...batchResults];
               batchUrl = [];
+            }
+            if (blockResBatchUrl.length === 99) {
+              this.common.SetNewrelic(
+                "Shared",
+                "UserCapacity",
+                "fetchBlockResourceData"
+              );
+              blockResbatchResults = await this.spService.executeBatch(
+                blockResBatchUrl
+              );
+              console.log(blockResbatchResults);
+              tempblockResFinalArray = [
+                ...tempblockResFinalArray,
+                ...blockResbatchResults,
+              ];
+              blockResBatchUrl = [];
             }
             if (TimeSpentbatchUrl.length === 99) {
               TimeSpentbatchResults = await this.spService.executeBatch(
@@ -300,6 +324,12 @@ export class UsercapacityComponent implements OnInit {
       this.common.SetNewrelic("Shared", "UserCapacity", "fetchTaskByUsers");
       batchResults = await this.spService.executeBatch(batchUrl);
       tempFinalArray = [...tempFinalArray, ...batchResults];
+    }
+
+    if (blockResBatchUrl.length) {
+      this.common.SetNewrelic("Shared", "UserCapacity", "fetchBlockResourceData");
+      blockResbatchResults = await this.spService.executeBatch(blockResBatchUrl);
+      tempblockResFinalArray = [...tempblockResFinalArray, ...blockResbatchResults];
     }
     if (TimeSpentbatchUrl.length) {
       this.common.SetNewrelic(
@@ -584,6 +614,29 @@ export class UsercapacityComponent implements OnInit {
     // return this.spService.getBatchBodyGet(batchContents, batchGuid, endpoint);
   }
 
+  fetchDataBlockResource(
+    oUser,
+    startDateString,
+    endDateString,
+    blockResBatchUrl
+  ) {
+    const url = this.spService.getReadURL(
+      this.globalConstantService.listNames.BlockResource.name,
+      this.sharedConstant.userCapacity.fetchBlockResource
+    );
+    this.common.setBatchObject(
+      blockResBatchUrl,
+      url
+        .replace("{{userID}}", oUser.uid)
+        .replace(/{{startDateString}}/gi, startDateString)
+        .replace(/{{endDateString}}/gi, endDateString),
+      null,
+      this.globalConstantService.Method.GET,
+      this.globalConstantService.listNames.BlockResource.name
+    );
+
+    return blockResBatchUrl;
+  }
   fetchDataForTimeSpent(
     oUser,
     startDateString,

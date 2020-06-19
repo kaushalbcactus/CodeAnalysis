@@ -22,7 +22,9 @@
             <div class="p-col-12 p-md-12 p-lg-12 p-grid">
                 <div class="p-col-6 p-md-4 p-lg-3 blockResItem">Resources</div>
                 <div class="p-col-6 p-md-8 p-lg-9 blockResItem">
-                    <p-dropdown resetFilterOnHide="true" [style]="{'width':'100%'}" class="cls_blockResResources" [options]="Resources" [showClear]="true" formControlName="Resource" placeholder="Select Resource" [filter]="true" optionLabel="label" (onChange)=setBudgetHoursValidation()></p-dropdown>
+                    <p-dropdown resetFilterOnHide="true" [style]="{'width':'100%'}" class="cls_blockResResources" [options]="Resources" [showClear]="true" formControlName="Resource" placeholder="Select Resource" [filter]="true" optionLabel="label"></p-dropdown>
+
+                    <!-- optionLabel="label" (onChange)=setBudgetHoursValidation()></p-dropdown> -->
                     <div *ngIf="isBlockResourceFormSubmit && BlockResourceForm.controls.Resource.errors">
                         <div *ngIf="BlockResourceForm.controls.Resource.errors.required" style="color:red;">
                             Please provide Resource.</div>
@@ -66,15 +68,15 @@
             </div>
 
             <div class="p-col-12 p-md-12 p-lg-12 p-grid">
-                <div class="p-col-6 p-md-4 p-lg-3 blockResItem">Expected Time (Per Day)</div>
+                <div class="p-col-6 p-md-4 p-lg-3 blockResItem">Expected Time</div>
                 <div class="p-col-6 p-md-8 p-lg-9 blockResItem">
 
                     <input type="number" step="0.25" pInputText class="textfeildClass cls_blockResExpectedTime" formControlName="ExpectedTime" />
-                    <div *ngIf="isBlockResourceFormSubmit && BlockResourceForm.controls.ExpectedTime.errors">
+                    <!-- <div *ngIf="isBlockResourceFormSubmit && BlockResourceForm.controls.ExpectedTime.errors">
                         <div *ngIf="BlockResourceForm.controls.ExpectedTime.errors.required" style="color:red;">Please provide Expected Time.</div>
                         <div *ngIf="BlockResourceForm.controls.ExpectedTime.errors.gtZeroNumber" style="color:red;">Expected Time should be greater than 0.</div>
                         <div *ngIf="BlockResourceForm.controls.ExpectedTime.errors.max" style="color:red;">Expected Time should be less than or equal to {{BlockResourceForm.value.Resource.value.MaxHrs}}.</div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>

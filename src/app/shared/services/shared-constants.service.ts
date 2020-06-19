@@ -42,6 +42,17 @@ export class SharedConstantsService {
         top: '4500',
       orderby: 'StartDate'
     },
+
+    fetchBlockResource: {
+      select: 'ID,Title,Status,ExpectedTime,StartDate,DueDate,TimeZone',
+      filter: "(Resource/Id eq {{userID}}) and(" +
+        "(StartDate ge '{{startDateString}}' and StartDate le '{{endDateString}}')" +
+        "or (DueDate ge '{{startDateString}}' and DueDate le '{{endDateString}}')" +
+        " or (StartDate le '{{startDateString}}' and DueDate ge '{{endDateString}}')" +
+        ") and Status ne 'Deleted'",
+      top: '4500',
+      orderby: 'StartDate'
+    },
     getProjectInformation: {
       select: 'ProjectCode, WBJID',
       filter: 'ProjectCode eq \'{{projectCode}}\'',
