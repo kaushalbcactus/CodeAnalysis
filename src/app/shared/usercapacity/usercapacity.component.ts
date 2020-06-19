@@ -3,7 +3,7 @@ import { DatePipe, CommonModule } from '@angular/common';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
-import { DynamicDialogConfig, MessageService, DialogService } from 'primeng';
+import { DynamicDialogConfig, DialogService } from 'primeng';
 import { CAGlobalService } from 'src/app/ca/caservices/caglobal.service';
 import { CACommonService } from 'src/app/ca/caservices/cacommon.service';
 import { SharedConstantsService } from '../services/shared-constants.service';

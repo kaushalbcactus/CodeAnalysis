@@ -8,7 +8,7 @@ import { GlobalService } from 'src/app/Services/global.service';
 import { TaskAllocationConstantsService } from '../services/task-allocation-constants.service';
 import { CommonService } from 'src/app/Services/common.service';
 // import { GanttEditorComponent, GanttEditorOptions } from 'ng-gantt';
-import { TreeNode, MessageService, DialogService, DynamicDialogRef } from 'primeng';
+import { TreeNode, DialogService, DynamicDialogRef } from 'primeng';
 import { MenuItem } from 'primeng/api';
 import { DragDropComponent } from '../drag-drop/drag-drop.component';
 import { TaskDetailsDialogComponent } from '../task-details-dialog/task-details-dialog.component';
@@ -30,11 +30,12 @@ import { GanttEdittaskComponent } from '../gantt-edittask/gantt-edittask.compone
 import { ConflictAllocationsComponent } from './conflict-allocations/conflict-allocations.component';
 import { message } from 'gantt';
 
+
 @Component({
   selector: 'app-timeline',
   templateUrl: './timeline.component.html',
   styleUrls: ['./timeline.component.css'],
-  providers: [MessageService, DialogService, DragDropComponent, UsercapacityComponent, DynamicDialogRef,
+  providers: [ DialogService, DragDropComponent, UsercapacityComponent, DynamicDialogRef,
     PreStackAllocationComponent, AllocationOverlayComponent, GanttEdittaskComponent, ConflictAllocationsComponent],
   encapsulation: ViewEncapsulation.None
 })
@@ -1084,7 +1085,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.disableSave = false;
     if (!bFirstLoad) {
       this.changeInRestructure = false;
-      this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Tasks Saved Successfully' });
+
+      this.commonService.showToastrMessage(this.constants.MessageType.success,'Tasks Saved Successfully.',false);
     } else {
       this.ganttAttachEvents();
     }
@@ -1369,7 +1371,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
     let menuItems = [];
     if (!indices) {
-      this.messageService.add({ key: 'gantt-message', severity: 'error', summary: 'Error Message', detail: 'No menus available' });
+      this.commonService.showToastrMessage(this.constants.MessageType.error,'No menus available',false);
     } else {
       indices.forEach(element => {
         menuItems.push(menus[element]);
@@ -1629,10 +1631,11 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
             this.onResourceClick(resourceTask);
           }
         } else if ((task.itemType == "Send to client" || task.itemType == "Client Review") && e.target.parentElement.className === "gantt_cell cell_user") {
-          this.messageService.add({ key: 'gantt-message', severity: 'error', summary: 'Error Message', detail: 'Resource view is unavailable for these tasks please edit the task to change resource' });
+
+          this.commonService.showToastrMessage(this.constants.MessageType.error,'Resource view is unavailable for these tasks please edit the task to change resource.',false);
         }
       } else if ((task.itemType == "Send to client" || task.itemType == "Client Review") && e.target.parentElement.className === "gantt_cell cell_user") {
-        this.messageService.add({ key: 'gantt-message', severity: 'error', summary: 'Error Message', detail: 'Resource view is unavailable for these tasks please edit the task to change resource' });
+        this.commonService.showToastrMessage(this.constants.MessageType.error,'Resource view is unavailable for these tasks please edit the task to change resource.',false);
       }
       let menuButton = e.target.closest("[data-action]")
       if (menuButton) {
@@ -1820,7 +1823,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
   ganttNotification() {
-    this.messageService.add({ key: 'gantt-message', severity: 'warn', summary: 'Warning Message', detail: 'Gantt task update. There are some unsaved changes, Please save them.' });
+    this.commonService.showToastrMessage(this.constants.MessageType.warn,'Gantt task update. There are some unsaved changes, Please save them.',false);
   }
 
   onResourceClick(task) {
@@ -1877,10 +1880,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     setTimeout(async () => {
       const rowNode: TreeNode = this.getNode(task);
       if (task.editMode) {
-        this.messageService.add({
-          key: 'custom', severity: 'warn', summary: 'Warning Message',
-          detail: 'There are some unsaved changes, Please save them.'
-        });
+
+        this.commonService.showToastrMessage(this.constants.MessageType.warn,'There are some unsaved changes, Please save them.',false);
         return false;
 
       } else {
@@ -1900,11 +1901,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
   confirmChangeResource(event) {
-    this.confirmationService.confirm({
-      header: 'Change Resource of Task',
-      icon: 'pi pi-exclamation-triangle',
-      message: 'Are you sure you want to change the Resource of Task ?',
-      accept: () => {
+    this.commonService.confirmMessageDialog('Change Resource of Task','Are you sure you want to change the Resource of Task ?',null,['Yes','No'],false).then(async Confirmation => {
+      if (Confirmation === 'Yes') {
         this.displayBody = false;
         this.changeResource(event);
       }
@@ -2026,7 +2024,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       this.maxBudgetHrs = this.taskAllocateCommonService.setMaxBudgetHrs(task);
       if (this.maxBudgetHrs < this.budgetHrs) {
         this.budgetHrs = 0;
-        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Budget hours is set to zero because given budget hours is greater than task time period.' });
+        this.commonService.showToastrMessage(this.constants.MessageType.warn,'Budget hours is set to zero because given budget hours is greater than task time period.',false);
       }
     }
   }
@@ -2057,7 +2055,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       };
 
       if (this.budgetHrs == 0 && this.updatedTasks.type !== 'milestone') {
-        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Add Budget Hours' });
+
+        this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please Add Budget Hours.',false);
+
       } else {
         if (this.updatedTasks.type !== 'milestone') {
           let time: any = this.commonService.getHrsAndMins(this.updatedTasks.pUserStart, this.updatedTasks.pUserEnd)
@@ -2071,7 +2071,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
           if (bHrsTime > time.maxTime) {
             this.budgetHrs = 0;
-            this.messageService.add({ key: 'gantt-message', severity: 'error', summary: 'Error Message', detail: 'Budget hours is set to zero because given budget hours is greater than task time period.' });
+
+            this.commonService.showToastrMessage(this.constants.MessageType.error,'Budget hours is set to zero because given budget hours is greater than task time period.',false);
           }
         }
         allTasks.data = this.getGanttTasksFromMilestones(this.milestoneData, true);
@@ -2743,7 +2744,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       this.maxBudgetHrs = this.taskAllocateCommonService.setMaxBudgetHrs(event);
       if (this.maxBudgetHrs < event.budgetHrs) {
         event.budgetHrs = 0;
-        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Budget hours is set to zero because given budget hours is greater than task time period.' });
+
+        this.commonService.showToastrMessage(this.constants.MessageType.warn,'Budget hours is set to zero because given budget hours is greater than task time period.',false);
       }
     }
     await this.dailyAllocation.calcPrestackAllocation(resource, event);
@@ -3759,8 +3761,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
     if (bHrsTime > time.maxTime) {
       node.budgetHours = 0;
-      this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: 'Budget hours is set to zero because given budget hours is greater than task time period.' });
-      this.messageService.add({ key: 'gantt-message', severity: 'error', summary: 'Error Message', detail: 'Budget hours is set to zero because given budget hours is greater than task time period.' });
+
+      this.commonService.showToastrMessage(this.constants.MessageType.error,'Budget hours is set to zero because given budget hours is greater than task time period.',false);
     }
     this.changeDateOfEditedTask(node, type);
     await this.dailyAllocation.calcPrestackAllocation(resource, node);
@@ -5663,10 +5665,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         const conflictTask = allNextTasks.find(c => task.end_date > c.start_date && c.status !== 'Completed'
           && c.status !== 'Auto Closed' && c.status !== 'Deleted' && c.DisableCascade === false); //// Change allow start to disable cascade
         if (conflictTask) {
-          this.messageService.add({
-            key: 'custom', severity: 'warn', summary: 'Warning Message',
-            detail: 'Start Date of ' + conflictTask.title + '  should be greater than end date of ' + task.title + ' in ' + task.milestone
-          });
+
+          this.commonService.showToastrMessage(this.constants.MessageType.warn,'Start Date of ' + conflictTask.title + '  should be greater than end date of ' + task.title + ' in ' + task.milestone,false);
           errorPresnet = true;
           break;
         }
@@ -5754,13 +5754,13 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   ///// Kaushal to test 
   async setAsNextMilestoneCall(task, msg) {
 
-    this.commonService.confirmMessageDialog('Confirmation', message, null, ['Yes', 'No'], false).then(async Confirmation => {
+    this.commonService.confirmMessageDialog('Confirmation', msg, null, ['Yes', 'No'], false).then(async Confirmation => {
       if (Confirmation === 'Yes') {
         this.selectedSubMilestone = task;
         const validateNextMilestone = this.validateNextMilestone(this.selectedSubMilestone);
         if (validateNextMilestone) {
           this.loaderenable = true;
-          setTimeout(() => { await this.setAsNextMilestone(this.selectedSubMilestone); }, 200);
+          setTimeout(async () => { await this.setAsNextMilestone(this.selectedSubMilestone); }, 200);
         }
       }
     });
@@ -5791,7 +5791,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     });
     const batchUrl = [];
     // tslint:disable
-
     if (!submilePresentInCurrent) {
       // // tslint:enable
       const updateProjectBody = {
@@ -6114,10 +6113,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         }
         if (milestone.data.title === 'Client Review' && milestone.data.status !== 'Not Confirmed' && milestone.data.status !== 'Not Saved' &&
           new Date(milestone.data.start_date).getTime() >= new Date(milestone.data.end_date).getTime()) {
-          this.messageService.add({
-            key: 'custom', severity: 'warn', summary: 'Warning Message',
-            detail: 'End date should be greater than start date of ' + milestone.data.milestone + ' - Client Review'
-          });
+            this.commonService.showToastrMessage(this.constants.MessageType.warn,'End date should be greater than start date of ' + milestone.data.milestone + ' - Client Review.',false);
           return false;
         }
         const milestoneTasksRelink = AllTasks.filter(t => t.status !== 'Abandon' && t.itemType !== 'Adhoc');
@@ -6373,7 +6369,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       }
       this.dailyAllocation.setAllocationPerDay(allocation, milestoneTask);
       if (allocation.allocationAlert) {
-        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Resource is over allocated' });
+
+        this.commonService.showToastrMessage(this.constants.MessageType.warn,'Resource is over allocated',false);
       }
     });
   }

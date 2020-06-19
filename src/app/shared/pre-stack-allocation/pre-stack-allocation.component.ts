@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { IDailyAllocationTask, IDailyAllocationObject, IPreStack, IPerformAllocationObject } from './interface/prestack';
 import { UsercapacityComponent } from 'src/app/shared/usercapacity/usercapacity.component';
-import { DynamicDialogConfig, DynamicDialogRef, MessageService } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 import { CommonService } from 'src/app/Services/common.service';
 import { DatePipe } from '@angular/common';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
@@ -9,6 +9,7 @@ import { TaskAllocationCommonService } from 'src/app/task-allocation/services/ta
 import { IMilestoneTask } from 'src/app/task-allocation/interface/allocation';
 import { GlobalService } from 'src/app/Services/global.service';
 import { IUserCapacity } from '../usercapacity/interface/usercapacity';
+import { ConstantsService } from 'src/app/Services/constants.service';
 
 @Component({
   selector: 'app-pre-stack-allocation',
@@ -41,8 +42,8 @@ export class PreStackAllocationComponent implements OnInit {
   };
   constructor(private usercapacityComponent: UsercapacityComponent, private popupData: DynamicDialogConfig,
     public common: CommonService, private datePipe: DatePipe, public popupConfig: DynamicDialogRef,
-    public allocationCommon: TaskAllocationCommonService, public messageService: MessageService,
-    public global: GlobalService) { }
+    public allocationCommon: TaskAllocationCommonService,
+    public global: GlobalService,public constants : ConstantsService) { }
 
   ngOnInit() {
     // retrieve data on popup open
@@ -83,7 +84,7 @@ export class PreStackAllocationComponent implements OnInit {
     const isDailyAllocationValid = !allocationData.allocationType ? this.checkDailyAllocation(resource, allocationData) : false;
     if (!isDailyAllocationValid) {
       if (allocationChanged) {
-        this.common.confirmMessageDialog('Cant accommodate pending hours on the subsequent days so equal allocation will be done. Should we do equal allocation ?',
+        this.common.confirmMessageDialog('Confirmation','Cant accommodate pending hours on the subsequent days so equal allocation will be done. Should we do equal allocation ?',null,
           ['Yes', 'No'], false).then(async Confirmation => {
             if (Confirmation === 'Yes') {
               arrAllocation = await this.equalSplitAllocation(resource, allocationData, true);
@@ -339,7 +340,7 @@ export class PreStackAllocationComponent implements OnInit {
       i++;
     }
     if (allocationChanged) {
-      this.messageService.add({ key: 'custom', severity: 'info', summary: 'Warning Message', detail: 'Equal allocation performed. Please assign budget hours from first row if change is needed.', sticky: true });
+      this.common.showToastrMessage(this.constants.MessageType.info,'Equal allocation performed. Please assign budget hours from first row if change is needed.',true);
     }
     return arrAllocation;
   }
@@ -444,7 +445,7 @@ export class PreStackAllocationComponent implements OnInit {
     if (rowData.tasks.length) {
       rowData.hideTasksTable = !rowData.hideTasksTable;
     } else {
-      this.messageService.add({ key: 'custom', severity: 'info', summary: 'Warning Message', detail: 'No Tasks found' });
+      this.common.showToastrMessage(this.constants.MessageType.info,'No Tasks found',false);
     }
   }
 

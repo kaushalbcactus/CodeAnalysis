@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ViewEncapsulation, EventEmitter, Output } from '@angular/core';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
-import { DynamicDialogConfig, DynamicDialogRef, DialogService, MessageService, TreeNode } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef, DialogService, TreeNode } from 'primeng';
 import { DatePipe } from '@angular/common';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -10,12 +10,13 @@ import { IDailyAllocationTask } from 'src/app/shared/pre-stack-allocation/interf
 import { PreStackAllocationComponent } from 'src/app/shared/pre-stack-allocation/pre-stack-allocation.component';
 import { TaskAllocationCommonService } from '../services/task-allocation-common.service';
 import { CommonService } from 'src/app/Services/common.service';
+import { ConstantsService } from 'src/app/Services/constants.service';
 
 @Component({
   selector: 'app-gantt-edittask',
   templateUrl: './gantt-edittask.component.html',
   styleUrls: ['./gantt-edittask.component.css'],
-  providers: [MessageService, DialogService],
+  providers: [DialogService],
   encapsulation: ViewEncapsulation.None
 })
 export class GanttEdittaskComponent implements OnInit {
@@ -59,10 +60,10 @@ export class GanttEdittaskComponent implements OnInit {
     public editTaskRef: DynamicDialogRef,
     private globalService: GlobalService,
     private dialogService: DialogService,
-    private messageService: MessageService,
     private dailyAllocation: PreStackAllocationComponent,
     private taskAllocateCommonService: TaskAllocationCommonService,
-    private commonService: CommonService) {
+    private commonService: CommonService,
+    private constants:ConstantsService) {
 
     this.editTaskForm = this.fb.group({
       budgetHrs: ['', Validators.required],
@@ -240,7 +241,7 @@ export class GanttEdittaskComponent implements OnInit {
 
     this.editTaskForm.get('startDate').valueChanges.subscribe(async startDate => {
       if (!startDate) {
-        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please select Start Date.' });
+        this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please select Start Date.',false);
       } else {
         const resources = this.globalService.oTaskAllocation.oResources.filter((objt) => {
           return this.task.AssignedTo.ID === objt.UserName.ID;
@@ -269,7 +270,7 @@ export class GanttEdittaskComponent implements OnInit {
 
     this.editTaskForm.get('endDate').valueChanges.subscribe(async endDate => {
       if (!endDate) {
-        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please select End Date.' });
+        this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please select End Date.',false);
       } else {
         const resources = this.globalService.oTaskAllocation.oResources.filter((objt) => {
           return this.task.AssignedTo.ID === objt.UserName.ID;
@@ -347,7 +348,7 @@ export class GanttEdittaskComponent implements OnInit {
     if (bHrsTime > time.maxTime) {
       let budgetHrs: number = 0;
       this.editTaskForm.get('budgetHrs').setValue(budgetHrs);
-      this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: 'Budget hours is set to zero because given budget hours is greater than task time period.' });
+      this.commonService.showToastrMessage(this.constants.MessageType.error,'Budget hours is set to zero because given budget hours is greater than task time period.',false);
     }
   }
 
@@ -375,7 +376,8 @@ export class GanttEdittaskComponent implements OnInit {
   saveTask(): void {
     if (this.editTaskForm.valid) {
       if (this.editTaskForm.value.budgetHrs == 0) {
-        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Add Budget Hours' });
+
+        this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please Add Budget Hours.',false);
       } else {
         const obj = {
           updatedTask: this.editTaskForm,
@@ -386,13 +388,13 @@ export class GanttEdittaskComponent implements OnInit {
       }
     } else {
       if (!this.editTaskForm.value.resource) {
-        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please select Resource.' });
+        this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please select Resource.',false);
       } else if (!this.editTaskForm.value.budgetHrs) {
-        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Add Budget Hours' });
+       this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please Add Budget Hours.',false);
       } else if (!this.editTaskForm.value.startDate) {
-        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please select Start Date.' });
+        this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please select Start Date.',false);
       } else if (!this.editTaskForm.value.endDate) {
-        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please select End Date.' });
+        this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please select End Date.',false);
       }
     }
   }
@@ -447,7 +449,7 @@ export class GanttEdittaskComponent implements OnInit {
     ref.onClose.subscribe((allocation: any) => {
       this.dailyAllocation.setAllocationPerDay(allocation, milestoneTask);
       if (allocation.allocationAlert) {
-        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Resource is over allocated' });
+        this.commonService.showToastrMessage(this.constants.MessageType.warn,'Resource is over allocated.',false);
       }
     });
   }

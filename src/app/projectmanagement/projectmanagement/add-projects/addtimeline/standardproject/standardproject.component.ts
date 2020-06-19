@@ -1,5 +1,5 @@
 import { Component, OnInit, NgZone, ViewEncapsulation, ViewChild } from '@angular/core';
-import { TreeNode, SelectItemGroup, MessageService, MenuItem } from 'primeng/api';
+import { TreeNode, SelectItemGroup, MenuItem } from 'primeng/api';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
@@ -23,7 +23,7 @@ declare var $;
   selector: 'app-standardproject',
   templateUrl: './standardproject.component.html',
   styleUrls: ['./standardproject.component.css'],
-  providers: [MessageService, DialogService, UsercapacityComponent, DynamicDialogRef,
+  providers: [DialogService, UsercapacityComponent, DynamicDialogRef,
     PreStackAllocationComponent, AllocationOverlayComponent],
   encapsulation: ViewEncapsulation.None
 })
@@ -1236,7 +1236,7 @@ export class StandardprojectComponent implements OnInit {
       errorMsg.push(msg);
     })
     if (errorMsg.length) {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: errorMsg.join('\n'), sticky: true });
+      this.commonService.showToastrMessage(this.constants.MessageType.warn,errorMsg.join('\n'),true,true);
     }
   }
   /**
@@ -2350,7 +2350,8 @@ export class StandardprojectComponent implements OnInit {
     ref.onClose.subscribe((allocation: any) => {
       this.dailyAllocation.setAllocationPerDay(allocation, milestoneTask);
       if (allocation.allocationAlert) {
-        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Resource is over allocated' });
+
+        this.commonService.showToastrMessage(this.constants.MessageType.warn,'Resource is over allocated',false);
       }
     });
   }
