@@ -195,7 +195,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    */
   onChangeClientLegalEntity() {
     if (this.addSowForm.value.clientLegalEntity) {
-      this.pmObject.addSOW.ClientLegalEntity = this.addSowForm.value.clientLegalEntity;
+    this.pmObject.addSOW.ClientLegalEntity = this.addSowForm.value.clientLegalEntity;
     }
     if (this.pmObject.addSOW.ClientLegalEntity) {
       this.sowDropDown.POC = [];
@@ -205,8 +205,8 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       if (poc && poc.length) {
         // tslint:disable-next-line:no-shadowed-variable
         poc.forEach(element => {
-          this.sowDropDown.POC.push({ label: element.FullName, value: element.ID });
-          this.sowDropDown.POCOptional.push({ label: element.FullName, value: element.ID });
+          this.sowDropDown.POC.push({ label: element.FullNameCC, value: element.ID });
+          this.sowDropDown.POCOptional.push({ label: element.FullNameCC, value: element.ID });
         });
       }
       const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
@@ -299,15 +299,15 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.addSowForm.get('total').setValue(this.pmObject.addSOW.Budget.Net +
       this.pmObject.addSOW.Budget.OOP + this.pmObject.addSOW.Budget.Tax);
 
-    if (!this.addSowForm.value.net) {
-      this.addSowForm.get('net').setValue(0);
-    }
-    if (!this.addSowForm.value.oop) {
-      this.addSowForm.get('oop').setValue(0);
-    }
-    if (!this.addSowForm.value.tax) {
-      this.addSowForm.get('tax').setValue(0);
-    }
+      if(!this.addSowForm.value.net) {
+        this.addSowForm.get('net').setValue(0);
+      }
+      if(!this.addSowForm.value.oop) {
+        this.addSowForm.get('oop').setValue(0);
+      }
+      if(!this.addSowForm.value.tax) {
+        this.addSowForm.get('tax').setValue(0);
+      }
   }
 
 
@@ -441,7 +441,6 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.FolderName = libraryName + '/' + docFolder;
     this.SelectedFile.push(new Object({ name: this.selectedFile.name, file: this.selectedFile }));
   }
-
   /**
    * This method is used to set the field properties.
    */
@@ -798,14 +797,14 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       BillingEntity: sowObj.BillingEntity,
       Status: sowObj.Status,
       Title: sowObj.SOWTitle,
-      Comments: sowObj.Comments,
+      CommentsMT: sowObj.Comments,
       Currency: sowObj.Currency,
       TotalBudget: sowObj.Budget.Total,
       NetBudget: sowObj.Budget.Net,
       OOPBudget: sowObj.Budget.OOP,
       TaxBudget: sowObj.Budget.Tax,
       BusinessVertical: sowObj.PracticeArea.join(';#'),
-      Year: year,
+      //Year: year,
       CreatedDate: sowObj.SOWCreationDate,
       ExpiryDate: sowObj.SOWExpiryDate,
       SOWLink: sowObj.SOWFileURL ? sowObj.SOWFileURL : sowObj.SOWDocument,
@@ -926,7 +925,6 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.pmObject.addSOW.Additonal.OOPBudget + this.pmObject.addSOW.Additonal.TaxBudget;
     this.addAdditionalBudgetForm.get('addTotal').setValue(parseFloat(AddBudgets.toFixed(2)));
   }
-
   /**
    * This method is used to get the edit SOWObj value based on selected sow.
    */

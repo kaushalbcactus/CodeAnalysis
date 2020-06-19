@@ -130,7 +130,7 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
     this.FBColArray.Feedbackfor = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.AssignedTo.Title, value: a.AssignedTo.Title, filterValue: a.AssignedTo.Title }; return b; }));
     this.FBColArray.FeedbackBy = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Author.Title, value: a.Author.Title, filterValue: a.Author.Title }; return b; }));
     this.FBColArray.Rating = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.AverageRating, value: a.AverageRating, filterValue: +a.AverageRating }; return b; }));
-    this.FBColArray.Comments = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Comments, value: a.Comments, filterValue: a.Comments }; return b; }));
+    this.FBColArray.Comments = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.CommentsMT, value: a.CommentsMT, filterValue: a.CommentsMT }; return b; }));
   }
 
   downloadExcel(fb) {
@@ -241,15 +241,15 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
         Date: element.Created ? new Date(this.datepipe.transform(element.Created, 'MMM d, yyyy')) : '',
         SubMilestones: element.SubMilestones ? element.SubMilestones : '',
         Author: element.Author,
-        AverageRating: element.AverageRating,
+        AverageRating: element.AverageRatingNM,
         Created: element.Created ? new Date(this.datepipe.transform(element.Created, 'MMM d, yyyy')) : '',
         Task: element.Title ? element.SubMilestones ? element.Title + ' - ' + element.SubMilestones : element.Title : '',
         Title: element.Title ? element.Title : '',
         AssignedTo: element.AssignedTo ? element.AssignedTo : '',
         Type: element.FeedbackType,
         Feedbackby: element.Author.Title,
-        Rating: element.AverageRating ? element.AverageRating : '',
-        Comments: element.Comments ? element.Comments : '',
+        Rating: element.AverageRatingNM ? element.AverageRatingNM : '',
+        Comments: element.CommentsMT ? element.CommentsMT : '',
         Parameters: element.ParameterRating ? element.ParameterRating : '',
         Score: element.Value ? element.Value : ''
       });

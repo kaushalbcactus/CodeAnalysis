@@ -20,7 +20,7 @@ import { Table } from 'primeng';
  *
  * @description
  *
- * This class is used to add user to Title column into `BusinessVerticals` list.
+ * This class is used to add user to Title column into `PracticeArea` list.
  *
  */
 
@@ -120,7 +120,7 @@ export class PracticeAreasComponent implements OnInit {
     getPracticeAreaInfo.filter = getPracticeAreaInfo.filter.replace(/{{isActive}}/gi,
       this.adminConstants.LOGICAL_FIELD.YES);
     this.common.SetNewrelic('admin', 'admin-attribute-practice-areas', 'getBusinessVerticals');
-    const results = await this.spServices.readItems(this.constants.listNames.BusinessVerticals.name, getPracticeAreaInfo);
+    const results = await this.spServices.readItems(this.constants.listNames.PracticeArea.name, getPracticeAreaInfo);
     if (results && results.length) {
       results.forEach(item => {
         const obj = Object.assign({}, this.adminObject.practiveAreaObj);
@@ -169,11 +169,11 @@ export class PracticeAreasComponent implements OnInit {
       colData.map(a => { const b = { label: a.LastModifiedBy, value: a.LastModifiedBy }; return b; })));
   }
   /**
-   * Construct a method to add the new Project Type into `BusinessVerticals` list.
+   * Construct a method to add the new Project Type into `PracticeArea` list.
    *
    * @description
    *
-   * This method will add practice area into `BusinessVerticals` list and shows that Project Type into the table.
+   * This method will add practice area into `PracticeArea` list and shows that Project Type into the table.
    *
    * @Note
    *
@@ -202,11 +202,12 @@ export class PracticeAreasComponent implements OnInit {
     }
     this.adminObject.isMainLoaderHidden = false;
     const data = {
-      Title: this.practiceArea
+      Title: this.practiceArea,
+      IsActiveCH: this.adminConstants.LOGICAL_FIELD.YES
     };
     this.common.SetNewrelic('admin', 'admin-attribute-practice-areas', 'createBusinessVerticals');
-    const result = await this.spServices.createItem(this.constants.listNames.BusinessVerticals.name, data,
-      this.constants.listNames.BusinessVerticals.type);
+    const result = await this.spServices.createItem(this.constants.listNames.PracticeArea.name, data,
+      this.constants.listNames.PracticeArea.type);
     console.log(result);
     this.common.showToastrMessage(this.constants.MessageType.success,'The practice area ' + this.practiceArea + ' has added successfully.',true);
     this.practiceArea = '';
@@ -228,11 +229,11 @@ export class PracticeAreasComponent implements OnInit {
     this.common.confirmMessageDialog('Delete Confirmation','Do you want to delete this record?',null,['Yes','No'],false).then(async Confirmation => {
       if (Confirmation === 'Yes') {
         const updateData = {
-          IsActive: this.adminConstants.LOGICAL_FIELD.NO
+          IsActiveCH: this.adminConstants.LOGICAL_FIELD.NO
         };
-        this.confirmUpdate(data, updateData, this.constants.listNames.BusinessVerticals.name,
-          this.constants.listNames.BusinessVerticals.type);
-	  }
+        this.confirmUpdate(data, updateData, this.constants.listNames.PracticeArea.name,
+          this.constants.listNames.PracticeArea.type);
+      },
     });
   }
 

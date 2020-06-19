@@ -297,9 +297,9 @@ export class StandardprojectComponent implements OnInit {
     let clientLegalEntity = this.pmObject.addProject.ProjectAttributes.ClientLegalEntity;
     let standardTemplate = [];
     const standardTemplateOptions = {
-      select: 'ID,Title,Skill,Active,TotalHours,StandardService/ID,StandardService/Title,LegalEntity/ID,LegalEntity/Title',
+      select: 'ID,Title,Skill,IsActiveCH,TotalHours,StandardService/ID,StandardService/Title,LegalEntity/ID,LegalEntity/Title',
       expand: 'StandardService/ID,StandardService/Title,LegalEntity/ID,LegalEntity/Title',
-      filter: 'StandardService/Title eq \'' + selectedServices + '\' and LegalEntity/Title eq \'' + clientLegalEntity + '\' and Active eq \'Yes\''
+      filter: 'StandardService/Title eq \'' + selectedServices + '\' and LegalEntity/Title eq \'' + clientLegalEntity + '\' and IsActiveCH eq \'Yes\''
     };
     this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetStdTemplateBasedOnDeliverables');
     standardTemplate = await this.spService.readItems(this.constants.listNames.StandardTemplates.name, standardTemplateOptions)
@@ -315,9 +315,9 @@ export class StandardprojectComponent implements OnInit {
     let clientLegalEntity = this.pmObject.addProject.ProjectAttributes.ClientLegalEntity;
     let standardTemplate = [];
     const standardTemplateOptions = {
-      select: 'ID,Title,Skill,Active,TotalHours,StandardService/ID,StandardService/Title,LegalEntity/ID,LegalEntity/Title',
+      select: 'ID,Title,Skill,IsActiveCH,TotalHours,StandardService/ID,StandardService/Title,LegalEntity/ID,LegalEntity/Title',
       expand: 'StandardService/ID,StandardService/Title,LegalEntity/ID,LegalEntity/Title',
-      filter: 'LegalEntity/Title eq \'' + clientLegalEntity + '\' and Active eq \'Yes \''
+      filter: 'LegalEntity/Title eq \'' + clientLegalEntity + '\' and IsActiveCH eq \'Yes \''
     };
     this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetStdTemplate');
     standardTemplate = await this.spService.readItems(this.constants.listNames.StandardTemplates.name, standardTemplateOptions);
@@ -432,9 +432,9 @@ export class StandardprojectComponent implements OnInit {
       });
     }
     const standardServiceOptions = {
-      select: 'ID,Title,BaseSkill,Active,Deliverable/ID,Deliverable/Title,SubDeliverable/ID,SubDeliverable/Title,Services/ID,Services/Title',
+      select: 'ID,Title,BaseSkill,IsActiveCH,Deliverable/ID,Deliverable/Title,SubDeliverable/ID,SubDeliverable/Title,Services/ID,Services/Title',
       expand: 'Deliverable/ID,Deliverable/Title,SubDeliverable/ID,SubDeliverable/Title,Services/ID,Services/Title',
-      filter: 'Active eq \'Yes\'',
+      filter: 'IsActiveCH eq \'Yes\'',
       orderby: 'Title'
     };
     this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetStandardServiceName');
@@ -473,14 +473,14 @@ export class StandardprojectComponent implements OnInit {
       this.pmObject.addProject.Timeline.Standard.SubDeliverable = event.value.SubDeliverable.Title;
       this.pmObject.addProject.Timeline.Standard.ServiceLevel = this.selectedService;
       const skillMasterOptions = {
-        select: 'ID,Title,Category,Name,Location,Tasks/ID,Tasks/Title',
+        select: 'ID,Title,CategoryCH,NameCH,LocationCH,Tasks/ID,Tasks/Title',
         expand: 'Tasks/ID,Tasks/Title',
-        filter: 'Name eq \'' + selectedVal + '\''
+        filter: 'NameCH eq \'' + selectedVal + '\''
       };
       this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetSkillMaster');
       let skillMaster = await this.spService.readItems(this.constants.listNames.SkillMaster.name, skillMasterOptions);
       skillMaster.forEach((skill) => {
-        let tempSkill = skill.Name;
+        let tempSkill = skill.NameCH;
         if (tempSkill) {
           const matchingSkill = this.sharedTaskAllocateObj.oStandardTemplateForDeliverable.filter(function (obj) {
             return obj.Skill === tempSkill;
@@ -675,7 +675,7 @@ export class StandardprojectComponent implements OnInit {
   }
   /**
    * This method is used to get submilestone for particular milestone
-   * @param milestones
+   * @param milestones 
    */
   private getSubMilestones(milestones: string) {
     let subMilestonesArray = [];
@@ -698,9 +698,9 @@ export class StandardprojectComponent implements OnInit {
 
   /**
    * This method is used to create the milestone.
-   * @param index
-   * @param isCreate
-   * @param StartDate
+   * @param index 
+   * @param isCreate 
+   * @param StartDate 
    */
   public async createMilestone(index, isCreate, StartDate) {
     if (isCreate && index < this.sharedTaskAllocateObj.oMilestones.length) {
@@ -787,8 +787,8 @@ export class StandardprojectComponent implements OnInit {
 
   /**
    * This function is used to create the submilestone.
-   * @param StartDate
-   * @param ngPrimemilestoneObj
+   * @param StartDate 
+   * @param ngPrimemilestoneObj 
    */
   public async createSubMilestones(StartDate, milestoneObj, isCreate, index) {
     let displayOrder: Number = 0;
@@ -862,9 +862,9 @@ export class StandardprojectComponent implements OnInit {
   }
   /**
    * This fuction is used to change the subMilestone Start date.
-   * @param ngPrimeSubmilestoneObj
-   * @param displayOrder
-   * @param newStartDate
+   * @param ngPrimeSubmilestoneObj 
+   * @param displayOrder 
+   * @param newStartDate 
    */
   private changeSubMilestoneStartDate(ngPrimeSubmilestoneObj, displayOrder, newStartDate) {
     let subMilestoneArray = ngPrimeSubmilestoneObj.children.filter(function (obj) {
@@ -887,7 +887,7 @@ export class StandardprojectComponent implements OnInit {
   }
   /**
    * create the client review task
-   * @param ngPrimemilestoneObj
+   * @param ngPrimemilestoneObj 
    */
   private setClientReview(ngPrimemilestoneObj, isCreate) {
     let date = new Date();
@@ -929,7 +929,7 @@ export class StandardprojectComponent implements OnInit {
   }
   /**
    * This method is used to compare SC date and milestone end date.
-   * @param ngPrimemilestoneObj
+   * @param ngPrimemilestoneObj 
    */
   private compareMilestoneAndSCEndDate(ngPrimemilestoneObj) {
     if (ngPrimemilestoneObj && ngPrimemilestoneObj.children && ngPrimemilestoneObj.children.length) {
@@ -945,12 +945,12 @@ export class StandardprojectComponent implements OnInit {
    * This method is used to create task for milestone and submilestone.
    * If submilestone is present - It will create the task for all submilestones.
    * If Submilestone is absent - It will create the task for all milestones
-   * @param startdate
-   * @param isCreate
-   * @param previousTask
-   * @param daysHours
-   * @param milestoneObj
-   * @param submilestoneObj
+   * @param startdate 
+   * @param isCreate 
+   * @param previousTask 
+   * @param daysHours 
+   * @param milestoneObj 
+   * @param submilestoneObj 
    */
   public async createTask(startdate, isCreate, previousTask, daysHours, timezone, milestoneObj, submilestoneObj) {
     let newStartDate = new Date(startdate);
@@ -998,7 +998,7 @@ export class StandardprojectComponent implements OnInit {
           return false;
         }
 
-        ///// Check if already added
+        ///// Check if already added 
         let addedTasks
 
         if (submilestoneObj) {
@@ -1318,7 +1318,7 @@ export class StandardprojectComponent implements OnInit {
   }
   /**
    * This method is used to cascade the task when start date is changed.
-   * @param curObj
+   * @param curObj 
    */
   async cascadeStartDate(curObj) {
     if (curObj) {
@@ -1353,11 +1353,11 @@ export class StandardprojectComponent implements OnInit {
 
   /**
    * This method is called when task start date changed.
-   * @param milestones_copy
-   * @param milestoneIndex
-   * @param uniqueId
-   * @param stardate
-   * @param curObj
+   * @param milestones_copy 
+   * @param milestoneIndex 
+   * @param uniqueId 
+   * @param stardate 
+   * @param curObj 
    */
   private async onTaskStartDate(milestones_copy, milestoneIndex, uniqueId, stardate, curObj) {
     let taskIndex = milestones_copy[milestoneIndex].children.findIndex(function (obj) {
@@ -1393,11 +1393,11 @@ export class StandardprojectComponent implements OnInit {
   }
   /**
    * This function is used to cascade the submilestone task when start date changed.
-   * @param milestones_copy
-   * @param milestoneIndex
-   * @param uniqueId
-   * @param stardate
-   * @param curObj
+   * @param milestones_copy 
+   * @param milestoneIndex 
+   * @param uniqueId 
+   * @param stardate 
+   * @param curObj 
    */
   private async subMilestoneTaskStartDate(milestones_copy, milestoneIndex, uniqueId, stardate, curObj) {
     let subMilestoneIndex = milestones_copy[milestoneIndex].children.findIndex(function (obj) {
@@ -1455,7 +1455,7 @@ export class StandardprojectComponent implements OnInit {
   }
   /**
    * This method is cascade the task, milestone and submilestone when task end date changed.
-   * @param curObj
+   * @param curObj 
    */
   async cascadeEndDate(curObj) {
     if (curObj) {
@@ -1503,11 +1503,11 @@ export class StandardprojectComponent implements OnInit {
   }
   /**
    * This function is used to cascade the submilestone and task when task end date changed.
-   * @param milestones_copy
-   * @param milestoneIndex
-   * @param uniqueId
-   * @param stardate
-   * @param curObj
+   * @param milestones_copy 
+   * @param milestoneIndex 
+   * @param uniqueId 
+   * @param stardate 
+   * @param curObj 
    */
   private async subMilestoneTaskEndDate(milestones_copy, milestoneIndex, uniqueId, stardate, curObj) {
     let subMilestoneIndex = milestones_copy[milestoneIndex].children.findIndex(function (obj) {
@@ -1555,11 +1555,11 @@ export class StandardprojectComponent implements OnInit {
   }
   /**
    * This function is used to cascade the task when task end date changed.
-   * @param milestones_copy
-   * @param milestoneIndex
-   * @param uniqueId
-   * @param stardate
-   * @param curObj
+   * @param milestones_copy 
+   * @param milestoneIndex 
+   * @param uniqueId 
+   * @param stardate 
+   * @param curObj 
    */
   private async taskEndDate(milestones_copy, milestoneIndex, uniqueId, stardate, curObj) {
     let taskIndex = milestones_copy[milestoneIndex].children.findIndex(function (obj) {
@@ -1604,7 +1604,7 @@ export class StandardprojectComponent implements OnInit {
 
   /**
    * This method called the respective method when start date changed.
-   * @param curObj
+   * @param curObj 
    */
   async onStartDateChanged(curObj) {
     this.showLoader();
@@ -1617,7 +1617,7 @@ export class StandardprojectComponent implements OnInit {
   }
   /**
    * This method will called respective method when end date is changed.
-   * @param curObj
+   * @param curObj 
    */
   async onEndDateChanged(curObj) {
     this.showLoader();
@@ -1640,7 +1640,7 @@ export class StandardprojectComponent implements OnInit {
   }
   /**
    * This function is used to check whether milestone, clientreview, submilestone or task end date is changed.
-   * @param mileId
+   * @param mileId 
    */
   private checkEndDateChanged(mileId: string) {
     let changedString = '';
@@ -1658,7 +1658,7 @@ export class StandardprojectComponent implements OnInit {
   }
   /**
    * This method is used to check whether milestone, submilestone or task start date is changed based on mileId.
-   * @param mileId
+   * @param mileId 
    */
   private checkStartDateChanged(mileId: string) {
     let changedString = '';
@@ -1676,9 +1676,9 @@ export class StandardprojectComponent implements OnInit {
   }
   /**
    * This method is used to change the start date based on business scenarios.
-   * @param startdate
-   * @param milestoneTaskObj
-   * @param timezone
+   * @param startdate 
+   * @param milestoneTaskObj 
+   * @param timezone 
    */
   private changeStartDate(startdate, milestoneTaskObj, timezone) {
     startdate = this.pmCommonService.calcTimeForDifferentTimeZone(startdate, timezone, milestoneTaskObj.data.assignedUserTimeZone);
@@ -1724,9 +1724,9 @@ export class StandardprojectComponent implements OnInit {
 
   /**
    * This method is called to calculate the task days.
-   * @param startdate
-   * @param milestoneTaskObj
-   * @param filterUser
+   * @param startdate 
+   * @param milestoneTaskObj 
+   * @param filterUser 
    */
   private calcTaskDays(startdate, milestoneTaskObj, filterUser) {
     let taskTotalHours = 0;
@@ -1760,9 +1760,9 @@ export class StandardprojectComponent implements OnInit {
 
   /**
    * This method is to calculate the hours days.
-   * @param startdate
-   * @param milestoneTaskObj
-   * @param filterUser
+   * @param startdate 
+   * @param milestoneTaskObj 
+   * @param filterUser 
    */
   private calHoursDays(startdate, milestoneTaskObj, filterUser) {
     let hours = milestoneTaskObj.data.Hours;
@@ -1888,7 +1888,7 @@ export class StandardprojectComponent implements OnInit {
           if (milestoneIndex !== -1 && subMilestoneIndex !== -1 && taskIndex !== -1) {
             let selectedSkillObj = this.pmObject.oTaskAllocation.oAllSelectedResource;
             let filterResource = selectedSkillObj.filter(function (obj) {
-              return milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.userId === obj.UserName.ID;
+              return milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.userId === obj.UserNamePG.ID;
             });
             if (milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.toggleCapacity) {
               setTimeout(async () => {
@@ -1919,7 +1919,7 @@ export class StandardprojectComponent implements OnInit {
           if (milestoneIndex !== -1 && taskIndex !== -1) {
             let selectedSkillObj = this.pmObject.oTaskAllocation.oAllSelectedResource;
             let filterResource = selectedSkillObj.filter(function (obj) {
-              return milestones_copy[milestoneIndex].children[taskIndex].data.userId === obj.UserName.ID;
+              return milestones_copy[milestoneIndex].children[taskIndex].data.userId === obj.UserNamePG.ID;
             });
             if (milestones_copy[milestoneIndex].children[taskIndex].data.toggleCapacity) {
               setTimeout(async () => {

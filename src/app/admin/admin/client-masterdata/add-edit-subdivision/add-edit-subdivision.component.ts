@@ -121,23 +121,23 @@ export class AddEditSubdivisionComponent implements OnInit {
     this.adminObject.dropdown.DeliveryLevel1Array = [];
     this.adminObject.dropdown.DeliveryLevel2Array = [];
     array.forEach(element => {
-      const role = element.Role;
+      const role = element.RoleCH;
       switch (role) {
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.CMLevel1:
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.CMLevel2:
-          this.adminObject.dropdown.CMLevel1Array.push({ label: element.UserName.Title, value: element.UserName.ID });
+          this.adminObject.dropdown.CMLevel1Array.push({ label: element.UserNamePG.Title, value: element.UserNamePG.ID });
           break;
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.DELIVERY_LEVEL_1:
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.DELIVERY_LEVEL_2:
-          this.adminObject.dropdown.DeliveryLevel1Array.push({ label: element.UserName.Title, value: element.UserName.ID });
+          this.adminObject.dropdown.DeliveryLevel1Array.push({ label: element.UserNamePG.Title, value: element.UserNamePG.ID });
           break;
       }
       switch (role) {
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.CMLevel2:
-          this.adminObject.dropdown.CMLevel2Array.push({ label: element.UserName.Title, value: element.UserName.ID });
+          this.adminObject.dropdown.CMLevel2Array.push({ label: element.UserNamePG.Title, value: element.UserNamePG.ID });
           break;
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.DELIVERY_LEVEL_2:
-          this.adminObject.dropdown.DeliveryLevel2Array.push({ label: element.UserName.Title, value: element.UserName.ID });
+          this.adminObject.dropdown.DeliveryLevel2Array.push({ label: element.UserNamePG.Title, value: element.UserNamePG.ID });
           break;
       }
     });

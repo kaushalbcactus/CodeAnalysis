@@ -108,7 +108,7 @@ export class TimeSpentDialogComponent implements OnInit {
 
       let endDate = this.SelectedTabType === 'MyCompletedTask' || task.Status === 'Completed' ? new Date(this.datePipe.transform(new Date(new Date(task.Actual_x0020_End_x0020_Date)), 'MMM d, y')) : new Date(this.datePipe.transform(new Date(), 'MMM d, y'));
 
-      endDate = task.Status === 'Auto Closed' ? new Date(this.datePipe.transform(task.DueDate, 'MMM d, y')) : endDate;
+      endDate = task.Status === 'Auto Closed' ? new Date(this.datePipe.transform(task.DueDateDT, 'MMM d, y')) : endDate;
 
       this.dateArray = await this.CalculatePastBusinessDays(new Date(startDate), new Date(endDate));
       this.dateArray.reverse();
@@ -117,7 +117,7 @@ export class TimeSpentDialogComponent implements OnInit {
 
         if (this.SelectedTabType === 'MyCompletedTask' || task.Status === 'Completed' || task.Status === 'Auto Closed') {
 
-          endDate = task.Status === 'Auto Closed' ? new Date(this.datePipe.transform(task.DueDate, 'MMM d, y')) : new Date(new Date(this.datePipe.transform(new Date(task.Actual_x0020_End_x0020_Date), 'MMM d,y')));
+          endDate = task.Status === 'Auto Closed' ? new Date(this.datePipe.transform(task.DueDateDT, 'MMM d, y')) : new Date(new Date(this.datePipe.transform(new Date(task.Actual_x0020_End_x0020_Date), 'MMM d,y')));
 
           startDate = task.Status === 'Auto Closed' ? new Date(this.datePipe.transform(task.StartDate, 'MMM d, y')) : new Date(new Date(this.datePipe.transform(new Date(task.Actual_x0020_Start_x0020_Date), 'MMM d,y')));
         } else {
@@ -134,7 +134,7 @@ export class TimeSpentDialogComponent implements OnInit {
 
         if (this.SelectedTabType === 'MyCompletedTask' || task.Status === 'Completed' || task.Status === 'Auto Closed') {
 
-          endDate = task.Status === 'Auto Closed' ? new Date(this.datePipe.transform(task.DueDate, 'MMM d, y')) : new Date(new Date(this.datePipe.transform(new Date(task.Actual_x0020_End_x0020_Date), 'MMM d,y')));
+          endDate = task.Status === 'Auto Closed' ? new Date(this.datePipe.transform(task.DueDateDT, 'MMM d, y')) : new Date(new Date(this.datePipe.transform(new Date(task.Actual_x0020_End_x0020_Date), 'MMM d,y')));
 
           startDate = task.Status === 'Auto Closed' ? new Date(this.datePipe.transform(task.StartDate, 'MMM d, y')) : new Date(new Date(this.datePipe.transform(new Date(task.Actual_x0020_Start_x0020_Date), 'MMM d,y')));
 

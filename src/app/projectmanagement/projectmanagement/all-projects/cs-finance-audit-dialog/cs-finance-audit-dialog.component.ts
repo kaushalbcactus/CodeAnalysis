@@ -94,7 +94,6 @@ export class CsFinanceAuditDialogComponent implements OnInit {
 
 
   ngAfterViewInit() {
-
     if (this.config.data.tableData.filters.ProjectCode) {
       this.columnFilter.ProjectCode = this.allProjects.ProjectCode.map(c => c.value).filter(c => this.config.data.tableData.filters.ProjectCode.value.includes(c));
       this.allProjectRef.filter(this.columnFilter.ProjectCode, 'ProjectCode', 'in')
@@ -196,8 +195,6 @@ export class CsFinanceAuditDialogComponent implements OnInit {
 
   }
 
-
-
   // **************************************************************************************
   // On row checkbox select for finance (maximum 10 rows are allowed)
   // **************************************************************************************
@@ -276,6 +273,7 @@ export class CsFinanceAuditDialogComponent implements OnInit {
         dbInvoiceLineItems = [].concat(...dbExpenseInvoiceArray.filter(c => c.listName === 'InvoiceLineItems').map(c => c.retItems));
         dbExpenseLineItems = [].concat(...dbExpenseInvoiceArray.filter(c => c.listName === 'SpendingInfo').map(c => c.retItems));
       }
+
       let UniqueInvalidInvoices = [];
       if (dbInvoiceLineItems) {
         if (dbInvoiceLineItems.filter(c => c.Status !== 'Approved')) {
@@ -284,13 +282,13 @@ export class CsFinanceAuditDialogComponent implements OnInit {
       }
       let UniqueInvalidExpenses = [];
       if (dbExpenseLineItems) {
-        const AllBillable = dbExpenseLineItems.filter(c => c.Category === 'Billable');
+        const AllBillable = dbExpenseLineItems.filter(c => c.CategoryST === 'Billable');
         let UniqueInvalidBilledExpenses = [];
         let UniqueInvalidNonBilledExpenses = [];
         if (AllBillable) {
           UniqueInvalidBilledExpenses = AllBillable.filter(c => c.Status.indexOf('Billed') === -1 && c.Status !== 'Rejected' && c.Status !== 'Cancelled') ? AllBillable.filter(c => c.Status.indexOf('Billed') === -1 && c.Status !== 'Rejected' && c.Status !== 'Cancelled').map(c => c.Title).filter((item, index) => AllBillable.filter(c => c.Status.indexOf('Billed') === -1 && c.Status !== 'Rejected' && c.Status !== 'Cancelled').map(c => c.Title).indexOf(item) === index) : [];
         }
-        const AllNonBillable = dbExpenseLineItems.filter(c => c.Category === 'Non Billable');
+        const AllNonBillable = dbExpenseLineItems.filter(c => c.CategoryST === 'Non Billable');
         if (AllNonBillable) {
           UniqueInvalidNonBilledExpenses = AllNonBillable.filter(c => c.Status.indexOf('Approved') === -1 && c.Status !== 'Rejected' && c.Status !== 'Cancelled') ? AllNonBillable.filter(c => c.Status.indexOf('Approved') === -1 && c.Status !== 'Rejected' && c.Status !== 'Cancelled').map(c => c.Title).filter((item, index) => AllNonBillable.filter(c => c.Status.indexOf('Approved') === -1 && c.Status !== 'Rejected' && c.Status !== 'Cancelled').map(c => c.Title).indexOf(item) === index) : [];
         }
@@ -356,6 +354,7 @@ export class CsFinanceAuditDialogComponent implements OnInit {
     let batchResults = [];
     let batchURL = [];
     let finalArray = [];
+
     this.selectedProjects.forEach(async element => {
       const ProjectUpdate = Object.assign({}, this.options);
       ProjectUpdate.data = piUdpate;
@@ -458,6 +457,7 @@ export class CsFinanceAuditDialogComponent implements OnInit {
   MultipleSelectRows(AuditType) {
     setTimeout(() => {
       if (AuditType === 'Finance') {
+
         if (this.allProjectRef.filteredValue) {
           if (this.allProjectRef.filteredValue.length > 10 && !this.checked) {
             this.selectedProjects = this.allProjectRef.filteredValue.slice(this.allProjectRef.first, this.allProjectRef.first + 10)

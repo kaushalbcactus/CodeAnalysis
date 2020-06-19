@@ -443,7 +443,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 SOWCode: sowCodeFromPI.SOWCode,
                 SOWName: sowItem.Title,
                 ClientLegalEntity: sowCodeFromPI.ClientLegalEntity,
-                Category: element.Category,
+                Category: element.CategoryST,
                 PONumber: element.PONumber,
                 ExpenseType: element.SpendType,
                 ClientAmount: parseFloat(element.ClientAmount ? element.ClientAmount : 0).toFixed(2),
@@ -452,8 +452,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 CreatedDateFormat: this.datePipe.transform(element.Created, 'MMM dd, yyyy, hh:mm a'),
                 CreatedBy: element.Author ? element.Author.Title : '',
                 ModifiedBy: element.Editor ? element.Editor.Title : '',
-
-                Notes: element.Notes,
+                NotesMT: element.Notes,
                 Modified: new Date(this.datePipe.transform(element.Modified, 'MMM dd, yyyy')),
                 ModifiedDateFormat: this.datePipe.transform(element.Modified, 'MMM dd, yyyy, hh:mm a'),
                 RequestType: element.RequestType,
@@ -765,7 +764,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 ApproverComments: this.cancelReject_form.value.ApproverComments,
                 Status: 'Rejected'
             };
-            speInfoObj['__metadata'] = { type: 'SP.Data.SpendingInfoListItem' };
+            speInfoObj['__metadata'] = { type: this.constantService.listNames.SpendingInfo.type };
             // let data = [];
             for (let inv = 0; inv < this.selectedAllRowsItem.length; inv++) {
                 const element = this.selectedAllRowsItem[inv];
@@ -796,7 +795,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                     DateSpend: this.datePipe.transform(new Date(), 'MM/dd/yyyy'),
                     Status: 'Approved Payment Pending'
                 };
-                speInfoObj['__metadata'] = { type: 'SP.Data.SpendingInfoListItem' };
+                speInfoObj['__metadata'] = { type: this.constantService.listNames.SpendingInfo.type };
                 // let data = [];
                 for (let inv = 0; inv < this.selectedAllRowsItem.length; inv++) {
                     const element = this.selectedAllRowsItem[inv];
@@ -932,7 +931,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
 
     getResourceData(ele) {
         const found = this.rcData.find((x) => {
-            if (x.UserName.ID === ele.ID) {
+            if (x.UserNamePG.ID === ele.ID) {
                 return x;
             }
         });
@@ -945,7 +944,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
 
     getAuthor(id) {
         const found = this.rcData.find((x) => {
-            if (x.UserName.ID === id) {
+            if (x.UserNamePG.ID === id) {
                 return x;
             }
         });
@@ -962,7 +961,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         const mailSubject = type === 'Approve Expense' ? expense.ProjectCode + ' : Expense Approved' : type === 'Cancel Expense' ? expense.ProjectCode + ' : Expense Cancelled' :
             expense.ProjectCode + ' : Expense Rejected';
 
-        let mailContent = this.mailContentRes[0].retItems[0].Content;
+        let mailContent = this.mailContentRes[0].retItems[0].ContentMT;
         mailContent = this.replaceContent(mailContent, '@@Val1@@', val1);
         mailContent = this.replaceContent(mailContent, '@@Val2@@', expense.Category);
         mailContent = this.replaceContent(mailContent, '@@Val4@@', expense.ExpenseType);
@@ -972,7 +971,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         mailContent = this.replaceContent(mailContent, '@@Val10@@', this.approveExpense_form.value.ApproverComments ? this.approveExpense_form.value.ApproverComments : this.cancelReject_form.value.ApproverComments);
 
         mailContent = this.replaceContent(mailContent, '@@Val0@@', expense.Id);
-        mailContent = this.replaceContent(mailContent, '@@Val13@@', author.hasOwnProperty('UserName') ? author.UserName.Title : 'Member');
+        mailContent = this.replaceContent(mailContent, '@@Val13@@', author.hasOwnProperty('UserNamePG') ? author.UserNamePG.Title : 'Member');
         mailContent = this.replaceContent(mailContent, '@@Val14@@', this.currentUserInfoData.Title);
         if (type === 'Approve Expense') {
             mailContent = this.replaceContent(mailContent, '@@Val15@@', this.approveExpense_form.value.PayingEntity.Title);

@@ -76,7 +76,7 @@ export class AverageRatingComponent implements OnInit, OnChanges {
         return t;
       }
     });
-    const totalRating = arrTaskFeedback.reduce((a, b) => a + +b.AverageRating, 0);
+    const totalRating = arrTaskFeedback.reduce((a, b) => a + +b.AverageRatingNM, 0);
     const averageRating = +(totalRating / arrTaskFeedback.length).toFixed(2);
     const obj = {
       name: type,

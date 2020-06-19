@@ -607,13 +607,13 @@ export class PubsupportComponent implements OnInit {
         const form = this.journal_Conference_Edit_Detail_form;
         // const journalConfItem = this.jcListArray.find(j => j.ID === data.element.JournalConferenceId);
         if (data.element) {
-            form.get('Name').setValue(data.element.Name);
-            form.get('jcLineItemName').setValue(data.element.Name);
+            form.get('Name').setValue(data.element.NameST);
+            form.get('jcLineItemName').setValue(data.element.NameST);
             form.get('EntryType').setValue(data.element.EntryType);
             form.get('Milestone').setValue(data.element.Milestone);
-            form.get('UserName').setValue(data.element.UserName);
+            form.get('UserName').setValue(data.element.UserNameST);
             form.get('Password').setValue(data.element.Password);
-            form.get('Comments').setValue(data.element.Comments);
+            form.get('Comments').setValue(data.element.CommentsMT);
             if (data.element.EntryType.toLowerCase() === 'journal') {
                 // Set New Values
                 // form.get('jcLineItemName').setValue(journalConfItem.JournalName);
@@ -625,7 +625,7 @@ export class PubsupportComponent implements OnInit {
                 // form.get('jcLineItemName').setValue(journalConfItem.ConferenceName);
                 form.get('CongressDate').setValue(this.datePipe.transform(new Date(data.element.CongressDate), 'MMM dd, yyyy'));
                 form.get('AbstractSubmissionDeadline').setValue(this.datePipe.transform(new Date(data.element.AbstractSubmissionDeadline), 'MMM dd, yyyy'));
-                form.get('Comments').setValue(data.element.Comments);
+                form.get('Comments').setValue(data.element.CommentsMT);
             }
             this.journal_Conference_Edit_Detail_form.updateValueAndValidity();
         }
@@ -1083,13 +1083,13 @@ export class PubsupportComponent implements OnInit {
                 form.get('ExpectedReviewPeriod').setValue(item.value.ExpectedReviewPeriod);
                 form.get('IF').setValue(item.value.ImpactFactor);
                 form.get('RejectionRate').setValue(item.value.RejectionRate);
-                form.get('Comments').setValue(item.value.Comments);
+                form.get('Comments').setValue(item.value.CommentsMT);
                 form.get('JournalEditorInfo').setValue(item.value.JournalEditorInfo);
             } else {
                 form.get('Name').setValue(item.value.ConferenceName);
                 form.get('CongressDate').setValue(this.datePipe.transform(new Date(item.value.ConferenceDate), 'MMM dd, yyyy'));
                 form.get('AbstractSubmissionDeadline').setValue(this.datePipe.transform(new Date(item.value.SubmissionDeadline), 'MMM dd, yyyy'));
-                form.get('Comments').setValue(item.value.Comments);
+                form.get('Comments').setValue(item.value.CommentsMT);
             }
             this.journal_Conference_Detail_form.updateValueAndValidity();
         }
@@ -1173,6 +1173,8 @@ export class PubsupportComponent implements OnInit {
         this.submitBtn.isClicked = false;
     }
 
+    // Modal Submit
+   
 
     async submit(dataEndpointArray, type: string) {
 
@@ -1377,22 +1379,21 @@ export class PubsupportComponent implements OnInit {
                 jcSubId = element.ID;
             }
         });
-        const jcGalleyEndpoint = this.spOperationsService.getReadURL(this.constantService.listNames.jcGalley.name);
+        const jcGalleyEndpoint = this.spOperationsService.getReadURL(this.constantService.listNames.JCGalley.name);
         const jcGalleyObj: any = {
             Title: this.selectedProject.ProjectCode,
             JCSubmissionID: jcSubId,
             GalleyDate: new Date(),
             GalleyURL: fileUrl
         };
-        jcGalleyObj.__metadata = { type: this.constantService.listNames.jcGalley.type };
+        jcGalleyObj.__metadata = { type: this.constantService.listNames.JCGalley.type };
         return {
             data: jcGalleyObj,
             url: jcGalleyEndpoint,
             type: 'POST',
-            listName: this.constantService.listNames.jcGalley.name
+            listName: this.constantService.listNames.JCGalley.name
         };
     }
-
 
 
     jcViewDetails = (index: number) => {
@@ -1489,11 +1490,11 @@ export class PubsupportComponent implements OnInit {
         this.galleyDetailsData = [];
         const obj = Object.assign({}, this.pubsupportService.pubsupportComponent.jcGalley);
         obj.filter = obj.filter.replace('{{ProjectCode}}', selectedJC.Title).replace('{{JCSubID}}', selectedJC.ID);
-        const jsEndpoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.jcGalley.name + '', obj);
+        const jsEndpoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.JCGalley.name + '', obj);
         const data = [{
             url: jsEndpoint,
             type: 'GET',
-            listName: this.constantService.listNames.jcGalley.name
+            listName: this.constantService.listNames.JCGalley.name
         }];
         this.common.SetNewrelic('PubSupport', 'pubsupport', 'getGallyDetailsByProjectCodeAndJCSubID');
         const res = await this.spOperationsService.executeBatch(data);
@@ -1628,6 +1629,14 @@ export class PubsupportComponent implements OnInit {
             obj['Status'] = 'Selected';
             obj['Title'] = this.selectedProject.ProjectCode;
             delete obj['jcLineItem'];
+            // Added by Arvind
+            obj['NameST'] = obj['Name'];
+            delete obj['Name'];
+            obj['CommentsMT'] = obj['Comments'];
+            delete obj['Comments'];
+            obj['UserNameST'] = obj['UserName'];
+            delete obj['UserName'];
+            // Arvind code end here
             obj['JournalConferenceId'] = this.journal_Conference_Detail_form.getRawValue().jcLineItem.ID;
             obj['__metadata'] = { type: this.constantService.listNames.JournalConf.type };
             /* tslint:enable:no-string-literal */
@@ -1650,7 +1659,16 @@ export class PubsupportComponent implements OnInit {
             /* tslint:disable:no-string-literal */
             delete obj['jcLineItemName'];
             delete obj['EntryType'];
+            //Added by Arvind
+            obj['NameST'] = obj['Name'];
+            delete obj['Name'];
+            obj['CommentsMT'] = obj['Comments'];
+            delete obj['Comments'];
+            obj['UserNameST'] = obj['UserName'];
+            delete obj['UserName'];
+            //Arvind code end here
             obj['__metadata'] = { type: this.constantService.listNames.JournalConf.type };
+    
             /* tslint:enable:no-string-literal */
             const endpoint = this.spOperationsService.getItemURL(this.constantService.listNames.JournalConf.name, this.journal_Conf_data[0].element.ID);
             const data = [{
@@ -1670,9 +1688,8 @@ export class PubsupportComponent implements OnInit {
             }
             this.submitBtn.isClicked = true;
             this.uploadFileData('updateJCRequirementModal');
-
         } else if (type === 'updateAuthor') {
-
+    
             // stop here if form is invalid
             if (this.update_author_form.invalid) {
                 this.submitBtn.isClicked = false;
@@ -1681,13 +1698,13 @@ export class PubsupportComponent implements OnInit {
             this.submitBtn.isSubmit = true;
             // this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
             if (this.filesToCopy.length) {
-                this.common.showToastrMessage(this.constantService.MessageType.warn, 'Files are copying from ' + this.selectedType.ProjectCode + ' to ' + this.selectedProject.ProjectCode, false);
+                this.common.showToastrMessage(this.constantService.MessageType.warn, 'Files are copying from ' + this.selectedType.ProjectCode + ' to ' + this.selectedProject.ProjectCode, false);  
                 this.update_author_form.removeControl('file');
                 this.common.SetNewrelic('Pubsupport', 'pubsupport-onsubmit', 'copyFiles');
                 const fileCopyEndPoint = await this.spOperationsService.copyFiles(this.fileSourcePath, this.fileDestinationPath);
                 this.common.clearToastrMessage();
                 this.common.showToastrMessage(this.constantService.MessageType.success, 'Author details updated.', false);
-                this.updateAuthorModal_1 = false;
+    this.updateAuthorModal_1 = false;
                 // this.reload();
             } else {
                 if (this.selectedFile && this.selectedFile.size === 0) {
@@ -1697,9 +1714,9 @@ export class PubsupportComponent implements OnInit {
                 }
                 this.uploadFileData('updateAuthors');
             }
-
+    
         } else if (type === 'updateDecision') {
-
+    
             // stop here if form is invalid
             if (this.update_decision_details.invalid) {
                 this.submitBtn.isClicked = false;
@@ -1710,9 +1727,9 @@ export class PubsupportComponent implements OnInit {
             }
             this.submitBtn.isClicked = true;
             this.uploadFileData('updateDecision');
-
+    
         } else if (type === 'updatePublication') {
-
+    
             // stop here if form is invalid
             if (this.update_publication_form.invalid) {
                 this.submitBtn.isClicked = false;
@@ -1723,9 +1740,9 @@ export class PubsupportComponent implements OnInit {
             }
             this.submitBtn.isClicked = true;
             this.uploadFileData('updatePublication');
-
+    
         } else if (type === 'galley') {
-
+    
             // stop here if form is invalid
             if (this.galley_form.invalid) {
                 this.submitBtn.isClicked = false;

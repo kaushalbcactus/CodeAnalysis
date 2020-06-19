@@ -7,34 +7,34 @@ export class CAConstantService {
   constructor() { }
   // tslint:disable
   public resourceQueryOptions = {
-    select: 'ID,MaxHrs,PrimarySkill,UserName/ID,UserName/EMail,UserName/Title,TimeZone/Title,SkillLevel/Title,Tasks/Title,Deliverables/Title,DeliverableExclusion/Title,TA/Title,TAExclusion/Title,Account/Title',
-    expand: 'UserName/ID,UserName/EMail,UserName/Title,TimeZone/Title,SkillLevel/Title,Tasks/Title,Tasks/Status,Deliverables/Title,DeliverableExclusion/Title,TA/Title,TAExclusion/Title,Account/Title',
-    filter: "IsActive eq 'Yes' and  CAVisibility eq 'Yes'",
+    select: 'ID,MaxHrs,PrimarySkill,UserNamePG/ID,UserNamePG/EMail,UserNamePG/Title,TimeZone/Title,SkillLevel/Title,Tasks/Title,Deliverables/Title,DeliverableExclusion/Title,TA/Title,TAExclusion/Title,Account/Title',
+    expand: 'UserNamePG/ID,UserNamePG/EMail,UserNamePG/Title,TimeZone/Title,SkillLevel/Title,Tasks/Title,Tasks/Status,Deliverables/Title,DeliverableExclusion/Title,TA/Title,TAExclusion/Title,Account/Title',
+    filter: "IsActiveCH eq 'Yes' and  CAVisibility eq 'Yes'",
     top: 4200,
-    orderby: 'UserName/Title asc'
+    orderby: 'UserNamePG/Title asc'
   };
 
   public scheduleAllocatedQueryOptions = {
-    select: 'ID,Title,TimeZone,SkillLevel,TimeSpentSubmitStatus,TimeSpentPerDay,TimeSpent,Task,Status,NextTasks,PrevTasks,ProjectCode,Milestone,SubMilestones,ExpectedTime,TaskComments,Comments,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,StartDate,DueDate,CentralAllocationDone,IsCentrallyAllocated,AssignedTo/ID, AssignedTo/Title, ActiveCA,DisableCascade,AllowCompletion',
+    select: 'ID,Title,TimeZoneNM,SkillLevel,TimeSpentPerDay,TimeSpent,Task,Status,NextTasks,PrevTasks,ProjectCode,Milestone,SubMilestones,ExpectedTime,TaskComments,CommentsMT,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,StartDate,DueDateDT,CentralAllocationDone,IsCentrallyAllocated,AssignedTo/ID, AssignedTo/Title, ActiveCA,DisableCascade,AllowCompletion',
     expand: 'AssignedTo/ID, AssignedTo/Title',
     filter: "ActiveCA eq 'Yes' and  IsCentrallyAllocated eq 'Yes' and CentralAllocationDone eq 'Yes' and Status ne 'Deleted' and Status ne 'Completed'",
     filterSlot: '',
-    orderby: 'DueDate asc',
+    orderby: 'DueDateDT asc',
     top: 4200
   };
 
 
   public scheduleUnAllocatedQueryOptions = {
-    select: 'ID,Title,TimeZone,SkillLevel,Task,Status,NextTasks,PrevTasks,ProjectCode,TimeSpent,Milestone,SubMilestones,ExpectedTime,TaskComments,Comments,StartDate,DueDate,CentralAllocationDone,IsCentrallyAllocated,AssignedTo/ID, AssignedTo/Title,DisableCascade,AllowCompletion',
+    select: 'ID,Title,TimeZoneNM,SkillLevel,Task,Status,NextTasks,PrevTasks,ProjectCode,TimeSpent,Milestone,SubMilestones,ExpectedTime,TaskComments,CommentsMT,StartDate,DueDateDT,CentralAllocationDone,IsCentrallyAllocated,AssignedTo/ID, AssignedTo/Title,DisableCascade,AllowCompletion',
     expand: 'AssignedTo/ID, AssignedTo/Title',
     filter: "ActiveCA eq 'Yes' and  IsCentrallyAllocated eq 'Yes' and CentralAllocationDone eq 'No' and Status ne 'Deleted' and Status ne 'Completed'",
     filterSlot: '',
-    orderby: 'DueDate asc',
+    orderby: 'DueDateDT asc',
     top: 4200
   };
 
   public scheduleMilestoneQueryOptions = {
-    select: 'ID,Title,TimeZone,Task,Status,NextTasks,PrevTasks,ProjectCode,Milestone,SubMilestones,TaskComments,StartDate,DueDate,AssignedTo/ID, AssignedTo/Title',
+    select: 'ID,Title,TimeZoneNM,Task,Status,NextTasks,PrevTasks,ProjectCode,Milestone,SubMilestones,TaskComments,StartDate,DueDateDT,AssignedTo/ID, AssignedTo/Title',
     expand: 'AssignedTo/ID, AssignedTo/Title',
     filter: "((ProjectCode eq '{0}' and Milestone eq '{1}') or (ProjectCode eq '{2}' and (Status eq 'Completed' or Status eq 'Auto Closed') and (Task eq 'QC' or Task eq 'Review-QC' or Task eq 'Inco-QC' or Task eq 'Edit' or Task eq 'Review-Edit' or Task eq 'Inco-Edit' or Task eq 'Graphics' or Task eq 'Review-Graphics' or Task eq 'Inco-Graphics')))",
     top: 4200
@@ -57,19 +57,19 @@ export class CAConstantService {
   };
 
   public mailContent = {
-    select: 'Content',
+    select: 'ContentMT',
     filter: "Title eq '{0}'",
     top: 4200
   };
 
 
   public scheduleQueryOptions = {
-    select: 'ID,Title,TimeZone,SkillLevel,TimeSpentSubmitStatus,TimeSpentPerDay,TimeSpent,Task,Status,NextTasks,PrevTasks,ProjectCode,Milestone,SubMilestones,ExpectedTime,TaskComments,Comments,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,StartDate,DueDate,CentralAllocationDone,IsCentrallyAllocated,AssignedTo/ID, AssignedTo/Title, ActiveCA,DisableCascade,AllowCompletion,PreviousAssignedUser/ID,PreviousAssignedUser/Title',
+    select: 'ID,Title,TimeZoneNM,SkillLevel,TimeSpentPerDay,TimeSpent,Task,Status,NextTasks,PrevTasks,ProjectCode,Milestone,SubMilestones,ExpectedTime,TaskComments,CommentsMT,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,StartDate,DueDateDT,CentralAllocationDone,IsCentrallyAllocated,AssignedTo/ID, AssignedTo/Title, ActiveCA,DisableCascade,AllowCompletion,PreviousAssignedUser/ID,PreviousAssignedUser/Title',
     expand: 'AssignedTo/ID, AssignedTo/Title,PreviousAssignedUser/ID,PreviousAssignedUser/Title',
     filter: "ActiveCA eq 'Yes' and Status ne 'Deleted' and Status ne 'Completed'",
     filterSlot: " and IsCentrallyAllocated eq 'Yes'",
     filterTask: " ParentSlot eq {{ParentSlotId}} ",
-    orderby: 'DueDate asc',
+    orderby: 'DueDateDT asc',
     top: 4200
   };
 
@@ -96,13 +96,13 @@ export class CAConstantService {
 
 
   public getMailTemplate = {
-    select: 'Content',
+    select: 'ContentMT',
     filter: "Title eq '{{templateName}}'"
   };
 
   public GetTaskBudgetHours = {
     select: 'ID,Title,Hours',
-    filter: "ClientLegalEntity eq '{{ClientLegalEntity}}' and StandardService eq '{{StandardService}}' and Milestone eq '{{Milestone}}'  and IsActive eq 'Yes'",
+    filter: "ClientLegalEntity eq '{{ClientLegalEntity}}' and StandardService eq '{{StandardService}}' and Milestone eq '{{Milestone}}'  and IsActiveCH eq 'Yes'",
     top: 4500
   };
 

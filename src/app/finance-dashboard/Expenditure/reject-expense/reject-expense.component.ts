@@ -220,7 +220,7 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
                 SOWCode: sowCodeFromPI.SOWCode,
                 SOWName: sowItem.Title,
                 ClientLegalEntity: sowCodeFromPI.ClientLegalEntity,
-                Category: element.Category,
+                Category: element.CategoryST,
                 // PONumber: element.PONumber,
                 ExpenseType: element.SpendType,
                 ClientAmount: element.Amount,
@@ -228,7 +228,7 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
                 Created: this.datePipe.transform(element.Created, 'MMM dd, yyy, hh:mm a'),
                 CreatedBy: element.Author ? element.Author.Title : '',
                 ModifiedBy: element.Editor ? element.Editor.Title : '',
-                Notes: element.Notes,
+                Notes: element.NotesMT,
                 ModifiedDateFormat: this.datePipe.transform(element.Modified, 'MMM dd, yyy, hh:mm a'),
                 RequestType: element.RequestType,
                 ApproverComments: element.ApproverComments,
@@ -261,7 +261,7 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
 
     getCreatedModifiedByFromRC(id) {
         let found = this.rcData.find((x) => {
-            if (x.UserName.ID == id) {
+            if (x.UserNamePG.ID == id) {
                 return x;
             }
         })

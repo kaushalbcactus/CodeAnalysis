@@ -145,7 +145,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     ];
   }
 
-
+  
   // *************************************************************************************************************************************
   // hide popup menu on production
   // *************************************************************************************************************************************
@@ -360,7 +360,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     this.ProjectPopupDetails.IsSearchProject = true;
     this.ProjectPopupDetails.POC = this.sharedObject.DashboardData.ProjectContacts.find(c => c.ID ===
       project.PrimaryPOC) !== undefined ? this.sharedObject.DashboardData.ProjectContacts.find(c =>
-        c.ID === project.PrimaryPOC).FullName : '';
+        c.ID === project.PrimaryPOC).FullNameCC : '';
 
     this.modalloaderenable = false;
 

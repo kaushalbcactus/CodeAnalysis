@@ -12,7 +12,7 @@
         <div>
             <p-multiSelect #resourcesFilter [style]="{'width':'100%'}" [options]="filterObj.filteredResources"
                 defaultLabel="Resources" [(ngModel)]="filterObj.selectedResource" (onClearClick)="getDetail(filterObj)" (onChange)='getDetail(filterObj)'
-                optionLabel='UserName.Title' (keydown.enter)="$event.preventDefault()" filter="true"
+                optionLabel='UserNamePG.Title' (keydown.enter)="$event.preventDefault()" filter="true"
                 resetFilterOnHide="true"></p-multiSelect>
         </div>
     </div>

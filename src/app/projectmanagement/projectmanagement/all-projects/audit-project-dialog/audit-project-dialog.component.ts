@@ -26,13 +26,12 @@ export class AuditProjectDialogComponent implements OnInit {
     this.addRollingProjectArray = this.config.data;
   }
 
-
+  
   close() {
     this.ref.close();
-  }
+  }                                                                             
 
   onRowSelect(event) {
-
     event.data.checked = true;
     this.enableDisableConfirmButton();
   }
@@ -45,7 +44,7 @@ export class AuditProjectDialogComponent implements OnInit {
   keyPress(event: any) {
     this.enableDisableConfirmButton();
   }
-
+                                             
 
 
   enableDisableConfirmButton() {

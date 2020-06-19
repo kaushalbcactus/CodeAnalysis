@@ -227,7 +227,7 @@ export class AdminViewComponent implements OnInit, OnDestroy {
     if (element && !this.global.viewTabsPermission.hideAdmin) {
       this.showLoader();
       setTimeout(async () => {
-        const tasks = await this.getResourceTasks(4500, element.value.UserName.ID);
+        const tasks = await this.getResourceTasks(4500, element.value.UserNamePG.ID);
         this.bindAdminView(tasks);
         this.showAdminTable = true;
         this.showTable();

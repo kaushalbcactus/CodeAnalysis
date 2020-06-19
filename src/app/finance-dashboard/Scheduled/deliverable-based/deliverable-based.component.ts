@@ -367,7 +367,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
 
                 CS: this.fdDataShareServie.getCSDetails(element),
                 PracticeArea: this.getPracticeArea(element).BusinessVertical,
-                POName: poItem.Name,
+                POName: poItem.NameST,
                 TaggedDate: element.TaggedDate,
                 Status: element.Status,
                 ProformaLookup: element.ProformaLookup,
@@ -572,7 +572,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             const iliData = {
                 Status: 'Confirmed'
             };
-            iliData['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
+            iliData['__metadata'] = { type: this.constantService.listNames.InvoiceLineItems.type };
             const iliObj = Object.assign({}, this.queryConfig);
             iliObj.url = this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, +this.selectedRowItem.Id);
             iliObj.listName = this.constantService.listNames.InvoiceLineItems.name;
@@ -650,7 +650,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
 
     getResourceData(ele) {
         const found = this.rcData.find((x) => {
-            if (x.UserName.ID === ele.ID) {
+            if (x.UserNamePG.ID === ele.ID) {
                 return x;
             }
         });
@@ -664,7 +664,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     invoiceConfirmMail() {
         const mailSubject = this.selectedRowItem.ProjectCode + '/' + this.selectedRowItem.ClientName + ': Confirmed line item for billing';
 
-        let mailContent = this.mailContentRes[0].Content;
+        let mailContent = this.mailContentRes[0].ContentMT;
         mailContent = this.replaceContent(mailContent, '@@Val1@@', 'Hello Invoice Team');
         mailContent = this.replaceContent(mailContent, '@@Val2@@', this.selectedRowItem.ProjectCode);
         mailContent = this.replaceContent(mailContent, '@@Val3@@', this.selectedRowItem.ClientName);

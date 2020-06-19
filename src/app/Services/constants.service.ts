@@ -19,312 +19,337 @@ export class ConstantsService {
   };
 
   public listNames = {
-    ProjectRelatedInvoices: {
-      name: "ProjectRelatedInvoices",
-      type: "SP.Data.ProjectRelatedInvoicesListItem",
+  ProjectScope: {
+      name: 'ProjectScope',
+      type: 'SP.Data.ProjectScopeListItem'
     },
-    ProjectScope: {
-      name: "ProjectScope",
-      type: "SP.Data.ProjectScopeListItem",
+    AvailableHours: { // checked
+      name: 'AvailableHoursCT',
+      type: 'SP.Data.AvailableHoursCTListItem',
+      contentTypeId:'0x0100AE8013F4448FD142986FE4648EC83285*'
     },
-    InvoiceDetails: {
-      name: "InvoiceDetails",
-      type: "SP.Data.InvoiceDetailsListItem",
+    SubDeliverables: { // checked
+      name: 'SubDeliverablesCT',
+      type: 'SP.Data.SubDeliverablesCTListItem',
+      contentTypeId:'0x01000D9988EACAC35948A314055E45F51828*'
     },
-    AvailableHours: {
-      name: "AvailableHours",
-      type: "SP.Data.AvailableHoursListItem",
-    },
-    SubDeliverables: {
-      name: "SubDeliverables",
-      type: "SP.Data.SubDeliverablesListItem",
-    },
-    InvoiceLineItems: {
-      name: "InvoiceLineItems",
-      type: "SP.Data.InvoiceLineItemsListItem",
+    InvoiceLineItems: { // checked
+      name: 'InvoiceLineItemsCT',
+      type: 'SP.Data.InvoiceLineItemsCTListItem',
+      contentTypeId:'0x0100DEC2228EE195F44D8AB231E4F33C6FA7*'
     },
     ProjectInformation: {
-      name: "ProjectInformation",
-      type: "SP.Data.ProjectInformationListItem",
-    },
-    projectInfo: {
-      name: "ProjectInformation",
-      type: "SP.Data.ProjectInformationListItem",
+      name: 'ProjectInformationCT',
+      type: 'SP.Data.ProjectInformationCTListItem',
+      contentTypeId:'0x0100C39236969AED684AB3138CC274A973B0*'
     },
     JournalConf: {
-      name: "JournalConference",
-      type: "SP.Data.JournalConferenceListItem",
+      name: 'JournalConferenceCT',
+      type: 'SP.Data.JournalConferenceCTListItem',
+      contentTypeId:'0x010013477ACADCD5AA43A595464BB9986AF5*'
     },
     JCSubmission: {
-      name: "JCSubmission",
-      type: "SP.Data.JCSubmissionListItem",
+      name: 'JCSubmissionCT',
+      type: 'SP.Data.JCSubmissionCTListItem',
+      contentTypeId:'0x0100ADED0F8617C0324AA5579EF8F5A13266*'
     },
-    addAuthor: {
-      name: "Authors",
-      type: "SP.Data.AuthorsListItem",
+    Authors: {
+      name: 'AuthorsCT',
+      type: 'SP.Data.AuthorsCTListItem',
+      contentTypeId:'0x0100D7C4ED88080DDB4CADD6A20E98C3FE03*'
     },
-    updateAuthor: {
-      name: "AAA01",
-      type: "SP.Data.AAA01ListItem",
-    },
-    updateDecision: {
-      name: "AAA01",
-      type: "SP.Data.AAA01ListItem",
-    },
-    jcGalley: {
-      name: "JCGalley",
-      type: "SP.Data.JCGalleyListItem",
+    JCGalley: {
+      name: 'JCGalleyCT',
+      type: 'SP.Data.JCGalleyCTListItem',
+      contentTypeId:'0x01009C58CD093A890542B38A029DE4790F19*'
     },
     Journal: {
-      name: "Journal",
-      type: "SP.Data.JournalListItem",
+      name: 'JournalCT',
+      type: 'SP.Data.JournalCTListItem',
+      contentTypeId:'0x010045D6CFF64F96C9468511AC4DAA5ED3C6*'
     },
     Conference: {
-      name: "Conference",
-      type: "SP.Data.ConferenceListItem",
+      name: 'ConferenceCT',
+      type: 'SP.Data.ConferenceCTListItem',
+      contentTypeId:'0x0100FA8BC4EBFB4EC84082F0BBB7DC79DFCB*'
     },
     // JCSubmission: 'JCSubmission',
     ProjectFinances: {
-      name: "ProjectFinances",
-      type: "SP.Data.ProjectFinancesListItem",
+      name: 'ProjectFinancesCT',
+      type: 'SP.Data.ProjectFinancesCTListItem',
+      contentTypeId:'0x0100962736EC198643419ECB14DE056DA4E0*'
     },
     SOW: {
-      name: "SOW",
-      type: "SP.Data.SOWListItem",
+      name: 'SOWCT',
+      type: 'SP.Data.SOWCTListItem',
+      contentTypeId:'0x01007E54096B6D61EC47A7324CACBF9E4684*'
     },
     ClientLegalEntity: {
-      name: "ClientLegalEntity",
-      type: "SP.Data.ClientLegalEntityListItem",
+      name: 'ClientLegalEntityCT',
+      type: 'SP.Data.ClientLegalEntityCTListItem',
+      contentTypeId:'0x0100E97FF3DC47CEBD499E1FACAACE8A8537*'
     },
     SOWBudgetBreakup: {
-      name: "SOWBudgetBreakup",
-      type: "SP.Data.SOWBudgetBreakupListItem",
+      name: 'SOWBudgetBreakupCT',
+      type: 'SP.Data.SOWBudgetBreakupCTListItem',
+      contentTypeId:'0x0100E7756B65DC010C408F45BD075F161AAC*'
     },
     ProjectContacts: {
-      name: "ProjectContacts",
-      type: "SP.Data.ProjectContactsListItem",
+      name: 'ProjectContactsCT',
+      type: 'SP.Data.ProjectContactsCTListItem',
+      contentTypeId:'0x0100110169BC24C15C4595D53C6A2702CABF*'
     },
     DeliverableType: {
-      name: "DeliverableType",
-      type: "SP.Data.DeliverableTypeListItem",
+      name: 'DeliverableTypeCT',
+      type: 'SP.Data.DeliverableTypeCTListItem',
+      contentTypeId:'0x01000838C9D1140C274D9FDB75199AEA8EF1*'
     },
-    ProjectType: {
-      name: "ProjectType",
-      type: "SP.Data.ProjectTypeListItem",
+    ProjectType: { // Used in project-types-components && pm-common-services.ts // need delete later
+      name: 'ProjectType',
+      type: 'SP.Data.ProjectTypeListItem',
+      contentTypeId:''
     },
     TA: {
-      name: "TA",
-      type: "SP.Data.TAListItem",
+      name: 'TACT',
+      type: 'SP.Data.TACTListItem',
+      contentTypeId:'0x0100B2BCF00CBA6AA74DACEE5094DA1F75BB*'
     },
     Molecules: {
-      name: "Molecules",
-      type: "SP.Data.MoleculesListItem",
+      name: 'MoleculesCT',
+      type: 'SP.Data.MoleculesCTListItem',
+      contentTypeId:'0x01005B925D728E4EFB4F898BFF900F85E1F0*'
     },
     ResourceCategorization: {
-      name: "ResourceCategorization",
-      type: "SP.Data.ResourceCategorizationListItem",
+      name: 'ResourceCategorizationCT',
+      type: 'SP.Data.ResourceCategorizationCTListItem',
+      contentTypeId:'0x01006B3C6B0BE98BFE42A02C86580EC4C063*'
     },
-    BusinessVerticals: {
-      name: "BusinessVerticals",
-      type: "SP.Data.BusinessVerticalsListItem",
+    PracticeArea: {
+      name: 'PracticeAreaCT',
+      type: 'SP.Data.PracticeAreaCTListItem',
+      contentTypeId:'0x010033A0DB5BD5D3EA478FF371821126EB1A*'
     },
     Currency: {
-      name: "Currency",
-      type: "SP.Data.CurrencyListItem",
+      name: 'CurrencyCT',
+      type: 'SP.Data.CurrencyCTListItem',
+      contentTypeId:'0x01000BA1874347FD7F4493D3CBB99A150AC0*'
     },
     ProjectPerYear: {
-      name: "ProjectPerYear",
-      type: "SP.Data.ProjectPerYearListItem",
-    },
-    // redundant item
-    ProjectPO: {
-      name: "PO",
-      type: "SP.Data.POListItem",
+      name: 'ProjectPerYearCT',
+      type: 'SP.Data.ProjectPerYearCTListItem',
+      contentTypeId:'0x01001F87D28D986F294F8B4AB4670E437C5D*'
     },
     PO: {
-      name: "PO",
-      type: "SP.Data.POListItem",
+      name: 'POCT',
+      type: 'SP.Data.POCTListItem',
+      contentTypeId:'0x0100A316D8AD29BCFB4DB67252A30783DF22*'
     },
     ProjectFinanceBreakup: {
-      name: "ProjectFinanceBreakup",
-      type: "SP.Data.ProjectFinanceBreakupListItem",
+      name: 'ProjectFinanceBreakupCT',
+      type: 'SP.Data.ProjectFinanceBreakupCTListItem',
+      contentTypeId:'0x0100C920DD645467334588714AA48AFF1A67*'
     },
     ProjectBudgetBreakup: {
-      name: "ProjectBudgetBreakup",
-      type: "SP.Data.ProjectBudgetBreakupListItem",
+      name: 'ProjectBudgetBreakupCT',
+      type: 'SP.Data.ProjectBudgetBreakupCTListItem',
+      contentTypeId:'0x0100792AC1D87963C34EA23766B486446D52*'
     },
     BillingEntity: {
-      name: "BillingEntity",
-      type: "SP.Data.BillingEntityListItem",
+      name: 'BillingEntityCT',
+      type: 'SP.Data.BillingEntityCTListItem',
+      contentTypeId:'0x01000D0C2EA8E6189841AD850920678AB6FF*'
     },
     Schedules: {
-      name: "Schedules",
-      type: "SP.Data.SchedulesListItem",
+      name: 'SchedulesCT',
+      type: 'SP.Data.SchedulesCTListItem',
+      contentTypeId:'0x0100E230FF3CEDFE4C42BEB74E6E8E685340*'
     },
-    EarlyTaskComplete: {
-      name: "EarlyTaskCompleteNotifications",
-      type: "SP.Data.EarlyTaskCompleteNotificationsListItem",
-    },
-    LeaveCalendar: {
-      name: "Leave Calendar",
-      type: "SP.Data.Leave_x0020_CalendarListItem",
-    },
-    Inquiry: {
-      name: "Inquiry",
-      type: "SP.Data.InquiryListItem",
+    LeaveCalendar: { // Local list
+      name: 'Leave Calendar',
+      type: 'SP.Data.Leave_x0020_CalendarListItem'
     },
     Milestones: {
-      name: "Milestones",
-      type: "SP.Data.MilestonesListItem",
+      name: 'MilestonesCT',
+      type: 'SP.Data.MilestonesCTListItem',
+      contentTypeId:'0x0100A2AA7D9F3B833543A06D9B645CEDEB8E*'
     },
     MilestoneTasks: {
-      name: "MilestoneTasks",
-      type: "SP.Data.MilestoneTasksListItem",
+      name: 'MilestoneTasksCT',
+      type: 'SP.Data.MilestoneTasksCTListItem',
+      contentTypeId:'0x01004B1B9BEDF296EF4A8DA796593AE23091*'
     },
     SubMilestones: {
-      name: "SubMilestones",
-      type: "SP.Data.SubMilestonesListItem",
-    },
-    EmailDetails: {
-      name: "EmailDetails",
-      type: "SP.Data.EmailDetailsListItem",
+      name: 'SubMilestonesCT',
+      type: 'SP.Data.SubMilestonesCTListItem',
+      contentTypeId:'0x0100A6956A25EB1E4D458AF1EC83F398E6F3*'
     },
     ErrorLog: {
-      name: "ErrorLog",
-      type: "SP.Data.ErrorLogListItem",
+      name: 'ErrorLogCT',
+      type: 'SP.Data.ErrorLogCTListItem',
+      contentTypeId:'0x0100665992FA6DE27547915C059C44DCB5CA*'
     },
     MailContent: {
-      name: "MailContent",
-      type: "SP.Data.MailContentListItem",
+      name: 'MailContentCT',
+      type: 'SP.Data.MailContentCTListItem',
+      contentTypeId:'0x01002BB4C65956579043A0F077021AEE91EF*'
     },
     ScorecardTemplate: {
-      name: "ScorecardTemplates",
-      type: "SP.Data.ScorecardTemplatesListItem",
+      name: 'ScorecardTemplatesCT',
+      type: 'SP.Data.ScorecardTemplatesCTListItem',
+      contentTypeId:'0x010051DC2269CF557F4F98D4EF64585DDAC5*'
     },
     ScorecardMatrix: {
-      name: "ScorecardMatrix",
-      type: "SP.Data.ScorecardMatrixListItem",
+      name: 'ScorecardMatrixCT',
+      type: 'SP.Data.ScorecardMatrixCTListItem',
+      contentTypeId:'0x0100EA61FDC033E83640B18D46D2F4331E05*'
     },
     Scorecard: {
-      name: "Scorecard",
-      type: "SP.Data.ScorecardListItem",
+      name: 'ScorecardCT',
+      type: 'SP.Data.ScorecardCTListItem',
+      contentTypeId:'0x0100521A011E27FBA54D8280311A570F5D89*'
     },
     ScorecardRatings: {
-      name: "ScorecardRating",
-      type: "SP.Data.ScorecardRatingListItem",
+      name: 'ScorecardRatingCT',
+      type: 'SP.Data.ScorecardRatingCTListItem',
+      contentTypeId:'0x01009208731FF80A954C84C798B5DFB74643*'
     },
     QualityComplaints: {
-      name: "Quality Complaints",
-      type: "SP.Data.Quality_x0020_ComplaintsListItem",
+      name: 'QualityComplaintsCT',
+      type: 'SP.Data.QualityComplaintsCTListItem',
+      contentTypeId:'0x01001B7D3B9AB6498543AE989843B15BCB8E*'
     },
     PositiveFeedbacks: {
-      name: "PositiveFeedbacks",
-      type: "SP.Data.PositiveFeedbacksListItem",
+      name: 'PositiveFeedbacksCT',
+      type: 'SP.Data.PositiveFeedbacksCTListItem',
+      contentTypeId:'0x0100D7EDDDD4440722498068DA96ACF9F286*'
     },
     QCEmails: {
       name: "QC Emails",
       type: "SP.Data.QC_x0020_EmailsListItem",
     },
     StandardServices: {
-      name: "StandardServices",
-      type: "SP.Data.StandardServicesListItem",
+      name: 'StandardServicesCT',
+      type: 'SP.Data.StandardServicesCTListItem',
+      contentTypeId:'0x0100956B97B5D6DC7D43A27AD9DC6F0C5251*'
     },
     SkillMaster: {
-      name: "SkillMaster",
-      type: "SP.Data.SkillMasterListItem",
+      name: 'SkillMasterCT',
+      type: 'SP.Data.SkillMasterCTListItem',
+      contentTypeId:'0x0100C73E886234C2F843A291A924D7F0891A*'
     },
     StandardTemplates: {
-      name: "StandardTemplates",
-      type: "SP.Data.StandardTemplatesListItem",
+      name: 'StandardTemplatesCT',
+      type: 'SP.Data.StandardTemplatesCTListItem',
+      contentTypeId:'0x0100EB3CBD8D654DE24FA2702437E76D5FA6*'
     },
     MilestoneMatrix: {
-      name: "MilestoneMatrix",
-      type: "SP.Data.MilestoneMatrixListItem",
+      name: 'MilestoneMatrixCT',
+      type: 'SP.Data.MilestoneMatrixCTListItem',
+      contentTypeId:'0x0100864FBE9DE3652D468C5852F7C28E8481*'
     },
     MilestoneSubTaskMatrix: {
-      name: "MilestoneSubTaskMatrix",
-      type: "SP.Data.MilestoneSubTaskMatrixListItem",
+      name: 'MilestoneSubTaskMatrixCT',
+      type: 'SP.Data.MilestoneSubTaskMatrixCTListItem',
+      contentTypeId:'0x0100CED72A58A5009443823F9655B164AC9F*'
     },
     MilestoneTaskMatrix: {
-      name: "MilestoneTaskMatrix",
-      type: "SP.Data.MilestoneTaskMatrixListItem",
+      name: 'MilestoneTaskMatrixCT',
+      type: 'SP.Data.MilestoneTaskMatrixCTListItem',
+      contentTypeId:'0x0100970730A5E0E03E4A92BD24E2B619CC45*'
     },
     Services: {
-      name: "Services",
-      type: "SP.Data.ServicesListItem",
+      name: 'ServicesCT',
+      type: 'SP.Data.ServicesCTListItem',
+      contentTypeId:'0x01009ACFC38D620A7545B2EEC432E40E0C59*'
     },
     UsState: {
-      name: "USStates",
-      type: "SP.Data.USStatesListItem",
+      name: 'USStatesCT',
+      type: 'SP.Data.USStatesCTListItem',
+      contentTypeId:'0x01006FFFE4AA5178E64DA3D9AE27A107818F*'
     },
-    BudgetRateMaster: {
-      name: "BudgetRateMaster",
-      type: "SP.Data.BudgetRateMasterListItem",
+    BudgetRateMaster: { 
+      name: 'BudgetRateMasterCT',
+      type: 'SP.Data.BudgetRateMasterCTListItem',
+      contentTypeId: '0x0100B533A9063996F14787DABBF9914FC93C*'
     },
     ClientSubdivision: {
-      name: "ClientSubdivision",
-      type: "SP.Data.ClientSubdivisionListItem",
+      name: 'ClientSubdivisionCT',
+      type: 'SP.Data.ClientSubdivisionCTListItem',
+      contentTypeId:'0x01000133CABFD5C9484C8E47E777756CA5BA*'
     },
     SpendingInfo: {
-      name: "SpendingInfo",
-      type: "SP.Data.SpendingInfoListItem",
+      name: 'SpendingInfoCT',
+      type: 'SP.Data.SpendingInfoCTListItem',
+      contentTypeId:'0x01004A74BF58B02D454E8D2D335FFA39F92D*'
     },
     Invoices: {
-      name: "Invoices",
-      type: "SP.Data.InvoicesListItem",
+      name: 'InvoicesCT',
+      type: 'SP.Data.InvoicesCTListItem',
+      contentTypeId:'0x0100367490D3F315FF49B9AEB5277E4886AF*'
     },
     Proforma: {
-      name: "Proforma",
-      type: "SP.Data.ProformaListItem",
-    },
-    // redundant
-    OutInvoices: {
-      name: "Invoices",
-      type: "SP.Data.InvoicesListItem",
+      name: 'ProformaCT',
+      type: 'SP.Data.ProformaCTListItem',
+      contentTypeId:'0x01000E6CFCF1AF68C24C8FA754A91E693F32*'
     },
     CreditAndDebit: {
-      name: "CreditAndDebitNote",
-      type: "SP.Data.CreditAndDebitNoteListItem",
+      name: 'CreditAndDebitNoteCT',
+      type: 'SP.Data.CreditAndDebitNoteCTListItem',
+      contentTypeId:'0x0100C1E5E87E5B85F342A8BF384A07B4062A*'
     },
     VendorFreelancer: {
-      name: "VendorFreelancer",
-      type: "SP.Data.VendorFreelancerListItem",
+      name: 'VendorFreelancerCT',
+      type: 'SP.Data.VendorFreelancerCTListItem',
+      contentTypeId:'0x01000F7F3A2BCB7B6342B9D58A46F1EA0CF4*'
     },
     FocusGroup: {
-      name: "Focus Group",
-      type: "SP.Data.Focus_x0020_GroupListItem",
+      name: 'FocusGroupCT',
+      type: 'SP.Data.FocusGroupCTListItem',
+      contentTypeId:'0x01005FDED8C40BE8C04ABA91C440CA00782F*'
     },
     TimeZones: {
-      name: "TimeZones",
-      type: "SP.Data.TimeZonesListItem",
+      name: 'TimeZonesCT',
+      type: 'SP.Data.TimeZonesCTListItem',
+      contentTypeId:'0x0100FEFAC93A1A2FDF42B63583C7F42C657D*'
     },
     UserInformationList: {
       name: "User Information List",
     },
     ClientGroup: {
-      name: "ClientGroup",
-      type: "SP.Data.ClientGroupListItem",
+      name: 'ClientGroupCT',
+      type: 'SP.Data.ClientGroupCTListItem',
+      contentTypeId:'0x01008186D9D5372AB848B0EBC7EDE5AF8FB0*'
     },
     POBudgetBreakup: {
-      name: "POBudgetBreakup",
-      type: "SP.Data.POBudgetBreakupListItem",
+      name: 'POBudgetBreakupCT',
+      type: 'SP.Data.POBudgetBreakupCTListItem',
+      contentTypeId:'0x0100057CA5C63F5C7D4EA0DCE8E850A0B26A*'
     },
     CLEBucketMapping: {
-      name: "CLEBucketMapping",
-      type: "SP.Data.CLEBucketMappingListItem",
+      name: 'CLEBucketMappingCT',
+      type: 'SP.Data.CLEBucketMappingCTListItem',
+      contentTypeId:'0x01009EFF4B187F5C514CA55907ECBA65E0AC*'
     },
     EarlyTaskCompleteNotifications: {
-      name: "EarlyTaskCompleteNotifications",
-      type: "SP.Data.EarlyTaskCompleteNotificationsListItem",
+      name: 'EarlyTaskCompleteNotificationsCT',
+      type: 'SP.Data.EarlyTaskCompleteNotificationsCTListItem',
+      contentTypeId:'0x0100AD22BC881F06A04EAD9E6F5E31399C55*'
     },
     SendEmail: {
-      name: "SendEmail",
-      type: "SP.Data.SendEmailListItem",
+      name: 'SendEmailCT',
+      type: 'SP.Data.SendEmailCTListItem',
+      contentTypeId:'0x0100E750B18758DE1A47B16A8FECB29C0F73*'
     },
-    BlockResource: {
-      name: "BlockingResources",
-      type: "SP.Data.BlockingResourcesListItem",
+    AdhocTask: {
+      name: 'AdhocTaskCT',
+      type: 'SP.Data.AdhocTaskCTListItem',
+      contentTypeId:'0x010001D6F5F61703574497087ACF9390AA16*'
     },
+    Blocking: {
+      name:'BlockingCT',
+      type:'BlockingCTListItem',
+      contentTypeId:'0x010088151006240E4149953AD8D3958182CA*'
+    }
   };
 
   public projectStatus = {
@@ -684,5 +709,10 @@ export class ConstantsService {
     FileNotUploaded: "File not uploaded, Folder / File Not Found",
     FileAlreadyExist:
       "This file name already exit.Please select another file name.",
+  }
+  public CONTENT_TYPE ={
+    TASK : 'Task',
+    MILESTONE: 'Milestone',
+    SLOT: 'Slot'
   };
 }

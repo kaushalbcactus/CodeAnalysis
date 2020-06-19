@@ -13,7 +13,7 @@
 
             <td>{{task.Title}} <span *ngIf='task.SubMilestones'> - {{task.SubMilestones}}</span></td>
             <td>{{task.StartDate | date : "dd MMM yy h:mm a"}}</td>
-            <td>{{task.DueDate | date : "dd MMM yy h:mm a"}}</td>
+            <td>{{task.DueDateDT | date : "dd MMM yy h:mm a"}}</td>
             <td>{{task.Status}}</td>
             <td> {{task.ExpectedTime}} </td>
             <td> {{task.AssignedTo.Title}} </td>

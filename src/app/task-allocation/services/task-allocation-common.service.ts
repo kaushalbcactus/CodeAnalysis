@@ -83,7 +83,7 @@ export class TaskAllocationCommonService {
     });
     similarTasksUsers.forEach(element => {
       if (element.AssignedTo && element.AssignedTo.hasOwnProperty('ID')) {
-        const resource = resources.filter(e => e.UserName.ID === element.AssignedTo.ID);
+        const resource = resources.filter(e => e.UserNamePG.ID === element.AssignedTo.ID);
         const checkExclusion = this.isUserAllowed(resource[0], prjDetails);
         if (checkExclusion) {
           allocatedResources.push(element.AssignedTo.ID);
@@ -115,7 +115,7 @@ export class TaskAllocationCommonService {
               return objt.Title === prjDetails.account;
             }) : [];
 
-          if (allocatedResources.includes(element.UserName.ID)) {
+          if (allocatedResources.includes(element.UserNamePG.ID)) {
             element.userType = 'Allocated';
             filteredResources.push(element);
           }
@@ -132,10 +132,10 @@ export class TaskAllocationCommonService {
             element.userType = 'Other';
             filteredResources.push(element);
           }
-          element.Title = element.UserName.Title;
-          element.ID = element.UserName.ID;
-          element.Id = element.UserName.ID;
-          element.Name = element.UserName.Name;
+          element.Title = element.UserNamePG.Title;
+          element.ID = element.UserNamePG.ID;
+          element.Id = element.UserNamePG.ID;
+          element.Name = element.UserNamePG.Name;
           element.SkillText = this.getSkillName(element.SkillLevel.Title);
           // }
         }

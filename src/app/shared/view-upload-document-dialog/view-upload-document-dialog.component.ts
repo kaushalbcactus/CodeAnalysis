@@ -79,8 +79,6 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     slotPTasks.forEach((element, i) => {
       this.selectedTask.PrevTasks += element.Title;
       this.selectedTask.PrevTasks += i < slotPTasks.length - 1 ? ';#' : '';
-
-
     });
     // }
     this.ModifiedSelectedTaskName = this.selectedTask.Title.replace(this.selectedTask.ProjectCode, '').replace(this.selectedTask.Milestone, '').trim();
@@ -131,6 +129,9 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       }
     }
 
+
+
+
     this.dbcols = [
       { field: 'Name', header: 'Document Name' },
       { field: 'taskName', header: 'Task Name' },
@@ -141,6 +142,8 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
 
     this.getDocuments(this.selectedTask);
     this.loaderenable = true;
+
+
   }
 
   ngOnDestroy() {
@@ -312,12 +315,16 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       }
 
     }
+
+
     const Ids = this.DocumentArray.map(c => c.DocIds = c.ListItemAllFields.EditorId).filter((el, i, a) => i === a.indexOf(el));
 
     let users;
     if (Ids.length > 0) {
       users = await this.getUsers(Ids);
     }
+
+
     this.loaderenable = false;
     this.DocumentArray.map(c => c.taskName = c.ListItemAllFields.TaskName != null ? c.ListItemAllFields.TaskName : '');
     this.DocumentArray.map(c => c.modifiedUserName = users.find(d => d.Id ===
@@ -393,7 +400,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       });
       if (bSelectedNewFiles) {
         const jsonData = {
-          __metadata: { type: 'SP.Data.SchedulesListItem' },
+          __metadata: { type: this.constants.listNames.Schedules.type },
           FinalDocSubmit: true
         };
         const taskObj = Object.assign({}, this.queryConfig);
@@ -542,7 +549,6 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
           contentStyle: { 'max-height': '82vh', 'overflow-y': 'auto', 'background-color': '#f4f3ef' },
           closable: false,
         });
-
         return ref.onClose.subscribe(async (uploadedfiles: any) => {
           if (uploadedfiles) {
             if (event.files.length > 0 && event.files.length === uploadedfiles.length) {
@@ -660,7 +666,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       listName: ''
     };
     const mailQueryOptions = {
-      select: 'Content',
+      select: 'ContentMT',
       // tslint:disable-next-line: quotemark
       filter: "Title eq 'ClosedTaskNotification'",
 
@@ -675,7 +681,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     const arrResults = await this.spServices.executeBatch(batchURL);
 
     if (arrResults[0].retItems) {
-      this.Emailtemplate = arrResults[0].retItems[0].Content;
+      this.Emailtemplate = arrResults[0].retItems[0].ContentMT;
     }
   }
 }

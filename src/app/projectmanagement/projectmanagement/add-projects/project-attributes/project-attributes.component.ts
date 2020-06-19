@@ -244,7 +244,7 @@ export class ProjectAttributesComponent implements OnInit {
     this.pmObject.projectContactsItems.forEach(element => {
       if (element.ClientLegalEntity === clientLeagalEntity) {
         this.pmObject.oProjectCreation.oProjectInfo.projectContact.push({
-          label: element.FullName
+          label: element.FullNameCC
           , value: element.ID
         });
       }
@@ -530,16 +530,16 @@ export class ProjectAttributesComponent implements OnInit {
     this.pmObject.addProject.ProjectAttributes.ActiveDelivery2 = projObj.DeliveryLevel2ID;
     this.pmObject.addProject.ProjectAttributes.ProjectTitle = projObj.Title;
     this.pmObject.addProject.ProjectAttributes.AlternateShortTitle = projObj.ShortTitle;
-    this.pmObject.addProject.ProjectAttributes.EndUseofDeliverable = projObj.Description;
+    this.pmObject.addProject.ProjectAttributes.EndUseofDeliverable = projObj.DescriptionMT;
     this.pmObject.addProject.ProjectAttributes.SOWBoxLink = projObj.SOWBoxLink;
     this.pmObject.addProject.ProjectAttributes.ConferenceJournal = projObj.ConferenceJournal;
     this.pmObject.addProject.ProjectAttributes.Authors = projObj.Authors;
     this.pmObject.addProject.ProjectAttributes.Comments = projObj.Comments;
     this.pmObject.addProject.ProjectAttributes.SlideCount = projObj.SlideCount;
     // tslint:disable-next-line: max-line-length
-    this.pmObject.addProject.ProjectAttributes.ReferenceCount = projObj.ReferenceCount;
+    this.pmObject.addProject.ProjectAttributes.ReferenceCount = projObj.ReferenceCount; 
     this.pmObject.addProject.ProjectAttributes.PageCount = projObj.PageCount;
-    this.pmObject.addProject.ProjectAttributes.AnnotationBinder = projObj.AnnotationBinder ? projObj.AnnotationBinder === 'Yes' ? true : false : false;
+     this.pmObject.addProject.ProjectAttributes.AnnotationBinder = projObj.AnnotationBinder ? projObj.AnnotationBinder === 'Yes' ? true : false : false;
 
     this.enableCountFields = this.pmObject.addProject.ProjectAttributes.PracticeArea.toLowerCase()
       === 'medcomm' || this.pmObject.addProject.ProjectAttributes.PracticeArea.toLowerCase()

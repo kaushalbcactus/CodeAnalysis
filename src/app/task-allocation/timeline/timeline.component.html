@@ -34,7 +34,8 @@
                 <div class="table-header-cell-timeline">
                     Available Hrs
                 </div>
-                <div class="table-body-cell-timeline" style="border-top-right-radius: 4px;border-bottom-right-radius: 4px;">
+                <div class="table-body-cell-timeline"
+                    style="border-top-right-radius: 4px;border-bottom-right-radius: 4px;">
                     <div id="availableBudgetHrs">{{oProjectDetails.availableHours}}</div>
                 </div>
             </div>
@@ -320,7 +321,8 @@
                             </div>
                         </td>
                         <td [ngStyle]="{'text-align': 'rowData.editMode' ? 'center':'left'}">
-                            <span *ngIf="rowData.type==='task' && !rowData.editMode">{{rowData.DisableCascade === true  ? 'Yes':'No'}}</span>
+                            <span
+                                *ngIf="rowData.type==='task' && !rowData.editMode">{{rowData.DisableCascade === true  ? 'Yes':'No'}}</span>
 
                             <p-inputSwitch
                                 *ngIf="rowData.editMode && rowData.type==='task' && rowData.itemType !== 'Client Review'"
@@ -348,14 +350,16 @@
 
                             <div *ngIf=" !rowData.editMode && rowData.type === 'task' && rowData.milestoneStatus !== 'Completed' &&
                             (rowData.status !== 'Completed' && rowData.status !== 'Abandon' && rowData.status !== 'Auto Closed'
-                              && rowData.status !== 'Hold') && !projectDetails && !rowData.parentSlot" style="text-align: center;">
+                              && rowData.status !== 'Hold') && !projectDetails && !rowData.parentSlot"
+                                style="text-align: center;">
                                 <p-menu #popupMenu [popup]="true" [style]="{'text-align': 'left'}" [model]="taskMenu">
                                 </p-menu>
 
                                 <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData,rowNode);popupMenu.show($event);"></i>
                             </div>
 
-                            <div *ngIf=" rowData.editMode && rowData.type === 'task' && rowData.status === 'Not Saved' && rowData.itemType !== 'Client Review' && rowData.itemType !== 'Send to client'">
+                            <div
+                                *ngIf=" rowData.editMode && rowData.type === 'task' && rowData.status === 'Not Saved' && rowData.itemType !== 'Client Review' && rowData.itemType !== 'Send to client'">
                                 <p-menu #popupMenu [popup]="true" [style]="{'text-align': 'left'}" [model]="taskMenu">
                                 </p-menu>
 
@@ -383,8 +387,11 @@
             <!-- <p-dialog header="Any specific instructions for task" [closable]="false" [modal]="true" [style]="{width: '450px', minWidth: '300px'}" [(visible)]="displayComment">
                 <textarea *ngIf="displayComment" placeholder="Leave Comment" rows="8" cols="30" pInputTextarea autoResize="autoResize" style="width:100%;padding: 3%;" [(ngModel)]="task.scope"> </textarea>
                 <p-footer>
-                    <button type="button" pButton icon="pi pi-check" style="background-color: #af0b14;border-color:#af0b14;" (click)=" displayComment=false" label="Save"></button>
-                    <button type="button" pButton icon="pi pi-times" (click)="cancelComment();displayComment=false" label="Cancel" class="ui-button-secondary"></button>
+                    <button type="button" pButton icon="pi pi-check"
+                        style="background-color: #af0b14;border-color:#af0b14;" (click)=" displayComment=false"
+                        label="Save"></button>
+                    <button type="button" pButton icon="pi pi-times" (click)="cancelComment();displayComment=false"
+                        label="Cancel" class="ui-button-secondary"></button>
                 </p-footer>
             </p-dialog> -->
         </div>
@@ -420,33 +427,45 @@
     <table class="w580" width="580" cellpadding="5" cellspacing="0" border="0">
         <thead>
             <tr style="border-collapse:collapse;">
-                <td width="150" class="fullBorder boldHeadres" style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;font-weight:bold;">
-                    <div align="left" class="table-Attr-content" style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                <td width="150" class="fullBorder boldHeadres"
+                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;font-weight:bold;">
+                    <div align="left" class="table-Attr-content"
+                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
                         Name
                     </div>
                 </td>
-                <td width="150" class="fullBorder boldHeadres" style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;font-weight:bold;">
-                    <div align="left" class="table-Attr-content" style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                <td width="150" class="fullBorder boldHeadres"
+                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;font-weight:bold;">
+                    <div align="left" class="table-Attr-content"
+                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
                         Previous Start Date
                     </div>
                 </td>
-                <td width="150" class="fullBorder boldHeadres" style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;font-weight:bold;">
-                    <div align="left" class="table-Attr-content" style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                <td width="150" class="fullBorder boldHeadres"
+                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;font-weight:bold;">
+                    <div align="left" class="table-Attr-content"
+                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
                         Previous End Date
                     </div>
                 </td>
-                <td width="150" class="fullBorder boldHeadres" style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;font-weight:bold;">
-                    <div align="left" class="table-Attr-content" style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                <td width="150" class="fullBorder boldHeadres"
+                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;font-weight:bold;">
+                    <div align="left" class="table-Attr-content"
+                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
                         New Start Date
                     </div>
                 </td>
-                <td width="150" class="fullBorder boldHeadres" style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;font-weight:bold;">
-                    <div align="left" class="table-Attr-content" style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                <td width="150" class="fullBorder boldHeadres"
+                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;font-weight:bold;">
+                    <div align="left" class="table-Attr-content"
+                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
                         New End Date
                     </div>
                 </td>
-                <td width="150" class="fullBorder boldHeadres" style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;font-weight:bold;">
-                    <div align="left" class="table-Attr-content" style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                <td width="150" class="fullBorder boldHeadres"
+                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;font-weight:bold;">
+                    <div align="left" class="table-Attr-content"
+                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
                         Assigned To
                     </div>
                 </td>
@@ -454,33 +473,45 @@
         </thead>
         <tbody>
             <tr style="border-collapse:collapse;" *ngFor="let item of reallocationMailData;trackBy:trackByFn">
-                <td width="300" class="noLeftTopBorder" style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;border-top-width:0px;border-left-width:1px;">
-                    <div align="left" class="table-Attr-content" style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                <td width="300" class="noLeftTopBorder"
+                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;border-top-width:0px;border-left-width:1px;">
+                    <div align="left" class="table-Attr-content"
+                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
                         {{item.taskName}}
                     </div>
                 </td>
-                <td width="300" class="noLeftTopBorder" style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;border-top-width:0px;border-left-width:0px;">
-                    <div align="left" class="table-Attr-content" style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                <td width="300" class="noLeftTopBorder"
+                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;border-top-width:0px;border-left-width:0px;">
+                    <div align="left" class="table-Attr-content"
+                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
                         {{item.preStDate }}
                     </div>
                 </td>
-                <td width="300" class="noLeftTopBorder" style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;border-top-width:0px;border-left-width:0px;">
-                    <div align="left" class="table-Attr-content" style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                <td width="300" class="noLeftTopBorder"
+                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;border-top-width:0px;border-left-width:0px;">
+                    <div align="left" class="table-Attr-content"
+                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
                         {{item.preEndDate}}
                     </div>
                 </td>
-                <td width="300" class="noLeftTopBorder" style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;border-top-width:0px;border-left-width:0px;">
-                    <div align="left" class="table-Attr-content" style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                <td width="300" class="noLeftTopBorder"
+                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;border-top-width:0px;border-left-width:0px;">
+                    <div align="left" class="table-Attr-content"
+                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
                         {{item.newStDate }}
                     </div>
                 </td>
-                <td width="300" class="noLeftTopBorder" style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;border-top-width:0px;border-left-width:0px;">
-                    <div align="left" class="table-Attr-content" style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                <td width="300" class="noLeftTopBorder"
+                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;border-top-width:0px;border-left-width:0px;">
+                    <div align="left" class="table-Attr-content"
+                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
                         {{item.newEndDate}}
                     </div>
                 </td>
-                <td width="300" class="noLeftTopBorder" style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;border-top-width:0px;border-left-width:0px;">
-                    <div align="left" class="table-Attr-content" style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                <td width="300" class="noLeftTopBorder"
+                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;border-top-width:0px;border-left-width:0px;">
+                    <div align="left" class="table-Attr-content"
+                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
                         {{item.assginedTo}}
                     </div>
                 </td>

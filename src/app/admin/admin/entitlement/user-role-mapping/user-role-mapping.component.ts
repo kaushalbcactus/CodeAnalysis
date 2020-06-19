@@ -110,7 +110,7 @@ export class UserRoleMappingComponent implements OnInit {
       const userResults = results[0].retItems;
       if (userResults && userResults.length) {
         userResults.forEach(element => {
-          this.users.push({ label: element.UserName.Title, value: element.UserName });
+          this.users.push({ label: element.UserNamePG.Title, value: element.UserNamePG });
         });
       }
       // load groups
@@ -132,7 +132,7 @@ export class UserRoleMappingComponent implements OnInit {
    *
    * @description
    * It will prepare the request as per following Sequence.
-   * 1. Users           - Get data from `ResourceCategorization` list based on filter `IsActive='Yes'`.
+   * 1. Users           - Get data from `ResourceCategorization` list based on filter `IsActiveCH='Yes'`.
    * 2. Groups          - Get data from Groups.
    *
    * @return An Array of the response in `JSON` format in above sequence.
@@ -213,7 +213,7 @@ export class UserRoleMappingComponent implements OnInit {
    * @description
    *
    * This method will extract the column object value from an array and stores into the column dropdown array and display
-   * the values into the User,Role,Action,By and Date column dropdown.
+   * the values into the User,RoleCH,Action,By and Date column dropdown.
    *
    * @param colData Pass colData as a parameter which contains an array of column object.
    *
@@ -227,7 +227,7 @@ export class UserRoleMappingComponent implements OnInit {
     }));
     this.userRoleColArray.Role = this.adminCommonService.uniqueArrayObj(colData.map(a => {
       const b = {
-        label: a.Role, value: a.Role
+        label: a.RoleCH, value: a.RoleCH
       };
       return b;
     }));

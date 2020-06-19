@@ -87,7 +87,7 @@ export class UserFeedbackComponent implements OnInit, AfterViewChecked {
     this.UFColArray.EvaluatorSkill = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.EvaluatorSkill, value: a.EvaluatorSkill, filterValue: a.EvaluatorSkill }; return b; }));
     this.UFColArray.Feedbackby = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Author.Title, value: a.Author.Title, filterValue: a.Author.Title }; return b; }));
     this.UFColArray.Rating = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.AverageRating, value: +a.AverageRating, filterValue: a.AverageRating }; return b; }));
-    this.UFColArray.Comments = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Comments, value: a.Comments, filterValue: a.Comments }; return b; }));
+    this.UFColArray.Comments = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.CommentsMT, value: a.CommentsMT, filterValue: a.CommentsMT }; return b; }));
     console.log('this.UFColArray ', this.UFColArray);
   }
 
@@ -199,15 +199,15 @@ export class UserFeedbackComponent implements OnInit, AfterViewChecked {
         Date: element.Created ? new Date(this.datepipe.transform(element.Created, 'MMM d, yyyy')) : '',
         SubMilestones: element.SubMilestones ? element.SubMilestones : '',
         Author: element.Author,
-        AverageRating: element.AverageRating,
+        AverageRating: element.AverageRatingNM,
         Created: element.Created ? new Date(this.datepipe.transform(element.Created, 'MMM d, yyyy')) : '',
         Task: element.Title ? element.SubMilestones ? element.Title + ' - ' + element.SubMilestones : element.Title : '',
         Title: element.Title ? element.Title : '',
         Type: element.FeedbackType ? element.FeedbackType : '',
         Feedbackby: element.Author.Title ? element.Author.Title : '',
         EvaluatorSkill: element.EvaluatorSkill !== undefined || element.EvaluatorSkill !== null ? element.EvaluatorSkill === '' ? 'Reviewer' : element.EvaluatorSkill : '',
-        Rating: element.AverageRating ? element.AverageRating : '',
-        Comments: element.Comments ? element.Comments : '',
+        Rating: element.AverageRatingNM ? element.AverageRatingNM : '',
+        Comments: element.CommentsMT ? element.CommentsMT : '',
         Parameters: element.ParameterRating ? element.ParameterRating : '',
         Score: element.Value ? element.Value : ''
       });

@@ -255,13 +255,9 @@ export class UsercapacityComponent implements OnInit {
 
           const userDetail = [selectedUsers[userIndex]];
           if (userDetail.length > 0) {
-            oUser.uid = userDetail[0].UserName.ID
-              ? userDetail[0].UserName.ID
-              : userDetail[0].UserName.Id;
-            oUser.userName = userDetail[0].UserName.Title;
-            oUser.maxHrs = userDetail[0].UserName.MaxHrs
-              ? userDetail[0].UserName.MaxHrs
-              : userDetail[0].MaxHrs;
+            oUser.uid = userDetail[0].UserNamePG.ID ? userDetail[0].UserNamePG.ID : userDetail[0].UserNamePG.Id;
+            oUser.userName = userDetail[0].UserNamePG.Title;
+            oUser.maxHrs = userDetail[0].UserNamePG.MaxHrs ? userDetail[0].UserNamePG.MaxHrs : userDetail[0].MaxHrs;
             oUser.GoLiveDate = userDetail[0].GoLiveDate;
             oUser.JoiningDate = userDetail[0].DateOfJoining;
             this.fetchData(oUser, startDateString, endDateString, batchUrl);
@@ -394,58 +390,26 @@ export class UsercapacityComponent implements OnInit {
           oCapacity.arrUserDetails[indexUser].tasks.length
         ) {
           oCapacity.arrUserDetails[indexUser].tasks.sort((a, b) => {
-            return b.DueDate - a.DueDate;
+            return b.DueDateDT - a.DueDateDT;
           });
 
           // tslint:disable
-          this.datepipe.transform(startDate, "yyyy-MM-dd") + "T00:00:01.000Z";
-          endDateString =
-            new Date(sTopEndDate) >
-            new Date(
-              this.datepipe.transform(
-                oCapacity.arrUserDetails[indexUser].tasks[0].DueDate,
-                "yyyy-MM-ddT"
-              ) + "23:59:00.000Z"
-            )
-              ? sTopEndDate.toISOString()
-              : this.datepipe.transform(
-                  oCapacity.arrUserDetails[indexUser].tasks[0].DueDate,
-                  "yyyy-MM-ddT"
-                ) + "23:59:00.000Z";
+          this.datepipe.transform(startDate, 'yyyy-MM-dd') + 'T00:00:01.000Z'
+          endDateString = new Date(sTopEndDate) > new Date(this.datepipe.transform(oCapacity.arrUserDetails[indexUser].tasks[0].DueDateDT, 'yyyy-MM-ddT') + '23:59:00.000Z')
+            ? sTopEndDate.toISOString() : this.datepipe.transform(oCapacity.arrUserDetails[indexUser].tasks[0].DueDateDT, 'yyyy-MM-ddT') + "23:59:00.000Z";
 
-          startDateString =
-            new Date(sTopStartDate) <
-            new Date(
-              this.datepipe.transform(
-                oCapacity.arrUserDetails[indexUser].tasks[0].StartDate,
-                "yyyy-MM-ddT"
-              ) + "00:00:01.000Z"
-            )
-              ? sTopStartDate.toISOString()
-              : this.datepipe.transform(
-                  oCapacity.arrUserDetails[indexUser].tasks[0].StartDate,
-                  "yyyy-MM-ddT"
-                ) + "00:00:01.000Z";
+          startDateString = new Date(sTopStartDate) < new Date(this.datepipe.transform(oCapacity.arrUserDetails[indexUser].tasks[0].StartDate, 'yyyy-MM-ddT') + '00:00:01.000Z')
+            ? sTopStartDate.toISOString() : this.datepipe.transform(oCapacity.arrUserDetails[indexUser].tasks[0].StartDate, 'yyyy-MM-ddT') + '00:00:01.000Z';
           // tslint: enable
 
           if (this.enableDownload) {
-            const TimeSpentTasks = this.fetchTasks(
-              oCapacity.arrUserDetails[indexUser],
-              arruserResults1[indexUser]
-            );
-            oCapacity.arrUserDetails[
-              indexUser
-            ].TimeSpentTasks = await this.SplitfetchTasks(TimeSpentTasks);
+            const TimeSpentTasks = this.fetchTasks(oCapacity.arrUserDetails[indexUser], arruserResults1[indexUser]);
+            oCapacity.arrUserDetails[indexUser].TimeSpentTasks = await this.SplitfetchTasks(TimeSpentTasks);
 
-            if (
-              oCapacity.arrUserDetails[indexUser].TimeSpentTasks &&
-              oCapacity.arrUserDetails[indexUser].TimeSpentTasks.length
-            ) {
-              oCapacity.arrUserDetails[indexUser].TimeSpentTasks.sort(
-                (a, b) => {
-                  return b.DueDate - a.DueDate;
-                }
-              );
+            if (oCapacity.arrUserDetails[indexUser].TimeSpentTasks && oCapacity.arrUserDetails[indexUser].TimeSpentTasks.length) {
+              oCapacity.arrUserDetails[indexUser].TimeSpentTasks.sort((a, b) => {
+                return b.DueDateDT - a.DueDateDT;
+              });
             }
           }
         } else {
@@ -453,18 +417,9 @@ export class UsercapacityComponent implements OnInit {
           endDateString = sTopEndDate.toISOString();
         }
 
-        selectedUsers.map(
-          (c) =>
-            (c.ResourceUserID = c.UserName.Id ? c.UserName.Id : c.UserName.ID)
-        );
+        selectedUsers.map(c => c.ResourceUserID = c.UserNamePG.Id ? c.UserNamePG.Id : c.UserNamePG.ID);
 
-        oCapacity.arrUserDetails.map(
-          (c) =>
-            (c.AvailableHoursRID = selectedUsers.find(
-              (c) =>
-                c.ResourceUserID === oCapacity.arrUserDetails[indexUser].uid
-            ).ID)
-        );
+        oCapacity.arrUserDetails.map(c => c.AvailableHoursRID = selectedUsers.find(c => c.ResourceUserID === oCapacity.arrUserDetails[indexUser].uid).ID)
 
         if (batchURL.length === 99) {
           this.common.SetNewrelic("Shared", "UserCapacity", "fetchTaskByUsers");
@@ -535,12 +490,9 @@ export class UsercapacityComponent implements OnInit {
     }
     finalArray = finalArray.length ? finalArray : [];
     if (finalArray) {
-      const UserLeaves = finalArray.filter(
-        (c) => c.listName === "Leave Calendar"
-      );
-      const UserAvailableHrs = finalArray.filter(
-        (c) => c.listName === "AvailableHours"
-      );
+
+      const UserLeaves = finalArray.filter(c => c.listName === this.globalConstantService.listNames.LeaveCalendar.name);
+      const UserAvailableHrs = finalArray.filter(c => c.listName === this.globalConstantService.listNames.AvailableHours.name);
 
       for (var index in oCapacity.arrUserDetails) {
         if (oCapacity.arrUserDetails.hasOwnProperty(index)) {
@@ -618,7 +570,7 @@ export class UsercapacityComponent implements OnInit {
     blockResBatchUrl
   ) {
     const url = this.spService.getReadURL(
-      this.globalConstantService.listNames.BlockResource.name,
+      this.globalConstantService.listNames.Blocking.name,
       this.sharedConstant.userCapacity.fetchBlockResource
     );
     this.common.setBatchObject(
@@ -629,7 +581,7 @@ export class UsercapacityComponent implements OnInit {
         .replace(/{{endDateString}}/gi, endDateString),
       null,
       this.globalConstantService.Method.GET,
-      this.globalConstantService.listNames.BlockResource.name
+      this.globalConstantService.listNames.Blocking.name
     );
 
     return blockResBatchUrl;
@@ -706,7 +658,7 @@ export class UsercapacityComponent implements OnInit {
           const sTimeZone = tasks[index].TimeZone === null ? '+5.5' : tasks[index].TimeZone;
           const currentUserTimeZone = (new Date()).getTimezoneOffset() / 60 * -1;
           tasks[index].StartDate = this.commonservice.calcTimeForDifferentTimeZone(new Date(tasks[index].StartDate), currentUserTimeZone, sTimeZone);
-          tasks[index].DueDate = this.commonservice.calcTimeForDifferentTimeZone(new Date(tasks[index].DueDate), currentUserTimeZone, sTimeZone);
+          tasks[index].DueDate = this.commonservice.calcTimeForDifferentTimeZone(new Date(tasks[index].DueDateDT), currentUserTimeZone, sTimeZone);
           filteredTasks.push(tasks[index]);
         }
 
@@ -971,7 +923,7 @@ export class UsercapacityComponent implements OnInit {
         for (const j in oUser.tasks) {
           if (oUser.tasks.hasOwnProperty(j)) {
             const taskStartDate = new Date(this.datepipe.transform(new Date(oUser.tasks[j].StartDate), 'MMM dd, yyyy'));
-            const taskEndDate = new Date(this.datepipe.transform(new Date(oUser.tasks[j].DueDate), 'MMM dd, yyyy'));
+            const taskEndDate = new Date(this.datepipe.transform(new Date(oUser.tasks[j].DueDateDT), 'MMM dd, yyyy'));
             const taskBusinessDays = this.commonservice.calcBusinessDays(taskStartDate, taskEndDate);
             oUser.tasks[j].taskBusinessDays = taskBusinessDays;
             oUser.tasks[j].taskTotalDays = this.CalculateWorkingDays(
@@ -1045,7 +997,7 @@ export class UsercapacityComponent implements OnInit {
                 shortTitle: '',
                 milestoneDeadline: '',
                 startDate: oUser.tasks[j].StartDate,
-                dueDate: oUser.tasks[j].DueDate,
+                dueDate: oUser.tasks[j].DueDateDT,
                 timeAllocatedPerDay: oUser.tasks[j].timeAllocatedPerDay,
                 displayTimeAllocatedPerDay:
                   oUser.tasks[j].timeAllocatedPerDay !== null
@@ -1337,26 +1289,12 @@ export class UsercapacityComponent implements OnInit {
               // tslint:disable
               for (const index in miltasks) {
                 if (miltasks.hasOwnProperty(index)) {
-                  const sTimeZone =
-                    miltasks[index].TimeZone === null
-                      ? "+5.5"
-                      : miltasks[index].TimeZone;
-                  const currentUserTimeZone =
-                    (new Date().getTimezoneOffset() / 60) * -1;
-                  miltasks[
-                    index
-                  ].StartDate = this.commonservice.calcTimeForDifferentTimeZone(
-                    new Date(miltasks[index].StartDate),
-                    currentUserTimeZone,
-                    sTimeZone
-                  );
-                  miltasks[
-                    index
-                  ].DueDate = this.commonservice.calcTimeForDifferentTimeZone(
-                    new Date(miltasks[index].DueDate),
-                    currentUserTimeZone,
-                    sTimeZone
-                  );
+                  const sTimeZone = miltasks[index].TimeZone === null ? "+5.5" : miltasks[index].TimeZone;
+                  const currentUserTimeZone = (new Date()).getTimezoneOffset() / 60 * -1;
+                  miltasks[index].StartDate = this.commonservice.
+                    calcTimeForDifferentTimeZone(new Date(miltasks[index].StartDate), currentUserTimeZone, sTimeZone);
+                  miltasks[index].DueDateDT = this.commonservice.
+                    calcTimeForDifferentTimeZone(new Date(miltasks[index].DueDateDT), currentUserTimeZone, sTimeZone);
                 }
               }
               miltasks.sort(function (a, b) {
@@ -1633,7 +1571,7 @@ export class UsercapacityComponent implements OnInit {
             Title: tasks[i].Title,
             projectCode: tasks[i].ProjectCode,
             StartDate: tasks[i].StartDate,
-            EndDate: tasks[i].DueDate,
+            EndDate: tasks[i].DueDateDT,
             TimeSpentDate: new Date(
               this.datepipe.transform(tasks[i].StartDate, "MM/dd/yyyy")
             ),

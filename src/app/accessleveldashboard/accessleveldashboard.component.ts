@@ -50,17 +50,17 @@ export class AccessleveldashboardComponent implements OnInit {
     if (arrResults) {
       if (arrResults[0].retItems.length > 0) {
         this.constant.loader.isPSInnerLoaderHidden = true;
-        if (arrResults[0].retItems[0].Role === 'CM L1' || arrResults[0].retItems[0].Role === 'CM L2') {
+        if (arrResults[0].retItems[0].RoleCH === 'CM L1' || arrResults[0].retItems[0].RoleCH === 'CM L2') {
           if (arrResults[0].retItems[0].SkillLevel.Title.includes('Offsite')) {
             this.router.navigate(['/projectMgmt']);
           } else {
             this.router.navigate(['/projectMgmt/sendToClient']);
           }
-        } else if (arrResults[0].retItems[0].Role === 'Delivery L1' ||
-          arrResults[0].retItems[0].Role === 'Delivery L2' || arrResults[0].retItems[0].Role
-          === 'Delivery' || arrResults[0].retItems[0].Role === 'Others') {
+        } else if (arrResults[0].retItems[0].RoleCH === 'Delivery L1' ||
+          arrResults[0].retItems[0].RoleCH === 'Delivery L2' || arrResults[0].retItems[0].RoleCH
+          === 'Delivery' || arrResults[0].retItems[0].RoleCH === 'Others') {
           this.router.navigate(['/myDashboard']);
-        } else if (arrResults[0].retItems[0].Role === 'Finance') {
+        } else if (arrResults[0].retItems[0].RoleCH === 'Finance') {
 
           this.router.navigate(['/financeDashboard']);
         } else {

@@ -77,13 +77,12 @@ export class CapacityDashboardComponent implements OnInit {
     };
 
     const Resources = {
-      // tslint:disable
-      select:
-        "ID,UserName/Id,UserName/Title,UserName/EMail,PrimarySkill,Bucket,Practice_x0020_Area,MaxHrs,GoLiveDate,DateOfJoining,TimeZone/ID,TimeZone/Title,TimeZone/TimeZoneName",
-      expand: "UserName/ID,UserName/EMail,UserName/Title,TimeZone/ID,TimeZone/Title,TimeZone/TimeZoneName",
-      filter: "IsActive eq 'Yes'",
-      orderby: "UserName/Title asc",
-      top: 4500,
+      // tslint:disable 
+      select: "ID,UserNamePG/Id,UserNamePG/Title,UserNamePG/EMail,PrimarySkill,Bucket,Practice_x0020_Area,MaxHrs,GoLiveDate,DateOfJoining,TimeZone/ID,TimeZone/Title,TimeZone/TimeZoneName",
+      expand: "UserNamePG/ID,UserNamePG/EMail,UserNamePG/Title,TimeZone/ID,TimeZone/Title,TimeZone/TimeZoneName",
+      filter: "IsActiveCH eq 'Yes'",
+      orderby: "UserNamePG/Title asc",
+      top: 4500
       // tslint:enable
     };
     const resourcesGet = Object.assign({}, options);

@@ -163,7 +163,7 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
     let resources = await this.spService.readItems(this.globalConstant.listNames.ResourceCategorization.name, managerComponent.getManagerResources);
     resources = resources.length > 0 ? resources : [];
     resources = resources.map(item => item)
-      .filter((value, index, self) => self.findIndex(s => s.UserName.ID === value.UserName.ID) === index);
+      .filter((value, index, self) => self.findIndex(s => s.UserNamePG.ID === value.UserNamePG.ID) === index);
     return resources;
   }
 
@@ -188,7 +188,7 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
     this.common.SetNewrelic('QMS', 'manager-view', 'GetAllResources');
     const arrResult = await this.spService.executeBatch(batchURL);
     let resources = arrResult.length > 0 ? arrResult[0].retItems : [];
-    const managerInResourceIndex = resources.findIndex(r => r.UserName.ID === managerID);
+    const managerInResourceIndex = resources.findIndex(r => r.UserNamePG.ID === managerID);
     if (managerInResourceIndex > -1) {
       resources.splice(managerInResourceIndex, 1);
     }
@@ -338,7 +338,7 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
   async addScorecardItem(feedback) {
     const scorecardDetails = {
       FeedbackType: 'Qualitative',
-      Comments: feedback.comments,
+      CommentsMT: feedback.comments,
       AssignedToId: feedback.userId
     };
     this.common.SetNewrelic('QMS', 'manager-view', 'addScorecardItem');
@@ -379,7 +379,7 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
 
   getAverageRating(itemsArray) {
     const arrTaskFeedback = itemsArray.filter((t) => t.FeedbackType && t.FeedbackType === this.globalConstant.FeedbackType.taskRating);
-    const totalRating = arrTaskFeedback.reduce((a, b) => a + +b.AverageRating, 0);
+    const totalRating = arrTaskFeedback.reduce((a, b) => a + +b.AverageRatingNM, 0);
     const averageRating = +(totalRating / arrTaskFeedback.length).toFixed(2);
     const ratingObj = {
       rating: isNaN(averageRating) ? '0' : '' + averageRating,

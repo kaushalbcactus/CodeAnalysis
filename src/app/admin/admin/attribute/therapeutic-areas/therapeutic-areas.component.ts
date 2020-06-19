@@ -205,7 +205,8 @@ export class TherapeuticAreasComponent implements OnInit {
     }
     this.adminObject.isMainLoaderHidden = false;
     const data = {
-      Title: this.therapeuticArea
+      Title: this.therapeuticArea,
+      IsActiveCH: this.adminConstants.LOGICAL_FIELD.YES
     };
     this.common.SetNewrelic('admin', 'admin-attribute-therapeutic', 'createTA');
     const result = await this.spServices.createItem(this.constants.listNames.TA.name, data,
@@ -232,7 +233,7 @@ export class TherapeuticAreasComponent implements OnInit {
     this.common.confirmMessageDialog('Delete Confirmation','Do you want to delete this record?',null,['Yes','No'],false).then(async Confirmation => {
       if (Confirmation === 'Yes') {
         const updateData = {
-          Active: this.adminConstants.LOGICAL_FIELD.NO
+          IsActiveCH: this.adminConstants.LOGICAL_FIELD.NO
         };
         this.confirmUpdate(data, updateData, this.constants.listNames.TA.name, this.constants.listNames.TA.type);
 	  }

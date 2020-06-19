@@ -147,7 +147,7 @@ export class AddEditPoDialogComponent implements OnInit {
   *  2. TA                    - Get data for `TA` from `TA` list.
   *  3. Molecule              - Get data for `Molecule` from `Molecule` list.
   *  4. PO Buying Entity      - Get choice field data for `BuyingEntity` from `PO` list.
-  *  5. CM Level 2            - Get data for `CM Level 2` from `ResourceCategorization` list based on filter `Role='CM Level 2'`.
+  *  5. CM Level 2            - Get data for `CM Level 2` from `ResourceCategorization` list based on filter `RoleCH='CM Level 2'`.
   *  6. Currency              - Get data for `Currency` from `Currency` list.
   * @Note
   * 1. If `dropdown.CurrencyArray` & `dropdown.CMLevel2Array` is not null then it will not query the `Currency` and
@@ -167,7 +167,7 @@ export class AddEditPoDialogComponent implements OnInit {
       if (pocArray && pocArray.length) {
         this.adminObject.dropdown.POPointOfContactArray = [];
         pocArray.forEach(element => {
-          this.adminObject.dropdown.POPointOfContactArray.push({ label: element.FullName, value: element.ID });
+          this.adminObject.dropdown.POPointOfContactArray.push({ label: element.FullNameCC, value: element.ID });
         });
       }
       if (taArray && taArray.length) {
@@ -211,7 +211,7 @@ export class AddEditPoDialogComponent implements OnInit {
    * 2. TA                    - Get data for `TA` from `TA` list.
    * 3. Molecule              - Get data for `Molecule` from `Molecule` list.
    * 4. PO Buying Entity      - Get choice field data for `BuyingEntity` from `PO` list.
-   * 5. CM Level 2            - Get data for `CM Level 2` from `ResourceCategorization` list based on filter `Role='CM Level 2'`.
+   * 5. CM Level 2            - Get data for `CM Level 2` from `ResourceCategorization` list based on filter `RoleCH='CM Level 2'`.
    * 6. Currency              - Get data for `Currency` from `Currency` list.
    *
    * @Note
@@ -322,23 +322,23 @@ export class AddEditPoDialogComponent implements OnInit {
     this.adminObject.dropdown.DeliveryLevel1Array = [];
     this.adminObject.dropdown.DeliveryLevel2Array = [];
     array.forEach(element => {
-      const role = element.Role;
+      const role = element.RoleCH;
       switch (role) {
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.CMLevel1:
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.CMLevel2:
-          this.adminObject.dropdown.CMLevel1Array.push({ label: element.UserName.Title, value: element.UserName.ID });
+          this.adminObject.dropdown.CMLevel1Array.push({ label: element.UserNamePG.Title, value: element.UserNamePG.ID });
           break;
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.DELIVERY_LEVEL_1:
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.DELIVERY_LEVEL_2:
-          this.adminObject.dropdown.DeliveryLevel1Array.push({ label: element.UserName.Title, value: element.UserName.ID });
+          this.adminObject.dropdown.DeliveryLevel1Array.push({ label: element.UserNamePG.Title, value: element.UserNamePG.ID });
           break;
       }
       switch (role) {
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.CMLevel2:
-          this.adminObject.dropdown.CMLevel2Array.push({ label: element.UserName.Title, value: element.UserName.ID });
+          this.adminObject.dropdown.CMLevel2Array.push({ label: element.UserNamePG.Title, value: element.UserNamePG.ID });
           break;
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.DELIVERY_LEVEL_2:
-          this.adminObject.dropdown.DeliveryLevel2Array.push({ label: element.UserName.Title, value: element.UserName.ID });
+          this.adminObject.dropdown.DeliveryLevel2Array.push({ label: element.UserNamePG.Title, value: element.UserNamePG.ID });
           break;
       }
     });

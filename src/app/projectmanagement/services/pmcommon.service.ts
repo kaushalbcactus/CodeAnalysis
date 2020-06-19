@@ -60,7 +60,7 @@ export class PMCommonService {
               element.userType = 'Other';
               filteredResources.push(element);
             }
-            element.Title = element.UserName.Title;
+            element.Title = element.UserNamePG.Title;
           }
         }
       });
@@ -307,8 +307,8 @@ export class PMCommonService {
     if (arrResults && arrResults.length) {
       this.pmObject.resourceCatItems = arrResults[0].retItems;
       if (this.pmObject.resourceCatItems.length) {
-        if (this.pmObject.resourceCatItems[0].Role === this.pmConstant.resourCatConstant.CMLevel1 ||
-          this.pmObject.resourceCatItems[0].Role === this.pmConstant.resourCatConstant.CMLevel2) {
+        if (this.pmObject.resourceCatItems[0].RoleCH === this.pmConstant.resourCatConstant.CMLevel1 ||
+          this.pmObject.resourceCatItems[0].RoleCH === this.pmConstant.resourCatConstant.CMLevel2) {
           this.pmObject.isUserAllowed = false;
           // this.bindMenuItems();
         }
@@ -363,23 +363,23 @@ export class PMCommonService {
     this.pmObject.oProjectCreation.Resources.primaryRes = [];
     if (resourcesArray && resourcesArray.length) {
       resourcesArray.forEach(element => {
-        const role = element.Role;
+        const role = element.RoleCH;
         switch (role) {
           case this.pmConstant.resourCatConstant.CMLevel1:
-            this.pmObject.oProjectCreation.Resources.cmLevel1.push(element.UserName);
+            this.pmObject.oProjectCreation.Resources.cmLevel1.push(element.UserNamePG);
             break;
           case this.pmConstant.resourCatConstant.CMLevel2:
-            this.pmObject.oProjectCreation.Resources.cmLevel2.push(element.UserName);
-            this.pmObject.oProjectCreation.Resources.businessDevelopment.push(element.UserName);
+            this.pmObject.oProjectCreation.Resources.cmLevel2.push(element.UserNamePG);
+            this.pmObject.oProjectCreation.Resources.businessDevelopment.push(element.UserNamePG);
             break;
           case this.pmConstant.resourCatConstant.DELIVERY_LEVEL_1:
-            this.pmObject.oProjectCreation.Resources.deliveryLevel1.push(element.UserName);
+            this.pmObject.oProjectCreation.Resources.deliveryLevel1.push(element.UserNamePG);
             break;
           case this.pmConstant.resourCatConstant.DELIVERY_LEVEL_2:
-            this.pmObject.oProjectCreation.Resources.deliveryLevel2.push(element.UserName);
+            this.pmObject.oProjectCreation.Resources.deliveryLevel2.push(element.UserNamePG);
             break;
           case this.pmConstant.resourCatConstant.BUSINESS_DEVELOPMENT:
-            this.pmObject.oProjectCreation.Resources.businessDevelopment.push(element.UserName);
+            this.pmObject.oProjectCreation.Resources.businessDevelopment.push(element.UserNamePG);
             break;
         }
         // if (element && element.Categories && element.Categories.results && element.Categories.results.length) {
@@ -444,10 +444,10 @@ export class PMCommonService {
     batchURL.push(billingEndPoint);
     // Get Practice Area  ##2
     const practiceAreaEndPoint = Object.assign({}, options);
-    practiceAreaEndPoint.url = this.spServices.getReadURL('' + this.constant.listNames.BusinessVerticals.name + '',
+    practiceAreaEndPoint.url = this.spServices.getReadURL('' + this.constant.listNames.PracticeArea.name + '',
       this.pmConstant.DROP_DOWN_QUERY.PRACTICE_AREA);
     practiceAreaEndPoint.type = 'GET',
-      practiceAreaEndPoint.listName = this.constant.listNames.BusinessVerticals.name;
+      practiceAreaEndPoint.listName = this.constant.listNames.PracticeArea.name;
     batchURL.push(practiceAreaEndPoint);
     // Get Client Legal Entity ##3
     const clientLegalEntityEndPoint = Object.assign({}, options);
@@ -517,10 +517,10 @@ export class PMCommonService {
     const tempArray = [];
     this.pmObject.oProjectManagement.oResourcesCat.forEach(element => {
       arrayOfIds.forEach(tempOjb => {
-        if (element.UserName && tempOjb.hasOwnProperty('ID') && element.UserName.ID === tempOjb.ID) {
-          tempArray.push(element.UserName.Title);
-        } else if (element.UserName && element.UserName.ID === tempOjb) {
-          tempArray.push(element.UserName.Title);
+        if (element.UserNamePG && tempOjb.hasOwnProperty('ID') && element.UserNamePG.ID === tempOjb.ID) {
+          tempArray.push(element.UserNamePG.Title);
+        } else if (element.UserNamePG && element.UserNamePG.ID === tempOjb) {
+          tempArray.push(element.UserNamePG.Title);
         }
       });
     });
@@ -535,7 +535,7 @@ export class PMCommonService {
     this.pmObject.projectContactsItems.forEach((element) => {
       ids.forEach(tempOjb => {
         if (element.ID === tempOjb) {
-          tempArray.push(element.FullName);
+          tempArray.push(element.FullNameCC);
         }
       });
     });
@@ -547,7 +547,7 @@ export class PMCommonService {
     contentFilter.filter = contentFilter.filter.replace(/{{templateName}}/gi, templateName);
     this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetMailContent');
     const body = await this.spServices.readItems(this.constant.listNames.MailContent.name, contentFilter);
-    let mailBody = body[0].Content;
+    let mailBody = body[0].ContentMT;
     objEmailBody.forEach(element => {
       mailBody = mailBody.replace(RegExp(element.key, 'gi'), element.value);
     });
@@ -559,10 +559,10 @@ export class PMCommonService {
     const arrayTo = [];
     this.pmObject.oProjectManagement.oResourcesCat.forEach(element => {
       tempArray.forEach(tempOjb => {
-        if (tempOjb && tempOjb.hasOwnProperty('ID') && element.UserName && element.UserName.ID === tempOjb.ID) {
-          arrayTo.push(element.UserName.EMail);
-        } else if (tempOjb && element.UserName.ID === tempOjb) {
-          arrayTo.push(element.UserName.EMail);
+        if (tempOjb && tempOjb.hasOwnProperty('ID') && element.UserNamePG && element.UserNamePG.ID === tempOjb.ID) {
+          arrayTo.push(element.UserNamePG.EMail);
+        } else if (tempOjb && element.UserNamePG.ID === tempOjb) {
+          arrayTo.push(element.UserNamePG.EMail);
         }
       });
     });
@@ -623,16 +623,16 @@ export class PMCommonService {
       },
       DeliveryLevel2Id: addObj.ProjectAttributes.ActiveDelivery2,
       SubDivision: addObj.ProjectAttributes.SubDivision ? addObj.ProjectAttributes.SubDivision : '',
-      Priority: addObj.ProjectAttributes.Priority,
+      PriorityST: addObj.ProjectAttributes.Priority,
       Indication: addObj.ProjectAttributes.Indication,
       Molecule: addObj.ProjectAttributes.Molecule,
       IsPubSupport: addObj.ProjectAttributes.PUBSupportRequired ? 'Yes' : 'No',
-      Description: addObj.ProjectAttributes.EndUseofDeliverable ? addObj.ProjectAttributes.EndUseofDeliverable : '',
+      DescriptionMT: addObj.ProjectAttributes.EndUseofDeliverable ? addObj.ProjectAttributes.EndUseofDeliverable : '',
       POC: addObj.ProjectAttributes.PointOfContact2 ? addObj.ProjectAttributes.PointOfContact2.join(';#') : '',
       Authors: addObj.ProjectAttributes.Authors ? addObj.ProjectAttributes.Authors : '',
       IsStandard: addObj.Timeline.Standard.IsStandard ? 'Yes' : 'No',
       ConferenceJournal: addObj.ProjectAttributes.ConferenceJournal ? addObj.ProjectAttributes.ConferenceJournal : '',
-      Comments: addObj.ProjectAttributes.Comments ? addObj.ProjectAttributes.Comments : '',
+      CommentsMT: addObj.ProjectAttributes.Comments ? addObj.ProjectAttributes.Comments : '',
       PubSupportStatus: addObj.ProjectAttributes.PUBSupportStatus ? addObj.ProjectAttributes.PUBSupportStatus : '',
       SOWLink: addObj.FinanceManagement.SOWFileURL ? addObj.FinanceManagement.SOWFileURL : '',
       SlideCount: addObj.ProjectAttributes.SlideCount,
@@ -642,6 +642,8 @@ export class PMCommonService {
     };
     if (isCreate) {
       data.SOWCode = addObj.SOWSelect.SOWCode;
+      data.IsApproved = 'No';
+      data.QuickProject = 'No';
       // data.Milestones = addObj.Timeline.Standard.IsStandard ? addObj.Timeline.Standard.Milestones : '';
       data.Milestones = '';
       if (addObj.Timeline.Standard.IsStandard) {
@@ -679,39 +681,39 @@ export class PMCommonService {
     const resource: any = addObj.Timeline.Standard.IsStandard ? addObj.Timeline.Standard.Resource :
       addObj.Timeline.NonStandard.ResourceName;
     if (resource && resource.hasOwnProperty('userType') && resource.userType !== 'Type') {
-      primaryResourceId.push(resource.UserName.ID);
+      primaryResourceId.push(resource.UserNamePG.ID);
       const skillLevel = resource.SkillLevel.Title.replace(' Offsite', '').replace(' Onsite', '').replace('Jr ', '').replace('Sr ', '');
       switch (skillLevel) {
         case this.constant.SKILL_LEVEL.WRITER:
           data.WritersId = {
-            results: [resource.UserName.ID]
+            results: [resource.UserNamePG.ID]
           };
           break;
         case this.constant.SKILL_LEVEL.EDITOR:
           data.EditorsId = {
-            results: [resource.UserName.ID]
+            results: [resource.UserNamePG.ID]
           };
           break;
         case this.constant.SKILL_LEVEL.GRAPHICS:
           data.GraphicsMembersId = {
-            results: [resource.UserName.ID]
+            results: [resource.UserNamePG.ID]
           };
           break;
         case this.constant.SKILL_LEVEL.QC:
           data.QCId = {
-            results: [resource.UserName.ID]
+            results: [resource.UserNamePG.ID]
           };
           break;
       }
-      arrId.push(resource.UserName.ID);
+      arrId.push(resource.UserNamePG.ID);
     }
     const reviewer: any = addObj.Timeline.Standard.Reviewer;
     if (addObj.Timeline.Standard.IsStandard &&
       reviewer && reviewer.hasOwnProperty('userType') && reviewer.userType !== 'Type') {
       data.ReviewersId = {
-        results: [reviewer.UserName.ID]
+        results: [reviewer.UserNamePG.ID]
       };
-      arrId.push(reviewer.UserName.ID);
+      arrId.push(reviewer.UserNamePG.ID);
     }
     if (arrId && arrId.length) {
       data.AllDeliveryResourcesId = {
@@ -769,7 +771,7 @@ export class PMCommonService {
     this.pmObject.addSOW.SOWCreationDate = new Date(sowItem.CreatedDate);
     this.pmObject.addSOW.SOWExpiryDate = new Date(sowItem.ExpiryDate);
     this.pmObject.addSOW.Status = sowItem.Status;
-    this.pmObject.addSOW.Comments = sowItem.Comments ? sowItem.Comments : '';
+    this.pmObject.addSOW.Comments = sowItem.CommentsMT ? sowItem.CommentsMT : '';
     this.pmObject.addSOW.Currency = sowItem.Currency;
     this.pmObject.addSOW.SOWDocument = sowItem.SOWLink ? sowItem.SOWLink : '';
     if (this.pmObject.addSOW.SOWDocument) {
@@ -1012,7 +1014,7 @@ export class PMCommonService {
       listName: ''
     };
     // Create Main Summary Call ## 15
-    const summaryObj = {
+    /*const summaryObj = {
       __metadata: { type: this.constant.listNames.Schedules.type },
       Title: this.pmObject.addProject.ProjectAttributes.ProjectCode,
       FileSystemObjectType: 1,
@@ -1024,7 +1026,7 @@ export class PMCommonService {
     createSummaryObj.type = 'POST';
     createSummaryObj.listName = this.constant.listNames.Schedules.name;
     batchURL.push(createSummaryObj);
-    counter += 1;
+    counter += 1;*/
     // Create Folder Call ## 1 - 14
     const folderArray = this.createFolderArray(this.pmObject.addProject.ProjectAttributes.ClientLegalEntity,
       this.pmObject.addProject.ProjectAttributes.ProjectCode);
@@ -1069,7 +1071,7 @@ export class PMCommonService {
     projectFinanceCreate.listName = this.constant.listNames.ProjectFinances.name;
     batchURL.push(projectFinanceCreate);
     counter += 1;
-    // Add data to projectFinanceBreakup call ##19
+    // Add data to projectFinanceBreakup call ##18
     const projectFinanceBreakArray = this.getProjectFinanceBreakupData();
     projectFinanceBreakArray.forEach(element => {
       const projectFinanceBreakupCreate = Object.assign({}, options);
@@ -1082,7 +1084,7 @@ export class PMCommonService {
     });
     if (this.pmObject.addProject.ProjectAttributes.BilledBy === this.pmConstant.PROJECT_TYPE.DELIVERABLE.value ||
       this.pmObject.addProject.ProjectAttributes.BilledBy === this.pmConstant.PROJECT_TYPE.FTE.value) {
-      //  Add data to  InvoiceLineItem call ## 20
+      //  Add data to  InvoiceLineItem call ## 19
       const invoiceLineItemArray = this.getInvoiceLineItemData();
       invoiceLineItemArray.forEach(element => {
         const createForderObj: any = Object.assign({}, options);
@@ -1093,7 +1095,7 @@ export class PMCommonService {
         batchURL.push(createForderObj);
         counter += 1;
       });
-      // Add data to  SOWItem call ## 21
+      // Add data to  SOWItem call ## 20
       const sowItemData = this.getSowItemData(projectFinanceData);
       const selectSOWItem: any = this.pmObject.addProject.SOWSelect.SOWSelectedItem;
       const sowItemCreate = Object.assign({}, options);
@@ -1103,7 +1105,7 @@ export class PMCommonService {
       sowItemCreate.listName = this.constant.listNames.SOW.name;
       batchURL.push(sowItemCreate);
       counter += 1;
-      // Add data to POItem call ## 22
+      // Add data to POItem call ## 21
       const poItemArray = this.getPoItemData(projectFinanceBreakArray);
       poItemArray.forEach(element => {
         const poItemCreate = Object.assign({}, options);
@@ -1204,7 +1206,8 @@ export class PMCommonService {
       Realization: '50',
       Template: billingEntity && billingEntity.length ? billingEntity[0].InvoiceTemplate : '',
       Currency: addObj.FinanceManagement.Currency,
-      BudgetHrs: addObj.FinanceManagement.BudgetHours
+      BudgetHrs: addObj.FinanceManagement.BudgetHours,
+      LastInvoiceSent: 'No'
     };
     if (addObj.ProjectAttributes.BilledBy === this.pmConstant.PROJECT_TYPE.HOURLY.value) {
       data.Budget = addObj.FinanceManagement.Rate;
@@ -1253,7 +1256,8 @@ export class PMCommonService {
       const data: any = {
         __metadata: { type: this.constant.listNames.ProjectFinanceBreakup.type },
         ProjectNumber: addObj.ProjectAttributes.ProjectCode,
-        POLookup: po.poId
+        POLookup: po.poId,
+        Status: 'Active'
       };
       if (addObj.ProjectAttributes.BilledBy === this.pmConstant.PROJECT_TYPE.HOURLY.value) {
         data.Amount = 0;
@@ -1387,7 +1391,7 @@ export class PMCommonService {
     projectBudgetBreakupCreate.listName = this.constant.listNames.ProjectBudgetBreakup.name;
     batchURL.push(projectBudgetBreakupCreate);
     // This call is used to rename the ProjectCode.
-    const projectCodeMoveUrl = this.globalObject.sharePointPageObject.webAbsoluteUrl +
+    /*const projectCodeMoveUrl = this.globalObject.sharePointPageObject.webAbsoluteUrl +
       '/_api/Web/Lists/getByTitle(\'' + this.constant.listNames.Schedules.name + '\')/Items' +
       '(' + response[0].retItems.ID + ')';
     const projectCodeMoveData = {
@@ -1399,7 +1403,14 @@ export class PMCommonService {
     moveMilewithDataObj.data = projectCodeMoveData;
     moveMilewithDataObj.type = 'PATCH';
     moveMilewithDataObj.listName = this.constant.listNames.Schedules.name;
-    batchURL.push(moveMilewithDataObj);
+    batchURL.push(moveMilewithDataObj);*/
+    // get project folder from projectInformation list
+
+    const getProjectFolder = Object.assign({}, this.pmConstant.ProjectInformation_Get_ProjectFolder_Options);
+    getProjectFolder.filter = getProjectFolder.filter.replace(/{{projectCode}}/gi,
+      this.pmObject.addProject.ProjectAttributes.ProjectCode);
+    const projectFolderResults = await this.spServices.readItems(this.constant.listNames.ProjectInformation.name, getProjectFolder);
+    const projectFolder = projectFolderResults && projectFolderResults.length ? projectFolderResults[0].ProjectFolder : '';
     if (this.pmObject.addProject.Timeline.Standard.IsStandard) {
       const milestones = this.pmObject.addProject.Timeline.Standard.standardArray;
       const projectCode = this.pmObject.addProject.ProjectAttributes.ProjectCode;
@@ -1418,11 +1429,11 @@ export class PMCommonService {
           // create the milestone folder.
           const milestoneFolderBody = {
             __metadata: { type: 'SP.Folder' },
-            ServerRelativeUrl: response[10].listName + '/' + milestoneObj.data.Name
+            ServerRelativeUrl: projectFolder + '/' + milestoneObj.data.Name // projectCode- folder Internal 
           };
           const createForderObj = Object.assign({}, options);
           createForderObj.data = milestoneFolderBody;
-          // createForderObj.listName = element;
+          //createForderObj.listName = element;
           createForderObj.type = 'POST';
           createForderObj.url = this.spServices.getFolderCreationURL();
           counter += 1;
@@ -1502,14 +1513,14 @@ export class PMCommonService {
     // Logic for creating Milestone and Task for FTE-Writing.
     if (this.pmObject.addProject.FinanceManagement.BilledBy ===
       this.pmConstant.PROJECT_TYPE.FTE.value) {
-      batchResults = await this.createFTEMilestones(response);
+      batchResults = await this.createFTEMilestones(response, projectFolder);
       finalArray = [...finalArray, ...batchResults];
     }
 
-    if (finalArray && finalArray.length && (this.pmObject.addProject.Timeline.Standard.IsStandard ||
-      this.pmObject.addProject.FinanceManagement.BilledBy === this.pmConstant.PROJECT_TYPE.FTE.value)) {
-      await this.moveMilestoneAndTask(finalArray, this.pmObject.addProject.ProjectAttributes.ProjectCode);
-    }
+    // if (finalArray && finalArray.length && (this.pmObject.addProject.Timeline.Standard.IsStandard ||
+    //   this.pmObject.addProject.FinanceManagement.BilledBy === this.pmConstant.PROJECT_TYPE.FTE.value)) {
+    //   await this.moveMilestoneAndTask(finalArray, this.pmObject.addProject.ProjectAttributes.ProjectCode);
+    // }
   }
   async moveMilestoneAndTask(results, ProjectCode) {
 
@@ -1579,7 +1590,7 @@ export class PMCommonService {
 
     this.pmObject.isMainLoaderHidden = true;
   }
-  async createFTEMilestones(response) {
+  async createFTEMilestones(response, projectFolder) {
     const monthObjArray = this.pmObject.addProject.Timeline.NonStandard.months;
     const options = {
       data: null,
@@ -1601,7 +1612,7 @@ export class PMCommonService {
       // create the milestone folder.
       const milestoneFolderBody = {
         __metadata: { type: 'SP.Folder' },
-        ServerRelativeUrl: response[10].listName + '/' + element.monthName
+        ServerRelativeUrl: projectFolder + '/Drafts/Internal/' + element.monthName
       };
       const createForderObj = Object.assign({}, options);
       createForderObj.data = milestoneFolderBody;
@@ -1647,12 +1658,13 @@ export class PMCommonService {
       Actual_x0020_Start_x0020_Date: fteObj.monthStartDay,
       Actual_x0020_End_x0020_Date: fteObj.monthEndDay,
       StartDate: fteObj.monthStartDay,
-      DueDate: fteObj.monthEndDay,
+      DueDateDT: fteObj.monthEndDay,
       Status: this.constant.STATUS.NOT_CONFIRMED,
       ProjectCode: projectCode,
       Title: fteObj.monthName,
-      FileSystemObjectType: 1,
-      ContentTypeId: '0x0120'
+      // FileSystemObjectType: 1,
+      // ContentTypeId: '0x0120'
+      ContentTypeCH: this.constant.CONTENT_TYPE.MILESTONE
     };
     return data;
   }
@@ -1664,54 +1676,57 @@ export class PMCommonService {
       data = {
         __metadata: { type: this.constant.listNames.Schedules.type },
         StartDate: fteObj.monthStartDay,
-        DueDate: fteObj.monthEndDay,
+        DueDateDT: fteObj.monthEndDay,
         ExpectedTime: '' + businessDay * resourceObj.MaxHrs,
-        TimeZone: '' + resourceObj.TimeZone.Title,
+        TimeZoneNM: resourceObj.TimeZone.Title,
         TATBusinessDays: businessDay,
         Status: this.constant.STATUS.NOT_CONFIRMED,
         Title: projectCode + ' ' + fteObj.monthName + ' ' + this.pmConstant.task.BLOCKING,
         ProjectCode: projectCode,
         Task: this.pmConstant.task.BLOCKING,
         Milestone: fteObj.monthName,
-        AssignedToId: resourceObj.UserName.ID,
+        AssignedToId: resourceObj.UserNamePG.ID,
         IsCentrallyAllocated: 'No',
-        ActiveCA: 'No'
+        ActiveCA: 'No',
+        ContentTypeCH: this.constant.CONTENT_TYPE.TASK
       };
     }
     if (taskType === this.pmConstant.task.MEETING) {
       data = {
         __metadata: { type: this.constant.listNames.Schedules.type },
         StartDate: fteObj.monthStartDay,
-        DueDate: fteObj.monthEndDay,
+        DueDateDT: fteObj.monthEndDay,
         ExpectedTime: '' + 0,
-        TimeZone: '' + resourceObj.TimeZone.Title,
+        TimeZoneNM: resourceObj.TimeZone.Title,
         TATBusinessDays: 0,
         Status: this.constant.STATUS.NOT_CONFIRMED,
         Title: projectCode + ' ' + fteObj.monthName + ' ' + this.pmConstant.task.MEETING,
         ProjectCode: projectCode,
         Task: this.pmConstant.task.MEETING,
         Milestone: fteObj.monthName,
-        AssignedToId: resourceObj.UserName.ID,
+        AssignedToId: resourceObj.UserNamePG.ID,
         IsCentrallyAllocated: 'No',
-        ActiveCA: 'No'
+        ActiveCA: 'No',
+        ContentTypeCH: this.constant.CONTENT_TYPE.TASK
       };
     }
     if (taskType === this.pmConstant.task.TRAINING) {
       data = {
         __metadata: { type: this.constant.listNames.Schedules.type },
         StartDate: fteObj.monthStartDay,
-        DueDate: fteObj.monthEndDay,
+        DueDateDT: fteObj.monthEndDay,
         ExpectedTime: '' + 0,
-        TimeZone: '' + resourceObj.TimeZone.Title,
+        TimeZoneNM: resourceObj.TimeZone.Title,
         TATBusinessDays: 0,
         Status: this.constant.STATUS.NOT_CONFIRMED,
         Title: projectCode + ' ' + fteObj.monthName + ' ' + this.pmConstant.task.TRAINING,
         ProjectCode: projectCode,
         Task: this.pmConstant.task.TRAINING,
         Milestone: fteObj.monthName,
-        AssignedToId: resourceObj.UserName.ID,
+        AssignedToId: resourceObj.UserNamePG.ID,
         IsCentrallyAllocated: 'No',
-        ActiveCA: 'No'
+        ActiveCA: 'No',
+        ContentTypeCH: this.constant.CONTENT_TYPE.TASK
       };
     }
     return data;
@@ -1728,14 +1743,15 @@ export class PMCommonService {
       Actual_x0020_Start_x0020_Date: milestoneObj.StartDate,
       Actual_x0020_End_x0020_Date: milestoneObj.EndDate,
       StartDate: milestoneObj.StartDate,
-      DueDate: milestoneObj.EndDate,
+      DueDateDT: milestoneObj.EndDate,
       ExpectedTime: '' + milestoneObj.Hours,
       Status: this.constant.STATUS.NOT_CONFIRMED,
       TATBusinessDays: milestoneObj.Days,
       ProjectCode: projectCode,
       Title: milestoneObj.Name,
-      FileSystemObjectType: 1,
-      ContentTypeId: '0x0120',
+      //FileSystemObjectType: 1,
+      //ContentTypeId: '0x0120',
+      ContentTypeCH: this.constant.CONTENT_TYPE.MILESTONE,
       SubMilestones: milestoneObj.strSubMilestone,
     };
     return data;
@@ -1755,11 +1771,11 @@ export class PMCommonService {
     const data: any = {
       __metadata: { type: this.constant.listNames.Schedules.type },
       StartDate: startDate,
-      DueDate: endDate,
+      DueDateDT: endDate,
       ExpectedTime: '' + milestoneTask.Hours,
-      TimeZone: '' + milestoneTask.assignedUserTimeZone,
+      TimeZoneNM: milestoneTask.assignedUserTimeZone,
       AllowCompletion: 'No',
-      TATStatus: milestoneTask.Task === 'Client Review' ? 'No' : milestoneTask.UseTaskDays,
+      TATStatus: milestoneTask.UseTaskDays,
       TATBusinessDays: milestoneTask.TaskDays,
       Status: this.constant.STATUS.NOT_CONFIRMED,
       SubMilestones: milestoneTask.SubMilestone,
@@ -1768,6 +1784,9 @@ export class PMCommonService {
       Task: milestoneTask.Task,
       Milestone: milestoneObj.MilestoneName,
       SkillLevel: milestoneTask.Skill,
+      CentralAllocationDone: 'No',
+      DisableCascade:'No',
+      
     };
     if (milestoneTask.userId > 0) {
       data.AssignedToId = milestoneTask.userId;
@@ -1823,17 +1842,12 @@ export class PMCommonService {
       data.PrevTasks = milestoneTask.PrevTasks;
     }
     if (milestoneTask.Skill === 'Editor' || milestoneTask.Skill === 'QC' || milestoneTask.Skill === 'Graphics') {
-      const clientLegal = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
-        x.Title === this.pmObject.addProject.ProjectAttributes.ClientLegalEntity);
-      if (clientLegal && clientLegal.length && clientLegal[0].IsCentrallyAllocated === 'Yes') {
-        data.IsCentrallyAllocated = 'Yes';
-      } else {
-        data.IsCentrallyAllocated = 'No';
-      }
+      data.IsCentrallyAllocated = 'Yes';
+      data.ContentTypeCH = this.constant.CONTENT_TYPE.SLOT;
     } else {
       data.IsCentrallyAllocated = 'No';
+      data.ContentTypeCH = this.constant.CONTENT_TYPE.TASK;
     }
-
     return data;
   }
   /**

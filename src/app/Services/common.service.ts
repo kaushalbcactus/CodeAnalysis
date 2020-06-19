@@ -638,7 +638,7 @@ export class CommonService {
 
     //////////// Refactor code
     /*****************************************************************
-
+   
     Call Api to Get Project Resources
    *******************************************************************/
 
@@ -749,14 +749,14 @@ export class CommonService {
     }
 
     // ***********************************************************************************************************************************
-    // Get Project Data
+    // Get Project Data 
     // ***********************************************************************************************************************************
 
     public setLevel1Email(prjObj) {
 
         if (prjObj.CMLevel1.results) {
             prjObj.CMLevel1.results = prjObj.CMLevel1.results.map(cmL1 => {
-                var cm = this.sharedTaskAllocateObj.oResources.filter(user => user.UserName.ID === cmL1.ID).map(u => u.UserName.EMail);
+                var cm = this.sharedTaskAllocateObj.oResources.filter(user => user.UserNamePG.ID === cmL1.ID).map(u => u.UserNamePG.EMail);
                 cmL1.EMail = cm.length > 0 ? cm[0] : ''
                 return cmL1;
             });

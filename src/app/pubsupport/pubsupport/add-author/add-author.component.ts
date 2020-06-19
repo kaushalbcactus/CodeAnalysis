@@ -98,15 +98,27 @@ export class AddAuthorComponent implements OnInit {
             return;
         }
         this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
-        this.add_author_form.value.Title = this.selectedRowItem.ProjectCode;
-        this.add_author_form.value.__metadata = { type: this.constantService.listNames.addAuthor.type };
+        //this.add_author_form.value.Title = this.selectedRowItem.ProjectCode;
+        //this.add_author_form.value.__metadata = { type: this.constantService.listNames.Authors.type };
         // const endpoint = this.pubsupportService.pubsupportComponent.addAuthor.addAuthorDetails;
-        const endpoint = this.spOperationsService.getReadURL(this.constantService.listNames.addAuthor.name);
+        // Added by Arvind
+        let obj = this.add_author_form.value;
+        obj['Title'] = this.selectedRowItem.ProjectCode;
+        obj['CommentsMT'] = obj['Comments'];
+        delete obj['Comments'];
+        obj['FirstNameST'] =  obj['FirstName'];
+        delete obj['FirstName'];
+        obj['AddressMT'] = obj['Address'];
+        delete obj['Address'];
+        obj['__metadata'] = { type: this.constantService.listNames.Authors.type };
+        // Arvind code end here.
+        const endpoint = this.spOperationsService.getReadURL(this.constantService.listNames.Authors.name);
         const data = [{
-            data: this.add_author_form.value,
+            // data: this.add_author_form.value,
+            data: obj,
             url: endpoint,
             type: 'POST',
-            listName: this.constantService.listNames.addAuthor.name
+            listName: this.constantService.listNames.Authors.name
         }];
         this.submit(data, type);
     }

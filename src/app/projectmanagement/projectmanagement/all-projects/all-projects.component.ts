@@ -202,10 +202,10 @@ export class AllProjectsComponent implements OnInit {
       this.CSButtonEnable = true;
       this.FinanceButtonEnable = true;
     }
-    else if (this.pmObject.userRights.isInvoiceTeam || this.pmObject.resourceCatItems[0].Role === this.pmConstant.resourCatConstant.FINANCE) {
+    else if (this.pmObject.userRights.isInvoiceTeam || this.pmObject.resourceCatItems[0].RoleCH === this.pmConstant.resourCatConstant.FINANCE) {
       this.FinanceButtonEnable = true;
     }
-    else if (this.pmObject.resourceCatItems[0].Role === this.pmConstant.resourCatConstant.CMLevel1 || this.pmObject.resourceCatItems[0].Role === this.pmConstant.resourCatConstant.CMLevel2) {
+    else if (this.pmObject.resourceCatItems[0].RoleCH === this.pmConstant.resourCatConstant.CMLevel1 || this.pmObject.resourceCatItems[0].RoleCH === this.pmConstant.resourCatConstant.CMLevel2) {
       this.CSButtonEnable = true;
     }
 
@@ -245,7 +245,7 @@ export class AllProjectsComponent implements OnInit {
           };
         } else {
           earlyTask = {
-            IsActive: 'No'
+            IsActiveCH: 'No'
           };
         }
         this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'updateEarlyTaskNotification');
@@ -500,9 +500,9 @@ export class AllProjectsComponent implements OnInit {
         projObj.ProposedEndDate = new Date(task.ProposedEndDate);
         projObj.ActualStartDate = new Date(task.ActualStartDate);
         projObj.ActualEndDate = new Date(task.ActualEndDate);
-        projObj.Description = task.Description ? task.Description : '';
+        projObj.Description = task.DescriptionMT ? task.DescriptionMT : '';
         projObj.ConferenceJournal = task.ConferenceJournal ? task.ConferenceJournal : '';
-        projObj.Comments = task.Comments ? task.Comments : '';
+        projObj.Comments = task.CommentsMT ? task.CommentsMT : '';
         projObj.PO = task.PO;
         projObj.Milestone = task.Milestone ? task.Milestone : '';
         projObj.Milestones = task.Milestones ? task.Milestones : '';
@@ -529,7 +529,7 @@ export class AllProjectsComponent implements OnInit {
         projObj.PubSupportStatus = task.PubSupportStatus ? task.PubSupportStatus : '';
         projObj.IsStandard = task.IsStandard ? task.IsStandard : '';
         projObj.StandardService = task.StandardService ? task.StandardService : '';
-        projObj.Priority = task.Priority ? task.Priority : '';
+        projObj.Priority = task.PriorityST ? task.PriorityST : '';
         projObj.Authors = task.Authors ? task.Authors : '';
 
         projObj.SlideCount = task.SlideCount ? task.SlideCount : 0;
@@ -930,8 +930,8 @@ export class AllProjectsComponent implements OnInit {
 
     const result = await this.getGetIds(selectedProjectObj, projectAction);
     if (result && result.length) {
-      const scheduleItems = result.find(c => c.listName === 'Schedules') ? result.find(c =>
-        c.listName === 'Schedules').retItems : [];
+      const scheduleItems = result.find(c => c.listName === this.constants.listNames.Schedules.name) ? result.find(c =>
+        c.listName === this.constants.listNames.Schedules.name).retItems : [];
       switch (projectAction) {
         case this.pmConstant.ACTION.CONFIRM_PROJECT:
           this.loaderView.nativeElement.classList.remove('show');
@@ -946,8 +946,8 @@ export class AllProjectsComponent implements OnInit {
           break;
         case this.pmConstant.ACTION.PROPOSE_CLOSURE:
 
-          const pbbItems = result.find(c => c.listName === 'ProjectBudgetBreakup') ? result.find(c =>
-            c.listName === 'ProjectBudgetBreakup').retItems : [];
+          const pbbItems = result.find(c => c.listName === this.constants.listNames.ProjectBudgetBreakup.name) ? result.find(c =>
+            c.listName === this.constants.listNames.ProjectBudgetBreakup.name).retItems : [];
           if (pbbItems) {
             if (pbbItems.find(c => c.Status === 'Approval Pending')) {
 
@@ -957,8 +957,8 @@ export class AllProjectsComponent implements OnInit {
               break;
             }
           }
-          const InvoiceLineItems = result.find(c => c.listName === 'InvoiceLineItems') ? result.find(c =>
-            c.listName === 'InvoiceLineItems').retItems : [];
+          const InvoiceLineItems = result.find(c => c.listName === this.constants.listNames.InvoiceLineItems.name) ? result.find(c =>
+            c.listName === this.constants.listNames.InvoiceLineItems.name).retItems : [];
           if (InvoiceLineItems) {
             if (InvoiceLineItems.find(c => c.Status === 'Scheduled')) {
 
@@ -968,10 +968,11 @@ export class AllProjectsComponent implements OnInit {
               break;
             }
           }
-          const ExpenseLineItems = result.find(c => c.listName === 'SpendingInfo') ? result.find(c =>
-            c.listName === 'SpendingInfo').retItems : [];
+          const ExpenseLineItems = result.find(c => c.listName ===
+            this.constants.listNames.SpendingInfo.name) ? result.find(c =>
+              c.listName === this.constants.listNames.SpendingInfo.name).retItems : [];
           if (ExpenseLineItems) {
-            const AllBillable = ExpenseLineItems.filter(c => c.Category === 'Billable');
+            const AllBillable = ExpenseLineItems.filter(c => c.CategoryST === 'Billable');
             if (AllBillable) {
               if (AllBillable.find(c => c.Status.indexOf('Billed') === -1 && c.Status !== 'Rejected' && c.Status !== 'Cancelled')) {
 
@@ -981,7 +982,7 @@ export class AllProjectsComponent implements OnInit {
                 break;
               }
             }
-            const AllNonBillable = ExpenseLineItems.filter(c => c.Category === 'Non Billable');
+            const AllNonBillable = ExpenseLineItems.filter(c => c.CategoryST === 'Non Billable');
             if (AllNonBillable) {
               if (AllNonBillable.find(c => c.Status.indexOf('Approved') === -1 && c.Status !== 'Rejected' && c.Status !== 'Cancelled')) {
 
@@ -1625,10 +1626,12 @@ export class AllProjectsComponent implements OnInit {
     const allTasks = response.length ? response : [];
     if (allTasks.length > 0) {
 
-      const milestones = allTasks.filter(c => c.FileSystemObjectType === 1 && (c.Status === 'Not Confirmed' || c.Status === 'In Progress'));
+      // const milestones = allTasks.filter(c => c.FileSystemObjectType === 1 && (c.Status === 'Not Confirmed' || c.Status === 'In Progress'));
+      const milestones = allTasks.filter(c => c.ContentTypeCH === this.constants.CONTENT_TYPE.MILESTONE && (c.Status === 'Not Confirmed' || c.Status === 'In Progress'));
       console.log(milestones);
 
-      const allMilestoneTasks = allTasks.filter(c => c.FileSystemObjectType === 0 && (c.Status === 'Not Confirmed' || c.Status === 'In Progress' || c.Status === 'Not Started'));
+      // const allMilestoneTasks = allTasks.filter(c => c.FileSystemObjectType === 0 && (c.Status === 'Not Confirmed' || c.Status === 'In Progress' || c.Status === 'Not Started'));
+      const allMilestoneTasks = allTasks.filter(c => c.ContentTypeCH !==this.constants.CONTENT_TYPE.MILESTONE && (c.Status === 'Not Confirmed' || c.Status === 'In Progress' || c.Status === 'Not Started'));
       console.log(allMilestoneTasks);
 
       if (milestones) {
@@ -1737,7 +1740,7 @@ export class AllProjectsComponent implements OnInit {
       },
       Status: this.constants.STATUS.AUTO_CLOSED,
       Actual_x0020_End_x0020_Date: new Date(),
-      DueDate: new Date(),
+      DueDateDT: new Date(),
       ExpectedTime: '',
       NextTasks: '',
     };
@@ -1802,7 +1805,7 @@ export class AllProjectsComponent implements OnInit {
             const scheduleStatusUpdate = Object.assign({}, options);
             const scInProgressUpdateDataNew = Object.assign({}, scInProgressUpdateData);
             scInProgressUpdateDataNew.ExpectedTime = element.TimeSpent;
-            scInProgressUpdateDataNew.DueDate = new Date(element.DueDate) < new Date() ? new Date(element.DueDate) : new Date();
+            scInProgressUpdateDataNew.DueDateDT = new Date(element.DueDateDT) < new Date() ? new Date(element.DueDateDT) : new Date();
             scheduleStatusUpdate.data = scInProgressUpdateDataNew;
             scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
             scheduleStatusUpdate.type = 'PATCH';
@@ -1812,7 +1815,6 @@ export class AllProjectsComponent implements OnInit {
           }
         }
       }
-
     });
 
     // console.log(batchURL)
@@ -2256,8 +2258,6 @@ export class AllProjectsComponent implements OnInit {
     this.loaderView.nativeElement.classList.remove('show');
     this.spannerView.nativeElement.classList.remove('show');
   }
-
-
   goToAllocationPage(task) {
     window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +
       '/dashboard#/taskAllocation?ProjectCode=' + task.ProjectCode, '_blank');
@@ -2503,7 +2503,7 @@ export class AllProjectsComponent implements OnInit {
     result.expanse.forEach(element => {
 
       this.projectExpenses.push({
-        Category: element.Category,
+        Category: element.CategoryST,
         ExpenseType: element.SpendType,
         ClientAmount: element.ClientAmount ? parseFloat(parseFloat(element.ClientAmount).toFixed(2)) : 0,
         ClientCurrency: element.ClientCurrency,

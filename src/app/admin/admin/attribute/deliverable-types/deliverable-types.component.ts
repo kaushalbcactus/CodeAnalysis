@@ -195,7 +195,8 @@ export class DeliverableTypesComponent implements OnInit {
       this.adminObject.isMainLoaderHidden = false;
       const data = {
         Title: this.deliverableTypes,
-        Acronym: this.acronym.toUpperCase()
+        Acronym: this.acronym.toUpperCase(),
+        IsActiveCH: this.adminConstants.LOGICAL_FIELD.YES
       };
       this.common.SetNewrelic('admin', 'admin-attribute-deliverableTypes', 'createDeliverableType');
       const result = await this.spServices.createItem(this.constants.listNames.DeliverableType.name, data,
@@ -281,7 +282,7 @@ export class DeliverableTypesComponent implements OnInit {
     this.common.confirmMessageDialog('Delete Confirmation','Do you want to delete this record?',null,['Yes','No'],false).then(async Confirmation => {
       if (Confirmation === 'Yes') {
         const updateData = {
-          Active: this.adminConstants.LOGICAL_FIELD.NO
+          IsActiveCH: this.adminConstants.LOGICAL_FIELD.NO
         };
         this.confirmUpdate(data, updateData, this.constants.listNames.DeliverableType.name, this.constants.listNames.DeliverableType.type);
       }

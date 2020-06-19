@@ -20,6 +20,8 @@ import { MarkAsPaymentDialogComponent } from '../mark-as-payment-dialog/mark-as-
     styleUrls: ['./approved-billable.component.css']
 })
 export class ApprovedBillableComponent implements OnInit, OnDestroy {
+    FolderName: string;
+    SelectedFile = [];
 
     yearRange: string;
     invoice: any;
@@ -288,7 +290,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                 SOWCode: sowCodeFromPI.SOWCode,
                 SOWName: sowItem && sowItem.Title ? sowItem.Title :'',
                 ClientLegalEntity: sowCodeFromPI.ClientLegalEntity,
-                Category: element.Category,
+                Category: element.CategoryST,
                 Number: element.Number,
                 ExpenseType: element.SpendType,
                 ClientAmount: parseFloat(element.ClientAmount).toFixed(2),

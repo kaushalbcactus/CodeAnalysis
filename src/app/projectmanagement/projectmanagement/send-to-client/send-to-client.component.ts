@@ -91,7 +91,6 @@ export class SendToClientComponent implements OnInit {
       },
       { label: 'Close', command: (event) => this.closeTask(this.selectedSendToClientTask) }
     ];
-
     this.pmObject.sendToClientArray = [];
     this.callSendToClient();
   }
@@ -161,7 +160,6 @@ export class SendToClientComponent implements OnInit {
     this.router.navigate(['/projectMgmt/allProjects']);
   }
   closeTask(task) {
-
     if (task.PreviousTaskStatus === 'Auto Closed' || task.PreviousTaskStatus === 'Completed') {
 
       this.loaderView.nativeElement.classList.add('show');
@@ -347,13 +345,13 @@ export class SendToClientComponent implements OnInit {
     const currentFilter = 'AssignedTo eq ' + this.globalObject.currentUser.userId + ' and ' +
       '(Status eq \'Not Started\') and (Task eq \'Send to client\') and ' +
       '((StartDate ge \'' + startDateString + '\' and StartDate le \'' + endDateString + '\') and ' +
-      ' (DueDate ge \'' + startDateString + '\' and DueDate le \'' + endDateString + '\'))';
+      ' (DueDateDT ge \'' + startDateString + '\' and DueDateDT le \'' + endDateString + '\'))';
     this.getSendToClient(currentFilter);
   }
 
   async getSendToClient(currentFilter) {
     const queryOptions = {
-      select: 'ID,Title,ProjectCode,StartDate,DueDate,PreviousTaskClosureDate,Milestone,PrevTasks,SubMilestones, NextTasks',
+      select: 'ID,Title,ProjectCode,StartDate,DueDateDT,PreviousTaskClosureDate,Milestone,PrevTasks,SubMilestones, NextTasks',
       filter: currentFilter,
       top: 4200
     };
@@ -406,10 +404,10 @@ export class SendToClientComponent implements OnInit {
           });
 
           if (projecContObj.length) {
-            scObj.POC = projecContObj[0].FullName;
+            scObj.POC = projecContObj[0].FullNameCC;
           }
         }
-        scObj.DueDate = new Date(this.datePipe.transform(task.DueDate, 'MMM dd, yyyy, h:mm a'));
+        scObj.DueDate = new Date(this.datePipe.transform(task.DueDateDT, 'MMM dd, yyyy, h:mm a'));
         scObj.DueDateFormat = this.datePipe.transform(new Date(scObj.DueDate), 'MMM dd, yyyy, h:mm a');
         scObj.Milestone = task.Milestone;
         scObj.displayMilestone = task.SubMilestones ?

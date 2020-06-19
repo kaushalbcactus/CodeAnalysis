@@ -161,7 +161,7 @@ export class ReviewerDetailViewComponent implements OnInit {
     this.milestoneTasks = arrResult.length > 0 ? arrResult[0].retItems : [];
     const reviewerTasks = arrResult.length > 1 ? arrResult[1].retItems : [];
     // let arrReviewTasks = await this.spService.readItems(this.globalConstant.listNames.Schedules.name, reviewerComponent.reviewerPendingTaskURL);
-    let arrReviewTasks = reviewerTasks.length > 0 ? reviewerTasks.filter(t => new Date(t.DueDate).getTime() >= filterDate.getTime()) : [];
+    let arrReviewTasks = reviewerTasks.length > 0 ? reviewerTasks.filter(t => new Date(t.DueDateDT).getTime() >= filterDate.getTime()) : [];
     arrReviewTasks = arrReviewTasks.map(t => {
       const obj = Object.assign({}, t);
       obj.defaultSkill = t.Task.indexOf('Review-') > -1 ? 'Review' : t.Task

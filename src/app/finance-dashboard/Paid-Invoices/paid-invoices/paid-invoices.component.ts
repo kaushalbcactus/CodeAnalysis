@@ -313,8 +313,6 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
             { field: 'PaymentURL', header: 'Payment URL', visibility: false },
             { field: 'MainPOC', header: 'Main POC', visibility: false },
             { field: 'Template', header: 'Template', visibility: false },
-            // { field: 'ProformaLookup', header: 'Proforma Lookup', visibility: false },
-            // { field: 'LineItemsLookup', header: 'LineItems Lookup', visibility: false },
             { field: 'DisputeReason', header: 'Dispute Reason', visibility: false },
             { field: 'DisputeComments', header: 'Dispute Comments', visibility: false },
             { field: 'Reason', header: 'Reason', visibility: false },
@@ -324,7 +322,6 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
             { field: 'TaggedAmount', header: 'Tagged Amount', visibility: false },
             { field: 'IsTaggedFully', header: 'Is Tagged Fully', visibility: false },
             { field: 'Modified', header: 'Modified', visibility: false },
-            // { field: 'AdditionalPOC', header: 'Additional POC', visibility: false },
             { field: 'Created', header: 'Created', visibility: false },
             { field: '', header: '', visibility: true },
         ];
@@ -355,7 +352,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         const obj = Object.assign({}, this.fdConstantsService.fdComponent.paidInvoices);
         obj.filter = obj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
         this.commonService.SetNewrelic('Finance-Dashboard', 'paid-invoices', 'getPaidInvoices');
-        const res = await this.spServices.readItems(this.constantService.listNames.OutInvoices.name, obj);
+        const res = await this.spServices.readItems(this.constantService.listNames.Invoices.name, obj);
         const arrResults = res.length ? res : [];
         this.formatData(arrResults);
         this.isPSInnerLoaderHidden = true;
@@ -391,7 +388,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
                 DisplayInvoiceWithAuxiliary: element.AuxiliaryInvoiceName ?  element.InvoiceNumber + ' - ' + element.AuxiliaryInvoiceName : element.InvoiceNumber,
                 POValues: POValues,
                 PONumber: poItem.Number,
-                POName: poItem.Name,
+                POName: poItem.NameST,
                 ClientLegalEntity: element.ClientLegalEntity,
                 InvoiceDate: new Date(this.datePipe.transform(element.InvoiceDate, 'MMM dd, yyyy')),
                 InvoiceDateFormat: this.datePipe.transform(element.InvoiceDate, 'MMM dd, yyy, hh:mm a'),
@@ -399,7 +396,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
                 Currency: element.Currency,
                 POC: this.getPOCName(element),
                 FileURL: element.FileURL,
-                FiscalYear: element.FiscalYear,
+                // FiscalYear: element.FiscalYear,
                 Title: element.InvoiceTitle,
                 AddressType: element.AddressType,
 
@@ -407,7 +404,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
                 MainPOC: element.MainPOC,
                 Template: element.Template,
                 ProformaLookup: element.ProformaLookup,
-                LineItemsLookup: element.LineItemsLookup,
+                //LineItemsLookup: element.LineItemsLookup,
                 DisputeReason: element.DisputeReason,
                 DisputeComments: element.DisputeComments,
                 Reason: element.Reason,

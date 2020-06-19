@@ -374,7 +374,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             const pocItem = this.searchPOCName(element.MainPOC, this.projectContactsData);
             let pocName = '';
             if (pocItem) {
-                pocName = pocItem.FullName ? ' - ' + pocItem.FullName : '';
+                pocName = pocItem.FullNameCC ? ' - ' + pocItem.FullNameCC : '';
                 pocItem.pocName = pocName;
             }
             if (poItem) {

@@ -9,7 +9,7 @@
     <div class="resource">
         <div>
             <span>Resources </span>
-            <p-dropdown #resourcesFilter [options]="filterObj.filteredResources" class="resourceSelect" optionLabel="UserName.Title" filter="true" resetFilterOnHide="true" placeholder="Select Resource" (onChange)="fetchResourcesTasks($event)" [(ngModel)]="filterObj.selectedResource">
+            <p-dropdown #resourcesFilter [options]="filterObj.filteredResources" class="resourceSelect" optionLabel="UserNamePG.Title" filter="true" resetFilterOnHide="true" placeholder="Select Resource" (onChange)="fetchResourcesTasks($event)" [(ngModel)]="filterObj.selectedResource">
             </p-dropdown>
         </div>
     </div>

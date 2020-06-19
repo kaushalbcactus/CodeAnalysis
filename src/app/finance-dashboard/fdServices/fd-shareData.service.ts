@@ -136,9 +136,9 @@ export class FDDataShareService {
             // tslint:disable-next-line: prefer-for-of
             for (let e = 0; e < resCatEmails.length; e++) {
                 const element = resCatEmails[e];
-                if (element.UserName) {
-                    if (element.UserName.EMail) {
-                        csMember.push(element.UserName.EMail);
+                if (element.UserNamePG) {
+                    if (element.UserNamePG.EMail) {
+                        csMember.push(element.UserNamePG.EMail);
                     }
                 } else if (element) {
                     csMember.push(element.EMail);
@@ -264,7 +264,7 @@ export class FDDataShareService {
 
     getResDetailById(data, ele) {
         const found = data.find((x) => {
-            if (x.UserName.ID === ele.EditorId) {
+            if (x.UserNamePG.ID === ele.EditorId) {
                 return x;
             }
         });
@@ -375,8 +375,8 @@ export class FDDataShareService {
         batchUrl.push(cleObj);
 
         const projectPOObj = Object.assign({}, this.queryConfig);
-        projectPOObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectPO.name, this.fdConstantsService.fdComponent.projectPO);
-        projectPOObj.listName = this.constantService.listNames.ProjectPO.name;
+        projectPOObj.url = this.spServices.getReadURL(this.constantService.listNames.PO.name, this.fdConstantsService.fdComponent.projectPO);
+        projectPOObj.listName = this.constantService.listNames.PO.name;
         projectPOObj.type = 'GET';
         batchUrl.push(projectPOObj);
         if (type === 'hourly') {
@@ -474,7 +474,7 @@ export class FDDataShareService {
         if (oProformaObj.AddressType === 'Client') {
             address = oCle.APAddress ? oCle.APAddress : '';
         } else {
-            address = oPOC.Address ? oPOC.Address : '';
+            address = oPOC.AddressMT ? oPOC.AddressMT : '';
         }
 
         let addressArr = address.split(';#');

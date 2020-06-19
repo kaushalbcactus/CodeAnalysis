@@ -110,8 +110,8 @@ export class AddUserToSowComponent implements OnInit {
         this.adminObject.resourceCatArray : results[0].retItems;
       if (userResults && userResults.length) {
         userResults.forEach(element => {
-          if (element.Role === this.adminConstants.FILTER.CM_LEVEL_1 || element.Role === this.adminConstants.FILTER.CM_LEVEL_2 || element.Role === this.adminConstants.FILTER.DELIVERY_LEVEL_1 || element.Role === this.adminConstants.FILTER.DELIVERY_LEVEL_2) {
-            this.users.push({ label: element.UserName.Title, value: element });
+          if (element.RoleCH === this.adminConstants.FILTER.CM_LEVEL_1 || element.RoleCH === this.adminConstants.FILTER.CM_LEVEL_2 || element.RoleCH === this.adminConstants.FILTER.DELIVERY_LEVEL_1 || element.RoleCH === this.adminConstants.FILTER.DELIVERY_LEVEL_2) {
+            this.users.push({ label: element.UserNamePG.Title, value: element });
           }
         });
       }
@@ -188,17 +188,17 @@ export class AddUserToSowComponent implements OnInit {
         obj.IsCheckBoxChecked = false;
         obj.SOWCode = item.SOWCode ? item.SOWCode : '';
         if (item.CMLevel2 && item.CMLevel2.hasOwnProperty('ID')
-          && userObj.UserName.ID === item.CMLevel2.ID ||
+          && userObj.UserNamePG.ID === item.CMLevel2.ID ||
           item.DeliveryLevel2 && item.DeliveryLevel2.hasOwnProperty('ID')
-          && userObj.UserName.ID === item.DeliveryLevel2.ID) {
+          && userObj.UserNamePG.ID === item.DeliveryLevel2.ID) {
           obj.IsTypeChangedDisabled = true;
           disableCount++;
           obj.AccessType = this.adminConstants.ACCESS_TYPE.ACCOUNTABLE;
           obj.CurrentAccess = this.adminConstants.ACCESS_TYPE.ACCOUNTABLE;
         } else if (item.CMLevel1 && item.CMLevel1.hasOwnProperty('results') && item.CMLevel1.results.length
-          && item.CMLevel1.results.some(a => a.ID === userObj.UserName.ID) ||
+          && item.CMLevel1.results.some(a => a.ID === userObj.UserNamePG.ID) ||
           item.DeliveryLevel1 && item.DeliveryLevel1.hasOwnProperty('results') && item.DeliveryLevel1.results.length
-          && item.DeliveryLevel1.results.some(a => a.ID === userObj.UserName.ID)) {
+          && item.DeliveryLevel1.results.some(a => a.ID === userObj.UserNamePG.ID)) {
           obj.AccessType = this.adminConstants.ACCESS_TYPE.ACCESS;
           obj.IsTypeChangedDisabled = false;
           obj.CurrentAccess = this.adminConstants.ACCESS_TYPE.ACCESS;
@@ -239,7 +239,7 @@ export class AddUserToSowComponent implements OnInit {
   typeChange(sowObj) {
     this.common.clearToastrMessage();
     const userObj = this.selectedUser;
-    if (sowObj && sowObj.CMLevel1 && sowObj.CMLevel1.length && sowObj.CMLevel1[0].ID === userObj.UserName.ID) {
+    if (sowObj && sowObj.CMLevel1 && sowObj.CMLevel1.length && sowObj.CMLevel1[0].ID === userObj.UserNamePG.ID) {
       if (sowObj.AccessType === this.adminConstants.ACCESS_TYPE.ACCOUNTABLE) {
         this.common.showToastrMessage(this.constants.MessageType.error,'The user ' + userObj.UserName.Title + ' cannot be made accountable.'
         + ' Since he is only available in Access. Hence resetting the accessType to Access',true);
@@ -296,7 +296,7 @@ export class AddUserToSowComponent implements OnInit {
       type: '',
       listName: ''
     };
-    if (!this.selectedUser || !this.selectedUser.hasOwnProperty('UserName')) {
+    if (!this.selectedUser || !this.selectedUser.hasOwnProperty('UserNamePG')) {
 
       this.common.showToastrMessage(this.constants.MessageType.warn,'Please select the user.',false);
       return false;
@@ -326,13 +326,13 @@ export class AddUserToSowComponent implements OnInit {
         if (element.DeliveryLevel1 && element.DeliveryLevel1.length) {
           element.DeliveryLevel1IDArray = element.DeliveryLevel1.map(x => x.ID);
         }
-        element.AllResourcesIDArray.push(this.selectedUser.UserName.ID);
+        element.AllResourcesIDArray.push(this.selectedUser.UserNamePG.ID);
         if (element.AccessType === this.adminConstants.ACCESS_TYPE.ACCESS) {
-          element.CMLevel1IDArray.push(this.selectedUser.UserName.ID);
-          element.DeliveryLevel1IDArray.push(this.selectedUser.UserName.ID);
+          element.CMLevel1IDArray.push(this.selectedUser.UserNamePG.ID);
+          element.DeliveryLevel1IDArray.push(this.selectedUser.UserNamePG.ID);
         } else if (element.AccessType === this.adminConstants.ACCESS_TYPE.ACCOUNTABLE) {
           // remove the current user if present in CMLevel1.
-          const cmIndex = element.CMLevel1IDArray.indexOf(this.selectedUser.UserName.ID);
+          const cmIndex = element.CMLevel1IDArray.indexOf(this.selectedUser.UserNamePG.ID);
           if (cmIndex > -1) {
             element.IsUserExistInCMLevel1 = true;
             element.CMLevel1IDArray.splice(cmIndex, 1);
@@ -342,7 +342,7 @@ export class AddUserToSowComponent implements OnInit {
           // This is non mandatory field so first check whether records present in DeliveryLevel1
           // remove the current user if present in DeliveryLevel1.
           if (element.DeliveryLevel1IDArray && element.DeliveryLevel1IDArray.length) {
-            const delIndex = element.DeliveryLevel1IDArray.indexOf(this.selectedUser.UserName.ID);
+            const delIndex = element.DeliveryLevel1IDArray.indexOf(this.selectedUser.UserNamePG.ID);
             if (delIndex > -1) {
               element.IsUserExistInDeliveryLevel1 = true;
               element.DeliveryLevel1IDArray.splice(delIndex, 1);

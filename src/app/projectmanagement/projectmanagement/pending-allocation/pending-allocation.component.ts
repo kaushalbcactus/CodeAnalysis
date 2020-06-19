@@ -176,7 +176,7 @@ export class PendingAllocationComponent implements OnInit {
         const poc = this.pmObject.projectContactsItems.filter((obj) => {
           return (obj.ID === task.PrimaryPOC);
         });
-        paObj.POC = poc.length > 0 ? poc[0].FullName : '';
+        paObj.POC = poc.length > 0 ? poc[0].FullNameCC : '';
         // Adding the particular value into the array for sorting and filtering.
         projectCodeTempArray.push({ label: paObj.ProjectCode, value: paObj.ProjectCode });
         shortTitleTempArray.push({ label: paObj.ShortTitle, value: paObj.ShortTitle });

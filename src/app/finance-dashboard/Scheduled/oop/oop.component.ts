@@ -1009,7 +1009,7 @@ export class OopComponent implements OnInit, OnDestroy {
 
   getResourceData(ele) {
     const found = this.rcData.find((x) => {
-      if (x.UserName.ID === ele.ID) {
+      if (x.UserNamePG.ID === ele.ID) {
         return x;
       }
     });

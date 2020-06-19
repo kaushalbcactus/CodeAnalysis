@@ -68,7 +68,6 @@ export class ClientMasterdataComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     public dialogService: DialogService
   ) {
-
     // Browser back button disabled & bookmark issue solution
     history.pushState(null, null, window.location.href);
     platformLocation.onPopState(() => {
@@ -90,6 +89,7 @@ export class ClientMasterdataComponent implements OnInit {
   isUserSPMCA: boolean;
   isUserPO: boolean;
   clientList = [];
+
   clientMasterDataColumns = [];
   clientMasterDataRows = [];
   auditHistoryColumns = [];
@@ -131,6 +131,7 @@ export class ClientMasterdataComponent implements OnInit {
   showaddPO = false;
   showeditPO = false;
   editPo = false;
+
 
 
   @ViewChild('cmd', { static: false }) clientMasterTable: Table;
@@ -232,7 +233,7 @@ export class ClientMasterdataComponent implements OnInit {
         obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd ,yyyy');
         obj.LastUpdatedBy = item.Editor.Title;
         obj.Acronym = item.Acronym;
-        obj.Geography = item.Geography;
+        // obj.Geography = item.Geography;
         obj.ListName = item.ListName;
         obj.Market = item.Market;
         obj.ClientGroup = item.ClientGroup;
@@ -243,13 +244,13 @@ export class ClientMasterdataComponent implements OnInit {
         obj.Template = item.Template;
         obj.DistributionList = item.DistributionList;
         obj.Realization = item.Realization;
-        obj.TimeZone = item.TimeZone;
-        obj.Notes = item.Notes;
+        obj.TimeZone = item.TimeZoneNM;
+        obj.Notes = item.NotesMT;
         obj.PORequired = item.PORequired;
         obj.BillingEntity = item.BillingEntity;
         obj.Bucket = item.Bucket;
-        obj.IsCentrallyAllocated = item.IsCentrallyAllocated;
-        obj.IsActive = item.IsActive;
+        // obj.IsCentrallyAllocated = item.IsCentrallyAllocated;
+        obj.IsActive = item.IsActiveCH;
         obj.CMLevel1 = item.CMLevel1;
         obj.CMLevel2 = item.CMLevel2;
         obj.DeliveryLevel1 = item.DeliveryLevel1;
@@ -343,7 +344,7 @@ export class ClientMasterdataComponent implements OnInit {
       obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd ,yyyy');
       obj.LastUpdatedBy = item.Editor.Title;
       obj.Acronym = item.Acronym;
-      obj.Geography = item.Geography;
+      //obj.Geography = item.Geography;
       obj.ListName = item.ListName;
       obj.Market = item.Market;
       obj.ClientGroup = item.ClientGroup;
@@ -354,13 +355,13 @@ export class ClientMasterdataComponent implements OnInit {
       obj.Template = item.Template;
       obj.DistributionList = item.DistributionList;
       obj.Realization = item.Realization;
-      obj.TimeZone = item.TimeZone;
-      obj.Notes = item.Notes;
+      obj.TimeZone = item.TimeZoneNM;
+      obj.Notes = item.NotesMT;
       obj.PORequired = item.PORequired;
       obj.BillingEntity = item.BillingEntity;
       obj.Bucket = item.Bucket;
-      obj.IsCentrallyAllocated = item.IsCentrallyAllocated;
-      obj.IsActive = item.IsActive;
+      // obj.IsCentrallyAllocated = item.IsCentrallyAllocated;
+      obj.IsActive = item.IsActiveCH;
       obj.CMLevel1 = item.CMLevel1;
       obj.CMLevel2 = item.CMLevel2;
       obj.DeliveryLevel1 = item.DeliveryLevel1;
@@ -407,7 +408,7 @@ export class ClientMasterdataComponent implements OnInit {
    *
    * @description
    *
-   * This method mark the Client legal entity as `IsActive='NO'` in `ClientLegalEntity` list so that it is not visible in table.
+   * This method mark the Client legal entity as `IsActiveCH='NO'` in `ClientLegalEntity` list so that it is not visible in table.
    *
    */
   deleteClient() {
@@ -416,7 +417,7 @@ export class ClientMasterdataComponent implements OnInit {
     this.common.confirmMessageDialog('Delete Confirmation', 'Do you want to delete this record?', null, ['Yes', 'No'], false).then(async Confirmation => {
       if (Confirmation === 'Yes') {
         const updateData = {
-          IsActive: this.adminConstants.LOGICAL_FIELD.NO
+          IsActiveCH: this.adminConstants.LOGICAL_FIELD.NO
         };
         this.confirmUpdate(this.currClientObj, updateData, this.constantsService.listNames.ClientLegalEntity.name,
           this.constantsService.listNames.ClientLegalEntity.type, this.adminConstants.DELETE_LIST_ITEM.CLIENT_LEGAL_ENTITY);
@@ -490,7 +491,7 @@ export class ClientMasterdataComponent implements OnInit {
         obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
         obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd ,yyyy');
         obj.LastUpdatedBy = item.Editor.Title;
-        obj.IsActive = item.IsActive;
+        obj.IsActive = item.IsActiveCH;
         obj.CMLevel1 = item.CMLevel1;
         obj.DeliveryLevel1 = item.DeliveryLevel1;
         obj.DistributionList = item.DistributionList;
@@ -562,7 +563,7 @@ export class ClientMasterdataComponent implements OnInit {
    *
    * @description
    *
-   * This method mark the ClientSubDivision as `IsActive='NO'` in `ClientSubDivision` list so that it is not visible in table.
+   * This method mark the ClientSubDivision as `IsActiveCH='NO'` in `ClientSubDivision` list so that it is not visible in table.
    *
    */
   deleteSubDivision() {
@@ -571,7 +572,7 @@ export class ClientMasterdataComponent implements OnInit {
     this.common.confirmMessageDialog('Delete Confirmation', 'Do you want to delete this record?', null, ['Yes', 'No'], false).then(async Confirmation => {
       if (Confirmation === 'Yes') {
         const updateData = {
-          IsActive: this.adminConstants.LOGICAL_FIELD.NO
+          IsActiveCH: this.adminConstants.LOGICAL_FIELD.NO
         };
         this.confirmUpdate(this.currSubDivisionObj, updateData, this.constantsService.listNames.ClientSubdivision.name,
           this.constantsService.listNames.ClientSubdivision.type, this.adminConstants.DELETE_LIST_ITEM.SUB_DIVISION);
@@ -608,14 +609,14 @@ export class ClientMasterdataComponent implements OnInit {
         obj.EmailAddress = item.EmailAddress;
         obj.Designation = item.Designation;
         obj.Phone = item.Phone ? item.Phone : '';
-        obj.Address = item.Address ? item.Address : '';
-        obj.FullName = item.FullName ? item.FullName : '';
-        obj.Department = item.Department ? item.Department : '';
+        obj.Address = item.AddressMT ? item.AddressMT : '';
+        obj.FullName = item.FullNameCC ? item.FullNameCC : '';
+        obj.Department = item.DepartmentST ? item.DepartmentST : '';
         obj.ReferralSource = item.ReferralSource;
         obj.Status = item.Status;
         obj.RelationshipStrength = item.RelationshipStrength ? item.RelationshipStrength : '';
         obj.EngagementPlan = item.EngagementPlan ? item.EngagementPlan : '';
-        obj.Comments = item.Comments ? item.Comments : '';
+        obj.Comments = item.CommentsMT ? item.CommentsMT : '';
         obj.ProjectContactsType = item.ProjectContactsType;
         obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
         obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd ,yyyy');
@@ -741,7 +742,7 @@ export class ClientMasterdataComponent implements OnInit {
         obj.AmountOOP = item.AmountOOP;
         obj.AmountRevenue = item.AmountRevenue;
         obj.AmountTax = item.AmountTax;
-        obj.BillOOPFromRevenue = item.BillOOPFromRevenue;
+        //obj.BillOOPFromRevenue = item.BillOOPFromRevenue;
         obj.BuyingEntity = item.BuyingEntity;
         obj.Currency = item.Currency;
         obj.InvoicedOOP = item.InvoicedOOP;
@@ -749,18 +750,18 @@ export class ClientMasterdataComponent implements OnInit {
         obj.InvoicedTax = item.InvoicedTax;
         obj.Link = item.Link;
         obj.Molecule = item.Molecule;
-        obj.PoName = item.Name;
+        obj.PoName = item.NameST;
         obj.PoNumber = item.Number;
         obj.OOPLinked = item.OOPLinked;
-        obj.PO_x0020_Geography = item.PO_x0020_Geography;
+        // obj.PO_x0020_Geography = item.PO_x0020_Geography;
         obj.POCategory = item.POCategory;
         obj.POCLookup = item.POCLookup;
         obj.POExpiryDate = new Date(item.POExpiryDate);
-        obj.PoProposalID = item.PoProposalID;
+        // obj.PoProposalID = item.PoProposalID;
         obj.RevenueLinked = item.RevenueLinked;
         obj.ScheduledOOP = item.ScheduledOOP;
         obj.ScheduledRevenue = item.ScheduledRevenue;
-        obj.SOWLookup = item.SOWLookup;
+        // obj.SOWLookup = item.SOWLookup;
         obj.Status = item.Status;
         obj.TA = item.TA;
         obj.TaxLinked = item.TaxLinked;
@@ -921,7 +922,7 @@ export class ClientMasterdataComponent implements OnInit {
       obj.AmountOOP = item.AmountOOP;
       obj.AmountRevenue = item.AmountRevenue;
       obj.AmountTax = item.AmountTax;
-      obj.BillOOPFromRevenue = item.BillOOPFromRevenue;
+      // obj.BillOOPFromRevenue = item.BillOOPFromRevenue;
       obj.BuyingEntity = item.BuyingEntity;
       obj.Currency = item.Currency;
       obj.InvoicedOOP = item.InvoicedOOP;
@@ -929,18 +930,18 @@ export class ClientMasterdataComponent implements OnInit {
       obj.InvoicedTax = item.InvoicedTax;
       obj.Link = item.Link;
       obj.Molecule = item.Molecule;
-      obj.PoName = item.Name;
+      obj.PoName = item.NameST;
       obj.PoNumber = item.Number;
       obj.OOPLinked = item.OOPLinked;
-      obj.PO_x0020_Geography = item.PO_x0020_Geography;
+      // obj.PO_x0020_Geography = item.PO_x0020_Geography;
       obj.POCategory = item.POCategory;
       obj.POCLookup = item.POCLookup;
       obj.POExpiryDate = new Date(item.POExpiryDate);
-      obj.PoProposalID = item.PoProposalID;
+      // obj.PoProposalID = item.PoProposalID;
       obj.RevenueLinked = item.RevenueLinked;
       obj.ScheduledOOP = item.ScheduledOOP;
       obj.ScheduledRevenue = item.ScheduledRevenue;
-      obj.SOWLookup = item.SOWLookup;
+      // obj.SOWLookup = item.SOWLookup;
       obj.Status = item.Status;
       obj.TA = item.TA;
       obj.TaxLinked = item.TaxLinked;
@@ -972,7 +973,6 @@ export class ClientMasterdataComponent implements OnInit {
 
     this.modalloaderenable = false;
   }
-
   /**
    * Construct a method to remove the item from table.
    *
@@ -1100,14 +1100,13 @@ export class ClientMasterdataComponent implements OnInit {
           a.label && a.label.toLowerCase() === clientDetails.value.group.toLowerCase())) {
           const clientGroupdata = {
             Title: clientDetails.value.group,
-            IsActive: 'Yes'
+            IsActiveCH: this.adminConstants.LOGICAL_FIELD.YES
           };
           // tslint:disable-next-line: max-line-length
           const newClientGroup = await this.spServices.createItem(this.constantsService.listNames.ClientGroup.name, clientGroupdata, this.constantsService.listNames.ClientGroup.type);
 
           this.adminObject.dropdown.ClientGroupArray.push({ label: clientDetails.value.group, value: clientDetails.value.group });
         }
-
         await this.loadRecentRecords(results.ID, this.showEditClient);
       }
     }
@@ -1124,7 +1123,7 @@ export class ClientMasterdataComponent implements OnInit {
         a.label && a.label.toLowerCase() === clientDetails.value.group.toLowerCase())) {
         const clientGroupdata = {
           Title: clientDetails.value.group,
-          IsActive: 'Yes'
+          IsActiveCH: this.adminConstants.LOGICAL_FIELD.YES
         };
         const newClientGroup = await this.spServices.createItem(this.constantsService.listNames.ClientGroup.name,
           clientGroupdata, this.constantsService.listNames.ClientGroup.type);
@@ -1183,7 +1182,7 @@ export class ClientMasterdataComponent implements OnInit {
     if (result && result.length) {
       const tempDate = clientDetails.value.bucketEffectiveDate;
       const updateItem = {
-        EndDate: new Date(new Date(tempDate).setDate(new Date(tempDate).getDate() - 1))
+        EndDateDT: new Date(new Date(tempDate).setDate(new Date(tempDate).getDate() - 1))
       };
       this.common.SetNewrelic('admin', 'admin-clientMaster', 'UpdateCLEBucketMapping');
       const updateResult = await this.spServices.updateItem(this.constantsService.listNames.CLEBucketMapping.name, result[0].ID,
@@ -1219,8 +1218,9 @@ export class ClientMasterdataComponent implements OnInit {
         data.Title = clientDetails.value.name;
       data.Acronym = clientDetails.value.acronym.toUpperCase();
       data.BillingEntity = clientDetails.value.billingEntry;
-      data.TimeZone = + clientDetails.value.timeZone;
+      data.TimeZoneNM = +clientDetails.value.timeZone;
       data.Currency = clientDetails.value.currency;
+      data.IsActiveCH = this.adminConstants.LOGICAL_FIELD.YES
     }
     data.DistributionList = clientDetails.value.distributionList ? clientDetails.value.distributionList : '';
     if (clientDetails.value.deliveryLevel1) {
@@ -1230,7 +1230,7 @@ export class ClientMasterdataComponent implements OnInit {
     }
 
     data.APEmail = clientDetails.value.APEmail ? clientDetails.value.APEmail : '';
-    data.Notes = clientDetails.value.notes ? clientDetails.value.notes : '';
+    data.NotesMT = clientDetails.value.notes ? clientDetails.value.notes : '';
     const ap1 = clientDetails.value.address1 ? clientDetails.value.address1 : '';
     const ap2 = clientDetails.value.address2 ? clientDetails.value.address2 : '';
     const ap3 = clientDetails.value.address3 ? clientDetails.value.address3 : '';
@@ -1278,6 +1278,7 @@ export class ClientMasterdataComponent implements OnInit {
     if (!this.showeditSubDivision) {
       data.Title = subDivisionDetails.value.subDivision_Name;
       data.ClientLegalEntity = this.currClientObj.ClientLegalEntity;
+      data.IsActiveCH = this.adminConstants.LOGICAL_FIELD.YES;
     }
     data.DeliveryLevel1Id = subDivisionDetails.value.deliveryLevel1 ? { results: subDivisionDetails.value.deliveryLevel1 } :
       { results: [] };
@@ -1314,7 +1315,7 @@ export class ClientMasterdataComponent implements OnInit {
       obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
       obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd ,yyyy');
       obj.LastUpdatedBy = item.Editor.Title;
-      obj.IsActive = item.IsActive;
+      obj.IsActive = item.IsActiveCH;
       obj.CMLevel1 = item.CMLevel1;
       obj.DeliveryLevel1 = item.DeliveryLevel1;
       obj.DistributionList = item.DistributionList;
@@ -1384,18 +1385,18 @@ export class ClientMasterdataComponent implements OnInit {
       ProjectContactsType: pocDetails.value.contactsType,
       ClientLegalEntity: this.currClientObj.ClientLegalEntity,
       Title: this.currClientObj.ClientLegalEntity,
-      FullName: pocDetails.value.fname + ' ' + pocDetails.value.lname
+      FullNameCC: pocDetails.value.fname + ' ' + pocDetails.value.lname
     };
     data.Phone = pocDetails.value.phone ? pocDetails.value.phone : '';
     const ap1 = pocDetails.value.address1 ? pocDetails.value.address1 : '';
     const ap2 = pocDetails.value.address2 ? pocDetails.value.address2 : '';
     const ap3 = pocDetails.value.address3 ? pocDetails.value.address3 : '';
     const ap4 = pocDetails.value.address4 ? pocDetails.value.address4 : '';
-    data.Address = ap1 + ';#' + ap2 + ';#' + ap3 + ';#' + ap4;
-    data.Department = pocDetails.value.department ? pocDetails.value.department : '';
+    data.AddressMT = ap1 + ';#' + ap2 + ';#' + ap3 + ';#' + ap4;
+    data.DepartmentST = pocDetails.value.department ? pocDetails.value.department : '';
     data.RelationshipStrength = pocDetails.value.relationshipStrength ? pocDetails.value.relationshipStrength : '';
     data.EngagementPlan = pocDetails.value.engagementPlan ? pocDetails.value.engagementPlan : '';
-    data.Comments = pocDetails.value.comments ? pocDetails.value.comments : '';
+    data.CommentsMT = pocDetails.value.comments ? pocDetails.value.comments : '';
     return data;
   }
 
@@ -1430,14 +1431,14 @@ export class ClientMasterdataComponent implements OnInit {
       obj.EmailAddress = item.EmailAddress;
       obj.Designation = item.Designation;
       obj.Phone = item.Phone ? item.Phone : '';
-      obj.Address = item.Address ? item.Address : '';
-      obj.FullName = item.FullName ? item.FullName : '';
-      obj.Department = item.Department ? item.Department : '';
+      obj.Address = item.AddressMT ? item.AddressMT : '';
+      obj.FullName = item.FullNameCC ? item.FullNameCC : '';
+      obj.Department = item.DepartmentST ? item.DepartmentST : '';
       obj.ReferralSource = item.ReferralSource;
       obj.Status = item.Status;
       obj.RelationshipStrength = item.RelationshipStrength ? item.RelationshipStrength : '';
       obj.EngagementPlan = item.EngagementPlan ? item.EngagementPlan : '';
-      obj.Comments = item.Comments ? item.Comments : '';
+      obj.Comments = item.CommentsMT ? item.CommentsMT : '';
       obj.ProjectContactsType = item.ProjectContactsType;
       obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
       obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd ,yyyy');
@@ -1539,7 +1540,7 @@ export class ClientMasterdataComponent implements OnInit {
    */
   getPOData(poDetails, selectedFile) {
     const data: any = {
-      Name: poDetails.value.poName,
+      NameST: poDetails.value.poName,
       POExpiryDate: poDetails.value.poExpiryDate,
       POCLookup: poDetails.value.poc,
       TA: poDetails.value.ta,
@@ -1655,9 +1656,6 @@ export class ClientMasterdataComponent implements OnInit {
       }
     });
   }
-
-
-
 
   addEditSubDivision(title, SubDivisionObject) {
 

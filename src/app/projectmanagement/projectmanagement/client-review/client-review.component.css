@@ -1,16 +1,18 @@
-.crTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child {
+
+  
+  .crTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child {
     overflow: visible;
-}
-
-.crTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div {
+  }
+  
+  .crTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div {
     position: relative;
-}
-
-.crTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div>i {
+  }
+  
+  .crTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div > i {
     top: 0px !important;
-}
-
-.crTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div div.ui-menu {
+  }
+  
+  .crTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div div.ui-menu {
     top: 0px !important;
     left: inherit !important;
     right: 40px !important;
