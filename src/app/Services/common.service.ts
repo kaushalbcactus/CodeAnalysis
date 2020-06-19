@@ -937,9 +937,7 @@ export class CommonService {
         });
     }
 
-    roundToPrecision(x, precision) {
-        // const y = +x + (precision === undefined ? 0.5 : precision / 2);
-        // return y - (y % (precision === undefined ? 1 : +precision));
+    roundToPrecision(x, precision): number {
         return Math.ceil(x / precision) * precision;
     }
 

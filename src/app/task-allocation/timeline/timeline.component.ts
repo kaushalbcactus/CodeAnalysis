@@ -539,7 +539,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       ////// Sorts the data as per the stored order
       for (const mil of arrMilestones) {
         const milestone = milestones.find(e => e.Title === mil && e.Status !== 'Deleted');
-        milestonesList.push(milestone);
+        if (milestone) {
+          milestonesList.push(milestone);
+        }
       }
       milestones = milestonesList;
       this.dbRecords = [];
@@ -1299,7 +1301,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         const nextMilesone = arrMilestones.length - 1 === milIndex ? '' : arrMilestones[milIndex + 1];
         if (nextMilesone) {
           const nextMil = data.find(e => e.title === nextMilesone);
-          linkArray.push(this.createLinkArrayObject(item, nextMil));
+          if (nextMil) {
+            linkArray.push(this.createLinkArrayObject(item, nextMil));
+          }
         }
       }
       else if (item.type === 'milestone') {
@@ -1669,7 +1673,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
     const onBeforeTaskChanged = gantt.attachEvent("onBeforeTaskChanged", (id, mode, task) => {
       this.allTaskData = gantt.serialize();
-      this.currentTask = {...task};
+      this.currentTask = { ...task };
       return true;
     });
     this.taskAllocateCommonService.attachedEvents.push(onBeforeTaskChanged);
@@ -1679,7 +1683,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       this.startDate = task.start_date;
       this.endDate = task.end_date;
       this.bHrs = task.budgetHours;
-      this.resetTask = {...task};
+      this.resetTask = { ...task };
       this.dragClickedInput = e.srcElement.className;
       const isStartDate = this.dragClickedInput.indexOf('start_date') > -1 ? true : false;
       if (gantt.ext.zoom.getCurrentLevel() < 3) {
@@ -1717,65 +1721,65 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     const onTaskClick = gantt.attachEvent("onTaskClick", (taskId, e) => {
       let task = gantt.getTask(taskId);
       let ganttOpenIcon = e.target.closest('.gantt_arrow_click');
-      if(!ganttOpenIcon) {
-      if (task.itemType !== "Send to client" && task.itemType !== "Client Review" && task.slotType !== 'Slot' && task.type !== "milestone" && task.type !== "submilestone" && task.AssignedTo.ID !== -1) {
-        if (e.target.parentElement.className === "gantt_cell cell_user") {
-          this.header = task.submilestone ? task.milestone + ' ' + task.submilestone + ' ' + task.text
-            : task.milestone + ' ' + task.text;
-          this.sharedObject.resourceHeader = this.header;
+      if (!ganttOpenIcon) {
+        if (task.itemType !== "Send to client" && task.itemType !== "Client Review" && task.slotType !== 'Slot' && task.type !== "milestone" && task.type !== "submilestone" && task.AssignedTo.ID !== -1) {
+          if (e.target.parentElement.className === "gantt_cell cell_user") {
+            this.header = task.submilestone ? task.milestone + ' ' + task.submilestone + ' ' + task.text
+              : task.milestone + ' ' + task.text;
+            this.sharedObject.resourceHeader = this.header;
 
-          let resourceTask = task; // this.sharedObject.currentTaskData ? this.sharedObject.currentTaskData : ;
-          this.onResourceClick(resourceTask);
-        }
-      } else if ((task.itemType == "Send to client" || task.itemType == "Client Review") && e.target.parentElement.className === "gantt_cell cell_user") {
-        this.messageService.add({ key: 'gantt-message', severity: 'error', summary: 'Error Message', detail: 'Resource view is unavailable for these tasks please edit the task to change resource' });
-      }
-      var menuButton = e.target.closest("[data-action]")
-      if (menuButton) {
-        if (gantt.ext.zoom.getCurrentLevel() < 3) {
-          if (taskId) {
-            let task = this.GanttchartData.find(e => e.id == taskId);//gantt.getTask(taskId);
-            const menus = this.showMenus(task);
-            this.menu.clearAll();
-            this.menu.loadStruct(menus);
-            this.currentTaskId = taskId;
-            this.startDate = task.start_date;
-            this.endDate = task.end_date;
-            this.bHrs = task.budgetHours;
-            this.resetTask = task;
-            let x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft,
-              y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
-
-            if (task.status !== 'Completed' || task.status !== "Auto Closed") {
-              this.menu.showContextMenu(x, y);
-              setTimeout(() => {
-                let contextMenu: any = document.getElementsByClassName("dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon")[0];
-                contextMenu.style.display = "block";
-              }, 500);
-            }
-            if (task) {
-              return false;
-            }
-            return true;
+            let resourceTask = task; // this.sharedObject.currentTaskData ? this.sharedObject.currentTaskData : ;
+            this.onResourceClick(resourceTask);
           }
-        } else {
-          return false;
+        } else if ((task.itemType == "Send to client" || task.itemType == "Client Review") && e.target.parentElement.className === "gantt_cell cell_user") {
+          this.messageService.add({ key: 'gantt-message', severity: 'error', summary: 'Error Message', detail: 'Resource view is unavailable for these tasks please edit the task to change resource' });
         }
+        var menuButton = e.target.closest("[data-action]")
+        if (menuButton) {
+          if (gantt.ext.zoom.getCurrentLevel() < 3) {
+            if (taskId) {
+              let task = this.GanttchartData.find(e => e.id == taskId);//gantt.getTask(taskId);
+              const menus = this.showMenus(task);
+              this.menu.clearAll();
+              this.menu.loadStruct(menus);
+              this.currentTaskId = taskId;
+              this.startDate = task.start_date;
+              this.endDate = task.end_date;
+              this.bHrs = task.budgetHours;
+              this.resetTask = task;
+              let x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft,
+                y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+
+              if (task.status !== 'Completed' || task.status !== "Auto Closed") {
+                this.menu.showContextMenu(x, y);
+                setTimeout(() => {
+                  let contextMenu: any = document.getElementsByClassName("dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon")[0];
+                  contextMenu.style.display = "block";
+                }, 500);
+              }
+              if (task) {
+                return false;
+              }
+              return true;
+            }
+          } else {
+            return false;
+          }
+        }
+        let overlayIconButton = e.target.closest(".ganttOverlayIcon");
+        if (overlayIconButton) {
+          this.showOverlayPanel(e, task, this.dailyAllocateOP, e.target.parentElement)
+        }
+        return false;
+      } else {
+        return true;
       }
-      let overlayIconButton = e.target.closest(".ganttOverlayIcon");
-      if (overlayIconButton) {
-        this.showOverlayPanel(e, task, this.dailyAllocateOP, e.target.parentElement)
-      }
-      return false;
-    } else {
-      return true;
-    }
     });
 
     this.taskAllocateCommonService.attachedEvents.push(onTaskClick);
 
     const onTaskDrag = gantt.attachEvent("onAfterTaskDrag", (id, mode, e) => {
-      let task = {...this.currentTask};
+      let task = { ...this.currentTask };
       this.ganttSetTime = false;
       const isStartDate = this.dragClickedInput.indexOf('start_date') > -1 ? true : false;
       if (task.status !== 'Completed' || task.type == 'milestone') {
@@ -1851,7 +1855,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         }
         if (task.id == this.resetTask.id) {
           //task = this.resetTask;
-          
+
           task.start_date = this.startDate;
           task.end_date = this.endDate;
         }
@@ -2008,7 +2012,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     }
     this.selectedTask.user = this.selectedTask.AssignedTo.Title;
     let allTasksData = [];
-    allTasksData= this.getGanttTasksFromMilestones(this.milestoneData, true);
+    allTasksData = this.getGanttTasksFromMilestones(this.milestoneData, true);
     const editedTask = allTasksData.find(task => task.id == this.selectedTask.id);
     editedTask.AssignedTo = editedTask ? this.selectedTask.AssignedTo : editedTask.AssignedTo;
     editedTask.user = editedTask ? this.selectedTask.AssignedTo.Title : editedTask.AssignedTo.Title;
@@ -2025,7 +2029,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     //   return this.selectedTask.AssignedTo.ID === objt.UserName.ID;
     // });
     // await this.dailyAllocation.calcPrestackAllocation(resource, this.selectedTask);
-   // this.refreshGantt();
+    // this.refreshGantt();
     this.ganttNotification();
   }
 
@@ -6506,11 +6510,11 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       let panel: any = document.querySelector(".dailyAllocationOverlayComp > div");
       let panelContainer: any = document.getElementById('s4-workspace');
       let topAdject = 0;
-      if(panelContainer) {
-       topAdject =  panelContainer.scrollTop > 0 ? panelContainer.scrollTop - panel.clientHeight : 0;
-       if(topAdject < 0) {
-        topAdject =  panelContainer.scrollTop;
-       }
+      if (panelContainer) {
+        topAdject = panelContainer.scrollTop > 0 ? panelContainer.scrollTop - panel.clientHeight : 0;
+        if (topAdject < 0) {
+          topAdject = panelContainer.scrollTop;
+        }
       }
       panel.style.top = event.pageY + topAdject + 'px';
       panel.style.left = event.pageX + 'px';

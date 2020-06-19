@@ -1,4 +1,7 @@
 // export interface Prestack {
+
+import { IUserCapacity } from '../../usercapacity/interface/usercapacity';
+
 // }
 export interface IDailyAllocationTask {
   ID: number;
@@ -8,7 +11,7 @@ export interface IDailyAllocationTask {
   startTime: string;
   endTime: string;
   budgetHrs: string;
-  resource: [any];
+  resource: IUserCapacity[];
   status: string;
   strAllocation: string;
   allocationType: string;
@@ -24,4 +27,15 @@ export interface IDailyAllocationObject {
   };
   hideTasksTable: boolean;
   tasks: any;
+}
+
+export interface IPreStack {
+  allocationPerDay: string;
+  allocationAlert: boolean;
+  allocationType: string;
+}
+
+export interface IPerformAllocationObject {
+      arrAllocation: IDailyAllocationObject[];
+      allocationType: string;
 }
