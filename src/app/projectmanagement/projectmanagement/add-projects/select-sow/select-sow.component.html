@@ -3,17 +3,13 @@
     <div id="selectSOWLoaderText">Loading...</div>
 </div>
 <div class="selectSOW-section" [hidden]='isSelectSOWTableHidden'>
-    <p-table #allProjectRef [columns]="displayedColumns" [value]="pmObject.selectSOWArray" [paginator]="true"
-        [rows]="5">
+    <p-table #allProjectRef [columns]="displayedColumns" [value]="pmObject.selectSOWArray" [paginator]="true" [rows]="5">
         <ng-template pTemplate="caption">
             <div style="text-align: left; width: 450px; float: left;">
                 <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
-                <input type="text" pInputText size="50" placeholder="search"
-                    [(ngModel)]="pmObject.addProject.SOWSelect.GlobalFilterValue"
-                    (input)="allProjectRef.filterGlobal($event.target.value, 'contains')" style="width:auto"
-                    (keydown.enter)="$event.preventDefault()">
+                <input type="text" pInputText size="50" placeholder="search" [(ngModel)]="pmObject.addProject.SOWSelect.GlobalFilterValue" (input)="allProjectRef.filterGlobal($event.target.value, 'contains')" style="width:auto" (keydown.enter)="$event.preventDefault()">
             </div>
-            <div class="sow-balance-section"> 
+            <div class="sow-balance-section">
                 <div>
                     <div [ngStyle]="{'color':'#d7181f', 'float':'left'}">Total Balance</div>
                     <div>{{pmObject.addProject.SOWSelect.sowTotalBalance}}</div>
@@ -34,17 +30,16 @@
                 </th>
             </tr>
         </ng-template>
-        <ng-template pTemplate="body" let-rowData let-task>
+        <ng-template pTemplate="body" let-rowData let-sow>
             <tr [pContextMenuRow]="rowData">
                 <td class="lastColumnWidth">
-                    <p-radioButton name="groupname" value="{{task.SOWCode}}" (click)="setSelectedSOWObject(task)"
-                        [(ngModel)]="pmObject.addProject.SOWSelect.SOWCode">
+                    <p-radioButton name="groupname" value="{{sow.SOWCode}}" (click)="setSelectedSOWObject(sow)" [(ngModel)]="pmObject.addProject.SOWSelect.SOWCode">
                     </p-radioButton>
                 </td>
-                <td>{{task.SOWCode}}</td>
-                <td>{{task.ShortTitle}}</td>
-                <td>{{task.SOWOwner}}</td>
-                <td>{{task.ClientLegalEntity}}</td>
+                <td>{{sow.SOWCode}}</td>
+                <td>{{sow.ShortTitle}}</td>
+                <td>{{sow.SOWOwner}}</td>
+                <td>{{sow.ClientLegalEntity}}</td>
             </tr>
         </ng-template>
     </p-table>

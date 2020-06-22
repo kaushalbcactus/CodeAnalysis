@@ -109,7 +109,6 @@ export class AppComponent implements OnDestroy {
       newrelic.setCustomAttribute('spUserName', _spPageContextInfo.userDisplayName);
     }
   }
-
   linkAccessForUsers(groups) {
     const currentUserGroups = groups.results.map(g => g.LoginName);
     if (currentUserGroups.length > 0) {

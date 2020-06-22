@@ -350,10 +350,6 @@ export class ConstantsService {
       type:'BlockingCTListItem',
       contentTypeId:'0x010088151006240E4149953AD8D3958182CA*'
     },
-    BlockResource: {
-      name: "BlockingResources",
-      type: "SP.Data.BlockingResourcesListItem",
-    },
   };
 
   public projectStatus = {
