@@ -129,18 +129,26 @@ export class SelectSOWComponent implements OnInit {
       this.errorMsg = this.pmConstant.ERROR.SELECT_SOW;
     }
   }
-  setSelectedSOWObject(task) {
+  async setSelectedSOWObject(sow) {
+   
+    const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.SOW_CODE);
+    sowFilter.filter = sowFilter.filter.replace('{{sowcode}}',sow.SOWCode);
+    this.commonService.SetNewrelic('projectManagment', 'addproj-selectSow', 'GetSow');
+    const arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
     this.pmObject.addProject.SOWSelect.SOWSelectedItem = {};
     this.pmObject.addProject.SOWSelect.sowTotalBalance = 0;
     this.pmObject.addProject.SOWSelect.sowNetBalance = 0;
-    if (task) {
-      this.pmObject.addProject.SOWSelect.sowTotalBalance = (task.TotalBudget ? task.TotalBudget : 0)
-        - (task.TotalLinked ? task.TotalLinked : 0);
+    
+    if (arrResults && arrResults.length) {
+
+      const sowObject =arrResults[0];
+      this.pmObject.addProject.SOWSelect.sowTotalBalance = (sowObject.TotalBudget ? sowObject.TotalBudget : 0)
+        - (sowObject.TotalLinked ? sowObject.TotalLinked : 0);
       this.pmObject.addProject.SOWSelect.sowTotalBalance = parseFloat(this.pmObject.addProject.SOWSelect.sowTotalBalance.toFixed(2));
-      this.pmObject.addProject.SOWSelect.sowNetBalance = (task.NetBudget ? task.NetBudget : 0)
-        - (task.RevenueLinked ? task.RevenueLinked : 0);
+      this.pmObject.addProject.SOWSelect.sowNetBalance = (sowObject.NetBudget ? sowObject.NetBudget : 0)
+        - (sowObject.RevenueLinked ? sowObject.RevenueLinked : 0);
       this.pmObject.addProject.SOWSelect.sowNetBalance = parseFloat(this.pmObject.addProject.SOWSelect.sowNetBalance.toFixed(2));
-      this.pmObject.addProject.SOWSelect.SOWSelectedItem = task;
+      this.pmObject.addProject.SOWSelect.SOWSelectedItem = sowObject;
     }
   }
 }
