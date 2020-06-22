@@ -10,6 +10,7 @@
    ************************************************************************************** -->
 
 <div class="MyCurrentCompletedTable" *ngIf="allTasks.length > 0 && !loaderenable" style="padding-top: 5px;">
+    <app-allocation-overlay #dailyAllocateOP></app-allocation-overlay>
     <p-table #TasksTable [columns]="cols" [value]="allTasks" [paginator]="true" [rows]="10" [style]="{'font-size':'13px','min-height': '400px'}" [exportFilename]="TabName ==='MyCompletedTask' ? 'My Completed Tasks':'My Current Tasks'">
 
         <ng-template pTemplate="header" let-columns>
@@ -60,6 +61,16 @@
                             *ngIf="col.field === 'TaskName' && tableloaderenable && rowIndex === selectedindex"
                             id="scTableInnerLoader"></div>
                         <div *ngIf="col.field === 'TaskName' && rowData.Comments">[{{rowData.Comments}}]</div> </span>
+                    <span *ngIf="col.field === 'ExpectedTime'">
+                        <div class='overlayIcon'
+                            appendTo="body"
+                            (click)="this.showOverlayPanel($event, rowData, dailyAllocateOP)"
+                            style="float: right;cursor: pointer;"
+                            title="Click to see allocation split"
+                            *ngIf="rowData.showAllocationSplit">
+                            <i class="fa fa-info-circle" aria-hidden="true"></i>
+                        </div>
+                    </span>
                 </td>
                 <td>
                     <div *ngIf="rowData.MainStatus !=='Planned'">

@@ -13,13 +13,16 @@ import { CommonService } from 'src/app/Services/common.service';
 import { DialogService, MenuItem, SelectItem } from 'primeng';
 import { CaDragdropComponent } from '../ca-dragdrop/ca-dragdrop.component';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
+import { PreStackAllocationComponent } from 'src/app/shared/pre-stack-allocation/pre-stack-allocation.component';
+import { IDailyAllocationTask } from 'src/app/shared/pre-stack-allocation/interface/prestack';
+import { AllocationOverlayComponent } from 'src/app/shared/pre-stack-allocation/allocation-overlay/allocation-overlay.component';
 
 
 @Component({
   selector: 'app-unallocated-allocated-tasks',
   templateUrl: './unallocated-allocated-tasks.component.html',
   styleUrls: ['./unallocated-allocated-tasks.component.css'],
-  providers: [UsercapacityComponent]
+  providers: [UsercapacityComponent, PreStackAllocationComponent, AllocationOverlayComponent]
 })
 export class UnallocatedAllocatedTasksComponent implements OnInit {
   cols: any[];
@@ -71,6 +74,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   BudgetHoursTaskenable = true;
   tempSlot: any;
   arrMilestoneTasks = [];
+  @ViewChild('dailyAllocateOP', { static: false }) dailyAllocateOP: AllocationOverlayComponent;
   constructor(
     private spServices: SPOperationService,
     private constants: ConstantsService,
@@ -85,6 +89,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     private commonService: CommonService,
     private cdr: ChangeDetectorRef,
     public datepipe: DatePipe,
+    private dailyAllocation: PreStackAllocationComponent
   ) {
     this.DropdownOptions = [{ label: 'All', value: 'All' },
     { label: 'Unallocated', value: 'unallocated' },
@@ -201,8 +206,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         this.caCommonService.getCaProperties(taskCounter, schedulesItemFetch, task, this.projects,
           this.resourceList, this.completeTaskArray, acTempArrays);
       }
+      // tslint:disable-next-line: max-line-length
       this.arrMilestoneTasks = await this.caCommonService.getMilestoneSchedules(this.constants.listNames.Schedules.name, schedulesItemFetch);
-
       this.caCommonService.getScheduleItems(this.completeTaskArray, this.arrMilestoneTasks);
       this.caArrays.clientLegalEntityArray = this.caCommonService.sortByAttribute(this.commonService.unique
         (acTempArrays.clientLegalEntityTempArray, 'value'), 'value', 'label');
@@ -220,18 +225,11 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         (acTempArrays.startTimeTempArray, 'value'), 'value');
       this.caArrays.endTimeArray = this.caCommonService.sortByDate(this.commonService.unique
         (acTempArrays.endTimeTempArray, 'value'), 'value');
-      // this.caGlobal.dataSource = this.completeTaskArray;
       this.caGlobal.totalRecords = this.completeTaskArray.length;
       this.caGlobal.dataSource = this.completeTaskArray.slice(0, 10);
-
-      // this.caGlobal.dataSource = this.completeTaskArray.slice(0, 30);
-      // this.dbRecords = JSON.parse(JSON.stringify(this.completeTaskArray));
     }
-
     this.caGlobal.loading = false;
     this.loaderenable = false;
-
-
   }
 
   uniqueArrayObj(array: any) {
@@ -255,39 +253,29 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
 
   openPopup(data, Slot) {
+    this.taskMenu = [];
     if (data.Type === 'Slot') {
-
+      this.taskMenu.push({ label: 'Restructure', icon: 'pi pi-sitemap', command: (e) => this.showRestructureCA(data) });
       if (data.editMode) {
-        this.taskMenu = [
-          { label: 'Restructure', icon: 'pi pi-sitemap', command: (e) => this.showRestructureCA(data) },
-          { label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data, Slot) },
-          { label: 'Cancel Changes', icon: 'pi pi-fw pi-times', command: (e) => this.cancelledAllchanges(data) },
-        ];
-      } else {
-        this.taskMenu = [
-          { label: 'Restructure', icon: 'pi pi-sitemap', command: (e) => this.showRestructureCA(data) },
-          { label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data, Slot) }
-        ];
+        this.taskMenu.push({ label: 'Cancel Changes', icon: 'pi pi-fw pi-times', command: (e) => this.cancelledAllchanges(data) });
       }
     } else {
-      if (data.editMode) {
-        this.taskMenu = [
-          { label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data, Slot) }
-        ];
-      } else {
-        this.taskMenu = [
-          { label: 'Edit', icon: 'pi pi-pencil', command: (event) => this.editTask(data) },
-          { label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data, Slot) }
-        ];
+      if (data.showAllocationSplit) {
+        this.taskMenu.push(
+          { label: 'Edit Allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, '') },
+          { label: 'Equal Allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, 'Equal') }
+        );
+      }
+      if (!data.editMode) {
+        this.taskMenu.push({ label: 'Edit', icon: 'pi pi-pencil', command: (event) => this.editTask(data) });
       }
     }
+    this.taskMenu.push({ label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data, Slot) });
   }
-
 
   editTask(data) {
     data.editMode = true;
   }
-
 
   cancelledAllchanges(data) {
 
@@ -295,8 +283,6 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     this.expandedRows[data.Id] = false;
     data.editMode = false;
     data.edited = false;
-    // delete data.MilestoneAllTasks;
-
   }
 
 
@@ -357,7 +343,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   fetchResources(task) {
     if (!this.selectOpened) {
 
-      this.commonService.showToastrMessage(this.constants.MessageType.warn,'Fetching available resources...',true,true);
+      this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Fetching available resources...', true, true);
       setTimeout(async () => {
         const setResourcesExtn = $.extend(true, [], task.resources);
         const startTime = new Date(new Date(task.StartTime).setHours(0, 0, 0, 0));
@@ -424,7 +410,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
             task.displayselectedResources.push({ label: retRes, items: Items });
           }
         }
-       this.commonService.clearToastrMessage();
+        this.commonService.clearToastrMessage();
         if (this.selectedUser) {
           this.selectedButton = Array.from(document.querySelectorAll('li'))
             .find(el => el.textContent.indexOf(this.selectedUser.UserNamePG.Title) > -1);
@@ -514,7 +500,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     });
     // tslint:disable-next-line: no-shadowed-variable
     ref.onClose.subscribe((task: any) => {
-      this.commonService.showToastrMessage(this.constants.MessageType.info,'Please wait..',true,true);
+      this.commonService.showToastrMessage(this.constants.MessageType.info, 'Please wait..', true, true);
       this.selectedUser = item;
       this.openedTask.allocatedResource = '';
       this.commonService.clearToastrMessage();
@@ -765,7 +751,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
 
 
-async getMilestoneTasks(task) {
+  async getMilestoneTasks(task) {
 
     let alltasks = [];
     if (this.arrMilestoneTasks.find(c => c.projectCode === task.ProjectCode && c.milestone === task.Milestone)) {
@@ -845,19 +831,19 @@ async getMilestoneTasks(task) {
         } else {
           event.data.MilestoneAllTasks.push({ type: tasks[0], milestone: event.data.Milestone, tasks: [event.data.TaskName] });
         }
-        
+
         event.data.subTaskloaderenable = false;
       }
 
-        if (this.completeTaskArray.filter(c => c.ProjectCode === event.data.ProjectCode && c.Milestone === event.data.Milestone)) {
-          this.completeTaskArray.filter(c => c.ProjectCode === event.data.ProjectCode && c.Milestone ===
-            event.data.Milestone).map(c => c.MilestoneAllTasks = event.data.MilestoneAllTasks);
-        }
-
-        console.log(event.data);
-        event.data.subTaskloaderenable = false;
+      if (this.completeTaskArray.filter(c => c.ProjectCode === event.data.ProjectCode && c.Milestone === event.data.Milestone)) {
+        this.completeTaskArray.filter(c => c.ProjectCode === event.data.ProjectCode && c.Milestone ===
+          event.data.Milestone).map(c => c.MilestoneAllTasks = event.data.MilestoneAllTasks);
       }
+
+      console.log(event.data);
+      event.data.subTaskloaderenable = false;
     }
+  }
   modelChanged(event, Slot) {
     event.editMode = true;
     event.edited = true;
@@ -910,7 +896,7 @@ async getMilestoneTasks(task) {
     task.AssignedUserTimeZone = AssignedUserTimeZone && AssignedUserTimeZone.length > 0
       ? AssignedUserTimeZone[0].TimeZone.Title ?
         AssignedUserTimeZone[0].TimeZone.Title : '+5.5' : '+5.5';
-    task.DueDate = IsdbTask ? task.DueDateDT : task.DueDate; 
+    task.DueDate = IsdbTask ? task.DueDateDT : task.DueDate;
     const convertedStartDate = task.StartDate ? this.commonService.calcTimeForDifferentTimeZone(new Date(task.StartDate),
       this.globalService.currentUser.timeZone, task.AssignedUserTimeZone) :
       this.commonService.calcTimeForDifferentTimeZone(new Date(task.StartDate),
@@ -949,7 +935,7 @@ async getMilestoneTasks(task) {
     taskObj.StartDate = task.startDate ? new Date(task.startDate) : new Date(task.StartDate);
     taskObj.DueDate = task.DueDate ? new Date(task.DueDate) : new Date(task.DueDate);
     taskObj.UserStart = task.startDate ? new Date(task.startDate) : new Date(task.StartDate);
-    taskObj.UserEnd = task.DueDate? new Date(task.DueDate) : new Date(task.DueDate);
+    taskObj.UserEnd = task.DueDate ? new Date(task.DueDate) : new Date(task.DueDate);
     taskObj.ProjectName = task.ProjectName;
     taskObj.SpentTime = this.commonService.addHrsMins([hrsMinObject]);
     taskObj.UserStartDatePart = this.getDatePart(convertedStartDate);
@@ -988,7 +974,7 @@ async getMilestoneTasks(task) {
     return taskObj;
   }
 
-  async  GetResourceOnEdit(task) {
+  async GetResourceOnEdit(task) {
 
     const setResourcesExtn = $.extend(true, [], task.resources);
     const startTime = new Date(new Date(task.StartTime).setHours(0, 0, 0, 0));
@@ -1220,7 +1206,7 @@ async getMilestoneTasks(task) {
     if (isValid) {
       this.loaderenable = true;
       setTimeout(() => {
-        this.commonService.showToastrMessage(this.constants.MessageType.info,'Updating...',true,true);
+        this.commonService.showToastrMessage(this.constants.MessageType.info, 'Updating...', true, true);
         this.generateSaveTasks(unt);
       }, 300);
     }
@@ -1268,16 +1254,16 @@ async getMilestoneTasks(task) {
           && e.Status !== 'Completed');
         // tslint:enable
         if (checkTaskAllocatedTime.length > 0) {
-          this.commonService.showToastrMessage(this.constants.MessageType.error,'Allocated time for task cannot be equal or less than 0 for '
-          + slot.ProjectCode + '-' + slot.Milestone + ' - ' + checkTaskAllocatedTime[0].Task,false);
+          this.commonService.showToastrMessage(this.constants.MessageType.error, 'Allocated time for task cannot be equal or less than 0 for '
+            + slot.ProjectCode + '-' + slot.Milestone + ' - ' + checkTaskAllocatedTime[0].Task, false);
           return false;
         }
 
         const compareDates = slot.SlotTasks.filter(e => (e.UserEnd <= e.UserStart && e.Status !== 'Completed'));
         if (compareDates.length > 0) {
 
-          this.commonService.showToastrMessage(this.constants.MessageType.warn,'End date should be greater than start date of ' + compareDates[0].TaskName + ' task of '
-          + slot.ProjectCode + '-' + slot.Milestone + ' - ' + slot.Task,false);
+          this.commonService.showToastrMessage(this.constants.MessageType.warn, 'End date should be greater than start date of ' + compareDates[0].TaskName + ' task of '
+            + slot.ProjectCode + '-' + slot.Milestone + ' - ' + slot.Task, false);
           return false;
         }
 
@@ -1295,7 +1281,7 @@ async getMilestoneTasks(task) {
         });
         if (!validateAllocation) {
 
-          this.commonService.showToastrMessage(this.constants.MessageType.warn,'All tasks of ' + slot.ProjectCode + '-' + slot.Milestone + ' - ' + slot.Task + ' should be assigned to   resource.',false);
+          this.commonService.showToastrMessage(this.constants.MessageType.warn, 'All tasks of ' + slot.ProjectCode + '-' + slot.Milestone + ' - ' + slot.Task + ' should be assigned to   resource.', false);
           return false;
         }
         const errorPresnet = this.validateTaskDates(slot.SlotTasks, slot);
@@ -1306,14 +1292,14 @@ async getMilestoneTasks(task) {
         const compareTaskDates = slot.SlotTasks.filter(e => (slot.StartDate > e.UserStart && e.Status !== 'Completed'));
         if (compareTaskDates.length > 0) {
 
-          this.commonService.showToastrMessage(this.constants.MessageType.warn, 'start date of ' + compareTaskDates[0].TaskName + ' task  should be greater than start date of ' + slot.ProjectCode + '-' + slot.Milestone + ' - ' + slot.Task,false);
+          this.commonService.showToastrMessage(this.constants.MessageType.warn, 'start date of ' + compareTaskDates[0].TaskName + ' task  should be greater than start date of ' + slot.ProjectCode + '-' + slot.Milestone + ' - ' + slot.Task, false);
           return false;
         }
 
         const compareTaskEndDates = slot.SlotTasks.filter(e => (e.UserEnd > slot.DueDate && e.Status !== 'Completed'));
         if (compareTaskEndDates.length > 0) {
 
-          this.commonService.showToastrMessage(this.constants.MessageType.warn, 'end date of ' + compareTaskEndDates[0].TaskName + ' task  should be less than end date of ' + slot.ProjectCode + '-' + slot.Milestone + ' - ' + slot.Task,false);
+          this.commonService.showToastrMessage(this.constants.MessageType.warn, 'end date of ' + compareTaskEndDates[0].TaskName + ' task  should be less than end date of ' + slot.ProjectCode + '-' + slot.Milestone + ' - ' + slot.Task, false);
           return false;
         }
 
@@ -1325,7 +1311,7 @@ async getMilestoneTasks(task) {
 
           if (ExisitingTasks.length > 0) {
 
-            this.commonService.showToastrMessage(this.constants.MessageType.warn,ExisitingTasks.join(', ') + ' task of ' + slot.ProjectCode + '-' + slot.Milestone + ' is already exist.',false);
+            this.commonService.showToastrMessage(this.constants.MessageType.warn, ExisitingTasks.join(', ') + ' task of ' + slot.ProjectCode + '-' + slot.Milestone + ' is already exist.', false);
             return false;
           }
         }
@@ -1355,8 +1341,8 @@ async getMilestoneTasks(task) {
         if (SDTask) {
           // this.errorMessageCount++;
 
-          this.commonService.showToastrMessage(this.constants.MessageType.warn,'Start Date of ' + SDTask.TaskName + '  should be greater than end date of ' +
-          task.TaskName + ' in ' + slot.ProjectCode + '-' + slot.Milestone + ' - ' + slot.Task,false);
+          this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Start Date of ' + SDTask.TaskName + '  should be greater than end date of ' +
+            task.TaskName + ' in ' + slot.ProjectCode + '-' + slot.Milestone + ' - ' + slot.Task, false);
           errorPresnet = true;
           break;
           // this.taskerrorMessage = 'Start Date of ' + SDTask.pName + '  should be greater than end date of ' + task.pName;
@@ -1633,7 +1619,7 @@ async getMilestoneTasks(task) {
     //this.messageService.clear();
     await this.getProperties();
 
-    this.commonService.showToastrMessage(this.constants.MessageType.success,'Slots updated Sucessfully.',false);
+    this.commonService.showToastrMessage(this.constants.MessageType.success, 'Slots updated Sucessfully.', false);
 
     if (unt) {
       this.caGlobal.loading = true;
@@ -1649,7 +1635,7 @@ async getMilestoneTasks(task) {
       let updateProjectRes = {};
       const projectID = project.projectID;
       updateProjectRes = {
-        __metadata: { type: this.constants.listNames.ProjectInformation.type},
+        __metadata: { type: this.constants.listNames.ProjectInformation.type },
         EditorsId: { results: project.updatedResources.editor.results },
         AllDeliveryResourcesId: { results: project.updatedResources.allDeliveryRes },
         QCId: { results: project.updatedResources.qualityChecker.results },
@@ -1692,7 +1678,7 @@ async getMilestoneTasks(task) {
         AssignedToId: task.allocatedResource ? task.allocatedResource.UserNamePG.hasOwnProperty('ID') ?
           task.allocatedResource.UserNamePG.ID : -1 : -1,
         TimeZoneNM: task.allocatedResource ? task.allocatedResource.TimeZone.hasOwnProperty('Title')
-          ? task.allocatedResource.TimeZone.Title :+5.5 : +5.5,
+          ? task.allocatedResource.TimeZone.Title : +5.5 : +5.5,
         CommentsMT: task.TaskScope,
         Status: task.Status,
         NextTasks: this.setPreviousAndNext(task.NextTasks, slot.Milestone, slot.ProjectCode),
@@ -1705,7 +1691,7 @@ async getMilestoneTasks(task) {
         Title: slot.ProjectCode + ' ' + slot.Milestone + ' ' + task.TaskName,
         CentralAllocationDone: 'Yes',
         IsCentrallyAllocated: 'No',
-        ContentTypeCH: this.constants.CONTENT_TYPE.TASK, 
+        ContentTypeCH: this.constants.CONTENT_TYPE.TASK,
         DisableCascade: task.DisableCascade === true ? 'Yes' : 'No'
       };
       url = this.spServices.getReadURL(this.constants.listNames.Schedules.name);
@@ -1760,5 +1746,57 @@ async getMilestoneTasks(task) {
     return sVal;
   }
 
+  editAllocation(milestoneTask, allocationType): void {
+    milestoneTask.resources = this.resourceList.filter((objt) => {
+      return objt.UserName.ID === milestoneTask.AssignedTo.ID;
+    });
+    let header = milestoneTask.submilestone ? milestoneTask.milestone + ' ' + milestoneTask.title
+      + ' ( ' + milestoneTask.submilestone + ' )' : milestoneTask.milestone + ' ' + milestoneTask.title;
+    header = header + ' - ' + milestoneTask.AssignedTo.Title;
+    const ref = this.dialogService.open(PreStackAllocationComponent, {
+      data: {
+        ID: milestoneTask.id,
+        task: milestoneTask.taskFullName,
+        startDate: milestoneTask.pUserStartDatePart,
+        endDate: milestoneTask.pUserEndDatePart,
+        startTime: milestoneTask.pUserStartTimePart,
+        endTime: milestoneTask.pUserEndTimePart,
+        budgetHrs: milestoneTask.budgetHours,
+        resource: milestoneTask.resources,
+        status: milestoneTask.status,
+        strAllocation: milestoneTask.allocationPerDay,
+        allocationType
+      } as IDailyAllocationTask,
+      width: '90vw',
+      header,
+      contentStyle: { 'max-height': '90vh', 'overflow-y': 'auto' },
+      closable: false
+    });
+    ref.onClose.subscribe((allocation: any) => {
+      // let task: any;
+      // if (milestoneTask.type === 'Milestone') {
+      //   const milestoneData: MilestoneTreeNode = this.milestoneData.find(m => m.data.title === milestoneTask.milestone);
+      //   const milestoneTasks: any[] = this.taskAllocateCommonService.getTasksFromMilestones(milestoneData, true,
+      //   this.milestoneData, false);
+      //   milestoneData.data.edited = true;
+      //   task = milestoneTasks.find(t => t.id === milestoneTask.id);
+      // } else {
+      //   task = milestoneTask;
+      // }
+      this.dailyAllocation.setAllocationPerDay(allocation, milestoneTask);
+      if (allocation.allocationAlert) {
 
+        this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Resource is over allocated', false);
+      }
+    });
+  }
+
+  showOverlayPanel(event, rowData, dailyAllocateOP, target?) {
+    const allocationPerDay = rowData.allocationPerDay ? rowData.allocationPerDay : '';
+    dailyAllocateOP.showOverlay(event, allocationPerDay, target);
+  }
+
+  hideOverlayPanel() {
+    this.dailyAllocateOP.hideOverlay();
+  }
 }

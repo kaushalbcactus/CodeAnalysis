@@ -12,14 +12,17 @@ import { AddEditCommentComponent } from '../add-edit-comment-dialog/add-edit-com
 import { ViewUploadDocumentDialogComponent } from 'src/app/shared/view-upload-document-dialog/view-upload-document-dialog.component';
 import { FeedbackPopupComponent } from 'src/app/qms/qms/reviewer-detail-view/feedback-popup/feedback-popup.component';
 import { GlobalService } from 'src/app/Services/global.service';
+import { AllocationOverlayComponent } from 'src/app/shared/pre-stack-allocation/allocation-overlay/allocation-overlay.component';
 
 @Component({
   selector: 'app-current-completed-tasks-table',
   templateUrl: './current-completed-tasks-table.component.html',
-  styleUrls: ['./current-completed-tasks-table.component.css']
+  styleUrls: ['./current-completed-tasks-table.component.css'],
+  providers: [AllocationOverlayComponent]
 })
 export class CurrentCompletedTasksTableComponent implements OnInit {
   @ViewChild('TasksTable', { static: false }) TasksTable: Table;
+  // @ViewChild('dailyAllocateOP', { static: false }) dailyAllocateOP: AllocationOverlayComponent;
   // @ViewChild('feedbackPopup', { static: false }) feedbackPopupComponent: FeedbackPopupComponent;
   @Output() reloadTableData = new EventEmitter<string>();
   tableBlock: Table;
@@ -47,7 +50,8 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     public spOperations: SPOperationService,
     public config: DynamicDialogConfig,
-    public sharedObject: GlobalService, ) { }
+    public sharedObject: GlobalService,
+    private dailyAllocateOP: AllocationOverlayComponent ) { }
 
   async ngOnInit() {
 
@@ -527,5 +531,27 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
     this.allTasks = data;
   }
 
+  showOverlayPanel(event, rowData, dailyAllocateOP, target?) {
+    const allocationPerDay = rowData.allocationPerDay ? rowData.allocationPerDay : '';
+    dailyAllocateOP.showOverlay(event, allocationPerDay, target);
+    console.log(event);
+    setTimeout(() => {
+      let panel: any = document.querySelector(".dailyAllocationOverlayComp > div");
+      let panelContainer: any = document.getElementById('s4-workspace');
+      let topAdject = 0;
+      if (panelContainer) {
+        topAdject = panelContainer.scrollTop > 0 ? panelContainer.scrollTop - panel.clientHeight : 0;
+        if (topAdject < 0) {
+          topAdject = panelContainer.scrollTop;
+        }
+      }
+      panel.style.top = event.pageY + topAdject + 'px';
+      panel.style.left = event.pageX + 'px';
+    }, 50);
+  }
+
+  hideOverlayPanel() {
+    this.dailyAllocateOP.hideOverlay();
+  }
 
 }
