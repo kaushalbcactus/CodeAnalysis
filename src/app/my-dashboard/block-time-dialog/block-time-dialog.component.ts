@@ -73,7 +73,7 @@ export class BlockTimeDialogComponent implements OnInit {
         this.datePipe.transform(this.data.task.StartDate, 'hh:mm aa').toLowerCase() : this.data.task.TimeSpent;
       this.minEndTime = this.starttime;
       this.minDateValue = await this.myDashboardConstantsService.CalculateminstartDateValue(this.eventDate, 3);
-      this.endtime = this.datePipe.transform(this.data.task.DueDate, 'hh:mm aa').toLowerCase();
+      this.endtime = this.datePipe.transform(this.data.task.DueDateDT, 'hh:mm aa').toLowerCase();
       this.commment = this.data.task.TaskComments !== null ? this.data.task.TaskComments : undefined;
 
     } else {
@@ -206,12 +206,12 @@ export class BlockTimeDialogComponent implements OnInit {
         TaskComments: this.commment,
         Status: 'Completed',
         AssignedToId: this.sharedObject.currentUser.userId,
-        TimeZone: this.sharedObject.DashboardData.ResourceCategorization.find(c => c.ID ===
+        TimeZoneNM: this.sharedObject.DashboardData.ResourceCategorization.find(c => c.ID ===
           this.sharedObject.currentUser.userId) !== undefined ?
           this.sharedObject.DashboardData.ResourceCategorization.find(c => c.ID ===
             this.sharedObject.currentUser.userId).TimeZone !== undefined ?
             this.sharedObject.DashboardData.ResourceCategorization.find(c => c.ID ===
-              this.sharedObject.currentUser.userId).TimeZone.Title : '5.5' : '5.5',
+              this.sharedObject.currentUser.userId).TimeZone.Title : 5.5 : 5.5,
         TATStatus: this.data.timeblockType === 'Admin' ? 'Yes' : 'No',
 
 

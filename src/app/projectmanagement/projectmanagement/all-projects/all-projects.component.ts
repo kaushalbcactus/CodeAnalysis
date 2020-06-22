@@ -381,7 +381,7 @@ export class AllProjectsComponent implements OnInit {
     }
     if (this.pmObject.allProjectItems.length) {
       // this.pmObject.countObj.allProjectCount = arrResults.length;
-      this.pmObject.countObj.allProjectCount = this.pmObject.allProjectItems.length; // added by kaushal on 12-07-2019
+      this.pmObject.countObj.allProjectCount = this.pmObject.allProjectItems.length;
       this.pmObject.totalRecords.AllProject = this.pmObject.countObj.allProjectCount;
       if (this.pmObject.tabMenuItems.length) {
         this.pmObject.tabMenuItems[0].label = 'All Projects (' + this.pmObject.countObj.allProjectCount + ')';
@@ -2243,7 +2243,7 @@ export class AllProjectsComponent implements OnInit {
 
 
   // **************************************************************************************************
-  //   This function is used to open or download project scope 
+  //   This function is used to open or download project scope
   // **************************************************************************************************
   async goToProjectScope(task) {
     this.loaderView.nativeElement.classList.add('show');
