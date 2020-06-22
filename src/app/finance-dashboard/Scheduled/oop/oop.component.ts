@@ -739,7 +739,7 @@ export class OopComponent implements OnInit, OnDestroy {
     this.items.push({
       label: "Show History",
       command: (e) => this.openMenuContent(e, data),
-    }); // Added by kaushal on 10.6.19
+    });
   }
 
   openMenuContent(event, data) {
@@ -781,7 +781,6 @@ export class OopComponent implements OnInit, OnDestroy {
     ) {
       this.goToProjectDetails(this.selectedRowItem);
     } else if (this.deliverableDialog.title.toLowerCase() === "show history") {
-      // Added by kaushal on 10.6.19
       this.timeline.showTimeline(data.Id, "FD", "InvoiceLineItems");
     } else if (event.item.label === "Details") {
       this.rightSideBar = !this.rightSideBar;

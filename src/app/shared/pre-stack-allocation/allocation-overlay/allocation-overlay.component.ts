@@ -21,7 +21,10 @@ export class AllocationOverlayComponent implements OnInit {
    ];
  }
 
- showOverlay(event, allocationPerDay, target?) {
+ /**
+  * Display overlay popup
+  */
+ showOverlay(event, allocationPerDay: string, target?: string) {
    // code commented for phase 2
    if (allocationPerDay) {
      this.setAllocation(allocationPerDay);
@@ -29,10 +32,16 @@ export class AllocationOverlayComponent implements OnInit {
    }
  }
 
+ /**
+  * Hide overlay popup
+  */
  hideOverlay() {
    this.panel.hide();
  }
 
+ /**
+  * Split string of allocationperday and push in to array to generate table
+  */
  setAllocation(strAllocation: string): void {
    const allocation = [];
    this.allocation.length = 0;
@@ -42,7 +51,7 @@ export class AllocationOverlayComponent implements OnInit {
        const arrDateTime: string[] = day.indexOf(':') > -1 ? day.split(':') : [];
        const date: Date = arrDateTime.length ? new Date(arrDateTime[0]) : new Date();
        const time: string = arrDateTime.length > 1 ? arrDateTime[1] + ':' + arrDateTime[2] : '';
-       const hrsMins = this.common.convertFromHrsMins(time);
+       const hrsMins: number = this.common.convertFromHrsMins(time);
        const obj = {
          date,
          allocation: hrsMins

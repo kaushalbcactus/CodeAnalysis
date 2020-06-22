@@ -33,9 +33,9 @@ export class SharedConstantsService {
       "(Actual_x0020_Start_x0020_Date ge '{{startDateString}}' and Actual_x0020_Start_x0020_Date le '{{endDateString}}')" +
       " or (DueDateDT ge '{{startDateString}}' and DueDateDT le '{{endDateString}}')" +
       " or (Actual_x0020_Start_x0020_Date le '{{startDateString}}' and DueDateDT ge '{{endDateString}}'))))",
-      
-      
-      
+
+
+
       // Actual_x0020_Start_x0020_Date ge '{{actualStartDateString}}' and Actual_x0020_Start_x0020_Date le '{{endDateString}}')",
       // filter: "(AssignedTo/Id eq {{userID}}) and Status eq 'Completed' and(" +
       //   "(Status eq 'Deleted' or Status eq 'In Progress') and ({{datestringArray}}))",
@@ -68,7 +68,7 @@ export class SharedConstantsService {
       top: '4500'
     },
     leaveCalendar: {
-      // tslint:disable 
+      // tslint:disable
       select: "ID,EventDate,EndDate,IsHalfDay",
       filter: "(UserName/Id eq {{userId}} and IsActive eq 'Yes' ) and((EventDate ge '{{startDateString}}' and EventDate le '{{endDateString}}') or (EndDate ge '{{startDateString}}' and EndDate le '{{endDateString}}') or (EventDate le '{{startDateString}}' and EndDate ge '{{endDateString}}'))",
       orderby: "Created",
@@ -76,7 +76,7 @@ export class SharedConstantsService {
       // tslint:enable
     },
     availableHrs: {
-      // tslint:disable 
+      // tslint:disable
       select: "ID,ResourceID,WeekStartDate,WeekEndDate,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday,MondayLeave,TuesdayLeave,WednesdayLeave,ThursdayLeave,FridayLeave",
       filter: "ResourceID eq {{ResourceId}} and((WeekStartDate ge '{{startDateString}}' and WeekStartDate le '{{endDateString}}') or (WeekEndDate ge '{{startDateString}}' and WeekEndDate le '{{endDateString}}') or (WeekStartDate le '{{startDateString}}' and WeekEndDate ge '{{endDateString}}'))",
       orderby: "WeekStartDate asc",

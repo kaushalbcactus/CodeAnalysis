@@ -233,7 +233,7 @@ export class PracticeAreasComponent implements OnInit {
         };
         this.confirmUpdate(data, updateData, this.constants.listNames.PracticeArea.name,
           this.constants.listNames.PracticeArea.type);
-      },
+      }
     });
   }
 

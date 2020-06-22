@@ -602,10 +602,11 @@ export class MyTimelineComponent implements OnInit {
           this.commonService.showToastrMessage(this.constants.MessageType.success, 'Leave created successfully.', false);
         } else {
           if (task === undefined) {
-            const folderUrl = this.sharedObject.sharePointPageObject.serverRelativeUrl + "/Lists/Schedules/AdhocTasks";
-            this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'CreateAndMoveTask');
-            await this.spServices.createItemAndMove(this.constants.listNames.Schedules.name, blockTimeobj, this.constants.listNames.Schedules.type, folderUrl);
-
+            // const folderUrl = this.sharedObject.sharePointPageObject.serverRelativeUrl + "/Lists/Schedules/AdhocTasks";
+            this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'Create Adhoc item');
+            // tslint:disable: max-line-length
+            await this.spServices.createItem(this.constants.listNames.Schedules.name, blockTimeobj, this.constants.listNames.Schedules.type);
+            // await this.spServices.createItemAndMove(this.constants.listNames.Schedules.name, blockTimeobj, this.constants.listNames.Schedules.type, folderUrl);
             this.commonService.showToastrMessage(this.constants.MessageType.success, 'Time Booking created successfully.', false);
 
           } else {
@@ -918,7 +919,7 @@ export class MyTimelineComponent implements OnInit {
 
 
   // **************************************************************************************************
-  //   This function is used to open or download project scope 
+  //   This function is used to open or download project scope
   // **************************************************************************************************
   async goToProjectScope(task) {
     const ProjectInformation = await this.myDashboardConstantsService.getCurrentTaskProjectInformation(task.ProjectCode);
