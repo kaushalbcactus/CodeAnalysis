@@ -349,7 +349,11 @@ export class ConstantsService {
       name:'BlockingCT',
       type:'BlockingCTListItem',
       contentTypeId:'0x010088151006240E4149953AD8D3958182CA*'
-    }
+    },
+    BlockResource: {
+      name: "BlockingResources",
+      type: "SP.Data.BlockingResourcesListItem",
+    },
   };
 
   public projectStatus = {
@@ -683,12 +687,6 @@ export class ConstantsService {
   };
 
   /////// Remove one of the constant
-  public batchType = {
-    POST : 'POST',
-    GET : 'GET',
-    PATCH : 'PATCH'
-  };
-
   public Method = {
     POST: "POST",
     PATCH: "PATCH",
