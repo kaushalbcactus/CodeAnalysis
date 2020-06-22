@@ -115,7 +115,6 @@ export class AddEditPoDialogComponent implements OnInit {
     this.PoForm.controls.oop.disable();
     this.PoForm.controls.revenue.disable();
     this.PoForm.controls.tax.disable();
-    this.adminConstants.FOLDER_LOCATION.PO
     this.PoForm.patchValue({
       poNumber: this.currPOObj.PoNumber,
       poName: this.currPOObj.PoName,
