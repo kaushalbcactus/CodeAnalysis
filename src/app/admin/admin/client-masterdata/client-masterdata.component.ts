@@ -16,6 +16,7 @@ import { AddEditSubdivisionComponent } from './add-edit-subdivision/add-edit-sub
 import { AddEditPocComponent } from './add-edit-poc/add-edit-poc.component';
 import { AddEditPoDialogComponent } from './add-edit-po-dialog/add-edit-po-dialog.component';
 import { ChangeBudgetDialogComponent } from './change-budget-dialog/change-budget-dialog.component';
+import { PMObjectService } from 'src/app/projectmanagement/services/pmobject.service';
 
 
 @Component({
@@ -719,6 +720,7 @@ export class ClientMasterdataComponent implements OnInit {
    *
    */
   async showPO() {
+    debugger;
     this.constantsService.loader.isPSInnerLoaderHidden = false;
     const tempArray = [];
     this.PORows = [];
@@ -748,6 +750,11 @@ export class ClientMasterdataComponent implements OnInit {
         obj.InvoicedRevenue = item.InvoicedRevenue;
         obj.InvoicedTax = item.InvoicedTax;
         obj.Link = item.Link;
+        if(item.Link){
+          
+          obj.poDocLink = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + item.ClientLegalEntity +
+          '/' + this.adminConstants.FOLDER_LOCATION.PO + '/' + item.Link
+        }
         obj.Molecule = item.Molecule;
         obj.PoName = item.Name;
         obj.PoNumber = item.Number;
@@ -928,6 +935,11 @@ export class ClientMasterdataComponent implements OnInit {
       obj.InvoicedRevenue = item.InvoicedRevenue;
       obj.InvoicedTax = item.InvoicedTax;
       obj.Link = item.Link;
+      if(item.Link){
+          
+        obj.poDocLink = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + item.ClientLegalEntity +
+        '/' + this.adminConstants.FOLDER_LOCATION.PO + '/' + item.Link
+      }
       obj.Molecule = item.Molecule;
       obj.PoName = item.Name;
       obj.PoNumber = item.Number;
