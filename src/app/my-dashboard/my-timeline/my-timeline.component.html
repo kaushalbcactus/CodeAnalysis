@@ -171,7 +171,7 @@
                         <div id="modalInnerLoader"></div>
                         <div id="modalInnerLoaderText">Loading...</div>
                     </div>
-
+                    <app-allocation-overlay #dailyAllocateOP></app-allocation-overlay>
                     <table [hidden]="modalloaderenable" style="width:100%;margin:10px 0px 0px 0px;">
                         <tr>
                             <th>Project Name:</th>
@@ -217,8 +217,17 @@
                         <tr>
                             <th>Milestone:</th>
                             <td>{{task.Milestone}}</td>
-                            <th>Task & Scope:</th>
-                            <td>{{task.Task}} <span *ngIf="task.Comments">[{{task.Comments}}]</span></td>
+                            <th>Task & Allocated Time:</th>
+                            <td>{{task.Task}} , {{task.ExpectedTime}} 
+                                <div class='overlayIcon'
+                                appendTo="body"
+                                (click)="this.showOverlayPanel($event, task, dailyAllocateOP)"
+                                style="float: right;cursor: pointer;"
+                                title="Click to see allocation split"
+                                *ngIf="task.showAllocationSplit">
+                                <i class="fa fa-info-circle" aria-hidden="true"></i>
+                            </div>
+                            <span *ngIf="task.Comments">[{{task.Comments}}]</span></td>
                         </tr>
                         <tr>
                             <th>Status:</th>

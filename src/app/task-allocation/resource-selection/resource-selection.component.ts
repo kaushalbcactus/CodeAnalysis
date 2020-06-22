@@ -61,7 +61,7 @@ export class ResourceSelectionComponent implements OnInit {
     let resArr = [];
     this.sharedObject.data.task.resources.forEach((e) => {
       resArr.push(
-        this.Resources.find((r) => r.value.UserName.Id == e.UserName.ID)
+        this.Resources.find((r) => r.value.UserName.Id == e.UserNamePG.ID)
       );
     });
     this.Resources = resArr;
@@ -95,8 +95,6 @@ export class ResourceSelectionComponent implements OnInit {
       filterPracticeArea.push(this.PracticeAreas.find((r) => r.value == e));
     });
     this.PracticeAreas = filterPracticeArea;
-
-    console.log(filterBuckets, filterPracticeArea);
 
     this.searchCapacityForm.patchValue({
       bucket: bucket,
@@ -195,7 +193,7 @@ export class ResourceSelectionComponent implements OnInit {
     let arrValue = [];
     this.sharedObject.data.task.resources.forEach((e) => {
       arrValue.push(
-        this.Resources.find((r) => r.value.UserName.Id == e.UserName.ID)
+        this.Resources.find((r) => r.value.UserName.Id == e.UserNamePG.ID)
       );
     });
     // this.Resources = arrValue;

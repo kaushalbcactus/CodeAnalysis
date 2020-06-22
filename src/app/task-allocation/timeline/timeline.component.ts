@@ -273,7 +273,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       const stDate = currentMilestone ? currentMilestone.data.pUserStart : this.milestoneData[0].data.pUserStart;
       const resources = this.getAllResources(this.allTasks);
       resources.forEach(resource => {
-        users.push(this.sharedObject.oTaskAllocation.oResources.find(r => r.UserName.ID === resource));
+        users.push(this.sharedObject.oTaskAllocation.oResources.find(r => r.UserNamePG.ID === resource));
       });
       const newdate = this.commonService.calcBusinessDate('Next', 90, new Date(stDate));
       this.sharedObject.oCapacity = await this.usercapacityComponent.applyFilterReturn(stDate, newdate.endDate, users, []);
@@ -342,7 +342,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       milestoneTask.assignedUsers = [{ Title: '', userType: '' }]; //this.resources.length > 0 ? this.resources : [{ Title: '', userType: '' }];
 
       const AssignedUserTimeZone = this.sharedObject.oTaskAllocation.oResources.filter(function (objt) {
-        return milestoneTask.AssignedTo.ID === objt.UserName.ID;
+        return milestoneTask.AssignedTo.ID === objt.UserNamePG.ID;
       });
       milestoneTask.assignedUserTimeZone = AssignedUserTimeZone && AssignedUserTimeZone.length > 0
         ? AssignedUserTimeZone[0].TimeZone.Title ?
@@ -444,7 +444,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     if (clientReviewObj.length > 0) {
       clientReviewObj[0].assignedUsers = [{ Title: '', userType: '' }];
       const AssignedUserTimeZone = this.sharedObject.oTaskAllocation.oResources.filter(function (objt) {
-        return clientReviewObj[0].AssignedTo.ID === objt.UserName.ID;
+        return clientReviewObj[0].AssignedTo.ID === objt.UserNamePG.ID;
       });
       clientReviewObj[0].assignedUserTimeZone = AssignedUserTimeZone && AssignedUserTimeZone.length > 0
         ? AssignedUserTimeZone[0].TimeZone.Title ?
@@ -1739,7 +1739,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
 
       const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
-        return this.singleTask.AssignedTo.ID === objt.UserName.ID;
+        return this.singleTask.AssignedTo.ID === objt.UserNamePG.ID;
       });
       await this.dailyAllocation.calcPrestackAllocation(resource, this.singleTask);
 
@@ -1834,7 +1834,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     task.assignedUsers.forEach((c) => {
       c.items.forEach((item) => {
         this.sharedObject.oTaskAllocation.oResources.forEach((objt) => {
-          if (objt.UserName.ID === item.value.ID) {
+          if (objt.UserNamePG.ID === item.value.ID) {
             resources.push(objt)
           }
         })
@@ -2083,7 +2083,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
               task.budgetHours = this.budgetHrs;
               task.edited = true;
               const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
-                return task.AssignedTo && task.AssignedTo.ID === objt.UserName.ID;
+                return task.AssignedTo && task.AssignedTo.ID === objt.UserNamePG.ID;
               });
               if (this.budgetHrs !== 0) {
                 await this.dailyAllocation.calcPrestackAllocation(resource, task);
@@ -2738,7 +2738,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     event.editMode = true;
     event.edited = true;
     const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
-      return event.AssignedTo && event.AssignedTo.ID === objt.UserName.ID;
+      return event.AssignedTo && event.AssignedTo.ID === objt.UserNamePG.ID;
     });
     if (event.type !== 'milestone' && event.type !== 'submilestone') {
       this.maxBudgetHrs = this.taskAllocateCommonService.setMaxBudgetHrs(event);
@@ -3747,7 +3747,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     node.pUserStart = new Date(this.datepipe.transform(node.pUserStartDatePart, 'MMM d, y') + ' ' + node.pUserStartTimePart);
     node.pUserEnd = new Date(this.datepipe.transform(node.pUserEndDatePart, 'MMM d, y') + ' ' + node.pUserEndTimePart);
     const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
-      return node.AssignedTo && node.AssignedTo.ID === objt.UserName.ID;
+      return node.AssignedTo && node.AssignedTo.ID === objt.UserNamePG.ID;
     });
     let time: any = this.commonService.getHrsAndMins(node.pUserStart, node.pUserEnd)
     let bhrs = this.commonService.convertToHrsMins('' + node.budgetHours).replace('.', ':')
@@ -4023,7 +4023,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     nodeData.edited = true;
     this.changeDateProperties(nodeData);
     const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
-      return node.AssignedTo && node.AssignedTo.ID === objt.UserName.ID;
+      return node.AssignedTo && node.AssignedTo.ID === objt.UserNamePG.ID;
     });
     await this.dailyAllocation.calcPrestackAllocation(resource, nodeData);
     if (nodeData.IsCentrallyAllocated === 'Yes' && node.slotType !== 'Slot' && !node.parentSlot) {
@@ -4208,7 +4208,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   async ChangeEndDate($event, node) {
     if ($event) {
       const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
-        return node.AssignedTo.ID === objt.UserName.ID;
+        return node.AssignedTo.ID === objt.UserNamePG.ID;
       });
       // node.start_date = new Date(node.start_date.getFullYear(), node.start_date.getMonth(), node.start_date.getDate(), 9, 0);
       // node.end_date = new Date(node.start_date.getFullYear(), node.start_date.getMonth(), node.start_date.getDate(), 19, 0);
@@ -6332,7 +6332,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   editAllocation(milestoneTask, allocationType): void {
     milestoneTask.resources = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
-      return objt.UserName.ID === milestoneTask.AssignedTo.ID;
+      return objt.UserNamePG.ID === milestoneTask.AssignedTo.ID;
     });
     let header = milestoneTask.submilestone ? milestoneTask.milestone + ' ' + milestoneTask.title
       + ' ( ' + milestoneTask.submilestone + ' )' : milestoneTask.milestone + ' ' + milestoneTask.title;

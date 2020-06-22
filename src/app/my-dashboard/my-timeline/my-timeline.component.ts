@@ -16,6 +16,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { CommonService } from 'src/app/Services/common.service';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
+import { AllocationOverlayComponent } from 'src/app/shared/pre-stack-allocation/allocation-overlay/allocation-overlay.component';
 
 declare var Tooltip: any;
 
@@ -23,7 +24,7 @@ declare var Tooltip: any;
   selector: 'app-my-timeline',
   templateUrl: './my-timeline.component.html',
   styleUrls: ['./my-timeline.component.css'],
-
+  providers: [AllocationOverlayComponent]
 })
 export class MyTimelineComponent implements OnInit {
   @ViewChild('menuPopup', { static: false }) plusmenu: MenuModule;
@@ -97,6 +98,7 @@ export class MyTimelineComponent implements OnInit {
     private readonly _router: Router,
     _applicationRef: ApplicationRef,
     zone: NgZone,
+    private dailyAllocateOP: AllocationOverlayComponent
   ) {
 
     // Browser back button disabled & bookmark issue solution
@@ -931,6 +933,29 @@ export class MyTimelineComponent implements OnInit {
     else {
       window.open(response);
     }
+  }
+
+  showOverlayPanel(event, rowData, dailyAllocateOP, target?) {
+    const allocationPerDay = rowData.allocationPerDay ? rowData.allocationPerDay : '';
+    dailyAllocateOP.showOverlay(event, allocationPerDay, target);
+    console.log(event);
+    setTimeout(() => {
+      let panel: any = document.querySelector(".dailyAllocationOverlayComp > div");
+      let panelContainer: any = document.getElementById('s4-workspace');
+      let topAdject = 0;
+      if (panelContainer) {
+        topAdject = panelContainer.scrollTop > 0 ? panelContainer.scrollTop - panel.clientHeight : 0;
+        if (topAdject < 0) {
+          topAdject = panelContainer.scrollTop;
+        }
+      }
+      panel.style.top = event.pageY + topAdject + 'px';
+      panel.style.left = event.pageX + 'px';
+    }, 50);
+  }
+
+  hideOverlayPanel() {
+    this.dailyAllocateOP.hideOverlay();
   }
 
 }

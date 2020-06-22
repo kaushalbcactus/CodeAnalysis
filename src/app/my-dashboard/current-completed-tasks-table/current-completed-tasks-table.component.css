@@ -125,3 +125,10 @@ body .ui-buttonset.ui-button-secondary>.ui-button.ui-state-default {
     left: inherit !important;
     right: 40px !important;
 }
+
+.overlayIcon {
+    float: right !important;
+    margin-right: 22px !important;
+    font-size: 0.75em !important;
+    margin-top: 1px !important;
+  }

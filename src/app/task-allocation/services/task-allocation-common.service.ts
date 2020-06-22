@@ -249,7 +249,7 @@ export class TaskAllocationCommonService {
     converteddateObject.jsLocalStartDate = this.commonService.calcTimeForDifferentTimeZone(converteddateObject.convertedStartDate,
       task.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
 
-    converteddateObject.convertedEndDate = this.commonService.calcTimeForDifferentTimeZone(new Date(task.DueDate),
+    converteddateObject.convertedEndDate = this.commonService.calcTimeForDifferentTimeZone(new Date(task.DueDateDT),
       this.sharedObject.currentUser.timeZone, task.assignedUserTimeZone);
 
     converteddateObject.jsLocalEndDate = this.commonService.calcTimeForDifferentTimeZone(converteddateObject.convertedEndDate,
