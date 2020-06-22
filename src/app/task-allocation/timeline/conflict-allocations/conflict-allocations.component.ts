@@ -147,7 +147,7 @@ export class ConflictAllocationsComponent implements OnInit, AfterViewInit {
             oExistingResource.tasks = [...oExistingResource.tasks, ...tasks];
           } else {
             const conflictResouce: IConflictResource = {
-              userName: user.userName,
+              userName: user.userNamePG,
               userId: user.uid,
               userCapacity: this.recalculateUserCapacity(user, dates),
               tasks
@@ -163,7 +163,7 @@ export class ConflictAllocationsComponent implements OnInit, AfterViewInit {
   async getResourceCapacity(task, milSubMil) {
     let capacity: any;
     task.resources = this.globalService.oTaskAllocation.oResources.filter((objt) => {
-      return objt.UserName.ID === task.AssignedTo.ID;
+      return objt.UserNamePG.ID === task.AssignedTo.ID;
     });
     task.resources = this.commonService.unique(task.resources, 'UserName.ID');
     if (milSubMil) {

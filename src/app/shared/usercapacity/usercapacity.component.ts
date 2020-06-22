@@ -790,7 +790,7 @@ export class UsercapacityComponent implements OnInit {
                     .replace(".", ":")
                 : tasks[index].TimeSpent.replace(".", ":");
             const sTimeZone =
-              tasks[index].TimeZone === null ? "+5.5" : tasks[index].TimeZone;
+              tasks[index].TimeZoneNM === null ? "+5.5" : tasks[index].TimeZoneNM;
             const currentUserTimeZone =
               (new Date().getTimezoneOffset() / 60) * -1;
             tasks[
@@ -820,7 +820,7 @@ export class UsercapacityComponent implements OnInit {
               ":"
             );
             const sTimeZone =
-              tasks[index].TimeZone === null ? "+5.5" : tasks[index].TimeZone;
+              tasks[index].TimeZoneNM === null ? "+5.5" : tasks[index].TimeZoneNM;
             const currentUserTimeZone =
               (new Date().getTimezoneOffset() / 60) * -1;
             tasks[
@@ -848,7 +848,7 @@ export class UsercapacityComponent implements OnInit {
                     .replace(".", ":")
                 : tasks[index].TimeSpent.replace(".", ":");
             const sTimeZone =
-              tasks[index].TimeZone === null ? "+5.5" : tasks[index].TimeZone;
+              tasks[index].TimeZoneNM === null ? "+5.5" : tasks[index].TimeZone;
             const currentUserTimeZone =
               (new Date().getTimezoneOffset() / 60) * -1;
             tasks[
@@ -871,7 +871,7 @@ export class UsercapacityComponent implements OnInit {
           tasks[index].TotalAllocated =
            this.commonservice.convertToHrsMins("" + tasks[index].ExpectedTime)
                   .replace(".", ":")
-             
+
           const sTimeZone =
             tasks[index].TimeZoneNM === null ? "+5.5" : tasks[index].TimeZoneNM;
           const currentUserTimeZone =
@@ -891,7 +891,7 @@ export class UsercapacityComponent implements OnInit {
             sTimeZone
           );
           filteredTasks.push(tasks[index]);
-        } 
+        }
         else {
           tasks[index].TotalAllocated =
             tasks[index].Task !== "Adhoc"
@@ -900,7 +900,7 @@ export class UsercapacityComponent implements OnInit {
                   .replace(".", ":")
               : tasks[index].TimeSpent.replace(".", ":");
           const sTimeZone =
-            tasks[index].TimeZone === null ? "+5.5" : tasks[index].TimeZone;
+            tasks[index].TimeZoneNM === null ? "+5.5" : tasks[index].TimeZoneNM;
           const currentUserTimeZone =
             (new Date().getTimezoneOffset() / 60) * -1;
           tasks[
@@ -1247,7 +1247,7 @@ export class UsercapacityComponent implements OnInit {
                 : "0.0";
 
             } else if(oUser.tasks[j].Task === 'ResourceBlocking'){
-              
+
               oUser.tasks[
                 j
               ].timeAllocatedPerDay = this.commonservice.convertToHrsMins(
@@ -1311,7 +1311,7 @@ export class UsercapacityComponent implements OnInit {
                 );
               }
             }
-            
+
             if (oUser.dates[i].userCapacity === "Leave") {
               oUser.tasks[j].timeAllocatedPerDay = "0:0";
             }
@@ -1342,7 +1342,7 @@ export class UsercapacityComponent implements OnInit {
                         ")"
                     : oUser.tasks[j].Title,
                 projectCode:
-                  oUser.tasks[i].Task !== "ResourceBlocking" && oUser.tasks[j].Title !== null
+                  oUser.tasks[j].Task !== "ResourceBlocking" && oUser.tasks[j].Title !== null
                     ? oUser.tasks[j].Title.split(" ")[0]
                     : "",
                 milestone: oUser.tasks[j].Milestone,
