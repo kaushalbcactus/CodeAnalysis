@@ -4699,8 +4699,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     }
 
     for (const mil of addMilestones) {
-      this.commonService.setBatchObject(batchUrl, mil.url, mil.body, this.constants.listNames.Schedules.name,
-        this.constants.batchType.POST);
+      this.commonService.setBatchObject(batchUrl, mil.url,mil.body, this.constants.Method.POST, this.constants.listNames.Schedules.name
+       );
       // this.spServices.getChangeSetBodySC(batchContents, changeSetId, mil.url, mil.body, true);
       // const milObj = Object.assign({}, this.queryConfig);
       // milObj.url = mil.url;
@@ -4711,8 +4711,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     }
 
     for (const tasks of addTasks) {
-      this.commonService.setBatchObject(batchUrl, tasks.url, tasks.body, this.constants.listNames.Schedules.name,
-        this.constants.batchType.POST);
+      this.commonService.setBatchObject(batchUrl, tasks.url, tasks.body,this.constants.Method.POST, this.constants.listNames.Schedules.name
+        );
       // this.spServices.getChangeSetBodySC(batchContents, changeSetId, tasks.url, tasks.body, true);
       // const milTaskObj = Object.assign({}, this.queryConfig);
       // milTaskObj.url = tasks.url;
@@ -4735,14 +4735,13 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       // addMilObj.data = this.spServices.getFolderCreationData(folderUrl);
       // batchUrl.push(addMilObj);
       this.commonService.setBatchObject(batchUrl, this.spServices.getFolderCreationURL(),
-        this.spServices.getFolderCreationData(folderUrl),
-        'Milestone Folder Creation', this.constants.batchType.POST
+        this.spServices.getFolderCreationData(folderUrl),this.constants.Method.POST,
+        'Milestone Folder Creation'
       )
       // this.spServices.getChangeSetBodySC(batchContents, changeSetId, milestoneFolderEndpoint, JSON.stringify(milestoneFolderBody), true);
     }
     for (const mil of updateMilestones) {
-      this.commonService.setBatchObject(batchUrl, mil.url, mil.body, this.constants.listNames.Schedules.name,
-        this.constants.batchType.PATCH);
+      this.commonService.setBatchObject(batchUrl, mil.url, mil.body,this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
       //this.setSchedulesObject(mil, batchUrl);
       // this.spServices.getChangeSetBodySC(batchContents, changeSetId, mil.url, mil.body, false);
       // const milObj = Object.assign({}, this.queryConfig);
@@ -4753,8 +4752,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       // batchUrl.push(milObj);
     }
     for (const tasks of updateTasks) {
-      this.commonService.setBatchObject(batchUrl, tasks.url, tasks.body, this.constants.listNames.Schedules.name,
-        this.constants.batchType.PATCH);
+      this.commonService.setBatchObject(batchUrl, tasks.url, tasks.body,this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
       //this.setSchedulesObject(tasks, batchUrl);
       // this.spServices.getChangeSetBodySC(batchContents, changeSetId, tasks.url, tasks.body, false);
       // const taskObj = Object.assign({}, this.queryConfig);

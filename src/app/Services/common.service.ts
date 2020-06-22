@@ -982,7 +982,7 @@ export class CommonService {
         }
     }
 
-    setBatchObject(batchUrl, url, body, listName, type, ) {
+    setBatchObject(batchUrl, url, body, type,listName) {
         const obj = Object.assign({}, this.queryConfig);
         obj.url = url;
         obj.listName = listName;
