@@ -855,8 +855,6 @@ button.ui-datepicker-trigger.ui-calendar-button span.ui-button-text.ui-clickable
 }
 
 
-/* Added by Kaushal on 7.6.2019 */
-
 .ui-table-scrollable-header {
     overflow: visible!important;
 }
@@ -899,7 +897,7 @@ button.ui-datepicker-trigger.ui-calendar-button span.ui-button-text.ui-clickable
 }
 
 
-/* 
+/*
 body {
     font-size: 13px !important;
 } */

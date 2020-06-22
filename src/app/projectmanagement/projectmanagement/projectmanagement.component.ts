@@ -216,7 +216,6 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
         this.addSowForm.get('cactusBillingEntity').setValue(clientInfo[0].BillingEntity);
         if (clientInfo[0].CMLevel1 && clientInfo[0].CMLevel1.results && clientInfo[0].CMLevel1.results.length) {
           const cm1 = this.pmService.getIds(clientInfo[0].CMLevel1.results);
-          // const found = this.sowDropDown.CMLevel1.some(r => cm1.indexOf(r) >= 0); // Commented by kaushal on 12-07-2019
           const found = this.sowDropDown.CMLevel1.some(r => cm1.indexOf(r.value) >= 0);
           if (found) {
             this.addSowForm.get('cm').setValue(cm1);
@@ -492,7 +491,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    * @param event event parameter should be file properties.
    */
 
-  //  commentedd by maxwell not in use 
+  //  commentedd by maxwell not in use
   // async uploadDocuments(event) {
   //   const docFolder = 'Finance/SOW';
   //   let libraryName = '';

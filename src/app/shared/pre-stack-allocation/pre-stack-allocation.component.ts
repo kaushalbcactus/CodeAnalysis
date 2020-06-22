@@ -43,7 +43,7 @@ export class PreStackAllocationComponent implements OnInit {
   constructor(private usercapacityComponent: UsercapacityComponent, private popupData: DynamicDialogConfig,
     public common: CommonService, private datePipe: DatePipe, public popupConfig: DynamicDialogRef,
     public allocationCommon: TaskAllocationCommonService,
-    public global: GlobalService,public constants : ConstantsService) { }
+    public global: GlobalService, public constants: ConstantsService) { }
 
   ngOnInit() {
     // retrieve data on popup open
