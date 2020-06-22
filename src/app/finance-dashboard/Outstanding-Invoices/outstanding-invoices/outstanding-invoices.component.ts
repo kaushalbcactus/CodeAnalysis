@@ -313,7 +313,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
 
         const outInvObj = Object.assign({}, this.fdConstantsService.fdComponent.invoicesForMangerIT);
         this.commonService.SetNewrelic('Finance-Dashboard', 'outstanding-invoices', 'invoicesForMangerIT');
-        const res = await this.spServices.readItems(this.constantService.listNames.OutInvoices.name, outInvObj);
+        const res = await this.spServices.readItems(this.constantService.listNames.Invoices.name, outInvObj);
         const arrResults = res.length ? res : [];
         this.formatData(arrResults);
         this.setCurrentPage(0);
