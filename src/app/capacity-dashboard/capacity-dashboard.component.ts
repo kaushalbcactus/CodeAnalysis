@@ -391,14 +391,13 @@ export class CapacityDashboardComponent implements OnInit {
     ref.onClose.subscribe(async (blockResource: any) => {
       if (blockResource) {
         const data = {
-          __metadata: { type: this.constants.listNames.Blocking.type },
           Title : blockResource.value.Title,
           StartDate:blockResource.value.StartDate,
           EndDateDT:blockResource.value.EndDate,
           Status : this.constants.blockResStatus.Active,
           AssignedToId:blockResource.value.Resource.value.UserNamePG.Id,
-          TimeZone:parseFloat(blockResource.value.Resource.value.TimeZone.Title),
-          ExpectedTime :blockResource.value.ExpectedTime
+          TimeZoneNM:parseFloat(blockResource.value.Resource.value.TimeZone.Title),
+          ExpectedTime :blockResource.value.ExpectedTime.toString()
         }
         console.log(blockResource);
         this.commonService.SetNewrelic('capacity-dashboard', 'blockResource', 'CreateblockResource');
@@ -406,10 +405,10 @@ export class CapacityDashboardComponent implements OnInit {
         const result = await this.spServices.createItem(this.constants.listNames.Blocking.name, data,
           this.constants.listNames.Blocking.type);
           if (!result.hasOwnProperty('hasError') && !result.hasError) {
-
-            this.commonService.showToastrMessage(this.constants.MessageType.success,'Resource block sucessfully.',false);
             this.SearchRecords();
-
+            setTimeout(() => {
+              this.commonService.showToastrMessage(this.constants.MessageType.success,'Resource block sucessfully.',false);
+            }, 1000);
           } 
       }
     });

@@ -21,7 +21,7 @@ export class SharedConstantsService {
     },
 
     fetchSpentTimeTasks: {
-      select: 'ID,Milestone,ProjectCode,SubMilestones,Task,Status,Title,TimeSpent,ExpectedTime,StartDate,DueDate,TimeZoneNM,ParentSlot,TimeSpentPerDay,AssignedTo/Title,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,CommentsMT,Entity',
+      select: 'ID,Milestone,ProjectCode,SubMilestones,Task,Status,Title,TimeSpent,ExpectedTime,StartDate,DueDateDT,TimeZoneNM,ParentSlot,TimeSpentPerDay,AssignedTo/Title,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,CommentsMT,Entity',
       filter : "(AssignedTo/Id eq {{userID}}) and ((Status eq 'Completed' and(" +
       "(StartDate ge '{{startDateString}}' and StartDate le '{{endDateString}}')" +
       " or (DueDateDT ge '{{startDateString}}' and DueDateDT le '{{endDateString}}')" +
@@ -45,11 +45,11 @@ export class SharedConstantsService {
     },
 
     fetchBlockResource: {
-      select: 'ID,Title,Status,ExpectedTime,StartDate,DueDate,TimeZone',
-      filter: "(Resource/Id eq {{userID}}) and(" +
+      select: 'ID,Title,Status,ExpectedTime,StartDate,EndDateDT,TimeZoneNM',
+      filter: "(AssignedTo/Id eq {{userID}}) and(" +
         "(StartDate ge '{{startDateString}}' and StartDate le '{{endDateString}}')" +
-        "or (DueDate ge '{{startDateString}}' and DueDate le '{{endDateString}}')" +
-        " or (StartDate le '{{startDateString}}' and DueDate ge '{{endDateString}}')" +
+        "or (EndDateDT ge '{{startDateString}}' and EndDateDT le '{{endDateString}}')" +
+        " or (StartDate le '{{startDateString}}' and EndDateDT ge '{{endDateString}}')" +
         ") and Status ne 'Deleted'",
       top: '4500',
       orderby: 'StartDate'

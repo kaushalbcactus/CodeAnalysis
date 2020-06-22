@@ -20,10 +20,10 @@
             <th title="{{date | date : 'EEE d MMM yyyy'}}" *ngFor="let date of oCapacity.arrDateFormat">
                 {{date | date : "d MMM"}}
             </th>
-            <th  *ngIf="!this.userCapacity" class="unallocated">
+            <th *ngIf="!this.userCapacity" class="unallocated">
                 Total Un-Allocated / Bench
             </th>
-            <th  *ngIf="!this.userCapacity" class="allocated">
+            <th *ngIf="!this.userCapacity" class="allocated">
                 Total Allocated / Spent
             </th>
         </tr>
@@ -43,10 +43,10 @@
                                                 <div (click)="onResourceClick(user)" style="cursor: pointer;" title="Joining Date :  {{user.JoiningDate | date :'EEE d MMM yyyy'}}&#013;Go Live Date : {{user.GoLiveDate | date :'EEE d MMM yyyy'}} ">{{user.userName}}
                                                 </div>
                                                 <div *ngIf="!this.disableOverlay">
-                                                <div style="color:#c53e3e;font-weight: 600;font-size: 13px;">Capacity </div>
-                                                <div class="{{user.uid}}more more" (click)="changeHeight(user,$event)" *ngIf="user.tasks.length > 3 && user.dates.length <= 10">More
-                                                </div>
-                                                <div class="{{user.uid}}less less hide" (click)="changeHeight(user,$event)">Less</div>
+                                                    <div style="color:#c53e3e;font-weight: 600;font-size: 13px;">Capacity </div>
+                                                    <div class="{{user.uid}}more more" (click)="changeHeight(user,$event)" *ngIf="user.tasks.length > 3 && user.dates.length <= 10">More
+                                                    </div>
+                                                    <div class="{{user.uid}}less less hide" (click)="changeHeight(user,$event)">Less</div>
                                                 </div>
                                             </th>
                                             <!-- (click)="fetchProjectTaskDetails(user, date.tasksDetails,$event)" -->
@@ -66,8 +66,12 @@
                                         </tr>
                                         <tr *ngIf="user.dates.length<=10 && !this.disableOverlay">
                                             <td>
-                                                <div class="taskBar" *ngFor="let task of user.tasks" [ngStyle]="{'width':task.cssWidth,'left':task.cssLeft,'top':task.cssTop,'display':task.cssHide}" [ngClass]="{'plannedTask':task.Status==='Not Confirmed','confirmedTask':task.Status!=='Not confirmed'}">
-                                                    {{task.TotalAllocated}} : {{task.ProjectCode}}
+                                                <div class="taskBar" *ngFor="let task of user.tasks" [ngStyle]="{'width':task.cssWidth,'left':task.cssLeft,'top':task.cssTop,'display':task.cssHide}" [ngClass]="{'plannedTask':task.Status==='Not Confirmed' || task.Status==='Active' ,'confirmedTask':task.Status!=='Not confirmed'}">
+                                                    <span *ngIf="task.ProjectCode;else showTitle">
+                                                    {{task.TotalAllocated}} : {{task.ProjectCode}}</span>
+                                                    <ng-template #showTitle>
+                                                        {{task.TotalAllocated}} : {{task.Title}}
+                                                    </ng-template>
                                                 </div>
                                             </td>
                                         </tr>
@@ -225,7 +229,10 @@
                                                                 <span>{{(task.StartDate | date:'dd MMM yy h:mm a') || '--' }}</span>
                                                             </td>
                                                             <td>
-                                                                <span>{{task.EndDate | date : "dd MMM yy h:mm a" || '--'}}</span>
+                                                                <span *ngIf="task.EndDate; else DueDate">{{task.EndDate | date : "dd MMM yy h:mm a" || '--'}}</span>
+                                                                <ng-template #DueDate>
+                                                                    {{task.DueDate | date : "dd MMM yy h:mm a" || '--'}}
+                                                                </ng-template>
                                                             </td>
                                                             <td></td>
                                                             <td>
@@ -419,7 +426,7 @@
                 </td>
             </tr>
         </div>
-        </tbody>
-    </table>
+    </tbody>
+</table>
 
-    <ng-template #ganttcontainer></ng-template>
+<ng-template #ganttcontainer></ng-template>
