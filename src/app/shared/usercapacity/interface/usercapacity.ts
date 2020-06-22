@@ -21,6 +21,6 @@ export interface IUserCapacity {
   totalAllocated: string;
   totalUnAllocated: string;
   uid: number;
-  UserName: any;
+  UserNamePG: any;
   userName: string;
 }

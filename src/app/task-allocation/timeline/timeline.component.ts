@@ -28,8 +28,6 @@ import { PreStackAllocationComponent } from 'src/app/shared/pre-stack-allocation
 import { AllocationOverlayComponent } from 'src/app/shared/pre-stack-allocation/allocation-overlay/allocation-overlay.component';
 import { GanttEdittaskComponent } from '../gantt-edittask/gantt-edittask.component';
 import { ConflictAllocationsComponent } from './conflict-allocations/conflict-allocations.component';
-import { message } from 'gantt';
-
 
 @Component({
   selector: 'app-timeline',
@@ -1196,7 +1194,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       const Users = assignedUsers.filter(c => c.userType === retRes);
       Users.forEach(user => {
 
-        const tempUser = user.UserName ? user.UserName : user;
+        const tempUser = user.UserNamePG ? user.UserNamePG : user;
         Items.push({ label: tempUser.Title, value: { ID: tempUser.ID, Title: tempUser.Title, Email: tempUser.EMail ? tempUser.EMail : tempUser.Email, SkillText: tempUser.SkillText ? tempUser.SkillText : '' } }
         );
       });
@@ -5168,7 +5166,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       const arrayTo = [];
 
       if (user !== 'SelectOne' && user !== '' && user != null) {
-        const userEmail = user.UserName ? user.UserName.EMail : user.EMail ? user.EMail : user.Email;
+        const userEmail = user.UserNamePG ? user.UserNamePG.EMail : user.EMail ? user.EMail : user.Email;
         arrayTo.push(userEmail);
       }
       const to = arrayTo.join(',').trim();
@@ -5750,7 +5748,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
 
-  ///// Kaushal to test 
+  ///// Kaushal to test
   async setAsNextMilestoneCall(task, msg) {
 
     this.commonService.confirmMessageDialog('Confirmation', msg, null, ['Yes', 'No'], false).then(async Confirmation => {
