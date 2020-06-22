@@ -15,7 +15,7 @@ export class CAConstantService {
   };
 
   public scheduleAllocatedQueryOptions = {
-    select: 'ID,Title,TimeZoneNM,SkillLevel,TimeSpentPerDay,TimeSpent,Task,Status,NextTasks,PrevTasks,ProjectCode,Milestone,SubMilestones,ExpectedTime,TaskComments,CommentsMT,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,StartDate,DueDateDT,CentralAllocationDone,IsCentrallyAllocated,AssignedTo/ID, AssignedTo/Title, ActiveCA,DisableCascade,AllowCompletion',
+    select: 'ID,Title,TimeZoneNM,SkillLevel,TimeSpentPerDay,TimeSpent,Task,Status,NextTasks,PrevTasks,ProjectCode,Milestone,SubMilestones,ExpectedTime,TaskComments,CommentsMT,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,StartDate,DueDateDT,CentralAllocationDone,IsCentrallyAllocated,AssignedTo/ID, AssignedTo/Title, ActiveCA,DisableCascade,AllowCompletion, AllocationPerDay',
     expand: 'AssignedTo/ID, AssignedTo/Title',
     filter: "ActiveCA eq 'Yes' and  IsCentrallyAllocated eq 'Yes' and CentralAllocationDone eq 'Yes' and Status ne 'Deleted' and Status ne 'Completed'",
     filterSlot: '',
@@ -25,7 +25,7 @@ export class CAConstantService {
 
 
   public scheduleUnAllocatedQueryOptions = {
-    select: 'ID,Title,TimeZoneNM,SkillLevel,Task,Status,NextTasks,PrevTasks,ProjectCode,TimeSpent,Milestone,SubMilestones,ExpectedTime,TaskComments,CommentsMT,StartDate,DueDateDT,CentralAllocationDone,IsCentrallyAllocated,AssignedTo/ID, AssignedTo/Title,DisableCascade,AllowCompletion',
+    select: 'ID,Title,TimeZoneNM,SkillLevel,Task,Status,NextTasks,PrevTasks,ProjectCode,TimeSpent,Milestone,SubMilestones,ExpectedTime,TaskComments,CommentsMT,StartDate,DueDateDT,CentralAllocationDone,IsCentrallyAllocated,AssignedTo/ID, AssignedTo/Title,DisableCascade,AllowCompletion, AllocationPerDay',
     expand: 'AssignedTo/ID, AssignedTo/Title',
     filter: "ActiveCA eq 'Yes' and  IsCentrallyAllocated eq 'Yes' and CentralAllocationDone eq 'No' and Status ne 'Deleted' and Status ne 'Completed'",
     filterSlot: '',
