@@ -146,7 +146,7 @@ export class CapacityDashboardComponent implements OnInit {
         );
 
         this.Resources = this.AlldbResources.map(
-          (o) => new Object({ label: o.UserName.Title, value: o })
+          (o) => new Object({ label: o.UserNamePG.Title, value: o })
         );
       }
     }
@@ -242,8 +242,8 @@ export class CapacityDashboardComponent implements OnInit {
         event.value.length > 0
           ? this.commonService.sortData(
               this.filterData("bucket", "resource")
-                .filter((c) => c.UserName.Title !== null)
-                .map((o) => new Object({ label: o.UserName.Title, value: o }))
+                .filter((c) => c.UserNamePG.Title !== null)
+                .map((o) => new Object({ label: o.UserNamePG.Title, value: o }))
             )
           : [];
 
@@ -274,12 +274,12 @@ export class CapacityDashboardComponent implements OnInit {
         event.value.length > 0
           ? this.commonService.sortData(
               this.filterData("practicearea", "resource")
-                .filter((c) => c.UserName.Title !== null)
-                .map((o) => new Object({ label: o.UserName.Title, value: o }))
+                .filter((c) => c.UserNamePG.Title !== null)
+                .map((o) => new Object({ label: o.UserNamePG.Title, value: o }))
             )
           : this.commonService.sortData(
-              this.AlldbResources.filter((c) => c.UserName.Title !== null).map(
-                (o) => new Object({ label: o.UserName.Title, value: o })
+              this.AlldbResources.filter((c) => c.UserNamePG.Title !== null).map(
+                (o) => new Object({ label: o.UserNamePG.Title, value: o })
               )
             );
 
@@ -299,12 +299,12 @@ export class CapacityDashboardComponent implements OnInit {
         event.value.length > 0
           ? this.commonService.sortData(
               this.filterData("skill", "resource")
-                .filter((c) => c.UserName.Title !== null)
-                .map((o) => new Object({ label: o.UserName.Title, value: o }))
+                .filter((c) => c.UserNamePG.Title !== null)
+                .map((o) => new Object({ label: o.UserNamePG.Title, value: o }))
             )
           : this.commonService.sortData(
-              this.AlldbResources.filter((c) => c.UserName.Title !== null).map(
-                (o) => new Object({ label: o.UserName.Title, value: o })
+              this.AlldbResources.filter((c) => c.UserNamePG.Title !== null).map(
+                (o) => new Object({ label: o.UserNamePG.Title, value: o })
               )
             );
 
@@ -381,7 +381,7 @@ export class CapacityDashboardComponent implements OnInit {
       data: {
         Resources:  this.AlldbResources.filter((c) =>
         this.searchCapacityForm.value.resources.includes(c)
-      ).map((o) => new Object({ label: o.UserName.Title, value: o })),
+      ).map((o) => new Object({ label: o.UserNamePG.Title, value: o })),
         selectedMinDate: this.searchCapacityForm.value.rangeDates[0],
         selectedMaxDate: this.searchCapacityForm.value.rangeDates[1],
       },
@@ -391,20 +391,20 @@ export class CapacityDashboardComponent implements OnInit {
     ref.onClose.subscribe(async (blockResource: any) => {
       if (blockResource) {
         const data = {
-          __metadata: { type: this.constants.listNames.BlockResource.type },
+          __metadata: { type: this.constants.listNames.Blocking.type },
           Title : blockResource.value.Title,
           StartDate:blockResource.value.StartDate,
-          DueDate:blockResource.value.EndDate,
+          EndDateDT:blockResource.value.EndDate,
           Status : this.constants.blockResStatus.Active,
-          ResourceId:blockResource.value.Resource.value.UserName.Id,
+          AssignedToId:blockResource.value.Resource.value.UserNamePG.Id,
           TimeZone:parseFloat(blockResource.value.Resource.value.TimeZone.Title),
           ExpectedTime :blockResource.value.ExpectedTime
         }
         console.log(blockResource);
         this.commonService.SetNewrelic('capacity-dashboard', 'blockResource', 'CreateblockResource');
         debugger;
-        const result = await this.spServices.createItem(this.constants.listNames.BlockResource.name, data,
-          this.constants.listNames.BlockResource.type);
+        const result = await this.spServices.createItem(this.constants.listNames.Blocking.name, data,
+          this.constants.listNames.Blocking.type);
           if (!result.hasOwnProperty('hasError') && !result.hasError) {
 
             this.commonService.showToastrMessage(this.constants.MessageType.success,'Resource block sucessfully.',false);

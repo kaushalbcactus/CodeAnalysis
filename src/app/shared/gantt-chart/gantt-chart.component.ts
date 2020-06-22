@@ -18,15 +18,16 @@ export class GanttChartComponent implements OnInit {
   ganttParseObject = {};
   isLoaderHidden: any;
   isTableHidden: boolean;
+  user = "AssignedTo";
+  key = "key";
+  label = "label";
+  resource = [];
+  tasks = {};
+  
   constructor() { }
 
-  user = "AssignedTo" //"user"
-  key = "key"
-  label = "label"
-  resource = []
-  tasks = {}
-
   ngOnInit() {
+
   }
 
   onLoad(data, resource) {
@@ -231,19 +232,6 @@ export class GanttChartComponent implements OnInit {
       ]
     };
 
-    function getResourceTasks(resourceId) {
-      var store = gantt.getDatastore('task'),
-        field = gantt.config.resource_property,
-        tasks;
-
-      if (store.hasChild(resourceId)) {
-        tasks = gantt.getTaskBy(field, store.getChildren(resourceId));
-      } else {
-        tasks = gantt.getTaskBy(field, resourceId);
-      }
-      return tasks;
-    }
-
     var resourceGridConfig = {
       columns: [
         {
@@ -254,7 +242,6 @@ export class GanttChartComponent implements OnInit {
         {
           name: "workload", label: "Workload", template: function (resource) {
             var tasks = gantt.getTaskBy("AssignedTo", resource.id);
-            // var tasks = getResourceTasks(resource.id);
             var totalDuration = 0;
             tasks.forEach(function (task) {
               totalDuration += task.duration;
@@ -323,10 +310,6 @@ export class GanttChartComponent implements OnInit {
       initItem: function (item) {
         item.id = item.key || gantt.uid();
         return item;
-        // item.parent = item.parent || gantt.config.root_id;
-        // item[gantt.config.resource_property] = item.parent;
-        // item.open = true;
-        // return item;
       }
     });
 
@@ -352,33 +335,6 @@ export class GanttChartComponent implements OnInit {
       return task.user
     }
 
-
-    function getTaskType(task) {
-      if (task.status == gantt.config.types.meeting) {
-        return "Meeting";
-      }
-      else if (task.status == gantt.config.types.planned) {
-        return "Planned";
-      }
-      else if (task.status == gantt.config.types.notstarted) {
-        return "Not Started";
-      }
-      else if (task.status == gantt.config.types.inprogress) {
-        return "In Progress";
-      }
-      else if (task.status == gantt.config.types.completed) {
-        return "Completed";
-      }
-      else if (task.status == gantt.config.types.autoclosed) {
-        return "Auto Closed";
-      }
-      else if (task.status == gantt.config.types.onhold) {
-        return "On Hold";
-      }
-      else if (task.status == gantt.config.types.notsaved) {
-        return "Not Saved";
-      }
-    }
 
     gantt.templates.tooltip_text = function (start, end, task) {
       gantt.templates.tooltip_date_format = task.type == 'milestone' || task.type == 'submilestone' ? gantt.date.date_to_str("%d-%M-%Y") : gantt.date.date_to_str("%d-%M-%Y %h:%i %A");
@@ -439,112 +395,19 @@ export class GanttChartComponent implements OnInit {
       return "";
     }
 
-    gantt.eachSuccessor = function (callback, root) {
-      if (!this.isTaskExists(root))
-        return;
-
-      // remember tasks we've already iterated in order to avoid infinite loops
-      var traversedTasks = arguments[2] || {};
-      if (traversedTasks[root])
-        return;
-      traversedTasks[root] = true;
-
-      var rootTask = this.getTask(root);
-      var links = rootTask.$source;
-      if (links) {
-        for (var i = 0; i < links.length; i++) {
-          var link = this.getLink(links[i]);
-          if (this.isTaskExists(link.target) && !traversedTasks[link.target]) {
-            callback.call(this, this.getTask(link.target));
-
-            // iterate the whole branch, not only first-level dependencies
-            this.eachSuccessor(callback, link.target, traversedTasks);
-          }
-        }
-      }
-    };
-
-    //   gantt.templates.grid_row_class =
-    // 		gantt.templates.task_class = function (start, end, task) {
-    // 	var css = [];
-    // 	// if (task.$virtual || task.type == gantt.config.types.project)
-    // 	// 	css.push("summary-bar");
-
-    // 	if(task.owner_id){
-    // 		css.push("gantt_resource_task gantt_resource_" + task.owner_id);
-    // 	}
-
-    // 	return css.join(" ");
-    // };
-
-    //   gantt.attachEvent("onLoadEnd", function(){
-    //     var styleId = "dynamicGanttStyles";
-    //     var element = document.getElementById(styleId);
-    //     if(!element){
-    //       element = document.createElement("style");
-    //       element.id = styleId;
-    //       document.querySelector("head").appendChild(element);
-    //     }
-    //     var html = [];
-    //     var resources = gantt.serverList(resource);
-
-    //     resources.forEach(function(r){
-    //       html.push(".gantt_task_line.gantt_resource_" + r.key + "{" +
-    //         "background-color:"+r.backgroundColor+"; " +
-    //         "color:"+r.textColor+";" +
-    //       "}");
-    //       html.push(".gantt_row.gantt_resource_" + r.key + " .gantt_cell:nth-child(2) .gantt_tree_content{" +
-    //         "background-color:"+r.backgroundColor+"; " +
-    //         "color:"+r.textColor+";" +
-    //         "}");
-    //     });
-    //     element.innerHTML = html.join("");
-    //   });
-
-
-
-    // if(gantt.ext.zoom.getCurrentLevel() < 3) {
-    // gantt.attachEvent("onTaskDrag", function(id, mode, task, original){
-
-    //   var modes = gantt.config.drag_mode;
-    //   if(mode == modes.move){
-    //     var diff = task.start_date - original.start_date;
-    //     gantt.eachSuccessor(function(child){
-    //       child.start_date = new Date(+child.start_date + diff);
-    //       child.end_date = new Date(+child.end_date + diff);
-    //       gantt.refreshTask(child.id, true);
-    //     },id );
-    //   }
-    //   return true;
-    // });
-    // }
-
-    // gantt.attachEvent("onAfterTaskDrag", function(id, mode, e){
-    //   var modes = gantt.config.drag_mode;
-    //   if(mode == modes.move ){
-    //     gantt.eachSuccessor(function(child){
-    //       // console.log(child)
-    //       child.start_date = gantt.roundDate(child.start_date);
-    //       child.end_date = gantt.calculateEndDate(child.start_date, child.duration);
-    //       gantt.updateTask(child.id);
-    //     },id );
-    //   }
-    // });
-
     resourcesStore.parse(resource);
 
     gantt.config.layout = this.gridConfig;
 
-    // gantt.config.order_branch = true;
-    // gantt.config.order_branch_free = true;
-
-    // gantt.config.drag_project = true;
     gantt.config.fit_tasks = true;
 
     this.ganttParseObject = data;
 
-    // gantt.config.work_time = true;
     gantt.config.skip_off_time = true;
+
+    gantt.config.show_progress = false;
+
+    gantt.config.smart_scales = true;
 
 
     gantt.ignore_time = function (date) {

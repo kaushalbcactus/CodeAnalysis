@@ -225,6 +225,7 @@ export class AdminObjectService {
     InvoicedRevenue: 0,
     InvoicedTax: 0,
     Link: '',
+    poDocLink:null,
     LastUpdated: new Date(),
     LastUpdatedBy: '',
     LastUpdatedFormat: '',

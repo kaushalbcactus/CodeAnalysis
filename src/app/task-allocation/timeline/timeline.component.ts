@@ -1633,9 +1633,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
           this.commonService.showToastrMessage(this.constants.MessageType.error, 'Resource view is unavailable for these tasks please edit the task to change resource.', false);
         }
-      } else if ((task.itemType == "Send to client" || task.itemType == "Client Review") && e.target.parentElement.className === "gantt_cell cell_user") {
-        this.commonService.showToastrMessage(this.constants.MessageType.error, 'Resource view is unavailable for these tasks please edit the task to change resource.', false);
-      }
       let menuButton = e.target.closest("[data-action]")
       if (menuButton) {
         if (gantt.ext.zoom.getCurrentLevel() < 3) {
@@ -1666,12 +1663,14 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
             return false;
           }
         }
-        let overlayIconButton = e.target.closest(".ganttOverlayIcon");
-        if (overlayIconButton) {
-          this.showOverlayPanel(e, task, this.dailyAllocateOP, e.target.parentElement)
-        }
-        return false;
-      } else {
+      }
+      let overlayIconButton = e.target.closest(".ganttOverlayIcon");
+      if (overlayIconButton) {
+        this.showOverlayPanel(e, task, this.dailyAllocateOP, e.target.parentElement)
+      }
+      return false;
+      }
+      else {
         return true;
       }
     });

@@ -50,10 +50,10 @@ export class BlockResourceDialogComponent implements OnInit {
   }
 
   SetDateValidation(dateType?: string) {
-    if (dateType === "startDate") {
+    if (dateType === "startDate" && this.BlockResourceForm.value.StartDate !=="") {
       this.EDminDateValue = new Date(this.BlockResourceForm.value.StartDate);
       this.EDmaxDateValue = new Date(this.selectedMaxDate);
-    } else if (dateType === "endDate") {
+    } else if (dateType === "endDate" && this.BlockResourceForm.value.EndDate !=="") {
       this.SDminDateValue = new Date(this.selectedMinDate);
       this.SDmaxDateValue = new Date(this.BlockResourceForm.value.EndDate);
     } else {

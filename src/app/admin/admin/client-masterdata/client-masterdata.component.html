@@ -458,7 +458,12 @@
                 <tr>
                     <td>{{ rowIndex+1 }}</td>
                     <td>
-                        {{rowData.PoName}}
+                        <span *ngIf="rowData.poDocLink;else isName"><a href="{{rowData.poDocLink}}" target="_blank" style="color:red; cursor: pointer;">  {{rowData.PoName}}</a>
+                            </span>
+
+                        <ng-template #isName>
+                            {{rowData.PoName}}
+                        </ng-template>
                     </td>
                     <td>
                         {{rowData.PoNumber}}

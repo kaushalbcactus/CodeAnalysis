@@ -84,7 +84,7 @@ export class AppComponent implements OnDestroy {
       : _spPageContextInfo.siteServerRelativeUrl;
     this.globalService.sharePointPageObject.serverRelativeUrl = this.globalService.sharePointPageObject.webRelativeUrl;
     this.globalService.sharePointPageObject.rootsite = window.origin;
-    this.globalService.url = window.location.href.indexOf('localhost') > -1 ? '#' : this.globalService.sharePointPageObject.webRelativeUrl + '/dashboardAllocation#';
+    this.globalService.url = window.location.href.indexOf('localhost') > -1 ? '#' : this.globalService.sharePointPageObject.webRelativeUrl + '/dashboard#';
 
     this.leftNavigation = [
       { title: 'My Dashboard', href: this.globalService.url + '/myDashboard', visible: true },
@@ -109,7 +109,6 @@ export class AppComponent implements OnDestroy {
       newrelic.setCustomAttribute('spUserName', _spPageContextInfo.userDisplayName);
     }
   }
-
   linkAccessForUsers(groups) {
     const currentUserGroups = groups.results.map(g => g.LoginName);
     if (currentUserGroups.length > 0) {
