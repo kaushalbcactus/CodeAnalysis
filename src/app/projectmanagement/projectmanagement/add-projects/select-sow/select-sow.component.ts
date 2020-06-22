@@ -138,14 +138,17 @@ export class SelectSOWComponent implements OnInit {
     this.pmObject.addProject.SOWSelect.SOWSelectedItem = {};
     this.pmObject.addProject.SOWSelect.sowTotalBalance = 0;
     this.pmObject.addProject.SOWSelect.sowNetBalance = 0;
+    
     if (arrResults && arrResults.length) {
-      this.pmObject.addProject.SOWSelect.sowTotalBalance = (arrResults[0].TotalBudget ? arrResults[0].TotalBudget : 0)
-        - (arrResults[0].TotalLinked ? arrResults[0].TotalLinked : 0);
+
+      const sowObject =arrResults[0];
+      this.pmObject.addProject.SOWSelect.sowTotalBalance = (sowObject.TotalBudget ? sowObject.TotalBudget : 0)
+        - (sowObject.TotalLinked ? sowObject.TotalLinked : 0);
       this.pmObject.addProject.SOWSelect.sowTotalBalance = parseFloat(this.pmObject.addProject.SOWSelect.sowTotalBalance.toFixed(2));
-      this.pmObject.addProject.SOWSelect.sowNetBalance = (arrResults[0].NetBudget ? sow.NetBudget : 0)
-        - (arrResults[0].RevenueLinked ? arrResults[0].RevenueLinked : 0);
+      this.pmObject.addProject.SOWSelect.sowNetBalance = (sowObject.NetBudget ? sowObject.NetBudget : 0)
+        - (sowObject.RevenueLinked ? sowObject.RevenueLinked : 0);
       this.pmObject.addProject.SOWSelect.sowNetBalance = parseFloat(this.pmObject.addProject.SOWSelect.sowNetBalance.toFixed(2));
-      this.pmObject.addProject.SOWSelect.SOWSelectedItem = arrResults[0];
+      this.pmObject.addProject.SOWSelect.SOWSelectedItem = sowObject;
     }
   }
 }
