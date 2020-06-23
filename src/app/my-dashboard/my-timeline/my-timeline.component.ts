@@ -481,6 +481,8 @@ export class MyTimelineComponent implements OnInit {
       // this.response = await this.spServices.readItem(this.constants.listNames.Schedules.name, +this.task.ID);
       this.task = this.response ? this.response[0] : {};
       //  this.task.AssignedTo = this.sharedObject.currentUser.title;
+      this.task.allocationPerDay = this.task.AllocationPerDay;
+      this.task.showAllocationSplit = this.task.AllocationPerDay ? true : false;
       this.task.TimeSpent = this.task.TimeSpent === null ? '00:00' : this.task.TimeSpent.replace('.', ':');
       const data = this.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === this.task.ProjectCode);
 
@@ -938,20 +940,11 @@ export class MyTimelineComponent implements OnInit {
   showOverlayPanel(event, rowData, dailyAllocateOP, target?) {
     const allocationPerDay = rowData.allocationPerDay ? rowData.allocationPerDay : '';
     dailyAllocateOP.showOverlay(event, allocationPerDay, target);
-    console.log(event);
-    setTimeout(() => {
-      let panel: any = document.querySelector(".dailyAllocationOverlayComp > div");
-      let panelContainer: any = document.getElementById('s4-workspace');
-      let topAdject = 0;
-      if (panelContainer) {
-        topAdject = panelContainer.scrollTop > 0 ? panelContainer.scrollTop - panel.clientHeight : 0;
-        if (topAdject < 0) {
-          topAdject = panelContainer.scrollTop;
-        }
-      }
-      panel.style.top = event.pageY + topAdject + 'px';
-      panel.style.left = event.pageX + 'px';
-    }, 50);
+    // setTimeout(() => {
+    //   let panel: any = document.querySelector(".dailyAllocationOverlayComp > div");
+    //   panel.style.top = event.pageY + 'px';
+    //   panel.style.left = event.pageX + 'px';
+    // }, 50);
   }
 
   hideOverlayPanel() {

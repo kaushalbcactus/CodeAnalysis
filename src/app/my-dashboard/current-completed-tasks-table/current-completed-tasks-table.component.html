@@ -62,14 +62,14 @@
                             id="scTableInnerLoader"></div>
                         <div *ngIf="col.field === 'TaskName' && rowData.Comments">[{{rowData.Comments}}]</div> </span>
                     <span *ngIf="col.field === 'ExpectedTime'">
-                        <div class='overlayIcon'
+                        <span class='overlayIcon'
                             appendTo="body"
                             (click)="this.showOverlayPanel($event, rowData, dailyAllocateOP)"
                             style="float: right;cursor: pointer;"
                             title="Click to see allocation split"
                             *ngIf="rowData.showAllocationSplit">
                             <i class="fa fa-info-circle" aria-hidden="true"></i>
-                        </div>
+                        </span>
                     </span>
                 </td>
                 <td>

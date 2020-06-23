@@ -398,8 +398,8 @@ th {
 }
 
 .overlayIcon {
-    float: right !important;
-    margin-right: 22px !important;
+    /* float: right !important; */
+    margin-left: 20px !important;
     font-size: 0.75em !important;
     margin-top: 1px !important;
   }
