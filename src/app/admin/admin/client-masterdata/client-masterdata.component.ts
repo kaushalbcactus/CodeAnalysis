@@ -751,7 +751,7 @@ export class ClientMasterdataComponent implements OnInit {
         obj.InvoicedTax = item.InvoicedTax;
         obj.Link = item.Link;
         if(item.Link){
-          
+
           obj.poDocLink = this.globalObject.sharePointPageObject.webRelativeUrl + '/' +this.currClientObj.ListName +
           '/' + this.adminConstants.FOLDER_LOCATION.PO + '/' + item.Link
         }

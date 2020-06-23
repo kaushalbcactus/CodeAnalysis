@@ -79,7 +79,7 @@ export class CapacityDashboardComponent implements OnInit {
     };
 
     const Resources = {
-      // tslint:disable 
+      // tslint:disable
       select: "ID,UserNamePG/Id,UserNamePG/Title,UserNamePG/EMail,PrimarySkill,Bucket,Practice_x0020_Area,MaxHrs,GoLiveDate,DateOfJoining,TimeZone/ID,TimeZone/Title,TimeZone/TimeZoneName",
       expand: "UserNamePG/ID,UserNamePG/EMail,UserNamePG/Title,TimeZone/ID,TimeZone/Title,TimeZone/TimeZoneName",
       filter: "IsActiveCH eq 'Yes'",
@@ -430,7 +430,7 @@ export class CapacityDashboardComponent implements OnInit {
               this.commonService.clearToastrMessage();
               this.SearchRecords();
             }, 1000);
-          } 
+          }
       }
     });
   }
