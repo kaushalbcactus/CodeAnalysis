@@ -77,7 +77,7 @@ export class CapacityDashboardComponent implements OnInit {
     };
 
     const Resources = {
-      // tslint:disable 
+      // tslint:disable
       select: "ID,UserNamePG/Id,UserNamePG/Title,UserNamePG/EMail,PrimarySkill,Bucket,Practice_x0020_Area,MaxHrs,GoLiveDate,DateOfJoining,TimeZone/ID,TimeZone/Title,TimeZone/TimeZoneName",
       expand: "UserNamePG/ID,UserNamePG/EMail,UserNamePG/Title,TimeZone/ID,TimeZone/Title,TimeZone/TimeZoneName",
       filter: "IsActiveCH eq 'Yes'",
@@ -401,7 +401,7 @@ export class CapacityDashboardComponent implements OnInit {
         }
         console.log(blockResource);
         this.commonService.SetNewrelic('capacity-dashboard', 'blockResource', 'CreateblockResource');
-        debugger;
+        ;
         const result = await this.spServices.createItem(this.constants.listNames.Blocking.name, data,
           this.constants.listNames.Blocking.type);
           if (!result.hasOwnProperty('hasError') && !result.hasError) {
@@ -409,7 +409,7 @@ export class CapacityDashboardComponent implements OnInit {
             setTimeout(() => {
               this.commonService.showToastrMessage(this.constants.MessageType.success,'Resource block sucessfully.',false);
             }, 1000);
-          } 
+          }
       }
     });
   }

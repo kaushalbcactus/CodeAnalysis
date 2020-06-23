@@ -1560,7 +1560,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     }
 
     const onTaskOpened = gantt.attachEvent("onTaskOpened", (id) => {
-      // debugger;
+      // ;
       // gantt.init(this.ganttComponentRef.instance.ganttContainer.nativeElement);
       // gantt.clearAll();
       // this.ganttComponentRef.instance.onLoad(this.taskAllocateCommonService.ganttParseObject, this.resource);

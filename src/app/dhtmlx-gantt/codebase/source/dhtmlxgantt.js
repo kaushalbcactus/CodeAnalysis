@@ -117,19 +117,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /* WEBPACK VAR INJECTION */(function(process, global, setImmediate) {/* @preserve
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2013-2018 Petka Antonov
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
@@ -137,7 +137,7 @@ return /******/ (function(modules) { // webpackBootstrap
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * 
+ *
  */
 /**
  * bluebird build version 3.5.4
@@ -3451,28 +3451,28 @@ _dereq_('./some.js')(Promise, PromiseArray, apiRejection);
 _dereq_('./filter.js')(Promise, INTERNAL);
 _dereq_('./each.js')(Promise, INTERNAL);
 _dereq_('./any.js')(Promise);
-                                                         
-    util.toFastProperties(Promise);                                          
-    util.toFastProperties(Promise.prototype);                                
-    function fillTypes(value) {                                              
-        var p = new Promise(INTERNAL);                                       
-        p._fulfillmentHandler0 = value;                                      
-        p._rejectionHandler0 = value;                                        
-        p._promise0 = value;                                                 
-        p._receiver0 = value;                                                
-    }                                                                        
-    // Complete slack tracking, opt out of field-type tracking and           
-    // stabilize map                                                         
-    fillTypes({a: 1});                                                       
-    fillTypes({b: 2});                                                       
-    fillTypes({c: 3});                                                       
-    fillTypes(1);                                                            
-    fillTypes(function(){});                                                 
-    fillTypes(undefined);                                                    
-    fillTypes(false);                                                        
-    fillTypes(new Promise(INTERNAL));                                        
-    debug.setBounds(Async.firstLineError, util.lastLineError);               
-    return Promise;                                                          
+
+    util.toFastProperties(Promise);
+    util.toFastProperties(Promise.prototype);
+    function fillTypes(value) {
+        var p = new Promise(INTERNAL);
+        p._fulfillmentHandler0 = value;
+        p._rejectionHandler0 = value;
+        p._promise0 = value;
+        p._receiver0 = value;
+    }
+    // Complete slack tracking, opt out of field-type tracking and
+    // stabilize map
+    fillTypes({a: 1});
+    fillTypes({b: 2});
+    fillTypes({c: 3});
+    fillTypes(1);
+    fillTypes(function(){});
+    fillTypes(undefined);
+    fillTypes(false);
+    fillTypes(new Promise(INTERNAL));
+    debug.setBounds(Async.firstLineError, util.lastLineError);
+    return Promise;
 
 };
 
@@ -4140,8 +4140,8 @@ function ReductionPromiseArray(promises, fn, initialValue, _each) {
 util.inherits(ReductionPromiseArray, PromiseArray);
 
 ReductionPromiseArray.prototype._gotAccum = function(accum) {
-    if (this._eachValues !== undefined && 
-        this._eachValues !== null && 
+    if (this._eachValues !== undefined &&
+        this._eachValues !== null &&
         accum !== INTERNAL) {
         this._eachValues.push(accum);
     }
@@ -5431,7 +5431,7 @@ var ret = {
 };
 ret.isRecentNode = ret.isNode && (function() {
     var version;
-    if (process.versions && process.versions.node) {    
+    if (process.versions && process.versions.node) {
         version = process.versions.node.split(".").map(Number);
     } else if (process.version) {
         version = process.version.split(".").map(Number);
@@ -6404,8 +6404,8 @@ module.exports = function(gantt){
 			if(gantt.config.show_errors && gantt.callEvent("onError",[message]) !== false) {
 				gantt.message({type: "error", text: message, expire: -1});
 
-				// eslint-disable-next-line no-debugger
-				debugger;
+				// eslint-disable-next-line no-
+				;
 			}
 		}
 	};
@@ -6554,21 +6554,21 @@ module.exports = function () {
         lightbox: {
             sections: [
                 { name: "description", height: 70, map_to: "text", type: "textarea", focus: true },
-                { name: "type", type: "select", map_to: 'type',  options: [ 
-                    {key:0, label: "Task"},                                               
-                    {key:1, label: "Project"},                                             
+                { name: "type", type: "select", map_to: 'type',  options: [
+                    {key:0, label: "Task"},
+                    {key:1, label: "Project"},
                     {key:2, label: "Milestone"},
-                    {key:3, label: "Meeting"}                                                 
+                    {key:3, label: "Meeting"}
                  ] },
                 { name: "time", type: "duration", map_to: "auto" }
             ],
             project_sections: [
                 { name: "description", height: 70, map_to: "text", type: "textarea", focus: true },
-                { name: "type", type: "select", map_to: "type", options: [ 
-                    {key:0, label: "Task"},                                               
-                    {key:1, label: "Project"},                                             
-                    {key:2, label: "Milestone"}, 
-                    {key:3, label: "Meeting"}                                                   
+                { name: "type", type: "select", map_to: "type", options: [
+                    {key:0, label: "Task"},
+                    {key:1, label: "Project"},
+                    {key:2, label: "Milestone"},
+                    {key:3, label: "Meeting"}
                  ] },
                  {name: "split", type:"checkbox", map_to: "render", options:[
                     {key:"split", label:"Split Task"}
@@ -6577,21 +6577,21 @@ module.exports = function () {
             ],
             milestone_sections: [
                 { name: "description", height: 70, map_to: "text", type: "textarea", focus: true },
-                { name: "type", type: "typeselect", map_to: "type" , options: [ 
-                    {key:0, label: "Task"},                                               
-                    {key:1, label: "Project"},                                             
+                { name: "type", type: "typeselect", map_to: "type" , options: [
+                    {key:0, label: "Task"},
+                    {key:1, label: "Project"},
                     {key:2, label: "Milestone"},
-                    {key:3, label: "Meeting"}                                                    
+                    {key:3, label: "Meeting"}
                  ] },
                 { name: "time", type: "duration", single_date: true, map_to: "auto" }
             ],
             meeting_sections: [
                 { name: "description", height: 70, map_to: "text", type: "textarea", focus: true },
-                { name: "type", type: "typeselect", map_to: "type" ,options: [ 
-                    {key:0, label: "Task"},                                               
-                    {key:1, label: "Project"},                                             
+                { name: "type", type: "typeselect", map_to: "type" ,options: [
+                    {key:0, label: "Task"},
+                    {key:1, label: "Project"},
                     {key:2, label: "Milestone"},
-                    {key:3, label: "Meeting"}                                                    
+                    {key:3, label: "Meeting"}
                  ]},
                 { name: "time", type: "duration", single_date: true, map_to: "auto" }
             ]
@@ -7314,8 +7314,8 @@ module.exports = function(gantt){
         return DurationFormatterNumeric;
     }());
     exports.default = DurationFormatterNumeric;
-    
-    
+
+
     /***/ }),
 
 /***/ "./sources/core/common/import.js":
@@ -7391,8 +7391,8 @@ module.exports = function(gantt){
         return LinkFormatterSimple;
     }());
     exports.default = LinkFormatterSimple;
-    
-    
+
+
     /***/ }),
 
 /***/ "./sources/core/common/serialize.ts":
@@ -9864,7 +9864,7 @@ DataStore.prototype = {
 			code.call(this, item);
 		}
 	},
-	
+
 	filter: function(rule){
 		this.callEvent("onBeforeFilter", []);
 		var filteredOrder = powerArray.$create();
@@ -10498,7 +10498,7 @@ function createDataStoreSelectMixin(store){
 	var selectedId = null;
 
 	var deleteItem = store._removeItemInner;
-	
+
 	function unselect(id){
 		selectedId = null;
 		this.callEvent("onAfterUnselect", [id]);
@@ -12352,7 +12352,7 @@ module.exports = function(gantt){
                     var a = gantt.getTask(o);
                     e.dynamicGroups || (r[e.relation_property] = a[e.relation_id_property]), this._setParentInner.apply(this, arguments)
                 } else e.dynamicGroups && void 0 === r[e.group_id] && (r[e.relation_property] = [])
-            }      
+            }
             gantt.$data.tasksStore.getParent = function(n) {
                 var e = gantt._groups;
                 return e.is_active() ? e.get_parent(gantt, n) : r.apply(this, arguments)
@@ -12364,7 +12364,7 @@ module.exports = function(gantt){
             gantt.parse(i)
         }
     },
-    gantt.groupBy = function(e) {    
+    gantt.groupBy = function(e) {
         var r = this,
             tasks = gantt.getTaskByTime();
         this._groups.set_relation_value = e.set_relation_value || undefined,
@@ -12373,7 +12373,7 @@ module.exports = function(gantt){
         }), (e = e || {}).default_group_label = e.default_group_label || this.locale.labels.default_group || "None";
         var relation_property = e.relation_property || null,
         group_id = e.group_id || "key",
-        group_text = e.group_text || "label";  
+        group_text = e.group_text || "label";
 
 
        this._groups.regroup = function() {
@@ -12691,7 +12691,7 @@ module.exports = function(gantt) {
 
 function dummy() {
 	// eslint-disable-next-line
-	console.log("Method is not implemented."); 
+	console.log("Method is not implemented.");
 }
 function BaseControl() {
 }
@@ -12724,7 +12724,7 @@ module.exports = function(gantt) {
 	function CheckboxControl() {
 		var self = _super.apply(this, arguments) || this;
 
-		return self; 
+		return self;
 	}
 
 	__extends(CheckboxControl, _super);
@@ -12885,9 +12885,9 @@ module.exports = function(gantt) {
 	var _super = __webpack_require__(/*! ./base_control */ "./sources/core/lightbox/controls/base_control.js")(gantt);
 
 	function DurationControl() {
-		var self = _super.apply(this, arguments) || this; 
+		var self = _super.apply(this, arguments) || this;
 
-		return self; 
+		return self;
 	}
 
 	function getFormatter(config) {
@@ -12963,11 +12963,11 @@ module.exports = function(gantt) {
 		if (s[3]) s[3].onchange = _calc_date;
 
 		duration.onkeydown = gantt.bind(function(e) {
-			var code; 
+			var code;
 
 			e = e || window.event;
 			code = (e.charCode || e.keyCode || e.which);
-			
+
 			if (code == gantt.constants.KEY_CODES.DOWN) {
 				_change_duration(-1 * gantt.config.duration_step);
 				return false;
@@ -13052,7 +13052,7 @@ module.exports = function(gantt) {
 		return duration;
 	}
 
-	return DurationControl; 
+	return DurationControl;
 };
 
 /***/ }),
@@ -13070,9 +13070,9 @@ module.exports = function(gantt) {
 	var _super = __webpack_require__(/*! ./select_control */ "./sources/core/lightbox/controls/select_control.js")(gantt);
 
 	function ParentControl() {
-		var self = _super.apply(this, arguments) || this; 
+		var self = _super.apply(this, arguments) || this;
 
-		return self; 
+		return self;
 	}
 
 	__extends(ParentControl, _super);
@@ -13157,7 +13157,7 @@ module.exports = function(gantt) {
 	function RadioControl() {
 		var self = _super.apply(this, arguments) || this;
 
-		return self; 
+		return self;
 	}
 
 	__extends(RadioControl, _super);
@@ -13224,12 +13224,12 @@ module.exports = function(gantt) {
 
 	function SelectControl() {
 		var self = _super.apply(this, arguments) || this;
-	
-		return self; 
+
+		return self;
 	}
-	
+
 	__extends(SelectControl, _super);
-	
+
 	SelectControl.prototype.render = function(sns) {
 		var height = (sns.height || "23") + "px";
 		var html = "<div class='gantt_cal_ltext' style='height:" + height + ";'>";
@@ -13249,16 +13249,16 @@ module.exports = function(gantt) {
 			value = (select.options[0] || {}).value;
 		select.value = value || "";
 	};
-	
+
 	SelectControl.prototype.get_value = function(node) {
 		return node.firstChild.value;
 	};
-	
+
 	SelectControl.prototype.focus = function(node) {
 		var a = node.firstChild;
 		gantt._focus(a, true);
 	};
-	
+
 	return SelectControl;
 };
 
@@ -13277,8 +13277,8 @@ module.exports = function(gantt) {
 	var _super = __webpack_require__(/*! ./base_control */ "./sources/core/lightbox/controls/base_control.js")(gantt);
 
 	function TemplateControl() {
-		var self = _super.apply(this, arguments) || this; 
-		return self; 
+		var self = _super.apply(this, arguments) || this;
+		return self;
 	}
 
 	__extends(TemplateControl, _super);
@@ -13319,7 +13319,7 @@ module.exports = function(gantt) {
 	function TextareaControl() {
 		var self = _super.apply(this, arguments) || this;
 
-		return self; 
+		return self;
 	}
 
 	__extends(TextareaControl, _super);
@@ -14493,7 +14493,7 @@ module.exports = function(gantt) {
 
 	gantt.on_load = function (resp, type) {
 		if(resp.xmlDoc && resp.xmlDoc.status === 404){ // work if we don't have a file at current url
-			this.assert(false, "Failed to load the data from <a href='" + resp.xmlDoc.responseURL + "' target='_blank'>" 
+			this.assert(false, "Failed to load the data from <a href='" + resp.xmlDoc.responseURL + "' target='_blank'>"
 				+ resp.xmlDoc.responseURL + "</a>, server returns 404");
 			return;
 		}
@@ -14633,7 +14633,7 @@ module.exports = function(gantt) {
 			for (var i = 0; i < rawLinks.length; i++) {
 				links.push(this.serializeLink(rawLinks[i]));
             }
-            
+
             tasks.forEach((task)=>{
                 task.pUserStart = new Date(task.pUserStart);
                 task.pUserEnd = new Date(task.pUserEnd);
@@ -15744,7 +15744,7 @@ module.exports = null;
 
     var DurationFormatter = __webpack_require__(/*! ../common/duration_formatter */ "./sources/core/common/duration_formatter_numeric.ts").default;
     var LinkFormatter = __webpack_require__(/*! ../common/link_formatter */ "./sources/core/common/link_formatter_simple.ts").default;
-    
+
     module.exports = function(gantt){
         gantt.ext.formatters = {
             durationFormatter: function(settings){
@@ -15762,7 +15762,7 @@ module.exports = null;
             linkFormatter: LinkFormatter.create
         };
     };
-    
+
     /***/ }),
 
 /***/ "./sources/core/plugins/index.js":
@@ -15904,7 +15904,7 @@ module.exports = function addPlaceholder(gantt){
 			}
 
 			gantt.addTask(placeholder);
-			
+
 		}
 	}
 
@@ -16158,7 +16158,7 @@ function createResourceMethods(gantt){
 
 				if(content)
 					el.innerHTML = content;
-				
+
 				return el;
 			}
 			return null;
@@ -16242,7 +16242,7 @@ function createResourceMethods(gantt){
 
 		return smartRender(renderResourceLine, updateResourceLine, isInViewPort, true);
 	}
-	
+
 	function renderBar(level, start, end, timeline){
 		var top = (1 - (level*1||0))*100;
 		var left = timeline.posFromDate(start);
@@ -16288,7 +16288,7 @@ function createResourceMethods(gantt){
 		function detachRenderedHistogramCell(id, index){
 
 			var renderedRow = renderedHistogramCells[id];
-			if(renderedRow && renderedRow[index] && 
+			if(renderedRow && renderedRow[index] &&
 				renderedRow[index].parentNode
 				){
 					renderedRow[index].parentNode.removeChild(renderedRow[index]);
@@ -16478,7 +16478,7 @@ function createResourceMethods(gantt){
 
 		return smartRender(renderResourceHistogram, updateResourceHistogram, isInViewPort, true);
 	}
-	
+
 
 	function selectAssignments(resourceId, taskId, result){
 		var property = gantt.config.resource_property;
@@ -16513,7 +16513,7 @@ function createResourceMethods(gantt){
 			});
 		}
 		return assignments;
-    }  
+    }
 
 	return {
 		renderLine: generateRenderResourceLine,
@@ -16568,7 +16568,7 @@ module.exports = function(gantt){
             // return '';
         }
     };
-    
+
 };
 
 
@@ -17014,7 +17014,7 @@ function _get_skin(force, gantt) {
 		config[1].width = skinset._second_column_width;
 	if (config[2] && !gantt.defined(config[2].width))
 		config[2].width = skinset._third_column_width;
-	
+
 	for (var i=0; i<config.length; i++) {
 		var column = config[i];
 		if (column.name == "add") {
@@ -17038,7 +17038,7 @@ function _get_skin(force, gantt) {
 	}
 
 	if (skinset.config.task_height)
-		gantt.config.task_height = skinset.config.task_height || "full"; 
+		gantt.config.task_height = skinset.config.task_height || "full";
 
 	if (skinset._lightbox_template)
 		gantt._lightbox_template = skinset._lightbox_template;
@@ -18151,14 +18151,14 @@ module.exports = function (gantt) {
         var BaseEditor = __webpack_require__(/*! ./base */ "./sources/core/ui/grid/editors/editors/base.js")(gantt),
             utils = __webpack_require__(/*! ../../../../../utils/utils */ "./sources/utils/utils.js");
         var __extends = __webpack_require__(/*! ../../../../../utils/extends */ "./sources/utils/extends.js");
-    
+
         function TextEditor() {
             var self = BaseEditor.apply(this, arguments) || this;
             return self;
         }
-    
+
         __extends(TextEditor, BaseEditor);
-    
+
         function getFormatter(config) {
             return config.formatter || gantt.ext.formatters.durationFormatter();
         }
@@ -18174,10 +18174,10 @@ module.exports = function (gantt) {
                 return getFormatter(column.editor).parse(this.get_input(node).value || "");
             }
         }, true);
-    
+
         return TextEditor;
     };
-    
+
     /***/ }),
 
 /***/ "./sources/core/ui/grid/editors/editors/number.js":
@@ -21425,7 +21425,7 @@ var Layout = (function (_super) {
 			self.minHeight += this.$config.margin * (this.$cells.length) || 0;
 			self.minHeight += (this.$config.padding * 2) || 0;
 		}
-		
+
 		return self;
 	};
 	// calc total gravity and free space
@@ -21978,7 +21978,7 @@ var ScrollbarCell = (function (_super) {
 			this.show();
 		}
 	};
-	
+
 	ScrollbarCell.prototype._getScaleOffset = function(view){
 		var offset = 0;
 		if(view && (view.$config.view == "timeline" || view.$config.view == "grid")){
@@ -22729,7 +22729,7 @@ var createMouseHandler = (function(domHelpers) {
 				if (id !== null && gantt.getTask(id)) {
 					if (res && gantt.config.details_on_dblclick) {
                         // gantt.showLightbox(id);
-                        // window.angularComponentReference.zone.run(() => { window.angularComponentReference.timelineComponentFn(id); });  
+                        // window.angularComponentReference.zone.run(() => { window.angularComponentReference.timelineComponentFn(id); });
 					}
 				}
 			}
@@ -22948,7 +22948,7 @@ var layerFactory = function(gantt){
 								self.onUpdateRequest(self.renderers[config.id]);
 							}
 						}
-						
+
 					};
 				}
 
@@ -23582,7 +23582,7 @@ var rendererFactory = function(gantt){
 						this.render_item(items[i], buffer, viewPort);
 					}
 
-					
+
 				}
 				if(buffer.childNodes.length){
 					container.appendChild(buffer, container);
@@ -23774,7 +23774,7 @@ function createTaskRenderer(gantt){
 			css += " gantt_task_inline_color";
 		}
         div.className = css;
-        
+
         width = task.itemType == cfg.types.sc ? 30 : width;
 
 		var styles = [
@@ -24164,7 +24164,7 @@ function createTaskBgRender(gantt){
 				}
 			}
 			visibleCells[item.id][columnIndex] = {};
-		
+
 			// TODO: do not iterate all cell, only ones in the viewport and once that are already rendered
 			for (var columnIndex = range.start; columnIndex <= range.end; columnIndex++) {
 				var cell = renderOneCell(cfg, columnIndex, item, viewPort, count, cssTemplate, config);
@@ -24195,7 +24195,7 @@ function createTaskBgRender(gantt){
 			cssclass = "";
 
 		if (isColumnVisible(columnIndex, scale, viewPort)) {//do not render skipped columns
-			
+
 			var cssTemplateContent = cssTemplate(item, scale.trace_x[columnIndex]);
 
 			if(config.static_background){
@@ -24516,12 +24516,12 @@ module.exports = function isLinkInViewPort(item, view, viewport){
 	var targetTop = view.getItemTop(target.id);
 	var targetHeight = view.getItemHeight(target);
 
-	if(viewport.y > sourceTop + sourceHeight && 
+	if(viewport.y > sourceTop + sourceHeight &&
 		viewport.y > targetTop + targetHeight){
 		return false;
 	}
 
-	if(viewport.y_end < targetTop && 
+	if(viewport.y_end < targetTop &&
 		viewport.y_end < targetHeight){
 		return false;
 	}
@@ -24531,7 +24531,7 @@ module.exports = function isLinkInViewPort(item, view, viewport){
 	var sourceRight = view.posFromDate(source.end_date);
 	var targetLeft = view.posFromDate(target.start_date);
 	var targetRight = view.posFromDate(target.end_date);
-	
+
 	if(sourceLeft > sourceRight){
 		// rtl
 		var tmp = sourceRight;
@@ -24549,12 +24549,12 @@ module.exports = function isLinkInViewPort(item, view, viewport){
 	targetLeft += -padding; // add buffer for custom elements
 	targetRight += padding;
 
-	if(viewport.x > sourceRight && 
+	if(viewport.x > sourceRight &&
 		viewport.x > targetRight){
 		return false;
 	}
 
-	if(viewport.x_end < sourceLeft && 
+	if(viewport.x_end < sourceLeft &&
 		viewport.x_end < targetLeft){
 		return false;
 	}
@@ -24584,7 +24584,7 @@ module.exports = function isInViewPort(item, view, viewport){
 	}
 	var left = view.posFromDate(item.start_date);
 	var right = view.posFromDate(item.end_date);
-	
+
 	if(left > right){
 		// rtl
 		var tmp = right;
@@ -24598,7 +24598,7 @@ module.exports = function isInViewPort(item, view, viewport){
 	if(viewport.x > right || viewport.x_end < left){
 		return false;
 	}
-		
+
 	return true;
 };
 
@@ -24877,7 +24877,7 @@ var initLinksDND = function(timeline, gantt) {
 
 		var targ = gantt.locate(e),
 			to_start = true;
-		
+
 		// can drag and drop link to another gantt on the page, such links are not supported
 		var sameGantt = domHelpers.isChildOf(e.target || e.srcElement, gantt.$root);
 		if(!sameGantt){
@@ -25416,7 +25416,7 @@ function ScaleHelper(gantt){
 			}else{
 				scales = scaleConfig.scales.slice(1);
 			}
-			
+
 			return scales.map(function(scale){
 				return this._prepareScaleObject(scale);
 			}.bind(this));
@@ -26070,7 +26070,7 @@ function createTaskDND(timeline, gantt){
 		_finalize_mouse_up: function(taskId, config, drag, e){
             var ev = gantt.getTask(taskId);
             var originalEvt = gantt.copy(ev);
-            
+
 			if (config.work_time && config.correct_work_time) {
 				this._fix_working_times(ev, drag);
 			}
@@ -27089,7 +27089,7 @@ var uiFactory = function createFactory(gantt){
 		content = createView.call(this, view, null, cell, parentView);
 		return content;
 	}
-	
+
 	var createdViews = {};
 
 	function createView(name, parent, config, parentView) {
@@ -29021,7 +29021,7 @@ gantt.skins.terrace = {
 		lightbox_additional_height:75
 	},
 	_second_column_width:200,
-	_third_column_width:180		
+	_third_column_width:180
 };
 
 };
@@ -29404,7 +29404,7 @@ function removeClassName(node, name) {
 function hasClass(element, className){
 	if ('classList' in element) {
 		return element.classList.contains(className);
-	} else { 
+	} else {
 		return new RegExp("\\b" + className + "\\b").test(element.className);
 	}
 }
@@ -29538,7 +29538,7 @@ function closest(element, selector){
 
 			if (method.call(el, selector)) return el;
 			el = el.parentElement || el.parentNode;
-		} while (el !== null && el.nodeType === 1); 
+		} while (el !== null && el.nodeType === 1);
 		return null;
 	}else{
 		// eslint-disable-next-line no-console
@@ -29871,7 +29871,7 @@ function delay (callback, timeout){
 			result.$pending = false;
 		}, timeout);
 	};
-	
+
 	result.$pending = false;
 	result.$cancelTimeout = function(){
 		clearTimeout(timer);
@@ -29965,7 +29965,7 @@ var htmlHelpers = {
 		var _this = this;
 
 		options = options || [];
-		
+
 		helpers.forEach(options, function(entry) {
 			var _attributes = [{ key: "value", value: entry.key }];
 
@@ -29993,7 +29993,7 @@ function _getHtmlContainer(tag, options, attributes) {
 	var html;
 
 	options = options || [];
-	
+
 	html = "<" + tag + _getHtmlAttributes(attributes || []) + ">" + (options.innerHTML || "") + "</" + tag +">";
 	return html;
 
@@ -30084,10 +30084,10 @@ module.exports = {
 function checkTimeout(host, updPerSecond){
 	if (!updPerSecond)
 		return true;
-	
+
 	if (host._on_timeout)
 		return false;
-	
+
 	var timeout = Math.ceil(1000/updPerSecond);
 	if (timeout < 2) return true;
 

@@ -457,13 +457,14 @@ export class PreStackAllocationComponent implements OnInit {
       ID: milestoneTask.id,
       task: milestoneTask.taskFullName,
       taskType: milestoneTask.Task ? milestoneTask.Task : milestoneTask.itemType,
-      startDatePart: milestoneTask.pUserStartDatePart ? milestoneTask.pUserStartDatePart : milestoneTask.StartDatePart,
-      endDatePart: milestoneTask.pUserEndDatePart ? milestoneTask.pUserEndDatePart : milestoneTask.EndDatePart,
-      startDate: milestoneTask.pUserStart ? milestoneTask.pUserStart : milestoneTask.StartDate,
-      endDate: milestoneTask.pUserEnd ? milestoneTask.pUserEnd : milestoneTask.EndDate,
-      budgetHrs: milestoneTask.budgetHours ? milestoneTask.budgetHours : milestoneTask.Hours,
-      startTime: milestoneTask.pUserStartTimePart ? milestoneTask.pUserStartTimePart : milestoneTask.StartTimePart,
-      endTime: milestoneTask.pUserEndTimePart ? milestoneTask.pUserEndTimePart : milestoneTask.EndTimePart,
+      // tslint:disable: max-line-length
+      startDatePart: milestoneTask.pUserStartDatePart ? milestoneTask.pUserStartDatePart : milestoneTask.UserStartDatePart ? milestoneTask.UserStartDatePart : milestoneTask.StartDatePart,
+      endDatePart: milestoneTask.pUserEndDatePart ? milestoneTask.pUserEndDatePart : milestoneTask.UserEndDatePart ? milestoneTask.UserEndDatePart : milestoneTask.EndDatePart,
+      startDate: milestoneTask.pUserStart ? milestoneTask.pUserStart : milestoneTask.UserStart ? milestoneTask.UserStart : milestoneTask.StartDate,
+      endDate: milestoneTask.pUserEnd ? milestoneTask.pUserEnd : milestoneTask.UserEnd ? milestoneTask.UserEnd : milestoneTask.EndDate,
+      budgetHrs: milestoneTask.budgetHours ? milestoneTask.budgetHours : milestoneTask.EstimatedTime ? milestoneTask.EstimatedTime : milestoneTask.Hours,
+      startTime: milestoneTask.pUserStartTimePart ? milestoneTask.pUserStartTimePart : milestoneTask.UserStartTimePart ? milestoneTask.UserStartTimePart : milestoneTask.StartTimePart,
+      endTime: milestoneTask.pUserEndTimePart ? milestoneTask.pUserEndTimePart : milestoneTask.UserEndTimePart ? milestoneTask.UserEndTimePart : milestoneTask.EndTimePart,
       status: milestoneTask.Status ? milestoneTask.Status : milestoneTask.status
     };
     return task;
@@ -474,10 +475,10 @@ export class PreStackAllocationComponent implements OnInit {
    */
   async calcPrestackAllocation(resource: IUserCapacity[], milestoneTask) {
     const task = this.getData(milestoneTask);
-    const eqgTasks = ['Edit', 'Quality', 'Graphics', 'Client Review', 'Send to client'];
+    const eqgTasks = ['EditSlot', 'QualitySlot', 'GraphicsSlot', 'Client Review', 'Send to client'];
     if (!eqgTasks.find(t => t === task.taskType) && task.startDatePart &&
       resource.length && task.endDatePart && task.budgetHrs &&
-      task.endDate > task.startDate
+      task.endDate > task.startDate && resource.length
       && new Date(task.startDatePart).getTime() !==  new Date(task.endDatePart).getTime()) {
       const allocationData: IDailyAllocationTask = {
         ID: task.ID,

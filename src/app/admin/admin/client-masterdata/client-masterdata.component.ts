@@ -721,7 +721,7 @@ export class ClientMasterdataComponent implements OnInit {
    *
    */
   async showPO() {
-    debugger;
+    ;
     this.constantsService.loader.isPSInnerLoaderHidden = false;
     const tempArray = [];
     this.PORows = [];
@@ -752,7 +752,7 @@ export class ClientMasterdataComponent implements OnInit {
         obj.InvoicedTax = item.InvoicedTax;
         obj.Link = item.Link;
         if(item.Link){
-          
+
           obj.poDocLink = this.globalObject.sharePointPageObject.webRelativeUrl + '/' +this.currClientObj.ListName +
           '/' + this.adminConstants.FOLDER_LOCATION.PO + '/' + item.Link
         }
@@ -909,7 +909,7 @@ export class ClientMasterdataComponent implements OnInit {
    */
   async loadRecentPORecords(ID, action) {
     const tempArray = [];
-    debugger;
+    ;
     const poGet = Object.assign({}, this.adminConstants.QUERY.GET_PO_BY_ID);
     poGet.filter = poGet.filter
       .replace(/{{active}}/gi, this.adminConstants.LOGICAL_FIELD.ACTIVE)
