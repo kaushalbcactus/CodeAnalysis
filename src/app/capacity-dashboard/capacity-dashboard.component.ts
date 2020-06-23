@@ -401,7 +401,6 @@ export class CapacityDashboardComponent implements OnInit {
         }
         console.log(blockResource);
         this.commonService.SetNewrelic('capacity-dashboard', 'blockResource', 'CreateblockResource');
-        debugger;
         const result = await this.spServices.createItem(this.constants.listNames.Blocking.name, data,
           this.constants.listNames.Blocking.type);
           if (!result.hasOwnProperty('hasError') && !result.hasError) {

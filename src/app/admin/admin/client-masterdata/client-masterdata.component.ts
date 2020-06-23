@@ -721,7 +721,6 @@ export class ClientMasterdataComponent implements OnInit {
    *
    */
   async showPO() {
-    debugger;
     this.constantsService.loader.isPSInnerLoaderHidden = false;
     const tempArray = [];
     this.PORows = [];
@@ -909,7 +908,6 @@ export class ClientMasterdataComponent implements OnInit {
    */
   async loadRecentPORecords(ID, action) {
     const tempArray = [];
-    debugger;
     const poGet = Object.assign({}, this.adminConstants.QUERY.GET_PO_BY_ID);
     poGet.filter = poGet.filter
       .replace(/{{active}}/gi, this.adminConstants.LOGICAL_FIELD.ACTIVE)

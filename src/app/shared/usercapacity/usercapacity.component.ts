@@ -459,8 +459,6 @@ export class UsercapacityComponent implements OnInit {
           });
 
           // tslint:disable
-
-          debugger;
           endDateString =
             new Date(sTopEndDate) >
             new Date(
@@ -1072,8 +1070,6 @@ export class UsercapacityComponent implements OnInit {
         }
       });
     } else {
-
-      debugger;
       let taskObj: any = {
         Title: task.taskFullName,
         Milestone: task.milestone,
@@ -1324,8 +1320,6 @@ export class UsercapacityComponent implements OnInit {
                   ? oUser.tasks[j].ExpectedTime
                   : oUser.tasks[j].TimeSpent;
               taskCount++;
-
-              debugger;
               const objTask = {
                 title:
                   oUser.tasks[j].Task === "Adhoc"
@@ -1651,8 +1645,6 @@ export class UsercapacityComponent implements OnInit {
 
   // tslint:disable
   async bindProjectTaskDetails(tasks, objt, user) {
-
-    debugger;
     if (tasks.length > 0) {
       const batchUrl = [];
       const batchContents = new Array();
