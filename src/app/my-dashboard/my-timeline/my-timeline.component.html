@@ -102,7 +102,7 @@
 <!--**************************************************************************************************
 //  dialog to to display data
 ************************************************************************************************** -->
-
+<app-allocation-overlay #dailyAllocateOP></app-allocation-overlay>
 <p-dialog *ngIf="taskdisplay" header="{{taskName}}" [contentStyle]="{'max-height':'90vh'}" [style]="{'width':task.Task === 'Adhoc' ? '80vw': '100vw'}" [positionTop]="task.Task === 'Adhoc' ? '': '0'" [modal]="true" [draggable]="false" appendTo='body' [closable]="false"
     [(visible)]="taskdisplay">
 
@@ -171,7 +171,6 @@
                         <div id="modalInnerLoader"></div>
                         <div id="modalInnerLoaderText">Loading...</div>
                     </div>
-                    <app-allocation-overlay #dailyAllocateOP></app-allocation-overlay>
                     <table [hidden]="modalloaderenable" style="width:100%;margin:10px 0px 0px 0px;">
                         <tr>
                             <th>Project Name:</th>
@@ -219,14 +218,14 @@
                             <td>{{task.Milestone}}</td>
                             <th>Task & Allocated Time:</th>
                             <td>{{task.Task}} , {{task.ExpectedTime}} 
-                                <div class='overlayIcon'
-                                appendTo="body"
-                                (click)="this.showOverlayPanel($event, task, dailyAllocateOP)"
-                                style="float: right;cursor: pointer;"
-                                title="Click to see allocation split"
-                                *ngIf="task.showAllocationSplit">
-                                <i class="fa fa-info-circle" aria-hidden="true"></i>
-                            </div>
+                                <span class='overlayIcon'
+                                    appendTo="body"
+                                    (click)="this.showOverlayPanel($event, task, dailyAllocateOP, actualTarget)"
+                                    style="cursor: pointer;"
+                                    title="Click to see allocation split"
+                                    *ngIf="task.showAllocationSplit">
+                                    <i #actualTarget class="fa fa-info-circle" aria-hidden="true"></i>
+                                </span>
                             <span *ngIf="task.Comments">[{{task.Comments}}]</span></td>
                         </tr>
                         <tr>
