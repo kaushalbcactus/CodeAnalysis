@@ -328,7 +328,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       });
       milestoneTask.assignedUserTimeZone = AssignedUserTimeZone && AssignedUserTimeZone.length > 0
         ? AssignedUserTimeZone[0].TimeZone.Title ?
-          AssignedUserTimeZone[0].TimeZone.Title : '+5.5' : '+5.5';
+          AssignedUserTimeZone[0].TimeZone.Title : +5.5 : +5.5;
 
 
       const hrsMinObject = {
@@ -363,7 +363,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         milestoneTask.type = 'task';
 
         let GanttTaskObj = this.taskAllocateCommonService.ganttDataObject(milestoneTask, '', '', milestone, hrsMinObject);
-        // console.log(GanttTaskObj)
 
         taskName = milestoneTask.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestoneTask.Milestone + ' ', '');
         this.GanttchartData.push(GanttTaskObj);
@@ -423,7 +422,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       });
       clientReviewObj[0].assignedUserTimeZone = AssignedUserTimeZone && AssignedUserTimeZone.length > 0
         ? AssignedUserTimeZone[0].TimeZone.Title ?
-          AssignedUserTimeZone[0].TimeZone.Title : '+5.5' : '+5.5';
+          AssignedUserTimeZone[0].TimeZone.Title : +5.5 : +5.5;
 
 
       let color = this.colors.filter(c => c.key == clientReviewObj[0].Status)
@@ -578,9 +577,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
             , allRetrievedTasks, tempSubmilestones, milestone);
 
           this.createFetchTaskMilestone(milestone, milestoneHoursSpent, tempSubmilestones);
-          
+
           this.createFetchTaskCR(milestone);
-          
+
         }
       }
 
@@ -2480,7 +2479,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         await this.dailyAllocation.calcPrestackAllocation(resource, milestoneTask);
         milestoneTask.assignedUserTimeZone = resource && resource.length > 0
           ? resource[0].TimeZone.Title ?
-            resource[0].TimeZone.Title : '+5.5' : '+5.5';
+            resource[0].TimeZone.Title : +5.5 : +5.5;
 
         this.changeUserTimeZone(milestoneTask, previousUserTimeZone, milestoneTask.assignedUserTimeZone);
         this.setDatePartAndTimePart(milestoneTask);
@@ -2488,7 +2487,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         /// Change date as user changed in AssignedTo dropdown
       } else {
         const previousUserTimeZone = milestoneTask.assignedUserTimeZone;
-        milestoneTask.assignedUserTimeZone = '+5.5';
+        milestoneTask.assignedUserTimeZone = +5.5;
         this.changeUserTimeZone(milestoneTask, previousUserTimeZone, milestoneTask.assignedUserTimeZone);
         this.setDatePartAndTimePart(milestoneTask);
         milestoneTask.skillLevel = milestoneTask.AssignedTo.SkillText;
@@ -3319,13 +3318,11 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     }
 
     for (const mil of addMilestones) {
-      this.commonService.setBatchObject(batchUrl, mil.url, mil.body, this.constants.Method.POST, this.constants.listNames.Schedules.name
-      );
+      this.commonService.setBatchObject(batchUrl, mil.url, mil.body, this.constants.Method.POST, this.constants.listNames.Schedules.name);
     }
 
     for (const tasks of addTasks) {
-      this.commonService.setBatchObject(batchUrl, tasks.url, tasks.body, this.constants.Method.POST, this.constants.listNames.Schedules.name
-      );
+      this.commonService.setBatchObject(batchUrl, tasks.url, tasks.body, this.constants.Method.POST, this.constants.listNames.Schedules.name);
     }
 
     for (const mil of addMilestoneItems) {
@@ -3394,9 +3391,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       await this.continueSetMilestone(restructureMilstoneStr, updatedResources, batchUrl, addMilestones, addTasks, projectStatus, previousProjectStatus);
     }
 
-
-
-    // }
   }
   // **************************************************************************************************
   // Split because of confirmation message popup
@@ -3590,12 +3584,17 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       Status: projectStatus,
       PrevStatus: previosProjectStatus
     };
-    const updatePrjObj = Object.assign({}, this.queryConfig);
-    updatePrjObj.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, +projectID);
-    updatePrjObj.listName = this.constants.listNames.ProjectInformation.name;
-    updatePrjObj.type = 'PATCH';
-    updatePrjObj.data = updateProjectRes;
-    batchUrl.push(updatePrjObj);
+    // const updatePrjObj = Object.assign({}, this.queryConfig);
+    // updatePrjObj.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, +projectID);
+    // updatePrjObj.listName = this.constants.listNames.ProjectInformation.name;
+    // updatePrjObj.type = 'PATCH';
+    // updatePrjObj.data = updateProjectRes;
+    // batchUrl.push(updatePrjObj);
+
+    this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, +projectID),
+      updateProjectRes, this.constants.Method.PATCH, this.constants.listNames.ProjectInformation.name);
+
+
     this.commonService.SetNewrelic('TaskAllocation', 'Timeline', 'updateProjectInfo');
     let response = await this.spServices.executeBatch(batchUrl);
     response = response.length ? response.map(a => a.retItems) : [];
@@ -3906,7 +3905,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       // tslint:enable
       if (checkTaskAllocatedTime.length > 0) {
 
-        this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Allocated time for task cannot be equal or less than 0 for ' + checkTaskAllocatedTime[0].pName, false);
+        this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Allocated time for task cannot be equal or less than 0 for ' + checkTaskAllocatedTime[0].title, false);
         return false;
       }
 
@@ -3914,7 +3913,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         e.itemType !== 'Follow up' && e.status !== 'Completed' && e.itemType !== 'Send to client'));
       if (compareDates.length > 0) {
 
-        this.commonService.showToastrMessage(this.constants.MessageType.warn, 'End date should be greater than start date of ' + compareDates[0].pName, false);
+        this.commonService.showToastrMessage(this.constants.MessageType.warn, 'End date should be greater than start date of ' + compareDates[0].title, false);
         return false;
       }
 
@@ -3964,7 +3963,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
 
     const newCurrentMilestone = this.milestoneData.filter((obj) => {
-      return obj.data.title === newCurrentMilestoneText; //.split(' (')[0]
+      return obj.data.title === newCurrentMilestoneText;
     });
     const batchUrl = [];
     // tslint:disable
@@ -3976,12 +3975,15 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         Status: 'In Progress',
         PrevStatus: this.sharedObject.oTaskAllocation.oProjectDetails.status
       };
-      const taskObj = Object.assign({}, this.queryConfig);
-      taskObj.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, +projectID);
-      taskObj.data = updateProjectBody;
-      taskObj.listName = this.constants.listNames.ProjectInformation.name;
-      taskObj.type = 'PATCH';
-      batchUrl.push(taskObj);
+      // const taskObj = Object.assign({}, this.queryConfig);
+      // taskObj.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, +projectID);
+      // taskObj.data = updateProjectBody;
+      // taskObj.listName = this.constants.listNames.ProjectInformation.name;
+      // taskObj.type = 'PATCH';
+      // batchUrl.push(taskObj);
+
+      this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, +projectID),
+        updateProjectBody, this.constants.Method.PATCH, this.constants.listNames.ProjectInformation.name);
     }
     /// end of project information update
     let previousSubMilestones;
@@ -4024,12 +4026,15 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
               SubMilestones: this.getSubMilestoneStatus(currentMilestone[0], 'Completed')
             };
           }
-          const milestoneObj = Object.assign({}, this.queryConfig);
-          milestoneObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +milestoneID);
-          milestoneObj.data = updatePMilestoneBody;
-          milestoneObj.listName = this.constants.listNames.Schedules.name;
-          milestoneObj.type = 'PATCH';
-          batchUrl.push(milestoneObj);
+          // const milestoneObj = Object.assign({}, this.queryConfig);
+          // milestoneObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +milestoneID);
+          // milestoneObj.data = updatePMilestoneBody;
+          // milestoneObj.listName = this.constants.listNames.Schedules.name;
+          // milestoneObj.type = 'PATCH';
+          // batchUrl.push(milestoneObj);
+
+          this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constants.listNames.Schedules.name, +milestoneID),
+            updatePMilestoneBody, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
           // tslint:enable
           for (const task of prevMilestoneTasks) {
             if (task.status === 'Not Confirmed') {
@@ -4052,12 +4057,15 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
               Status: task.status,
               ActiveCA: task.ActiveCA
             };
-            const taskUpdateObj = Object.assign({}, this.queryConfig);
-            taskUpdateObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +task.id);
-            taskUpdateObj.data = updateSchedulesBody;
-            taskUpdateObj.listName = this.constants.listNames.Schedules.name;
-            taskUpdateObj.type = 'PATCH';
-            batchUrl.push(taskUpdateObj);
+            // const taskUpdateObj = Object.assign({}, this.queryConfig);
+            // taskUpdateObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +task.id);
+            // taskUpdateObj.data = updateSchedulesBody;
+            // taskUpdateObj.listName = this.constants.listNames.Schedules.name;
+            // taskUpdateObj.type = 'PATCH';
+            // batchUrl.push(taskUpdateObj);
+
+            this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constants.listNames.Schedules.name, +task.id),
+              updateSchedulesBody, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
           }
         });
       }
@@ -4094,12 +4102,15 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           Status: element.status,
           ActiveCA: element.ActiveCA
         };
-        const taskCAUpdateObj = Object.assign({}, this.queryConfig);
-        taskCAUpdateObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +element.id);
-        taskCAUpdateObj.data = updateSchedulesBody;
-        taskCAUpdateObj.listName = this.constants.listNames.Schedules.name;
-        taskCAUpdateObj.type = 'PATCH';
-        batchUrl.push(taskCAUpdateObj);
+        // const taskCAUpdateObj = Object.assign({}, this.queryConfig);
+        // taskCAUpdateObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +element.id);
+        // taskCAUpdateObj.data = updateSchedulesBody;
+        // taskCAUpdateObj.listName = this.constants.listNames.Schedules.name;
+        // taskCAUpdateObj.type = 'PATCH';
+        // batchUrl.push(taskCAUpdateObj);
+
+        this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constants.listNames.Schedules.name, +element.id),
+          updateSchedulesBody, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
       }
     }
     const cMilestoneEndpoint = '';
@@ -4120,20 +4131,25 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         SubMilestones: this.getSubMilestoneStatus(newCurrentMilestone[0], '')//.join(';#')
       };
     }
-    const taskCMUpdateObj = Object.assign({}, this.queryConfig);
-    taskCMUpdateObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +curMilestoneID);
-    taskCMUpdateObj.data = updateCMilestoneBody;
-    taskCMUpdateObj.listName = this.constants.listNames.Schedules.name;
-    taskCMUpdateObj.type = 'PATCH';
-    batchUrl.push(taskCMUpdateObj);
+    // const taskCMUpdateObj = Object.assign({}, this.queryConfig);
+    // taskCMUpdateObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +curMilestoneID);
+    // taskCMUpdateObj.data = updateCMilestoneBody;
+    // taskCMUpdateObj.listName = this.constants.listNames.Schedules.name;
+    // taskCMUpdateObj.type = 'PATCH';
+    // batchUrl.push(taskCMUpdateObj);
+    this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constants.listNames.Schedules.name, +curMilestoneID),
+      updateCMilestoneBody, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
 
-    const notificationObj = Object.assign({}, this.queryConfig);
-    // tslint:disable: max-line-length
-    notificationObj.url = this.spServices.getReadURL(this.constants.listNames.EarlyTaskCompleteNotifications.name, this.taskAllocationService.taskallocationComponent.earlyTaskNotification);
-    notificationObj.url = notificationObj.url.replace(/{{projectCode}}/g, this.oProjectDetails.projectCode);
-    notificationObj.listName = this.constants.listNames.EarlyTaskCompleteNotifications.name;
-    notificationObj.type = 'GET';
-    batchUrl.push(notificationObj);
+    // const notificationObj = Object.assign({}, this.queryConfig);
+    // // tslint:disable: max-line-length
+    // notificationObj.url = this.spServices.getReadURL(this.constants.listNames.EarlyTaskCompleteNotifications.name, this.taskAllocationService.taskallocationComponent.earlyTaskNotification);
+    // notificationObj.url = notificationObj.url.replace(/{{projectCode}}/g, this.oProjectDetails.projectCode);
+    // notificationObj.listName = this.constants.listNames.EarlyTaskCompleteNotifications.name;
+    // notificationObj.type = 'GET';
+    // batchUrl.push(notificationObj);
+    let url = this.spServices.getReadURL(this.constants.listNames.EarlyTaskCompleteNotifications.name, this.taskAllocationService.taskallocationComponent.earlyTaskNotification);
+    url = url.replace(/{{projectCode}}/g, this.oProjectDetails.projectCode);
+    this.commonService.setBatchObject(batchUrl, url, null, this.constants.Method.GET, this.constants.listNames.EarlyTaskCompleteNotifications.name);
 
     this.commonService.SetNewrelic('TaskAllocation', 'Timeline', 'SetAsNextMilestone');
     const response = await this.spServices.executeBatch(batchUrl);
@@ -4145,12 +4161,15 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           __metadata: { type: this.constants.listNames.EarlyTaskCompleteNotifications.type },
           IsActiveCH: 'No',
         };
-        const notificationUpdateObj = Object.assign({}, this.queryConfig);
-        notificationUpdateObj.url = this.spServices.getItemURL(this.constants.listNames.EarlyTaskCompleteNotifications.name, +element.ID);
-        notificationUpdateObj.data = updateNotificationBody;
-        notificationUpdateObj.listName = this.constants.listNames.EarlyTaskCompleteNotifications.name;
-        notificationUpdateObj.type = 'PATCH';
-        notificationBatchUrl.push(notificationUpdateObj);
+        // const notificationUpdateObj = Object.assign({}, this.queryConfig);
+        // notificationUpdateObj.url = this.spServices.getItemURL(this.constants.listNames.EarlyTaskCompleteNotifications.name, +element.ID);
+        // notificationUpdateObj.data = updateNotificationBody;
+        // notificationUpdateObj.listName = this.constants.listNames.EarlyTaskCompleteNotifications.name;
+        // notificationUpdateObj.type = 'PATCH';
+        // notificationBatchUrl.push(notificationUpdateObj);
+
+        this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constants.listNames.EarlyTaskCompleteNotifications.name, +element.ID),
+        updateNotificationBody, this.constants.Method.PATCH, this.constants.listNames.EarlyTaskCompleteNotifications.name);
       });
 
       this.commonService.SetNewrelic('TaskAllocation', 'Timeline', 'SendEarlyTaskCompletionNotification');
@@ -4476,7 +4495,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     return taskObj;
   }
 
-  ////// Refactor - Done
   getExistingData(oExistingTask) {
     oExistingTask.start_date = new Date(oExistingTask.start_date);
     oExistingTask.end_date = new Date(oExistingTask.end_date);
@@ -4487,7 +4505,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     return oExistingTask;
   }
   // tslint:enable
-
 
   trackByFn(index, item) {
     return index; // or item.id

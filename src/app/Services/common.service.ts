@@ -975,19 +975,21 @@ export class CommonService {
         let hrs: number = Math.floor(mins / 60);
         let maxBudgetHrs = mins / 60;
         let maxTime: any = new Date();
-        maxTime = maxTime.setHours(hrs ,minutes, 0 ,0);
+        maxTime = maxTime.setHours(hrs, minutes, 0, 0);
         return {
             maxTime,
             maxBudgetHrs
         }
     }
 
-    setBatchObject(batchUrl, url, body, type,listName) {
+    setBatchObject(batchUrl, url, body, type, listName) {
         const obj = Object.assign({}, this.queryConfig);
         obj.url = url;
         obj.listName = listName;
         obj.type = type;
-        obj.data = body;
+        if (body) {
+            obj.data = body;
+        }
         batchUrl.push(obj);
     }
 
@@ -1010,33 +1012,33 @@ export class CommonService {
     }
 
     getAllocationByDate(date: Date, strAllocation: string, optionalValToSet: number): number {
-      const strDate = this.datePipe.transform(new Date(date), 'EE,MMMd,y');
-      if (strAllocation) {
-        const arrAllocation = strAllocation ? strAllocation.split(/\n/) : [];
-        const strDay = arrAllocation.find(a => a.indexOf(strDate) > -1);
-        const value = strDay ? this.getDateTimeFromString(strDay).value : 0;
-        return value ? this.convertFromHrsMins(value.hours + ':' + value.mins) : optionalValToSet;
-       } else {
-        return optionalValToSet;
-      }
+        const strDate = this.datePipe.transform(new Date(date), 'EE,MMMd,y');
+        if (strAllocation) {
+            const arrAllocation = strAllocation ? strAllocation.split(/\n/) : [];
+            const strDay = arrAllocation.find(a => a.indexOf(strDate) > -1);
+            const value = strDay ? this.getDateTimeFromString(strDay).value : 0;
+            return value ? this.convertFromHrsMins(value.hours + ':' + value.mins) : optionalValToSet;
+        } else {
+            return optionalValToSet;
+        }
     }
 
     getDateTimeFromString(hrsDate: Date | string) {
-      const day = hrsDate instanceof Date ? this.datePipe.transform(new Date(hrsDate), 'EE,MMMd,y') : hrsDate;
-      const arrDateTime: string[] = day.indexOf(':') > -1 ? day.split(':') : [];
-      const date: Date = arrDateTime.length ? new Date(arrDateTime[0]) : new Date();
-      const time: string = arrDateTime.length > 1 ? arrDateTime[1] + ':' + arrDateTime[2] : '';
-      const value = this.getHrsMinsObj(time, false);
-      return { date, value };
+        const day = hrsDate instanceof Date ? this.datePipe.transform(new Date(hrsDate), 'EE,MMMd,y') : hrsDate;
+        const arrDateTime: string[] = day.indexOf(':') > -1 ? day.split(':') : [];
+        const date: Date = arrDateTime.length ? new Date(arrDateTime[0]) : new Date();
+        const time: string = arrDateTime.length > 1 ? arrDateTime[1] + ':' + arrDateTime[2] : '';
+        const value = this.getHrsMinsObj(time, false);
+        return { date, value };
     }
 
     getHrsMinsObj(hrs: string, isSliderRange: boolean): any {
-      const strhrs = '' + hrs;
-      const hours = strhrs.indexOf(':') > -1 ? +strhrs.split(':')[0] : +strhrs;
-      const mins = strhrs.indexOf(':') > 0 ? +strhrs.split(':')[1] : isSliderRange ? 45 : 0;
-      return {
-        hours, mins
-      };
+        const strhrs = '' + hrs;
+        const hours = strhrs.indexOf(':') > -1 ? +strhrs.split(':')[0] : +strhrs;
+        const mins = strhrs.indexOf(':') > 0 ? +strhrs.split(':')[1] : isSliderRange ? 45 : 0;
+        return {
+            hours, mins
+        };
     }
     checkPositiveNumberValidator(): ValidatorFn {
         return (control: AbstractControl): { [key: string]: boolean } | null => {
@@ -1076,13 +1078,13 @@ export class CommonService {
             return null;
         };
     }
-   
+
     getyearRange() {
         const currentYear = new Date();
         return (currentYear.getFullYear() - 10) + ':' + (currentYear.getFullYear() + 10);
     }
 
-    showToastrMessage(type: string, message: string, stickyenable: boolean, showmodal?:boolean) {
+    showToastrMessage(type: string, message: string, stickyenable: boolean, showmodal?: boolean) {
         let summaryMessage = '';
         if (type === this.constants.MessageType.warn) {
             summaryMessage = 'Warn Message';
@@ -1093,12 +1095,12 @@ export class CommonService {
         } else if (type === this.constants.MessageType.info) {
             summaryMessage = 'Info Message';
         }
-      
-            this.messageService.add({ key: showmodal ? 'cls_ModaltoastrMessage' :'cls_toastrMessage', severity: type, summary: summaryMessage, detail: message, sticky: stickyenable });
-       
+
+        this.messageService.add({ key: showmodal ? 'cls_ModaltoastrMessage' : 'cls_toastrMessage', severity: type, summary: summaryMessage, detail: message, sticky: stickyenable });
+
     }
 
-    clearToastrMessage(){
+    clearToastrMessage() {
         this.messageService.clear();
     }
 }
