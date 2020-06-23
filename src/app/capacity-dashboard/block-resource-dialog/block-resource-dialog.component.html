@@ -22,7 +22,7 @@
             <div class="p-col-12 p-md-12 p-lg-12 p-grid">
                 <div class="p-col-6 p-md-4 p-lg-3 blockResItem">Resources</div>
                 <div class="p-col-6 p-md-8 p-lg-9 blockResItem">
-                    <p-dropdown resetFilterOnHide="true" [style]="{'width':'100%'}" class="cls_blockResResources" [options]="Resources" [showClear]="true" formControlName="Resource" placeholder="Select Resource" [filter]="true" optionLabel="label"></p-dropdown>
+                    <p-dropdown resetFilterOnHide="true" [style]="{'width':'100%'}" [disabled]="readonly" class="cls_blockResResources" [options]="Resources" [showClear]="true" formControlName="Resource" placeholder="Select Resource" [filter]="true" optionLabel="label"></p-dropdown>
 
                     <!-- optionLabel="label" (onChange)=setBudgetHoursValidation()></p-dropdown> -->
                     <div *ngIf="isBlockResourceFormSubmit && BlockResourceForm.controls.Resource.errors">
@@ -45,8 +45,8 @@
                 <div class="p-col-6 p-md-4 p-lg-3 blockResItem">Start Date</div>
                 <div class="p-col-6 p-md-8 p-lg-9 blockResItem">
 
-                    <p-calendar styleClass="pCalendarBtn" [showIcon]="true" class="cls_blockResStartDate" [minDate]="SDminDateValue" [maxDate]="SDmaxDateValue" placeholder="Select Start Date" [disabledDays]="[0,6]" dateFormat="M dd, yy" yearRange="{{yearsRange}}" appendTo="body"
-                        [monthNavigator]="true" [yearNavigator]="true" formControlName="StartDate" (onClose)="SetDateValidation('startDate')"></p-calendar>
+                    <p-calendar styleClass="pCalendarBtn" [disabled]="readonly" [showIcon]="true" class="cls_blockResStartDate" [minDate]="SDminDateValue" [maxDate]="SDmaxDateValue" placeholder="Select Start Date" [disabledDays]="[0,6]" dateFormat="M dd, yy" yearRange="{{yearsRange}}"
+                        appendTo="body" [monthNavigator]="true" [yearNavigator]="true" formControlName="StartDate" (onClose)="SetDateValidation('startDate')"></p-calendar>
 
                     <div *ngIf="isBlockResourceFormSubmit && BlockResourceForm.controls.StartDate.errors">
                         <div *ngIf="BlockResourceForm.controls.StartDate.errors.required" style="color:red;">Please provide Start Date.</div>
@@ -58,8 +58,8 @@
                 <div class="p-col-6 p-md-4 p-lg-3 blockResItem">End Date</div>
                 <div class="p-col-6 p-md-8 p-lg-9 blockResItem">
 
-                    <p-calendar styleClass="pCalendarBtn" [showIcon]="true" class="cls_blockResEndDate" [minDate]="EDminDateValue" [maxDate]="EDmaxDateValue" placeholder="Select End Date" [disabledDays]="[0,6]" dateFormat="M dd, yy" yearRange="{{yearsRange}}" appendTo="body"
-                        [monthNavigator]="true" [yearNavigator]="true" formControlName="EndDate" (onClose)="SetDateValidation('endDate')"></p-calendar>
+                    <p-calendar styleClass="pCalendarBtn" [disabled]="readonly" [showIcon]="true" class="cls_blockResEndDate" [minDate]="EDminDateValue" [maxDate]="EDmaxDateValue" placeholder="Select End Date" [disabledDays]="[0,6]" dateFormat="M dd, yy" yearRange="{{yearsRange}}"
+                        appendTo="body" [monthNavigator]="true" [yearNavigator]="true" formControlName="EndDate" (onClose)="SetDateValidation('endDate')"></p-calendar>
 
                     <div *ngIf="isBlockResourceFormSubmit && BlockResourceForm.controls.EndDate.errors">
                         <div *ngIf="BlockResourceForm.controls.EndDate.errors.required" style="color:red;">Please provide End Date.</div>

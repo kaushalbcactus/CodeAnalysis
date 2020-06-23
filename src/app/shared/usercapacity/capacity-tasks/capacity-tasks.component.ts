@@ -6,6 +6,7 @@ import { TaskAllocationConstantsService } from 'src/app/task-allocation/services
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { CommonService } from 'src/app/Services/common.service';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-capacity-tasks',
@@ -17,12 +18,17 @@ export class CapacityTasksComponent implements OnInit {
   @Input() disableCamera: boolean;
   @Input() componentName: string;
   @Output() collapse = new EventEmitter<boolean>();
+
+  @Output() updateBlocking  = new EventEmitter(); 
+  today: Date;
   constructor(public globalService: GlobalService, public allocationConstant: TaskAllocationConstantsService,
               public dialogService: DialogService, public globalConstant: ConstantsService,
-              public spServices: SPOperationService, public commonService: CommonService) { }
+              public spServices: SPOperationService, public commonService: CommonService,
+              public datepipe:DatePipe) { }
 
   async ngOnInit() {
-    this.disableCamera = this.disableCamera;
+    this.today = new Date(this.datepipe.transform(new Date(),'MM/dd/yyyy'));
+        this.disableCamera = this.disableCamera;
     this.componentName = this.componentName;
     await this.updateShortTitle(this.tasks);
     this.tasks = [...this.tasks];
@@ -43,6 +49,13 @@ export class CapacityTasksComponent implements OnInit {
 
   collapseTable(param) {
     this.collapse.emit(param);
+  }
+
+  UpdateBlocking(rowData,type){
+    this.updateBlocking.emit({
+      task: rowData,
+      type: type
+    });
   }
 
   getMilestoneTasks(task) {
@@ -93,4 +106,6 @@ export class CapacityTasksComponent implements OnInit {
     projectInformation = [...projectInformation, ...projects];
     return projectInformation;
   }
+
+
 }
