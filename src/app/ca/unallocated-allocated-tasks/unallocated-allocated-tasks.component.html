@@ -53,7 +53,7 @@
 
             </tr>
         </ng-template>
-        <ng-template pTemplate="body" let-task let-expanded="expanded" let-columns="columns" let-rowIndex="rowIndex">
+        <ng-template pTemplate="body" let-task let-expanded="expanded" let-columns="columns" let-rowIndex="rowIndex" let-Slot>
             <tr>
                 <td>
                     <a href="#" [pRowToggler]="task">
@@ -92,8 +92,8 @@
                     <p-table #subtaskTable class="subtaskTable" [style]="{'font-size':'13px'}" [value]="Slot.SlotTasks">
                         <ng-template pTemplate="header">
                             <tr>
-                                <th style="width:7%"> Tasks </th>
-                                <th style="width:5%">Budget Hrs</th>
+                                <th style="width:4%"> Tasks </th>
+                                <th style="width:8%">Budget Hrs</th>
                                 <th style="width:4%">Spent Hrs</th>
                                 <th style="width:14%">Start Date</th>
                                 <th style="width:14%">End Date</th>

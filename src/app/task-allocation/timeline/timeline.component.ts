@@ -25,14 +25,14 @@ import { IDailyAllocationTask } from 'src/app/shared/pre-stack-allocation/interf
 import { PreStackAllocationComponent } from 'src/app/shared/pre-stack-allocation/pre-stack-allocation.component';
 import { AllocationOverlayComponent } from 'src/app/shared/pre-stack-allocation/allocation-overlay/allocation-overlay.component';
 import { GanttEdittaskComponent } from '../gantt-edittask/gantt-edittask.component';
-import { ConflictAllocationsComponent } from './conflict-allocations/conflict-allocations.component';
+import { ConflictAllocationComponent } from 'src/app/shared/conflict-allocations/conflict-allocation.component';
 
 @Component({
   selector: 'app-timeline',
   templateUrl: './timeline.component.html',
   styleUrls: ['./timeline.component.css'],
   providers: [DialogService, DragDropComponent, UsercapacityComponent, DynamicDialogRef,
-    PreStackAllocationComponent, AllocationOverlayComponent, GanttEdittaskComponent, ConflictAllocationsComponent],
+    PreStackAllocationComponent, AllocationOverlayComponent, GanttEdittaskComponent, ConflictAllocationComponent],
   encapsulation: ViewEncapsulation.None
 })
 export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, AfterViewChecked {
@@ -216,7 +216,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     private dailyAllocation: PreStackAllocationComponent,
     private cdRef: ChangeDetectorRef,
     private myElement: ElementRef,
-    private conflictAllocation: ConflictAllocationsComponent
+    private conflictAllocation: ConflictAllocationComponent
   ) {
 
   }
@@ -1359,17 +1359,15 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     setTimeout(async () => {
       const rowNode: TreeNode = this.getNode(task);
       if (task.editMode) {
-
         this.commonService.showToastrMessage(this.constants.MessageType.warn, 'There are some unsaved changes, Please save them.', false);
         return false;
-
       } else {
-        const Title: string = task.itemType === 'submilestone' && task.milestone ? task.milestone + ' - ' + task.title : task.title;
-        const message: string = 'Are you sure that you want to Confirm \'' + Title + '\' milestone ?';
-        const conflictDetails: IConflictResource[] = await this.conflictAllocation.checkConflictsAllocations(rowNode, this.milestoneData);
+        const conflictDetails: IConflictResource[] = await this.conflictAllocation.checkConflictsAllocations(rowNode, this.milestoneData, [], this.sharedObject.oTaskAllocation.oResources);
         if (conflictDetails.length) {
           this.showConflictAllocations(task, conflictDetails, rowNode);
         } else {
+          const Title: string = task.itemType === 'submilestone' && task.milestone ? task.milestone + ' - ' + task.title : task.title;
+          const message: string = 'Are you sure that you want to Confirm \'' + Title + '\' milestone ?';
           this.setAsNextMilestoneCall(task, message);
         }
       }
@@ -3122,7 +3120,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     let header = task ? '-' + task.itemType.submilestone ? task.milestone + ' ( ' + task.title + ' )'
       : '-' + task.title : '';
     header = 'Conflicting Allocations - ' + this.oProjectDetails.projectCode + header;
-    const ref = this.dialogService.open(ConflictAllocationsComponent, {
+    const ref = this.dialogService.open(ConflictAllocationComponent, {
       data: {
         conflictDetail,
         node,
@@ -3167,7 +3165,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         this.sharedObject.resSectionShow = false;
         const currentMilestoneEdited = this.milestoneData.find(m => m.data.type === 'milestone' && m.data.isCurrent && m.data.edited);
         // tslint:disable-next-line: max-line-length
-        const conflictDetails: IConflictResource[] = currentMilestoneEdited ? await this.conflictAllocation.checkConflictsAllocations(null, this.milestoneData) : [];
+        const conflictDetails: IConflictResource[] = currentMilestoneEdited ? await this.conflictAllocation.checkConflictsAllocations(null, this.milestoneData, [], this.sharedObject.oTaskAllocation.oResources) : [];
         if (conflictDetails.length) {
           this.disableSave = false;
           this.loaderenable = false;
@@ -3965,7 +3963,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         newTasks = newTasks.filter(c => (c.submilestone === subMile.title || c.itemType === 'Client Review'));
       }
     }
-    /////// Update current milestone status 
+    /////// Update current milestone status
     updateCurrMilBody = {
       __metadata: { type: this.constants.listNames.Schedules.type },
       Status: bCurrentMilestoneUpdated ? this.constants.STATUS.IN_PROGRESS : this.constants.STATUS.COMPLETED,
@@ -3975,7 +3973,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constants.listNames.Schedules.name, +currentMilestone.data.Id),
       updateCurrMilBody, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
 
-    /////// Update current project status 
+    /////// Update current project status
     updateProjectBody = {
       __metadata: { type: this.constants.listNames.ProjectInformation.type },
       Milestone: bCurrentMilestoneUpdated ? this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone :
@@ -3986,7 +3984,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, +projectID),
       updateProjectBody, this.constants.Method.PATCH, this.constants.listNames.ProjectInformation.name);
 
-    /////// Filter out not required tasks from prev Milestone / submilestone  
+    /////// Filter out not required tasks from prev Milestone / submilestone
     previousTasks = previousTasks.filter((objt) => {
       return objt.status !== 'Deleted' && objt.status !== 'Abandon' && objt.status !== 'Completed';
     });

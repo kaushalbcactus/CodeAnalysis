@@ -16,13 +16,13 @@ import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
 import { PreStackAllocationComponent } from 'src/app/shared/pre-stack-allocation/pre-stack-allocation.component';
 import { IDailyAllocationTask } from 'src/app/shared/pre-stack-allocation/interface/prestack';
 import { AllocationOverlayComponent } from 'src/app/shared/pre-stack-allocation/allocation-overlay/allocation-overlay.component';
-
-
+import { IConflictResource } from 'src/app/task-allocation/interface/allocation';
+import { ConflictAllocationComponent } from 'src/app/shared/conflict-allocations/conflict-allocation.component';
 @Component({
   selector: 'app-unallocated-allocated-tasks',
   templateUrl: './unallocated-allocated-tasks.component.html',
   styleUrls: ['./unallocated-allocated-tasks.component.css'],
-  providers: [UsercapacityComponent, PreStackAllocationComponent, AllocationOverlayComponent]
+  providers: [UsercapacityComponent, PreStackAllocationComponent, AllocationOverlayComponent, ConflictAllocationComponent]
 })
 export class UnallocatedAllocatedTasksComponent implements OnInit {
   cols: any[];
@@ -89,7 +89,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     private commonService: CommonService,
     private cdr: ChangeDetectorRef,
     public datepipe: DatePipe,
-    private dailyAllocation: PreStackAllocationComponent
+    private dailyAllocation: PreStackAllocationComponent,
+    private conflictAllocation: ConflictAllocationComponent
   ) {
     this.DropdownOptions = [{ label: 'All', value: 'All' },
     { label: 'Unallocated', value: 'unallocated' },
@@ -761,12 +762,16 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     if (this.arrMilestoneTasks.find(c => c.projectCode === task.ProjectCode && c.milestone === task.Milestone)) {
       let dbMilestoneTasks = this.arrMilestoneTasks.find(c => c.projectCode === task.ProjectCode && c.milestone === task.Milestone).MilestoneTasks;
       dbMilestoneTasks = dbMilestoneTasks.filter(c => c.Milestone === task.Milestone);
-      alltasks = Array.from(new Set(dbMilestoneTasks.map(s => s.Task))).map(task => {
+      alltasks = Array.from(new Set(dbMilestoneTasks.map(s => s.Task))).map(tasktype => {
+        const dbTask = dbMilestoneTasks.find(s => s.Task === tasktype);
         return {
-          type: task,
-          milestone: dbMilestoneTasks.find(s => s.Task === task).Milestone,
-          //tasks: []
-          tasks: dbMilestoneTasks.filter(s => s.Task === task).map(c => $.trim(c.Title.replace(c.ProjectCode + '', '').replace(c.Milestone + '', '')))
+          ...dbTask,
+          start_date: dbTask.StartDate,
+          end_date: dbTask.DueDateDT,
+          id: dbTask.Id,
+          type: dbTask.tasktype,
+          milestone: dbTask.Milestone,
+          tasks: dbMilestoneTasks.filter(s => s.Task === tasktype).map(c => $.trim(c.Title.replace(c.ProjectCode + '', '').replace(c.Milestone + '', '')))
         };
       });
 
@@ -833,7 +838,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           event.data.MilestoneAllTasks.find(c => c.type === tasks[0] && c.milestone === event.data.Milestone)
             .tasks.push(event.data.TaskName);
         } else {
-          event.data.MilestoneAllTasks.push({ type: tasks[0], milestone: event.data.Milestone, tasks: [event.data.TaskName] });
+          event.data.MilestoneAllTasks.push({ ...event.data, type: tasks[0], milestone: event.data.Milestone, tasks: [event.data.TaskName] });
         }
 
         event.data.subTaskloaderenable = false;
@@ -1213,12 +1218,16 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
     this.disableSave = true;
     const isValid = await this.validate();
-
+    const tasks = [];
+    for (const task of this.completeTaskArray) {
+      const conflictDetails: IConflictResource[] = await this.conflictAllocation.checkConflictsAllocations(unt, [], task.MilestoneAllTasks, this.resourceList);
+      console.log(conflictDetails);
+    }
     if (isValid) {
       this.loaderenable = true;
       setTimeout(() => {
         this.commonService.showToastrMessage(this.constants.MessageType.info, 'Updating...', true, true);
-        this.generateSaveTasks(unt);
+        // this.generateSaveTasks(unt);
       }, 300);
     }
     else {
@@ -1761,20 +1770,20 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     milestoneTask.resources = this.resourceList.filter((objt) => {
       return objt.UserNamePG.ID === milestoneTask.AssignedTo.ID;
     });
-    let header = milestoneTask.submilestone ? milestoneTask.milestone + ' ' + milestoneTask.title
-      + ' ( ' + milestoneTask.submilestone + ' )' : milestoneTask.milestone + ' ' + milestoneTask.title;
+    let header = milestoneTask.SubMilestones ? milestoneTask.Milestone + ' ' + milestoneTask.TaskName
+      + ' ( ' + milestoneTask.SubMilestones + ' )' : milestoneTask.Milestone + ' ' + milestoneTask.TaskName;
     header = header + ' - ' + milestoneTask.AssignedTo.Title;
     const ref = this.dialogService.open(PreStackAllocationComponent, {
       data: {
         ID: milestoneTask.Id ?  milestoneTask.Id : milestoneTask.id,
         task: milestoneTask.taskFullName,
-        startDate: milestoneTask.pUserStartDatePart,
-        endDate: milestoneTask.pUserEndDatePart,
-        startTime: milestoneTask.pUserStartTimePart,
-        endTime: milestoneTask.pUserEndTimePart,
-        budgetHrs: milestoneTask.budgetHours,
-        resource: milestoneTask.resources,
-        status: milestoneTask.status,
+        startDate: milestoneTask.UserStartDatePart,
+        endDate: milestoneTask.UserEndDatePart,
+        startTime: milestoneTask.UserStartTimePart,
+        endTime: milestoneTask.UserEndTimePart,
+        budgetHrs: milestoneTask.EstimatedTime,
+        resource: [milestoneTask.allocatedResource],
+        status: milestoneTask.Status,
         strAllocation: milestoneTask.allocationPerDay,
         allocationType
       } as IDailyAllocationTask,
