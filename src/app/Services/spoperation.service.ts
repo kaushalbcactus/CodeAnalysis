@@ -822,7 +822,7 @@ export class SPOperationService {
     return this.parseRetSingle(res);
   }
 
-  // check if file exist 
+  // check if file exist
   async checkFileExist(url: string) {
     const res = await this.httpClient.get<Response>(url).toPromise().catch((err: HttpErrorResponse) => {
       return err;
@@ -844,7 +844,7 @@ export class SPOperationService {
   //     failure: failure
   //   });
 
-  //   debugger;
+  //   ;
   // }
 
 
@@ -867,7 +867,7 @@ export class SPOperationService {
   //     }
   //   };
 
-  //   debugger;
+  //   ;
   //   var endpointUrl = this.baseUrl + "/_api/web/lists/getbytitle('Schedules')/getitems";
   //   this.postJson(endpointUrl, queryPayload,
   //     function (data) {
@@ -1037,7 +1037,7 @@ export class SPOperationService {
   //     success: function (data) {
   //       if (data.d.results.length > 0) {
   //         for (var index in data.d.results) {
-  //           tempObject = data.d.results[index];                    
+  //           tempObject = data.d.results[index];
   //           tempObject.fileUrl = tempObject.ServerRelativeUrl;
   //           tempObject.status = tempObject.ListItemAllFields.Status != null ? tempObject.ListItemAllFields.Status : "";
   //           tempObject.taskName = tempObject.ListItemAllFields.TaskName != null ? tempObject.ListItemAllFields.TaskName : "";
@@ -1218,7 +1218,7 @@ export class SPOperationService {
 
   // async create(listName: string, jsonBody: any, type: string): Promise<any> {
   //   const url = this.apiUrl.replace('{0}', listName);
-  //   // append metadata 
+  //   // append metadata
   //   if (!jsonBody.__metadata) {
   //     jsonBody.__metadata = {
   //       type: type

@@ -457,13 +457,14 @@ export class PreStackAllocationComponent implements OnInit {
       ID: milestoneTask.id,
       task: milestoneTask.taskFullName,
       taskType: milestoneTask.Task ? milestoneTask.Task : milestoneTask.itemType,
-      startDatePart: milestoneTask.pUserStartDatePart ? milestoneTask.pUserStartDatePart : milestoneTask.StartDatePart,
-      endDatePart: milestoneTask.pUserEndDatePart ? milestoneTask.pUserEndDatePart : milestoneTask.EndDatePart,
-      startDate: milestoneTask.pUserStart ? milestoneTask.pUserStart : milestoneTask.StartDate,
-      endDate: milestoneTask.pUserEnd ? milestoneTask.pUserEnd : milestoneTask.EndDate,
-      budgetHrs: milestoneTask.budgetHours ? milestoneTask.budgetHours : milestoneTask.Hours,
-      startTime: milestoneTask.pUserStartTimePart ? milestoneTask.pUserStartTimePart : milestoneTask.StartTimePart,
-      endTime: milestoneTask.pUserEndTimePart ? milestoneTask.pUserEndTimePart : milestoneTask.EndTimePart,
+      // tslint:disable: max-line-length
+      startDatePart: milestoneTask.pUserStartDatePart ? milestoneTask.pUserStartDatePart : milestoneTask.UserStartDatePart ? milestoneTask.UserStartDatePart : milestoneTask.StartDatePart,
+      endDatePart: milestoneTask.pUserEndDatePart ? milestoneTask.pUserEndDatePart : milestoneTask.UserEndDatePart ? milestoneTask.UserEndDatePart : milestoneTask.EndDatePart,
+      startDate: milestoneTask.pUserStart ? milestoneTask.pUserStart : milestoneTask.UserStart ? milestoneTask.UserStart : milestoneTask.StartDate,
+      endDate: milestoneTask.pUserEnd ? milestoneTask.pUserEnd : milestoneTask.UserEnd ? milestoneTask.UserEnd : milestoneTask.EndDate,
+      budgetHrs: milestoneTask.budgetHours ? milestoneTask.budgetHours : milestoneTask.EstimatedTime ? milestoneTask.EstimatedTime : milestoneTask.Hours,
+      startTime: milestoneTask.pUserStartTimePart ? milestoneTask.pUserStartTimePart : milestoneTask.UserStartTimePart ? milestoneTask.UserStartTimePart : milestoneTask.StartTimePart,
+      endTime: milestoneTask.pUserEndTimePart ? milestoneTask.pUserEndTimePart : milestoneTask.UserEndTimePart ? milestoneTask.UserEndTimePart : milestoneTask.EndTimePart,
       status: milestoneTask.Status ? milestoneTask.Status : milestoneTask.status
     };
     return task;
@@ -474,10 +475,10 @@ export class PreStackAllocationComponent implements OnInit {
    */
   async calcPrestackAllocation(resource: IUserCapacity[], milestoneTask) {
     const task = this.getData(milestoneTask);
-    const eqgTasks = ['Edit', 'Quality', 'Graphics', 'Client Review', 'Send to client'];
+    const eqgTasks = ['EditSlot', 'QualitySlot', 'GraphicsSlot', 'Client Review', 'Send to client'];
     if (!eqgTasks.find(t => t === task.taskType) && task.startDatePart &&
       resource.length && task.endDatePart && task.budgetHrs &&
-      task.endDate > task.startDate
+      task.endDate > task.startDate && resource.length
       && new Date(task.startDatePart).getTime() !==  new Date(task.endDatePart).getTime()) {
       const allocationData: IDailyAllocationTask = {
         ID: task.ID,
@@ -510,6 +511,59 @@ export class PreStackAllocationComponent implements OnInit {
    * It calculates user capacity from existing array of capacity or generate new request if data does not exists
    */
   async recalculateUserCapacity(allocationData: IDailyAllocationTask): Promise<IUserCapacity> {
+    let newUserCapacity = await this.calcCapacity(allocationData);
+    if (!newUserCapacity) {
+      newUserCapacity = await this.refetchUserCapacity(allocationData);
+      this.global.oCapacity.arrUserDetails.push(newUserCapacity);
+      newUserCapacity = this.calcCapacity(allocationData);
+    } else if (!newUserCapacity.dates) {
+      const resource = allocationData.resource.length ? allocationData.resource[0].UserNamePG.ID : -1;
+      newUserCapacity = this.refetchUserCapacity(allocationData);
+      const capacity = this.global.oCapacity.arrUserDetails.find(u => u.uid === resource);
+      capacity.dates = [...capacity.dates, ...newUserCapacity.dates];
+      capacity.businessDays = [...capacity.businessDays, ...newUserCapacity.businessDays];
+    }
+    return newUserCapacity;
+
+    // const taskStatus = this.allocationCommon.taskStatus.indexOf(allocationData.status) > -1 ? this.allocationCommon.taskStatus : [];
+    // const adhoc = this.allocationCommon.adhocStatus;
+    // const businessDays = this.usercapacityComponent.getDates(allocationData.startDate, allocationData.endDate, true);
+    // if (this.global.oCapacity.arrUserDetails.length) {
+    //   const resourceCapacity = this.global.oCapacity.arrUserDetails.find(u => u.uid === resource);
+    //   if (resourceCapacity) {
+    //     const userCapacity = {...resourceCapacity};
+    //     userCapacity.businessDays = businessDays.dateArray;
+    //     // tslint:disable-next-line: max-line-length
+    //     const dates = userCapacity.dates.filter(u => businessDays.dateArray.find(b => new Date(b).getTime() === new Date(u.date).getTime()));
+    //     dates.forEach(date => {
+    //       date.tasksDetails = date.tasksDetails.filter(t => taskStatus.indexOf(t.status) < 0 &&
+    //         adhoc.indexOf(t.comments) < 0 && t.ID !== allocationData.ID);
+    //     });
+    //     userCapacity.dates = dates;
+    //     userCapacity.tasks = userCapacity.tasks.filter(t => taskStatus.indexOf(t.Status) < 0 &&
+    //       adhoc.indexOf(t.Comments) < 0 && t.ID !== allocationData.ID);
+    //     if (userCapacity.dates.length === userCapacity.businessDays.length) {
+    //       newUserCapacity = this.usercapacityComponent.fetchUserCapacity(userCapacity);
+    //     } else {
+    //       newUserCapacity = this.refetchUserCapacity(allocationData);
+    //       const capacity = this.global.oCapacity.arrUserDetails.find(u => u.uid === resource);
+    //       capacity.dates = [...capacity.dates, ...newUserCapacity.dates];
+    //       capacity.businessDays = [...capacity.businessDays, ...newUserCapacity.businessDays];
+    //     }
+    //   } else {
+    //     newUserCapacity = await this.refetchUserCapacity(allocationData);
+    //     this.global.oCapacity.arrUserDetails.push(newUserCapacity);
+    //     await this.recalculateUserCapacity(allocationData);
+    //   }
+    // } else {
+    //   newUserCapacity = await this.refetchUserCapacity(allocationData);
+    //   this.global.oCapacity.arrUserDetails.push(newUserCapacity);
+    //   await this.recalculateUserCapacity(allocationData);
+    // }
+    // return newUserCapacity;
+  }
+
+  calcCapacity(allocationData) {
     const taskStatus = this.allocationCommon.taskStatus.indexOf(allocationData.status) > -1 ? this.allocationCommon.taskStatus : [];
     const adhoc = this.allocationCommon.adhocStatus;
     const resource = allocationData.resource.length ? allocationData.resource[0].UserNamePG.ID : -1;
@@ -518,39 +572,34 @@ export class PreStackAllocationComponent implements OnInit {
     if (this.global.oCapacity.arrUserDetails.length) {
       const resourceCapacity = this.global.oCapacity.arrUserDetails.find(u => u.uid === resource);
       if (resourceCapacity) {
-        const userCapacity = {...resourceCapacity};
-        userCapacity.businessDays = businessDays.dateArray;
+        newUserCapacity = {...resourceCapacity};
+        newUserCapacity.businessDays = businessDays.dateArray;
         // tslint:disable-next-line: max-line-length
-        const dates = userCapacity.dates.filter(u => businessDays.dateArray.find(b => new Date(b).getTime() === new Date(u.date).getTime()));
+        const dates = newUserCapacity.dates.filter(u => businessDays.dateArray.find(b => new Date(b).getTime() === new Date(u.date).getTime()));
         dates.forEach(date => {
           date.tasksDetails = date.tasksDetails.filter(t => taskStatus.indexOf(t.status) < 0 &&
             adhoc.indexOf(t.comments) < 0 && t.ID !== allocationData.ID);
         });
-        userCapacity.dates = dates;
-        userCapacity.tasks = userCapacity.tasks.filter(t => taskStatus.indexOf(t.Status) < 0 &&
+        newUserCapacity.dates = dates;
+        newUserCapacity.tasks = newUserCapacity.tasks.filter(t => taskStatus.indexOf(t.Status) < 0 &&
           adhoc.indexOf(t.Comments) < 0 && t.ID !== allocationData.ID);
-        if (userCapacity.dates.length === userCapacity.businessDays.length) {
-          newUserCapacity = this.usercapacityComponent.fetchUserCapacity(userCapacity);
+        if (newUserCapacity.dates.length === newUserCapacity.businessDays.length) {
+          newUserCapacity = this.usercapacityComponent.fetchUserCapacity(newUserCapacity);
         } else {
-          allocationData.endDate = this.common.calcBusinessDate('Next', 90, allocationData.startDate).endDate;
-          newUserCapacity = await this.getResourceCapacity(allocationData);
-          const capacity = this.global.oCapacity.arrUserDetails.find(u => u.uid === resource);
-          capacity.dates = [...capacity.dates, ...newUserCapacity.dates];
-          capacity.businessDays = [...capacity.businessDays, ...newUserCapacity.businessDays];
+          newUserCapacity.dates = [];
         }
-      } else {
-        allocationData.endDate = this.common.calcBusinessDate('Next', 90, allocationData.startDate).endDate;
-        newUserCapacity = await this.getResourceCapacity(allocationData);
-        this.global.oCapacity.arrUserDetails.push(newUserCapacity);
       }
-    } else {
-      allocationData.endDate = this.common.calcBusinessDate('Next', 90, allocationData.startDate).endDate;
-      newUserCapacity = await this.getResourceCapacity(allocationData);
-      this.global.oCapacity.arrUserDetails.push(newUserCapacity);
     }
     return newUserCapacity;
   }
 
+  async refetchUserCapacity(allocationData) {
+    const endDate = this.common.calcBusinessDate('Next', 90, allocationData.startDate).endDate;
+    const newObj = {...allocationData};
+    newObj.endDate = endDate;
+    const newUserCapacity = await this.getResourceCapacity(newObj);
+    return newUserCapacity;
+  }
   /**
    * Update task with new generated allocationperday string and other properties
    */
