@@ -221,7 +221,7 @@ export class ClientMasterdataComponent implements OnInit {
             this.globalObject.currentUser.userId);
       }
     }
-    // const getClientLegalInfo = Object.assign({}, this.adminConstants.QUERY.GET_ALL_CLIENT_LEGAL_ENTITY_BY_ACTIVE);
+    //getClientLegalInfo = Object.assign({}, this.adminConstants.QUERY.GET_ALL_CLIENT_LEGAL_ENTITY_BY_ACTIVE);
     this.common.SetNewrelic('admin', 'admin-clientMaster', 'getCLE');
     const results = await this.spServices.readItems(this.constantsService.listNames.ClientLegalEntity.name, getClientLegalInfo);
     if (results && results.length) {

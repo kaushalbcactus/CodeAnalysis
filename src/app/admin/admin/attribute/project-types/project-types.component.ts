@@ -180,14 +180,13 @@ export class ProjectTypesComponent implements OnInit {
    *
    */
   async addProjectType() {
-    const alphaExp = this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL;
+    const alphaExp = new RegExp(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL);
     this.common.clearToastrMessage();
     if (!this.projectType) {
       this.common.showToastrMessage(this.constants.MessageType.warn,'Please enter Project Type.',false);
       return false;
     }
-    if (!this.projectType.match(alphaExp)) {
-
+    if (!alphaExp.test(this.projectType)) {
       this.common.showToastrMessage(this.constants.MessageType.error,'Special characters are allowed between alphabets. Allowed special characters are \'-\' and \'_\'.',false);
       return false;
     }

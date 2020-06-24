@@ -366,13 +366,13 @@ export class BucketMasterdataComponent implements OnInit {
    *
    */
   async addBucketData() {
-    const alphaExp = this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL;
+    const alphaExp = new RegExp(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL);
     this.common.clearToastrMessage();
     if (!this.bucketData) {
       this.common.showToastrMessage(this.constants.MessageType.error,'Please enter bucket name.',false);
       return false;
     }
-    if (!this.bucketData.match(alphaExp)) {
+    if (!alphaExp.test(this.bucketData)) {
       this.common.showToastrMessage(this.constants.MessageType.error,'Special characters are allowed between alphabets. Allowed special characters are \'-\' and \'_\'.',false);
       return false;
     }
