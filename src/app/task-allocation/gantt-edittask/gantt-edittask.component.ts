@@ -206,7 +206,7 @@ export class GanttEdittaskComponent implements OnInit {
       this.task.user = resource ? resource.Title : '';
       if (resource) {
         const resources = this.globalService.oTaskAllocation.oResources.filter((objt) => {
-          return this.task.AssignedTo.ID === objt.UserName.ID;
+          return this.task.AssignedTo.ID === objt.UserNamePG.ID;
         });
         await this.dailyAllocation.calcPrestackAllocation(resources, this.task);
         let task = await this.assignedToUserChanged();
@@ -225,7 +225,7 @@ export class GanttEdittaskComponent implements OnInit {
 
     this.editTaskForm.get('budgetHrs').valueChanges.subscribe(async budgetHrs => {
       const resources = this.globalService.oTaskAllocation.oResources.filter((objt) => {
-        return this.task.AssignedTo.ID === objt.UserName.ID;
+        return this.task.AssignedTo.ID === objt.UserNamePG.ID;
       });
 
 
@@ -244,7 +244,7 @@ export class GanttEdittaskComponent implements OnInit {
         this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please select Start Date.',false);
       } else {
         const resources = this.globalService.oTaskAllocation.oResources.filter((objt) => {
-          return this.task.AssignedTo.ID === objt.UserName.ID;
+          return this.task.AssignedTo.ID === objt.UserNamePG.ID;
         });
 
         const start_date = new Date(this.datepipe.transform(startDate, 'MMM d, y') + ' ' + this.editTaskForm.get('startDateTimePart').value);
@@ -273,7 +273,7 @@ export class GanttEdittaskComponent implements OnInit {
         this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please select End Date.',false);
       } else {
         const resources = this.globalService.oTaskAllocation.oResources.filter((objt) => {
-          return this.task.AssignedTo.ID === objt.UserName.ID;
+          return this.task.AssignedTo.ID === objt.UserNamePG.ID;
         });
 
         const end_date = new Date(this.datepipe.transform(endDate, 'MMM d, y') + ' ' + this.editTaskForm.get('endDateTimePart').value);;
@@ -292,7 +292,7 @@ export class GanttEdittaskComponent implements OnInit {
 
     this.editTaskForm.get('startDateTimePart').valueChanges.subscribe(async startTime => {
       const resources = this.globalService.oTaskAllocation.oResources.filter((objt) => {
-        return this.task.AssignedTo.ID === objt.UserName.ID;
+        return this.task.AssignedTo.ID === objt.UserNamePG.ID;
       });
 
       let start_date = new Date(this.datepipe.transform(this.editTaskForm.get('startDate').value, 'MMM d, y') + ' ' + startTime);;
@@ -316,7 +316,7 @@ export class GanttEdittaskComponent implements OnInit {
 
     this.editTaskForm.get('endDateTimePart').valueChanges.subscribe(async endTime => {
       const resources = this.globalService.oTaskAllocation.oResources.filter((objt) => {
-        return this.task.AssignedTo.ID === objt.UserName.ID;
+        return this.task.AssignedTo.ID === objt.UserNamePG.ID;
       });
 
       let end_date = new Date(this.datepipe.transform(this.editTaskForm.get('endDate').value, 'MMM d, y') + ' ' + endTime);;
@@ -421,7 +421,7 @@ export class GanttEdittaskComponent implements OnInit {
   viewAllocation(allocationType) {
     const milestoneTask = this.task;
     milestoneTask.resources = this.globalService.oTaskAllocation.oResources.filter((objt) => {
-      return objt.UserName.ID === this.task.AssignedTo.ID;
+      return objt.UserNamePG.ID === this.task.AssignedTo.ID;
     });
     let header = milestoneTask.submilestone ? milestoneTask.milestone + ' ' + milestoneTask.title
       + ' ( ' + milestoneTask.submilestone + ' )' : milestoneTask.milestone + ' ' + milestoneTask.title;
@@ -555,7 +555,7 @@ export class GanttEdittaskComponent implements OnInit {
         milestoneTask.skillLevel = this.taskAllocateCommonService.getSkillName(milestoneTask.AssignedTo.SkillText);
         const previousUserTimeZone = milestoneTask.assignedUserTimeZone;
         const resource = this.globalService.oTaskAllocation.oResources.filter((objt) => {
-          return milestoneTask.AssignedTo.ID === objt.UserName.ID;
+          return milestoneTask.AssignedTo.ID === objt.UserNamePG.ID;
         });
         await this.dailyAllocation.calcPrestackAllocation(resource, this.task);
         milestoneTask.assignedUserTimeZone = resource && resource.length > 0

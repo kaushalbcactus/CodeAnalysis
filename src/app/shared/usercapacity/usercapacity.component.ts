@@ -801,7 +801,7 @@ export class UsercapacityComponent implements OnInit {
             tasks[
               index
             ].DueDate = this.commonservice.calcTimeForDifferentTimeZone(
-              new Date(tasks[index].DueDate),
+              new Date(tasks[index].DueDateDT),
               currentUserTimeZone,
               sTimeZone
             );
