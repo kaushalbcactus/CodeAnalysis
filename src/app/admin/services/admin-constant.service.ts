@@ -387,10 +387,10 @@ export class AdminConstantService {
     NO_ACCESS: "No Access",
   };
   public REG_EXPRESSION = {
-    ALPHA_SPECIAL: /^([a-z A-Z])+((?:[-_](?![-_]))*([a-z A-Z]))*$/,
+    ALPHA_SPECIAL: /^([a-zA-Z])+((?:[-_](?![-_]))*([a-zA-Z]))*$/,
     ALPHA: /^[a-zA-Z]+$/,
     APLHA_NUMERIC: /^[a-zA-Z0-9]+$/,
-    ALPHA_SPECIAL_NUMERIC: /^[a-zA-Z0-9]+((-?[a-zA-Z0-9]+)*(_?[a-zA-Z0-9]+)*)*((_?[a-zA-Z0-9]+)*(-?[a-zA-Z0-9]+)*)*$/,
+    ALPHA_SPECIAL_NUMERIC: /^([a-zA-Z0-9])+((?:[-_](?![-_]))*([a-zA-Z0-9]))*$/,
     THREE_UPPERCASE_TWO_NUMBER: /^[A-Z]{3}[0-9]{2}$/,
     ALPHA_SPECIAL_WITHSPACE: /^([a-z A-Z])+((?:[-_](?![-_]))*([a-z A-Z]))*$/,
   };
