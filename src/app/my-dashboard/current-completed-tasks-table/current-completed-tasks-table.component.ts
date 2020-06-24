@@ -415,7 +415,7 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
 
 
   async checkCompleteTask(task) {
-    const allowedStatus = ['Completed', 'AllowCompletion', 'Auto Closed'];
+    const allowedStatus = ['Completed', 'Auto Closed'];
     this.commonService.SetNewrelic('MyDashboard', 'MyCurrentCompletedTasks', 'readItem');
     const response = await this.spServices.readItem(this.constants.listNames.Schedules.name, task.ID);
     const stval = await this.myDashboardConstantsService.getPrevTaskStatus(task);
@@ -423,12 +423,12 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
     task.TaskComments = response ? response.TaskComments : '';
 
     // if (stval === 'Completed' || stval === 'AllowCompletion' || stval === 'Auto Closed') {
-    if (allowedStatus.includes(stval)) {
-      if (!task.FinalDocSubmit) {
+    // if (allowedStatus.includes(stval) || stval === '') { 
+      if (!task.FinalDocSubmit && (allowedStatus.includes(stval) || stval === '')) {
         this.commonService.showToastrMessage(this.constants.MessageType.error, 'No Final Document Found', false)
         return false;
       }
-      if (task.TaskComments) {
+      if (task.TaskComments && (allowedStatus.includes(stval) || stval === '')) {
         this.commonService.confirmMessageDialog('Confirmation', 'Are you sure that you want to proceed?', null, ['Yes', 'No'], false).then(async Confirmation => {
           if (Confirmation === 'Yes') {
             task.parent = 'Dashboard';
@@ -442,12 +442,13 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
             }
           }
         });
-      } else {
+      } else if(allowedStatus.includes(stval) || stval === '') {
         this.getAddUpdateComment(task, true);
+      } else {
+        this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Previous task should be completed.', false);
       }
-    } else {
-      this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Previous task should be completed.', false);
-    }
+    // } else {
+    // }
   }
 
   // ******************************************************************************************
@@ -499,9 +500,9 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
         Id: task.Id,
         AssignedTo: task.AssignedTo,
         StartDate: new Date(this.datePipe.transform(task.StartDate, 'MMM d, y, h:mm a')),
-        DueDate: new Date(this.datePipe.transform(task.DueDate, 'MMM d, y, h:mm a')),
+        DueDate: new Date(this.datePipe.transform(task.DueDateDT, 'MMM d, y, h:mm a')),
         ExportStartDate: new Date(this.datePipe.transform(task.StartDate, 'MMM d, y, h:mm a')),
-        ExportDueDate: new Date(this.datePipe.transform(task.DueDate, 'MMM d, y, h:mm a')),
+        ExportDueDate: new Date(this.datePipe.transform(task.DueDateDT, 'MMM d, y, h:mm a')),
         TimeSpent: task.TimeSpent === null ? 0 : task.TimeSpent.replace('.', ':'),
         TaskStatus: task.Status,
         ExpectedTime: task.ExpectedTime,
@@ -536,6 +537,7 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
   showOverlayPanel(event, rowData, dailyAllocateOP, target?) {
     const allocationPerDay = rowData.allocationPerDay ? rowData.allocationPerDay : '';
     dailyAllocateOP.showOverlay(event, allocationPerDay, target);
+    console.log(event);
   }
 
   hideOverlayPanel() {

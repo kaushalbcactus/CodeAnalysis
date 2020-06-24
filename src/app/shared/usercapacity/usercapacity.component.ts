@@ -1080,6 +1080,7 @@ export class UsercapacityComponent implements OnInit {
         Task: task.title,
         StartDate: task.start_date,
         DueDate: task.end_date,
+        DueDateDT: task.end_date,
         AllocationPerDay: task.allocationPerDay,
         Status: task.status,
         ExpectedTime: task.budgetHours,

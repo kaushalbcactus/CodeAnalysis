@@ -435,7 +435,7 @@ export class MyDashboardConstantsService {
     this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'GetNextPreviousTasksStatus');
     this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, currentTask);
     for (const element of this.response) {
-      if (element.AllowCompletion === 'No') {
+      // if (element.AllowCompletion === 'No') {
 
         const nextPrevTasks = await this.getNextPreviousTask(element);
         const prevTaskResponse = nextPrevTasks.filter(e => e.TaskType === 'Previous Task');
@@ -445,11 +445,11 @@ export class MyDashboardConstantsService {
             status = obj.Status;
           }
         } else {
-          status = 'AllowCompletion';
+          status = '';
         }
-      } else {
-        status = 'AllowCompletion';
-      }
+      // } else {
+      //   status = '';
+      // }
     }
     return status;
   }

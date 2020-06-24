@@ -61,7 +61,7 @@ export class ResourceSelectionComponent implements OnInit {
     let resArr = [];
     this.sharedObject.data.task.resources.forEach((e) => {
       resArr.push(
-        this.Resources.find((r) => r.value.UserName.Id == e.UserNamePG.ID)
+        this.Resources.find((r) => r.value.UserNamePG.Id == e.UserNamePG.ID)
       );
     });
     this.Resources = resArr;
@@ -128,10 +128,10 @@ export class ResourceSelectionComponent implements OnInit {
     const Resources = {
       // tslint:disable
       select:
-        "ID,UserName/Id,UserName/Title,UserName/EMail,PrimarySkill,Bucket,Practice_x0020_Area,MaxHrs,GoLiveDate,DateOfJoining",
-      expand: "UserName/ID,UserName/EMail,UserName/Title",
-      filter: "IsActive eq 'Yes'",
-      orderby: "UserName/Title asc",
+        "ID,UserNamePG/Id,UserNamePG/Title,UserNamePG/EMail,PrimarySkill,Bucket,Practice_x0020_Area,MaxHrs,GoLiveDate,DateOfJoining",
+      expand: "UserNamePG/ID,UserNamePG/EMail,UserNamePG/Title",
+      filter: "IsActiveCH eq 'Yes'",
+      orderby: "UserNamePG/Title asc",
       top: 4500,
       // tslint:enable
     };
@@ -182,7 +182,7 @@ export class ResourceSelectionComponent implements OnInit {
         );
 
         this.Resources = this.AlldbResources.map(
-          (o) => new Object({ label: o.UserName.Title, value: o })
+          (o) => new Object({ label: o.UserNamePG.Title, value: o })
         );
       }
     }
@@ -193,7 +193,7 @@ export class ResourceSelectionComponent implements OnInit {
     let arrValue = [];
     this.sharedObject.data.task.resources.forEach((e) => {
       arrValue.push(
-        this.Resources.find((r) => r.value.UserName.Id == e.UserNamePG.ID)
+        this.Resources.find((r) => r.value.UserNamePG.Id == e.UserNamePG.ID)
       );
     });
     // this.Resources = arrValue;
@@ -246,8 +246,8 @@ export class ResourceSelectionComponent implements OnInit {
         event.value.length > 0
           ? this.commonService.sortData(
               this.filterData("bucket", "resource")
-                .filter((c) => c.UserName.Title !== null)
-                .map((o) => new Object({ label: o.UserName.Title, value: o }))
+                .filter((c) => c.UserNamePG.Title !== null)
+                .map((o) => new Object({ label: o.UserNamePG.Title, value: o }))
             )
           : [];
 
@@ -262,12 +262,12 @@ export class ResourceSelectionComponent implements OnInit {
         event.value.length > 0
           ? this.commonService.sortData(
               this.filterData("practicearea", "resource")
-                .filter((c) => c.UserName.Title !== null)
-                .map((o) => new Object({ label: o.UserName.Title, value: o }))
+                .filter((c) => c.UserNamePG.Title !== null)
+                .map((o) => new Object({ label: o.UserNamePG.Title, value: o }))
             )
           : this.commonService.sortData(
-              this.AlldbResources.filter((c) => c.UserName.Title !== null).map(
-                (o) => new Object({ label: o.UserName.Title, value: o })
+              this.AlldbResources.filter((c) => c.UserNamePG.Title !== null).map(
+                (o) => new Object({ label: o.UserNamePG.Title, value: o })
               )
             );
 
