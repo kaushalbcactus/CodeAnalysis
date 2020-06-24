@@ -421,7 +421,7 @@ export class GanttEdittaskComponent implements OnInit {
   viewAllocation(allocationType) {
     const milestoneTask = this.task;
     milestoneTask.resources = this.globalService.oTaskAllocation.oResources.filter((objt) => {
-      return objt.UserName.ID === this.task.AssignedTo.ID;
+      return objt.UserNamePG.ID === this.task.AssignedTo.ID;
     });
     let header = milestoneTask.submilestone ? milestoneTask.milestone + ' ' + milestoneTask.title
       + ' ( ' + milestoneTask.submilestone + ' )' : milestoneTask.milestone + ' ' + milestoneTask.title;

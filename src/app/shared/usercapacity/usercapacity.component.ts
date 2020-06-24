@@ -458,7 +458,7 @@ export class UsercapacityComponent implements OnInit {
           oCapacity.arrUserDetails[indexUser].tasks.length
         ) {
           oCapacity.arrUserDetails[indexUser].tasks.sort((a, b) => {
-            return b.DueDate - a.DueDate;
+            return b.DueDateDT - a.DueDateDT;
           });
 
           // tslint:disable
@@ -466,13 +466,13 @@ export class UsercapacityComponent implements OnInit {
             new Date(sTopEndDate) >
             new Date(
               this.datepipe.transform(
-                oCapacity.arrUserDetails[indexUser].tasks[0].DueDate,
+                oCapacity.arrUserDetails[indexUser].tasks[0].DueDateDT,
                 "yyyy-MM-ddT"
               ) + "23:59:00.000Z"
             )
               ? sTopEndDate.toISOString()
               : this.datepipe.transform(
-                  oCapacity.arrUserDetails[indexUser].tasks[0].DueDate,
+                  oCapacity.arrUserDetails[indexUser].tasks[0].DueDateDT,
                   "yyyy-MM-ddT"
                 ) + "23:59:00.000Z";
 
@@ -1217,7 +1217,7 @@ export class UsercapacityComponent implements OnInit {
             );
             const taskEndDate = new Date(
               this.datepipe.transform(
-                new Date(oUser.tasks[j].DueDate),
+                new Date(oUser.tasks[j].DueDateDT),
                 "MMM dd, yyyy"
               )
             );
