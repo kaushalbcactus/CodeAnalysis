@@ -28,7 +28,7 @@
     <ng-template pTemplate="body" let-rowData let-columns="columns">
         <tr class="tableBody">
             <td class="taskTitle UserTasksRow">
-                <a *ngIf="rowData.projectCode !== 'Adhoc'; else elseblock" [href]="goToProjectDetails(rowData)">{{rowData.title}} <span *ngIf='rowData.SubMilestones'> - {{rowData.SubMilestones}} </span><span *ngIf='rowData.shortTitle'>({{rowData.shortTitle}})</span></a>
+                <a *ngIf="rowData.projectCode && rowData.projectCode !== 'Adhoc'; else elseblock" [href]="goToProjectDetails(rowData)">{{rowData.title}} <span *ngIf='rowData.SubMilestones'> - {{rowData.SubMilestones}} </span><span *ngIf='rowData.shortTitle'>({{rowData.shortTitle}})</span></a>
                 <ng-template #elseblock>{{rowData.title}}</ng-template>
             </td>
             <td>
@@ -38,7 +38,7 @@
                 <span>{{rowData.dueDate | date : "dd MMM yy h:mm a" || '--'}}</span>
             </td>
             <td [hidden]="componentName === 'prestack'">
-                <span>{{(rowData.milestoneDeadline!='--') ? (rowData.milestoneDeadline | date : "dd MMM yy h:mm a") : '--'}}</span>
+                <span>{{(rowData.milestoneDeadline !=='' && rowData.milestoneDeadline!='--') ? (rowData.milestoneDeadline | date : "dd MMM yy h:mm a") : '--'}}</span>
             </td>
             <td>
                 <span>{{rowData.displayTimeAllocatedPerDay}}
@@ -49,6 +49,12 @@
             </td>
             <td [hidden]="componentName === 'prestack'">
                 <i *ngIf="rowData.projectCode && rowData.projectCode !=='Adhoc' && !disableCamera" class="pi pi-camera" title="Milestone Tasks" (click)="getMilestoneTasks(rowData)" style="font-size: 3em;cursor: pointer;"></i>
+                <span [ngClass]="rowData.dueDate > today ? 'p-grid':''" *ngIf="rowData.projectCode==='' && rowData.TaskType === 'ResourceBlocking'">
+                  <i  *ngIf="rowData.dueDate > today" class="pi pi-pencil" title="Edit blocking" (click)="UpdateBlocking(rowData,'Edit')" style="font-size: 2em;cursor: pointer;"></i>
+
+                  <i  class="pi pi-trash" title="Delete blocking" (click)="UpdateBlocking(rowData, 'Deleted')" style="font-size: 2em;cursor: pointer;"></i>
+
+                </span>
             </td>
         </tr>
     </ng-template>

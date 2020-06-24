@@ -14,6 +14,7 @@ import { ConstantsService } from "../Services/constants.service";
 import { CommonService } from "../Services/common.service";
 import { UsercapacityComponent } from "../shared/usercapacity/usercapacity.component";
 import { BlockResourceDialogComponent } from "./block-resource-dialog/block-resource-dialog.component";
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: "app-capacity-dashboard",
@@ -48,7 +49,8 @@ export class CapacityDashboardComponent implements OnInit {
     private spServices: SPOperationService,
     private commonService: CommonService,
     private constants: ConstantsService,
-    public dialogService: DialogService
+    public dialogService: DialogService,
+    public datepipe:DatePipe
   ) {}
 
   searchCapacityForm = this.fb.group({
@@ -148,6 +150,11 @@ export class CapacityDashboardComponent implements OnInit {
         this.Resources = this.AlldbResources.map(
           (o) => new Object({ label: o.UserNamePG.Title, value: o })
         );
+
+        // this.searchCapacityForm.patchValue({
+        //   skill: ["Writer","Reviewer"],
+        // });
+        // this.onChange({value:["Writer","Reviewer"]},'skill');
       }
     }
   }
@@ -370,7 +377,19 @@ export class CapacityDashboardComponent implements OnInit {
       if (type === "search") {
         this.SearchRecords();
       } else {
-        this.EnableBlockResourceDialog();
+
+        if(this.searchCapacityForm.value.rangeDates[1] < new Date(this.datepipe.transform(new Date(),'MM/dd/yyyy'))){
+          this.commonService.showToastrMessage(
+            this.constants.MessageType.warn,
+            "Unable to block resource on past days.",
+            false,
+            true
+          );
+          return false;
+        }else{
+          this.EnableBlockResourceDialog();
+        }
+       
       }
     }
   }
@@ -379,6 +398,7 @@ export class CapacityDashboardComponent implements OnInit {
       header: "Block Resources",
       width: "60vw",
       data: {
+        type:'new',
         Resources:  this.AlldbResources.filter((c) =>
         this.searchCapacityForm.value.resources.includes(c)
       ).map((o) => new Object({ label: o.UserNamePG.Title, value: o })),
@@ -404,9 +424,11 @@ export class CapacityDashboardComponent implements OnInit {
         const result = await this.spServices.createItem(this.constants.listNames.Blocking.name, data,
           this.constants.listNames.Blocking.type);
           if (!result.hasOwnProperty('hasError') && !result.hasError) {
-            this.SearchRecords();
+            this.commonService.clearToastrMessage();
+            this.commonService.showToastrMessage(this.constants.MessageType.success,'Resource block sucessfully.',true,true);
             setTimeout(() => {
-              this.commonService.showToastrMessage(this.constants.MessageType.success,'Resource block sucessfully.',false);
+              this.commonService.clearToastrMessage();
+              this.SearchRecords();
             }, 1000);
           }
       }
@@ -451,4 +473,80 @@ export class CapacityDashboardComponent implements OnInit {
     this.userCapacityEnable = true;
     this.userCapacity.Onload(data);
   }
+
+
+
+
+
+  UpdateBlocking(event){
+    if(event.type === this.constants.STATUS.DELETED){
+       this.deleteBlockingResource(event);
+    }else{
+        this.updateBlockingResource(event.task);
+    }
+    console.log('eventprint');
+    console.log(event);
+  }
+
+  
+//  ******************************************************************************************************
+//  Delete blocking resource data 
+//  ******************************************************************************************************
+async deleteBlockingResource(event){
+  this.commonService.showToastrMessage(this.constants.MessageType.info,'Deleting...',true,true);
+  const updateItem = {
+    __metadata: { type: this.constants.listNames.Blocking.type },
+  Status: this.constants.STATUS.DELETED
+  };
+  this.commonService.SetNewrelic('CapacityDashboard', 'capacity-dashboard', 'deleteBlocking');
+  const updateResult = await this.spServices.updateItem(this.constants.listNames.Blocking.name, event.task.taskID,
+    updateItem, this.constants.listNames.Blocking.type);
+    this.commonService.clearToastrMessage();
+    this.commonService.showToastrMessage(this.constants.MessageType.success,'Blocking resource deleted sucessfully.',true,true);
+    setTimeout(() => {
+      this.commonService.clearToastrMessage();
+      this.SearchRecords();
+    }, 800);
+}
+
+//  ******************************************************************************************************
+//  update blocking resource data 
+//  ******************************************************************************************************
+
+updateBlockingResource(data){
+
+  const ref = this.dialogService.open(BlockResourceDialogComponent, {
+    header: "Edit Block Resources",
+    width: "60vw",
+    data: {
+      Resources:  this.AlldbResources.filter((c) =>
+      this.searchCapacityForm.value.resources.includes(c)
+    ).map((o) => new Object({ label: o.UserNamePG.Title, value: o })),
+    type : 'EditBlocking',
+     data
+    },
+    contentStyle: { "max-height": "80vh", "overflow-y": "auto" },
+    closable: false,
+  });
+  ref.onClose.subscribe(async (blockResource: any) => {
+    if (blockResource) {
+      const updateItem = {
+        __metadata: { type: this.constants.listNames.Blocking.type },
+        Title : blockResource.value.Title,
+        ExpectedTime :blockResource.value.ExpectedTime.toString()
+      };
+      this.commonService.SetNewrelic('CapacityDashboard', 'capacity-dashboard', 'updateBlocking');
+      const updateResult = await this.spServices.updateItem(this.constants.listNames.Blocking.name, data.taskID,
+        updateItem, this.constants.listNames.Blocking.type);
+        this.commonService.clearToastrMessage();
+        this.commonService.showToastrMessage(this.constants.MessageType.success,'Blocking resource updated sucessfully.',true,true);
+        setTimeout(() => {
+          this.commonService.clearToastrMessage();
+          this.SearchRecords();
+        }, 800);
+    }
+  });
+
+}
+
 }

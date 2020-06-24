@@ -112,7 +112,7 @@
         </form>
         <div class="p-col" [hidden]="!fetchDataloader">
             <div [hidden]="!userCapacityEnable">
-                <app-usercapacity #InitialUserCapacity [parentModule]="'capacity'"></app-usercapacity>
+                <app-usercapacity #InitialUserCapacity (updateblocking)="UpdateBlocking($event)" [parentModule]="'capacity'"></app-usercapacity>
             </div>
 
         </div>
