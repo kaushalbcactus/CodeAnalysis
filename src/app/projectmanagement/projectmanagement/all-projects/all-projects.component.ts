@@ -938,7 +938,7 @@ export class AllProjectsComponent implements OnInit {
           this.spannerView.nativeElement.classList.remove('show');
 
           this.commonService.confirmMessageDialog('Change Status of Project -' + selectedProjectObj.ProjectCode + '', 'Are you sure you want to change the Status of Project - ' + selectedProjectObj.ProjectCode + ''
-            + ' from ' + selectedProjectObj.Status + ' to ' + this.constants.projectStatus.Unallocated + '?', null, ['Yes', 'No'], false).then(async Confirmation => {
+            + ' from \'' + selectedProjectObj.Status + '\' to \'' + this.constants.projectStatus.Unallocated + '\'?', null, ['Yes', 'No'], false).then(async Confirmation => {
               if (Confirmation === 'Yes') {
                 this.changeProjectStatusUnallocated(selectedProjectObj);
               }
@@ -998,7 +998,7 @@ export class AllProjectsComponent implements OnInit {
           this.spannerView.nativeElement.classList.remove('show');
 
           this.commonService.confirmMessageDialog('Change Status of Project -' + selectedProjectObj.ProjectCode + '', 'Are you sure you want to change the Status of Project - ' + selectedProjectObj.ProjectCode + ''
-            + ' from ' + selectedProjectObj.Status + ' to ' + this.constants.projectStatus.NewAuditInProgress + '?', null, ['Yes', 'No'], false).then(async Confirmation => {
+            + ' from \'' + selectedProjectObj.Status + '\' to \'' + this.constants.projectStatus.NewAuditInProgress + '\'?', null, ['Yes', 'No'], false).then(async Confirmation => {
               if (Confirmation === 'Yes') {
                 this.changeProjectStatusAuditInProgress(selectedProjectObj, scheduleItems);
               }
@@ -1010,7 +1010,7 @@ export class AllProjectsComponent implements OnInit {
           this.spannerView.nativeElement.classList.remove('show');
 
           this.commonService.confirmMessageDialog('Change Status of Project -' + selectedProjectObj.ProjectCode + '', 'Are you sure you want to change the Status of Project - ' + selectedProjectObj.ProjectCode + ''
-            + ' from ' + this.constants.projectStatus.NewPendingClosure + ' to ' + this.constants.projectStatus.Closed + '?', null, ['Yes', 'No'], false).then(async Confirmation => {
+            + ' from \'' + this.constants.projectStatus.NewPendingClosure + '\' to \'' + this.constants.projectStatus.Closed + '\'?', null, ['Yes', 'No'], false).then(async Confirmation => {
               if (Confirmation === 'Yes') {
                 this.changeProjectStatusClose(selectedProjectObj);
               }
