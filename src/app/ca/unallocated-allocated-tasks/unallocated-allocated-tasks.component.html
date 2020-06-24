@@ -98,7 +98,8 @@
                                 <th style="width:14%">Start Date</th>
                                 <th style="width:14%">End Date</th>
                                 <th style="width:10%">Assign To</th>
-                                <th style="width:4%">Allow Start</th>
+                                <th style="width:4%">Type</th>
+                                <!-- <th style="width:4%">Allow Start</th> -->
                                 <th style="width:6%">Disable Cascade</th>
                                 <th style="width:1.95%"> </th>
                             </tr>
@@ -113,13 +114,13 @@
                                 <td style="text-align: center;">
                                     <span *ngIf="!rowData.editMode">{{rowData.EstimatedTime}}</span>
                                     <input type="number" class="form-control budgetHr" required="required" min="0" value="0" onchange="validity.valid||(value='0');" step="0.25" *ngIf=" rowData.editMode" required="required" [id]="rowData.ID" (ngModelChange)="modelChanged(rowData,Slot)" [(ngModel)]="rowData.EstimatedTime">
-                                    <div class='overlayIcon'
+                                    <span class='overlayIcon'
                                       (click)="this.showOverlayPanel($event, rowData, dailyAllocateOP)"
                                         style="float: right;cursor: pointer;"
                                         title="Click to see allocation split"
                                       *ngIf="rowData.showAllocationSplit">
                                       <i class="fa fa-info-circle" aria-hidden="true"></i>
-                                    </div>
+                                </span>
                                 </td>
 
                                 <!-- spent Hrs -->
@@ -187,14 +188,12 @@
                                     </p-dropdown>
 
                                 </td>
-                                <!-- Allow start -->
-                                <td [ngStyle]="{'text-align': 'rowData.editMode' ? 'center':'left'}">
-                                    <span *ngIf="!rowData.editMode">{{rowData.allowStart === true ? 'Yes':'No'}}</span>
-
-                                    <p-inputSwitch *ngIf="rowData.editMode" (onChange)="modelChanged(rowData,Slot)" [(ngModel)]="rowData.allowStart"></p-inputSwitch>
+                                <!--Daily Allocation Type-->
+                                <td [style.backgroundColor]="rowData?.allocationColor">
+                                  <div fxLayout="column" fxLayoutAlign="center center" *ngIf="rowData?.allocationTypeLoader">
+                                    <div id="allocationTypeLoader"></div>
+                                  </div>
                                 </td>
-                                <!-- Disable cascade -->
-
                                 <td [ngStyle]="{'text-align': 'rowData.editMode' ? 'center':'left'}">
                                     <span *ngIf="!rowData.editMode">{{rowData.DisableCascade === true  ? 'Yes':'No'}}</span>
 

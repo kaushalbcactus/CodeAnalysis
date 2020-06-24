@@ -854,7 +854,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     Slot.editMode = true;
     this.disableSave = false;
     const resource = this.resourceList.filter((objt) => {
-      return event.AssignedTo && event.AssignedTo.ID === objt.UserNamePG.ID;
+      return event.allocatedResource && event.allocatedResource.UserNamePG && event.allocatedResource.UserNamePG.ID === objt.UserNamePG.ID;
     });
     await this.dailyAllocation.calcPrestackAllocation(resource, event);
   }
@@ -968,6 +968,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     taskObj.PreviousAssignedUser = task.PreviousAssignedUser;
     taskObj.SubMilestones = task.SubMilestones;
     taskObj.showAllocationSplit = task.AllocationPerDay ? true : false;
+    taskObj.allocationColor = '';
+    taskObj.allocationTypeLoader = false;
     if (taskObj.allocatedResource !== '') {
       await this.GetResourceOnEdit(taskObj);
     }
@@ -1757,7 +1759,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
   editAllocation(milestoneTask, allocationType): void {
     milestoneTask.resources = this.resourceList.filter((objt) => {
-      return objt.UserName.ID === milestoneTask.AssignedTo.ID;
+      return objt.UserNamePG.ID === milestoneTask.AssignedTo.ID;
     });
     let header = milestoneTask.submilestone ? milestoneTask.milestone + ' ' + milestoneTask.title
       + ' ( ' + milestoneTask.submilestone + ' )' : milestoneTask.milestone + ' ' + milestoneTask.title;

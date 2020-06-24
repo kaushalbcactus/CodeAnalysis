@@ -20,6 +20,7 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { CaComponent } from './ca.component';
 import { PreStackAllocationModule } from '../shared/pre-stack-allocation/pre-stack-allocation.module';
+import { PreStackAllocationComponent } from '../shared/pre-stack-allocation/pre-stack-allocation.component';
 
 @NgModule({
   declarations: [UnallocatedAllocatedTasksComponent, CaDragdropComponent, CaComponent],
@@ -37,6 +38,6 @@ import { PreStackAllocationModule } from '../shared/pre-stack-allocation/pre-sta
     PreStackAllocationModule
   ],
   providers: [DynamicDialogConfig, DynamicDialogRef],
-  entryComponents: [UsercapacityComponent, CaDragdropComponent],
+  entryComponents: [UsercapacityComponent, CaDragdropComponent, PreStackAllocationComponent],
 })
 export class CAModule { }

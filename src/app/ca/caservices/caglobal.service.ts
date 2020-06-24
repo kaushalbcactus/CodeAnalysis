@@ -78,7 +78,9 @@ export class CAGlobalService {
     Status: '',
     status: '',
     showAllocationSplit: false,
-    taskFullName: ''
+    taskFullName: '',
+    allocationColor : '',
+    allocationTypeLoader : false,
   };
   public oCapacity = {
     arrUserDetails: [],
