@@ -151,10 +151,10 @@ export class CapacityDashboardComponent implements OnInit {
           (o) => new Object({ label: o.UserNamePG.Title, value: o })
         );
 
-        // this.searchCapacityForm.patchValue({
-        //   skill: ["Writer","Reviewer"],
-        // });
-        // this.onChange({value:["Writer","Reviewer"]},'skill');
+        this.searchCapacityForm.patchValue({
+          skill: ["Writer","Reviewer"],
+        });
+        this.onChange({value:["Writer","Reviewer"]},'skill');
       }
     }
   }
@@ -413,7 +413,7 @@ export class CapacityDashboardComponent implements OnInit {
         const data = {
           Title : blockResource.value.Title,
           StartDate:blockResource.value.StartDate,
-          EndDateDT:blockResource.value.EndDate,
+          DueDateDT:blockResource.value.EndDate,
           Status : this.constants.blockResStatus.Active,
           AssignedToId:blockResource.value.Resource.value.UserNamePG.Id,
           TimeZoneNM:parseFloat(blockResource.value.Resource.value.TimeZone.Title),
