@@ -3936,7 +3936,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     const currentMilestone = this.milestoneData.find((obj) => {
       return obj.data.isCurrent === true;
     });
-    let previousTasks, newTasks, updateProjectBody, updateCurrMilBody, updateNextMilBody;
+    let previousTasks, newTasks, updateProjectBody, updateCurrMilBody;
     if (bCurrentMilestoneUpdated) {
       let prevSubMil = currentMilestone.children.filter(c => parseInt(c.data.position, 10) === (parseInt(subMile.position, 10) - 1));
       prevSubMil.forEach(element => {
@@ -3950,13 +3950,13 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         return obj.data.title === this.sharedObject.oTaskAllocation.oProjectDetails.nextMilestone;
       });
 
-      updateNextMilBody = {
+      let updateNextMilBody = {
         __metadata: { type: this.constants.listNames.Schedules.type },
         Status: this.constants.STATUS.IN_PROGRESS,
-        SubMilestones: bSubMilNew ? this.getSubMilestoneStatus(currentMilestone, this.constants.STATUS.COMPLETED, subMile.title) : ''
+        SubMilestones: bSubMilNew ? this.getSubMilestoneStatus(newCurrentMilestone, this.constants.STATUS.COMPLETED, subMile.title) : ''
       }
-      this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constants.listNames.Schedules.name, +currentMilestone.data.Id),
-        updateCurrMilBody, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
+      this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constants.listNames.Schedules.name, +newCurrentMilestone.data.Id),
+        updateNextMilBody, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
 
       previousTasks = currentMilestone ? this.taskAllocateCommonService.getTasksFromMilestones(currentMilestone, true, this.milestoneData, false) : [];
 
@@ -3993,7 +3993,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
     ////// Filter only Not Confirmed tasks from new
     newTasks = newTasks.filter((objt) => {
-      return objt.status === 'Not Confirmed' ;
+      return objt.status === 'Not Confirmed';
     });
 
     for (const task of previousTasks) {
