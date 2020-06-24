@@ -3955,7 +3955,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         Status: this.constants.STATUS.IN_PROGRESS,
         SubMilestones: bSubMilNew ? this.getSubMilestoneStatus(newCurrentMilestone, this.constants.STATUS.COMPLETED, subMile.title) : ''
       }
-      this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constants.listNames.Schedules.name, +newCurrentMilestone.data.Id),
+      this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constants.listNames.Schedules.name, +newCurrentMilestone.data.id),
         updateNextMilBody, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
 
       previousTasks = currentMilestone ? this.taskAllocateCommonService.getTasksFromMilestones(currentMilestone, true, this.milestoneData, false) : [];
@@ -3965,15 +3965,18 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         newTasks = newTasks.filter(c => (c.submilestone === subMile.title || c.itemType === 'Client Review'));
       }
     }
-    /////// Update current milestone status 
-    updateCurrMilBody = {
-      __metadata: { type: this.constants.listNames.Schedules.type },
-      Status: bCurrentMilestoneUpdated ? this.constants.STATUS.IN_PROGRESS : this.constants.STATUS.COMPLETED,
-      SubMilestones: bCurrentMilestoneUpdated ? this.getSubMilestoneStatus(currentMilestone, this.constants.STATUS.COMPLETED, subMile.title) :
-        this.getSubMilestoneStatus(currentMilestone, this.constants.STATUS.COMPLETED)
-    };
-    this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constants.listNames.Schedules.name, +currentMilestone.data.Id),
-      updateCurrMilBody, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
+    if (currentMilestone) {
+      /////// Update current milestone status 
+      updateCurrMilBody = {
+        __metadata: { type: this.constants.listNames.Schedules.type },
+        Status: bCurrentMilestoneUpdated ? this.constants.STATUS.IN_PROGRESS : this.constants.STATUS.COMPLETED,
+        SubMilestones: bCurrentMilestoneUpdated ? this.getSubMilestoneStatus(currentMilestone, this.constants.STATUS.COMPLETED, subMile.title) :
+          this.getSubMilestoneStatus(currentMilestone, this.constants.STATUS.COMPLETED)
+      };
+      this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constants.listNames.Schedules.name, +currentMilestone.data.id),
+        updateCurrMilBody, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
+    }
+
 
     /////// Update current project status 
     updateProjectBody = {
