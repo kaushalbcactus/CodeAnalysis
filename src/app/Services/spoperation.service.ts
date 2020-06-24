@@ -9,7 +9,6 @@ import { ConstantsService } from './constants.service';
 import { GlobalService } from './global.service';
 declare const $: any;
 
-
 @Injectable({
   providedIn: 'root'
 })

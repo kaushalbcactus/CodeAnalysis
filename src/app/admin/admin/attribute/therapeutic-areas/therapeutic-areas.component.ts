@@ -189,13 +189,13 @@ export class TherapeuticAreasComponent implements OnInit {
    *
    */
   async addTherapeuticArea() {
-    const alphaExp = this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL_WITHSPACE;
+    const alphaExp = new RegExp(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL_WITHSPACE);
     this.common.clearToastrMessage();
     if (!this.therapeuticArea) {
       this.common.showToastrMessage(this.constants.MessageType.warn,'Please enter ta.',false);
       return false;
     }
-    if (!this.therapeuticArea.match(alphaExp)) {
+    if (!alphaExp.test(this.therapeuticArea)) {
       this.common.showToastrMessage(this.constants.MessageType.error,'Special characters are allowed between alphabets. Allowed special characters are \'-\' and \'_\'.',false);
       return false;
     }

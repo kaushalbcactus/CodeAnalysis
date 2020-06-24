@@ -183,15 +183,14 @@ export class PracticeAreasComponent implements OnInit {
    *
    */
   async addPracticeArea() {
-    const alphaExp = this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL_WITHSPACE;
+    const alphaExp = new RegExp(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL_WITHSPACE);
     this.common.clearToastrMessage();
     if (!this.practiceArea) {
 
       this.common.showToastrMessage(this.constants.MessageType.error,'Please enter practice area.',false);
       return false;
     }
-    if (!this.practiceArea.match(alphaExp)) {
-
+    if (!alphaExp.test(this.practiceArea)) {
       this.common.showToastrMessage(this.constants.MessageType.error,'Special characters are allowed between alphabets. Allowed special characters are \'-\' and \'_\'.',false);
       return false;
     }
