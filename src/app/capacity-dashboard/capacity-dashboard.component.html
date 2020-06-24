@@ -7,9 +7,9 @@
 </div>
 
 <div class="p-row p-dir-col" *ngIf="!mainloaderenable">
-    <p-card class="p-col topCardPosition">
+    <p-card class="topCardPosition">
         <form class="p-grid" #searchForm="ngForm" [formGroup]="searchCapacityForm" (ngSubmit)="onSubmit('search')">
-            <div class="p-col-12 p-justify-between p-align-center" style="padding: 20px 0px 20px 0px;">
+            <div class="p-col-12 p-justify-between p-align-center" style="padding: 20px 0px 5px 0px;">
                 <span class="p-col ui-float-label ui-fluid evenrow" style="width:11%;">
                     <p-multiSelect [options]="Buckets" formControlName="bucket" (onChange)="onChange($event,'bucket')"
                     resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" defaultLabel="Select"
