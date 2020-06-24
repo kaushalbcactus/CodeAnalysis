@@ -9,13 +9,14 @@ export class SharedConstantsService {
   // tslint:disable
   public userCapacity = {
     fetchTasks: {
-      select: 'ID,Milestone,ProjectCode,SubMilestones,Task,Status,Title,TimeSpent,ExpectedTime,StartDate,DueDateDT,TimeZoneNM,ParentSlot,AllocationPerDay,CommentsMT,Entity',
+      select: 'ID,Milestone,ProjectCode,SubMilestones,Task,Status,Title,TimeSpent,ExpectedTime,StartDate,DueDateDT,TimeZoneNM,ParentSlot,AllocationPerDay,CommentsMT,Entity,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail',
       filter: "(AssignedTo/Id eq {{userID}}) and(" +
         "(StartDate ge '{{startDateString}}' and StartDate le '{{endDateString}}')" +
         "or (DueDateDT ge '{{startDateString}}' and DueDateDT le '{{endDateString}}')" +
         " or (StartDate le '{{startDateString}}' and DueDateDT ge '{{endDateString}}')" +
         ") and Status ne 'Abandon' and Status ne 'Deleted' and Task ne 'Time Booking' and Task ne 'Send to client' and Task ne 'Client Review' ",
       filterNotConfirmed: "and Status ne '{{taskStatus}}'",
+      expand: 'AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail',
       top: '4500',
       orderby: 'StartDate'
     },
@@ -45,13 +46,14 @@ export class SharedConstantsService {
     },
 
     fetchBlockResource: {
-      select: 'ID,Title,Status,ExpectedTime,StartDate,EndDateDT,TimeZoneNM',
+      select: 'ID,Title,Status,ExpectedTime,StartDate,DueDateDT,TimeZoneNM,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail',
       filter: "(AssignedTo/Id eq {{userID}}) and(" +
         "(StartDate ge '{{startDateString}}' and StartDate le '{{endDateString}}')" +
-        "or (EndDateDT ge '{{startDateString}}' and EndDateDT le '{{endDateString}}')" +
-        " or (StartDate le '{{startDateString}}' and EndDateDT ge '{{endDateString}}')" +
+        "or (DueDateDT ge '{{startDateString}}' and DueDateDT le '{{endDateString}}')" +
+        " or (StartDate le '{{startDateString}}' and DueDateDT ge '{{endDateString}}')" +
         ") and Status ne 'Deleted'",
       top: '4500',
+      expand: 'AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail',
       orderby: 'StartDate'
     },
     getProjectInformation: {

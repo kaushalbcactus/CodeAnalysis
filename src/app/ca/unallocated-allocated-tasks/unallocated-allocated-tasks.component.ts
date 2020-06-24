@@ -520,9 +520,12 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     this.disableSave = false;
   }
 
-  assignedToUserChanged(rowData) {
+  async assignedToUserChanged(rowData) {
     rowData.assignedUserChanged = true;
-    // rowData.PreviousAssignedUser = rowData.AssignedTo;
+    const resource = this.resourceList.filter((objt) => {
+      return rowData.allocatedResource.UserNamePG.ID === objt.UserNamePG.ID;
+    });
+    await this.dailyAllocation.calcPrestackAllocation(resource, rowData);
   }
 
 
@@ -718,6 +721,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           }
           task.prevTasks = previousTasks === '' ? null : previousTasks;
           task.nextTasks = nextTasks === '' ? null : nextTasks;
+          task.milestone = task.Milestone ? task.Milestone : RowData.Milestone;
           const obj = await this.GetTask(task, false);
           obj.editMode = true;
           obj.edited = task.edited ? task.edited : false;
@@ -844,11 +848,15 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       event.data.subTaskloaderenable = false;
     }
   }
-  modelChanged(event, Slot) {
+  async modelChanged(event, Slot) {
     event.editMode = true;
     event.edited = true;
     Slot.editMode = true;
     this.disableSave = false;
+    const resource = this.resourceList.filter((objt) => {
+      return event.allocatedResource && event.allocatedResource.UserNamePG && event.allocatedResource.UserNamePG.ID === objt.UserNamePG.ID;
+    });
+    await this.dailyAllocation.calcPrestackAllocation(resource, event);
   }
   async GetAllConstantTasks(taskName) {
     let allConstantTasks = [];
@@ -857,8 +865,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   }
   async GetTask(task, IsdbTask) {
 
-
-    const taskObj = $.extend(true, {}, this.caGlobal.caObject);
+    // const taskObj = $.extend(true, {}, this.caGlobal.caObject);
+    const taskObj = {...this.caGlobal.caObject};
     const hrsMinObject = {
       timeHrs: task.TimeSpent != null ? task.TimeSpent.indexOf('.') > -1 ?
         task.TimeSpent.split('.')[0] : task.TimeSpent : '00',
@@ -928,6 +936,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     taskObj.PrevTasks = task.Type && task.Type === 'Slot' ? '' : task.prevTasks;
     taskObj.Milestone = task.milestone ? task.milestone : task.Milestone;
     taskObj.TaskName = task.TaskName;
+    taskObj.taskFullName = taskObj.ProjectCode + ' ' + taskObj.Milestone + ' ' + taskObj.TaskName;
     taskObj.EstimatedTime = task.estimatedTime ? task.estimatedTime : task.ExpectedTime ?
       task.ExpectedTime : task.EstimatedTime ? task.EstimatedTime : '0';
     taskObj.StartTime = task.startDate ? task.startDate : task.StartDate;
@@ -958,7 +967,9 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     taskObj.DisableCascade = task.DisableCascade && task.DisableCascade === 'Yes' ? true : false;
     taskObj.PreviousAssignedUser = task.PreviousAssignedUser;
     taskObj.SubMilestones = task.SubMilestones;
-
+    taskObj.showAllocationSplit = task.AllocationPerDay ? true : false;
+    taskObj.allocationColor = '';
+    taskObj.allocationTypeLoader = false;
     if (taskObj.allocatedResource !== '') {
       await this.GetResourceOnEdit(taskObj);
     }
@@ -1748,14 +1759,14 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
   editAllocation(milestoneTask, allocationType): void {
     milestoneTask.resources = this.resourceList.filter((objt) => {
-      return objt.UserName.ID === milestoneTask.AssignedTo.ID;
+      return objt.UserNamePG.ID === milestoneTask.AssignedTo.ID;
     });
     let header = milestoneTask.submilestone ? milestoneTask.milestone + ' ' + milestoneTask.title
       + ' ( ' + milestoneTask.submilestone + ' )' : milestoneTask.milestone + ' ' + milestoneTask.title;
     header = header + ' - ' + milestoneTask.AssignedTo.Title;
     const ref = this.dialogService.open(PreStackAllocationComponent, {
       data: {
-        ID: milestoneTask.id,
+        ID: milestoneTask.Id ?  milestoneTask.Id : milestoneTask.id,
         task: milestoneTask.taskFullName,
         startDate: milestoneTask.pUserStartDatePart,
         endDate: milestoneTask.pUserEndDatePart,

@@ -113,9 +113,9 @@ export class SelectSOWComponent implements OnInit {
       this.selectSOW.shortTitleArray = this.commonService.unique(shortTitleTempArray, 'value');
       this.selectSOW.sowOwnerArray = this.commonService.unique(sowOwnerTempArray, 'value');
       this.pmObject.selectSOWArray = Object.assign([], tempAllSOWArray);
-      this.isSelectSOWLoaderHidden = true;
-      this.isSelectSOWTableHidden = false;
     }
+    this.isSelectSOWLoaderHidden = true;
+    this.isSelectSOWTableHidden = false;
   }
   lazyLoadTask(event) {
     this.pmObject.addProject.SOWSelect.GlobalFilterEvent = event;

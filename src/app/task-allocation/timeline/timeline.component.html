@@ -211,7 +211,7 @@
                                 required="required"
                                 style="border:none;border-radius: 0px;height: 25px;text-align: center;padding:0px;float: left;"
                                 [id]="rowData.id"
-                                (change)="modelChanged(rowData)"
+                                (change)="budgetHrsChanged(rowData)"
                                 [(ngModel)]="rowData.budgetHours">
                             <div class='overlayIcon'
                              (click)="this.showOverlayPanel($event, rowData, dailyAllocateOP)"

@@ -229,15 +229,14 @@ export class DeliverableTypesComponent implements OnInit {
    * @returns  It will return boolean value either `true` or `false`
    */
   isFormValid() {
-    const alphaSpecialExp = this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL_WITHSPACE;
-    const alphaExp = this.adminConstants.REG_EXPRESSION.ALPHA;
+    const alphaSpecialExp = new RegExp(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL_WITHSPACE);
+    const alphaExp = new RegExp(this.adminConstants.REG_EXPRESSION.ALPHA);
     if (!this.deliverableTypes) {
 
       this.common.showToastrMessage(this.constants.MessageType.error,'Please enter Deliverable Type.',false);
       return false;
     }
-    if (!this.deliverableTypes.match(alphaSpecialExp)) {
-
+    if(!alphaSpecialExp.test(this.deliverableTypes)){
       this.common.showToastrMessage(this.constants.MessageType.error,'Special characters are allowed between alphabets. Allowed special characters are \'-\' and \'_\'.',false);
       return false;
     }
@@ -249,7 +248,7 @@ export class DeliverableTypesComponent implements OnInit {
       this.common.showToastrMessage(this.constants.MessageType.error,'Please enter acronym Type.',false);
       return false;
     }
-    if (!this.acronym.match(alphaExp)) {
+    if (!alphaExp.test(this.acronym)) {
       this.common.showToastrMessage(this.constants.MessageType.error,'Please enter only alphabets.',false);
       return false;
     }

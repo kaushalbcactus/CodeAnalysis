@@ -12,7 +12,7 @@
 </div>
 
 <table class="col-md-12 table-bordered table-striped header-fixed" id="capacityTable">
-    <thead class="tableHeader">
+    <thead class="tableHeader" [hidden]="loaderenable">
         <tr>
             <th [ngStyle]="{'width':'6%'}">
                 Res(s) / Date(s)
@@ -28,7 +28,7 @@
             </th>
         </tr>
     </thead>
-    <tbody class="capacityBody">
+    <tbody class="capacityBody" [hidden]="loaderenable">
         <tr *ngFor="let user of oCapacity.arrUserDetails">
             <td>
                 <table class="table-bordered tbl">
@@ -37,8 +37,7 @@
                             <td>
                                 <table>
                                     <tbody>
-                                        <tr class="{{user.uid}}taskrow" [ngStyle]="{'height':height,'width': '100%','display': 'inline-table','table-layout': 'fixed'}">
-                                            <!-- <tr class="{{user.uid}}taskrow" [ngStyle]="{'display':'table-row', 'table-layout': 'fixed', 'height':height}"> -->
+                                        <tr class="{{user.uid}}taskrow" id="UserRowDetails" [ngStyle]="{'height':height,'width': '100%','display': 'inline-table','table-layout': 'fixed'}">
                                             <th [ngStyle]="{'vertical-align':verticalAlign, 'width':'6%',     'border-bottom': 'none' }">
                                                 <div (click)="onResourceClick(user)" style="cursor: pointer;" title="Joining Date :  {{user.JoiningDate | date :'EEE d MMM yyyy'}}&#013;Go Live Date : {{user.GoLiveDate | date :'EEE d MMM yyyy'}} ">{{user.userName}}
                                                 </div>
@@ -83,73 +82,13 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr [hidden]="user.dayTasks.length === 0" [ngStyle]="{'position' :  'inherit' }" class="TaskPerDayRow">
+                                        <tr [hidden]="user.dayTasks.length === 0" [ngStyle]="{'position' :  'inherit' }" class="TaskPerDayRow" #capacityTasks>
                                             <td>
                                                 <div class="innerTableLoader" style="padding-top:2%;">
                                                     <div id="modalInnerLoader"></div>
                                                     <div id="modalInnerLoaderText">Loading...</div>
                                                 </div>
-                                                <app-capacity-tasks *ngIf="user.dayTasks.length" (collapse)="collpaseTable($event, user, 'available')" [componentName]="'usercapacity'" [disableCamera]="disableCamera" [tasks]="user.dayTasks"></app-capacity-tasks>
-                                                <!-- <table class="table-bordered table-striped" id="TasksPerDay" style="width: 100%;">
-                                                    <thead>
-                                                        <tr class="tableHeader">
-                                                            <td>
-                                                                Task Name (Short Title)
-                                                            </td>
-                                                            <td>
-                                                                Start Date
-                                                            </td>
-                                                            <td>
-                                                                Due Date
-                                                            </td>
-                                                            <td>
-                                                                Milestone Deadline
-                                                            </td>
-                                                            <td>
-                                                                Per Day (Total Allocated)
-                                                            </td>
-                                                            <td>
-                                                                Status
-
-                                                            </td>
-                                                            <td> <span><img title="collapse"
-                                                                            [src]="globalService.sharePointPageObject.publicCdn +'/collapseTable.png'"
-                                                                            (click)="collpaseTable($event.target, user,'available')" />
-                                                                    </span>
-                                                            </td>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr *ngFor="let task of user.dayTasks" class="UserTasksRow">
-                                                            <td style="border: 1px solid #ddd;">
-                                                                <span>{{task.title}} <span *ngIf='task.SubMilestones'> -
-                                                                            {{task.SubMilestones}} </span><span *ngIf='task.shortTitle'>({{task.shortTitle}})</span></span>
-                                                            </td>
-                                                            <td>
-                                                                <span>{{(task.startDate | date:'dd MMM yy h:mm a') || '--' }}</span>
-                                                            </td>
-                                                            <td>
-                                                                <span>{{task.dueDate | date : "dd MMM yy h:mm a" || '--'}}</span>
-                                                            </td>
-                                                            <td>
-                                                                <span>{{(task.milestoneDeadline!='--') ? (task.milestoneDeadline | date : "dd MMM yy h:mm a") : '--'}}</span>
-                                                            </td>
-                                                            <td>
-                                                                <span>{{task.displayTimeAllocatedPerDay}}
-                                                                        ({{task.displayTotalAllocatedTime}})</span>
-                                                            </td>
-                                                            <td>
-                                                                <span>{{task.status}}</span>
-                                                            </td>
-
-                                                            <td>
-
-                                                                <i *ngIf="task.projectCode !=='Adhoc' && !disableCamera" class="pi pi-camera" title="Milestone Tasks" (click)="getMilestoneTasks(task)" style="font-size: 3em;cursor: pointer;"></i>
-
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table> -->
+                                                <app-capacity-tasks *ngIf="user.dayTasks.length" (collapse)="collpaseTable($event, user, 'available',capacityTasks)" [componentName]="'usercapacity'" [disableCamera]="disableCamera" [tasks]="user.dayTasks" (updateBlocking)="UpdateBlocking($event)"></app-capacity-tasks>
                                             </td>
                                         </tr>
                                         <tr *ngIf="enableDownload" class="spenttaskRow" [ngStyle]="{'height':'40px','width': '100%','display': 'inline-table','table-layout': 'fixed'}">
@@ -172,84 +111,6 @@
                                                 <div class="center">{{user.TotalTimeSpent}}</div>
                                             </td>
                                         </tr>
-                                        <!-- spent time expand  -->
-                                        <!-- <tr *ngIf="user.TimeSpentDayTasks.length === 0 " style="display: none;" class="{{user.uid}}spentloaderenable">
-                                            <td>
-                                                <div class="innerspentTableLoader" style="padding-top:2%;">
-                                                    <div id="modalInnerLoader"></div>
-                                                    <div id="modalInnerLoaderText">Loading...</div>
-                                                </div>
-                                            </td>
-                                        </tr> -->
-                                        <tr [hidden]="user.TimeSpentDayTasks.length === 0" class="SpentTaskPerDayRow">
-                                            <td>
-                                                <div class="innerspentTableLoader" style="padding-top: 1%;">
-                                                    <div id="modalInnerLoader"></div>
-                                                    <div id="modalInnerLoaderText">Loading...</div>
-                                                </div>
-                                                <table class="table-bordered" id="spentTasksPerDay" style="width: 100%;">
-                                                    <thead>
-                                                        <tr class="tableHeader" style="display: table-row;">
-                                                            <td>
-                                                                Task Name (Short Title)
-                                                            </td>
-                                                            <td>
-                                                                Start Date
-                                                            </td>
-                                                            <td>
-                                                                End Date
-                                                            </td>
-                                                            <td>
-                                                                -
-                                                            </td>
-                                                            <td>
-                                                                Current Day (Total Spent)
-                                                            </td>
-                                                            <td>
-                                                                Status
-
-                                                            </td>
-                                                            <td>
-                                                                <span><img title="collapse"
-                                                                            [src]="globalService.sharePointPageObject.publicCdn +'/collapseTable.png'"
-                                                                            (click)="collpaseTable($event.target, user,'spent')" style="height: 25px;
-                                                                            cursor: pointer;" />
-                                                                    </span>
-                                                            </td>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr *ngFor="let task of user.TimeSpentDayTasks" class="UserspentTasksRow">
-                                                            <td style="border: 1px solid #ddd;">
-                                                                <span>{{task.Title}} <span *ngIf='task.SubMilestones'> -
-                                                                            {{task.SubMilestones}} </span>
-                                                                <span *ngIf='task.shortTitle'>({{task.shortTitle}})</span></span>
-                                                            </td>
-                                                            <td>
-                                                                <span>{{(task.StartDate | date:'dd MMM yy h:mm a') || '--' }}</span>
-                                                            </td>
-                                                            <td>
-                                                                <span *ngIf="task.EndDate; else DueDate">{{task.EndDate | date : "dd MMM yy h:mm a" || '--'}}</span>
-                                                                <ng-template #DueDate>
-                                                                    {{task.DueDate | date : "dd MMM yy h:mm a" || '--'}}
-                                                                </ng-template>
-                                                            </td>
-                                                            <td></td>
-                                                            <td>
-                                                                <span>{{task.TimeSpentPerDay}}
-                                                                        ({{task.TotalTimeSpent}})</span>
-                                                            </td>
-                                                            <td>
-                                                                <span>{{task.Status}}</span>
-                                                            </td>
-                                                            <td>
-                                                                <!-- <i *ngIf="task.projectCode !=='Adhoc' && !disableCamera" class="pi pi-camera" title="Milestone Tasks" (click)="getMilestoneTasks(task)" style="font-size: 3em;cursor: pointer;"></i> -->
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </td>
-                                        </tr>
                                     </tbody>
                                 </table>
                             </td>
@@ -262,8 +123,10 @@
 </table>
 
 
-<!-- **      To export data in excel   ** -->
+<ng-template #ganttcontainer></ng-template>
 
+<!-- **      To export data in excel   ** -->
+<!-- 
 <table hidden #capacityTable1 id="capacityTable1">
     <thead>
         <tr>
@@ -301,7 +164,7 @@
             </td>
 
             <td *ngFor="let date of user.dates" class="tableCell" [ngStyle]="{'background-color':getColor(date)}">
-                <!-- [ngStyle]="{'background-color': date.userCapacity ==='Leave' ? 'grey' : 'date.userCapacity' === 'NotAvailable' ? '#EF3D3D' : 'date.userCapacity' === 'Available' ? '#55bf3b' : 'date.backgroundColor' : 'date.backgroundColor' : 'date.backgroundColor'}"> -->
+             
                 <div class="wrap">
                     <div class="availableHrs center">
                         {{date.displayAvailableHrsstring}}
@@ -364,7 +227,7 @@
         <tr [ngStyle]="{'width': '100%','display': 'inline-table','table-layout': 'fixed'}">
             <th [ngStyle]="{'vertical-align':'middle', 'width':'6%', 'border-top':'none' }">
                 <div style="color:#c53e3e;font-weight: 600;">Time Spent</div>
-                <!-- <div> {{user.userName}} </div> -->
+               
             </th>
             <th></th>
             <th></th>
@@ -427,6 +290,4 @@
             </tr>
         </div>
     </tbody>
-</table>
-
-<ng-template #ganttcontainer></ng-template>
+</table> -->

@@ -23,6 +23,7 @@ import { MilestoneTasksDialogComponent } from "./milestone-tasks-dialog/mileston
 import { CommonService } from "src/app/Services/common.service";
 import { GanttChartComponent } from "../../shared/gantt-chart/gantt-chart.component";
 import { gantt, Gantt } from "../../dhtmlx-gantt/codebase/source/dhtmlxgantt";
+import { BlockResourceDialogComponent } from 'src/app/capacity-dashboard/block-resource-dialog/block-resource-dialog.component';
 
 @Component({
   selector: "app-usercapacity",
@@ -30,6 +31,7 @@ import { gantt, Gantt } from "../../dhtmlx-gantt/codebase/source/dhtmlxgantt";
   styleUrls: ["./usercapacity.component.css"],
 })
 export class UsercapacityComponent implements OnInit {
+  @ViewChild("capacityTasks", {static:false}) capacityTasks: ElementRef;
   @ViewChild("ganttcontainer", { read: ViewContainerRef, static: false })
   ganttChart: ViewContainerRef;
   public modalReference = null;
@@ -63,6 +65,7 @@ export class UsercapacityComponent implements OnInit {
   tableLoaderenable = false;
   public disableOverlay = false;
   @Output() resourceSelect = new EventEmitter<string>();
+  @Output() updateblocking= new EventEmitter();
   @Input() userCapacity: any;
   @Input() parentModule: string;
   constructor(
@@ -455,7 +458,7 @@ export class UsercapacityComponent implements OnInit {
           oCapacity.arrUserDetails[indexUser].tasks.length
         ) {
           oCapacity.arrUserDetails[indexUser].tasks.sort((a, b) => {
-            return b.DueDate - a.DueDate;
+            return b.DueDateDT - a.DueDateDT;
           });
 
           // tslint:disable
@@ -463,13 +466,13 @@ export class UsercapacityComponent implements OnInit {
             new Date(sTopEndDate) >
             new Date(
               this.datepipe.transform(
-                oCapacity.arrUserDetails[indexUser].tasks[0].DueDate,
+                oCapacity.arrUserDetails[indexUser].tasks[0].DueDateDT,
                 "yyyy-MM-ddT"
               ) + "23:59:00.000Z"
             )
               ? sTopEndDate.toISOString()
               : this.datepipe.transform(
-                  oCapacity.arrUserDetails[indexUser].tasks[0].DueDate,
+                  oCapacity.arrUserDetails[indexUser].tasks[0].DueDateDT,
                   "yyyy-MM-ddT"
                 ) + "23:59:00.000Z";
 
@@ -801,7 +804,7 @@ export class UsercapacityComponent implements OnInit {
             tasks[
               index
             ].DueDate = this.commonservice.calcTimeForDifferentTimeZone(
-              new Date(tasks[index].DueDateDT),
+              new Date(tasks[index].DueDateDT ? tasks[index].DueDateDT : tasks[index].EndDateDT),
               currentUserTimeZone,
               sTimeZone
             );
@@ -831,7 +834,7 @@ export class UsercapacityComponent implements OnInit {
             tasks[
               index
             ].DueDate = this.commonservice.calcTimeForDifferentTimeZone(
-              new Date(tasks[index].DueDate),
+              new Date(tasks[index].DueDateDT),
               currentUserTimeZone,
               sTimeZone
             );
@@ -859,7 +862,7 @@ export class UsercapacityComponent implements OnInit {
             tasks[
               index
             ].DueDate = this.commonservice.calcTimeForDifferentTimeZone(
-              new Date(tasks[index].DueDate),
+              new Date(tasks[index].DueDateDT),
               currentUserTimeZone,
               sTimeZone
             );
@@ -1214,7 +1217,7 @@ export class UsercapacityComponent implements OnInit {
             );
             const taskEndDate = new Date(
               this.datepipe.transform(
-                new Date(oUser.tasks[j].DueDate),
+                new Date(oUser.tasks[j].DueDateDT),
                 "MMM dd, yyyy"
               )
             );
@@ -1346,6 +1349,7 @@ export class UsercapacityComponent implements OnInit {
                 taskID: oUser.tasks[j].ID,
                 shortTitle: "",
                 milestoneDeadline: "",
+                AssignedTo : oUser.tasks[j].AssignedTo,
                 startDate: oUser.tasks[j].StartDate,
                 dueDate: oUser.tasks[j].DueDateDT ? oUser.tasks[j].DueDateDT  : oUser.tasks[j].DueDate,
                 timeAllocatedPerDay: oUser.tasks[j].timeAllocatedPerDay,
@@ -1692,7 +1696,7 @@ export class UsercapacityComponent implements OnInit {
         let nCount = 0;
         for (const i in tasks) {
           if (tasks.hasOwnProperty(i)) {
-            if (tasks[i].projectCode !== "Adhoc") {
+            if (tasks[i].projectCode && tasks[i].projectCode !== "Adhoc") {
               const arrProject = arrResults[nCount];
               if (arrProject.length > 0) {
                 tasks[i].shortTitle = arrProject[0].WBJID;
@@ -1744,7 +1748,6 @@ export class UsercapacityComponent implements OnInit {
                       })
                     : [];
               }
-
               tasks[i].milestoneTasks = miltasks;
               tasks[i].milestoneDeadline =
                 lastSCTask.length > 0 ? lastSCTask[0].StartDate : "--";
@@ -1958,15 +1961,9 @@ export class UsercapacityComponent implements OnInit {
     ref.onClose.subscribe(async (tasks: any) => {});
   }
 
-  collpaseTable(objt, user, type) {
+  collpaseTable(objt, user, type, row) {
     if (type === "available") {
-      const oCollpase = $(objt).closest(".TaskPerDayRow");
-      oCollpase
-        .prev()
-        .prev()
-        .find(".highlightCell")
-        .removeClass("highlightCell");
-      oCollpase.slideUp();
+      row.parentNode.getElementsByClassName('highlightCell')[0].classList.remove('highlightCell');
       user.dayTasks = [];
       user.dates.map((c) => delete c.backgroundColor);
     } else {
@@ -2074,6 +2071,14 @@ export class UsercapacityComponent implements OnInit {
     }
     return ReturnTasks;
   }
+
+
+   UpdateBlocking(event){
+    this.updateblocking.emit(event);
+  }
+
+
+
 
   @HostListener("window:resize", ["$event"])
   onResize(event) {

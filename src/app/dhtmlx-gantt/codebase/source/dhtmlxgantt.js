@@ -171,19 +171,19 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
                 (function(process, global, setImmediate) {
                     /* @preserve
                      * The MIT License (MIT)
-                     * 
+                     *
                      * Copyright (c) 2013-2018 Petka Antonov
-                     * 
+                     *
                      * Permission is hereby granted, free of charge, to any person obtaining a copy
                      * of this software and associated documentation files (the "Software"), to deal
                      * in the Software without restriction, including without limitation the rights
                      * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
                      * copies of the Software, and to permit persons to whom the Software is
                      * furnished to do so, subject to the following conditions:
-                     * 
+                     *
                      * The above copyright notice and this permission notice shall be included in
                      * all copies or substantial portions of the Software.
-                     * 
+                     *
                      * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
                      * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
                      * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
@@ -191,7 +191,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
                      * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
                      * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
                      * THE SOFTWARE.
-                     * 
+                     *
                      */
                     /**
                      * bluebird build version 3.5.4
@@ -3546,8 +3546,8 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
                                         p._promise0 = value;
                                         p._receiver0 = value;
                                     }
-                                    // Complete slack tracking, opt out of field-type tracking and           
-                                    // stabilize map                                                         
+                                    // Complete slack tracking, opt out of field-type tracking and
+                                    // stabilize map
                                     fillTypes({ a: 1 });
                                     fillTypes({ b: 2 });
                                     fillTypes({ c: 3 });
@@ -23118,7 +23118,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
                                 if (id !== null && gantt.getTask(id)) {
                                     if (res && gantt.config.details_on_dblclick) {
                                         // gantt.showLightbox(id);
-                                        // window.angularComponentReference.zone.run(() => { window.angularComponentReference.timelineComponentFn(id); });  
+                                        // window.angularComponentReference.zone.run(() => { window.angularComponentReference.timelineComponentFn(id); });
                                     }
                                 }
                             }
