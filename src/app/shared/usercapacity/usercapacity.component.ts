@@ -23,13 +23,13 @@ import { MilestoneTasksDialogComponent } from "./milestone-tasks-dialog/mileston
 import { CommonService } from "src/app/Services/common.service";
 import { GanttChartComponent } from "../../shared/gantt-chart/gantt-chart.component";
 import { gantt, Gantt } from "../../dhtmlx-gantt/codebase/source/dhtmlxgantt";
-import { BlockResourceDialogComponent } from 'src/app/capacity-dashboard/block-resource-dialog/block-resource-dialog.component';
 
 @Component({
   selector: "app-usercapacity",
   templateUrl: "./usercapacity.component.html",
   styleUrls: ["./usercapacity.component.css"],
 })
+
 export class UsercapacityComponent implements OnInit {
   @ViewChild("capacityTasks", {static:false}) capacityTasks: ElementRef;
   @ViewChild("ganttcontainer", { read: ViewContainerRef, static: false })
@@ -1246,20 +1246,22 @@ export class UsercapacityComponent implements OnInit {
                 ? "" + oUser.tasks[j].TimeSpent
                 : "0.0";
 
-            } else if(oUser.tasks[j].Task === 'ResourceBlocking'){
+            } 
+            // else if(oUser.tasks[j].Task === 'ResourceBlocking'){
 
-              oUser.tasks[
-                j
-              ].timeAllocatedPerDay = this.commonservice.convertToHrsMins(
-                "" +
-                  this.getPerDayTime(
-                    oUser.tasks[j].ExpectedTime !== null
-                      ? oUser.tasks[j].ExpectedTime
-                      : "0",
-                    taskBusinessDays - arrLeaveDays.length
-                  )
-              );
-            } else{
+            //   oUser.tasks[
+            //     j
+            //   ].timeAllocatedPerDay = this.commonservice.convertToHrsMins(
+            //     "" +
+            //       this.getPerDayTime(
+            //         oUser.tasks[j].ExpectedTime !== null
+            //           ? oUser.tasks[j].ExpectedTime
+            //           : "0",
+            //         taskBusinessDays - arrLeaveDays.length
+            //       )
+            //   );
+            // }
+             else{
               if (oUser.tasks[j].AllocationPerDay) {
                 let allocationPerDay = oUser.tasks[j].AllocationPerDay.split(
                   /\n/

@@ -411,13 +411,14 @@ export class CapacityDashboardComponent implements OnInit {
     ref.onClose.subscribe(async (blockResource: any) => {
       if (blockResource) {
         const data = {
-          Title : blockResource.value.Title,
-          StartDate:blockResource.value.StartDate,
-          DueDateDT:blockResource.value.EndDate,
+          Title : blockResource.taskFullName,
+          StartDate:blockResource.pUserStart,
+          DueDateDT:blockResource.pUserEnd,
           Status : this.constants.blockResStatus.Active,
-          AssignedToId:blockResource.value.Resource.value.UserNamePG.Id,
-          TimeZoneNM:parseFloat(blockResource.value.Resource.value.TimeZone.Title),
-          ExpectedTime :blockResource.value.ExpectedTime.toString()
+          AssignedToId:blockResource.Resource.UserNamePG.Id,
+          TimeZoneNM:parseFloat(blockResource.Resource.TimeZone.Title),
+          ExpectedTime :blockResource.budgetHours.toString(),
+          AllocationPerDay: blockResource.allocationPerDay
         }
         console.log(blockResource);
         this.commonService.SetNewrelic('capacity-dashboard', 'blockResource', 'CreateblockResource');

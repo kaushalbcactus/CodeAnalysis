@@ -260,6 +260,7 @@ export class GanttEdittaskComponent implements OnInit {
           this.task.pUserEndDatePart = this.getDatePart(this.task.pUserStart);
           this.task.pUserEndTimePart = this.getTimePart(this.task.pUserStart);
         }
+        await this.startDateChanged(this.task, 'start')
         this.cascadingObject.node = this.task;
         this.cascadingObject.type = 'start';
         this.validateBudgetHours(this.task);
@@ -334,8 +335,13 @@ export class GanttEdittaskComponent implements OnInit {
   }
 
   validateBudgetHours(task: any) {
-    let time: any = this.commonService.getHrsAndMins(task.pUserStart, task.pUserEnd)
-    let bhrs = this.commonService.convertToHrsMins('' + task.budgetHours).replace('.', ':')
+    // let taskObj: any = {
+    //   start_date: task.startDate,
+    //   end_date: task.endDate,
+    //   tat: task.tat
+    // }
+    let time: any = this.commonService.getHrsAndMins(task.startDate, task.endDate)
+    let bhrs = this.commonService.convertToHrsMins('' + task.budgetHrs).replace('.', ':')
 
     this.maxBudgetHrs = this.taskAllocateCommonService.setMaxBudgetHrs(task);
 
@@ -346,9 +352,10 @@ export class GanttEdittaskComponent implements OnInit {
     bHrsTime = bHrsTime.setHours(hrs, min, 0, 0);
 
     if (bHrsTime > time.maxTime) {
+      let ogBudgetHrs =  this.editTaskForm.get('budgetHrs').value;
       let budgetHrs: number = 0;
       this.editTaskForm.get('budgetHrs').setValue(budgetHrs);
-      this.commonService.showToastrMessage(this.constants.MessageType.error,'Budget hours is set to zero because given budget hours is greater than task time period.',false);
+      this.commonService.showToastrMessage(this.constants.MessageType.error,'Budget hours is set to zero because given budget hours is greater than task time period. Original budget hrs of task is ' + ogBudgetHrs ,false);
     }
   }
 
@@ -371,6 +378,20 @@ export class GanttEdittaskComponent implements OnInit {
       startDateTimePart: this.getTimePart(startDate),
       endDateTimePart: this.getTimePart(endDate),
     })
+  }
+
+  startDateChanged(node , type) {
+    if(type == 'start' && node.pUserStart > node.pUserEnd && node.budgetHours) {
+      let endDate = new Date(node.pUserStart);
+      endDate.setHours(endDate.getHours() + parseInt(node.budgetHours.split('.')[0]));
+      node.budgetHours.split('.')[1] ? endDate.setMinutes(endDate.getMinutes() + parseInt(node.budgetHours.split('.')[1])) : endDate;
+      node.end_date = new Date(endDate);
+      // node.pUserEnd = new Date(endDate);
+      // node.pUserEndDatePart = this.getDatePart(endDate);
+      // node.pUserEndTimePart = this.getTimePart(endDate);
+      this.editTaskForm.controls.endDate.setValue(endDate);
+      this.editTaskForm.controls.endDateTimePart.setValue(this.getTimePart(endDate));
+    }
   }
 
   saveTask(): void {

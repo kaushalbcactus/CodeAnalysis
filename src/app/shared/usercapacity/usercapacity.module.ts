@@ -16,7 +16,7 @@ import { CapacityTasksComponent } from './capacity-tasks/capacity-tasks.componen
     UsercapacityComponent,
     CapacityTasksComponent
   ],
-  entryComponents: [MilestoneTasksDialogComponent]
+  entryComponents: [MilestoneTasksDialogComponent],
 })
 export class UserCapacityModule {
 }

@@ -27,6 +27,6 @@ import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
   ],
   entryComponents: [
     UsercapacityComponent
-  ]
+  ],
 })
 export class PreStackAllocationModule { }

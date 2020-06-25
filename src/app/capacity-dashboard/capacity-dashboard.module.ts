@@ -8,6 +8,8 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { UserCapacityModule } from "../shared/usercapacity/usercapacity.module";
 import { BlockResourceDialogComponent } from "./block-resource-dialog/block-resource-dialog.component";
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { PreStackAllocationModule } from '../shared/pre-stack-allocation/pre-stack-allocation.module';
+import { PreStackAllocationComponent } from '../shared/pre-stack-allocation/pre-stack-allocation.component';
 
 @NgModule({
   declarations: [CapacityDashboardComponent, BlockResourceDialogComponent],
@@ -18,10 +20,11 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     PrimengModule,
     ReactiveFormsModule,
     UserCapacityModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    PreStackAllocationModule
   ],
 
   providers: [DialogService, DynamicDialogConfig, DynamicDialogRef],
-  entryComponents: [BlockResourceDialogComponent],
+  entryComponents: [BlockResourceDialogComponent, PreStackAllocationComponent],
 })
 export class CapacityDashboardModule {}
