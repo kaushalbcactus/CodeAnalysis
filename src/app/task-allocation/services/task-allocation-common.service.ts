@@ -27,7 +27,8 @@ export class TaskAllocationCommonService {
 
   taskStatus = [
     'Not Saved',
-    'Not Confirmed'
+    'Not Confirmed',
+    'Active'
   ]
 
   getResourceByMatrix(task, allTasks) {

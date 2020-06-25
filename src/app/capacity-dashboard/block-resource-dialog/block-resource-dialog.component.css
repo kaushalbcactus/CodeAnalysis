@@ -5,3 +5,12 @@
 .readonlyField {
     opacity: 0.5 !important;
 }
+
+::ng-deep .ui-overlaypanel-close {
+    background-color: #db1721 !important;
+}
+
+::ng-deep .blockResItem .ui-overlaypanel {
+    top: 55px !important;
+    left: 510px !important;
+}

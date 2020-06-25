@@ -1103,4 +1103,14 @@ export class CommonService {
     clearToastrMessage() {
         this.messageService.clear();
     }
+
+    getDatePart(date) {
+        const newDate = new Date(date);
+        return new Date(this.datePipe.transform(newDate, 'MMM d, y'));
+      }
+    
+      getTimePart(date) {
+        const newDate = new Date(date);
+        return this.datePipe.transform(newDate, 'hh:mm a');
+      }
 }
