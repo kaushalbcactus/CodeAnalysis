@@ -201,6 +201,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   singleTask;
   bHrs = 0;
   defaultTimeZone = 5.5;
+  ogBudgethrs = 0;
   constructor(
     private constants: ConstantsService,
     public sharedObject: GlobalService,
@@ -1489,8 +1490,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     if (task.type !== 'milestone' && task.type !== 'submilestone') {
       this.maxBudgetHrs = this.taskAllocateCommonService.setMaxBudgetHrs(task);
       if (this.maxBudgetHrs < this.budgetHrs) {
+        this.ogBudgethrs = this.budgetHrs;
         this.budgetHrs = 0;
-        this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Budget hours is set to zero because given budget hours is greater than task time period.', false);
+        this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Budget hours is set to zero because given budget hours is greater than task time period. Original budget hrs of task is ' + this.ogBudgethrs , false);
       }
     }
   }
@@ -1536,9 +1538,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           bHrsTime = bHrsTime.setHours(hrs, min, 0, 0);
 
           if (bHrsTime > time.maxTime) {
+            this.ogBudgethrs = this.budgetHrs;
             this.budgetHrs = 0;
-
-            this.commonService.showToastrMessage(this.constants.MessageType.error, 'Budget hours is set to zero because given budget hours is greater than task time period.', false);
+            this.commonService.showToastrMessage(this.constants.MessageType.error, 'Budget hours is set to zero because given budget hours is greater than task time period. Original budget hrs of task is ' + this.ogBudgethrs ,false);
           }
         }
         allTasks.data = this.getGanttTasksFromMilestones(this.milestoneData, true);
@@ -2072,9 +2074,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     if (event.type !== 'milestone' && event.type !== 'submilestone') {
       this.maxBudgetHrs = this.taskAllocateCommonService.setMaxBudgetHrs(event);
       if (this.maxBudgetHrs < event.budgetHrs) {
+        this.ogBudgethrs = event.budgetHrs
         event.budgetHrs = 0;
-
-        this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Budget hours is set to zero because given budget hours is greater than task time period.', false);
+        this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Budget hours is set to zero because given budget hours is greater than task time period. Original budget hrs of task is ' + this.ogBudgethrs, false);
       }
     }
     await this.dailyAllocation.calcPrestackAllocation(resource, event);
@@ -2563,6 +2565,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     const resource = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
       return node.AssignedTo && node.AssignedTo.ID === objt.UserNamePG.ID;
     });
+    await this.startDateChanged(node , type);
     let time: any = this.commonService.getHrsAndMins(node.pUserStart, node.pUserEnd)
     let bhrs = this.commonService.convertToHrsMins('' + node.budgetHours).replace('.', ':')
 
@@ -2574,9 +2577,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     bHrsTime = bHrsTime.setHours(hrs, min, 0, 0);
 
     if (bHrsTime > time.maxTime) {
+      this.ogBudgethrs = node.budgetHours;
       node.budgetHours = 0;
-
-      this.commonService.showToastrMessage(this.constants.MessageType.error, 'Budget hours is set to zero because given budget hours is greater than task time period.', false);
+      this.commonService.showToastrMessage(this.constants.MessageType.error, 'Budget hours is set to zero because given budget hours is greater than task time period.Original budget hrs of task is ' + this.ogBudgethrs, false);
     }
     this.changeDateOfEditedTask(node, type);
     await this.dailyAllocation.calcPrestackAllocation(resource, node);
@@ -2607,6 +2610,18 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.cascadeNextNodes(previousNode, subMilestonePosition, selectedMil);
     this.resetStartAndEnd();
     previousNode.clickedInput = undefined;
+  }
+
+  startDateChanged(node , type) {
+    if(type == 'start' && node.pUserStart > node.pUserEnd && node.budgetHours) {
+      let endDate = new Date(node.pUserStart);
+      endDate.setHours(endDate.getHours() + parseInt(node.budgetHours.split('.')[0]));
+      node.budgetHours.split('.')[1] ? endDate.setMinutes(endDate.getMinutes() + parseInt(node.budgetHours.split('.')[1])) : endDate;
+      node.end_date = new Date(endDate);
+      node.pUserEnd = new Date(endDate);
+      node.pUserEndDatePart = this.getDatePart(endDate);
+      node.pUserEndTimePart = this.getTimePart(endDate);
+    }
   }
 
   setMilestoneStartEnd(nextNode, selectedMil) {
@@ -4494,7 +4509,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
   getDefaultDate() {
-    return new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 9, 0)
+    return new Date(this.Today.getFullYear(), this.Today.getMonth(), this.Today.getDate(), 0, 0)
   }
 
   getTaskObjectByValue(task, className, milestone, nextTasks, previousTasks, submilestone, tempID) {
