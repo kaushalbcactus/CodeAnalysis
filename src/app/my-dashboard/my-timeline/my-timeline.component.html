@@ -220,11 +220,11 @@
                             <td>{{task.Task}} , {{task.ExpectedTime}} 
                                 <span class='overlayIcon'
                                     appendTo="body"
-                                    (click)="this.showOverlayPanel($event, task, dailyAllocateOP, actualTarget)"
+                                    (click)="this.showOverlayPanel($event, task, dailyAllocateOP)"
                                     style="cursor: pointer;"
                                     title="Click to see allocation split"
                                     *ngIf="task.showAllocationSplit">
-                                    <i #actualTarget class="fa fa-info-circle" aria-hidden="true"></i>
+                                    <i class="fa fa-info-circle" aria-hidden="true"></i>
                                 </span>
                             <span *ngIf="task.Comments">[{{task.Comments}}]</span></td>
                         </tr>

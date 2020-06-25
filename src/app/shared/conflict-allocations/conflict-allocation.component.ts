@@ -1,20 +1,20 @@
 import { Component, OnInit, ViewChild, AfterViewInit, Output, EventEmitter } from '@angular/core';
 import { DynamicDialogConfig, DynamicDialogRef, TreeNode } from 'primeng';
-import { IConflictTask, IPopupConflictData, IConflictResource, IQueryOptions } from '../../interface/allocation';
+import { IConflictTask, IPopupConflictData, IConflictResource, IQueryOptions } from './interface/conflict-allocation';
 import { GlobalService } from 'src/app/Services/global.service';
-import { TaskAllocationCommonService } from '../../services/task-allocation-common.service';
+import { TaskAllocationCommonService } from '../../task-allocation/services/task-allocation-common.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { UsercapacityComponent } from 'src/app/shared/usercapacity/usercapacity.component';
-import { TaskAllocationConstantsService } from '../../services/task-allocation-constants.service';
+import { TaskAllocationConstantsService } from '../../task-allocation/services/task-allocation-constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 
 @Component({
-  selector: 'app-conflict-allocations',
-  templateUrl: './conflict-allocations.component.html',
-  styleUrls: ['./conflict-allocations.component.css']
+  selector: 'app-conflict-allocation',
+  templateUrl: './conflict-allocation.component.html',
+  styleUrls: ['./conflict-allocation.component.css']
 })
-export class ConflictAllocationsComponent implements OnInit, AfterViewInit {
+export class ConflictAllocationComponent implements OnInit {
   resources: any;
   cols = [];
   activeIndex = -1;
@@ -74,7 +74,8 @@ export class ConflictAllocationsComponent implements OnInit, AfterViewInit {
   refresh(): void {
     this.hideLoader = false;
     setTimeout(async () => {
-      this.conflicTasks = await this.checkConflictsAllocations(this.node, this.milestoneData);
+      // tslint:disable-next-line: max-line-length
+      this.conflicTasks = await this.checkConflictsAllocations(this.node, this.milestoneData, [], this.globalService.oTaskAllocation.oResources);
       this.hideLoader = true;
     }, 100);
   }
@@ -103,15 +104,16 @@ export class ConflictAllocationsComponent implements OnInit, AfterViewInit {
     return allTasks;
   }
 
-  async checkConflictsAllocations(milSubMil: TreeNode, originalData: TreeNode[]): Promise<IConflictResource[]> {
+  // tslint:disable-next-line: max-line-length
+  async checkConflictsAllocations(milSubMil: TreeNode, originalData: TreeNode[], arrTasks: any[], allResources: any[]): Promise<IConflictResource[]> {
     let allTasks = [];
     const conflictDetails = [];
     let projectInformation = [];
-    allTasks = this.getAllTasks(milSubMil, originalData);
+    allTasks = arrTasks.length ? arrTasks : this.getAllTasks(milSubMil, originalData);
     let capacity;
     const maxHrs = 10;
     for (const element of allTasks) {
-      capacity = await this.getResourceCapacity(element, milSubMil);
+      capacity = await this.getResourceCapacity(element, milSubMil, allResources);
       for (const user of capacity.arrUserDetails) {
         const oExistingResource: IConflictResource = conflictDetails.length ? conflictDetails.find(ct => ct.userId === user.uid) : {};
         this.updateUserCapacity(element, user);
@@ -160,9 +162,10 @@ export class ConflictAllocationsComponent implements OnInit, AfterViewInit {
     return conflictDetails;
   }
 
-  async getResourceCapacity(task, milSubMil) {
+  async getResourceCapacity(task, milSubMil, allResources) {
     let capacity: any;
-    task.resources = this.globalService.oTaskAllocation.oResources.filter((objt) => {
+    // task.resources = this.globalService.oTaskAllocation.oResources.filter((objt) => {
+    task.resources = allResources.filter((objt) => {
       return objt.UserNamePG.ID === task.AssignedTo.ID;
     });
     task.resources = this.commonService.unique(task.resources, 'UserName.ID');
@@ -240,4 +243,3 @@ export class ConflictAllocationsComponent implements OnInit, AfterViewInit {
     return oCapacity;
   }
 }
-

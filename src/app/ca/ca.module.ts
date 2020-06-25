@@ -21,6 +21,8 @@ import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { CaComponent } from './ca.component';
 import { PreStackAllocationModule } from '../shared/pre-stack-allocation/pre-stack-allocation.module';
 import { PreStackAllocationComponent } from '../shared/pre-stack-allocation/pre-stack-allocation.component';
+import { ConflictAllocationsModule } from '../Shared/conflict-allocations/conflict-allocations.module';
+import { ConflictAllocationComponent } from '../shared/conflict-allocations/conflict-allocation.component';
 
 @NgModule({
   declarations: [UnallocatedAllocatedTasksComponent, CaDragdropComponent, CaComponent],
@@ -35,9 +37,11 @@ import { PreStackAllocationComponent } from '../shared/pre-stack-allocation/pre-
     NgxGraphModule,
     NgxChartsModule,
     NgxMaterialTimepickerModule,
-    PreStackAllocationModule
+    PreStackAllocationModule,
+    ConflictAllocationsModule
   ],
   providers: [DynamicDialogConfig, DynamicDialogRef],
-  entryComponents: [UsercapacityComponent, CaDragdropComponent, PreStackAllocationComponent],
+  entryComponents: [UsercapacityComponent, CaDragdropComponent, PreStackAllocationComponent,
+    ConflictAllocationComponent],
 })
 export class CAModule { }

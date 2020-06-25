@@ -25,11 +25,12 @@ import { GanttEdittaskComponent } from './gantt-edittask/gantt-edittask.componen
 import { Ng5SliderModule } from 'ng5-slider';
 import { PreStackAllocationModule } from '../shared/pre-stack-allocation/pre-stack-allocation.module';
 import { PreStackAllocationComponent } from '../shared/pre-stack-allocation/pre-stack-allocation.component';
-import { ConflictAllocationsComponent } from './timeline/conflict-allocations/conflict-allocations.component';
 import { ResourceSelectionComponent } from './resource-selection/resource-selection.component';
+import { ConflictAllocationsModule } from '../Shared/conflict-allocations/conflict-allocations.module';
+import { ConflictAllocationComponent } from '../shared/conflict-allocations/conflict-allocation.component';
 @NgModule({
   declarations: [TaskAllocationComponent, TimelineComponent, DragDropComponent,
-                  TaskDetailsDialogComponent, ResourcesComponent, GanttEdittaskComponent, ConflictAllocationsComponent,ResourceSelectionComponent],
+                  TaskDetailsDialogComponent, ResourcesComponent, GanttEdittaskComponent, ResourceSelectionComponent],
   imports: [
     CommonModule,
     TaskAllocationRoutingModule,
@@ -47,13 +48,14 @@ import { ResourceSelectionComponent } from './resource-selection/resource-select
     UserCapacityModule,
     GanttChartModule,
     Ng5SliderModule,
-    PreStackAllocationModule
+    PreStackAllocationModule,
+    ConflictAllocationsModule
   ],
   exports: [
     TimelineComponent
   ],
   providers: [DatePipe, DynamicDialogConfig, DynamicDialogRef],
   entryComponents: [UsercapacityComponent, DragDropComponent, TaskDetailsDialogComponent, GanttChartComponent, PreStackAllocationComponent,
-                     GanttEdittaskComponent, ConflictAllocationsComponent,ResourceSelectionComponent]
+                     GanttEdittaskComponent, ResourceSelectionComponent, ConflictAllocationComponent]
 })
 export class TaskAllocationModule { }

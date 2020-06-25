@@ -25,14 +25,14 @@ import { IDailyAllocationTask } from 'src/app/shared/pre-stack-allocation/interf
 import { PreStackAllocationComponent } from 'src/app/shared/pre-stack-allocation/pre-stack-allocation.component';
 import { AllocationOverlayComponent } from 'src/app/shared/pre-stack-allocation/allocation-overlay/allocation-overlay.component';
 import { GanttEdittaskComponent } from '../gantt-edittask/gantt-edittask.component';
-import { ConflictAllocationsComponent } from './conflict-allocations/conflict-allocations.component';
+import { ConflictAllocationComponent } from 'src/app/shared/conflict-allocations/conflict-allocation.component';
 
 @Component({
   selector: 'app-timeline',
   templateUrl: './timeline.component.html',
   styleUrls: ['./timeline.component.css'],
   providers: [DialogService, DragDropComponent, UsercapacityComponent, DynamicDialogRef,
-    PreStackAllocationComponent, AllocationOverlayComponent, GanttEdittaskComponent, ConflictAllocationsComponent],
+    PreStackAllocationComponent, AllocationOverlayComponent, GanttEdittaskComponent, ConflictAllocationComponent],
   encapsulation: ViewEncapsulation.None
 })
 export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, AfterViewChecked {
@@ -216,7 +216,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     private dailyAllocation: PreStackAllocationComponent,
     private cdRef: ChangeDetectorRef,
     private myElement: ElementRef,
-    private conflictAllocation: ConflictAllocationsComponent
+    private conflictAllocation: ConflictAllocationComponent
   ) {
 
   }
@@ -882,14 +882,21 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           index = [0, 1,];
           index.push(task.DisableCascade ? 5 : 4);
         } else {
-          index = [0, 1, 6];
-          index.push(task.tat ? 3 : 2);
-          index.push(task.DisableCascade ? 5 : 4);
-          if (task.AssignedTo && task.AssignedTo.ID && task.AssignedTo.ID !== -1) {
-            index.push(7);
-          }
-          if (task.showAllocationSplit) {
-            index = index.concat([10, 11]);
+          if (task.status !== 'Completed' && task.status !== 'Auto Closed') {
+            index = [0, 1, 6];
+            index.push(task.tat ? 3 : 2);
+            index.push(task.DisableCascade ? 5 : 4);
+            if (task.AssignedTo && task.AssignedTo.ID && task.AssignedTo.ID !== -1) {
+              index.push(7);
+            }
+            if (task.showAllocationSplit) {
+              index = index.concat([10, 11]);
+            }
+          } else {
+            index = [6];
+            if (task.AssignedTo && task.AssignedTo.ID && task.AssignedTo.ID !== -1) {
+              index.push(7);
+            }
           }
         }
       }
@@ -1085,7 +1092,11 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           this.sharedObject.resourceHeader = this.header;
 
           let resourceTask = task;
-          this.onResourceClick(resourceTask);
+          if (resourceTask.status === 'Completed' || resourceTask.status !== 'Auto CLosed' || resourceTask.status !== 'In Progress') {
+            this.commonService.showToastrMessage(this.constants.MessageType.error, 'Resource view is unavailable for Completed, Auto CLosed & In Progress tasks.', false);
+          } else {
+            this.onResourceClick(resourceTask);
+          }
         }
       } else if ((task.itemType == "Send to client" || task.itemType == "Client Review") && e.target.parentElement.className === "gantt_cell cell_user") {
         this.commonService.showToastrMessage(this.constants.MessageType.error, 'Resource view is unavailable for these tasks please edit the task to change resource.', false);
@@ -1111,25 +1122,19 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
               setTimeout(() => {
                 let contextMenu: any = document.getElementsByClassName("dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon")[0];
                 contextMenu.style.display = "block";
-              }, 500);
+              }, 50);
             }
-            if (task) {
-              return false;
-            }
-          } else {
-            return false;
           }
         }
       }
       let overlayIconButton = e.target.closest(".ganttOverlayIcon");
       if (overlayIconButton) {
-        this.showOverlayPanel(e, task, this.dailyAllocateOP, e.target.parentElement)
+        this.showOverlayPanel(e, task, this.dailyAllocateOP, e.target.parentElement);
       }
-      return false;
     }
-    else {
-      return true;
-    }
+
+    return true;
+
   }
 
   onAfterTaskDragCall(id, mode, e) {
@@ -1359,17 +1364,15 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     setTimeout(async () => {
       const rowNode: TreeNode = this.getNode(task);
       if (task.editMode) {
-
         this.commonService.showToastrMessage(this.constants.MessageType.warn, 'There are some unsaved changes, Please save them.', false);
         return false;
-
       } else {
-        const Title: string = task.itemType === 'submilestone' && task.milestone ? task.milestone + ' - ' + task.title : task.title;
-        const message: string = 'Are you sure that you want to Confirm \'' + Title + '\' milestone ?';
-        const conflictDetails: IConflictResource[] = await this.conflictAllocation.checkConflictsAllocations(rowNode, this.milestoneData);
+        const conflictDetails: IConflictResource[] = await this.conflictAllocation.checkConflictsAllocations(rowNode, this.milestoneData, [], this.sharedObject.oTaskAllocation.oResources);
         if (conflictDetails.length) {
           this.showConflictAllocations(task, conflictDetails, rowNode);
         } else {
+          const Title: string = task.itemType === 'submilestone' && task.milestone ? task.milestone + ' - ' + task.title : task.title;
+          const message: string = 'Are you sure that you want to Confirm \'' + Title + '\' milestone ?';
           this.setAsNextMilestoneCall(task, message);
         }
       }
@@ -3122,7 +3125,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     let header = task ? '-' + task.itemType.submilestone ? task.milestone + ' ( ' + task.title + ' )'
       : '-' + task.title : '';
     header = 'Conflicting Allocations - ' + this.oProjectDetails.projectCode + header;
-    const ref = this.dialogService.open(ConflictAllocationsComponent, {
+    const ref = this.dialogService.open(ConflictAllocationComponent, {
       data: {
         conflictDetail,
         node,
@@ -3167,7 +3170,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         this.sharedObject.resSectionShow = false;
         const currentMilestoneEdited = this.milestoneData.find(m => m.data.type === 'milestone' && m.data.isCurrent && m.data.edited);
         // tslint:disable-next-line: max-line-length
-        const conflictDetails: IConflictResource[] = currentMilestoneEdited ? await this.conflictAllocation.checkConflictsAllocations(null, this.milestoneData) : [];
+        const conflictDetails: IConflictResource[] = currentMilestoneEdited ? await this.conflictAllocation.checkConflictsAllocations(null, this.milestoneData, [], this.sharedObject.oTaskAllocation.oResources) : [];
         if (conflictDetails.length) {
           this.disableSave = false;
           this.loaderenable = false;
@@ -3936,7 +3939,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     const currentMilestone = this.milestoneData.find((obj) => {
       return obj.data.isCurrent === true;
     });
-    let previousTasks, newTasks, updateProjectBody, updateCurrMilBody, updateNextMilBody;
+    let previousTasks, newTasks, updateProjectBody, updateCurrMilBody;
     if (bCurrentMilestoneUpdated) {
       let prevSubMil = currentMilestone.children.filter(c => parseInt(c.data.position, 10) === (parseInt(subMile.position, 10) - 1));
       prevSubMil.forEach(element => {
@@ -3950,13 +3953,13 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         return obj.data.title === this.sharedObject.oTaskAllocation.oProjectDetails.nextMilestone;
       });
 
-      updateNextMilBody = {
+      let updateNextMilBody = {
         __metadata: { type: this.constants.listNames.Schedules.type },
         Status: this.constants.STATUS.IN_PROGRESS,
-        SubMilestones: bSubMilNew ? this.getSubMilestoneStatus(currentMilestone, this.constants.STATUS.COMPLETED, subMile.title) : ''
+        SubMilestones: bSubMilNew ? this.getSubMilestoneStatus(newCurrentMilestone, this.constants.STATUS.COMPLETED, subMile.title) : ''
       }
-      this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constants.listNames.Schedules.name, +currentMilestone.data.Id),
-        updateCurrMilBody, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
+      this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constants.listNames.Schedules.name, +newCurrentMilestone.data.id),
+        updateNextMilBody, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
 
       previousTasks = currentMilestone ? this.taskAllocateCommonService.getTasksFromMilestones(currentMilestone, true, this.milestoneData, false) : [];
 
@@ -3965,17 +3968,20 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         newTasks = newTasks.filter(c => (c.submilestone === subMile.title || c.itemType === 'Client Review'));
       }
     }
-    /////// Update current milestone status 
-    updateCurrMilBody = {
-      __metadata: { type: this.constants.listNames.Schedules.type },
-      Status: bCurrentMilestoneUpdated ? this.constants.STATUS.IN_PROGRESS : this.constants.STATUS.COMPLETED,
-      SubMilestones: bCurrentMilestoneUpdated ? this.getSubMilestoneStatus(currentMilestone, this.constants.STATUS.COMPLETED, subMile.title) :
-        this.getSubMilestoneStatus(currentMilestone, this.constants.STATUS.COMPLETED)
-    };
-    this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constants.listNames.Schedules.name, +currentMilestone.data.Id),
-      updateCurrMilBody, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
+    if (currentMilestone) {
+      /////// Update current milestone status
+      updateCurrMilBody = {
+        __metadata: { type: this.constants.listNames.Schedules.type },
+        Status: bCurrentMilestoneUpdated ? this.constants.STATUS.IN_PROGRESS : this.constants.STATUS.COMPLETED,
+        SubMilestones: bCurrentMilestoneUpdated ? this.getSubMilestoneStatus(currentMilestone, this.constants.STATUS.COMPLETED, subMile.title) :
+          this.getSubMilestoneStatus(currentMilestone, this.constants.STATUS.COMPLETED)
+      };
+      this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constants.listNames.Schedules.name, +currentMilestone.data.id),
+        updateCurrMilBody, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
+    }
 
-    /////// Update current project status 
+
+    /////// Update current project status
     updateProjectBody = {
       __metadata: { type: this.constants.listNames.ProjectInformation.type },
       Milestone: bCurrentMilestoneUpdated ? this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone :
@@ -3986,14 +3992,14 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, +projectID),
       updateProjectBody, this.constants.Method.PATCH, this.constants.listNames.ProjectInformation.name);
 
-    /////// Filter out not required tasks from prev Milestone / submilestone  
+    /////// Filter out not required tasks from prev Milestone / submilestone
     previousTasks = previousTasks.filter((objt) => {
       return objt.status !== 'Deleted' && objt.status !== 'Abandon' && objt.status !== 'Completed';
     });
 
     ////// Filter only Not Confirmed tasks from new
     newTasks = newTasks.filter((objt) => {
-      return objt.status === 'Not Confirmed' ;
+      return objt.status === 'Not Confirmed';
     });
 
     for (const task of previousTasks) {

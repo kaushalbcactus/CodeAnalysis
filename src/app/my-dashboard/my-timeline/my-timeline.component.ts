@@ -521,7 +521,7 @@ export class MyTimelineComponent implements OnInit {
       } else if (this.task.Status === 'In Progress') {
         this.SelectedStatus = 'In Progress';
         this.task.StartDate = new Date(this.task.StartDate);
-        this.task.DueDate = new Date(this.task.DueDate);
+        this.task.DueDate = new Date(this.task.DueDateDT);
         this.task['DueTime'] = this.datePipe.transform(this.task.DueDateDT, 'h:mm a');
         this.statusOptions = [
           { label: 'In Progress', value: 'In Progress' },
@@ -690,18 +690,16 @@ export class MyTimelineComponent implements OnInit {
     const earlierStaus = task.Status;
     task.Status = this.SelectedStatus;
     const stval = await this.myDashboardConstantsService.getPrevTaskStatus(task);
-    const allowedStatus = ["Completed", "AllowCompletion", "Auto Closed"];
-    if (allowedStatus.includes(stval)) {
-      if (task.Status === 'Completed' && !task.FinalDocSubmit) {
-
+    const allowedStatus = ["Completed", "Auto Closed"];
+    // if (allowedStatus.includes(stval) || stval === '') {
+      if (task.Status === 'Completed' && !task.FinalDocSubmit && (allowedStatus.includes(stval) || stval === '')) {
         this.commonService.showToastrMessage(this.constants.MessageType.error, 'No Final Document Found', false);
         task.Status = earlierStaus;
         this.CalendarLoader = false;
         return false;
       } else {
-        this.CalendarLoader = false;
-        if (task.Status === "Completed") {
-
+        if (task.Status === "Completed" && (allowedStatus.includes(stval) || stval === '')) {
+          this.CalendarLoader = false;
           this.commonService.confirmMessageDialog('Confirmation', 'Are you sure that you want to proceed?', null, ['Yes', 'No'], false).then(async Confirmation => {
             if (Confirmation === 'Yes') {
               task.parent = 'Dashboard';
@@ -729,7 +727,7 @@ export class MyTimelineComponent implements OnInit {
               task.Status = earlierStaus;
             }
           });
-        } else {
+        } else if (task.Status === "In Progress" && (allowedStatus.includes(stval) || stval === '')) {
           const batchURL = [];
           const options = {
             data: null,
@@ -780,14 +778,17 @@ export class MyTimelineComponent implements OnInit {
           this.commonService.showToastrMessage(this.constants.MessageType.success, 'Task updated successfully.', false);
           this.getEvents(false, this.fullCalendar.calendar.state.dateProfile.currentRange.start,
             this.fullCalendar.calendar.state.dateProfile.currentRange.end);
+        } else {
+          this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Previous task should be completed.', false);
+          task.Status = earlierStaus;
+          this.CalendarLoader = false;
         }
       }
 
-    } else {
-      this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Previous task should be completed.', false);
-      task.Status = earlierStaus;
-      this.CalendarLoader = false;
-    }
+    // } else {
+      
+     
+    // }
   }
 
   async saveTask(task) {
@@ -940,11 +941,6 @@ export class MyTimelineComponent implements OnInit {
   showOverlayPanel(event, rowData, dailyAllocateOP, target?) {
     const allocationPerDay = rowData.allocationPerDay ? rowData.allocationPerDay : '';
     dailyAllocateOP.showOverlay(event, allocationPerDay, target);
-    // setTimeout(() => {
-    //   let panel: any = document.querySelector(".dailyAllocationOverlayComp > div");
-    //   panel.style.top = event.pageY + 'px';
-    //   panel.style.left = event.pageX + 'px';
-    // }, 50);
   }
 
   hideOverlayPanel() {
