@@ -1,8 +1,3 @@
-<!-- <div fxLayout="column" style="padding: 2vw;" fxLayoutAlign="center center" *ngIf="!GanttChartView && projectDetails !== undefined">
-    <div id="modalInnerLoader"></div>
-    <div id="modalInnerLoaderText">Loading...</div>
-</div> -->
-
 <div fxLayout="row" fxLayoutAlign="start center" style="width:100%;">
 
     <div *ngIf="GanttChartView" fxLayout="column" fxLayoutAlign="center start" style="margin-top: 1vh;width: 100%;">
@@ -153,7 +148,7 @@
         <!-- **********************************************************************************************************
                                                           Table View Data
            ********************************************************************************************************** -->
-        <div fxLayout="row" class="taskAllocationTimeline" fxLayoutAlign="center start" [hidden]="visualgraph === true" *ngIf="!loaderenable">
+        <div fxLayout="row" class="taskAllocationTimeline" fxLayoutAlign="center start" [hidden]="!tableView">
 
             <p-treeTable [value]="milestoneData">
 
@@ -167,17 +162,15 @@
                         <th style="width:4%">TAT</th>
                         <th style="width:15%">Assign To</th>
                         <th style="width:4%">Type</th>
-                        <!-- <th style="width:5%">Allow Start</th> -->
                         <th style="width:5%">Disable Cascade</th>
                         <th style="width:3%"> </th>
                     </tr>
                 </ng-template>
 
                 <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
-                    <!-- [ttContextMenuRow]="rowNode" -->
                     <tr *ngIf="(rowData.status !== 'Deleted')" class="milestoneTable"
                         [style.font-weight]="rowData.type === 'milestone' || rowData.type === 'submilestone' || rowData.title ==='Client Review' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.title.indexOf('Slot') > -1) ? '700':''">
-                        <!-- task Name -->
+                        
                         <td [style.text-align]="'left'"
                             [style.padding-left.px]="rowData.title ==='Client Review' ? '20':''"
                             [style.backgroundColor]="rowData.slotColor">
@@ -340,13 +333,6 @@
 
                                 <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData, rowNode);popupMenu.show($event);"></i>
                             </div>
-                            <!-- <button
-                                *ngIf="rowData.type === 'task' && rowData.milestoneStatus !== 'Completed' && (rowData.status !== 'Completed' && rowData.status !=='Abandon' && rowData.status !=='Auto Closed' && rowData.status !=='Hold' && rowData.status !== 'Not Saved') && !changeInRestructure"
-                                [hidden]="rowData.editMode === false" type="button"
-                                (click)="CancelChanges(rowData,'task')" style="line-height: 0px;height: 0px;"
-                                mat-icon-button title="Cancel">
-                                <mat-icon> cancel</mat-icon>
-                            </button> -->
 
                             <div *ngIf=" !rowData.editMode && rowData.type === 'task' && rowData.milestoneStatus !== 'Completed' &&
                             (rowData.status !== 'Completed' && rowData.status !== 'Abandon' && rowData.status !== 'Auto Closed'
@@ -410,8 +396,6 @@
                 <ng-template #ganttcontainer></ng-template>
             </div>
         </div>
-  <!-- <ng-gantt style="width:100%;" *ngIf='visualgraph' [options]="editorOptions" [data]="GanttchartData"
-                #gantteditor></ng-gantt> -->
         <app-allocation-overlay #dailyAllocateOP></app-allocation-overlay>
 
         <input [hidden]='true' readonly [ngxTimepicker]="ganttPicker"
@@ -540,10 +524,6 @@
         </div>
     </form>
 </p-dialog>
-
-<!-- <p-overlayPanel #op2 [showCloseIcon]="true" [dismissable]="false">
-  <app-daily-allocation></app-daily-allocation>
-</p-overlayPanel> -->
 
 
 <p-sidebar [(visible)]="displayBody" position="bottom" styleClass="ui-sidebar-lg resourcePanel" [showCloseIcon]="false" [closeOnEscape]="false" (onHide)="onClose()">
