@@ -97,6 +97,17 @@ export class BlockResourceDialogComponent implements OnInit {
       ExpectedTime: ["", Validators.required],
       allocationPerDay:[""],
     });
+     let count =0;
+    this.BlockResourceForm.valueChanges.subscribe(async blockResource => {
+       
+      console.log("function called:" + count++ )
+      await this.updateValue(blockResource)
+      this.validateBudgetHours();
+      this.isViewAllocationBtn();
+      if(this.task.budgetHours > 0){
+        await this.dailyAllocation.calcPrestackAllocation([this.BlockResourceForm.value.Resource.value],this.task);
+    } 
+    });
   }
 
   async SetDateValidation(dateType?: string) {
@@ -121,40 +132,33 @@ export class BlockResourceDialogComponent implements OnInit {
       this.EDmaxDateValue = new Date(this.selectedMaxDate);
     } 
 
+   
+
+    // this.validateBudgetHours();
+    // this.isViewAllocationBtn();
+    // await this.dailyAllocation.calcPrestackAllocation([this.BlockResourceForm.value.Resource.value], this.task);
+
+    // console.log("callled")
+  
+  }
+
+  updateValue(blockResource){
+    const EndDate = blockResource.EndDate ?  new Date(this.datepipe.transform(blockResource.EndDate, 'yyyy-MM-dd') + 'T23:45:00.000') : null
     this.task =  {
       id: this.blockingRecord ? this.blockingRecord.taskID:0,
-      taskFullName: this.BlockResourceForm.value.Title,
+      taskFullName: blockResource.Title,
       Task: "ResourceBlocking",
-      pUserStartDatePart: this.BlockResourceForm.value.StartDate ? this.common.getDatePart(this.BlockResourceForm.value.StartDate): null,
-      pUserEndDatePart:this.BlockResourceForm.value.EndDate ? this.common.getDatePart(this.BlockResourceForm.value.EndDate): null,
-      pUserStart: this.BlockResourceForm.value.StartDate ? this.BlockResourceForm.value.StartDate: null,
-      pUserEnd:this.BlockResourceForm.value.EndDate ? this.BlockResourceForm.value.EndDate : null,
-      budgetHours: this.BlockResourceForm.value.ExpectedTime,
-      pUserStartTimePart: this.BlockResourceForm.value.StartDate ? this.common.getTimePart(this.BlockResourceForm.value.StartDate) :'',
-      pUserEndTimePart: this.BlockResourceForm.value.EndDate ? this.common.getTimePart(this.BlockResourceForm.value.EndDate):'',
+      pUserStartDatePart: blockResource.StartDate ? this.common.getDatePart(blockResource.StartDate): null,
+      pUserEndDatePart:EndDate ? this.common.getDatePart(EndDate): null,
+      pUserStart: blockResource.StartDate ? blockResource.StartDate: null,
+      pUserEnd:EndDate,
+      budgetHours: blockResource.ExpectedTime,
+      pUserStartTimePart: blockResource.StartDate ? this.common.getTimePart(blockResource.StartDate) :'',
+      pUserEndTimePart: EndDate ? this.common.getTimePart(EndDate):'',
       status:'Active',
-      allocationPerDay:''
+      allocationPerDay:'',
+      Resource: blockResource.Resource ? blockResource.Resource.value : ''
     };
-
-    this.validateBudgetHours();
-    this.isViewAllocationBtn();
-    await this.dailyAllocation.calcPrestackAllocation([this.BlockResourceForm.value.Resource.value], this.task);
-
-    console.log("callled")
-    this.BlockResourceForm.get('ExpectedTime').valueChanges.subscribe(async expectedTime => {
-      this.task.budgetHours = expectedTime;
-      this.validateBudgetHours();
-      this.isViewAllocationBtn();
-      if(expectedTime > 0){
-        await this.dailyAllocation.calcPrestackAllocation([this.BlockResourceForm.value.Resource.value],this.task);
-    } 
-    });
-    this.BlockResourceForm.get('Resource').valueChanges.subscribe(async resource => {
-      this.task.Resource = resource.value;
-      this.validateBudgetHours();
-      this.isViewAllocationBtn();
-        await this.dailyAllocation.calcPrestackAllocation([this.BlockResourceForm.value.Resource.value],this.task);
-    });
   }
 
   async SaveDetails() {
@@ -166,15 +170,6 @@ export class BlockResourceDialogComponent implements OnInit {
         this.common.showToastrMessage(this.constants.MessageType.info,'adding...',true,true);
         this.task.Resource = this.BlockResourceForm.value.Resource.value
         this.ref.close(this.task);
-        // const validation = await this.validateBlocking(this.datepipe.transform(this.BlockResourceForm.value.StartDate, 'MM/dd/yyyy')
-        // , this.datepipe.transform(this.BlockResourceForm.value.EndDate,'MM/dd/yyyy'));
-        // if (validation) {
-        //   this.ref.close(this.BlockResourceForm);
-        // } else {
-        //   this.common.clearToastrMessage();
-        //   this.common.showToastrMessage(this.constants.MessageType.warn, 'Blocking resource already exist between ' +
-        //     this.datepipe.transform(this.BlockResourceForm.value.StartDate, 'MMM dd, yyyy') + ' and ' + this.datepipe.transform(this.BlockResourceForm.value.EndDate, 'MMM dd, yyyy'), false);
-        // }
       } 
   }
   else {
@@ -183,36 +178,40 @@ export class BlockResourceDialogComponent implements OnInit {
 }
 
 viewAllocation(allocationType) {
-  const milestoneTask = this.task;
+  if(this.BlockResourceForm.value.Resource){
+    const milestoneTask = this.task;
+    let header = this.BlockResourceForm.value.Title;
+    header = header + ' - ' + this.BlockResourceForm.value.Resource.value.UserNamePG.Title;
+    const ref = this.dialogService.open(PreStackAllocationComponent, {
+      data: {
+        ID: milestoneTask.id,
+        task: milestoneTask.taskFullName,
+        startDate: milestoneTask.pUserStart,
+        endDate: milestoneTask.pUserEnd,
+        startTime: milestoneTask.pUserStartTimePart,
+        endTime: milestoneTask.pUserEndTimePart,
+        budgetHrs: milestoneTask.budgetHours.toString(),
+        resource:[this.BlockResourceForm.value.Resource.value],
+        status: milestoneTask.status,
+        strAllocation: milestoneTask.allocationPerDay,
+        allocationType
+      } as IDailyAllocationTask,
+      width: '90vw',
+  
+      header,
+      contentStyle: { 'max-height': '90vh', 'overflow-y': 'auto' },
+      closable: false
+    });
+    ref.onClose.subscribe((allocation: any) => {
+      this.dailyAllocation.setAllocationPerDay(allocation, milestoneTask);
+      if (allocation.allocationAlert) {
+        this.common.showToastrMessage(this.constants.MessageType.warn,'Resource is over allocated.',false);
+      }
+    });
+  } else{
+    this.common.showToastrMessage(this.constants.MessageType.warn,"Please select resource",false);
+  }
  
-  let header = this.BlockResourceForm.value.Title;
-  header = header + ' - ' + this.BlockResourceForm.value.Resource.value.UserNamePG.Title;
-  const ref = this.dialogService.open(PreStackAllocationComponent, {
-    data: {
-      ID: milestoneTask.id,
-      task: milestoneTask.taskFullName,
-      startDate: milestoneTask.pUserStart,
-      endDate: milestoneTask.pUserEnd,
-      startTime: milestoneTask.pUserStartTimePart,
-      endTime: milestoneTask.pUserEndTimePart,
-      budgetHrs: milestoneTask.budgetHours.toString(),
-      resource:[this.BlockResourceForm.value.Resource.value],
-      status: milestoneTask.status,
-      strAllocation: milestoneTask.allocationPerDay,
-      allocationType
-    } as IDailyAllocationTask,
-    width: '90vw',
-
-    header,
-    contentStyle: { 'max-height': '90vh', 'overflow-y': 'auto' },
-    closable: false
-  });
-  ref.onClose.subscribe((allocation: any) => {
-    this.dailyAllocation.setAllocationPerDay(allocation, milestoneTask);
-    if (allocation.allocationAlert) {
-      this.common.showToastrMessage(this.constants.MessageType.warn,'Resource is over allocated.',false);
-    }
-  });
 }
 
 // async validateBlocking(startDate, endDate) {
@@ -258,7 +257,7 @@ viewAllocation(allocationType) {
 // await this.dailyAllocation.calcPrestackAllocation(resources, this.task);
 
 isViewAllocationBtn() {
-    if (this.task.budgetHours && this.task.pUserStartDatePart !== this.task.pUserEndDatePart) {
+    if (this.task.budgetHours && this.task.Resource && this.task.pUserStartDatePart !== this.task.pUserEndDatePart) {
       this.isViewAllocation = true;
     } else {
       this.isViewAllocation = false;

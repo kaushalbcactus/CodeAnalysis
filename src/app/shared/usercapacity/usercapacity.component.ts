@@ -1246,20 +1246,22 @@ export class UsercapacityComponent implements OnInit {
                 ? "" + oUser.tasks[j].TimeSpent
                 : "0.0";
 
-            } else if(oUser.tasks[j].Task === 'ResourceBlocking'){
+            } 
+            // else if(oUser.tasks[j].Task === 'ResourceBlocking'){
 
-              oUser.tasks[
-                j
-              ].timeAllocatedPerDay = this.commonservice.convertToHrsMins(
-                "" +
-                  this.getPerDayTime(
-                    oUser.tasks[j].ExpectedTime !== null
-                      ? oUser.tasks[j].ExpectedTime
-                      : "0",
-                    taskBusinessDays - arrLeaveDays.length
-                  )
-              );
-            } else{
+            //   oUser.tasks[
+            //     j
+            //   ].timeAllocatedPerDay = this.commonservice.convertToHrsMins(
+            //     "" +
+            //       this.getPerDayTime(
+            //         oUser.tasks[j].ExpectedTime !== null
+            //           ? oUser.tasks[j].ExpectedTime
+            //           : "0",
+            //         taskBusinessDays - arrLeaveDays.length
+            //       )
+            //   );
+            // }
+             else{
               if (oUser.tasks[j].AllocationPerDay) {
                 let allocationPerDay = oUser.tasks[j].AllocationPerDay.split(
                   /\n/

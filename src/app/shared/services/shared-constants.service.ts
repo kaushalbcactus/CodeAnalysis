@@ -46,7 +46,7 @@ export class SharedConstantsService {
     },
 
     fetchBlockResource: {
-      select: 'ID,Title,Status,ExpectedTime,StartDate,DueDateDT,TimeZoneNM,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail',
+      select: 'ID,Title,Status,ExpectedTime,StartDate,DueDateDT,TimeZoneNM,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail,AllocationPerDay',
       filter: "(AssignedTo/Id eq {{userID}}) and(" +
         "(StartDate ge '{{startDateString}}' and StartDate le '{{endDateString}}')" +
         "or (DueDateDT ge '{{startDateString}}' and DueDateDT le '{{endDateString}}')" +
