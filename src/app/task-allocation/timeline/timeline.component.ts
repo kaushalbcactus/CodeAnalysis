@@ -882,14 +882,21 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           index = [0, 1,];
           index.push(task.DisableCascade ? 5 : 4);
         } else {
-          index = [0, 1, 6];
-          index.push(task.tat ? 3 : 2);
-          index.push(task.DisableCascade ? 5 : 4);
-          if (task.AssignedTo && task.AssignedTo.ID && task.AssignedTo.ID !== -1) {
-            index.push(7);
-          }
-          if (task.showAllocationSplit) {
-            index = index.concat([10, 11]);
+          if (task.status !== 'Completed' && task.status !== 'Auto Closed') {
+            index = [0, 1, 6];
+            index.push(task.tat ? 3 : 2);
+            index.push(task.DisableCascade ? 5 : 4);
+            if (task.AssignedTo && task.AssignedTo.ID && task.AssignedTo.ID !== -1) {
+              index.push(7);
+            }
+            if (task.showAllocationSplit) {
+              index = index.concat([10, 11]);
+            }
+          } else {
+            index = [6];
+            if (task.AssignedTo && task.AssignedTo.ID && task.AssignedTo.ID !== -1) {
+              index.push(7);
+            }
           }
         }
       }
@@ -1085,7 +1092,11 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           this.sharedObject.resourceHeader = this.header;
 
           let resourceTask = task;
-          this.onResourceClick(resourceTask);
+          if (resourceTask.status === 'Completed' || resourceTask.status !== 'Auto CLosed' || resourceTask.status !== 'In Progress') {
+            this.commonService.showToastrMessage(this.constants.MessageType.error, 'Resource view is unavailable for Completed, Auto CLosed & In Progress tasks.', false);
+          } else {
+            this.onResourceClick(resourceTask);
+          }
         }
       } else if ((task.itemType == "Send to client" || task.itemType == "Client Review") && e.target.parentElement.className === "gantt_cell cell_user") {
         this.commonService.showToastrMessage(this.constants.MessageType.error, 'Resource view is unavailable for these tasks please edit the task to change resource.', false);
@@ -1111,25 +1122,19 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
               setTimeout(() => {
                 let contextMenu: any = document.getElementsByClassName("dhtmlxMenu_dhx_terrace_SubLevelArea_Polygon")[0];
                 contextMenu.style.display = "block";
-              }, 500);
+              }, 50);
             }
-            if (task) {
-              return false;
-            }
-          } else {
-            return false;
           }
         }
       }
       let overlayIconButton = e.target.closest(".ganttOverlayIcon");
       if (overlayIconButton) {
-        this.showOverlayPanel(e, task, this.dailyAllocateOP, e.target.parentElement)
+        this.showOverlayPanel(e, task, this.dailyAllocateOP, e.target.parentElement);
       }
-      return false;
     }
-    else {
-      return true;
-    }
+
+    return true;
+
   }
 
   onAfterTaskDragCall(id, mode, e) {
