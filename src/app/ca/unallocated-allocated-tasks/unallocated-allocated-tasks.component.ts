@@ -523,6 +523,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
   async assignedToUserChanged(rowData) {
     rowData.assignedUserChanged = true;
+    rowData.AssignedTo = rowData.allocatedResource.UserNamePG;
+    // this.completeTaskArray.find(a => a.Title === rowData.Title).MilestoneAllTasks.find(t => t.taskFullName === rowData.taskFullName);;
     const resource = this.resourceList.filter((objt) => {
       return rowData.allocatedResource.UserNamePG.ID === objt.UserNamePG.ID;
     });
@@ -769,7 +771,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           start_date: dbTask.StartDate,
           end_date: dbTask.DueDateDT,
           id: dbTask.Id,
-          type: dbTask.tasktype,
+          type: dbTask.Task,
           milestone: dbTask.Milestone,
           tasks: dbMilestoneTasks.filter(s => s.Task === tasktype).map(c => $.trim(c.Title.replace(c.ProjectCode + '', '').replace(c.Milestone + '', '')))
         };
@@ -838,7 +840,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           event.data.MilestoneAllTasks.find(c => c.type === tasks[0] && c.milestone === event.data.Milestone)
             .tasks.push(event.data.TaskName);
         } else {
-          event.data.MilestoneAllTasks.push({ ...event.data, type: tasks[0], milestone: event.data.Milestone, tasks: [event.data.TaskName] });
+          event.data.MilestoneAllTasks.push({ ...obj, type: tasks[0], milestone: event.data.Milestone, tasks: [event.data.TaskName] });
         }
 
         event.data.subTaskloaderenable = false;
@@ -871,7 +873,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   async GetTask(task, IsdbTask) {
 
     // const taskObj = $.extend(true, {}, this.caGlobal.caObject);
-    const taskObj = {...this.caGlobal.caObject};
+    const taskObj = { ...this.caGlobal.caObject };
     const hrsMinObject = {
       timeHrs: task.TimeSpent != null ? task.TimeSpent.indexOf('.') > -1 ?
         task.TimeSpent.split('.')[0] : task.TimeSpent : '00',
@@ -949,6 +951,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     taskObj.StartDate = task.startDate ? new Date(task.startDate) : new Date(task.StartDate);
     taskObj.DueDate = task.DueDate ? new Date(task.DueDate) : new Date(task.DueDate);
     taskObj.UserStart = task.startDate ? new Date(task.startDate) : new Date(task.StartDate);
+    taskObj.start_date = taskObj.UserStart;
     taskObj.UserEnd = task.DueDate ? new Date(task.DueDate) : new Date(task.DueDate);
     taskObj.ProjectName = task.ProjectName;
     taskObj.SpentTime = this.commonService.addHrsMins([hrsMinObject]);
@@ -1215,15 +1218,13 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
 
   async saveTasks(unt) {
-
     this.disableSave = true;
     const isValid = await this.validate();
-    const tasks = [];
-    for (const task of this.completeTaskArray) {
-      const conflictDetails: IConflictResource[] = await this.conflictAllocation.checkConflictsAllocations(unt, [], task.MilestoneAllTasks, this.resourceList);
-      console.log(conflictDetails);
-    }
-    if (isValid) {
+    const bindingData = [...this.caGlobal.dataSource];
+    const allTasks = [].concat.apply([], bindingData.map(t => t.SlotTasks));
+    const conflictDetails: IConflictResource[] = await this.conflictAllocation.checkConflictsAllocations(null, [], allTasks, this.resourceList);
+    const projectCodes = allTasks.map(t => t.ProjectCode);
+    if (isValid && conflictDetails.length <= 0) {
       this.loaderenable = true;
       setTimeout(() => {
         this.commonService.showToastrMessage(this.constants.MessageType.info, 'Updating...', true, true);
@@ -1231,6 +1232,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       }, 300);
     }
     else {
+      this.showConflictAllocations(null, conflictDetails, unt, allTasks, projectCodes);
       this.disableSave = false;
     }
 
@@ -1775,7 +1777,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     header = header + ' - ' + milestoneTask.AssignedTo.Title;
     const ref = this.dialogService.open(PreStackAllocationComponent, {
       data: {
-        ID: milestoneTask.Id ?  milestoneTask.Id : milestoneTask.id,
+        ID: milestoneTask.Id ? milestoneTask.Id : milestoneTask.id,
         task: milestoneTask.taskFullName,
         startDate: milestoneTask.UserStartDatePart,
         endDate: milestoneTask.UserEndDatePart,
@@ -1818,5 +1820,37 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
   hideOverlayPanel() {
     this.dailyAllocateOP.hideOverlay();
+  }
+
+  showConflictAllocations(task, conflictDetail, node, allTasks, projectCodes) {
+    // let header = task ? '-' + task.itemType.submilestone ? task.milestone + ' ( ' + task.title + ' )'
+    //   : '-' + task.title : '';
+    const header = 'Conflicting Allocations - ' + projectCodes.join(', ');
+    const ref = this.dialogService.open(ConflictAllocationComponent, {
+      data: {
+        conflictDetail,
+        node,
+        originalData: allTasks,
+        project: projectCodes,
+        resources: this.resourceList
+      },
+      header,
+      width: '95vw',
+      height: '80vh',
+      contentStyle: { height: '80vh', overflow: 'auto' },
+      closable: false,
+    });
+
+    ref.onClose.subscribe(async (detail: any) => {
+      if (detail.action.toLowerCase() === 'save') {
+        const msg = 'Are you sure that you want to update tasks ?';
+        const conflictMessage = detail.conflictResolved ? '' + msg : 'Conflict unresolved. ' + msg;
+        this.commonService.confirmMessageDialog('Confirmation', msg, null, ['Yes', 'No'], false).then(async Confirmation => {
+          if (Confirmation === 'Yes') {
+            this.generateSaveTasks(node);
+          }
+        });
+      }
+    });
   }
 }

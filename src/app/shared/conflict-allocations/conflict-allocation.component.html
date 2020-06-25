@@ -4,9 +4,19 @@
     fxLayoutAlign="end center"
     style="margin-right: 10px;"
   >
-    <button mat-raised-button type="button" title="Refresh" class="cls_conflict_refresh" (click)="refresh()">
+    <!-- <button type="button" title="Refresh" class="cls_conflict_refresh" (click)="refresh()">
       <mat-icon>refresh</mat-icon>
-    </button>
+    </button> -->
+    <button
+    type="button"
+    pButton
+    icon="pi pi-refresh"
+    [ngStyle]="{ 'margin-right': '5px', cursor: 'pointer' }"
+    label="Refresh"
+    class="ui-button-secondary cls_conflict_refresh"
+    (click)="refresh()"
+    style="background-color: ghostwhite;"
+  ></button>
   </div>
   <button
     type="button"
@@ -74,7 +84,7 @@
                 <ng-template pTemplate="body" let-innerRowData let-columns="innercolumns">
                   <tr>
                     <td>
-                      <a [href]="goToProjectDetails(innerRowData)" *ngIf="innerRowData.projectCode !== projectCode && innerRowData.projectCode !== 'Adhoc' ; else elseBlock" target="_blank" style="color:#c53e3e;" target="_blank"> {{ innerRowData.projectCode }}</a>
+                      <a [href]="goToProjectDetails(innerRowData)" *ngIf="this.projectCodes.indexOf(innerRowData.projectCode) < 0 && innerRowData.projectCode !== 'Adhoc' ; else elseBlock" target="_blank" style="color:#c53e3e;" target="_blank"> {{ innerRowData.projectCode }}</a>
                       <ng-template #elseBlock>{{innerRowData.projectCode}}</ng-template>
                     </td>
                     <td>

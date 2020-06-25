@@ -1074,20 +1074,20 @@ export class UsercapacityComponent implements OnInit {
       });
     } else {
       let taskObj: any = {
-        Title: task.taskFullName,
-        Milestone: task.milestone,
-        SubMilestones: task.submilestone,
-        Task: task.title,
+        Title: task.taskFullName ? task.taskFullName : task.Title,
+        Milestone: task.milestone ? task.milestone : task.Milestone,
+        SubMilestones: task.SubMilestones ? task.SubMilestones : task.submilestone,
+        Task: task.Task ? task.Task : task.title,
         StartDate: task.start_date,
         DueDate: task.end_date,
         DueDateDT: task.end_date,
         AllocationPerDay: task.allocationPerDay,
-        Status: task.status,
-        ExpectedTime: task.budgetHours,
+        Status: task.Status ? task.Status : task.status,
+        ExpectedTime: task.EstimatedTime ? task.EstimatedTime : task.budgetHours,
         ID: task.id,
-        TimeSpent: task.spentTime,
-        TimeZone: task.assignedUserTimeZone,
-        parentSlot: task.parentSlot,
+        TimeSpent: task.SpentTime ?  task.SpentTime : task.spentTime,
+        TimeZone: task.AssignedUserTimeZone ? task.AssignedUserTimeZone : task.assignedUserTimeZone,
+        parentSlot: task.parentSlot ? task.parentSlot : task.Id,
       };
 
       for (var index in capacity.arrUserDetails) {

@@ -12,17 +12,18 @@ import { ConstantsService } from 'src/app/Services/constants.service';
 @Component({
   selector: 'app-conflict-allocation',
   templateUrl: './conflict-allocation.component.html',
-  styleUrls: ['./conflict-allocation.component.css']
+  styleUrls: ['./conflict-allocation.component.css'],
+  providers: [UsercapacityComponent]
 })
 export class ConflictAllocationComponent implements OnInit {
-  resources: any;
   cols = [];
   activeIndex = -1;
   public conflicTasks: any;
   public node: TreeNode;
   public milestoneData: TreeNode[];
-  public projectCode: string;
+  public projectCodes: string[];
   public hideLoader: boolean;
+  public allResources: any;
   @ViewChild('UserCapacity', { static: false }) userCapacity: UsercapacityComponent;
   constructor(public popupData: DynamicDialogConfig, public globalService: GlobalService,
     public popupConfig: DynamicDialogRef, public allocationCommon: TaskAllocationCommonService,
@@ -41,7 +42,8 @@ export class ConflictAllocationComponent implements OnInit {
     this.conflicTasks = this.popupData.data.conflictDetail ? this.popupData.data.conflictDetail : [];
     this.node = this.popupData.data.node ? this.popupData.data.node : {};
     this.milestoneData = this.popupData.data.originalData ? this.popupData.data.originalData : {};
-    this.projectCode = this.popupData.data.project ? this.popupData.data.project : '';
+    this.projectCodes = this.popupData.data.project ? this.popupData.data.project : [];
+    this.allResources = this.popupData.data.resources ? this.popupData.data.resources : [];
     this.popupData.data = null;
     this.activeIndex = 0;
     this.hideLoader = true;
@@ -51,7 +53,7 @@ export class ConflictAllocationComponent implements OnInit {
   }
 
   goToProjectDetails(data: any): string {
-    if (this.projectCode !== data.projectCode) {
+    if (this.projectCodes.indexOf(data.projectCode) < 0) {
       return this.globalService.url + '/taskAllocation?ProjectCode=' + data.projectCode;
     }
   }
@@ -74,8 +76,12 @@ export class ConflictAllocationComponent implements OnInit {
   refresh(): void {
     this.hideLoader = false;
     setTimeout(async () => {
-      // tslint:disable-next-line: max-line-length
-      this.conflicTasks = await this.checkConflictsAllocations(this.node, this.milestoneData, [], this.globalService.oTaskAllocation.oResources);
+      if (this.allResources.length) {
+        this.conflicTasks = await this.checkConflictsAllocations(null, [], this.milestoneData, this.allResources);
+      } else {
+        // tslint:disable-next-line: max-line-length
+        this.conflicTasks = await this.checkConflictsAllocations(this.node, this.milestoneData, [], this.globalService.oTaskAllocation.oResources);
+      }
       this.hideLoader = true;
     }, 100);
   }
@@ -133,12 +139,19 @@ export class ConflictAllocationComponent implements OnInit {
               };
               date.tasksDetails.forEach(task => {
                 const project = projectInformation.find(p => p.ProjectCode === task.projectCode);
-                const projectDetail = {
-                  projectCode: task.projectCode,
-                  shortTitle: project ? project.WBJID : '',
-                  allocatedhrs: this.commonService.convertFromHrsMins(task.timeAllocatedPerDay)
-                };
-                conflictTask.projects.push(projectDetail);
+                const projectExists = conflictTask.projects.find(p => p.projectCode === task.projectCode);
+                if (!projectExists) {
+                  const projectDetail = {
+                    projectCode: task.projectCode,
+                    shortTitle: project ? project.WBJID : '',
+                    allocatedhrs: this.commonService.convertFromHrsMins(task.timeAllocatedPerDay)
+                  };
+                  conflictTask.projects.push(projectDetail);
+                } else {
+                  const preallocatedHrs: number = projectExists.allocatedhrs;
+                  const currentAllocatedHrs: number = this.commonService.convertFromHrsMins(task.timeAllocatedPerDay);
+                  projectExists.allocatedhrs = preallocatedHrs + currentAllocatedHrs;
+                }
               });
               tasks.push(conflictTask);
             }
@@ -149,7 +162,7 @@ export class ConflictAllocationComponent implements OnInit {
             oExistingResource.tasks = [...oExistingResource.tasks, ...tasks];
           } else {
             const conflictResouce: IConflictResource = {
-              userName: user.userNamePG,
+              userName: user.userName,
               userId: user.uid,
               userCapacity: this.recalculateUserCapacity(user, dates),
               tasks
@@ -164,7 +177,6 @@ export class ConflictAllocationComponent implements OnInit {
 
   async getResourceCapacity(task, milSubMil, allResources) {
     let capacity: any;
-    // task.resources = this.globalService.oTaskAllocation.oResources.filter((objt) => {
     task.resources = allResources.filter((objt) => {
       return objt.UserNamePG.ID === task.AssignedTo.ID;
     });

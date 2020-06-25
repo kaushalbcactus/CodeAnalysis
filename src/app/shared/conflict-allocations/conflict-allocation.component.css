@@ -53,3 +53,8 @@ body .ui-accordion .ui-accordion-header:not(.ui-state-disabled).ui-state-active:
 ::ng-deep tr:nth-child(even) {
   background-color: #ffffff!important;
 }
+::ng-deep .saveTaskButton {
+  margin-right: 15px !important;
+  background-color: #db1721 !important;
+  border: 1px solid #db1721 !important;
+}

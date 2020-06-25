@@ -81,6 +81,9 @@ export class CAGlobalService {
     taskFullName: '',
     allocationColor : '',
     allocationTypeLoader : false,
+    start_date: new Date(),
+    end_date: new Date(),
+    id: 0
   };
   public oCapacity = {
     arrUserDetails: [],
