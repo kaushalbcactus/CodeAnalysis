@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { UsercapacityComponent } from './usercapacity.component';
 import { MilestoneTasksDialogComponent } from './milestone-tasks-dialog/milestone-tasks-dialog.component';
 import { CapacityTasksComponent } from './capacity-tasks/capacity-tasks.component';
+import { PreStackAllocationComponent } from '../pre-stack-allocation/pre-stack-allocation.component';
 
 @NgModule({
   declarations: [UsercapacityComponent, MilestoneTasksDialogComponent, CapacityTasksComponent],
@@ -16,7 +17,7 @@ import { CapacityTasksComponent } from './capacity-tasks/capacity-tasks.componen
     UsercapacityComponent,
     CapacityTasksComponent
   ],
-  entryComponents: [MilestoneTasksDialogComponent]
+  entryComponents: [MilestoneTasksDialogComponent,PreStackAllocationComponent],
 })
 export class UserCapacityModule {
 }

@@ -23,13 +23,13 @@ import { MilestoneTasksDialogComponent } from "./milestone-tasks-dialog/mileston
 import { CommonService } from "src/app/Services/common.service";
 import { GanttChartComponent } from "../../shared/gantt-chart/gantt-chart.component";
 import { gantt, Gantt } from "../../dhtmlx-gantt/codebase/source/dhtmlxgantt";
-import { BlockResourceDialogComponent } from 'src/app/capacity-dashboard/block-resource-dialog/block-resource-dialog.component';
 
 @Component({
   selector: "app-usercapacity",
   templateUrl: "./usercapacity.component.html",
   styleUrls: ["./usercapacity.component.css"],
 })
+
 export class UsercapacityComponent implements OnInit {
   @ViewChild("capacityTasks", {static:false}) capacityTasks: ElementRef;
   @ViewChild("ganttcontainer", { read: ViewContainerRef, static: false })

@@ -566,7 +566,7 @@ export class PreStackAllocationComponent implements OnInit {
   calcCapacity(allocationData) {
     const taskStatus = this.allocationCommon.taskStatus.indexOf(allocationData.status) > -1 ? this.allocationCommon.taskStatus : [];
     const adhoc = this.allocationCommon.adhocStatus;
-    const resource = allocationData.resource.length ? allocationData.resource[0].UserNamePG.ID : -1;
+    const resource = allocationData.resource.length ? allocationData.resource[0].UserNamePG.Id : -1;
     const businessDays = this.usercapacityComponent.getDates(allocationData.startDate, allocationData.endDate, true);
     let newUserCapacity;
     if (this.global.oCapacity.arrUserDetails.length) {
