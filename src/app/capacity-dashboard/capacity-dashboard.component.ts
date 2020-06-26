@@ -533,11 +533,12 @@ updateBlockingResource(data){
     if (blockResource) {
       const updateItem = {
         __metadata: { type: this.constants.listNames.Blocking.type },
-        Title : blockResource.value.Title,
-        ExpectedTime :blockResource.value.ExpectedTime.toString()
+        Title : blockResource.taskFullName,
+        ExpectedTime :blockResource.budgetHours.toString(),
+          AllocationPerDay: blockResource.allocationPerDay
       };
       this.commonService.SetNewrelic('CapacityDashboard', 'capacity-dashboard', 'updateBlocking');
-      const updateResult = await this.spServices.updateItem(this.constants.listNames.Blocking.name, data.taskID,
+      const updateResult = await this.spServices.updateItem(this.constants.listNames.Blocking.name, blockResource.id,
         updateItem, this.constants.listNames.Blocking.type);
         this.commonService.clearToastrMessage();
         this.commonService.showToastrMessage(this.constants.MessageType.success,'Blocking resource updated sucessfully.',true,true);

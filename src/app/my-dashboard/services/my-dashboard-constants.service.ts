@@ -193,7 +193,6 @@ export class MyDashboardConstantsService {
       filterNotCompleted: '(Status ne \'Completed\') and (Status ne \'Not Confirmed\') and (Status ne \'Deleted\') and (Status ne \'Abandon\') and (Status ne \'Hold Request\') and (Status ne \'Abandon Request\') and (Status ne \'Hold\') and (Status ne \'Project on Hold\') and (Status ne \'Auto Closed\')',
       filterPlanned: '(Status eq \'Not Confirmed\')',
       filterCompleted: '(Task ne \'Adhoc\') and ((Status eq \'Completed\' ) or (Status eq \'Auto Closed\'))',
-      filterAdhoc: '(Task eq \'Adhoc\' and ProjectCode eq \'Adhoc\' and Status eq \'Completed\')',
       filterAll: '(Status ne \'Deleted\')',
       filterDate: 'and((StartDate ge \'{{startDateString}}\' and StartDate le \'{{endDateString}}\') or (DueDateDT ge \'{{startDateString}}\' and DueDateDT le \'{{endDateString}}\') or (StartDate le \'{{startDateString}}\' and DueDateDT ge \'{{endDateString}}\'))',
       top: 4500
@@ -210,10 +209,17 @@ export class MyDashboardConstantsService {
       top: 4500
     },
     LeaveCalendar: {
-
       select: 'ID,EventDate,EndDate,IsHalfDay,Title,IsActive',
       filter: '(UserName/Id eq {{currentUser}} and IsActive eq \'Yes\' ) and ((EventDate ge \'{{startDateString}}\' and EventDate le \'{{endDateString}}\') or (EndDate ge \'{{startDateString}}\' and EndDate le \'{{endDateString}}\') or (EventDate le \'{{startDateString}}\' and EndDate ge \'{{endDateString}}\'))',
       orderby: 'Created',
+      top: 4500
+    },
+
+    AdhocTasks: {
+      select: 'ID,Title,Status,StartDate,DueDateDT,TimeSpent,CommentsMT,Task,TaskComments,Entity',
+      orderby: 'DueDateDT asc',
+      filter: 'AssignedTo eq  {{userId}} and  Status eq \'Completed\'',
+      filterDate: 'and((StartDate ge \'{{startDateString}}\' and StartDate le \'{{endDateString}}\') or (DueDateDT ge \'{{startDateString}}\' and DueDateDT le \'{{endDateString}}\') or (StartDate le \'{{startDateString}}\' and DueDateDT ge \'{{endDateString}}\'))',
       top: 4500
     },
     AvailableHours: {

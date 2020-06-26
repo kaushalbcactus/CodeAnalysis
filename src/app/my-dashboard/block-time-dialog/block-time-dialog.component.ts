@@ -80,20 +80,12 @@ export class BlockTimeDialogComponent implements OnInit {
       if (this.data.timeblockType !== 'Leave') {
         this.minDateValue = await this.myDashboardConstantsService.CalculateminstartDateValue(new Date(), 3);
       } else {
-        // const WeekDate = new Date(new Date().getTime() - 60 * 60 * 24 * 14 * 1000);
-        // const day = WeekDate.getDay();
-        // const monday = (WeekDate.getDate() - day + (day === 0 ? -6 : 1)) - 1;
-        // const tempdate = new Date(WeekDate.setDate(monday));
-        // const newDate = new Date(tempdate.getTime());
-        // this.minDateValue = new Date(newDate.setDate(newDate.getDate() + 1));
         const actualStartDate = new Date();
         const allowedDate = this.common.CalculateminstartDateValue(new Date(), 3);
         if (actualStartDate.getFullYear() >= allowedDate.getFullYear() &&
           actualStartDate.getMonth() >= allowedDate.getMonth()) {
             this.minDateValue = new Date(allowedDate.setDate(1));
         }
-
-
       }
     }
     this.mode = this.data.mode;
@@ -129,8 +121,6 @@ export class BlockTimeDialogComponent implements OnInit {
 
 
   SetTime(time) {
-    // const timespent = (time.split(':')[0] % 12) > 12 ?
-    //   time.split(':')[0] % 12 + ':' + time.split(':')[1] : time.split(':')[0] + ':' + time.split(':')[1];
     const timespent = time.split(':')[0] % 12 + ':' + time.split(':')[1];
     this.starttime = timespent;
   }
@@ -181,24 +171,16 @@ export class BlockTimeDialogComponent implements OnInit {
         startDateTime = new Date(this.datePipe.transform(this.eventDate, 'yyyy-MM-dd') + 'T09:00:00.000');
         endDateTime = new Date(this.datePipe.transform(this.eventDate, 'yyyy-MM-dd') + 'T19:00:00.000');
       }
-
-
-
       const obj = {
         __metadata: this.mode === 'create' ? {
-          // tslint:disable-next-line: object-literal-key-quotes
-          'type': this.constants.listNames.Schedules.type
+          type: this.constants.listNames.AdhocTask.type
         } : undefined,
         Title: 'Adhoc ' + this.datePipe.transform(this.eventDate, 'dd MMM') + ' ' + this.sharedObject.currentUser.title,
         Entity: this.data.timeblockType === 'Admin' || this.data.timeblockType === 'Training' ||
           this.data.timeblockType === 'Internal Meeting' ? 'CACTUS Internal India' : this.SelectedClientLegalEntity,
-        ProjectCode: 'Adhoc',
         Task: 'Adhoc',
         StartDate: startDateTime,
         DueDateDT: endDateTime,
-        Actual_x0020_Start_x0020_Date: startDateTime,
-        Actual_x0020_End_x0020_Date: endDateTime,
-        ExpectedTime: '0',
         TimeSpent: this.data.timeblockType === 'Admin' ? this.starttime.replace(':', '.') : timeDifference.replace(':', '.'),
         CommentsMT: this.data.timeblockType === 'Client Meeting / Training' ?
           'Client meeting / client training' : this.data.timeblockType === 'Internal Meeting' ?
@@ -212,10 +194,6 @@ export class BlockTimeDialogComponent implements OnInit {
             this.sharedObject.currentUser.userId).TimeZone !== undefined ?
             this.sharedObject.DashboardData.ResourceCategorization.find(c => c.ID ===
               this.sharedObject.currentUser.userId).TimeZone.Title : 5.5 : 5.5,
-        TATStatus: this.data.timeblockType === 'Admin' ? 'Yes' : 'No',
-
-
-
       };
       this.ref.close(obj);
     }
@@ -247,8 +225,7 @@ export class BlockTimeDialogComponent implements OnInit {
     } else {
       const obj = {
         __metadata: {
-          // tslint:disable-next-line: object-literal-key-quotes
-          'type': this.constants.listNames.LeaveCalendar.type
+          type: this.constants.listNames.LeaveCalendar.type
         },
         Title: this.IsHalfDay ? this.sharedObject.currentUser.title + ' on half day leave' :
           this.sharedObject.currentUser.title + ' on leave',
@@ -274,22 +251,14 @@ export class BlockTimeDialogComponent implements OnInit {
   async validateLeave(EventDate, EndDate) {
     let validation = true;
     const batchURL = [];
-    const options = {
-      data: null,
-      url: '',
-      type: '',
-      listName: ''
-    };
-
-    const leavesGet = Object.assign({}, options);
-    leavesGet.url = this.spServices.getReadURL(this.constants.listNames.LeaveCalendar.name,
+  
+    const url = this.spServices.getReadURL(this.constants.listNames.LeaveCalendar.name,
       this.myDashboardConstantsService.mydashboardComponent.LeaveCalendar);
-    leavesGet.url = leavesGet.url.replace(/{{currentUser}}/gi,
-      this.sharedObject.currentUser.userId.toString()).replace(/{{startDateString}}/gi,
-        EventDate).replace(/{{endDateString}}/gi, EndDate);
-    leavesGet.type = 'GET';
-    leavesGet.listName = this.constants.listNames.LeaveCalendar.name;
-    batchURL.push(leavesGet);
+
+    this.common.setBatchObject(batchURL, url.replace(/{{currentUser}}/gi,
+    this.sharedObject.currentUser.userId.toString()).replace(/{{startDateString}}/gi,
+      EventDate).replace(/{{endDateString}}/gi, EndDate), null, this.constants.Method.GET,this.constants.listNames.LeaveCalendar.name)
+
     this.common.SetNewrelic('MyDashboard', 'BlockTimeDialogComponent', 'ValidateLeave');
     const arrResults = await this.spServices.executeBatch(batchURL);
 
