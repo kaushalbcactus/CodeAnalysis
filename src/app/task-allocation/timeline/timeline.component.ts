@@ -200,7 +200,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   taskTime;
   ganttSetTime: boolean = false;
   singleTask;
-  bHrs = 0;
   defaultTimeZone = 5.5;
   ogBudgethrs = 0;
   constructor(
@@ -1047,12 +1046,30 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     }
   }
 
+  createResetObj(task) {
+    let taskObj: any = {
+      id: task.id,
+      start_date : task.start_date,
+      pUserStart : task.pUserStart,
+      pUserStartDatePart : task.pUserStartDatePart,
+      pUserStartTimePart : task.pUserStartTimePart,
+      end_date : task.end_date,
+      pUserEnd : task.pUserEnd,
+      pUserEndDatePart : task.pUserEndDatePart,
+      pUserEndTimePart : task.pUserEndTimePart,
+      budgetHours : task.budgetHours,
+      user : task.user,
+      AssignedTo : task.AssignedTo,
+      tat : task.tat,
+      DisableCascade : task.DisableCascade
+    }
+
+    return taskObj;
+  }
+
   onBeforeTaskDragCall(id, mode, e) {
     let task = this.GanttchartData.find(e => e.id == id);
-    this.startDate = task.start_date;
-    this.endDate = task.end_date;
-    this.bHrs = task.budgetHours;
-    this.resetTask = { ...task };
+    this.resetTask = this.createResetObj(task);
     this.dragClickedInput = e.srcElement.className;
     const isStartDate = this.dragClickedInput.indexOf('start_date') > -1 ? true : false;
     if (gantt.ext.zoom.getCurrentLevel() < 3) {
@@ -1115,10 +1132,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
             this.menu.clearAll();
             this.menu.loadStruct(menus);
             this.currentTaskId = taskId;
-            this.startDate = task.start_date;
-            this.endDate = task.end_date;
-            this.bHrs = task.budgetHours;
-            this.resetTask = task;
+            this.resetTask = this.createResetObj(task);
             let x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft,
               y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
 
@@ -1251,8 +1265,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           }
         }
         if (task.id == this.resetTask.id) {
-          task.start_date = this.startDate;
-          task.end_date = this.endDate;
+          task = this.resetCurrentTask(task , this.resetTask);
         }
       });
 
@@ -1686,6 +1699,25 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   ganttAllTasks() {
     return gantt.serialize();
   }
+  
+  resetCurrentTask(task, resetTask) {
+    task.start_date = resetTask.start_date;
+    task.pUserStart = resetTask.pUserStart;
+    task.pUserStartDatePart = resetTask.pUserStartDatePart;
+    task.pUserStartTimePart = resetTask.pUserStartTimePart;
+    task.end_date = resetTask.end_date;
+    task.pUserEnd = resetTask.pUserEnd;
+    task.pUserEndDatePart = resetTask.pUserEndDatePart;
+    task.pUserEndTimePart = resetTask.pUserEndTimePart;
+    task.budgetHours = resetTask.budgetHours;
+    task.user = resetTask.user;
+    task.AssignedTo = resetTask.AssignedTo;
+    task.tat = resetTask.tat;
+    task.DisableCascade = resetTask.DisableCascade;
+    task.showAllocationSplit = task.allocationPerDay ? true : false;
+
+    return task;
+  }
 
   async close() {
     this.loaderenable = true;
@@ -1705,11 +1737,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         }
       }
       if (task.id == this.resetTask.id) {
-        task = this.resetTask;
-        task.start_date = this.startDate;
-        task.end_date = this.endDate;
-        task.budgetHours = this.bHrs;
-        task.user = this.resetTask.AssignedTo ? this.resetTask.AssignedTo.Title : '';
+        task = this.resetCurrentTask(task , this.resetTask);
       }
     })
     this.GanttchartData = allTasks.data;
@@ -3857,6 +3885,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     return errorPresnet;
   }
 
+  /////// Refactor code
   validateNextMilestone(subMile) {
 
     let validateNextMilestone = true;
@@ -4471,7 +4500,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   showOverlayPanel(event, rowData, dailyAllocateOP, target?) {
     const allocationPerDay = rowData.allocationPerDay ? rowData.allocationPerDay : '';
     dailyAllocateOP.showOverlay(event, allocationPerDay, target);
-    console.log(event);
     setTimeout(() => {
       let panel: any = document.querySelector(".dailyAllocationOverlayComp > div");
       let panelContainer: any = document.getElementById('s4-workspace');
