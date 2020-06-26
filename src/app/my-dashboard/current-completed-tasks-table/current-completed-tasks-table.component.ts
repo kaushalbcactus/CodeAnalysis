@@ -539,7 +539,6 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
   showOverlayPanel(event, rowData, dailyAllocateOP, target?) {
     const allocationPerDay = rowData.allocationPerDay ? rowData.allocationPerDay : '';
     dailyAllocateOP.showOverlay(event, allocationPerDay, target);
-    console.log(event);
   }
 
   hideOverlayPanel() {

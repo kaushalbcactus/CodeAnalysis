@@ -110,8 +110,8 @@ export class GanttEdittaskComponent implements OnInit {
   }
 
   async onLoad(task, clickedInputType) {
-    let sTime = this.getTimePart(this.startDate);
-    let eTime = this.getTimePart(this.endDate);
+    // let sTime = this.getTimePart(this.startDate);
+    // let eTime = this.getTimePart(this.endDate);
 
     this.maxBudgetHrs = this.taskAllocateCommonService.setMaxBudgetHrs(task);
 
@@ -126,17 +126,12 @@ export class GanttEdittaskComponent implements OnInit {
       this.editTaskObject.isTat = false;
       this.editTaskForm.controls['startDate'].disable();
       this.editTaskForm.controls['startDateTimePart'].disable();
-      // this.editTaskForm.get('startDate').setValue(this.startDate);
-      // this.editTaskForm.get('startDateTimePart').setValue(sTime);
       task.start_date = this.startDate;
     } else if (task.itemType === 'Send to client') {
       this.editTaskObject.isDisableCascade = true;
       this.editTaskObject.isTat = false;
       this.editTaskForm.controls['endDate'].disable();
       this.editTaskForm.controls['endDateTimePart'].disable();
-      // this.editTaskForm.get('endDate').setValue(this.endDate);
-      // this.editTaskForm.get('endDateTimePart').setValue(eTime);
-      // task.start_date = this.startDate;
       task.end_date = task.start_date;
     } else if (task.slotType === 'Slot') {
       this.maxBudgetHrs = '';
@@ -156,8 +151,6 @@ export class GanttEdittaskComponent implements OnInit {
     } else if (task.status == "In Progress") {
       this.editTaskForm.controls['startDate'].disable();
       this.editTaskForm.controls['startDateTimePart'].disable();
-      // this.editTaskForm.get('startDate').setValue(this.startDate);
-      // this.editTaskForm.get('startDateTimePart').setValue(sTime);
       task.start_date = this.startDate;
       if (task.itemType !== 'Send to client') {
         this.editTaskForm.controls['endDate'].enable();
@@ -335,11 +328,6 @@ export class GanttEdittaskComponent implements OnInit {
   }
 
   validateBudgetHours(task: any) {
-    // let taskObj: any = {
-    //   start_date: task.startDate,
-    //   end_date: task.endDate,
-    //   tat: task.tat
-    // }
     let time: any = this.commonService.getHrsAndMins(task.startDate, task.endDate)
     let bhrs = this.commonService.convertToHrsMins('' + task.budgetHrs).replace('.', ':')
 
@@ -386,9 +374,6 @@ export class GanttEdittaskComponent implements OnInit {
       endDate.setHours(endDate.getHours() + parseInt(node.budgetHours.split('.')[0]));
       node.budgetHours.split('.')[1] ? endDate.setMinutes(endDate.getMinutes() + parseInt(node.budgetHours.split('.')[1])) : endDate;
       node.end_date = new Date(endDate);
-      // node.pUserEnd = new Date(endDate);
-      // node.pUserEndDatePart = this.getDatePart(endDate);
-      // node.pUserEndTimePart = this.getTimePart(endDate);
       this.editTaskForm.controls.endDate.setValue(endDate);
       this.editTaskForm.controls.endDateTimePart.setValue(this.getTimePart(endDate));
     }
