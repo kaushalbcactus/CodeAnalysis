@@ -953,6 +953,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     taskObj.UserStart = task.startDate ? new Date(task.startDate) : new Date(task.StartDate);
     taskObj.start_date = taskObj.UserStart;
     taskObj.UserEnd = task.DueDate ? new Date(task.DueDate) : new Date(task.DueDate);
+    taskObj.end_date = taskObj.UserEnd;
     taskObj.ProjectName = task.ProjectName;
     taskObj.SpentTime = this.commonService.addHrsMins([hrsMinObject]);
     taskObj.UserStartDatePart = this.getDatePart(convertedStartDate);
@@ -1221,7 +1222,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     this.disableSave = true;
     const isValid = await this.validate();
     const bindingData = [...this.caGlobal.dataSource];
-    const allTasks = [].concat.apply([], bindingData.map(t => t.SlotTasks));
+    const allTasks = [].concat.apply([], bindingData.map(t => t.SlotTasks)).filter(Boolean);
     const conflictDetails: IConflictResource[] = await this.conflictAllocation.checkConflictsAllocations(null, [], allTasks, this.resourceList);
     const projectCodes = allTasks.map(t => t.ProjectCode);
     if (isValid && conflictDetails.length <= 0) {
@@ -1845,7 +1846,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       if (detail.action.toLowerCase() === 'save') {
         const msg = 'Are you sure that you want to update tasks ?';
         const conflictMessage = detail.conflictResolved ? '' + msg : 'Conflict unresolved. ' + msg;
-        this.commonService.confirmMessageDialog('Confirmation', msg, null, ['Yes', 'No'], false).then(async Confirmation => {
+        this.commonService.confirmMessageDialog('Confirmation', conflictMessage, null, ['Yes', 'No'], false).then(async Confirmation => {
           if (Confirmation === 'Yes') {
             this.generateSaveTasks(node);
           }

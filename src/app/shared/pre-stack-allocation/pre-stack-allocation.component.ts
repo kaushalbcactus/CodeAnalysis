@@ -474,10 +474,11 @@ export class PreStackAllocationComponent implements OnInit {
    * Action is performed to recalculate daily allocation on changes to either resource, dates or budget hours
    */
   async calcPrestackAllocation(resource: IUserCapacity[], milestoneTask) {
+    milestoneTask.allocationTypeLoader = true;
     const task = this.getData(milestoneTask);
     const eqgTasks = ['EditSlot', 'QualitySlot', 'GraphicsSlot', 'Client Review', 'Send to client'];
     if (!eqgTasks.find(t => t === task.taskType) && task.startDatePart &&
-      resource.length && task.endDatePart && task.budgetHrs &&
+      resource.length && task.endDatePart && +task.budgetHrs &&
       task.endDate > task.startDate && resource.length
       && new Date(task.startDatePart).getTime() !==  new Date(task.endDatePart).getTime()) {
       const allocationData: IDailyAllocationTask = {
@@ -505,6 +506,7 @@ export class PreStackAllocationComponent implements OnInit {
       milestoneTask.allocationColor = '';
       milestoneTask.allocationPerDay = '';
     }
+    milestoneTask.allocationTypeLoader = false;
   }
 
   /**
@@ -524,49 +526,12 @@ export class PreStackAllocationComponent implements OnInit {
       capacity.businessDays = [...capacity.businessDays, ...newUserCapacity.businessDays];
     }
     return newUserCapacity;
-
-    // const taskStatus = this.allocationCommon.taskStatus.indexOf(allocationData.status) > -1 ? this.allocationCommon.taskStatus : [];
-    // const adhoc = this.allocationCommon.adhocStatus;
-    // const businessDays = this.usercapacityComponent.getDates(allocationData.startDate, allocationData.endDate, true);
-    // if (this.global.oCapacity.arrUserDetails.length) {
-    //   const resourceCapacity = this.global.oCapacity.arrUserDetails.find(u => u.uid === resource);
-    //   if (resourceCapacity) {
-    //     const userCapacity = {...resourceCapacity};
-    //     userCapacity.businessDays = businessDays.dateArray;
-    //     // tslint:disable-next-line: max-line-length
-    //     const dates = userCapacity.dates.filter(u => businessDays.dateArray.find(b => new Date(b).getTime() === new Date(u.date).getTime()));
-    //     dates.forEach(date => {
-    //       date.tasksDetails = date.tasksDetails.filter(t => taskStatus.indexOf(t.status) < 0 &&
-    //         adhoc.indexOf(t.comments) < 0 && t.ID !== allocationData.ID);
-    //     });
-    //     userCapacity.dates = dates;
-    //     userCapacity.tasks = userCapacity.tasks.filter(t => taskStatus.indexOf(t.Status) < 0 &&
-    //       adhoc.indexOf(t.Comments) < 0 && t.ID !== allocationData.ID);
-    //     if (userCapacity.dates.length === userCapacity.businessDays.length) {
-    //       newUserCapacity = this.usercapacityComponent.fetchUserCapacity(userCapacity);
-    //     } else {
-    //       newUserCapacity = this.refetchUserCapacity(allocationData);
-    //       const capacity = this.global.oCapacity.arrUserDetails.find(u => u.uid === resource);
-    //       capacity.dates = [...capacity.dates, ...newUserCapacity.dates];
-    //       capacity.businessDays = [...capacity.businessDays, ...newUserCapacity.businessDays];
-    //     }
-    //   } else {
-    //     newUserCapacity = await this.refetchUserCapacity(allocationData);
-    //     this.global.oCapacity.arrUserDetails.push(newUserCapacity);
-    //     await this.recalculateUserCapacity(allocationData);
-    //   }
-    // } else {
-    //   newUserCapacity = await this.refetchUserCapacity(allocationData);
-    //   this.global.oCapacity.arrUserDetails.push(newUserCapacity);
-    //   await this.recalculateUserCapacity(allocationData);
-    // }
-    // return newUserCapacity;
   }
 
   calcCapacity(allocationData) {
     const taskStatus = this.allocationCommon.taskStatus.indexOf(allocationData.status) > -1 ? this.allocationCommon.taskStatus : [];
     const adhoc = this.allocationCommon.adhocStatus;
-    const resource = allocationData.resource.length ? allocationData.resource[0].UserNamePG.Id : -1;
+    const resource = allocationData.resource.length ? allocationData.resource[0].UserNamePG.ID ? allocationData.resource[0].UserNamePG.ID : allocationData.resource[0].UserNamePG.Id : -1;
     const businessDays = this.usercapacityComponent.getDates(allocationData.startDate, allocationData.endDate, true);
     let newUserCapacity;
     if (this.global.oCapacity.arrUserDetails.length) {

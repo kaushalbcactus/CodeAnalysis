@@ -148,7 +148,7 @@
         <!-- **********************************************************************************************************
                                                           Table View Data
            ********************************************************************************************************** -->
-        <div fxLayout="row" class="taskAllocationTimeline" fxLayoutAlign="center start" [hidden]="!tableView">
+        <div fxLayout="row" class="taskAllocationTimeline" *ngIf="!loaderenable" fxLayoutAlign="center start" [hidden]="!tableView">
 
             <p-treeTable [value]="milestoneData">
 
@@ -170,7 +170,7 @@
                 <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
                     <tr *ngIf="(rowData.status !== 'Deleted')" class="milestoneTable"
                         [style.font-weight]="rowData.type === 'milestone' || rowData.type === 'submilestone' || rowData.title ==='Client Review' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.title.indexOf('Slot') > -1) ? '700':''">
-                        
+
                         <td [style.text-align]="'left'"
                             [style.padding-left.px]="rowData.title ==='Client Review' ? '20':''"
                             [style.backgroundColor]="rowData.slotColor">
