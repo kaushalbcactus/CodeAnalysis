@@ -1248,7 +1248,7 @@ export class UsercapacityComponent implements OnInit {
                 ? "" + oUser.tasks[j].TimeSpent
                 : "0.0";
 
-            } 
+            }
             // else if(oUser.tasks[j].Task === 'ResourceBlocking'){
 
             //   oUser.tasks[
@@ -1295,7 +1295,7 @@ export class UsercapacityComponent implements OnInit {
                     "" +
                       this.getPerDayTime(
                         oUser.tasks[j].ExpectedTime !== null
-                          ? oUser.tasks[j].ExpectedTime
+                          ? '' + oUser.tasks[j].ExpectedTime
                           : "0",
                         taskBusinessDays - arrLeaveDays.length
                       )
@@ -1308,7 +1308,7 @@ export class UsercapacityComponent implements OnInit {
                   "" +
                     this.getPerDayTime(
                       oUser.tasks[j].ExpectedTime !== null
-                        ? oUser.tasks[j].ExpectedTime
+                        ? '' + oUser.tasks[j].ExpectedTime
                         : "0",
                       taskBusinessDays - arrLeaveDays.length
                     )

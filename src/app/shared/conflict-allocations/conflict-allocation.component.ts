@@ -196,7 +196,7 @@ export class ConflictAllocationComponent implements OnInit {
     if (matchedTask) {
       const strAllocationPerDay = matchedTask && currentTask ? currentTask.allocationPerDay : '';
       matchedTask.AllocationPerDay = strAllocationPerDay;
-      matchedTask.ExpectedTime = matchedTask.TotalAllocated = currentTask.budgetHours;
+      matchedTask.ExpectedTime = matchedTask.TotalAllocated = currentTask.budgetHours = currentTask.EstimatedTime;
       this.usercapacityComponent.fetchUserCapacity(user);
     }
   }
