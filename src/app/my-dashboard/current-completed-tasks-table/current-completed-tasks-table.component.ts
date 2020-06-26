@@ -40,6 +40,7 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
   tableloaderenable: boolean;
   selectedindex: any;
   tempClick: any;
+  hideIcon: boolean = false;
   constructor(public myDashboardConstantsService: MyDashboardConstantsService,
     private constants: ConstantsService,
     private datePipe: DatePipe,
@@ -68,6 +69,7 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
       { field: 'TimeSpent', header: 'Time Spent', visibility: true, exportable: true },
     ];
 
+    this.hideIcon=  this.config.data ? true : false;
     await this.processData(this.config.data ? this.config.data.allpopupTasks : this.allTasksData);
     // if (this.config.data) {
     //   await this.processData(this.config.data.allpopupTasks);
