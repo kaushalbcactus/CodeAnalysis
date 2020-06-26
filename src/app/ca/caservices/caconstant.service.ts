@@ -50,7 +50,7 @@ export class CAConstantService {
   };
 
   public projectOnLoad = {
-    select: 'ID,Title,ProjectCode,PrimaryPOC,WBJID,TA,DeliverableType,ClientLegalEntity,StandardService,IsStandard',
+    select: 'ID,Title,ProjectCode,PrimaryPOC,WBJID,TA,DeliverableType,ClientLegalEntity,StandardService,IsStandard, Milestone',
     filter: "(Status ne 'Closed') and (Status ne 'Cancelled') ",
     top: 4200,
     orderby: 'ClientLegalEntity asc'

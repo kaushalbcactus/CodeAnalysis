@@ -2119,7 +2119,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     if (event.type !== 'milestone' && event.type !== 'submilestone') {
       this.maxBudgetHrs = this.taskAllocateCommonService.setMaxBudgetHrs(event);
       if (this.maxBudgetHrs < event.budgetHrs) {
-        this.ogBudgethrs = event.budgetHrs
+        this.ogBudgethrs = event.budgetHrs;
         event.budgetHrs = 0;
         this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Budget hours is set to zero because given budget hours is greater than task time period. Original budget hrs of task is ' + this.ogBudgethrs, false);
       }

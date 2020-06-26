@@ -321,7 +321,7 @@ export class PreStackAllocationComponent implements OnInit {
         totalHrs = allocationPerDay < remainingBudgetHrs ? allocationPerDay : remainingBudgetHrs;
       }
       remainingBudgetHrs = remainingBudgetHrs - totalHrs;
-      const maximumHrs = totalHrs < resourceSliderMaxHrs ? resourceSliderMaxHrs : totalHrs;
+      const maximumHrs = resourceSliderMaxHrs; // totalHrs < resourceSliderMaxHrs ? resourceSliderMaxHrs : totalHrs
       const strTotalHrs = this.common.convertToHrsMins(totalHrs);
       const strMaximumHrs = this.common.convertToHrsMins(maximumHrs);
       const obj: IDailyAllocationObject = {
