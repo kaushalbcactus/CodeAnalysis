@@ -46,7 +46,16 @@ export class BlockResourceDialogComponent implements OnInit {
     public spServices: SPOperationService,
     private dailyAllocation: PreStackAllocationComponent,
     private dialogService:DialogService
-  ) {}
+  ) {
+    this.BlockResourceForm = this.formBuilder.group({
+      Resource: ["", Validators.required],
+      Title: ["", Validators.required],
+      StartDate: ["", Validators.required],
+      EndDate: ["", Validators.required],
+      ExpectedTime: ["", Validators.required],
+      allocationPerDay:[""],
+    });
+  }
 
   ngOnInit() {
     this.task={ id: 0,
@@ -65,7 +74,6 @@ export class BlockResourceDialogComponent implements OnInit {
     }
     this.yearsRange = this.common.getyearRange();
     this.Resources = this.config.data.Resources;
-    this.InitializeForm();
     if(this.config.data.type ==='EditBlocking'){
       this.readonly = true;
       this.blockingRecord=this.config.data.data;
@@ -77,30 +85,7 @@ export class BlockResourceDialogComponent implements OnInit {
       this.SetDateValidation();
     }
     this.modalloaderenable = false;
-  }
-  EditForm(){
-    this.BlockResourceForm.patchValue({
-      Resource: this.Resources.find(c=>c.label === this.blockingRecord.AssignedTo.Title) ? this.Resources.find(c=>c.label === this.blockingRecord.AssignedTo.Title) :'',
-      Title : this.blockingRecord.title,
-      StartDate:this.blockingRecord.startDate,
-      EndDate:this.blockingRecord.dueDate,
-      ExpectedTime : this.blockingRecord.totalAllocatedTime
-    })
-  }
-
-  InitializeForm() {
-    this.BlockResourceForm = this.formBuilder.group({
-      Resource: ["", Validators.required],
-      Title: ["", Validators.required],
-      StartDate: ["", Validators.required],
-      EndDate: ["", Validators.required],
-      ExpectedTime: ["", Validators.required],
-      allocationPerDay:[""],
-    });
-     let count =0;
     this.BlockResourceForm.valueChanges.subscribe(async blockResource => {
-       
-      console.log("function called:" + count++ )
       await this.updateValue(blockResource)
       this.validateBudgetHours();
       this.isViewAllocationBtn();
@@ -108,6 +93,19 @@ export class BlockResourceDialogComponent implements OnInit {
         await this.dailyAllocation.calcPrestackAllocation([this.BlockResourceForm.value.Resource.value],this.task);
     } 
     });
+  }
+  async EditForm(){
+    this.BlockResourceForm.patchValue({
+      Resource: this.Resources.find(c=>c.label === this.blockingRecord.AssignedTo.Title) ? this.Resources.find(c=>c.label === this.blockingRecord.AssignedTo.Title) :'',
+      Title : this.blockingRecord.title,
+      StartDate:this.blockingRecord.startDate,
+      EndDate:this.blockingRecord.dueDate,
+      ExpectedTime : this.blockingRecord.totalAllocatedTime,
+      allocationPerDay : this.blockingRecord.AllocationPerDay
+    })
+    await this.updateValue(this.BlockResourceForm.value);
+    this.validateBudgetHours();
+    this.isViewAllocationBtn();
   }
 
   async SetDateValidation(dateType?: string) {
@@ -156,7 +154,7 @@ export class BlockResourceDialogComponent implements OnInit {
       pUserStartTimePart: blockResource.StartDate ? this.common.getTimePart(blockResource.StartDate) :'',
       pUserEndTimePart: EndDate ? this.common.getTimePart(EndDate):'',
       status:'Active',
-      allocationPerDay:'',
+      allocationPerDay:blockResource.allocationPerDay,
       Resource: blockResource.Resource ? blockResource.Resource.value : ''
     };
   }
@@ -165,7 +163,7 @@ export class BlockResourceDialogComponent implements OnInit {
     if (this.BlockResourceForm.valid) {
       if(this.config.data.type ==='EditBlocking'){
         this.common.showToastrMessage(this.constants.MessageType.info,'updating....',true,true);
-        this.ref.close(this.BlockResourceForm);
+        this.ref.close(this.task);
       }else{
         this.common.showToastrMessage(this.constants.MessageType.info,'adding...',true,true);
         this.task.Resource = this.BlockResourceForm.value.Resource.value

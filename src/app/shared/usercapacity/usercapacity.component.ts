@@ -804,7 +804,7 @@ export class UsercapacityComponent implements OnInit {
             tasks[
               index
             ].DueDate = this.commonservice.calcTimeForDifferentTimeZone(
-              new Date(tasks[index].DueDateDT ? tasks[index].DueDateDT : tasks[index].EndDateDT),
+              new Date(tasks[index].DueDateDT),
               currentUserTimeZone,
               sTimeZone
             );
@@ -849,7 +849,7 @@ export class UsercapacityComponent implements OnInit {
                     .replace(".", ":")
                 : tasks[index].TimeSpent.replace(".", ":");
             const sTimeZone =
-              tasks[index].TimeZoneNM === null ? "+5.5" : tasks[index].TimeZone;
+              tasks[index].TimeZoneNM === null ? "+5.5" : tasks[index].TimeZoneNM;
             const currentUserTimeZone =
               (new Date().getTimezoneOffset() / 60) * -1;
             tasks[
@@ -868,31 +868,32 @@ export class UsercapacityComponent implements OnInit {
             );
             filteredTasks.push(tasks[index]);
           }
-        } else if(tasks[index].Task ==='ResourceBlocking'){
-          tasks[index].TotalAllocated =
-           this.commonservice.convertToHrsMins("" + tasks[index].ExpectedTime)
-                  .replace(".", ":")
-
-          const sTimeZone =
-            tasks[index].TimeZoneNM === null ? "+5.5" : tasks[index].TimeZoneNM;
-          const currentUserTimeZone =
-            (new Date().getTimezoneOffset() / 60) * -1;
-          tasks[
-            index
-          ].StartDate = this.commonservice.calcTimeForDifferentTimeZone(
-            new Date(tasks[index].StartDate),
-            currentUserTimeZone,
-            sTimeZone
-          );
-          tasks[
-            index
-          ].DueDate = this.commonservice.calcTimeForDifferentTimeZone(
-            new Date(tasks[index].EndDateDT),
-            currentUserTimeZone,
-            sTimeZone
-          );
-          filteredTasks.push(tasks[index]);
         }
+        //  else if(tasks[index].Task ==='ResourceBlocking'){
+        //   tasks[index].TotalAllocated =
+        //    this.commonservice.convertToHrsMins("" + tasks[index].ExpectedTime)
+        //           .replace(".", ":")
+
+        //   const sTimeZone =
+        //     tasks[index].TimeZoneNM === null ? "+5.5" : tasks[index].TimeZoneNM;
+        //   const currentUserTimeZone =
+        //     (new Date().getTimezoneOffset() / 60) * -1;
+        //   tasks[
+        //     index
+        //   ].StartDate = this.commonservice.calcTimeForDifferentTimeZone(
+        //     new Date(tasks[index].StartDate),
+        //     currentUserTimeZone,
+        //     sTimeZone
+        //   );
+        //   tasks[
+        //     index
+        //   ].DueDate = this.commonservice.calcTimeForDifferentTimeZone(
+        //     new Date(tasks[index].EndDateDT),
+        //     currentUserTimeZone,
+        //     sTimeZone
+        //   );
+        //   filteredTasks.push(tasks[index]);
+        // }
         else {
           tasks[index].TotalAllocated =
             tasks[index].Task !== "Adhoc"
@@ -1087,6 +1088,7 @@ export class UsercapacityComponent implements OnInit {
         ID: task.id,
         TimeSpent: task.SpentTime ?  task.SpentTime : task.spentTime,
         TimeZone: task.AssignedUserTimeZone ? task.AssignedUserTimeZone : task.assignedUserTimeZone,
+        TimeZoneNM: task.AssignedUserTimeZone ? task.AssignedUserTimeZone : task.assignedUserTimeZone,
         parentSlot: task.parentSlot ? task.parentSlot : task.Id,
       };
 
@@ -1354,7 +1356,7 @@ export class UsercapacityComponent implements OnInit {
                 milestoneDeadline: "",
                 AssignedTo : oUser.tasks[j].AssignedTo,
                 startDate: oUser.tasks[j].StartDate,
-                dueDate: oUser.tasks[j].DueDateDT ? oUser.tasks[j].DueDateDT  : oUser.tasks[j].DueDate,
+                dueDate: oUser.tasks[j].DueDate ? oUser.tasks[j].DueDate  : oUser.tasks[j].DueDateDT,
                 timeAllocatedPerDay: oUser.tasks[j].timeAllocatedPerDay,
                 displayTimeAllocatedPerDay:
                   oUser.tasks[j].timeAllocatedPerDay !== null
@@ -1371,7 +1373,7 @@ export class UsercapacityComponent implements OnInit {
                 parentSlot: oUser.tasks[j].parentSlot
                   ? oUser.tasks[j].parentSlot
                   : "",
-
+                  AllocationPerDay : oUser.tasks[j].AllocationPerDay,
                   TaskType: oUser.tasks[j].Task
               };
               tasksDetails.push(objTask);
@@ -1715,9 +1717,9 @@ export class UsercapacityComponent implements OnInit {
               for (const index in miltasks) {
                 if (miltasks.hasOwnProperty(index)) {
                   const sTimeZone =
-                    miltasks[index].TimeZone === null
+                    miltasks[index].TimeZoneNM === null
                       ? "+5.5"
-                      : miltasks[index].TimeZone;
+                      : miltasks[index].TimeZoneNM;
                   const currentUserTimeZone =
                     (new Date().getTimezoneOffset() / 60) * -1;
                   miltasks[
