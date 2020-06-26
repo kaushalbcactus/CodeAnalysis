@@ -860,9 +860,15 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     event.edited = true;
     Slot.editMode = true;
     this.disableSave = false;
+    const originalBudgetHrs = event.EstimatedTime;
     const resource = this.resourceList.filter((objt) => {
       return event.allocatedResource && event.allocatedResource.UserNamePG && event.allocatedResource.UserNamePG.ID === objt.UserNamePG.ID;
     });
+    const maxBudgetHrs = this.commonService.getMaxBudgetHrs(event);
+    if (maxBudgetHrs < event.EstimatedTime) {
+      event.EstimatedTime = 0;
+      this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Budget hours is set to zero because given budget hours is greater than task time period. Original budget hrs of task is ' + originalBudgetHrs, false);
+    }
     await this.dailyAllocation.calcPrestackAllocation(resource, event);
   }
   async GetAllConstantTasks(taskName) {
@@ -888,9 +894,6 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     }
     const resPool = this.caCommonService.getResourceByMatrix(resourcesList, task.Task ? task.Task : task.taskType ? task.taskType : '', task.SkillLevel,
       projectItem[0].ClientLegalEntity, projectItem[0].TA, projectItem[0].DeliverableType);
-    //  resPool = this.caCommonService.sortResources(resPool, task);
-    // task.Type && task.Type === 'Slot' ? task.Task : task.Task && task.Task !== 'Select One' ?
-    //   task.Task : task.Task
     if (task.PreviousAssignedUser && task.PreviousAssignedUser.ID > -1 && task.CentralAllocationDone === 'No') {
 
       let ExistingUser = resPool.find(c => c.UserNamePG.ID === task.PreviousAssignedUser.ID && c.UserNamePG.Title === task.PreviousAssignedUser.Title);
@@ -979,6 +982,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     taskObj.showAllocationSplit = task.AllocationPerDay ? true : false;
     taskObj.allocationColor = '';
     taskObj.allocationTypeLoader = false;
+    taskObj.isCurrentMilestoneTask = projectItem.length && task.Milestone === projectItem[0].Milestone ? true : false;
     if (taskObj.allocatedResource !== '') {
       await this.GetResourceOnEdit(taskObj);
     }
@@ -1080,13 +1084,17 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   }
 
 
-  DateChangePart(Node, Slot, type) {
+  async DateChangePart(Node, Slot, type) {
     Node.UserStart = new Date(this.datepipe.transform(Node.UserStartDatePart, 'MMM d, y') + ' ' + Node.UserStartTimePart);
     Node.UserEnd = new Date(this.datepipe.transform(Node.UserEndDatePart, 'MMM d, y') + ' ' + Node.UserEndTimePart);
 
     Node.StartDate = Node.UserStart;
     Node.DueDate = Node.UserEnd;
     Slot.editMode = true;
+    const resource = this.resourceList.filter((objt) => {
+      return Node.allocatedResource.UserNamePG.ID === objt.UserNamePG.ID;
+    });
+    await this.dailyAllocation.calcPrestackAllocation(resource, Node);
     this.DateChange(Node, Slot, type);
     this.disableSave = false;
   }
@@ -1141,6 +1149,10 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       currentnode.AssignedUserTimeZone, this.globalService.currentUser.timeZone);
     currentnode.edited = true;
     currentnode.pRes = currentnode.skillLevel;
+    const resource = this.resourceList.filter((objt) => {
+      return currentnode.allocatedResource.UserNamePG.ID === objt.UserNamePG.ID;
+    });
+    await this.dailyAllocation.calcPrestackAllocation(resource, currentnode);
     const nextTasks = currentnode.NextTasks ? currentnode.NextTasks.split(';') : [];
     if (nextTasks) {
       this.cascadeNextTask(nextTasks, Slot, currentnode);
@@ -1219,24 +1231,28 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
 
   async saveTasks(unt) {
-    this.disableSave = true;
     const isValid = await this.validate();
-    const bindingData = [...this.caGlobal.dataSource];
-    const allTasks = [].concat.apply([], bindingData.map(t => t.SlotTasks)).filter(Boolean);
-    const conflictDetails: IConflictResource[] = await this.conflictAllocation.checkConflictsAllocations(null, [], allTasks, this.resourceList);
-    const projectCodes = allTasks.map(t => t.ProjectCode);
-    if (isValid && conflictDetails.length <= 0) {
+    if (isValid) {
+      this.disableSave = true;
       this.loaderenable = true;
-      setTimeout(() => {
-        this.commonService.showToastrMessage(this.constants.MessageType.info, 'Updating...', true, true);
-        // this.generateSaveTasks(unt);
-      }, 300);
-    }
-    else {
-      this.showConflictAllocations(null, conflictDetails, unt, allTasks, projectCodes);
-      this.disableSave = false;
-    }
+      const bindingData = [...this.caGlobal.dataSource];
+      const allTasks = [].concat.apply([], bindingData.map(t => t.SlotTasks)).filter(t => Boolean && t.isCurrentMilestoneTask);
+      const conflictDetails: IConflictResource[] = await this.conflictAllocation.checkConflictsAllocations(null, [], allTasks, this.resourceList);
+      const projectCodes = allTasks.map(t => t.ProjectCode);
+      const uniqueProjectCodes = [...new Set(projectCodes)];
 
+      if (conflictDetails.length <= 0) {
+        this.loaderenable = true;
+        setTimeout(() => {
+          this.commonService.showToastrMessage(this.constants.MessageType.info, 'Updating...', true, true);
+          this.generateSaveTasks(unt);
+        }, 300);
+      } else {
+        this.showConflictAllocations(null, conflictDetails, unt, allTasks, uniqueProjectCodes);
+      }
+    }
+    this.loaderenable = false;
+    this.disableSave = false;
   }
 
 

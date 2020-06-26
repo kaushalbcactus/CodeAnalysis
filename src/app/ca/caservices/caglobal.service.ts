@@ -83,7 +83,8 @@ export class CAGlobalService {
     allocationTypeLoader : false,
     start_date: new Date(),
     end_date: new Date(),
-    id: 0
+    id: 0,
+    isCurrentMilestoneTask: false
   };
   public oCapacity = {
     arrUserDetails: [],
