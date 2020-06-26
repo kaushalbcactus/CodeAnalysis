@@ -23,7 +23,7 @@ export class GanttChartComponent implements OnInit {
   label = "label";
   resource = [];
   tasks = {};
-  
+
   constructor() { }
 
   ngOnInit() {
@@ -217,15 +217,17 @@ export class GanttChartComponent implements OnInit {
 
     var mainGridConfig = {
       columns: [
-        { name: "text", tree: true, width: 150 },
+        { name: "text", label: 'Task name', tree: true, width: 250 },
         {
-          name: "user", width: 150, label: "Resource", template: function (task) {
+          name: "user", label: "Resource", width: 150, template: function (task) {
             if (!task.user) return "";
             return task.user
           }
         },
-        {name: "ganttOverlay" ,align: 'right' , width: 75},
-        {name: "ganttMenu" ,align: 'right' , width: 75}
+        { name: "budgetHours", label: 'B Hrs', width: 50 },
+        { name: "spentTime", label: 'S Hrs', width: 50 },
+        { name: "ganttOverlay", align: 'right', width: 35 },
+        { name: "ganttMenu", align: 'right', width: 45 }
         // {name: "buttons" ,align: 'right' , width: 75,template: colContent}
         // { name: "start_date", width: 150 },
         // { name: "end_date", width: 150 },

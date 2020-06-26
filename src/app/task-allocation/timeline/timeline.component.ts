@@ -3857,6 +3857,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     return errorPresnet;
   }
 
+  /////// Refactor code
   validateNextMilestone(subMile) {
 
     let validateNextMilestone = true;
@@ -4471,7 +4472,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   showOverlayPanel(event, rowData, dailyAllocateOP, target?) {
     const allocationPerDay = rowData.allocationPerDay ? rowData.allocationPerDay : '';
     dailyAllocateOP.showOverlay(event, allocationPerDay, target);
-    console.log(event);
     setTimeout(() => {
       let panel: any = document.querySelector(".dailyAllocationOverlayComp > div");
       let panelContainer: any = document.getElementById('s4-workspace');
