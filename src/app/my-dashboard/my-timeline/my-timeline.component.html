@@ -216,8 +216,9 @@
                         <tr>
                             <th>Milestone:</th>
                             <td>{{task.Milestone}}</td>
-                            <th>Task & Allocated Time:</th>
-                            <td>{{task.Task}} , {{task.ExpectedTime}} 
+                            <th>Task / Scope / Allocated Time:</th>
+                            <td>{{task.Task}} / <span *ngIf="task.Comments">[{{task.Comments}}] /</span>
+                                {{task.ExpectedTime}} 
                                 <span class='overlayIcon'
                                     appendTo="body"
                                     (click)="this.showOverlayPanel($event, task, dailyAllocateOP)"
@@ -226,7 +227,7 @@
                                     *ngIf="task.showAllocationSplit">
                                     <i class="fa fa-info-circle" aria-hidden="true"></i>
                                 </span>
-                            <span *ngIf="task.Comments">[{{task.Comments}}]</span></td>
+                            </td>
                         </tr>
                         <tr>
                             <th>Status:</th>
