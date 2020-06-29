@@ -53,7 +53,7 @@ export class PreStackAllocationComponent implements OnInit {
       this.showLoader();
       setTimeout(async () => {
         this.resourceCapacityCopy = await this.getResourceCapacity(allocationData);
-        this.resourceCapacity = {...this.resourceCapacityCopy};
+        this.resourceCapacity = { ...this.resourceCapacityCopy };
         this.allocationSplit = await this.initialize(this.resourceCapacity, allocationData);
         this.hideTable = false;
         this.showTable();
@@ -67,7 +67,7 @@ export class PreStackAllocationComponent implements OnInit {
   async initialize(resource: IUserCapacity, allocationData: IDailyAllocationTask): Promise<IDailyAllocationObject[]> {
     let allocationSplit: IDailyAllocationObject[];
     if (allocationData.strAllocation && !allocationData.allocationType) {
-      allocationSplit = this.showAllocation(resource, allocationData.strAllocation);
+      allocationSplit = this.showAllocation(resource, allocationData);
     } else {
       const arrAllocation: IPerformAllocationObject = await this.performAllocation(resource, allocationData, false, null, null);
       allocationSplit = arrAllocation.arrAllocation;
@@ -79,12 +79,12 @@ export class PreStackAllocationComponent implements OnInit {
    * Perform prestack allocation or equal split allocation
    */
   async performAllocation(resource: IUserCapacity, allocationData: IDailyAllocationTask,
-                          allocationChanged: boolean, oldValue, oldAllocation): Promise<IPerformAllocationObject> {
+    allocationChanged: boolean, oldValue, oldAllocation): Promise<IPerformAllocationObject> {
     let arrAllocation = [...this.allocationSplit];
     const isDailyAllocationValid = !allocationData.allocationType ? this.checkDailyAllocation(resource, allocationData) : false;
     if (!isDailyAllocationValid) {
       if (allocationChanged) {
-        this.common.confirmMessageDialog('Confirmation','Cant accommodate pending hours on the subsequent days so equal allocation will be done. Should we do equal allocation ?',null,
+        this.common.confirmMessageDialog('Confirmation', 'Cant accommodate pending hours on the subsequent days so equal allocation will be done. Should we do equal allocation ?', null,
           ['Yes', 'No'], false).then(async Confirmation => {
             if (Confirmation === 'Yes') {
               arrAllocation = await this.equalSplitAllocation(resource, allocationData, true);
@@ -114,16 +114,18 @@ export class PreStackAllocationComponent implements OnInit {
   /**
    * show allocation per day in popup with slider
    */
-  showAllocation(resource: IUserCapacity, strAllocation: string): IDailyAllocationObject[] {
+  showAllocation(resource: IUserCapacity, allocationData: IDailyAllocationTask): IDailyAllocationObject[] {
     const arrAllocation = [];
     const sliderMaxHrs: number = resource.maxHrs ? +resource.maxHrs + 3 : 0;
-    const allocationDays = strAllocation.split(/\n/);
+    const allocationDays = allocationData.strAllocation.split(/\n/);
+    const arrTimeSpentPerDay = this.getTimeSpentArray(allocationData.strTimeSpent);
     allocationDays.forEach((day, index) => {
       if (day) {
-        const betweenDays = index > 0 && index < allocationDays.length - 1 ? true : false;
+        // const betweenDays = index > 0 && index < allocationDays.length - 1 ? true : false;
         const resourceDailyAllocation: any[] = resource.dates;
         const allocation = this.common.getDateTimeFromString(day);
         const allocatedDate: any = resourceDailyAllocation.find(d => new Date(d.date).getTime() === allocation.date.getTime());
+        const timeSpent: number = this.getTimeSpent(arrTimeSpentPerDay, allocatedDate);
         if (allocatedDate) {
           let resourceSliderMaxHrs: string = this.getResourceMaxHrs(sliderMaxHrs, allocatedDate, index, allocation.value.hours);
           resourceSliderMaxHrs = resourceSliderMaxHrs.indexOf('-') > -1 ? '0:0' : resourceSliderMaxHrs;
@@ -135,6 +137,7 @@ export class PreStackAllocationComponent implements OnInit {
               maxHrs: this.common.getHrsMinsObj(resourceSliderMaxHrs, true).hours,
               maxMins: resourceSliderMaxHrs === '0:0' ? 0 : 45
             },
+            timeSpent,
             tasks: allocatedDate.tasksDetails,
             hideTasksTable: true
           };
@@ -145,6 +148,24 @@ export class PreStackAllocationComponent implements OnInit {
     return arrAllocation;
   }
 
+  getTimeSpentArray(strTimeSpent: string): any[] {
+    const newarrTimeSpent = [];
+    const arrTimeSpent = strTimeSpent.split(/\n/);
+    arrTimeSpent.forEach((daySpentTime) => {
+      newarrTimeSpent.push(this.common.getDateTimeFromString(daySpentTime));
+    });
+    return newarrTimeSpent;
+  }
+
+  getTimeSpent(arrTimeSpent: any[], day: any): number {
+    let dayTimeSpent = 0;
+    arrTimeSpent.forEach((timeSpentDate) => {
+      if (day.date.getTime() === timeSpentDate.date.getTime()) {
+        dayTimeSpent = timeSpentDate.value.hours + timeSpentDate.value.mins;
+      }
+    });
+    return dayTimeSpent;
+  }
   /**
    * Perform daily allocation - part 1
    * It will return boolean value based on prestack allocation success or not
@@ -184,7 +205,7 @@ export class PreStackAllocationComponent implements OnInit {
    * Main method performing pre stack allocation
    */
   checkResourceAvailability(resource: IUserCapacity, extraHrs: string, taskBudgetHrs: string,
-                            allocationData: IDailyAllocationTask, maxLimit: number): string {
+    allocationData: IDailyAllocationTask, maxLimit: number): string {
     const startTime = allocationData.startTime ? this.common.convertTo24Hour(allocationData.startTime) : '0:0';
     const endTime = allocationData.endTime ? this.common.convertTo24Hour(allocationData.endTime) : '0:0';
     const availableStartDayHrs: string = this.common.subtractHrsMins(startTime, '24:00', false);
@@ -205,6 +226,7 @@ export class PreStackAllocationComponent implements OnInit {
           maxHrs: 0,
           maxMins: 0
         },
+        timeSpent: detail.timeSpent,
         tasks: detail.tasksDetails,
         hideTasksTable: true
       };
@@ -255,18 +277,7 @@ export class PreStackAllocationComponent implements OnInit {
   /**
    * Fetch maximum hours for slider
    */
-  // getResourceSliderMaxHrs(defaultResourceMaxHrs: number, day: any, betweenDays: boolean): string {
-  //   const numtotalAllocated: number = this.common.convertFromHrsMins(day.totalTimeAllocatedPerDay);
-  //   const maxHrsMins = this.common.roundToPrecision(defaultResourceMaxHrs - numtotalAllocated, 0.25);
-  //   const sliderMaxHrs = betweenDays ? maxHrsMins > -1 && (24 - maxHrsMins < 12) ?
-  //     24 - maxHrsMins : defaultResourceMaxHrs : maxHrsMins;
-  //   return this.common.convertToHrsMins('' + sliderMaxHrs);
-  // }
-
-  /**
-   * Fetch maximum hours for slider
-   */
-  getResourceMaxHrs(defaultResourceMaxHrs: number, day: any, betweenDays: number|boolean, allocatedHours?: number): string {
+  getResourceMaxHrs(defaultResourceMaxHrs: number, day: any, betweenDays: number | boolean, allocatedHours?: number): string {
     const numtotalAllocated: number = this.common.convertFromHrsMins(day.totalTimeAllocatedPerDay);
     const availableHrs: number = defaultResourceMaxHrs - numtotalAllocated;
     const maxHrs: number = availableHrs < allocatedHours ? allocatedHours : availableHrs;
@@ -292,12 +303,12 @@ export class PreStackAllocationComponent implements OnInit {
    * Perform equal split to allocation per day
    */
   async equalSplitAllocation(resourceCapacityCopy: IUserCapacity, allocationData: IDailyAllocationTask,
-                             allocationChanged: boolean): Promise<IPerformAllocationObject[]> {
+    allocationChanged: boolean): Promise<IPerformAllocationObject[]> {
     const arrAllocation = [];
     const businessDays = this.common.calcBusinessDays(allocationData.startDate, allocationData.endDate);
     const budgetHours = +allocationData.budgetHrs;
     let allocationPerDay = this.common.roundToPrecision(budgetHours / businessDays, 0.25);
-    this.resourceCapacity = {...resourceCapacityCopy};
+    this.resourceCapacity = { ...resourceCapacityCopy };
     // Object.keys(this.resourceCapacity).length ? this.resourceCapacity : await this.getResourceCapacity(allocationData);
     const resourceSliderMaxHrs = this.resourceCapacity.maxHrs + 3;
     const resourceDailyDetails = this.resourceCapacity.dates.filter(d => d.userCapacity !== 'Leave');
@@ -332,6 +343,7 @@ export class PreStackAllocationComponent implements OnInit {
           maxHrs: this.common.getHrsMinsObj(strMaximumHrs, true).hours,
           maxMins: 45
         },
+        timeSpent: detail.timeSpent,
         tasks: detail.tasksDetails,
         hideTasksTable: true
       };
@@ -340,7 +352,7 @@ export class PreStackAllocationComponent implements OnInit {
       i++;
     }
     if (allocationChanged) {
-      this.common.showToastrMessage(this.constants.MessageType.info,'Equal allocation performed. Please assign budget hours from first row if change is needed.',true);
+      this.common.showToastrMessage(this.constants.MessageType.info, 'Equal allocation performed. Please assign budget hours from first row if change is needed.', true);
     }
     return arrAllocation;
   }
@@ -404,7 +416,7 @@ export class PreStackAllocationComponent implements OnInit {
     this.resourceCapacity = Object.keys(this.resourceCapacity).length ? this.resourceCapacity : await this.getResourceCapacity(objData);
     const resourceDailyAllocation = this.resourceCapacity.dates;
     const resourceChangedDate = resourceDailyAllocation.find(d => new Date(d.date).getTime() === new Date(changedDate.Date).getTime());
-    const oldValue = {...resourceChangedDate};
+    const oldValue = { ...resourceChangedDate };
     const oldAllocation = this.allocationSplit.find(d => new Date(d.Date).getTime() === new Date(changedDate.Date).getTime());
     event.value = event.type ? event.value : event.selectedHour.time + ':' + event.selectedMinute.time;
     const strChangedValue = event.type ? event.type === 'hrs' ?
@@ -445,7 +457,7 @@ export class PreStackAllocationComponent implements OnInit {
     if (rowData.tasks.length) {
       rowData.hideTasksTable = !rowData.hideTasksTable;
     } else {
-      this.common.showToastrMessage(this.constants.MessageType.info,'No Tasks found',false);
+      this.common.showToastrMessage(this.constants.MessageType.info, 'No Tasks found', false);
     }
   }
 
@@ -480,7 +492,7 @@ export class PreStackAllocationComponent implements OnInit {
     if (!eqgTasks.find(t => t === task.taskType) && task.startDatePart &&
       resource.length && task.endDatePart && +task.budgetHrs &&
       task.endDate > task.startDate && resource.length
-      && new Date(task.startDatePart).getTime() !==  new Date(task.endDatePart).getTime()) {
+      && new Date(task.startDatePart).getTime() !== new Date(task.endDatePart).getTime()) {
       const allocationData: IDailyAllocationTask = {
         ID: task.ID,
         task: task.task,
@@ -492,6 +504,7 @@ export class PreStackAllocationComponent implements OnInit {
         resource,
         status: task.status,
         strAllocation: '',
+        strTimeSpent: milestoneTask.timeSpentPerDay,
         allocationType: ''
       };
       const resourceCapacity: IUserCapacity = await this.recalculateUserCapacity(allocationData);
@@ -537,7 +550,7 @@ export class PreStackAllocationComponent implements OnInit {
     if (this.global.oCapacity.arrUserDetails.length) {
       const resourceCapacity = this.global.oCapacity.arrUserDetails.find(u => u.uid === resource);
       if (resourceCapacity) {
-        newUserCapacity = {...resourceCapacity};
+        newUserCapacity = { ...resourceCapacity };
         newUserCapacity.businessDays = businessDays.dateArray;
         // tslint:disable-next-line: max-line-length
         const dates = newUserCapacity.dates.filter(u => businessDays.dateArray.find(b => new Date(b).getTime() === new Date(u.date).getTime()));
@@ -560,7 +573,7 @@ export class PreStackAllocationComponent implements OnInit {
 
   async refetchUserCapacity(allocationData) {
     const endDate = this.common.calcBusinessDate('Next', 90, allocationData.startDate).endDate;
-    const newObj = {...allocationData};
+    const newObj = { ...allocationData };
     newObj.endDate = endDate;
     const newUserCapacity = await this.getResourceCapacity(newObj);
     return newUserCapacity;

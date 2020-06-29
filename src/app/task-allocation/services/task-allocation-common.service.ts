@@ -361,6 +361,7 @@ export class TaskAllocationCommonService {
       taskFullName : data.Title,
       subMilestonePresent : dbSubMilestones.length > 0 ? true : false,
       allocationPerDay : data.AllocationPerDay ? data.AllocationPerDay : '',
+      timeSpentPerDay: data.TimeSpentPerDay ? data.TimeSpentPerDay : '',
       allocationColor : '',
       showAllocationSplit : data.AllocationPerDay ? true : false,
       allocationTypeLoader : false,
