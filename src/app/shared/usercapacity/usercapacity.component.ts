@@ -519,6 +519,7 @@ export class UsercapacityComponent implements OnInit {
           // tslint: enable
 
           if (this.enableDownload) {
+            debugger
             const TimeSpentTasks = this.fetchTasks(
               oCapacity.arrUserDetails[indexUser],
               arruserResults1[indexUser]
@@ -1644,12 +1645,10 @@ export class UsercapacityComponent implements OnInit {
   changeHeight(user, objt) {
     if (objt.currentTarget.classList[1] === "more") {
       $(objt.currentTarget)
-        .parent()
-        .parent()
-        .next()
-        .find("div")
-        .not(":visible")
-        .addClass(user.uid + "overFlowTasks");
+      .parent()
+       .parent()
+      .parent()
+      .next().find("div").not(":visible").addClass(user.uid + "overFlowTasks");
       const height =
         +user.maxHeight.split("px")[0] > +user.height.split("px")[0]
           ? user.maxHeight
@@ -1887,6 +1886,7 @@ export class UsercapacityComponent implements OnInit {
           let nCount = 0;
           for (const i in SpentTasks) {
             if (SpentTasks.hasOwnProperty(i)) {
+              debugger
               if (SpentTasks[i].projectCode !== "Adhoc") {
                 const arrProject = arrResults.find(
                   (e) => e.ProjectCode === SpentTasks[i].projectCode

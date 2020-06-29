@@ -89,7 +89,7 @@ export class BlockResourceDialogComponent implements OnInit {
       await this.updateValue(blockResource)
       this.validateBudgetHours();
       this.isViewAllocationBtn();
-      if(this.task.budgetHours > 0){
+      if(this.task.budgetHours > 0 && this.task.Resource){
         await this.dailyAllocation.calcPrestackAllocation([this.BlockResourceForm.value.Resource.value],this.task);
     } 
     });
