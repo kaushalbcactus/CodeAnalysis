@@ -73,9 +73,6 @@ export class TaskDetailsDialogComponent implements OnInit {
 
     this.commonService.SetNewrelic('TaskAllocation', 'task-detailsDialog', 'getCommentByTaskId');
     const response = await this.spServices.readItem(this.constants.listNames.Schedules.name, taskId);
-    // const CommentUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', Comment);
-    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, CommentUrl);
-    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
     this.currentTask = response;
     this.getDocuments(this.currentTask);
   }
@@ -84,8 +81,6 @@ export class TaskDetailsDialogComponent implements OnInit {
   //  Get Documents On tab switch
   // **************************************************************************************************
   async getDocuments(task) {
-
-
     if (this.sharedObject.DashboardData.ProjectInformation.ProjectCode === task.ProjectCode) {
       this.ProjectInformation = this.sharedObject.DashboardData.ProjectInformation;
     } else {
@@ -100,15 +95,10 @@ export class TaskDetailsDialogComponent implements OnInit {
   // *************************************************************************************************
 
   async getCurrentTaskProjectInformation(ProjectCode) {
-    // this.batchContents = new Array();
-    // const batchGuid = this.spServices.generateUUID();
     const project = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.projectInfo);
     project.filter = project.filter.replace(/{{projectCode}}/gi, ProjectCode);
     this.commonService.SetNewrelic('TaskAllocation', 'task-detailsDialog', 'GetProjInfoByProjCode');
     const response = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, project);
-    // const projectUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', project);
-    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, projectUrl);
-    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
     this.sharedObject.DashboardData.ProjectInformation = response.length ? response[0] : [];
   }
 
@@ -126,19 +116,7 @@ export class TaskDetailsDialogComponent implements OnInit {
     let completeFolderRelativeUrl = '';
     const folderUrl = this.ProjectInformation.ProjectFolder;
     completeFolderRelativeUrl = folderUrl + documentsUrl;
-    // const Url = this.sharedObject.sharePointPageObject.serverRelativeUrl +
-    //   // tslint:disable-next-line: quotemark
-    //   "/_api/web/getfolderbyserverrelativeurl('" + completeFolderRelativeUrl
-    //   // tslint:disable-next-line: quotemark
-    //   + "')/Files?$expand=ListItemAllFields";
 
-    // this.batchContents = new Array();
-    // const batchGuid = this.spServices.generateUUID();
-
-    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, Url);
-    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-
-    // this.allDocuments = this.response[0];
     this.commonService.SetNewrelic('TaskAllocation', 'task-detailsDialog', 'GetDocumentsByType');
     const arrResult = await this.spServices.readFiles(completeFolderRelativeUrl);
     this.response = arrResult.length ? arrResult : [];
@@ -157,7 +135,6 @@ export class TaskDetailsDialogComponent implements OnInit {
       users.find(d => d.Id === c.ListItemAllFields.EditorId) !== undefined ?
         users.find(d => d.Id === c.ListItemAllFields.EditorId).Title : '');
     this.DocumentArray.map(c => c.status = c.ListItemAllFields.Status !== null ? c.ListItemAllFields.Status : '');
-    // this.DocumentArray.map(c => c.isFileMarkedAsFinal = c.status.split(" ").splice(-1)[0] === "Complete" ? true : false);
     this.DocumentArray.map(c => c.ModifiedDateString = this.datePipe.transform(c.ListItemAllFields.Modified, 'MMM d, y, h:mm a'));
 
     if (this.DocumentArray.length) {
@@ -174,35 +151,18 @@ export class TaskDetailsDialogComponent implements OnInit {
   //  fetch  user data for Document
   // **************************************************************************************************
 
-  // async getUsers(Ids) {
-  //   this.batchContents = new Array();
-  //   const batchGuid = this.spServices.generateUUID();
-  //   Ids.forEach(element => {
-  //     const url = this.sharedObject.sharePointPageObject.serverRelativeUrl +
-  //       '/_api/Web/GetUserById(' + element + ')';
-  //     this.spServices.getBatchBodyGet(this.batchContents, batchGuid, url);
-  //   });
-  //   this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-  //   return this.response;
-  // }
   async getUsers(Ids) {
-
-    // this.batchContents = new Array();
-    // const batchGuid = this.spServices.generateUUID();
     const batchUrl = [];
     Ids.forEach(element => {
       const userObj = Object.assign({}, this.queryConfig);
       userObj.url = this.spServices.getUserURL(element);
       userObj.type = 'GET';
       batchUrl.push(userObj);
-      // const url = this.sharedObject.sharePointPageObject.serverRelativeUrl + '/_api/Web/GetUserById(' + element + ')';
-      // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, url);
     });
 
     this.commonService.SetNewrelic('TaskAllocation', 'task-detailsDialog', 'GetUsrsbyIds');
     this.response = await this.spServices.executeBatch(batchUrl);
     this.response = this.response.length ? this.response.map(a => a.retItems) : [];
-    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
     return this.response;
   }
   // **************************************************************************************************
