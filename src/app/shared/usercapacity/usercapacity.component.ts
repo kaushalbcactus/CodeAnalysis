@@ -519,7 +519,6 @@ export class UsercapacityComponent implements OnInit {
           // tslint: enable
 
           if (this.enableDownload) {
-            debugger
             const TimeSpentTasks = this.fetchTasks(
               oCapacity.arrUserDetails[indexUser],
               arruserResults1[indexUser]
@@ -1886,7 +1885,6 @@ export class UsercapacityComponent implements OnInit {
           let nCount = 0;
           for (const i in SpentTasks) {
             if (SpentTasks.hasOwnProperty(i)) {
-              debugger
               if (SpentTasks[i].projectCode !== "Adhoc") {
                 const arrProject = arrResults.find(
                   (e) => e.ProjectCode === SpentTasks[i].projectCode
