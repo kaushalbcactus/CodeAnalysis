@@ -600,9 +600,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       this.milestoneData = this.reOrderTaskItems(this.milestoneData);
       this.GanttchartData = this.getGanttTasksFromMilestones(this.milestoneData, true);
       this.tempmilestoneData = [];
-      this.oldGantChartData = [...this.GanttchartData];
-      this.tempGanttchartData = [...this.GanttchartData];
-      this.tempmilestoneData = [...this.milestoneData];
+      this.oldGantChartData = JSON.parse(JSON.stringify(this.GanttchartData));
+      this.tempGanttchartData = JSON.parse(JSON.stringify(this.GanttchartData));
+      this.tempmilestoneData = JSON.parse(JSON.stringify(this.milestoneData));
     }
     else {
       this.milestoneData = [];
@@ -615,7 +615,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       this.tableView = true;
       this.createGanttDataAndLinks(true);
     }
-    this.milestoneDataCopy = [...this.milestoneData];
+    this.milestoneDataCopy = JSON.parse(JSON.stringify(this.milestoneData));
 
     this.disableSave = false;
     if (!bFirstLoad) {
@@ -810,7 +810,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       }
       else if (item.type === 'milestone') {
         const crTask = data.find(e => e.itemType === 'Client Review' && e.milestone === item.title);
-        linkArray.push(this.createLinkArrayObject(item, crTask));
+        if (crTask) {
+          linkArray.push(this.createLinkArrayObject(item, crTask));
+        }
       }
       if (item.AssignedTo && item.AssignedTo.ID >= 0) {
         this.resource.push({
@@ -1925,7 +1927,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
             const dbtasks = this.tempmilestoneData[milestoneIndex].children[submilestoneIndex].children.slice(taskindex, this.tempmilestoneData[milestoneIndex].children[submilestoneIndex].children.length);
             this.milestoneData[milestoneIndex].children[submilestoneIndex].children = [...tasks, ...dbtasks];
 
-            if (this.milestoneData[milestoneIndex].children[submilestoneIndex].children[taskindex].data.slotType === 'Slot') {
+            if (milestone.slotType === 'Slot') {
               // replace all subtasks from edited task
               const dbSubtasks = this.tempmilestoneData[milestoneIndex].children[submilestoneIndex].children[taskindex].children;
               this.milestoneData[milestoneIndex].children[submilestoneIndex].children[taskindex].children = [...dbSubtasks];
@@ -1947,7 +1949,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
             const dbsubmilestones = this.tempmilestoneData[milestoneIndex].children.slice(submilestoneIndex, this.tempmilestoneData[milestoneIndex].children.length);
             this.milestoneData[milestoneIndex].children = [...submilestones, ...dbsubmilestones];
 
-            if (this.milestoneData[milestoneIndex].children[submilestoneIndex].data.slotType === 'Slot') {
+            if (milestone.slotType === 'Slot') {
               // replace all tasks from edited task
               const dbtasks = this.tempmilestoneData[milestoneIndex].children[submilestoneIndex].children;
               this.milestoneData[milestoneIndex].children[submilestoneIndex].children = [...dbtasks];
@@ -2074,9 +2076,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       (data.status !== 'Completed' && data.status !== 'Abandon' && data.status !== 'Auto Closed')) {
       this.taskMenu = [
         { label: 'Edit', icon: 'pi pi-pencil', command: (event) => this.editTask(data, rowNode) },
-        { label: 'Task Scope', icon: 'pi pi-comment', command: (event) => this.openComment(data, rowNode) },
       ];
-
+      if (data.itemType !== 'Client Review' && data.itemType !== 'Send to client') {
+        this.taskMenu.push({ label: 'Task Scope', icon: 'pi pi-comment', command: (event) => this.openComment(data, rowNode) });
+      }
       if (data.itemType !== 'Client Review' && data.itemType !== 'Send to client' && data.slotType.indexOf('Slot') < 0) {
         if (data.showAllocationSplit) {
           this.taskMenu.push(
