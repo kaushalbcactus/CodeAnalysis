@@ -4291,6 +4291,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       DisableCascade: task.DisableCascade && task.DisableCascade === 'Yes' ? true : false,
       taskFullName: this.oProjectDetails.projectCode + ' ' + milestone.label + ' ' + task.label,
       allocationPerDay: task.allocationPerDay ? task.allocationPerDay : '',
+      timeSpentPerDay: task.TimeSpentPerDay ? task.TimeSpentPerDay : '',
       isNext: false,
       position: '',
       color: '',
@@ -4362,6 +4363,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       deallocateSlot: false,
       subMilestonePresent: false,
       allocationPerDay: '',
+      timeSpentPerDay: '',
       showAllocationSplit: false,
       allocationColor: '',
       allocationTypeLoader: false,
@@ -4406,6 +4408,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         resource: milestoneTask.resources,
         status: milestoneTask.status,
         strAllocation: milestoneTask.allocationPerDay,
+        strTimeSpent: milestoneTask.timeSpentPerDay,
         allocationType
       } as IDailyAllocationTask,
       width: '90vw',
