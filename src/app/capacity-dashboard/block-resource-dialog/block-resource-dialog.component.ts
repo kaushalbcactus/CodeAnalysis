@@ -192,6 +192,7 @@ viewAllocation(allocationType) {
         resource:[this.BlockResourceForm.value.Resource.value],
         status: milestoneTask.status,
         strAllocation: milestoneTask.allocationPerDay,
+        strTimeSpent:'',
         allocationType
       } as IDailyAllocationTask,
       width: '90vw',

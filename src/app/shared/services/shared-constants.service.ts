@@ -21,6 +21,18 @@ export class SharedConstantsService {
       orderby: 'StartDate'
     },
 
+    fetchAdhocTasks: {
+      select: 'ID,Task,Status,Title,TimeSpent,StartDate,DueDateDT,TimeZoneNM,CommentsMT,Entity,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail',
+      filter: "(AssignedTo/Id eq {{userID}}) and(" +
+        "(StartDate ge '{{startDateString}}' and StartDate le '{{endDateString}}')" +
+        "or (DueDateDT ge '{{startDateString}}' and DueDateDT le '{{endDateString}}')" +
+        " or (StartDate le '{{startDateString}}' and DueDateDT ge '{{endDateString}}')" +
+        ") and Status ne 'Deleted'",
+      expand: 'AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail',
+      top: '4500',
+      orderby: 'StartDate'
+    },
+
     fetchSpentTimeTasks: {
       select: 'ID,Milestone,ProjectCode,SubMilestones,Task,Status,Title,TimeSpent,ExpectedTime,StartDate,DueDateDT,TimeZoneNM,ParentSlot,TimeSpentPerDay,AssignedTo/Title,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,CommentsMT,Entity',
       filter : "(AssignedTo/Id eq {{userID}}) and ((Status eq 'Completed' and(" +
