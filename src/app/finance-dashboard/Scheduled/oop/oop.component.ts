@@ -879,7 +879,7 @@ export class OopComponent implements OnInit, OnDestroy {
       "/" +
       this.selectedRowItem.ClientName +
       ": Confirmed line item for billing";
-    let mailContent = this.mailContentRes.Content;
+    let mailContent = this.mailContentRes.ContentMT;
     mailContent = this.replaceContent(
       mailContent,
       "@@Val1@@",
