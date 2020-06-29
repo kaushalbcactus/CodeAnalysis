@@ -113,7 +113,7 @@
                                 <!-- Budget Hrs -->
                                 <td style="text-align: center;">
                                     <span *ngIf="!rowData.editMode">{{rowData.EstimatedTime}}</span>
-                                    <input type="number" class="form-control budgetHr" required="required" min="0" value="0" onchange="validity.valid||(value='0');" step="0.25" *ngIf=" rowData.editMode" required="required" [id]="rowData.ID" (ngModelChange)="modelChanged(rowData,Slot)" [(ngModel)]="rowData.EstimatedTime">
+                                    <input type="number" class="form-control budgetHr" required="required" min="0" value="0" onchange="validity.valid||(value='0');" step="0.25" *ngIf=" rowData.editMode" required="required" [id]="rowData.ID" (change)="modelChanged(rowData,Slot)" [(ngModel)]="rowData.EstimatedTime">
                                     <span class='overlayIcon'
                                       (click)="this.showOverlayPanel($event, rowData, dailyAllocateOP)"
                                         style="float: right;cursor: pointer;"

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, AfterViewInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, Output, EventEmitter, AfterViewChecked } from '@angular/core';
 import { DynamicDialogConfig, DynamicDialogRef, TreeNode } from 'primeng';
 import { IConflictTask, IPopupConflictData, IConflictResource, IQueryOptions } from './interface/conflict-allocation';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -15,9 +15,9 @@ import { ConstantsService } from 'src/app/Services/constants.service';
   styleUrls: ['./conflict-allocation.component.css'],
   providers: [UsercapacityComponent]
 })
-export class ConflictAllocationComponent implements OnInit {
+export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
   cols = [];
-  activeIndex = -1;
+  public activeIndex = -1;
   public conflicTasks: any;
   public node: TreeNode;
   public milestoneData: TreeNode[];
@@ -45,11 +45,11 @@ export class ConflictAllocationComponent implements OnInit {
     this.projectCodes = this.popupData.data.project ? this.popupData.data.project : [];
     this.allResources = this.popupData.data.resources ? this.popupData.data.resources : [];
     this.popupData.data = null;
-    this.activeIndex = 0;
     this.hideLoader = true;
   }
 
-  ngAfterViewInit() {
+  ngAfterViewChecked() {
+    this.activeIndex = 0;
   }
 
   goToProjectDetails(data: any): string {
