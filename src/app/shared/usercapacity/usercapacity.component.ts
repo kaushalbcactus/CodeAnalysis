@@ -290,6 +290,9 @@ export class UsercapacityComponent implements OnInit {
     let TimeSpentbatchUrl = [];
     let blockResbatchResults = [];
     let tempblockResFinalArray = [];
+    let adhocTasksBatchUrl=[];
+    let adhocResbatchResults = [];
+    let tempAdhocResFinalArray = [];
     for (const userIndex in selectedUsers) {
       if (selectedUsers.hasOwnProperty(userIndex)) {
         if (selectedUsers[userIndex]) {
@@ -321,6 +324,8 @@ export class UsercapacityComponent implements OnInit {
             oUser.GoLiveDate = userDetail[0].GoLiveDate;
             oUser.JoiningDate = userDetail[0].DateOfJoining;
             this.fetchData(oUser, startDateString, endDateString, batchUrl);
+
+            this.fetchAdhocData(oUser, startDateString, endDateString, adhocTasksBatchUrl);
             this.fetchDataBlockResource(
               oUser,
               startDateString,
@@ -346,6 +351,17 @@ export class UsercapacityComponent implements OnInit {
               console.log(batchResults);
               tempFinalArray = [...tempFinalArray, ...batchResults];
               batchUrl = [];
+            }
+            if (adhocTasksBatchUrl.length === 99) {
+              this.common.SetNewrelic(
+                "Shared",
+                "UserCapacity",
+                "fetchAdhocTaskByUsers"
+              );
+              adhocResbatchResults = await this.spService.executeBatch(adhocTasksBatchUrl);
+              console.log(adhocResbatchResults);
+              tempAdhocResFinalArray = [...tempAdhocResFinalArray, ...adhocResbatchResults];
+              adhocTasksBatchUrl = [];
             }
             if (blockResBatchUrl.length === 99) {
               this.common.SetNewrelic(
@@ -385,6 +401,12 @@ export class UsercapacityComponent implements OnInit {
       tempFinalArray = [...tempFinalArray, ...batchResults];
     }
 
+
+    if (adhocTasksBatchUrl.length) {
+      this.common.SetNewrelic("Shared", "UserCapacity", "fetchAdhocTaskByUsers");
+      adhocResbatchResults = await this.spService.executeBatch(adhocTasksBatchUrl);
+      tempAdhocResFinalArray = [...tempAdhocResFinalArray, ...adhocResbatchResults];
+    }
     if (blockResBatchUrl.length) {
       this.common.SetNewrelic(
         "Shared",
@@ -420,6 +442,11 @@ export class UsercapacityComponent implements OnInit {
       ? tempFinalArray.map((a) => a.retItems)
       : [];
 
+
+      const arruserAdhocResults = tempAdhocResFinalArray.length
+      ? tempAdhocResFinalArray.map((a) => a.retItems)
+      : [];
+
     const arruserResults1 = tempTimeSpentFinalArray.length
       ? tempTimeSpentFinalArray.map((a) => a.retItems)
       : [];
@@ -444,7 +471,7 @@ export class UsercapacityComponent implements OnInit {
       if (oCapacity.arrUserDetails.hasOwnProperty(indexUser)) {
         const TempTasks = this.fetchTasks(
           oCapacity.arrUserDetails[indexUser],
-          [...arruserResults[indexUser], ...arrBlockResResults[indexUser]],
+          [...arruserResults[indexUser],...arruserAdhocResults[indexUser], ...arrBlockResResults[indexUser]],
           excludeTasks,
           taskStatus,
           adhocStatus
@@ -627,6 +654,7 @@ export class UsercapacityComponent implements OnInit {
 
   filterData(TempTasks) {
     let taskArray = [];
+    debugger;
     taskArray =
       this.taskStatus === "Confirmed"
         ? TempTasks.filter(
@@ -643,7 +671,12 @@ export class UsercapacityComponent implements OnInit {
               c.Status === "Planned" ||
               c.Status === "Blocked"
           )
-        : TempTasks;
+        :   this.taskStatus === "Adhoc"
+        ? TempTasks.filter(
+            (c) =>
+              c.Task=== "Adhoc"
+          )
+        :  TempTasks;
 
     return taskArray;
   }
@@ -715,6 +748,22 @@ export class UsercapacityComponent implements OnInit {
     invObj.listName = this.globalConstantService.listNames.Schedules.name;
     invObj.type = "GET";
     batchUrl.push(invObj);
+    return batchUrl;
+  }
+
+
+  fetchAdhocData(oUser, startDateString, endDateString, batchUrl) {
+    const selectedUserID = oUser.uid;
+    const AdhocTasksurl = this.spService.getReadURL(
+      this.globalConstantService.listNames.AdhocTask.name,
+      this.sharedConstant.userCapacity.fetchAdhocTasks
+    );
+
+    this.common.setBatchObject(batchUrl,AdhocTasksurl
+      .replace("{{userID}}", selectedUserID)
+      .replace(/{{startDateString}}/gi, startDateString)
+      .replace(/{{endDateString}}/gi, endDateString),null,this.globalConstantService.Method.GET,this.globalConstantService.listNames.AdhocTask.name)
+
     return batchUrl;
   }
 
@@ -1332,13 +1381,13 @@ export class UsercapacityComponent implements OnInit {
                 title:
                   oUser.tasks[j].Task === "Adhoc"
                     ? oUser.tasks[j].Entity
-                      ? oUser.tasks[j].Comments +
+                      ? oUser.tasks[j].CommentsMT +
                         " - " +
                         oUser.tasks[j].Entity +
                         " (" +
                         oUser.tasks[j].Task +
                         ")"
-                      : oUser.tasks[j].Comments +
+                      : oUser.tasks[j].CommentsMT +
                         " (" +
                         oUser.tasks[j].Task +
                         ")"
@@ -1350,7 +1399,7 @@ export class UsercapacityComponent implements OnInit {
                 milestone: oUser.tasks[j].Milestone,
                 SubMilestones: oUser.tasks[j].SubMilestones,
                 task: oUser.tasks[j].Task,
-                comments: oUser.tasks[j].Comments,
+                comments: oUser.tasks[j].CommentsMT,
                 taskID: oUser.tasks[j].ID,
                 shortTitle: "",
                 milestoneDeadline: "",
@@ -1660,7 +1709,7 @@ export class UsercapacityComponent implements OnInit {
       const batchGuid = this.spService.generateUUID();
       for (const taskIndex in tasks) {
         if (tasks.hasOwnProperty(taskIndex)) {
-          if ( tasks[taskIndex].projectCode && tasks[taskIndex].projectCode !== "Adhoc" ) {
+          if ( tasks[taskIndex].projectCode) {
             // tslint:disable
             const piObj = Object.assign({}, this.queryConfig);
             piObj.url = this.spService.getReadURL(
@@ -1701,7 +1750,7 @@ export class UsercapacityComponent implements OnInit {
         let nCount = 0;
         for (const i in tasks) {
           if (tasks.hasOwnProperty(i)) {
-            if (tasks[i].projectCode && tasks[i].projectCode !== "Adhoc") {
+            if (tasks[i].projectCode) {
               const arrProject = arrResults[nCount];
               if (arrProject.length > 0) {
                 tasks[i].shortTitle = arrProject[0].WBJID;
@@ -1808,6 +1857,7 @@ export class UsercapacityComponent implements OnInit {
         const projectAdded = [];
         for (const taskIndex in SpentTasks) {
           if (SpentTasks.hasOwnProperty(taskIndex)) {
+            debugger;
             if (
               SpentTasks[taskIndex].projectCode !== "Adhoc" &&
               projectAdded.indexOf(SpentTasks[taskIndex].projectCode) === -1
@@ -1839,6 +1889,7 @@ export class UsercapacityComponent implements OnInit {
           let nCount = 0;
           for (const i in SpentTasks) {
             if (SpentTasks.hasOwnProperty(i)) {
+              debugger
               if (SpentTasks[i].projectCode !== "Adhoc") {
                 const arrProject = arrResults.find(
                   (e) => e.ProjectCode === SpentTasks[i].projectCode
