@@ -29,13 +29,14 @@ export class CapacityDashboardComponent implements OnInit {
   AlldbResources: any;
   Resources: [];
   ResourceType = [
-    { label: "On Job Resource", value: "OnJob" },
+    { label: "On Job", value: "OnJob" },
     { label: "Trainee", value: "Trainee" },
   ];
   Statuses = [
     { label: "All", value: "All" },
     { label: "Confirmed", value: "Confirmed" },
     { label: "Not Confirmed", value: "NotConfirmed" },
+    { label: "Adhoc", value: "Adhoc" },
   ];
   Skills: [];
   PracticeAreas: [];
@@ -412,8 +413,10 @@ export class CapacityDashboardComponent implements OnInit {
       if (blockResource) {
         const data = {
           Title : blockResource.taskFullName,
-          StartDate:blockResource.pUserStart,
-          DueDateDT:blockResource.pUserEnd,
+          // StartDate:blockResource.pUserStart,
+          // DueDateDT:blockResource.pUserEnd,
+          StartDate:new Date(this.datepipe.transform(blockResource.pUserStart, 'yyyy-MM-dd') + 'T00:00:00.000'),
+          DueDateDT:new Date(this.datepipe.transform(blockResource.pUserEnd, 'yyyy-MM-dd') + 'T23:45:00.000'),
           Status : this.constants.blockResStatus.Active,
           AssignedToId:blockResource.Resource.UserNamePG.Id,
           TimeZoneNM:parseFloat(blockResource.Resource.TimeZone.Title),

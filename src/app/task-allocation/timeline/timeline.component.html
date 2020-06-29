@@ -91,10 +91,6 @@
                     <label>Auto Closed</label>
                     <div class="color-box" style="background-color: #8183CC;"></div>
                 </div>
-                <!-- <div class="input-color">
-                    <label>On Hold</label>
-                    <div class="color-box" style="background-color: #FF3E56;"></div>
-                </div> -->
             </div>
             <div>
               <div class="input-color">
@@ -129,12 +125,6 @@
                         <mat-icon>save</mat-icon> Save
                     </button>
                 </div>
-
-                <!-- <div *ngIf="visualgraph">
-                    <button mat-raised-button type="button" (click)="save()">
-                        <mat-icon>save</mat-icon> Save Tasks
-                    </button>
-                </div> -->
             </div>
 
         </div>
@@ -180,7 +170,7 @@
                                 {{rowData.text}}</span>
                             <span style="color:#dc2038;cursor: pointer;"
                                 *ngIf="(rowData.type ==='task' && rowData.IsCentrallyAllocated !== 'Yes') || (rowData.IsCentrallyAllocated === 'Yes' && rowData.title.indexOf('Slot') < 0)"
-                                (click)="ViewTaskDetails(rowData)"> {{rowData.text}}</span>
+                                (click)="viewTaskDetails(rowData)"> {{rowData.text}}</span>
 
                             <div id="nextMilestone"
                                 [title]=" rowData.type==='milestone' ? 'Set as Current Milestone':'Set as Current Sub-Milestone'"
@@ -364,22 +354,8 @@
                 </ng-template>
 
             </p-treeTable>
-            <!-- <p-contextMenu #milestones [hidden]="contextMenuvisible" appendTo="body" [model]="contextMenuOptions">
-            </p-contextMenu> -->
 
-            <!-- **********************************************************************************************************
-                                                         Comment Popup
-           ********************************************************************************************************** -->
-            <!-- <p-dialog header="Any specific instructions for task" [closable]="false" [modal]="true" [style]="{width: '450px', minWidth: '300px'}" [(visible)]="displayComment">
-                <textarea *ngIf="displayComment" placeholder="Leave Comment" rows="8" cols="30" pInputTextarea autoResize="autoResize" style="width:100%;padding: 3%;" [(ngModel)]="task.scope"> </textarea>
-                <p-footer>
-                    <button type="button" pButton icon="pi pi-check"
-                        style="background-color: #af0b14;border-color:#af0b14;" (click)=" displayComment=false"
-                        label="Save"></button>
-                    <button type="button" pButton icon="pi pi-times" (click)="cancelComment();displayComment=false"
-                        label="Cancel" class="ui-button-secondary"></button>
-                </p-footer>
-            </p-dialog> -->
+          
         </div>
 
         <!-- **********************************************************************************************************
@@ -529,4 +505,18 @@
 <p-sidebar [(visible)]="displayBody" position="bottom" styleClass="ui-sidebar-lg resourcePanel" [showCloseIcon]="false" [closeOnEscape]="false" (onHide)="onClose()">
     <app-resource-selection *ngIf="hideResourceSelection" #resourceSelect></app-resource-selection>
 </p-sidebar>
+
+  <!-- **********************************************************************************************************
+                                                         Comment Popup
+    ********************************************************************************************************** -->
+<p-dialog header="Any specific instructions for task" [closable]="false" [modal]="true" [style]="{width: '450px', minWidth: '300px'}" [(visible)]="displayComment">
+    <textarea *ngIf="displayComment" placeholder="Leave Comment" rows="8" cols="30" pInputTextarea autoResize="autoResize" style="width:100%;padding: 3%;" [(ngModel)]="task.scope"> </textarea>
+    <p-footer>
+        <button type="button" pButton icon="pi pi-check"
+                style="background-color: #af0b14;border-color:#af0b14;" (click)="displayComment=false"
+                label="Save"></button>
+        <button type="button" pButton icon="pi pi-times" (click)="cancelComment();displayComment=false"
+                label="Cancel" class="ui-button-secondary"></button>
+    </p-footer>
+</p-dialog>
 

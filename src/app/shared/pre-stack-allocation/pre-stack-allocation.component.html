@@ -27,6 +27,9 @@
           <th class="valueCol">
             Budget Hrs
           </th>
+          <th class="valueCol">
+            Time Spent
+          </th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-rowData let-columns="columns">
@@ -60,6 +63,11 @@
                 [format]="24"
               >
               </ngx-material-timepicker>
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ rowData.timeSpent}}
             </div>
           </td>
         </tr>

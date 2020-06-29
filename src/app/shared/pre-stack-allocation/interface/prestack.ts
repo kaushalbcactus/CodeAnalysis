@@ -14,6 +14,7 @@ export interface IDailyAllocationTask {
   resource: IUserCapacity[];
   status: string;
   strAllocation: string;
+  strTimeSpent: string;
   allocationType: string;
 }
 
@@ -25,6 +26,7 @@ export interface IDailyAllocationObject {
     maxHrs: number;
     maxMins: number;
   };
+  timeSpent: number;
   hideTasksTable: boolean;
   tasks: any;
 }

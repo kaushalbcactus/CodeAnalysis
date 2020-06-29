@@ -868,7 +868,7 @@ export class SOWComponent implements OnInit, OnDestroy {
 
 
   getMailContent(sowObj) {
-    let mailContent = this.emailTemplate ? this.emailTemplate.Content : '';
+    let mailContent = this.emailTemplate ? this.emailTemplate.ContentMT : '';
     mailContent = this.pmCommonService.replaceContent(mailContent, "@@SowCode@@", sowObj.SOWCode);
     mailContent = this.pmCommonService.replaceContent(mailContent, "@@ClientName@@", sowObj.ClientLegalEntity);
     mailContent = this.pmCommonService.replaceContent(mailContent, "@@Title@@", sowObj.SOWTitle);

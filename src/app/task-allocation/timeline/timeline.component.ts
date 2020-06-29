@@ -412,7 +412,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
   createFetchTaskCR(milestone) {
-    const clientReviewObj = this.allTasks.filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title &&
+    const clientReviewObj = this.allTasks.filter(c => c.ContentTypeCH !== this.constants.CONTENT_TYPE.MILESTONE && c.Milestone === milestone.Title &&
       c.Task === 'Client Review' && c.Status !== 'Deleted');
 
     if (clientReviewObj.length > 0) {
@@ -460,9 +460,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       if (GanttTaskObj.status !== 'Deleted') {
         this.GanttchartData.push(GanttTaskObj);
       }
-
-      const milestoneTasks = this.allTasks.filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title && c.SubMilestones === element.subMile);
-
+      const milestoneTasks = this.allTasks.filter(c => c.ContentTypeCH !== this.constants.CONTENT_TYPE.MILESTONE && c.Milestone === milestone.Title && c.SubMilestones === element.subMile);
       this.createFetchTaskObject(milestoneTasks, milestoneHoursSpent, projectHoursSpent, projectHoursAllocated, projectAvailableHours
         , allRetrievedTasks, tempSubmilestones, milestone);
 
@@ -485,6 +483,15 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       submile.push(temptasks);
     }
   }
+
+
+  /////// Impelement reorder function 
+  reOrderTaskItems(milestoneData) {
+    const milData = milestoneData;
+    return milData;
+  }
+
+
   // tslint:disable
   public async getMilestones(bFirstLoad) {
     this.loaderenable = true;
@@ -590,10 +597,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         this.assignProjectHours(projectHoursSpent, projectHoursAllocated, projectAvailableHours, totalMilestoneBudgetHours);
       }
 
-      this.milestoneData = [...this.milestoneData];
-      this.GanttchartData = [...this.GanttchartData];
+      this.milestoneData = this.reOrderTaskItems(this.milestoneData);
+      this.GanttchartData = this.getGanttTasksFromMilestones(this.milestoneData, true);
       this.tempmilestoneData = [];
-      this.oldGantChartData = this.GanttchartData;
+      this.oldGantChartData = JSON.parse(JSON.stringify(this.GanttchartData));
       this.tempGanttchartData = JSON.parse(JSON.stringify(this.GanttchartData));
       this.tempmilestoneData = JSON.parse(JSON.stringify(this.milestoneData));
     }
@@ -803,7 +810,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       }
       else if (item.type === 'milestone') {
         const crTask = data.find(e => e.itemType === 'Client Review' && e.milestone === item.title);
-        linkArray.push(this.createLinkArrayObject(item, crTask));
+        if (crTask) {
+          linkArray.push(this.createLinkArrayObject(item, crTask));
+        }
       }
       if (item.AssignedTo && item.AssignedTo.ID >= 0) {
         this.resource.push({
@@ -855,7 +864,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       { "id": "confirmMilestone", "text": "Confirm Milestone", "enabled": true },
       { "id": "confirmSubmilestone", "text": "Confirm SubMilestone", "enabled": true },
       { "id": "editAllocation", "text": "Edit Allocation", "enabled": true },
-      { "id": "equalSplit", "text": "Equal Allocation", "enabled": true }
+      { "id": "equalSplit", "text": "Equal Allocation", "enabled": true },
+      { "id": "taskScope", "text": "Task Scope", "enabled": true }
 
     ]
 
@@ -883,11 +893,11 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         index.push(task.DisableCascade ? 5 : 4);
       } else {
         if (task.slotType === 'Slot' && task.status !== 'Completed') {
-          index = [0, 1,];
+          index = [0, 1, 12];
           index.push(task.DisableCascade ? 5 : 4);
         } else {
           if (task.status !== 'Completed' && task.status !== 'Auto Closed') {
-            index = [0, 1, 6];
+            index = [0, 1, 12, 6];
             index.push(task.tat ? 3 : 2);
             index.push(task.DisableCascade ? 5 : 4);
             if (task.AssignedTo && task.AssignedTo.ID && task.AssignedTo.ID !== -1) {
@@ -987,7 +997,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           this.ganttNotification();
           break;
         case 'filesandcomments':
-          this.ViewTaskDetails(task);
+          this.viewTaskDetails(task);
           break;
         case 'capacity':
           this.getUserCapacity(task);
@@ -1009,6 +1019,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           break;
         case 'budgetHrs':
           this.changeBudgetHrs(task);
+          break;
+        case 'taskScope':
+          this.openComment(task, null);
           break;
         default:
           break;
@@ -1542,9 +1555,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     milestoneTask.pUserEndTimePart = task.endDateTimePart;
     milestoneTask.budgetHours = task.budgetHrs;
     milestoneTask.DisableCascade = task.disableCascade;
-    milestoneTask.AssignedTo = task.resource
-    milestoneTask.user = task.resource.Title
-    milestoneTask.tat = task.tat
+    milestoneTask.AssignedTo = task.resource;
+    milestoneTask.user = task.resource.Title;
+    milestoneTask.tat = task.tat;
 
     return milestoneTask;
   }
@@ -1936,7 +1949,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
             const dbtasks = this.tempmilestoneData[milestoneIndex].children[submilestoneIndex].children.slice(taskindex, this.tempmilestoneData[milestoneIndex].children[submilestoneIndex].children.length);
             this.milestoneData[milestoneIndex].children[submilestoneIndex].children = [...tasks, ...dbtasks];
 
-            if (this.milestoneData[milestoneIndex].children[submilestoneIndex].children[taskindex].data.slotType === 'Slot') {
+            if (milestone.slotType === 'Slot') {
               // replace all subtasks from edited task
               const dbSubtasks = this.tempmilestoneData[milestoneIndex].children[submilestoneIndex].children[taskindex].children;
               this.milestoneData[milestoneIndex].children[submilestoneIndex].children[taskindex].children = [...dbSubtasks];
@@ -1958,7 +1971,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
             const dbsubmilestones = this.tempmilestoneData[milestoneIndex].children.slice(submilestoneIndex, this.tempmilestoneData[milestoneIndex].children.length);
             this.milestoneData[milestoneIndex].children = [...submilestones, ...dbsubmilestones];
 
-            if (this.milestoneData[milestoneIndex].children[submilestoneIndex].data.slotType === 'Slot') {
+            if (milestone.slotType === 'Slot') {
               // replace all tasks from edited task
               const dbtasks = this.tempmilestoneData[milestoneIndex].children[submilestoneIndex].children;
               this.milestoneData[milestoneIndex].children[submilestoneIndex].children = [...dbtasks];
@@ -2046,28 +2059,29 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   // *************************************************************************************************
   //  Add Comment
   // **************************************************************************************************
-  // openComment(task, rowNode) {
-  //   this.tempComment = task.scope;
-  //   this.task = task;
-  //   this.displayComment = true;
+  openComment(task, rowNode) {
+    this.tempComment = task.scope;
+    this.task = task;
+    this.displayComment = true;
 
-  //   if (rowNode.parent !== null) {
-  //     if (rowNode.parent.parent === null) {
-  //       rowNode.parent.data.edited = true;
-  //     } else {
-  //       rowNode.parent.parent.data.edited = true;
-  //       rowNode.parent.data.edited = true;
-
-  //     }
-  //   }
-  //   task.edited = true;
-  // }
+    if (rowNode && rowNode.parent !== null) {
+      if (rowNode.parent.parent === null) {
+        rowNode.parent.data.edited = true;
+      } else {
+        rowNode.parent.parent.data.edited = true;
+        rowNode.parent.data.edited = true;
+      }
+    } else {
+      const milestone = this.GanttchartData.find(e => e.type === 'milestone' && e.title === task.milestone);
+      milestone.edited = true;
+    }
+    task.edited = true;
+  }
 
   // *************************************************************************************************
 
   //  Remove Comment
   // **************************************************************************************************
-
 
   cancelComment() {
     this.task.scope = this.tempComment;
@@ -2085,7 +2099,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       this.taskMenu = [
         { label: 'Edit', icon: 'pi pi-pencil', command: (event) => this.editTask(data, rowNode) },
       ];
-
+      if (data.itemType !== 'Client Review' && data.itemType !== 'Send to client') {
+        this.taskMenu.push({ label: 'Task Scope', icon: 'pi pi-comment', command: (event) => this.openComment(data, rowNode) });
+      }
       if (data.itemType !== 'Client Review' && data.itemType !== 'Send to client' && data.slotType.indexOf('Slot') < 0) {
         if (data.showAllocationSplit) {
           this.taskMenu.push(
@@ -2140,9 +2156,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     });
     if (event.type !== 'milestone' && event.type !== 'submilestone') {
       this.maxBudgetHrs = this.taskAllocateCommonService.setMaxBudgetHrs(event);
-      if (this.maxBudgetHrs < event.budgetHrs) {
-        this.ogBudgethrs = event.budgetHrs;
-        event.budgetHrs = 0;
+      if (this.maxBudgetHrs < event.budgetHours) {
+        this.ogBudgethrs = event.budgetHours;
+        event.budgetHours = 0;
         this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Budget hours is set to zero because given budget hours is greater than task time period. Original budget hrs of task is ' + this.ogBudgethrs, false);
       }
     }
@@ -2615,7 +2631,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     if (!tasks.length) {
       tasks = this.allTasks.filter(e => {
         const taskName = e.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + e.Milestone + ' ', '');
-        return e.FileSystemObjectType === 0 && taskName === originalName && e.Milestone === milestoneTask.milestone;
+        return e.ContentTypeCH !== this.constants.CONTENT_TYPE.MILESTONE && taskName === originalName && e.Milestone === milestoneTask.milestone;
       });
     }
     return tasks;
@@ -2996,16 +3012,13 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   checkEndDate(start, workingMinutes) {
     let count = 0;
     let EndDate = new Date(start);
-    //let CaculateDate = new Date(start);
     while (count < workingMinutes) {
       if (EndDate.getDay() !== 0 && EndDate.getDay() !== 6) {
         EndDate = new Date(EndDate.setMinutes(EndDate.getMinutes() + 1));
-        //CaculateDate = new Date(EndDate);
         count++;
       }
       else {
         EndDate = new Date(EndDate.getFullYear(), EndDate.getMonth(), (EndDate.getDate() + 1), 0, 0);
-        //CaculateDate = new Date(EndDate);
       }
     }
     return EndDate;
@@ -3488,12 +3501,13 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       SubMilestones: milestoneTask.submilestone,
       Milestone: milestoneTask.milestone,
       Task: milestoneTask.itemType,
-      ProjectCode: this.oProjectDetails.projectCode,
+      ProjectCode: this.oProjectDetails.projectCode
     }
   }
   async addUpdateTaskObject(milestoneTask) {
     return {
       __metadata: { type: this.constants.listNames.Schedules.type },
+      CommentsMT: milestoneTask.scope,
       StartDate: milestoneTask.start_date,
       DueDateDT: milestoneTask.end_date,
       ExpectedTime: '' + milestoneTask.budgetHours,
@@ -3884,8 +3898,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     });
   }
 
-
-
   // ************************************************************************************************
   // Milestone Validation
   // ************************************************************************************************
@@ -4116,7 +4128,6 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         updateCurrMilBody, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
     }
 
-
     /////// Update current project status
     updateProjectBody = {
       __metadata: { type: this.constants.listNames.ProjectInformation.type },
@@ -4245,7 +4256,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   // *************************************************************************************************************************************
 
   // tslint:disable
-  async ViewTaskDetails(task) {
+  async viewTaskDetails(task) {
 
     const ref = this.dialogService.open(TaskDetailsDialogComponent, {
       data: {
@@ -4313,6 +4324,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       DisableCascade: task.DisableCascade && task.DisableCascade === 'Yes' ? true : false,
       taskFullName: this.oProjectDetails.projectCode + ' ' + milestone.label + ' ' + task.label,
       allocationPerDay: task.allocationPerDay ? task.allocationPerDay : '',
+      timeSpentPerDay: task.TimeSpentPerDay ? task.TimeSpentPerDay : '',
       isNext: false,
       position: '',
       color: '',
@@ -4384,6 +4396,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       deallocateSlot: false,
       subMilestonePresent: false,
       allocationPerDay: '',
+      timeSpentPerDay: '',
       showAllocationSplit: false,
       allocationColor: '',
       allocationTypeLoader: false,
@@ -4428,6 +4441,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         resource: milestoneTask.resources,
         status: milestoneTask.status,
         strAllocation: milestoneTask.allocationPerDay,
+        strTimeSpent: milestoneTask.timeSpentPerDay,
         allocationType
       } as IDailyAllocationTask,
       width: '90vw',

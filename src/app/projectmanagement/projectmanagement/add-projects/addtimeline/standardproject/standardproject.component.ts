@@ -2338,6 +2338,7 @@ export class StandardprojectComponent implements OnInit {
         budgetHrs: milestoneTask.Hours,
         resource: milestoneTask.resources,
         strAllocation: milestoneTask.allocationPerDay,
+        strTimeSpent: '',
         allocationType
       } as IDailyAllocationTask,
       width: '90vw',
@@ -2355,14 +2356,6 @@ export class StandardprojectComponent implements OnInit {
       }
     });
   }
-
-  // setAllocationPerDay(allocation, milestoneTask) {
-  //   milestoneTask.allocationPerDay = allocation.allocationPerDay;
-  //   milestoneTask.edited = true;
-  //   milestoneTask.showAllocationSplit = new Date(milestoneTask.StartDatePart).getTime() !== new Date(milestoneTask.EndDatePart).getTime() ?
-  //     true : false;
-  //   milestoneTask.allocationColor = allocation.allocationType === 'Daily Allocation' ? '' : 'indianred';
-  // }
 
   showOverlayPanel(event, rowData, dailyAllocateOP, target?) {
     const allocationPerDay = rowData.allocationPerDay ? rowData.allocationPerDay : '';
