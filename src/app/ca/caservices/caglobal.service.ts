@@ -84,7 +84,8 @@ export class CAGlobalService {
     start_date: new Date(),
     end_date: new Date(),
     id: 0,
-    isCurrentMilestoneTask: false
+    isCurrentMilestoneTask: false,
+    timeSpentPerDay: ''
   };
   public oCapacity = {
     arrUserDetails: [],

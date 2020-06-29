@@ -980,6 +980,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     taskObj.PreviousAssignedUser = task.PreviousAssignedUser;
     taskObj.SubMilestones = task.SubMilestones;
     taskObj.showAllocationSplit = task.AllocationPerDay ? true : false;
+    taskObj.timeSpentPerDay = task.TimeSpentPerDay ? task.TimeSpentPerDay : '';
     taskObj.allocationColor = '';
     taskObj.allocationTypeLoader = false;
     taskObj.isCurrentMilestoneTask = projectItem.length && task.Milestone === projectItem[0].Milestone ? true : false;
@@ -1236,7 +1237,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       this.disableSave = true;
       this.loaderenable = true;
       const bindingData = [...this.caGlobal.dataSource];
-      const allTasks = [].concat.apply([], bindingData.map(t => t.SlotTasks)).filter(t => Boolean && t.isCurrentMilestoneTask);
+      const allTasks = [].concat.apply([], bindingData.map(t => t.SlotTasks)).filter(t => t && t.isCurrentMilestoneTask);
       const conflictDetails: IConflictResource[] = await this.conflictAllocation.checkConflictsAllocations(null, [], allTasks, this.resourceList);
       const projectCodes = allTasks.map(t => t.ProjectCode);
       const uniqueProjectCodes = [...new Set(projectCodes)];
@@ -1804,6 +1805,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         resource: [milestoneTask.allocatedResource],
         status: milestoneTask.Status,
         strAllocation: milestoneTask.allocationPerDay,
+        strTimeSpent: milestoneTask.timeSpentPerDay,
         allocationType
       } as IDailyAllocationTask,
       width: '90vw',

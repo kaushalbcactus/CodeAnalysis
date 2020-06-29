@@ -1321,7 +1321,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
       "/" +
       this.selectedRowItem.ClientLegalEntity +
       ": Confirmed line item for billing";
-    let mailContent = this.mailContentRes[0].retItems[0].Content;
+    let mailContent = this.mailContentRes[0].retItems[0].ContentMT;
     mailContent = this.replaceContent(
       mailContent,
       "@@Val1@@",
@@ -1367,7 +1367,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
       this.selectedRowItem.Id +
       "): " +
       "Propose closure for project";
-    let pcmailContent = this.mailContentRes[1].retItems[0].Content;
+    let pcmailContent = this.mailContentRes[1].retItems[0].ContentMT;
     pcmailContent = this.replaceContent(pcmailContent, "@@Val3@@", "All");
     pcmailContent = this.replaceContent(
       pcmailContent,

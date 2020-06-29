@@ -65,6 +65,7 @@ export interface IMilestoneTask {
     'taskFullName': string;
     'subMilestonePresent': boolean;
     'allocationPerDay': string;
+    'timeSpentPerDay' : string;
     'allocationColor': string;
     'showAllocationSplit': boolean;
     'allocationTypeLoader': boolean;
