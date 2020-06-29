@@ -280,7 +280,7 @@ export class PreStackAllocationComponent implements OnInit {
   getResourceMaxHrs(defaultResourceMaxHrs: number, day: any, betweenDays: number | boolean, allocatedHours?: number): string {
     const numtotalAllocated: number = this.common.convertFromHrsMins(day.totalTimeAllocatedPerDay);
     const availableHrs: number = defaultResourceMaxHrs - numtotalAllocated;
-    const maxHrs: number = availableHrs < allocatedHours ? allocatedHours : availableHrs;
+    const maxHrs: number = availableHrs; // availableHrs < allocatedHours ? allocatedHours : availableHrs;
     const maxHrsMins: number = this.common.roundToPrecision(maxHrs, 0.25);
     const sliderMaxHrs: number = betweenDays ? maxHrsMins > -1 && (24 - maxHrsMins < 12) ?
       24 - maxHrsMins : defaultResourceMaxHrs : maxHrsMins;
