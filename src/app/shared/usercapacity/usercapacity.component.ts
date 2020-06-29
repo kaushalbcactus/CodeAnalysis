@@ -654,7 +654,6 @@ export class UsercapacityComponent implements OnInit {
 
   filterData(TempTasks) {
     let taskArray = [];
-    debugger;
     taskArray =
       this.taskStatus === "Confirmed"
         ? TempTasks.filter(
@@ -1857,7 +1856,6 @@ export class UsercapacityComponent implements OnInit {
         const projectAdded = [];
         for (const taskIndex in SpentTasks) {
           if (SpentTasks.hasOwnProperty(taskIndex)) {
-            debugger;
             if (
               SpentTasks[taskIndex].projectCode !== "Adhoc" &&
               projectAdded.indexOf(SpentTasks[taskIndex].projectCode) === -1
@@ -1889,7 +1887,6 @@ export class UsercapacityComponent implements OnInit {
           let nCount = 0;
           for (const i in SpentTasks) {
             if (SpentTasks.hasOwnProperty(i)) {
-              debugger
               if (SpentTasks[i].projectCode !== "Adhoc") {
                 const arrProject = arrResults.find(
                   (e) => e.ProjectCode === SpentTasks[i].projectCode
