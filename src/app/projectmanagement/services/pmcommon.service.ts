@@ -630,7 +630,6 @@ export class PMCommonService {
       DescriptionMT: addObj.ProjectAttributes.EndUseofDeliverable ? addObj.ProjectAttributes.EndUseofDeliverable : '',
       POC: addObj.ProjectAttributes.PointOfContact2 ? addObj.ProjectAttributes.PointOfContact2.join(';#') : '',
       Authors: addObj.ProjectAttributes.Authors ? addObj.ProjectAttributes.Authors : '',
-      IsStandard: addObj.Timeline.Standard.IsStandard ? 'Yes' : 'No',
       ConferenceJournal: addObj.ProjectAttributes.ConferenceJournal ? addObj.ProjectAttributes.ConferenceJournal : '',
       CommentsMT: addObj.ProjectAttributes.Comments ? addObj.ProjectAttributes.Comments : '',
       PubSupportStatus: addObj.ProjectAttributes.PUBSupportStatus ? addObj.ProjectAttributes.PUBSupportStatus : '',
@@ -641,10 +640,10 @@ export class PMCommonService {
       AnnotationBinder: addObj.ProjectAttributes.AnnotationBinder === true ? 'Yes' : 'No'
     };
     if (isCreate) {
-      data.SOWCode = addObj.SOWSelect.SOWCode;
+      data.IsStandard = addObj.Timeline.Standard.IsStandard ? 'Yes' : 'No',
+        data.SOWCode = addObj.SOWSelect.SOWCode;
       data.IsApproved = 'No';
       data.QuickProject = 'No';
-      // data.Milestones = addObj.Timeline.Standard.IsStandard ? addObj.Timeline.Standard.Milestones : '';
       data.Milestones = '';
       if (addObj.Timeline.Standard.IsStandard) {
         data.Milestones = Array.from(new Set(addObj.Timeline.Standard.Milestones)).join(';#');
@@ -654,7 +653,6 @@ export class PMCommonService {
         const monthNameArray = this.pmObject.addProject.Timeline.NonStandard.months.map(a => a.monthName);
         data.Milestones = monthNameArray.join(';#');
       }
-      //data.Milestones = addObj.Timeline.Standard.IsStandard ? Array.from(new Set(addObj.Timeline.Standard.Milestones)).join(';#') : '';
       data.DeliverableType = addObj.Timeline.Standard.IsStandard ? addObj.Timeline.Standard.DeliverableType :
         addObj.Timeline.NonStandard.DeliverableType;
       data.ProjectType = addObj.ProjectAttributes.BilledBy;
@@ -672,7 +670,7 @@ export class PMCommonService {
       data.ServiceLevel = addObj.Timeline.Standard.IsStandard ? addObj.Timeline.Standard.Service :
         addObj.Timeline.NonStandard.Service;
       data.OvernightRequest = addObj.FinanceManagement.OverNightRequest ? addObj.FinanceManagement.OverNightRequest : '';
-      data.StandardService = addObj.Timeline.Standard.IsStandard ? addObj.Timeline.Standard.Service : addObj.Timeline.NonStandard.Service;
+      data.StandardService = addObj.Timeline.Standard.IsStandard ? addObj.Timeline.Standard.Service : '';
       data.StandardBudgetHrs = addObj.Timeline.Standard.IsStandard ? addObj.Timeline.Standard.StandardProjectBugetHours :
         addObj.Timeline.NonStandard.ProjectBudgetHours;
     }
@@ -1785,8 +1783,8 @@ export class PMCommonService {
       Milestone: milestoneObj.MilestoneName,
       SkillLevel: milestoneTask.Skill,
       CentralAllocationDone: 'No',
-      DisableCascade:'No',
-      
+      DisableCascade: 'No',
+
     };
     if (milestoneTask.userId > 0) {
       data.AssignedToId = milestoneTask.userId;
@@ -2013,8 +2011,8 @@ export class PMCommonService {
 
 
 
-  
-  
+
+
   // SendEmail(){
   //   var EmailTemplate = this.Emailtemplate.Content;
   //   var objEmailBody = [];

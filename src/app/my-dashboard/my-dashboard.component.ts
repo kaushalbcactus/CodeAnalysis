@@ -121,7 +121,8 @@ export class MyDashboardComponent implements OnInit {
     if (res.length > 0) { 
       const ref = this.dialogService.open(CurrentCompletedTasksTableComponent, { 
           data: {
-            allpopupTasks  : res
+            allpopupTasks  : res,
+          
           },
         header: 'Open Tasks',
         width: '90vw',
