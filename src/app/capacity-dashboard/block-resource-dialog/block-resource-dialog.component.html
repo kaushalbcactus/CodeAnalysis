@@ -71,7 +71,7 @@
                 <div class="p-col-6 p-md-4 p-lg-3 blockResItem">Expected Time</div>
                 <div class="p-col-6 p-md-8 p-lg-9 blockResItem">
                     <app-allocation-overlay #dailyAllocateOP></app-allocation-overlay>
-                    <input type="number" onchange="validity.valid||(value='0');" step="0.25" pInputText class="cls_blockResExpectedTime" formControlName="ExpectedTime" [style.width]="isViewAllocation ? '90%' : '100%'" min="0" max={{maxBudgetHrs}} value="0" />
+                    <input type="number" onchange="validity.valid||(value='0');" step="0.25" pInputText class="cls_blockResExpectedTime" formControlName="ExpectedTime" [style.width]="isViewAllocation ? '90%' : '100%'" min="0" max={{maxExpectedHrs}} value="0" />
                     <ng-container *ngIf="isViewAllocation">
                         <button pButton type="button" (click)="viewAllocation('')" class="viewAllocation ui-button-danger" icon='pi pi-sliders-h'></button>
                         <i title="Click to see allocation split" style="font-size: 22px;

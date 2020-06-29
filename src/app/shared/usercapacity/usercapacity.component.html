@@ -114,6 +114,69 @@
                                                 <div class="center">{{user.TotalTimeSpent}}</div>
                                             </td>
                                         </tr>
+
+                                        <tr [hidden]="user.TimeSpentDayTasks.length === 0" class="SpentTaskPerDayRow">
+                                            <td>
+                                                <div class="innerspentTableLoader" style="padding-top: 1%;">
+                                                    <div id="modalInnerLoader"></div>
+                                                    <div id="modalInnerLoaderText">Loading...</div>
+                                                </div>
+                                                <table class="table-bordered table-striped" id="spentTasksPerDay" style="width: 100%;">
+                                                    <thead>
+                                                        <tr class="tableHeader" style="display: table-row;">
+                                                            <td>
+                                                                Task Name (Short Title)
+                                                            </td>
+                                                            <td>
+                                                                Start Date
+                                                            </td>
+                                                            <td>
+                                                                End Date
+                                                            </td>
+                                                            <td>
+                                                                Current Day (Total Spent)
+                                                            </td>
+                                                            <td>
+                                                                Status
+
+                                                            </td>
+                                                            <td>
+                                                                <span><img title="collapse"
+                                                                            [src]="globalService.sharePointPageObject.publicCdn +'/collapseTable.png'"
+                                                                            (click)="collpaseTable($event.target, user,'spent')" style="height: 25px;
+                                                                            cursor: pointer;" />
+                                                                    </span>
+                                                            </td>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr *ngFor="let task of user.TimeSpentDayTasks" class="UserspentTasksRow">
+                                                            <td style="border: 1px solid #ddd;">
+                                                                <span>{{task.Title}} <span *ngIf='task.SubMilestones'> -
+                                                                            {{task.SubMilestones}} </span>
+                                                                <span *ngIf='task.shortTitle'>({{task.shortTitle}})</span></span>
+                                                            </td>
+                                                            <td>
+                                                                <span>{{(task.StartDate | date:'dd MMM yy h:mm a') || '--' }}</span>
+                                                            </td>
+                                                            <td>
+                                                                <span>{{task.EndDate | date : "dd MMM yy h:mm a" || '--'}}</span>
+                                                            </td>
+                                                            <td>
+                                                                <span>{{task.TimeSpentPerDay}}
+                                                                        ({{task.TotalTimeSpent}})</span>
+                                                            </td>
+                                                            <td>
+                                                                <span>{{task.Status}}</span>
+                                                            </td>
+                                                            <td>
+
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </td>
