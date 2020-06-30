@@ -3260,7 +3260,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
   showConflictAllocations(task, conflictDetail, node) {
-    let header = task ? '-' + task.itemType.submilestone ? task.milestone + ' ( ' + task.title + ' )'
+    let header = task ? '-' + task.submilestone ? task.milestone + ' ( ' + task.title + ' )'
       : '-' + task.title : '';
     header = 'Conflicting Allocations - ' + this.oProjectDetails.projectCode + header;
     const ref = this.dialogService.open(ConflictAllocationComponent, {

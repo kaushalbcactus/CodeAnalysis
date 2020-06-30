@@ -346,8 +346,20 @@ export class TaskAllocationCommonService {
     if (getMilSubMil) {
       tasks.push(milestone.data);
     }
-    if (milestone.children && milestone.children.length) {
-      milestone.children.forEach(submil => {
+    let milSubMil
+    if (!milestone.data) {
+      if (milestone.type === 'milestone') {
+        milSubMil = data.find(e => e.data.type === 'milestone' && e.data.title === milestone.title)
+      } else {
+        const mil = data.find(e => e.data.type === 'milestone' && e.data.title === milestone.milestone);
+        milSubMil = mil.children.find(e => e.data.type === 'submilestone' && e.data.title === milestone.title)
+      }
+    } else {
+      milSubMil = milestone;
+    }
+
+    if (milSubMil.children && milSubMil.children.length) {
+      milSubMil.children.forEach(submil => {
         if (submil.data.type === 'task') {
           tasks.push(submil.data);
           tasks = this.getSubTasks(tasks, includeSubTasks, submil);
@@ -362,13 +374,24 @@ export class TaskAllocationCommonService {
         }
       });
     }
+
+    const milestoneText = milSubMil.data.type === 'milestone' ? milSubMil.data.title : milSubMil.data.milestone;
+
     // const milData = bOld ? originalData : updatedData;
 
-    const clTask = milestone.data ? milestone.data.type === 'milestone' || milestone.data.type === 'task' : milestone.type === 'milestone' || milestone.type === 'task' ? data.filter((obj) => {
-      return obj.data.type === 'task' && obj.data.itemType === 'Client Review' && obj.data.milestone === milestone.data ? milestone.data.title.split(' (')[0] : milestone.title.split(' (')[0];
-    }) : milestone.parent ? data.filter((obj) => {
-      return obj.data.type === 'task' && obj.data.itemType === 'Client Review' && obj.data.milestone === milestone.parent.data.title.split(' (')[0];
-    }) : [];
+    // const clTask = milestone.data ? milestone.data.type === 'milestone' || milestone.data.type === 'task' : milestone.type === 'milestone' || milestone.type === 'task' ? data.filter((obj) => {
+    //   return obj.data.type === 'task' && obj.data.itemType === 'Client Review' && obj.data.milestone === milestone.data ? milestone.data.title.split(' (')[0] : milestone.title.split(' (')[0];
+    // }) : milestone.parent ? data.filter((obj) => {
+    //   return obj.data.type === 'task' && obj.data.itemType === 'Client Review' && obj.data.milestone === milestone.parent.data.title.split(' (')[0];
+    // }) : [];
+
+    //   const clTask = milSubMil.data.type === 'milestone' || milSubMil.data.type === 'task' ? data.filter((obj) => {
+    //     return obj.data.type === 'task' && obj.data.itemType === 'Client Review' && obj.data.milestone === milSubMil.data.title;
+    // }) : milSubMil.parent ? data.filter((obj) => {
+    //   return obj.data.type === 'task' && obj.data.itemType === 'Client Review' && obj.data.milestone === milSubMil.parent.data.title;
+    // }) : [];
+
+    const clTask = data.find(e => e.data.itemType === 'Client Review' && e.data.milestone === milestoneText);
 
     if (clTask.length && !getMilSubMil) {
       tasks.push(clTask[0].data);
