@@ -600,9 +600,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       this.milestoneData = this.reOrderTaskItems(this.milestoneData);
       this.GanttchartData = this.getGanttTasksFromMilestones(this.milestoneData, true);
       this.tempmilestoneData = [];
-      this.oldGantChartData = [...this.GanttchartData];
-      this.tempGanttchartData = [...this.GanttchartData];
-      this.tempmilestoneData = [...this.milestoneData];
+      this.oldGantChartData = JSON.parse(JSON.stringify(this.GanttchartData));
+      this.tempGanttchartData = JSON.parse(JSON.stringify(this.GanttchartData));
+      this.tempmilestoneData = JSON.parse(JSON.stringify(this.milestoneData));
     }
     else {
       this.milestoneData = [];
@@ -615,7 +615,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       this.tableView = true;
       this.createGanttDataAndLinks(true);
     }
-    this.milestoneDataCopy = [...this.milestoneData];
+    this.milestoneDataCopy = JSON.parse(JSON.stringify(this.milestoneData));
 
     this.disableSave = false;
     if (!bFirstLoad) {
@@ -810,7 +810,9 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       }
       else if (item.type === 'milestone') {
         const crTask = data.find(e => e.itemType === 'Client Review' && e.milestone === item.title);
-        linkArray.push(this.createLinkArrayObject(item, crTask));
+        if (crTask) {
+          linkArray.push(this.createLinkArrayObject(item, crTask));
+        }
       }
       if (item.AssignedTo && item.AssignedTo.ID >= 0) {
         this.resource.push({
@@ -1176,17 +1178,21 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         this.taskTime = isStartDate ? this.taskAllocateCommonService.setMinutesAfterDrag(task.start_date) : this.taskAllocateCommonService.setMinutesAfterDrag(task.end_date);
         this.singleTask = task;
         if (this.singleTask.tat) {
-          if (isStartDate) {
-            this.singleTask.start_date = new Date(task.start_date.getFullYear(), task.start_date.getMonth(), task.start_date.getDate(), 9, 0)
-            this.singleTask.pUserStart = new Date(this.datepipe.transform(this.singleTask.start_date, 'MMM d, y') + ' ' + this.singleTask.pUserStartTimePart);
-            this.singleTask.pUserStartDatePart = this.getDatePart(this.singleTask.start_date);
-          } else {
-            this.singleTask.end_date = new Date(task.end_date.getFullYear(), task.end_date.getMonth(), task.end_date.getDate(), 19, 0);
-            this.singleTask.pUserEnd = this.singleTask.pUserEnd = new Date(this.datepipe.transform(this.singleTask.end_date, 'MMM d, y') + ' ' + this.singleTask.pUserEndTimePart);
-            this.singleTask.pUserEndDatePart = this.getDatePart(this.singleTask.end_date);
-          }
-          this.ganttSetTime = true;
-          this.timeChange();
+          this.commonService.confirmMessageDialog('Change ' + (isStartDate  ? 'Start Date and Time ' : 'End Date and Time ') + 'of Task', 'Are you sure you want to change specify selected ' + (isStartDate ? 'Start Date' : 'End Date') +  ' of Task ?', null, ['Yes', 'No'], false).then(async Confirmation => {
+            if(Confirmation == 'Yes') {
+              if (isStartDate) {
+                this.singleTask.start_date = new Date(task.start_date.getFullYear(), task.start_date.getMonth(), task.start_date.getDate(), 9, 0)
+                this.singleTask.pUserStart = new Date(this.datepipe.transform(this.singleTask.start_date, 'MMM d, y') + ' ' + this.singleTask.pUserStartTimePart);
+                this.singleTask.pUserStartDatePart = this.getDatePart(this.singleTask.start_date);
+              } else {
+                this.singleTask.end_date = new Date(task.end_date.getFullYear(), task.end_date.getMonth(), task.end_date.getDate(), 19, 0);
+                this.singleTask.pUserEnd = this.singleTask.pUserEnd = new Date(this.datepipe.transform(this.singleTask.end_date, 'MMM d, y') + ' ' + this.singleTask.pUserEndTimePart);
+                this.singleTask.pUserEndDatePart = this.getDatePart(this.singleTask.end_date);
+              }
+              this.ganttSetTime = true;
+              this.timeChange();
+            }
+          })
         } else {
           this.picker.open();
         }
@@ -1244,8 +1250,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       data: []
     };
     if (this.ganttSetTime) {
-      this.setDateToCurrent(this.singleTask);
-      this.DateChange(this.singleTask, type);
+      await this.setDateToCurrent(this.singleTask);
+      // this.DateChange(this.singleTask, type);
 
       this.maxBudgetHrs = this.taskAllocateCommonService.setMaxBudgetHrs(this.singleTask);
 
@@ -1263,9 +1269,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         return this.singleTask.AssignedTo.ID === objt.UserNamePG.ID;
       });
       await this.dailyAllocation.calcPrestackAllocation(resource, this.singleTask);
+      await this.changeBudgetHrs(this.singleTask);
 
       this.GanttchartData = allTasks.data;
-      this.ganttNotification();
+      await this.ganttNotification();
     } else {
       allTasks.data = this.getGanttTasksFromMilestones(this.milestoneData, true);
       allTasks.data.forEach((task) => {
@@ -1282,10 +1289,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
       this.GanttchartData = allTasks.data;
     }
-    this.showGanttChart(false);
-    setTimeout(() => {
-      this.scrollToTaskDate(this.ganttSetTime ? this.singleTask.end_date : this.resetTask.end_date);
-    }, 500);
+    await this.showGanttChart(false);
+    // setTimeout(() => {
+    //   this.scrollToTaskDate(this.ganttSetTime ? this.singleTask.end_date : this.resetTask.end_date, this.singleTask.id);
+    // }, 500);
   }
 
   setTime(time) {
@@ -1333,11 +1340,16 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   changeBudgetHrs(task) {
     this.budgetHrs = 0;
-    this.showBudgetHrs = true;
     this.updatedTasks = task;
     this.budgetHrs = task.budgetHours;
     this.maxBudgetHrs = this.taskAllocateCommonService.setMaxBudgetHrs(task);
     this.budgetHrsTask = task;
+    if(task.type == "task" && new Date(task.start_date).getTime() == new Date(task.end_date).getTime()) {
+      this.showBudgetHrs = false;
+      this.commonService.showToastrMessage(this.constants.MessageType.error, 'Start date and end date of task is equal', false);
+    } else {
+      this.showBudgetHrs = true;
+    }
   }
 
   ganttNotification() {
@@ -1552,6 +1564,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   async saveTask(isBudgetHrs, updatedDataObj) {
     if (isBudgetHrs) {
+      const isStartDate = this.dragClickedInput.indexOf('start_date') > -1 ? true : false;
+      let type = isStartDate ? 'start' : 'end'
 
       let allTasks = {
         data: []
@@ -1594,6 +1608,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
                 await this.dailyAllocation.calcPrestackAllocation(resource, task);
               }
               this.setDateToCurrent(task)
+              this.DateChange(task, type);
               this.sharedObject.currentTaskData = task;
             }
           } else if (task.type == 'milestone') {
@@ -1618,7 +1633,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         this.ganttNotification();
         this.showGanttChart(false);
         setTimeout(() => {
-          this.scrollToTaskDate(this.updatedTasks.end_date);
+          this.scrollToTaskDate(this.updatedTasks.end_date, this.updatedTasks.id);
         }, 500);
 
       }
@@ -1661,7 +1676,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       this.ganttNotification();
       this.showGanttChart(false);
       setTimeout(() => {
-        this.scrollToTaskDate(scrollDate);
+        this.scrollToTaskDate(scrollDate, this.updatedTasks.id);
       }, 500);
     }
   }
@@ -1754,7 +1769,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.GanttchartData = allTasks.data;
     this.showGanttChart(false);
     setTimeout(() => {
-      this.scrollToTaskDate(this.resetTask.pUserEnd);
+      this.scrollToTaskDate(this.resetTask.pUserEnd, this.resetTask.id);
     }, 500);
   }
 
@@ -1791,13 +1806,22 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   }
 
-  scrollToTaskDate(date) {
+  scrollToTaskDate(date ,id?) {
+    if(gantt.ext.zoom.getCurrentLevel() == 0) {
+      gantt.showTask(id)
+      // let scrollX = gantt.posFromDate(new Date(date));
+      // gantt.scrollTo(scrollX, 0);
+    } else {
     let endDate = new Date(date);
     endDate = new Date(endDate.setDate(endDate.getDate() - 6));
     gantt.showDate(new Date(endDate));
+    }
+
     this.loaderenable = false;
     this.visualgraph = true;
   }
+
+
 
   setScale(scale) {
     this.ganttComponentRef.instance.setScaleConfig(scale.value)
@@ -1925,7 +1949,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
             const dbtasks = this.tempmilestoneData[milestoneIndex].children[submilestoneIndex].children.slice(taskindex, this.tempmilestoneData[milestoneIndex].children[submilestoneIndex].children.length);
             this.milestoneData[milestoneIndex].children[submilestoneIndex].children = [...tasks, ...dbtasks];
 
-            if (this.milestoneData[milestoneIndex].children[submilestoneIndex].children[taskindex].data.slotType === 'Slot') {
+            if (milestone.slotType === 'Slot') {
               // replace all subtasks from edited task
               const dbSubtasks = this.tempmilestoneData[milestoneIndex].children[submilestoneIndex].children[taskindex].children;
               this.milestoneData[milestoneIndex].children[submilestoneIndex].children[taskindex].children = [...dbSubtasks];
@@ -1947,7 +1971,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
             const dbsubmilestones = this.tempmilestoneData[milestoneIndex].children.slice(submilestoneIndex, this.tempmilestoneData[milestoneIndex].children.length);
             this.milestoneData[milestoneIndex].children = [...submilestones, ...dbsubmilestones];
 
-            if (this.milestoneData[milestoneIndex].children[submilestoneIndex].data.slotType === 'Slot') {
+            if (milestone.slotType === 'Slot') {
               // replace all tasks from edited task
               const dbtasks = this.tempmilestoneData[milestoneIndex].children[submilestoneIndex].children;
               this.milestoneData[milestoneIndex].children[submilestoneIndex].children = [...dbtasks];
@@ -2074,9 +2098,10 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       (data.status !== 'Completed' && data.status !== 'Abandon' && data.status !== 'Auto Closed')) {
       this.taskMenu = [
         { label: 'Edit', icon: 'pi pi-pencil', command: (event) => this.editTask(data, rowNode) },
-        { label: 'Task Scope', icon: 'pi pi-comment', command: (event) => this.openComment(data, rowNode) },
       ];
-
+      if (data.itemType !== 'Client Review' && data.itemType !== 'Send to client') {
+        this.taskMenu.push({ label: 'Task Scope', icon: 'pi pi-comment', command: (event) => this.openComment(data, rowNode) });
+      }
       if (data.itemType !== 'Client Review' && data.itemType !== 'Send to client' && data.slotType.indexOf('Slot') < 0) {
         if (data.showAllocationSplit) {
           this.taskMenu.push(
