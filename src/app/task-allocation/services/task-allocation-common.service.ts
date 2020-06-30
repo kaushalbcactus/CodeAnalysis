@@ -341,13 +341,25 @@ export class TaskAllocationCommonService {
     return ganttObject;
   }
 
-  getTasksFromMilestones(milestone, includeSubTasks, data, getMilSubMil?) {
+  getTasksFromMilestones(milestone, includeSubTasks, data, getMilSubMil) {
     let tasks = [];
     if (getMilSubMil) {
       tasks.push(milestone.data);
     }
-    if (milestone.children && milestone.children.length) {
-      milestone.children.forEach(submil => {
+    let milSubMil
+    if (!milestone.data) {
+      if (milestone.type === 'milestone') {
+        milSubMil = data.find(e => e.data.type === 'milestone' && e.data.title === milestone.title)
+      } else {
+        const mil = data.find(e => e.data.type === 'milestone' && e.data.title === milestone.milestone);
+        milSubMil = mil.children.find(e => e.data.type === 'submilestone' && e.data.title === milestone.title)
+      }
+    } else {
+      milSubMil = milestone;
+    }
+
+    if (milSubMil.children && milSubMil.children.length) {
+      milSubMil.children.forEach(submil => {
         if (submil.data.type === 'task') {
           tasks.push(submil.data);
           tasks = this.getSubTasks(tasks, includeSubTasks, submil);
@@ -362,16 +374,13 @@ export class TaskAllocationCommonService {
         }
       });
     }
-    // const milData = bOld ? originalData : updatedData;
 
-    const clTask = milestone.data ? milestone.data.type === 'milestone' || milestone.data.type === 'task' : milestone.type === 'milestone' || milestone.type === 'task' ? data.filter((obj) => {
-      return obj.data.type === 'task' && obj.data.itemType === 'Client Review' && obj.data.milestone === milestone.data ? milestone.data.title.split(' (')[0] : milestone.title.split(' (')[0];
-    }) : milestone.parent ? data.filter((obj) => {
-      return obj.data.type === 'task' && obj.data.itemType === 'Client Review' && obj.data.milestone === milestone.parent.data.title.split(' (')[0];
-    }) : [];
+    const milestoneText = milSubMil.data.type === 'milestone' ? milSubMil.data.title : milSubMil.data.milestone;
 
-    if (clTask.length && !getMilSubMil) {
-      tasks.push(clTask[0].data);
+    const clTask = data.find(e => e.data.itemType === 'Client Review' && e.data.milestone === milestoneText);
+
+    if (clTask && !getMilSubMil) {
+      tasks.push(clTask.data);
     }
     return this.commonService.removeEmptyItems(tasks);
   }

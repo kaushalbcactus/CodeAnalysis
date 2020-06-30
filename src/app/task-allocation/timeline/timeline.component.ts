@@ -4175,11 +4175,7 @@ export class TimelineComponent
       node.data.pUserEnd = node.data.end_date;
       this.setDatePartAndTimePart(node.data);
 
-      const getNodes = this.taskAllocateCommonService.getTasksFromMilestones(
-        node,
-        false,
-        this.milestoneData
-      );
+      const getNodes = this.taskAllocateCommonService.getTasksFromMilestones(node, false, this.milestoneData, false);
       const bEditedNode = getNodes.find(e => e.edited === true);
       if (bEditedNode) {
         node.data.edited = true;
@@ -4677,13 +4673,9 @@ export class TimelineComponent
   }
 
   showConflictAllocations(task, conflictDetail, node) {
-    let header = task
-      ? "-" + task.itemType.submilestone
-        ? task.milestone + " ( " + task.title + " )"
-        : "-" + task.title
-      : "";
-    header =
-      "Conflicting Allocations - " + this.oProjectDetails.projectCode + header;
+    let header = task ? '-' + task.submilestone ? task.milestone + ' ( ' + task.title + ' )'
+      : '-' + task.title : '';
+    header = 'Conflicting Allocations - ' + this.oProjectDetails.projectCode + header;
     const ref = this.dialogService.open(ConflictAllocationComponent, {
       data: {
         conflictDetail,
