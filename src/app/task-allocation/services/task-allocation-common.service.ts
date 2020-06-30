@@ -364,8 +364,8 @@ export class TaskAllocationCommonService {
     }
     // const milData = bOld ? originalData : updatedData;
 
-    const clTask = milestone.data.type === 'milestone' || milestone.data.type === 'task' ? data.filter((obj) => {
-      return obj.data.type === 'task' && obj.data.itemType === 'Client Review' && obj.data.milestone === milestone.data.title.split(' (')[0];
+    const clTask = milestone.data ? milestone.data.type === 'milestone' || milestone.data.type === 'task' : milestone.type === 'milestone' || milestone.type === 'task' ? data.filter((obj) => {
+      return obj.data.type === 'task' && obj.data.itemType === 'Client Review' && obj.data.milestone === milestone.data ? milestone.data.title.split(' (')[0] : milestone.title.split(' (')[0];
     }) : milestone.parent ? data.filter((obj) => {
       return obj.data.type === 'task' && obj.data.itemType === 'Client Review' && obj.data.milestone === milestone.parent.data.title.split(' (')[0];
     }) : [];
