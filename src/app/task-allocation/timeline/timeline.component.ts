@@ -2941,7 +2941,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       node.data.pUserEnd = node.data.end_date;
       this.setDatePartAndTimePart(node.data);
 
-      const getNodes = this.taskAllocateCommonService.getTasksFromMilestones(node, false, this.milestoneData);
+      const getNodes = this.taskAllocateCommonService.getTasksFromMilestones(node, false, this.milestoneData, false);
       const bEditedNode = getNodes.find(e => e.edited === true);
       if (bEditedNode) {
         node.data.edited = true;
