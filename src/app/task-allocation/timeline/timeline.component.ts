@@ -483,12 +483,60 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       submile.push(temptasks);
     }
   }
+  getNextTask(currentTask, allTasks, allNewTasks) {
+    if(currentTask.data.nextTask) {
+      const nextTasks = currentTask.data.nextTask.split(';');
+      const newTasks = allTasks.filter(e=> nextTasks.indexOf(e.data.title) > -1);
+      const newNextTasks = [];
+      newTasks.forEach(newTask => {
+        if(allNewTasks.indexOf(newTask) === -1) {
+          allNewTasks.push(newTask);
+          newNextTasks.push(newTask);
+        }
+      });
+      newNextTasks.forEach(newNext => {
+        this.getNextTask(newNext, allTasks, allNewTasks);
+      });
+    }
+  }
 
+  sortTasks(subMilestone) {
+    let allTasks = subMilestone.children;
+    const startTasks = allTasks.filter(e=> !e.data.previousTask);
+    let allNewTasks = [...startTasks];
+    startTasks.forEach(element => {
+      this.getNextTask(element, allTasks, allNewTasks);
+    });
+    allNewTasks = allNewTasks.sort((a, b) => <any>new Date(a.data.start_date) - <any>new Date(b.data.start_date));
+    subMilestone.children = allNewTasks;
+  }
 
   /////// Impelement reorder function 
   reOrderTaskItems(milestoneData) {
-    const milData = milestoneData;
-    return milData;
+    milestoneData.forEach(milestone => {
+      if (milestone.data.type === 'milestone') {
+        let getSubMil = [], getTasks = [];
+        getSubMil = milestone.children.filter(e => e.data.type === 'submilestone');
+        getTasks = milestone.children.filter(e => e.data.type === 'task');
+        if (getSubMil.length) {
+          getSubMil = getSubMil.sort((a, b) =>
+            (+a.data.position - +b.data.position && <any>new Date(a.data.start_date) - <any>new Date(b.data.start_date)));
+          getSubMil.forEach(subMil => {
+            this.sortTasks(subMil);
+          });
+        }
+        if (getSubMil.length && getTasks.length) {
+          getTasks = getTasks.sort((a, b) => <any>new Date(a.data.start_date) - <any>new Date(b.data.start_date));
+          milestone.children = [...getSubMil, ...getTasks];
+        }
+        else if (getSubMil.length) {
+          milestone.children = [...getSubMil];
+        } else if (getTasks.length) {
+          this.sortTasks(milestone);
+        }
+
+      }
+    });
   }
 
 
@@ -597,7 +645,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         this.assignProjectHours(projectHoursSpent, projectHoursAllocated, projectAvailableHours, totalMilestoneBudgetHours);
       }
 
-      this.milestoneData = this.reOrderTaskItems(this.milestoneData);
+      this.reOrderTaskItems(this.milestoneData);
       this.GanttchartData = this.getGanttTasksFromMilestones(this.milestoneData, true);
       this.tempmilestoneData = [];
       this.oldGantChartData = JSON.parse(JSON.stringify(this.GanttchartData));
