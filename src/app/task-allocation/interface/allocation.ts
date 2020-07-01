@@ -71,6 +71,7 @@ export interface IMilestoneTask {
     'allocationTypeLoader': boolean;
     'ganttOverlay': string;
     'ganttMenu':string;
+    'ExpectedBudgetHrs': any;
 }
 
 export interface IConflictTask {
