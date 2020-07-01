@@ -364,7 +364,7 @@ export class TimelineComponent
     return this.datepipe.transform(newDate, "hh:mm a");
   }
 
-  createFetchTaskObject(
+  async createFetchTaskObject(
     milestoneTasks,
     milestoneHoursSpent,
     projectHoursSpent,
@@ -452,7 +452,7 @@ export class TimelineComponent
       if (milestoneTask.Status !== "Deleted") {
         milestoneTask.type = "task";
 
-        let GanttTaskObj = this.taskAllocateCommonService.ganttDataObject(
+        let GanttTaskObj = await this.taskAllocateCommonService.ganttDataObject(
           milestoneTask,
           "",
           "",
@@ -528,7 +528,7 @@ export class TimelineComponent
     }
   }
 
-  createFetchTaskCR(milestone) {
+  async createFetchTaskCR(milestone) {
     const clientReviewObj = this.allTasks.filter(
       c =>
         c.ContentTypeCH !== this.constants.CONTENT_TYPE.MILESTONE &&
@@ -557,7 +557,7 @@ export class TimelineComponent
       }
 
       clientReviewObj[0].type = "task";
-      let GanttTaskObj = this.taskAllocateCommonService.ganttDataObject(
+      let GanttTaskObj = await this.taskAllocateCommonService.ganttDataObject(
         clientReviewObj[0],
         "",
         "",
@@ -574,7 +574,7 @@ export class TimelineComponent
     }
   }
 
-  createFetchTaskSubMil(
+  async createFetchTaskSubMil(
     dbSubMilestones,
     milestone,
     GanttObj,
@@ -599,7 +599,7 @@ export class TimelineComponent
       }
 
       let tempSubmilestones = [];
-      let GanttTaskObj = this.taskAllocateCommonService.ganttDataObject(
+      let GanttTaskObj = await this.taskAllocateCommonService.ganttDataObject(
         element,
         GanttObj,
         nextSubMilestone,
@@ -615,7 +615,7 @@ export class TimelineComponent
           c.Milestone === milestone.Title &&
           c.SubMilestones === element.subMile
       );
-      this.createFetchTaskObject(
+      await this.createFetchTaskObject(
         milestoneTasks,
         milestoneHoursSpent,
         projectHoursSpent,
@@ -853,7 +853,7 @@ export class TimelineComponent
         milestone.type = "milestone";
         // Gantt Chart Object
 
-        let GanttObj: any = this.taskAllocateCommonService.ganttDataObject(
+        let GanttObj: any = await this.taskAllocateCommonService.ganttDataObject(
           milestone
         );
 
@@ -862,7 +862,7 @@ export class TimelineComponent
         }
         if (dbSubMilestones.length > 0) {
           let submile = [];
-          this.createFetchTaskSubMil(
+          await this.createFetchTaskSubMil(
             dbSubMilestones,
             milestone,
             GanttObj,
@@ -885,7 +885,7 @@ export class TimelineComponent
           );
 
           if (defaultTasks.length) {
-            this.createFetchTaskObject(
+            await this.createFetchTaskObject(
               defaultTasks,
               milestoneHoursSpent,
               projectHoursSpent,
@@ -901,7 +901,7 @@ export class TimelineComponent
             milestoneHoursSpent,
             submile
           );
-          this.createFetchTaskCR(milestone);
+          await this.createFetchTaskCR(milestone);
         } else {
           milestoneTasks = this.allTasks.filter(
             c =>
@@ -911,7 +911,7 @@ export class TimelineComponent
           );
 
           let tempSubmilestones = [];
-          this.createFetchTaskObject(
+          await this.createFetchTaskObject(
             milestoneTasks,
             milestoneHoursSpent,
             projectHoursSpent,
@@ -928,7 +928,7 @@ export class TimelineComponent
             tempSubmilestones
           );
 
-          this.createFetchTaskCR(milestone);
+          await this.createFetchTaskCR(milestone);
         }
       }
 
@@ -1854,9 +1854,10 @@ export class TimelineComponent
       await this.setDateToCurrent(this.singleTask);
       // this.DateChange(this.singleTask, type);
 
-      this.maxBudgetHrs = this.taskAllocateCommonService.setMaxBudgetHrs(
+      this.singleTask.ExpectedBudgetHrs = await this.taskAllocateCommonService.setMaxBudgetHrs(
         this.singleTask
       );
+      this.maxBudgetHrs = this.singleTask.ExpectedBudgetHrs;
 
       allTasks.data = this.getGanttTasksFromMilestones(
         this.milestoneData,
@@ -1983,11 +1984,12 @@ export class TimelineComponent
     }
   }
 
-  changeBudgetHrs(task) {
+  async changeBudgetHrs(task) {
     this.budgetHrs = 0;
     this.updatedTasks = task;
     this.budgetHrs = task.budgetHours;
-    this.maxBudgetHrs = this.taskAllocateCommonService.setMaxBudgetHrs(task);
+    task.ExpectedBudgetHrs = await this.taskAllocateCommonService.setMaxBudgetHrs(task);
+    this.maxBudgetHrs = task.ExpectedBudgetHrs;
     this.budgetHrsTask = task;
     if (
       task.type == "task" &&
@@ -2229,10 +2231,11 @@ export class TimelineComponent
     }
   }
 
-  setBudgetHours(task) {
+  async setBudgetHours(task) {
     if (task.type !== "milestone" && task.type !== "submilestone") {
-      this.maxBudgetHrs = this.taskAllocateCommonService.setMaxBudgetHrs(task);
-      if (this.maxBudgetHrs < this.budgetHrs) {
+      task.ExpectedBudgetHrs = await this.taskAllocateCommonService.setMaxBudgetHrs(task);
+      this.maxBudgetHrs = task.ExpectedBudgetHrs;
+      if (task.ExpectedBudgetHrs < this.budgetHrs) {
         this.ogBudgethrs = this.budgetHrs;
         this.budgetHrs = 0;
         this.commonService.showToastrMessage(
@@ -2265,9 +2268,13 @@ export class TimelineComponent
 
   async saveTask(isBudgetHrs, updatedDataObj) {
     if (isBudgetHrs) {
-      const isStartDate =
+      let isStartDate: any;
+      if(this.dragClickedInput) {
+        isStartDate =
         this.dragClickedInput.indexOf("start_date") > -1 ? true : false;
-      let type = isStartDate ? "start" : "end";
+      }
+      let type = this.dragClickedInput ? isStartDate ? "start" : "end" : "end";
+     
 
       let allTasks = {
         data: []
@@ -3037,8 +3044,9 @@ export class TimelineComponent
       }
     );
     if (event.type !== "milestone" && event.type !== "submilestone") {
-      this.maxBudgetHrs = this.taskAllocateCommonService.setMaxBudgetHrs(event);
-      if (this.maxBudgetHrs < event.budgetHours) {
+      event.ExpectedBudgetHrs = await this.taskAllocateCommonService.setMaxBudgetHrs(event);
+      this.maxBudgetHrs = event.ExpectedBudgetHrs;
+      if (event.ExpectedBudgetHrs < event.budgetHours) {
         this.ogBudgethrs = event.budgetHours;
         event.budgetHours = 0;
         this.commonService.showToastrMessage(
@@ -3817,7 +3825,6 @@ export class TimelineComponent
       .convertToHrsMins("" + node.budgetHours)
       .replace(".", ":");
 
-    this.maxBudgetHrs = this.taskAllocateCommonService.setMaxBudgetHrs(node);
     let hrs = parseInt(bhrs.split(":")[0]);
     let min = parseInt(bhrs.split(":")[1]);
 
@@ -3834,9 +3841,11 @@ export class TimelineComponent
         false
       );
     }
-    this.changeDateOfEditedTask(node, type);
+    await this.changeDateOfEditedTask(node, type);
     await this.dailyAllocation.calcPrestackAllocation(resource, node);
-    this.DateChange(node, type);
+    await this.DateChange(node, type);
+    node.ExpectedBudgetHrs = await this.taskAllocateCommonService.setMaxBudgetHrs(node);
+    this.maxBudgetHrs = node.ExpectedBudgetHrs;
   }
 
   // tslint:disable
@@ -5152,7 +5161,7 @@ export class TimelineComponent
       false,
       false
     );
-    this.getMilestones(false);
+    await this.getMilestones(false);
 
     this.reloadResources.emit();
   }
@@ -6690,7 +6699,8 @@ export class TimelineComponent
       allocationColor: "",
       allocationTypeLoader: false,
       ganttOverlay: "",
-      ganttMenu: ""
+      ganttMenu: "",
+      ExpectedBudgetHrs: '',
     };
 
     return taskObj;
@@ -6777,7 +6787,8 @@ export class TimelineComponent
       allocationColor: "",
       allocationTypeLoader: false,
       ganttOverlay: "",
-      ganttMenu: ""
+      ganttMenu: "",
+      ExpectedBudgetHrs:''
     };
 
     return taskObj;
