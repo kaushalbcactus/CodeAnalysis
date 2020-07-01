@@ -258,13 +258,23 @@ export class TaskAllocationCommonService {
     return converteddateObject
   }
 
-  ganttDataObject(data, milestoneObj?, NextSubMilestone?, milestone?, hrsMinObject?) {
+  async ganttDataObject(data, milestoneObj?, NextSubMilestone?, milestone?, hrsMinObject?) {
 
     var milestoneSubmilestones = data.SubMilestones ? data.SubMilestones !== null ? data.SubMilestones.replace(/#/gi, "").split(';') : [] : [];
 
     var dbSubMilestones: Array<any> = milestoneSubmilestones.length > 0 ? milestoneSubmilestones.map(o => new Object({ subMile: o.split(':')[0], position: o.split(':')[1], status: o.split(':')[2] })) : [];
 
     let convertedDate = this.convertDate(data);
+
+    let taskObj: any= {
+      start_date: data.type == 'submilestone' ? null :
+      data.type == 'task' ? new Date(convertedDate.jsLocalStartDate) :
+        new Date(data.startDate !== "" ? data.startDate.date.year + "/" + (data.startDate.date.month < 10 ? "0" + data.startDate.date.month : data.startDate.date.month) + "/" + (data.startDate.date.day < 10 ? "0" + data.startDate.date.day : data.startDate.date.day) : ''),
+      end_date: data.type == 'submilestone' ? null :
+      data.type == 'task' ? data.itemType == 'Send to client' ? new Date(convertedDate.jsLocalStartDate) : new Date(convertedDate.jsLocalEndDate) :
+        new Date(data.endDate !== "" ? data.endDate.date.year + "/" + (data.endDate.date.month < 10 ? "0" + data.endDate.date.month : data.endDate.date.month) + "/" + (data.endDate.date.day < 10 ? "0" + data.endDate.date.day : data.endDate.date.day) : ''),
+      tat: data.type == 'submilestone' ? false : data.type == 'task' ? data.TATStatus === true || data.TATStatus === 'Yes' ? true : false : true
+    }
     // tslint:disable: object-literal-key-quotes
     let ganttObject: IMilestoneTask = {
       pUserStart: data.type == 'submilestone' ? null :
@@ -336,18 +346,31 @@ export class TaskAllocationCommonService {
       showAllocationSplit: data.AllocationPerDay ? true : false,
       allocationTypeLoader: false,
       ganttOverlay: data.AllocationPerDay ? this.allocationSplitColumn : '',
-      ganttMenu: ''
+      ganttMenu: '',
+      ExpectedBudgetHrs: data.type == 'task' ? await this.setMaxBudgetHrs(taskObj) : ''
     };
     return ganttObject;
   }
 
-  getTasksFromMilestones(milestone, includeSubTasks, data, getMilSubMil?) {
+  getTasksFromMilestones(milestone, includeSubTasks, data, getMilSubMil) {
     let tasks = [];
     if (getMilSubMil) {
       tasks.push(milestone.data);
     }
-    if (milestone.children && milestone.children.length) {
-      milestone.children.forEach(submil => {
+    let milSubMil
+    if (!milestone.data) {
+      if (milestone.type === 'milestone') {
+        milSubMil = data.find(e => e.data.type === 'milestone' && e.data.title === milestone.title)
+      } else {
+        const mil = data.find(e => e.data.type === 'milestone' && e.data.title === milestone.milestone);
+        milSubMil = mil.children.find(e => e.data.type === 'submilestone' && e.data.title === milestone.title)
+      }
+    } else {
+      milSubMil = milestone;
+    }
+
+    if (milSubMil.children && milSubMil.children.length) {
+      milSubMil.children.forEach(submil => {
         if (submil.data.type === 'task') {
           tasks.push(submil.data);
           tasks = this.getSubTasks(tasks, includeSubTasks, submil);
@@ -362,16 +385,13 @@ export class TaskAllocationCommonService {
         }
       });
     }
-    // const milData = bOld ? originalData : updatedData;
 
-    const clTask = milestone.data.type === 'milestone' || milestone.data.type === 'task' ? data.filter((obj) => {
-      return obj.data.type === 'task' && obj.data.itemType === 'Client Review' && obj.data.milestone === milestone.data.title.split(' (')[0];
-    }) : milestone.parent ? data.filter((obj) => {
-      return obj.data.type === 'task' && obj.data.itemType === 'Client Review' && obj.data.milestone === milestone.parent.data.title.split(' (')[0];
-    }) : [];
+    const milestoneText = milSubMil.data.type === 'milestone' ? milSubMil.data.title : milSubMil.data.milestone;
 
-    if (clTask.length && !getMilSubMil) {
-      tasks.push(clTask[0].data);
+    const clTask = data.find(e => e.data.itemType === 'Client Review' && e.data.milestone === milestoneText);
+
+    if (clTask && !getMilSubMil) {
+      tasks.push(clTask.data);
     }
     return this.commonService.removeEmptyItems(tasks);
   }
@@ -393,10 +413,10 @@ export class TaskAllocationCommonService {
     return h + ':' + minutes + ' ' + ampm;
   }
 
-  setMaxBudgetHrs(task) {
-    let time: any = this.commonService.getHrsAndMins(task.start_date, task.end_date);
+  async setMaxBudgetHrs(task) {
+    let time: any = await this.commonService.getHrsAndMins(task.start_date, task.end_date);
     if (task.tat) {
-      let businessDays = this.commonService.calcBusinessDays(task.start_date, task.end_date);
+      let businessDays = await this.commonService.calcBusinessDays(task.start_date, task.end_date);
       return businessDays * 24;
     } else {
       return time.maxBudgetHrs;

@@ -113,7 +113,7 @@ export class GanttEdittaskComponent implements OnInit {
     // let sTime = this.getTimePart(this.startDate);
     // let eTime = this.getTimePart(this.endDate);
 
-    this.maxBudgetHrs = this.taskAllocateCommonService.setMaxBudgetHrs(task);
+    this.maxBudgetHrs = await this.taskAllocateCommonService.setMaxBudgetHrs(task);
 
     if (task.itemType === 'Client Review' || task.itemType === 'Send to client') {
       let bHrs = 0 || task.budgetHours;
@@ -222,7 +222,7 @@ export class GanttEdittaskComponent implements OnInit {
       });
 
 
-      this.maxBudgetHrs = this.taskAllocateCommonService.setMaxBudgetHrs(this.task);
+      this.maxBudgetHrs = await this.taskAllocateCommonService.setMaxBudgetHrs(this.task);
       this.task.budgetHours = budgetHrs;
 
       this.isViewAllocationBtn(task)
@@ -256,7 +256,7 @@ export class GanttEdittaskComponent implements OnInit {
         await this.startDateChanged(this.task, 'start')
         this.cascadingObject.node = this.task;
         this.cascadingObject.type = 'start';
-        this.validateBudgetHours(this.task);
+        await this.validateBudgetHours(this.task);
         this.isViewAllocationBtn(task);
         await this.dailyAllocation.calcPrestackAllocation(resources, this.task);
       }
@@ -278,7 +278,7 @@ export class GanttEdittaskComponent implements OnInit {
         this.task.pUserEndTimePart = this.getTimePart(end_date);
         this.cascadingObject.node = this.task;
         this.cascadingObject.type = 'end';
-        this.validateBudgetHours(this.task);
+        await this.validateBudgetHours(this.task);
         this.isViewAllocationBtn(task);
         await this.dailyAllocation.calcPrestackAllocation(resources, this.task);
       }
@@ -304,7 +304,7 @@ export class GanttEdittaskComponent implements OnInit {
       }
       this.cascadingObject.node = this.task;
       this.cascadingObject.type = 'start';
-      this.validateBudgetHours(this.task);
+      await this.validateBudgetHours(this.task);
       await this.dailyAllocation.calcPrestackAllocation(resources, this.task);
     });
 
@@ -321,17 +321,17 @@ export class GanttEdittaskComponent implements OnInit {
       this.task.pUserEndTimePart = this.getTimePart(end_date);
       this.cascadingObject.node = this.task;
       this.cascadingObject.type = 'end';
-      this.validateBudgetHours(this.task);
+      await this.validateBudgetHours(this.task);
       await this.dailyAllocation.calcPrestackAllocation(resources, this.task);
     });
 
   }
 
-  validateBudgetHours(task: any) {
+  async validateBudgetHours(task: any) {
     let time: any = this.commonService.getHrsAndMins(task.startDate, task.endDate)
     let bhrs = this.commonService.convertToHrsMins('' + task.budgetHrs).replace('.', ':')
 
-    this.maxBudgetHrs = this.taskAllocateCommonService.setMaxBudgetHrs(task);
+    this.maxBudgetHrs = await this.taskAllocateCommonService.setMaxBudgetHrs(task);
 
     let hrs = parseInt(bhrs.split(':')[0]);
     let min = parseInt(bhrs.split(':')[1]);
