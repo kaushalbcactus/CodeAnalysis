@@ -676,41 +676,36 @@ export class DragDropComponent implements OnInit {
 
   async GetAllTasksMilestones() {
     const batchUrl = [];
-    const projectDetails =this.sharedObject.oTaskAllocation.oProjectDetails;
-   
-      const DeliverableUrl = this.spServices.getReadURL(this.constants.listNames.DeliverableType.name,
-        this.taskAllocationService.taskallocationComponent.Deliverable);
-        this.commonService.setBatchObject(batchUrl,DeliverableUrl.replace(/{{status}}/gi, 'Yes'),null,this.constants.Method.GET,this.constants.listNames.DeliverableType.name);
+    const projectDetails = this.sharedObject.oTaskAllocation.oProjectDetails;
 
-      const PracticeAreaUrl = this.spServices.getReadURL(this.constants.listNames.PracticeArea.name,
-        this.taskAllocationService.taskallocationComponent.PracticeArea);
-        this.commonService.setBatchObject(batchUrl,PracticeAreaUrl.replace(/{{status}}/gi, 'Yes'),null,this.constants.Method.GET,this.constants.listNames.PracticeArea.name);
-  
-        const milestoneUrl = this.spServices.getReadURL(this.constants.listNames.Milestones.name,
-        this.taskAllocationService.taskallocationComponent.milestoneList);
-        this.commonService.setBatchObject(batchUrl,milestoneUrl.replace(/{{status}}/gi, 'Active'),null,this.constants.Method.GET,this.constants.listNames.Milestones.name)
+    const DeliverableUrl = this.spServices.getReadURL(this.constants.listNames.DeliverableType.name,
+      this.taskAllocationService.taskallocationComponent.Deliverable);
+    this.commonService.setBatchObject(batchUrl, DeliverableUrl.replace(/{{status}}/gi, 'Yes'), null, this.constants.Method.GET, this.constants.listNames.DeliverableType.name);
 
-        const tasksUrl = this.spServices.getReadURL(this.constants.listNames.MilestoneTasks.name,
-        this.taskAllocationService.taskallocationComponent.taskList);
-        this.commonService.setBatchObject(batchUrl,tasksUrl.replace(/{{status}}/gi, 'Active').replace(/{{TaskType}}/gi, 'SubTask'),null,this.constants.Method.GET,this.constants.listNames.MilestoneTasks.name);    
-  
-       const submilestoneUrl = this.spServices.getReadURL(this.constants.listNames.SubMilestones.name,
+    const PracticeAreaUrl = this.spServices.getReadURL(this.constants.listNames.PracticeArea.name,
+      this.taskAllocationService.taskallocationComponent.PracticeArea);
+    this.commonService.setBatchObject(batchUrl, PracticeAreaUrl.replace(/{{status}}/gi, 'Yes'), null, this.constants.Method.GET, this.constants.listNames.PracticeArea.name);
+
+    const milestoneUrl = this.spServices.getReadURL(this.constants.listNames.Milestones.name,
+      this.taskAllocationService.taskallocationComponent.milestoneList);
+    this.commonService.setBatchObject(batchUrl, milestoneUrl.replace(/{{status}}/gi, 'Active'), null, this.constants.Method.GET, this.constants.listNames.Milestones.name)
+
+    const tasksUrl = this.spServices.getReadURL(this.constants.listNames.MilestoneTasks.name,
+      this.taskAllocationService.taskallocationComponent.taskList);
+    this.commonService.setBatchObject(batchUrl, tasksUrl.replace(/{{status}}/gi, 'Active').replace(/{{TaskType}}/gi, 'SubTask'), null, this.constants.Method.GET, this.constants.listNames.MilestoneTasks.name);
+
+    const submilestoneUrl = this.spServices.getReadURL(this.constants.listNames.SubMilestones.name,
       this.taskAllocationService.taskallocationComponent.submilestonesList);
-      this.commonService.setBatchObject(batchUrl,submilestoneUrl.replace(/{{status}}/gi, 'Yes'),null,this.constants.Method.GET,this.constants.listNames.SubMilestones.name);
+    this.commonService.setBatchObject(batchUrl, submilestoneUrl.replace(/{{status}}/gi, 'Yes'), null, this.constants.Method.GET, this.constants.listNames.SubMilestones.name);
 
     this.commonService.SetNewrelic('TaskAllocation', 'Drag-Drop', 'GetMilestoneSubmilestoneAndTasks');
     const arrResult = await this.spServices.executeBatch(batchUrl);
 
 
-
-    this.sharedObject.oTaskAllocation.arrMilestones =  arrResult.find(c=>c.listName === this.constants.listNames.DeliverableType.name ).retItems.find(c=>c.Title === projectDetails.deliverable).Milestones.results.length > 0 ?  arrResult.find(c=>c.listName === this.constants.listNames.DeliverableType.name).retItems.find(c=>c.Title === projectDetails.deliverable).Milestones.results.map(c => c.Title) :  arrResult.find(c=>c.listName === this.constants.listNames.PracticeArea.name).retItems.find(c=>c.Title === projectDetails.practiceArea).Milestones.results.length > 0  ? arrResult.find(c=>c.listName === this.constants.listNames.PracticeArea.name).retItems.find(c=>c.Title === projectDetails.practiceArea).Milestones.results.map(c => c.Title) :  arrResult.find(c=>c.listName === this.constants.listNames.Milestones.name).retItems.map(c => c.Title);
-    
-     this.sharedObject.oTaskAllocation.arrSubMilestones = arrResult.find(c=>c.listName === 'SubMilestonesCT').retItems.map(c => c.Title);
-
-
-     this.sharedObject.oTaskAllocation.arrTasks = arrResult.find(c=>c.listName === this.constants.listNames.DeliverableType.name).retItems.find(c=>c.Title === projectDetails.deliverable).MilestoneTasks.results.length > 0 ? arrResult.find(c=>c.listName === this.constants.listNames.DeliverableType.name).retItems.find(c=>c.Title === projectDetails.deliverable).MilestoneTasks.results.map(c => c.Title) :  arrResult.find(c=>c.listName === this.constants.listNames.PracticeArea.name).retItems.find(c=>c.Title === projectDetails.practiceArea).MilestoneTasks.results.length > 0 ? arrResult.find(c=>c.listName === this.constants.listNames.PracticeArea.name).retItems.find(c=>c.Title === projectDetails.practiceArea).MilestoneTasks.results.map(c => c.Title) :  arrResult.find(c=>c.listName === this.constants.listNames.MilestoneTasks.name).retItems.map(c => c.Title);
-
-     this.sharedObject.oTaskAllocation.allTasks = arrResult.find(c=>c.listName === this.constants.listNames.DeliverableType.name).retItems.find(c=>c.Title === projectDetails.deliverable).MilestoneTasks.results.length > 0 ? arrResult.find(c=>c.listName === this.constants.listNames.DeliverableType.name).retItems.find(c=>c.Title === projectDetails.deliverable).MilestoneTasks.results :  arrResult.find(c=>c.listName === this.constants.listNames.PracticeArea.name).retItems.find(c=>c.Title === projectDetails.practiceArea).MilestoneTasks.results.length > 0 ? arrResult.find(c=>c.listName === this.constants.listNames.PracticeArea.name).retItems.find(c=>c.Title === projectDetails.practiceArea).MilestoneTasks.results :  arrResult.find(c=>c.listName === this.constants.listNames.MilestoneTasks.name).retItems;
+    this.sharedObject.oTaskAllocation.arrMilestones = arrResult.find(c => c.listName === this.constants.listNames.DeliverableType.name).retItems.find(c => c.Title === projectDetails.deliverable).Milestones.results.length > 0 ? arrResult.find(c => c.listName === this.constants.listNames.DeliverableType.name).retItems.find(c => c.Title === projectDetails.deliverable).Milestones.results.map(c => c.Title) : arrResult.find(c => c.listName === this.constants.listNames.PracticeArea.name).retItems.find(c => c.Title === projectDetails.practiceArea).Milestones.results.length > 0 ? arrResult.find(c => c.listName === this.constants.listNames.PracticeArea.name).retItems.find(c => c.Title === projectDetails.practiceArea).Milestones.results.map(c => c.Title) : arrResult.find(c => c.listName === this.constants.listNames.Milestones.name).retItems.map(c => c.Title);
+    this.sharedObject.oTaskAllocation.arrSubMilestones = arrResult.find(c => c.listName === this.constants.listNames.SubMilestones.name).retItems.map(c => c.Title);
+    this.sharedObject.oTaskAllocation.arrTasks = arrResult.find(c => c.listName === this.constants.listNames.DeliverableType.name).retItems.find(c => c.Title === projectDetails.deliverable).MilestoneTasks.results.length > 0 ? arrResult.find(c => c.listName === this.constants.listNames.DeliverableType.name).retItems.find(c => c.Title === projectDetails.deliverable).MilestoneTasks.results.map(c => c.Title) : arrResult.find(c => c.listName === this.constants.listNames.PracticeArea.name).retItems.find(c => c.Title === projectDetails.practiceArea).MilestoneTasks.results.length > 0 ? arrResult.find(c => c.listName === this.constants.listNames.PracticeArea.name).retItems.find(c => c.Title === projectDetails.practiceArea).MilestoneTasks.results.map(c => c.Title) : arrResult.find(c => c.listName === this.constants.listNames.MilestoneTasks.name).retItems.map(c => c.Title);
+    this.sharedObject.oTaskAllocation.allTasks = arrResult.find(c => c.listName === this.constants.listNames.DeliverableType.name).retItems.find(c => c.Title === projectDetails.deliverable).MilestoneTasks.results.length > 0 ? arrResult.find(c => c.listName === this.constants.listNames.DeliverableType.name).retItems.find(c => c.Title === projectDetails.deliverable).MilestoneTasks.results : arrResult.find(c => c.listName === this.constants.listNames.PracticeArea.name).retItems.find(c => c.Title === projectDetails.practiceArea).MilestoneTasks.results.length > 0 ? arrResult.find(c => c.listName === this.constants.listNames.PracticeArea.name).retItems.find(c => c.Title === projectDetails.practiceArea).MilestoneTasks.results : arrResult.find(c => c.listName === this.constants.listNames.MilestoneTasks.name).retItems;
 
     this.mainloaderenable = false;
 
