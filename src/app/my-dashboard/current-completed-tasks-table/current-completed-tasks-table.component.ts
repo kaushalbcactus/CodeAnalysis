@@ -371,7 +371,7 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
       this.reloadTableData.emit();
       this.commonService.showToastrMessage(this.constants.MessageType.error, response, false);
     } else {
-      this.commonService.showToastrMessage(this.constants.MessageType.success, task.Title + 'Task Updated Successfully.', false);
+      this.commonService.showToastrMessage(this.constants.MessageType.success, task.Title + ' task Updated Successfully.', false);
       this.refreshData();
     }
   }
