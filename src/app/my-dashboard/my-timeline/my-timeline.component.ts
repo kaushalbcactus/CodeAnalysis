@@ -683,6 +683,8 @@ export class MyTimelineComponent implements OnInit {
     const stval = await this.myDashboardConstantsService.getPrevTaskStatus(task);
     const allowedStatus = ["Completed", "Auto Closed"];
     // if (allowedStatus.includes(stval) || stval === '') {
+      this.commonService.confirmMessageDialog('Confirmation', 'Are you sure that you want to proceed?', null, ['Yes', 'No'], false).then(async Confirmation => {
+      if (Confirmation === 'Yes') {
       if (task.Status === 'Completed' && !task.FinalDocSubmit && (allowedStatus.includes(stval) || stval === '')) {
         this.commonService.showToastrMessage(this.constants.MessageType.error, 'No Final Document Found', false);
         task.Status = earlierStaus;
@@ -691,8 +693,6 @@ export class MyTimelineComponent implements OnInit {
       } else {
         if (task.Status === "Completed" && (allowedStatus.includes(stval) || stval === '')) {
           this.CalendarLoader = false;
-          this.commonService.confirmMessageDialog('Confirmation', 'Are you sure that you want to proceed?', null, ['Yes', 'No'], false).then(async Confirmation => {
-            if (Confirmation === 'Yes') {
               task.parent = 'Dashboard';
               const qmsTasks = await this.myDashboardConstantsService.callQMSPopup(task);
               if (qmsTasks.length) {
@@ -714,10 +714,7 @@ export class MyTimelineComponent implements OnInit {
               } else {
                 this.saveTask(task);
               }
-            } else {
-              task.Status = earlierStaus;
-            }
-          });
+            
         } else if (task.Status === "In Progress" && (allowedStatus.includes(stval) || stval === '')) {
           const batchURL = [];
           if (this.task.StartTime) {
@@ -763,6 +760,11 @@ this.commonService.setBatchObject(batchURL,projectInfoUpdateurl,{ Status: this.c
           this.CalendarLoader = false;
         }
       }
+    } else {
+      task.Status = earlierStaus;
+      this.CalendarLoader = false;
+    }
+    });
   }
 
   async saveTask(task) {
