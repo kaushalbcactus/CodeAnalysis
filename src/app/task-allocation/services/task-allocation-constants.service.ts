@@ -97,13 +97,13 @@ export class TaskAllocationConstantsService {
         Deliverable: {
             select: 'Title,IsActiveCH,MilestoneTasks/ID,MilestoneTasks/Title,Milestones/ID,Milestones/Title',
             expand: 'Milestones,MilestoneTasks',
-            filter: "Title eq '{{title}}' and IsActiveCH eq '{{status}}'",
+            filter: "IsActiveCH eq '{{status}}'",
             top: 4500
         },
         PracticeArea:{
             select: 'Title,IsActiveCH,MilestoneTasks/ID,MilestoneTasks/Title,Milestones/ID,Milestones/Title',
             expand: 'Milestones,MilestoneTasks',
-            filter: "Title eq '{{title}}' and IsActiveCH eq '{{status}}'",
+            filter: "IsActiveCH eq '{{status}}'",
             top: 4500
         }
     };
