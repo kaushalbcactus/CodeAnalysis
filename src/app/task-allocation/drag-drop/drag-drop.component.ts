@@ -671,34 +671,42 @@ export class DragDropComponent implements OnInit {
 
   async GetAllTasksMilestones() {
     const batchUrl = [];
-    const milestoneObj = Object.assign({}, this.queryConfig);
-    milestoneObj.url = this.spServices.getReadURL(this.constants.listNames.Milestones.name,
-      this.taskAllocationService.taskallocationComponent.milestoneList);
-    milestoneObj.url = milestoneObj.url.replace(/{{status}}/gi, 'Active');
-    milestoneObj.listName = this.constants.listNames.Milestones.name;
-    milestoneObj.type = 'GET';
-    batchUrl.push(milestoneObj);
-    const submilestoneObj = Object.assign({}, this.queryConfig);
-    submilestoneObj.url = this.spServices.getReadURL(this.constants.listNames.SubMilestones.name,
+    const projectDetails =this.sharedObject.oTaskAllocation.oProjectDetails;
+    if(projectDetails.deliverable && (projectDetails.deliverable.toLowerCase() ==='elearning' || projectDetails.deliverable.toLowerCase() ==='interactives' || projectDetails.deliverable.toLowerCase() ==='digital tactics')){
+      const DeliverableUrl = this.spServices.getReadURL(this.constants.listNames.DeliverableType.name,
+        this.taskAllocationService.taskallocationComponent.Deliverable);
+        this.commonService.setBatchObject(batchUrl,DeliverableUrl.replace(/{{title}}/gi, projectDetails.deliverable).replace(/{{status}}/gi, 'Yes'),null,this.constants.Method.GET,this.constants.listNames.DeliverableType.name);
+    }
+     else if(projectDetails.practiceArea &&  (projectDetails.practiceArea.toLowerCase() === 'devices' || projectDetails.practiceArea.toLowerCase() === 'medcom' || projectDetails.practiceArea.toLowerCase() === 'medinfo' || projectDetails.practiceArea.toLowerCase() === 'pubs' || projectDetails.practiceArea.toLowerCase() === 'eqg')) {
+      const PracticeAreaUrl = this.spServices.getReadURL(this.constants.listNames.PracticeArea.name,
+        this.taskAllocationService.taskallocationComponent.PracticeArea);
+        this.commonService.setBatchObject(batchUrl,PracticeAreaUrl.replace(/{{title}}/gi,projectDetails.practiceArea).replace(/{{status}}/gi, 'Yes'),null,this.constants.Method.GET,this.constants.listNames.PracticeArea.name);
+     }
+     else{
+        const milestoneUrl = this.spServices.getReadURL(this.constants.listNames.Milestones.name,
+        this.taskAllocationService.taskallocationComponent.milestoneList);
+        this.commonService.setBatchObject(batchUrl,milestoneUrl.replace(/{{status}}/gi, 'Active'),null,this.constants.Method.GET,this.constants.listNames.Milestones.name)
+
+        const tasksUrl = this.spServices.getReadURL(this.constants.listNames.MilestoneTasks.name,
+        this.taskAllocationService.taskallocationComponent.taskList);
+        this.commonService.setBatchObject(batchUrl,tasksUrl.replace(/{{status}}/gi, 'Active').replace(/{{TaskType}}/gi, 'SubTask'),null,this.constants.Method.GET,this.constants.listNames.MilestoneTasks.name);    
+    }
+    const submilestoneUrl = this.spServices.getReadURL(this.constants.listNames.SubMilestones.name,
       this.taskAllocationService.taskallocationComponent.submilestonesList);
-    submilestoneObj.url = submilestoneObj.url.replace(/{{status}}/gi, 'Yes');
-    submilestoneObj.listName = this.constants.listNames.SubMilestones.name;
-    submilestoneObj.type = 'GET';
-    batchUrl.push(submilestoneObj);
-    const tasksObj = Object.assign({}, this.queryConfig);
-    tasksObj.url = this.spServices.getReadURL(this.constants.listNames.MilestoneTasks.name,
-      this.taskAllocationService.taskallocationComponent.taskList);
-    tasksObj.url = tasksObj.url.replace(/{{status}}/gi, 'Active').replace(/{{TaskType}}/gi, 'SubTask');
-    tasksObj.listName = this.constants.listNames.MilestoneTasks.name;
-    tasksObj.type = 'GET';
-    batchUrl.push(tasksObj);
+      this.commonService.setBatchObject(batchUrl,submilestoneUrl.replace(/{{status}}/gi, 'Yes'),null,this.constants.Method.GET,this.constants.listNames.SubMilestones.name);
+
     this.commonService.SetNewrelic('TaskAllocation', 'Drag-Drop', 'GetMilestoneSubmilestoneAndTasks');
     const arrResult = await this.spServices.executeBatch(batchUrl);
-    this.response = arrResult.length ? arrResult.map(a => a.retItems) : [];
-    this.sharedObject.oTaskAllocation.arrMilestones = this.response[0].map(c => c.Title);
-    this.sharedObject.oTaskAllocation.arrSubMilestones = this.response[1].map(c => c.Title);
-    this.sharedObject.oTaskAllocation.arrTasks = this.response[2].map(c => c.Title);
-    this.sharedObject.oTaskAllocation.allTasks = this.response[2];
+
+    this.sharedObject.oTaskAllocation.arrMilestones = arrResult.find(c=>c.listName === 'PracticeAreaCT' || c.listName === 'DeliverableTypeCT') ? arrResult.find(c=>c.listName === 'PracticeAreaCT' || c.listName === 'DeliverableTypeCT').retItems[0].Milestones.results.map(c => c.Title) : arrResult.find(c=>c.listName === 'MilestonesCT').retItems.map(c => c.Title);
+
+     this.sharedObject.oTaskAllocation.arrSubMilestones = arrResult.find(c=>c.listName === 'SubMilestonesCT').retItems.map(c => c.Title);
+
+
+    this.sharedObject.oTaskAllocation.arrTasks = arrResult.find(c=>c.listName === 'PracticeAreaCT' || c.listName === 'DeliverableTypeCT') ? arrResult.find(c=>c.listName === 'PracticeAreaCT' || c.listName === 'DeliverableTypeCT').retItems[0].MilestoneTasks.results.map(c => c.Title) : arrResult.find(c=>c.listName === 'MilestoneTasksCT').retItems.map(c => c.Title);
+
+
+    this.sharedObject.oTaskAllocation.allTasks =  arrResult.find(c=>c.listName === 'PracticeAreaCT' || c.listName === 'DeliverableTypeCT') ? arrResult.find(c=>c.listName === 'PracticeAreaCT' || c.listName === 'DeliverableTypeCT').retItems[0].MilestoneTasks.results : arrResult.find(c=>c.listName === 'MilestoneTasksCT').retItems;
 
     this.mainloaderenable = false;
 
