@@ -854,6 +854,8 @@ export class UserProfileComponent implements OnInit {
         this.userProfileData.splice(index, 1);
       }
     }
+
+    this.userProfileData = [... this.userProfileData];
     this.adminObject.isMainLoaderHidden = false;
     this.colFilters(this.userProfileData);
   }
