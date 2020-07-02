@@ -5,11 +5,11 @@ import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 import { CommonService } from 'src/app/Services/common.service';
 import { DatePipe } from '@angular/common';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
-import { TaskAllocationCommonService } from 'src/app/task-allocation/services/task-allocation-common.service';
 import { IMilestoneTask } from 'src/app/task-allocation/interface/allocation';
 import { GlobalService } from 'src/app/Services/global.service';
 import { IUserCapacity } from '../usercapacity/interface/usercapacity';
 import { ConstantsService } from 'src/app/Services/constants.service';
+import { TaskAllocationConstantsService } from 'src/app/task-allocation/services/task-allocation-constants.service';
 
 @Component({
   selector: 'app-pre-stack-allocation',
@@ -42,7 +42,7 @@ export class PreStackAllocationComponent implements OnInit {
   };
   constructor(private usercapacityComponent: UsercapacityComponent, private popupData: DynamicDialogConfig,
     public common: CommonService, private datePipe: DatePipe, public popupConfig: DynamicDialogRef,
-    public allocationCommon: TaskAllocationCommonService,
+    public allocationConstant: TaskAllocationConstantsService,
     public global: GlobalService, public constants: ConstantsService) { }
 
   ngOnInit() {
@@ -194,9 +194,9 @@ export class PreStackAllocationComponent implements OnInit {
    * Fetch user capacity based task start and end date
    */
   async getResourceCapacity(task: IDailyAllocationTask): Promise<IUserCapacity> {
-    const taskStatus: string[] = this.allocationCommon.taskStatus.indexOf(task.status) > -1 ? this.allocationCommon.taskStatus : [];
+    const taskStatus: string[] = this.allocationConstant.taskStatus.indexOf(task.status) > -1 ? this.allocationConstant.taskStatus : [];
     // tslint:disable-next-line: max-line-length
-    const oCapacity = await this.usercapacityComponent.factoringTimeForAllocation(task.startDate, task.endDate, task.resource, [task], taskStatus, this.allocationCommon.adhocStatus);
+    const oCapacity = await this.usercapacityComponent.factoringTimeForAllocation(task.startDate, task.endDate, task.resource, [task], taskStatus, this.allocationConstant.adhocStatus);
     const resource: IUserCapacity = oCapacity.arrUserDetails.length ? oCapacity.arrUserDetails[0] : {};
     return resource;
   }
@@ -542,8 +542,8 @@ export class PreStackAllocationComponent implements OnInit {
   }
 
   calcCapacity(allocationData) {
-    const taskStatus = this.allocationCommon.taskStatus.indexOf(allocationData.status) > -1 ? this.allocationCommon.taskStatus : [];
-    const adhoc = this.allocationCommon.adhocStatus;
+    const taskStatus = this.allocationConstant.taskStatus.indexOf(allocationData.status) > -1 ? this.allocationConstant.taskStatus : [];
+    const adhoc = this.allocationConstant.adhocStatus;
     const resource = allocationData.resource.length ? allocationData.resource[0].UserNamePG.ID ? allocationData.resource[0].UserNamePG.ID : allocationData.resource[0].UserNamePG.Id : -1;
     const businessDays = this.usercapacityComponent.getDates(allocationData.startDate, allocationData.endDate, true);
     let newUserCapacity;

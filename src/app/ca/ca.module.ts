@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 // import { UnallocatedComponent } from './unallocated/unallocated.component';
 
 import { PrimengModule } from '../primeng/primeng.module';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+// import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 import { CaRoutingModule } from './ca-routing.module';
 // import { CaComponent } from './ca.component';
@@ -29,7 +29,7 @@ import { ConflictAllocationComponent } from '../shared/conflict-allocations/conf
   imports: [
     CommonModule,
     PrimengModule,
-    NgbModule,
+    // NgbModule,
     FormsModule,
     CaRoutingModule,
     UserCapacityModule,

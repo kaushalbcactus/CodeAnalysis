@@ -5,7 +5,6 @@ import { CommonService } from '../../../Services/common.service';
 import { DataService } from '../../../Services/data.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { GlobalService } from '../../../Services/global.service';
-// import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { UserFeedbackComponent } from '../user-feedback/user-feedback.component';

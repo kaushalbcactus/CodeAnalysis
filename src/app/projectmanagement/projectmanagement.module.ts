@@ -7,7 +7,7 @@ import { InactiveComponent } from './projectmanagement/inactive/inactive.compone
 import { ClientReviewComponent } from './projectmanagement/client-review/client-review.component';
 import { ProjectManagementRoutingModule } from './project-management-routing.module';
 import { PrimengModule } from '../primeng/primeng.module';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+// import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AllProjectsComponent } from './projectmanagement/all-projects/all-projects.component';
 import { SOWComponent } from './projectmanagement/sow/sow.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -76,7 +76,7 @@ import { AddReduceSowbudgetDialogComponent } from './projectmanagement/sow/add-r
     ReactiveFormsModule,
     TimelineModule,
     CustomMaterialModule,
-    NgbModule,
+    // NgbModule,
     TaskAllocationModule,
     UserCapacityModule,
     FlexLayoutModule,

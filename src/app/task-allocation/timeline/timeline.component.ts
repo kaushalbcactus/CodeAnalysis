@@ -46,6 +46,7 @@ import { AllocationOverlayComponent } from "src/app/shared/pre-stack-allocation/
 import { GanttEdittaskComponent } from "../gantt-edittask/gantt-edittask.component";
 import { ConflictAllocationComponent } from "src/app/shared/conflict-allocations/conflict-allocation.component";
 
+
 @Component({
   selector: "app-timeline",
   templateUrl: "./timeline.component.html",
@@ -1497,7 +1498,7 @@ export class TimelineComponent
   renderGanttTemplates() {
     this.taskAllocateCommonService.ganttParseObject.data.forEach(e => {
       e.ganttOverlay = e.showAllocationSplit
-        ? this.taskAllocateCommonService.allocationSplitColumn
+        ? this.taskAllocationService.allocationSplitColumn
         : "";
       e.ganttMenu =
         e.type == "milestone"
@@ -1507,17 +1508,17 @@ export class TimelineComponent
             this.oProjectDetails.status !== "In Discussion" &&
             this.oProjectDetails.projectType !== "FTE-Writing" &&
             e.status !== "Completed"
-            ? this.taskAllocateCommonService.contextMenu
+            ? this.taskAllocationService.contextMenu
             : e.status !== "Completed" && e.status !== "Auto Closed"
-            ? this.taskAllocateCommonService.contextMenu
+            ? this.taskAllocationService.contextMenu
             : ""
           : e.type == "submilestone"
           ? !this.changeInRestructure &&
             e.status === "Not Confirmed" &&
             (e.isCurrent || e.isNext)
-            ? this.taskAllocateCommonService.contextMenu
+            ? this.taskAllocationService.contextMenu
             : ""
-          : this.taskAllocateCommonService.contextMenu;
+          : this.taskAllocationService.contextMenu;
     });
   }
 
@@ -3630,6 +3631,9 @@ export class TimelineComponent
   // *************************************************************************************************************************************
 
   async assignedToUserChanged(milestoneTask) {
+   // await this.allocationCommon.assignedToUserChanged(milestoneTask, this.milestoneData, this.allRestructureTasks, this.allTasks);
+
+
     const assignedTo = milestoneTask.AssignedTo;
     if (assignedTo) {
       this.updateNextPreviousTasks(milestoneTask);

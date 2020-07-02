@@ -3,6 +3,8 @@ import { GlobalService } from 'src/app/Services/global.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { DatePipe } from '@angular/common';
 import { IMilestoneTask } from '../interface/allocation';
+import { ConstantsService } from 'src/app/Services/constants.service';
+import { TaskAllocationConstantsService } from './task-allocation-constants.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,24 +13,13 @@ export class TaskAllocationCommonService {
 
   constructor(public sharedObject: GlobalService,
     private commonService: CommonService,
-    public datepipe: DatePipe) { }
+    public datepipe: DatePipe,
+    public constants: ConstantsService,
+    public allocationConstant: TaskAllocationConstantsService) { }
 
   ganttParseObject: any = {}
   allTasks: any = {}
   attachedEvents = [];
-  allocationSplitColumn = `<span class='ganttOverlayIcon' "title="Click to see allocation split">
-  <i class="fa fa-info-circle" aria-hidden="true"></i></span>`;
-  contextMenu = `<i class="fa fa-ellipsis-v contextMenu" data-action="contextmenu"></i>`;
-
-  adhocStatus = [
-    'Administrative Work',
-    'Internal meeting'
-  ]
-
-  taskStatus = [
-    'Not Saved',
-    'Not Confirmed',
-  ]
 
   getResourceByMatrix(task, allTasks) {
     let resources = this.sharedObject.oTaskAllocation.oResources;
@@ -266,13 +257,13 @@ export class TaskAllocationCommonService {
 
     let convertedDate = this.convertDate(data);
 
-    let taskObj: any= {
+    let taskObj: any = {
       start_date: data.type == 'submilestone' ? null :
-      data.type == 'task' ? new Date(convertedDate.jsLocalStartDate) :
-        new Date(data.startDate !== "" ? data.startDate.date.year + "/" + (data.startDate.date.month < 10 ? "0" + data.startDate.date.month : data.startDate.date.month) + "/" + (data.startDate.date.day < 10 ? "0" + data.startDate.date.day : data.startDate.date.day) : ''),
+        data.type == 'task' ? new Date(convertedDate.jsLocalStartDate) :
+          new Date(data.startDate !== "" ? data.startDate.date.year + "/" + (data.startDate.date.month < 10 ? "0" + data.startDate.date.month : data.startDate.date.month) + "/" + (data.startDate.date.day < 10 ? "0" + data.startDate.date.day : data.startDate.date.day) : ''),
       end_date: data.type == 'submilestone' ? null :
-      data.type == 'task' ? data.itemType == 'Send to client' ? new Date(convertedDate.jsLocalStartDate) : new Date(convertedDate.jsLocalEndDate) :
-        new Date(data.endDate !== "" ? data.endDate.date.year + "/" + (data.endDate.date.month < 10 ? "0" + data.endDate.date.month : data.endDate.date.month) + "/" + (data.endDate.date.day < 10 ? "0" + data.endDate.date.day : data.endDate.date.day) : ''),
+        data.type == 'task' ? data.itemType == 'Send to client' ? new Date(convertedDate.jsLocalStartDate) : new Date(convertedDate.jsLocalEndDate) :
+          new Date(data.endDate !== "" ? data.endDate.date.year + "/" + (data.endDate.date.month < 10 ? "0" + data.endDate.date.month : data.endDate.date.month) + "/" + (data.endDate.date.day < 10 ? "0" + data.endDate.date.day : data.endDate.date.day) : ''),
       tat: data.type == 'submilestone' ? false : data.type == 'task' ? data.TATStatus === true || data.TATStatus === 'Yes' ? true : false : true
     }
     // tslint:disable: object-literal-key-quotes
@@ -345,7 +336,7 @@ export class TaskAllocationCommonService {
       allocationColor: '',
       showAllocationSplit: data.AllocationPerDay ? true : false,
       allocationTypeLoader: false,
-      ganttOverlay: data.AllocationPerDay ? this.allocationSplitColumn : '',
+      ganttOverlay: data.AllocationPerDay ? this.allocationConstant.allocationSplitColumn : '',
       ganttMenu: '',
       ExpectedBudgetHrs: data.type == 'task' ? await this.setMaxBudgetHrs(taskObj) : ''
     };
@@ -422,4 +413,196 @@ export class TaskAllocationCommonService {
       return time.maxBudgetHrs;
     }
   }
+
+  changeUserTimeZone(node, previousTimezone, newTimeZone) {
+    node.pUserStart = this.commonService.calcTimeForDifferentTimeZone(
+      node.pUserStart,
+      previousTimezone,
+      newTimeZone
+    );
+    node.pUserEnd = this.commonService.calcTimeForDifferentTimeZone(
+      node.pUserEnd,
+      previousTimezone,
+      newTimeZone
+    );
+  }
+
+  setDatePartAndTimePart(node) {
+    node.pUserStartDatePart = this.getDatePart(node.pUserStart);
+    node.pUserStartTimePart = this.getTimePart(node.pUserStart);
+    node.pUserEndDatePart = this.getDatePart(node.pUserEnd);
+    node.pUserEndTimePart = this.getTimePart(node.pUserEnd);
+    node.tatVal = this.commonService.calcBusinessDays(
+      new Date(node.start_date),
+      new Date(node.end_date)
+    );
+  }
+
+  // async assignedToUserChanged(milestoneTask, milestoneData, allResTasks, allTasks) {
+  //   const assignedTo = milestoneTask.AssignedTo;
+  //   if (assignedTo) {
+  //     this.updateNextPreviousTasks(milestoneTask, milestoneData, allResTasks, allTasks);
+  //     milestoneTask.assignedUserChanged = true;
+  //     if (assignedTo.hasOwnProperty("ID") && assignedTo.ID) {
+  //       milestoneTask.skillLevel = this.getSkillName(
+  //         assignedTo.SkillText
+  //       );
+  //       const previousUserTimeZone = milestoneTask.assignedUserTimeZone;
+  //       const resource = this.sharedObject.oTaskAllocation.oResources.filter(
+  //         objt => {
+  //           return assignedTo.ID === objt.UserNamePG.ID;
+  //         }
+  //       );
+  //       await this.dailyAllocation.calcPrestackAllocation(
+  //         resource,
+  //         milestoneTask
+  //       );
+  //       milestoneTask.assignedUserTimeZone =
+  //         resource && resource.length > 0
+  //           ? resource[0].TimeZone.Title
+  //             ? resource[0].TimeZone.Title
+  //             : this.allocationConstant.defaultTimeZone
+  //           : this.allocationConstant.defaultTimeZone;
+
+  //       this.changeUserTimeZone(
+  //         milestoneTask,
+  //         previousUserTimeZone,
+  //         milestoneTask.assignedUserTimeZone
+  //       );
+  //       this.setDatePartAndTimePart(milestoneTask);
+
+  //       /// Change date as user changed in AssignedTo dropdown
+  //     } else {
+  //       const previousUserTimeZone = milestoneTask.assignedUserTimeZone;
+  //       milestoneTask.assignedUserTimeZone = this.allocationConstant.defaultTimeZone;
+  //       this.changeUserTimeZone(
+  //         milestoneTask,
+  //         previousUserTimeZone,
+  //         milestoneTask.assignedUserTimeZone
+  //       );
+  //       this.setDatePartAndTimePart(milestoneTask);
+  //       milestoneTask.skillLevel = milestoneTask.AssignedTo.SkillText;
+  //       milestoneTask.user = milestoneTask.skillLevel;
+  //     }
+  //     milestoneTask.edited = true;
+  //     milestoneTask.user = milestoneTask.AssignedTo
+  //       ? milestoneTask.AssignedTo.Title
+  //       : milestoneTask.user;
+  //   }
+  // }
+
+  // changeNextTaskPrevTask(
+  //   sNextPrev,
+  //   subMilestone,
+  //   currentTask,
+  //   newName,
+  //   sParam
+  // ) {
+  //   const sTasks = sNextPrev.split(";");
+  //   sTasks.forEach(task => {
+  //     const oTask = subMilestone.children.find(t => t.data.title === task);
+  //     const sNextPrevTasks = oTask.data[sParam].split(";");
+  //     const currentTaskIndex = sNextPrevTasks.indexOf(currentTask.title);
+  //     sNextPrevTasks[currentTaskIndex] = newName;
+  //     const prevNextTaskString = sNextPrevTasks.join(";");
+  //     oTask.data[sParam] = prevNextTaskString;
+  //   });
+  // }
+
+  // /**
+  //  * Update next previous task of submit/galley(Slot type as Both) slot based on skill/user
+  //  * @param milestoneTask - task whose assigned user changed
+  //  */
+  // async updateNextPreviousTasks(milestoneTask, milestoneData, allResTasks, allTasks) {
+  //   const currentTask = milestoneTask;
+  //   const milestone = milestoneData.find(
+  //     m => m.data.title === milestoneTask.milestone
+  //   );
+
+  //   let subMilestone;
+  //   subMilestone = currentTask.submilestone
+  //     ? milestone.children.find(t => t.data.title === currentTask.submilestone)
+  //     : milestone;
+  //   let newName = "";
+  //   if (milestoneTask.slotType === "Both") {
+  //     if (milestoneTask.AssignedTo.ID) {
+  //       milestoneTask.ActiveCA = "No";
+  //       milestoneTask.itemType = milestoneTask.itemType.replace(/Slot/g, "");
+  //       if (milestoneTask.IsCentrallyAllocated === "Yes") {
+  //         newName = milestoneTask.itemType;
+  //         newName = this.getNewTaskName(milestoneTask, newName, allResTasks, allTasks);
+  //         milestoneTask.IsCentrallyAllocated = "No";
+  //       } else {
+  //         newName = milestoneTask.title;
+  //       }
+  //     } else if (!milestoneTask.AssignedTo.ID) {
+  //       milestoneTask.IsCentrallyAllocated = "Yes";
+  //       milestoneTask.ActiveCA =
+  //         this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone ===
+  //           milestoneTask.milestone
+  //           ? "Yes"
+  //           : milestoneTask.ActiveCA;
+  //       milestoneTask.itemType = milestoneTask.itemType + "Slot";
+  //       newName = milestoneTask.itemType;
+  //       newName = this.getNewTaskName(milestoneTask, newName, allResTasks, allTasks);
+  //     }
+  //     milestoneTask.title = milestoneTask.title = newName;
+
+  //     if (milestoneTask.nextTask) {
+  //       this.changeNextTaskPrevTask(
+  //         milestoneTask.nextTask,
+  //         subMilestone,
+  //         currentTask,
+  //         newName,
+  //         "previousTask"
+  //       );
+  //     }
+  //     if (milestoneTask.previousTask) {
+  //       this.changeNextTaskPrevTask(
+  //         milestoneTask.nextTask,
+  //         subMilestone,
+  //         currentTask,
+  //         newName,
+  //         "nextTask"
+  //       );
+  //     }
+  //   }
+  // }
+
+  // getNewTaskName(milestoneTask, originalName, allResTasks, allTasks) {
+  //   let counter = 1;
+  //   let tasks = this.checkNameExists([], milestoneTask, originalName, allResTasks, allTasks);
+  //   while (tasks.length) {
+  //     counter++;
+  //     originalName = milestoneTask.itemType + " " + counter;
+  //     tasks = this.checkNameExists(tasks, milestoneTask, originalName, allResTasks, allTasks);
+  //   }
+
+  //   return originalName;
+  // }
+
+  // checkNameExists(tasks, milestoneTask, originalName, allResTasks, allTasks) {
+  //   tasks = allTasks.filter(
+  //     e => e.title === originalName && e.milestone === milestoneTask.milestone
+  //   );
+  //   if (!tasks.length) {
+  //     tasks = allTasks.filter(e => {
+  //       const taskName = e.Title.replace(
+  //         this.sharedObject.oTaskAllocation.oProjectDetails.projectCode +
+  //         " " +
+  //         e.Milestone +
+  //         " ",
+  //         ""
+  //       );
+  //       return (
+  //         e.ContentTypeCH !== this.constants.CONTENT_TYPE.MILESTONE &&
+  //         taskName === originalName &&
+  //         e.Milestone === milestoneTask.milestone
+  //       );
+  //     });
+  //   }
+  //   return tasks;
+  // }
+
+
 }

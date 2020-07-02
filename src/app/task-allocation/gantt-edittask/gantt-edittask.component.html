@@ -1,16 +1,13 @@
 <p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom" [hideTransitionOptions]="'0ms'" position="bottom-center">
 </p-toast>
 <div class='taskButton' fxLayout="row" fxLayoutAlign="end center">
-
     <button type="button" pButton icon="pi pi-save" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }"
         (click)="saveTask()" label="Save" class="saveTaskButton"></button>
     <button type="button" pButton icon="pi pi-times" (click)="reset();" label="Cancel" class="ui-button-secondary"
         style="background-color:ghostwhite;"></button>
-
 </div>
 
 <div fxLayout="row" #scrollDown fxLayoutAlign="space-between start" fxLayoutGap="5px">
-
     <form [formGroup]="editTaskForm" class="p-col">
         <div class="p-grid p-col mt-20">
             <div class="p-col-2">
@@ -83,7 +80,6 @@
                 </p-dropdown>
             </div>
         </div>
-
         <div class="p-grid p-col mt-20">
             <ng-container *ngIf="editTaskObject.isDisableCascade">
                 <div class="p-col-2">

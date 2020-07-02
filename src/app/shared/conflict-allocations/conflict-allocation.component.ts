@@ -183,7 +183,7 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
     task.resources = this.commonService.unique(task.resources, 'UserName.ID');
     if (milSubMil) {
       capacity = await this.usercapacityComponent.factoringTimeForAllocation(task.start_date, task.end_date,
-        task.resources, [], [], this.allocationCommon.adhocStatus);
+        task.resources, [], [], this.allocationConstant.adhocStatus);
     } else {
       capacity = await this.usercapacityComponent.afterResourceChange(task, task.start_date,
         task.end_date, task.resources, [], false);

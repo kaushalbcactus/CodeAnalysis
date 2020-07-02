@@ -9,6 +9,21 @@ export class TaskAllocationConstantsService {
 
     constructor(private constantService: ConstantsService, private globalObject: GlobalService) { }
     // tslint:disable
+    allocationSplitColumn = `<span class='ganttOverlayIcon' "title="Click to see allocation split">
+  <i class="fa fa-info-circle" aria-hidden="true"></i></span>`;
+    contextMenu = `<i class="fa fa-ellipsis-v contextMenu" data-action="contextmenu"></i>`;
+    defaultTimeZone = 5.5;
+    adhocStatus = [
+        'Administrative Work',
+        'Internal meeting'
+    ]
+
+    taskStatus = [
+        'Not Saved',
+        'Not Confirmed',
+    ]
+
+
     common = {
         getMailTemplate: {
             select: 'ContentMT',
@@ -23,8 +38,8 @@ export class TaskAllocationConstantsService {
             top: 4500
         },
         projectShortTitle: {
-          select: 'ProjectCode, WBJID',
-          filter: 'ProjectCode eq \'{{projectCode}}\''
+            select: 'ProjectCode, WBJID',
+            filter: 'ProjectCode eq \'{{projectCode}}\''
         },
         Resources: {
             select: "ID,MaxHrs,TAVisibility,PrimarySkill,UserNamePG/ID,UserNamePG/EMail,UserNamePG/Title,UserNamePG/Name,TimeZone/Title,SkillLevel/Title,Tasks/Title,Tasks/Status,Deliverables/Title,DeliverableExclusion/Title,TA/Title,TAExclusion/Title,Account/Title",
@@ -40,7 +55,7 @@ export class TaskAllocationConstantsService {
         },
         ClientLegal: {
             //select: 'IsCentrallyAllocated',
-            select:'ID,Title',
+            select: 'ID,Title',
             filter: "IsActiveCH eq 'Yes' and Title eq '{{ProjectDetailsaccount}}'",
             top: 4500
         },
@@ -100,7 +115,7 @@ export class TaskAllocationConstantsService {
             filter: "IsActiveCH eq '{{status}}'",
             top: 4500
         },
-        PracticeArea:{
+        PracticeArea: {
             select: 'Title,IsActiveCH,MilestoneTasks/ID,MilestoneTasks/Title,Milestones/ID,Milestones/Title',
             expand: 'Milestones,MilestoneTasks',
             filter: "IsActiveCH eq '{{status}}'",
