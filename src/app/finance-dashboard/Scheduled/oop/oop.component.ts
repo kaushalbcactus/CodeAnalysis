@@ -465,7 +465,7 @@ export class OopComponent implements OnInit, OnDestroy {
         return x;
       }
     });
-    return found ? found.FullName : "";
+    return found ? found.FullNameCC : "";
   }
 
   // Project Client
