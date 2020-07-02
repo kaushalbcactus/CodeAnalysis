@@ -74,12 +74,12 @@ export class AddEditUserProfileComponent implements OnInit {
     private spServices: SPOperationService,
     private common: CommonService, ) { }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.minPastMonth = new Date(new Date().setDate(new Date().getDate() - 30));
     const currentYear = new Date();
     this.yearRange = this.common.getyearRange();
     this.initialAddUserForm();
-    this.loadDropDownValue();
+    await  this.loadDropDownValue();
     if (this.config.data) {
       this.currUserObj = this.config.data;
       this.showEditUserModal();
@@ -90,11 +90,8 @@ export class AddEditUserProfileComponent implements OnInit {
       this.addUser.get('workWednessday').setValue(true);
       this.addUser.get('workThursday').setValue(true);
       this.addUser.get('workFriday').setValue(true);
-
+      this.modalloaderenable = false;
     }
-
-
-
   }
 
   // tslint:disable-next-line: member-ordering
@@ -441,6 +438,8 @@ export class AddEditUserProfileComponent implements OnInit {
     await this.setUserFormField(userObj);
     this.showeditUser = true;
     this.upObject.isFormSubmit = false;
+
+    this.modalloaderenable = false;
   }
   /**
    * Construct a method to set the value into form field
@@ -480,13 +479,15 @@ export class AddEditUserProfileComponent implements OnInit {
     // Convert Practice area(;#) to array
     const paArray = userObj.PracticeArea ? userObj.PracticeArea.split(',') : [];
     if (paArray.length) {
-      const val = [];
-      paArray.forEach(element => {
-        val.push(element);
-      });
+      // const val = [];
+      // paArray.forEach(element => {
+      //   val.push(element);
+      // });
+
+      const selectedValue =this.adminDropDown.practiceAreaArray.filter(c=> paArray.includes(c.value)) ? this.adminDropDown.practiceAreaArray.filter(c=> paArray.includes(c.value)).map(c=>c.value) : [];
 
       this.addUser.patchValue({
-        practiceArea: val
+        practiceArea: selectedValue
       });
       // this.addUser.get('practiceArea').setValue(val);
       // this.addUser.value.practiceArea.updateValueAndValidity();
@@ -858,8 +859,6 @@ export class AddEditUserProfileComponent implements OnInit {
           this.adminDropDown.isFTEArray.push({ label: element, value: element });
         });
       }
-
-      this.modalloaderenable = false;
     }
   }
 

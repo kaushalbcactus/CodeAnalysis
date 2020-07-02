@@ -89,7 +89,7 @@ export class UsercapacityComponent implements OnInit {
   ngOnInit() {
     this.loaderenable = true;
     this.data = this.config.data;
-    this.hideOverlay(this.data, this.parentModule);
+     this.hideOverlay(this.data, this.parentModule);
     if (this.data) {
       this.dynamicload = true;
       this.Onload(this.data);
@@ -129,12 +129,6 @@ export class UsercapacityComponent implements OnInit {
 
   async Onload(data) {
     if (data.task) {
-      this.common.showToastrMessage(
-        this.globalConstantService.MessageType.warn,
-        "Fetching data...",
-        true,
-        true
-      );
       this.enableDownload = data.type === "CapacityDashboard" ? true : false;
       if (data.type === "CapacityDashboard") {
         this.displayCount =
@@ -1987,16 +1981,10 @@ export class UsercapacityComponent implements OnInit {
           }
         }
       }
-      setTimeout(() => {
-        this.common.clearToastrMessage();
-      }, 500);
-      // }, 500);
+     
     } else {
       this.height = "inherit";
       this.verticalAlign = "middle";
-      setTimeout(() => {
-        this.common.clearToastrMessage();
-      }, 500);
     }
   }
 

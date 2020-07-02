@@ -472,7 +472,7 @@ export class TimeBookingDialogComponent implements OnInit {
   }
 
   async SaveTimeBooking() {
-
+debugger;
     let count = 0;
     const dbTasks = this.UserMilestones.filter(c => c.type === 'task');
     // tslint:disable-next-line: prefer-for-of
@@ -530,7 +530,7 @@ export class TimeBookingDialogComponent implements OnInit {
               const obj = {
                 __metadata: {
                   // tslint:disable-next-line: object-literal-key-quotes
-                  'type':this.constants.listNames.Schedules.type
+                type:this.constants.listNames.Schedules.type
                 },
                 Actual_x0020_End_x0020_Date: new Date(this.datePipe.transform(dbTasks[i].TimeSpents[6]
                   .date, 'yyyy-MM-dd') + 'T09:00:00.000'),
@@ -542,8 +542,8 @@ export class TimeBookingDialogComponent implements OnInit {
                 SubMilestones: dbTasks[i].SubMilestone,
                 ProjectCode: dbTasks[i].ProjectCode,
                 StartDate: new Date(this.datePipe.transform(dbTasks[i].TimeSpents[0].date, 'yyyy-MM-dd') + 'T09:00:00.000'),
-                Status: 'Completed',
-                Task: 'Time Booking',
+                Status: this.constants.STATUS.COMPLETED,
+                Task:  'Time Booking',
                 TimeSpent: totalTimeSpent,
                 TimeSpentPerDay: timeSpentString,
                 TaskComments: dbTasks[i].CommentsMT,
@@ -551,11 +551,9 @@ export class TimeBookingDialogComponent implements OnInit {
                 AssignedToId: this.sharedObject.currentUser.userId,
               };
               count++;
-              const folderUrl = this.sharedObject.sharePointPageObject.serverRelativeUrl + '/Lists/Schedules/' + dbTasks[i].ProjectCode;
               this.commonService.SetNewrelic('MyDashboard', 'time-bookingDialog', 'CreateAndMoveSchedule');
               // tslint:disable: max-line-length
-              await this.spServices.createItemAndMove(this.constants.listNames.Schedules.name, obj, this.constants.listNames.Schedules.type, folderUrl);
-              // await this.spServices.createAndMove(this.constants.listNames.Schedules.name, obj, folderUrl);
+              await this.spServices.createItem(this.constants.listNames.Schedules.name, obj, this.constants.listNames.Schedules.type);
             }
           }
         }
@@ -650,6 +648,7 @@ export class TimeBookingDialogComponent implements OnInit {
 
 
   openDialog(rowData, type) {
+
     if (type === 'comments') {
       this.displayComment = true;
       this.timebookingRow = rowData;
