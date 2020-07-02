@@ -523,7 +523,7 @@ export class MyTimelineComponent implements OnInit {
       if (this.task.Status === 'Not Started') {
         this.SelectedStatus = 'Not Started';
         this.task.StartDate = new Date(this.task.StartDate);
-        this.task.DueDate = new Date(this.task.DueDateDT);
+        this.task.DueDateDT = new Date(this.task.DueDateDT);
         console.log(this.task.StartDate);
         this.task['StartTime'] = this.datePipe.transform(this.task.StartDate, 'h:mm a');
         this.task['DueTime'] = this.datePipe.transform(this.task.DueDateDT, 'h:mm a');
@@ -536,7 +536,7 @@ export class MyTimelineComponent implements OnInit {
       } else if (this.task.Status === 'In Progress') {
         this.SelectedStatus = 'In Progress';
         this.task.StartDate = new Date(this.task.StartDate);
-        this.task.DueDate = new Date(this.task.DueDateDT);
+        this.task.DueDateDT = new Date(this.task.DueDateDT);
         this.task['DueTime'] = this.datePipe.transform(this.task.DueDateDT, 'h:mm a');
         this.statusOptions = [
           { label: 'In Progress', value: 'In Progress' },
@@ -645,8 +645,8 @@ export class MyTimelineComponent implements OnInit {
   }
 
   onCloseStartDate() {
-    if (this.task.StartDate > this.task.DueDate) {
-      this.task.DueDate = this.task.StartDate;
+    if (this.task.StartDate > this.task.DueDateDT) {
+      this.task.DueDateDT = this.task.StartDate;
     }
   }
 
@@ -724,7 +724,7 @@ export class MyTimelineComponent implements OnInit {
             }
             if (this.task.DueTime) {
               const endTime = this.commonService.ConvertTimeformat(24, this.task.DueTime);
-              this.task.DueDate = this.datePipe.transform(this.task.DueDateDT, 'yyyy-MM-dd' + 'T' + endTime + ':00.000');
+              this.task.DueDateDT = this.datePipe.transform(this.task.DueDateDT, 'yyyy-MM-dd' + 'T' + endTime + ':00.000');
             }
     
             const ProjectInformation = await this.myDashboardConstantsService.getCurrentTaskProjectInformation(task.ProjectCode);
@@ -737,7 +737,7 @@ export class MyTimelineComponent implements OnInit {
               Actual_x0020_Start_x0020_Date: task.Actual_x0020_Start_x0020_Date !== null ? task.Actual_x0020_Start_x0020_Date : new Date(),
               Status: task.Status,
               StartDate: this.task.StartDate,
-              DueDateDT: this.task.DueDate
+              DueDateDT: this.task.DueDateDT
             };
             this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'UpdateTask');
             const taskUpdateUrl = this.spServices.getItemURL(this.constants.listNames.Schedules.name, task.ID);

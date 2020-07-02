@@ -135,7 +135,7 @@
                 <th>Start Date:</th>
                 <td>{{task.StartDate | date :'medium'}}</td>
                 <th>End Date:</th>
-                <td>{{task.DueDate | date:'medium'}}</td>
+                <td>{{task.DueDateDT | date:'medium'}}</td>
             </tr>
             <tr>
                 <!-- <th>Status:</th>
@@ -199,13 +199,14 @@
                             </td>
                             <th>End Date:</th>
                             <td *ngIf="!myDashboardConstantsService.mydashboardComponent.user.isUserFTE">
-                                {{task.DueDate | date :'medium'}}
+                                {{task.DueDateDT | date :'medium'}}
                             </td>
-                            <td *ngIf="myDashboardConstantsService.mydashboardComponent.user.isUserFTE && SelectedStatus === 'Completed' && task.DueDate">
-                                {{task.DueDate | date :'medium'}}
+                            <td *ngIf="myDashboardConstantsService.mydashboardComponent.user.isUserFTE && SelectedStatus === 'Completed' && task.DueDateDT">
+                                {{task.DueDateDT | date :'medium'}}
                             </td>
                             <td *ngIf="myDashboardConstantsService.mydashboardComponent.user.isUserFTE && SelectedStatus !== 'Completed' && task.DueTime">
-                                <p-calendar [style]="{'border': '1px solid !important'}" placeholder="Select Due Date" [minDate]="task.StartDate" [(ngModel)]="task.DueDate" [disabledDays]="[0,6]" dateFormat="M dd, yy" appendTo="body" [monthNavigator]="true" [yearNavigator]="true" yearRange="{{yearRangePastNext}}">
+                                <p-calendar [style]="{'border': '1px solid !important'}" placeholder="Select Due Date" [minDate]="task.StartDate" [(ngModel)]="task.DueDateDT" [disabledDays]="[0,6]" dateFormat="M dd, yy" appendTo="body" [monthNavigator]="true" [yearNavigator]="true"
+                                    yearRange="{{yearRangePastNext}}">
                                 </p-calendar>
                                 <input style="font-size: 14px; color: #333333; background: #ffffff;  padding: 0.429em;margin: 0px 8px 0px 10px; border: 1px solid #a6a6a6; border-radius: 4px;" aria-label="12hr format" [ngxTimepicker]="defaultEndTime" [(ngModel)]="task.DueTime" [format]="12"
                                     readonly>
@@ -217,14 +218,8 @@
                             <th>Milestone:</th>
                             <td>{{task.Milestone}}</td>
                             <th>Task / Scope / Allocated Time:</th>
-                            <td>{{task.Task}} / <span *ngIf="task.Comments">[{{task.Comments}}] /</span>
-                                {{task.ExpectedTime}} 
-                                <span class='overlayIcon'
-                                    appendTo="body"
-                                    (click)="this.showOverlayPanel($event, task, dailyAllocateOP)"
-                                    style="cursor: pointer;"
-                                    title="Click to see allocation split"
-                                    *ngIf="task.showAllocationSplit">
+                            <td>{{task.Task}} / <span *ngIf="task.Comments">[{{task.Comments}}] /</span> {{task.ExpectedTime}}
+                                <span class='overlayIcon' appendTo="body" (click)="this.showOverlayPanel($event, task, dailyAllocateOP)" style="cursor: pointer;" title="Click to see allocation split" *ngIf="task.showAllocationSplit">
                                     <i class="fa fa-info-circle" aria-hidden="true"></i>
                                 </span>
                             </td>
