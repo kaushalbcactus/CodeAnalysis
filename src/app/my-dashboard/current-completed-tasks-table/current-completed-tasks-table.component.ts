@@ -426,13 +426,13 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
 
     // if (stval === 'Completed' || stval === 'AllowCompletion' || stval === 'Auto Closed') {
     // if (allowedStatus.includes(stval) || stval === '') { 
+      this.commonService.confirmMessageDialog('Confirmation', 'Are you sure that you want to proceed?', null, ['Yes', 'No'], false).then(async Confirmation => {
+        if (Confirmation === 'Yes') {
       if (!task.FinalDocSubmit && (allowedStatus.includes(stval) || stval === '')) {
         this.commonService.showToastrMessage(this.constants.MessageType.error, 'No Final Document Found', false)
         return false;
       }
       if (task.TaskComments && (allowedStatus.includes(stval) || stval === '')) {
-        this.commonService.confirmMessageDialog('Confirmation', 'Are you sure that you want to proceed?', null, ['Yes', 'No'], false).then(async Confirmation => {
-          if (Confirmation === 'Yes') {
             task.parent = 'Dashboard';
             task.Status = 'Completed';
             const qmsTasks = await this.myDashboardConstantsService.callQMSPopup(task);
@@ -441,16 +441,14 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
               // this.feedbackPopupComponent.openPopup(qmsTasks, task);
             } else {
               this.saveTask(task);
-            }
           }
-        });
       } else if(allowedStatus.includes(stval) || stval === '') {
         this.getAddUpdateComment(task, true);
       } else {
         this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Previous task should be completed.', false);
       }
-    // } else {
-    // }
+      }
+    })
   }
 
   // ******************************************************************************************
