@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DatePipe } from '@angular/common';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { MatButtonModule } from '@angular/material/button';
 import { MatRippleModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -70,7 +69,6 @@ import { DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng';
     MatSortModule,
     MatTableModule,
     MatTabsModule,
-    NgbModule,
     PrimengModule
   ],
   entryComponents:[FeedbackPopupComponent],

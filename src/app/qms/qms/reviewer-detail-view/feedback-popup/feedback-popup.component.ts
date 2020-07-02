@@ -8,14 +8,12 @@ import { IScorecard, IScorecardTemplate } from '../../../interfaces/qms';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 import { MyDashboardConstantsService } from 'src/app/my-dashboard/services/my-dashboard-constants.service';
 import { DatePipe } from '@angular/common';
-import { isArray } from 'util';
 
 @Component({
   selector: 'app-feedback-popup',
   templateUrl: './feedback-popup.component.html',
   styleUrls: ['./feedback-popup.component.css']
 })
-
 
 export class FeedbackPopupComponent implements OnInit {
 

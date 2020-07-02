@@ -54,18 +54,32 @@
                                 {{ matrixObj.question }}
                             </td>
                             <td class="stars">
-                                <ngb-rating [(rate)]="matrixObj.rating" min="0" max="5" (rateChange)="updateRating(task)">
-                                    <ng-template let-fill="fill" let-index="index">
+                              <p-rating [(ngModel)]="matrixObj.rating" stars="5"  [cancel]="false" (onRate)="updateRating(task)"></p-rating>
+                                <!-- <ngb-rating [(rate)]="matrixObj.rating" min="0" max="5" (rateChange)="updateRating(task)"> -->
+                                  
+                                    <!-- <ng-template let-fill="fill" let-index="index">
                                         <span class="star" [class.filled]="fill === 100">&#9733;</span
                       >
                     </ng-template>
-                  </ngb-rating>
+                  </ngb-rating> -->
                 </td>
               </ng-container>
             </tr>
           </tbody>
         </table>
-        <mat-form-field class="example-full-width">
+        <textarea
+            #popupComments
+            maxlength="1000"
+            matInput
+            placeholder="Please share your feedback"
+            class="example-full-width"
+            [(ngModel)]="task.feedbackComment"
+          ></textarea>
+          <div style="font-size: 7px;">
+            <span style="float: right;">{{ task.feedbackComment.length }} / 1000</span>
+            <span style="clear: both;"></span>
+          </div>
+        <!-- <mat-form-field class="example-full-width">
           <textarea
             #popupComments
             maxlength="1000"
@@ -80,7 +94,7 @@
           <mat-hint align="end"
             >{{ task.feedbackComment.length }} / 1000</mat-hint
           >
-        </mat-form-field>
+        </mat-form-field> -->
       </div>
     </p-accordionTab>
   </p-accordion>

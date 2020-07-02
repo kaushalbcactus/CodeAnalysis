@@ -208,8 +208,8 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
     const arrFormattedData: any = [];
     arrResources.forEach(async element => {
       const obj = JSON.parse(JSON.stringify(this.resource));
-      obj.data.userName = element.UserName.Title;
-      obj.data.userId = element.UserName.ID;
+      obj.data.userName = element.UserNamePG.Title;
+      obj.data.userId = element.UserNamePG.ID;
       obj.data.feedbackForMe = element.feedbackForMe;
       obj.data.evaluatorSkill = element.EvaluatorSkill;
       // obj.data.averageRating = element.averageRating;
@@ -301,7 +301,7 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
     let arrResourceScoreCards = [];
     let batchURL = [];
     resources.forEach(element => {
-      batchURL = [...batchURL, ...this.getScorecard(element.UserName.ID, topCount, startDate, endDate)];
+      batchURL = [...batchURL, ...this.getScorecard(element.UserNamePG.ID, topCount, startDate, endDate)];
     });
     this.common.SetNewrelic('QMS', 'manager-view', 'getResourceRatingDetail');
     arrResourceScoreCards = await this.spService.executeBatch(batchURL);
