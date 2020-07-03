@@ -727,7 +727,6 @@ export class CommonService {
           prevstatus: returnedProject ? returnedProject.PrevStatus : '',
           projectFolder: returnedProject ? returnedProject.ProjectFolder : '',
           projectType: returnedProject ? returnedProject.ProjectType : '',
-          practiceArea: returnedProject ? returnedProject.BusinessVertical : ''
         };
         if (bFirstCall) {
           this.batchContents = new Array();
