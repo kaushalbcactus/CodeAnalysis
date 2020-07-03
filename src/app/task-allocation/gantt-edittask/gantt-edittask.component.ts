@@ -9,6 +9,7 @@ import { PreStackAllocationComponent } from 'src/app/shared/pre-stack-allocation
 import { TaskAllocationCommonService } from '../services/task-allocation-common.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
+import { PreStackcommonService } from 'src/app/shared/pre-stack-allocation/service/pre-stackcommon.service';
 
 @Component({
   selector: 'app-gantt-edittask',
@@ -61,7 +62,8 @@ export class GanttEdittaskComponent implements OnInit {
     private dailyAllocation: PreStackAllocationComponent,
     private taskAllocateCommonService: TaskAllocationCommonService,
     private commonService: CommonService,
-    private constants: ConstantsService) {
+    private constants: ConstantsService,
+    private prestackService: PreStackcommonService) {
 
     this.editTaskForm = this.fb.group({
       budgetHrs: ['', Validators.required],
@@ -192,7 +194,7 @@ export class GanttEdittaskComponent implements OnInit {
         const resources = this.globalService.oTaskAllocation.oResources.filter((objt) => {
           return this.task.AssignedTo.ID === objt.UserNamePG.ID;
         });
-        await this.dailyAllocation.calcPrestackAllocation(resources, this.task);
+        await this.prestackService.calcPrestackAllocation(resources, this.task);
         let task = await this.assignedToUserChanged();
         this.patchEditForm(task.pUserStart, task.pUserEnd);
         // let startDate = task.pUserStart;
@@ -214,7 +216,7 @@ export class GanttEdittaskComponent implements OnInit {
       this.task.budgetHours = budgetHrs;
       this.isViewAllocationBtn(task)
       if (budgetHrs > 0) {
-        await this.dailyAllocation.calcPrestackAllocation(resources, this.task);
+        await this.prestackService.calcPrestackAllocation(resources, this.task);
       }
     });
 
@@ -246,7 +248,7 @@ export class GanttEdittaskComponent implements OnInit {
         this.cascadingObject.type = 'start';
         await this.validateBudgetHours(this.task);
         this.isViewAllocationBtn(task);
-        await this.dailyAllocation.calcPrestackAllocation(resources, this.task);
+        await this.prestackService.calcPrestackAllocation(resources, this.task);
       }
     });
 
@@ -269,7 +271,7 @@ export class GanttEdittaskComponent implements OnInit {
         this.cascadingObject.type = 'end';
         await this.validateBudgetHours(this.task);
         this.isViewAllocationBtn(task);
-        await this.dailyAllocation.calcPrestackAllocation(resources, this.task);
+        await this.prestackService.calcPrestackAllocation(resources, this.task);
       }
     });
 
@@ -296,7 +298,7 @@ export class GanttEdittaskComponent implements OnInit {
       this.cascadingObject.node = this.task;
       this.cascadingObject.type = 'start';
       await this.validateBudgetHours(this.task);
-      await this.dailyAllocation.calcPrestackAllocation(resources, this.task);
+      await this.prestackService.calcPrestackAllocation(resources, this.task);
     });
 
     this.editTaskForm.get('endDateTimePart').valueChanges.subscribe(async endTime => {
@@ -314,7 +316,7 @@ export class GanttEdittaskComponent implements OnInit {
       this.cascadingObject.node = this.task;
       this.cascadingObject.type = 'end';
       await this.validateBudgetHours(this.task);
-      await this.dailyAllocation.calcPrestackAllocation(resources, this.task);
+      await this.prestackService.calcPrestackAllocation(resources, this.task);
     });
 
   }
@@ -445,7 +447,7 @@ export class GanttEdittaskComponent implements OnInit {
       closable: false
     });
     ref.onClose.subscribe((allocation: any) => {
-      this.dailyAllocation.setAllocationPerDay(allocation, milestoneTask);
+      this.prestackService.setAllocationPerDay(allocation, milestoneTask);
       if (allocation.allocationAlert) {
         this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Resource is over allocated.', false);
       }
@@ -454,55 +456,55 @@ export class GanttEdittaskComponent implements OnInit {
 
   async assignedToUserChanged() {
 
-    // await this.allocationCommon.assignedToUserChanged(this.task, this.milestoneData, this.allRestructureTasks, this.allTasks);
-    // return this.task;
-    let milestoneTask = this.task;
-    if (milestoneTask.AssignedTo) {
-      this.updateNextPreviousTasks(milestoneTask);
-      milestoneTask.assignedUserChanged = true;
-      if (milestoneTask.AssignedTo.hasOwnProperty('ID') && milestoneTask.AssignedTo.ID) {
-        milestoneTask.skillLevel = this.taskAllocateCommonService.getSkillName(milestoneTask.AssignedTo.SkillText);
-        const previousUserTimeZone = milestoneTask.assignedUserTimeZone;
-        const resource = this.globalService.oTaskAllocation.oResources.filter((objt) => {
-          return milestoneTask.AssignedTo.ID === objt.UserNamePG.ID;
-        });
-        await this.dailyAllocation.calcPrestackAllocation(resource, this.task);
-        milestoneTask.assignedUserTimeZone = resource && resource.length > 0
-          ? resource[0].TimeZone.Title ?
-            resource[0].TimeZone.Title : '+5.5' : '+5.5';
+    await this.taskAllocateCommonService.assignedToUserChanged(this.task, this.milestoneData, this.allRestructureTasks, this.allTasks);
+    return this.task;
+    // let milestoneTask = this.task;
+    // if (milestoneTask.AssignedTo) {
+    //   this.updateNextPreviousTasks(milestoneTask);
+    //   milestoneTask.assignedUserChanged = true;
+    //   if (milestoneTask.AssignedTo.hasOwnProperty('ID') && milestoneTask.AssignedTo.ID) {
+    //     milestoneTask.skillLevel = this.taskAllocateCommonService.getSkillName(milestoneTask.AssignedTo.SkillText);
+    //     const previousUserTimeZone = milestoneTask.assignedUserTimeZone;
+    //     const resource = this.globalService.oTaskAllocation.oResources.filter((objt) => {
+    //       return milestoneTask.AssignedTo.ID === objt.UserNamePG.ID;
+    //     });
+    //     await this.dailyAllocation.calcPrestackAllocation(resource, this.task);
+    //     milestoneTask.assignedUserTimeZone = resource && resource.length > 0
+    //       ? resource[0].TimeZone.Title ?
+    //         resource[0].TimeZone.Title : '+5.5' : '+5.5';
 
-        milestoneTask.start_date = this.commonService.calcTimeForDifferentTimeZone(milestoneTask.pUserStart,
-          previousUserTimeZone, milestoneTask.assignedUserTimeZone);
-        milestoneTask.end_date = this.commonService.calcTimeForDifferentTimeZone(milestoneTask.pUserEnd,
-          previousUserTimeZone, milestoneTask.assignedUserTimeZone);
-        milestoneTask.pUserStart = this.commonService.calcTimeForDifferentTimeZone(milestoneTask.pUserStart,
-          previousUserTimeZone, milestoneTask.assignedUserTimeZone);
-        milestoneTask.pUserEnd = this.commonService.calcTimeForDifferentTimeZone(milestoneTask.pUserEnd,
-          previousUserTimeZone, milestoneTask.assignedUserTimeZone);
+    //     milestoneTask.start_date = this.commonService.calcTimeForDifferentTimeZone(milestoneTask.pUserStart,
+    //       previousUserTimeZone, milestoneTask.assignedUserTimeZone);
+    //     milestoneTask.end_date = this.commonService.calcTimeForDifferentTimeZone(milestoneTask.pUserEnd,
+    //       previousUserTimeZone, milestoneTask.assignedUserTimeZone);
+    //     milestoneTask.pUserStart = this.commonService.calcTimeForDifferentTimeZone(milestoneTask.pUserStart,
+    //       previousUserTimeZone, milestoneTask.assignedUserTimeZone);
+    //     milestoneTask.pUserEnd = this.commonService.calcTimeForDifferentTimeZone(milestoneTask.pUserEnd,
+    //       previousUserTimeZone, milestoneTask.assignedUserTimeZone);
 
-        milestoneTask.pUserStartDatePart = this.taskAllocateCommonService.getDatePart(milestoneTask.pUserStart);
-        milestoneTask.pUserStartTimePart = this.taskAllocateCommonService.getTimePart(milestoneTask.pUserStart);
-        milestoneTask.pUserEndDatePart = this.taskAllocateCommonService.getDatePart(milestoneTask.pUserEnd);
-        milestoneTask.pUserEndTimePart = this.taskAllocateCommonService.getTimePart(milestoneTask.pUserEnd);
-        /// Change date as user changed in AssignedTo dropdown
-      } else {
-        const previousUserTimeZone = milestoneTask.assignedUserTimeZone;
-        milestoneTask.assignedUserTimeZone = '+5.5';
-        milestoneTask.pUserStart = this.commonService.calcTimeForDifferentTimeZone(milestoneTask.pUserStart,
-          previousUserTimeZone, milestoneTask.assignedUserTimeZone);
-        milestoneTask.pUserEnd = this.commonService.calcTimeForDifferentTimeZone(milestoneTask.pUserEnd,
-          previousUserTimeZone, milestoneTask.assignedUserTimeZone);
+    //     milestoneTask.pUserStartDatePart = this.taskAllocateCommonService.getDatePart(milestoneTask.pUserStart);
+    //     milestoneTask.pUserStartTimePart = this.taskAllocateCommonService.getTimePart(milestoneTask.pUserStart);
+    //     milestoneTask.pUserEndDatePart = this.taskAllocateCommonService.getDatePart(milestoneTask.pUserEnd);
+    //     milestoneTask.pUserEndTimePart = this.taskAllocateCommonService.getTimePart(milestoneTask.pUserEnd);
+    //     /// Change date as user changed in AssignedTo dropdown
+    //   } else {
+    //     const previousUserTimeZone = milestoneTask.assignedUserTimeZone;
+    //     milestoneTask.assignedUserTimeZone = '+5.5';
+    //     milestoneTask.pUserStart = this.commonService.calcTimeForDifferentTimeZone(milestoneTask.pUserStart,
+    //       previousUserTimeZone, milestoneTask.assignedUserTimeZone);
+    //     milestoneTask.pUserEnd = this.commonService.calcTimeForDifferentTimeZone(milestoneTask.pUserEnd,
+    //       previousUserTimeZone, milestoneTask.assignedUserTimeZone);
 
-        milestoneTask.pUserStartDatePart = this.taskAllocateCommonService.getDatePart(milestoneTask.pUserStart);
-        milestoneTask.pUserStartTimePart = this.taskAllocateCommonService.getTimePart(milestoneTask.pUserStart);
-        milestoneTask.pUserEndDatePart = this.taskAllocateCommonService.getDatePart(milestoneTask.pUserEnd);
-        milestoneTask.pUserEndTimePart = this.taskAllocateCommonService.getTimePart(milestoneTask.pUserEnd);
-        milestoneTask.skillLevel = milestoneTask.AssignedTo.SkillText;
-        milestoneTask.edited = true;
-        milestoneTask.user = milestoneTask.skillLevel;
-      }
-      return milestoneTask;
-    }
+    //     milestoneTask.pUserStartDatePart = this.taskAllocateCommonService.getDatePart(milestoneTask.pUserStart);
+    //     milestoneTask.pUserStartTimePart = this.taskAllocateCommonService.getTimePart(milestoneTask.pUserStart);
+    //     milestoneTask.pUserEndDatePart = this.taskAllocateCommonService.getDatePart(milestoneTask.pUserEnd);
+    //     milestoneTask.pUserEndTimePart = this.taskAllocateCommonService.getTimePart(milestoneTask.pUserEnd);
+    //     milestoneTask.skillLevel = milestoneTask.AssignedTo.SkillText;
+    //     milestoneTask.edited = true;
+    //     milestoneTask.user = milestoneTask.skillLevel;
+    //   }
+    //   return milestoneTask;
+    // }
   }
 
   async updateNextPreviousTasks(milestoneTask) {
