@@ -53,7 +53,7 @@ export class CommonService {
     //   Code : 'AM601-0109-0126'
     // }
     console.log(obj);
-    return this.http.post('https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF',
+    return this.http.post('https://cactusspofinance.cactusglobal.com/pdfservice3/PDFService.svc/GeneratePDF',
       JSON.stringify(obj), httpOptions);
     // return this.http.get('https://cactusspofinance.cactusglobal.com/PROD/Services/FinanceDashboard.svc/AddProforma/2157');
 
