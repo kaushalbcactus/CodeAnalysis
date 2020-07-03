@@ -683,13 +683,13 @@ export class MyTimelineComponent implements OnInit {
     const stval = await this.myDashboardConstantsService.getPrevTaskStatus(task);
     const allowedStatus = ["Completed", "Auto Closed"];
     if (allowedStatus.includes(stval) || stval === '') { 
-      this.updateCurrentTask(this.task);
+      this.updateCurrentTask(this.task,earlierStaus);
     } else { 
       this.CalendarLoader = false;
       this.commonService.confirmMessageDialog('Confirmation', 'Previous task is not completed, do you still want to continue?', null, ['Yes', 'No'], false).then(async Confirmation => {
         if (Confirmation === 'Yes') {
           this.CalendarLoader = true;
-         this.updateCurrentTask(this.task);
+         this.updateCurrentTask(this.task,earlierStaus);
         } else {
           task.Status = earlierStaus;
           this.CalendarLoader = false;
@@ -698,15 +698,17 @@ export class MyTimelineComponent implements OnInit {
     }
   }
 
-  async updateCurrentTask(task) {
+  async updateCurrentTask(task,earlierStaus) {
     if (task.Status === 'Completed' && !task.FinalDocSubmit) {
       this.commonService.showToastrMessage(this.constants.MessageType.error, 'No Final Document Found', false);
-      // task.Status = earlierStaus;
+      task.Status = earlierStaus;
       this.CalendarLoader = false;
       return false;
     } else {
       if (task.Status === "Completed") {
         this.CalendarLoader = false;
+        this.commonService.confirmMessageDialog('Confirmation', 'Are you sure that you want to proceed?', null, ['Yes', 'No'], false).then(async Confirmation => {
+          if (Confirmation === 'Yes') {
             task.parent = 'Dashboard';
             const qmsTasks = await this.myDashboardConstantsService.callQMSPopup(task);
             if (qmsTasks.length) {
@@ -728,7 +730,10 @@ export class MyTimelineComponent implements OnInit {
             } else {
               this.saveTask(task);
             }
-          
+          } else {
+            task.Status = earlierStaus;
+          }
+        });          
       } else if (task.Status === "In Progress") {
       const batchURL = [];
       if (this.task.StartTime) {
