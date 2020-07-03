@@ -2695,6 +2695,15 @@ export class TimelineComponent
         );
         this.milestoneData = [...notCancelled, ...dbmilestones];
       }
+    } else if(type == "cancelAll") {
+      const milestoneData = this.cancelAll();
+      this.milestoneData = [...milestoneData];
+      this.GanttchartData = this.getGanttTasksFromMilestones(
+        this.milestoneData,
+        true
+      );
+      this.createGanttDataAndLinks(true);
+      this.loaderenable = false;
     } else {
       this.tempmilestoneData.forEach(element => {
         const getAllTasks = this.taskAllocateCommonService.getTasksFromMilestones(
@@ -2726,10 +2735,11 @@ export class TimelineComponent
             ].children.findIndex(c => c.data.id === milestone.id);
 
             // replace all milestone from edited milestone
-            const currentMilestone = this.milestoneData.splice(
+            let currentMilestone: any = this.milestoneData.splice(
               0,
               milestoneIndex + 1
             );
+            // this.checkForEditedMilestone(currentMilestone);
             const dbmilestones = this.tempmilestoneData.slice(
               milestoneIndex + 1,
               this.tempmilestoneData.length
@@ -2737,9 +2747,10 @@ export class TimelineComponent
             this.milestoneData = [...currentMilestone, ...dbmilestones];
 
             // replace all submilestone from edited submilestone
-            const submilestones = this.milestoneData[
+            let submilestones: any = this.milestoneData[
               milestoneIndex
             ].children.splice(0, submilestoneIndex + 1);
+            // this.checkForEditedMilestone(submilestones);
             const dbsubmilestones = this.tempmilestoneData[
               milestoneIndex
             ].children.slice(
@@ -2781,10 +2792,11 @@ export class TimelineComponent
           ].children.findIndex(c => c.data.id === milestone.id);
           if (submilestoneIndex > -1) {
             // replace all milestone from edited milestone
-            const tillCurrent = this.milestoneData.splice(
+            let tillCurrent: any = this.milestoneData.splice(
               0,
               milestoneIndex + 1
             );
+            // this.checkForEditedMilestone(tillCurrent);
             const dbmilestones = this.tempmilestoneData.slice(
               milestoneIndex + 1,
               this.tempmilestoneData.length
@@ -2792,9 +2804,10 @@ export class TimelineComponent
             this.milestoneData = [...tillCurrent, ...dbmilestones];
 
             // replace all submilestone from edited submilestone
-            const submilestones = this.milestoneData[
+            let submilestones: any = this.milestoneData[
               milestoneIndex
             ].children.splice(0, submilestoneIndex);
+            // this.checkForEditedMilestone(submilestones);
             const dbsubmilestones = this.tempmilestoneData[
               milestoneIndex
             ].children.slice(
@@ -2847,6 +2860,34 @@ export class TimelineComponent
   }
   // tslint:enable
 
+  cancelAll() {
+    const milestoneData = this.milestoneData;
+    this.milestoneData.forEach((mil, index) => { 
+      if(mil.data) {
+        mil.data.edited = false;
+        mil.data.editMode = false;
+      } else if(mil.children && mil.children.length) {
+        mil.children.forEach((task)=>{
+          if(task.data.type =='task') {
+            task.data.edited = false;
+            task.data.editMode = false;
+          } else if(task.data.type == 'submilestone') {
+            if(task.data) {
+              task.data.edited = false;
+              task.data.editMode = false;
+            } else {
+            task.children.forEach((sub)=>{ 
+              sub.data.edited = false;
+              sub.data.editMode = false;
+            })
+            }
+          }
+        })
+      }
+    })
+    return milestoneData;
+  }
+
   // **************************************************************************************************************************************
   //  Convert string date to date format after cancel the changes
   // **************************************************************************************************************************************
@@ -2879,27 +2920,57 @@ export class TimelineComponent
   //  Edit Task
   // **************************************************************************************************
 
-  async editTask(task, rowNode) {
-    task.assignedUsers.forEach(element => {
-      if (element.items.find(c => c.value.ID === task.AssignedTo.ID)) {
-        task.AssignedTo = element.items.find(
-          c => c.value.ID === task.AssignedTo.ID
+  async editTask(task, rowNode, type?) {
+    if(type == "Edit All") {
+      this.milestoneData.forEach(async (mil, index) => { 
+        if(mil.children && mil.children.length) {
+          mil.children.forEach(async task =>{
+            task.data.type == 'task' ? await this.editModeForTasks(task, rowNode) :
+            task.children.forEach(async sub =>{
+              await this.editModeForTasks(sub,rowNode);
+            })
+          })
+        }
+        if(mil.data.itemType == 'Client Review') {
+          await this.editModeForTasks(mil,rowNode);
+        }
+      })
+    } else {
+      task.assignedUsers.forEach(element => {
+        if (element.items.find(c => c.value.ID === task.AssignedTo.ID)) {
+          task.AssignedTo = element.items.find(
+            c => c.value.ID === task.AssignedTo.ID
+          ).value;
+        }
+      });
+      if (rowNode.parent !== null) {
+        if (rowNode.parent.parent === null) {
+          rowNode.parent.data.editMode = true;
+          rowNode.parent.data.edited = true;
+        } else {
+          rowNode.parent.parent.data.editMode = true;
+          rowNode.parent.parent.data.edited = true;
+          rowNode.parent.data.editMode = true;
+          rowNode.parent.data.edited = true;
+        }
+      }
+      task.editMode = true;
+      task.edited = true;
+    }
+  }
+
+  editModeForTasks(task,rowNode) {
+    task.data.assignedUsers.forEach(element => {
+      if (element.items.find(c => c.value.ID === task.data.AssignedTo.ID)) {
+        task.data.AssignedTo = element.items.find(
+          c => c.value.ID === task.data.AssignedTo.ID
         ).value;
       }
     });
-    if (rowNode.parent !== null) {
-      if (rowNode.parent.parent === null) {
-        rowNode.parent.data.editMode = true;
-        rowNode.parent.data.edited = true;
-      } else {
-        rowNode.parent.parent.data.editMode = true;
-        rowNode.parent.parent.data.edited = true;
-        rowNode.parent.data.editMode = true;
-        rowNode.parent.data.edited = true;
-      }
-    }
-    task.editMode = true;
-    task.edited = true;
+    task.data.edited = true;
+    task.data.editMode = true;
+    rowNode.node.data.edited = true;
+    rowNode.node.data.editMode = true;
   }
 
   // *************************************************************************************************
@@ -2942,12 +3013,38 @@ export class TimelineComponent
 
   openPopup(data, rowNode) {
     this.taskMenu = [];
+    if(data.type == 'milestone' &&
+    data.status !== "Completed" &&
+      data.status !== "Abandon" &&
+      data.status !== "Auto Closed") {
+        this.taskMenu = [
+          {
+            label: "Edit All",
+            icon: "pi pi-pencil",
+            command: event => this.editTask(data, rowNode, 'Edit All')
+          }
+        ];
+
+        if (this.milestoneData.filter(e=> e.data.edited).length) { //rowNode.node.children.filter(r=> r.data.editMode).length
+          this.taskMenu.splice(
+            this.taskMenu.findIndex(t => t.label === "Edit All"),
+            1
+          );
+          this.taskMenu.push({
+            label: "Cancel All",
+            icon: "pi pi-times-circle",
+            command: event => this.CancelChanges(data, 'cancelAll')
+          });
+        }
+    }
+
+
     if (
       data.type === "task" &&
       data.milestoneStatus !== "Completed" &&
       data.status !== "Completed" &&
-      data.status !== "Abandon" &&
-      data.status !== "Auto Closed"
+        data.status !== "Abandon" &&
+        data.status !== "Auto Closed"
     ) {
       this.taskMenu = [
         {
