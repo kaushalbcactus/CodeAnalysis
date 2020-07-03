@@ -124,7 +124,7 @@
                 <div class="p-col-4"><span class="compulsory">*</span>POC Name</div>
                 <div class="p-col-8">
 
-                    <p-dropdown class="cls_addTSPOCName" [options]="listOfPOCs" formControlName="POCName" placeholder="Select POC Name" optionLabel="FullName" filter="true" resetFilterOnHide="true" (onChange)="pocChange($event)" [style]="{'width':'100%'}"> </p-dropdown>
+                    <p-dropdown class="cls_addTSPOCName" [options]="listOfPOCs" formControlName="POCName" placeholder="Select POC Name" optionLabel="FullNameCC" filter="true" resetFilterOnHide="true" (onChange)="pocChange($event)" [style]="{'width':'100%'}"> </p-dropdown>
                     <div class="error" *ngIf="isScheduleInvoiceFormSubmit && ScheduleInvoiceForm.controls.POCName.errors">
                         <div *ngIf="ScheduleInvoiceForm.controls.POCName.errors.required">
                             Please provide POC Name.</div>

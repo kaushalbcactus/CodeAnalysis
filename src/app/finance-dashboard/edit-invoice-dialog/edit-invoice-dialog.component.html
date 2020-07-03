@@ -42,7 +42,7 @@
                 <div class="p-col-6 p-md-4 p-lg-4 editInvoiceitem">POC Name</div>
                 <div class="p-col-6 p-md-8 p-lg-8 editInvoiceitem" *ngIf="InvoiceType !== 'hourly'">
 
-                    <p-dropdown [readonly]="InvoiceType === 'hourly' ? true : false" resetFilterOnHide="true" [options]="listOfPOCNames" formControlName="POCName" placeholder="Select POC Name" [filter]="true" optionLabel="FullName" [style]="{'width':'100%'}" appendTo="body">
+                    <p-dropdown [readonly]="InvoiceType === 'hourly' ? true : false" resetFilterOnHide="true" [options]="listOfPOCNames" formControlName="POCName" placeholder="Select POC Name" [filter]="true" optionLabel="FullNameCC" [style]="{'width':'100%'}" appendTo="body">
                         <ng-template let-item pTemplate="item">
                             <div class="ui-helper-clearfix" style="position: relative;height: 25px;">
                                 <div style="font-size:14px;float:left;margin-top:4px">{{item.label }}</div>
