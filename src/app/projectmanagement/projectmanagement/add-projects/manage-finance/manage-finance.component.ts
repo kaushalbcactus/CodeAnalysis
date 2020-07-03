@@ -718,6 +718,7 @@ export class ManageFinanceComponent implements OnInit {
         } else {
           this.poData.push(tempObj);
         }
+        this.poData = [...this.poData];
         const poIndex = this.poData.findIndex(item => item.poInfo[0].poId === this.selectedPo);
         const retPOInfo = this.poData[poIndex].poInfo[0];
         if (this.budgetData && this.budgetData.length && this.unassignedBudget && this.unassignedBudget.length

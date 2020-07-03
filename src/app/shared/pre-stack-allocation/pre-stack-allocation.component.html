@@ -1,84 +1,70 @@
 <div id="dailyAllocation" [hidden]="hideLoader">
-  <div id="dailyAllocationLoader"></div>
-  <div id="dailyAllocationLoaderText">Loading...</div>
+    <div id="dailyAllocationLoader"></div>
+    <div id="dailyAllocationLoaderText">Loading...</div>
 </div>
-<p-toast position="bottom-center" key="prestack"></p-toast>
+
 <div id="mainContent" [hidden]="hideTable">
-  <div class='footer' fxLayout="row" fxLayoutAlign="end center">
-    <button type="button" pButton icon="pi pi-save" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }"
-      (click)="saveAllocation()" label="Save" class="saveTaskButton"></button>
-    <button type="button" pButton icon="pi pi-times" (click)="cancel();" label="Cancel" class="ui-button-secondary"
-      style="background-color:ghostwhite;"></button>
+    <div class='footer' fxLayout="row" fxLayoutAlign="end center">
+        <button type="button" pButton icon="pi pi-save" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="saveAllocation()" label="Save" class="saveTaskButton"></button>
+        <button type="button" pButton icon="pi pi-times" (click)="cancel();" label="Cancel" class="ui-button-secondary" style="background-color:ghostwhite;"></button>
 
-  </div>
-  <div class="table">
-    <p-table [value]="allocationSplit">
-      <ng-template pTemplate="header" let-columns>
-        <tr>
-          <th class="dateCol">
-            Date
-          </th>
-          <th class="hrsCol">
-            Hours
-          </th>
-          <th class="minsCol">
-            Mins
-          </th>
-          <th class="valueCol">
-            Budget Hrs
-          </th>
-          <th class="valueCol">
-            Time Spent
-          </th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-rowData let-columns="columns">
-        <tr>
-          <td (click)="showTasks(rowData)" class="allocationDate">
-            {{ rowData.Date | date: " d MMM, y" }}
-          </td>
-          <td>
-            <app-allocation-slider (changedValue)="checkAllocation($event, rowData)" type="hrs"
-              [value]="rowData.Allocation.valueHrs" [range]="rowData.Allocation.maxHrs"></app-allocation-slider>
-          </td>
-          <td>
-            <app-allocation-slider (changedValue)="checkAllocation($event, rowData)" type="mins"
-              [value]="rowData.Allocation.valueMins" [range]="rowData.Allocation.maxMins"></app-allocation-slider>
-          </td>
-          <td>
-            <div>
-              {{
-                rowData.Allocation.valueHrs + '.' + common.getMinsValue(rowData.Allocation.valueMins)
-              }}
-            </div>
-            <div class="timepicker" *ngIf="rowData.Allocation.maxHrs">
-              <ngx-material-timepicker-toggle [for]="picker"></ngx-material-timepicker-toggle>
-              <ngx-material-timepicker
-                [preventOverlayClick]="true"
-                #picker
-                (closed)="checkAllocation(picker, rowData)"
-                [defaultTime]="rowData.Allocation.valueHrs + ':' + rowData.Allocation.valueMins"
-                [ngxMaterialTimepickerTheme]="darkTheme"
-                [minutesGap]="15"
-                [format]="24"
-              >
-              </ngx-material-timepicker>
-            </div>
-          </td>
-          <td>
-            <div>
-              {{ rowData.timeSpent}}
-            </div>
-          </td>
-        </tr>
-        <tr [hidden]="rowData.hideTasksTable">
-          <td [attr.colspan]="5">
-            <app-capacity-tasks (collapse)="showTasks(rowData)" [componentName]="'prestack'" [disableCamera]="false" [tasks]="rowData.tasks"></app-capacity-tasks>
-          <!-- <app-date-user-capacity (collapse)="showTasks(rowData)" [tasks]="rowData.tasks"></app-date-user-capacity> -->
-        </td>
-        </tr>
-      </ng-template>
-    </p-table>
+    </div>
+    <div class="table">
+        <p-table [value]="allocationSplit">
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th class="dateCol">
+                        Date
+                    </th>
+                    <th class="hrsCol">
+                        Hours
+                    </th>
+                    <th class="minsCol">
+                        Mins
+                    </th>
+                    <th class="valueCol">
+                        Budget Hrs
+                    </th>
+                    <th class="valueCol">
+                        Time Spent
+                    </th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-rowData let-columns="columns">
+                <tr>
+                    <td (click)="showTasks(rowData)" class="allocationDate">
+                        {{ rowData.Date | date: " d MMM, y" }}
+                    </td>
+                    <td>
+                        <app-allocation-slider (changedValue)="checkAllocation($event, rowData)" type="hrs" [value]="rowData.Allocation.valueHrs" [range]="rowData.Allocation.maxHrs"></app-allocation-slider>
+                    </td>
+                    <td>
+                        <app-allocation-slider (changedValue)="checkAllocation($event, rowData)" type="mins" [value]="rowData.Allocation.valueMins" [range]="rowData.Allocation.maxMins"></app-allocation-slider>
+                    </td>
+                    <td>
+                        <div>
+                            {{ rowData.Allocation.valueHrs + '.' + common.getMinsValue(rowData.Allocation.valueMins) }}
+                        </div>
+                        <div class="timepicker" *ngIf="rowData.Allocation.maxHrs">
+                            <ngx-material-timepicker-toggle [for]="picker"></ngx-material-timepicker-toggle>
+                            <ngx-material-timepicker [preventOverlayClick]="true" #picker (closed)="checkAllocation(picker, rowData)" [defaultTime]="rowData.Allocation.valueHrs + ':' + rowData.Allocation.valueMins" [ngxMaterialTimepickerTheme]="darkTheme" [minutesGap]="15" [format]="24">
+                            </ngx-material-timepicker>
+                        </div>
+                    </td>
+                    <td>
+                        <div>
+                            {{ rowData.timeSpent}}
+                        </div>
+                    </td>
+                </tr>
+                <tr [hidden]="rowData.hideTasksTable">
+                    <td [attr.colspan]="4">
+                        <app-capacity-tasks (collapse)="showTasks(rowData)" [componentName]="'prestack'" [disableCamera]="false" [tasks]="rowData.tasks"></app-capacity-tasks>
+                        <!-- <app-date-user-capacity (collapse)="showTasks(rowData)" [tasks]="rowData.tasks"></app-date-user-capacity> -->
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
 
-  </div>
+    </div>
 </div>

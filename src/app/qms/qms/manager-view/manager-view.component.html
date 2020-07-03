@@ -1,152 +1,245 @@
 <div id="managerContent">
-    <app-filters (callApplyFilter)="reloadPage($event)"></app-filters>
-    <div class="downloadbutton download-worksheet">
-        <a class="refreshButton hoverClick " (click)="initialiseManagerView()"> <i class="fa fa-refresh" aria-hidden="true"></i> </a>
-        <a class="hoverClick" (click)="downloadExcel()"> <i class="fa fa-download" aria-hidden="true"></i> </a>
-    </div>
+  <app-filters (callApplyFilter)="reloadPage($event)"></app-filters>
+  <div class="downloadbutton download-worksheet">
+    <a class="refreshButton hoverClick" (click)="initialiseManagerView()">
+      <i class="fa fa-refresh" aria-hidden="true"></i>
+    </a>
+    <a class="hoverClick" (click)="downloadExcel()">
+      <i class="fa fa-download" aria-hidden="true"></i>
+    </a>
+  </div>
 
-    <div class="clear"></div>
+  <div class="clear"></div>
 
-    <p-treeTable [value]="feedbacksRows" [columns]="feedbacksColumns" [hidden]="hideTable">
-        <ng-template pTemplate="header" let-columns let-rowNode>
-            <tr [ttRow]="rowNode">
-                <th *ngFor="let col of columns" [hidden]="!col.visibility" style="width:20%">
-                    {{col.header}}
-                </th>
-                <th style="width:55%">Average Rating</th>
-                <th style="width:25%"></th>
-            </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
-            <tr>
-                <td *ngFor="let col of columns; let i = index" class="hoverClick" [hidden]="!col.visibility" (click)="getResourceDetail(rowData, rowNode)">
-                    <p-treeTableToggler [id]="rowNode.node.data.userId" [rowNode]="rowNode" *ngIf="i == 0"></p-treeTableToggler>
-                    {{rowData[col.field]}}
-                </td>
-                <td>
-                    <!-- <div class="cd-rating">
+  <p-treeTable
+    [value]="feedbacksRows"
+    [columns]="feedbacksColumns"
+    [hidden]="hideTable"
+  >
+    <ng-template pTemplate="header" let-columns let-rowNode>
+      <tr [ttRow]="rowNode">
+        <th
+          *ngFor="let col of columns"
+          [hidden]="!col.visibility"
+          style="width: 20%;"
+        >
+          {{ col.header }}
+        </th>
+        <th style="width: 55%;">Average Rating</th>
+        <th style="width: 25%;"></th>
+      </tr>
+    </ng-template>
+    <ng-template
+      pTemplate="body"
+      let-rowNode
+      let-rowData="rowData"
+      let-columns="columns"
+    >
+      <tr>
+        <td
+          *ngFor="let col of columns; let i = index"
+          class="hoverClick"
+          [hidden]="!col.visibility"
+          (click)="getResourceDetail(rowData, rowNode)"
+        >
+          <p-treeTableToggler
+            [id]="rowNode.node.data.userId"
+            [rowNode]="rowNode"
+            *ngIf="i == 0"
+          ></p-treeTableToggler>
+          {{ rowData[col.field] }}
+        </td>
+        <td>
+          <!-- <div class="cd-rating">
             <span id="ratenow1">{{rowData['averageRating']}}</span>
             <div class="star-white fa-star fa"></div>
           </div>
           <small>based on {{rowData['ratingCount']}} ratings</small> -->
-                    <div>
-                        <app-average-rating [tasks]="rowData.feedbackForMe" [headerLength]="ratingHeaderLength" (filter)="getResourceScorecard($event,userFeedbackRef, rowData)"></app-average-rating>
-                    </div>
-                </td>
-                <td class="commentsTextArea">
-                    <a class="download-worksheet td-none button" [hidden]="!rowData['hideFeedbackForm'] && rowData['hideFeedBackSubmitted'] ? true: false" (click)="rowData['hideFeedbackForm'] = !rowData['hideFeedbackForm']"><i class="fa fa-edit"
-              aria-hidden="true"></i> Provide feedback</a>
-                    <div class="content" [ngbCollapse]="rowData['hideFeedbackForm']">
-                        <span class="ui-float-label example-full-width">
-              <textarea style="width:100%" id="float-input" class="commentsText" #comments maxlength="1000" cols="90" rows="5" pInputTextarea color="#B13E3E"
-                [(ngModel)]="rowData['comments']"></textarea>
+          <div>
+            <app-average-rating
+              [tasks]="rowData.feedbackForMe"
+              [headerLength]="ratingHeaderLength"
+              (filter)="getResourceScorecard($event, userFeedbackRef, rowData)"
+            ></app-average-rating>
+          </div>
+        </td>
+        <td class="commentsTextArea">
+          <a
+            class="download-worksheet td-none button"
+            [hidden]="
+              !rowData['hideFeedbackForm'] && rowData['hideFeedBackSubmitted']
+                ? true
+                : false
+            "
+            (click)="rowData['hideFeedbackForm'] = !rowData['hideFeedbackForm']"
+            ><i class="fa fa-edit" aria-hidden="true"></i> Provide feedback</a
+          >
+          <div class="content" [hidden]="rowData['hideFeedbackForm']">
+            <span class="ui-float-label example-full-width">
+              <textarea
+                style="width: 100%;"
+                id="float-input"
+                class="commentsText"
+                #comments
+                maxlength="1000"
+                cols="90"
+                rows="5"
+                pInputTextarea
+                color="#B13E3E"
+                [(ngModel)]="rowData['comments']"
+              ></textarea>
               <label for="float-input">Comments</label>
             </span>
-                        <div class="clear"></div>
-                        <div class="floatRight">
-                            <button class="button default-txt" type="button" p-button value="Cancel" (click)="rowData['hideFeedbackForm']=true">Cancel</button>
-                            <button class="button save-feedback" type="button" p-button value="Save" (click)="saveFeedback(rowData)">Save</button>
-                        </div>
-                    </div>
-                    <div class="feedbackSubmitted" [hidden]="rowData['hideFeedBackSubmitted']"><i class="fas fa-check"></i> Feedback submitted.</div>
-                </td>
-            </tr>
-            <tr [hidden]="rowData['hideInnerTable']">
-                <td colspan=3>
-                    <div id="feedbackTable">
-                        <app-user-feedback #userFeedbackRef (feedbackData)="getFeedbackData($event,rowData)"></app-user-feedback>
-                    </div>
-                </td>
-            </tr>
-        </ng-template>
-        <ng-template pTemplate="emptymessage" let-columns="columns">
-            <tr>
-                <td [attr.colspan]="3">
-                    No Data found
-                </td>
-            </tr>
-        </ng-template>
-    </p-treeTable>
-    <div [hidden]="true">
-        <p-table #mt id="managerTable" [columns]="feedbacksTableColumns" [value]="feedbackTable" exportFilename="Feedback">
-            <ng-template pTemplate="header" let-columns>
-                <tr>
-                    <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
-                        {{col.header}}
-                    </th>
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-rowData let-columns="columns">
-                <tr>
-                    <td *ngFor="let col of columns let i = index;" [hidden]="!col.visibility">
-                        <ng-container *ngIf="col.field != '' && col.field == 'userName'">
-                            {{rowData[col.field]}}
-                        </ng-container>
-                        <!-- <ng-container *ngIf="col.field == 'averageRating'">
+            <div class="clear"></div>
+            <div class="floatRight">
+              <button
+                class="button default-txt"
+                type="button"
+                p-button
+                value="Cancel"
+                (click)="rowData['hideFeedbackForm'] = true"
+              >
+                Cancel
+              </button>
+              <button
+                class="button save-feedback"
+                type="button"
+                p-button
+                value="Save"
+                (click)="saveFeedback(rowData)"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+          <div
+            class="feedbackSubmitted"
+            [hidden]="rowData['hideFeedBackSubmitted']"
+          >
+            <i class="fas fa-check"></i> Feedback submitted.
+          </div>
+        </td>
+      </tr>
+      <tr [hidden]="rowData['hideInnerTable']">
+        <td colspan="3">
+          <div id="feedbackTable">
+            <app-user-feedback
+              #userFeedbackRef
+              (feedbackData)="getFeedbackData($event, rowData)"
+            ></app-user-feedback>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage" let-columns="columns">
+      <tr>
+        <td [attr.colspan]="3">
+          No Data found
+        </td>
+      </tr>
+    </ng-template>
+  </p-treeTable>
+  <div [hidden]="true">
+    <p-table
+      #mt
+      id="managerTable"
+      [columns]="feedbacksTableColumns"
+      [value]="feedbackTable"
+      exportFilename="Feedback"
+    >
+      <ng-template pTemplate="header" let-columns>
+        <tr>
+          <th
+            *ngFor="let col of columns"
+            [pSortableColumn]="col.field"
+            [hidden]="!col.visibility"
+          >
+            {{ col.header }}
+          </th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowData let-columns="columns">
+        <tr>
+          <td
+            *ngFor="let col of columns; let i = index"
+            [hidden]="!col.visibility"
+          >
+            <ng-container *ngIf="col.field != '' && col.field == 'userName'">
+              {{ rowData[col.field] }}
+            </ng-container>
+            <!-- <ng-container *ngIf="col.field == 'averageRating'">
               <span id="ratenow1">{{rowData[col.field]}}</span>
               <small> based on {{rowData['ratingCount']}} ratings</small>
             </ng-container> -->
-                        <!-- <ng-container *ngIf="col.field == 'averageRating'">
+            <!-- <ng-container *ngIf="col.field == 'averageRating'">
               <app-average-rating [tasks]="rowData.feedbackForMe" [headerLength]="ratingHeaderLength" (filter)="getResourceScorecard($event,userFeedbackRef, rowData)"></app-average-rating>
             </ng-container> -->
-                    </td>
-                    <td *ngIf="rowData['userFeedback'].length > 0">
-                        <p-table [columns]="innerTable" [value]="rowData['userFeedback']">
-                            <ng-template pTemplate="header" let-columns1>
-                                <tr>
-                                    <th *ngFor="let col of columns1" [pSortableColumn]="col.field">
-                                        {{col.header}}
-                                    </th>
-                                </tr>
-                            </ng-template>
-                            <ng-template pTemplate="body" let-rowData1 let-columns="columns1" let-ri="rowIndex">
-                                <ng-container>
-                                    <tr>
-                                        <td>
-                                            {{ rowData1.Date }}
-                                        </td>
-                                        <td>
-                                            {{ rowData1.Task }}
-                                        </td>
-                                        <td>
-                                            {{ rowData1.Type }}
-                                        </td>
-                                        <td>
-                                            {{ rowData1.Feedbackby }}
-                                        </td>
-                                        <td>
-                                            {{ rowData1.EvaluatorSkill }}
-                                        </td>
-                                        <td>
-                                            {{ rowData1.Rating }}
-                                        </td>
-                                        <td>
-                                            {{ rowData1.Comments }}
-                                        </td>
-                                        <td>
-                                            <div [innerHTML]="rowData1.Parameters"></div>
-                                        </td>
-                                        <td>
-                                            <div [innerHTML]="rowData1.Score"></div>
-                                        </td>
-                                    </tr>
-                                </ng-container>
-                            </ng-template>
-                        </p-table>
-                    </td>
+          </td>
+          <td *ngIf="rowData['userFeedback'].length > 0">
+            <p-table [columns]="innerTable" [value]="rowData['userFeedback']">
+              <ng-template pTemplate="header" let-columns1>
+                <tr>
+                  <th
+                    *ngFor="let col of columns1"
+                    [pSortableColumn]="col.field"
+                  >
+                    {{ col.header }}
+                  </th>
                 </tr>
-            </ng-template>
-        </p-table>
-    </div>
+              </ng-template>
+              <ng-template
+                pTemplate="body"
+                let-rowData1
+                let-columns="columns1"
+                let-ri="rowIndex"
+              >
+                <ng-container>
+                  <tr>
+                    <td>
+                      {{ rowData1.Date }}
+                    </td>
+                    <td>
+                      {{ rowData1.Task }}
+                    </td>
+                    <td>
+                      {{ rowData1.Type }}
+                    </td>
+                    <td>
+                      {{ rowData1.Feedbackby }}
+                    </td>
+                    <td>
+                      {{ rowData1.EvaluatorSkill }}
+                    </td>
+                    <td>
+                      {{ rowData1.Rating }}
+                    </td>
+                    <td>
+                      {{ rowData1.Comments }}
+                    </td>
+                    <td>
+                      <div [innerHTML]="rowData1.Parameters"></div>
+                    </td>
+                    <td>
+                      <div [innerHTML]="rowData1.Score"></div>
+                    </td>
+                  </tr>
+                </ng-container>
+              </ng-template>
+            </p-table>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
 </div>
 
 <ng-template #popupContent let-modal>
-    <div class="modal-body">
-        <div id="mainLoader"></div>
-        <div id="mainLoaderText">Loading...</div>
-    </div>
-</ng-template>
-<div class="tableLoader" [hidden]='hideLoader'>
+  <div class="modal-body">
     <div id="mainLoader"></div>
     <div id="mainLoaderText">Loading...</div>
+  </div>
+</ng-template>
+<div class="tableLoader" [hidden]="hideLoader">
+  <div id="mainLoader"></div>
+  <div id="mainLoaderText">Loading...</div>
 </div>

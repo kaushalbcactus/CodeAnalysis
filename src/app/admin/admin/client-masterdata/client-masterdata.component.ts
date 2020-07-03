@@ -376,6 +376,7 @@ export class ClientMasterdataComponent implements OnInit {
       } else {
         this.clientMasterDataRows.unshift(obj);
       }
+      this.clientMasterDataRows =[...this.clientMasterDataRows];
       this.colFilters(this.clientMasterDataRows);
     }
   }
@@ -964,12 +965,14 @@ export class ClientMasterdataComponent implements OnInit {
       switch (action) {
         case this.adminConstants.ACTION.ADD:
           this.PORows.unshift(obj);
+          this.PORows= [...this.PORows];
           this.POFilters(this.PORows);
           break;
         case this.adminConstants.ACTION.EDIT:
           const index = this.PORows.findIndex(x => x.ID === obj.ID);
           this.PORows.splice(index, 1);
           this.PORows.unshift(obj);
+          this.PORows= [...this.PORows];
           this.POFilters(this.PORows);
           break;
         case this.adminConstants.ACTION.GET:
@@ -1339,6 +1342,9 @@ export class ClientMasterdataComponent implements OnInit {
       } else {
         this.subDivisionDetailsRows.unshift(obj);
       }
+
+      this.subDivisionDetailsRows= [...this.subDivisionDetailsRows];
+
       this.subDivisionFilters(this.subDivisionDetailsRows);
     }
   }
@@ -1462,6 +1468,7 @@ export class ClientMasterdataComponent implements OnInit {
       } else {
         this.POCRows.unshift(obj);
       }
+      this.POCRows =[...this.POCRows];
       this.POCFilters(this.POCRows);
     }
   }

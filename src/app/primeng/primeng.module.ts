@@ -36,6 +36,8 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
 import { TooltipModule } from 'primeng/tooltip';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import {SliderModule} from 'primeng/slider';
+import {RatingModule} from 'primeng/rating';
+
 @NgModule({
   declarations: [],
   imports: [
@@ -83,7 +85,8 @@ import {SliderModule} from 'primeng/slider';
     TooltipModule,
     TieredMenuModule,
     InputSwitchModule, DragDropModule,
-    SelectButtonModule
+    SelectButtonModule,
+    RatingModule
   ],
   providers: [ DialogService]
 })

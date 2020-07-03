@@ -6,9 +6,9 @@
                     <div class="floatLeft catHeader"><span class="compulsory">*</span>Service</div>
                 </div>
                 <div class="col-md-2 col-xs-2 col-lg-2">
-                  <!-- [(ngModel)]="ngModelSelectService" -->
-                    <p-dropdown *ngIf="!pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked"  #selectServiceDD [options]="standardServices"  [filter]="true" placeholder="Select Service" [disabled]="isServiceDisabled" [showClear]="true"
-                        (onChange)="onServiceChange($event,selectServiceDD)" resetFilterOnHide="true">
+                    <!-- [(ngModel)]="ngModelSelectService" -->
+                    <p-dropdown *ngIf="!pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked"  #selectServiceDD [options]="standardServices" [filter]="true" placeholder="Select Service" [disabled]="isServiceDisabled" [showClear]="true" (onChange)="onServiceChange($event,selectServiceDD)"
+                        resetFilterOnHide="true">
                     </p-dropdown>
                     <p-dropdown *ngIf="pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked" [disabled]="isServiceDisabled" [options]="registerStandardServices">
                     </p-dropdown>
@@ -17,9 +17,9 @@
                     <div class="floatLeft catHeader"><span class="compulsory">*</span>Resource</div>
                 </div>
                 <div class="col-md-2 col-xs-2 col-lg-2">
-                  <!-- [(ngModel)]="ngModelSelectResource" -->
-                    <p-dropdown *ngIf="!pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked"  #skillTypesDD [options]="skillTypes"  [filter]="true" [group]="true" placeholder="Select Skill" [disabled]="isResourceDisabled" [showClear]="true"
-                        (onChange)="onSkillChange($event,selectServiceDD)" resetFilterOnHide="true">
+                    <!-- [(ngModel)]="ngModelSelectResource" -->
+                    <p-dropdown *ngIf="!pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked"  #skillTypesDD [options]="skillTypes" [filter]="true" [group]="true" placeholder="Select Skill" [disabled]="isResourceDisabled" [showClear]="true" (onChange)="onSkillChange($event,selectServiceDD)"
+                        resetFilterOnHide="true">
                     </p-dropdown>
                     <p-dropdown *ngIf="pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked" [disabled]="isResourceDisabled" [options]="registerSkillTypes">
                     </p-dropdown>
@@ -28,9 +28,9 @@
                     <div class="floatLeft catHeader"><span class="compulsory">*</span>Reviewer</div>
                 </div>
                 <div class="col-md-2 col-xs-2 col-lg-2">
-                  <!-- [(ngModel)]="ngModelSelectReviewer" -->
-                    <p-dropdown *ngIf="!pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked"  #reviewerListDD [options]="reviewerList"  [filter]="true" [group]="true" placeholder="Select Reviewer" [disabled]="isReviewerDisabled"
-                        [showClear]="true" (onChange)="onResourceChange($event,selectServiceDD)" resetFilterOnHide="true">
+                    <!-- [(ngModel)]="ngModelSelectReviewer" -->
+                    <p-dropdown *ngIf="!pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked"  #reviewerListDD [options]="reviewerList" [filter]="true" [group]="true" placeholder="Select Reviewer" [disabled]="isReviewerDisabled" [showClear]="true" (onChange)="onResourceChange($event,selectServiceDD)"
+                        resetFilterOnHide="true">
                     </p-dropdown>
                     <p-dropdown *ngIf="pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked" [disabled]="isReviewerDisabled" [options]="registerReviewerList">
                     </p-dropdown>
@@ -56,8 +56,8 @@
                         </p-calendar>
                 </div>
                 <div class="col-md-4 col-xs-4 col-lg-4">
-                    <button id="standardTimelineCapacity" class="btn btn-danger" type="button" styleClass="pmBtn"  (click)="getInitialUserCapactiy(InitialUserCapacity)">Capacity</button>
-                    <button id="standardTimelineGenerate" class="btn btn-danger" type="button" styleClass="pmBtn"  (click)="getMilestones()">Generate</button>
+                    <button id="standardTimelineCapacity" class="btn btn-danger" type="button" styleClass="pmBtn" (click)="getInitialUserCapactiy(InitialUserCapacity)">Capacity</button>
+                    <button id="standardTimelineGenerate" class="btn btn-danger" type="button" styleClass="pmBtn" (click)="getMilestones()">Generate</button>
                 </div>
             </div>
         </div>
@@ -93,9 +93,9 @@
     <div id="modalInnerLoaderText">Loading...</div>
 
 </div>
-<div  [hidden]='isStandardLoaderHidden'>
-  <div id="standardLoader"></div>
-  <div id="standardLoaderText">Loading...</div>
+<div [hidden]='isStandardLoaderHidden'>
+    <div id="standardLoader"></div>
+    <div id="standardLoaderText">Loading...</div>
 </div>
 
 <div class="timeline-standard-generated-section">
@@ -110,8 +110,8 @@
                 <div class="standardMilestoneByType" [hidden]="hideTable">
                     <p-treeTable [value]="standardFiles">
                         <ng-template pTemplate="header">
-                            <tr >
-                              <!-- [ttRow]="rowNode" -->
+                            <tr>
+                                <!-- [ttRow]="rowNode" -->
                                 <th>Name</th>
                                 <th>Hours</th>
                                 <th>TAT</th>
@@ -131,14 +131,9 @@
                                     <span>{{rowData.Name}}</span>
                                 </td>
                                 <td>{{rowData.Hours}}
-                                  <div class='overlayIcon'
-                                      appendTo="body"
-                                      (click)="this.showOverlayPanel($event, rowData, dailyAllocateOP)"
-                                        style="float: right;cursor: pointer;"
-                                        title="Click to see allocation split"
-                                      *ngIf="rowData.showAllocationSplit">
-                                      <i class="fa fa-info-circle" aria-hidden="true"></i>
-                                  </div>
+                                    <div class='overlayIcon' appendTo="body" (click)="this.showOverlayPanel($event, rowData, dailyAllocateOP)" style="float: right;cursor: pointer;" title="Click to see allocation split" *ngIf="rowData.showAllocationSplit">
+                                        <i class="fa fa-info-circle" aria-hidden="true"></i>
+                                    </div>
                                 </td>
                                 <td>{{rowData.Days}}</td>
                                 <td *ngIf="rowData.showTime">
@@ -177,10 +172,10 @@
                                     {{rowData.AssignedTo}}
                                 </td>
                                 <td>
-                                   <div *ngIf = "rowData.showAllocationSplit">
-                                    <p-menu #popupMenu [popup]="true" [style]="{'text-align': 'left'}" [model]="taskMenu" appendTo="body">
-                                    </p-menu>
-                                    <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData);popupMenu.show($event);"></i>
+                                    <div *ngIf="rowData.showAllocationSplit">
+                                        <p-menu #popupMenu [popup]="true" [style]="{'text-align': 'left'}" [model]="taskMenu" appendTo="body">
+                                        </p-menu>
+                                        <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData);popupMenu.show($event);"></i>
                                     </div>
                                 </td>
                             </tr>
@@ -197,7 +192,7 @@
     </div>
 </div>
 <div>
-  <app-allocation-overlay #dailyAllocateOP></app-allocation-overlay>
+    <app-allocation-overlay #dailyAllocateOP></app-allocation-overlay>
 </div>
 <div class="standard-generated-fetch-section" [hidden]="isStandardFetchTableHidden">
     <div class="container">
@@ -207,7 +202,7 @@
                     <p-treeTable [value]="standardFiles">
                         <ng-template pTemplate="header">
                             <tr>
-                              <!-- [ttRow]="rowNode -->
+                                <!-- [ttRow]="rowNode -->
                                 <th>Name</th>
                                 <th>Hours</th>
                                 <th>TAT</th>
@@ -242,17 +237,16 @@
         <div class="row">
             <div class="col-md-2 col-xs-2 col-lg-2">
                 <div>
-                    <p-button type="button" styleClass="pmBtn"  class="mr-5" label="Back" (click)="goToProjectAttributes()"></p-button>
+                    <p-button type="button" styleClass="pmBtn" class="mr-5" label="Back" (click)="goToProjectAttributes()"></p-button>
                 </div>
             </div>
             <div class="col-md-4 col-xs-4 col-lg-4"></div>
             <div class="col-md-6 col-xs-6 col-lg-6">
                 <div>
-                    <button [disabled]="confirmDisabled" id="standardTimelineConfirm" class="mr-5 btn btn-danger" type="button" styleClass="pmBtn"  (click)="saveTimelineData()">Save Project</button>
+                    <button [disabled]="confirmDisabled" id="standardTimelineConfirm" class="mr-5 btn btn-danger" type="button" styleClass="pmBtn" (click)="saveTimelineData()">Save Project</button>
                     <!-- <p-button type="button" styleClass="pmBtn"  class="mr-5" label="Continue to Finance & Management" (click)="goToFinanceMang()"></p-button> -->
                 </div>
             </div>
         </div>
     </div>
 </div>
-<p-toast position="bottom-right" key="custom"></p-toast>

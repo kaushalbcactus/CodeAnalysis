@@ -9,6 +9,7 @@ import { AllocationOverlayComponent } from 'src/app/shared/pre-stack-allocation/
 import { PreStackAllocationComponent } from 'src/app/shared/pre-stack-allocation/pre-stack-allocation.component';
 import { UsercapacityComponent } from 'src/app/shared/usercapacity/usercapacity.component';
 import { IDailyAllocationTask } from 'src/app/shared/pre-stack-allocation/interface/prestack';
+import { PreStackcommonService } from 'src/app/shared/pre-stack-allocation/service/pre-stackcommon.service';
 
 @Component({
   selector: "app-block-resource-dialog",
@@ -45,7 +46,8 @@ export class BlockResourceDialogComponent implements OnInit {
     public datepipe : DatePipe,
     public spServices: SPOperationService,
     private dailyAllocation: PreStackAllocationComponent,
-    private dialogService:DialogService
+    private dialogService:DialogService,
+    private prestackService: PreStackcommonService
   ) {
     this.BlockResourceForm = this.formBuilder.group({
       Resource: ["", Validators.required],
@@ -90,7 +92,7 @@ export class BlockResourceDialogComponent implements OnInit {
       this.validateBudgetHours();
       this.isViewAllocationBtn();
       if(this.task.budgetHours > 0 && this.task.Resource){
-        await this.dailyAllocation.calcPrestackAllocation([this.BlockResourceForm.value.Resource.value],this.task);
+        await this.prestackService.calcPrestackAllocation([this.BlockResourceForm.value.Resource.value],this.task);
     } 
     });
   }
@@ -202,7 +204,7 @@ viewAllocation(allocationType) {
       closable: false
     });
     ref.onClose.subscribe((allocation: any) => {
-      this.dailyAllocation.setAllocationPerDay(allocation, milestoneTask);
+      this.prestackService.setAllocationPerDay(allocation, milestoneTask);
       if (allocation.allocationAlert) {
         this.common.showToastrMessage(this.constants.MessageType.warn,'Resource is over allocated.',false);
       }
@@ -256,7 +258,7 @@ viewAllocation(allocationType) {
 // await this.dailyAllocation.calcPrestackAllocation(resources, this.task);
 
 isViewAllocationBtn() {
-    if (this.task.budgetHours && this.task.Resource && this.task.pUserStartDatePart !== this.task.pUserEndDatePart) {
+    if (this.task.budgetHours && this.task.Resource && this.task.pUserStartDatePart.getTime() !== this.task.pUserEndDatePart.getTime()) {
       this.isViewAllocation = true;
     } else {
       this.isViewAllocation = false;

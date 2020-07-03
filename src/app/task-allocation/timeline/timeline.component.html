@@ -29,14 +29,12 @@
                 <div class="table-header-cell-timeline">
                     Available Hrs
                 </div>
-                <div class="table-body-cell-timeline"
-                    style="border-top-right-radius: 4px;border-bottom-right-radius: 4px;">
+                <div class="table-body-cell-timeline" style="border-top-right-radius: 4px;border-bottom-right-radius: 4px;">
                     <div id="availableBudgetHrs">{{oProjectDetails.availableHours}}</div>
                 </div>
             </div>
 
-            <div
-                *ngIf="(oProjectDetails.status !== 'In Discussion' && oProjectDetails.status !== 'Closed' &&oProjectDetails.status !== 'Cancelled' && oProjectDetails.status !== 'Awaiting Cancel Approval' && oProjectDetails.status !== 'Pending Closure' && oProjectDetails.status !== 'Audit In Progress' && oProjectDetails.projectType !== 'FTE-Writing') && !projectDetails">
+            <div *ngIf="(oProjectDetails.status !== 'In Discussion' && oProjectDetails.status !== 'Closed' &&oProjectDetails.status !== 'Cancelled' && oProjectDetails.status !== 'Awaiting Cancel Approval' && oProjectDetails.status !== 'Pending Closure' && oProjectDetails.status !== 'Audit In Progress' && oProjectDetails.projectType !== 'FTE-Writing') && !projectDetails">
                 <button mat-raised-button type="button" (click)="showRestructure()">
                     <mat-icon>create</mat-icon> Restructure
                 </button>
@@ -58,10 +56,9 @@
                 <button class="mr-20" type="button" mat-raised-button (click)="zoomOut()"><mat-icon>zoom_out</mat-icon></button>
                 <!-- <button class="mr-20" type="button" mat-raised-button (click)="ganttExportToExcel()">Export To
                     Excel</button> -->
-                    <i style="font-size: 1.8em;cursor: pointer;vertical-align: top;
+                <i style="font-size: 1.8em;cursor: pointer;vertical-align: top;
                     margin: 7px 15px 0px 0px;" (click)="ganttExportToExcel()" title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
-                <p-dropdown #mySelect [options]="scales" [(ngModel)]="selectedScale"
-                    (onChange)="setScale(mySelect.value)" optionLabel="label"></p-dropdown>
+                <p-dropdown #mySelect [options]="scales" [(ngModel)]="selectedScale" (onChange)="setScale(mySelect.value)" optionLabel="label"></p-dropdown>
             </div>
         </div>
 
@@ -93,35 +90,30 @@
                 </div>
             </div>
             <div>
-              <div class="input-color">
-                  <label>Equal allocation per day</label>
-                  <div class="color-box" style="background-color: indianred;"></div>
-              </div>
-              <!-- <div class="input-color">
+                <div class="input-color">
+                    <label>Equal allocation per day</label>
+                    <div class="color-box" style="background-color: indianred;"></div>
+                </div>
+                <!-- <div class="input-color">
                   <label>Daily Split</label>
                   <div class="color-box" style="background-color: rgb(160, 247, 142)"></div>
               </div> -->
             </div>
             <div>
-                <div *ngIf="visualgraph" class="input-color" fxLayoutAlign="end center"
-                    style="margin-right: 10px;">
-                    <button mat-raised-button type="button" title="Refresh Gantt"
-                        (click)="loadComponentRefresh()">
+                <div *ngIf="visualgraph" class="input-color" fxLayoutAlign="end center" style="margin-right: 10px;">
+                    <button mat-raised-button type="button" title="Refresh Gantt" (click)="loadComponentRefresh()">
                         <mat-icon>refresh</mat-icon>
                     </button>
                 </div>
-                <div *ngIf="changeInRestructure " class="input-color" fxLayoutAlign="end center"
-                    style="margin-right: 10px;">
-                    <button *ngIf="!projectDetails" mat-raised-button type="button"
-                        (click)="CancelChanges(projectDetails,'discardAll')" [disabled]="disableSave">
+                <div *ngIf="changeInRestructure " class="input-color" fxLayoutAlign="end center" style="margin-right: 10px;">
+                    <button *ngIf="!projectDetails" mat-raised-button type="button" (click)="CancelChanges(projectDetails,'discardAll')" [disabled]="disableSave">
                         <mat-icon>delete_forever</mat-icon> Discard All
                     </button>
                 </div>
 
                 <div *ngIf="oProjectDetails.status !== 'On Hold' && oProjectDetails.status !== 'In Discussion' && oProjectDetails.status !== 'Closed' &&oProjectDetails.status !== 'Cancelled' && oProjectDetails.status !== 'Awaiting Cancel Approval' && oProjectDetails.status !== 'Pending Closure' && oProjectDetails.status !== 'Audit In Progress' && oProjectDetails.projectType !== 'FTE-Writing'"
                     class="input-color" fxLayoutAlign="end center">
-                    <button *ngIf="!projectDetails && !this.confirmMilestoneLoader" mat-raised-button type="button" [disabled]="disableSave"
-                        (click)="saveTasks()">
+                    <button *ngIf="!projectDetails && !this.confirmMilestoneLoader" mat-raised-button type="button" [disabled]="disableSave" (click)="saveTasks()">
                         <mat-icon>save</mat-icon> Save
                     </button>
                 </div>
@@ -158,51 +150,30 @@
                 </ng-template>
 
                 <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
-                    <tr *ngIf="(rowData.status !== 'Deleted')" class="milestoneTable"
-                        [style.font-weight]="rowData.type === 'milestone' || rowData.type === 'submilestone' || rowData.title ==='Client Review' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.title.indexOf('Slot') > -1) ? '700':''">
+                    <tr *ngIf="(rowData.status !== 'Deleted')" class="milestoneTable" [style.font-weight]="rowData.type === 'milestone' || rowData.type === 'submilestone' || rowData.title ==='Client Review' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.title.indexOf('Slot') > -1) ? '700':''">
 
-                        <td [style.text-align]="'left'"
-                            [style.padding-left.px]="rowData.title ==='Client Review' ? '20':''"
-                            [style.backgroundColor]="rowData.slotColor">
+                        <td [style.text-align]="'left'" [style.padding-left.px]="rowData.title ==='Client Review' ? '20':''" [style.backgroundColor]="rowData.slotColor">
                             <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
-                            <span
-                                *ngIf="rowData.type !=='task' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.title.indexOf('Slot') > -1)">
+                            <span *ngIf="rowData.type !=='task' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.title.indexOf('Slot') > -1)">
                                 {{rowData.text}}</span>
-                            <span style="color:#dc2038;cursor: pointer;"
-                                *ngIf="(rowData.type ==='task' && rowData.IsCentrallyAllocated !== 'Yes') || (rowData.IsCentrallyAllocated === 'Yes' && rowData.title.indexOf('Slot') < 0)"
-                                (click)="viewTaskDetails(rowData)"> {{rowData.text}}</span>
+                            <span style="color:#dc2038;cursor: pointer;" *ngIf="(rowData.type ==='task' && rowData.IsCentrallyAllocated !== 'Yes') || (rowData.IsCentrallyAllocated === 'Yes' && rowData.title.indexOf('Slot') < 0)" (click)="viewTaskDetails(rowData)"> {{rowData.text}}</span>
 
-                            <div id="nextMilestone"
-                                [title]=" rowData.type==='milestone' ? 'Set as Current Milestone':'Set as Current Sub-Milestone'"
-                                (click)=" confirmMilestone(rowData,rowNode)"
-                                *ngIf="(rowData.isNext === true && !rowData.subMilestonePresent && !changeInRestructure) || (rowData.type==='submilestone' && rowData.isCurrent && !changeInRestructure) || (rowData.type==='submilestone' && rowData.isNext &&   !changeInRestructure)  "
-                                style="display: inline;"
-                                [hidden]=" (rowData.type==='milestone' && (oProjectDetails.status ==='In Discussion' || oProjectDetails.projectType === 'FTE-Writing' || rowData.status === 'Completed' || rowData.id === -1)) || (rowData.type==='submilestone' &&  rowData.status !== 'Not Confirmed') || projectDetails ">
+                            <div id="nextMilestone" [title]=" rowData.type==='milestone' ? 'Set as Current Milestone':'Set as Current Sub-Milestone'" (click)=" confirmMilestone(rowData,rowNode)" *ngIf="(rowData.isNext === true && !rowData.subMilestonePresent && !changeInRestructure) || (rowData.type==='submilestone' && rowData.isCurrent && !changeInRestructure) || (rowData.type==='submilestone' && rowData.isNext &&   !changeInRestructure)  "
+                                style="display: inline;" [hidden]=" (rowData.type==='milestone' && (oProjectDetails.status ==='In Discussion' || oProjectDetails.projectType === 'FTE-Writing' || rowData.status === 'Completed' || rowData.id === -1)) || (rowData.type==='submilestone' &&  rowData.status !== 'Not Confirmed') || projectDetails ">
                                 <i class="pi pi-check" style="font-size: 2em;vertical-align: middle;"></i>
                             </div>
                         </td>
                         <!-- Budget Hrs -->
                         <td style="text-align: center;" *ngIf="!projectDetails">
-                            <div
-                                *ngIf="(rowData.type === 'milestone' && rowData.status !== 'Not Saved' && rowData.status !== 'Not Confirmed' && !rowData.isCurrent) || (rowData.type ==='task' && !rowData.editMode && rowData.itemType !== 'Client Review' && rowData.itemType !== 'Send to client')"
+                            <div *ngIf="(rowData.type === 'milestone' && rowData.status !== 'Not Saved' && rowData.status !== 'Not Confirmed' && !rowData.isCurrent) || (rowData.type ==='task' && !rowData.editMode && rowData.itemType !== 'Client Review' && rowData.itemType !== 'Send to client')"
                                 style="float: left;margin-left: 22px;">{{rowData.budgetHours}}</div>
-                            <input type="number" class="form-control budgetHr" required="required" min="0" max= {{maxBudgetHrs}} value="0"
-                                step="0.25"
-                                *ngIf="(rowData.type !=='milestone' && rowData.type !=='submilestone' && rowData.editMode
+                            <input type="number" class="form-control budgetHr" required="required" min="0" max="{{rowData.ExpectedBudgetHrs}}" value="0" step="0.25" *ngIf="(rowData.type !=='milestone' && rowData.type !=='submilestone' && rowData.editMode
                                 && (rowData.itemType !== 'Client Review' &&  rowData.itemType !== 'Send to client')) ||
-                                ((rowData.status ==='In Progress' || rowData.status ==='Not Started' || rowData.status ==='Not Confirmed' || rowData.status ==='Not Saved') && rowData.type === 'milestone')"
-                                required="required"
-                                style="border:none;border-radius: 0px;height: 25px;text-align: center;padding:0px;float: left;"
-                                [id]="rowData.id"
-                                (change)="budgetHrsChanged(rowData)"
-                                [(ngModel)]="rowData.budgetHours">
-                            <div class='overlayIcon'
-                             (click)="this.showOverlayPanel($event, rowData, dailyAllocateOP)"
-                              style="float: right;cursor: pointer;"
-                              title="Click to see allocation split"
-                            *ngIf="rowData.showAllocationSplit">
-                            <i class="fa fa-info-circle" aria-hidden="true"></i>
-                          </div>
+                                ((rowData.status ==='In Progress' || rowData.status ==='Not Started' || rowData.status ==='Not Confirmed' || rowData.status ==='Not Saved') && rowData.type === 'milestone')" required="required" style="border:none;border-radius: 0px;height: 25px;text-align: center;padding:0px;float: left;"
+                                [id]="rowData.id" (change)="budgetHrsChanged(rowData)" [(ngModel)]="rowData.budgetHours">
+                            <div class='overlayIcon' (click)="this.showOverlayPanel($event, rowData, dailyAllocateOP)" style="float: right;cursor: pointer;" title="Click to see allocation split" *ngIf="rowData.showAllocationSplit">
+                                <i class="fa fa-info-circle" aria-hidden="true"></i>
+                            </div>
                         </td>
 
                         <td style="text-align: center;" *ngIf="projectDetails">
@@ -214,10 +185,8 @@
                         <!-- Start Date -->
                         <td>
 
-                            <span [title]="rowData.pUserStart |  date:' d MMM, y, h:mm a'"
-                                *ngIf="(!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat === true) || rowData.type === 'milestone' || rowData.type === 'submilestone'">{{rowData.start_date |  date:' d MMM, y' }}</span>
-                            <span [title]="rowData.pUserStart |  date:' d MMM, y, h:mm a'"
-                                *ngIf="(!rowData.editMode && rowData.type === 'task' &&  rowData.tat !== true) || (rowData.type === 'task' && rowData.editMode && rowData.status === 'In Progress') || (rowData.type === 'task' && rowData.editMode && rowData.itemType ==='Client Review')">{{rowData.start_date |  date:' d MMM, y, h:mm a' }}</span>
+                            <span [title]="rowData.pUserStart |  date:' d MMM, y, h:mm a'" *ngIf="(!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat === true) || rowData.type === 'milestone' || rowData.type === 'submilestone'">{{rowData.start_date |  date:' d MMM, y' }}</span>
+                            <span [title]="rowData.pUserStart |  date:' d MMM, y, h:mm a'" *ngIf="(!rowData.editMode && rowData.type === 'task' &&  rowData.tat !== true) || (rowData.type === 'task' && rowData.editMode && rowData.status === 'In Progress') || (rowData.type === 'task' && rowData.editMode && rowData.itemType ==='Client Review')">{{rowData.start_date |  date:' d MMM, y, h:mm a' }}</span>
 
                             <span *ngIf="rowData.editMode && rowData.type === 'task'  && rowData.status !== 'In Progress' && rowData.itemType !== 'Client Review' && (rowData.status === 'Not Started' || rowData.status === 'Not Confirmed' || rowData.status === 'Not Saved')">
                                 <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserStartDatePart"
@@ -239,10 +208,8 @@
                         </td>
                         <!-- End Date -->
                         <td>
-                            <span [title]="rowData.pUserEnd |  date:' d MMM, y, h:mm a'"
-                                *ngIf="(!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat === true) || rowData.type === 'milestone' || rowData.type === 'submilestone'">{{rowData.end_date |  date:' d MMM, y' }}</span>
-                            <span [title]="rowData.pUserEnd |  date:' d MMM, y, h:mm a'"
-                                *ngIf="(!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat !== true) || (rowData.type === 'task' && rowData.editMode && rowData.itemType ==='Send to client')">{{rowData.end_date |  date:' d MMM, y, h:mm a' }}</span>
+                            <span [title]="rowData.pUserEnd |  date:' d MMM, y, h:mm a'" *ngIf="(!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat === true) || rowData.type === 'milestone' || rowData.type === 'submilestone'">{{rowData.end_date |  date:' d MMM, y' }}</span>
+                            <span [title]="rowData.pUserEnd |  date:' d MMM, y, h:mm a'" *ngIf="(!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat !== true) || (rowData.type === 'task' && rowData.editMode && rowData.itemType ==='Send to client')">{{rowData.end_date |  date:' d MMM, y, h:mm a' }}</span>
 
 
                             <span *ngIf="rowData.editMode && rowData.type === 'task' && rowData.itemType !=='Send to client' && (rowData.status === 'Not Started' || rowData.status === 'Not Confirmed' || rowData.status === 'In Progress' || rowData.status === 'Not Saved')">
@@ -270,24 +237,17 @@
                             <span *ngIf="!rowData.editMode && rowData.type ==='task' && rowData.itemType !=='Client Review' && rowData.itemType !=='Send to client' ">{{rowData.tat === true ? 'Yes' :'No'}}</span>
 
 
-                            <p-inputSwitch
-                                *ngIf="rowData.editMode && rowData.type === 'task'
+                            <p-inputSwitch *ngIf="rowData.editMode && rowData.type === 'task'
                                 && rowData.itemType !=='Client Review' && rowData.itemType !=='Send to client' && (rowData.IsCentrallyAllocated !== 'Yes' || rowData.slotType === 'Both' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.title.indexOf('Slot') < 0))"
-                                [disabled]=" rowData.title ==='Client Review'"
-                                (onChange)="ChangeEndDate($event, rowData)"
-                                [(ngModel)]="rowData.title ==='Client Review' ? 'Yes' : rowData.tat"></p-inputSwitch>
+                                [disabled]=" rowData.title ==='Client Review'" (onChange)="ChangeEndDate($event, rowData)" [(ngModel)]="rowData.title ==='Client Review' ? 'Yes' : rowData.tat"></p-inputSwitch>
                         </td>
 
                         <!-- Assign To -->
                         <td>
-                            <span
-                                *ngIf="!rowData.editMode && (rowData.IsCentrallyAllocated !== 'Yes' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.title.indexOf('Slot') < 0))">
+                            <span *ngIf="!rowData.editMode && (rowData.IsCentrallyAllocated !== 'Yes' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.title.indexOf('Slot') < 0))">
                                 {{rowData.AssignedTo.Title}}</span>
-                            <p-dropdown [style]="{'width':'100%'}"
-                                *ngIf="rowData.editMode && rowData.type !=='milestone' && rowData.type !=='submilestone' && (rowData.IsCentrallyAllocated !== 'Yes' || rowData.slotType === 'Both' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.title.indexOf('Slot') < 0))"
-                                #assignedTo class="txtTask" [options]="rowData.assignedUsers"
-                                [disabled]="rowData.status=== 'In Progress'" [panelStyle]="{minWidth:'15em' }"
-                                [(ngModel)]="rowData.AssignedTo" placeholder="Select Resource" [showClear]="true"
+                            <p-dropdown [style]="{'width':'100%'}" *ngIf="rowData.editMode && rowData.type !=='milestone' && rowData.type !=='submilestone' && (rowData.IsCentrallyAllocated !== 'Yes' || rowData.slotType === 'Both' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.title.indexOf('Slot') < 0))"
+                                #assignedTo class="txtTask" [options]="rowData.assignedUsers" [disabled]="rowData.status=== 'In Progress'" [panelStyle]="{minWidth:'15em' }" [(ngModel)]="rowData.AssignedTo" placeholder="Select Resource" [showClear]="true"
                                 [group]="true" filter="true" (onChange)="assignedToUserChanged(rowData)">
                                 <ng-template let-group pTemplate="group">
                                     <span style="margin-left:.25em">{{group.label}}</span>
@@ -300,22 +260,27 @@
                         <!--Daily Allocation Type-->
                         <td [style.backgroundColor]="rowData?.allocationColor">
                             <div fxLayout="column" fxLayoutAlign="center center" *ngIf="rowData?.allocationTypeLoader">
-                              <div id="allocationTypeLoader"></div>
+                                <div id="allocationTypeLoader"></div>
                             </div>
                         </td>
                         <td [ngStyle]="{'text-align': 'rowData.editMode' ? 'center':'left'}">
-                            <span
-                                *ngIf="rowData.type==='task' && !rowData.editMode">{{rowData.DisableCascade === true  ? 'Yes':'No'}}</span>
+                            <span *ngIf="rowData.type==='task' && !rowData.editMode">{{rowData.DisableCascade === true  ? 'Yes':'No'}}</span>
 
-                            <p-inputSwitch
-                                *ngIf="rowData.editMode && rowData.type==='task' && rowData.itemType !== 'Client Review'"
-                                [(ngModel)]="rowData.DisableCascade"></p-inputSwitch>
+                            <p-inputSwitch *ngIf="rowData.editMode && rowData.type==='task' && rowData.itemType !== 'Client Review'" [(ngModel)]="rowData.DisableCascade"></p-inputSwitch>
                         </td>
 
                         <!-- Menu option -->
                         <td [style.backgroundColor]="rowData.color">
 
-                          <div  *ngIf="rowData.type === 'task' && rowData.milestoneStatus !== 'Completed' && (rowData.status !== 'Completed' && rowData.status !=='Abandon' && rowData.status !=='Auto Closed' && rowData.status !=='Hold' && rowData.status !== 'Not Saved') && !changeInRestructure"
+                            <!-- <div  *ngIf="!rowData.editMode && rowData.type === 'milestone' && rowData.status !== 'Completed' && rowData.status !== 'Auto Closed' && !changeInRestructure"
+                                      style="text-align: center;">
+                                <p-menu #popupMenu [popup]="true" [style]="{'text-align': 'left'}" [model]="taskMenu">
+                                </p-menu>
+
+                                <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData, rowNode);popupMenu.show($event);"></i>
+                            </div> -->
+                            
+                          <div  *ngIf="(rowData.type === 'task' && rowData.milestoneStatus !== 'Completed' && rowData.status !== 'Completed' && rowData.status !=='Abandon' && rowData.status !=='Auto Closed' && rowData.status !=='Hold' && rowData.status !== 'Not Saved') || (rowData.type === 'milestone' && rowData.status !== 'Completed' && rowData.status !== 'Auto Closed') && !changeInRestructure"
                                       [hidden]="rowData.editMode === false"
                                       style="text-align: center;">
                                 <p-menu #popupMenu [popup]="true" [style]="{'text-align': 'left'}" [model]="taskMenu">
@@ -324,9 +289,9 @@
                                 <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData, rowNode);popupMenu.show($event);"></i>
                             </div>
 
-                            <div *ngIf=" !rowData.editMode && rowData.type === 'task' && rowData.milestoneStatus !== 'Completed' &&
+                            <div *ngIf="(!rowData.editMode && (rowData.type === 'task' && rowData.milestoneStatus !== 'Completed' &&
                             (rowData.status !== 'Completed' && rowData.status !== 'Abandon' && rowData.status !== 'Auto Closed'
-                              && rowData.status !== 'Hold') && !projectDetails && !rowData.parentSlot"
+                              && rowData.status !== 'Hold') && !projectDetails && !rowData.parentSlot)) || !rowData.editMode && (rowData.type === 'milestone' && rowData.status !== 'Completed' && rowData.status !== 'Auto Closed' && !changeInRestructure)"
                                 style="text-align: center;">
                                 <p-menu #popupMenu [popup]="true" [style]="{'text-align': 'left'}" [model]="taskMenu">
                                 </p-menu>
@@ -355,18 +320,14 @@
 
             </p-treeTable>
 
-          
+
         </div>
 
         <!-- **********************************************************************************************************
                                                          gantt chart Data
            ********************************************************************************************************** -->
-        <div fxLayout="row" fxLayoutAlign=" start center"
-            [ngClass]="projectDetails  ? 'VisualRepresentationpopup':'VisualRepresentation'"
-            [hidden]="!visualgraph" style="width:100%"> <!--&& loaderenable === true-->
-            <p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="gantt-message"
-                position="bottom-center">
-            </p-toast>
+        <div fxLayout="row" fxLayoutAlign=" start center" [ngClass]="projectDetails  ? 'VisualRepresentationpopup':'VisualRepresentation'" [hidden]="!visualgraph" style="width:100%">
+            <!--&& loaderenable === true-->
 
             <div style="width:100%">
                 <ng-template #ganttcontainer></ng-template>
@@ -374,10 +335,8 @@
         </div>
         <app-allocation-overlay #dailyAllocateOP></app-allocation-overlay>
 
-        <input [hidden]='true' readonly [ngxTimepicker]="ganttPicker"
-        [(ngModel)]="taskTime" class="timePicker">
-        <ngx-material-timepicker [preventOverlayClick]="true" (closed)="timeChange()" #ganttPicker
-        (timeSet)="setTime($event)" [ngxMaterialTimepickerTheme]="darkTheme" [minutesGap]="15">
+        <input [hidden]='true' readonly [ngxTimepicker]="ganttPicker" [(ngModel)]="taskTime" class="timePicker">
+        <ngx-material-timepicker [preventOverlayClick]="true" (closed)="timeChange()" #ganttPicker (timeSet)="setTime($event)" [ngxMaterialTimepickerTheme]="darkTheme" [minutesGap]="15">
         </ngx-material-timepicker>
     </div>
 
@@ -387,45 +346,33 @@
     <table class="w580" width="580" cellpadding="5" cellspacing="0" border="0">
         <thead>
             <tr style="border-collapse:collapse;">
-                <td width="150" class="fullBorder boldHeadres"
-                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;font-weight:bold;">
-                    <div align="left" class="table-Attr-content"
-                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                <td width="150" class="fullBorder boldHeadres" style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;font-weight:bold;">
+                    <div align="left" class="table-Attr-content" style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
                         Name
                     </div>
                 </td>
-                <td width="150" class="fullBorder boldHeadres"
-                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;font-weight:bold;">
-                    <div align="left" class="table-Attr-content"
-                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                <td width="150" class="fullBorder boldHeadres" style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;font-weight:bold;">
+                    <div align="left" class="table-Attr-content" style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
                         Previous Start Date
                     </div>
                 </td>
-                <td width="150" class="fullBorder boldHeadres"
-                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;font-weight:bold;">
-                    <div align="left" class="table-Attr-content"
-                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                <td width="150" class="fullBorder boldHeadres" style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;font-weight:bold;">
+                    <div align="left" class="table-Attr-content" style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
                         Previous End Date
                     </div>
                 </td>
-                <td width="150" class="fullBorder boldHeadres"
-                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;font-weight:bold;">
-                    <div align="left" class="table-Attr-content"
-                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                <td width="150" class="fullBorder boldHeadres" style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;font-weight:bold;">
+                    <div align="left" class="table-Attr-content" style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
                         New Start Date
                     </div>
                 </td>
-                <td width="150" class="fullBorder boldHeadres"
-                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;font-weight:bold;">
-                    <div align="left" class="table-Attr-content"
-                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                <td width="150" class="fullBorder boldHeadres" style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;font-weight:bold;">
+                    <div align="left" class="table-Attr-content" style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
                         New End Date
                     </div>
                 </td>
-                <td width="150" class="fullBorder boldHeadres"
-                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;font-weight:bold;">
-                    <div align="left" class="table-Attr-content"
-                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                <td width="150" class="fullBorder boldHeadres" style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;font-weight:bold;">
+                    <div align="left" class="table-Attr-content" style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
                         Assigned To
                     </div>
                 </td>
@@ -433,45 +380,33 @@
         </thead>
         <tbody>
             <tr style="border-collapse:collapse;" *ngFor="let item of reallocationMailData;trackBy:trackByFn">
-                <td width="300" class="noLeftTopBorder"
-                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;border-top-width:0px;border-left-width:1px;">
-                    <div align="left" class="table-Attr-content"
-                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                <td width="300" class="noLeftTopBorder" style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;border-top-width:0px;border-left-width:1px;">
+                    <div align="left" class="table-Attr-content" style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
                         {{item.taskName}}
                     </div>
                 </td>
-                <td width="300" class="noLeftTopBorder"
-                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;border-top-width:0px;border-left-width:0px;">
-                    <div align="left" class="table-Attr-content"
-                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                <td width="300" class="noLeftTopBorder" style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;border-top-width:0px;border-left-width:0px;">
+                    <div align="left" class="table-Attr-content" style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
                         {{item.preStDate }}
                     </div>
                 </td>
-                <td width="300" class="noLeftTopBorder"
-                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;border-top-width:0px;border-left-width:0px;">
-                    <div align="left" class="table-Attr-content"
-                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                <td width="300" class="noLeftTopBorder" style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;border-top-width:0px;border-left-width:0px;">
+                    <div align="left" class="table-Attr-content" style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
                         {{item.preEndDate}}
                     </div>
                 </td>
-                <td width="300" class="noLeftTopBorder"
-                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;border-top-width:0px;border-left-width:0px;">
-                    <div align="left" class="table-Attr-content"
-                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                <td width="300" class="noLeftTopBorder" style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;border-top-width:0px;border-left-width:0px;">
+                    <div align="left" class="table-Attr-content" style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
                         {{item.newStDate }}
                     </div>
                 </td>
-                <td width="300" class="noLeftTopBorder"
-                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;border-top-width:0px;border-left-width:0px;">
-                    <div align="left" class="table-Attr-content"
-                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                <td width="300" class="noLeftTopBorder" style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;border-top-width:0px;border-left-width:0px;">
+                    <div align="left" class="table-Attr-content" style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
                         {{item.newEndDate}}
                     </div>
                 </td>
-                <td width="300" class="noLeftTopBorder"
-                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;border-top-width:0px;border-left-width:0px;">
-                    <div align="left" class="table-Attr-content"
-                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                <td width="300" class="noLeftTopBorder" style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;border-top-width:0px;border-left-width:0px;">
+                    <div align="left" class="table-Attr-content" style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
                         {{item.assginedTo}}
                     </div>
                 </td>
@@ -480,8 +415,7 @@
     </table>
 </div>
 
-<p-dialog [(visible)]="showBudgetHrs" [modal]="true" [draggable]="false" [responsive]="true"
-    [style]="{'width': '30%', 'top':'0px'}" [closeOnEscape]="false" [closable]="false">
+<p-dialog [(visible)]="showBudgetHrs" [modal]="true" [draggable]="false" [responsive]="true" [style]="{'width': '30%', 'top':'0px'}" [closeOnEscape]="false" [closable]="false">
     <p-header>
         Change Budget Hours
         <div class="footerBtn" fxLayout="row" fxLayoutAlign="end center">
@@ -495,7 +429,7 @@
                 Budget Hrs
             </div>
             <div class="p-col-4">
-                <input type="number" pInputText [(ngModel)]="budgetHrs" [ngModelOptions]="{standalone: true}" (change)="setBudgetHours(budgetHrsTask)" min="0"  max={{maxBudgetHrs}} value="0" step="0.25">
+                <input type="number" pInputText [(ngModel)]="budgetHrs" [ngModelOptions]="{standalone: true}" (change)="setBudgetHours(budgetHrsTask)" min="0" max={{maxBudgetHrs}} value="0" step="0.25">
             </div>
         </div>
     </form>
@@ -506,17 +440,13 @@
     <app-resource-selection *ngIf="hideResourceSelection" #resourceSelect></app-resource-selection>
 </p-sidebar>
 
-  <!-- **********************************************************************************************************
+<!-- **********************************************************************************************************
                                                          Comment Popup
     ********************************************************************************************************** -->
 <p-dialog header="Any specific instructions for task" [closable]="false" [modal]="true" [style]="{width: '450px', minWidth: '300px'}" [(visible)]="displayComment">
     <textarea *ngIf="displayComment" placeholder="Leave Comment" rows="8" cols="30" pInputTextarea autoResize="autoResize" style="width:100%;padding: 3%;" [(ngModel)]="task.scope"> </textarea>
     <p-footer>
-        <button type="button" pButton icon="pi pi-check"
-                style="background-color: #af0b14;border-color:#af0b14;" (click)="displayComment=false"
-                label="Save"></button>
-        <button type="button" pButton icon="pi pi-times" (click)="cancelComment();displayComment=false"
-                label="Cancel" class="ui-button-secondary"></button>
+        <button type="button" pButton icon="pi pi-check" style="background-color: #af0b14;border-color:#af0b14;" (click)="displayComment=false" label="Save"></button>
+        <button type="button" pButton icon="pi pi-times" (click)="cancelComment();displayComment=false" label="Cancel" class="ui-button-secondary"></button>
     </p-footer>
 </p-dialog>
-

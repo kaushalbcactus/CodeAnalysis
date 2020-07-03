@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewChild, ApplicationRef, NgZone } from '@angular/core';
 import { FormControl, FormGroupDirective, NgForm, Validators } from '@angular/forms';
-
 import { ActivatedRoute, Router } from '@angular/router';
 import { GlobalService } from '../Services/global.service';
 import { ConstantsService } from '../Services/constants.service';
@@ -101,11 +100,8 @@ export class TaskAllocationComponent implements OnInit {
   }
 
   /*****************************************************************
-
    Enable Search button & call api on enter click.
   *******************************************************************/
-
-
   async currentUserGroup() {
 
     this.commonService.SetNewrelic('TaskAllocation', 'task-allocation', 'CurrentUser');
@@ -127,12 +123,9 @@ export class TaskAllocationComponent implements OnInit {
     this.Searchenable = this.searchFormControl.value !== '' ? true : false;
   }
   /*****************************************************************
-
    Call Api to Get Project Details
   *******************************************************************/
-
   private async getProjectDetails() {
-
     this.errormessage = '';
     this.loaderenable = true;
     this.SearchView = false;

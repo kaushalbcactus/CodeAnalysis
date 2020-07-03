@@ -22,7 +22,7 @@ import { AddUserToSowComponent } from './admin/entitlement/add-user-to-sow/add-u
 import { AddUserToProjectsComponent } from './admin/entitlement/add-user-to-projects/add-user-to-projects.component';
 import { ReferenceDataComponent } from './admin/reference-data/reference-data.component';
 import { RulesComponent } from './admin/rules/rules.component';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+// import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { GroupDescriptionComponent } from './admin/entitlement/group-description/group-description.component';
 import { SharedModule } from '../shared/shared.module';
 import { AddEditUserProfileComponent } from './admin/user-profile/add-edit-user-profile/add-edit-user-profile.component';
@@ -65,7 +65,7 @@ import { CustomMaterialModule } from '../shared/material.module';
     SharedModule,
     AdminRoutingModule,
     PrimengModule,
-    NgbModule,
+    // NgbModule,
     FlexLayoutModule,
     CustomMaterialModule
   ],

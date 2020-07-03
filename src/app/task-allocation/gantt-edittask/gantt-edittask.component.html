@@ -1,31 +1,21 @@
-<p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom" [hideTransitionOptions]="'0ms'" position="bottom-center">
-</p-toast>
 <div class='taskButton' fxLayout="row" fxLayoutAlign="end center">
-
-    <button type="button" pButton icon="pi pi-save" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }"
-        (click)="saveTask()" label="Save" class="saveTaskButton"></button>
-    <button type="button" pButton icon="pi pi-times" (click)="reset();" label="Cancel" class="ui-button-secondary"
-        style="background-color:ghostwhite;"></button>
-
+    <button type="button" pButton icon="pi pi-save" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="saveTask()" label="Save" class="saveTaskButton"></button>
+    <button type="button" pButton icon="pi pi-times" (click)="reset();" label="Cancel" class="ui-button-secondary" style="background-color:ghostwhite;"></button>
 </div>
 
 <div fxLayout="row" #scrollDown fxLayoutAlign="space-between start" fxLayoutGap="5px">
-
     <form [formGroup]="editTaskForm" class="p-col">
         <div class="p-grid p-col mt-20">
             <div class="p-col-2">
                 Start Date
             </div>
             <div class="p-col-4">
-                <p-calendar formControlName="startDate" appendTo="body" dateFormat="M dd, yy" [disabledDays]="[0,6]"
-                    placeholder="Select Start Date"></p-calendar>
+                <p-calendar formControlName="startDate" appendTo="body" dateFormat="M dd, yy" [disabledDays]="[0,6]" placeholder="Select Start Date"></p-calendar>
             </div>
             <div class="p-col-3">
-                <input readonly [ngxTimepicker]="startDateTimepicker" formControlName="startDateTimePart"
-                    class="timePicker">
+                <input readonly [ngxTimepicker]="startDateTimepicker" formControlName="startDateTimePart" class="timePicker">
                 <ngx-material-timepicker-toggle [for]="startDateTimepicker"></ngx-material-timepicker-toggle>
-                <ngx-material-timepicker [preventOverlayClick]="true" #startDateTimepicker
-                    [ngxMaterialTimepickerTheme]="darkTheme" [minutesGap]="15">
+                <ngx-material-timepicker [preventOverlayClick]="true" #startDateTimepicker [ngxMaterialTimepickerTheme]="darkTheme" [minutesGap]="15">
                 </ngx-material-timepicker>
             </div>
         </div>
@@ -34,15 +24,12 @@
                 End Date
             </div>
             <div class="p-col-4">
-                <p-calendar formControlName="endDate" appendTo="body" dateFormat="M dd, yy" [disabledDays]="[0,6]"
-                    placeholder="Select End Date"></p-calendar>
+                <p-calendar formControlName="endDate" appendTo="body" dateFormat="M dd, yy" [disabledDays]="[0,6]" placeholder="Select End Date"></p-calendar>
             </div>
             <div class="p-col-3">
-                <input readonly [ngxTimepicker]="endDateTimepicker" formControlName="endDateTimePart"
-                    class="timePicker">
+                <input readonly [ngxTimepicker]="endDateTimepicker" formControlName="endDateTimePart" class="timePicker">
                 <ngx-material-timepicker-toggle [for]="endDateTimepicker"></ngx-material-timepicker-toggle>
-                <ngx-material-timepicker [preventOverlayClick]="true" #endDateTimepicker
-                    [ngxMaterialTimepickerTheme]="darkTheme" [minutesGap]="15">
+                <ngx-material-timepicker [preventOverlayClick]="true" #endDateTimepicker [ngxMaterialTimepickerTheme]="darkTheme" [minutesGap]="15">
                 </ngx-material-timepicker>
             </div>
         </div>
@@ -54,26 +41,21 @@
             <ng-container *ngIf="!isViewAllocation">
                 <div class="p-col-4">
                     <input type="number" onchange="validity.valid||(value='0');" pInputText formControlName="budgetHrs" min="0" max={{maxBudgetHrs}} value="0" step="0.25">
-                    <i title="Click to see allocation split" class="fa fa-info-circle overlayIconGantt" aria-hidden="true"
-                        (click)="this.showOverlayPanel($event, dailyAllocateOP)" *ngIf="task.showAllocationSplit"></i>
+                    <i title="Click to see allocation split" class="fa fa-info-circle overlayIconGantt" aria-hidden="true" (click)="this.showOverlayPanel($event, dailyAllocateOP)" *ngIf="task.showAllocationSplit"></i>
                 </div>
             </ng-container>
             <ng-container *ngIf="isViewAllocation">
                 <div class="p-col-4">
                     <input type="number" onchange="validity.valid||(value='0');" pInputText formControlName="budgetHrs" min="0" max={{maxBudgetHrs}} value="0" step="0.25">
-                    <button pButton type="button" (click)="viewAllocation('')" class="viewAllocation"
-                        icon='pi pi-sliders-h'></button>
-                    <i title="Click to see allocation split" class="fa fa-info-circle overlayIconGantt" aria-hidden="true"
-                        (click)="this.showOverlayPanel($event, dailyAllocateOP)"></i>
+                    <button pButton type="button" (click)="viewAllocation('')" class="viewAllocation" icon='pi pi-sliders-h'></button>
+                    <i title="Click to see allocation split" class="fa fa-info-circle overlayIconGantt" aria-hidden="true" (click)="this.showOverlayPanel($event, dailyAllocateOP)"></i>
                 </div>
             </ng-container>
             <div class="p-col-2">
                 Resource
             </div>
             <div class="p-col-4">
-                <p-dropdown appendTo="body" [style]="{'width':'100%'}" [options]="assignedUsers"
-                    [panelStyle]="{minWidth:'15em' }" placeholder="Select Resource" [showClear]="true" [group]="true"
-                    filter="true" formControlName="resource" resetFilterOnHide="true">
+                <p-dropdown appendTo="body" [style]="{'width':'100%'}" [options]="assignedUsers" [panelStyle]="{minWidth:'15em' }" placeholder="Select Resource" [showClear]="true" [group]="true" filter="true" formControlName="resource" resetFilterOnHide="true">
                     <ng-template let-group pTemplate="group">
                         <span style="margin-left:.25em">{{group.label}}</span>
                     </ng-template>
@@ -83,7 +65,6 @@
                 </p-dropdown>
             </div>
         </div>
-
         <div class="p-grid p-col mt-20">
             <ng-container *ngIf="editTaskObject.isDisableCascade">
                 <div class="p-col-2">

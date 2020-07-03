@@ -20,8 +20,9 @@ export class ConstantsService {
 
   public listNames = {
   ProjectScope: {
-      name: 'ProjectScope',
-      type: 'SP.Data.ProjectScopeListItem'
+      name: 'ProjectScopeCT',
+      type: 'SP.Data.ProjectScopeCTListItem',
+      contentTypeId:'0x0100DD5B4FBCF3F8FD4DA1C52F52781E1BEC00075BFD9AAF4F7544AD9DE8BFA52D7E05'
     },
     AvailableHours: { // checked
       name: 'AvailableHoursCT',
