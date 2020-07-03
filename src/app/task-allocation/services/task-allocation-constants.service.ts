@@ -23,7 +23,6 @@ export class TaskAllocationConstantsService {
         'Not Confirmed',
     ]
 
-
     common = {
         getMailTemplate: {
             select: 'ContentMT',

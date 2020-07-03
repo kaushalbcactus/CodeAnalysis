@@ -99,7 +99,7 @@
                                                 <div style="color:#c53e3e;font-weight: 600;font-size: 13px;">Time Spent</div>
                                                 <!-- <div> {{user.userName}} </div> -->
                                             </th>
-                                            <td (click)="fetchTimeSpentTaskDetails(user,date,$event)" [ngClass]="getTimeSpentBColor(date.date, user.GoLiveDate)" [ngStyle]="{'vertical-align':verticalAlign, 'cursor' : date.TimeSpent !=='0:00' ? 'pointer' :'' }" *ngFor="let date of user.dates" class="tableCell">
+                                            <td (click)="fetchTimeSpentTaskDetails(user,date,$event)" [ngClass]="userCapacityCommon.getTimeSpentBColor(date.date, user.GoLiveDate)" [ngStyle]="{'vertical-align':verticalAlign, 'cursor' : date.TimeSpent !=='0:00' ? 'pointer' :'' }" *ngFor="let date of user.dates" class="tableCell">
                                                 <div class="wrap">
 
                                                     <div class="availableHrs center"> {{date.TimeSpent}}

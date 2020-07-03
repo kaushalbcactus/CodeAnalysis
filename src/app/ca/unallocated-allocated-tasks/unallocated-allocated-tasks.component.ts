@@ -18,6 +18,8 @@ import { IDailyAllocationTask } from 'src/app/shared/pre-stack-allocation/interf
 import { AllocationOverlayComponent } from 'src/app/shared/pre-stack-allocation/allocation-overlay/allocation-overlay.component';
 import { IConflictResource } from 'src/app/task-allocation/interface/allocation';
 import { ConflictAllocationComponent } from 'src/app/shared/conflict-allocations/conflict-allocation.component';
+import { PreStackcommonService } from 'src/app/shared/pre-stack-allocation/service/pre-stackcommon.service';
+
 @Component({
   selector: 'app-unallocated-allocated-tasks',
   templateUrl: './unallocated-allocated-tasks.component.html',
@@ -90,7 +92,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     public datepipe: DatePipe,
     private dailyAllocation: PreStackAllocationComponent,
-    private conflictAllocation: ConflictAllocationComponent
+    private conflictAllocation: ConflictAllocationComponent,
+    private prestackService: PreStackcommonService
   ) {
     this.DropdownOptions = [{ label: 'All', value: 'All' },
     { label: 'Unallocated', value: 'unallocated' },
@@ -528,7 +531,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     const resource = this.resourceList.filter((objt) => {
       return rowData.allocatedResource.UserNamePG.ID === objt.UserNamePG.ID;
     });
-    await this.dailyAllocation.calcPrestackAllocation(resource, rowData);
+    await this.prestackService.calcPrestackAllocation(resource, rowData);
   }
 
 
@@ -869,7 +872,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       event.EstimatedTime = 0;
       this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Budget hours is set to zero because given budget hours is greater than task time period. Original budget hrs of task is ' + originalBudgetHrs, false);
     }
-    await this.dailyAllocation.calcPrestackAllocation(resource, event);
+    await this.prestackService.calcPrestackAllocation(resource, event);
   }
   async GetAllConstantTasks(taskName) {
     let allConstantTasks = [];
@@ -1095,7 +1098,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     const resource = this.resourceList.filter((objt) => {
       return Node.allocatedResource.UserNamePG.ID === objt.UserNamePG.ID;
     });
-    await this.dailyAllocation.calcPrestackAllocation(resource, Node);
+    await this.prestackService.calcPrestackAllocation(resource, Node);
     this.DateChange(Node, Slot, type);
     this.disableSave = false;
   }
@@ -1153,7 +1156,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     const resource = this.resourceList.filter((objt) => {
       return currentnode.allocatedResource.UserNamePG.ID === objt.UserNamePG.ID;
     });
-    await this.dailyAllocation.calcPrestackAllocation(resource, currentnode);
+    await this.prestackService.calcPrestackAllocation(resource, currentnode);
     const nextTasks = currentnode.NextTasks ? currentnode.NextTasks.split(';') : [];
     if (nextTasks) {
       this.cascadeNextTask(nextTasks, Slot, currentnode);
@@ -1824,7 +1827,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       // } else {
       //   task = milestoneTask;
       // }
-      this.dailyAllocation.setAllocationPerDay(allocation, milestoneTask);
+      this.prestackService.setAllocationPerDay(allocation, milestoneTask);
       if (allocation.allocationAlert) {
 
         this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Resource is over allocated', false);

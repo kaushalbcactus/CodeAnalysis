@@ -17,6 +17,7 @@ import { IDailyAllocationTask } from 'src/app/shared/pre-stack-allocation/interf
 import { PreStackAllocationComponent } from 'src/app/shared/pre-stack-allocation/pre-stack-allocation.component';
 import { AllocationOverlayComponent } from 'src/app/shared/pre-stack-allocation/allocation-overlay/allocation-overlay.component';
 import { TaskAllocationCommonService } from 'src/app/task-allocation/services/task-allocation-common.service';
+import { PreStackcommonService } from 'src/app/shared/pre-stack-allocation/service/pre-stackcommon.service';
 
 declare var $;
 @Component({
@@ -113,7 +114,8 @@ export class StandardprojectComponent implements OnInit {
     private dataService: DataService,
     public dailyAllocation: PreStackAllocationComponent,
     private dailyAllocateOP: AllocationOverlayComponent,
-    private allocationCommon: TaskAllocationCommonService) {
+    private allocationCommon: TaskAllocationCommonService,
+    private prestackService: PreStackcommonService) {
   }
 
   getDatePart(date) {
@@ -1131,7 +1133,7 @@ export class StandardprojectComponent implements OnInit {
           const resource = this.sharedTaskAllocateObj.oAllResource.filter((objt) => {
             return taskObj.data.userId === objt.UserName.ID;
           });
-          await this.dailyAllocation.calcPrestackAllocation(resource, taskObj.data);
+          await this.prestackService.calcPrestackAllocation(resource, taskObj.data);
           tempTaskArray.push(taskObj);
           endateArray.push(taskObj);
           this.allTasks.push(taskObj);
@@ -1198,7 +1200,7 @@ export class StandardprojectComponent implements OnInit {
           const resource = this.sharedTaskAllocateObj.oAllResource.filter((objt) => {
             return taskObj.data.userId === objt.UserName.ID;
           });
-          await this.dailyAllocation.calcPrestackAllocation(resource, taskObj.data);
+          await this.prestackService.calcPrestackAllocation(resource, taskObj.data);
           endateArray.push(taskObj);
           tempTaskArray.push(taskObj);
           this.allTasks.push(taskObj);
@@ -1427,7 +1429,7 @@ export class StandardprojectComponent implements OnInit {
       const resource = this.sharedTaskAllocateObj.oAllResource.filter((objt) => {
         return taskObj.data.userId === objt.UserName.ID;
       });
-      await this.dailyAllocation.calcPrestackAllocation(resource, taskObj.data);
+      await this.prestackService.calcPrestackAllocation(resource, taskObj.data);
       const taskEndDate = milestones_copy[milestoneIndex].children[subMilestoneIndex].children[milestones_copy[milestoneIndex].children[subMilestoneIndex].children.length - 1].data.EndDate;
       const subMilestoneEndDate = milestones_copy[milestoneIndex].children[subMilestoneIndex].data.EndDate;
       // check whether submilestone end date is greater than last task end date.
@@ -1524,7 +1526,7 @@ export class StandardprojectComponent implements OnInit {
       const resource = this.sharedTaskAllocateObj.oAllResource.filter((objt) => {
         return taskObj.data.userId === objt.UserName.ID;
       });
-      await this.dailyAllocation.calcPrestackAllocation(resource, taskObj.data);
+      await this.prestackService.calcPrestackAllocation(resource, taskObj.data);
       stardate = this.setDefaultPMHours(curObj.EndDate);
       this.sharedTaskAllocateObj.oTasks = milestones_copy[milestoneIndex].children[subMilestoneIndex].children;
       // It will cascade the remaining task in current submilestone
@@ -1574,7 +1576,7 @@ export class StandardprojectComponent implements OnInit {
       const resource = this.sharedTaskAllocateObj.oAllResource.filter((objt) => {
         return taskObj.data.userId === objt.UserName.ID;
       });
-      await this.dailyAllocation.calcPrestackAllocation(resource, taskObj.data);
+      await this.prestackService.calcPrestackAllocation(resource, taskObj.data);
       this.sharedTaskAllocateObj.oTasks = milestones_copy[milestoneIndex].children;
       // It will cascade the remaining task in current submilestone
       await this.createTask(stardate, false, taskObj.data.Title, taskObj.data.TaskDays, taskObj.data.assignedUserTimeZone, milestones_copy[milestoneIndex], null);
@@ -2349,7 +2351,7 @@ export class StandardprojectComponent implements OnInit {
       closable: false
     });
     ref.onClose.subscribe((allocation: any) => {
-      this.dailyAllocation.setAllocationPerDay(allocation, milestoneTask);
+      this.prestackService.setAllocationPerDay(allocation, milestoneTask);
       if (allocation.allocationAlert) {
 
         this.commonService.showToastrMessage(this.constants.MessageType.warn,'Resource is over allocated',false);

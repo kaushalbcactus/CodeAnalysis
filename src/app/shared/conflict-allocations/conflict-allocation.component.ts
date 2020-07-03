@@ -8,6 +8,7 @@ import { UsercapacityComponent } from 'src/app/shared/usercapacity/usercapacity.
 import { TaskAllocationConstantsService } from '../../task-allocation/services/task-allocation-constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
+import { UserCapacitycommonService } from '../usercapacity/service/user-capacitycommon.service';
 
 @Component({
   selector: 'app-conflict-allocation',
@@ -29,7 +30,7 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
     public popupConfig: DynamicDialogRef, public allocationCommon: TaskAllocationCommonService,
     public commonService: CommonService, private usercapacityComponent: UsercapacityComponent,
     private allocationConstant: TaskAllocationConstantsService, private spServices: SPOperationService,
-    private globalConstant: ConstantsService) { }
+    private globalConstant: ConstantsService, private userCapacityCommon: UserCapacitycommonService) { }
   public conflictResolved = false;
   ngOnInit() {
     this.cols = [
@@ -182,7 +183,7 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
     });
     task.resources = this.commonService.unique(task.resources, 'UserName.ID');
     if (milSubMil) {
-      capacity = await this.usercapacityComponent.factoringTimeForAllocation(task.start_date, task.end_date,
+      capacity = await this.userCapacityCommon.factoringTimeForAllocation(task.start_date, task.end_date,
         task.resources, [], [], this.allocationConstant.adhocStatus);
     } else {
       capacity = await this.usercapacityComponent.afterResourceChange(task, task.start_date,
@@ -198,7 +199,7 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
       matchedTask.AllocationPerDay = strAllocationPerDay;
       matchedTask.ExpectedTime = matchedTask.TotalAllocated ? matchedTask.TotalAllocated : currentTask.budgetHours ?
                                  currentTask.budgetHours : currentTask.EstimatedTime ? currentTask.EstimatedTime : '0.0';
-      this.usercapacityComponent.fetchUserCapacity(user);
+      this.userCapacityCommon.fetchUserCapacity(user);
     }
   }
 
@@ -246,7 +247,7 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
   recalculateUserCapacity(user, dates) {
     user.dates = dates;
     const businessDays = dates.map(d => d.date);
-    const newUserCapacity = this.usercapacityComponent.fetchUserCapacity(user);
+    const newUserCapacity = this.userCapacityCommon.fetchUserCapacity(user);
     const oCapacity = {
       arrUserDetails: [newUserCapacity],
       arrDateRange: businessDays,

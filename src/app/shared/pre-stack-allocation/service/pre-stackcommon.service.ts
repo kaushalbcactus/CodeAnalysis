@@ -1,0 +1,489 @@
+import { Injectable } from '@angular/core';
+import { GlobalService } from 'src/app/Services/global.service';
+import { ConstantsService } from 'src/app/Services/constants.service';
+import { CommonService } from 'src/app/Services/common.service';
+import { DatePipe } from '@angular/common';
+import { TaskAllocationConstantsService } from 'src/app/task-allocation/services/task-allocation-constants.service';
+import { IUserCapacity } from '../../usercapacity/interface/usercapacity';
+import { IDailyAllocationTask, IDailyAllocationObject, IPreStack, IPerformAllocationObject } from '../interface/prestack';
+import { IMilestoneTask } from 'src/app/task-allocation/interface/allocation';
+import { UserCapacitycommonService } from '../../usercapacity/service/user-capacitycommon.service';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class PreStackcommonService {
+
+  constructor(
+    private global: GlobalService,
+    private common: CommonService, private datePipe: DatePipe,
+    private allocationConstant: TaskAllocationConstantsService,
+    private constants: ConstantsService,
+    private userCapacityCommon: UserCapacitycommonService
+
+  ) { }
+
+  /**
+  * Generate task data
+  */
+  getData(milestoneTask): any {
+    const task = {
+      ID: milestoneTask.id,
+      task: milestoneTask.taskFullName,
+      taskType: milestoneTask.Task ? milestoneTask.Task : milestoneTask.itemType,
+      // tslint:disable: max-line-length
+      startDatePart: milestoneTask.pUserStartDatePart ? milestoneTask.pUserStartDatePart : milestoneTask.UserStartDatePart ? milestoneTask.UserStartDatePart : milestoneTask.StartDatePart,
+      endDatePart: milestoneTask.pUserEndDatePart ? milestoneTask.pUserEndDatePart : milestoneTask.UserEndDatePart ? milestoneTask.UserEndDatePart : milestoneTask.EndDatePart,
+      startDate: milestoneTask.pUserStart ? milestoneTask.pUserStart : milestoneTask.UserStart ? milestoneTask.UserStart : milestoneTask.StartDate,
+      endDate: milestoneTask.pUserEnd ? milestoneTask.pUserEnd : milestoneTask.UserEnd ? milestoneTask.UserEnd : milestoneTask.EndDate,
+      budgetHrs: milestoneTask.budgetHours ? milestoneTask.budgetHours : milestoneTask.EstimatedTime ? milestoneTask.EstimatedTime : milestoneTask.Hours,
+      startTime: milestoneTask.pUserStartTimePart ? milestoneTask.pUserStartTimePart : milestoneTask.UserStartTimePart ? milestoneTask.UserStartTimePart : milestoneTask.StartTimePart,
+      endTime: milestoneTask.pUserEndTimePart ? milestoneTask.pUserEndTimePart : milestoneTask.UserEndTimePart ? milestoneTask.UserEndTimePart : milestoneTask.EndTimePart,
+      status: milestoneTask.Status ? milestoneTask.Status : milestoneTask.status
+    };
+    return task;
+  }
+
+  /**
+   * Action is performed to recalculate daily allocation on changes to either resource, dates or budget hours
+   */
+  async calcPrestackAllocation(resource: IUserCapacity[], milestoneTask) {
+    milestoneTask.allocationTypeLoader = true;
+    const task = this.getData(milestoneTask);
+    const eqgTasks = ['EditSlot', 'QualitySlot', 'GraphicsSlot', 'Client Review', 'Send to client'];
+    if (!eqgTasks.find(t => t === task.taskType) && task.startDatePart &&
+      resource.length && task.endDatePart && +task.budgetHrs &&
+      task.endDate > task.startDate && resource.length
+      && new Date(task.startDatePart).getTime() !== new Date(task.endDatePart).getTime()) {
+      const allocationData: IDailyAllocationTask = {
+        ID: task.ID,
+        task: task.task,
+        startDate: task.startDatePart,
+        endDate: task.endDatePart,
+        startTime: task.startTime,
+        endTime: task.endTime,
+        budgetHrs: task.budgetHrs,
+        resource,
+        status: task.status,
+        strAllocation: '',
+        strTimeSpent: milestoneTask.timeSpentPerDay,
+        allocationType: ''
+      };
+      const resourceCapacity: IUserCapacity = await this.recalculateUserCapacity(allocationData);
+      const allocationSplit = await this.performAllocation(resourceCapacity, allocationData, false, null, null, [])
+      const objDailyAllocation: IPreStack = this.getAllocationPerDay(resourceCapacity, allocationData, allocationSplit.arrAllocation);
+      this.setAllocationPerDay(objDailyAllocation, milestoneTask);
+      if (objDailyAllocation.allocationAlert) {
+        milestoneTask.allocationAlert = true;
+      }
+    } else {
+      milestoneTask.showAllocationSplit = false;
+      milestoneTask.allocationColor = '';
+      milestoneTask.allocationPerDay = '';
+    }
+    milestoneTask.allocationTypeLoader = false;
+  }
+
+  /**
+   * It calculates user capacity from existing array of capacity or generate new request if data does not exists
+   */
+  async recalculateUserCapacity(allocationData: IDailyAllocationTask): Promise<IUserCapacity> {
+    let newUserCapacity = await this.calcCapacity(allocationData);
+    if (!newUserCapacity) {
+      newUserCapacity = await this.refetchUserCapacity(allocationData);
+      this.global.oCapacity.arrUserDetails.push(newUserCapacity);
+      newUserCapacity = await this.calcCapacity(allocationData);
+    } else if (!newUserCapacity.dates) {
+      const resource = allocationData.resource.length ? allocationData.resource[0].UserNamePG.ID : -1;
+      newUserCapacity = await this.refetchUserCapacity(allocationData);
+      const capacity = this.global.oCapacity.arrUserDetails.find(u => u.uid === resource);
+      capacity.dates = [...capacity.dates, ...newUserCapacity.dates];
+      capacity.businessDays = [...capacity.businessDays, ...newUserCapacity.businessDays];
+    }
+    return newUserCapacity;
+  }
+
+  async calcCapacity(allocationData): Promise<IUserCapacity> {
+    const taskStatus = this.allocationConstant.taskStatus.indexOf(allocationData.status) > -1 ? this.allocationConstant.taskStatus : [];
+    const adhoc = this.allocationConstant.adhocStatus;
+    const resource = allocationData.resource.length ? allocationData.resource[0].UserNamePG.ID ? allocationData.resource[0].UserNamePG.ID : allocationData.resource[0].UserNamePG.Id : -1;
+    const businessDays = this.userCapacityCommon.getDates(allocationData.startDate, allocationData.endDate, true);
+    let newUserCapacity;
+    if (this.global.oCapacity.arrUserDetails.length) {
+      const resourceCapacity = this.global.oCapacity.arrUserDetails.find(u => u.uid === resource);
+      if (resourceCapacity) {
+        newUserCapacity = { ...resourceCapacity };
+        newUserCapacity.businessDays = businessDays.dateArray;
+        // tslint:disable-next-line: max-line-length
+        const dates = newUserCapacity.dates.filter(u => businessDays.dateArray.find(b => new Date(b).getTime() === new Date(u.date).getTime()));
+        dates.forEach(date => {
+          date.tasksDetails = date.tasksDetails.filter(t => taskStatus.indexOf(t.status) < 0 &&
+            adhoc.indexOf(t.comments) < 0 && t.ID !== allocationData.ID);
+        });
+        newUserCapacity.dates = dates;
+        newUserCapacity.tasks = newUserCapacity.tasks.filter(t => taskStatus.indexOf(t.Status) < 0 &&
+          adhoc.indexOf(t.Comments) < 0 && t.ID !== allocationData.ID);
+        if (newUserCapacity.dates.length === newUserCapacity.businessDays.length) {
+          newUserCapacity = this.userCapacityCommon.fetchUserCapacity(newUserCapacity);
+        } else {
+          newUserCapacity.dates = [];
+        }
+      }
+    }
+    return newUserCapacity;
+  }
+
+  async refetchUserCapacity(allocationData) {
+    const endDate = this.common.calcBusinessDate('Next', 90, allocationData.startDate).endDate;
+    const newObj = { ...allocationData };
+    newObj.endDate = endDate;
+    const newUserCapacity = await this.getResourceCapacity(newObj);
+    return newUserCapacity;
+  }
+  /**
+   * Update task with new generated allocationperday string and other properties
+   */
+  setAllocationPerDay(allocation: IPreStack, task: IMilestoneTask): void {
+    task.allocationPerDay = allocation.allocationPerDay;
+    task.showAllocationSplit = new Date(task.pUserStartDatePart).getTime() !== new Date(task.pUserEndDatePart).getTime() ? true : false;
+    task.edited = true;
+    task.allocationColor = allocation.allocationType === 'Equal allocation per day' ? 'indianred' : '';
+  }
+
+  /**
+  * Perform prestack allocation or equal split allocation
+  */
+  async performAllocation(resource: IUserCapacity, allocationData: IDailyAllocationTask,
+    allocationChanged: boolean, oldValue, oldAllocation, allocationSplit): Promise<IPerformAllocationObject> {
+    let arrAllocation = [...allocationSplit];
+    const isDailyAllocationValid = !allocationData.allocationType ? this.checkDailyAllocation(resource, allocationData, allocationSplit) : false;
+    if (!isDailyAllocationValid) {
+      if (allocationChanged) {
+        this.common.confirmMessageDialog('Confirmation', 'Cant accommodate pending hours on the subsequent days so equal allocation will be done. Should we do equal allocation ?', null,
+          ['Yes', 'No'], false).then(async Confirmation => {
+            if (Confirmation === 'Yes') {
+              arrAllocation = await this.equalSplitAllocation(resource, allocationData, true);
+              allocationData.allocationType = 'Equal allocation per day';
+            } else {
+              const dateIndex = resource.dates.findIndex(d => new Date(d.date).getTime() === new Date(oldValue.date).getTime());
+              // tslint:disable-next-line: max-line-length
+              const allocationIndex = arrAllocation.findIndex(d => new Date(d.Date).getTime() === new Date(oldAllocation.Date).getTime());
+              resource.dates.splice(dateIndex, 1, oldValue);
+              arrAllocation.splice(allocationIndex, 1, oldAllocation);
+            }
+          });
+      } else {
+        arrAllocation = await this.equalSplitAllocation(resource, allocationData, false);
+        allocationData.allocationType = 'Equal allocation per day';
+      }
+    } else {
+      arrAllocation = [...allocationSplit];
+      allocationData.allocationType = 'Daily Allocation';
+    }
+    return {
+      arrAllocation,
+      allocationType: allocationData.allocationType
+    };
+  }
+
+  /**
+  * Perform daily allocation - part 1
+  * It will return boolean value based on prestack allocation success or not
+  */
+  checkDailyAllocation(resource: IUserCapacity, allocationData: IDailyAllocationTask, allocationSplit): boolean {
+    const autoAllocateAddHrs = '0:30';
+    let extraHrs = '0:0';
+    const maxLimit = +resource.maxHrs + 2;
+    const budgetHrs: number = +allocationData.budgetHrs;
+    let maxAvailableHrs = +resource.maxHrs;
+    let remainingBudgetHrs: string;
+    while (maxAvailableHrs <= maxLimit) {
+      remainingBudgetHrs = '' + budgetHrs;
+      remainingBudgetHrs = this.checkResourceAvailability(resource, extraHrs, remainingBudgetHrs, allocationData, maxLimit, allocationSplit);
+      if (remainingBudgetHrs.indexOf('-') > -1) {
+        extraHrs = this.common.addHrsMins([extraHrs, autoAllocateAddHrs]);
+        maxAvailableHrs = maxAvailableHrs + 0.5;
+      } else {
+        break;
+      }
+    }
+    return remainingBudgetHrs.indexOf('-') < 0 ? true : false;
+  }
+  /**
+   * Fetch user capacity based task start and end date
+   */
+  async getResourceCapacity(task: IDailyAllocationTask): Promise<IUserCapacity> {
+    const taskStatus: string[] = this.allocationConstant.taskStatus.indexOf(task.status) > -1 ? this.allocationConstant.taskStatus : [];
+    // tslint:disable-next-line: max-line-length
+    const oCapacity = await this.userCapacityCommon.factoringTimeForAllocation(task.startDate, task.endDate, task.resource, [task], taskStatus, this.allocationConstant.adhocStatus);
+    const resource: IUserCapacity = oCapacity.arrUserDetails.length ? oCapacity.arrUserDetails[0] : {};
+    return resource;
+  }
+
+  /**
+   * Main method performing pre stack allocation
+   */
+  checkResourceAvailability(resource: IUserCapacity, extraHrs: string, taskBudgetHrs: string,
+    allocationData: IDailyAllocationTask, maxLimit: number, allocationSplit): string {
+    const startTime = allocationData.startTime ? this.common.convertTo24Hour(allocationData.startTime) : '0:0';
+    const endTime = allocationData.endTime ? this.common.convertTo24Hour(allocationData.endTime) : '0:0';
+    const availableStartDayHrs: string = this.common.subtractHrsMins(startTime, '24:00', false);
+    const availableEndDayHrs: string = this.common.convertTo24Hour(endTime);
+    const resourceDailyDetails = resource.dates.filter(d => d.userCapacity !== 'Leave');
+    const resourceSliderMaxHrs: number = +resource.maxHrs + 3;
+    let newBudgetHrs = '0';
+    allocationSplit.length = 0;
+    let flag = true;
+    let i = 0;
+    for (const detail of resourceDailyDetails) {
+      let betweenDays = false;
+      const obj: IDailyAllocationObject = {
+        Date: new Date(detail.date),
+        Allocation: {
+          valueHrs: 0,
+          valueMins: 0,
+          maxHrs: 0,
+          maxMins: 0
+        },
+        timeSpent: detail.timeSpent,
+        tasks: detail.tasksDetails,
+        hideTasksTable: true
+      };
+      if (flag) {
+        if (i === 0) {
+          detail.availableHrs = this.compareHrs(availableStartDayHrs, detail) ? availableStartDayHrs : detail.availableHrs;
+        } else if (i === resourceDailyDetails.length - 1) {
+          detail.availableHrs = this.compareHrs(availableEndDayHrs, detail) ? availableEndDayHrs : detail.availableHrs;
+        } else {
+          betweenDays = true;
+        }
+        let availableHrs: string = detail.availableHrs.indexOf('-') > -1 ? '0:0' : detail.availableHrs;
+        availableHrs = detail.mandatoryHrs || detail.totalTimeAllocated >= maxLimit ? availableHrs :
+          this.common.addHrsMins([availableHrs, extraHrs]);
+        newBudgetHrs = this.getDailyAvailableHours(availableHrs, taskBudgetHrs);
+        // const numhrs = this.getResourceSliderMaxHrs(resourceSliderMaxHrs, detail, betweenDays);
+        const numhrs = this.getResourceMaxHrs(resourceSliderMaxHrs, detail, betweenDays);
+        obj.Allocation.maxHrs = numhrs.indexOf('-') > -1 ? 0 : this.common.getHrsMinsObj(numhrs, true).hours;
+        obj.Allocation.maxMins = availableHrs === '0:0' && detail.totalTimeAllocated >= maxLimit && !betweenDays ? 0 : 45;
+        if (newBudgetHrs.indexOf('-') > -1) {
+          obj.Allocation.valueHrs = this.common.getHrsMinsObj(availableHrs, false).hours;
+          obj.Allocation.valueMins = this.common.getHrsMinsObj(availableHrs, false).mins;
+          taskBudgetHrs = newBudgetHrs;
+        } else {
+          let budgetHrs = taskBudgetHrs.indexOf('-') > -1 ? taskBudgetHrs.replace('-', '') : taskBudgetHrs;
+          budgetHrs = budgetHrs.indexOf('.') > -1 ? this.common.convertToHrsMins(budgetHrs) : budgetHrs;
+          obj.Allocation.valueHrs = this.common.getHrsMinsObj(budgetHrs, false).hours;
+          obj.Allocation.valueMins = this.common.getHrsMinsObj(budgetHrs, false).mins;
+          flag = false;
+        }
+      }
+      allocationSplit.push(obj);
+      i++;
+    }
+    return newBudgetHrs;
+  }
+
+  /**
+   * This checks if budget hours for task is less than available hours for day
+   */
+  compareHrs(firstElement: string, day: any): boolean {
+    const secondElement = day.availableHrs;
+    const result = this.common.convertFromHrsMins(firstElement) <= this.common.convertFromHrsMins(secondElement) ? true : false;
+    day.mandatoryHrs = result ? true : day.mandatoryHrs;
+    return result;
+  }
+
+  /**
+   * Fetch maximum hours for slider
+   */
+  getResourceMaxHrs(defaultResourceMaxHrs: number, day: any, betweenDays: number | boolean, allocatedHours?: number): string {
+    const numtotalAllocated: number = this.common.convertFromHrsMins(day.totalTimeAllocatedPerDay);
+    const availableHrs: number = defaultResourceMaxHrs - numtotalAllocated;
+    const maxHrs: number = availableHrs; // availableHrs < allocatedHours ? allocatedHours : availableHrs;
+    const maxHrsMins: number = this.common.roundToPrecision(maxHrs, 0.25);
+    const sliderMaxHrs: number = betweenDays ? maxHrsMins > -1 && (24 - maxHrsMins < 12) ?
+      24 - maxHrsMins : defaultResourceMaxHrs : maxHrsMins;
+    return this.common.convertToHrsMins('' + sliderMaxHrs);
+  }
+
+  /**
+   * Subtracts remaining budget hours from available hours in day
+   * @param resourceAvailableHrs - available hours in day
+   * @param budgetHrs - remaining budget of task in day
+   */
+  getDailyAvailableHours(resourceAvailableHrs: string, budgetHrs: string): string {
+    let budgetHours: string = budgetHrs.indexOf(':') < 0 ? this.common.convertToHrsMins(budgetHrs) : budgetHrs;
+    budgetHours = budgetHours.indexOf('-') > -1 ? budgetHours.replace('-', '') : budgetHours;
+    const newBudgetHrs: string = this.common.subtractHrsMins(resourceAvailableHrs, budgetHours, true);
+    return newBudgetHrs;
+  }
+
+  /**
+   * Perform equal split to allocation per day
+   */
+  async equalSplitAllocation(resourceCapacityCopy: IUserCapacity, allocationData: IDailyAllocationTask,
+    allocationChanged: boolean): Promise<IPerformAllocationObject[]> {
+    const arrAllocation = [];
+    const businessDays = this.common.calcBusinessDays(allocationData.startDate, allocationData.endDate);
+    const budgetHours = +allocationData.budgetHrs;
+    let allocationPerDay = this.common.roundToPrecision(budgetHours / businessDays, 0.25);
+    const resourceCapacity = { ...resourceCapacityCopy };
+    // Object.keys(this.resourceCapacity).length ? this.resourceCapacity : await this.getResourceCapacity(allocationData);
+    const resourceSliderMaxHrs = resourceCapacity.maxHrs + 3;
+    const resourceDailyDetails = resourceCapacity.dates.filter(d => d.userCapacity !== 'Leave');
+    let remainingBudgetHrs = budgetHours;
+    const availaibility = this.equalSplitAvailibilty(allocationData, allocationPerDay);
+    const noOfDays = businessDays > availaibility.days ? (businessDays - availaibility.days) : businessDays;
+    let calcBudgetHrs = availaibility.lastDayAvailability < allocationPerDay && noOfDays > 1 ?
+      budgetHours - availaibility.lastDayAvailability : budgetHours;
+    calcBudgetHrs = availaibility.firstDayAvailablity < allocationPerDay ? calcBudgetHrs - availaibility.firstDayAvailablity :
+      calcBudgetHrs;
+    allocationPerDay = calcBudgetHrs !== budgetHours ? Math.ceil(calcBudgetHrs / noOfDays) : allocationPerDay;
+    let i = 0;
+    for (const detail of resourceDailyDetails) {
+      let totalHrs = 0;
+      if (i === 0) {
+        totalHrs = availaibility.firstDayAvailablity < allocationPerDay ?
+          availaibility.firstDayAvailablity : allocationPerDay; // noOfDays <= 1 ? availaibility.firstDayAvailablity :
+      } else if (i === resourceDailyDetails.length - 1) {
+        totalHrs = availaibility.lastDayAvailability < remainingBudgetHrs ? availaibility.lastDayAvailability : remainingBudgetHrs;
+      } else {
+        totalHrs = allocationPerDay < remainingBudgetHrs ? allocationPerDay : remainingBudgetHrs;
+      }
+      remainingBudgetHrs = remainingBudgetHrs - totalHrs;
+      const maximumHrs = resourceSliderMaxHrs; // totalHrs < resourceSliderMaxHrs ? resourceSliderMaxHrs : totalHrs
+      const strTotalHrs = this.common.convertToHrsMins(totalHrs);
+      const strMaximumHrs = this.common.convertToHrsMins(maximumHrs);
+      const obj: IDailyAllocationObject = {
+        Date: new Date(detail.date),
+        Allocation: {
+          valueHrs: this.common.getHrsMinsObj(strTotalHrs, false).hours,
+          valueMins: this.common.getHrsMinsObj(strTotalHrs, false).mins,
+          maxHrs: this.common.getHrsMinsObj(strMaximumHrs, true).hours,
+          maxMins: 45
+        },
+        timeSpent: detail.timeSpent,
+        tasks: detail.tasksDetails,
+        hideTasksTable: true
+      };
+
+      arrAllocation.push(obj);
+      i++;
+    }
+    if (allocationChanged) {
+      this.common.showToastrMessage(this.constants.MessageType.info, 'Equal allocation performed. Please assign budget hours from first row if change is needed.', true);
+    }
+    return arrAllocation;
+  }
+
+  /**
+   * Check if equal splitted hours is available on start and end day
+   */
+  equalSplitAvailibilty(allocationData: IDailyAllocationTask, allocationPerDay: number) {
+    let count = 0;
+    const startTime = allocationData.startTime ? this.common.convertFromHrsMins(this.common.convertTo24Hour(allocationData.startTime)) : 0;
+    const endTime = allocationData.endTime ? this.common.convertFromHrsMins(this.common.convertTo24Hour(allocationData.endTime)) : 0;
+    const availableStartDayHrs = 24 - startTime;
+    const availableEndDayHrs = endTime;
+    if (availableEndDayHrs < allocationPerDay) {
+      count++;
+    }
+    if (availableStartDayHrs < allocationPerDay) {
+      count++;
+    }
+    return {
+      firstDayAvailablity: availableStartDayHrs,
+      lastDayAvailability: availableEndDayHrs,
+      days: count
+    };
+  }
+
+  /**
+   * generate string of allocationperday from array of allocation
+   */
+  getAllocationPerDay(resourceCapacity: IUserCapacity, allocationData: IDailyAllocationTask, allocationSplit): IPreStack {
+    let allocationPerDay = '';
+    allocationSplit.forEach(element => {
+      allocationPerDay = allocationPerDay + this.datePipe.transform(new Date(element.Date), 'EE,MMMd,y') + ':' +
+        element.Allocation.valueHrs + ':' + element.Allocation.valueMins + '\n';
+    });
+    const availableHours = resourceCapacity.totalUnAllocated;
+    const allocationAlert = (new Date(allocationData.startDate).getTime() === new Date(allocationData.endDate).getTime()
+      && +availableHours < +allocationData.budgetHrs) ? true : false;
+    return ({
+      allocationPerDay,
+      allocationAlert,
+      allocationType: allocationData.allocationType ? allocationData.allocationType : 'Equal allocation per day'
+    });
+  }
+
+  getTimeSpentArray(strTimeSpent: string): any[] {
+    const newarrTimeSpent = [];
+    const arrTimeSpent = strTimeSpent.split(/\n/);
+    arrTimeSpent.forEach((daySpentTime) => {
+      newarrTimeSpent.push(this.common.getDateTimeFromString(daySpentTime));
+    });
+    return newarrTimeSpent;
+  }
+
+  getTimeSpent(arrTimeSpent: any[], day: any): number {
+    let dayTimeSpent = 0;
+    arrTimeSpent.forEach((timeSpentDate) => {
+      if (day.date.getTime() === timeSpentDate.date.getTime()) {
+        dayTimeSpent = timeSpentDate.value.hours + timeSpentDate.value.mins;
+      }
+    });
+    return dayTimeSpent;
+  }
+
+  /**
+   * Fetch preallocated allocation per day for each task or perform allocation
+   */
+  async initialize(resource: IUserCapacity, allocationData: IDailyAllocationTask): Promise<IDailyAllocationObject[]> {
+    let allocationSplit: IDailyAllocationObject[];
+    if (allocationData.strAllocation && !allocationData.allocationType) {
+      allocationSplit = this.showAllocation(resource, allocationData);
+    } else {
+      const arrAllocation: IPerformAllocationObject = await this.performAllocation(resource, allocationData, false, null, null, []);
+      allocationSplit = arrAllocation.arrAllocation;
+    }
+    return allocationSplit;
+  }
+
+  /**
+   * show allocation per day in popup with slider
+   */
+  showAllocation(resource: IUserCapacity, allocationData: IDailyAllocationTask): IDailyAllocationObject[] {
+    const arrAllocation = [];
+    const sliderMaxHrs: number = resource.maxHrs ? +resource.maxHrs + 3 : 0;
+    const allocationDays = allocationData.strAllocation.split(/\n/);
+    const arrTimeSpentPerDay = this.getTimeSpentArray(allocationData.strTimeSpent);
+    allocationDays.forEach((day, index) => {
+      if (day) {
+        // const betweenDays = index > 0 && index < allocationDays.length - 1 ? true : false;
+        const resourceDailyAllocation: any[] = resource.dates;
+        const allocation = this.common.getDateTimeFromString(day);
+        const allocatedDate: any = resourceDailyAllocation.find(d => new Date(d.date).getTime() === allocation.date.getTime());
+        const timeSpent: number = this.getTimeSpent(arrTimeSpentPerDay, allocatedDate);
+        if (allocatedDate) {
+          let resourceSliderMaxHrs: string = this.getResourceMaxHrs(sliderMaxHrs, allocatedDate, index, allocation.value.hours);
+          resourceSliderMaxHrs = resourceSliderMaxHrs.indexOf('-') > -1 ? '0:0' : resourceSliderMaxHrs;
+          const obj: IDailyAllocationObject = {
+            Date: allocation.date,
+            Allocation: {
+              valueHrs: allocation.value.hours,
+              valueMins: allocation.value.mins,
+              maxHrs: this.common.getHrsMinsObj(resourceSliderMaxHrs, true).hours,
+              maxMins: resourceSliderMaxHrs === '0:0' ? 0 : 45
+            },
+            timeSpent,
+            tasks: allocatedDate.tasksDetails,
+            hideTasksTable: true
+          };
+          arrAllocation.push(obj);
+        }
+      }
+    });
+    return arrAllocation;
+  }
+}

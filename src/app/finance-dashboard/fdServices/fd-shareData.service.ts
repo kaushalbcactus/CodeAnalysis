@@ -444,7 +444,7 @@ export class FDDataShareService {
 
             ///// Call service
             this.commonService.SetNewrelic('Finance-Dashboard', 'fdsharedata-CallProformaCreation', 'executeJS');
-            const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
+            const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice3/PDFService.svc/GeneratePDF';
             await this.spServices.executeJS(pdfService, pdfContent);
         }
     }
@@ -461,7 +461,7 @@ export class FDDataShareService {
 
         ///// Call service
         this.commonService.SetNewrelic('Finance-Dashboard', 'fd-shareData-callProformaInvoiceEdit', 'executeJS');
-        const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
+        const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice3/PDFService.svc/GeneratePDF';
         await this.spServices.executeJS(pdfService, pdfContent);
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
         this.fdConstantsService.fdComponent.selectedComp.reFetchData(refetchType);
@@ -614,7 +614,7 @@ export class FDDataShareService {
             pdfCall.ListName = oCLE.ListName;
             pdfCall.HtmlContent = proformHtml;
             this.commonService.SetNewrelic('Finance-Dashboard', 'proforma', 'executeJS');
-            const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
+            const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice3/PDFService.svc/GeneratePDF';
             await this.spServices.executeJS(pdfService, pdfCall);
         } catch (e) {
             response = false; // error in the above string (in this case, yes)!

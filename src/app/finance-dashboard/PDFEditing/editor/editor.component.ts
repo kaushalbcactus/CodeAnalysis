@@ -2933,7 +2933,7 @@ export class EditorComponent implements OnInit {
         this.fdConstantsService.fdComponent.selectedEditObject.ListName = "AAA01";
         this.fdConstantsService.fdComponent.selectedEditObject.Type = "Proforma";
         ///// Call service 
-        const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
+        const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice3/PDFService.svc/GeneratePDF';
         this.common.SetNewrelic('Finance-Dashboard', 'pdfEditing-CreateUSProforma', 'executeJS');
         await this.spOperationsServices.executeJS(pdfService, pdfContent);
     }
@@ -2953,7 +2953,7 @@ export class EditorComponent implements OnInit {
         this.fdConstantsService.fdComponent.selectedEditObject.Type = "Proforma";
         ///// Call service 
         this.common.SetNewrelic('Finance-Dashboard', 'pdfEditing-CreateJapanProforma', 'executeJS');
-        const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
+        const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice3/PDFService.svc/GeneratePDF';
         await this.spOperationsServices.executeJS(pdfService, pdfContent);
     }
 
@@ -2971,7 +2971,7 @@ export class EditorComponent implements OnInit {
         this.fdConstantsService.fdComponent.selectedEditObject.Type = "Proforma";
         ///// Call service 
         this.common.SetNewrelic('Finance-Dashboard', 'pdfEditing-CreateIndiaProforma', 'executeJS');
-        const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
+        const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice3/PDFService.svc/GeneratePDF';
         await this.spOperationsServices.executeJS(pdfService, pdfContent);
     }
 
