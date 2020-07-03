@@ -242,7 +242,6 @@ export class PreStackAllocationComponent implements OnInit {
         availableHrs = detail.mandatoryHrs || detail.totalTimeAllocated >= maxLimit ? availableHrs :
           this.common.addHrsMins([availableHrs, extraHrs]);
         newBudgetHrs = this.getDailyAvailableHours(availableHrs, taskBudgetHrs);
-        // const numhrs = this.getResourceSliderMaxHrs(resourceSliderMaxHrs, detail, betweenDays);
         const numhrs = this.getResourceMaxHrs(resourceSliderMaxHrs, detail, betweenDays);
         obj.Allocation.maxHrs = numhrs.indexOf('-') > -1 ? 0 : this.common.getHrsMinsObj(numhrs, true).hours;
         obj.Allocation.maxMins = availableHrs === '0:0' && detail.totalTimeAllocated >= maxLimit && !betweenDays ? 0 : 45;

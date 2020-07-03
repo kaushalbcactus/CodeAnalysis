@@ -267,7 +267,7 @@ export class ConstantsService {
       type: 'SP.Data.USStatesCTListItem',
       contentTypeId:'0x01006FFFE4AA5178E64DA3D9AE27A107818F*'
     },
-    BudgetRateMaster: { 
+    BudgetRateMaster: {
       name: 'BudgetRateMasterCT',
       type: 'SP.Data.BudgetRateMasterCTListItem',
       contentTypeId: '0x0100B533A9063996F14787DABBF9914FC93C*'
@@ -349,6 +349,11 @@ export class ConstantsService {
       name:'BlockingCT',
       type:'SP.Data.BlockingCTListItem',
       contentTypeId:'0x010088151006240E4149953AD8D3958182CA*'
+    },
+    PreferredResources: {
+      name: 'PreferredResources',
+      type: 'SP.Data.PreferredResourcesListItem',
+      contentTypeId: '0x01001C131EF299CBF741A4E84C62523A293A*'
     },
   };
 

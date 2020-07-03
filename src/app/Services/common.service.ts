@@ -725,7 +725,8 @@ export class CommonService {
           status: returnedProject ? returnedProject.Status : '',
           prevstatus: returnedProject ? returnedProject.PrevStatus : '',
           projectFolder: returnedProject ? returnedProject.ProjectFolder : '',
-          projectType: returnedProject ? returnedProject.ProjectType : ''
+          projectType: returnedProject ? returnedProject.ProjectType : '',
+          practiceArea: returnedProject ? returnedProject.BusinessVertical : ''
         };
         if (bFirstCall) {
           this.batchContents = new Array();
@@ -1115,7 +1116,7 @@ export class CommonService {
   }
   getMaxBudgetHrs(task) {
     let time: any = this.getHrsAndMins(task.start_date, task.end_date);
-    if(task.tat) {
+    if (task.tat) {
       let businessDays = this.calcBusinessDays(task.start_date, task.end_date);
       return businessDays * 24;
     } else {

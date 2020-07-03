@@ -20,7 +20,7 @@ import { SelectItem } from 'primeng/api';
 import { gantt } from '../../dhtmlx-gantt/codebase/source/dhtmlxgantt';
 import { FormBuilder, } from '@angular/forms';
 declare let dhtmlXMenuObject: any;
-import { IMilestoneTask, IConflictResource } from '../interface/allocation';
+import { IMilestoneTask, IConflictResource, IResourceSelection, IPreferredResources } from '../interface/allocation';
 import { IDailyAllocationTask } from 'src/app/shared/pre-stack-allocation/interface/prestack';
 import { PreStackAllocationComponent } from 'src/app/shared/pre-stack-allocation/pre-stack-allocation.component';
 import { AllocationOverlayComponent } from 'src/app/shared/pre-stack-allocation/allocation-overlay/allocation-overlay.component';
@@ -134,7 +134,8 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     ta: [],
     deliverable: [],
     account: [],
-    projectType: ''
+    projectType: '',
+    practiceArea: ''
   };
   public queryConfig = {
     data: null,
@@ -202,6 +203,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   singleTask;
   defaultTimeZone = 5.5;
   ogBudgethrs = 0;
+  preferredResources = [];
   constructor(
     private constants: ConstantsService,
     public sharedObject: GlobalService,
@@ -485,12 +487,36 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
 
-  /////// Impelement reorder function 
+  /////// Impelement reorder function
   reOrderTaskItems(milestoneData) {
     const milData = milestoneData;
     return milData;
   }
 
+  async fetchDetails() {
+    // tslint:disable: max-line-length
+    const batchUrl = [];
+    const milestoneObj = Object.assign({}, this.queryConfig);
+    milestoneObj.url = this.spServices.getReadURL(this.constants.listNames.Schedules.name, this.taskAllocationService.taskallocationComponent.milestone);
+    milestoneObj.url = milestoneObj.url.replace(/{{projectCode}}/gi, this.oProjectDetails.projectCode);
+    milestoneObj.listName = this.constants.listNames.PreferredResources.name;
+    milestoneObj.type = 'GET';
+    batchUrl.push(milestoneObj);
+
+    const preferredResObj = Object.assign({}, this.queryConfig);
+    preferredResObj.url = this.spServices.getReadURL(this.constants.listNames.PreferredResources.name, this.taskAllocationService.taskallocationComponent.getPreferredResources);
+    preferredResObj.url = preferredResObj.url.replace(/{{practiceArea}}/gi, this.oProjectDetails.practiceArea).replace(/{{currentuser}}/gi, '' + this.sharedObject.currentUser.userId);
+    preferredResObj.listName = this.constants.listNames.PreferredResources.name;
+    preferredResObj.type = 'GET';
+    batchUrl.push(preferredResObj);
+    const arrResult = await this.spServices.executeBatch(batchUrl);
+    this.commonService.SetNewrelic('TaskAllocation', 'task-detailsDialog', 'GetMilestonesByProjectCode and preferred resources');
+    const response = arrResult.length > 0 ? arrResult.map(a => a.retItems) : [];
+    return {
+      tasks: response.length > 0 ? response[0] : [],
+      preferredResources: response.length > 1 ? response[1] : []
+    };
+  }
 
   // tslint:disable
   public async getMilestones(bFirstLoad) {
@@ -500,13 +526,14 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.oProjectDetails = this.sharedObject.oTaskAllocation.oProjectDetails;
     const projectHoursSpent = [], projectHoursAllocated = [], projectAvailableHours = [], totalMilestoneBudgetHours = [];
     let milestones = [], milestoneTasks = [], milestoneSubmilestones = [], allRetrievedTasks = [];
+    const response = await this.fetchDetails();
+    // let milestoneCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.milestone);
+    // milestoneCall.filter = milestoneCall.filter.replace(/{{projectCode}}/gi, this.oProjectDetails.projectCode);
 
-    let milestoneCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.milestone);
-    milestoneCall.filter = milestoneCall.filter.replace(/{{projectCode}}/gi, this.oProjectDetails.projectCode);
-
-    this.commonService.SetNewrelic('TaskAllocation', 'task-detailsDialog', 'GetMilestonesByProjectCode');
-    const response = await this.spServices.readItems(this.constants.listNames.Schedules.name, milestoneCall);
-    this.allTasks = response.length ? response : [];
+    // this.commonService.SetNewrelic('TaskAllocation', 'task-detailsDialog', 'GetMilestonesByProjectCode');
+    // const response = await this.spServices.readItems(this.constants.listNames.Schedules.name, milestoneCall);
+    this.allTasks = response.tasks;
+    this.preferredResources = response.preferredResources;
 
     if (this.allTasks.length > 0) {
 
@@ -1361,18 +1388,18 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       })
     });
     task.resources = resources;
-
+    const prefRes = this.preferredResources.length ? this.preferredResources[0]: {};
     const startTime = new Date(new Date(task.start_date).setHours(0, 0, 0, 0));
     const endTime = new Date(new Date(task.end_date).setHours(0, 0, 0, 0));
-    let data: any = {
+    let data: IResourceSelection = {
       task,
       startTime: startTime,
       endTime: endTime,
+      projectDetails: this.sharedObject.oTaskAllocation.oProjectDetails,
+      preferredResources: prefRes
     }
-
     this.selectedTask = task;
     this.sharedObject.data = data;
-
   }
 
   onClose() {
@@ -1414,14 +1441,14 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     }, 100);
   }
 
-  confirmChangeResource(event) {
-    this.commonService.confirmMessageDialog('Change Resource of Task', 'Are you sure you want to change the Resource of Task ?', null, ['Yes', 'No'], false).then(async Confirmation => {
-      if (Confirmation === 'Yes') {
-        this.displayBody = false;
-        this.changeResource(event);
-      }
-    });
-  }
+  // confirmChangeResource(event) {
+  //   this.commonService.confirmMessageDialog('Change Resource of Task', 'Are you sure you want to change the Resource of Task ?', null, ['Yes', 'No'], false).then(async Confirmation => {
+  //     if (Confirmation === 'Yes') {
+  //       this.displayBody = false;
+  //       this.changeResource(event);
+  //     }
+  //   });
+  // }
 
   async changeResource(userId) {
     this.sharedObject.isResourceChange = true;
@@ -3891,7 +3918,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       this.commonService.showToastrMessage(this.constants.MessageType.warn, 'All tasks should be assigned to either a resource or skill before setting the milestone / submilestone - ' + task.title, false);
       return false;
     }
-    /////// Check if all are assigned more than zero budget hrs 
+    /////// Check if all are assigned more than zero budget hrs
     // tslint:disable
     const checkTaskAllocatedTime = checkTasks.find(e => (e.budgetHours === '' || +e.budgetHours <= 0)
       && e.itemType !== 'Send to client' && e.itemType !== 'Client Review' && e.itemType !== 'Follow up' && e.status !== 'Completed');
@@ -3901,7 +3928,7 @@ export class TimelineComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       return false;
     }
 
-    //////// Check if end time is greater than start time of the task 
+    //////// Check if end time is greater than start time of the task
     const compareDates = checkTasks.find(e => (e.end_date <= e.start_date && e.tat === false &&
       e.itemType !== 'Follow up' && e.status !== 'Completed' && e.itemType !== 'Send to client'));
     if (compareDates) {
