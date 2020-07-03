@@ -2738,7 +2738,7 @@ export class TimelineComponent
             ].children.findIndex(c => c.data.id === milestone.id);
 
             // replace all milestone from edited milestone
-            let currentMilestone: any = this.milestoneData.splice(
+            const currentMilestone = this.milestoneData.splice(
               0,
               milestoneIndex + 1
             );
@@ -2750,7 +2750,7 @@ export class TimelineComponent
             this.milestoneData = [...currentMilestone, ...dbmilestones];
 
             // replace all submilestone from edited submilestone
-            let submilestones: any = this.milestoneData[
+            const submilestones = this.milestoneData[
               milestoneIndex
             ].children.splice(0, submilestoneIndex + 1);
             // this.checkForEditedMilestone(submilestones);
@@ -2795,7 +2795,7 @@ export class TimelineComponent
           ].children.findIndex(c => c.data.id === milestone.id);
           if (submilestoneIndex > -1) {
             // replace all milestone from edited milestone
-            let tillCurrent: any = this.milestoneData.splice(
+            const tillCurrent = this.milestoneData.splice(
               0,
               milestoneIndex + 1
             );
@@ -2807,7 +2807,7 @@ export class TimelineComponent
             this.milestoneData = [...tillCurrent, ...dbmilestones];
 
             // replace all submilestone from edited submilestone
-            let submilestones: any = this.milestoneData[
+            const submilestones = this.milestoneData[
               milestoneIndex
             ].children.splice(0, submilestoneIndex);
             // this.checkForEditedMilestone(submilestones);
@@ -2869,21 +2869,23 @@ export class TimelineComponent
       if(mil.data) {
         mil.data.edited = false;
         mil.data.editMode = false;
-      } else if(mil.children && mil.children.length) {
+      }
+      if(mil.children && mil.children.length) {
         mil.children.forEach((task)=>{
-          if(task.data.type =='task') {
-            task.data.edited = false;
-            task.data.editMode = false;
-          } else if(task.data.type == 'submilestone') {
+          if(task.data.type == 'submilestone') {
             if(task.data) {
               task.data.edited = false;
               task.data.editMode = false;
-            } else {
+            } 
+            if(task.children && task.children.length) {
             task.children.forEach((sub)=>{ 
               sub.data.edited = false;
               sub.data.editMode = false;
             })
             }
+          } else {
+            task.data.edited = false;
+            task.data.editMode = false;
           }
         })
       }
@@ -2963,6 +2965,9 @@ export class TimelineComponent
   }
 
   editModeForTasks(task,rowNode) {
+    if( task.data.status !== "Completed" &&
+    task.data.status !== "Abandon" &&
+    task.data.status !== "Auto Closed") {
     task.data.assignedUsers.forEach(element => {
       if (element.items.find(c => c.value.ID === task.data.AssignedTo.ID)) {
         task.data.AssignedTo = element.items.find(
@@ -2974,6 +2979,7 @@ export class TimelineComponent
     task.data.editMode = true;
     rowNode.node.data.edited = true;
     rowNode.node.data.editMode = true;
+    }
   }
 
   // *************************************************************************************************
