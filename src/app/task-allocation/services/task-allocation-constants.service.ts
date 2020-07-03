@@ -72,7 +72,7 @@ export class TaskAllocationConstantsService {
             top: 4500
         },
         taskList: {
-            select: 'Title,Status,IsCentrallyAllocated,DefaultSkill,TaskTypeCH',
+            select: 'ID,Title,Status,IsCentrallyAllocated,DefaultSkill,TaskTypeCH',
             orderby: 'SerialOrder asc',
             filter: "Status eq '{{status}}' and TaskTypeCH ne '{{TaskType}}'",
             top: 4500

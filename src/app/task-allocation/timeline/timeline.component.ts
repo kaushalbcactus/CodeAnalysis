@@ -375,6 +375,7 @@ export class TimelineComponent
     tempSubmilestones,
     milestone
   ) {
+    debugger;
     let taskName = "";
     let bConsiderAllcoated = true;
     for (const milestoneTask of milestoneTasks) {
@@ -3142,7 +3143,7 @@ export class TimelineComponent
   ) {
     const allTaskNodes = node.task.nodes;
     const allTaskLinks = node.task.links;
-
+    debugger;
     allTaskNodes.forEach(task => {
       let nextTasks = this.getNextPrevious(
         allTaskNodes,
@@ -3639,9 +3640,9 @@ debugger;
       this.updateNextPreviousTasks(milestoneTask);
       milestoneTask.assignedUserChanged = true;
       if (assignedTo.hasOwnProperty("ID") && assignedTo.ID) {
-        milestoneTask.skillLevel = this.taskAllocateCommonService.getSkillName(
-          assignedTo.SkillText
-        );
+        // milestoneTask.skillLevel = this.taskAllocateCommonService.getSkillName(
+        //   assignedTo.SkillText
+        // );
         const previousUserTimeZone = milestoneTask.assignedUserTimeZone;
         const resource = this.sharedObject.oTaskAllocation.oResources.filter(
           objt => {
@@ -6622,6 +6623,7 @@ debugger;
     submilestone,
     tempID
   ) {
+    debugger;
     const submilestoneLabel = submilestone ? submilestone.title : "";
     const defaultDate = this.getDefaultDate();
     let taskObj: IMilestoneTask = {

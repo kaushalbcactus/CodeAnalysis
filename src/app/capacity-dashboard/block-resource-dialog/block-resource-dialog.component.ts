@@ -256,7 +256,7 @@ viewAllocation(allocationType) {
 // await this.dailyAllocation.calcPrestackAllocation(resources, this.task);
 
 isViewAllocationBtn() {
-    if (this.task.budgetHours && this.task.Resource && this.task.pUserStartDatePart !== this.task.pUserEndDatePart) {
+    if (this.task.budgetHours && this.task.Resource && this.task.pUserStartDatePart.getTime() !== this.task.pUserEndDatePart.getTime()) {
       this.isViewAllocation = true;
     } else {
       this.isViewAllocation = false;
