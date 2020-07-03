@@ -272,24 +272,35 @@
                         <!-- Menu option -->
                         <td [style.backgroundColor]="rowData.color">
 
-                            <div *ngIf="rowData.type === 'task' && rowData.milestoneStatus !== 'Completed' && (rowData.status !== 'Completed' && rowData.status !=='Abandon' && rowData.status !=='Auto Closed' && rowData.status !=='Hold' && rowData.status !== 'Not Saved') && !changeInRestructure"
-                                [hidden]="rowData.editMode === false" style="text-align: center;">
+                            <!-- <div  *ngIf="!rowData.editMode && rowData.type === 'milestone' && rowData.status !== 'Completed' && rowData.status !== 'Auto Closed' && !changeInRestructure"
+                                      style="text-align: center;">
+                                <p-menu #popupMenu [popup]="true" [style]="{'text-align': 'left'}" [model]="taskMenu">
+                                </p-menu>
+
+                                <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData, rowNode);popupMenu.show($event);"></i>
+                            </div> -->
+                            
+                          <div  *ngIf="(rowData.type === 'task' && rowData.milestoneStatus !== 'Completed' && rowData.status !== 'Completed' && rowData.status !=='Abandon' && rowData.status !=='Auto Closed' && rowData.status !=='Hold' && rowData.status !== 'Not Saved') || (rowData.type === 'milestone' && rowData.status !== 'Completed' && rowData.status !== 'Auto Closed') && !changeInRestructure"
+                                      [hidden]="rowData.editMode === false"
+                                      style="text-align: center;">
                                 <p-menu #popupMenu [popup]="true" [style]="{'text-align': 'left'}" [model]="taskMenu">
                                 </p-menu>
 
                                 <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData, rowNode);popupMenu.show($event);"></i>
                             </div>
 
-                            <div *ngIf=" !rowData.editMode && rowData.type === 'task' && rowData.milestoneStatus !== 'Completed' &&
+                            <div *ngIf="(!rowData.editMode && (rowData.type === 'task' && rowData.milestoneStatus !== 'Completed' &&
                             (rowData.status !== 'Completed' && rowData.status !== 'Abandon' && rowData.status !== 'Auto Closed'
-                              && rowData.status !== 'Hold') && !projectDetails && !rowData.parentSlot" style="text-align: center;">
+                              && rowData.status !== 'Hold') && !projectDetails && !rowData.parentSlot)) || !rowData.editMode && (rowData.type === 'milestone' && rowData.status !== 'Completed' && rowData.status !== 'Auto Closed' && !changeInRestructure)"
+                                style="text-align: center;">
                                 <p-menu #popupMenu [popup]="true" [style]="{'text-align': 'left'}" [model]="taskMenu">
                                 </p-menu>
 
                                 <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData,rowNode);popupMenu.show($event);"></i>
                             </div>
 
-                            <div *ngIf=" rowData.editMode && rowData.type === 'task' && rowData.status === 'Not Saved' && rowData.itemType !== 'Client Review' && rowData.itemType !== 'Send to client'">
+                            <div
+                                *ngIf=" rowData.editMode && rowData.type === 'task' && rowData.status === 'Not Saved' && rowData.itemType !== 'Client Review' && rowData.itemType !== 'Send to client'">
                                 <p-menu #popupMenu [popup]="true" [style]="{'text-align': 'left'}" [model]="taskMenu">
                                 </p-menu>
 
