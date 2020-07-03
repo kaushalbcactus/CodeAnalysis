@@ -3633,7 +3633,7 @@ export class TimelineComponent
   async assignedToUserChanged(milestoneTask) {
    // await this.allocationCommon.assignedToUserChanged(milestoneTask, this.milestoneData, this.allRestructureTasks, this.allTasks);
 
-
+debugger;
     const assignedTo = milestoneTask.AssignedTo;
     if (assignedTo) {
       this.updateNextPreviousTasks(milestoneTask);
@@ -4809,7 +4809,8 @@ export class TimelineComponent
       milestoneTask.AssignedTo.hasOwnProperty("ID") &&
       milestoneTask.AssignedTo.ID !== -1
     ) {
-      switch (milestoneTask.itemType) {
+      debugger;
+      switch (milestoneTask.skillLevel) {
         case "Write":
           writers.push({
             ID: milestoneTask.AssignedTo.ID,
@@ -4838,15 +4839,8 @@ export class TimelineComponent
           });
           arrGraphicsIds.push(milestoneTask.AssignedTo.ID);
           break;
-        case "Send to client":
-        case "Client Review":
-          break;
+       
         case "Pub Support":
-        case "Submission Pkg":
-        case "Journal Selection":
-        case "Submit":
-        case "Galley":
-        case "Journal Requirement":
           pubSupport.push({
             ID: milestoneTask.AssignedTo.ID,
             Name: milestoneTask.AssignedTo.Title
@@ -4854,13 +4848,6 @@ export class TimelineComponent
           arrPubSupportIds.push(milestoneTask.AssignedTo.ID);
           break;
         default:
-          if (milestoneTask.itemType.startsWith("Review-")) {
-            reviewers.push({
-              ID: milestoneTask.AssignedTo.ID,
-              Name: milestoneTask.AssignedTo.Title
-            });
-            arrReviewers.push(milestoneTask.AssignedTo.ID);
-          }
           break;
       }
     }
@@ -5199,6 +5186,7 @@ export class TimelineComponent
     };
   }
   async addUpdateTaskObject(milestoneTask) {
+    debugger
     return {
       __metadata: { type: this.constants.listNames.Schedules.type },
       CommentsMT: milestoneTask.scope,
