@@ -198,13 +198,13 @@
                                 </ngx-material-timepicker>
                             </td>
                             <th>End Date:</th>
-                            <td *ngIf="!myDashboardConstantsService.mydashboardComponent.user.isUserFTE">
+                            <td *ngIf="!myDashboardConstantsService.mydashboardComponent.user.isUserFTE || SelectedStatus === 'Not Confirmed' ">
                                 {{task.DueDateDT | date :'medium'}}
                             </td>
-                            <td *ngIf="myDashboardConstantsService.mydashboardComponent.user.isUserFTE && SelectedStatus === 'Completed' && task.DueDateDT">
+                            <td *ngIf="myDashboardConstantsService.mydashboardComponent.user.isUserFTE && task.Status === 'Completed'">
                                 {{task.DueDateDT | date :'medium'}}
                             </td>
-                            <td *ngIf="myDashboardConstantsService.mydashboardComponent.user.isUserFTE && SelectedStatus !== 'Completed' && task.DueTime">
+                            <td *ngIf="myDashboardConstantsService.mydashboardComponent.user.isUserFTE && task.Status !== 'Completed' && task.DueTime">
                                 <p-calendar [style]="{'border': '1px solid !important'}" placeholder="Select Due Date" [minDate]="task.StartDate" [(ngModel)]="task.DueDateDT" [disabledDays]="[0,6]" dateFormat="M dd, yy" appendTo="body" [monthNavigator]="true" [yearNavigator]="true"
                                     yearRange="{{yearRangePastNext}}">
                                 </p-calendar>
