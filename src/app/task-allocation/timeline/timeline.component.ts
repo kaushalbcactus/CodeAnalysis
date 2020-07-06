@@ -377,7 +377,7 @@ export class TimelineComponent
     tempSubmilestones,
     milestone
   ) {
-    debugger;
+    // debugger;
     let taskName = "";
     let bConsiderAllcoated = true;
     for (const milestoneTask of milestoneTasks) {
@@ -3248,7 +3248,7 @@ export class TimelineComponent
   ) {
     const allTaskNodes = node.task.nodes;
     const allTaskLinks = node.task.links;
-    debugger;
+    // debugger;
     allTaskNodes.forEach(task => {
       let nextTasks = this.getNextPrevious(
         allTaskNodes,
@@ -3551,15 +3551,15 @@ export class TimelineComponent
           tempmilestoneData,
           milestonesList,
           allReturnedTasks
-        );
-        const updatedtempmilestoneData = this.updateMilestoneSubMilestonesDate(
+        );   
+        const updatedTaskData = this.updateRestructureDates(
           tempmilestoneData
         );
-        const updatedTaskData = this.updateRestructureDates(
-          updatedtempmilestoneData
+        const updatedtempmilestoneData = this.updateMilestoneSubMilestonesDate(
+          updatedTaskData
         );
         this.milestoneData = [];
-        this.milestoneData.push.apply(this.milestoneData, updatedTaskData);
+        this.milestoneData.push.apply(this.milestoneData,updatedtempmilestoneData);
         this.milestoneData = [...this.milestoneData];
         this.changeInRestructure =
           this.milestoneData.find(c => c.data.editMode === true) !== undefined
@@ -3630,7 +3630,7 @@ export class TimelineComponent
       }
 
       //new added submilestone
-      if (subMilestone) {
+      if (subMilestone && subMilestone.length) {
         subMilestone.forEach(sub => {
           let previousSubMilestones = mil.children[
             mil.children.findIndex(e => e == sub) - 1
@@ -3643,17 +3643,17 @@ export class TimelineComponent
           );
           previousSubMilestones
             ? this.setTaskDates(sub.data, previousSubMilestones.end_date)
-            : new Date(parentMilestone.data.end_date) > new Date(defaultDate)
-              ? this.setTaskDates(sub.data, parentMilestone.data.end_date)
+            : new Date(parentMilestone.data.start_date) > new Date(defaultDate)
+              ? this.setTaskDates(sub.data, parentMilestone.data.start_date)
               : this.setTaskDates(sub.data, new Date(defaultDate));
         });
       }
       // new added milestone/submilestone task
-      if (mil.children) {
+      if (mil.children && mil.children.length) {
         let tasks = mil.children.find(e => e.children)
           ? mil.children.filter(e => e.children.find(c => c.data.added))
           : mil.children.filter(c => c.data.added == true);
-        if (tasks) {
+        if (tasks && tasks.length) {
           tasks.forEach(t => {
             if (t.data.type == "submilestone") {
               t.children.forEach(subTask => {
@@ -3667,11 +3667,11 @@ export class TimelineComponent
                   // let parentSubMilestone = milestoneData.find(m => m.children.filter(e=> e.data.title)).children.find(c=> c.data.title == subTask.data.submilestone).data;
                   prevTask
                     ? this.setTaskDates(subTask.data, prevTask.data.end_date)
-                    : new Date(parentSubMilestone.end_date) >
+                    : new Date(parentSubMilestone.start_date) >
                       new Date(defaultDate)
                       ? this.setTaskDates(
                         subTask.data,
-                        parentSubMilestone.end_date
+                        parentSubMilestone.start_date
                       )
                       : this.setTaskDates(subTask.data, new Date(defaultDate));
                 }
@@ -3685,9 +3685,9 @@ export class TimelineComponent
               );
               prevTask
                 ? this.setTaskDates(t.data, prevTask.data.end_date)
-                : new Date(parentMilestone.data.end_date) >
+                : new Date(parentMilestone.data.start_date) >
                   new Date(defaultDate)
-                  ? this.setTaskDates(t.data, parentMilestone.data.end_date)
+                  ? this.setTaskDates(t.data, parentMilestone.data.start_date)
                   : this.setTaskDates(t.data, new Date(defaultDate));
             }
           });
@@ -3706,15 +3706,19 @@ export class TimelineComponent
   }
 
   setDateValues(object) {
-    object.data.start_date = object.children[0].data.start_date;
-    object.data.pUserStart = object.children[0].data.pUserStart;
-    object.data.pUserStartDatePart = object.children[0].data.pUserStartDatePart;
+    let milestone = object;
+    milestone.children = object.children.sort((a, b) =>
+        <any>new Date(a.data.start_date) - <any>new Date(b.data.start_date));
+
+    object.data.start_date = milestone.children[0].data.start_date;
+    object.data.pUserStart = milestone.children[0].data.pUserStart;
+    object.data.pUserStartDatePart = milestone.children[0].data.pUserStartDatePart;
     object.data.end_date =
-      object.children[object.children.length - 1].data.end_date;
+      milestone.children[milestone.children.length - 1].data.end_date;
     object.data.pUserEnd =
-      object.children[object.children.length - 1].data.pUserEnd;
+      milestone.children[milestone.children.length - 1].data.pUserEnd;
     object.data.pUserEndDatePart =
-      object.children[object.children.length - 1].data.pUserEndDatePart;
+      milestone.children[milestone.children.length - 1].data.pUserEndDatePart;
   }
 
   updateMilestoneSubMilestonesDate(milestones) {
@@ -4915,7 +4919,7 @@ export class TimelineComponent
       milestoneTask.AssignedTo.hasOwnProperty("ID") &&
       milestoneTask.AssignedTo.ID !== -1
     ) {
-      debugger;
+      // debugger;
       switch (milestoneTask.skillLevel) {
         case "Write":
           writers.push({
@@ -5292,7 +5296,7 @@ export class TimelineComponent
     };
   }
   async addUpdateTaskObject(milestoneTask) {
-    debugger
+    // debugger
     return {
       __metadata: { type: this.constants.listNames.Schedules.type },
       CommentsMT: milestoneTask.scope,
@@ -6728,7 +6732,7 @@ export class TimelineComponent
     submilestone,
     tempID
   ) {
-    debugger;
+    // debugger;
     const submilestoneLabel = submilestone ? submilestone.title : "";
     const defaultDate = this.getDefaultDate();
     let taskObj: IMilestoneTask = {
