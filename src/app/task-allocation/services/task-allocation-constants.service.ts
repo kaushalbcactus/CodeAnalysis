@@ -3,7 +3,7 @@ import { ConstantsService } from '../../Services/constants.service';
 import { GlobalService } from '../../Services/global.service';
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class TaskAllocationConstantsService {
 
@@ -119,6 +119,12 @@ export class TaskAllocationConstantsService {
             expand: 'Milestones,MilestoneTasks',
             filter: "IsActiveCH eq '{{status}}'",
             top: 4500
+        },
+        getPreferredResources: {
+          select: 'ID,Resources/ID,Resources/Name,Resources/Title',
+          expand: 'Resources',
+          filter: "Practice_x0020_Area eq '{{practiceArea}}' and ActionBy/ID eq {{currentuser}} and IsActiveCH eq 'Yes'",
+          top: 4500
         }
     };
 }

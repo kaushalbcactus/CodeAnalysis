@@ -81,9 +81,9 @@ export interface IConflictTask {
 }
 
 export interface IConflictProject {
-    projectCode: string;
-    shortTitle: string;
-    allocatedhrs: number;
+  projectCode: string;
+  shortTitle: string;
+  allocatedhrs: number;
 }
 
 export interface IConflictResource {
@@ -94,14 +94,39 @@ export interface IConflictResource {
 }
 
 export interface IPopupConflictData {
-    conflictResolved: boolean;
-    action: string;
+  conflictResolved: boolean;
+  action: string;
 }
 
 export interface IQueryOptions {
-    data: any;
-    url: string;
-    type: string;
-    listName: string;
+  data: any;
+  url: string;
+  type: string;
+  listName: string;
 }
 
+export interface IResourceSelection {
+  task: any;
+  startTime: Date;
+  endTime: Date;
+  projectDetails: any;
+  preferredResources: IPreferredResources[];
+}
+
+export interface IResourceSelectionFilter {
+  fteFilter: string;
+  resourceTypeFilter: string;
+  bucketFilter: any[];
+  paFilter: any[];
+  startDateFilter: Date;
+  endDateFilter: Date;
+  resourceFilter: any[];
+}
+
+export interface IPreferredResources {
+  ID: number;
+  Title: string;
+  CurrentUser: number;
+  Resources: any;
+  IsActiveCH: string;
+}

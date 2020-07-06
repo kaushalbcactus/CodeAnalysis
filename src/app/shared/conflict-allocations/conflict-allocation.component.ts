@@ -70,8 +70,10 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
   }
 
   close(): void {
-    const obj: IPopupConflictData = { conflictResolved: this.conflictResolved, action: 'close' };
-    this.popupConfig.close(obj);
+    setTimeout(() => {
+      const obj: IPopupConflictData = { conflictResolved: this.conflictResolved, action: 'close' };
+      this.popupConfig.close(obj);
+    }, 100);
   }
 
   refresh(): void {
@@ -145,13 +147,13 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
                   const projectDetail = {
                     projectCode: task.projectCode,
                     shortTitle: project ? project.WBJID : '',
-                    allocatedhrs: this.commonService.convertFromHrsMins(task.timeAllocatedPerDay)
+                    allocatedhrs: +(this.commonService.convertFromHrsMins(task.timeAllocatedPerDay)).toFixed(2)
                   };
                   conflictTask.projects.push(projectDetail);
                 } else {
-                  const preallocatedHrs: number = projectExists.allocatedhrs;
+                  const preallocatedHrs: number = +(+projectExists.allocatedhrs).toFixed(2);
                   const currentAllocatedHrs: number = this.commonService.convertFromHrsMins(task.timeAllocatedPerDay);
-                  projectExists.allocatedhrs = preallocatedHrs + currentAllocatedHrs;
+                  projectExists.allocatedhrs = +(+preallocatedHrs + +currentAllocatedHrs).toFixed(2);
                 }
               });
               tasks.push(conflictTask);

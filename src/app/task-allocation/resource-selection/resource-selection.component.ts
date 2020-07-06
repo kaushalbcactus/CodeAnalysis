@@ -1,359 +1,306 @@
-import {
-  Component,
-  OnInit,
-  ViewChild,
-  Input,
-  OnChanges,
-  SimpleChanges,
-} from "@angular/core";
-import { UsercapacityComponent } from "src/app/shared/usercapacity/usercapacity.component";
-import { TimelineComponent } from "../timeline/timeline.component";
-import { CommonService } from "src/app/Services/common.service";
-import { ConstantsService } from "src/app/Services/constants.service";
-import { SPOperationService } from "src/app/Services/spoperation.service";
-import { GlobalService } from "src/app/Services/global.service";
-import { FormGroup, Validators, FormBuilder } from "@angular/forms";
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { UsercapacityComponent } from 'src/app/shared/usercapacity/usercapacity.component';
+import { TimelineComponent } from '../timeline/timeline.component';
+import { CommonService } from 'src/app/Services/common.service';
+import { ConstantsService } from 'src/app/Services/constants.service';
+import { GlobalService } from 'src/app/Services/global.service';
+import { FormGroup, Validators, FormBuilder } from '@angular/forms';
+import { IResourceSelection, IResourceSelectionFilter } from '../interface/allocation';
+import { sort } from 'gantt';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
+import { IUserCapacity } from 'src/app/shared/usercapacity/interface/usercapacity';
 
 @Component({
-  selector: "app-resource-selection",
-  templateUrl: "./resource-selection.component.html",
-  styleUrls: ["./resource-selection.component.css"],
+  selector: 'app-resource-selection',
+  templateUrl: './resource-selection.component.html',
+  styleUrls: ['./resource-selection.component.css'],
 })
 export class ResourceSelectionComponent implements OnInit {
-  @ViewChild("userCapacity", { static: false })
+  @ViewChild('userCapacity', { static: false })
   userCapacity: UsercapacityComponent;
-  AlldbResources = [];
+  alldbResources = [];
   Buckets = [];
   PracticeAreas = [];
-  Resources = [];
-  header = "";
-  constructor(
-    private timeline: TimelineComponent,
-    private commonService: CommonService,
-    private constants: ConstantsService,
-    private spServices: SPOperationService,
-    private sharedObject: GlobalService,
-    private fb: FormBuilder
-  ) {}
+  filteredResources = [];
+  header = '';
+  resourceType = [
+    { label: 'On Job', value: 'OnJob' },
+    { label: 'Trainee', value: 'Trainee' },
+  ];
+  isfte = [
+    { label: 'No', value: 'No' },
+    { label: 'Yes', value: 'Yes' },
+  ];
+  selectedResourceType = { label: '', value: '' };
+  selectedIsFTE = { label: '', value: '' };
+  selectedDateRanges = [];
+  constructor(private timeline: TimelineComponent, private commonService: CommonService, private constants: ConstantsService,
+              private sharedObject: GlobalService, private fb: FormBuilder, private spService: SPOperationService) { }
 
   searchCapacityForm = this.fb.group({
-    bucket: [""],
-    practicearea: [""],
-    resources: ["", [Validators.required]],
-    rangeDates: ["", [Validators.required]],
+    bucket: [''],
+    practicearea: [''],
+    resources: ['', [Validators.required]],
+    rangeDates: ['', [Validators.required]],
+    resourceType: ['', [Validators.required]],
+    isfte: ['', [Validators.required]]
   });
 
-  async ngOnInit() {
+  ngOnInit() {
     if (this.sharedObject.data) {
-      let data = this.sharedObject.data;
+      const data = this.sharedObject.data;
       this.header = this.sharedObject.resourceHeader;
-      console.log(data);
-      await this.onLoad(data);
+      this.alldbResources = this.getAllResources(data);
+      this.initialize(data, this.alldbResources);
     }
   }
 
-  // ngOnChanges(changes: SimpleChanges) {
-  //  console.log(this.data);
+  getPrefResources(data) {
+    const prefRes = [];
+    const prefResItem = data.preferredResources ? data.preferredResources : {};
+    const resources = prefResItem.Resources ? prefResItem.Resources.results ? prefResItem.Resources.results : [] : [];
+    resources.forEach((res) => {
+      const refRes = this.sharedObject.oTaskAllocation.oResources.find(r => r.UserNamePG.ID === res.ID);
+      prefRes.push(refRes);
+    });
+    return prefRes;
+  }
+
+  getAllResources(data) {
+    const prefRes = this.getPrefResources(data);
+    let taskResources = [...this.sharedObject.data.task.resources, ...prefRes];
+    taskResources = this.sharedObject.data.task.resources
+      .map(obj => ({ ...obj, arrPracticeArea: obj.Practice_x0020_Area.split(';#') }));
+    return taskResources;
+  }
+
+  initialize(data: IResourceSelection, taskResources) {
+    this.bindFilterData(taskResources);
+    const filters = this.getFilterValues(data);
+    const selectedResources = this.filterResources(taskResources, filters);
+    this.updateFilters(selectedResources, filters);
+    this.showCapacity(filters, data.task);
+  }
+
+  getFilterValues(popupData: IResourceSelection) {
+    // tslint:disable: max-line-length
+    const formControl = this.searchCapacityForm.controls;
+    const pa: string[] = popupData && popupData.projectDetails ? [popupData.projectDetails.practiceArea] : [];
+    const startDate: Date = popupData && popupData.startTime ? popupData.startTime : new Date();
+    const endDate: Date = popupData && popupData.endTime ? popupData.endTime : new Date();
+    const objFilter: IResourceSelectionFilter = {
+      bucketFilter: formControl.bucket.value.length ? formControl.bucket.value : [],
+      fteFilter: formControl.isfte.value ? formControl.isfte.value : 'No',
+      resourceTypeFilter: formControl.resourceType.value ? formControl.resourceType.value : 'OnJob',
+      paFilter: formControl.practicearea.value.length ? Array.isArray([formControl.practicearea.value]) ? formControl.practicearea.value : [formControl.practicearea.value] : pa,
+      startDateFilter: formControl.rangeDates.value ? formControl.rangeDates.value[0] : startDate,
+      endDateFilter: formControl.rangeDates.value ? formControl.rangeDates.value[1] : endDate,
+      resourceFilter: formControl.resources.value ? formControl.resources.value : []
+    };
+    return objFilter;
+  }
+
+  filterResources(resources, filters: IResourceSelectionFilter) {
+    let filteredResources;
+    if (filters.resourceFilter.length) {
+      filteredResources = resources.filter(r => filters.resourceFilter.findIndex(u => u.UserNamePG.ID === r.UserNamePG.ID) > -1);
+    } else {
+      filteredResources = filters.bucketFilter.length ? resources.filter(r => filters.bucketFilter.includes(r.Bucket)) : [...resources];
+      filteredResources = filteredResources.filter(r => r.arrPracticeArea.findIndex(p => filters.paFilter.includes(p)) > -1 && r.IsFTE === filters.fteFilter);
+      if (filters.resourceTypeFilter === 'OnJob') {
+        const dateFilter = filters.endDateFilter ? filters.endDateFilter : filters.startDateFilter;
+        filteredResources = filteredResources.filter((c) => c.GoLiveDate && new Date(c.GoLiveDate) <= dateFilter);
+      } else {
+        filteredResources = filteredResources.filter((c) => (!c.GoLiveDate) || (c.GoLiveDate && new Date(c.GoLiveDate) > filters.startDateFilter));
+      }
+    }
+    return filteredResources;
+  }
+
+  bindFilterData(filteredResources) {
+    const buckets = filteredResources.filter(Boolean).map(r => new Object({ label: r.Bucket, value: r.Bucket }));
+    this.Buckets = this.commonService.sortData(this.commonService.unique(buckets, 'label'));
+    const pa = [].concat(...[...new Set(filteredResources.filter(Boolean).map(r => r.arrPracticeArea))]);
+    const practiceAreas = pa.map(r => new Object({ label: r, value: r }));
+    this.PracticeAreas = this.commonService.sortData(this.commonService.unique(practiceAreas, 'label'));
+    this.filteredResources = filteredResources.map(
+      (o) => new Object({ label: o.UserNamePG.Title, value: o })
+    );
+  }
+
+  updateFilters(resources, filters: IResourceSelectionFilter) {
+    filters.resourceFilter = resources;
+    this.searchCapacityForm.patchValue({
+      resources,
+      bucket: filters.bucketFilter,
+      practicearea: filters.paFilter,
+      isfte: filters.fteFilter,
+      resourceType: filters.resourceTypeFilter,
+      rangeDates: [filters.startDateFilter, filters.endDateFilter]
+    });
+  }
+
+  sortResources(resources, prefRes, popupData, capacity) {
+    let sortedRes = [];
+    const resourcesCapacity = [...capacity.arrUserDetails];
+    resourcesCapacity.map(res => {
+      const resource = resources.find(u => u.UserNamePG.ID === res.uid);
+      res.userType = resource ? resource.userType : 'Other';
+    });
+    const previousResId = popupData.task.AssignedTo ? popupData.task.AssignedTo.ID : 0;
+    const sortedPreAllocatedRes = this.sortByAvailibility(resourcesCapacity.filter(r => r.userType === 'Allocated'));
+    const otherRes = resourcesCapacity.filter(r => r.userType === 'Other');
+    const assignedUser = previousResId > 0 ? resourcesCapacity.filter(r => r.ID === previousResId) : [];
+    const preferredRes = resourcesCapacity.filter(r => prefRes.filter(pr => pr.UserNamePG.ID ===  r.uid).length);
+    if (previousResId) {
+      const sortedOther = this.sortByAvailibility(otherRes);
+      const sortedPreferred = this.sortByAvailibility(preferredRes);
+      sortedRes = [...assignedUser, ...sortedPreAllocatedRes, ...sortedOther, ...sortedPreferred];
+    } else {
+      const others = this.sortByAvailibility([...preferredRes, ...otherRes]);
+      sortedRes = [...sortedPreAllocatedRes, ...others];
+    }
+    const uniqueSorted = [...new Set(sortedRes)];
+    return uniqueSorted;
+  }
+
+  // getUniqueResources(arrResources) {
+  //   const sortedRes = this.commonService.unique(arrResources, 'UserNamePG.ID');
+  //   // const allResources = [...arrResources];
+  //   // allResources.forEach(resource => {
+  //   //   if (sortedRes.findIndex(r => r.UserNamePG.ID === resource.UserNamePG.ID) < 0) {
+  //   //     sortedRes.push(resource);
+  //   //   }
+  //   // });
+  //   return sortedRes;
   // }
 
-  async onLoad(data: any) {
-    await this.GetResources();
-    let resArr = [];
-    this.sharedObject.data.task.resources.forEach((e) => {
-      resArr.push(
-        this.Resources.find((r) => r.value.UserNamePG.Id == e.UserNamePG.ID)
-      );
-    });
-    this.Resources = resArr;
-    resArr = resArr.map(({ value }) => value);
-
-    let filterBuckets = [];
-    let filterPracticeArea = [];
-
-    let bucket = [
-      ...new Map(
-        resArr
-          .filter((e) => e.Bucket)
-          .map((t) => t.Bucket)
-          .map((item) => [item, item])
-      ).values(),
-    ];
-    bucket.forEach((e) => {
-      filterBuckets.push(this.Buckets.find((r) => r.value == e));
-    });
-    this.Buckets = filterBuckets;
-
-    let practiceArea = [
-      ...new Map(
-        resArr
-          .filter((e) => e.Practice_x0020_Area)
-          .map((t) => t.Practice_x0020_Area)
-          .map((item) => [item, item])
-      ).values(),
-    ];
-    practiceArea.forEach((e) => {
-      filterPracticeArea.push(this.PracticeAreas.find((r) => r.value == e));
-    });
-    this.PracticeAreas = filterPracticeArea;
-
-    this.searchCapacityForm.patchValue({
-      bucket: bucket,
-      practicearea: practiceArea,
-      resources: resArr,
-      rangeDates: [data.startTime, data.endTime],
-    });
-    this.userCapacity.loaderenable = true;
-    // this.userCapacity.Onload(data)
-    let capacity: any = await this.userCapacity.afterResourceChange(
-      data.task,
-      data.startTime,
-      data.endTime,
-      data.task.resources,
-      [],
-      false
-    );
-    // this.userCapacity.oCapacity = capacity;
-    this.userCapacity.showCapacity(capacity);
+  sortByAvailibility(arrResources) {
+    const resources = arrResources.sort((a, b) => (a.availableHrs > b.availableHrs) ? 1 : -1);
+    return resources;
   }
 
-  async GetResources() {
-    const batchURL = [];
-    const options = {
-      data: null,
-      url: "",
-      type: "",
-      listName: "",
-    };
-
-    const Resources = {
-      // tslint:disable
-      select:
-        "ID,UserNamePG/Id,UserNamePG/Title,UserNamePG/EMail,PrimarySkill,Bucket,Practice_x0020_Area,MaxHrs,GoLiveDate,DateOfJoining",
-      expand: "UserNamePG/ID,UserNamePG/EMail,UserNamePG/Title",
-      filter: "IsActiveCH eq 'Yes'",
-      orderby: "UserNamePG/Title asc",
-      top: 4500,
-      // tslint:enable
-    };
-    const resourcesGet = Object.assign({}, options);
-    const resourcesQuery = Object.assign({}, Resources);
-    resourcesGet.url = this.spServices.getReadURL(
-      "" + this.constants.listNames.ResourceCategorization.name + "",
-      resourcesQuery
-    );
-    resourcesGet.type = "GET";
-    resourcesGet.listName = this.constants.listNames.ResourceCategorization.name;
-    batchURL.push(resourcesGet);
-
-    this.commonService.SetNewrelic(
-      "CapacityDashboard",
-      "CapacityDashboard",
-      "GetResourceCategorization"
-    );
-
-    const arrResults = await this.spServices.executeBatch(batchURL);
-
-    if (arrResults) {
-      if (arrResults[0].retItems.length > 0) {
-        this.AlldbResources = arrResults[0].retItems;
-
-        this.Buckets = this.commonService.sortData(
-          this.sharedObject.unique(
-            this.AlldbResources.filter((c) => c.Bucket !== null).map(
-              (o) => new Object({ label: o.Bucket, value: o.Bucket })
-            ),
-            ["label"]
-          )
-        );
-
-        this.PracticeAreas = this.commonService.sortData(
-          this.sharedObject.unique(
-            this.AlldbResources.filter(
-              (c) => c.Practice_x0020_Area !== null
-            ).map(
-              (o) =>
-                new Object({
-                  label: o.Practice_x0020_Area,
-                  value: o.Practice_x0020_Area,
-                })
-            ),
-            ["label"]
-          )
-        );
-
-        this.Resources = this.AlldbResources.map(
-          (o) => new Object({ label: o.UserNamePG.Title, value: o })
-        );
-      }
-    }
-  }
-
-  filterData(callType, dataType) {
-    // const arrValue = this.AlldbResources;
-    let arrValue = [];
-    this.sharedObject.data.task.resources.forEach((e) => {
-      arrValue.push(
-        this.Resources.find((r) => r.value.UserNamePG.Id == e.UserNamePG.ID)
-      );
-    });
-    // this.Resources = arrValue;
-    arrValue = arrValue.map(({ value }) => value);
-    let bucket = this.searchCapacityForm.controls["bucket"].value;
-    let practiceArea = this.searchCapacityForm.controls["practicearea"].value;
-    bucket = bucket ? bucket : [];
-    practiceArea = practiceArea ? practiceArea : [];
-    let res;
-    switch (callType) {
-      case "bucket":
-        res = bucket.length
-          ? arrValue.filter((c) => bucket.includes(c.Bucket))
-          : arrValue;
-        switch (dataType) {
-          case "resource":
-            res = practiceArea.length
-              ? res.filter((c) => practiceArea.includes(c.Practice_x0020_Area))
-              : res;
-            break;
-        }
-        break;
-      case "practicearea":
-        res = bucket.length
-          ? arrValue.filter((c) => bucket.includes(c.Bucket))
-          : arrValue;
-        res = practiceArea.length
-          ? res.filter((c) => practiceArea.includes(c.Practice_x0020_Area))
-          : res;
-        break;
-    }
-
-    return res;
-  }
-
-  onChange(event, arrayType) {
-    if (arrayType === "bucket") {
-      const practiceAreas =
-        event.value.length > 0
-          ? Array.from(
-              new Set(
-                this.filterData("bucket", "practicearea")
-                  .filter((c) => c.Practice_x0020_Area !== null)
-                  .map((o) => o.Practice_x0020_Area)
-              )
-            )
-          : [];
-
-      const resources =
-        event.value.length > 0
-          ? this.commonService.sortData(
-              this.filterData("bucket", "resource")
-                .filter((c) => c.UserNamePG.Title !== null)
-                .map((o) => new Object({ label: o.UserNamePG.Title, value: o }))
-            )
-          : [];
-
-      const resValues = resources.map(({ value }) => value); // this.Resources.map(o => o.value);
-
-      this.searchCapacityForm.patchValue({
-        practicearea: practiceAreas,
-        resources: resValues,
-      });
-    } else if (arrayType === "practicearea") {
-      const resources =
-        event.value.length > 0
-          ? this.commonService.sortData(
-              this.filterData("practicearea", "resource")
-                .filter((c) => c.UserNamePG.Title !== null)
-                .map((o) => new Object({ label: o.UserNamePG.Title, value: o }))
-            )
-          : this.commonService.sortData(
-              this.AlldbResources.filter((c) => c.UserNamePG.Title !== null).map(
-                (o) => new Object({ label: o.UserNamePG.Title, value: o })
-              )
-            );
-
-      const resValues = resources.map(({ value }) => value);
-      this.searchCapacityForm.patchValue({ resources: resValues });
-    } else if (arrayType === "resource") {
-    } else if (arrayType === "resourcetype") {
-    } else if (arrayType === "taskType") {
-    } else {
-      this.searchCapacityForm.patchValue({
-        bucket: [],
-        practicearea: [],
-        resources: [],
-      });
-    }
-  }
-
-  async onSubmit() {
-    if (!this.searchCapacityForm.valid) {
-      let Message = "Please select dates.";
-      if (!this.searchCapacityForm.value.resources) {
-        Message = "Please select Resource.";
-      }
-      this.commonService.showToastrMessage(
-        this.constants.MessageType.warn,
-        Message,
-        false
-      );
-      return false;
-    } else {
-      let Resources = this.searchCapacityForm.value.resources;
-
-      const startDate = new Date(this.searchCapacityForm.value.rangeDates[0]);
-      // if (this.searchCapacityForm.value.resourcetype === 'OnJob') {
-      //   if (this.searchCapacityForm.value.rangeDates[1]) {
-      //     Resources = Resources.filter(c => c.GoLiveDate !== null).filter(c => new Date(c.GoLiveDate)
-      //       <= this.searchCapacityForm.value.rangeDates[1]);
-      //   } else {
-      //     Resources = Resources.filter(c => c.GoLiveDate !== null).filter(c => new Date
-      //       (c.GoLiveDate) <= startDate);
-      //   }
-
-      // } else
-      // {
-      // if (this.searchCapacityForm.value.rangeDates[1]) {
-      // const nullResources = Resources.filter(c => c.GoLiveDate === null);
-      // Resources = Resources.filter(c => c.GoLiveDate !== null).filter(c => new Date(c.GoLiveDate)
-      //   > startDate);
-      // Resources.push.apply(Resources, nullResources);
-      // } else {
-      //   Resources = Resources.filter(c => this.searchCapacityForm.value.rangeDates[0] > new Date
-      //     (c.GoLiveDate));
-      // }
-      // }
-      let taskObj = this.sharedObject.data.task;
-      const data = {
-        task: taskObj,
-        startTime: this.searchCapacityForm.value.rangeDates[0],
-        endTime: this.searchCapacityForm.value.rangeDates[1]
-          ? this.searchCapacityForm.value.rangeDates[1]
-          : startDate,
-      };
-
+  showCapacity(filters: IResourceSelectionFilter, task) {
+    setTimeout(async () => {
       this.userCapacity.loaderenable = true;
-
-      let capacity: any = await this.userCapacity.afterResourceChange(
-        data.task,
-        data.startTime,
-        data.endTime,
-        Resources,
+      const popupData = this.sharedObject.data;
+      const prefRes =  this.getPrefResources(popupData);
+      const capacity: any = await this.userCapacity.afterResourceChange(
+        task,
+        filters.startDateFilter,
+        filters.endDateFilter,
+        filters.resourceFilter, // resources,
         [],
         false
       );
-
+      capacity.arrUserDetails = this.sortResources(filters.resourceFilter, prefRes, popupData, capacity);
       this.userCapacity.showCapacity(capacity);
-      // this.userCapacity.loaderenable = true;
-      // this.userCapacity.Onload(data);
-      // this.onLoad(data);
+    }, 300);
+  }
+
+  onChange(filter) {
+    const taskResources = [...this.alldbResources];
+    const objResourceSelection = { ...this.sharedObject.data };
+    if (filter !== 'resourceFilter') {
+      this.searchCapacityForm.controls.resources.reset();
+    }
+    const filters = this.getFilterValues(objResourceSelection);
+    this.bindFilterData(taskResources);
+    const resources = this.filterResources(taskResources, filters);
+    this.updateFilters(resources, filters);
+  }
+
+  async onSubmit() {
+    const isValid: boolean = this.validate();
+    if (isValid) {
+      const task = this.sharedObject.data.task;
+      const objResourceSelection = { ...this.sharedObject.data };
+      const filters: IResourceSelectionFilter = this.getFilterValues(objResourceSelection);
+      this.showCapacity(filters, task);
     }
   }
 
-  confirmChangeResource(event: Event) {
-    if (this.sharedObject.data.task.AssignedTo.ID == event) {
-      this.commonService.showToastrMessage(this.constants.MessageType.error,"Please select different resource name to change the resource",false);
-    } else {
-      this.timeline.confirmChangeResource(event);
+  validate(): boolean {
+    const resources = this.searchCapacityForm.value.resources;
+    const daterange = this.searchCapacityForm.value.rangeDates;
+    const msg = !daterange ? 'Please select dates' : !resources ? 'Please select Resource.' : '';
+    if (msg) {
+      this.commonService.showToastrMessage(this.constants.MessageType.warn, msg, false);
+      return false;
     }
+    return true;
+  }
+
+  confirmChangeResource(event: IUserCapacity) {
+    const assignedTo = this.sharedObject.data.task.AssignedTo;
+    if (assignedTo.ID === event.uid) {
+      this.commonService.showToastrMessage(this.constants.MessageType.error, 'Please select different resource name to change the resource', false);
+    } else {
+      this.commonService.confirmMessageDialog('Change Resource of Task', 'Are you sure you want to change the Resource of Task ?', null, ['Yes', 'No'], false).then(async Confirmation => {
+        if (Confirmation === 'Yes') {
+          this.timeline.displayBody = false;
+          this.timeline.changeResource(event.uid);
+          this.addResourcePreference(event);
+        }
+      });
+    }
+  }
+
+  addResourcePreference(assignedTo): void {
+    let preferredResource = this.sharedObject.data.preferredResources;
+    const projectDetails = this.sharedObject.oTaskAllocation.oProjectDetails;
+    const prefResItem = preferredResource ? preferredResource : {};
+    const resources = prefResItem.Resources ? prefResItem.Resources.results ? prefResItem.Resources.results : [] : [];
+    const isEntryExists: boolean = resources.length ? true : false;
+    const isResourceExists: boolean = isEntryExists ? resources.findIndex(res => res.ID === assignedTo.uid) > -1 ?
+      true : false : false;
+    if (!isResourceExists) {
+      this.commonService.confirmMessageDialog('Confirm', 'Do you want to add \'' + assignedTo.userName + '\' as preferred resource for practice area \'' + projectDetails.practiceArea + '\' ?', null, ['Yes', 'No'], false).then(async Confirmation => {
+        if (Confirmation === 'Yes') {
+          if (!isEntryExists) {
+            const newPrefResItem = await this.createPrefResource(assignedTo.uid, projectDetails);
+            preferredResource = this.formatPrefResData(newPrefResItem, assignedTo.uid);
+          } else {
+            const prefRes = resources.length ? resources.map(r => r.ID) : [];
+            prefRes.push(assignedTo.uid);
+            await this.addPrefResources(prefRes, prefResItem.ID);
+            prefResItem.Resources.results.push({ID: assignedTo.uid, Title: assignedTo.userName});
+          }
+        }
+      });
+    }
+  }
+
+  formatPrefResData(data, resource) {
+    const obj =  {
+      ID: data.ID,
+      Resources: {
+        results: [resource]
+      }
+    };
+    return [obj];
+  }
+
+  async createPrefResource(assignedTo, projectDetails) {
+    const data = {
+      Practice_x0020_Area: projectDetails.practiceArea,
+      ActionById: this.sharedObject.currentUser.userId,
+      ResourcesId: { results: [assignedTo] },
+      IsActiveCH: 'Yes'
+    };
+    this.commonService.SetNewrelic('Allocation', 'timeline', 'Add Resource Preference - Creating Item');
+    let item = await this.spService.createItem(this.constants.listNames.PreferredResources.name, data,
+      this.constants.listNames.PreferredResources.type);
+    item = item ? item : {};
+    return item;
+  }
+
+  async addPrefResources(resources, itemID: number) {
+    const updateItem = {
+      ResourcesId: { results: resources }
+    };
+    this.commonService.SetNewrelic('Allocation', 'timeline', 'Add Resource Preference - Update Item');
+    await this.spService.updateItem(this.constants.listNames.PreferredResources.name, itemID,
+      updateItem, this.constants.listNames.PreferredResources.type);
   }
 }

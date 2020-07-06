@@ -1062,7 +1062,7 @@ export class UsercapacityComponent implements OnInit {
   // }
 
   async onResourceClick(user) {
-    this.resourceSelect.emit(user.uid);
+    this.resourceSelect.emit(user);
   }
 
   // fetch capacity for after task resource change and milestone task added and/or changed

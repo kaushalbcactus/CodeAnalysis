@@ -568,7 +568,7 @@ export class PmconstantService {
       top: 4900
     },
     SOW_BY_SOWCODE: {
-      select: 'ID, ClientLegalEntity, SOWTitle, Currency, TotalBudget, NetBudget, OOPBudget, TaxBudget, Status,'
+      select: 'ID,ClientLegalEntity,Currency,TotalBudget,NetBudget,OOPBudget,TaxBudget,Status,'
         + 'PrimaryPOC,TotalScheduled, ScheduledRevenue, TotalLinked, RevenueLinked',
       filter: 'SOWCode eq \'{{sowCode}}\'',
       top: 4900
