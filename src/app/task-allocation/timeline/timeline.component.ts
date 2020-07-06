@@ -3695,8 +3695,8 @@ export class TimelineComponent
 
   setDateValues(object) {
     let milestone = object;
-    milestone.children = object.children.sort((a, b) =>
-        <any>new Date(a.data.start_date) - <any>new Date(b.data.start_date));
+    // milestone.children = object.children.sort((a, b) =>
+    //     <any>new Date(a.data.start_date) - <any>new Date(b.data.start_date));
 
     object.data.start_date = milestone.children[0].data.start_date;
     object.data.pUserStart = milestone.children[0].data.pUserStart;

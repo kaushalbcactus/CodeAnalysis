@@ -392,18 +392,22 @@ export class DragDropComponent implements OnInit {
   }
 
   getNextTargetSC(source, target, submilestone, currentPath, allPaths) {
-    const currentTaskStatus = submilestone.task.nodes.find(node => node.id === target).status;
-    currentPath = submilestone.task.nodes.find(node => node.id === target).taskType;
-    const TargetLinks = submilestone.task.links.filter(c => c.source === target).map(c => c.target);
-    if (TargetLinks.length) {
-      TargetLinks.forEach(newTarget => {
-        this.getNextTargetSC(source, newTarget, submilestone, currentPath, allPaths);
-      });
-    } else {
-      if (currentTaskStatus !== 'Completed') {
-        allPaths.push(currentPath);
+    const currentNode = submilestone.task.nodes.find(node => node.id === target);
+    if(currentNode) {
+      const currentTaskStatus = currentNode.status;
+      currentPath = submilestone.task.nodes.find(node => node.id === target).taskType;
+      const TargetLinks = submilestone.task.links.filter(c => c.source === target).map(c => c.target);
+      if (TargetLinks.length) {
+        TargetLinks.forEach(newTarget => {
+          this.getNextTargetSC(source, newTarget, submilestone, currentPath, allPaths);
+        });
+      } else {
+        if (currentTaskStatus !== 'Completed') {
+          allPaths.push(currentPath);
+        }
       }
     }
+    
 
   }
 
