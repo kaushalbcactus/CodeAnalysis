@@ -147,7 +147,7 @@ export class AddUpdateProformaDialogComponent implements OnInit {
       let poScheduled = parseFloat(this.selectedPOItem.value.TotalScheduled ? this.selectedPOItem.value.TotalScheduled : 0);
       let poInvoiced = parseFloat(this.selectedPOItem.value.TotalInvoiced ? this.selectedPOItem.value.TotalInvoiced : 0);
       let availableBudget = (this.selectedPOItem.value.Amount ? this.selectedPOItem.value.Amount : 0) - (poScheduled + poInvoiced);
-      this.ProformaForm.get('Amount').setValidators([Validators.max(availableBudget)]);
+      this.ProformaForm.get('Amount').setValidators([Validators.required, Validators.max(availableBudget)]);
       this.ProformaForm.get('Amount').updateValueAndValidity();
     }
     this.ProformaForm.patchValue({
