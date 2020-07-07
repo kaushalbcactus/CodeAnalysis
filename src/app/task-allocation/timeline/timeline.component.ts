@@ -2687,14 +2687,16 @@ export class TimelineComponent
         this.milestoneData = [...notCancelled, ...dbmilestones];
       }
     } else if (type == "cancelAll") {
-      const milestoneData = this.cancelAll();
+      const milestoneData = this.tempmilestoneData; //this.cancelAll();
       this.milestoneData = [...milestoneData];
       this.GanttchartData = this.getGanttTasksFromMilestones(
         this.milestoneData,
         true
       );
       this.createGanttDataAndLinks(true);
+      setTimeout(() => {
       this.loaderenable = false;
+      },100);
     } else {
       this.tempmilestoneData.forEach(element => {
         const getAllTasks = this.taskAllocateCommonService.getTasksFromMilestones(
@@ -2730,7 +2732,7 @@ export class TimelineComponent
               0,
               milestoneIndex + 1
             );
-            // this.checkForEditedMilestone(currentMilestone);
+            this.checkForEditedMilestone(currentMilestone);
             const dbmilestones = this.tempmilestoneData.slice(
               milestoneIndex + 1,
               this.tempmilestoneData.length
@@ -2741,7 +2743,7 @@ export class TimelineComponent
             const submilestones = this.milestoneData[
               milestoneIndex
             ].children.splice(0, submilestoneIndex + 1);
-            // this.checkForEditedMilestone(submilestones);
+            this.checkForEditedMilestone(submilestones);
             const dbsubmilestones = this.tempmilestoneData[
               milestoneIndex
             ].children.slice(
@@ -2787,7 +2789,7 @@ export class TimelineComponent
               0,
               milestoneIndex + 1
             );
-            // this.checkForEditedMilestone(tillCurrent);
+            this.checkForEditedMilestone(tillCurrent);
             const dbmilestones = this.tempmilestoneData.slice(
               milestoneIndex + 1,
               this.tempmilestoneData.length
@@ -2798,7 +2800,7 @@ export class TimelineComponent
             const submilestones = this.milestoneData[
               milestoneIndex
             ].children.splice(0, submilestoneIndex);
-            // this.checkForEditedMilestone(submilestones);
+            this.checkForEditedMilestone(submilestones);
             const dbsubmilestones = this.tempmilestoneData[
               milestoneIndex
             ].children.slice(
@@ -2851,35 +2853,43 @@ export class TimelineComponent
   }
   // tslint:enable
 
-  cancelAll() {
-    const milestoneData = this.milestoneData;
-    this.milestoneData.forEach((mil, index) => {
-      if (mil.data) {
-        mil.data.edited = false;
-        mil.data.editMode = false;
-      }
-      if (mil.children && mil.children.length) {
-        mil.children.forEach((task) => {
-          if (task.data.type == 'submilestone') {
-            if (task.data) {
-              task.data.edited = false;
-              task.data.editMode = false;
-            }
-            if (task.children && task.children.length) {
-              task.children.forEach((sub) => {
-                sub.data.edited = false;
-                sub.data.editMode = false;
-              })
-            }
-          } else {
-            task.data.edited = false;
-            task.data.editMode = false;
-          }
-        })
-      }
+  checkForEditedMilestone(milestonesTasks) {
+    let milestoneData = milestonesTasks.filter(m=> (m.data.type == "milestone" || m.data.type == 'submilestone') && m.data.edited)
+    milestoneData.forEach((m)=>{  
+      m.data.editMode = false;
+      m.data.edited = false;
     })
-    return milestoneData;
   }
+
+  // cancelAll() {
+  //   const milestoneData = this.tempmilestoneData; //this.milestoneData;
+  //   milestoneData.forEach((mil, index) => {
+  //     if (mil.data) {
+  //       mil.data.edited = false;
+  //       mil.data.editMode = false;
+  //     }
+  //     if (mil.children && mil.children.length) {
+  //       mil.children.forEach((task) => {
+  //         if (task.data.type == 'submilestone') {
+  //           if (task.data) {
+  //             task.data.edited = false;
+  //             task.data.editMode = false;
+  //           }
+  //           if (task.children && task.children.length) {
+  //             task.children.forEach((sub) => {
+  //               sub.data.edited = false;
+  //               sub.data.editMode = false;
+  //             })
+  //           }
+  //         } else {
+  //           task.data.edited = false;
+  //           task.data.editMode = false;
+  //         }
+  //       })
+  //     }
+  //   })
+  //   return milestoneData;
+  // }
 
   // **************************************************************************************************************************************
   //  Convert string date to date format after cancel the changes
@@ -2915,19 +2925,23 @@ export class TimelineComponent
 
   async editTask(task, rowNode, type?) {
     if (type == 'Edit All') {
+      this.loaderenable = true;
+      setTimeout(() => {
       this.milestoneData.forEach(async (mil, index) => {
         if (mil.children && mil.children.length) {
-          mil.children.forEach(async task => {
-            task.data.type == 'task' ? await this.editModeForTasks(task, rowNode) :
-              task.children.forEach(async sub => {
-                await this.editModeForTasks(sub, rowNode);
+          mil.children.forEach(async submile => {
+            submile.data.type == 'task' ? await this.editModeForTasks(submile,mil) :
+              submile.children.forEach(async subTask => {
+              await this.editModeForTasks(subTask,mil ,submile);
               })
           })
         }
         if (mil.data.itemType == 'Client Review') {
-          await this.editModeForTasks(mil, rowNode);
+          await this.editModeForTasks(mil, mil);
         }
       })
+      this.loaderenable = false;
+    },100);
     } else {
       task.assignedUsers.forEach(element => {
         if (element.items.find(c => c.value.ID === task.AssignedTo.ID)) {
@@ -2952,7 +2966,7 @@ export class TimelineComponent
     }
   }
 
-  editModeForTasks(task, rowNode) {
+  editModeForTasks(task, milestone, submilestone?) {
     if (task.data.status !== 'Completed' &&
       task.data.status !== 'Abandon' &&
       task.data.status !== 'Auto Closed') {
@@ -2965,8 +2979,16 @@ export class TimelineComponent
       });
       task.data.edited = true;
       task.data.editMode = true;
-      rowNode.node.data.edited = true;
-      rowNode.node.data.editMode = true;
+      milestone.data.edited = true;
+      milestone.data.editMode = true;
+      task.data.type !== 'Client Review' ? milestone.expanded = true : milestone;
+      if(submilestone) {
+        submilestone.data.edited = true;
+        submilestone.data.editMode = true;
+        submilestone.expanded = milestone.data.edited;
+      }
+      // rowNode.node.data.edited = true;
+      // rowNode.node.data.editMode = true;
     }
   }
 
@@ -3022,7 +3044,7 @@ export class TimelineComponent
         }
       ];
 
-      if (this.milestoneData.filter(e => e.data.edited).length) { //rowNode.node.children.filter(r=> r.data.editMode).length
+      if (this.milestoneData.filter(e => e.data.editMode).length) { //rowNode.node.children.filter(r=> r.data.editMode).length
         this.taskMenu.splice(
           this.taskMenu.findIndex(t => t.label === 'Edit All'),
           1
