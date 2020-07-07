@@ -5924,7 +5924,7 @@ export class TimelineComponent
     const allTasksItem = allTasks.filter(e => e.type !== "submilestone");
     allTasksItem.forEach(element => {
       if (element.type === "milestone") {
-        listOfMilestones.push(element.title); 
+        listOfMilestones.push(element.title);
       }
       if (element.edited) {
         if (element.type === "milestone" &&
@@ -6239,8 +6239,8 @@ export class TimelineComponent
       if (milestoneTasksRelink.length > 0) {
         this.linkScToClientReview(milestoneTasksRelink);
       }
-      const isValid = this.validateAllocationString(AllTasks);
-      if (!isValid) {
+      const isSaveValid = this.validateAllocationString(AllTasks);
+      if (!isSaveValid) {
         return false;
       }
       previousNode = milestone.data;
@@ -6251,8 +6251,8 @@ export class TimelineComponent
   validateAllocationString(checkTasks) {
      //////// check if multiple days task have allocationperday string
     const errorTasks = checkTasks.filter(t => t.itemType !== 'Client Review' && t.itemType !== 'Send to client' && !t.parentSlot
-                       && t.slotType === 'Task' && !t.allocationPerDay && t.edited && +t.budgetHrs
-                       && new Date(t.startDatePart).getTime() !== new Date(t.endDatePart).getTime());
+                       && t.slotType === 'Task' && !t.allocationPerDay && t.edited && +t.budgetHours
+                       && new Date(t.pUserStartDatePart).getTime() !== new Date(t.pUserEndDatePart).getTime());
     if (errorTasks.length) {
       const tasks = errorTasks.map(t => t.title).join(', ');
       this.commonService.showToastrMessage(
