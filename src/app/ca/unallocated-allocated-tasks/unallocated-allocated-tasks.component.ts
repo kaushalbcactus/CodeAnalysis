@@ -525,6 +525,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   }
 
   async assignedToUserChanged(rowData) {
+    this.disableSave = true;
     rowData.assignedUserChanged = true;
     rowData.AssignedTo = rowData.allocatedResource.UserNamePG;
     // this.completeTaskArray.find(a => a.Title === rowData.Title).MilestoneAllTasks.find(t => t.taskFullName === rowData.taskFullName);;
@@ -532,6 +533,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       return rowData.allocatedResource.UserNamePG.ID === objt.UserNamePG.ID;
     });
     await this.prestackService.calcPrestackAllocation(resource, rowData);
+    this.disableSave = false;
   }
 
 
@@ -862,7 +864,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     event.editMode = true;
     event.edited = true;
     Slot.editMode = true;
-    this.disableSave = false;
+    this.disableSave = true;
     const originalBudgetHrs = event.EstimatedTime;
     const resource = this.resourceList.filter((objt) => {
       return event.allocatedResource && event.allocatedResource.UserNamePG && event.allocatedResource.UserNamePG.ID === objt.UserNamePG.ID;
@@ -873,6 +875,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Budget hours is set to zero because given budget hours is greater than task time period. Original budget hrs of task is ' + originalBudgetHrs, false);
     }
     await this.prestackService.calcPrestackAllocation(resource, event);
+    this.disableSave = false;
   }
   async GetAllConstantTasks(taskName) {
     let allConstantTasks = [];
@@ -1089,6 +1092,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
 
   async DateChangePart(Node, Slot, type) {
+    this.disableSave = true;
     Node.UserStart = new Date(this.datepipe.transform(Node.UserStartDatePart, 'MMM d, y') + ' ' + Node.UserStartTimePart);
     Node.UserEnd = new Date(this.datepipe.transform(Node.UserEndDatePart, 'MMM d, y') + ' ' + Node.UserEndTimePart);
 
