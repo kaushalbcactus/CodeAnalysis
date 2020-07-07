@@ -5842,7 +5842,7 @@ export class TimelineComponent
       const subMil = allTasks.find(
         e =>
           e.milestone === element.milestone &&
-          e.taskFullName === element.submilestone
+          e.submilestone === element.submilestone
       );
       status =
         subMil.status === "In Progress"
