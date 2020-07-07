@@ -91,7 +91,7 @@ export class MyDashboardConstantsService {
       top: '4500'
     },
     ProjectInformations: {
-      select: 'ID,Title,ProjectCode,Status,ClientLegalEntity,Milestones,WBJID,ProjectFolder',
+      select: 'ID,Title,ProjectCode,Status,ClientLegalEntity,Milestones,WBJID,ProjectFolder,ProjectType',
       filter: '(Status eq \'Author Review\' or Status eq \'In Progress\' or Status eq \'Ready for Client\' or Status eq \'Unallocated\')',
       orderby: 'ProjectCode asc',
       top: '4500'

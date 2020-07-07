@@ -1781,6 +1781,7 @@ export class UsercapacityComponent implements OnInit {
           }
         }
       }
+      tasks.map(c=>c.editenableCapacity = this.enableDownload ? true: false);
       user.dayTasks = tasks;
 
       $("." + user.uid + "loaderenable").hide();

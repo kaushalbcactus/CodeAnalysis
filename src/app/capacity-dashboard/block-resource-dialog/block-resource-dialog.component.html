@@ -71,13 +71,19 @@
                 <div class="p-col-6 p-md-4 p-lg-3 blockResItem">Expected Time</div>
                 <div class="p-col-6 p-md-8 p-lg-9 blockResItem">
                     <app-allocation-overlay #dailyAllocateOP></app-allocation-overlay>
-                    <input type="number" onchange="validity.valid||(value='0');" step="0.25" pInputText class="cls_blockResExpectedTime" formControlName="ExpectedTime" [style.width]="isViewAllocation ? '87%' : '100%'" min="0" max={{maxExpectedHrs}} value="0" />
+                    <input type="number" onchange="validity.valid||(value='0');" step="0.25" pInputText class="cls_blockResExpectedTime" formControlName="ExpectedTime" [style.width]="isViewAllocation ? '87%' : '100%'" max={{maxExpectedHrs}} value="0" />
+
                     <ng-container *ngIf="isViewAllocation">
                         <button pButton type="button" (click)="viewAllocation('')" class="viewAllocation ui-button-danger" icon='pi pi-sliders-h'></button>
                         <i title="Click to see allocation split" style="font-size: 22px;
                             margin-left: 2px;
                             vertical-align: text-bottom;" class="fa fa-info-circle overlayIconGantt" aria-hidden="true" (click)="showOverlayPanel($event, dailyAllocateOP)"></i>
                     </ng-container>
+                    <div *ngIf="isBlockResourceFormSubmit && BlockResourceForm.controls.ExpectedTime.errors">
+                        <div *ngIf="BlockResourceForm.controls.ExpectedTime.errors.required" style="color:red;">Please provide Expected Time.</div>
+                        <div *ngIf="BlockResourceForm.controls.ExpectedTime.errors.gtZeroNumber" style="color:red;">
+                            Expected Time cannot be less than equal to zero</div>
+                    </div>
                 </div>
 
             </div>

@@ -1046,7 +1046,10 @@ export class AllProjectsComponent implements OnInit {
             for (const item of invoiceItems) {
               if (item.Status !== this.constants.STATUS.SCHEDUELD) {
 
-                this.commonService.showToastrMessage(this.constants.MessageType.error, 'Cancellation not allowed as there is confirmed invoice line items.', true);
+                this.commonService.showToastrMessage(this.constants.MessageType.error, 'Cancellation not allowed as there is confirmed invoice line items.', true,true);
+                return;
+              } else if(item.ScheduleType ==='oop' &&  item.Status === this.constants.STATUS.SCHEDUELD){
+                this.commonService.showToastrMessage(this.constants.MessageType.error, 'Cancellation not allowed as there is \'Scheduled OOP\' line items.', true,true);
                 return;
               }
             }
