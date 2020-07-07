@@ -57,6 +57,7 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
     if (this.projectCodes.indexOf(data.projectCode) < 0) {
       return this.globalService.url + '/taskAllocation?ProjectCode=' + data.projectCode;
     }
+    return '';
   }
 
   save(): void {
@@ -121,6 +122,7 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
     allTasks = arrTasks.length ? arrTasks : this.getAllTasks(milSubMil, originalData);
     let capacity;
     const maxHrs = 10;
+    let allDates = [];
     for (const element of allTasks) {
       capacity = await this.getResourceCapacity(element, milSubMil, allResources);
       for (const user of capacity.arrUserDetails) {
@@ -129,6 +131,7 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
         const dates = user.dates.filter(d => d.totalTimeAllocated > maxHrs && d.userCapacity !== 'Leave');
         const tasks = [];
         if (dates.length) {
+          allDates = [...new Set([...allDates, ...dates])];
           const projectCodes = this.getProjectCodes(dates);
           projectInformation = await this.getProjectShortTitle(projectCodes, projectInformation);
           for (const date of dates) {
@@ -144,10 +147,12 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
                 const project = projectInformation.find(p => p.ProjectCode === task.projectCode);
                 const projectExists = conflictTask.projects.find(p => p.projectCode === task.projectCode);
                 if (!projectExists) {
+                  const projectTitle = this.getTaskTitle(task);
                   const projectDetail = {
-                    projectCode: task.projectCode,
+                    projectCode: projectTitle,
                     shortTitle: project ? project.WBJID : '',
-                    allocatedhrs: +(this.commonService.convertFromHrsMins(task.timeAllocatedPerDay)).toFixed(2)
+                    allocatedhrs: +(this.commonService.convertFromHrsMins(task.timeAllocatedPerDay)).toFixed(2),
+                    showProjectLink: task.TaskType !== 'Adhoc' && task.TaskType !== 'ResourceBlocking' ? true : false
                   };
                   conflictTask.projects.push(projectDetail);
                 } else {
@@ -163,11 +168,12 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
         if (tasks.length) {
           if (oExistingResource && Object.keys(oExistingResource).length) {
             oExistingResource.tasks = [...oExistingResource.tasks, ...tasks];
+            oExistingResource.userCapacity = this.recalculateUserCapacity(user, allDates);
           } else {
             const conflictResouce: IConflictResource = {
               userName: user.userName,
               userId: user.uid,
-              userCapacity: this.recalculateUserCapacity(user, dates),
+              userCapacity: this.recalculateUserCapacity(user, allDates),
               tasks
             };
             conflictDetails.push(conflictResouce);
@@ -176,6 +182,22 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
       }
     }
     return conflictDetails;
+  }
+
+  getTaskTitle(task) {
+    let projectTitle = '';
+    switch (task.TaskType) {
+      case 'Adhoc':
+        projectTitle = task.title;
+        break;
+      case 'ResourceBlocking':
+        projectTitle = task.TaskType + ' (' + task.title + ')';
+        break;
+      default:
+        projectTitle = task.projectCode;
+        break;
+    }
+    return projectTitle;
   }
 
   async getResourceCapacity(task, milSubMil, allResources) {
@@ -200,7 +222,7 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
       const strAllocationPerDay = matchedTask && currentTask ? currentTask.allocationPerDay : '';
       matchedTask.AllocationPerDay = strAllocationPerDay;
       matchedTask.ExpectedTime = matchedTask.TotalAllocated ? matchedTask.TotalAllocated : currentTask.budgetHours ?
-                                 currentTask.budgetHours : currentTask.EstimatedTime ? currentTask.EstimatedTime : '0.0';
+        currentTask.budgetHours : currentTask.EstimatedTime ? currentTask.EstimatedTime : '0.0';
       this.userCapacityCommon.fetchUserCapacity(user);
     }
   }

@@ -41,7 +41,7 @@ export class TaskAllocationConstantsService {
             filter: 'ProjectCode eq \'{{projectCode}}\''
         },
         Resources: {
-            select: "ID,MaxHrs,TAVisibility,PrimarySkill,UserNamePG/ID,UserNamePG/EMail,UserNamePG/Title,UserNamePG/Name,TimeZone/Title,SkillLevel/Title,Tasks/Title,Tasks/Status,Deliverables/Title,DeliverableExclusion/Title,TA/Title,TAExclusion/Title,Account/Title",
+            select: "ID,MaxHrs,TAVisibility,PrimarySkill,UserNamePG/ID,UserNamePG/EMail,UserNamePG/Title,UserNamePG/Name,TimeZone/Title,SkillLevel/Title,Tasks/Title,Tasks/Status,Deliverables/Title,DeliverableExclusion/Title,TA/Title,TAExclusion/Title,Account/Title, Practice_x0020_Area, IsFTE, GoLiveDate, Bucket",
             expand: "UserNamePG/ID,UserNamePG/EMail,UserNamePG/Title,UserNamePG/Name,TimeZone/Title,SkillLevel/Title,Tasks/Title,Tasks/Status,Deliverables/Title,DeliverableExclusion/Title,TA/Title,TAExclusion/Title,Account/Title",
             filter: "IsActiveCH eq '{{enable}}'",
             orderby: "UserNamePG/Title asc",

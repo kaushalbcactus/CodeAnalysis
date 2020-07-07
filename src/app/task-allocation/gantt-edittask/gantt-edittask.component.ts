@@ -52,6 +52,7 @@ export class GanttEdittaskComponent implements OnInit {
       clockFaceTimeInactiveColor: '#fff'
     }
   };
+  disableSave = false;
 
   constructor(private fb: FormBuilder,
     private config: DynamicDialogConfig,
@@ -191,12 +192,12 @@ export class GanttEdittaskComponent implements OnInit {
       this.task.res_id = resource;
       this.task.user = resource ? resource.Title : '';
       if (resource) {
-        const resources = this.globalService.oTaskAllocation.oResources.filter((objt) => {
-          return this.task.AssignedTo.ID === objt.UserNamePG.ID;
-        });
-        await this.prestackService.calcPrestackAllocation(resources, this.task);
-        let task = await this.assignedToUserChanged();
-        this.patchEditForm(task.pUserStart, task.pUserEnd);
+        // const resources = this.globalService.oTaskAllocation.oResources.filter((objt) => {
+        //   return this.task.AssignedTo.ID === objt.UserNamePG.ID;
+        // });
+        // await this.prestackService.calcPrestackAllocation(resources, this.task);
+        const newtask = await this.assignedToUserChanged();
+        this.patchEditForm(newtask.pUserStart, newtask.pUserEnd);
         // let startDate = task.pUserStart;
         // let endDate = task.pUserEnd;
         // this.editTaskForm.patchValue({
@@ -309,7 +310,7 @@ export class GanttEdittaskComponent implements OnInit {
       let end_date = new Date(this.datepipe.transform(this.editTaskForm.get('endDate').value, 'MMM d, y') + ' ' + endTime);;
       this.task.end_date = this.commonService.calcTimeForDifferentTimeZone(end_date, task.assignedUserTimeZone,
         this.globalService.currentUser.timeZone);
-        this.associateStartEndDates('end', end_date);
+      this.associateStartEndDates('end', end_date);
       // this.task.pUserEnd = end_date;
       // this.task.pUserEndDatePart = this.taskAllocateCommonService.getDatePart(end_date);
       // this.task.pUserEndTimePart = this.taskAllocateCommonService.getTimePart(end_date);
@@ -455,9 +456,11 @@ export class GanttEdittaskComponent implements OnInit {
   }
 
   async assignedToUserChanged() {
-
+    this.disableSave = true;
     await this.taskAllocateCommonService.assignedToUserChanged(this.task, this.milestoneData, this.allRestructureTasks, this.allTasks);
+    this.disableSave = false;
     return this.task;
+
     // let milestoneTask = this.task;
     // if (milestoneTask.AssignedTo) {
     //   this.updateNextPreviousTasks(milestoneTask);
