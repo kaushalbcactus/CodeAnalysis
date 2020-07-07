@@ -3283,8 +3283,13 @@ export class TimelineComponent
           oExistingTask.previousTask !== previousTasks ||
           oExistingTask.nextTask !== nextTasks
         ) {
-          oExistingTask.editMode = true;
-          oExistingTask.edited = true;
+          if (oExistingTask.status == 'Completed' || oExistingTask.status == 'Auto Closed') {
+            oExistingTask.editMode = false;
+            oExistingTask.edited = true;
+          } else {
+            oExistingTask.editMode = true;
+            oExistingTask.edited = true;
+          }
         }
         oExistingTask.nextTask = nextTasks;
         oExistingTask.previousTask = previousTasks;
@@ -3557,7 +3562,7 @@ export class TimelineComponent
           updatedTaskData
         );
         this.milestoneData = [];
-        this.milestoneData.push.apply(this.milestoneData,updatedtempmilestoneData);
+        this.milestoneData.push.apply(this.milestoneData, updatedtempmilestoneData);
         this.milestoneData = [...this.milestoneData];
         this.changeInRestructure =
           this.milestoneData.find(c => c.data.editMode === true) !== undefined
@@ -4829,14 +4834,14 @@ export class TimelineComponent
             this.loaderenable = true;
             await this.generateSaveTasks();
           } else {
-          const conflictMessage = 'Conflict unresolved. Do you want to proceed ?';
-          this.commonService.confirmMessageDialog('Confirmation', conflictMessage, null, ['Yes', 'No'], false)
-            .then(async Confirmation => {
-              if (Confirmation === 'Yes') {
-                this.loaderenable = true;
-                await this.generateSaveTasks();
-              }
-            });
+            const conflictMessage = 'Conflict unresolved. Do you want to proceed ?';
+            this.commonService.confirmMessageDialog('Confirmation', conflictMessage, null, ['Yes', 'No'], false)
+              .then(async Confirmation => {
+                if (Confirmation === 'Yes') {
+                  this.loaderenable = true;
+                  await this.generateSaveTasks();
+                }
+              });
           }
         }
       }
@@ -5276,7 +5281,23 @@ export class TimelineComponent
     this.reloadResources.emit();
   }
 
-  async updateTaskObject(milestoneTask) {
+  updateClosedTaskObject(milestoneTask) {
+    return {
+      __metadata: { type: this.constants.listNames.Schedules.type },
+      NextTasks: this.setPreviousAndNext(
+        milestoneTask.nextTask,
+        milestoneTask.milestone,
+        this.oProjectDetails.projectCode
+      ),
+      PrevTasks: this.setPreviousAndNext(
+        milestoneTask.previousTask,
+        milestoneTask.milestone,
+        this.oProjectDetails.projectCode
+      )
+    }
+  }
+
+  updateTaskObject(milestoneTask) {
     return {
       PreviousAssignedUserId: milestoneTask.previousAssignedUser
         ? milestoneTask.previousAssignedUser
@@ -5284,7 +5305,7 @@ export class TimelineComponent
     };
   }
 
-  async addTaskObject(milestoneTask, slotTaskName) {
+  addTaskObject(milestoneTask, slotTaskName) {
     return {
       Title:
         milestoneTask.slotType !== 'Both' && milestoneTask.slotType !== 'Slot'
@@ -5304,7 +5325,7 @@ export class TimelineComponent
       ProjectCode: this.oProjectDetails.projectCode
     };
   }
-  async addUpdateTaskObject(milestoneTask) {
+  addUpdateTaskObject(milestoneTask) {
     // debugger
     return {
       __metadata: { type: this.constants.listNames.Schedules.type },
@@ -5393,19 +5414,23 @@ export class TimelineComponent
         ? ' ' + milestoneTask.title.match(/\d+$/)[0]
         : '';
       const slotTaskName = milestoneTask.itemType + taskCount;
-      addUpdateTask = await this.addUpdateTaskObject(milestoneTask);
+      addUpdateTask = this.addUpdateTaskObject(milestoneTask);
       addUpdateTask = Object.assign(
         addUpdateTask,
-        await this.addTaskObject(milestoneTask, slotTaskName)
+        this.addTaskObject(milestoneTask, slotTaskName)
       );
 
       url = this.spServices.getReadURL(this.constants.listNames.Schedules.name);
     } else {
-      addUpdateTask = await this.addUpdateTaskObject(milestoneTask);
-      addUpdateTask = Object.assign(
-        addUpdateTask,
-        await this.updateTaskObject(milestoneTask)
-      );
+      if (milestoneTask.status !== 'Completed' && milestoneTask.status !== 'Auto Closed') {
+        addUpdateTask = this.addUpdateTaskObject(milestoneTask);
+        addUpdateTask = Object.assign(
+          addUpdateTask,
+          this.updateTaskObject(milestoneTask)
+        );
+      } else {
+        addUpdateTask = this.updateClosedTaskObject(milestoneTask);
+      }
       url = this.spServices.getItemURL(
         this.constants.listNames.Schedules.name,
         +milestoneTask.id
@@ -5830,7 +5855,7 @@ export class TimelineComponent
       const subMil = allTasks.find(
         e =>
           e.milestone === element.milestone &&
-          e.taskFullName === element.submilestone
+          e.submilestone === element.submilestone
       );
       status =
         subMil.status === "In Progress"
@@ -5899,14 +5924,12 @@ export class TimelineComponent
     const allTasksItem = allTasks.filter(e => e.type !== "submilestone");
     allTasksItem.forEach(element => {
       if (element.type === "milestone") {
-        listOfMilestones.push(element.title); //.split(' (')[0]);
+        listOfMilestones.push(element.title); 
       }
-      if (
-        element.edited &&
-        element.status !== "Completed" &&
-        element.status !== "Auto Closed"
-      ) {
-        if (element.type === "milestone") {
+      if (element.edited) {
+        if (element.type === "milestone" &&
+          element.status !== "Completed" &&
+          element.status !== "Auto Closed") {
           this.updateCurrentItemID(this.deletedMilestones, element);
           currentMilTaskUpdated = this.addedUpdatedList(
             element,
