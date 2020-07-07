@@ -1698,6 +1698,7 @@ export class TimelineComponent
   }
 
   onAfterTaskDragCall(id, mode, e) {
+    this.disableSave = true;
     let task = { ...this.currentTask };
     this.ganttSetTime = false;
     const isStartDate =
@@ -1797,8 +1798,10 @@ export class TimelineComponent
       } else {
         this.openPopupOnGanttTask(task, "end");
       }
+      this.disableSave = false;
       return true;
     } else {
+      this.disableSave = false;
       return false;
     }
   }
@@ -2176,7 +2179,12 @@ export class TimelineComponent
       closable: false
     });
     ref.onClose.subscribe((updateData: any) => {
-      this.saveTask(false, updateData);
+      this.disableSave = true;
+      setTimeout(() => {
+        this.saveTask(false, updateData);
+        this.disableSave = false;
+      }, 100);
+
     });
   }
 
@@ -3131,6 +3139,7 @@ export class TimelineComponent
   }
 
   async budgetHrsChanged(event) {
+    this.disableSave = true;
     event.editMode = true;
     event.edited = true;
     const resource = this.sharedObject.oTaskAllocation.oResources.filter(
@@ -3153,6 +3162,7 @@ export class TimelineComponent
       }
     }
     await this.prestackService.calcPrestackAllocation(resource, event);
+    this.disableSave = false;
   }
 
   // **************************************************************************************************
@@ -3539,7 +3549,7 @@ export class TimelineComponent
           tempmilestoneData,
           milestonesList,
           allReturnedTasks
-        );   
+        );
         const updatedTaskData = this.updateRestructureDates(
           tempmilestoneData
         );
@@ -3729,8 +3739,9 @@ export class TimelineComponent
   // *************************************************************************************************************************************
 
   async assignedToUserChanged(milestoneTask) {
+    this.disableSave = true;
     await this.taskAllocateCommonService.assignedToUserChanged(milestoneTask, this.milestoneData, this.allRestructureTasks, this.allTasks);
-
+    this.disableSave = false;
 
     // const assignedTo = milestoneTask.AssignedTo;
     // if (assignedTo) {
@@ -3901,6 +3912,7 @@ export class TimelineComponent
   // Cascading full data
   // **************************************************************************************************
   async DateChangePart(node, type) {
+    this.disableSave = true;
     this.reallocationMailArray.length = 0;
     this.deallocationMailArray.length = 0;
     node.pUserStart = new Date(
@@ -3948,6 +3960,7 @@ export class TimelineComponent
     await this.DateChange(node, type);
     node.ExpectedBudgetHrs = await this.taskAllocateCommonService.setMaxBudgetHrs(node);
     this.maxBudgetHrs = node.ExpectedBudgetHrs;
+    this.disableSave = false;
   }
 
   // tslint:disable
@@ -6203,8 +6216,28 @@ export class TimelineComponent
       if (milestoneTasksRelink.length > 0) {
         this.linkScToClientReview(milestoneTasksRelink);
       }
-
+      const isValid = this.validateAllocationString(AllTasks);
+      if (!isValid) {
+        return false;
+      }
       previousNode = milestone.data;
+    }
+    return true;
+  }
+
+  validateAllocationString(checkTasks) {
+     //////// check if multiple days task have allocationperday string
+    const errorTasks = checkTasks.filter(t => t.itemType !== 'Client Review' && t.itemType !== 'Send to client' && !t.parentSlot
+                       && t.slotType === 'Task' && !t.allocationPerDay && t.edited && +t.budgetHrs
+                       && new Date(t.startDatePart).getTime() !== new Date(t.endDatePart).getTime());
+    if (errorTasks.length) {
+      const tasks = errorTasks.map(t => t.title).join(', ');
+      this.commonService.showToastrMessage(
+        this.constants.MessageType.warn,
+        'Error occured for tasks' + tasks + '. Please try reset budget hours and save again.',
+        false
+      );
+      return false;
     }
     return true;
   }

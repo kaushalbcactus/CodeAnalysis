@@ -1,5 +1,5 @@
 <div class='taskButton' fxLayout="row" fxLayoutAlign="end center">
-    <button type="button" pButton icon="pi pi-save" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="saveTask()" label="Save" class="saveTaskButton"></button>
+    <button type="button" pButton icon="pi pi-save" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="saveTask()" [disabled]="disableSave" label="Save" class="saveTaskButton"></button>
     <button type="button" pButton icon="pi pi-times" (click)="reset();" label="Cancel" class="ui-button-secondary" style="background-color:ghostwhite;"></button>
 </div>
 
