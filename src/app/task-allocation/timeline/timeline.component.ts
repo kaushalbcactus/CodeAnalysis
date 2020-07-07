@@ -3273,8 +3273,13 @@ export class TimelineComponent
           oExistingTask.previousTask !== previousTasks ||
           oExistingTask.nextTask !== nextTasks
         ) {
+          if(oExistingTask.status == 'Completed' || oExistingTask.status == 'Auto Closed') {
+            oExistingTask.editMode = false;
+            oExistingTask.edited = true;
+          } else {
           oExistingTask.editMode = true;
           oExistingTask.edited = true;
+          }
         }
         oExistingTask.nextTask = nextTasks;
         oExistingTask.previousTask = previousTasks;
@@ -5888,12 +5893,10 @@ export class TimelineComponent
       if (element.type === "milestone") {
         listOfMilestones.push(element.title); //.split(' (')[0]);
       }
-      if (
-        element.edited &&
+      if (element.edited) {
+        if (element.type === "milestone" &&
         element.status !== "Completed" &&
-        element.status !== "Auto Closed"
-      ) {
-        if (element.type === "milestone") {
+        element.status !== "Auto Closed") {
           this.updateCurrentItemID(this.deletedMilestones, element);
           currentMilTaskUpdated = this.addedUpdatedList(
             element,
