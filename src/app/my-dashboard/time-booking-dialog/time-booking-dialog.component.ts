@@ -472,7 +472,6 @@ export class TimeBookingDialogComponent implements OnInit {
   }
 
   async SaveTimeBooking() {
-debugger;
     let count = 0;
     const dbTasks = this.UserMilestones.filter(c => c.type === 'task');
     // tslint:disable-next-line: prefer-for-of
