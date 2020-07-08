@@ -40,6 +40,8 @@ export class ChangeBudgetDialogComponent implements OnInit {
     { label: 'USD', value: '$' },
   ]
   currency: string;
+  BalancedRevenue: number;
+  BalancedOOP: number;
   constructor(private frmbuilder: FormBuilder, 
     private adminCommonService: AdminCommonService,
     private adminConstants: AdminConstantService,
@@ -58,7 +60,7 @@ export class ChangeBudgetDialogComponent implements OnInit {
   }
 
   ngOnInit() {
-
+    console.log(this.config.data.poObject)
     this.currPOObj = this.config.data.poObject;
     this.selectedValue = [];
     this.checkBudgetValue = false;
@@ -229,6 +231,16 @@ export class ChangeBudgetDialogComponent implements OnInit {
       this.common.showToastrMessage(this.constantsService.MessageType.error,'Total should be negative number',false);
       return false;
     }
+
+    if (Math.abs(this.adminObject.newBudget.AmountRevenue) > this.currPOObj.BalancedRevenue) {
+      this.common.showToastrMessage(this.constantsService.MessageType.error,'Can\'t reduce Revenue amount by '+Math.abs(this.adminObject.newBudget.AmountRevenue)+' as the Linked/Invoice Balance is ' + this.currPOObj.BalancedRevenue ,false);
+      return false;
+    }
+    if (Math.abs(this.adminObject.newBudget.AmountOOP) > this.currPOObj.BalancedOOP) {
+      this.common.showToastrMessage(this.constantsService.MessageType.error,'Can\'t reduce OOP amount by '+Math.abs(this.adminObject.newBudget.AmountOOP)+' as the Linked/Invoice Balance is ' + this.currPOObj.BalancedOOP ,false);
+      return false;
+    }
+
     if (Math.abs(this.adminObject.newBudget.Amount) > this.adminObject.oldBudget.Amount) {
 
       this.common.showToastrMessage(this.constantsService.MessageType.error,'Total Amount must be less than or equal to existing Total',false);
@@ -306,6 +318,16 @@ export class ChangeBudgetDialogComponent implements OnInit {
       this.common.showToastrMessage(this.constantsService.MessageType.error,'Total Amount must be less than or equal to existing Total',false);
       return false;
     }
+    if (this.adminObject.newBudget.AmountRevenue < 0 && Math.abs(this.adminObject.newBudget.AmountRevenue) > this.currPOObj.BalancedRevenue) {
+      this.common.showToastrMessage(this.constantsService.MessageType.error,'Can\'t reduce Revenue amount by '+Math.abs(this.adminObject.newBudget.AmountRevenue)+' as the Linked/Invoice Balance is ' + this.currPOObj.BalancedRevenue ,false);
+      return false;
+    }
+
+    if (this.adminObject.newBudget.AmountOOP < 0 && Math.abs(this.adminObject.newBudget.AmountOOP) > this.currPOObj.BalancedOOP) {
+      this.common.showToastrMessage(this.constantsService.MessageType.error,'Can\'t reduce OOP amount by '+Math.abs(this.adminObject.newBudget.AmountOOP)+' as the Linked/Invoice Balance is ' + this.currPOObj.BalancedOOP ,false);
+      return false;
+    }
+
     if (this.adminObject.newBudget.AmountRevenue < 0 && Math.abs(this.adminObject.newBudget.AmountRevenue) > this.adminObject.oldBudget.AmountRevenue) {
 
       this.common.showToastrMessage(this.constantsService.MessageType.error,'Revenue must be less than or equal to existing Revenue',false);

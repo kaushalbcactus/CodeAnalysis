@@ -2670,13 +2670,13 @@ export class AllProjectsComponent implements OnInit {
       if (newSOWObj && newSOWObj.length && oldSOWObj && oldSOWObj.length) {
         const newSOW = newSOWObj[0];
         const oldSOW = oldSOWObj[0];
-        const newSOWTotalBudget = newSOW.TotalLinked + projObject.Budget;
-        const newSOWRevenueBudget = newSOW.RevenueLinked + projObject.RevenueBudget;
-        const newSOWOOPBudget = newSOW.OOPLinked + projObject.OOPBudget;
-        const newSOWTaxBudget = newSOW.TaxLinked + projObject.TaxBudget;
-        const newSOWTotalScheduled = newSOW.TotalScheduled + projObject.InvoicesScheduled;
-        const newSOWScheduledRevenue = newSOW.ScheduledRevenue + projObject.ScheduledRevenue;
-        const newSOWScheduledOOP = newSOW.ScheduledOOP + projObject.ScheduledOOP;
+        const newSOWTotalBudget = isNaN(newSOW.TotalLinked) ? projObject.Budget: newSOW.TotalLinked + projObject.Budget;
+        const newSOWRevenueBudget = isNaN(newSOW.RevenueLinked) ? projObject.RevenueBudget : newSOW.RevenueLinked + projObject.RevenueBudget;
+        const newSOWOOPBudget = isNaN(newSOW.OOPLinked) ? projObject.OOPBudget: newSOW.OOPLinked + projObject.OOPBudget;
+        const newSOWTaxBudget = isNaN(newSOW.TaxLinked) ? projObject.TaxBudget : newSOW.TaxLinked + projObject.TaxBudget;
+        const newSOWTotalScheduled = isNaN(newSOW.TotalScheduled) ? projObject.InvoicesScheduled : newSOW.TotalScheduled + projObject.InvoicesScheduled;
+        const newSOWScheduledRevenue = isNaN(newSOW.ScheduledRevenue) ? projObject.ScheduledRevenue : newSOW.ScheduledRevenue + projObject.ScheduledRevenue;
+        const newSOWScheduledOOP = isNaN(newSOW.ScheduledOOP) ? projObject.ScheduledOOP : newSOW.ScheduledOOP + projObject.ScheduledOOP;
         const newSOWData = this.getSOWData(newSOWTotalBudget, newSOWRevenueBudget, newSOWOOPBudget,
           newSOWTaxBudget, newSOWTotalScheduled, newSOWScheduledRevenue, newSOWScheduledOOP);
         const newSOWUpdate = Object.assign({}, options);
