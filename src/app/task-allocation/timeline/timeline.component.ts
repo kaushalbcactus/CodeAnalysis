@@ -2863,7 +2863,7 @@ export class TimelineComponent
 
   checkForEditedMilestone(milestonesTasks) {
     let milestoneData = milestonesTasks.filter(m=> (m.data.type == "milestone" || m.data.type == 'submilestone') && m.data.edited)
-    milestoneData.forEach((m)=>{  
+    milestoneData.forEach((m)=>{
       m.data.editMode = false;
       m.data.edited = false;
     })
@@ -6261,10 +6261,10 @@ export class TimelineComponent
       if (milestoneTasksRelink.length > 0) {
         this.linkScToClientReview(milestoneTasksRelink);
       }
-      const isSaveValid = this.validateAllocationString(AllTasks);
-      if (!isSaveValid) {
-        return false;
-      }
+      // const isSaveValid = this.validateAllocationString(AllTasks);
+      // if (!isSaveValid) {
+      //   return false;
+      // }
       previousNode = milestone.data;
     }
     return true;
