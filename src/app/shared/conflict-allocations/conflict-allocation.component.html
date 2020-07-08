@@ -48,7 +48,7 @@
   <p-accordion class="cls_conflict_accordion">
     <p-accordionTab *ngFor="let task of conflicTasks">
       <p-header>
-        <span >{{ task.userName }}</span>
+        <span >{{ task.user.userName }}</span>
       </p-header>
       <div>
         <p-table [columns]="cols" [value]="task.tasks" class="conflictTable cls_conflict_conflictTable">
@@ -77,7 +77,7 @@
                 <span>{{ rowData.allocatedHrs }} </span>
               </td>
               <td>
-                <span>{{ rowData.allocationDate | date: " d MMM, y" }}</span>
+                <span>{{ rowData.allocation.date | date: " d MMM, y" }}</span>
               </td>
               <td [attr.colSpan]="3">
               <p-table class="conflictProjectSection" [value]="rowData.projects">

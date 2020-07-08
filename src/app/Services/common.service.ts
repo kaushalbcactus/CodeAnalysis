@@ -1114,14 +1114,14 @@ export class CommonService {
     const newDate = new Date(date);
     return this.datePipe.transform(newDate, 'hh:mm a');
   }
-  getMaxBudgetHrs(task) {
-    let time: any = this.getHrsAndMins(task.start_date, task.end_date);
-    if (task.tat) {
-      let businessDays = this.calcBusinessDays(task.start_date, task.end_date);
+  getMaxBudgetHrs(startDate, endDate, isTat) {
+    let time: any = this.getHrsAndMins(startDate, endDate);
+    if (isTat) {
+      let businessDays = this.calcBusinessDays(startDate, endDate);
       return businessDays * 24;
     } else {
       return time.maxBudgetHrs;
     }
   }
-  
+
 }

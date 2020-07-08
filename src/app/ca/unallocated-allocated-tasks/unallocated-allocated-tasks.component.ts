@@ -16,9 +16,9 @@ import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
 import { PreStackAllocationComponent } from 'src/app/shared/pre-stack-allocation/pre-stack-allocation.component';
 import { IDailyAllocationTask } from 'src/app/shared/pre-stack-allocation/interface/prestack';
 import { AllocationOverlayComponent } from 'src/app/shared/pre-stack-allocation/allocation-overlay/allocation-overlay.component';
-import { IConflictResource } from 'src/app/task-allocation/interface/allocation';
 import { ConflictAllocationComponent } from 'src/app/shared/conflict-allocations/conflict-allocation.component';
 import { PreStackcommonService } from 'src/app/shared/pre-stack-allocation/service/pre-stackcommon.service';
+import { IConflictResource } from 'src/app/shared/conflict-allocations/interface/conflict-allocation';
 
 @Component({
   selector: 'app-unallocated-allocated-tasks',
@@ -869,14 +869,19 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     const resource = this.resourceList.filter((objt) => {
       return event.allocatedResource && event.allocatedResource.UserNamePG && event.allocatedResource.UserNamePG.ID === objt.UserNamePG.ID;
     });
-    const maxBudgetHrs = this.commonService.getMaxBudgetHrs(event);
+    this.validateBudgetHours(event, originalBudgetHrs);
+    await this.prestackService.calcPrestackAllocation(resource, event);
+    this.disableSave = false;
+  }
+
+  validateBudgetHours(event, originalBudgetHrs) {
+    const maxBudgetHrs = this.commonService.getMaxBudgetHrs(event.UserStart, event.UserEnd, false);
     if (maxBudgetHrs < event.EstimatedTime) {
       event.EstimatedTime = 0;
       this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Budget hours is set to zero because given budget hours is greater than task time period. Original budget hrs of task is ' + originalBudgetHrs, false);
     }
-    await this.prestackService.calcPrestackAllocation(resource, event);
-    this.disableSave = false;
   }
+
   async GetAllConstantTasks(taskName) {
     let allConstantTasks = [];
     allConstantTasks = await this.caCommonService.GetAllTasksMilestones(taskName);
@@ -1099,8 +1104,9 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     Node.StartDate = Node.UserStart;
     Node.DueDate = Node.UserEnd;
     Slot.editMode = true;
+    this.validateBudgetHours(Node, Node.EstimatedTime);
     const resource = this.resourceList.filter((objt) => {
-      return Node.allocatedResource.UserNamePG.ID === objt.UserNamePG.ID;
+      return Node.allocatedResource && Node.allocatedResource.UserNamePG.ID === objt.UserNamePG.ID;
     });
     await this.prestackService.calcPrestackAllocation(resource, Node);
     this.DateChange(Node, Slot, type);
@@ -1245,7 +1251,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       this.loaderenable = true;
       const bindingData = [...this.caGlobal.dataSource];
       const allTasks = [].concat.apply([], bindingData.map(t => t.SlotTasks)).filter(t => t && t.isCurrentMilestoneTask);
-      const conflictDetails: IConflictResource[] = await this.conflictAllocation.checkConflictsAllocations(null, [], allTasks, this.resourceList);
+      const conflictDetails: IConflictResource[] = await this.conflictAllocation.bindConflictDetails(null, [], allTasks, this.resourceList);
       const projectCodes = allTasks.map(t => t.ProjectCode);
       const uniqueProjectCodes = [...new Set(projectCodes)];
 

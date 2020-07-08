@@ -39,13 +39,14 @@ import { SelectItem } from 'primeng/api';
 import { gantt } from '../../dhtmlx-gantt/codebase/source/dhtmlxgantt';
 import { FormBuilder } from '@angular/forms';
 declare let dhtmlXMenuObject: any;
-import { IMilestoneTask, IConflictResource, IResourceSelection } from '../interface/allocation';
+import { IMilestoneTask, IResourceSelection } from '../interface/allocation';
 import { IDailyAllocationTask } from 'src/app/shared/pre-stack-allocation/interface/prestack';
 import { PreStackAllocationComponent } from 'src/app/shared/pre-stack-allocation/pre-stack-allocation.component';
 import { AllocationOverlayComponent } from 'src/app/shared/pre-stack-allocation/allocation-overlay/allocation-overlay.component';
 import { GanttEdittaskComponent } from '../gantt-edittask/gantt-edittask.component';
 import { ConflictAllocationComponent } from 'src/app/shared/conflict-allocations/conflict-allocation.component';
 import { PreStackcommonService } from 'src/app/shared/pre-stack-allocation/service/pre-stackcommon.service';
+import { IConflictResource } from 'src/app/shared/conflict-allocations/interface/conflict-allocation';
 
 
 @Component({
@@ -2087,7 +2088,7 @@ export class TimelineComponent
         );
         return false;
       } else {
-        const conflictDetails: IConflictResource[] = await this.conflictAllocation.checkConflictsAllocations(
+        const conflictDetails: IConflictResource[] = await this.conflictAllocation.bindConflictDetails(
           rowNode,
           this.milestoneData,
           [],
@@ -4889,7 +4890,7 @@ export class TimelineComponent
         );
         // tslint:disable-next-line: max-line-length
         const conflictDetails: IConflictResource[] = currentMilestoneEdited
-          ? await this.conflictAllocation.checkConflictsAllocations(
+          ? await this.conflictAllocation.bindConflictDetails(
             null,
             this.milestoneData,
             [],
