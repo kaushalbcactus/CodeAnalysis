@@ -139,7 +139,7 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
             const resourceDateExists = oExistingResource && Object.keys(oExistingResource).length && conflictDetails.findIndex(ct => ct.tasks.find(t => t.allocationDate.getTime() === date.date.getTime())) > -1 ? true : false;
             if (!resourceDateExists) {
               const conflictTask: IConflictTask = {
-                allocatedHrs: date.totalTimeAllocated,
+                allocatedHrs: '' + +date.totalTimeAllocated.toFixed(2),
                 allocationDate: date.date,
                 projects: [],
               };
