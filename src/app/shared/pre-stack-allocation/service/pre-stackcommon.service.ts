@@ -93,7 +93,7 @@ export class PreStackcommonService {
       newUserCapacity = await this.refetchUserCapacity(allocationData);
       this.global.oCapacity.arrUserDetails.push(newUserCapacity);
       newUserCapacity = await this.calcCapacity(allocationData);
-    } else if (!newUserCapacity.dates) {
+    } else if (!newUserCapacity.dates.length) {
       const resource = allocationData.resource.length ? allocationData.resource[0].UserNamePG.ID : -1;
       newUserCapacity = await this.refetchUserCapacity(allocationData);
       const capacity = this.global.oCapacity.arrUserDetails.find(u => u.uid === resource);
@@ -112,7 +112,7 @@ export class PreStackcommonService {
     if (this.global.oCapacity.arrUserDetails.length) {
       const resourceCapacity = this.global.oCapacity.arrUserDetails.find(u => u.uid === resource);
       if (resourceCapacity) {
-        newUserCapacity = { ...resourceCapacity };
+        newUserCapacity = JSON.parse(JSON.stringify(resourceCapacity));
         newUserCapacity.businessDays = businessDays.dateArray;
         // tslint:disable-next-line: max-line-length
         const dates = newUserCapacity.dates.filter(u => businessDays.dateArray.find(b => new Date(b).getTime() === new Date(u.date).getTime()));
@@ -124,7 +124,7 @@ export class PreStackcommonService {
         newUserCapacity.tasks = newUserCapacity.tasks.filter(t => taskStatus.indexOf(t.Status) < 0 &&
           adhoc.indexOf(t.Comments) < 0 && t.ID !== allocationData.ID);
         if (newUserCapacity.dates.length === newUserCapacity.businessDays.length) {
-          newUserCapacity = this.userCapacityCommon.fetchUserCapacity(newUserCapacity);
+          newUserCapacity = await this.userCapacityCommon.fetchUserCapacity(newUserCapacity);
         } else {
           newUserCapacity.dates = [];
         }
@@ -135,7 +135,7 @@ export class PreStackcommonService {
 
   async refetchUserCapacity(allocationData) {
     const endDate = this.common.calcBusinessDate('Next', 90, allocationData.startDate).endDate;
-    const newObj = { ...allocationData };
+    const newObj = JSON.parse(JSON.stringify(allocationData));
     newObj.endDate = endDate;
     const newUserCapacity = await this.getResourceCapacity(newObj);
     return newUserCapacity;
@@ -151,15 +151,15 @@ export class PreStackcommonService {
   }
 
   /**
-  * Perform prestack allocation or equal split allocation
-  */
+   * Perform prestack allocation or equal split allocation
+   */
   async performAllocation(resource: IUserCapacity, allocationData: IDailyAllocationTask,
-    allocationChanged: boolean, oldValue, oldAllocation, allocationSplit): Promise<IPerformAllocationObject> {
+                          allocationChanged: boolean, oldValue, oldAllocation, allocationSplit): Promise<IPerformAllocationObject> {
     let arrAllocation = [...allocationSplit];
-    const isDailyAllocationValid = !allocationData.allocationType ? this.checkDailyAllocation(resource, allocationData, allocationSplit) : false;
-    if (!isDailyAllocationValid) {
+    allocationSplit = !allocationData.allocationType ? this.checkDailyAllocation(resource, allocationData, allocationSplit) : [];
+    if (!allocationSplit.length) {
       if (allocationChanged) {
-        this.common.confirmMessageDialog('Confirmation', 'Cant accommodate pending hours on the subsequent days so equal allocation will be done. Should we do equal allocation ?', null,
+        await this.common.confirmMessageDialog('Confirmation', 'Cant accommodate pending hours on the subsequent days so equal allocation will be done. Should we do equal allocation ?', null,
           ['Yes', 'No'], false).then(async Confirmation => {
             if (Confirmation === 'Yes') {
               arrAllocation = await this.equalSplitAllocation(resource, allocationData, true);
@@ -187,9 +187,9 @@ export class PreStackcommonService {
   }
 
   /**
-  * Perform daily allocation - part 1
-  * It will return boolean value based on prestack allocation success or not
-  */
+   * Perform daily allocation - part 1
+   * It will return boolean value based on prestack allocation success or not
+   */
   checkDailyAllocation(resource: IUserCapacity, allocationData: IDailyAllocationTask, allocationSplit): boolean {
     const autoAllocateAddHrs = '0:30';
     let extraHrs = '0:0';
@@ -199,15 +199,17 @@ export class PreStackcommonService {
     let remainingBudgetHrs: string;
     while (maxAvailableHrs <= maxLimit) {
       remainingBudgetHrs = '' + budgetHrs;
-      remainingBudgetHrs = this.checkResourceAvailability(resource, extraHrs, remainingBudgetHrs, allocationData, maxLimit, allocationSplit);
+      const obj = this.checkResourceAvailability(resource, extraHrs, remainingBudgetHrs, allocationData, maxLimit, allocationSplit);
+      remainingBudgetHrs = obj.newBudgetHrs;
       if (remainingBudgetHrs.indexOf('-') > -1) {
         extraHrs = this.common.addHrsMins([extraHrs, autoAllocateAddHrs]);
         maxAvailableHrs = maxAvailableHrs + 0.5;
       } else {
+        allocationSplit = obj.allocationSplit;
         break;
       }
     }
-    return remainingBudgetHrs.indexOf('-') < 0 ? true : false;
+    return remainingBudgetHrs.indexOf('-') < 0 ? allocationSplit : [];
   }
   /**
    * Fetch user capacity based task start and end date
@@ -224,7 +226,7 @@ export class PreStackcommonService {
    * Main method performing pre stack allocation
    */
   checkResourceAvailability(resource: IUserCapacity, extraHrs: string, taskBudgetHrs: string,
-    allocationData: IDailyAllocationTask, maxLimit: number, allocationSplit): string {
+    allocationData: IDailyAllocationTask, maxLimit: number, allocationSplit) {
     const startTime = allocationData.startTime ? this.common.convertTo24Hour(allocationData.startTime) : '0:0';
     const endTime = allocationData.endTime ? this.common.convertTo24Hour(allocationData.endTime) : '0:0';
     const availableStartDayHrs: string = this.common.subtractHrsMins(startTime, '24:00', false);
@@ -280,7 +282,10 @@ export class PreStackcommonService {
       allocationSplit.push(obj);
       i++;
     }
-    return newBudgetHrs;
+    return {
+      newBudgetHrs,
+      allocationSplit
+    };
   }
 
   /**
@@ -327,7 +332,7 @@ export class PreStackcommonService {
     const businessDays = this.common.calcBusinessDays(allocationData.startDate, allocationData.endDate);
     const budgetHours = +allocationData.budgetHrs;
     let allocationPerDay = this.common.roundToPrecision(budgetHours / businessDays, 0.25);
-    const resourceCapacity = { ...resourceCapacityCopy };
+    const resourceCapacity = JSON.parse(JSON.stringify(resourceCapacityCopy));
     // Object.keys(this.resourceCapacity).length ? this.resourceCapacity : await this.getResourceCapacity(allocationData);
     const resourceSliderMaxHrs = resourceCapacity.maxHrs + 3;
     const resourceDailyDetails = resourceCapacity.dates.filter(d => d.userCapacity !== 'Leave');
@@ -343,12 +348,12 @@ export class PreStackcommonService {
     for (const detail of resourceDailyDetails) {
       let totalHrs = 0;
       if (i === 0) {
-        totalHrs = availaibility.firstDayAvailablity < allocationPerDay ?
-          availaibility.firstDayAvailablity : allocationPerDay; // noOfDays <= 1 ? availaibility.firstDayAvailablity :
+        totalHrs = availaibility.firstDayAvailablity < allocationPerDay ? availaibility.firstDayAvailablity : allocationPerDay;
+        totalHrs = resourceDailyDetails.length === 2 && availaibility.lastDayAvailability < remainingBudgetHrs ? remainingBudgetHrs - availaibility.lastDayAvailability : totalHrs;
       } else if (i === resourceDailyDetails.length - 1) {
         totalHrs = availaibility.lastDayAvailability < remainingBudgetHrs ? availaibility.lastDayAvailability : remainingBudgetHrs;
       } else {
-        totalHrs = allocationPerDay < remainingBudgetHrs ? allocationPerDay : remainingBudgetHrs;
+        totalHrs = allocationPerDay < remainingBudgetHrs ? allocationPerDay : remainingBudgetHrs <= 24 ? remainingBudgetHrs : 24;
       }
       remainingBudgetHrs = remainingBudgetHrs - totalHrs;
       const maximumHrs = resourceSliderMaxHrs; // totalHrs < resourceSliderMaxHrs ? resourceSliderMaxHrs : totalHrs
@@ -429,7 +434,7 @@ export class PreStackcommonService {
   getTimeSpent(arrTimeSpent: any[], day: any): number {
     let dayTimeSpent = 0;
     arrTimeSpent.forEach((timeSpentDate) => {
-      if (day.date.getTime() === timeSpentDate.date.getTime()) {
+      if (new Date(day.date).getTime() === new Date(timeSpentDate.date).getTime()) {
         dayTimeSpent = timeSpentDate.value.hours + timeSpentDate.value.mins;
       }
     });
