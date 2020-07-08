@@ -718,6 +718,10 @@ export class MyTimelineComponent implements OnInit {
       return false;
     } else {
       if (task.Status === "Completed") {
+        if (this.task.DueTime) {
+          const endTime = this.commonService.ConvertTimeformat(24, this.task.DueTime);
+          task.DueDateDT = this.datePipe.transform(this.task.DueDateDT, 'yyyy-MM-dd' + 'T' + endTime + ':00.000');
+        }
         this.CalendarLoader = false;
         this.commonService.confirmMessageDialog('Confirmation', 'Are you sure that you want to proceed?', null, ['Yes', 'No'], false).then(async Confirmation => {
           if (Confirmation === 'Yes') {
@@ -784,68 +788,8 @@ export class MyTimelineComponent implements OnInit {
         }
         this.commonService.showToastrMessage(this.constants.MessageType.success, ' task updated successfully.', false);
         this.getEvents(false, this.fullCalendar.calendar.state.dateProfile.currentRange.start,
-          this.fullCalendar.calendar.state.dateProfile.currentRange.end);
-        
+          this.fullCalendar.calendar.state.dateProfile.currentRange.end);      
       }
-      
-      
-      
-      
-      
-      
-      
-    //   else if (task.Status === "In Progress") {
-    //   const batchURL = [];
-    //   if (this.task.StartTime) {
-    //     const startTime = this.commonService.ConvertTimeformat(24, this.task.StartTime);
-    //     this.task.StartDate = this.datePipe.transform(new Date(this.task.StartDate), 'yyyy-MM-dd' + 'T' + startTime + ':00.000');
-    //   }
-    //   if (this.task.DueTime) {
-    //     const endTime = this.commonService.ConvertTimeformat(24, this.task.DueTime);
-    //     this.task.DueDate = this.datePipe.transform(this.task.DueDateDT, 'yyyy-MM-dd' + 'T' + endTime + ':00.000');
-    //   }
-
-    //   const ProjectInformation = await this.myDashboardConstantsService.getCurrentTaskProjectInformation(task.ProjectCode);
-
-    //   this.SelectedStatus = undefined;
-    //   this.taskdisplay = false;
-    //   this.CalendarLoader = true;
-    //   const jsonData = {
-    //     __metadata: { type: this.constants.listNames.Schedules.type },
-    //     Actual_x0020_Start_x0020_Date: task.Actual_x0020_Start_x0020_Date !== null ? task.Actual_x0020_Start_x0020_Date : new Date(),
-    //     Status: task.Status,
-    //     StartDate: this.task.StartDate,
-    //     DueDateDT: this.task.DueDate
-    //   };
-    //   this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'UpdateTask');
-    //   const taskUpdateUrl = this.spServices.getItemURL(this.constants.listNames.Schedules.name, task.ID);
-    //   this.commonService.setBatchObject(batchURL, taskUpdateUrl, jsonData, this.constants.Method.PATCH, this.constants.listNames.Schedules.name)
-
-    //   const projectInfoUpdateurl = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, ProjectInformation.ID);
-
-
-    //   this.commonService.setBatchObject(batchURL, projectInfoUpdateurl, { Status: this.constants.STATUS.IN_PROGRESS, __metadata: { type: this.constants.listNames.ProjectInformation.type } }, this.constants.Method.PATCH, this.constants.listNames.ProjectInformation.name)
-
-    //   await this.spServices.executeBatch(batchURL);
-    //   if (task.ParentSlot) {
-    //     await this.myDashboardConstantsService.getCurrentAndParentTask(task, jsonData.Status);
-    //   }
-    //   this.commonService.showToastrMessage(this.constants.MessageType.success, ' task updated successfully.', false);
-    //   this.getEvents(false, this.fullCalendar.calendar.state.dateProfile.currentRange.start,
-    //     this.fullCalendar.calendar.state.dateProfile.currentRange.end);
-    // } 
-    // else if(task.Status === this.constants.STATUS.NOT_STARTED && task.projectType === this.constants.PROJECTTYPES.FTE){
-    //   const batchURL = [];
-    //   if (this.task.StartTime) {
-    //     const startTime = this.commonService.ConvertTimeformat(24, this.task.StartTime);
-    //     this.task.StartDate = this.datePipe.transform(new Date(this.task.StartDate), 'yyyy-MM-dd' + 'T' + startTime + ':00.000');
-    //   }
-    //   if (this.task.DueTime) {
-    //     const endTime = this.commonService.ConvertTimeformat(24, this.task.DueTime);
-    //     this.task.DueDate = this.datePipe.transform(this.task.DueDateDT, 'yyyy-MM-dd' + 'T' + endTime + ':00.000');
-    //   }
-
-    // }
     }
   }
 

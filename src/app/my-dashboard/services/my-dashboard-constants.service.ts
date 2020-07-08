@@ -734,6 +734,7 @@ export class MyDashboardConstantsService {
       Actual_x0020_Start_x0020_Date: task.Actual_x0020_Start_x0020_Date !== null ? task.Actual_x0020_Start_x0020_Date : new Date(),
       Status: task.Status,
       TaskComments: task.TaskComments,
+      DueDateDT: task.DueDateDT
     };
     const newdata = task.IsCentrallyAllocated === 'Yes' ? { ...data, ActiveCA: 'No' } : { ...data };
     const taskObj = Object.assign({}, this.queryConfig);

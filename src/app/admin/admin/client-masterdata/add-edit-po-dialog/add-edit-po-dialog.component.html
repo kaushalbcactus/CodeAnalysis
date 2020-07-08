@@ -98,7 +98,7 @@
             <div class="p-grid p-col">
                 <div class="p-col-4"><span class="compulsory">*</span>Currency</div>
                 <div class="p-col-8">
-                    <p-dropdown [options]="adminObject.dropdown.CurrencyArray" placeholder="Select Currency" formControlName="currency" editable="true" filter="true" resetFilterOnHide="true" [style]="{'width':'100%'}"></p-dropdown>
+                    <p-dropdown [options]="adminObject.dropdown.CurrencyArray" placeholder="Select Currency" formControlName="currency" filter="true" resetFilterOnHide="true" [style]="{'width':'100%'}"></p-dropdown>
                     <div class="error" *ngIf="isPOFormSubmit && PoForm.controls.currency.errors">
                         <div *ngIf="PoForm.controls.currency.errors.required">
                             Currency is required</div>
@@ -123,7 +123,7 @@
             <div class="p-grid p-col">
                 <div class="p-col-4"><span class="compulsory">*</span>Point of Contact</div>
                 <div class="p-col-8">
-                    <p-dropdown [options]="adminObject.dropdown.POPointOfContactArray" placeholder="Select Point of Contact" formControlName="poc" editable="true" filter="true" resetFilterOnHide="true" [style]="{'width':'100%'}"></p-dropdown>
+                    <p-dropdown [options]="adminObject.dropdown.POPointOfContactArray" placeholder="Select Point of Contact" formControlName="poc" filter="true" resetFilterOnHide="true" [style]="{'width':'100%'}"></p-dropdown>
                     <div class="error" *ngIf="isPOFormSubmit && PoForm.controls.poc.errors">
                         <div *ngIf="PoForm.controls.poc.errors.required">
                             Point of Contact is required</div>
