@@ -76,8 +76,10 @@ export class TimelineComponent
   public noTaskError = 'No milestones found.';
   @ViewChild('reallocationMailTableID', { static: false })
   reallocateTable: ElementRef;
-  @ViewChild('ganttcontainer', { read: ViewContainerRef, static: false })
-  ganttChart: ViewContainerRef;
+  // @ViewChild('ganttcontainer', { read: ViewContainerRef, static: false })
+  // ganttChart: ViewContainerRef;
+  @ViewChild('ganttcontainer', { static: false })
+  ganttChart: GanttChartComponent;
   @ViewChild('dailyAllocateOP', { static: false })
   dailyAllocateOP: AllocationOverlayComponent;
   @ViewChild('ganttPicker', { static: false })
@@ -1117,7 +1119,7 @@ export class TimelineComponent
       this.visualgraph = true;
       this.showGanttChart(true);
     } else {
-      this.ganttChart.remove();
+      // this.ganttChart.remove();
       this.visualgraph = false;
       this.tableView = true;
     }
@@ -1387,10 +1389,10 @@ export class TimelineComponent
       label: "Day Scale",
       value: "1"
     };
-    this.ganttChart.clear();
-    this.ganttChart.remove();
-    const factory = this.resolver.resolveComponentFactory(GanttChartComponent);
-    this.ganttComponentRef = this.ganttChart.createComponent(factory);
+    // this.ganttChart.clear();
+    // this.ganttChart.remove();
+    // const factory = this.resolver.resolveComponentFactory(GanttChartComponent);
+    // this.ganttComponentRef = this.ganttChart.createComponent(factory);
     gantt.serverList("AssignedTo", this.resource);
     if (this.taskAllocateCommonService.ganttParseObject.data.length) {
       let firstTaskStart = new Date(
@@ -1418,12 +1420,11 @@ export class TimelineComponent
         0
       );
     }
-    gantt.init(this.ganttComponentRef.instance.ganttContainer.nativeElement);
+    gantt.init(this.ganttChart.ganttContainer.nativeElement);
     gantt.clearAll();
 
     this.renderGanttTemplates();
-    this.ganttComponentRef.instance.onLoad(
-      this.taskAllocateCommonService.ganttParseObject,
+    this.ganttChart.onLoad(
       this.resource
     );
     this.setScale(this.selectedScale);
@@ -1802,6 +1803,13 @@ export class TimelineComponent
       return false;
     }
   }
+
+  onBeforeTaskChangedCall(id, mode, task) {
+    this.allTaskData = gantt.serialize();
+    this.currentTask = { ...task };
+    return true;
+  }
+
   ganttAttachEvents() {
     if (this.taskAllocateCommonService.attachedEvents.length) {
       this.taskAllocateCommonService.attachedEvents.forEach(element => {
@@ -1810,43 +1818,43 @@ export class TimelineComponent
       this.taskAllocateCommonService.attachedEvents = [];
     }
 
-    const onTaskOpened = gantt.attachEvent("onTaskOpened", id => {
-      // ;
-      // gantt.init(this.ganttComponentRef.instance.ganttContainer.nativeElement);
-      // gantt.clearAll();
-      // this.ganttComponentRef.instance.onLoad(this.taskAllocateCommonService.ganttParseObject, this.resource);
-      // this.setScale(this.selectedScale);
-      //this.loadComponent();
-    });
-    this.taskAllocateCommonService.attachedEvents.push(onTaskOpened);
+    // const onTaskOpened = gantt.attachEvent("onTaskOpened", id => {
+    //   // ;
+    //   // gantt.init(this.ganttChart.ganttContainer.nativeElement);
+    //   // gantt.clearAll();
+    //   // this.ganttChart.onLoad(this.resource);
+    //   // this.setScale(this.selectedScale);
+    //   //this.loadComponent();
+    // });
+    // this.taskAllocateCommonService.attachedEvents.push(onTaskOpened);
 
-    const onBeforeTaskChanged = gantt.attachEvent(
-      "onBeforeTaskChanged",
-      (id, mode, task) => {
-        this.allTaskData = gantt.serialize();
-        this.currentTask = { ...task };
-        return true;
-      }
-    );
-    this.taskAllocateCommonService.attachedEvents.push(onBeforeTaskChanged);
+    // const onBeforeTaskChanged = gantt.attachEvent(
+    //   "onBeforeTaskChanged",
+    //   (id, mode, task) => {
+    //    this.allTaskData = gantt.serialize();
+    //    this.currentTask = { ...task };
+    //    return true;
+    //   }
+    // );
+    // this.taskAllocateCommonService.attachedEvents.push(onBeforeTaskChanged);
 
-    const onBeforeTaskDrag = gantt.attachEvent(
-      "onBeforeTaskDrag",
-      (id, mode, e) => {
-        return this.onBeforeTaskDragCall(id, mode, e);
-      }
-    );
-    this.taskAllocateCommonService.attachedEvents.push(onBeforeTaskDrag);
+    // const onBeforeTaskDrag = gantt.attachEvent(
+    //   "onBeforeTaskDrag",
+    //   (id, mode, e) => {
+    //     return this.onBeforeTaskDragCall(id, mode, e);
+    //   }
+    // );
+    // this.taskAllocateCommonService.attachedEvents.push(onBeforeTaskDrag);
 
-    const onTaskClick = gantt.attachEvent("onTaskClick", (taskId, e) => {
-      return this.onTaskClickCall(taskId, e);
-    });
-    this.taskAllocateCommonService.attachedEvents.push(onTaskClick);
+    // const onTaskClick = gantt.attachEvent("onTaskClick", (taskId, e) => {
+    //   return this.onTaskClickCall(taskId, e);
+    // });
+    // this.taskAllocateCommonService.attachedEvents.push(onTaskClick);
 
-    const onTaskDrag = gantt.attachEvent("onAfterTaskDrag", (id, mode, e) => {
-      return this.onAfterTaskDragCall(id, mode, e);
-    });
-    this.taskAllocateCommonService.attachedEvents.push(onTaskDrag);
+    // const onTaskDrag = gantt.attachEvent("onAfterTaskDrag", (id, mode, e) => {
+    //   return this.onAfterTaskDragCall(id, mode, e);
+    // });
+    // this.taskAllocateCommonService.attachedEvents.push(onTaskDrag);
   }
 
   async timeChange() {
@@ -2550,10 +2558,9 @@ export class TimelineComponent
           0
         );
       }
-      gantt.init(this.ganttComponentRef.instance.ganttContainer.nativeElement);
+      gantt.init(this.ganttChart.ganttContainer.nativeElement);
       gantt.clearAll();
-      this.ganttComponentRef.instance.onLoad(
-        this.taskAllocateCommonService.ganttParseObject,
+      this.ganttChart.onLoad(
         this.resource
       );
       this.setScale(this.selectedScale);
@@ -2581,19 +2588,19 @@ export class TimelineComponent
   }
 
   setScale(scale) {
-    this.ganttComponentRef.instance.setScaleConfig(scale.value);
+    this.ganttChart.setScaleConfig(scale.value);
   }
 
   zoomIn() {
     if (gantt.ext.zoom.getCurrentLevel() != 0) {
-      this.ganttComponentRef.instance.zoomIn();
+      this.ganttChart.zoomIn();
       this.selectedScale = this.scales[gantt.ext.zoom.getCurrentLevel()];
     }
   }
 
   zoomOut() {
     if (gantt.ext.zoom.getCurrentLevel() < 5) {
-      this.ganttComponentRef.instance.zoomOut();
+      this.ganttChart.zoomOut();
       this.selectedScale = this.scales[gantt.ext.zoom.getCurrentLevel()];
     }
   }

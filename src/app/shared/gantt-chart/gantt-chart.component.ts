@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, OnChanges, Input, NgZone } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, OnChanges, Input, NgZone, Output, EventEmitter } from '@angular/core';
 import { gantt, Gantt } from '../../dhtmlx-gantt/codebase/source/dhtmlxgantt';
 // import { gantt, Gantt } from '../../dhtmlx-gantt/codebase/dhtmlxganttmin';
 import '../../dhtmlx-gantt/codebase/ext/dhtmlxgantt_tooltip';
@@ -23,6 +23,11 @@ export class GanttChartComponent implements OnInit {
   label = "label";
   resource = [];
   tasks = {};
+  @Input() ganttData: any
+  @Output() berforeTaskDrag: EventEmitter<any> = new EventEmitter();
+  @Output() taskClick: EventEmitter<any> = new EventEmitter();
+  @Output() afterTaskDrag: EventEmitter<any> = new EventEmitter();
+  @Output() beforeTaskChanged: EventEmitter<any> = new EventEmitter();
 
   constructor() { }
 
@@ -30,7 +35,7 @@ export class GanttChartComponent implements OnInit {
 
   }
 
-  onLoad(data, resource) {
+  onLoad(resource) {
 
     var zoomConfig = {
       levels: [
@@ -403,7 +408,7 @@ export class GanttChartComponent implements OnInit {
 
     gantt.config.fit_tasks = true;
 
-    this.ganttParseObject = data;
+    this.ganttParseObject = this.ganttData;
 
     gantt.config.skip_off_time = true;
 
@@ -421,8 +426,26 @@ export class GanttChartComponent implements OnInit {
 
     gantt.init(this.ganttContainer.nativeElement)
     gantt.config.branch_loading = true;
-    gantt.parse(data);
+    gantt.parse(this.ganttData);
 
+    gantt.attachEvent("onBeforeTaskChanged", async (id, mode, task) => {
+      await this.beforeTaskChanged.emit({id, mode, task}); 
+    });
+    
+    gantt.attachEvent(
+    "onBeforeTaskDrag",
+    async (id, mode, event) => {
+      await this.berforeTaskDrag.emit({id,mode,event});
+    })
+
+    gantt.attachEvent("onTaskClick", async (taskId, event) => {
+      await this.taskClick.emit({taskId,event});
+    });
+
+    gantt.attachEvent("onAfterTaskDrag", async (id, mode, event) => {
+      await this.afterTaskDrag.emit({id, mode, event});
+    });
+    
   }
 
 
