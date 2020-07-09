@@ -1501,6 +1501,7 @@ export class TimelineComponent
           break;
       }
     });
+
   }
 
   renderGanttTemplates() {
@@ -1893,7 +1894,14 @@ export class TimelineComponent
         resource,
         this.singleTask
       );
-      await this.changeBudgetHrs(this.singleTask);
+      if(this.singleTask.itemType !== 'Client Review' && this.singleTask.itemType !== 'Send to client') {
+        await this.changeBudgetHrs(this.singleTask);
+      } else if(this.singleTask.type == 'task' ){
+        this.DateChange(this.singleTask, type);
+        this.GanttchartData = allTasks.data;
+        this.loaderenable = false;
+        this.visualgraph = true;
+      }
 
       this.GanttchartData = allTasks.data;
       await this.ganttNotification();
@@ -2162,8 +2170,8 @@ export class TimelineComponent
       milestoneDataCopy: this.milestoneDataCopy,
       allRestructureTasks: this.allRestructureTasks,
       allTasks: this.allTasks,
-      startDate: this.startDate,
-      endDate: this.endDate
+      // startDate: this.startDate,
+      // endDate: this.endDate
     };
 
     this.editTaskComponent(data);
@@ -2268,6 +2276,7 @@ export class TimelineComponent
   }
 
   async saveTask(isBudgetHrs, updatedDataObj) {
+    let allowStatus = ['Not Confirmed' ,'Not Saved'];
     if (isBudgetHrs) {
       let isStartDate: any;
       if (this.dragClickedInput) {
@@ -2281,7 +2290,7 @@ export class TimelineComponent
         data: []
       };
 
-      if (this.budgetHrs == 0 && this.updatedTasks.type !== "milestone") {
+      if (this.budgetHrs == 0 && this.updatedTasks.type !== "milestone" && !allowStatus.includes(this.updatedTasks.status)) {
         this.commonService.showToastrMessage(
           this.constants.MessageType.warn,
           "Please Add Budget Hours.",
