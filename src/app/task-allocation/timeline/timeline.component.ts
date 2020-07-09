@@ -3304,7 +3304,7 @@ export class TimelineComponent
         oExistingTask = this.getExistingData(oExistingTask);
         if (
           (oExistingTask.previousTask !== previousTasks ||
-          oExistingTask.nextTask !== nextTasks) && oExistingTask.added
+          oExistingTask.nextTask !== nextTasks)
         ) {
           if (oExistingTask.status == 'Completed' || oExistingTask.status == 'Auto Closed') {
             oExistingTask.editMode = false;
