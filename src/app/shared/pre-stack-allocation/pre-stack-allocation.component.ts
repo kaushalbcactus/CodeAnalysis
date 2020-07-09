@@ -80,7 +80,7 @@ export class PreStackAllocationComponent implements OnInit {
                             await this.prestackService.getResourceCapacity(objData);
     const resourceDailyAllocation = this.resourceCapacity.dates;
     const resourceChangedDate = resourceDailyAllocation.find(d => new Date(d.date).getTime() === new Date(changedDate.Date).getTime());
-    const oldValue = JSON.parse(JSON.stringify(resourceChangedDate));
+    const oldValue = {...resourceChangedDate};
     const oldAllocation = this.allocationSplit.find(d => new Date(d.Date).getTime() === new Date(changedDate.Date).getTime());
     event.value = event.type ? event.value : event.selectedHour.time + ':' + event.selectedMinute.time;
     const strChangedValue = event.type ? event.type === 'hrs' ?
@@ -88,9 +88,10 @@ export class PreStackAllocationComponent implements OnInit {
       changedDate.Allocation.valueHrs + ':' + event.value : event.value;
     resourceChangedDate.availableHrs = strChangedValue;
     resourceChangedDate.mandatoryHrs = true;
-    this.allocationSplit = (await this.prestackService.performAllocation(this.resourceCapacity, objData, true,
-                                                                         oldValue, oldAllocation, this.allocationSplit)).arrAllocation;
-  }
+    const allocationSplit = await this.prestackService.performAllocation(this.resourceCapacity, objData, true,
+                            oldValue, oldAllocation, this.allocationSplit);
+    this.allocationSplit = [...allocationSplit.arrAllocation];
+                                                                        }
 
   /**
    * show table and hide loader

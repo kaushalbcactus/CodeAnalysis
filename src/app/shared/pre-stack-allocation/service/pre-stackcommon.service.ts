@@ -70,7 +70,7 @@ export class PreStackcommonService {
         allocationType: ''
       };
       const resourceCapacity: IUserCapacity = await this.recalculateUserCapacity(allocationData);
-      const allocationSplit = await this.performAllocation(resourceCapacity, allocationData, false, null, null, [])
+      const allocationSplit = await this.performAllocation(resourceCapacity, allocationData, false, null, null, []);
       const objDailyAllocation: IPreStack = this.getAllocationPerDay(resourceCapacity, allocationData, allocationSplit.arrAllocation);
       this.setAllocationPerDay(objDailyAllocation, milestoneTask);
       if (objDailyAllocation.allocationAlert) {
@@ -156,7 +156,7 @@ export class PreStackcommonService {
   async performAllocation(resource: IUserCapacity, allocationData: IDailyAllocationTask,
                           allocationChanged: boolean, oldValue, oldAllocation, allocationSplit): Promise<IPerformAllocationObject> {
     let arrAllocation = [...allocationSplit];
-    allocationSplit = !allocationData.allocationType ? this.checkDailyAllocation(resource, allocationData, allocationSplit) : [];
+    allocationSplit = !allocationData.allocationType ? this.checkDailyAllocation(resource, allocationData, arrAllocation) : [];
     if (!allocationSplit.length) {
       if (allocationChanged) {
         await this.common.confirmMessageDialog('Confirmation', 'Cant accommodate pending hours on the subsequent days so equal allocation will be done. Should we do equal allocation ?', null,
@@ -188,9 +188,9 @@ export class PreStackcommonService {
 
   /**
    * Perform daily allocation - part 1
-   * It will return boolean value based on prestack allocation success or not
+   *
    */
-  checkDailyAllocation(resource: IUserCapacity, allocationData: IDailyAllocationTask, allocationSplit): boolean {
+  checkDailyAllocation(resource: IUserCapacity, allocationData: IDailyAllocationTask, allocationSplit) {
     const autoAllocateAddHrs = '0:30';
     let extraHrs = '0:0';
     const maxLimit = +resource.maxHrs + 2;
@@ -329,13 +329,12 @@ export class PreStackcommonService {
   async equalSplitAllocation(resourceCapacityCopy: IUserCapacity, allocationData: IDailyAllocationTask,
     allocationChanged: boolean): Promise<IPerformAllocationObject[]> {
     const arrAllocation = [];
-    const businessDays = this.common.calcBusinessDays(allocationData.startDate, allocationData.endDate);
     const budgetHours = +allocationData.budgetHrs;
-    let allocationPerDay = this.common.roundToPrecision(budgetHours / businessDays, 0.25);
     const resourceCapacity = JSON.parse(JSON.stringify(resourceCapacityCopy));
-    // Object.keys(this.resourceCapacity).length ? this.resourceCapacity : await this.getResourceCapacity(allocationData);
     const resourceSliderMaxHrs = resourceCapacity.maxHrs + 3;
     const resourceDailyDetails = resourceCapacity.dates.filter(d => d.userCapacity !== 'Leave');
+    const businessDays = resourceDailyDetails.length;
+    let allocationPerDay = this.common.roundToPrecision(budgetHours / businessDays, 0.25);
     let remainingBudgetHrs = budgetHours;
     const availaibility = this.equalSplitAvailibilty(allocationData, allocationPerDay);
     const noOfDays = businessDays > availaibility.days ? (businessDays - availaibility.days) : businessDays;
@@ -349,7 +348,7 @@ export class PreStackcommonService {
       let totalHrs = 0;
       if (i === 0) {
         totalHrs = availaibility.firstDayAvailablity < allocationPerDay ? availaibility.firstDayAvailablity : allocationPerDay;
-        totalHrs = resourceDailyDetails.length === 2 && availaibility.lastDayAvailability < remainingBudgetHrs ? remainingBudgetHrs - availaibility.lastDayAvailability : totalHrs;
+        totalHrs = resourceDailyDetails.length === 2 && availaibility.lastDayAvailability < allocationPerDay ? remainingBudgetHrs - availaibility.lastDayAvailability : totalHrs;
       } else if (i === resourceDailyDetails.length - 1) {
         totalHrs = availaibility.lastDayAvailability < remainingBudgetHrs ? availaibility.lastDayAvailability : remainingBudgetHrs;
       } else {

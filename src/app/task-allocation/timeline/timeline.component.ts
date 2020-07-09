@@ -6262,10 +6262,10 @@ export class TimelineComponent
       if (milestoneTasksRelink.length > 0) {
         this.linkScToClientReview(milestoneTasksRelink);
       }
-      // const isSaveValid = this.validateAllocationString(AllTasks);
-      // if (!isSaveValid) {
-      //   return false;
-      // }
+      const isSaveValid = this.validateAllocationString(AllTasks);
+      if (!isSaveValid) {
+        return false;
+      }
       previousNode = milestone.data;
     }
     return true;
