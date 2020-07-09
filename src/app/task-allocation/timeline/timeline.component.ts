@@ -1618,8 +1618,7 @@ export class TimelineComponent
         task.itemType !== "Client Review" &&
         task.slotType !== "Slot" &&
         task.type !== "milestone" &&
-        task.type !== "submilestone" &&
-        task.AssignedTo.ID !== -1
+        task.type !== "submilestone"
       ) {
         if (e.target.parentElement.className === "gantt_cell cell_user") {
           this.header = task.submilestone
