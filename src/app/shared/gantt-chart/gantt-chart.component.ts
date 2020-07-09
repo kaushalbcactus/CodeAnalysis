@@ -347,7 +347,7 @@ export class GanttChartComponent implements OnInit {
         "<br/><b>End date:</b> " + gantt.templates.tooltip_date_format(task.end_date) +
         "<br/><b>Resource start date:</b> " + gantt.templates.tooltip_date_format(new Date(task.pUserStart)) +
         "<br/><b>Resource end date:</b> " + gantt.templates.tooltip_date_format(new Date(task.pUserEnd)) +
-        "<br/><b>Duration:</b> " + gantt.calculateDuration(task) + "<br/><b>Status:</b> " + task.status +
+        // "<br/><b>Duration:</b> " + gantt.calculateDuration(task) + "<br/><b>Status:</b> " + task.status +
         "<br/><b>Resource:</b> " + getResource(task) + "<br/><b>Budget Hrs:</b> " + task.budgetHours +
         "<br/><b>Spent Hrs:</b> " + task.spentTime;
     }

@@ -2704,7 +2704,7 @@ export class TimelineComponent
       this.createGanttDataAndLinks(true);
       setTimeout(() => {
       this.loaderenable = false;
-      },100);
+      },50);
     } else {
       this.tempmilestoneData.forEach(element => {
         const getAllTasks = this.taskAllocateCommonService.getTasksFromMilestones(
@@ -3302,8 +3302,8 @@ export class TimelineComponent
       if (oExistingTask) {
         oExistingTask = this.getExistingData(oExistingTask);
         if (
-          oExistingTask.previousTask !== previousTasks ||
-          oExistingTask.nextTask !== nextTasks
+          (oExistingTask.previousTask !== previousTasks ||
+          oExistingTask.nextTask !== nextTasks) && oExistingTask.added
         ) {
           if (oExistingTask.status == 'Completed' || oExistingTask.status == 'Auto Closed') {
             oExistingTask.editMode = false;
