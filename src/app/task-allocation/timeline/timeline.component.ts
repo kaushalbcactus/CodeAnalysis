@@ -2704,8 +2704,8 @@ export class TimelineComponent
       );
       this.createGanttDataAndLinks(true);
       setTimeout(() => {
-      this.loaderenable = false;
-      },50);
+        this.loaderenable = false;
+      }, 50);
     } else {
       this.tempmilestoneData.forEach(element => {
         const getAllTasks = this.taskAllocateCommonService.getTasksFromMilestones(
@@ -2863,8 +2863,8 @@ export class TimelineComponent
   // tslint:enable
 
   checkForEditedMilestone(milestonesTasks) {
-    let milestoneData = milestonesTasks.filter(m=> (m.data.type == "milestone" || m.data.type == 'submilestone') && m.data.edited)
-    milestoneData.forEach((m)=>{
+    let milestoneData = milestonesTasks.filter(m => (m.data.type == "milestone" || m.data.type == 'submilestone') && m.data.edited)
+    milestoneData.forEach((m) => {
       m.data.editMode = false;
       m.data.edited = false;
     })
@@ -2936,21 +2936,21 @@ export class TimelineComponent
     if (type == 'Edit All') {
       this.loaderenable = true;
       setTimeout(() => {
-      this.milestoneData.forEach(async (mil, index) => {
-        if (mil.children && mil.children.length) {
-          mil.children.forEach(async submile => {
-            submile.data.type == 'task' ? await this.editModeForTasks(submile,mil) :
-              submile.children.forEach(async subTask => {
-              await this.editModeForTasks(subTask,mil ,submile);
-              })
-          })
-        }
-        if (mil.data.itemType == 'Client Review') {
-          await this.editModeForTasks(mil, mil);
-        }
-      })
-      this.loaderenable = false;
-    },100);
+        this.milestoneData.forEach(async (mil, index) => {
+          if (mil.children && mil.children.length) {
+            mil.children.forEach(async submile => {
+              submile.data.type == 'task' ? await this.editModeForTasks(submile, mil) :
+                submile.children.forEach(async subTask => {
+                  await this.editModeForTasks(subTask, mil, submile);
+                })
+            })
+          }
+          if (mil.data.itemType == 'Client Review') {
+            await this.editModeForTasks(mil, mil);
+          }
+        })
+        this.loaderenable = false;
+      }, 100);
     } else {
       task.assignedUsers.forEach(element => {
         if (element.items.find(c => c.value.ID === task.AssignedTo.ID)) {
@@ -2991,7 +2991,7 @@ export class TimelineComponent
       milestone.data.edited = true;
       milestone.data.editMode = true;
       task.data.type !== 'Client Review' ? milestone.expanded = true : milestone;
-      if(submilestone) {
+      if (submilestone) {
         submilestone.data.edited = true;
         submilestone.data.editMode = true;
         submilestone.expanded = milestone.data.edited;
@@ -3304,7 +3304,7 @@ export class TimelineComponent
         oExistingTask = this.getExistingData(oExistingTask);
         if (
           (oExistingTask.previousTask !== previousTasks ||
-          oExistingTask.nextTask !== nextTasks)
+            oExistingTask.nextTask !== nextTasks && milestone.status !== 'Completed')
         ) {
           if (oExistingTask.status == 'Completed' || oExistingTask.status == 'Auto Closed') {
             oExistingTask.editMode = false;
@@ -6272,7 +6272,7 @@ export class TimelineComponent
   }
 
   validateAllocationString(checkTasks) {
-     //////// check if multiple days task have allocationperday string
+    //////// check if multiple days task have allocationperday string
     // const errorTasks = checkTasks.filter(t => t.itemType !== 'Client Review' && t.itemType !== 'Send to client' && !t.parentSlot
     //                    && t.slotType === 'Task' && !t.allocationPerDay && t.edited && +t.budgetHours
     //                    && new Date(t.pUserStartDatePart).getTime() !== new Date(t.pUserEndDatePart).getTime());
