@@ -116,7 +116,7 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
 
   // tslint:disable-next-line: max-line-length
   async bindConflictDetails(milSubMil: TreeNode, originalData: TreeNode[], arrTasks: any[], allResources: any[]): Promise<IConflictResource[]> {
-    const conflictDetails = await this.bindConflictDetails(milSubMil, originalData, arrTasks, allResources);
+    const conflictDetails = await this.checkConflictsAllocations(milSubMil, originalData, arrTasks, allResources);
     conflictDetails.forEach(resource => {
       const allDates = resource.tasks.map(t => t.allocation);
       resource.userCapacity = this.recalculateUserCapacity(resource.user, allDates);

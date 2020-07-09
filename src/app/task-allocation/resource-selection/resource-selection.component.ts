@@ -160,20 +160,10 @@ export class ResourceSelectionComponent implements OnInit {
       const others = this.sortByAvailibility([...preferredRes, ...otherRes]);
       sortedRes = [...sortedPreAllocatedRes, ...others];
     }
-    const uniqueSorted = [...new Set(sortedRes)];
+    const remainingResources = resourcesCapacity.filter(r => !sortedRes.filter(sr => sr.uid !== r.uid).length);
+    const uniqueSorted = [...new Set([...sortedRes, ...remainingResources])];
     return uniqueSorted;
   }
-
-  // getUniqueResources(arrResources) {
-  //   const sortedRes = this.commonService.unique(arrResources, 'UserNamePG.ID');
-  //   // const allResources = [...arrResources];
-  //   // allResources.forEach(resource => {
-  //   //   if (sortedRes.findIndex(r => r.UserNamePG.ID === resource.UserNamePG.ID) < 0) {
-  //   //     sortedRes.push(resource);
-  //   //   }
-  //   // });
-  //   return sortedRes;
-  // }
 
   sortByAvailibility(arrResources) {
     const resources = arrResources.sort((a, b) => (a.availableHrs > b.availableHrs) ? 1 : -1);
