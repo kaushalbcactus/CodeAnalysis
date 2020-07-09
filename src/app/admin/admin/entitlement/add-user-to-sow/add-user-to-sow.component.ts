@@ -172,7 +172,8 @@ export class AddUserToSowComponent implements OnInit {
     const sResult = await this.spServices.readItems(this.constants.listNames.SOW.name, getSOW);
     if (sResult && sResult.length) {
       let disableCount = 0;
-      sResult.forEach(item => {
+      const ApprovedSow = sResult.length ? sResult.filter(c=>c.Status=this.constants.SOW_STATUS.APPROVED):[];
+      ApprovedSow.forEach(item => {
         const obj = Object.assign({}, this.adminObject.sowObj);
         obj.CMLevel1 = item.CMLevel1 && item.CMLevel1.results && item.CMLevel1.results.length ?
           item.CMLevel1.results : [];
@@ -210,7 +211,7 @@ export class AddUserToSowComponent implements OnInit {
         tempArray.push(obj);
       });
       this.sowList = tempArray;
-      if (disableCount === sResult.length) {
+      if (disableCount === ApprovedSow.length) {
         this.disableTableHeader = true;
       } else {
         this.disableTableHeader = false;
