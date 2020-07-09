@@ -6273,18 +6273,18 @@ export class TimelineComponent
 
   validateAllocationString(checkTasks) {
      //////// check if multiple days task have allocationperday string
-    const errorTasks = checkTasks.filter(t => t.itemType !== 'Client Review' && t.itemType !== 'Send to client' && !t.parentSlot
-                       && t.slotType === 'Task' && !t.allocationPerDay && t.edited && +t.budgetHours
-                       && new Date(t.pUserStartDatePart).getTime() !== new Date(t.pUserEndDatePart).getTime());
-    if (errorTasks.length) {
-      const tasks = errorTasks.map(t => t.title).join(', ');
-      this.commonService.showToastrMessage(
-        this.constants.MessageType.warn,
-        'Error occured for tasks' + tasks + '. Please try reset budget hours and save again.',
-        false
-      );
-      return false;
-    }
+    // const errorTasks = checkTasks.filter(t => t.itemType !== 'Client Review' && t.itemType !== 'Send to client' && !t.parentSlot
+    //                    && t.slotType === 'Task' && !t.allocationPerDay && t.edited && +t.budgetHours
+    //                    && new Date(t.pUserStartDatePart).getTime() !== new Date(t.pUserEndDatePart).getTime());
+    // if (errorTasks.length) {
+    //   const tasks = errorTasks.map(t => t.title).join(', ');
+    //   this.commonService.showToastrMessage(
+    //     this.constants.MessageType.warn,
+    //     'Error occured for tasks' + tasks + '. Please try reset budget hours and save again.',
+    //     false
+    //   );
+    //   return false;
+    // }
     return true;
   }
 

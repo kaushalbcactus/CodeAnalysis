@@ -827,4 +827,8 @@ div.sticky {
 .ganttOverlayIcon {
   cursor: pointer;
   padding: 0 10px;
+} 
+
+.gantt_task_line .gantt_link_control {
+  display: none !important;
 }
