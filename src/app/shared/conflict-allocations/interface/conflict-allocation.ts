@@ -3,7 +3,8 @@ export interface ConflictAllocation {
 
 export interface IConflictTask {
 allocatedHrs: string;
-allocationDate: Date;
+// allocationDate: any;
+allocation: any;
 projects: any;
 }
 
@@ -14,8 +15,9 @@ export interface IConflictProject {
 }
 
 export interface IConflictResource {
-userName: string;
-userId: number;
+// userName: string;
+// userId: number;
+user: any;
 userCapacity: any;
 tasks: any;
 }

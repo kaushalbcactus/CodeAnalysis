@@ -81,10 +81,10 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
     this.hideLoader = false;
     setTimeout(async () => {
       if (this.allResources.length) {
-        this.conflicTasks = await this.checkConflictsAllocations(null, [], this.milestoneData, this.allResources);
+        this.conflicTasks = await this.bindConflictDetails(null, [], this.milestoneData, this.allResources);
       } else {
         // tslint:disable-next-line: max-line-length
-        this.conflicTasks = await this.checkConflictsAllocations(this.node, this.milestoneData, [], this.globalService.oTaskAllocation.oResources);
+        this.conflicTasks = await this.bindConflictDetails(this.node, this.milestoneData, [], this.globalService.oTaskAllocation.oResources);
       }
       this.hideLoader = true;
     }, 100);
@@ -115,6 +115,16 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
   }
 
   // tslint:disable-next-line: max-line-length
+  async bindConflictDetails(milSubMil: TreeNode, originalData: TreeNode[], arrTasks: any[], allResources: any[]): Promise<IConflictResource[]> {
+    const conflictDetails = await this.bindConflictDetails(milSubMil, originalData, arrTasks, allResources);
+    conflictDetails.forEach(resource => {
+      const allDates = resource.tasks.map(t => t.allocation);
+      resource.userCapacity = this.recalculateUserCapacity(resource.user, allDates);
+    });
+    return conflictDetails;
+  }
+
+  // tslint:disable-next-line: max-line-length
   async checkConflictsAllocations(milSubMil: TreeNode, originalData: TreeNode[], arrTasks: any[], allResources: any[]): Promise<IConflictResource[]> {
     let allTasks = [];
     const conflictDetails = [];
@@ -122,25 +132,26 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
     allTasks = arrTasks.length ? arrTasks : this.getAllTasks(milSubMil, originalData);
     let capacity;
     const maxHrs = 10;
-    let allDates = [];
     for (const element of allTasks) {
       capacity = await this.getResourceCapacity(element, milSubMil, allResources);
       for (const user of capacity.arrUserDetails) {
-        const oExistingResource: IConflictResource = conflictDetails.length ? conflictDetails.find(ct => ct.userId === user.uid) : {};
+        // let allDates = [];
+        const oExistingResource: IConflictResource = conflictDetails.length ? conflictDetails.find(ct => ct.user.uid === user.uid) : {};
         this.updateUserCapacity(element, user);
         const dates = user.dates.filter(d => d.totalTimeAllocated > maxHrs && d.userCapacity !== 'Leave');
         const tasks = [];
         if (dates.length) {
-          allDates = [...new Set([...allDates, ...dates])];
+          // allDates = [...new Set([...allDates, ...dates])];
           const projectCodes = this.getProjectCodes(dates);
           projectInformation = await this.getProjectShortTitle(projectCodes, projectInformation);
           for (const date of dates) {
             // tslint:disable-next-line: max-line-length
-            const resourceDateExists = oExistingResource && Object.keys(oExistingResource).length && conflictDetails.findIndex(ct => ct.tasks.find(t => t.allocationDate.getTime() === date.date.getTime())) > -1 ? true : false;
+            const resourceDateExists = oExistingResource && Object.keys(oExistingResource).length && conflictDetails.findIndex(ct => ct.tasks.find(t => t.allocation.date.getTime() === date.date.getTime())) > -1 ? true : false;
             if (!resourceDateExists) {
               const conflictTask: IConflictTask = {
                 allocatedHrs: '' + +date.totalTimeAllocated.toFixed(2),
-                allocationDate: date.date,
+                // allocationDate: date,
+                allocation: date,
                 projects: [],
               };
               date.tasksDetails.forEach(task => {
@@ -168,12 +179,13 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
         if (tasks.length) {
           if (oExistingResource && Object.keys(oExistingResource).length) {
             oExistingResource.tasks = [...oExistingResource.tasks, ...tasks];
-            oExistingResource.userCapacity = this.recalculateUserCapacity(user, allDates);
+            // oExistingResource.userCapacity = this.recalculateUserCapacity(user, allDates);
           } else {
             const conflictResouce: IConflictResource = {
-              userName: user.userName,
-              userId: user.uid,
-              userCapacity: this.recalculateUserCapacity(user, allDates),
+              // userName: user.userName,
+              // userId: user.uid,
+              user,
+              userCapacity: this.recalculateUserCapacity(user, dates),
               tasks
             };
             conflictDetails.push(conflictResouce);

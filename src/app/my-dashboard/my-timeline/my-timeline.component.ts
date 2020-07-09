@@ -554,8 +554,8 @@ export class MyTimelineComponent implements OnInit {
     const startTime = type === 'startTime' ? time.split(':')[0] % 12 + ':' + time.split(':')[1]
       : endTime = time.split(':')[0] % 12 + ':' + time.split(':')[1];
 
-      if(type !== 'startTime' && new Date(this.datePipe.transform(this.task.StartDate, 'yyyy-MM-dd' + 'T' + this.commonService.ConvertTimeformat(24, this.task.StartTime) + ':00.000')).getTime() > new Date(this.datePipe.transform(this.task.DueDateDT, 'yyyy-MM-dd' + 'T' + this.commonService.ConvertTimeformat(24, this.task.DueTime) + ':00.000')).getTime()){
-        this.task.DueTime = this.task.StartTime;
+      if(type !== 'startTime' && new Date(this.datePipe.transform(this.task.StartDate, 'yyyy-MM-dd' + 'T' + this.commonService.ConvertTimeformat(24, this.task.StartTime ? this.task.StartTime : this.datePipe.transform(this.task.StartDate, 'hh:mm a')) + ':00.000')).getTime() > new Date(this.datePipe.transform(this.task.DueDateDT, 'yyyy-MM-dd' + 'T' + this.commonService.ConvertTimeformat(24, this.task.DueTime) + ':00.000')).getTime()){
+        this.task.DueTime =  this.task.StartTime ? this.task.StartTime : this.datePipe.transform(this.task.StartDate, 'hh:mm a');
         this.commonService.showToastrMessage(this.constants.MessageType.warn,'End Time should not be less than start time',false);
       }
     console.log('Start time: ', startTime + ' endTime ', endTime);
@@ -656,8 +656,8 @@ export class MyTimelineComponent implements OnInit {
   }
 
   onCloseDueDate(){
-    if(new Date(this.datePipe.transform(this.task.StartDate, 'yyyy-MM-dd' + 'T' + this.commonService.ConvertTimeformat(24, this.task.StartTime) + ':00.000')).getTime() > new Date(this.datePipe.transform(this.task.DueDateDT, 'yyyy-MM-dd' + 'T' + this.commonService.ConvertTimeformat(24, this.task.DueTime) + ':00.000')).getTime()){
-      this.task.DueTime = this.task.StartTime;
+    if(new Date(this.datePipe.transform(this.task.StartDate, 'yyyy-MM-dd' + 'T' + this.commonService.ConvertTimeformat(24,  this.task.StartTime ? this.task.StartTime : this.datePipe.transform(this.task.StartDate, 'hh:mm a')) + ':00.000')).getTime() > new Date(this.datePipe.transform(this.task.DueDateDT, 'yyyy-MM-dd' + 'T' + this.commonService.ConvertTimeformat(24, this.task.DueTime) + ':00.000')).getTime()){
+      this.task.DueTime =  this.task.StartTime ? this.task.StartTime : this.datePipe.transform(this.task.StartDate, 'hh:mm a');
       this.commonService.showToastrMessage(this.constants.MessageType.warn,'End Time should not be less than start time',false);
     }
   }
