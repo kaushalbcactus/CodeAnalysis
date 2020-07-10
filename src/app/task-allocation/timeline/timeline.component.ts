@@ -2007,9 +2007,15 @@ export class TimelineComponent
     this.budgetHrs = 0;
     this.updatedTasks = task;
     this.budgetHrs = task.budgetHours;
-    task.ExpectedBudgetHrs = await this.taskAllocateCommonService.setMaxBudgetHrs(task);
-    this.maxBudgetHrs = task.ExpectedBudgetHrs;
-    this.budgetHrsTask = task;
+    if(task.type !== 'milestone' && task.type !== 'submilestone') {
+      task.ExpectedBudgetHrs = await this.taskAllocateCommonService.setMaxBudgetHrs(task);
+      this.maxBudgetHrs = task.ExpectedBudgetHrs;
+      this.budgetHrsTask = task;
+    } else {
+      task.ExpectedBudgetHrs = ''
+      this.maxBudgetHrs = ''
+      this.budgetHrsTask = task;
+    }
     if (
       task.type == "task" &&
       new Date(task.start_date).getTime() == new Date(task.end_date).getTime()
@@ -2253,6 +2259,9 @@ export class TimelineComponent
           false
         );
       }
+    } else {
+      task.ExpectedBudgetHrs = '';
+      this.maxBudgetHrs = task.ExpectedBudgetHrs;
     }
   }
 
@@ -2687,6 +2696,11 @@ export class TimelineComponent
       this.changeInRestructure = false;
       this.milestoneData = [...this.tempmilestoneData];
       this.GanttchartData = [...this.oldGantChartData];
+      setTimeout(() => {
+        if(this.visualgraph === true) {
+          this.loadComponentRefresh();  
+        }
+      }, 200);
     } else if (type === "task" && milestone.itemType === "Client Review") {
       const tempMile = this.tempmilestoneData.find(
         c => c.data.id === milestone.id
