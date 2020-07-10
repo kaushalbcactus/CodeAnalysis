@@ -101,15 +101,15 @@ export class GanttEdittaskComponent implements OnInit {
   updateDates(task) {
     this.taskAllocateCommonService.changeUserTimeZone(task, this.globalService.currentUser.timeZone, task.assignedUserTimeZone);
     this.taskAllocateCommonService.setDatePartAndTimePart(task);
-    // task.pUserStart = this.commonService.calcTimeForDifferentTimeZone(task.start_date,
-    //   this.globalService.currentUser.timeZone, task.assignedUserTimeZone);
-    // task.pUserStartDatePart = this.taskAllocateCommonService.getDatePart(task.pUserStart);
-    // task.pUserStartTimePart = this.taskAllocateCommonService.getTimePart(task.pUserStart);
+    task.pUserStart = this.commonService.calcTimeForDifferentTimeZone(task.start_date,
+      this.globalService.currentUser.timeZone, task.assignedUserTimeZone);
+    task.pUserStartDatePart = this.taskAllocateCommonService.getDatePart(task.pUserStart);
+    task.pUserStartTimePart = this.taskAllocateCommonService.getTimePart(task.pUserStart);
 
-    // task.pUserEnd = this.commonService.calcTimeForDifferentTimeZone(task.end_date,
-    //   this.globalService.currentUser.timeZone, task.assignedUserTimeZone);
-    // task.pUserEndDatePart = this.taskAllocateCommonService.getDatePart(task.pUserEnd);
-    // task.pUserEndTimePart = this.taskAllocateCommonService.getTimePart(task.pUserEnd);
+    task.pUserEnd = this.commonService.calcTimeForDifferentTimeZone(task.end_date,
+      this.globalService.currentUser.timeZone, task.assignedUserTimeZone);
+    task.pUserEndDatePart = this.taskAllocateCommonService.getDatePart(task.pUserEnd);
+    task.pUserEndTimePart = this.taskAllocateCommonService.getTimePart(task.pUserEnd);
   }
 
   async onLoad(task, clickedInputType) {
@@ -162,7 +162,7 @@ export class GanttEdittaskComponent implements OnInit {
     task.end_date = new Date(this.datepipe.transform(task.end_date, 'MMM d, y') + ' ' + endTime);
     this.updateDates(task);
     this.task = task;
-    this.task.showAllocationSplit = this.task.AllocationPerDay ? true : false;
+    this.task.showAllocationSplit = this.task.allocationPerDay ? true : false;
     this.cascadingObject.node = clickedInputType ? task : '';
     this.cascadingObject.type = clickedInputType;
     this.isViewAllocationBtn(task);

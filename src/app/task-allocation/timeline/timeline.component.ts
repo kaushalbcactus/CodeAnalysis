@@ -1320,16 +1320,19 @@ export class TimelineComponent
   showMenus(task) {
     task.showAllocationSplit = task.allocationPerDay ? true : false;
     let index;
+    let status = ['Auto Closed' , 'Completed'];
     if (task.type == "task") {
       if (task.itemType === "Client Review") {
-        index = [1, 6];
+        index = task.status == 'Completed' || task.status == 'Auto Closed' ? [6] : [1, 6];
       } else if (task.itemType === "Send to client") {
-        index = [1, 6];
+        index = task.status == 'Completed' || task.status == 'Auto Closed' ? [6] : [1, 6];
         index.push(task.DisableCascade ? 5 : 4);
       } else {
-        if (task.slotType === "Slot" && task.status !== "Completed") {
+        if (task.slotType === "Slot" && !status.includes(task.status)) {
           index = [0, 1, 12];
           index.push(task.DisableCascade ? 5 : 4);
+        } else if(task.slotType === "Slot" && status.includes(task.status)) {
+          index = [];
         } else {
           if (task.status !== "Completed" && task.status !== "Auto Closed") {
             index = [0, 1, 12, 6];
@@ -1505,6 +1508,7 @@ export class TimelineComponent
   }
 
   renderGanttTemplates() {
+    let status = ['Auto Closed' , "Completed"];
     this.taskAllocateCommonService.ganttParseObject.data.forEach(e => {
       e.ganttOverlay = e.showAllocationSplit
         ? this.taskAllocationService.allocationSplitColumn
@@ -1527,7 +1531,7 @@ export class TimelineComponent
               (e.isCurrent || e.isNext)
               ? this.taskAllocationService.contextMenu
               : ""
-            : this.taskAllocationService.contextMenu;
+            : e.slotType == "Slot" ? !status.includes(e.status) ? this.taskAllocationService.contextMenu : "" : this.taskAllocationService.contextMenu;
     });
   }
 
@@ -1572,7 +1576,9 @@ export class TimelineComponent
     let task = this.GanttchartData.find(e => e.id == id);
     this.resetTask = this.createResetObj(task);
     this.dragClickedInput = e.srcElement.className;
-    const isStartDate =
+    let isStartDate;
+    if(this.dragClickedInput !== "gantt_link_point" && this.dragClickedInput !== "gantt_task_cell") {
+    isStartDate =
       this.dragClickedInput.indexOf("start_date") > -1 ? true : false;
     if (gantt.ext.zoom.getCurrentLevel() < 3) {
       if (
@@ -1584,9 +1590,9 @@ export class TimelineComponent
         return false;
       } else {
         if (task.itemType == "Client Review") {
-          if (mode === "resize") {
+          if (mode === "resize" && !isStartDate) {
             let isDrag = this.isDragEnable(isStartDate, task.status);
-            return isDrag;
+            return isDrag; 
           } else {
             return false;
           }
@@ -1605,7 +1611,8 @@ export class TimelineComponent
           }
         }
       }
-    } else {
+    } 
+    }else {
       return false;
     }
   }
@@ -1702,7 +1709,9 @@ export class TimelineComponent
     this.disableSave = true;
     let task = { ...this.currentTask };
     this.ganttSetTime = false;
-    const isStartDate =
+    let isStartDate;
+    if(this.dragClickedInput !== "gantt_link_point" && this.dragClickedInput !== "gantt_task_cell") {
+    isStartDate =
       this.dragClickedInput.indexOf("start_date") > -1 ? true : false;
     if (task.status !== "Completed" || task.type == "milestone") {
       if (mode === "resize") {
@@ -1801,7 +1810,8 @@ export class TimelineComponent
       }
       this.disableSave = false;
       return true;
-    } else {
+    }
+   } else {
       this.disableSave = false;
       return false;
     }
@@ -1934,7 +1944,7 @@ export class TimelineComponent
   setTime(time) {
     this.ganttSetTime = true;
     const isStartDate =
-      this.dragClickedInput.indexOf("start_date") > -1 ? true : false;
+    this.dragClickedInput.indexOf("start_date") > -1 ? true : false;
     if (isStartDate) {
       this.singleTask.start_date = new Date(
         this.datepipe.transform(this.singleTask.start_date, "MMM d, y") +

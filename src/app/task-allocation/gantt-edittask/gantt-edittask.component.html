@@ -47,8 +47,8 @@
             <ng-container *ngIf="isViewAllocation">
                 <div class="p-col-4">
                     <input type="number" oninput="validity.valid||(value='0');" pInputText formControlName="budgetHrs" min="0" max={{maxBudgetHrs}} value="0" step="0.25">
-                    <button pButton type="button" (click)="viewAllocation('')" class="viewAllocation" icon='pi pi-sliders-h'></button>
-                    <i title="Click to see allocation split" class="fa fa-info-circle overlayIconGantt" aria-hidden="true" (click)="this.showOverlayPanel($event, dailyAllocateOP)"></i>
+                    <button pButton type="button" (click)="viewAllocation('')" class="viewAllocation" icon='pi pi-sliders-h' *ngIf="task.showAllocationSplit"></button>
+                    <i title="Click to see allocation split" class="fa fa-info-circle overlayIconGantt" aria-hidden="true" (click)="this.showOverlayPanel($event, dailyAllocateOP)" *ngIf="task.showAllocationSplit"></i>
                 </div>
             </ng-container>
             <div class="p-col-2">
