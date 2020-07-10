@@ -338,26 +338,27 @@ export class PreStackcommonService {
     const sliderMaxHrs = this.common.convertToHrsMins(resourceCapacity.maxHrs + 3.75);
     const resourceDailyDetails = resourceCapacity.dates.filter(d => [0, 6].indexOf(new Date(d.date).getDay()) < 0); // .filter(d => d.userCapacity !== 'Leave');
     const businessDays = resourceCapacity.dates.filter(d => d.userCapacity !== 'Leave').length; // resourceDailyDetails.length;
-    let allocationPerDay = this.common.roundToPrecision(budgetHours / businessDays, 0.25);
-    let remainingBudgetHrs = budgetHours;
+    const allocationPerDay = this.common.roundToPrecision(budgetHours / businessDays, 0.25);
     const availaibility = this.getDayAvailibilty(resourceDailyDetails, allocationData, allocationPerDay);
+    const lastDayUnavailable = availaibility.lastDayAvailability < allocationPerDay ? true : false;
     const noOfDays = businessDays > availaibility.days ? (businessDays - availaibility.days) : businessDays;
-    let calcBudgetHrs = availaibility.lastDayAvailability < allocationPerDay && noOfDays > 1 ?
-      budgetHours - availaibility.lastDayAvailability : budgetHours;
+    let calcBudgetHrs = lastDayUnavailable && noOfDays > 1 ? budgetHours - availaibility.lastDayAvailability : budgetHours;
     calcBudgetHrs = availaibility.firstDayAvailablity < allocationPerDay ? calcBudgetHrs - availaibility.firstDayAvailablity :
       calcBudgetHrs;
-    allocationPerDay = calcBudgetHrs !== budgetHours ? this.common.roundToPrecision(calcBudgetHrs / noOfDays, 0.25) : allocationPerDay;
+    let remainingBudgetHrs = lastDayUnavailable ? calcBudgetHrs : budgetHours;
+    const newAllocationPerDay = calcBudgetHrs !== budgetHours ? this.common.roundToPrecision(calcBudgetHrs / noOfDays, 0.25) : allocationPerDay;
     let i = 0;
     for (const detail of resourceDailyDetails) {
       let totalHrs = 0;
       if (detail.userCapacity !== 'Leave') {
         if (i === 0) {
-          totalHrs = availaibility.firstDayAvailablity < allocationPerDay ? availaibility.firstDayAvailablity : allocationPerDay;
-          totalHrs = resourceDailyDetails.length === 2 && availaibility.lastDayAvailability < allocationPerDay ? remainingBudgetHrs - availaibility.lastDayAvailability : totalHrs;
+          totalHrs = availaibility.firstDayAvailablity < newAllocationPerDay ? availaibility.firstDayAvailablity : newAllocationPerDay;
+          totalHrs = resourceDailyDetails.length === 2 && availaibility.lastDayAvailability < newAllocationPerDay ? remainingBudgetHrs - availaibility.lastDayAvailability : totalHrs;
         } else if (i === resourceDailyDetails.length - 1) {
-          totalHrs = availaibility.lastDayAvailability < remainingBudgetHrs ? availaibility.lastDayAvailability : remainingBudgetHrs;
+          totalHrs = lastDayUnavailable ? availaibility.lastDayAvailability : remainingBudgetHrs;
+          // totalHrs = availaibility.lastDayAvailability < remainingBudgetHrs ? availaibility.lastDayAvailability : remainingBudgetHrs;
         } else {
-          totalHrs = allocationPerDay < remainingBudgetHrs ? allocationPerDay : remainingBudgetHrs <= 24 ? remainingBudgetHrs : 24;
+          totalHrs = newAllocationPerDay < remainingBudgetHrs ? newAllocationPerDay : remainingBudgetHrs <= 24 ? remainingBudgetHrs : 24;
         }
         remainingBudgetHrs = remainingBudgetHrs - totalHrs;
       }
