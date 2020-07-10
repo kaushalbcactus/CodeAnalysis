@@ -1501,6 +1501,7 @@ export class TimelineComponent
           break;
       }
     });
+
   }
 
   renderGanttTemplates() {
@@ -1618,8 +1619,7 @@ export class TimelineComponent
         task.itemType !== "Client Review" &&
         task.slotType !== "Slot" &&
         task.type !== "milestone" &&
-        task.type !== "submilestone" &&
-        task.AssignedTo.ID !== -1
+        task.type !== "submilestone"
       ) {
         if (e.target.parentElement.className === "gantt_cell cell_user") {
           this.header = task.submilestone
@@ -1893,7 +1893,14 @@ export class TimelineComponent
         resource,
         this.singleTask
       );
-      await this.changeBudgetHrs(this.singleTask);
+      if(this.singleTask.itemType !== 'Client Review' && this.singleTask.itemType !== 'Send to client') {
+        await this.changeBudgetHrs(this.singleTask);
+      } else if(this.singleTask.type == 'task' ){
+        this.DateChange(this.singleTask, type);
+        this.GanttchartData = allTasks.data;
+        this.loaderenable = false;
+        this.visualgraph = true;
+      }
 
       this.GanttchartData = allTasks.data;
       await this.ganttNotification();
@@ -2000,9 +2007,15 @@ export class TimelineComponent
     this.budgetHrs = 0;
     this.updatedTasks = task;
     this.budgetHrs = task.budgetHours;
-    task.ExpectedBudgetHrs = await this.taskAllocateCommonService.setMaxBudgetHrs(task);
-    this.maxBudgetHrs = task.ExpectedBudgetHrs;
-    this.budgetHrsTask = task;
+    if(task.type !== 'milestone' && task.type !== 'submilestone') {
+      task.ExpectedBudgetHrs = await this.taskAllocateCommonService.setMaxBudgetHrs(task);
+      this.maxBudgetHrs = task.ExpectedBudgetHrs;
+      this.budgetHrsTask = task;
+    } else {
+      task.ExpectedBudgetHrs = ''
+      this.maxBudgetHrs = ''
+      this.budgetHrsTask = task;
+    }
     if (
       task.type == "task" &&
       new Date(task.start_date).getTime() == new Date(task.end_date).getTime()
@@ -2162,8 +2175,8 @@ export class TimelineComponent
       milestoneDataCopy: this.milestoneDataCopy,
       allRestructureTasks: this.allRestructureTasks,
       allTasks: this.allTasks,
-      startDate: this.startDate,
-      endDate: this.endDate
+      // startDate: this.startDate,
+      // endDate: this.endDate
     };
 
     this.editTaskComponent(data);
@@ -2246,6 +2259,9 @@ export class TimelineComponent
           false
         );
       }
+    } else {
+      task.ExpectedBudgetHrs = '';
+      this.maxBudgetHrs = task.ExpectedBudgetHrs;
     }
   }
 
@@ -2268,6 +2284,7 @@ export class TimelineComponent
   }
 
   async saveTask(isBudgetHrs, updatedDataObj) {
+    let allowStatus = ['Not Confirmed' ,'Not Saved'];
     if (isBudgetHrs) {
       let isStartDate: any;
       if (this.dragClickedInput) {
@@ -2281,7 +2298,7 @@ export class TimelineComponent
         data: []
       };
 
-      if (this.budgetHrs == 0 && this.updatedTasks.type !== "milestone") {
+      if (this.budgetHrs == 0 && this.updatedTasks.type !== "milestone" && !allowStatus.includes(this.updatedTasks.status)) {
         this.commonService.showToastrMessage(
           this.constants.MessageType.warn,
           "Please Add Budget Hours.",
@@ -2679,6 +2696,11 @@ export class TimelineComponent
       this.changeInRestructure = false;
       this.milestoneData = [...this.tempmilestoneData];
       this.GanttchartData = [...this.oldGantChartData];
+      setTimeout(() => {
+        if(this.visualgraph === true) {
+          this.loadComponentRefresh();  
+        }
+      }, 200);
     } else if (type === "task" && milestone.itemType === "Client Review") {
       const tempMile = this.tempmilestoneData.find(
         c => c.data.id === milestone.id

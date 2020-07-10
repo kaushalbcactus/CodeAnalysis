@@ -93,8 +93,8 @@ export class GanttEdittaskComponent implements OnInit {
     this.allRestructureTasks = this.config.data.allRestructureTasks;
     this.allTasks = this.allTasks;
     const clickedInputType = this.config.data.clickedInputType;
-    this.startDate = this.config.data.startDate;
-    this.endDate = this.config.data.endDate;
+    // this.startDate = this.config.data.startDate;
+    // this.endDate = this.config.data.endDate;
     this.onLoad(this.task, clickedInputType);
   }
 
@@ -125,7 +125,7 @@ export class GanttEdittaskComponent implements OnInit {
       this.editTaskObject.isTat = false;
       this.editTaskForm.controls['startDate'].disable();
       this.editTaskForm.controls['startDateTimePart'].disable();
-      task.start_date = this.startDate;
+      // task.start_date = this.startDate;
     } else if (task.itemType === 'Send to client') {
       this.editTaskObject.isDisableCascade = true;
       this.editTaskObject.isTat = false;
@@ -150,7 +150,7 @@ export class GanttEdittaskComponent implements OnInit {
     } else if (task.status == "In Progress") {
       this.editTaskForm.controls['startDate'].disable();
       this.editTaskForm.controls['startDateTimePart'].disable();
-      task.start_date = this.startDate;
+      // task.start_date = this.startDate;
       if (task.itemType !== 'Send to client') {
         this.editTaskForm.controls['endDate'].enable();
         this.editTaskForm.controls['endDateTimePart'].enable();
@@ -185,6 +185,10 @@ export class GanttEdittaskComponent implements OnInit {
       if (tat) {
         this.isTaskTAT(task);
       }
+    });
+
+    this.editTaskForm.get('disableCascade').valueChanges.subscribe(disableCascade => {
+      task.DisableCascade = disableCascade;
     });
 
     this.editTaskForm.get('resource').valueChanges.subscribe(async resource => {
@@ -385,9 +389,12 @@ export class GanttEdittaskComponent implements OnInit {
   }
 
   saveTask(): void {
-    if (this.editTaskForm.valid) {
-      if (this.editTaskForm.value.budgetHrs == 0) {
-
+    let allowStatus = ['Not Confirmed' ,'Not Saved'];
+    if (this.editTaskForm.valid || allowStatus.includes(this.task.status)) {
+      if (this.editTaskForm.value.endDate < this.editTaskForm.value.startDate) {
+        this.commonService.showToastrMessage(this.constants.MessageType.warn, 'End date time should be greater than start date time.', false);
+      }
+      else if (this.editTaskForm.value.budgetHrs == 0 && !allowStatus.includes(this.task.status)) {
         this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please Add Budget Hours.', false);
       } else {
         const obj = {
@@ -398,14 +405,16 @@ export class GanttEdittaskComponent implements OnInit {
         this.editTaskRef.close(obj);
       }
     } else {
-      if (!this.editTaskForm.value.resource) {
-        this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please select Resource.', false);
-      } else if (!this.editTaskForm.value.budgetHrs) {
-        this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please Add Budget Hours.', false);
-      } else if (!this.editTaskForm.value.startDate) {
-        this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please select Start Date.', false);
-      } else if (!this.editTaskForm.value.endDate) {
-        this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please select End Date.', false);
+      if(!allowStatus.includes(this.task.status)) {
+        if (!this.editTaskForm.value.resource) {
+          this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please select Resource.', false);
+        } else if (!this.editTaskForm.value.budgetHrs) {
+          this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please Add Budget Hours.', false);
+        } else if (!this.editTaskForm.value.startDate) {
+          this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please select Start Date.', false);
+        } else if (!this.editTaskForm.value.endDate) {
+          this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please select End Date.', false);
+        }
       }
     }
   }
