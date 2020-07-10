@@ -346,7 +346,7 @@ export class PreStackcommonService {
       budgetHours - availaibility.lastDayAvailability : budgetHours;
     calcBudgetHrs = availaibility.firstDayAvailablity < allocationPerDay ? calcBudgetHrs - availaibility.firstDayAvailablity :
       calcBudgetHrs;
-    allocationPerDay = calcBudgetHrs !== budgetHours ? Math.ceil(calcBudgetHrs / noOfDays) : allocationPerDay;
+    allocationPerDay = calcBudgetHrs !== budgetHours ? this.common.roundToPrecision(calcBudgetHrs / noOfDays, 0.25) : allocationPerDay;
     let i = 0;
     for (const detail of resourceDailyDetails) {
       let totalHrs = 0;

@@ -721,7 +721,7 @@ export class UserCapacitycommonService {
                   "yyyy-MM-ddT"
                 ) + "23:59:00.000Z"
               )
-              ? sTopEndDate.toISOString()
+              ? new Date(sTopEndDate).toISOString()
               : this.datepipe.transform(
                 oCapacity.arrUserDetails[indexUser].tasks[0].DueDateDT,
                 "yyyy-MM-ddT"
@@ -735,7 +735,7 @@ export class UserCapacitycommonService {
                   "yyyy-MM-ddT"
                 ) + "00:00:01.000Z"
               )
-              ? sTopStartDate.toISOString()
+              ? new Date(sTopStartDate).toISOString()
               : this.datepipe.transform(
                 oCapacity.arrUserDetails[indexUser].tasks[0].StartDate,
                 "yyyy-MM-ddT"
@@ -763,8 +763,8 @@ export class UserCapacitycommonService {
             }
           }
         } else {
-          startDateString = sTopStartDate.toISOString();
-          endDateString = sTopEndDate.toISOString();
+          startDateString = new Date(sTopStartDate).toISOString();
+          endDateString = new Date(sTopEndDate).toISOString();
         }
 
         selectedUsers.map(
