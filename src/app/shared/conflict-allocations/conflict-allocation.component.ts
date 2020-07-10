@@ -116,7 +116,7 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
 
   // tslint:disable-next-line: max-line-length
   async bindConflictDetails(milSubMil: TreeNode, originalData: TreeNode[], arrTasks: any[], allResources: any[]): Promise<IConflictResource[]> {
-    const conflictDetails = await this.bindConflictDetails(milSubMil, originalData, arrTasks, allResources);
+    const conflictDetails = await this.checkConflictsAllocations(milSubMil, originalData, arrTasks, allResources);
     conflictDetails.forEach(resource => {
       const allDates = resource.tasks.map(t => t.allocation);
       resource.userCapacity = this.recalculateUserCapacity(resource.user, allDates);
@@ -131,11 +131,11 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
     let projectInformation = [];
     allTasks = arrTasks.length ? arrTasks : this.getAllTasks(milSubMil, originalData);
     let capacity;
-    const maxHrs = 10;
     for (const element of allTasks) {
       capacity = await this.getResourceCapacity(element, milSubMil, allResources);
       for (const user of capacity.arrUserDetails) {
         // let allDates = [];
+        const maxHrs = +user.maxHrs + 2;
         const oExistingResource: IConflictResource = conflictDetails.length ? conflictDetails.find(ct => ct.user.uid === user.uid) : {};
         this.updateUserCapacity(element, user);
         const dates = user.dates.filter(d => d.totalTimeAllocated > maxHrs && d.userCapacity !== 'Leave');

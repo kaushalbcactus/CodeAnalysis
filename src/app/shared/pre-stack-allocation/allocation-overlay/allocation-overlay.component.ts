@@ -50,7 +50,7 @@ export class AllocationOverlayComponent implements OnInit {
      if (day) {
        const arrDateTime: string[] = day.indexOf(':') > -1 ? day.split(':') : [];
        const date: Date = arrDateTime.length ? new Date(arrDateTime[0]) : new Date();
-       const time: string = arrDateTime.length > 1 ? arrDateTime[1] + ':' + arrDateTime[2] : '';
+       const time: string = arrDateTime.length > 1 ? (+arrDateTime[1]).toFixed(2) + ':' + (+arrDateTime[2]).toFixed(2) : '';
        const hrsMins: number = this.common.convertFromHrsMins(time);
        const obj = {
          date,
