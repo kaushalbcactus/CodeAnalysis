@@ -829,6 +829,11 @@ div.sticky {
   padding: 0 10px;
 } 
 
-.gantt_task_line .gantt_link_control {
-  display: none !important;
+.gantt_task_line .gantt_link_control.task_right {
+  right: -22px !important;
 }
+
+.gantt_task_line .gantt_link_control.task_left {
+  left: -22px !important;
+}
+ 
