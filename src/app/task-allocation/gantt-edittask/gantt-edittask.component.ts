@@ -187,6 +187,10 @@ export class GanttEdittaskComponent implements OnInit {
       }
     });
 
+    this.editTaskForm.get('disableCascade').valueChanges.subscribe(disableCascade => {
+      task.DisableCascade = disableCascade;
+    });
+
     this.editTaskForm.get('resource').valueChanges.subscribe(async resource => {
       this.task.AssignedTo = resource;
       this.task.res_id = resource;
@@ -387,8 +391,10 @@ export class GanttEdittaskComponent implements OnInit {
   saveTask(): void {
     let allowStatus = ['Not Confirmed' ,'Not Saved'];
     if (this.editTaskForm.valid || allowStatus.includes(this.task.status)) {
-      if (this.editTaskForm.value.budgetHrs == 0 && !allowStatus.includes(this.task.status)) {
-
+      if (this.editTaskForm.value.endDate < this.editTaskForm.value.startDate) {
+        this.commonService.showToastrMessage(this.constants.MessageType.warn, 'End date time should be greater than start date time.', false);
+      }
+      else if (this.editTaskForm.value.budgetHrs == 0 && !allowStatus.includes(this.task.status)) {
         this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please Add Budget Hours.', false);
       } else {
         const obj = {
