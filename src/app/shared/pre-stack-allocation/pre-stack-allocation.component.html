@@ -32,7 +32,7 @@
             </ng-template>
             <ng-template pTemplate="body" let-rowData let-columns="columns">
                 <tr>
-                    <td (click)="showTasks(rowData)" class="allocationDate">
+                    <td (click)="showTasks(rowData)" class="allocationDate"  [style.background]="rowData.leave ? '#808080': '#FFFFFF'" [title]="rowData.leave ? 'On Leave' : ''">
                         {{ rowData.Date | date: " d MMM, y" }}
                     </td>
                     <td>
@@ -58,9 +58,8 @@
                     </td>
                 </tr>
                 <tr [hidden]="rowData.hideTasksTable">
-                    <td [attr.colspan]="4">
+                    <td [attr.colspan]="5">
                         <app-capacity-tasks (collapse)="showTasks(rowData)" [componentName]="'prestack'" [disableCamera]="false" [tasks]="rowData.tasks"></app-capacity-tasks>
-                        <!-- <app-date-user-capacity (collapse)="showTasks(rowData)" [tasks]="rowData.tasks"></app-date-user-capacity> -->
                     </td>
                 </tr>
             </ng-template>

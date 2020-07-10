@@ -19,28 +19,30 @@ export class CapacityTasksComponent implements OnInit {
   @Input() componentName: string;
   @Output() collapse = new EventEmitter<boolean>();
 
-  @Output() updateBlocking  = new EventEmitter(); 
+  @Output() updateBlocking = new EventEmitter();
   today: Date;
   constructor(public globalService: GlobalService, public allocationConstant: TaskAllocationConstantsService,
-              public dialogService: DialogService, public globalConstant: ConstantsService,
-              public spServices: SPOperationService, public commonService: CommonService,
-              public datepipe:DatePipe) { }
+    public dialogService: DialogService, public globalConstant: ConstantsService,
+    public spServices: SPOperationService, public commonService: CommonService,
+    public datepipe: DatePipe) { }
 
   async ngOnInit() {
-    this.today = new Date(this.datepipe.transform(new Date(),'MM/dd/yyyy'));
-        this.disableCamera = this.disableCamera;
+    this.today = new Date(this.datepipe.transform(new Date(), 'MM/dd/yyyy'));
+    this.disableCamera = this.disableCamera;
     this.componentName = this.componentName;
     await this.updateShortTitle(this.tasks);
     this.tasks = [...this.tasks];
   }
 
   async updateShortTitle(tasks) {
-    const projectCodes = this.getProjectCodes(tasks);
-    const projectInformation = await this.getProjectShortTitle(projectCodes, []);
-    tasks.forEach(task => {
+    if (tasks) {
+      const projectCodes = this.getProjectCodes(tasks);
+      const projectInformation = await this.getProjectShortTitle(projectCodes, []);
+      tasks.forEach(task => {
         const project = projectInformation.find(p => p.ProjectCode === task.projectCode);
         task.shortTitle = project ? project.WBJID : '';
-    });
+      });
+    }
   }
 
   goToProjectDetails(data: any): string {
@@ -51,7 +53,7 @@ export class CapacityTasksComponent implements OnInit {
     this.collapse.emit(param);
   }
 
-  UpdateBlocking(rowData,type){
+  UpdateBlocking(rowData, type) {
     this.updateBlocking.emit({
       task: rowData,
       type: type
@@ -72,12 +74,15 @@ export class CapacityTasksComponent implements OnInit {
   }
 
   getProjectCodes(tasks) {
-    const projectCodes = tasks.map(task => task.projectCode);
-    const uniqueProjectCodes = [...new Set(projectCodes)];
-    return uniqueProjectCodes;
+    if (tasks) {
+      const projectCodes = tasks.map(task => task.projectCode);
+      const uniqueProjectCodes = [...new Set(projectCodes)];
+      return uniqueProjectCodes;
+    }
+    return [];
   }
 
-  async getProjectShortTitle(projectCodes, existingProjectInfo)   {
+  async getProjectShortTitle(projectCodes, existingProjectInfo) {
     const batchUrl = [];
     let projectInformation = [];
     const options = {

@@ -1164,7 +1164,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     currentnode.edited = true;
     currentnode.pRes = currentnode.skillLevel;
     const resource = this.resourceList.filter((objt) => {
-      return currentnode.allocatedResource.UserNamePG.ID === objt.UserNamePG.ID;
+      return currentnode.allocatedResource && currentnode.allocatedResource.UserNamePG.ID === objt.UserNamePG.ID;
     });
     await this.prestackService.calcPrestackAllocation(resource, currentnode);
     const nextTasks = currentnode.NextTasks ? currentnode.NextTasks.split(';') : [];
@@ -1258,7 +1258,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       if (conflictDetails.length <= 0) {
         this.loaderenable = true;
         setTimeout(() => {
-          this.commonService.showToastrMessage(this.constants.MessageType.info, 'Updating...', true, true);
+          this.commonService.showToastrMessage(this.constants.MessageType.info, 'Updating...', false, true);
           this.generateSaveTasks(unt);
         }, 300);
       } else {
@@ -1671,7 +1671,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     }*/
     //this.messageService.clear();
     await this.getProperties();
-
+    this.commonService.clearToastrMessage();
     this.commonService.showToastrMessage(this.constants.MessageType.success, 'Slots updated Sucessfully.', false);
 
     if (unt) {

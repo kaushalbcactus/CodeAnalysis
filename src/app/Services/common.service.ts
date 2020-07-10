@@ -35,7 +35,6 @@ export class CommonService {
     private pmConstant: PmconstantService, public sharedObject: GlobalService,
     public taskAllocationService: TaskAllocationConstantsService,
     private datePipe: DatePipe,
-    public common: CommonService,
     public dialogService: DialogService,
     private messageService: MessageService
   ) { }
@@ -548,8 +547,8 @@ export class CommonService {
     const h = Math.floor(totalMins / 60);
     let m = totalMins % 60;
     m = +(m / 60);
-    const totalHrs = h < 10 ? '0' + h : h;
-    return +totalHrs + +m;
+    // const totalHrs = h < 10 ? '0' + h : h;
+    return +h + +m;
   }
 
   calcTimeForDifferentTimeZone(date, prevOffset, currentOffset) {
@@ -720,7 +719,7 @@ export class CommonService {
           budgetHours: bSaveRes ? bBudgetHrs : this.response.length > 1 ? this.response[1] !== "" ? this.response[1][0].BudgetHrs : 0 : 0,
           ta: returnedProject.TA ? returnedProject.TA : [],
           deliverable: returnedProject ? returnedProject.DeliverableType : [],
-          practiceArea : returnedProject ? returnedProject.BusinessVertical :'',
+          practiceArea: returnedProject ? returnedProject.BusinessVertical : '',
           account: returnedProject ? returnedProject.ClientLegalEntity : [],
           wbjid: returnedProject ? returnedProject.WBJID : '',
           status: returnedProject ? returnedProject.Status : '',
@@ -946,16 +945,19 @@ export class CommonService {
   }
 
   convertTo24Hour(time) {
-    time = time.replace(':', '.').toUpperCase();
-    let hours = +(time.substr(0, 2));
-    if (time.indexOf('AM') != -1 && hours == 12) {
-      time = time.replace('12', '0');
+    if (time) {
+      time = time.replace(':', '.').toUpperCase();
+      let hours = +(time.substr(0, 2));
+      if (time.indexOf('AM') != -1 && hours == 12) {
+        time = time.replace('12', '0');
+      }
+      if (time.indexOf('PM') != -1 && hours < 12) {
+        const numTime = time.indexOf('0' + hours) > -1 ? time.replace('0' + hours, (hours + 12)) : time.replace(hours, (hours + 12));
+        time = '' + numTime;
+      }
+      return time.replace(/(AM|PM)/, '').replace('.', ':');
     }
-    if (time.indexOf('PM') != -1 && hours < 12) {
-      const numTime = time.indexOf('0' + hours) > -1 ? time.replace('0' + hours, (hours + 12)) : time.replace(hours, (hours + 12));
-      time = '' + numTime;
-    }
-    return time.replace(/(AM|PM)/, '').replace('.', ':');
+    return '0:0';
   }
   getMinsValue(val) {
     return +val === 0 ? 0 : +val === 25 ? 15 : +val === 50 ? 30 : +val === 15 ? 25 : +val === 30 ? 50 : 75;
@@ -1035,8 +1037,8 @@ export class CommonService {
 
   getHrsMinsObj(hrs: string, isSliderRange: boolean): any {
     const strhrs = '' + hrs;
-    const hours = strhrs.indexOf(':') > -1 ? +strhrs.split(':')[0] : +strhrs;
-    const mins = strhrs.indexOf(':') > 0 ? +strhrs.split(':')[1] : isSliderRange ? 45 : 0;
+    const hours = strhrs.indexOf(':') > -1 ? +((+strhrs.split(':')[0]).toFixed(2)) : +((+strhrs).toFixed(2));
+    const mins = strhrs.indexOf(':') > 0 ? +((+strhrs.split(':')[1]).toFixed(2)) : isSliderRange ? 45 : 0;
     return {
       hours, mins
     };
@@ -1124,4 +1126,23 @@ export class CommonService {
     }
   }
 
+  getTimeSpentArray(strTimeSpent: string): any[] {
+    const newarrTimeSpent = [];
+    const arrTimeSpent = strTimeSpent.split(/\n/);
+    arrTimeSpent.forEach((daySpentTime) => {
+      newarrTimeSpent.push(this.getDateTimeFromString(daySpentTime));
+    });
+    return newarrTimeSpent;
+  }
+
+  getTimeSpent(strTimeSpent: string, date: any): number {
+    const arrTimeSpentPerDay = this.getTimeSpentArray(strTimeSpent);
+    let dayTimeSpent = 0;
+    arrTimeSpentPerDay.forEach((timeSpentDate) => {
+      if (new Date(date).getTime() === new Date(timeSpentDate.date).getTime()) {
+        dayTimeSpent = timeSpentDate.value.hours + timeSpentDate.value.mins;
+      }
+    });
+    return dayTimeSpent;
+  }
 }

@@ -131,11 +131,11 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
     let projectInformation = [];
     allTasks = arrTasks.length ? arrTasks : this.getAllTasks(milSubMil, originalData);
     let capacity;
-    const maxHrs = 10;
     for (const element of allTasks) {
       capacity = await this.getResourceCapacity(element, milSubMil, allResources);
       for (const user of capacity.arrUserDetails) {
         // let allDates = [];
+        const maxHrs = +user.maxHrs + 2;
         const oExistingResource: IConflictResource = conflictDetails.length ? conflictDetails.find(ct => ct.user.uid === user.uid) : {};
         this.updateUserCapacity(element, user);
         const dates = user.dates.filter(d => d.totalTimeAllocated > maxHrs && d.userCapacity !== 'Leave');
