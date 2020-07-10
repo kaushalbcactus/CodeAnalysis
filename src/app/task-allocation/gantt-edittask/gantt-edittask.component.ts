@@ -187,6 +187,10 @@ export class GanttEdittaskComponent implements OnInit {
       }
     });
 
+    this.editTaskForm.get('disableCascade').valueChanges.subscribe(disableCascade => {
+      task.DisableCascade = disableCascade;
+    });
+
     this.editTaskForm.get('resource').valueChanges.subscribe(async resource => {
       this.task.AssignedTo = resource;
       this.task.res_id = resource;
