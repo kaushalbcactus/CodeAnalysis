@@ -93,23 +93,16 @@ export class GanttEdittaskComponent implements OnInit {
     this.allRestructureTasks = this.config.data.allRestructureTasks;
     this.allTasks = this.allTasks;
     const clickedInputType = this.config.data.clickedInputType;
-    // this.startDate = this.config.data.startDate;
-    // this.endDate = this.config.data.endDate;
     this.onLoad(this.task, clickedInputType);
   }
 
   updateDates(task) {
-    this.taskAllocateCommonService.changeUserTimeZone(task, this.globalService.currentUser.timeZone, task.assignedUserTimeZone);
-    this.taskAllocateCommonService.setDatePartAndTimePart(task);
     task.pUserStart = this.commonService.calcTimeForDifferentTimeZone(task.start_date,
       this.globalService.currentUser.timeZone, task.assignedUserTimeZone);
-    task.pUserStartDatePart = this.taskAllocateCommonService.getDatePart(task.pUserStart);
-    task.pUserStartTimePart = this.taskAllocateCommonService.getTimePart(task.pUserStart);
 
     task.pUserEnd = this.commonService.calcTimeForDifferentTimeZone(task.end_date,
       this.globalService.currentUser.timeZone, task.assignedUserTimeZone);
-    task.pUserEndDatePart = this.taskAllocateCommonService.getDatePart(task.pUserEnd);
-    task.pUserEndTimePart = this.taskAllocateCommonService.getTimePart(task.pUserEnd);
+    this.taskAllocateCommonService.setDatePartAndTimePart(task);
   }
 
   async onLoad(task, clickedInputType) {
@@ -125,7 +118,6 @@ export class GanttEdittaskComponent implements OnInit {
       this.editTaskObject.isTat = false;
       this.editTaskForm.controls['startDate'].disable();
       this.editTaskForm.controls['startDateTimePart'].disable();
-      // task.start_date = this.startDate;
     } else if (task.itemType === 'Send to client') {
       this.editTaskObject.isDisableCascade = true;
       this.editTaskObject.isTat = false;
@@ -150,7 +142,6 @@ export class GanttEdittaskComponent implements OnInit {
     } else if (task.status == "In Progress") {
       this.editTaskForm.controls['startDate'].disable();
       this.editTaskForm.controls['startDateTimePart'].disable();
-      // task.start_date = this.startDate;
       if (task.itemType !== 'Send to client') {
         this.editTaskForm.controls['endDate'].enable();
         this.editTaskForm.controls['endDateTimePart'].enable();
@@ -192,24 +183,18 @@ export class GanttEdittaskComponent implements OnInit {
     });
 
     this.editTaskForm.get('resource').valueChanges.subscribe(async resource => {
-      this.task.AssignedTo = resource;
       this.task.res_id = resource;
       this.task.user = resource ? resource.Title : '';
       if (resource) {
-        // const resources = this.globalService.oTaskAllocation.oResources.filter((objt) => {
-        //   return this.task.AssignedTo.ID === objt.UserNamePG.ID;
-        // });
-        // await this.prestackService.calcPrestackAllocation(resources, this.task);
+        this.task.AssignedTo = resource;
         const newtask = await this.assignedToUserChanged();
         this.patchEditForm(newtask.pUserStart, newtask.pUserEnd);
-        // let startDate = task.pUserStart;
-        // let endDate = task.pUserEnd;
-        // this.editTaskForm.patchValue({
-        //   startDate: startDate,
-        //   endDate: endDate,
-        //   startDateTimePart: this.taskAllocateCommonService.getTimePart(task.pUserStart),
-        //   endDateTimePart: this.taskAllocateCommonService.getTimePart(task.pUserEnd),
-        // });
+      } else { 
+        this.task.AssignedTo = {
+          Title: '',
+          ID: -1
+        }
+        this.taskAllocateCommonService.resetDailyAllocation(this.task);
       }
     });
 
@@ -219,9 +204,10 @@ export class GanttEdittaskComponent implements OnInit {
       });
       this.maxBudgetHrs = await this.taskAllocateCommonService.setMaxBudgetHrs(this.task);
       this.task.budgetHours = budgetHrs;
-      this.isViewAllocationBtn(task)
       if (budgetHrs > 0) {
         await this.prestackService.calcPrestackAllocation(resources, this.task);
+      } else {
+        this.taskAllocateCommonService.resetDailyAllocation(this.task);
       }
     });
 
@@ -237,23 +223,18 @@ export class GanttEdittaskComponent implements OnInit {
         this.task.start_date = this.commonService.calcTimeForDifferentTimeZone(start_date, task.assignedUserTimeZone,
           this.globalService.currentUser.timeZone);
         this.associateStartEndDates('start', start_date);
-        // this.task.pUserStart = start_date;
-        // this.task.pUserStartDatePart = this.taskAllocateCommonService.getDatePart(start_date);
-        // this.task.pUserStartTimePart = this.taskAllocateCommonService.getTimePart(start_date);
         if (this.task.itemType == 'Send to client') {
           this.editTaskForm.controls.endDate.setValue(this.task.start_date);
           this.editTaskForm.controls.endDateTimePart.setValue(this.taskAllocateCommonService.getTimePart(this.task.start_date));
           this.associateStartEndDates('end', this.task.pUserStart);
-          // this.task.pUserEnd = this.task.pUserStart;
-          // this.task.pUserEndDatePart = this.taskAllocateCommonService.getDatePart(this.task.pUserStart);
-          // this.task.pUserEndTimePart = this.taskAllocateCommonService.getTimePart(this.task.pUserStart);
         }
         await this.startDateChanged(this.task, 'start')
         this.cascadingObject.node = this.task;
         this.cascadingObject.type = 'start';
         await this.validateBudgetHours(this.task);
-        this.isViewAllocationBtn(task);
-        await this.prestackService.calcPrestackAllocation(resources, this.task);
+        if (this.task.budgetHours) {
+          await this.prestackService.calcPrestackAllocation(resources, this.task);
+        }
       }
     });
 
@@ -269,14 +250,12 @@ export class GanttEdittaskComponent implements OnInit {
         this.task.end_date = this.commonService.calcTimeForDifferentTimeZone(end_date, task.assignedUserTimeZone,
           this.globalService.currentUser.timeZone);
         this.associateStartEndDates('end', end_date);
-        // this.task.pUserEnd = end_date;
-        // this.task.pUserEndDatePart = this.taskAllocateCommonService.getDatePart(end_date);
-        // this.task.pUserEndTimePart = this.taskAllocateCommonService.getTimePart(end_date);
         this.cascadingObject.node = this.task;
         this.cascadingObject.type = 'end';
         await this.validateBudgetHours(this.task);
-        this.isViewAllocationBtn(task);
-        await this.prestackService.calcPrestackAllocation(resources, this.task);
+        if (this.task.budgetHours) {
+          await this.prestackService.calcPrestackAllocation(resources, this.task);
+        }
       }
     });
 
@@ -289,21 +268,17 @@ export class GanttEdittaskComponent implements OnInit {
       this.task.start_date = this.commonService.calcTimeForDifferentTimeZone(start_date, task.assignedUserTimeZone,
         this.globalService.currentUser.timeZone);
       this.associateStartEndDates('start', start_date);
-      // this.task.pUserStart = start_date;
-      // this.task.pUserStartDatePart = this.taskAllocateCommonService.getDatePart(start_date);
-      // this.task.pUserStartTimePart = this.taskAllocateCommonService.getTimePart(start_date);
       if (this.task.itemType == 'Send to client') {
         this.editTaskForm.controls.endDate.setValue(this.task.start_date);
         this.editTaskForm.controls.endDateTimePart.setValue(this.taskAllocateCommonService.getTimePart(this.task.start_date));
         this.associateStartEndDates('end', this.task.pUserStart);
-        // this.task.pUserEnd = this.task.pUserStart;
-        // this.task.pUserEndDatePart = this.taskAllocateCommonService.getDatePart(this.task.pUserStart);
-        // this.task.pUserEndTimePart = this.taskAllocateCommonService.getTimePart(this.task.pUserStart);
       }
       this.cascadingObject.node = this.task;
       this.cascadingObject.type = 'start';
       await this.validateBudgetHours(this.task);
-      await this.prestackService.calcPrestackAllocation(resources, this.task);
+      if (this.task.budgetHours) {
+        await this.prestackService.calcPrestackAllocation(resources, this.task);
+      }
     });
 
     this.editTaskForm.get('endDateTimePart').valueChanges.subscribe(async endTime => {
@@ -315,21 +290,19 @@ export class GanttEdittaskComponent implements OnInit {
       this.task.end_date = this.commonService.calcTimeForDifferentTimeZone(end_date, task.assignedUserTimeZone,
         this.globalService.currentUser.timeZone);
       this.associateStartEndDates('end', end_date);
-      // this.task.pUserEnd = end_date;
-      // this.task.pUserEndDatePart = this.taskAllocateCommonService.getDatePart(end_date);
-      // this.task.pUserEndTimePart = this.taskAllocateCommonService.getTimePart(end_date);
       this.cascadingObject.node = this.task;
       this.cascadingObject.type = 'end';
       await this.validateBudgetHours(this.task);
-      await this.prestackService.calcPrestackAllocation(resources, this.task);
+      if (this.task.budgetHours) {
+        await this.prestackService.calcPrestackAllocation(resources, this.task);
+      }
     });
 
   }
 
   async validateBudgetHours(task: any) {
-    let time: any = this.commonService.getHrsAndMins(task.startDate, task.endDate)
-    let bhrs = this.commonService.convertToHrsMins('' + task.budgetHrs).replace('.', ':')
-
+    let time: any = this.commonService.getHrsAndMins(task.start_date, task.end_date)
+    let bhrs = this.commonService.convertToHrsMins('' + task.budgetHours).replace('.', ':')
     this.maxBudgetHrs = await this.taskAllocateCommonService.setMaxBudgetHrs(task);
 
     let hrs = parseInt(bhrs.split(':')[0]);
@@ -342,17 +315,17 @@ export class GanttEdittaskComponent implements OnInit {
       let ogBudgetHrs = this.editTaskForm.get('budgetHrs').value;
       let budgetHrs: number = 0;
       this.editTaskForm.get('budgetHrs').setValue(budgetHrs);
+      this.taskAllocateCommonService.resetDailyAllocation(task);
+      task.budgetHours = 0;
       this.commonService.showToastrMessage(this.constants.MessageType.error, 'Budget hours is set to zero because given budget hours is greater than task time period. Original budget hrs of task is ' + ogBudgetHrs, false);
     }
   }
 
   isViewAllocationBtn(task) {
     if (task.itemType !== 'Client Review' && task.itemType !== 'Send to client' && task.slotType !== 'Slot') {
-      if (task.budgetHours && task.pUserStartDatePart.getTime() !== task.pUserEndDatePart.getTime()) {
-        this.isViewAllocation = true;
-      } else {
-        this.isViewAllocation = false;
-      }
+      this.isViewAllocation = true;
+    } else {
+      this.isViewAllocation = false;
     }
   }
 
@@ -360,12 +333,6 @@ export class GanttEdittaskComponent implements OnInit {
     const startDate = new Date(task.start_date.getFullYear(), task.start_date.getMonth(), task.start_date.getDate(), 9, 0)
     const endDate = new Date(task.end_date.getFullYear(), task.end_date.getMonth(), task.end_date.getDate(), 19, 0);
     this.patchEditForm(startDate, endDate);
-    // this.editTaskForm.patchValue({
-    //   startDate,
-    //   endDate,
-    //   startDateTimePart: this.taskAllocateCommonService.getTimePart(startDate),
-    //   endDateTimePart: this.taskAllocateCommonService.getTimePart(endDate),
-    // })
   }
 
   patchEditForm(startDate, endDate) {
@@ -389,9 +356,9 @@ export class GanttEdittaskComponent implements OnInit {
   }
 
   saveTask(): void {
-    let allowStatus = ['Not Confirmed' ,'Not Saved'];
+    let allowStatus = ['Not Confirmed', 'Not Saved'];
     if (this.editTaskForm.valid || allowStatus.includes(this.task.status)) {
-      if (this.editTaskForm.value.endDate < this.editTaskForm.value.startDate) {
+      if (this.cascadingObject.node.pUserEnd < this.cascadingObject.node.pUserStart) {
         this.commonService.showToastrMessage(this.constants.MessageType.warn, 'End date time should be greater than start date time.', false);
       }
       else if (this.editTaskForm.value.budgetHrs == 0 && !allowStatus.includes(this.task.status)) {
@@ -405,7 +372,7 @@ export class GanttEdittaskComponent implements OnInit {
         this.editTaskRef.close(obj);
       }
     } else {
-      if(!allowStatus.includes(this.task.status)) {
+      if (!allowStatus.includes(this.task.status)) {
         if (!this.editTaskForm.value.resource) {
           this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please select Resource.', false);
         } else if (!this.editTaskForm.value.budgetHrs) {

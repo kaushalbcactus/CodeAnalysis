@@ -2365,6 +2365,8 @@ export class TimelineComponent
                   resource,
                   task
                 );
+              } else {
+                this.taskAllocateCommonService.resetDailyAllocation(task);
               }
               this.setDateToCurrent(task);
               this.DateChange(task, type);
