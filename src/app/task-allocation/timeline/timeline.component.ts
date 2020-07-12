@@ -1320,18 +1320,22 @@ export class TimelineComponent
   showMenus(task) {
     task.showAllocationSplit = task.allocationPerDay ? true : false;
     let index;
-    let status = ['Auto Closed' , 'Completed'];
+    let status = ['Auto Closed', 'Completed'];
     if (task.type == "task") {
       if (task.itemType === "Client Review") {
         index = task.status == 'Completed' || task.status == 'Auto Closed' ? [6] : [1, 6];
       } else if (task.itemType === "Send to client") {
-        index = task.status == 'Completed' || task.status == 'Auto Closed' ? [6] : [1, 6];
-        index.push(task.DisableCascade ? 5 : 4);
+        if (task.status == 'Completed' || task.status == 'Auto Closed') {
+          index = [6]
+        } else {
+          index = [1, 6];
+          index.push(task.DisableCascade ? 5 : 4);
+        }
       } else {
         if (task.slotType === "Slot" && !status.includes(task.status)) {
           index = [0, 1, 12];
           index.push(task.DisableCascade ? 5 : 4);
-        } else if(task.slotType === "Slot" && status.includes(task.status)) {
+        } else if (task.slotType === "Slot" && status.includes(task.status)) {
           index = [];
         } else {
           if (task.status !== "Completed" && task.status !== "Auto Closed") {
@@ -1508,7 +1512,7 @@ export class TimelineComponent
   }
 
   renderGanttTemplates() {
-    let status = ['Auto Closed' , "Completed"];
+    let status = ['Auto Closed', "Completed"];
     this.taskAllocateCommonService.ganttParseObject.data.forEach(e => {
       e.ganttOverlay = e.showAllocationSplit
         ? this.taskAllocationService.allocationSplitColumn
@@ -1577,42 +1581,42 @@ export class TimelineComponent
     this.resetTask = this.createResetObj(task);
     this.dragClickedInput = e.srcElement.className;
     let isStartDate;
-    if(this.dragClickedInput !== "gantt_link_point" && this.dragClickedInput !== "gantt_task_cell") {
-    isStartDate =
-      this.dragClickedInput.indexOf("start_date") > -1 ? true : false;
-    if (gantt.ext.zoom.getCurrentLevel() < 3) {
-      if (
-        task.status == "Completed" ||
-        task.status == "Auto Closed" ||
-        task.type == "milestone" ||
-        task.type === "submilestone"
-      ) {
-        return false;
-      } else {
-        if (task.itemType == "Client Review") {
-          if (mode === "resize" && !isStartDate) {
-            let isDrag = this.isDragEnable(isStartDate, task.status);
-            return isDrag; 
-          } else {
-            return false;
-          }
+    if (this.dragClickedInput !== "gantt_link_point" && this.dragClickedInput !== "gantt_task_cell") {
+      isStartDate =
+        this.dragClickedInput.indexOf("start_date") > -1 ? true : false;
+      if (gantt.ext.zoom.getCurrentLevel() < 3) {
+        if (
+          task.status == "Completed" ||
+          task.status == "Auto Closed" ||
+          task.type == "milestone" ||
+          task.type === "submilestone"
+        ) {
+          return false;
         } else {
-          if (mode === "resize") {
-            let isDrag = this.isDragEnable(isStartDate, task.status);
-            return isDrag;
-          } else if (mode === "move") {
-            if (task.status == "In Progress") {
-              return false;
+          if (task.itemType == "Client Review") {
+            if (mode === "resize" && !isStartDate) {
+              let isDrag = this.isDragEnable(isStartDate, task.status);
+              return isDrag;
             } else {
-              return true;
+              return false;
             }
           } else {
-            return false;
+            if (mode === "resize") {
+              let isDrag = this.isDragEnable(isStartDate, task.status);
+              return isDrag;
+            } else if (mode === "move") {
+              if (task.status == "In Progress") {
+                return false;
+              } else {
+                return true;
+              }
+            } else {
+              return false;
+            }
           }
         }
       }
-    } 
-    }else {
+    } else {
       return false;
     }
   }
@@ -1710,108 +1714,108 @@ export class TimelineComponent
     let task = { ...this.currentTask };
     this.ganttSetTime = false;
     let isStartDate;
-    if(this.dragClickedInput !== "gantt_link_point" && this.dragClickedInput !== "gantt_task_cell") {
-    isStartDate =
-      this.dragClickedInput.indexOf("start_date") > -1 ? true : false;
-    if (task.status !== "Completed" || task.type == "milestone") {
-      if (mode === "resize") {
-        this.taskTime = isStartDate
-          ? this.taskAllocateCommonService.setMinutesAfterDrag(task.start_date)
-          : this.taskAllocateCommonService.setMinutesAfterDrag(task.end_date);
-        this.singleTask = task;
-        if (this.singleTask.tat) {
-          this.loaderenable = true;
-          this.visualgraph = false;
-          this.commonService
-            .confirmMessageDialog(
-              "Change " +
-              (isStartDate ? "Start Date and Time " : "End Date and Time ") +
-              "of Task",
-              "Are you sure you want to change specify selected " +
-              (isStartDate ? "Start Date" : "End Date") +
-              " of Task ?",
-              null,
-              ["Yes", "No"],
-              false
-            )
-            .then(async Confirmation => {
-              if (Confirmation == "Yes") {
-                if (isStartDate) {
-                  this.singleTask.start_date = new Date(
-                    task.start_date.getFullYear(),
-                    task.start_date.getMonth(),
-                    task.start_date.getDate(),
-                    9,
-                    0
-                  );
-                  this.singleTask.pUserStart = new Date(
-                    this.datepipe.transform(
-                      this.singleTask.start_date,
-                      "MMM d, y"
-                    ) +
-                    " " +
-                    this.singleTask.pUserStartTimePart
-                  );
-                  this.singleTask.pUserStartDatePart = this.getDatePart(
-                    this.singleTask.start_date
-                  );
+    if (this.dragClickedInput !== "gantt_link_point" && this.dragClickedInput !== "gantt_task_cell") {
+      isStartDate =
+        this.dragClickedInput.indexOf("start_date") > -1 ? true : false;
+      if (task.status !== "Completed" || task.type == "milestone") {
+        if (mode === "resize") {
+          this.taskTime = isStartDate
+            ? this.taskAllocateCommonService.setMinutesAfterDrag(task.start_date)
+            : this.taskAllocateCommonService.setMinutesAfterDrag(task.end_date);
+          this.singleTask = task;
+          if (this.singleTask.tat) {
+            this.loaderenable = true;
+            this.visualgraph = false;
+            this.commonService
+              .confirmMessageDialog(
+                "Change " +
+                (isStartDate ? "Start Date and Time " : "End Date and Time ") +
+                "of Task",
+                "Are you sure you want to change specify selected " +
+                (isStartDate ? "Start Date" : "End Date") +
+                " of Task ?",
+                null,
+                ["Yes", "No"],
+                false
+              )
+              .then(async Confirmation => {
+                if (Confirmation == "Yes") {
+                  if (isStartDate) {
+                    this.singleTask.start_date = new Date(
+                      task.start_date.getFullYear(),
+                      task.start_date.getMonth(),
+                      task.start_date.getDate(),
+                      9,
+                      0
+                    );
+                    this.singleTask.pUserStart = new Date(
+                      this.datepipe.transform(
+                        this.singleTask.start_date,
+                        "MMM d, y"
+                      ) +
+                      " " +
+                      this.singleTask.pUserStartTimePart
+                    );
+                    this.singleTask.pUserStartDatePart = this.getDatePart(
+                      this.singleTask.start_date
+                    );
+                  } else {
+                    this.singleTask.end_date = new Date(
+                      task.end_date.getFullYear(),
+                      task.end_date.getMonth(),
+                      task.end_date.getDate(),
+                      19,
+                      0
+                    );
+                    this.singleTask.pUserEnd = this.singleTask.pUserEnd = new Date(
+                      this.datepipe.transform(
+                        this.singleTask.end_date,
+                        "MMM d, y"
+                      ) +
+                      " " +
+                      this.singleTask.pUserEndTimePart
+                    );
+                    this.singleTask.pUserEndDatePart = this.getDatePart(
+                      this.singleTask.end_date
+                    );
+                  }
+                  this.ganttSetTime = true;
+                  this.timeChange();
                 } else {
-                  this.singleTask.end_date = new Date(
-                    task.end_date.getFullYear(),
-                    task.end_date.getMonth(),
-                    task.end_date.getDate(),
-                    19,
-                    0
-                  );
-                  this.singleTask.pUserEnd = this.singleTask.pUserEnd = new Date(
-                    this.datepipe.transform(
-                      this.singleTask.end_date,
-                      "MMM d, y"
-                    ) +
-                    " " +
-                    this.singleTask.pUserEndTimePart
-                  );
-                  this.singleTask.pUserEndDatePart = this.getDatePart(
-                    this.singleTask.end_date
-                  );
-                }
-                this.ganttSetTime = true;
-                this.timeChange();
-              } else {
-                let allTasks = {
-                  data: []
-                };
+                  let allTasks = {
+                    data: []
+                  };
 
-                allTasks.data = this.getGanttTasksFromMilestones(this.milestoneData, true);
+                  allTasks.data = this.getGanttTasksFromMilestones(this.milestoneData, true);
 
-                allTasks.data.forEach(task => {
-                  if (this.resetTask.type === "milestone") {
-                    if (task.id == this.resetTask.id) {
-                      task.open = true;
-                      task.edited = false;
+                  allTasks.data.forEach(task => {
+                    if (this.resetTask.type === "milestone") {
+                      if (task.id == this.resetTask.id) {
+                        task.open = true;
+                        task.edited = false;
+                      }
                     }
-                  }
-                  if (task.id == this.resetTask.id) {
-                    task = this.resetCurrentTask(task, this.resetTask);
-                  }
-                });
-                this.GanttchartData = allTasks.data;
-                this.showGanttChart(false);
-                setTimeout(() => {
-                  this.scrollToTaskDate(this.resetTask.pUserEnd, this.resetTask.id);
-                }, 500);
-              }
-            });
+                    if (task.id == this.resetTask.id) {
+                      task = this.resetCurrentTask(task, this.resetTask);
+                    }
+                  });
+                  this.GanttchartData = allTasks.data;
+                  this.showGanttChart(false);
+                  setTimeout(() => {
+                    this.scrollToTaskDate(this.resetTask.pUserEnd, this.resetTask.id);
+                  }, 500);
+                }
+              });
+          } else {
+            this.picker.open();
+          }
         } else {
-          this.picker.open();
+          this.openPopupOnGanttTask(task, "end");
         }
-      } else {
-        this.openPopupOnGanttTask(task, "end");
+        this.disableSave = false;
+        return true;
       }
-      this.disableSave = false;
-      return true;
-    }
-   } else {
+    } else {
       this.disableSave = false;
       return false;
     }
@@ -1903,9 +1907,9 @@ export class TimelineComponent
         resource,
         this.singleTask
       );
-      if(this.singleTask.itemType !== 'Client Review' && this.singleTask.itemType !== 'Send to client') {
+      if (this.singleTask.itemType !== 'Client Review' && this.singleTask.itemType !== 'Send to client') {
         await this.changeBudgetHrs(this.singleTask);
-      } else if(this.singleTask.type == 'task' ){
+      } else if (this.singleTask.type == 'task') {
         this.DateChange(this.singleTask, type);
         this.GanttchartData = allTasks.data;
         this.loaderenable = false;
@@ -1944,7 +1948,7 @@ export class TimelineComponent
   setTime(time) {
     this.ganttSetTime = true;
     const isStartDate =
-    this.dragClickedInput.indexOf("start_date") > -1 ? true : false;
+      this.dragClickedInput.indexOf("start_date") > -1 ? true : false;
     if (isStartDate) {
       this.singleTask.start_date = new Date(
         this.datepipe.transform(this.singleTask.start_date, "MMM d, y") +
@@ -2017,7 +2021,7 @@ export class TimelineComponent
     this.budgetHrs = 0;
     this.updatedTasks = task;
     this.budgetHrs = task.budgetHours;
-    if(task.type !== 'milestone' && task.type !== 'submilestone') {
+    if (task.type !== 'milestone' && task.type !== 'submilestone') {
       task.ExpectedBudgetHrs = await this.taskAllocateCommonService.setMaxBudgetHrs(task);
       this.maxBudgetHrs = task.ExpectedBudgetHrs;
       this.budgetHrsTask = task;
@@ -2294,7 +2298,7 @@ export class TimelineComponent
   }
 
   async saveTask(isBudgetHrs, updatedDataObj) {
-    let allowStatus = ['Not Confirmed' ,'Not Saved'];
+    let allowStatus = ['Not Confirmed', 'Not Saved'];
     if (isBudgetHrs) {
       let isStartDate: any;
       if (this.dragClickedInput) {
@@ -2709,8 +2713,8 @@ export class TimelineComponent
       this.milestoneData = [...this.tempmilestoneData];
       this.GanttchartData = [...this.oldGantChartData];
       setTimeout(() => {
-        if(this.visualgraph === true) {
-          this.loadComponentRefresh();  
+        if (this.visualgraph === true) {
+          this.loadComponentRefresh();
         }
       }, 200);
     } else if (type === "task" && milestone.itemType === "Client Review") {
@@ -6199,9 +6203,7 @@ export class TimelineComponent
       e => e.status !== 'Completed' && e.status !== 'Deleted'
     );
     const checkMilestoneAllocatedTime = tempMilestones.find(
-      e =>
-        (e.budgetHours === '' || +e.budgetHours <= 0) &&
-        e.status !== 'Not Confirmed'
+      e => (e.budgetHours === '' || +e.budgetHours <= 0)
     );
     if (checkMilestoneAllocatedTime) {
       this.commonService.showToastrMessage(
@@ -6307,18 +6309,18 @@ export class TimelineComponent
 
   validateAllocationString(checkTasks) {
     //////// check if multiple days task have allocationperday string
-    // const errorTasks = checkTasks.filter(t => t.itemType !== 'Client Review' && t.itemType !== 'Send to client' && !t.parentSlot
-    //                    && t.slotType === 'Task' && !t.allocationPerDay && t.edited && +t.budgetHours
-    //                    && new Date(t.pUserStartDatePart).getTime() !== new Date(t.pUserEndDatePart).getTime());
-    // if (errorTasks.length) {
-    //   const tasks = errorTasks.map(t => t.title).join(', ');
-    //   this.commonService.showToastrMessage(
-    //     this.constants.MessageType.warn,
-    //     'Error occured for tasks' + tasks + '. Please try reset budget hours and save again.',
-    //     false
-    //   );
-    //   return false;
-    // }
+    const errorTasks = checkTasks.filter(t => t.itemType !== 'Client Review' && t.itemType !== 'Send to client' && !t.parentSlot
+                       && t.slotType === 'Task' && !t.allocationPerDay && t.edited && +t.budgetHours && t.AssignedTo && t.AssignedTo.ID !== -1
+                       && new Date(t.pUserStartDatePart).getTime() !== new Date(t.pUserEndDatePart).getTime());
+    if (errorTasks.length) {
+      const tasks = errorTasks.map(t => t.title).join(', ');
+      this.commonService.showToastrMessage(
+        this.constants.MessageType.warn,
+        'Error occured for tasks ' + tasks + '. Please try reset budget hours and save again.',
+        false
+      );
+      return false;
+    }
     return true;
   }
 

@@ -561,7 +561,7 @@ export class TaskAllocationCommonService {
         newName = milestoneTask.itemType;
         newName = this.getNewTaskName(milestoneTask, newName, allResTasks, allTasks);
       }
-      milestoneTask.title = milestoneTask.title = newName;
+      milestoneTask.title = milestoneTask.text = newName;
 
       if (milestoneTask.nextTask) {
         this.changeNextTaskPrevTask(

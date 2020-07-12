@@ -58,7 +58,7 @@
                     Excel</button> -->
                 <i style="font-size: 1.8em;cursor: pointer;vertical-align: top;
                     margin: 7px 15px 0px 0px;" (click)="ganttExportToExcel()" title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
-                <p-dropdown #mySelect [options]="scales" [(ngModel)]="selectedScale" (onChange)="setScale(mySelect.value)" optionLabel="label"></p-dropdown>
+                <p-dropdown #mySelect [options]="scales" [style]="{'width': '150px'}" [(ngModel)]="selectedScale" (onChange)="setScale(mySelect.value)" optionLabel="label"></p-dropdown>
             </div>
         </div>
 

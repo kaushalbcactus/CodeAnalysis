@@ -163,7 +163,7 @@ export class GanttEdittaskComponent implements OnInit {
       endDate: task.end_date,
       tat: task.tat,
       disableCascade: task.DisableCascade,
-      resource: task.AssignedTo.ID ? task.AssignedTo : null,
+      resource: task.AssignedTo.ID ? task.AssignedTo : (task.slotType === 'Slot' ? { ID: undefined, Email: undefined, Title:  task.skillLevel, SkillText: task.skillLevel } : null),
       startDateTimePart: startTime,
       endDateTimePart: endTime,
     });
@@ -173,6 +173,7 @@ export class GanttEdittaskComponent implements OnInit {
     }
 
     this.editTaskForm.get('tat').valueChanges.subscribe(tat => {
+      task.tat = tat;
       if (tat) {
         this.isTaskTAT(task);
       }
