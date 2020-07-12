@@ -6309,9 +6309,11 @@ export class TimelineComponent
 
   validateAllocationString(checkTasks) {
     //////// check if multiple days task have allocationperday string
-    const errorTasks = checkTasks.filter(t => t.itemType !== 'Client Review' && t.itemType !== 'Send to client' && !t.parentSlot
-                       && t.slotType === 'Task' && !t.allocationPerDay && t.edited && +t.budgetHours && t.AssignedTo && t.AssignedTo.ID !== -1
-                       && new Date(t.pUserStartDatePart).getTime() !== new Date(t.pUserEndDatePart).getTime());
+    const errorTasks = checkTasks.filter(t => t.edited && t.itemType !== 'Client Review' && t.itemType !== 'Send to client' 
+                       && !t.parentSlot && t.slotType === 'Task' 
+                       && new Date(t.pUserStartDatePart).getTime() !== new Date(t.pUserEndDatePart).getTime()
+                       && !t.allocationPerDay&& +t.budgetHours 
+                       && t.AssignedTo && t.AssignedTo.ID && t.AssignedTo.ID !== -1);
     if (errorTasks.length) {
       const tasks = errorTasks.map(t => t.title).join(', ');
       this.commonService.showToastrMessage(
