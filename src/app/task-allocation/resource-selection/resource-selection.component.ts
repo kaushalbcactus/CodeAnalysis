@@ -193,25 +193,28 @@ export class ResourceSelectionComponent implements OnInit {
       res.userType = resource ? resource.userType : 'Other';
     });
     const previousResId = popupData.task.AssignedTo ? popupData.task.AssignedTo.ID : 0;
-    let oldResIds = this.findOldResources(popupData);
+    const oldResIds = this.findOldResources(popupData);
     const sortedPreAllocatedRes = this.sortByAvailibility(resourcesCapacity.filter(r => oldResIds.indexOf(r.uid) > -1));
     oldResIds.push(previousResId);
     const otherRes = resourcesCapacity.filter(r => oldResIds.indexOf(r.uid) === -1);
     const assignedUser = previousResId > 0 ? resourcesCapacity.filter(r => r.uid === previousResId) : [];
-    const preferredRes = resourcesCapacity.filter(r => prefRes.filter(pr => pr.UserNamePG.ID === r.uid).length);
-    const others = this.sortByAvailibility([...preferredRes, ...otherRes]);
-    if (previousResId) {
-      sortedRes = [...assignedUser, ...sortedPreAllocatedRes, ...others];
+    const preferredRes = this.sortByAvailibility(resourcesCapacity.filter(r => prefRes.filter(pr => pr.UserNamePG.ID === r.uid).length));
+    const others = this.sortByAvailibility([...otherRes]);
+    if (previousResId > 0) {
+      sortedRes = [...assignedUser, ...sortedPreAllocatedRes, ...preferredRes, ...others];
     } else {
-      sortedRes = [...sortedPreAllocatedRes, ...others];
+      const mergedPrefOthers = this.sortByAvailibility([...preferredRes, ...others]);
+      sortedRes = [...sortedPreAllocatedRes, ...mergedPrefOthers];
     }
-    //const remainingResources = resourcesCapacity.filter(r => !sortedRes.filter(sr => sr.uid !== r.uid).length);
+    // const remainingResources = resourcesCapacity.filter(r => !sortedRes.filter(sr => sr.uid !== r.uid).length);
     const uniqueSorted = [...new Set([...sortedRes])];
     return uniqueSorted;
   }
 
   sortByAvailibility(arrResources) {
-    const resources = arrResources.sort((a, b) => (a.availableHrs > b.availableHrs) ? 1 : -1);
+    const resources = arrResources.sort((a, b) => (
+      this.commonService.convertFromHrsMins('' + a.totalUnAllocated) > this.commonService.convertFromHrsMins('' + b.totalUnAllocated))
+      ? -1 : 1);
     return resources;
   }
 
@@ -266,22 +269,22 @@ export class ResourceSelectionComponent implements OnInit {
     return true;
   }
 
-  confirmChangeResource(event: IUserCapacity) {
+  async confirmChangeResource(event: IUserCapacity) {
     const assignedTo = this.sharedObject.data.task.AssignedTo;
     if (assignedTo.ID === event.uid) {
       this.commonService.showToastrMessage(this.constants.MessageType.error, 'Please select different resource name to change the resource', false);
     } else {
-      this.commonService.confirmMessageDialog('Change Resource of Task', 'Are you sure you want to change the Resource of Task ?', null, ['Yes', 'No'], false).then(async Confirmation => {
+      await this.commonService.confirmMessageDialog('Change Resource of Task', 'Are you sure you want to change the Resource of Task ?', null, ['Yes', 'No'], false).then(async Confirmation => {
         if (Confirmation === 'Yes') {
           this.timeline.displayBody = false;
           this.timeline.changeResource(event.uid);
-          this.addResourcePreference(event);
+          await this.addResourcePreference(event);
         }
       });
     }
   }
 
-  addResourcePreference(assignedTo): void {
+  async addResourcePreference(assignedTo): Promise<void> {
     let preferredResource = this.sharedObject.data.preferredResources;
     const projectDetails = this.sharedObject.oTaskAllocation.oProjectDetails;
     const prefResItem = preferredResource ? preferredResource : {};
@@ -290,7 +293,7 @@ export class ResourceSelectionComponent implements OnInit {
     const isResourceExists: boolean = isEntryExists ? resources.findIndex(res => res.ID === assignedTo.uid) > -1 ?
       true : false : false;
     if (!isResourceExists) {
-      this.commonService.confirmMessageDialog('Confirm', 'Do you want to add \'' + assignedTo.userName + '\' as preferred resource for practice area \'' + projectDetails.practiceArea + '\' ?', null, ['Yes', 'No'], false).then(async Confirmation => {
+      await this.commonService.confirmMessageDialog('Confirm', 'Do you want to add \'' + assignedTo.userName + '\' as preferred resource for practice area \'' + projectDetails.practiceArea + '\' ?', null, ['Yes', 'No'], false).then(async Confirmation => {
         if (Confirmation === 'Yes') {
           if (!isEntryExists) {
             const newPrefResItem = await this.createPrefResource(assignedTo.uid, projectDetails);

@@ -1574,7 +1574,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       ...updatedResources.pubSupportMembers.results, ...project.items.allDeliveryRes];
       UpdateProjectInfo.push({ projectID: project.projectId, updatedResources });
     }
-    this.completeSaveTask(dbAddTasks, dbUpdateTasks, updateSlot, UpdateProjectInfo, unt);
+    await this.completeSaveTask(dbAddTasks, dbUpdateTasks, updateSlot, UpdateProjectInfo, unt);
   }
 
   getIDFromItem(objItem) {
@@ -1877,9 +1877,10 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       if (detail.action.toLowerCase() === 'save') {
         const msg = 'Are you sure that you want to update tasks ?';
         const conflictMessage = detail.conflictResolved ? '' + msg : 'Conflict unresolved. ' + msg;
-        this.commonService.confirmMessageDialog('Confirmation', conflictMessage, null, ['Yes', 'No'], false).then(async Confirmation => {
+        // tslint:disable-next-line: max-line-length
+        await this.commonService.confirmMessageDialog('Confirmation', conflictMessage, null, ['Yes', 'No'], false).then(async Confirmation => {
           if (Confirmation === 'Yes') {
-            this.generateSaveTasks(node);
+            await this.generateSaveTasks(node);
           }
         });
       }

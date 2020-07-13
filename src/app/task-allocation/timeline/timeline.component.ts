@@ -2130,7 +2130,7 @@ export class TimelineComponent
               : task.title;
           const message: string =
             "Are you sure that you want to Confirm '" + Title + "' milestone ?";
-          this.setAsNextMilestoneCall(task, message);
+          await this.setAsNextMilestoneCall(task, message);
         }
       }
       this.loaderenable = false;
@@ -4889,14 +4889,14 @@ export class TimelineComponent
               : task.title;
           const msg = 'Are you sure that you want to Confirm \'' + Title + '\' milestone ?';
           const conflictMessage = detail.conflictResolved ? '' + msg : 'Conflict unresolved. ' + msg;
-          this.setAsNextMilestoneCall(task, conflictMessage);
+          await this.setAsNextMilestoneCall(task, conflictMessage);
         } else {
           if (detail.conflictResolved) {
             this.loaderenable = true;
             await this.generateSaveTasks();
           } else {
             const conflictMessage = 'Conflict unresolved. Do you want to proceed ?';
-            this.commonService.confirmMessageDialog('Confirmation', conflictMessage, null, ['Yes', 'No'], false)
+            await this.commonService.confirmMessageDialog('Confirmation', conflictMessage, null, ['Yes', 'No'], false)
               .then(async Confirmation => {
                 if (Confirmation === 'Yes') {
                   this.loaderenable = true;
@@ -5235,7 +5235,7 @@ export class TimelineComponent
       this.sharedObject.oTaskAllocation.oProjectDetails.status ===
       this.constants.STATUS.AUTHOR_REVIEW
     ) {
-      this.commonService
+      await this.commonService
         .confirmMessageDialog(
           'Confirmation',
           'Do you want to keep project in \'Author Review\' or \'In Progress\' ?',
@@ -6309,10 +6309,10 @@ export class TimelineComponent
 
   validateAllocationString(checkTasks) {
     //////// check if multiple days task have allocationperday string
-    const errorTasks = checkTasks.filter(t => t.edited && t.itemType !== 'Client Review' && t.itemType !== 'Send to client' 
-                       && !t.parentSlot && t.slotType === 'Task' 
+    const errorTasks = checkTasks.filter(t => t.edited && t.itemType !== 'Client Review' && t.itemType !== 'Send to client'
+                       && !t.parentSlot && t.slotType === 'Task'
                        && new Date(t.pUserStartDatePart).getTime() !== new Date(t.pUserEndDatePart).getTime()
-                       && !t.allocationPerDay&& +t.budgetHours 
+                       && !t.allocationPerDay&& +t.budgetHours
                        && t.AssignedTo && t.AssignedTo.ID && t.AssignedTo.ID !== -1);
     if (errorTasks.length) {
       const tasks = errorTasks.map(t => t.title).join(', ');
@@ -6428,7 +6428,7 @@ export class TimelineComponent
   }
 
   async setAsNextMilestoneCall(task, msg) {
-    this.commonService.confirmMessageDialog('Confirmation', msg, null, ['Yes', 'No'], false).then(async Confirmation => {
+    await this.commonService.confirmMessageDialog('Confirmation', msg, null, ['Yes', 'No'], false).then(async Confirmation => {
       if (Confirmation === 'Yes') {
         this.selectedSubMilestone = task;
         const validateNextMilestone = this.validateNextMilestone(this.selectedSubMilestone);
