@@ -168,15 +168,11 @@ export class GanttEdittaskComponent implements OnInit {
       endDateTimePart: endTime,
     });
 
-    if (task.tat) {
       this.isTaskTAT(task);
-    }
 
     this.editTaskForm.get('tat').valueChanges.subscribe(tat => {
       task.tat = tat;
-      if (tat) {
         this.isTaskTAT(task);
-      }
     });
 
     this.editTaskForm.get('disableCascade').valueChanges.subscribe(disableCascade => {
@@ -331,9 +327,16 @@ export class GanttEdittaskComponent implements OnInit {
   }
 
   isTaskTAT(task) {
-    const startDate = new Date(task.start_date.getFullYear(), task.start_date.getMonth(), task.start_date.getDate(), 9, 0)
-    const endDate = new Date(task.end_date.getFullYear(), task.end_date.getMonth(), task.end_date.getDate(), 19, 0);
-    this.patchEditForm(startDate, endDate);
+    if (task.tat) {
+      const startDate = new Date(task.start_date.getFullYear(), task.start_date.getMonth(), task.start_date.getDate(), 9, 0)
+      const endDate = new Date(task.end_date.getFullYear(), task.end_date.getMonth(), task.end_date.getDate(), 19, 0);
+      this.patchEditForm(startDate, endDate);
+      this.editTaskForm.controls['startDateTimePart'].disable();
+      this.editTaskForm.controls['endDateTimePart'].disable();
+    } else {
+      this.editTaskForm.controls['startDateTimePart'].enable();
+      this.editTaskForm.controls['endDateTimePart'].enable();
+    }
   }
 
   patchEditForm(startDate, endDate) {
