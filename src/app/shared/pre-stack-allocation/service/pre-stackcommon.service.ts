@@ -241,7 +241,7 @@ export class PreStackcommonService {
         } else if (i === resourceDailyDetails.length - 1) {
           availableHrs = this.getAvailableHours(boundaries.strLastAvailability, detail, maxLimit, extraHrs);
         } else {
-          availableHrs = detail.availableHrs;
+          availableHrs = this.getAvailableHours(null, detail, maxLimit, extraHrs); // detail.availableHrs;
         }
         newBudgetHrs = this.getCalculatedRemainingHours(availableHrs, taskBudgetHrs);
         const isLast = i === resourceDailyDetails.length - 1 ? true : false;
@@ -284,10 +284,12 @@ export class PreStackcommonService {
 
   getAvailableHours(dayAvailableHrs: string, dayResourceCapacity: any, maxLimit: number, extraHrs: string): string {
     let availableHrs = dayResourceCapacity.availableHrs;
-    const dateHrsAvailable = this.compareHrs(availableHrs, dayAvailableHrs);
-    if (!dateHrsAvailable) {
-      availableHrs = dayAvailableHrs;
-      dayResourceCapacity.mandatoryHrs = true;
+    if (dayAvailableHrs) {
+      const dateHrsAvailable = this.compareHrs(availableHrs, dayAvailableHrs);
+      if (!dateHrsAvailable) {
+        availableHrs = dayAvailableHrs;
+        dayResourceCapacity.mandatoryHrs = true;
+      }
     }
     availableHrs = availableHrs.indexOf('-') > -1 ? '0:0' : availableHrs;
     availableHrs = dayResourceCapacity.mandatoryHrs || dayResourceCapacity.totalTimeAllocated >= maxLimit ? availableHrs :
