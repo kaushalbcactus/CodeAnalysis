@@ -488,12 +488,22 @@ export class TaskAllocationCommonService {
         this.setDatePartAndTimePart(milestoneTask);
         milestoneTask.skillLevel = milestoneTask.AssignedTo.SkillText;
         milestoneTask.user = milestoneTask.skillLevel;
+        this.resetDailyAllocation(milestoneTask);
+        // milestoneTask.allocationPerDay = '';
+        // milestoneTask.showAllocationSplit = false;
+        // milestoneTask.allocationColor = '';
       }
       milestoneTask.edited = true;
       milestoneTask.user = milestoneTask.AssignedTo
         ? milestoneTask.AssignedTo.Title
         : milestoneTask.user;
     }
+  }
+
+  resetDailyAllocation(task) {
+    task.allocationPerDay = '';
+    task.showAllocationSplit = false;
+    task.allocationColor = '';
   }
 
   changeNextTaskPrevTask(
@@ -551,7 +561,7 @@ export class TaskAllocationCommonService {
         newName = milestoneTask.itemType;
         newName = this.getNewTaskName(milestoneTask, newName, allResTasks, allTasks);
       }
-      milestoneTask.title = milestoneTask.title = newName;
+      milestoneTask.title = milestoneTask.text = newName;
 
       if (milestoneTask.nextTask) {
         this.changeNextTaskPrevTask(

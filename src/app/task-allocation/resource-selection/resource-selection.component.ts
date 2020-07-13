@@ -35,7 +35,7 @@ export class ResourceSelectionComponent implements OnInit {
   selectedIsFTE = { label: '', value: '' };
   selectedDateRanges = [];
   constructor(private timeline: TimelineComponent, private commonService: CommonService, private constants: ConstantsService,
-              private sharedObject: GlobalService, private fb: FormBuilder, private spService: SPOperationService) { }
+    private sharedObject: GlobalService, private fb: FormBuilder, private spService: SPOperationService) { }
 
   searchCapacityForm = this.fb.group({
     bucket: [''],
@@ -77,7 +77,7 @@ export class ResourceSelectionComponent implements OnInit {
   initialize(data: IResourceSelection, taskResources) {
     this.bindFilterData(taskResources);
     const filters = this.getFilterValues(data);
-    const selectedResources = this.filterResources(taskResources, filters);
+    const selectedResources = this.filterResources(taskResources, filters, data);
     this.updateFilters(selectedResources, filters);
     this.showCapacity(filters, data.task);
   }
@@ -100,8 +100,9 @@ export class ResourceSelectionComponent implements OnInit {
     return objFilter;
   }
 
-  filterResources(resources, filters: IResourceSelectionFilter) {
+  filterResources(resources, filters: IResourceSelectionFilter, data?) {
     let filteredResources;
+
     if (filters.resourceFilter.length) {
       filteredResources = resources.filter(r => filters.resourceFilter.findIndex(u => u.UserNamePG.ID === r.UserNamePG.ID) > -1);
     } else {
@@ -114,9 +115,53 @@ export class ResourceSelectionComponent implements OnInit {
         filteredResources = filteredResources.filter((c) => (!c.GoLiveDate) || (c.GoLiveDate && new Date(c.GoLiveDate) > filters.startDateFilter));
       }
     }
-    return filteredResources;
+    if (data) {
+      let oldResIds = this.findOldResources(data);
+      let oldResources;
+      if (oldResIds.length) {
+        let selectedIds = filteredResources.map(e => e.UserNamePG.ID);
+        oldResIds = oldResIds.filter(e => selectedIds.indexOf(e) === -1);
+        oldResources = resources.filter(r => oldResIds.indexOf(r.UserNamePG.ID) > -1);
+        if (oldResources.length) {
+          filteredResources = [...oldResources, ...filteredResources];
+        }
+      }
+      if (data.task.AssignedTo && data.task.AssignedTo.ID) {
+        let allocatedRes = filteredResources.find(e => e.UserNamePG.ID === data.task.AssignedTo.ID);
+        if (!allocatedRes) {
+          allocatedRes = resources.find(e => e.UserNamePG.ID === data.task.AssignedTo.ID);
+        }
+        if (allocatedRes) {
+          filteredResources = [...[allocatedRes], ...filteredResources];
+        }
+      }
+    }
+
+    return [...new Set([...filteredResources])];
   }
 
+
+  findOldResources(data) {
+    let oldResources;
+    let oldResIds = []
+    switch (data.task.itemType) {
+      case 'Write':
+      case 'Inco':
+      case 'Finalize':
+        oldResources = data.projectDetails.writer.results ? data.projectDetails.writer.results : [];
+        break;
+      case 'Review-Write':
+        oldResources = data.projectDetails.reviewer.results ? data.projectDetails.reviewer.results : [];
+        break;
+      default:
+        oldResources = data.projectDetails.pubSupportMembers.results ? data.projectDetails.pubSupportMembers.results : [];
+        break;
+    }
+    if (oldResources.length) {
+      oldResIds = oldResources.map(e => e.ID);
+    }
+    return oldResIds;
+  }
   bindFilterData(filteredResources) {
     const buckets = filteredResources.filter(Boolean).map(r => new Object({ label: r.Bucket, value: r.Bucket }));
     this.Buckets = this.commonService.sortData(this.commonService.unique(buckets, 'label'));
@@ -148,20 +193,20 @@ export class ResourceSelectionComponent implements OnInit {
       res.userType = resource ? resource.userType : 'Other';
     });
     const previousResId = popupData.task.AssignedTo ? popupData.task.AssignedTo.ID : 0;
-    const sortedPreAllocatedRes = this.sortByAvailibility(resourcesCapacity.filter(r => r.userType === 'Allocated'));
-    const otherRes = resourcesCapacity.filter(r => r.userType === 'Other');
-    const assignedUser = previousResId > 0 ? resourcesCapacity.filter(r => r.ID === previousResId) : [];
-    const preferredRes = resourcesCapacity.filter(r => prefRes.filter(pr => pr.UserNamePG.ID ===  r.uid).length);
+    let oldResIds = this.findOldResources(popupData);
+    const sortedPreAllocatedRes = this.sortByAvailibility(resourcesCapacity.filter(r => oldResIds.indexOf(r.uid) > -1));
+    oldResIds.push(previousResId);
+    const otherRes = resourcesCapacity.filter(r => oldResIds.indexOf(r.uid) === -1);
+    const assignedUser = previousResId > 0 ? resourcesCapacity.filter(r => r.uid === previousResId) : [];
+    const preferredRes = resourcesCapacity.filter(r => prefRes.filter(pr => pr.UserNamePG.ID === r.uid).length);
+    const others = this.sortByAvailibility([...preferredRes, ...otherRes]);
     if (previousResId) {
-      const sortedOther = this.sortByAvailibility(otherRes);
-      const sortedPreferred = this.sortByAvailibility(preferredRes);
-      sortedRes = [...assignedUser, ...sortedPreAllocatedRes, ...sortedOther, ...sortedPreferred];
+      sortedRes = [...assignedUser, ...sortedPreAllocatedRes, ...others];
     } else {
-      const others = this.sortByAvailibility([...preferredRes, ...otherRes]);
       sortedRes = [...sortedPreAllocatedRes, ...others];
     }
-    const remainingResources = resourcesCapacity.filter(r => !sortedRes.filter(sr => sr.uid !== r.uid).length);
-    const uniqueSorted = [...new Set([...sortedRes, ...remainingResources])];
+    //const remainingResources = resourcesCapacity.filter(r => !sortedRes.filter(sr => sr.uid !== r.uid).length);
+    const uniqueSorted = [...new Set([...sortedRes])];
     return uniqueSorted;
   }
 
@@ -174,7 +219,7 @@ export class ResourceSelectionComponent implements OnInit {
     setTimeout(async () => {
       this.userCapacity.loaderenable = true;
       const popupData = this.sharedObject.data;
-      const prefRes =  this.getPrefResources(popupData);
+      const prefRes = this.getPrefResources(popupData);
       const capacity: any = await this.userCapacity.afterResourceChange(
         task,
         filters.startDateFilter,
@@ -254,7 +299,7 @@ export class ResourceSelectionComponent implements OnInit {
             const prefRes = resources.length ? resources.map(r => r.ID) : [];
             prefRes.push(assignedTo.uid);
             await this.addPrefResources(prefRes, prefResItem.ID);
-            prefResItem.Resources.results.push({ID: assignedTo.uid, Title: assignedTo.userName});
+            prefResItem.Resources.results.push({ ID: assignedTo.uid, Title: assignedTo.userName });
           }
         }
       });
@@ -262,7 +307,7 @@ export class ResourceSelectionComponent implements OnInit {
   }
 
   formatPrefResData(data, resource) {
-    const obj =  {
+    const obj = {
       ID: data.ID,
       Resources: {
         results: [resource]

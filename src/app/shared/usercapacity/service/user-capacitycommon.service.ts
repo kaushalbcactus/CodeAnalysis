@@ -498,8 +498,8 @@ export class UserCapacitycommonService {
       this.datepipe.transform(startDate, "yyyy-MM-dd") + "T00:00:01.000Z";
     let endDateString =
       this.datepipe.transform(endDate, "yyyy-MM-dd") + "T23:59:00.000Z";
-    const sTopStartDate = startDate;
-    const sTopEndDate = endDate;
+    const sTopStartDate = new Date(startDate);
+    const sTopEndDate = new Date(endDate);
     const obj = {
       arrDateRange: [],
       arrDateFormat: [],
