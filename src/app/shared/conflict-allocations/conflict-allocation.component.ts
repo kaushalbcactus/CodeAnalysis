@@ -67,14 +67,14 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
       const obj: IPopupConflictData = { conflictResolved: this.conflictResolved, action: 'save' };
       this.popupConfig.close(obj);
       this.hideLoader = true;
-    }, 100);
+    }, 300);
   }
 
   close(): void {
     setTimeout(() => {
       const obj: IPopupConflictData = { conflictResolved: this.conflictResolved, action: 'close' };
       this.popupConfig.close(obj);
-    }, 100);
+    }, 300);
   }
 
   refresh(): void {
