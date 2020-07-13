@@ -753,7 +753,7 @@ export class MyDashboardConstantsService {
       });
       if (task.Task === 'Submission Pkg') {
         const jcSubmissionData = {
-          __metadata: { type: this.constants.listNames.Schedules.type },
+          __metadata: { type: this.constants.listNames.JCSubmission.type },
           SubmissionPkgURL: docUrl
         };
         const jcSubObj = Object.assign({}, this.queryConfig);
