@@ -521,6 +521,7 @@ export class TaskAllocationCommonService {
       sNextPrevTasks[currentTaskIndex] = newName;
       const prevNextTaskString = sNextPrevTasks.join(";");
       oTask.data[sParam] = prevNextTaskString;
+      oTask.data.edited = true;
     });
   }
 
@@ -561,7 +562,7 @@ export class TaskAllocationCommonService {
         newName = milestoneTask.itemType;
         newName = this.getNewTaskName(milestoneTask, newName, allResTasks, allTasks);
       }
-      milestoneTask.title = milestoneTask.text = newName;
+     
 
       if (milestoneTask.nextTask) {
         this.changeNextTaskPrevTask(
@@ -574,13 +575,14 @@ export class TaskAllocationCommonService {
       }
       if (milestoneTask.previousTask) {
         this.changeNextTaskPrevTask(
-          milestoneTask.nextTask,
+          milestoneTask.previousTask,
           subMilestone,
           currentTask,
           newName,
           "nextTask"
         );
       }
+      milestoneTask.title = milestoneTask.text = newName;
     }
   }
 
