@@ -201,7 +201,7 @@ export class ResourceSelectionComponent implements OnInit {
     const preferredRes = this.sortByAvailibility(resourcesCapacity.filter(r => prefRes.filter(pr => pr.UserNamePG.ID === r.uid).length));
     const others = this.sortByAvailibility([...otherRes]);
     if (previousResId > 0) {
-      sortedRes = [...assignedUser, ...sortedPreAllocatedRes, ...preferredRes, ...others];
+      sortedRes = [...assignedUser, ...sortedPreAllocatedRes, ...others, ...preferredRes];
     } else {
       const mergedPrefOthers = this.sortByAvailibility([...preferredRes, ...others]);
       sortedRes = [...sortedPreAllocatedRes, ...mergedPrefOthers];
