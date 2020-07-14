@@ -970,7 +970,7 @@ export class UserCapacitycommonService {
             ) &&
             !(
               taskStatus.find((status) => tasks[index].Status === status) ||
-              adhocStatus.find((status) => tasks[index].Comments === status)
+              adhocStatus.find((status) => tasks[index].CommentsMT === status)
             )
           ) {
             tasks[index].TotalAllocated =
@@ -1004,7 +1004,7 @@ export class UserCapacitycommonService {
           adhocStatus &&
           adhocStatus.length
         ) {
-          if (!adhocStatus.find((status) => tasks[index].Comments === status)) {
+          if (!adhocStatus.find((status) => tasks[index].CommentsMT === status)) {
             tasks[index].TotalAllocated = tasks[index].TimeSpent.replace(
               ".",
               ":"
