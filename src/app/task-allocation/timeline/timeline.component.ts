@@ -2107,13 +2107,13 @@ export class TimelineComponent
     this.confirmMilestoneLoader = true;
     setTimeout(async () => {
       const rowNode: TreeNode = this.getNode(task);
-      if (task.editMode) {
+      if (task.edited || task.editMode) {
         this.commonService.showToastrMessage(
           this.constants.MessageType.warn,
           "There are some unsaved changes, Please save them.",
           false
         );
-        return false;
+        // return false;
       } else {
         const conflictDetails: IConflictResource[] = await this.conflictAllocation.bindConflictDetails(
           rowNode,
