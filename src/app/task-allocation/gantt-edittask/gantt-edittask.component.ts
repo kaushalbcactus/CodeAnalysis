@@ -186,7 +186,7 @@ export class GanttEdittaskComponent implements OnInit {
         this.task.AssignedTo = resource;
         const newtask = await this.assignedToUserChanged();
         this.patchEditForm(newtask.pUserStart, newtask.pUserEnd);
-      } else { 
+      } else {
         this.task.AssignedTo = {
           Title: '',
           ID: -1
@@ -419,6 +419,7 @@ export class GanttEdittaskComponent implements OnInit {
         resource: milestoneTask.resources,
         status: milestoneTask.status,
         strAllocation: milestoneTask.allocationPerDay,
+        strTimeSpent: milestoneTask.timeSpentPerDay,
         allocationType
       } as IDailyAllocationTask,
       width: '90vw',

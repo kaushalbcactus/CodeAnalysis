@@ -62,32 +62,32 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
 
   save(): void {
     this.hideLoader = false;
-    setTimeout(() => {
-      this.conflictResolved = this.conflicTasks.filter(t => t.tasks.length).length > 0 ? false : true;
-      const obj: IPopupConflictData = { conflictResolved: this.conflictResolved, action: 'save' };
-      this.popupConfig.close(obj);
-      this.hideLoader = true;
-    }, 300);
+    // setTimeout(() => {
+    this.conflictResolved = this.conflicTasks.filter(t => t.tasks.length).length > 0 ? false : true;
+    const obj: IPopupConflictData = { conflictResolved: this.conflictResolved, action: 'save' };
+    this.popupConfig.close(obj);
+    this.hideLoader = true;
+    // }, 300);
   }
 
   close(): void {
-    setTimeout(() => {
-      const obj: IPopupConflictData = { conflictResolved: this.conflictResolved, action: 'close' };
-      this.popupConfig.close(obj);
-    }, 300);
+    // setTimeout(() => {
+    const obj: IPopupConflictData = { conflictResolved: this.conflictResolved, action: 'close' };
+    this.popupConfig.close(obj);
+    // }, 300);
   }
 
-  refresh(): void {
+  async refresh(): Promise<void> {
     this.hideLoader = false;
-    setTimeout(async () => {
-      if (this.allResources.length) {
-        this.conflicTasks = await this.bindConflictDetails(null, [], this.milestoneData, this.allResources);
-      } else {
-        // tslint:disable-next-line: max-line-length
-        this.conflicTasks = await this.bindConflictDetails(this.node, this.milestoneData, [], this.globalService.oTaskAllocation.oResources);
-      }
-      this.hideLoader = true;
-    }, 100);
+    // setTimeout(async () => {
+    if (this.allResources.length) {
+      this.conflicTasks = await this.bindConflictDetails(null, [], this.milestoneData, this.allResources);
+    } else {
+      // tslint:disable-next-line: max-line-length
+      this.conflicTasks = await this.bindConflictDetails(this.node, this.milestoneData, [], this.globalService.oTaskAllocation.oResources);
+    }
+    this.hideLoader = true;
+    // }, 100);
   }
 
   getAllTasks(milSubMil, originalData) {

@@ -461,7 +461,7 @@ export class UserCapacitycommonService {
     taskStatus,
     adhocStatus
   ) {
-    return this.applyFilter(
+    return await this.applyFilter(
       startDate,
       endDate,
       resource,

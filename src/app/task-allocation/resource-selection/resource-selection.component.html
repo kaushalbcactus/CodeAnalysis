@@ -8,20 +8,20 @@
               </div>
               <span class="p-col-1 ui-float-label ui-fluid oddrow" >
                 <p-dropdown [options]="resourceType" formControlName="resourceType"
-                (onChange)="onChange('')" resetFilterOnHide="true"
+                (onChange)="onChange('', $event)" resetFilterOnHide="true"
                 (keydown.enter)="$event.preventDefault()" defaultLabel="Select Resource"
                 [style]="{width:'100%'}" [filter]="true"></p-dropdown>
                   <label for="float-input" style="top: -.75em;" class="mainlable">Resource Type</label>
               </span>
               <span class="p-col-1 ui-float-label ui-fluid oddrow">
                 <p-dropdown [options]="isfte" formControlName="isfte"
-                    (onChange)="onChange('')" resetFilterOnHide="true"
+                    (onChange)="onChange('', $event)" resetFilterOnHide="true"
                     (keydown.enter)="$event.preventDefault()" defaultLabel="Select Resource"
                     [style]="{width:'100%'}" [filter]="true"></p-dropdown>
                 <label for="float-input" class="mainlable">Is FTE</label>
             </span>
               <span class="p-col-1 ui-float-label ui-fluid oddrow" >
-                    <p-multiSelect [options]="Buckets" formControlName="bucket" (onChange)="onChange('')"
+                    <p-multiSelect [options]="Buckets" formControlName="bucket" (onChange)="onChange('', $event)"
                         resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" defaultLabel="Select"
                         [style]="{width:'100%'}">
                     </p-multiSelect>
@@ -29,7 +29,7 @@
               </span>
               <span class="p-col-2 ui-float-label ui-fluid oddrow">
                     <p-multiSelect [options]="PracticeAreas" formControlName="practicearea"
-                        (onChange)="onChange('')" resetFilterOnHide="true"
+                        (onChange)="onChange('', $event)" resetFilterOnHide="true"
                         (keydown.enter)="$event.preventDefault()" defaultLabel="Select Practice Area"
                         [style]="{width:'100%'}">
                     </p-multiSelect>
@@ -37,7 +37,7 @@
               </span>
               <span class="p-col-2 ui-float-label ui-fluid oddrow">
                     <p-multiSelect [options]="filteredResources" formControlName="resources"
-                        (onChange)="onChange('resourceFilter')" resetFilterOnHide="true"
+                        (onChange)="onChange('resourceFilter', $event)" resetFilterOnHide="true"
                         (keydown.enter)="$event.preventDefault()" defaultLabel="Select Resource"
                         [style]="{width:'100%'}"></p-multiSelect>
                     <label for="float-input" class="mainlable">Resources</label>

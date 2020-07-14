@@ -1136,11 +1136,12 @@ export class CommonService {
   }
 
   getTimeSpent(strTimeSpent: string, date: any): number {
+    strTimeSpent = strTimeSpent ? strTimeSpent : '';
     const arrTimeSpentPerDay = this.getTimeSpentArray(strTimeSpent);
     let dayTimeSpent = 0;
     arrTimeSpentPerDay.forEach((timeSpentDate) => {
       if (new Date(date).getTime() === new Date(timeSpentDate.date).getTime()) {
-        dayTimeSpent = timeSpentDate.value.hours + timeSpentDate.value.mins;
+        dayTimeSpent = this.convertFromHrsMins(timeSpentDate.value.hours + ':' + timeSpentDate.value.mins);
       }
     });
     return dayTimeSpent;
