@@ -70,7 +70,6 @@ export class PreStackcommonService {
         allocationType: ''
       };
       const resourceCapacity: IUserCapacity = await this.recalculateUserCapacity(allocationData);
-      allocationData.resource = [resourceCapacity];
       const allocationSplit = await this.performAllocation(resourceCapacity, allocationData, false, null, null, []);
       const objDailyAllocation: IPreStack = this.getAllocationPerDay(resourceCapacity, allocationData, allocationSplit.arrAllocation);
       this.setAllocationPerDay(objDailyAllocation, milestoneTask);
