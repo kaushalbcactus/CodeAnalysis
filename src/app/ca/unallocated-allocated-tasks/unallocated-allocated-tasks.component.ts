@@ -994,6 +994,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     taskObj.timeSpentPerDay = task.TimeSpentPerDay ? task.TimeSpentPerDay : '';
     taskObj.allocationColor = '';
     taskObj.allocationTypeLoader = false;
+    taskObj.allocationPerDay = task.AllocationPerDay ? task.AllocationPerDay : '';
     taskObj.isCurrentMilestoneTask = projectItem.length && task.Milestone === projectItem[0].Milestone ? true : false;
     if (taskObj.allocatedResource !== '') {
       await this.GetResourceOnEdit(taskObj);
@@ -1745,7 +1746,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         CentralAllocationDone: 'Yes',
         IsCentrallyAllocated: 'No',
         ContentTypeCH: this.constants.CONTENT_TYPE.TASK,
-        DisableCascade: task.DisableCascade === true ? 'Yes' : 'No'
+        DisableCascade: task.DisableCascade === true ? 'Yes' : 'No',
+        AllocationPerDay: task.allocationPerDay ? task.allocationPerDay : ''
       };
       url = this.spServices.getReadURL(this.constants.listNames.Schedules.name);
       data = addData;
@@ -1771,6 +1773,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         DisableCascade: task.DisableCascade === true ? 'Yes' : 'No',
         PreviousAssignedUserId: task.PreviousAssignedUser ? task.PreviousAssignedUser.hasOwnProperty('ID') ?
           task.PreviousAssignedUser.ID : -1 : -1,
+        AllocationPerDay: task.allocationPerDay ? task.allocationPerDay : ''
       };
       url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +task.Id);
       data = updateData;

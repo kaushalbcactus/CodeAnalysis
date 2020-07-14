@@ -70,6 +70,7 @@ export class PreStackcommonService {
         allocationType: ''
       };
       const resourceCapacity: IUserCapacity = await this.recalculateUserCapacity(allocationData);
+      allocationData.resource = [resourceCapacity];
       const allocationSplit = await this.performAllocation(resourceCapacity, allocationData, false, null, null, []);
       const objDailyAllocation: IPreStack = this.getAllocationPerDay(resourceCapacity, allocationData, allocationSplit.arrAllocation);
       this.setAllocationPerDay(objDailyAllocation, milestoneTask);
@@ -88,11 +89,11 @@ export class PreStackcommonService {
    * It calculates user capacity from existing array of capacity or generate new request if data does not exists
    */
   async recalculateUserCapacity(allocationData: IDailyAllocationTask): Promise<IUserCapacity> {
-    let newUserCapacity = await this.calcCapacity(allocationData);
+    let newUserCapacity = this.calcCapacity(allocationData);
     if (!newUserCapacity) {
       newUserCapacity = await this.refetchUserCapacity(allocationData);
       this.global.oCapacity.arrUserDetails.push(newUserCapacity);
-      newUserCapacity = await this.calcCapacity(allocationData);
+      newUserCapacity = this.calcCapacity(allocationData);
     } else if (!newUserCapacity.dates.length) {
       const resource = allocationData.resource.length ? allocationData.resource[0].UserNamePG.ID : -1;
       newUserCapacity = await this.refetchUserCapacity(allocationData);
@@ -103,28 +104,32 @@ export class PreStackcommonService {
     return newUserCapacity;
   }
 
-  async calcCapacity(allocationData): Promise<IUserCapacity> {
-    const taskStatus = this.allocationConstant.taskStatus.indexOf(allocationData.status) > -1 ? this.allocationConstant.taskStatus : [];
+  calcCapacity(allocationData): IUserCapacity {
+    const taskStatus = this.allocationConstant.taskStatus;
+    // const taskStatus = this.allocationConstant.taskStatus.indexOf(allocationData.status) > -1 ? this.allocationConstant.taskStatus : [];
     const adhoc = this.allocationConstant.adhocStatus;
     const resource = allocationData.resource.length ? allocationData.resource[0].UserNamePG.ID ? allocationData.resource[0].UserNamePG.ID : allocationData.resource[0].UserNamePG.Id : -1;
     const businessDays = this.userCapacityCommon.getDates(allocationData.startDate, allocationData.endDate, true);
     let newUserCapacity;
     if (this.global.oCapacity.arrUserDetails.length) {
-      const resourceCapacity = this.global.oCapacity.arrUserDetails.find(u => u.uid === resource);
+
+      const resourceCapacity = this.global.oCapacity.arrUserDetails.find(u => u && u.uid === resource);
       if (resourceCapacity) {
         newUserCapacity = JSON.parse(JSON.stringify(resourceCapacity));
         newUserCapacity.businessDays = businessDays.dateArray;
         // tslint:disable-next-line: max-line-length
         const dates = newUserCapacity.dates.filter(u => businessDays.dateArray.find(b => new Date(b).getTime() === new Date(u.date).getTime()));
         for (const date of dates) {
-          date.tasksDetails = date.tasksDetails.filter(t => taskStatus.indexOf(t.status) < 0 &&
-            adhoc.indexOf(t.comments) < 0 && t.ID !== allocationData.ID);
+          date.tasksDetails = this.filterTasks(date.tasksDetails, taskStatus, adhoc);
+          // date.tasksDetails = date.tasksDetails.filter(t => (taskStatus.indexOf(t.status) < 0));
+          // date.tasksDetails = date.tasksDetails.filter(t => ((t.TaskType === 'Adhoc' && adhoc.indexOf(t.comments) < 0)));
         }
         newUserCapacity.dates = dates;
-        newUserCapacity.tasks = newUserCapacity.tasks.filter(t => taskStatus.indexOf(t.Status) < 0 &&
-          adhoc.indexOf(t.Comments) < 0 && t.ID !== allocationData.ID);
+        newUserCapacity.tasks = this.filterTasks(newUserCapacity.tasks, taskStatus, adhoc);
+        // newUserCapacity.tasks = newUserCapacity.tasks.filter(t => (taskStatus.indexOf(t.Status) < 0 || (t.Task === 'Adhoc' && adhoc.indexOf(t.CommentsMT) < 0))
+        //                                                       && t.ID !== allocationData.ID);
         if (newUserCapacity.dates.length === newUserCapacity.businessDays.length) {
-          newUserCapacity = await this.userCapacityCommon.fetchUserCapacity(newUserCapacity);
+          newUserCapacity = this.userCapacityCommon.fetchUserCapacity(newUserCapacity);
         } else {
           newUserCapacity.dates = [];
         }
@@ -133,6 +138,12 @@ export class PreStackcommonService {
     return newUserCapacity;
   }
 
+  filterTasks(tasks, taskFilter, adhocFilter) {
+    tasks = tasks.filter(t => taskFilter.indexOf(t.status ? t.status : t.Status) < 0);
+    tasks = tasks.filter(t => adhocFilter.indexOf(t.comments ? t.comments : t.CommentsMT) < 0);
+    return tasks;
+
+  }
   async refetchUserCapacity(allocationData) {
     const endDate = this.common.calcBusinessDate('Next', 90, allocationData.startDate).endDate;
     const newObj = JSON.parse(JSON.stringify(allocationData));
@@ -211,9 +222,9 @@ export class PreStackcommonService {
    * Fetch user capacity based task start and end date
    */
   async getResourceCapacity(task: IDailyAllocationTask): Promise<IUserCapacity> {
-    const taskStatus: string[] = this.allocationConstant.taskStatus.indexOf(task.status) > -1 ? this.allocationConstant.taskStatus : [];
+    // const taskStatus: string[] = this.allocationConstant.taskStatus.indexOf(task.status) > -1 ? this.allocationConstant.taskStatus : [];
     // tslint:disable-next-line: max-line-length
-    const oCapacity = await this.userCapacityCommon.factoringTimeForAllocation(task.startDate, task.endDate, task.resource, [task], taskStatus, this.allocationConstant.adhocStatus);
+    const oCapacity = await this.userCapacityCommon.factoringTimeForAllocation(task.startDate, task.endDate, task.resource, [task], this.allocationConstant.taskStatus, this.allocationConstant.adhocStatus);
     const resource: IUserCapacity = oCapacity.arrUserDetails.length ? oCapacity.arrUserDetails[0] : {};
     return resource;
   }
@@ -233,19 +244,19 @@ export class PreStackcommonService {
     let i = 0;
     for (const detail of resourceDailyDetails) {
       let availableHrs = '0:0';
+      const isLast = i === resourceDailyDetails.length - 1 ? true : false;
+      const resourceSliderMaxHrs: string = this.getResourceMaxHrs(strsliderMaxHrs, i, boundaries, isLast);
       const obj = this.getPrestackObject(detail, null, allocationData.strTimeSpent);
-      // const isLeaveValid = this.checkLeave(detail);
+      this.setSliderValue(resourceSliderMaxHrs, obj.Allocation, true, '0');
       if (flag && (detail.userCapacity !== 'Leave' || detail.mandatoryHrs)) {
         if (i === 0) {
           availableHrs = this.getAvailableHours(boundaries.strFirstAvailablity, detail, maxLimit, extraHrs);
         } else if (i === resourceDailyDetails.length - 1) {
           availableHrs = this.getAvailableHours(boundaries.strLastAvailability, detail, maxLimit, extraHrs);
         } else {
-          availableHrs = this.getAvailableHours(null, detail, maxLimit, extraHrs); // detail.availableHrs;
+          availableHrs = this.getAvailableHours(null, detail, maxLimit, extraHrs);
         }
         newBudgetHrs = this.getCalculatedRemainingHours(availableHrs, taskBudgetHrs);
-        const isLast = i === resourceDailyDetails.length - 1 ? true : false;
-        const resourceSliderMaxHrs: string = this.getResourceMaxHrs(strsliderMaxHrs, i, boundaries, isLast);
         let sliderValue = availableHrs;
         if (newBudgetHrs.indexOf('-') > -1) {
           taskBudgetHrs = newBudgetHrs;
@@ -300,7 +311,8 @@ export class PreStackcommonService {
   setSliderValue(budgetHrs: string, sliderObject: any, isMaxHrs: boolean, sliderValue: string) {
     const allocatedValue = this.common.getHrsMinsObj(budgetHrs, false);
     if (isMaxHrs) {
-      const show45Mins = this.common.convertFromHrsMins(sliderValue) < this.common.convertFromHrsMins(budgetHrs) ? true : false;
+      const sliderHours = this.common.getHrsMinsObj(sliderValue, false);
+      const show45Mins = sliderHours.hours < allocatedValue.hours ? true : false;
       sliderObject.maxHrs = allocatedValue.hours;
       sliderObject.maxMins = show45Mins ? 45 : allocatedValue.mins;
     } else {
@@ -347,8 +359,9 @@ export class PreStackcommonService {
     let calcBudgetHrs = lastDayUnavailable && noOfDays > 1 ? budgetHours - availaibility.lastDayAvailability : budgetHours;
     calcBudgetHrs = availaibility.firstDayAvailablity < allocationPerDay ? calcBudgetHrs - availaibility.firstDayAvailablity :
       calcBudgetHrs;
+    const newAllocationPerDay = this.common.roundToPrecision(calcBudgetHrs / noOfDays, 0.25);
+    // calcBudgetHrs !== budgetHours ? this.common.roundToPrecision(calcBudgetHrs / noOfDays, 0.25) : allocationPerDay;
     let remainingBudgetHrs = lastDayUnavailable ? calcBudgetHrs : budgetHours;
-    const newAllocationPerDay = calcBudgetHrs !== budgetHours ? this.common.roundToPrecision(calcBudgetHrs / noOfDays, 0.25) : allocationPerDay;
     let i = 0;
     for (const detail of resourceDailyDetails) {
       let totalHrs = 0;

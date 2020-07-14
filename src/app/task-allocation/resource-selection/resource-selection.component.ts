@@ -236,16 +236,18 @@ export class ResourceSelectionComponent implements OnInit {
     }, 300);
   }
 
-  onChange(filter) {
-    const taskResources = [...this.alldbResources];
-    const objResourceSelection = { ...this.sharedObject.data };
-    if (filter !== 'resourceFilter') {
-      this.searchCapacityForm.controls.resources.reset();
+  onChange(filter, event) {
+    if (event.value.length) {
+      const taskResources = [...this.alldbResources];
+      const objResourceSelection = { ...this.sharedObject.data };
+      if (filter !== 'resourceFilter') {
+        this.searchCapacityForm.controls.resources.reset();
+      }
+      const filters = this.getFilterValues(objResourceSelection);
+      this.bindFilterData(taskResources);
+      const resources = this.filterResources(taskResources, filters);
+      this.updateFilters(resources, filters);
     }
-    const filters = this.getFilterValues(objResourceSelection);
-    this.bindFilterData(taskResources);
-    const resources = this.filterResources(taskResources, filters);
-    this.updateFilters(resources, filters);
   }
 
   async onSubmit() {
