@@ -1316,6 +1316,17 @@ export class ClientMasterdataComponent implements OnInit {
       obj.TotalLinked = item.TotalLinked;
       obj.TotalScheduled = item.TotalScheduled;
       obj.CMLevel2 = item.CMLevel2;
+      
+      const RevenueBalanced =item.AmountRevenue - item.RevenueLinked;
+      const OOPBalanced = item.AmountOOP - item.OOPLinked;
+      const InvRevenueBalanced = item.AmountRevenue - item.InvoicedRevenue;
+      const InvOOPBalanced = item.AmountOOP - item.InvoicedOOP;
+
+      obj.BalancedRevenue = RevenueBalanced < InvRevenueBalanced
+          ? RevenueBalanced : InvRevenueBalanced;
+      obj.BalancedOOP =  OOPBalanced < InvOOPBalanced ? OOPBalanced : InvOOPBalanced;
+
+
       // If Create - add the new created item at position 0 in the array.
       // If Edit - Replace the item in the array and position at 0 in the array.
       switch (action) {
