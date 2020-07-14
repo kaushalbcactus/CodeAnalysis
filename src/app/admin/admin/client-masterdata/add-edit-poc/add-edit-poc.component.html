@@ -81,7 +81,7 @@
             <div class="p-grid p-col">
                 <div class="p-col-4"><span class="compulsory">*</span>Referral Source</div>
                 <div class="p-col-8">
-                    <p-dropdown [options]="adminObject.dropdown.POCRefferalSourceArray" placeholder="Select Referral Source" formControlName="referralSource" editable="true" filter="true" resetFilterOnHide="true" [style]="{'width':'100%'}"></p-dropdown>
+                    <p-dropdown [options]="adminObject.dropdown.POCRefferalSourceArray" placeholder="Select Referral Source" formControlName="referralSource" filter="true" resetFilterOnHide="true" [style]="{'width':'100%'}"></p-dropdown>
                     <div class="error" *ngIf="isPOCFormSubmit && pocForm.controls.referralSource.errors">
                         <div *ngIf="pocForm.controls.referralSource.errors.required">
                             Referral Source is required</div>
