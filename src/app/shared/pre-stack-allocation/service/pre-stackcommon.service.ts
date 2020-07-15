@@ -8,6 +8,7 @@ import { IUserCapacity } from '../../usercapacity/interface/usercapacity';
 import { IDailyAllocationTask, IDailyAllocationObject, IPreStack, IPerformAllocationObject } from '../interface/prestack';
 import { IMilestoneTask } from 'src/app/task-allocation/interface/allocation';
 import { UserCapacitycommonService } from '../../usercapacity/service/user-capacitycommon.service';
+import { abort } from 'process';
 
 @Injectable({
   providedIn: 'root'
@@ -99,8 +100,41 @@ export class PreStackcommonService {
       const capacity = this.global.oCapacity.arrUserDetails.find(u => u.uid === resource);
       capacity.dates = [...capacity.dates, ...newUserCapacity.dates];
       capacity.businessDays = [...capacity.businessDays, ...newUserCapacity.businessDays];
+      capacity.dates = this.removeAndSort(capacity.dates, 'date');
+      capacity.businessDays = this.removeAndSortDate(capacity.businessDays);
+      newUserCapacity = this.calcCapacity(allocationData);
     }
     return newUserCapacity;
+  }
+
+  removeAndSortDate(arrValues) {
+    let uniqueArray = arrValues
+      .map(function (date) { return date.getTime() })
+      .filter(function (date, i, array) {
+        return array.indexOf(date) === i;
+      })
+      .map(function (time) { return new Date(time); });
+
+    uniqueArray = uniqueArray.sort((a, b) => a - b);
+
+    return uniqueArray
+  }
+
+  removeAndSort(arrValues, sColumnNames) {
+    let uniqueArray = arrValues.sort((a, b) => a[sColumnNames] - b[sColumnNames]);
+
+    const uniqueArrayNew = [];
+
+    // Loop through array values
+    for (var value of uniqueArray) {
+      const findIndex = uniqueArrayNew.findIndex(e => e[sColumnNames].getTime() === value[sColumnNames].getTime())
+      if (findIndex == -1) {
+        uniqueArrayNew.push(value);
+      } else {
+        uniqueArrayNew[findIndex] = value;
+      }
+    }
+    return uniqueArrayNew;
   }
 
   calcCapacity(allocationData): IUserCapacity {
