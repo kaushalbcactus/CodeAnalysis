@@ -658,7 +658,7 @@ export class StandardprojectComponent implements OnInit {
       let endDate = this.calcBusinessNextDate(startDate, 90);
       let resource = [];
       resource.push(this.selectedSkillObject.value, this.selectedResourceObject.value);
-      const currentUser = this.pmObject.oProjectManagement.oResourcesCat.find(u => u.UserName.ID === this.userProperties.Id);
+      const currentUser = this.pmObject.oProjectManagement.oResourcesCat.find(u => u.UserNamePG.ID === this.userProperties.Id);
       if (currentUser) {
         resource.push(currentUser);
       }
@@ -1095,7 +1095,7 @@ export class StandardprojectComponent implements OnInit {
               return taskObj.data.Skill === skill;
             });
             taskObj.data.assignedUserTimeZone = filterResource.length > 0 ? filterResource[0].TimeZone.Title ?
-              filterResource[0].TimeZone.Title : '+5.5' : '+5.5';
+              filterResource[0].TimeZone.Title : +5.5 : +5.5;
             if (daysHours !== "") {
               startdate = this.changeStartDate(newStartDate, taskObj, timezone);
             }
@@ -1103,8 +1103,8 @@ export class StandardprojectComponent implements OnInit {
               startdate = new Date(newStartDate);
             }
             if (filterResource && filterResource.length) {
-              taskObj.data.AssignedTo = filterResource[0].UserName.Title;
-              taskObj.data.userId = filterResource[0].UserName.ID;
+              taskObj.data.AssignedTo = filterResource[0].UserNamePG.Title;
+              taskObj.data.userId = filterResource[0].UserNamePG.ID;
               // startdate = this.checkUserAvailability(startdate, taskObj);
             } else {
               taskObj.data.AssignedTo = milestoneTask[index].Skill;
@@ -1131,7 +1131,7 @@ export class StandardprojectComponent implements OnInit {
             }
           }
           const resource = this.sharedTaskAllocateObj.oAllResource.filter((objt) => {
-            return taskObj.data.userId === objt.UserName.ID;
+            return taskObj.data.userId === objt.UserNamePG.ID;
           });
           await this.prestackService.calcPrestackAllocation(resource, taskObj.data);
           tempTaskArray.push(taskObj);
@@ -1185,8 +1185,8 @@ export class StandardprojectComponent implements OnInit {
               startdate = new Date(newStartDate);
             }
             if (filterResource.length) {
-              taskObj.data.AssignedTo = filterResource[0].UserName.Title;
-              taskObj.data.userId = filterResource[0].UserName.ID;
+              taskObj.data.AssignedTo = filterResource[0].UserNamePG.Title;
+              taskObj.data.userId = filterResource[0].UserNamePG.ID;
               // startdate = this.checkUserAvailability(startdate, taskObj);
             } else {
               taskObj.data.AssignedTo = milestoneTask[index].Skill;
@@ -1198,7 +1198,7 @@ export class StandardprojectComponent implements OnInit {
             startdate = this.commonUserTaskProperties(taskObj, startdate);
           }
           const resource = this.sharedTaskAllocateObj.oAllResource.filter((objt) => {
-            return taskObj.data.userId === objt.UserName.ID;
+            return taskObj.data.userId === objt.UserNamePG.ID;
           });
           await this.prestackService.calcPrestackAllocation(resource, taskObj.data);
           endateArray.push(taskObj);
@@ -1427,7 +1427,7 @@ export class StandardprojectComponent implements OnInit {
         await this.createTask(updatedStartdate, false, taskObj.data.Title, taskObj.data.TaskDays, taskObj.data.assignedUserTimeZone, milestones_copy[milestoneIndex], milestones_copy[milestoneIndex].children[subMilestoneIndex]);
       }
       const resource = this.sharedTaskAllocateObj.oAllResource.filter((objt) => {
-        return taskObj.data.userId === objt.UserName.ID;
+        return taskObj.data.userId === objt.UserNamePG.ID;
       });
       await this.prestackService.calcPrestackAllocation(resource, taskObj.data);
       const taskEndDate = milestones_copy[milestoneIndex].children[subMilestoneIndex].children[milestones_copy[milestoneIndex].children[subMilestoneIndex].children.length - 1].data.EndDate;
@@ -1524,7 +1524,7 @@ export class StandardprojectComponent implements OnInit {
       taskObj.data.EndDatePart = this.getDatePart(taskObj.data.EndDate);
       taskObj.data.EndTimePart = this.getTimePart(taskObj.data.EndDate);
       const resource = this.sharedTaskAllocateObj.oAllResource.filter((objt) => {
-        return taskObj.data.userId === objt.UserName.ID;
+        return taskObj.data.userId === objt.UserNamePG.ID;
       });
       await this.prestackService.calcPrestackAllocation(resource, taskObj.data);
       stardate = this.setDefaultPMHours(curObj.EndDate);
@@ -1574,7 +1574,7 @@ export class StandardprojectComponent implements OnInit {
       taskObj.data.EndTimePart = this.getTimePart(curObj.EndDate);
       stardate = this.setDefaultPMHours(curObj.EndDate);
       const resource = this.sharedTaskAllocateObj.oAllResource.filter((objt) => {
-        return taskObj.data.userId === objt.UserName.ID;
+        return taskObj.data.userId === objt.UserNamePG.ID;
       });
       await this.prestackService.calcPrestackAllocation(resource, taskObj.data);
       this.sharedTaskAllocateObj.oTasks = milestones_copy[milestoneIndex].children;
@@ -2326,7 +2326,7 @@ export class StandardprojectComponent implements OnInit {
 
   editAllocation(milestoneTask, allocationType): void {
     milestoneTask.resources = this.sharedTaskAllocateObj.oAllResource.filter((objt) => {
-      return objt.UserName.ID === milestoneTask.userId;
+      return objt.UserNamePG.ID === milestoneTask.userId;
     });
 
     const ref = this.dialogService.open(PreStackAllocationComponent, {
