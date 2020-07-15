@@ -532,13 +532,17 @@ export class CommonService {
 
   calculateTotalMins(hrsMins: string): number {
     let totalMinutes = 0;
-    const negative: boolean = hrsMins.indexOf('-') > -1 ? true : false;
-    if (hrsMins != null && hrsMins.indexOf(':') > -1) {
-      const hrs = negative ? -(+(hrsMins.toString().split(':')[0]) * 60) : (+(hrsMins.toString().split(':')[0]) * 60);
-      totalMinutes = hrs + +(hrsMins.toString().split(':')[1]);
-    } else if (hrsMins != null && hrsMins.indexOf(':') === -1) {
-      totalMinutes = +(hrsMins) * 60;
+    let negative: boolean = false;
+    if (hrsMins) {
+      negative = hrsMins.indexOf('-') > -1 ? true : false;
+      if (hrsMins != null && hrsMins.indexOf(':') > -1) {
+        const hrs = negative ? -(+(hrsMins.toString().split(':')[0]) * 60) : (+(hrsMins.toString().split(':')[0]) * 60);
+        totalMinutes = hrs + +(hrsMins.toString().split(':')[1]);
+      } else if (hrsMins != null && hrsMins.indexOf(':') === -1) {
+        totalMinutes = +(hrsMins) * 60;
+      }
     }
+
     return negative ? -totalMinutes : totalMinutes;
   }
 
