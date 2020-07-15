@@ -2333,8 +2333,8 @@ export class StandardprojectComponent implements OnInit {
       data: {
         ID: milestoneTask.id,
         task: milestoneTask.taskFullName,
-        startDate: milestoneTask.StartDate,
-        endDate: milestoneTask.EndDate,
+        startDate: milestoneTask.StartDatePart,
+        endDate: milestoneTask.EndDatePart,
         startTime: milestoneTask.StartTimePart,
         endTime: milestoneTask.EndTimePart,
         budgetHrs: milestoneTask.Hours,
