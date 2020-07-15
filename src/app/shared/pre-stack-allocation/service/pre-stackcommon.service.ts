@@ -8,6 +8,7 @@ import { IUserCapacity } from '../../usercapacity/interface/usercapacity';
 import { IDailyAllocationTask, IDailyAllocationObject, IPreStack, IPerformAllocationObject } from '../interface/prestack';
 import { IMilestoneTask } from 'src/app/task-allocation/interface/allocation';
 import { UserCapacitycommonService } from '../../usercapacity/service/user-capacitycommon.service';
+import { abort } from 'process';
 
 @Injectable({
   providedIn: 'root'
@@ -99,8 +100,41 @@ export class PreStackcommonService {
       const capacity = this.global.oCapacity.arrUserDetails.find(u => u.uid === resource);
       capacity.dates = [...capacity.dates, ...newUserCapacity.dates];
       capacity.businessDays = [...capacity.businessDays, ...newUserCapacity.businessDays];
+      capacity.dates = this.removeAndSort(capacity.dates, 'date');
+      capacity.businessDays = this.removeAndSortDate(capacity.businessDays);
+      newUserCapacity = this.calcCapacity(allocationData);
     }
     return newUserCapacity;
+  }
+
+  removeAndSortDate(arrValues) {
+    let uniqueArray = arrValues
+      .map(function (date) { return date.getTime() })
+      .filter(function (date, i, array) {
+        return array.indexOf(date) === i;
+      })
+      .map(function (time) { return new Date(time); });
+
+    uniqueArray = uniqueArray.sort((a, b) => a - b);
+
+    return uniqueArray
+  }
+
+  removeAndSort(arrValues, sColumnNames) {
+    let uniqueArray = arrValues.sort((a, b) => a[sColumnNames] - b[sColumnNames]);
+
+    const uniqueArrayNew = [];
+
+    // Loop through array values
+    for (var value of uniqueArray) {
+      const findIndex = uniqueArrayNew.findIndex(e => e[sColumnNames].getTime() === value[sColumnNames].getTime())
+      if (findIndex == -1) {
+        uniqueArrayNew.push(value);
+      } else {
+        uniqueArrayNew[findIndex] = value;
+      }
+    }
+    return uniqueArrayNew;
   }
 
   calcCapacity(allocationData): IUserCapacity {
@@ -123,7 +157,7 @@ export class PreStackcommonService {
           // date.tasksDetails = date.tasksDetails.filter(t => (taskStatus.indexOf(t.status) < 0));
           // date.tasksDetails = date.tasksDetails.filter(t => ((t.TaskType === 'Adhoc' && adhoc.indexOf(t.comments) < 0)));
         }
-        newUserCapacity.dates = dates;
+        newUserCapacity.dates = [...new Set(dates)];
         newUserCapacity.tasks = this.filterTasks(newUserCapacity.tasks, taskStatus, adhoc);
         // newUserCapacity.tasks = newUserCapacity.tasks.filter(t => (taskStatus.indexOf(t.Status) < 0 || (t.Task === 'Adhoc' && adhoc.indexOf(t.CommentsMT) < 0))
         //                                                       && t.ID !== allocationData.ID);
@@ -295,8 +329,8 @@ export class PreStackcommonService {
   getAvailableHours(dayAvailableHrs: string, dayResourceCapacity: any, maxLimit: number, extraHrs: string): string {
     let availableHrs = dayResourceCapacity.availableHrs;
     if (dayAvailableHrs) {
-      const dateHrsAvailable = this.compareHrs(availableHrs, dayAvailableHrs);
-      if (!dateHrsAvailable) {
+      const dateHrsAvailable = this.compareHrs(dayAvailableHrs, availableHrs);
+      if (dateHrsAvailable <= 0.25) {
         availableHrs = dayAvailableHrs;
         dayResourceCapacity.mandatoryHrs = true;
       }
@@ -323,9 +357,11 @@ export class PreStackcommonService {
   /**
    * This return true if first parameter is less than equal to second element
    */
-  compareHrs(firstElement: string, secondElement: string): boolean {
-    const result = this.common.convertFromHrsMins(firstElement) <= this.common.convertFromHrsMins(secondElement) ? true : false;
-    return result;
+  compareHrs(firstElement: string, secondElement: string): number {
+    // const result = this.common.convertFromHrsMins(firstElement) <= this.common.convertFromHrsMins(secondElement) ? true : false;
+    // return result;
+    const result = this.common.subtractHrsMins(firstElement, secondElement, true);
+    return this.common.convertFromHrsMins(result);
   }
 
   /**
@@ -423,11 +459,11 @@ export class PreStackcommonService {
    */
   getAllocationPerDay(resourceCapacity: IUserCapacity, allocationData: IDailyAllocationTask, allocationSplit): IPreStack {
     let allocationPerDay = '';
-    allocationSplit.forEach(element => {
+    for (const element of allocationSplit) {
       allocationPerDay = allocationPerDay + this.datePipe.transform(new Date(element.Date), 'EE,MMMd,y') + ':' +
-        element.Allocation.valueHrs + ':' + element.Allocation.valueMins + '\n';
-    });
-    const availableHours = resourceCapacity.totalUnAllocated;
+      element.Allocation.valueHrs + ':' + element.Allocation.valueMins + '\n';
+    }
+    const availableHours = this.common.convertFromHrsMins(resourceCapacity.totalUnAllocated);
     const allocationAlert = (new Date(allocationData.startDate).getTime() === new Date(allocationData.endDate).getTime()
       && +availableHours < +allocationData.budgetHrs) ? true : false;
     return ({
@@ -459,7 +495,8 @@ export class PreStackcommonService {
     const resourceDailyAllocation: any[] = resource.dates.filter(d => [0, 6].indexOf(new Date(d.date).getDay()) < 0);
     const sliderMaxHrs: string = resource.maxHrs ? this.common.convertToHrsMins(+resource.maxHrs + 3.75) : '0:0';
     const allocationDays = allocationData.strAllocation.split(/\n/).filter(Boolean);
-    allocationDays.forEach((day, index) => {
+    let index = 0;
+    for (const day of allocationDays) {
       if (day) {
         const isLast = index === allocationDays.length - 1 ? true : false;
         const allocation = this.common.getDateTimeFromString(day);
@@ -478,7 +515,28 @@ export class PreStackcommonService {
           arrAllocation.push(obj);
         }
       }
-    });
+      index++;
+    }
+    // allocationDays.forEach((day, index) => {
+    //   if (day) {
+    //     const isLast = index === allocationDays.length - 1 ? true : false;
+    //     const allocation = this.common.getDateTimeFromString(day);
+    //     const strAllocatedValue = this.common.convertToHrsMins(allocation.value.hours + ':' + allocation.value.mins);
+    //     const allocatedDate: any = resourceDailyAllocation.find(d => new Date(d.date).getTime() === allocation.date.getTime());
+    //     const dayDetail = {
+    //       date: allocation.date,
+    //       tasksDetails: allocatedDate.tasksDetails,
+    //       userCapacity: allocatedDate.userCapacity
+    //     };
+    //     if (allocatedDate) {
+    //       const boundaries = this.getDayAvailibilty(resourceDailyAllocation, allocationData, 0);
+    //       const resourceSliderMaxHrs: string = this.getResourceMaxHrs(sliderMaxHrs, index, boundaries, isLast);
+    //       const obj = this.getPrestackObject(dayDetail, allocation.value, allocationData.strTimeSpent);
+    //       this.setSliderValue(resourceSliderMaxHrs, obj.Allocation, true, strAllocatedValue);
+    //       arrAllocation.push(obj);
+    //     }
+    //   }
+    // });
     return arrAllocation;
   }
 
@@ -488,9 +546,11 @@ export class PreStackcommonService {
   getResourceMaxHrs(defaultResourceMaxHrs: string, index: number, boundaries, isLast): string {
     let maxHrs = defaultResourceMaxHrs;
     if (index === 0) {
-      maxHrs = this.compareHrs(boundaries.strFirstAvailablity, defaultResourceMaxHrs) ? boundaries.strFirstAvailablity : defaultResourceMaxHrs;
+      maxHrs = this.compareHrs(boundaries.strFirstAvailablity, defaultResourceMaxHrs) < 0 ?
+               boundaries.strFirstAvailablity : defaultResourceMaxHrs;
     } else if (isLast) {
-      maxHrs = this.compareHrs(boundaries.strLastAvailability, defaultResourceMaxHrs) ? boundaries.strLastAvailability : defaultResourceMaxHrs;
+      maxHrs = this.compareHrs(boundaries.strLastAvailability, defaultResourceMaxHrs) < 0 ?
+               boundaries.strLastAvailability : defaultResourceMaxHrs;
     }
     return maxHrs;
   }
