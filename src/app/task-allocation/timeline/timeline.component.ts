@@ -1545,11 +1545,11 @@ export class TimelineComponent
       case "Not Started":
       case "Not Confirmed":
       case "Not Saved":
-        if(task.CentralAllocationDone == 'Yes' && task.slotType == 'Task') return false;
+        if(task.parentSlot !=='' && task.parentSlot !== 0 ) return false;
         else return true;
 
       case "In Progress":
-        if(task.CentralAllocationDone == 'Yes' && task.slotType == 'Task') {
+        if(task.parentSlot !=='' && task.parentSlot !== 0 ) {
           return false;
         } else {
           if (!isStartDate) return true;
@@ -1614,7 +1614,9 @@ export class TimelineComponent
               if (task.status == "In Progress") {
                 return false;
               } else {
-                if(task.CentralAllocationDone == 'No' || task.CentralAllocationDone == null || task.slotType == 'Slot') {
+                if(task.parentSlot !=='' && task.parentSlot !== 0) {
+                  return false;
+                } else {
                   return true;
                 }
               }
@@ -1818,9 +1820,7 @@ export class TimelineComponent
             this.picker.open();
           }
         } else {
-          if(task.CentralAllocationDone == 'No' || task.CentralAllocationDone == null || task.slotType == 'Slot') {
             this.openPopupOnGanttTask(task, "end");
-         }
         }
         this.disableSave = false;
         return true;
