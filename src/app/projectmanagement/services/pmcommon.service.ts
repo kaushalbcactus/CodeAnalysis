@@ -1427,7 +1427,7 @@ export class PMCommonService {
           // create the milestone folder.
           const milestoneFolderBody = {
             __metadata: { type: 'SP.Folder' },
-            ServerRelativeUrl: projectFolder + '/' + milestoneObj.data.Name // projectCode- folder Internal 
+            ServerRelativeUrl: projectFolder + '/' + milestoneObj.data.Name // projectCode- folder Internal
           };
           const createForderObj = Object.assign({}, options);
           createForderObj.data = milestoneFolderBody;
@@ -1771,7 +1771,7 @@ export class PMCommonService {
       StartDate: startDate,
       DueDateDT: endDate,
       ExpectedTime: '' + milestoneTask.Hours,
-      TimeZoneNM: milestoneTask.assignedUserTimeZone,
+      TimeZoneNM: +milestoneTask.assignedUserTimeZone,
       AllowCompletion: 'No',
       TATStatus: milestoneTask.UseTaskDays,
       TATBusinessDays: milestoneTask.TaskDays,
@@ -1784,6 +1784,7 @@ export class PMCommonService {
       SkillLevel: milestoneTask.Skill,
       CentralAllocationDone: 'No',
       DisableCascade: 'No',
+      AllocationPerDay: milestoneTask.allocationPerDay ? milestoneTask.allocationPerDay : ''
 
     };
     if (milestoneTask.userId > 0) {

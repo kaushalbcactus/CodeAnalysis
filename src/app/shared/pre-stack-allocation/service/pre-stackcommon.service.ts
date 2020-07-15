@@ -464,8 +464,8 @@ export class PreStackcommonService {
       element.Allocation.valueHrs + ':' + element.Allocation.valueMins + '\n';
     }
     const availableHours = this.common.convertFromHrsMins(resourceCapacity.totalUnAllocated);
-    const allocationAlert = (new Date(allocationData.startDate).getTime() === new Date(allocationData.endDate).getTime()
-      && +availableHours < +allocationData.budgetHrs) ? true : false;
+    const allocationAlert =  +availableHours < +allocationData.budgetHrs ? true : false;
+    // (new Date(allocationData.startDate).getTime() === new Date(allocationData.endDate).getTime()
     return ({
       allocationPerDay,
       allocationAlert,
