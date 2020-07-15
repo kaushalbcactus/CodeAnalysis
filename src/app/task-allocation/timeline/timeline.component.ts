@@ -3241,12 +3241,25 @@ export class TimelineComponent
         return objt.UserNamePG.ID === milestoneTask.AssignedTo.ID;
       }
     );
+
+    let resources = [];
+    milestoneTask.assignedUsers.forEach(c => {
+      c.items.forEach(item => {
+        this.sharedObject.oTaskAllocation.oResources.forEach(objt => {
+          if (objt.UserNamePG.ID === item.value.ID) {
+            resources.push(objt);
+          }
+        });
+      });
+    });
+
     const ref = this.dialogService.open(UsercapacityComponent, {
       data: {
         task: resourceTask,
         startTime: resourceTask.pUserStart,
         endTime: resourceTask.pUserEnd,
-        parentModule: 'allocation'
+        parentModule: 'allocation',
+        taskResources: resources
       },
       width: '90vw',
       header: resourceTask.submilestone
