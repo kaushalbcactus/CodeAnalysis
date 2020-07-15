@@ -367,9 +367,9 @@ export class StandardprojectComponent implements OnInit {
               task.Skill = task.Skill ? task.Skill : '';
               let previousTaskArray = [];
               if (task.PreviousTask && task.PreviousTask.results && task.PreviousTask.results.length > 0) {
-                task.PreviousTask.results.forEach((prevTask) => {
+                for (const prevTask of task.PreviousTask.results) {
                   previousTaskArray.push(prevTask.Title);
-                });
+                }
               } else {
                 previousTaskArray.push("");
               }
@@ -382,9 +382,9 @@ export class StandardprojectComponent implements OnInit {
               task.Skill = task.Skill ? task.Skill : '';
               let previousTaskArray = [];
               if (task.PreviousTask && task.PreviousTask.results && task.PreviousTask.results.length > 0) {
-                task.PreviousTask.results.forEach((prevTask) => {
+                for (const prevTask of task.PreviousTask.results) {
                   previousTaskArray.push(prevTask.Title);
-                });
+                }
               } else {
                 previousTaskArray.push("");
               }
@@ -405,7 +405,7 @@ export class StandardprojectComponent implements OnInit {
       type: '',
       listName: ''
     };
-    milestoneArray.forEach((milestone) => {
+    for (const milestone of milestoneArray) {
       const standardMilestoneTaskOptions = {
         select: 'ID,Title,Skill,Hours,TaskDays,UseTaskDays,Milestones/ID,Milestones/Title,TaskName/ID,TaskName/Title,PreviousTask/ID,PreviousTask/Title,SubMilestones/ID,SubMilestones/Title',
         expand: 'Milestones/ID,Milestones/Title,TaskName/ID,TaskName/Title,PreviousTask/ID,PreviousTask/Title,SubMilestones/ID,SubMilestones/Title',
@@ -418,7 +418,7 @@ export class StandardprojectComponent implements OnInit {
       milestoneTaskGet.type = 'GET';
       milestoneTaskGet.listName = this.constants.listNames.MilestoneTaskMatrix.name;
       batchURL.push(milestoneTaskGet);
-    });
+    }
     this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetMilestoneTasks');
     this.allMilestoneTask = await this.spService.executeBatch(batchURL);
   }
@@ -429,9 +429,9 @@ export class StandardprojectComponent implements OnInit {
   async loadServiceDropDown(standardTemplate) {
     const templates = [];
     if (standardTemplate.length > 0) {
-      standardTemplate.forEach((val) => {
+      for (const val of standardTemplate) {
         templates.push(val.StandardService.Title);
-      });
+      }
     }
     const standardServiceOptions = {
       select: 'ID,Title,BaseSkill,IsActiveCH,Deliverable/ID,Deliverable/Title,SubDeliverable/ID,SubDeliverable/Title,Services/ID,Services/Title',
@@ -442,11 +442,11 @@ export class StandardprojectComponent implements OnInit {
     this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetStandardServiceName');
     const result = await this.spService.readItems(this.constants.listNames.StandardServices.name, standardServiceOptions);
     if (result && result.length) {
-      result.forEach(element => {
+      for (const element of result) {
         if (templates.indexOf(element.Title) > -1) {
           this.standardServices.push({ label: element.Title, value: element });
         }
-      });
+      }
     }
   }
   /**
@@ -481,7 +481,7 @@ export class StandardprojectComponent implements OnInit {
       };
       this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetSkillMaster');
       let skillMaster = await this.spService.readItems(this.constants.listNames.SkillMaster.name, skillMasterOptions);
-      skillMaster.forEach((skill) => {
+      for (const skill of skillMaster) {
         let tempSkill = skill.NameCH;
         if (tempSkill) {
           const matchingSkill = this.sharedTaskAllocateObj.oStandardTemplateForDeliverable.filter(function (obj) {
@@ -490,7 +490,7 @@ export class StandardprojectComponent implements OnInit {
           tempskillTypes = { Title: matchingSkill[0].Skill, userType: "Type" };
           temSkillArray.push(tempskillTypes);
         }
-      });
+      }
       temSkillArray = this.removeDuplicates(temSkillArray, 'Title')
       let userResource = this.pmCommonService.getResourceByMatrix(await this.getResources(temSkillArray), this.deliverableType);
       if (userResource && userResource.length) {
@@ -1233,10 +1233,10 @@ export class StandardprojectComponent implements OnInit {
     const overAllocatedTasks = this.allTasks.filter(t => t.data.allocationAlert);
     // const resources = overAllocatedTasks.map(t => t.data.AssignedTo);
     const errorMsg = [];
-    overAllocatedTasks.forEach((resource) => {
+    for (const resource of overAllocatedTasks) {
       const msg = resource.data.AssignedTo + ' is over allocated for task \'' + resource.data.Milestone + '-' + resource.data.SubMilestone + '-' + resource.data.TaskName + '\'';
       errorMsg.push(msg);
-    })
+    }
     if (errorMsg.length) {
       this.commonService.showToastrMessage(this.constants.MessageType.warn,errorMsg.join('\n'),true,true);
     }

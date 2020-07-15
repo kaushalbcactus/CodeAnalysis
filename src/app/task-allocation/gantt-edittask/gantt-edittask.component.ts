@@ -411,8 +411,8 @@ export class GanttEdittaskComponent implements OnInit {
       data: {
         ID: milestoneTask.id,
         task: milestoneTask.taskFullName,
-        startDate: milestoneTask.pUserStart,
-        endDate: milestoneTask.pUserEnd,
+        startDate: milestoneTask.pUserStartDatePart,
+        endDate: milestoneTask.pUserEndDatePart,
         startTime: milestoneTask.pUserStartTimePart,
         endTime: milestoneTask.pUserEndTimePart,
         budgetHrs: milestoneTask.budgetHours,

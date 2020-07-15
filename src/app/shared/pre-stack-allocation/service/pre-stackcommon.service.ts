@@ -99,6 +99,7 @@ export class PreStackcommonService {
       const capacity = this.global.oCapacity.arrUserDetails.find(u => u.uid === resource);
       capacity.dates = [...capacity.dates, ...newUserCapacity.dates];
       capacity.businessDays = [...capacity.businessDays, ...newUserCapacity.businessDays];
+      newUserCapacity = this.calcCapacity(allocationData);
     }
     return newUserCapacity;
   }
@@ -123,7 +124,7 @@ export class PreStackcommonService {
           // date.tasksDetails = date.tasksDetails.filter(t => (taskStatus.indexOf(t.status) < 0));
           // date.tasksDetails = date.tasksDetails.filter(t => ((t.TaskType === 'Adhoc' && adhoc.indexOf(t.comments) < 0)));
         }
-        newUserCapacity.dates = dates;
+        newUserCapacity.dates = [...new Set(dates)];
         newUserCapacity.tasks = this.filterTasks(newUserCapacity.tasks, taskStatus, adhoc);
         // newUserCapacity.tasks = newUserCapacity.tasks.filter(t => (taskStatus.indexOf(t.Status) < 0 || (t.Task === 'Adhoc' && adhoc.indexOf(t.CommentsMT) < 0))
         //                                                       && t.ID !== allocationData.ID);
@@ -423,11 +424,11 @@ export class PreStackcommonService {
    */
   getAllocationPerDay(resourceCapacity: IUserCapacity, allocationData: IDailyAllocationTask, allocationSplit): IPreStack {
     let allocationPerDay = '';
-    allocationSplit.forEach(element => {
+    for (const element of allocationSplit) {
       allocationPerDay = allocationPerDay + this.datePipe.transform(new Date(element.Date), 'EE,MMMd,y') + ':' +
-        element.Allocation.valueHrs + ':' + element.Allocation.valueMins + '\n';
-    });
-    const availableHours = resourceCapacity.totalUnAllocated;
+      element.Allocation.valueHrs + ':' + element.Allocation.valueMins + '\n';
+    }
+    const availableHours = this.common.convertFromHrsMins(resourceCapacity.totalUnAllocated);
     const allocationAlert = (new Date(allocationData.startDate).getTime() === new Date(allocationData.endDate).getTime()
       && +availableHours < +allocationData.budgetHrs) ? true : false;
     return ({
@@ -459,7 +460,8 @@ export class PreStackcommonService {
     const resourceDailyAllocation: any[] = resource.dates.filter(d => [0, 6].indexOf(new Date(d.date).getDay()) < 0);
     const sliderMaxHrs: string = resource.maxHrs ? this.common.convertToHrsMins(+resource.maxHrs + 3.75) : '0:0';
     const allocationDays = allocationData.strAllocation.split(/\n/).filter(Boolean);
-    allocationDays.forEach((day, index) => {
+    let index = 0;
+    for (const day of allocationDays) {
       if (day) {
         const isLast = index === allocationDays.length - 1 ? true : false;
         const allocation = this.common.getDateTimeFromString(day);
@@ -478,7 +480,28 @@ export class PreStackcommonService {
           arrAllocation.push(obj);
         }
       }
-    });
+      index++;
+    }
+    // allocationDays.forEach((day, index) => {
+    //   if (day) {
+    //     const isLast = index === allocationDays.length - 1 ? true : false;
+    //     const allocation = this.common.getDateTimeFromString(day);
+    //     const strAllocatedValue = this.common.convertToHrsMins(allocation.value.hours + ':' + allocation.value.mins);
+    //     const allocatedDate: any = resourceDailyAllocation.find(d => new Date(d.date).getTime() === allocation.date.getTime());
+    //     const dayDetail = {
+    //       date: allocation.date,
+    //       tasksDetails: allocatedDate.tasksDetails,
+    //       userCapacity: allocatedDate.userCapacity
+    //     };
+    //     if (allocatedDate) {
+    //       const boundaries = this.getDayAvailibilty(resourceDailyAllocation, allocationData, 0);
+    //       const resourceSliderMaxHrs: string = this.getResourceMaxHrs(sliderMaxHrs, index, boundaries, isLast);
+    //       const obj = this.getPrestackObject(dayDetail, allocation.value, allocationData.strTimeSpent);
+    //       this.setSliderValue(resourceSliderMaxHrs, obj.Allocation, true, strAllocatedValue);
+    //       arrAllocation.push(obj);
+    //     }
+    //   }
+    // });
     return arrAllocation;
   }
 
