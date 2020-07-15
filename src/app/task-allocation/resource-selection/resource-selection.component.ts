@@ -229,7 +229,8 @@ export class ResourceSelectionComponent implements OnInit {
         filters.endDateFilter,
         filters.resourceFilter, // resources,
         [],
-        false
+        false,
+        []
       );
       capacity.arrUserDetails = this.sortResources(filters.resourceFilter, prefRes, popupData, capacity);
       this.userCapacity.showCapacity(capacity);

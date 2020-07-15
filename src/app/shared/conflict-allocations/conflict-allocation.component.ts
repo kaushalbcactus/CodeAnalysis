@@ -223,7 +223,7 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
         task.resources, [], [], this.allocationConstant.adhocStatus);
     } else {
       capacity = await this.usercapacityComponent.afterResourceChange(task, task.start_date,
-        task.end_date, task.resources, [], false);
+        task.end_date, task.resources, [], false, []);
     }
     return capacity;
   }
