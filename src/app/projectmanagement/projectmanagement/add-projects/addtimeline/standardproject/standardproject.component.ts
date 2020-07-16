@@ -1230,7 +1230,8 @@ export class StandardprojectComponent implements OnInit {
   }
 
   overAllocationAlert() {
-    const overAllocatedTasks = this.allTasks.filter(t => t.data.allocationAlert);
+    let overAllocatedTasks = this.allTasks.filter(t => t.data.allocationAlert);
+    overAllocatedTasks = [...new Set(overAllocatedTasks)];
     // const resources = overAllocatedTasks.map(t => t.data.AssignedTo);
     const errorMsg = [];
     for (const resource of overAllocatedTasks) {

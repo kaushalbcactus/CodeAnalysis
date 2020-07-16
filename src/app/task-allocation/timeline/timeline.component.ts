@@ -1913,7 +1913,7 @@ export class TimelineComponent
           return this.singleTask.AssignedTo.ID === objt.UserNamePG.ID;
         }
       );
-     
+
       if (this.singleTask.itemType !== 'Client Review' && this.singleTask.itemType !== 'Send to client') {
         await this.changeBudgetHrs(this.singleTask);
         // await this.prestackService.calcPrestackAllocation(
@@ -4873,6 +4873,7 @@ export class TimelineComponent
         task.data.previousTimeZone = task.data.assignedUserTimeZone;
         task.data.assignedUserTimeZone = this.defaultTimeZone;
         task.data.CentralAllocationDone = 'No';
+        task.data.allocationPerDay = '';
       }
       slot.data.slotColor = '#FF3E56';
       slot.data.CentralAllocationDone = 'No';
@@ -6263,11 +6264,11 @@ export class TimelineComponent
 
       let validateCurrentTask = validateDates.find(t=> new Date(t.pUserStart).getDay() == 0 || new Date(t.pUserStart).getDay() == 6 ||
       new Date(t.pUserEnd).getDay() == 0 || new Date(t.pUserEnd).getDay() == 6)
-      
+
       if(validateCurrentTask) {
         this.commonService.showToastrMessage(
           this.constants.MessageType.warn,
-          'start date / end date of ' + validateCurrentTask.title + ' task in ' + validateCurrentTask.milestone + ' is on Staurday / Sunday so please change', 
+          'start date / end date of ' + validateCurrentTask.title + ' task in ' + validateCurrentTask.milestone + ' is on Staurday / Sunday so please change',
           false
         );
         return false;
