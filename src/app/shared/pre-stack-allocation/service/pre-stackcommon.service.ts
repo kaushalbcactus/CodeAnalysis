@@ -393,7 +393,7 @@ export class PreStackcommonService {
     const availaibility = this.getDayAvailibilty(resourceDailyDetails, allocationData, allocationPerDay);
     const lastDayUnavailable = availaibility.lastDayAvailability < allocationPerDay ? true : false;
     const noOfDays = businessDays > availaibility.days ? (businessDays - availaibility.days) : businessDays;
-    let calcBudgetHrs = lastDayUnavailable && noOfDays > 1 ? budgetHours - availaibility.lastDayAvailability : budgetHours;
+    let calcBudgetHrs = lastDayUnavailable ? budgetHours - availaibility.lastDayAvailability : budgetHours;
     calcBudgetHrs = availaibility.firstDayAvailablity < allocationPerDay ? calcBudgetHrs - availaibility.firstDayAvailablity :
       calcBudgetHrs;
     const newAllocationPerDay = this.common.roundToPrecision(calcBudgetHrs / noOfDays, 0.25);
