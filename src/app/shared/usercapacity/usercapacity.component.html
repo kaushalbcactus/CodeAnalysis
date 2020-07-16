@@ -211,10 +211,10 @@
                 {{date | date : "EEE d MMM yyyy"}}
             </th>
             <th>
-                Total Un-Allocated
+                Total Un-Allocated / Bench
             </th>
             <th>
-                Total Allocated
+                Total Allocated / Spent
             </th>
         </tr>
     </thead>
@@ -307,6 +307,7 @@
                 </div>
             </td>
             <td class="unallocated" [ngStyle]="{'vertical-align':verticalAlign}">
+                {{user.displayTotalBenchExport}}
             </td>
             <td class="allocated" [ngStyle]="{'vertical-align':verticalAlign}">
                 <div class="center">{{user.displayTotalTimeSpentExport}}</div>

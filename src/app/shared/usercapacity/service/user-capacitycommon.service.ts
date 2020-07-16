@@ -418,6 +418,12 @@ export class UserCapacitycommonService {
       "h:" +
       oUser.displayTotalTimeSpent.split(":")[1] +
       "m";
+    oUser.displayTotalBenchExport =
+    oUser.Bench.split(":")[0] +
+      "h:" +
+      oUser.Bench.split(":")[1] +
+      "m";
+      
     oUser.dayTasks = [];
     oUser.TimeSpentDayTasks = [];
     return oUser;
