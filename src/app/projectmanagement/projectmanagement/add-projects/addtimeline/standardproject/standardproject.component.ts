@@ -522,7 +522,7 @@ export class StandardprojectComponent implements OnInit {
   getInitialUserCapactiy(userCapacityRef) {
     if (this.selectedService === undefined) {
 
-      this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please select the service.',false);
+      this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please select the service.', false);
     } else {
       // $('.initialUserCapacity-section').hide();
       this.hideCapacity = true;
@@ -1238,7 +1238,7 @@ export class StandardprojectComponent implements OnInit {
       errorMsg.push(msg);
     }
     if (errorMsg.length) {
-      this.commonService.showToastrMessage(this.constants.MessageType.warn,errorMsg.join('\n'),true,true);
+      this.commonService.showToastrMessage(this.constants.MessageType.warn, errorMsg.join('\n'), true, true);
     }
   }
   /**
@@ -1272,7 +1272,7 @@ export class StandardprojectComponent implements OnInit {
       for (let milestoneTaskObj of ngPrimeSubmilestoneObj.children.children.tasks) {
         if (milestoneTaskObj.data.Task !== this.pmConstant.task.SEND_TO_CLIENT && milestoneTaskObj.data.EndDate > ngPrimeSubmilestoneObj.data.EndDate) {
 
-          this.commonService.showToastrMessage(this.constants.MessageType.error,'Task end date cannot be greater than milestone end date.',false);
+          this.commonService.showToastrMessage(this.constants.MessageType.error, 'Task end date cannot be greater than milestone end date.', false);
           milestoneTaskObj.isClassErrorRedVisible = true;
         }
       }
@@ -2001,40 +2001,40 @@ export class StandardprojectComponent implements OnInit {
    */
   private validateRequiredField(isRegisterClick) {
     if (!this.selectedService) {
-      this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please select the service.',false);
+      this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please select the service.', false);
       return false;
     }
     if (!this.selectedSkillObject || !this.selectedSkillObject.value.userType) {
 
-      this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please select the resource.',false);
+      this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please select the resource.', false);
       return false;
     }
     if (!this.selectedResourceObject || !this.selectedResourceObject.value.userType) {
 
-      this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please select the reviewer.',false);
+      this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please select the reviewer.', false);
       return false;
     }
     // if (this.selectedSkillObject.value.userType === 'Type') {
     if (!this.ngStandardProposedStartDate) {
-      this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please select the proposed start date.',false);
+      this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please select the proposed start date.', false);
       return false;
     }
     // }
     if (!this.standardProjectBudgetHrs) {
 
-      this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please enter the project Budget Hrs.',false);
+      this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please enter the project Budget Hrs.', false);
       return false;
     }
     if (this.standardProjectBudgetHrs) {
       // tslint:disable
       if (parseFloat(this.standardProjectBudgetHrs) <= 0) {
 
-        this.commonService.showToastrMessage(this.constants.MessageType.error,'Please enter the valid Budget Hrs.',false);
+        this.commonService.showToastrMessage(this.constants.MessageType.error, 'Please enter the valid Budget Hrs.', false);
         return false;
       }
       if (isNaN(parseFloat(this.standardProjectBudgetHrs))) {
 
-        this.commonService.showToastrMessage(this.constants.MessageType.error,'Please enter the Budget Hrs in number.',false);
+        this.commonService.showToastrMessage(this.constants.MessageType.error, 'Please enter the Budget Hrs in number.', false);
         return false;
       }
     }
@@ -2113,7 +2113,7 @@ export class StandardprojectComponent implements OnInit {
 
     if (this.pmObject.addProject.FinanceManagement.selectedFile && this.pmObject.addProject.FinanceManagement.selectedFile.size === 0) {
 
-      this.commonService.showToastrMessage(this.constants.MessageType.error,this.constants.Messages.ZeroKbFile.replace('{{fileName}}', this.pmObject.addProject.FinanceManagement.selectedFile.name),false);
+      this.commonService.showToastrMessage(this.constants.MessageType.error, this.constants.Messages.ZeroKbFile.replace('{{fileName}}', this.pmObject.addProject.FinanceManagement.selectedFile.name), false);
     }
 
     if (isTrue) {
@@ -2174,7 +2174,7 @@ export class StandardprojectComponent implements OnInit {
     this.pmObject.isMainLoaderHidden = false;
     await this.pmCommonService.addUpdateProject();
 
-    this.commonService.showToastrMessage(this.constants.MessageType.success,'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode,true);
+    this.commonService.showToastrMessage(this.constants.MessageType.success, 'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode, true);
     this.pmCommonService.reloadPMPage();
   }
 
@@ -2354,7 +2354,7 @@ export class StandardprojectComponent implements OnInit {
       this.prestackService.setAllocationPerDay(allocation, milestoneTask);
       if (allocation.allocationAlert) {
 
-        this.commonService.showToastrMessage(this.constants.MessageType.warn,'Resource is over allocated',false);
+        this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Resource is over allocated', false);
       }
     });
   }
@@ -2362,6 +2362,28 @@ export class StandardprojectComponent implements OnInit {
   showOverlayPanel(event, rowData, dailyAllocateOP, target?) {
     const allocationPerDay = rowData.allocationPerDay ? rowData.allocationPerDay : '';
     dailyAllocateOP.showOverlay(event, allocationPerDay, target);
+    setTimeout(() => {
+      let panel: any = document.querySelector(
+        '.dailyAllocationOverlayComp > div'
+      );
+      let leftAdjest = 0;
+      let topAdjest = 0;
+      let container: any = document.querySelector('.ui-dialog.ui-widget.ui-widget-content');
+      let container2: any = document.querySelector('.ui-dialog-content.ui-widget-content');
+      if (container) {
+        leftAdjest = parseInt(container.style.left.split('.')[0]);
+      }
+      if (container2) {
+        topAdjest = container2.scrollTop;
+      }
+      if (topAdjest) {
+        panel.style.top = topAdjest + 'px';
+
+      } else {
+        panel.style.top = Math.abs(event.screenY - 100) + 'px';
+      }
+      panel.style.left = (event.screenX - leftAdjest) + 'px';
+    }, 50);
   }
 
   hideOverlayPanel() {
