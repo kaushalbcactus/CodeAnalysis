@@ -4836,6 +4836,7 @@ export class TimelineComponent
           ? task.data.assignedUserTimeZone
           : task.data.previousTimeZone;
         task.data.CentralAllocationDone = 'Yes';
+        task.data.edited = true;
         task.data.allocationPerDay = task.data.prevallocationPerDay ? task.data.prevallocationPerDay : task.data.allocationPerDay;
         task.data.showAllocationSplit =  task.data.prevshowAllocationSplit ?  task.data.prevshowAllocationSplit : task.data.showAllocationSplit ;
         task.data.allocationColor = task.data.prevallocationColor ? task.data.prevallocationColor : task.data.allocationColor;
@@ -4874,6 +4875,7 @@ export class TimelineComponent
         task.data.previousTimeZone = task.data.assignedUserTimeZone;
         task.data.assignedUserTimeZone = this.defaultTimeZone;
         task.data.CentralAllocationDone = 'No';
+        task.data.edited = true;
         task.data.prevallocationPerDay = task.data.allocationPerDay;
         task.data.prevshowAllocationSplit =  task.data.showAllocationSplit;
         task.data.prevallocationColor = task.data.allocationColor;
@@ -4881,7 +4883,6 @@ export class TimelineComponent
       }
       slot.data.slotColor = '#FF3E56';
       slot.data.CentralAllocationDone = 'No';
-
       this.deallocationMailArray.push({
         project: this.oProjectDetails,
         slot,
