@@ -463,11 +463,12 @@ export class PreStackcommonService {
     let allocationPerDay = '';
     for (const element of allocationSplit) {
       allocationPerDay = allocationPerDay + this.datePipe.transform(new Date(element.Date), 'EE,MMMd,y') + ':' +
-      element.Allocation.valueHrs + ':' + element.Allocation.valueMins + '\n';
+        element.Allocation.valueHrs + ':' + element.Allocation.valueMins + '\n';
     }
     const availableHours = resourceCapacity.maxHrs + 2;
-    const allocationAlert =  +availableHours < +allocationData.budgetHrs ? true : false;
-    // (new Date(allocationData.startDate).getTime() === new Date(allocationData.endDate).getTime()
+    const singleDayTask = (new Date(allocationData.startDate).getTime() === new Date(allocationData.endDate).getTime()) ? true : false;
+    let allocationAlert = singleDayTask && (+availableHours < +allocationData.budgetHrs) ? true : false;
+    allocationAlert = !allocationAlert && !singleDayTask && allocationData.allocationType !== 'Daily Allocation' ?  true : false;
     return ({
       allocationPerDay,
       allocationAlert,
@@ -549,10 +550,10 @@ export class PreStackcommonService {
     let maxHrs = defaultResourceMaxHrs;
     if (index === 0) {
       maxHrs = this.compareHrs(boundaries.strFirstAvailablity, defaultResourceMaxHrs) < 0 ?
-               boundaries.strFirstAvailablity : defaultResourceMaxHrs;
+        boundaries.strFirstAvailablity : defaultResourceMaxHrs;
     } else if (isLast) {
       maxHrs = this.compareHrs(boundaries.strLastAvailability, defaultResourceMaxHrs) < 0 ?
-               boundaries.strLastAvailability : defaultResourceMaxHrs;
+        boundaries.strLastAvailability : defaultResourceMaxHrs;
     }
     return maxHrs;
   }

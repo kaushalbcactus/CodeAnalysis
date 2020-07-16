@@ -1803,9 +1803,9 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   }
 
   editAllocation(milestoneTask, allocationType): void {
-    milestoneTask.resources = this.resourceList.filter((objt) => {
-      return objt.UserNamePG.ID === milestoneTask.AssignedTo.ID;
-    });
+    // milestoneTask.resources = this.resourceList.filter((objt) => {
+    //   return objt.UserNamePG.ID === milestoneTask.AssignedTo.ID;
+    // });
     let header = milestoneTask.SubMilestones ? milestoneTask.Milestone + ' ' + milestoneTask.TaskName
       + ' ( ' + milestoneTask.SubMilestones + ' )' : milestoneTask.Milestone + ' ' + milestoneTask.TaskName;
     header = header + ' - ' + milestoneTask.AssignedTo.Title;
