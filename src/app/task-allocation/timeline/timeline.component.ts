@@ -6253,6 +6253,26 @@ export class TimelineComponent
         false
       );
 
+      let validateDates = AllTasks.filter(
+        t =>
+          t.status !== 'Abandon' &&
+          t.status !== 'Completed' &&
+          t.status !== 'Auto Closed' &&
+          t.itemType !== 'Adhoc'
+      );
+
+      let validateCurrentTask = validateDates.find(t=> new Date(t.pUserStart).getDay() == 0 || new Date(t.pUserStart).getDay() == 6 ||
+      new Date(t.pUserEnd).getDay() == 0 || new Date(t.pUserEnd).getDay() == 6)
+      
+      if(validateCurrentTask) {
+        this.commonService.showToastrMessage(
+          this.constants.MessageType.warn,
+          'start date / end date of ' + validateCurrentTask.title + ' task in ' + validateCurrentTask.milestone + ' is on Staurday / Sunday so please change', 
+          false
+        );
+        return false;
+      }
+
       if (milestone.data.status === 'In Progress') {
         const zeroItem =
           milestone.children && milestone.children.length
@@ -6287,25 +6307,7 @@ export class TimelineComponent
               t.itemType !== 'Adhoc'
           );
         }
-        let validateDates = AllTasks.filter(
-          t =>
-            t.status !== 'Abandon' &&
-            t.status !== 'Completed' &&
-            t.status !== 'Auto Closed' &&
-            t.itemType !== 'Adhoc'
-        );
 
-        let validateCurrentTask = validateDates.find(t=> new Date(t.pUserStart).getDay() == 0 || new Date(t.pUserStart).getDay() == 6 ||
-        new Date(t.pUserEnd).getDay() == 0 || new Date(t.pUserEnd).getDay() == 6)
-        
-        if(validateCurrentTask) {
-          this.commonService.showToastrMessage(
-            this.constants.MessageType.warn,
-            'start date / end date of ' + validateCurrentTask.title + ' task in ' + validateCurrentTask.milestone + ' is on Staurday / Sunday so please change', 
-            false
-          );
-          return false;
-        }
         const isValid = this.validationsForActive(checkTasks);
         if (!isValid) {
           return false;
