@@ -450,12 +450,10 @@ export class GanttChartComponent implements OnInit {
 
 
   setScaleConfig(value) {
-    // this.showLoader();
     gantt.ext.zoom.setLevel(value);
     setTimeout(() => {
       gantt.init(this.ganttContainer.nativeElement);
       gantt.parse(this.ganttParseObject);
-      // this.showTable();
     }, 300);
   }
 
@@ -470,11 +468,9 @@ export class GanttChartComponent implements OnInit {
   zoomIn() {
     gantt.ext.zoom.zoomIn();
     if (gantt.ext.zoom.getCurrentLevel() === 0) {
-      // this.showLoader();
       gantt.init(this.ganttContainer.nativeElement);
       setTimeout(() => {
         gantt.parse(this.ganttParseObject);
-        // this.showTable();
       }, 300);
     }
   }
@@ -482,11 +478,9 @@ export class GanttChartComponent implements OnInit {
   zoomOut() {
     gantt.ext.zoom.zoomOut();
     if (gantt.ext.zoom.getCurrentLevel() >= 1 && gantt.ext.zoom.getCurrentLevel() <= 5) {
-      // this.showLoader();
       setTimeout(() => {
         gantt.init(this.ganttContainer.nativeElement)
         gantt.parse(this.ganttParseObject);
-        // this.showTable();
       }, 300);
     }
   }

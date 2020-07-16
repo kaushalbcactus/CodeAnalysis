@@ -1449,25 +1449,25 @@ export class TimelineComponent
         case "tatON":
           task.tat = true;
           this.ChangeEndDate(true, task);
-          this.updateMilestoneData();
+          this.updateMilestoneData(task);
           this.ganttNotification();
           break;
         case "tatOFF":
           task.tat = false;
           this.ChangeEndDate(true, task);
-          this.updateMilestoneData();
+          this.updateMilestoneData(task);
           this.ganttNotification();
           break;
         case "disableCascadeON":
           task.DisableCascade = true;
           task.edited = true;
-          this.updateMilestoneData();
+          this.updateMilestoneData(task);
           this.ganttNotification();
           break;
         case "disableCascadeOFF":
           task.DisableCascade = false;
           task.edited = true;
-          this.updateMilestoneData();
+          this.updateMilestoneData(task);
           this.ganttNotification();
           break;
         case "filesandcomments":
@@ -2436,23 +2436,24 @@ export class TimelineComponent
     return this.commonService.removeEmptyItems(tasks);
   }
 
-  updateMilestoneData() {
-    let allTasks = this.ganttAllTasks();
+  updateMilestoneData(currentTask) {
+    // let allTasks = { data: [] };
+    let allTasks = gantt.serialize(); //this.getGanttTasksFromMilestones(this.milestoneData, true);
     let tasks = allTasks.data.filter(e => e.edited == true && e.type == "task");
 
     allTasks.data.forEach(task => {
-      tasks.forEach(item => {
         if (task.type == "milestone") {
-          if (task.title == item.milestone) {
+          if (task.title == currentTask.milestone) {
             task.edited = true;
           }
         }
-      });
     });
 
-    allTasks = allTasks.data.filter(e => e.edited == true);
+    // this.GanttchartData = allTasks.data;
+   
+    allTasks.data = allTasks.data.filter(e => e.edited == true);
 
-    allTasks.forEach(task => {
+    allTasks.data.forEach(task => {
       this.milestoneData.forEach((item: any) => {
         if (task.id == item.data.id) {
           item.data.edited = true;
@@ -2465,10 +2466,7 @@ export class TimelineComponent
         }
       });
     });
-  }
 
-  ganttAllTasks() {
-    return gantt.serialize();
   }
 
   resetCurrentTask(task, resetTask) {
