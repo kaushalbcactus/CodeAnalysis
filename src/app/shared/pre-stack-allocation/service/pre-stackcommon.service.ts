@@ -74,6 +74,7 @@ export class PreStackcommonService {
       const allocationSplit = await this.performAllocation(resourceCapacity, allocationData, false, null, null, []);
       const objDailyAllocation: IPreStack = this.getAllocationPerDay(resourceCapacity, allocationData, allocationSplit.arrAllocation);
       this.setAllocationPerDay(objDailyAllocation, milestoneTask);
+      milestoneTask.allocationAlert = false;
       if (objDailyAllocation.allocationAlert) {
         milestoneTask.allocationAlert = true;
       }
@@ -81,6 +82,7 @@ export class PreStackcommonService {
       milestoneTask.showAllocationSplit = false;
       milestoneTask.allocationColor = '';
       milestoneTask.allocationPerDay = '';
+      milestoneTask.allocationAlert = false;
     }
     milestoneTask.allocationTypeLoader = false;
   }
@@ -329,8 +331,8 @@ export class PreStackcommonService {
   getAvailableHours(dayAvailableHrs: string, dayResourceCapacity: any, maxLimit: number, extraHrs: string): string {
     let availableHrs = dayResourceCapacity.availableHrs;
     if (dayAvailableHrs) {
-      const dateHrsAvailable = this.compareHrs(availableHrs, dayAvailableHrs);
-      if (!dateHrsAvailable) {
+      const dateHrsAvailable = this.compareHrs(dayAvailableHrs, availableHrs);
+      if (dateHrsAvailable <= 0.25) {
         availableHrs = dayAvailableHrs;
         dayResourceCapacity.mandatoryHrs = true;
       }
@@ -357,9 +359,11 @@ export class PreStackcommonService {
   /**
    * This return true if first parameter is less than equal to second element
    */
-  compareHrs(firstElement: string, secondElement: string): boolean {
-    const result = this.common.convertFromHrsMins(firstElement) <= this.common.convertFromHrsMins(secondElement) ? true : false;
-    return result;
+  compareHrs(firstElement: string, secondElement: string): number {
+    // const result = this.common.convertFromHrsMins(firstElement) <= this.common.convertFromHrsMins(secondElement) ? true : false;
+    // return result;
+    const result = this.common.subtractHrsMins(firstElement, secondElement, true);
+    return this.common.convertFromHrsMins(result);
   }
 
   /**
@@ -389,7 +393,7 @@ export class PreStackcommonService {
     const availaibility = this.getDayAvailibilty(resourceDailyDetails, allocationData, allocationPerDay);
     const lastDayUnavailable = availaibility.lastDayAvailability < allocationPerDay ? true : false;
     const noOfDays = businessDays > availaibility.days ? (businessDays - availaibility.days) : businessDays;
-    let calcBudgetHrs = lastDayUnavailable && noOfDays > 1 ? budgetHours - availaibility.lastDayAvailability : budgetHours;
+    let calcBudgetHrs = lastDayUnavailable ? budgetHours - availaibility.lastDayAvailability : budgetHours;
     calcBudgetHrs = availaibility.firstDayAvailablity < allocationPerDay ? calcBudgetHrs - availaibility.firstDayAvailablity :
       calcBudgetHrs;
     const newAllocationPerDay = this.common.roundToPrecision(calcBudgetHrs / noOfDays, 0.25);
@@ -461,9 +465,9 @@ export class PreStackcommonService {
       allocationPerDay = allocationPerDay + this.datePipe.transform(new Date(element.Date), 'EE,MMMd,y') + ':' +
       element.Allocation.valueHrs + ':' + element.Allocation.valueMins + '\n';
     }
-    const availableHours = this.common.convertFromHrsMins(resourceCapacity.totalUnAllocated);
-    const allocationAlert = (new Date(allocationData.startDate).getTime() === new Date(allocationData.endDate).getTime()
-      && +availableHours < +allocationData.budgetHrs) ? true : false;
+    const availableHours = resourceCapacity.maxHrs + 2;
+    const allocationAlert =  +availableHours < +allocationData.budgetHrs ? true : false;
+    // (new Date(allocationData.startDate).getTime() === new Date(allocationData.endDate).getTime()
     return ({
       allocationPerDay,
       allocationAlert,
@@ -544,9 +548,11 @@ export class PreStackcommonService {
   getResourceMaxHrs(defaultResourceMaxHrs: string, index: number, boundaries, isLast): string {
     let maxHrs = defaultResourceMaxHrs;
     if (index === 0) {
-      maxHrs = this.compareHrs(boundaries.strFirstAvailablity, defaultResourceMaxHrs) ? boundaries.strFirstAvailablity : defaultResourceMaxHrs;
+      maxHrs = this.compareHrs(boundaries.strFirstAvailablity, defaultResourceMaxHrs) < 0 ?
+               boundaries.strFirstAvailablity : defaultResourceMaxHrs;
     } else if (isLast) {
-      maxHrs = this.compareHrs(boundaries.strLastAvailability, defaultResourceMaxHrs) ? boundaries.strLastAvailability : defaultResourceMaxHrs;
+      maxHrs = this.compareHrs(boundaries.strLastAvailability, defaultResourceMaxHrs) < 0 ?
+               boundaries.strLastAvailability : defaultResourceMaxHrs;
     }
     return maxHrs;
   }

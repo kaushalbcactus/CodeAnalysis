@@ -1540,16 +1540,21 @@ export class TimelineComponent
     });
   }
 
-  isDragEnable(isStartDate, status) {
-    switch (status) {
+  isDragEnable(isStartDate, task) {
+    switch (task.status) {
       case "Not Started":
       case "Not Confirmed":
       case "Not Saved":
-        return true;
+        if(task.parentSlot !=='' && task.parentSlot !== 0 ) return false;
+        else return true;
 
       case "In Progress":
-        if (!isStartDate) return true;
-        else return false;
+        if(task.parentSlot !=='' && task.parentSlot !== 0 ) {
+          return false;
+        } else {
+          if (!isStartDate) return true;
+          else return false;
+        }
 
       default:
         return false;
@@ -1596,20 +1601,24 @@ export class TimelineComponent
         } else {
           if (task.itemType == "Client Review") {
             if (mode === "resize" && !isStartDate) {
-              let isDrag = this.isDragEnable(isStartDate, task.status);
+              let isDrag = this.isDragEnable(isStartDate, task);
               return isDrag;
             } else {
               return false;
             }
           } else {
             if (mode === "resize") {
-              let isDrag = this.isDragEnable(isStartDate, task.status);
+              let isDrag = this.isDragEnable(isStartDate, task);
               return isDrag;
             } else if (mode === "move") {
               if (task.status == "In Progress") {
                 return false;
               } else {
-                return true;
+                if(task.parentSlot !=='' && task.parentSlot !== 0) {
+                  return false;
+                } else {
+                  return true;
+                }
               }
             } else {
               return false;
@@ -1811,7 +1820,7 @@ export class TimelineComponent
             this.picker.open();
           }
         } else {
-          this.openPopupOnGanttTask(task, "end");
+            this.openPopupOnGanttTask(task, "end");
         }
         this.disableSave = false;
         return true;
@@ -1904,12 +1913,13 @@ export class TimelineComponent
           return this.singleTask.AssignedTo.ID === objt.UserNamePG.ID;
         }
       );
-      await this.prestackService.calcPrestackAllocation(
-        resource,
-        this.singleTask
-      );
+     
       if (this.singleTask.itemType !== 'Client Review' && this.singleTask.itemType !== 'Send to client') {
         await this.changeBudgetHrs(this.singleTask);
+        // await this.prestackService.calcPrestackAllocation(
+        //   resource,
+        //   this.singleTask
+        // );
       } else if (this.singleTask.type == 'task') {
         this.DateChange(this.singleTask, type);
         this.GanttchartData = allTasks.data;
@@ -6243,6 +6253,26 @@ export class TimelineComponent
         false
       );
 
+      let validateDates = AllTasks.filter(
+        t =>
+          t.status !== 'Abandon' &&
+          t.status !== 'Completed' &&
+          t.status !== 'Auto Closed' &&
+          t.itemType !== 'Adhoc'
+      );
+
+      let validateCurrentTask = validateDates.find(t=> new Date(t.pUserStart).getDay() == 0 || new Date(t.pUserStart).getDay() == 6 ||
+      new Date(t.pUserEnd).getDay() == 0 || new Date(t.pUserEnd).getDay() == 6)
+      
+      if(validateCurrentTask) {
+        this.commonService.showToastrMessage(
+          this.constants.MessageType.warn,
+          'start date / end date of ' + validateCurrentTask.title + ' task in ' + validateCurrentTask.milestone + ' is on Staurday / Sunday so please change', 
+          false
+        );
+        return false;
+      }
+
       if (milestone.data.status === 'In Progress') {
         const zeroItem =
           milestone.children && milestone.children.length
@@ -6277,25 +6307,7 @@ export class TimelineComponent
               t.itemType !== 'Adhoc'
           );
         }
-        let validateDates = AllTasks.filter(
-          t =>
-            t.status !== 'Abandon' &&
-            t.status !== 'Completed' &&
-            t.status !== 'Auto Closed' &&
-            t.itemType !== 'Adhoc'
-        );
 
-        let validateCurrentTask = validateDates.find(t=> new Date(t.pUserStart).getDay() == 0 || new Date(t.pUserStart).getDay() == 6 ||
-        new Date(t.pUserEnd).getDay() == 0 || new Date(t.pUserEnd).getDay() == 6)
-        
-        if(validateCurrentTask) {
-          this.commonService.showToastrMessage(
-            this.constants.MessageType.warn,
-            'start date / end date of ' + validateCurrentTask.title + ' task in ' + validateCurrentTask.milestone + ' is on Staurday / Sunday so please change', 
-            false
-          );
-          return false;
-        }
         const isValid = this.validationsForActive(checkTasks);
         if (!isValid) {
           return false;
