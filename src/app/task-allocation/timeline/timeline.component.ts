@@ -4670,9 +4670,7 @@ export class TimelineComponent
           });
           if (
             sentPrevNode.data.status !== 'In Progress' &&
-            slotFirstTask[0].data.AssignedTo.ID &&
-            slotFirstTask[0].data.AssignedTo.ID !== -1
-          ) {
+            slotFirstTask[0].data.AssignedTo.EMail) {
             // All task of slot will be allocated at once so if first task is assigned to resource then check for resource and new task date availability
             await this.checkTaskResourceAvailability(
               sentPrevNode,
@@ -4838,6 +4836,9 @@ export class TimelineComponent
           ? task.data.assignedUserTimeZone
           : task.data.previousTimeZone;
         task.data.CentralAllocationDone = 'Yes';
+        task.data.allocationPerDay = task.data.prevallocationPerDay ? task.data.prevallocationPerDay : task.data.allocationPerDay;
+        task.data.showAllocationSplit =  task.data.prevshowAllocationSplit ?  task.data.prevshowAllocationSplit : task.data.showAllocationSplit ;
+        task.data.allocationColor = task.data.prevallocationColor ? task.data.prevallocationColor : task.data.allocationColor;
       }
       this.addToReAllocateEmail(mailTableObj, slot, oldSlot, '');
       const oldSubTasks = oldSlot.children;
@@ -4861,7 +4862,7 @@ export class TimelineComponent
       }, 300);
     } else {
       // Reallocation and send single mail for reallocation
-      for (let task of slotTasks) {
+      for (const task of slotTasks) {
         task.data.previousAssignedUser =
           task.data.previousAssignedUser &&
             task.data.previousAssignedUser !== -1
@@ -4873,7 +4874,10 @@ export class TimelineComponent
         task.data.previousTimeZone = task.data.assignedUserTimeZone;
         task.data.assignedUserTimeZone = this.defaultTimeZone;
         task.data.CentralAllocationDone = 'No';
-        task.data.allocationPerDay = '';
+        task.data.prevallocationPerDay = task.data.allocationPerDay;
+        task.data.prevshowAllocationSplit =  task.data.showAllocationSplit;
+        task.data.prevallocationColor = task.data.allocationColor;
+        this.taskAllocateCommonService.resetDailyAllocation(task.data);
       }
       slot.data.slotColor = '#FF3E56';
       slot.data.CentralAllocationDone = 'No';

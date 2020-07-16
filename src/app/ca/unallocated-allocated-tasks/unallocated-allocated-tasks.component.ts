@@ -382,7 +382,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
               c.UserNamePG.Title === task.PreviousAssignedUser.Title);
             if (ExistingUser) {
               ExistingUser.userType = 'Previously Assigned';
-              const retResource = oCapacity.arrUserDetails.filter(user => user.uid === ExistingUser.UserName.ID);
+              const retResource = oCapacity.arrUserDetails.filter(user => user.uid === ExistingUser.UserNamePG.ID);
               this.setColorCode(retResource, ExistingUser, task);
               const dispTime = parseFloat(retResource[0].displayTotalUnAllocated.replace(':', '.'));
               ExistingUser.taskDetails = retResource[0];
