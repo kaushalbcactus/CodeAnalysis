@@ -1612,6 +1612,7 @@ export class StandardprojectComponent implements OnInit {
     this.showLoader();
     setTimeout(async () => {
       await this.cascadeStartDate(curObj);
+      this.overAllocationAlert();
       let tempstand = this.standardFiles;
       this.standardFiles = [...tempstand];
       this.showTable();
@@ -1625,6 +1626,7 @@ export class StandardprojectComponent implements OnInit {
     this.showLoader();
     setTimeout(async () => {
       await this.cascadeEndDate(curObj);
+      this.overAllocationAlert();
       let tempstand = this.standardFiles;
       this.standardFiles = [...tempstand];
       this.showTable();

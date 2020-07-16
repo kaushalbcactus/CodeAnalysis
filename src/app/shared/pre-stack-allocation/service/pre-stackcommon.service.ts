@@ -74,6 +74,7 @@ export class PreStackcommonService {
       const allocationSplit = await this.performAllocation(resourceCapacity, allocationData, false, null, null, []);
       const objDailyAllocation: IPreStack = this.getAllocationPerDay(resourceCapacity, allocationData, allocationSplit.arrAllocation);
       this.setAllocationPerDay(objDailyAllocation, milestoneTask);
+      milestoneTask.allocationAlert = false;
       if (objDailyAllocation.allocationAlert) {
         milestoneTask.allocationAlert = true;
       }
@@ -81,6 +82,7 @@ export class PreStackcommonService {
       milestoneTask.showAllocationSplit = false;
       milestoneTask.allocationColor = '';
       milestoneTask.allocationPerDay = '';
+      milestoneTask.allocationAlert = false;
     }
     milestoneTask.allocationTypeLoader = false;
   }
@@ -463,7 +465,7 @@ export class PreStackcommonService {
       allocationPerDay = allocationPerDay + this.datePipe.transform(new Date(element.Date), 'EE,MMMd,y') + ':' +
       element.Allocation.valueHrs + ':' + element.Allocation.valueMins + '\n';
     }
-    const availableHours = this.common.convertFromHrsMins(resourceCapacity.totalUnAllocated);
+    const availableHours = resourceCapacity.maxHrs + 2;
     const allocationAlert =  +availableHours < +allocationData.budgetHrs ? true : false;
     // (new Date(allocationData.startDate).getTime() === new Date(allocationData.endDate).getTime()
     return ({
