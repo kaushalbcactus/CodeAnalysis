@@ -11,7 +11,8 @@ import { DatePipe } from '@angular/common';
 @Component({
   selector: 'app-capacity-tasks',
   templateUrl: './capacity-tasks.component.html',
-  styleUrls: ['./capacity-tasks.component.css']
+  styleUrls: ['./capacity-tasks.component.css'],
+  providers: [DialogService]
 })
 export class CapacityTasksComponent implements OnInit {
   @Input() tasks: any;
@@ -22,7 +23,7 @@ export class CapacityTasksComponent implements OnInit {
   @Output() updateBlocking = new EventEmitter();
   today: Date;
   constructor(public globalService: GlobalService, public allocationConstant: TaskAllocationConstantsService,
-    public dialogService: DialogService, public globalConstant: ConstantsService,
+    public capacityDialogService: DialogService, public globalConstant: ConstantsService,
     public spServices: SPOperationService, public commonService: CommonService,
     public datepipe: DatePipe) { }
 
@@ -61,7 +62,7 @@ export class CapacityTasksComponent implements OnInit {
   }
 
   getMilestoneTasks(task) {
-    const ref = this.dialogService.open(MilestoneTasksDialogComponent, {
+    const ref = this.capacityDialogService.open(MilestoneTasksDialogComponent, {
       data: {
         task
       },
@@ -69,7 +70,7 @@ export class CapacityTasksComponent implements OnInit {
       width: '90vw',
       contentStyle: { 'max-height': '90vh', 'overflow-y': 'auto' },
     });
-    ref.onClose.subscribe(async (tasks: any) => {
+    ref.onClose.subscribe((tasks: any) => {
     });
   }
 

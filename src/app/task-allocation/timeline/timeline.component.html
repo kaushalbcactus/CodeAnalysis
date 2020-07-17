@@ -279,7 +279,7 @@
 
                                 <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData, rowNode);popupMenu.show($event);"></i>
                             </div> -->
-                            
+
                           <div  *ngIf="(rowData.type === 'task' && rowData.milestoneStatus !== 'Completed' && rowData.status !== 'Completed' && rowData.status !=='Abandon' && rowData.status !=='Auto Closed' && rowData.status !=='Hold' && rowData.status !== 'Not Saved') || (rowData.type === 'milestone' && rowData.status !== 'Completed' && rowData.status !== 'Auto Closed') && !changeInRestructure"
                                       [hidden]="rowData.editMode === false"
                                       style="text-align: center;">
@@ -326,7 +326,7 @@
         <!-- **********************************************************************************************************
                                                          gantt chart Data
            ********************************************************************************************************** -->
-        <div fxLayout="row" fxLayoutAlign=" start center" [ngClass]="projectDetails  ? 'VisualRepresentationpopup':'VisualRepresentation'" [hidden]="!visualgraph" style="width:100%">
+        <div fxLayout="row" fxLayoutAlign=" start center" [ngClass]="projectDetails  ? 'VisualRepresentationpopup':'VisualRepresentation'" [hidden]="!visualgraph || loaderenable" style="width:100%">
             <!--&& loaderenable === true-->
 
             <div style="width:100%">

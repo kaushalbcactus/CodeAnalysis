@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, AfterViewInit, Output, EventEmitter, AfterViewChecked } from '@angular/core';
-import { DynamicDialogConfig, DynamicDialogRef, TreeNode } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef, TreeNode, DialogService } from 'primeng';
 import { IConflictTask, IPopupConflictData, IConflictResource, IQueryOptions } from './interface/conflict-allocation';
 import { GlobalService } from 'src/app/Services/global.service';
 import { TaskAllocationCommonService } from '../../task-allocation/services/task-allocation-common.service';
@@ -14,7 +14,7 @@ import { UserCapacitycommonService } from '../usercapacity/service/user-capacity
   selector: 'app-conflict-allocation',
   templateUrl: './conflict-allocation.component.html',
   styleUrls: ['./conflict-allocation.component.css'],
-  providers: [UsercapacityComponent]
+  providers: [UsercapacityComponent, DialogService]
 })
 export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
   cols = [];
@@ -141,7 +141,6 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
         const dates = user.dates.filter(d => d.totalTimeAllocated > maxHrs && d.userCapacity !== 'Leave');
         const tasks = [];
         if (dates.length) {
-          // allDates = [...new Set([...allDates, ...dates])];
           const projectCodes = this.getProjectCodes(dates);
           projectInformation = await this.getProjectShortTitle(projectCodes, projectInformation);
           for (const date of dates) {
@@ -150,7 +149,6 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
             if (!resourceDateExists) {
               const conflictTask: IConflictTask = {
                 allocatedHrs: '' + +date.totalTimeAllocated.toFixed(2),
-                // allocationDate: date,
                 allocation: date,
                 projects: [],
               };
@@ -159,13 +157,16 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
                 const projectExists = conflictTask.projects.find(p => p.projectCode === task.projectCode);
                 if (!projectExists) {
                   const projectTitle = this.getTaskTitle(task);
+                  const numAllocatedHrs = this.commonService.convertFromHrsMins(task.timeAllocatedPerDay);
                   const projectDetail = {
                     projectCode: projectTitle,
                     shortTitle: project ? project.WBJID : '',
-                    allocatedhrs: +(this.commonService.convertFromHrsMins(task.timeAllocatedPerDay)).toFixed(2),
+                    allocatedhrs: +(numAllocatedHrs).toFixed(2),
                     showProjectLink: task.TaskType !== 'Adhoc' && task.TaskType !== 'ResourceBlocking' ? true : false
                   };
-                  conflictTask.projects.push(projectDetail);
+                  if (numAllocatedHrs > 0) {
+                    conflictTask.projects.push(projectDetail);
+                  }
                 } else {
                   const preallocatedHrs: number = +(+projectExists.allocatedhrs).toFixed(2);
                   const currentAllocatedHrs: number = this.commonService.convertFromHrsMins(task.timeAllocatedPerDay);
@@ -179,11 +180,8 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
         if (tasks.length) {
           if (oExistingResource && Object.keys(oExistingResource).length) {
             oExistingResource.tasks = [...oExistingResource.tasks, ...tasks];
-            // oExistingResource.userCapacity = this.recalculateUserCapacity(user, allDates);
           } else {
             const conflictResouce: IConflictResource = {
-              // userName: user.userName,
-              // userId: user.uid,
               user,
               userCapacity: this.recalculateUserCapacity(user, dates),
               tasks
