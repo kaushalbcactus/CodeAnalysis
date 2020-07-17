@@ -4848,7 +4848,7 @@ export class TimelineComponent
         this.addToReAllocateEmail(
           mailTableObj,
           task,
-          oldSubTasks,
+          oldSubTasks[index],
           task.data.AssignedTo.Title
         );
       });
