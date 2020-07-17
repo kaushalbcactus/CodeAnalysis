@@ -24,11 +24,11 @@ export class GanttChartComponent implements OnInit, OnChanges,OnDestroy {
   resource = [];
   tasks = {};
   @Input() ganttData: any
-  // @Output() berforeTaskDrag: EventEmitter<any> = new EventEmitter();
-  @Output() taskClick: EventEmitter<any> = new EventEmitter();
-  @Output() afterTaskDrag: EventEmitter<any> = new EventEmitter();
-  @Output() beforeTaskChanged: EventEmitter<any> = new EventEmitter();
-  @Input() beforeTaskDrag: (id: any, mode: any, task: any) => boolean;
+  @Input() beforeTaskDrag: (id: any, mode: any, event: any) => boolean;
+  @Input() taskClick: (taskId: any, event: any) => boolean;
+  @Input() afterTaskDrag: (id: any, mode: any, event: any) => boolean;
+  @Input() beforeTaskChanged: (id: any, mode: any, task: any) => boolean;
+
   constructor() { }
 
   ngOnInit() {
@@ -45,7 +45,7 @@ export class GanttChartComponent implements OnInit, OnChanges,OnDestroy {
   }
 
   ngOnDestroy() {
-    // gantt.detachAllEvents();
+    gantt.detachAllEvents();
   }
 
   onLoad(resource) {
@@ -442,23 +442,25 @@ export class GanttChartComponent implements OnInit, OnChanges,OnDestroy {
     gantt.parse(this.ganttData);
 
     gantt.attachEvent("onBeforeTaskChanged", (id, mode, task) => {
-      this.beforeTaskChanged.emit({id, mode, task}); 
+      let drag = this.beforeTaskChanged(id,mode,task);
+      return drag;
     });
     
     gantt.attachEvent(
     "onBeforeTaskDrag",
     (id, mode, event) => {
-      // this.berforeTaskDrag.emit({id,mode,event});
       let drag = this.beforeTaskDrag(id,mode,event);
       return drag;
     })
 
     gantt.attachEvent("onTaskClick", (taskId, event) => {
-      this.taskClick.emit({taskId,event});
+      let drag = this.taskClick(taskId,event);
+      return drag;
     });
 
     gantt.attachEvent("onAfterTaskDrag", (id, mode, event) => {
-      this.afterTaskDrag.emit({id, mode, event});
+      let drag = this.afterTaskDrag(id,mode,event);
+      return drag;
     });
     
   }

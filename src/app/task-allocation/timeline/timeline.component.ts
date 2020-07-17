@@ -1567,7 +1567,7 @@ export class TimelineComponent
     return taskObj;
   }
 
-  onBeforeTaskDragCall(id, mode, e): boolean {
+  onBeforeTaskDragCall = (id, mode, e) => {
     let task = this.GanttchartData.find(e => e.id == id);
     this.resetTask = this.createResetObj(task);
     this.dragClickedInput = e.srcElement.className;
@@ -1609,7 +1609,7 @@ export class TimelineComponent
     }
   }
 
-  onTaskClickCall(taskId, e) {
+  onTaskClickCall = (taskId, e) => {
     let task = gantt.getTask(taskId);
     let ganttOpenIcon = e.target.closest(".gantt_arrow_click");
     if (!ganttOpenIcon) {
@@ -1698,7 +1698,7 @@ export class TimelineComponent
     return true;
   }
 
-  onAfterTaskDragCall(id, mode, e) {
+  onAfterTaskDragCall = (id, mode, e) => {
     let task = { ...this.currentTask };
     this.ganttSetTime = false;
     const isStartDate =
@@ -1804,7 +1804,7 @@ export class TimelineComponent
     }
   }
 
-  onBeforeTaskChangedCall(id, mode, task) {
+  onBeforeTaskChangedCall = (id, mode, task) => {
     this.allTaskData = gantt.serialize();
     this.currentTask = { ...task };
     return true;
