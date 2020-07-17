@@ -82,10 +82,10 @@ export class GanttEdittaskComponent implements OnInit {
     this.editTaskForm.get('tat').setValue(false);
     this.editTaskForm.get('disableCascade').setValue(false);
     this.editTaskForm.controls['budgetHrs'].enable();
-    this.editTaskForm.controls['startDate'].disable();
-    this.editTaskForm.controls['startDateTimePart'].disable();
-    this.editTaskForm.controls['endDate'].disable();
-    this.editTaskForm.controls['endDateTimePart'].disable();
+    // this.editTaskForm.controls['startDate'].disable();
+    // this.editTaskForm.controls['startDateTimePart'].disable();
+    // this.editTaskForm.controls['endDate'].disable();
+    // this.editTaskForm.controls['endDateTimePart'].disable();
     this.assignedUsers = this.config.data.assignedUsers;
     this.task = this.config.data.task;
     this.milestoneData = this.config.data.milestoneData;
@@ -113,6 +113,7 @@ export class GanttEdittaskComponent implements OnInit {
       this.editTaskForm.get('budgetHrs').setValue(bHrs);
       this.editTaskForm.controls['budgetHrs'].disable();
     }
+    if (task.status == 'Not Confirmed' || task.status == "Not Started" || task.status == "Not Saved") {
     if (task.itemType === 'Client Review') {
       this.editTaskObject.isDisableCascade = false;
       this.editTaskObject.isTat = false;
@@ -128,25 +129,40 @@ export class GanttEdittaskComponent implements OnInit {
       this.maxBudgetHrs = '';
       this.editTaskObject.isDisableCascade = true;
       this.editTaskObject.isTat = false;
+    } else {
+      this.editTaskForm.controls['startDate'].enable();
+      this.editTaskForm.controls['startDateTimePart'].enable();
+      this.editTaskForm.controls['endDate'].enable();
+      this.editTaskForm.controls['endDateTimePart'].enable();
+      this.isTaskTAT(task);
     }
-
-    if (task.status == 'Not Confirmed' || task.status == "Not Started" || task.status == "Not Saved") {
-      if (task.itemType !== 'Client Review') {
-        this.editTaskForm.controls['startDate'].enable();
-        this.editTaskForm.controls['startDateTimePart'].enable();
-      }
-      if (task.itemType !== 'Send to client') {
-        this.editTaskForm.controls['endDate'].enable();
-        this.editTaskForm.controls['endDateTimePart'].enable();
-      }
     } else if (task.status == "In Progress") {
       this.editTaskForm.controls['startDate'].disable();
       this.editTaskForm.controls['startDateTimePart'].disable();
+      this.editTaskForm.controls['resource'].disable();
       if (task.itemType !== 'Send to client') {
         this.editTaskForm.controls['endDate'].enable();
         this.editTaskForm.controls['endDateTimePart'].enable();
       }
     }
+
+    // if (task.status == 'Not Confirmed' || task.status == "Not Started" || task.status == "Not Saved") {
+    //   // if (task.itemType !== 'Client Review') {
+    //   //   this.editTaskForm.controls['startDate'].enable();
+    //   //   this.editTaskForm.controls['startDateTimePart'].enable();
+    //   // }
+    //   // if (task.itemType !== 'Send to client') {
+    //   //   // this.editTaskForm.controls['endDate'].enable();
+    //   //   // this.editTaskForm.controls['endDateTimePart'].enable();
+    //   // }
+    // } else if (task.status == "In Progress") {
+    //   this.editTaskForm.controls['startDate'].disable();
+    //   this.editTaskForm.controls['startDateTimePart'].disable();
+    //   if (task.itemType !== 'Send to client') {
+    //     this.editTaskForm.controls['endDate'].enable();
+    //     this.editTaskForm.controls['endDateTimePart'].enable();
+    //   }
+    // }
     const startTime = this.taskAllocateCommonService.setMinutesAfterDrag(task.start_date);
     task.start_date = new Date(this.datepipe.transform(task.start_date, 'MMM d, y') + ' ' + startTime);
     const endTime = this.taskAllocateCommonService.setMinutesAfterDrag(task.end_date);
@@ -168,7 +184,6 @@ export class GanttEdittaskComponent implements OnInit {
       endDateTimePart: endTime,
     });
 
-      this.isTaskTAT(task);
 
     this.editTaskForm.get('tat').valueChanges.subscribe(tat => {
       task.tat = tat;

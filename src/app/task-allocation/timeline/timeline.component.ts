@@ -1606,6 +1606,13 @@ export class TimelineComponent
             } else {
               return false;
             }
+          }else  if (task.itemType == "Send to client") {
+            if (mode === "resize" && isStartDate) {
+              let isDrag = this.isDragEnable(isStartDate, task);
+              return isDrag;
+            } else {
+              return false;
+            }
           } else {
             if (mode === "resize") {
               let isDrag = this.isDragEnable(isStartDate, task);
