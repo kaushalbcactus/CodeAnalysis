@@ -179,7 +179,9 @@ export class AddEditPoDialogComponent implements OnInit {
       if (moleculeArray && moleculeArray.length) {
         this.adminObject.dropdown.POMoleculeArray = [];
         moleculeArray.forEach(element => {
-          this.adminObject.dropdown.POMoleculeArray.push({ label: element.Title, value: element.Title });
+          if(!this.adminObject.dropdown.POMoleculeArray.find(c=>c.value === element.Title)){
+            this.adminObject.dropdown.POMoleculeArray.push({ label: element.Title, value: element.Title });
+          }
         });
 
         if(!this.config.data.poObject){
