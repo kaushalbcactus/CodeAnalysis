@@ -1567,7 +1567,7 @@ export class TimelineComponent
     return taskObj;
   }
 
-  onBeforeTaskDragCall(id, mode, e) {
+  onBeforeTaskDragCall(id, mode, e): boolean {
     let task = this.GanttchartData.find(e => e.id == id);
     this.resetTask = this.createResetObj(task);
     this.dragClickedInput = e.srcElement.className;

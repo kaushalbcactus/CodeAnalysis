@@ -331,7 +331,7 @@
 
             <div style="width:100%">
                 <!-- <ng-template #ganttcontainer></ng-template> -->
-                <app-gantt-chart #ganttcontainer [ganttData]='this.taskAllocateCommonService.ganttParseObject' (beforeTaskChanged)="onBeforeTaskChangedCall($event.id,$event.mode,$event.task)" (beforeTaskDrag)="onBeforeTaskDragCall($event.id,$event.mode,$event.event)" (taskClick)="onTaskClickCall($event.taskId,$event.event)" (afterTaskDrag)="onAfterTaskDragCall($event.id,$event.mode,$event.event)"></app-gantt-chart>
+                <app-gantt-chart #ganttcontainer [ganttData]='this.taskAllocateCommonService.ganttParseObject' (beforeTaskChanged)="onBeforeTaskChangedCall($event.id,$event.mode,$event.task)" [beforeTaskDrag]="onBeforeTaskDragCall" (taskClick)="onTaskClickCall($event.taskId,$event.event)" (afterTaskDrag)="onAfterTaskDragCall($event.id,$event.mode,$event.event)"></app-gantt-chart>
             </div>
         </div>
         <app-allocation-overlay #dailyAllocateOP></app-allocation-overlay>

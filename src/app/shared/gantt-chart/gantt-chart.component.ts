@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, OnChanges, Input, NgZone, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, OnChanges, Input, Output, EventEmitter, SimpleChanges, OnDestroy } from '@angular/core';
 import { gantt, Gantt } from '../../dhtmlx-gantt/codebase/source/dhtmlxgantt';
 // import { gantt, Gantt } from '../../dhtmlx-gantt/codebase/dhtmlxganttmin';
 import '../../dhtmlx-gantt/codebase/ext/dhtmlxgantt_tooltip';
@@ -11,7 +11,7 @@ import '../../dhtmlx-gantt/codebase/ext/api';
   templateUrl: './gantt-chart.component.html',
   styleUrls: ['./gantt-chart.component.css']
 })
-export class GanttChartComponent implements OnInit {
+export class GanttChartComponent implements OnInit, OnChanges,OnDestroy {
   @ViewChild('ganttchart', { static: true }) ganttContainer: ElementRef;
   resourcePanelConfig: any;
   gridConfig: any;
@@ -24,15 +24,28 @@ export class GanttChartComponent implements OnInit {
   resource = [];
   tasks = {};
   @Input() ganttData: any
-  @Output() berforeTaskDrag: EventEmitter<any> = new EventEmitter();
+  // @Output() berforeTaskDrag: EventEmitter<any> = new EventEmitter();
   @Output() taskClick: EventEmitter<any> = new EventEmitter();
   @Output() afterTaskDrag: EventEmitter<any> = new EventEmitter();
   @Output() beforeTaskChanged: EventEmitter<any> = new EventEmitter();
-
+  @Input() beforeTaskDrag: (id: any, mode: any, task: any) => boolean;
   constructor() { }
 
   ngOnInit() {
 
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    // if (changes.data && changes.data.currentValue) {
+    //   setTimeout(() => {
+    //     gantt.init(this.ganttContainer.nativeElement);
+    //     gantt.parse(changes.data.currentValue);
+    //   }, 300);
+    // }
+  }
+
+  ngOnDestroy() {
+    // gantt.detachAllEvents();
   }
 
   onLoad(resource) {
@@ -428,22 +441,24 @@ export class GanttChartComponent implements OnInit {
     gantt.config.branch_loading = true;
     gantt.parse(this.ganttData);
 
-    gantt.attachEvent("onBeforeTaskChanged", async (id, mode, task) => {
-      await this.beforeTaskChanged.emit({id, mode, task}); 
+    gantt.attachEvent("onBeforeTaskChanged", (id, mode, task) => {
+      this.beforeTaskChanged.emit({id, mode, task}); 
     });
     
     gantt.attachEvent(
     "onBeforeTaskDrag",
-    async (id, mode, event) => {
-      await this.berforeTaskDrag.emit({id,mode,event});
+    (id, mode, event) => {
+      // this.berforeTaskDrag.emit({id,mode,event});
+      let drag = this.beforeTaskDrag(id,mode,event);
+      return drag;
     })
 
-    gantt.attachEvent("onTaskClick", async (taskId, event) => {
-      await this.taskClick.emit({taskId,event});
+    gantt.attachEvent("onTaskClick", (taskId, event) => {
+      this.taskClick.emit({taskId,event});
     });
 
-    gantt.attachEvent("onAfterTaskDrag", async (id, mode, event) => {
-      await this.afterTaskDrag.emit({id, mode, event});
+    gantt.attachEvent("onAfterTaskDrag", (id, mode, event) => {
+      this.afterTaskDrag.emit({id, mode, event});
     });
     
   }
