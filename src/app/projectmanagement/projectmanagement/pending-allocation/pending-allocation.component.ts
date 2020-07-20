@@ -255,9 +255,9 @@ export class PendingAllocationComponent implements OnInit {
   }
 
   goToAllocationPage(task) {
-    window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +
-      '/dashboard#/taskAllocation?ProjectCode=' + task.ProjectCode, '_blank');
+    window.open(this.globalObject.url + '/taskAllocation?ProjectCode=' + task.ProjectCode, '_blank');
   }
+  
   goToProjectManagement(task) {
     // window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +
     //   '/Pages/ProjectManagement.aspx?ProjectCode=' + task.ProjectCode, '_blank');

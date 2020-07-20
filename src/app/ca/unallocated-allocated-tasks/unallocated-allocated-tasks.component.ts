@@ -16,9 +16,9 @@ import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
 import { PreStackAllocationComponent } from 'src/app/shared/pre-stack-allocation/pre-stack-allocation.component';
 import { IDailyAllocationTask } from 'src/app/shared/pre-stack-allocation/interface/prestack';
 import { AllocationOverlayComponent } from 'src/app/shared/pre-stack-allocation/allocation-overlay/allocation-overlay.component';
-import { IConflictResource } from 'src/app/task-allocation/interface/allocation';
 import { ConflictAllocationComponent } from 'src/app/shared/conflict-allocations/conflict-allocation.component';
 import { PreStackcommonService } from 'src/app/shared/pre-stack-allocation/service/pre-stackcommon.service';
+import { IConflictResource } from 'src/app/shared/conflict-allocations/interface/conflict-allocation';
 
 @Component({
   selector: 'app-unallocated-allocated-tasks',
@@ -382,7 +382,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
               c.UserNamePG.Title === task.PreviousAssignedUser.Title);
             if (ExistingUser) {
               ExistingUser.userType = 'Previously Assigned';
-              const retResource = oCapacity.arrUserDetails.filter(user => user.uid === ExistingUser.UserName.ID);
+              const retResource = oCapacity.arrUserDetails.filter(user => user.uid === ExistingUser.UserNamePG.ID);
               this.setColorCode(retResource, ExistingUser, task);
               const dispTime = parseFloat(retResource[0].displayTotalUnAllocated.replace(':', '.'));
               ExistingUser.taskDetails = retResource[0];
@@ -525,6 +525,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   }
 
   async assignedToUserChanged(rowData) {
+    this.disableSave = true;
     rowData.assignedUserChanged = true;
     rowData.AssignedTo = rowData.allocatedResource.UserNamePG;
     // this.completeTaskArray.find(a => a.Title === rowData.Title).MilestoneAllTasks.find(t => t.taskFullName === rowData.taskFullName);;
@@ -532,6 +533,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       return rowData.allocatedResource.UserNamePG.ID === objt.UserNamePG.ID;
     });
     await this.prestackService.calcPrestackAllocation(resource, rowData);
+    this.disableSave = false;
   }
 
 
@@ -862,18 +864,24 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     event.editMode = true;
     event.edited = true;
     Slot.editMode = true;
-    this.disableSave = false;
+    this.disableSave = true;
     const originalBudgetHrs = event.EstimatedTime;
     const resource = this.resourceList.filter((objt) => {
       return event.allocatedResource && event.allocatedResource.UserNamePG && event.allocatedResource.UserNamePG.ID === objt.UserNamePG.ID;
     });
-    const maxBudgetHrs = this.commonService.getMaxBudgetHrs(event);
+    this.validateBudgetHours(event, originalBudgetHrs);
+    await this.prestackService.calcPrestackAllocation(resource, event);
+    this.disableSave = false;
+  }
+
+  validateBudgetHours(event, originalBudgetHrs) {
+    const maxBudgetHrs = this.commonService.getMaxBudgetHrs(event.UserStart, event.UserEnd, false);
     if (maxBudgetHrs < event.EstimatedTime) {
       event.EstimatedTime = 0;
       this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Budget hours is set to zero because given budget hours is greater than task time period. Original budget hrs of task is ' + originalBudgetHrs, false);
     }
-    await this.prestackService.calcPrestackAllocation(resource, event);
   }
+
   async GetAllConstantTasks(taskName) {
     let allConstantTasks = [];
     allConstantTasks = await this.caCommonService.GetAllTasksMilestones(taskName);
@@ -986,6 +994,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     taskObj.timeSpentPerDay = task.TimeSpentPerDay ? task.TimeSpentPerDay : '';
     taskObj.allocationColor = '';
     taskObj.allocationTypeLoader = false;
+    taskObj.allocationPerDay = task.AllocationPerDay ? task.AllocationPerDay : '';
     taskObj.isCurrentMilestoneTask = projectItem.length && task.Milestone === projectItem[0].Milestone ? true : false;
     if (taskObj.allocatedResource !== '') {
       await this.GetResourceOnEdit(taskObj);
@@ -1089,14 +1098,16 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
 
   async DateChangePart(Node, Slot, type) {
+    this.disableSave = true;
     Node.UserStart = new Date(this.datepipe.transform(Node.UserStartDatePart, 'MMM d, y') + ' ' + Node.UserStartTimePart);
     Node.UserEnd = new Date(this.datepipe.transform(Node.UserEndDatePart, 'MMM d, y') + ' ' + Node.UserEndTimePart);
 
     Node.StartDate = Node.UserStart;
     Node.DueDate = Node.UserEnd;
     Slot.editMode = true;
+    this.validateBudgetHours(Node, Node.EstimatedTime);
     const resource = this.resourceList.filter((objt) => {
-      return Node.allocatedResource.UserNamePG.ID === objt.UserNamePG.ID;
+      return Node.allocatedResource && Node.allocatedResource.UserNamePG.ID === objt.UserNamePG.ID;
     });
     await this.prestackService.calcPrestackAllocation(resource, Node);
     this.DateChange(Node, Slot, type);
@@ -1154,7 +1165,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     currentnode.edited = true;
     currentnode.pRes = currentnode.skillLevel;
     const resource = this.resourceList.filter((objt) => {
-      return currentnode.allocatedResource.UserNamePG.ID === objt.UserNamePG.ID;
+      return currentnode.allocatedResource && currentnode.allocatedResource.UserNamePG.ID === objt.UserNamePG.ID;
     });
     await this.prestackService.calcPrestackAllocation(resource, currentnode);
     const nextTasks = currentnode.NextTasks ? currentnode.NextTasks.split(';') : [];
@@ -1241,14 +1252,14 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       this.loaderenable = true;
       const bindingData = [...this.caGlobal.dataSource];
       const allTasks = [].concat.apply([], bindingData.map(t => t.SlotTasks)).filter(t => t && t.isCurrentMilestoneTask);
-      const conflictDetails: IConflictResource[] = await this.conflictAllocation.checkConflictsAllocations(null, [], allTasks, this.resourceList);
+      const conflictDetails: IConflictResource[] = await this.conflictAllocation.bindConflictDetails(null, [], allTasks, this.resourceList);
       const projectCodes = allTasks.map(t => t.ProjectCode);
       const uniqueProjectCodes = [...new Set(projectCodes)];
 
       if (conflictDetails.length <= 0) {
         this.loaderenable = true;
         setTimeout(() => {
-          this.commonService.showToastrMessage(this.constants.MessageType.info, 'Updating...', true, true);
+          this.commonService.showToastrMessage(this.constants.MessageType.info, 'Updating...', false, true);
           this.generateSaveTasks(unt);
         }, 300);
       } else {
@@ -1564,7 +1575,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       ...updatedResources.pubSupportMembers.results, ...project.items.allDeliveryRes];
       UpdateProjectInfo.push({ projectID: project.projectId, updatedResources });
     }
-    this.completeSaveTask(dbAddTasks, dbUpdateTasks, updateSlot, UpdateProjectInfo, unt);
+    await this.completeSaveTask(dbAddTasks, dbUpdateTasks, updateSlot, UpdateProjectInfo, unt);
   }
 
   getIDFromItem(objItem) {
@@ -1661,7 +1672,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     }*/
     //this.messageService.clear();
     await this.getProperties();
-
+    this.commonService.clearToastrMessage();
     this.commonService.showToastrMessage(this.constants.MessageType.success, 'Slots updated Sucessfully.', false);
 
     if (unt) {
@@ -1735,7 +1746,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         CentralAllocationDone: 'Yes',
         IsCentrallyAllocated: 'No',
         ContentTypeCH: this.constants.CONTENT_TYPE.TASK,
-        DisableCascade: task.DisableCascade === true ? 'Yes' : 'No'
+        DisableCascade: task.DisableCascade === true ? 'Yes' : 'No',
+        AllocationPerDay: task.allocationPerDay ? task.allocationPerDay : ''
       };
       url = this.spServices.getReadURL(this.constants.listNames.Schedules.name);
       data = addData;
@@ -1761,6 +1773,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         DisableCascade: task.DisableCascade === true ? 'Yes' : 'No',
         PreviousAssignedUserId: task.PreviousAssignedUser ? task.PreviousAssignedUser.hasOwnProperty('ID') ?
           task.PreviousAssignedUser.ID : -1 : -1,
+        AllocationPerDay: task.allocationPerDay ? task.allocationPerDay : ''
       };
       url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +task.Id);
       data = updateData;
@@ -1790,9 +1803,9 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   }
 
   editAllocation(milestoneTask, allocationType): void {
-    milestoneTask.resources = this.resourceList.filter((objt) => {
-      return objt.UserNamePG.ID === milestoneTask.AssignedTo.ID;
-    });
+    // milestoneTask.resources = this.resourceList.filter((objt) => {
+    //   return objt.UserNamePG.ID === milestoneTask.AssignedTo.ID;
+    // });
     let header = milestoneTask.SubMilestones ? milestoneTask.Milestone + ' ' + milestoneTask.TaskName
       + ' ( ' + milestoneTask.SubMilestones + ' )' : milestoneTask.Milestone + ' ' + milestoneTask.TaskName;
     header = header + ' - ' + milestoneTask.AssignedTo.Title;
@@ -1867,9 +1880,10 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       if (detail.action.toLowerCase() === 'save') {
         const msg = 'Are you sure that you want to update tasks ?';
         const conflictMessage = detail.conflictResolved ? '' + msg : 'Conflict unresolved. ' + msg;
-        this.commonService.confirmMessageDialog('Confirmation', conflictMessage, null, ['Yes', 'No'], false).then(async Confirmation => {
+        // tslint:disable-next-line: max-line-length
+        await this.commonService.confirmMessageDialog('Confirmation', conflictMessage, null, ['Yes', 'No'], false).then(async Confirmation => {
           if (Confirmation === 'Yes') {
-            this.generateSaveTasks(node);
+            await this.generateSaveTasks(node);
           }
         });
       }

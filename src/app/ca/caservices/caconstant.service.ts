@@ -64,7 +64,7 @@ export class CAConstantService {
 
 
   public scheduleQueryOptions = {
-    select: 'ID,Title,TimeZoneNM,SkillLevel,TimeSpentPerDay,TimeSpent,Task,Status,NextTasks,PrevTasks,ProjectCode,Milestone,SubMilestones,ExpectedTime,TaskComments,CommentsMT,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,StartDate,DueDateDT,CentralAllocationDone,IsCentrallyAllocated,AssignedTo/ID, AssignedTo/Title, ActiveCA,DisableCascade,AllowCompletion,PreviousAssignedUser/ID,PreviousAssignedUser/Title',
+    select: 'ID,Title,TimeZoneNM,SkillLevel,TimeSpentPerDay,TimeSpent,Task,Status,NextTasks,PrevTasks,ProjectCode,Milestone,SubMilestones,ExpectedTime,TaskComments,CommentsMT,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,StartDate,DueDateDT,CentralAllocationDone,IsCentrallyAllocated,AssignedTo/ID, AssignedTo/Title, ActiveCA,DisableCascade,AllowCompletion,PreviousAssignedUser/ID,PreviousAssignedUser/Title, AllocationPerDay',
     expand: 'AssignedTo/ID, AssignedTo/Title,PreviousAssignedUser/ID,PreviousAssignedUser/Title',
     filter: "ActiveCA eq 'Yes' and Status ne 'Deleted' and Status ne 'Completed'",
     filterSlot: " and IsCentrallyAllocated eq 'Yes'",

@@ -48,7 +48,7 @@
   <p-accordion class="cls_conflict_accordion">
     <p-accordionTab *ngFor="let task of conflicTasks">
       <p-header>
-        <span >{{ task.userName }}</span>
+        <span >{{ task.user.userName }}</span>
       </p-header>
       <div>
         <p-table [columns]="cols" [value]="task.tasks" class="conflictTable cls_conflict_conflictTable">
@@ -77,14 +77,14 @@
                 <span>{{ rowData.allocatedHrs }} </span>
               </td>
               <td>
-                <span>{{ rowData.allocationDate | date: " d MMM, y" }}</span>
+                <span>{{ rowData.allocation.date | date: " d MMM, y" }}</span>
               </td>
               <td [attr.colSpan]="3">
               <p-table class="conflictProjectSection" [value]="rowData.projects">
                 <ng-template pTemplate="body" let-innerRowData let-columns="innercolumns">
                   <tr>
                     <td>
-                      <a [href]="goToProjectDetails(innerRowData)" *ngIf="this.projectCodes.indexOf(innerRowData.projectCode) < 0 && innerRowData.projectCode !== 'Adhoc' ; else elseBlock" target="_blank" style="color:#c53e3e;" target="_blank"> {{ innerRowData.projectCode }}</a>
+                      <a [href]="goToProjectDetails(innerRowData)" *ngIf="innerRowData.showProjectLink && goToProjectDetails(innerRowData); else elseBlock" target="_blank" style="color:#c53e3e;" target="_blank"> {{ innerRowData.projectCode }}</a>
                       <ng-template #elseBlock>{{innerRowData.projectCode}}</ng-template>
                     </td>
                     <td>

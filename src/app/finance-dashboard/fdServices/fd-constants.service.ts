@@ -320,7 +320,7 @@ export class FdConstantsService {
         },
 
         invoiceLineItemProforma:{
-            select:"ID,Title,TaggedDate,ScheduledDate,Amount,Currency,PO,Status,ProformaLookup,ScheduleType,InvoiceLookup,FiscalYear,MainPOC,AddressType,Template,SOWCode,Modified,Modified,CS,CS/ID,CS/Title,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title",
+            select:"ID,Title,TaggedDate,ScheduledDate,Amount,Currency,PO,Status,ProformaLookup,ScheduleType,InvoiceLookup,MainPOC,AddressType,Template,SOWCode,Modified,Modified,CS,CS/ID,CS/Title,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title",
             filter: "ProformaLookup eq '{{ProformaLookup}}' ",
             top: 4500,
             expand: "CS/ID,CS/Title,Editor,Author"

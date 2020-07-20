@@ -29,6 +29,7 @@ export interface IDailyAllocationObject {
   timeSpent: number;
   hideTasksTable: boolean;
   tasks: any;
+  leave: boolean;
 }
 
 export interface IPreStack {

@@ -41,13 +41,13 @@ export class QMSConstantsService {
       select: 'ID, Title, Task, SubMilestones, ProjectCode, Status, Milestone, AssignedTo/ID, AssignedTo/Title,DueDateDT, PrevTasks, Rated',
       expand: 'AssignedTo/ID, AssignedTo/Title',
       filter: "AssignedTo/ID eq '" + this.global.currentUser.userId + "' and (Status eq 'Completed' or Status eq 'Auto Closed')" +
-        " and startswith(Task,'Review-') and  DueDateDT ge '{{PrevMonthDate}}' and Rated eq 0",
+        " and startswith(Task,'Review-') and  DueDateDT ge '{{PrevMonthDate}}' and IsRated ne 1",
       top: '{{TopCount}}'
     },
     prevOfReviewTasksUrl: {
       select: 'ID, Title, Task, SubMilestones, ProjectCode, Status, Milestone, AssignedTo/ID, AssignedTo/Title, Actual_x0020_End_x0020_Date, PrevTasks, NextTasks, Rated',
       expand: 'AssignedTo/ID, AssignedTo/Title',
-      filter: "Title eq '{{PrevTaskTitle}}' and Rated eq 0",
+      filter: "Title eq '{{PrevTaskTitle}}' and Rated ne 1",
       top: '1'
     },
     projectInformationUrl: {
@@ -72,7 +72,7 @@ export class QMSConstantsService {
     notRatedPrevTasks: {
       select: 'ID, Title, ProjectCode, Status, Milestone, AssignedTo/ID, AssignedTo/Title, Actual_x0020_End_x0020_Date, PrevTasks, NextTasks',
       expand: 'AssignedTo/ID, AssignedTo/Title',
-      filter: "Title eq '{{PrevTaskTitle}}' and Rated eq 0",
+      filter: "Title eq '{{PrevTaskTitle}}' and Rated ne 1",
       top: '1'
     }
   };

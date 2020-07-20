@@ -488,12 +488,22 @@ export class TaskAllocationCommonService {
         this.setDatePartAndTimePart(milestoneTask);
         milestoneTask.skillLevel = milestoneTask.AssignedTo.SkillText;
         milestoneTask.user = milestoneTask.skillLevel;
+        this.resetDailyAllocation(milestoneTask);
+        // milestoneTask.allocationPerDay = '';
+        // milestoneTask.showAllocationSplit = false;
+        // milestoneTask.allocationColor = '';
       }
       milestoneTask.edited = true;
       milestoneTask.user = milestoneTask.AssignedTo
         ? milestoneTask.AssignedTo.Title
         : milestoneTask.user;
     }
+  }
+
+  resetDailyAllocation(task) {
+    task.allocationPerDay = '';
+    task.showAllocationSplit = false;
+    task.allocationColor = '';
   }
 
   changeNextTaskPrevTask(
@@ -511,6 +521,7 @@ export class TaskAllocationCommonService {
       sNextPrevTasks[currentTaskIndex] = newName;
       const prevNextTaskString = sNextPrevTasks.join(";");
       oTask.data[sParam] = prevNextTaskString;
+      oTask.data.edited = true;
     });
   }
 
@@ -551,7 +562,7 @@ export class TaskAllocationCommonService {
         newName = milestoneTask.itemType;
         newName = this.getNewTaskName(milestoneTask, newName, allResTasks, allTasks);
       }
-      milestoneTask.title = milestoneTask.title = newName;
+     
 
       if (milestoneTask.nextTask) {
         this.changeNextTaskPrevTask(
@@ -564,13 +575,14 @@ export class TaskAllocationCommonService {
       }
       if (milestoneTask.previousTask) {
         this.changeNextTaskPrevTask(
-          milestoneTask.nextTask,
+          milestoneTask.previousTask,
           subMilestone,
           currentTask,
           newName,
           "nextTask"
         );
       }
+      milestoneTask.title = milestoneTask.text = newName;
     }
   }
 

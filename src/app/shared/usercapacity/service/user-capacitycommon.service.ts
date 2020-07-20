@@ -418,6 +418,12 @@ export class UserCapacitycommonService {
       "h:" +
       oUser.displayTotalTimeSpent.split(":")[1] +
       "m";
+    oUser.displayTotalBenchExport =
+    oUser.Bench.split(":")[0] +
+      "h:" +
+      oUser.Bench.split(":")[1] +
+      "m";
+      
     oUser.dayTasks = [];
     oUser.TimeSpentDayTasks = [];
     return oUser;
@@ -461,7 +467,7 @@ export class UserCapacitycommonService {
     taskStatus,
     adhocStatus
   ) {
-    return this.applyFilter(
+    return await this.applyFilter(
       startDate,
       endDate,
       resource,
@@ -498,8 +504,8 @@ export class UserCapacitycommonService {
       this.datepipe.transform(startDate, "yyyy-MM-dd") + "T00:00:01.000Z";
     let endDateString =
       this.datepipe.transform(endDate, "yyyy-MM-dd") + "T23:59:00.000Z";
-    const sTopStartDate = startDate;
-    const sTopEndDate = endDate;
+    const sTopStartDate = new Date(startDate);
+    const sTopEndDate = new Date(endDate);
     const obj = {
       arrDateRange: [],
       arrDateFormat: [],
@@ -721,7 +727,7 @@ export class UserCapacitycommonService {
                   "yyyy-MM-ddT"
                 ) + "23:59:00.000Z"
               )
-              ? sTopEndDate.toISOString()
+              ? new Date(sTopEndDate).toISOString()
               : this.datepipe.transform(
                 oCapacity.arrUserDetails[indexUser].tasks[0].DueDateDT,
                 "yyyy-MM-ddT"
@@ -735,7 +741,7 @@ export class UserCapacitycommonService {
                   "yyyy-MM-ddT"
                 ) + "00:00:01.000Z"
               )
-              ? sTopStartDate.toISOString()
+              ? new Date(sTopStartDate).toISOString()
               : this.datepipe.transform(
                 oCapacity.arrUserDetails[indexUser].tasks[0].StartDate,
                 "yyyy-MM-ddT"
@@ -763,8 +769,8 @@ export class UserCapacitycommonService {
             }
           }
         } else {
-          startDateString = sTopStartDate.toISOString();
-          endDateString = sTopEndDate.toISOString();
+          startDateString = new Date(sTopStartDate).toISOString();
+          endDateString = new Date(sTopEndDate).toISOString();
         }
 
         selectedUsers.map(
@@ -970,7 +976,7 @@ export class UserCapacitycommonService {
             ) &&
             !(
               taskStatus.find((status) => tasks[index].Status === status) ||
-              adhocStatus.find((status) => tasks[index].Comments === status)
+              adhocStatus.find((status) => tasks[index].CommentsMT === status)
             )
           ) {
             tasks[index].TotalAllocated =
@@ -1004,7 +1010,7 @@ export class UserCapacitycommonService {
           adhocStatus &&
           adhocStatus.length
         ) {
-          if (!adhocStatus.find((status) => tasks[index].Comments === status)) {
+          if (!adhocStatus.find((status) => tasks[index].CommentsMT === status)) {
             tasks[index].TotalAllocated = tasks[index].TimeSpent.replace(
               ".",
               ":"

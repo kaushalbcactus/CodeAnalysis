@@ -49,7 +49,7 @@
             </td>
             <td [hidden]="componentName === 'prestack'">
                 <i *ngIf="rowData.projectCode && rowData.projectCode !=='Adhoc' && !disableCamera" class="pi pi-camera" title="Milestone Tasks" (click)="getMilestoneTasks(rowData)" style="font-size: 3em;cursor: pointer;"></i>
-                <span [ngClass]="rowData.dueDate > today ? 'p-grid':''" *ngIf="rowData.projectCode==='' && rowData.TaskType === 'ResourceBlocking'">
+                <span [ngClass]="rowData.dueDate > today ? 'p-grid':''" *ngIf="rowData.projectCode==='' && rowData.TaskType === 'ResourceBlocking' && rowData.editenableCapacity">
                   <i  *ngIf="rowData.dueDate > today" class="pi pi-pencil" title="Edit blocking" (click)="UpdateBlocking(rowData,'Edit')" style="font-size: 2em;cursor: pointer;"></i>
 
                   <i  class="pi pi-trash" title="Delete blocking" (click)="UpdateBlocking(rowData, 'Deleted')" style="font-size: 2em;cursor: pointer;"></i>

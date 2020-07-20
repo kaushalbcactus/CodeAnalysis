@@ -163,7 +163,8 @@ export class AddUserToProjectsComponent implements OnInit {
     const sResult = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, getProjInfo);
     if (sResult && sResult.length) {
       let disableCount = 0;
-      sResult.forEach(item => {
+      const dbProjects = sResult.length ? sResult.filter(c=>c.Status !== this.constants.projectList.status.Cancelled && c.Status !== this.constants.projectList.status.Closed) :[];
+      dbProjects.forEach(item => {
         const obj = Object.assign({}, this.adminObject.projObj);
         obj.CMLevel1 = item.CMLevel1 && item.CMLevel1.results && item.CMLevel1.results.length ? item.CMLevel1.results : [];
         obj.CMLevel2 = item.CMLevel2 && item.CMLevel2.hasOwnProperty('ID') ? item.CMLevel2 : '';
@@ -201,7 +202,7 @@ export class AddUserToProjectsComponent implements OnInit {
         tempArray.push(obj);
       });
       this.projectList = tempArray;
-      if (disableCount === sResult.length) {
+      if (disableCount === dbProjects.length) {
         this.disableTableHeader = true;
       } else {
         this.disableTableHeader = false;

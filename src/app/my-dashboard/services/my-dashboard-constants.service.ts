@@ -91,7 +91,7 @@ export class MyDashboardConstantsService {
       top: '4500'
     },
     ProjectInformations: {
-      select: 'ID,Title,ProjectCode,Status,ClientLegalEntity,Milestones,WBJID,ProjectFolder',
+      select: 'ID,Title,ProjectCode,Status,ClientLegalEntity,Milestones,WBJID,ProjectFolder,ProjectType',
       filter: '(Status eq \'Author Review\' or Status eq \'In Progress\' or Status eq \'Ready for Client\' or Status eq \'Unallocated\')',
       orderby: 'ProjectCode asc',
       top: '4500'
@@ -734,6 +734,7 @@ export class MyDashboardConstantsService {
       Actual_x0020_Start_x0020_Date: task.Actual_x0020_Start_x0020_Date !== null ? task.Actual_x0020_Start_x0020_Date : new Date(),
       Status: task.Status,
       TaskComments: task.TaskComments,
+      DueDateDT: task.DueDateDT
     };
     const newdata = task.IsCentrallyAllocated === 'Yes' ? { ...data, ActiveCA: 'No' } : { ...data };
     const taskObj = Object.assign({}, this.queryConfig);
@@ -752,7 +753,7 @@ export class MyDashboardConstantsService {
       });
       if (task.Task === 'Submission Pkg') {
         const jcSubmissionData = {
-          __metadata: { type: this.constants.listNames.Schedules.type },
+          __metadata: { type: this.constants.listNames.JCSubmission.type },
           SubmissionPkgURL: docUrl
         };
         const jcSubObj = Object.assign({}, this.queryConfig);
