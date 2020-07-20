@@ -54,7 +54,7 @@ export class BlockResourceDialogComponent implements OnInit {
       Title: ["", Validators.required],
       StartDate: ["", Validators.required],
       EndDate: ["", Validators.required],
-      ExpectedTime: ["", Validators.required],
+      ExpectedTime: ["",[Validators.required, this.common.checkGTZeroNumberValidator()]],
       allocationPerDay:[""],
     });
   }

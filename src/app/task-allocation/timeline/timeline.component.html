@@ -58,7 +58,7 @@
                     Excel</button> -->
                 <i style="font-size: 1.8em;cursor: pointer;vertical-align: top;
                     margin: 7px 15px 0px 0px;" (click)="ganttExportToExcel()" title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
-                <p-dropdown #mySelect [options]="scales" [(ngModel)]="selectedScale" (onChange)="setScale(mySelect.value)" optionLabel="label"></p-dropdown>
+                <p-dropdown #mySelect [options]="scales" [style]="{'width': '150px'}" [(ngModel)]="selectedScale" (onChange)="setScale(mySelect.value)" optionLabel="label"></p-dropdown>
             </div>
         </div>
 
@@ -167,7 +167,7 @@
                         <td style="text-align: center;" *ngIf="!projectDetails">
                             <div *ngIf="(rowData.type === 'milestone' && rowData.status !== 'Not Saved' && rowData.status !== 'Not Confirmed' && !rowData.isCurrent) || (rowData.type ==='task' && !rowData.editMode && rowData.itemType !== 'Client Review' && rowData.itemType !== 'Send to client')"
                                 style="float: left;margin-left: 22px;">{{rowData.budgetHours}}</div>
-                            <input type="number" class="form-control budgetHr" required="required" min="0" max="{{rowData.ExpectedBudgetHrs}}" value="0" step="0.25" *ngIf="(rowData.type !=='milestone' && rowData.type !=='submilestone' && rowData.editMode
+                            <input type="number" class="form-control budgetHr" required="required" oninput="validity.valid||(value='0');" min="0" max="{{rowData.ExpectedBudgetHrs}}" value="0" step="0.25" *ngIf="(rowData.type !=='milestone' && rowData.type !=='submilestone' && rowData.editMode
                                 && (rowData.itemType !== 'Client Review' &&  rowData.itemType !== 'Send to client')) ||
                                 ((rowData.status ==='In Progress' || rowData.status ==='Not Started' || rowData.status ==='Not Confirmed' || rowData.status ==='Not Saved') && rowData.type === 'milestone')" required="required" style="border:none;border-radius: 0px;height: 25px;text-align: center;padding:0px;float: left;"
                                 [id]="rowData.id" (change)="budgetHrsChanged(rowData)" [(ngModel)]="rowData.budgetHours">
@@ -279,7 +279,7 @@
 
                                 <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData, rowNode);popupMenu.show($event);"></i>
                             </div> -->
-                            
+
                           <div  *ngIf="(rowData.type === 'task' && rowData.milestoneStatus !== 'Completed' && rowData.status !== 'Completed' && rowData.status !=='Abandon' && rowData.status !=='Auto Closed' && rowData.status !=='Hold' && rowData.status !== 'Not Saved') || (rowData.type === 'milestone' && rowData.status !== 'Completed' && rowData.status !== 'Auto Closed') && !changeInRestructure"
                                       [hidden]="rowData.editMode === false"
                                       style="text-align: center;">
@@ -326,7 +326,7 @@
         <!-- **********************************************************************************************************
                                                          gantt chart Data
            ********************************************************************************************************** -->
-        <div fxLayout="row" fxLayoutAlign=" start center" [ngClass]="projectDetails  ? 'VisualRepresentationpopup':'VisualRepresentation'" [hidden]="!visualgraph" style="width:100%">
+        <div fxLayout="row" fxLayoutAlign=" start center" [ngClass]="projectDetails  ? 'VisualRepresentationpopup':'VisualRepresentation'" [hidden]="!visualgraph || loaderenable" style="width:100%">
             <!--&& loaderenable === true-->
 
             <div style="width:100%">
@@ -430,7 +430,7 @@
                 Budget Hrs
             </div>
             <div class="p-col-4">
-                <input type="number" pInputText [(ngModel)]="budgetHrs" [ngModelOptions]="{standalone: true}" (change)="setBudgetHours(budgetHrsTask)" min="0" max={{maxBudgetHrs}} value="0" step="0.25">
+                <input type="number" pInputText [(ngModel)]="budgetHrs" [ngModelOptions]="{standalone: true}" (change)="setBudgetHours(budgetHrsTask)" oninput="validity.valid||(value='0');" min="0" max={{maxBudgetHrs}} value="0" step="0.25">
             </div>
         </div>
     </form>

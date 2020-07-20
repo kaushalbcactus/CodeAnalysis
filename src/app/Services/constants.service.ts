@@ -709,10 +709,16 @@ export class ConstantsService {
     FileNotUploaded: "File not uploaded, Folder / File Not Found",
     FileAlreadyExist:
       "This file name already exit.Please select another file name.",
-  }
+  };
   public CONTENT_TYPE ={
     TASK : 'Task',
     MILESTONE: 'Milestone',
     SLOT: 'Slot'
+  };
+
+  public PROJECTTYPES={
+    DELIVERABLE:'Deliverable-Writing',
+    FTE:'FTE-Writing',
+    HOURLY:'Hours-Rolling'
   };
 }

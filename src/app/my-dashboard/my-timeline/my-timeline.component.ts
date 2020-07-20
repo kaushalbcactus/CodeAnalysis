@@ -255,9 +255,9 @@ export class MyTimelineComponent implements OnInit {
 
           self.task.TimeSpent = self.task.TimeSpent === null ? '00:00' : self.task.TimeSpent.replace('.', ':');
           const data = self.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === self.task.ProjectCode);
-
           if (data !== undefined) {
             self.task.ProjectName = data.WBJID !== null ? self.task.ProjectCode + '(' + data.WBJID + ')' : self.task.ProjectCode;
+            self.task.projectType = data.ProjectType; 
           } else {
             self.task.ProjectName = self.task.ProjectCode;
           }
@@ -345,7 +345,6 @@ export class MyTimelineComponent implements OnInit {
     MyLeaves.filter = MyLeaves.filter.replace(/{{currentUser}}/gi, this.sharedObject.currentUser.userId.toString()).replace(/{{startDateString}}/gi, filterDates[0]).replace(/{{endDateString}}/gi, filterDates[1])
     const MyLeavesUrl = this.spServices.getReadURL(this.constants.listNames.LeaveCalendar.name, MyLeaves);
     this.commonService.setBatchObject(batchURL, MyLeavesUrl, null, this.constants.Method.GET, this.constants.listNames.LeaveCalendar.name);
-
 
     //***********************************************************************************************
     // Get Adhoc Tasks
@@ -516,6 +515,7 @@ export class MyTimelineComponent implements OnInit {
 
       if (data !== undefined) {
         this.task.ProjectName = data.WBJID !== null ? this.task.ProjectCode + '(' + data.WBJID + ')' : this.task.ProjectCode;
+        this.task.projectType = data.ProjectType;
       } else {
         this.task.ProjectName = this.task.ProjectCode;
       }
@@ -525,8 +525,8 @@ export class MyTimelineComponent implements OnInit {
         this.task.StartDate = new Date(this.task.StartDate);
         this.task.DueDateDT = new Date(this.task.DueDateDT);
         console.log(this.task.StartDate);
-        this.task['StartTime'] = this.datePipe.transform(this.task.StartDate, 'h:mm a');
-        this.task['DueTime'] = this.datePipe.transform(this.task.DueDateDT, 'h:mm a');
+        this.task['StartTime'] = this.datePipe.transform(this.task.StartDate, 'hh:mm a');
+        this.task['DueTime'] = this.datePipe.transform(this.task.DueDateDT, 'hh:mm a');
         console.log('this.task ', this.task);
         this.statusOptions = [
           { label: 'Not Started', value: 'Not Started' },
@@ -537,7 +537,7 @@ export class MyTimelineComponent implements OnInit {
         this.SelectedStatus = 'In Progress';
         this.task.StartDate = new Date(this.task.StartDate);
         this.task.DueDateDT = new Date(this.task.DueDateDT);
-        this.task['DueTime'] = this.datePipe.transform(this.task.DueDateDT, 'h:mm a');
+        this.task['DueTime'] = this.datePipe.transform(this.task.DueDateDT, 'hh:mm a');
         this.statusOptions = [
           { label: 'In Progress', value: 'In Progress' },
           { label: 'Completed', value: 'Completed' },
@@ -553,6 +553,11 @@ export class MyTimelineComponent implements OnInit {
     let endTime;
     const startTime = type === 'startTime' ? time.split(':')[0] % 12 + ':' + time.split(':')[1]
       : endTime = time.split(':')[0] % 12 + ':' + time.split(':')[1];
+
+      if(type !== 'startTime' && new Date(this.datePipe.transform(this.task.StartDate, 'yyyy-MM-dd' + 'T' + this.commonService.ConvertTimeformat(24, this.task.StartTime ? this.task.StartTime : this.datePipe.transform(this.task.StartDate, 'hh:mm a')) + ':00.000')).getTime() > new Date(this.datePipe.transform(this.task.DueDateDT, 'yyyy-MM-dd' + 'T' + this.commonService.ConvertTimeformat(24, this.task.DueTime) + ':00.000')).getTime()){
+        this.task.DueTime =  this.task.StartTime ? this.task.StartTime : this.datePipe.transform(this.task.StartDate, 'hh:mm a');
+        this.commonService.showToastrMessage(this.constants.MessageType.warn,'End Time should not be less than start time',false);
+      }
     console.log('Start time: ', startTime + ' endTime ', endTime);
   }
 
@@ -650,6 +655,13 @@ export class MyTimelineComponent implements OnInit {
     }
   }
 
+  onCloseDueDate(){
+    if(new Date(this.datePipe.transform(this.task.StartDate, 'yyyy-MM-dd' + 'T' + this.commonService.ConvertTimeformat(24,  this.task.StartTime ? this.task.StartTime : this.datePipe.transform(this.task.StartDate, 'hh:mm a')) + ':00.000')).getTime() > new Date(this.datePipe.transform(this.task.DueDateDT, 'yyyy-MM-dd' + 'T' + this.commonService.ConvertTimeformat(24, this.task.DueTime) + ':00.000')).getTime()){
+      this.task.DueTime =  this.task.StartTime ? this.task.StartTime : this.datePipe.transform(this.task.StartDate, 'hh:mm a');
+      this.commonService.showToastrMessage(this.constants.MessageType.warn,'End Time should not be less than start time',false);
+    }
+  }
+
 
 
   // *******************************************************************************************
@@ -706,6 +718,10 @@ export class MyTimelineComponent implements OnInit {
       return false;
     } else {
       if (task.Status === "Completed") {
+        if (this.task.DueTime) {
+          const endTime = this.commonService.ConvertTimeformat(24, this.task.DueTime);
+          task.DueDateDT = this.datePipe.transform(this.task.DueDateDT, 'yyyy-MM-dd' + 'T' + endTime + ':00.000');
+        }
         this.CalendarLoader = false;
         this.commonService.confirmMessageDialog('Confirmation', 'Are you sure that you want to proceed?', null, ['Yes', 'No'], false).then(async Confirmation => {
           if (Confirmation === 'Yes') {
@@ -734,46 +750,46 @@ export class MyTimelineComponent implements OnInit {
             task.Status = earlierStaus;
           }
         });          
-      } else if (task.Status === "In Progress") {
-      const batchURL = [];
-      if (this.task.StartTime) {
-        const startTime = this.commonService.ConvertTimeformat(24, this.task.StartTime);
-        this.task.StartDate = this.datePipe.transform(new Date(this.task.StartDate), 'yyyy-MM-dd' + 'T' + startTime + ':00.000');
+      }  else if (task.Status === this.constants.STATUS.IN_PROGRESS || (task.Status === this.constants.STATUS.NOT_STARTED && task.projectType === this.constants.PROJECTTYPES.FTE)) {
+        const batchURL = [];
+        if (this.task.StartTime) {
+          const startTime = this.commonService.ConvertTimeformat(24, this.task.StartTime);
+          this.task.StartDate = this.datePipe.transform(new Date(this.task.StartDate), 'yyyy-MM-dd' + 'T' + startTime + ':00.000');
+        }
+        if (this.task.DueTime) {
+          const endTime = this.commonService.ConvertTimeformat(24, this.task.DueTime);
+          this.task.DueDate = this.datePipe.transform(this.task.DueDateDT, 'yyyy-MM-dd' + 'T' + endTime + ':00.000');
+        }
+        this.SelectedStatus = undefined;
+        this.taskdisplay = false;
+        this.CalendarLoader = true;
+        const jsonData = {
+          __metadata: { type: this.constants.listNames.Schedules.type },
+          StartDate: this.task.StartDate,
+          DueDateDT: this.task.DueDate,
+          Status:task.Status
+        };
+
+        if(task.Status === this.constants.STATUS.IN_PROGRESS){
+          jsonData['Actual_x0020_Start_x0020_Date'] = task.Actual_x0020_Start_x0020_Date !== null ? task.Actual_x0020_Start_x0020_Date : new Date();
+          const ProjectInformation = await this.myDashboardConstantsService.getCurrentTaskProjectInformation(task.ProjectCode);
+          const projectInfoUpdateurl = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, ProjectInformation.ID);
+          this.commonService.setBatchObject(batchURL, projectInfoUpdateurl, { Status: this.constants.STATUS.IN_PROGRESS, __metadata: { type: this.constants.listNames.ProjectInformation.type } }, this.constants.Method.PATCH, this.constants.listNames.ProjectInformation.name);
+        }
+
+        const taskUpdateUrl = this.spServices.getItemURL(this.constants.listNames.Schedules.name, task.ID);
+        this.commonService.setBatchObject(batchURL, taskUpdateUrl, jsonData, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
+
+        this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'UpdateTask');
+        await this.spServices.executeBatch(batchURL);
+
+        if (task.Status === this.constants.STATUS.IN_PROGRESS && task.ParentSlot) {
+          await this.myDashboardConstantsService.getCurrentAndParentTask(task, jsonData.Status);
+        }
+        this.commonService.showToastrMessage(this.constants.MessageType.success, ' task updated successfully.', false);
+        this.getEvents(false, this.fullCalendar.calendar.state.dateProfile.currentRange.start,
+          this.fullCalendar.calendar.state.dateProfile.currentRange.end);      
       }
-      if (this.task.DueTime) {
-        const endTime = this.commonService.ConvertTimeformat(24, this.task.DueTime);
-        this.task.DueDate = this.datePipe.transform(this.task.DueDateDT, 'yyyy-MM-dd' + 'T' + endTime + ':00.000');
-      }
-
-      const ProjectInformation = await this.myDashboardConstantsService.getCurrentTaskProjectInformation(task.ProjectCode);
-
-      this.SelectedStatus = undefined;
-      this.taskdisplay = false;
-      this.CalendarLoader = true;
-      const jsonData = {
-        __metadata: { type: this.constants.listNames.Schedules.type },
-        Actual_x0020_Start_x0020_Date: task.Actual_x0020_Start_x0020_Date !== null ? task.Actual_x0020_Start_x0020_Date : new Date(),
-        Status: task.Status,
-        StartDate: this.task.StartDate,
-        DueDateDT: this.task.DueDate
-      };
-      this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'UpdateTask');
-      const taskUpdateUrl = this.spServices.getItemURL(this.constants.listNames.Schedules.name, task.ID);
-      this.commonService.setBatchObject(batchURL, taskUpdateUrl, jsonData, this.constants.Method.PATCH, this.constants.listNames.Schedules.name)
-
-      const projectInfoUpdateurl = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, ProjectInformation.ID);
-
-
-      this.commonService.setBatchObject(batchURL, projectInfoUpdateurl, { Status: this.constants.STATUS.IN_PROGRESS, __metadata: { type: this.constants.listNames.ProjectInformation.type } }, this.constants.Method.PATCH, this.constants.listNames.ProjectInformation.name)
-
-      await this.spServices.executeBatch(batchURL);
-      if (task.ParentSlot) {
-        await this.myDashboardConstantsService.getCurrentAndParentTask(task, jsonData.Status);
-      }
-      this.commonService.showToastrMessage(this.constants.MessageType.success, ' task updated successfully.', false);
-      this.getEvents(false, this.fullCalendar.calendar.state.dateProfile.currentRange.start,
-        this.fullCalendar.calendar.state.dateProfile.currentRange.end);
-    } 
     }
   }
 

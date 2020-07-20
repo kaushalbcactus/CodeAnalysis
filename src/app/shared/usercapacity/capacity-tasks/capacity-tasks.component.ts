@@ -11,7 +11,8 @@ import { DatePipe } from '@angular/common';
 @Component({
   selector: 'app-capacity-tasks',
   templateUrl: './capacity-tasks.component.html',
-  styleUrls: ['./capacity-tasks.component.css']
+  styleUrls: ['./capacity-tasks.component.css'],
+  providers: [DialogService]
 })
 export class CapacityTasksComponent implements OnInit {
   @Input() tasks: any;
@@ -19,28 +20,30 @@ export class CapacityTasksComponent implements OnInit {
   @Input() componentName: string;
   @Output() collapse = new EventEmitter<boolean>();
 
-  @Output() updateBlocking  = new EventEmitter(); 
+  @Output() updateBlocking = new EventEmitter();
   today: Date;
   constructor(public globalService: GlobalService, public allocationConstant: TaskAllocationConstantsService,
-              public dialogService: DialogService, public globalConstant: ConstantsService,
-              public spServices: SPOperationService, public commonService: CommonService,
-              public datepipe:DatePipe) { }
+    public capacityDialogService: DialogService, public globalConstant: ConstantsService,
+    public spServices: SPOperationService, public commonService: CommonService,
+    public datepipe: DatePipe) { }
 
   async ngOnInit() {
-    this.today = new Date(this.datepipe.transform(new Date(),'MM/dd/yyyy'));
-        this.disableCamera = this.disableCamera;
+    this.today = new Date(this.datepipe.transform(new Date(), 'MM/dd/yyyy'));
+    this.disableCamera = this.disableCamera;
     this.componentName = this.componentName;
     await this.updateShortTitle(this.tasks);
     this.tasks = [...this.tasks];
   }
 
   async updateShortTitle(tasks) {
-    const projectCodes = this.getProjectCodes(tasks);
-    const projectInformation = await this.getProjectShortTitle(projectCodes, []);
-    tasks.forEach(task => {
+    if (tasks) {
+      const projectCodes = this.getProjectCodes(tasks);
+      const projectInformation = await this.getProjectShortTitle(projectCodes, []);
+      tasks.forEach(task => {
         const project = projectInformation.find(p => p.ProjectCode === task.projectCode);
         task.shortTitle = project ? project.WBJID : '';
-    });
+      });
+    }
   }
 
   goToProjectDetails(data: any): string {
@@ -51,7 +54,7 @@ export class CapacityTasksComponent implements OnInit {
     this.collapse.emit(param);
   }
 
-  UpdateBlocking(rowData,type){
+  UpdateBlocking(rowData, type) {
     this.updateBlocking.emit({
       task: rowData,
       type: type
@@ -59,7 +62,7 @@ export class CapacityTasksComponent implements OnInit {
   }
 
   getMilestoneTasks(task) {
-    const ref = this.dialogService.open(MilestoneTasksDialogComponent, {
+    const ref = this.capacityDialogService.open(MilestoneTasksDialogComponent, {
       data: {
         task
       },
@@ -67,17 +70,20 @@ export class CapacityTasksComponent implements OnInit {
       width: '90vw',
       contentStyle: { 'max-height': '90vh', 'overflow-y': 'auto' },
     });
-    ref.onClose.subscribe(async (tasks: any) => {
+    ref.onClose.subscribe((tasks: any) => {
     });
   }
 
   getProjectCodes(tasks) {
-    const projectCodes = tasks.map(task => task.projectCode);
-    const uniqueProjectCodes = [...new Set(projectCodes)];
-    return uniqueProjectCodes;
+    if (tasks) {
+      const projectCodes = tasks.map(task => task.projectCode);
+      const uniqueProjectCodes = [...new Set(projectCodes)];
+      return uniqueProjectCodes;
+    }
+    return [];
   }
 
-  async getProjectShortTitle(projectCodes, existingProjectInfo)   {
+  async getProjectShortTitle(projectCodes, existingProjectInfo) {
     const batchUrl = [];
     let projectInformation = [];
     const options = {

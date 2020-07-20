@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, AfterViewInit, Output, EventEmitter, AfterViewChecked } from '@angular/core';
-import { DynamicDialogConfig, DynamicDialogRef, TreeNode } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef, TreeNode, DialogService } from 'primeng';
 import { IConflictTask, IPopupConflictData, IConflictResource, IQueryOptions } from './interface/conflict-allocation';
 import { GlobalService } from 'src/app/Services/global.service';
 import { TaskAllocationCommonService } from '../../task-allocation/services/task-allocation-common.service';
@@ -14,7 +14,7 @@ import { UserCapacitycommonService } from '../usercapacity/service/user-capacity
   selector: 'app-conflict-allocation',
   templateUrl: './conflict-allocation.component.html',
   styleUrls: ['./conflict-allocation.component.css'],
-  providers: [UsercapacityComponent]
+  providers: [UsercapacityComponent, DialogService]
 })
 export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
   cols = [];
@@ -57,36 +57,37 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
     if (this.projectCodes.indexOf(data.projectCode) < 0) {
       return this.globalService.url + '/taskAllocation?ProjectCode=' + data.projectCode;
     }
+    return '';
   }
 
   save(): void {
     this.hideLoader = false;
-    setTimeout(() => {
-      this.conflictResolved = this.conflicTasks.filter(t => t.tasks.length).length > 0 ? false : true;
-      const obj: IPopupConflictData = { conflictResolved: this.conflictResolved, action: 'save' };
-      this.popupConfig.close(obj);
-      this.hideLoader = true;
-    }, 100);
+    // setTimeout(() => {
+    this.conflictResolved = this.conflicTasks.filter(t => t.tasks.length).length > 0 ? false : true;
+    const obj: IPopupConflictData = { conflictResolved: this.conflictResolved, action: 'save' };
+    this.popupConfig.close(obj);
+    this.hideLoader = true;
+    // }, 300);
   }
 
   close(): void {
-    setTimeout(() => {
-      const obj: IPopupConflictData = { conflictResolved: this.conflictResolved, action: 'close' };
-      this.popupConfig.close(obj);
-    }, 100);
+    // setTimeout(() => {
+    const obj: IPopupConflictData = { conflictResolved: this.conflictResolved, action: 'close' };
+    this.popupConfig.close(obj);
+    // }, 300);
   }
 
-  refresh(): void {
+  async refresh(): Promise<void> {
     this.hideLoader = false;
-    setTimeout(async () => {
-      if (this.allResources.length) {
-        this.conflicTasks = await this.checkConflictsAllocations(null, [], this.milestoneData, this.allResources);
-      } else {
-        // tslint:disable-next-line: max-line-length
-        this.conflicTasks = await this.checkConflictsAllocations(this.node, this.milestoneData, [], this.globalService.oTaskAllocation.oResources);
-      }
-      this.hideLoader = true;
-    }, 100);
+    // setTimeout(async () => {
+    if (this.allResources.length) {
+      this.conflicTasks = await this.bindConflictDetails(null, [], this.milestoneData, this.allResources);
+    } else {
+      // tslint:disable-next-line: max-line-length
+      this.conflicTasks = await this.bindConflictDetails(this.node, this.milestoneData, [], this.globalService.oTaskAllocation.oResources);
+    }
+    this.hideLoader = true;
+    // }, 100);
   }
 
   getAllTasks(milSubMil, originalData) {
@@ -114,17 +115,28 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
   }
 
   // tslint:disable-next-line: max-line-length
+  async bindConflictDetails(milSubMil: TreeNode, originalData: TreeNode[], arrTasks: any[], allResources: any[]): Promise<IConflictResource[]> {
+    const conflictDetails = await this.checkConflictsAllocations(milSubMil, originalData, arrTasks, allResources);
+    conflictDetails.forEach(resource => {
+      const allDates = resource.tasks.map(t => t.allocation);
+      resource.userCapacity = this.recalculateUserCapacity(resource.user, allDates);
+    });
+    return conflictDetails;
+  }
+
+  // tslint:disable-next-line: max-line-length
   async checkConflictsAllocations(milSubMil: TreeNode, originalData: TreeNode[], arrTasks: any[], allResources: any[]): Promise<IConflictResource[]> {
     let allTasks = [];
     const conflictDetails = [];
     let projectInformation = [];
     allTasks = arrTasks.length ? arrTasks : this.getAllTasks(milSubMil, originalData);
     let capacity;
-    const maxHrs = 10;
     for (const element of allTasks) {
       capacity = await this.getResourceCapacity(element, milSubMil, allResources);
       for (const user of capacity.arrUserDetails) {
-        const oExistingResource: IConflictResource = conflictDetails.length ? conflictDetails.find(ct => ct.userId === user.uid) : {};
+        // let allDates = [];
+        const maxHrs = +user.maxHrs + 2;
+        const oExistingResource: IConflictResource = conflictDetails.length ? conflictDetails.find(ct => ct.user.uid === user.uid) : {};
         this.updateUserCapacity(element, user);
         const dates = user.dates.filter(d => d.totalTimeAllocated > maxHrs && d.userCapacity !== 'Leave');
         const tasks = [];
@@ -133,23 +145,28 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
           projectInformation = await this.getProjectShortTitle(projectCodes, projectInformation);
           for (const date of dates) {
             // tslint:disable-next-line: max-line-length
-            const resourceDateExists = oExistingResource && Object.keys(oExistingResource).length && conflictDetails.findIndex(ct => ct.tasks.find(t => t.allocationDate.getTime() === date.date.getTime())) > -1 ? true : false;
+            const resourceDateExists = oExistingResource && Object.keys(oExistingResource).length && conflictDetails.findIndex(ct => ct.tasks.find(t => t.allocation.date.getTime() === date.date.getTime())) > -1 ? true : false;
             if (!resourceDateExists) {
               const conflictTask: IConflictTask = {
-                allocatedHrs: date.totalTimeAllocated,
-                allocationDate: date.date,
+                allocatedHrs: '' + +date.totalTimeAllocated.toFixed(2),
+                allocation: date,
                 projects: [],
               };
               date.tasksDetails.forEach(task => {
                 const project = projectInformation.find(p => p.ProjectCode === task.projectCode);
                 const projectExists = conflictTask.projects.find(p => p.projectCode === task.projectCode);
                 if (!projectExists) {
+                  const projectTitle = this.getTaskTitle(task);
+                  const numAllocatedHrs = this.commonService.convertFromHrsMins(task.timeAllocatedPerDay);
                   const projectDetail = {
-                    projectCode: task.projectCode,
+                    projectCode: projectTitle,
                     shortTitle: project ? project.WBJID : '',
-                    allocatedhrs: +(this.commonService.convertFromHrsMins(task.timeAllocatedPerDay)).toFixed(2)
+                    allocatedhrs: +(numAllocatedHrs).toFixed(2),
+                    showProjectLink: task.TaskType !== 'Adhoc' && task.TaskType !== 'ResourceBlocking' ? true : false
                   };
-                  conflictTask.projects.push(projectDetail);
+                  if (numAllocatedHrs > 0) {
+                    conflictTask.projects.push(projectDetail);
+                  }
                 } else {
                   const preallocatedHrs: number = +(+projectExists.allocatedhrs).toFixed(2);
                   const currentAllocatedHrs: number = this.commonService.convertFromHrsMins(task.timeAllocatedPerDay);
@@ -165,8 +182,7 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
             oExistingResource.tasks = [...oExistingResource.tasks, ...tasks];
           } else {
             const conflictResouce: IConflictResource = {
-              userName: user.userName,
-              userId: user.uid,
+              user,
               userCapacity: this.recalculateUserCapacity(user, dates),
               tasks
             };
@@ -176,6 +192,22 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
       }
     }
     return conflictDetails;
+  }
+
+  getTaskTitle(task) {
+    let projectTitle = '';
+    switch (task.TaskType) {
+      case 'Adhoc':
+        projectTitle = task.title;
+        break;
+      case 'ResourceBlocking':
+        projectTitle = task.TaskType + ' (' + task.title + ')';
+        break;
+      default:
+        projectTitle = task.projectCode;
+        break;
+    }
+    return projectTitle;
   }
 
   async getResourceCapacity(task, milSubMil, allResources) {
@@ -189,7 +221,7 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
         task.resources, [], [], this.allocationConstant.adhocStatus);
     } else {
       capacity = await this.usercapacityComponent.afterResourceChange(task, task.start_date,
-        task.end_date, task.resources, [], false);
+        task.end_date, task.resources, [], false, []);
     }
     return capacity;
   }
@@ -200,7 +232,7 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
       const strAllocationPerDay = matchedTask && currentTask ? currentTask.allocationPerDay : '';
       matchedTask.AllocationPerDay = strAllocationPerDay;
       matchedTask.ExpectedTime = matchedTask.TotalAllocated ? matchedTask.TotalAllocated : currentTask.budgetHours ?
-                                 currentTask.budgetHours : currentTask.EstimatedTime ? currentTask.EstimatedTime : '0.0';
+        currentTask.budgetHours : currentTask.EstimatedTime ? currentTask.EstimatedTime : '0.0';
       this.userCapacityCommon.fetchUserCapacity(user);
     }
   }

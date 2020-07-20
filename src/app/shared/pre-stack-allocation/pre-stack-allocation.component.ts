@@ -54,14 +54,78 @@ export class PreStackAllocationComponent implements OnInit {
       this.showLoader();
       setTimeout(async () => {
         this.resourceCapacityCopy = await this.prestackService.getResourceCapacity(allocationData);
-        this.resourceCapacity = { ...this.resourceCapacityCopy };
+        this.resourceCapacity = JSON.parse(JSON.stringify(this.resourceCapacityCopy));
         this.allocationSplit = await this.prestackService.initialize(this.resourceCapacity, allocationData);
         this.hideTable = false;
         this.showTable();
       }, 300);
     }
   }
+  /**
+   * Generate string of allocation per day and close edit allocation popup
+   */
+  saveAllocation(): void {
+    const allocationData: IDailyAllocationTask = this.popupData.data;
+    const objAllocation: IPreStack = this.prestackService.getAllocationPerDay(this.resourceCapacity, allocationData, this.allocationSplit);
+    this.popupConfig.close(objAllocation);
+  }
 
+  /**
+   * Event is fired when hours or mins are changed
+   */
+  async checkAllocation(event: any, changedDate: IDailyAllocationObject) {
+    const objData = this.popupData.data;
+    objData.allocationType = '';
+    this.resourceCapacity = Object.keys(this.resourceCapacity).length ? this.resourceCapacity :
+                            await this.prestackService.getResourceCapacity(objData);
+    const resourceDailyAllocation = this.resourceCapacity.dates;
+    const resourceChangedDate = resourceDailyAllocation.find(d => new Date(d.date).getTime() === new Date(changedDate.Date).getTime());
+    const oldValue = JSON.parse(JSON.stringify(resourceChangedDate));
+    const oldAllocation = this.allocationSplit.find(d => new Date(d.Date).getTime() === new Date(changedDate.Date).getTime());
+    event.value = event.type ? event.value : event.selectedHour.time + ':' + event.selectedMinute.time;
+    const strChangedValue = event.type ? event.type === 'hrs' ?
+      event.value + ':' + changedDate.Allocation.valueMins :
+      changedDate.Allocation.valueHrs + ':' + event.value : event.value;
+    resourceChangedDate.availableHrs = strChangedValue;
+    resourceChangedDate.mandatoryHrs = true;
+    const allocationSplit = await this.prestackService.performAllocation(this.resourceCapacity, objData, true,
+                            oldValue, oldAllocation, this.allocationSplit);
+    this.allocationSplit = [...allocationSplit.arrAllocation];
+                                                                        }
+
+  /**
+   * show table and hide loader
+   */
+  showTable(): void {
+    this.hideLoader = true;
+    this.hideTable = false;
+  }
+
+  /**
+   * show loader and hide table
+   */
+  showLoader(): void {
+    this.hideLoader = false;
+    this.hideTable = true;
+  }
+
+  /**
+   * cancel edit allocation changes and close popup
+   */
+  cancel(): void {
+    this.popupConfig.close({ allocationPerDay: this.popupData.data.strAllocation, allocationAlert: false });
+  }
+
+  /**
+   * displays all tasks for user on clicked date
+   */
+  showTasks(rowData): void {
+    if (rowData.tasks.length) {
+      rowData.hideTasksTable = !rowData.hideTasksTable;
+    } else {
+      this.common.showToastrMessage(this.constants.MessageType.info, 'No Tasks found', false);
+    }
+  }
   /**
    * Fetch preallocated allocation per day for each task or perform allocation
    */
@@ -382,68 +446,7 @@ export class PreStackAllocationComponent implements OnInit {
   //   });
   // }
 
-  /**
-   * Generate string of allocation per day and close edit allocation popup
-   */
-  saveAllocation(): void {
-    const allocationData: IDailyAllocationTask = this.popupData.data;
-    const objAllocation: IPreStack = this.prestackService.getAllocationPerDay(this.resourceCapacity, allocationData, this.allocationSplit);
-    this.popupConfig.close(objAllocation);
-  }
 
-  /**
-   * Event is fired when hours or mins are changed
-   */
-  async checkAllocation(event: any, changedDate: IDailyAllocationObject) {
-    const objData = this.popupData.data;
-    objData.allocationType = '';
-    this.resourceCapacity = Object.keys(this.resourceCapacity).length ? this.resourceCapacity : await this.prestackService.getResourceCapacity(objData);
-    const resourceDailyAllocation = this.resourceCapacity.dates;
-    const resourceChangedDate = resourceDailyAllocation.find(d => new Date(d.date).getTime() === new Date(changedDate.Date).getTime());
-    const oldValue = { ...resourceChangedDate };
-    const oldAllocation = this.allocationSplit.find(d => new Date(d.Date).getTime() === new Date(changedDate.Date).getTime());
-    event.value = event.type ? event.value : event.selectedHour.time + ':' + event.selectedMinute.time;
-    const strChangedValue = event.type ? event.type === 'hrs' ?
-      event.value + ':' + changedDate.Allocation.valueMins :
-      changedDate.Allocation.valueHrs + ':' + event.value : event.value;
-    resourceChangedDate.availableHrs = strChangedValue;
-    resourceChangedDate.mandatoryHrs = true;
-    this.allocationSplit = (await this.prestackService.performAllocation(this.resourceCapacity, objData, true, oldValue, oldAllocation, this.allocationSplit)).arrAllocation;
-  }
-
-  /**
-   * show table and hide loader
-   */
-  showTable(): void {
-    this.hideLoader = true;
-    this.hideTable = false;
-  }
-
-  /**
-   * show loader and hide table
-   */
-  showLoader(): void {
-    this.hideLoader = false;
-    this.hideTable = true;
-  }
-
-  /**
-   * cancel edit allocation changes and close popup
-   */
-  cancel(): void {
-    this.popupConfig.close({ allocationPerDay: this.popupData.data.strAllocation, allocationAlert: false });
-  }
-
-  /**
-   * displays all tasks for user on clicked date
-   */
-  showTasks(rowData): void {
-    if (rowData.tasks.length) {
-      rowData.hideTasksTable = !rowData.hideTasksTable;
-    } else {
-      this.common.showToastrMessage(this.constants.MessageType.info, 'No Tasks found', false);
-    }
-  }
 
   // /**
   //  * Generate task data

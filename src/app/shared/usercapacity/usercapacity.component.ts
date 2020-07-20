@@ -166,12 +166,13 @@ export class UsercapacityComponent implements OnInit {
       }
       if (this.globalService.isResourceChange) {
         const capacity: any = await this.afterResourceChange(
-          this.globalService.data.task,
-          this.globalService.data.startTime,
-          this.globalService.data.endTime,
-          this.globalService.data.task.resources,
+          data.task,// this.globalService.data.task,
+          data.startTime,// this.globalService.data.startTime,
+          data.endTime,// this.globalService.data.endTime,
+          data.task.resources,// this.globalService.data.task.resources,
           [],
-          true
+          true,
+          data.taskResources,
         );
         this.oCapacity = capacity;
       } else if (this.globalService.currentTaskData) {
@@ -181,7 +182,8 @@ export class UsercapacityComponent implements OnInit {
           this.globalService.currentTaskData.end_date,
           this.globalService.currentTaskData.resources,
           [],
-          false
+          false,
+          data.taskResources
         );
         this.oCapacity = capacity;
       } else {
@@ -1072,11 +1074,12 @@ export class UsercapacityComponent implements OnInit {
     endDate: Date,
     resource: any,
     [],
-    isResourceChange: boolean
+    isResourceChange: boolean,
+    taskResources: any
   ) {
-    let capacity = await this.userCapacityCommon.applyFilter(startDate, endDate, resource, [], this.enableDownload, this.taskStatus);
-
+    let capacity;
     if (isResourceChange) {
+      capacity = await this.userCapacityCommon.applyFilter(startDate, endDate, taskResources, [], this.enableDownload, this.taskStatus);
       let Task: any;
       capacity.arrUserDetails.forEach((e) => {
         e.tasks.forEach((c) => {
@@ -1095,7 +1098,10 @@ export class UsercapacityComponent implements OnInit {
           e.tasks.push(Task);
         }
       });
+
+      capacity.arrUserDetails = capacity.arrUserDetails.filter(e=> e.uid === task.AssignedTo.ID);
     } else {
+      capacity = await this.userCapacityCommon.applyFilter(startDate, endDate, resource, [], this.enableDownload, this.taskStatus);
       let taskObj: any = {
         Title: task.taskFullName ? task.taskFullName : task.Title,
         Milestone: task.milestone ? task.milestone : task.Milestone,
@@ -1112,6 +1118,7 @@ export class UsercapacityComponent implements OnInit {
         TimeZone: task.AssignedUserTimeZone ? task.AssignedUserTimeZone : task.assignedUserTimeZone,
         TimeZoneNM: task.AssignedUserTimeZone ? task.AssignedUserTimeZone : task.assignedUserTimeZone,
         parentSlot: task.parentSlot ? task.parentSlot : task.Id,
+        AssignedTo: task.AssignedTo
       };
 
       for (var index in capacity.arrUserDetails) {
@@ -1132,6 +1139,15 @@ export class UsercapacityComponent implements OnInit {
             } else {
               capacity.arrUserDetails[index].tasks.push(taskObj);
             }
+          } 
+          else if(capacity.arrUserDetails[index].tasks.find(e=> e.Id == task.id) && capacity.arrUserDetails[index].uid !== task.AssignedTo.ID) {
+            let taskIndex = capacity.arrUserDetails[index].tasks.findIndex(
+              (x) => x.ID === task.id
+            );
+            capacity.arrUserDetails[index].tasks.splice(
+              taskIndex,
+              1
+            );
           }
         }
       }
@@ -1781,6 +1797,7 @@ export class UsercapacityComponent implements OnInit {
           }
         }
       }
+      tasks.map(c=>c.editenableCapacity = this.enableDownload ? true: false);
       user.dayTasks = tasks;
 
       $("." + user.uid + "loaderenable").hide();
