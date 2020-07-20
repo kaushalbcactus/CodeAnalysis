@@ -5,6 +5,7 @@ import '../../dhtmlx-gantt/codebase/ext/dhtmlxgantt_tooltip';
 import '../../dhtmlx-gantt/codebase/ext/dhtmlxgantt_marker';
 
 import '../../dhtmlx-gantt/codebase/ext/api';
+import { GanttService } from './service/gantt.service';
 
 @Component({
   selector: 'app-gantt-chart',
@@ -29,14 +30,13 @@ export class GanttChartComponent implements OnInit, OnChanges,OnDestroy {
   @Input() afterTaskDrag: (id: any, mode: any, event: any) => boolean;
   @Input() beforeTaskChanged: (id: any, mode: any, task: any) => boolean;
 
-  attachedEvents = [];
-
-  constructor() { }
+  constructor(public ganttService: GanttService) { }
 
   ngOnInit() {
   }
 
   ngOnChanges(changes: SimpleChanges) {
+    console.log(changes);
   }
 
   ngOnDestroy() {
@@ -436,13 +436,24 @@ export class GanttChartComponent implements OnInit, OnChanges,OnDestroy {
     gantt.init(this.ganttContainer.nativeElement)
     gantt.config.branch_loading = true;
     gantt.parse(this.ganttData);
+    
+  }
 
+  ganttAttachEvents() {
+
+    if (this.ganttService.attachedEvents.length) {
+      this.ganttService.attachedEvents.forEach(element => {
+        gantt.detachEvent(element);
+      });
+      this.ganttService.attachedEvents = [];
+    }
+    
     const beforeTaskChanged = gantt.attachEvent("onBeforeTaskChanged", (id, mode, task) => {
       let drag = this.beforeTaskChanged(id,mode,task);
       return drag;
     });
 
-    this.attachedEvents.push(beforeTaskChanged);
+    this.ganttService.attachedEvents.push(beforeTaskChanged);
     
     const beforeTaskDrag = gantt.attachEvent(
     "onBeforeTaskDrag",
@@ -451,21 +462,20 @@ export class GanttChartComponent implements OnInit, OnChanges,OnDestroy {
       return drag;        
     })
 
-    this.attachedEvents.push(beforeTaskDrag);
+    this.ganttService.attachedEvents.push(beforeTaskDrag);
 
     const taskClick = gantt.attachEvent("onTaskClick", (taskId, event) => {
       let drag = this.taskClick(taskId,event);
       return drag;
     });
-    this.attachedEvents.push(taskClick);
+    this.ganttService.attachedEvents.push(taskClick);
 
     const afterTaskDrag = gantt.attachEvent("onAfterTaskDrag", (id, mode, event) => {
       let drag = this.afterTaskDrag(id,mode,event);
       return drag;
     });
 
-    this.attachedEvents.push(afterTaskDrag);
-    
+    this.ganttService.attachedEvents.push(afterTaskDrag);
   }
 
 
