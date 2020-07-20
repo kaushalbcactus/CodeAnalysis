@@ -1422,7 +1422,12 @@ export class TimelineComponent
     }
     gantt.init(this.ganttChart.ganttContainer.nativeElement);
     gantt.clearAll();
-
+    if (this.ganttChart.attachedEvents.length) {
+      this.ganttChart.attachedEvents.forEach(element => {
+        gantt.detachEvent(element);
+      });
+      this.ganttChart.attachedEvents = [];
+    }
     this.renderGanttTemplates();
     this.ganttChart.onLoad(
       this.resource
