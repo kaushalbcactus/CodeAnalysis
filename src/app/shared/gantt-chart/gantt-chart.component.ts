@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, OnChanges, Input, Output, EventEmitter, SimpleChanges, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Input} from '@angular/core';
 import { gantt, Gantt } from '../../dhtmlx-gantt/codebase/source/dhtmlxgantt';
 // import { gantt, Gantt } from '../../dhtmlx-gantt/codebase/dhtmlxganttmin';
 import '../../dhtmlx-gantt/codebase/ext/dhtmlxgantt_tooltip';
@@ -12,7 +12,7 @@ import { GanttService } from './service/gantt.service';
   templateUrl: './gantt-chart.component.html',
   styleUrls: ['./gantt-chart.component.css']
 })
-export class GanttChartComponent implements OnInit, OnChanges,OnDestroy {
+export class GanttChartComponent implements OnInit {
   @ViewChild('ganttchart', { static: true }) ganttContainer: ElementRef;
   resourcePanelConfig: any;
   gridConfig: any;
@@ -33,14 +33,6 @@ export class GanttChartComponent implements OnInit, OnChanges,OnDestroy {
   constructor(public ganttService: GanttService) { }
 
   ngOnInit() {
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    console.log(changes);
-  }
-
-  ngOnDestroy() {
-    // gantt.detachAllEvents();
   }
 
   onLoad(resource) {

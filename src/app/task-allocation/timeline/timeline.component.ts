@@ -47,7 +47,7 @@ import { GanttEdittaskComponent } from "../gantt-edittask/gantt-edittask.compone
 import { ConflictAllocationComponent } from "src/app/shared/conflict-allocations/conflict-allocation.component";
 import { PreStackcommonService } from "src/app/shared/pre-stack-allocation/service/pre-stackcommon.service";
 import { IConflictResource } from "src/app/shared/conflict-allocations/interface/conflict-allocation";
-import { GanttService } from 'src/app/shared/gantt-chart/service/gantt.service';
+import { GanttService } from "src/app/shared/gantt-chart/service/gantt.service";
 
 @Component({
   selector: "app-timeline",
@@ -1142,7 +1142,6 @@ export class TimelineComponent
       this.visualgraph = true;
       this.showGanttChart(true);
     } else {
-      // this.ganttChart.remove();
       this.visualgraph = false;
       this.tableView = true;
     }
@@ -1422,10 +1421,6 @@ export class TimelineComponent
       label: "Day Scale",
       value: "1"
     };
-    // this.ganttChart.clear();
-    // this.ganttChart.remove();
-    // const factory = this.resolver.resolveComponentFactory(GanttChartComponent);
-    // this.ganttComponentRef = this.ganttChart.createComponent(factory);
     gantt.serverList("AssignedTo", this.resource);
     if (this.taskAllocateCommonService.ganttParseObject.data.length) {
       let firstTaskStart = new Date(
@@ -1455,12 +1450,6 @@ export class TimelineComponent
     }
     gantt.init(this.ganttChart.ganttContainer.nativeElement);
     gantt.clearAll();
-    // if (this.ganttChart.attachedEvents.length) {
-    //   this.ganttChart.attachedEvents.forEach(element => {
-    //     gantt.detachEvent(element);
-    //   });
-    //   this.ganttChart.attachedEvents = [];
-    // }
     this.renderGanttTemplates();
     this.ganttChart.onLoad(this.resource);
     this.setScale(this.selectedScale);
@@ -1885,63 +1874,10 @@ export class TimelineComponent
   };
 
   onBeforeTaskChangedCall = (id, mode, task) => {
-    this.allTaskData = gantt.serialize();
+    this.allTaskData = this.getGanttTasksFromMilestones(this.milestoneData, true); //gantt.serialize();
     this.currentTask = { ...task };
     return true;
   };
-
-  ganttAttachEvents() {
-    // if (this.ganttService.attachedEvents.length) {
-    //   this.ganttService.attachedEvents.forEach(element => {
-    //     gantt.detachEvent(element);
-    //   });
-    //   this.ganttService.attachedEvents = [];
-    // }
-    // if (this.taskAllocateCommonService.attachedEvents.length) {
-    //   this.taskAllocateCommonService.attachedEvents.forEach(element => {
-    //     gantt.detachEvent(element);
-    //   });
-    //   this.taskAllocateCommonService.attachedEvents = [];
-    // }
-
-    // const onTaskOpened = gantt.attachEvent("onTaskOpened", id => {
-    //   // ;
-    //   // gantt.init(this.ganttChart.ganttContainer.nativeElement);
-    //   // gantt.clearAll();
-    //   // this.ganttChart.onLoad(this.resource);
-    //   // this.setScale(this.selectedScale);
-    //   //this.loadComponent();
-    // });
-    // this.taskAllocateCommonService.attachedEvents.push(onTaskOpened);
-
-    // const onBeforeTaskChanged = gantt.attachEvent(
-    //   "onBeforeTaskChanged",
-    //   (id, mode, task) => {
-    //    this.allTaskData = gantt.serialize();
-    //    this.currentTask = { ...task };
-    //    return true;
-    //   }
-    // );
-    // this.taskAllocateCommonService.attachedEvents.push(onBeforeTaskChanged);
-
-    // const onBeforeTaskDrag = gantt.attachEvent(
-    //   "onBeforeTaskDrag",
-    //   (id, mode, e) => {
-    //     return this.onBeforeTaskDragCall(id, mode, e);
-    //   }
-    // );
-    // this.taskAllocateCommonService.attachedEvents.push(onBeforeTaskDrag);
-
-    // const onTaskClick = gantt.attachEvent("onTaskClick", (taskId, e) => {
-    //   return this.onTaskClickCall(taskId, e);
-    // });
-    // this.taskAllocateCommonService.attachedEvents.push(onTaskClick);
-
-    // const onTaskDrag = gantt.attachEvent("onAfterTaskDrag", (id, mode, e) => {
-    //   return this.onAfterTaskDragCall(id, mode, e);
-    // });
-    // this.taskAllocateCommonService.attachedEvents.push(onTaskDrag);
-  }
 
   async timeChange() {
     this.visualgraph = false;
@@ -2563,35 +2499,21 @@ export class TimelineComponent
   }
 
   updateMilestoneData(currentTask) {
-    // let allTasks = { data: [] };
-    let allTasks = gantt.serialize(); //this.getGanttTasksFromMilestones(this.milestoneData, true);
-    let tasks = allTasks.data.filter(e => e.edited == true && e.type == "task");
+    let allTasks = { data: [] };
 
-    allTasks.data.forEach(task => {
-      if (task.type == "milestone") {
-        if (task.title == currentTask.milestone) {
-          task.edited = true;
-        }
+    this.setDateToCurrent(currentTask);
+    allTasks.data = this.getGanttTasksFromMilestones(this.milestoneData, true);
+
+    allTasks.data.forEach(e => {
+      if (e.type == "milestone" && currentTask.milestone == e.title) {
+        e.edited = true;
+        e.open = true;
       }
     });
 
-    // this.GanttchartData = allTasks.data;
+    this.GanttchartData = allTasks.data;
 
-    allTasks.data = allTasks.data.filter(e => e.edited == true);
-
-    allTasks.data.forEach(task => {
-      this.milestoneData.forEach((item: any) => {
-        if (task.id == item.data.id) {
-          item.data.edited = true;
-        } else if (item.children) {
-          item.children.forEach((child: any) => {
-            if (task.id == child.data.id) {
-              child.data = task;
-            }
-          });
-        }
-      });
-    });
+    this.showGanttChart(false);
   }
 
   resetCurrentTask(task, resetTask) {
