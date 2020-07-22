@@ -193,13 +193,13 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
     }
     let leaders = arrResult.length > 0 ? arrResult[1].retItems : [];
     leaders = leaders.map(obj => ({
-      ...obj, UserName: { ID: obj.Id, Title: obj.Title }
+      ...obj, UserNamePG: { ID: obj.Id, Title: obj.Title }
     }));
-    const currentUserIndex = leaders.findIndex(u => u.UserName.ID === this.global.currentUser.userId);
+    const currentUserIndex = leaders.findIndex(u => u.UserNamePG.ID === this.global.currentUser.userId);
     if (currentUserIndex > -1) {
       leaders.splice(currentUserIndex, 1);
       resources = [...resources, ...leaders].map(item => item)
-        .filter((value, index, self) => self.findIndex(s => s.UserName.ID === value.UserName.ID) === index);
+        .filter((value, index, self) => self.findIndex(s => s.UserNamePG.ID === value.UserNamePG.ID) === index);
     }
     return resources;
   }
