@@ -241,6 +241,8 @@ export class TimelineComponent
   defaultTimeZone = 5.5;
   ogBudgethrs = 0;
   preferredResources = [];
+  minTime: any = "12:00 am";
+  maxTime: any = "12:00 am";
   constructor(
     private constants: ConstantsService,
     public sharedObject: GlobalService,
@@ -1748,7 +1750,7 @@ export class TimelineComponent
     return true;
   };
 
-  onAfterTaskDragCall = (id, mode, e) => {
+  onAfterTaskDragCall = async (id, mode, e) => {
     this.disableSave = true;
     let task = { ...this.currentTask };
     this.ganttSetTime = false;
@@ -1859,7 +1861,8 @@ export class TimelineComponent
                 }
               });
           } else {
-            this.picker.open();
+            await this.checkDragDateTime(isStartDate);
+            await this.picker.open();
           }
         } else {
           this.openPopupOnGanttTask(task, "end");
@@ -1874,7 +1877,10 @@ export class TimelineComponent
   };
 
   onBeforeTaskChangedCall = (id, mode, task) => {
-    this.allTaskData = this.getGanttTasksFromMilestones(this.milestoneData, true); //gantt.serialize();
+    this.allTaskData = this.getGanttTasksFromMilestones(
+      this.milestoneData,
+      true
+    ); //gantt.serialize();
     this.currentTask = { ...task };
     return true;
   };
@@ -1959,6 +1965,34 @@ export class TimelineComponent
     // setTimeout(() => {
     //   this.scrollToTaskDate(this.ganttSetTime ? this.singleTask.end_date : this.resetTask.end_date, this.singleTask.id);
     // }, 500);
+  }
+
+  checkDragDateTime(isStartDate) {
+    if (isStartDate) {
+      if (
+        new Date(this.singleTask.start_date).getDate() ==
+        new Date(this.singleTask.end_date).getDate()
+      ) {
+        this.minTime = this.getTimePart(this.singleTask.end_date);
+        // this.maxTime = '12:00 am';
+        // this.checkDragDateTime(this.singleTask, time);
+      } else {
+        this.maxTime = "12:00 am";
+        this.minTime = "12:00 am";
+      }
+    } else {
+      if (
+        new Date(this.singleTask.start_date).getDate() ==
+        new Date(this.singleTask.end_date).getDate()
+      ) {
+        this.minTime = this.getTimePart(this.singleTask.start_date);
+        // this.maxTime = '12:00 am';
+        // this.checkDragDateTime(this.singleTask, time);
+      } else {
+        this.maxTime = "12:00 am";
+        this.minTime = "12:00 am";
+      }
+    }
   }
 
   setTime(time) {
@@ -6338,7 +6372,7 @@ export class TimelineComponent
             validateCurrentTask.title +
             " task in " +
             validateCurrentTask.milestone +
-            " is on Staurday / Sunday so please change",
+            " is on Saturday / Sunday so please change",
           false
         );
         return false;
