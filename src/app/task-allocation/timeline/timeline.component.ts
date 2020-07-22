@@ -1974,10 +1974,8 @@ export class TimelineComponent
         new Date(this.singleTask.end_date).getDate()
       ) {
         this.minTime = this.getTimePart(this.singleTask.end_date);
-        // this.maxTime = '12:00 am';
-        // this.checkDragDateTime(this.singleTask, time);
       } else {
-        this.maxTime = "12:00 am";
+        // this.maxTime = "12:00 am";
         this.minTime = "12:00 am";
       }
     } else {
@@ -1986,10 +1984,8 @@ export class TimelineComponent
         new Date(this.singleTask.end_date).getDate()
       ) {
         this.minTime = this.getTimePart(this.singleTask.start_date);
-        // this.maxTime = '12:00 am';
-        // this.checkDragDateTime(this.singleTask, time);
       } else {
-        this.maxTime = "12:00 am";
+        // this.maxTime = "12:00 am";
         this.minTime = "12:00 am";
       }
     }
