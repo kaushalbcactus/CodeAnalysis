@@ -207,16 +207,16 @@ export class ScorecardsComponent implements OnInit {
     return batchURL;
   }
 
-  getAverageRating(itemsArray) {
-    const arrTaskFeedback = itemsArray.filter((t) => t.FeedbackType && t.FeedbackType === this.globalConstant.FeedbackType.taskRating);
-    const totalRating = arrTaskFeedback.reduce((a, b) => a + +b.AverageRatingNM, 0);
-    const averageRating = +(totalRating / arrTaskFeedback.length).toFixed(2);
-    const ratingObj = {
-      rating: isNaN(averageRating) ? '0' : '' + averageRating,
-      count: arrTaskFeedback.length
-    };
-    return ratingObj;
-  }
+  // getAverageRating(itemsArray) {
+  //   const arrTaskFeedback = itemsArray.filter((t) => t.FeedbackType && t.FeedbackType === this.globalConstant.FeedbackType.taskRating);
+  //   const totalRating = arrTaskFeedback.reduce((a, b) => a + +b.AverageRatingNM, 0);
+  //   const averageRating = +(totalRating / arrTaskFeedback.length).toFixed(2);
+  //   const ratingObj = {
+  //     rating: isNaN(averageRating) ? '0' : '' + averageRating,
+  //     count: arrTaskFeedback.length
+  //   };
+  //   return ratingObj;
+  // }
 
   getResourceScorecard(event, feedbackTableRef, feedback) {
     this.filterObj.userId = feedback.userId;
