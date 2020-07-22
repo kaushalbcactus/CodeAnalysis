@@ -336,7 +336,7 @@
         </div>
         <app-allocation-overlay #dailyAllocateOP></app-allocation-overlay>
 
-        <input [hidden]='true' readonly [ngxTimepicker]="ganttPicker" [(ngModel)]="taskTime" [min]="minTime" class="timePicker">
+        <input [hidden]='true' readonly [ngxTimepicker]="ganttPicker" [(ngModel)]="taskTime" [min]="minTime" [max]="maxTime" class="timePicker">
         <ngx-material-timepicker [preventOverlayClick]="true" (closed)="timeChange()" #ganttPicker (timeSet)="setTime($event)" [ngxMaterialTimepickerTheme]="darkTheme" [minutesGap]="15">
         </ngx-material-timepicker>
     </div>

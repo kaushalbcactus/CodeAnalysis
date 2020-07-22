@@ -241,8 +241,8 @@ export class TimelineComponent
   defaultTimeZone = 5.5;
   ogBudgethrs = 0;
   preferredResources = [];
-  minTime: any = "12:00 am";
-  maxTime: any = "12:00 am";
+  minTime: any;
+  maxTime: any;
   constructor(
     private constants: ConstantsService,
     public sharedObject: GlobalService,
@@ -1934,10 +1934,10 @@ export class TimelineComponent
       } else if (this.singleTask.type == "task") {
         this.DateChange(this.singleTask, type);
         this.GanttchartData = allTasks.data;
-        this.loaderenable = false;
-        this.visualgraph = true;
       }
 
+      this.loaderenable = false;
+      this.visualgraph = true;
       this.GanttchartData = allTasks.data;
       await this.ganttNotification();
     } else {
@@ -1968,27 +1968,21 @@ export class TimelineComponent
   }
 
   checkDragDateTime(isStartDate) {
-    if (isStartDate) {
-      if (
-        new Date(this.singleTask.start_date).getDate() ==
-        new Date(this.singleTask.end_date).getDate()
-      ) {
-        this.minTime = this.getTimePart(this.singleTask.end_date);
+    if (
+      new Date(this.singleTask.start_date).getDate() ==
+      new Date(this.singleTask.end_date).getDate()
+    ) {
+      if (isStartDate) {
+          this.maxTime = this.singleTask.pUserEndTimePart;
+          this.minTime = "12:00 AM";
+        } else {
+          this.maxTime = "11:45 PM";
+          this.minTime = this.singleTask.pUserStartTimePart;
+        }
       } else {
-        // this.maxTime = "12:00 am";
-        this.minTime = "12:00 am";
+        this.maxTime = "11:45 PM";
+        this.minTime = "12:00 AM";
       }
-    } else {
-      if (
-        new Date(this.singleTask.start_date).getDate() ==
-        new Date(this.singleTask.end_date).getDate()
-      ) {
-        this.minTime = this.getTimePart(this.singleTask.start_date);
-      } else {
-        // this.maxTime = "12:00 am";
-        this.minTime = "12:00 am";
-      }
-    }
   }
 
   setTime(time) {
