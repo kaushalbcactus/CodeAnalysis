@@ -44,13 +44,13 @@
                 </span>
                 <span class="p-col-2 ui-float-label ui-fluid oddrow" style="width: 12%;">
                     <p-dropdown  [options]="ResourceType" formControlName="resourcetype"
-                    resetFilterOnHide="true" (onChange)="!fetchDataloader"  (keydown.enter)="$event.preventDefault()" defaultLabel="Select Resource Type"
+                    resetFilterOnHide="true" (onChange)="fetchDataloader = false"  (keydown.enter)="$event.preventDefault()" defaultLabel="Select Resource Type"
                     [style]="{width:'100%'}"></p-dropdown >
                     <label for="float-input" class="mainlable">Resources Type</label>
                 </span>
                 <span class="p-col-2 ui-float-label ui-fluid evenrow" style="width: 17%;">
                     <p-calendar formControlName="rangeDates" selectionMode="range" [style]="{'width':'100%'}"
-                        numberOfMonths='1' dateFormat="M dd, yy" [showIcon]="true" [disabledDays]="[0,6]"
+                        numberOfMonths='1' dateFormat="M dd, yy" [showIcon]="true" [disabledDays]="[0,6]" (onClose)="fetchDataloader = false"
                         [readonlyInput]="true" placeholder="Select Custom Dates" [style]="{'cursor': 'pointer'}"
                         [required]="true"></p-calendar>
                     <label for="float-input" style="top: -.75em;" class="mainlable">Custom Dates</label>

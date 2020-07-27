@@ -1750,7 +1750,7 @@ export class TimelineComponent
     return true;
   };
 
-  onAfterTaskDragCall = async (id, mode, e) => {
+  async onAfterTaskDragCall(id, mode, e) {
     this.disableSave = true;
     let task = { ...this.currentTask };
     this.ganttSetTime = false;
@@ -6358,11 +6358,7 @@ export class TimelineComponent
       if (validateCurrentTask) {
         this.commonService.showToastrMessage(
           this.constants.MessageType.warn,
-          "start date / end date of " +
-            validateCurrentTask.title +
-            " task in " +
-            validateCurrentTask.milestone +
-            " is on Saturday / Sunday so please change",
+          'start date / end date of ' + validateCurrentTask.title + ' task in ' + validateCurrentTask.milestone + ' is on Saturday / Sunday so please change',
           false
         );
         return false;
