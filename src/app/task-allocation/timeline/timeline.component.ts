@@ -1538,7 +1538,7 @@ export class TimelineComponent
               ? this.taskAllocationService.contextMenu
               : ""
             : e.slotType == "Slot" ? !status.includes(e.status) ? this.taskAllocationService.contextMenu : "" :
-            (e.parentSlot !=='' && e.parentSlot !== 0 ) ? "" : this.taskAllocationService.contextMenu;
+              (e.parentSlot !== '' && e.parentSlot !== 0) ? "" : this.taskAllocationService.contextMenu;
     });
   }
 
@@ -1547,11 +1547,11 @@ export class TimelineComponent
       case "Not Started":
       case "Not Confirmed":
       case "Not Saved":
-        if(task.parentSlot !=='' && task.parentSlot !== 0 ) return false;
+        if (task.parentSlot !== '' && task.parentSlot !== 0) return false;
         else return true;
 
       case "In Progress":
-        if(task.parentSlot !=='' && task.parentSlot !== 0 ) {
+        if (task.parentSlot !== '' && task.parentSlot !== 0) {
           return false;
         } else {
           if (!isStartDate) return true;
@@ -1608,7 +1608,7 @@ export class TimelineComponent
             } else {
               return false;
             }
-          }else  if (task.itemType == "Send to client") {
+          } else if (task.itemType == "Send to client") {
             if (mode === "resize" && isStartDate) {
               let isDrag = this.isDragEnable(isStartDate, task);
               return isDrag;
@@ -1623,7 +1623,7 @@ export class TimelineComponent
               if (task.status == "In Progress") {
                 return false;
               } else {
-                if(task.parentSlot !=='' && task.parentSlot !== 0) {
+                if (task.parentSlot !== '' && task.parentSlot !== 0) {
                   return false;
                 } else {
                   return true;
@@ -1830,7 +1830,7 @@ export class TimelineComponent
             await this.picker.open();
           }
         } else {
-            this.openPopupOnGanttTask(task, "end");
+          this.openPopupOnGanttTask(task, "end");
         }
         this.disableSave = false;
         return true;
@@ -1972,16 +1972,16 @@ export class TimelineComponent
       new Date(this.singleTask.end_date).getDate()
     ) {
       if (isStartDate) {
-          this.maxTime = this.singleTask.pUserEndTimePart;
-          this.minTime = "12:00 AM";
-        } else {
-          this.maxTime = "11:45 PM";
-          this.minTime = this.singleTask.pUserStartTimePart;
-        }
+        this.maxTime = this.singleTask.pUserEndTimePart;
+        this.minTime = "12:00 AM";
       } else {
         this.maxTime = "11:45 PM";
-        this.minTime = "12:00 AM";
+        this.minTime = this.singleTask.pUserStartTimePart;
       }
+    } else {
+      this.maxTime = "11:45 PM";
+      this.minTime = "12:00 AM";
+    }
   }
 
   setTime(time) {
@@ -4866,7 +4866,7 @@ export class TimelineComponent
         task.data.CentralAllocationDone = 'Yes';
         task.data.edited = true;
         task.data.allocationPerDay = task.data.prevallocationPerDay ? task.data.prevallocationPerDay : task.data.allocationPerDay;
-        task.data.showAllocationSplit =  task.data.prevshowAllocationSplit ?  task.data.prevshowAllocationSplit : task.data.showAllocationSplit ;
+        task.data.showAllocationSplit = task.data.prevshowAllocationSplit ? task.data.prevshowAllocationSplit : task.data.showAllocationSplit;
         task.data.allocationColor = task.data.prevallocationColor ? task.data.prevallocationColor : task.data.allocationColor;
       }
       this.addToReAllocateEmail(mailTableObj, slot, oldSlot, '');
@@ -4905,7 +4905,7 @@ export class TimelineComponent
         task.data.CentralAllocationDone = 'No';
         task.data.edited = true;
         task.data.prevallocationPerDay = task.data.allocationPerDay;
-        task.data.prevshowAllocationSplit =  task.data.showAllocationSplit;
+        task.data.prevshowAllocationSplit = task.data.showAllocationSplit;
         task.data.prevallocationColor = task.data.allocationColor;
         this.taskAllocateCommonService.resetDailyAllocation(task.data);
       }
@@ -5054,7 +5054,7 @@ export class TimelineComponent
     ) {
       // debugger;
       switch (milestoneTask.skillLevel) {
-        case 'Write':
+        case 'Writer':
           writers.push({
             ID: milestoneTask.AssignedTo.ID,
             Name: milestoneTask.AssignedTo.Title
@@ -5089,6 +5089,13 @@ export class TimelineComponent
             Name: milestoneTask.AssignedTo.Title
           });
           arrPubSupportIds.push(milestoneTask.AssignedTo.ID);
+          break;
+        case 'Reviewer':
+          reviewers.push({
+            ID: milestoneTask.AssignedTo.ID,
+            Name: milestoneTask.AssignedTo.Title
+          });
+          arrReviewers.push(milestoneTask.AssignedTo.ID);
           break;
         default:
           break;
@@ -6295,10 +6302,10 @@ export class TimelineComponent
           t.itemType !== 'Adhoc'
       );
 
-      let validateCurrentTask = validateDates.find(t=> new Date(t.pUserStart).getDay() == 0 || new Date(t.pUserStart).getDay() == 6 ||
-      new Date(t.pUserEnd).getDay() == 0 || new Date(t.pUserEnd).getDay() == 6)
+      let validateCurrentTask = validateDates.find(t => new Date(t.pUserStart).getDay() == 0 || new Date(t.pUserStart).getDay() == 6 ||
+        new Date(t.pUserEnd).getDay() == 0 || new Date(t.pUserEnd).getDay() == 6)
 
-      if(validateCurrentTask) {
+      if (validateCurrentTask) {
         this.commonService.showToastrMessage(
           this.constants.MessageType.warn,
           'start date / end date of ' + validateCurrentTask.title + ' task in ' + validateCurrentTask.milestone + ' is on Saturday / Sunday so please change',
@@ -6389,10 +6396,10 @@ export class TimelineComponent
   validateAllocationString(checkTasks) {
     //////// check if multiple days task have allocationperday string
     const errorTasks = checkTasks.filter(t => t.edited && t.itemType !== 'Client Review' && t.itemType !== 'Send to client'
-                       && !t.parentSlot && t.slotType === 'Task'
-                       && new Date(t.pUserStartDatePart).getTime() !== new Date(t.pUserEndDatePart).getTime()
-                       && !t.allocationPerDay&& +t.budgetHours
-                       && t.AssignedTo && t.AssignedTo.ID && t.AssignedTo.ID !== -1);
+      && !t.parentSlot && t.slotType === 'Task'
+      && new Date(t.pUserStartDatePart).getTime() !== new Date(t.pUserEndDatePart).getTime()
+      && !t.allocationPerDay && +t.budgetHours
+      && t.AssignedTo && t.AssignedTo.ID && t.AssignedTo.ID !== -1);
     if (errorTasks.length) {
       const tasks = errorTasks.map(t => t.title).join(', ');
       this.commonService.showToastrMessage(
