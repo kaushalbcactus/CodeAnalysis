@@ -5068,7 +5068,7 @@ export class TimelineComponent
           });
           arrQualityCheckerIds.push(milestoneTask.AssignedTo.ID);
           break;
-        case 'Edit':
+        case 'Editor':
           editors.push({
             ID: milestoneTask.AssignedTo.ID,
             Name: milestoneTask.AssignedTo.Title
