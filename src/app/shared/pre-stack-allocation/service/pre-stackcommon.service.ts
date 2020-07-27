@@ -97,7 +97,7 @@ export class PreStackcommonService {
       this.global.oCapacity.arrUserDetails.push(newUserCapacity);
       newUserCapacity = this.calcCapacity(allocationData);
     } else if (!newUserCapacity.dates.length) {
-      const resource = allocationData.resource.length ? allocationData.resource[0].UserNamePG.ID : -1;
+      const resource = allocationData.resource.length ? allocationData.resource[0].UserNamePG.ID ? allocationData.resource[0].UserNamePG.ID  : allocationData.resource[0].UserNamePG.Id : -1;
       newUserCapacity = await this.refetchUserCapacity(allocationData);
       const capacity = this.global.oCapacity.arrUserDetails.find(u => u.uid === resource);
       capacity.dates = [...capacity.dates, ...newUserCapacity.dates];
