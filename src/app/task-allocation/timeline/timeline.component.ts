@@ -701,7 +701,7 @@ export class TimelineComponent
   /////// Impelement reorder function
   reOrderTaskItems(milestoneData) {
     milestoneData.forEach(milestone => {
-      if (milestone.data.type === 'milestone') {
+      if (milestone.data.type === 'milestone' && milestone.data.status !== 'Completed' && milestone.data.status !== 'Deleted') {
         let getSubMil = [],
           getTasks = [];
         getSubMil = milestone.children.filter(
@@ -1488,7 +1488,7 @@ export class TimelineComponent
         case "confirmMilestone":
           this.confirmMilestone(task);
           break;
-        case "confirmSubilestone":
+        case "confirmSubmilestone":
           this.confirmMilestone(task);
           break;
         case "editAllocation":
