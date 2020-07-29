@@ -1609,7 +1609,7 @@ export class TimelineComponent
               return false;
             }
           } else if (task.itemType == "Send to client") {
-            if (mode === "resize" && isStartDate) {
+            if ((mode === "resize" && isStartDate) || mode === 'move') {
               let isDrag = this.isDragEnable(isStartDate, task);
               return isDrag;
             } else {
