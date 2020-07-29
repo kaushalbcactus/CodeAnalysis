@@ -347,6 +347,9 @@ export class StandardprojectComponent implements OnInit {
     this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetMilestonMatrix');
     standardMilestone = await this.spService.readItems(this.constants.listNames.MilestoneMatrix.name, standardMilestoneOptions);
     if (standardMilestone.length > 0) {
+      standardMilestone = standardMilestone.sort(function (a, b) {
+        return a.DisplayOrder < b.DisplayOrder ? -1 : 1
+      })
       return standardMilestone;
     }
   }
