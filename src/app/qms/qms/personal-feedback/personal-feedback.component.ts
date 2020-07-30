@@ -38,7 +38,6 @@ export class PersonalFeedbackComponent implements OnInit {
    */
   personalFeedbackCalled(filterObj) {
     this.data.changeFilterObj(filterObj);
-    //this.router.navigate([this.router.url]);
     switch (this.router.url) {
       case '/qms/personalFeedback/internalFeedback':
         this.qmsCommonService.selectedComponent.initialisePFInternal();

@@ -1,10 +1,6 @@
-<!-- <p-dialog #popupContent [modal]="true" [(visible)]="display" [closable]="false" [style]="{width: '664px',heigth: '800px'}" positionTop="10"> -->
-  <!-- <p-header>
-      <h4>{{qc.actionClickedTitle}}</h4>
-  </p-header> -->
   <div class="popupLoader" [hidden]="hidePopupLoader">
-      <div id="mainLoader"></div>
-      <div id="mainLoaderText">PLEASE WAIT...UPDATING CD</div>
+      <div id="cdLoader"></div>
+      <div id="cdLoaderText">PLEASE WAIT...UPDATING CD</div>
   </div>
   <div class="tablePopupLoader" [hidden]='hidePopupTable'>
       <!--Dissatisfaction popup-->
@@ -47,12 +43,6 @@
                       <label for="float-input">Please enter comments</label>
                     </span>
                     <label>{{qc.resourceIdentifiedComments.length}} / 1500</label>
-                      <!-- <mat-form-field color="warm" class="full-width">
-                          <textarea #comments maxlength="1500" matInput placeholder="Please enter comments" color="#B13E3E" rows="7" [(ngModel)]="qc.resourceIdentifiedComments"></textarea>
-                          <mat-error *ngIf="!qc.resourceIdentifiedComments">Please enter comments</mat-error>
-                          <mat-hint align="start"><strong>Comments</strong> </mat-hint>
-                          <mat-hint align="end">{{qc.resourceIdentifiedComments.length}} / 1500</mat-hint>
-                      </mat-form-field> -->
                   </td>
               </tr>
           </table>
@@ -65,11 +55,6 @@
                       <label for="float-input">Please enter comments</label>
                     </span>
                     <label>{{qc.resourceIdentifiedComments.length}} / 1500</label>
-                      <!-- <mat-form-field color="warm" class="full-width">
-                          <textarea #comments maxlength="1500" rows="4" matInput placeholder="(blank)" disabled color="#B13E3E" [(ngModel)]="qc.resourceIdentifiedComments"></textarea>
-                          <mat-hint align="start"><strong>Comments</strong> </mat-hint>
-                          <mat-hint align="end">{{qc.resourceIdentifiedComments.length}} / 1500</mat-hint>
-                      </mat-form-field> -->
                   </td>
               </tr>
               <tr>
@@ -79,11 +64,6 @@
                       <label for="float-input">Please enter root cause analysis details</label>
                     </span>
                     <label>{{qc.rcaComments.length}} / 1500</label>
-                      <!-- <mat-form-field color="warm" class="textArea full-width">
-                          <textarea #comments maxlength="1500" rows="4" matInput placeholder="Please enter root cause analysis details" color="#B13E3E" [disabled]="qc.actionClicked ==='viewComments'" [(ngModel)]="qc.rcaComments"></textarea>
-                          <mat-hint align="start"><strong>RCA</strong> </mat-hint>
-                          <mat-hint align="end">{{qc.rcaComments.length}} / 1500</mat-hint>
-                      </mat-form-field> -->
                       <hr>
                   </td>
               </tr>
@@ -94,11 +74,6 @@
                       <label for="float-input">Please enter corrective action details</label>
                     </span>
                     <label>{{qc.caComments.length}} / 1500</label>
-                      <!-- <mat-form-field color="warm" class="textArea full-width">
-                          <textarea #comments maxlength="1500" rows="4" matInput placeholder="Please enter corrective action details" color="#B13E3E" [disabled]="qc.actionClicked ==='viewComments'" [(ngModel)]="qc.caComments"></textarea>
-                          <mat-hint align="start"><strong>Corrective Actions</strong> </mat-hint>
-                          <mat-hint align="end">{{qc.caComments.length}} / 1500</mat-hint>
-                      </mat-form-field> -->
                       <hr>
                   </td>
               </tr>
@@ -109,27 +84,21 @@
                       <label for="float-input">Please enter preventive action details</label>
                     </span>
                     <label>{{qc.paComments.length}} / 1500</label>
-
-                      <!-- <mat-form-field color="warm" class="textArea full-width">
-                          <textarea #comments maxlength="1500" rows="4" matInput placeholder="Please enter preventive action details" color="#B13E3E" [disabled]="qc.actionClicked ==='viewComments'" [(ngModel)]="qc.paComments"></textarea>
-                          <mat-hint align="start"><strong>Preventive Actions</strong> </mat-hint>
-                          <mat-hint align="end">{{qc.paComments.length}} / 1500</mat-hint>
-                      </mat-form-field> -->
                   </td>
               </tr>
           </table>
       </div>
       <!--Tag CD to Client / Project popup-->
-      <table class="tagPopup full-width" *ngIf="qc.actionClicked ==='tag'">
+      <table class="full-width" *ngIf="qc.actionClicked ==='tag'">
           <tr>
               <td class="tagGroup">
-                  <p-dropdown [options]="qc.tagGroups" filter="true" resetFilterOnHide="true" placeholder="Select Project / Client" optionLabel="label" [(ngModel)]="qc.selectedGroup" (onChange)="getSelectedGroupItems()" appendTo="body">
+                  <p-dropdown class="tagPopup" [options]="qc.tagGroups" filter="true" resetFilterOnHide="true" placeholder="Select Project / Client" optionLabel="label" [(ngModel)]="qc.selectedGroup" (onChange)="getSelectedGroupItems()" appendTo="body">
                   </p-dropdown> <span class="mandatory">*</span>
               </td>
           </tr>
           <tr>
               <td>
-                  <p-dropdown [options]="qc.tagGroupItems" placeholder="Select Group Items" filter="true" resetFilterOnHide="true" optionLabel="Title" [(ngModel)]="qc.selectedTaggedItem" appendTo="body" loader="loading">
+                  <p-dropdown class="tagPopup" [options]="qc.tagGroupItems" placeholder="Select Group Items" filter="true" resetFilterOnHide="true" optionLabel="Title" [(ngModel)]="qc.selectedTaggedItem" appendTo="body" loader="loading">
                   </p-dropdown> <span class="mandatory">*</span>
                   <div class="popupResourceLoader">
                       <div id="resourceLoader" [hidden]="hideResourceLoader"></div>
@@ -147,11 +116,6 @@
 
                 </span>
                 <label class="wordCount">{{qc.resourceIdentifiedComments.length}} / 1500</label>
-                  <!-- <mat-form-field color="warm" class="full-width">
-                      <textarea #comments maxlength="1500" rows="4" matInput readonly color="#B13E3E" [(ngModel)]="qc.resourceIdentifiedComments"></textarea>
-                      <mat-hint align="start"><strong>Comments</strong> </mat-hint>
-                      <mat-hint align="end">{{qc.resourceIdentifiedComments.length}} / 1500</mat-hint>
-                  </mat-form-field> -->
               </td>
           </tr>
           <tr>
@@ -161,12 +125,6 @@
 
                 </span>
                 <label class="wordCount">{{qc.rcaComments.length}} / 1500</label>
-                  <!-- <mat-form-field color="warm" class="textArea full-width">
-                      <textarea #comments maxlength="1500" rows="4" matInput color="#B13E3E" readonly [(ngModel)]="qc.rcaComments"></textarea>
-                      <mat-hint align="start"><strong>RCA</strong> </mat-hint>
-                      <mat-hint align="end">{{qc.rcaComments.length}} / 1500</mat-hint>
-                  </mat-form-field> -->
-                  <!-- <hr> -->
               </td>
           </tr>
           <tr>
@@ -176,12 +134,6 @@
 
                 </span>
                 <label class="wordCount">{{qc.caComments.length}} / 1500</label>
-                  <!-- <mat-form-field color="warm" class="textArea full-width">
-                      <textarea #comments maxlength="1500" rows="4" matInput color="#B13E3E" readonly [(ngModel)]="qc.caComments"></textarea>
-                      <mat-hint align="start"><strong>Corrective Actions</strong> </mat-hint>
-                      <mat-hint align="end">{{qc.caComments.length}} / 1500</mat-hint>
-                  </mat-form-field> -->
-                  <!-- <hr> -->
               </td>
           </tr>
           <tr>
@@ -191,11 +143,6 @@
 
                 </span>
                 <label class="wordCount">{{qc.paComments.length}} / 1500</label>
-                  <!-- <mat-form-field color="warm" class="textArea full-width">
-                      <textarea #comments maxlength="1500" rows="4" matInput color="#B13E3E" readonly [(ngModel)]="qc.paComments"></textarea>
-                      <mat-hint align="start"><strong>Preventive Actions</strong> </mat-hint>
-                      <mat-hint align="end">{{qc.paComments.length}} / 1500</mat-hint>
-                  </mat-form-field> -->
               </td>
           </tr>
           <tr *ngIf="qc.rejectionComments">
@@ -205,11 +152,6 @@
 
                 </span>
                 <label class="wordCount">{{qc.rejectionComments.length}} / 1500</label>
-                  <!-- <mat-form-field color="warm" class="textArea full-width">
-                      <textarea #comments maxlength="1500" rows="4" matInput color="#B13E3E" readonly [(ngModel)]="qc.rejectionComments"></textarea>
-                      <mat-hint align="start"><strong>Rejection Comments</strong> </mat-hint>
-                      <mat-hint align="end">{{qc.rejectionComments.length}} / 1500</mat-hint>
-                  </mat-form-field> -->
               </td>
           </tr>
       </table>
@@ -217,10 +159,7 @@
       <table class="full-width" *ngIf="qc.actionClicked ==='delete'">
           <tr>
               <td>
-                  <!-- <ng-select [items]="cdDelete.reasons" placeholder="Select deletion reason" [(ngModel)]="cdDelete.selectedReason"
-           [clearable]="false">
-          </ng-select> -->
-                  <p-dropdown [options]="cdDelete.reasons" placeholder="Select deletion reason" filter="true" optionLabel="label" resetFilterOnHide="true" [(ngModel)]="cdDelete.selectedReason" appendTo="body">
+                  <p-dropdown class="tagPopup" [options]="cdDelete.reasons" placeholder="Select deletion reason" filter="true" optionLabel="label" resetFilterOnHide="true" [(ngModel)]="cdDelete.selectedReason" appendTo="body">
                   </p-dropdown><span class="mandatory">*</span>
               </td>
           </tr>
@@ -235,17 +174,12 @@
                   <p>Are you sure you want to mark CD as <strong>invalid</strong> ?</p>
               </td>
               <td *ngIf="qc.actionClicked ==='reject'">
-                  <p>Are you sure you want to reject CD and send back for correction?</p>
+                  <p class="rejectionComments">Are you sure you want to reject CD and send back for correction?</p>
                   <span class="ui-float-label">
-                    <textarea id="float-input" rows="4" maxlength="1500" color="#B13E3E" readonly pInputTextarea  (keyup)="updateRejectionComments($event)"></textarea>
+                    <textarea id="float-input"  class="popupTextArea" rows="4" maxlength="1500" color="#B13E3E" pInputTextarea  (keyup)="updateRejectionComments($event)"></textarea>
                     <label for="float-input">Comments</label>
-                    <label>{{qc.newRejectionComments.length}} / 1500</label>
                   </span>
-                  <!-- <mat-form-field color="warm" class="full-width">
-                      <textarea #rejectionComments maxlength="1500" rows="4" matInput placeholder="Comments" color="#B13E3E" (keyup)="updateRejectionComments($event)"></textarea>
-                      <mat-hint align="start"><strong>Comments</strong> </mat-hint>
-                      <mat-hint align="end">{{qc.newRejectionComments.length}} / 1500</mat-hint>
-                  </mat-form-field> -->
+                  <label class="wordCount">{{qc.newRejectionComments.length}} / 1500</label>
               </td>
           </tr>
       </table>
@@ -267,4 +201,3 @@
           <button type="button" id='rejectBtn' class="btn btn-light button savebtn" (click)="updateValidity(qc.actionClicked)" [disabled]="qc.actionClicked === 'reject' && !qc.newRejectionComments" [hidden]="qc.actionClicked !== 'valid' && qc.actionClicked !== 'invalid' && qc.actionClicked !== 'reject'">Confirm</button>
       </div>
   </div>
-<!-- </p-dialog> -->

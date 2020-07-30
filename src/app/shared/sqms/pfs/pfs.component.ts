@@ -9,7 +9,6 @@ import { GlobalService } from 'src/app/Services/global.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { QMSCommonService } from 'src/app/qms/qms/services/qmscommon.service';
 import { MenuItem, DialogService } from 'primeng';
-import { FilterComponent } from 'src/app/qms/qms/client-feedback/filter/filter.component';
 import { PfdetailsComponent } from './pfdetails/pfdetails.component';
 
 @Component({
@@ -236,6 +235,7 @@ export class PfsComponent implements OnInit, AfterViewChecked {
       arrPFs = await this.getMyPFItems(filterObj);
     }
     this.bindTable(arrPFs);
+    this.pfs = arrPFs;
   }
 
   /**

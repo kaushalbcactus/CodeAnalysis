@@ -352,7 +352,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
   getProjectDetails(project) {
 
     this.showDetails = true;
-    this.step = 4;
+    this.step = 5;
     this.ProjectDetails = project;
 
     this.modalloaderenable = true;

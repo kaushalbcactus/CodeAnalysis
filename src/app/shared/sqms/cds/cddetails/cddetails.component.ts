@@ -24,8 +24,8 @@ export class CddetailsComponent implements OnInit {
   // public successMessage: string;
   // private success = new Subject<string>();
   public loading = false;
-  public hidePopupLoader = true;
-  public hidePopupTable = false;
+  public hidePopupLoader = false;
+  public hidePopupTable = true;
   public qc = {
     qcID: '',
     projectCode: '',
@@ -34,8 +34,9 @@ export class CddetailsComponent implements OnInit {
     otherResources: [],
     status: '',
     accountableGroup: [{ label: 'SS', value: 'SS' },
-    { label: 'CS / PM / RM / Others', value: 'CS / PM / RM / Others' },
-    { label: 'EQG', value: 'EQG' }],
+    { label: 'EQG', value: 'EQG' },
+    { label: 'CS / PM / RM / Others', value: 'CS / PM / RM / Others' }
+    ],
     // resources: [],
     businessImpact: [{ label: 'High', value: 'High' }, { label: 'Low', value: 'Low' }],
     cdCategories: [{ label: 'ATD issues', value: 'ATD issues' }, { label: 'Content issues', value: 'Content issues' },
@@ -114,38 +115,16 @@ export class CddetailsComponent implements OnInit {
   ) {
   }
 
-  async ngOnInit() {
-    const content = this.popupData.data;
-    if (content) {
-      const resourceDetails = await this.getResourceDetails(content.Title);
-      this.setQCObject(content, resourceDetails);
-    }
+  ngOnInit() {
+    setTimeout(async () => {
+      const content = this.popupData.data;
+      if (content) {
+        const resourceDetails = await this.getResourceDetails(content.Title);
+        this.setQCObject(content, resourceDetails);
+      }
+      this.showTable();
+    }, 200);
   }
-
-  // initializeMsg() {
-  //   // this.success.subscribe((message) => this.successMessage = message);
-  //   // this.success.pipe(
-  //   //   debounceTime(5000)
-  //   // ).subscribe(() => this.successMessage = null);
-  // }
-
-  // /**
-  //  * Opens popup and initialize public variable with row clicked data
-  //  * @param element - button clicked
-  //  * @param content - CD row
-  //  * @param popupSize - popup size
-  //  */
-  // async openPopup(element: any, content: any) {
-  //   const currentTarget = Object.assign(element.currentTarget);
-  //   // this.initializeMsg();
-  //   const resourceDetails = await this.getResourceDetails(content.Title);
-  //   this.setQCObject(currentTarget, content, resourceDetails);
-  //   this.display = true;
-  // }
-
-  // setPopupSuccessMsg(message) {
-  //   this.success.next(message);
-  // }
 
   async getResourceDetails(code) {
     const batchURL = [];
@@ -254,8 +233,7 @@ export class CddetailsComponent implements OnInit {
    * Rejectes CD
    */
   deleteCD() {
-    this.hidePopupLoader = false;
-    this.hidePopupTable = true;
+    this.showLoader();
     setTimeout(() => {
       const cdDetails = {
         __metadata: { type: this.globalConstant.listNames.QualityComplaints.type },
@@ -264,13 +242,7 @@ export class CddetailsComponent implements OnInit {
       };
       this.qc.status = this.globalConstant.cdStatus.Deleted;
       this.updateCD(cdDetails);
-      // Send updated qc to CD component and update CD
-      // this.bindTableEvent.emit(this.qc);
-      // tslint:disable-next-line
-      // this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD for "' + this.qc.projectCode + '" successfully marked deleted due to ' + this.cdDelete.selectedReason.value });
-      // this.close();
-      this.hidePopupLoader = true;
-      this.hidePopupTable = false;
+      this.showTable();
       this.popupConfig.close({
         qc: this.qc,
         action: 'Delete',
@@ -298,8 +270,7 @@ export class CddetailsComponent implements OnInit {
     // tslint:enable
     const cdAdminsEmail = this.global.cdAdmins.map(r => r.Email);
     const strCDdAdminsEmail = cdAdminsEmail.join(',');
-    this.hidePopupLoader = false;
-    this.hidePopupTable = true;
+    this.showLoader();
     const resources = {
       resourcesEmail: [...otherResourcesEmail, ...operationalResourceEmail],
       resourcesID: [...otherResourcesID, ...operationalResourceID]
@@ -348,24 +319,17 @@ export class CddetailsComponent implements OnInit {
           }
         }
         msg = 'CD status updated for ' + this.qc.projectCode + '.';
-        // this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD status updated for ' + this.qc.projectCode + '.' });
         oldStatus = this.qc.status;
-
-        // this.resetAccountableResource();
       } else {
-        // this.setPopupSuccessMsg('Data saved!');
-        // this.commonService.showToastrMessage(this.globalConstant.MessageType.success, 'Data Saved.', false);
         msg = 'Data Saved.';
       }
-      this.hidePopupLoader = true;
-      this.hidePopupTable = false;
+      this.showTable();
       this.popupConfig.close({
         qc: this.qc,
         action: 'Close',
         msgType: this.globalConstant.MessageType.success,
         msg
       });
-      // this.close();
     }, 300);
   }
 
@@ -433,7 +397,7 @@ export class CddetailsComponent implements OnInit {
         msg = 'CD marked as valid and closed for ' + this.qc.projectCode + '.';
         // this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD marked as valid and closed for ' + this.qc.projectCode + '.' });
       } else if (actionClicked === 'invalid') {
-        msg =  'CD marked as invalid and closed for ' + this.qc.projectCode + '.';
+        msg = 'CD marked as invalid and closed for ' + this.qc.projectCode + '.';
         // this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD marked as invalid and closed for ' + this.qc.projectCode + '.' });
       }
       // emit success message to CD component
@@ -466,7 +430,7 @@ export class CddetailsComponent implements OnInit {
     const allResources = this.global.allResources;
     const emails = [];
     const ids = [];
-    const arrResources = resources && resources.results ? resources.results : []
+    const arrResources = resources ? resources.results ? resources.results : resources.length ? resources : [] : [];
     arrResources.forEach(element => {
       const resourceDetail = allResources.filter(r => r.UserNamePG.ID === element.ID);
       emails.push(resourceDetail.length > 0 ? resourceDetail[0].UserNamePG.EMail : '');
@@ -483,8 +447,7 @@ export class CddetailsComponent implements OnInit {
    */
   tag() {
     let msg = '';
-    this.hidePopupLoader = false;
-    this.hidePopupTable = true;
+    this.showLoader();
     setTimeout(async () => {
       const cm = [...this.qc.selectedTaggedItem.CMLevel1.results.map(u => u.ID), this.qc.selectedTaggedItem.CMLevel2.ID ? this.qc.selectedTaggedItem.CMLevel2.ID : ''];
       const delivery1 = this.qc.selectedTaggedItem.DeliveryLevel1.results ? this.qc.selectedTaggedItem.DeliveryLevel1.results : [];
@@ -500,7 +463,6 @@ export class CddetailsComponent implements OnInit {
         ASDId: { 'results': delivery2 },
         PrimaryResId: { 'results': primaryResources },
         CSId: { 'results': cm },
-        //Milestone: this.qc.selectedTaggedItem.Milestone ? this.qc.selectedTaggedItem.Milestone : '',
         ResourcesId: { 'results': delivery2 }
       };
       // update projectcode property to bind cd component
@@ -510,9 +472,6 @@ export class CddetailsComponent implements OnInit {
       const cm1 = this.qc.selectedTaggedItem.CMLevel1.results ? this.qc.selectedTaggedItem.CMLevel1.results : [];
       this.qc.CS.results = [...cm1, this.qc.selectedTaggedItem.CMLevel2];
       this.updateCD(cdDetails);
-      // Send updated qc to CD component and update CD
-      // this.bindTableEvent.emit(this.qc);
-      // send mail
       const createCDTemplate = await this.getMailContent(this.qmsConstant.EmailTemplates.CD.CreateQualityComplaint);
       if (createCDTemplate.length > 0) {
         let createMailContent = createCDTemplate[0].ContentMT;
@@ -523,10 +482,7 @@ export class CddetailsComponent implements OnInit {
         this.spService.sendMail(strTo, this.global.currentUser.email, createMailSubject, createMailContent, this.global.currentUser.email);
       }
       msg = 'CD Tagged Successfully.'
-      // this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD Tagged Successfully!' });
-      // this.close();
-      this.hidePopupLoader = true;
-      this.hidePopupTable = false;
+      this.showTable();
       this.popupConfig.close({
         qc: this.qc,
         action: 'updateValidity',
@@ -596,6 +552,16 @@ export class CddetailsComponent implements OnInit {
       });
       this.hideResourceLoader = true;
     }, 300);
+  }
+
+  showTable() {
+    this.hidePopupLoader = true;
+    this.hidePopupTable = false;
+  }
+
+  showLoader() {
+    this.hidePopupLoader = false;
+    this.hidePopupTable = true;
   }
 
   /**

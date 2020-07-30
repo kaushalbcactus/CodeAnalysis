@@ -39,7 +39,7 @@ const routes: Routes = [
         path: 'clientFeedback',
         component: ClientFeedbackComponent,
         children: [
-          { path: '', redirectTo: 'cfpositiveFeedback', pathMatch: 'prefix' },
+          { path: '', redirectTo: 'clientDissatisfaction', pathMatch: 'prefix' },
           { path: 'clientDissatisfaction', component: CDComponent },
           { path: 'cfpositiveFeedback', component: CFPositiveFeedbackComponent }
         ]
