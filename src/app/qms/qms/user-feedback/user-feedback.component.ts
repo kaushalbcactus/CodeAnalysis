@@ -165,11 +165,13 @@ export class UserFeedbackComponent implements OnInit, AfterViewChecked {
         } else if (arrScoreCards[i]) {
           arrScoreCards[i].ParameterRating = '';
           arrScoreCards[i].Value = '';
+          arrScoreCards[i].parameters = [];
           arrRatings[i].retItems.forEach(elem => {
             arrScoreCards[i].ParameterRating = filterObj.managerView ? arrScoreCards[i].ParameterRating + elem.Parameter.Title + '<br style="mso-data-placement:same-cell;" />' :
               arrScoreCards[i].ParameterRating + elem.Parameter.Title + '\n';
             arrScoreCards[i].Value = filterObj.managerView ? arrScoreCards[i].Value + elem.Rating + '<br style="mso-data-placement:same-cell;" />' :
               arrScoreCards[i].Value + elem.Rating + '\n';
+            arrScoreCards[i].parameters.push({property: elem.Parameter.Title, value: elem.Rating});
           });
         }
       }
@@ -209,7 +211,8 @@ export class UserFeedbackComponent implements OnInit, AfterViewChecked {
         Rating: element.AverageRatingNM ? element.AverageRatingNM : '',
         Comments: element.CommentsMT ? element.CommentsMT : '',
         Parameters: element.ParameterRating ? element.ParameterRating : '',
-        Score: element.Value ? element.Value : ''
+        Score: element.Value ? element.Value : '',
+        ParameterRatings: element.parameters ? element.parameters : []
       });
     });
     this.originalScorecard = [...this.UFRows];
@@ -292,6 +295,10 @@ export class UserFeedbackComponent implements OnInit, AfterViewChecked {
       }
       this.cdr.detectChanges();
     }
+  }
+
+  showOverlayPanel(event, rowData, ratingOP, target?) {
+    ratingOP.showOverlay(event, rowData, target);
   }
 
 }

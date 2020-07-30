@@ -51,7 +51,8 @@
     border: 0px;
 }
 
-::ng-deep .cdFilters .mat-form-field-infix {
+/* .mat-form-field-infix */
+::ng-deep .cdFilters  {
     border-top: .24271em solid transparent;
 }
 

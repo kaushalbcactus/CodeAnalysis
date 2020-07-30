@@ -34,9 +34,9 @@ body{
       cursor: pointer;
       margin-top: 2px;
 }
-th.mat-sort-header-sorted {
+/* th.mat-sort-header-sorted {
   color: black;
-}
+} */
 
 .userdetails {
   margin-top: 20px;

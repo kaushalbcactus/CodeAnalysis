@@ -19,6 +19,7 @@ import { Table } from 'primeng/table';
 import { ViewUploadDocumentDialogComponent } from 'src/app/shared/view-upload-document-dialog/view-upload-document-dialog.component';
 import { CsFinanceAuditDialogComponent } from './cs-finance-audit-dialog/cs-finance-audit-dialog.component';
 import { InvoiceLineitemsComponent } from './invoice-lineitems/invoice-lineitems.component';
+import { CdpfComponent } from 'src/app/shared/sqms/cdpf/cdpf.component';
 
 declare var $;
 @Component({
@@ -329,6 +330,7 @@ export class AllProjectsComponent implements OnInit {
           { label: 'Timeline', command: (event) => this.projectTimeline(this.selectedProjectObj) },
           { label: 'Go to Allocation', command: (event) => this.goToAllocationPage(this.selectedProjectObj) },
           { label: 'Project Scope', command: (event) => this.goToProjectScope(this.selectedProjectObj) },
+          { label: 'View CDs/PFs', command: (event) => this.viewCDPF(this.selectedProjectObj) },
         ]
       },
       {
@@ -3008,5 +3010,19 @@ export class AllProjectsComponent implements OnInit {
 
   }
 
+  viewCDPF(projObj) {
+    const ref = this.dialogService.open(CdpfComponent, {
+      header: 'CDs/PFs - ' + projObj.ProjectCode + '(' + projObj.Title + ')',
+      width: '90vw',
+      data: {
+        projectCode: projObj.ProjectCode,
+        readOnly: true
+      },
+      contentStyle: { 'max-height': '85vh', 'overflow-y': 'auto' },
+      closable: true
+    });
+    ref.onClose.subscribe(element => {
+    });
+  }
 
 }

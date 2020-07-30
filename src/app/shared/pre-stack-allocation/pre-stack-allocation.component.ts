@@ -89,7 +89,7 @@ export class PreStackAllocationComponent implements OnInit {
     resourceChangedDate.availableHrs = strChangedValue;
     resourceChangedDate.mandatoryHrs = true;
     const allocationSplit = await this.prestackService.performAllocation(this.resourceCapacity, objData, true,
-                            oldValue, oldAllocation, this.allocationSplit);
+                            this.allocationSplit);
     this.allocationSplit = [...allocationSplit.arrAllocation];
                                                                         }
 

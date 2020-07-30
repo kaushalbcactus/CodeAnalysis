@@ -1,0 +1,8 @@
+<p-tabView>
+  <p-tabPanel header="Positive Feedback">
+    <app-pfs [filterObj]="filterObj" [parentComponent]="'cdpf'"></app-pfs>
+  </p-tabPanel>
+  <p-tabPanel header="Client Dissatisfaction">
+    <app-cds [filterObj]="filterObj" [readOnly]="true"></app-cds>
+  </p-tabPanel>
+</p-tabView>

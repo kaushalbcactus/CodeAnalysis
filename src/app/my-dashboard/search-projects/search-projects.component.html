@@ -28,7 +28,7 @@
   </div>
 
     <!-- **********************************************************************************************************
-                                                         loader enable 
+                                                         loader enable
 ********************************************************************************************************** -->
   <div fxLayout="column" style="padding: 10vw;width: 100%;" fxLayoutAlign="center center" *ngIf="loaderenable">
     <div id="scInnerLoader"></div>
@@ -220,7 +220,7 @@
 
 
 
-    <!--****************************************************************************************** 
+    <!--******************************************************************************************
               //  dialog to display Project Resources
         ****************************************************************************************** -->
 
@@ -276,7 +276,7 @@
 
     </mat-expansion-panel>
 
-    <!--****************************************************************************************** 
+    <!--******************************************************************************************
         //  dialog to view shared  Document
       ****************************************************************************************** -->
     <mat-expansion-panel [expanded]="step === 2" (opened)="setStep(2)">
@@ -291,7 +291,7 @@
 
     </mat-expansion-panel>
 
-    <!--****************************************************************************************** 
+    <!--******************************************************************************************
         //  dialog to view project Timeline
       ****************************************************************************************** -->
 
@@ -309,7 +309,7 @@
 
     </mat-expansion-panel>
 
-    <!--****************************************************************************************** 
+    <!--******************************************************************************************
         //  dialog to show project drafts
         ****************************************************************************************** -->
     <mat-expansion-panel [expanded]="step === 4" (opened)="setStep(4)">
@@ -321,6 +321,22 @@
       </mat-expansion-panel-header>
       <ng-template matExpansionPanelContent>
         <app-project-drafts [milestoneData]="ProjectPopupDetails"></app-project-drafts>
+      </ng-template>
+
+    </mat-expansion-panel>
+
+    <!--******************************************************************************************
+        //  dialog to show CDs/PFs
+        ****************************************************************************************** -->
+    <mat-expansion-panel [expanded]="step === 4" (opened)="setStep(5)">
+      <mat-expansion-panel-header>
+        <mat-panel-title style="color:#000000;padding: 5px 0px 0px 0px;">
+          <mat-icon>feedback</mat-icon> &nbsp;&nbsp; PF's / Cd's
+        </mat-panel-title>
+
+      </mat-expansion-panel-header>
+      <ng-template matExpansionPanelContent>
+        <app-cdpf [prjCode]="ProjectDetails.ProjectCode"></app-cdpf>
       </ng-template>
 
     </mat-expansion-panel>

@@ -76,6 +76,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     ta: [],
     deliverable: [],
     account: [],
+    ProjectCode: ''
   };
   tempClick: any;
   public queryConfig = {
@@ -120,7 +121,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     const route = this.router.url;
     this.ProjectCode = this.route.snapshot.queryParams['ProjectCode'];
     if (this.ProjectCode !== undefined) {
-      await this.SearchProject();  
+      await this.SearchProject();
       if(this.ProjectList){
         this.getProjectDetails(this.ProjectList[0]);
         this.router.navigate([]);
@@ -131,7 +132,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     } else {
       this.onSearchProject = false;
     }
-   
+
     this.cols = [
       { field: 'SOWCode', header: 'SOW Code' },
       { field: 'ProjectCode', header: 'Project Code' },
@@ -145,7 +146,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     ];
   }
 
-  
+
   // *************************************************************************************************************************************
   // hide popup menu on production
   // *************************************************************************************************************************************
@@ -491,7 +492,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
 
 
   // **************************************************************************************************
-  //   This function is used to open or download project scope 
+  //   This function is used to open or download project scope
   // **************************************************************************************************
   async goToProjectScope(project) {
     const response = await this.commonService.goToProjectScope(project, project.Status);

@@ -42,6 +42,7 @@ import { CreateTaskComponent } from './fte/create-task/create-task.component';
 import { CurrentCompletedTasksTableComponent } from './current-completed-tasks-table/current-completed-tasks-table.component';
 import { FeedbackPopupComponent } from '../qms/qms/reviewer-detail-view/feedback-popup/feedback-popup.component';
 import { PreStackAllocationModule } from '../shared/pre-stack-allocation/pre-stack-allocation.module';
+import { SqmsModule } from '../shared/sqms/sqms.module';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
@@ -88,7 +89,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     TaskAllocationModule,
     TimelineModule,
     QmsModule,
-    PreStackAllocationModule
+    PreStackAllocationModule,
+    SqmsModule
   ],
 
   providers: [ DatePipe, DialogService, DynamicDialogConfig, DynamicDialogRef, {

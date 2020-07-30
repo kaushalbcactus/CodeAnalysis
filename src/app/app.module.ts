@@ -30,7 +30,7 @@ import { ToastModule } from 'primeng/toast';
   ],
   declarations: [
     AppComponent,
-    PageNotFoundComponent
+    PageNotFoundComponent,
   ],
   entryComponents: [FileUploadProgressDialogComponent, ConfirmationDialogComponent],
   providers: [DataService, TimelineHistoryComponent, DatePipe, MessageService, Title],

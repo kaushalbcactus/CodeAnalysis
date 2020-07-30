@@ -118,12 +118,28 @@ export class QMSConstantsService {
         top: '{{TopCount}}',
         orderby: 'SentDate desc'
       },
+      getQCByProject: {
+        select: 'ID, Title, FileID, FileURL, SentDate,SentBy/ID, SentBy/Title, Modified, Status, CategoryST,' +
+          'Resources/ID, SeverityLevel, BusinessImpact,Segregation,' +
+          'CommentsMT, RootCauseAnalysis, CorrectiveActions, PreventiveActions, IsActiveCH',
+        expand: 'SentBy, Resources',
+        filter: "Status ne 'Deleted' and Title eq '{{projectCode}}'",
+        top: '{{TopCount}}',
+        orderby: 'SentDate desc'
+      }
     },
     PositiveFeedbacks: {
       getPF: {
         select: 'ID, Title, FileID, FileURL, SentDate,SentBy/ID, SentBy/Title, Modified, Resources/ID, Resources/Title, DeliveryLeads/ID',
         expand: 'SentBy, Resources, DeliveryLeads',
         filter: "IsActiveCH eq 'Yes' and Status eq 'Accepted' and SentDate ge '{{startDate}}' and SentDate le '{{endDate}}'",
+        top: '{{TopCount}}',
+        orderby: 'SentDate desc'
+      },
+      getPFByProject: {
+        select: 'ID, Title, FileID, FileURL, SentDate,SentBy/ID, SentBy/Title, Modified, Resources/ID, Resources/Title, DeliveryLeads/ID',
+        expand: 'SentBy, Resources, DeliveryLeads',
+        filter: "IsActiveCH eq 'Yes' and Status eq 'Accepted' and Title eq '{{projectCode}}'",
         top: '{{TopCount}}',
         orderby: 'SentDate desc'
       }

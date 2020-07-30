@@ -1,0 +1,6 @@
+::ng-deep body .overlayTable > .ui-table .ui-table-tbody > tr > td {
+  max-width: 100px!important;
+  overflow: hidden!important;
+  text-overflow: ellipsis!important;
+  white-space: nowrap!important;
+}

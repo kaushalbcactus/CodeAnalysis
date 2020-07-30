@@ -183,7 +183,7 @@ export class CsFinanceAuditDialogComponent implements OnInit {
   }
 
   // **************************************************************************************
-  // To Close dialog 
+  // To Close dialog
   // **************************************************************************************
   cancel() {
     if (this.projectUpdated) {
@@ -235,9 +235,8 @@ export class CsFinanceAuditDialogComponent implements OnInit {
         { checked: false, parameter: 'Is the project budget and budget hours correct?', comments: '', hideCheckBox: false },
         { checked: false, parameter: 'Is the pub support status updated to submitted?', comments: '', hideCheckBox: false },
         { checked: false, parameter: 'Are the CM Lvl 2 and Delivery Lvl 2 correct?', comments: '', hideCheckBox: false },
-        { checked: false, parameter: 'Has ER been fully accrued before proposing closure?', comments: 'Select One', hideCheckBox: true },
-
-
+        { checked: false, parameter: 'Check if any CDs are open?', comments: 'Select One', hideCheckBox: true },
+        { checked: false, parameter: 'Has ER been fully accrued before proposing closure?', comments: 'Select One', hideCheckBox: true }
       ];
 
       const ref = this.dialogService.open(AuditProjectDialogComponent, {

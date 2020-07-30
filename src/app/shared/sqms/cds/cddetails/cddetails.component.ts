@@ -1,27 +1,28 @@
-import { GlobalService } from './../../../../../Services/global.service';
-import { Component, OnInit, Output, EventEmitter, ViewChild, ElementRef, ApplicationRef, NgZone } from '@angular/core';
-import { ConstantsService } from '../../../../../Services/constants.service';
-import { SPOperationService } from '../../../../../Services/spoperation.service';
+import { Component, OnInit, ViewChild, ElementRef, Output, EventEmitter, ApplicationRef } from '@angular/core';
 import { Subject } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
-import { QMSConstantsService } from '../../../services/qmsconstants.service';
+import { ConstantsService } from 'src/app/Services/constants.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
+import { GlobalService } from 'src/app/Services/global.service';
+import { QMSConstantsService } from 'src/app/qms/qms/services/qmsconstants.service';
 import { CommonService } from 'src/app/Services/common.service';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 
 @Component({
-  selector: 'app-actions-popup',
-  templateUrl: './actions-popup.component.html',
-  styleUrls: ['./actions-popup.component.css']
+  selector: 'app-cddetails',
+  templateUrl: './cddetails.component.html',
+  styleUrls: ['./cddetails.component.css']
 })
-export class ActionsPopupComponent implements OnInit {
+export class CddetailsComponent implements OnInit {
+
   // Html for popup
-  @ViewChild('popupContent', { static: true }) popupContent: ElementRef;
+  // @ViewChild('popupContent', { static: true }) popupContent: ElementRef;
 
   // This property emits data to parent (CD) component to reflect changes done in popup
   @Output() bindTableEvent = new EventEmitter<{}>();
   @Output() setSuccessMessage = new EventEmitter<{}>();
   display = false;
   // public successMessage: string;
-  private success = new Subject<string>();
+  // private success = new Subject<string>();
   public loading = false;
   public hidePopupLoader = true;
   public hidePopupTable = false;
@@ -32,7 +33,9 @@ export class ActionsPopupComponent implements OnInit {
     actionClickedTitle: '',
     otherResources: [],
     status: '',
-    accountableGroup: [{ label: 'SS', value: 'SS' }, { label: 'CS / PM / RM / Others', value: 'CS / PM / RM / Others' }],
+    accountableGroup: [{ label: 'SS', value: 'SS' },
+    { label: 'CS / PM / RM / Others', value: 'CS / PM / RM / Others' },
+    { label: 'EQG', value: 'EQG' }],
     // resources: [],
     businessImpact: [{ label: 'High', value: 'High' }, { label: 'Low', value: 'Low' }],
     cdCategories: [{ label: 'ATD issues', value: 'ATD issues' }, { label: 'Content issues', value: 'Content issues' },
@@ -106,11 +109,17 @@ export class ActionsPopupComponent implements OnInit {
     private qmsConstant: QMSConstantsService,
     private commonService: CommonService,
     _applicationRef: ApplicationRef,
-    zone: NgZone
+    private popupData: DynamicDialogConfig,
+    public popupConfig: DynamicDialogRef
   ) {
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    const content = this.popupData.data;
+    if (content) {
+      const resourceDetails = await this.getResourceDetails(content.Title);
+      this.setQCObject(content, resourceDetails);
+    }
   }
 
   // initializeMsg() {
@@ -120,19 +129,19 @@ export class ActionsPopupComponent implements OnInit {
   //   // ).subscribe(() => this.successMessage = null);
   // }
 
-  /**
-   * Opens popup and initialize public variable with row clicked data
-   * @param element - button clicked
-   * @param content - CD row
-   * @param popupSize - popup size
-   */
-  async openPopup(element: any, content: any) {
-    const currentTarget = Object.assign(element.currentTarget);
-    // this.initializeMsg();
-    const resourceDetails = await this.getResourceDetails(content.Title);
-    this.setQCObject(currentTarget, content, resourceDetails);
-    this.display = true;
-  }
+  // /**
+  //  * Opens popup and initialize public variable with row clicked data
+  //  * @param element - button clicked
+  //  * @param content - CD row
+  //  * @param popupSize - popup size
+  //  */
+  // async openPopup(element: any, content: any) {
+  //   const currentTarget = Object.assign(element.currentTarget);
+  //   // this.initializeMsg();
+  //   const resourceDetails = await this.getResourceDetails(content.Title);
+  //   this.setQCObject(currentTarget, content, resourceDetails);
+  //   this.display = true;
+  // }
 
   // setPopupSuccessMsg(message) {
   //   this.success.next(message);
@@ -169,11 +178,11 @@ export class ActionsPopupComponent implements OnInit {
    * @param element-button clicked
    * @param content-cd row
    */
-  setQCObject(currentTarget, content, codeDetails) {
+  setQCObject(content, codeDetails) {
     this.qc.qcID = '' + content.ID;
     this.qc.projectCode = content.Title;
-    this.qc.actionClicked = currentTarget.id;
-    this.qc.actionClickedTitle = currentTarget.title;
+    this.qc.actionClicked = content.actionClicked;
+    this.qc.actionClickedTitle = content.actionClickedTitle;
     this.qc.status = content.Status ? content.Status : '';
     this.qc.selectedAccountableGroup = content.Category ? content.Category : null;
     this.qc.selectedBusinessImpact = content.BusinessImpact ? content.BusinessImpact : null;
@@ -211,8 +220,14 @@ export class ActionsPopupComponent implements OnInit {
    * reset accountable resource and close popup
    */
   close() {
-    this.resetAccountableResource();
-    this.display = false;
+    this.popupConfig.close({
+      qc: [],
+      action: 'Cancel',
+      msgType: '',
+      msg: ''
+    });
+    // this.resetAccountableResource();
+    // this.display = false;
   }
 
   /**
@@ -231,6 +246,7 @@ export class ActionsPopupComponent implements OnInit {
    * @param cdDetails- detals that needs to be updated
    */
   updateCD(cdDetails) {
+    this.commonService.SetNewrelic('QMS', 'ClientFeedBack-cdposition', 'updatecd');
     this.spService.updateItem(this.globalConstant.listNames.QualityComplaints.name, this.qc.qcID, cdDetails);
   }
 
@@ -249,12 +265,18 @@ export class ActionsPopupComponent implements OnInit {
       this.qc.status = this.globalConstant.cdStatus.Deleted;
       this.updateCD(cdDetails);
       // Send updated qc to CD component and update CD
-      this.bindTableEvent.emit(this.qc);
+      // this.bindTableEvent.emit(this.qc);
       // tslint:disable-next-line
-      this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD for "' + this.qc.projectCode + '" successfully marked deleted due to ' + this.cdDelete.selectedReason.value });
-      this.close();
+      // this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD for "' + this.qc.projectCode + '" successfully marked deleted due to ' + this.cdDelete.selectedReason.value });
+      // this.close();
       this.hidePopupLoader = true;
       this.hidePopupTable = false;
+      this.popupConfig.close({
+        qc: this.qc,
+        action: 'Delete',
+        msgType: this.globalConstant.MessageType.success,
+        msg: 'CD for "' + this.qc.projectCode + '" successfully marked deleted due to ' + this.cdDelete.selectedReason.value
+      });
     });
   }
 
@@ -266,6 +288,7 @@ export class ActionsPopupComponent implements OnInit {
    * update cd status to closed ones all comments are entered
    */
   closeCD(element) {
+    let msg = '';
     const popupActionClicked = element.currentTarget.id;
     // tslint:disable
     const operationalResourceID = [...this.qc.deliveryLevel1.ids, ...this.qc.deliveryLevel2.ids, ...this.qc.cm.ids].filter(function (e) { return e }); // Included delivery 2 user ID as they have to be added in resources column
@@ -277,16 +300,11 @@ export class ActionsPopupComponent implements OnInit {
     const strCDdAdminsEmail = cdAdminsEmail.join(',');
     this.hidePopupLoader = false;
     this.hidePopupTable = true;
-    const cd = {
-      Internal: {
-        resourcesEmail: operationalResourceEmail,
-        resourcesID: operationalResourceID
-      },
-      External: {
-        resourcesEmail: [...otherResourcesEmail, ...operationalResourceEmail],
-        resourcesID: [...otherResourcesID, ...operationalResourceID]
-      }
+    const resources = {
+      resourcesEmail: [...otherResourcesEmail, ...operationalResourceEmail],
+      resourcesID: [...otherResourcesID, ...operationalResourceID]
     };
+
     const cdDetails = {
       __metadata: { type: this.globalConstant.listNames.QualityComplaints.type },
       RootCauseAnalysis: this.qc.rcaComments ? this.qc.rcaComments : '',
@@ -298,13 +316,12 @@ export class ActionsPopupComponent implements OnInit {
       BusinessImpact: this.qc.selectedBusinessImpact ? this.qc.selectedBusinessImpact : '',
       SeverityLevel: this.qc.selectedCDCategory ? this.qc.selectedCDCategory : '',
       Segregation: this.qc.selectedSegregation ? this.qc.selectedSegregation : '',
-      ResourcesId: { 'results': this.qc.selectedSegregation === 'Internal' ? cd.Internal.resourcesID : cd.External.resourcesID }
+      ResourcesId: { results: resources.resourcesID }
     };
     setTimeout(async () => {
       this.updateCD(cdDetails);
       let oldStatus = this.qc.status;
       this.qc.status = popupActionClicked === 'closeBtn' ? this.globalConstant.cdStatus.ValidationPending : this.qc.status;
-      this.bindTableEvent.emit(this.qc);
       if (popupActionClicked === 'closeBtn') {
         const mailTemplates = [this.qmsConstant.EmailTemplates.CD.ValidationPending,
         this.qmsConstant.EmailTemplates.CD.NotifyAllOtherResources];
@@ -324,22 +341,31 @@ export class ActionsPopupComponent implements OnInit {
           if (notifyMailTemplate.length > 0) {
             let notifyMailContent = notifyMailTemplate[0].ContentMT;
             const notifyMailSubject = this.qc.projectCode + '(#' + this.qc.qcID + '): Dissatisfaction';
-            const strTo = this.qc.selectedSegregation === 'Internal' ? cd.Internal.resourcesEmail.join(',') : cd.External.resourcesEmail.join(',');
+            const strTo = resources.resourcesEmail ? resources.resourcesEmail.join(',') : '';
             notifyMailContent = this.replaceContent(notifyMailContent, '@@Val1@@', this.global.sharePointPageObject.webAbsoluteUrl + '/dashboard#/qms/personalFeedback/externalFeedback');
             this.commonService.SetNewrelic('QMS', 'CD-Popup-closeCD', 'SendMail');
             this.spService.sendMail(strTo, this.global.currentUser.email, notifyMailSubject, notifyMailContent, this.global.currentUser.email);
           }
         }
-        this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD status updated for ' + this.qc.projectCode + '.' });
+        msg = 'CD status updated for ' + this.qc.projectCode + '.';
+        // this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD status updated for ' + this.qc.projectCode + '.' });
         oldStatus = this.qc.status;
-        this.resetAccountableResource();
+
+        // this.resetAccountableResource();
       } else {
         // this.setPopupSuccessMsg('Data saved!');
-        this.commonService.showToastrMessage(this.globalConstant.MessageType.success,'Data Saved.',false);
+        // this.commonService.showToastrMessage(this.globalConstant.MessageType.success, 'Data Saved.', false);
+        msg = 'Data Saved.';
       }
       this.hidePopupLoader = true;
       this.hidePopupTable = false;
-      this.close();
+      this.popupConfig.close({
+        qc: this.qc,
+        action: 'Close',
+        msgType: this.globalConstant.MessageType.success,
+        msg
+      });
+      // this.close();
     }, 300);
   }
 
@@ -348,6 +374,7 @@ export class ActionsPopupComponent implements OnInit {
    *
    */
   updateValidity(actionClicked) {
+    let msg = '';
     this.hidePopupLoader = false;
     this.hidePopupTable = true;
     const metadata = {
@@ -389,7 +416,7 @@ export class ActionsPopupComponent implements OnInit {
         cdDetails.Status + ' - ' + this.globalConstant.cdStatus.Valid : cdDetails.Status + ' - ' + this.globalConstant.cdStatus.InValid;
       this.qc.isActive = cdDetails.IsActiveCH;
       this.qc.rejectionComments = this.qc.rejectionComments + '\n' + this.qc.newRejectionComments;
-      this.bindTableEvent.emit(this.qc);
+      // this.bindTableEvent.emit(this.qc);
       if (actionClicked === 'reject') {
         const rejectTemplate = await this.getMailContent(this.qmsConstant.EmailTemplates.CD.RejectQualityComplaint);
         if (rejectTemplate.length > 0) {
@@ -400,17 +427,26 @@ export class ActionsPopupComponent implements OnInit {
           this.commonService.SetNewrelic('QMS', 'CD-updateValidity', 'SendMail');
           this.spService.sendMail(strTo, this.global.currentUser.email, rejectMailSubject, rejectMailContent, this.global.currentUser.email);
         }
-        this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD rejected for ' + this.qc.projectCode + '.' });
+        msg = 'CD rejected for ' + this.qc.projectCode + '.';
+        // this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD rejected for ' + this.qc.projectCode + '.' });
       } else if (actionClicked === 'valid') {
-        this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD marked as valid and closed for ' + this.qc.projectCode + '.' });
+        msg = 'CD marked as valid and closed for ' + this.qc.projectCode + '.';
+        // this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD marked as valid and closed for ' + this.qc.projectCode + '.' });
       } else if (actionClicked === 'invalid') {
-        this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD marked as invalid and closed for ' + this.qc.projectCode + '.' });
+        msg =  'CD marked as invalid and closed for ' + this.qc.projectCode + '.';
+        // this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD marked as invalid and closed for ' + this.qc.projectCode + '.' });
       }
       // emit success message to CD component
-      this.resetAccountableResource();
+      // this.resetAccountableResource();
       this.hidePopupLoader = true;
       this.hidePopupTable = false;
-      this.close();
+      this.popupConfig.close({
+        qc: this.qc,
+        action: 'updateValidity',
+        msgType: this.globalConstant.MessageType.success,
+        msg
+      });
+      // this.close();
     }, 300);
   }
 
@@ -446,6 +482,7 @@ export class ActionsPopupComponent implements OnInit {
    * tag CD to project or client
    */
   tag() {
+    let msg = '';
     this.hidePopupLoader = false;
     this.hidePopupTable = true;
     setTimeout(async () => {
@@ -474,7 +511,7 @@ export class ActionsPopupComponent implements OnInit {
       this.qc.CS.results = [...cm1, this.qc.selectedTaggedItem.CMLevel2];
       this.updateCD(cdDetails);
       // Send updated qc to CD component and update CD
-      this.bindTableEvent.emit(this.qc);
+      // this.bindTableEvent.emit(this.qc);
       // send mail
       const createCDTemplate = await this.getMailContent(this.qmsConstant.EmailTemplates.CD.CreateQualityComplaint);
       if (createCDTemplate.length > 0) {
@@ -485,10 +522,17 @@ export class ActionsPopupComponent implements OnInit {
         this.commonService.SetNewrelic('QMS', 'CD-actions-popup-tag', 'SendMail');
         this.spService.sendMail(strTo, this.global.currentUser.email, createMailSubject, createMailContent, this.global.currentUser.email);
       }
-      this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD Tagged Successfully!' });
-      this.close();
+      msg = 'CD Tagged Successfully.'
+      // this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD Tagged Successfully!' });
+      // this.close();
       this.hidePopupLoader = true;
       this.hidePopupTable = false;
+      this.popupConfig.close({
+        qc: this.qc,
+        action: 'updateValidity',
+        msgType: this.globalConstant.MessageType.success,
+        msg
+      });
     });
   }
 

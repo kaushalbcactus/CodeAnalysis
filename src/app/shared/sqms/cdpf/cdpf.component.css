@@ -1,0 +1,5 @@
+::ng-deep li.ui-state-active{
+  border-color: #ca5151 !important;
+  background-color: #c94c4c !important;
+  color: #ffffff !important;
+}
