@@ -169,7 +169,7 @@ export class CDComponent implements OnInit, OnDestroy {
         .replace('{{endDate}}', endDate);
       if (filterObj && filterObj.selectedStatus && filterObj.selectedStatus.type !== 'All') {
         // tslint:disable: quotemark
-        const validityStatus = filterObj.selectedStatus.type.indexOf('Closed') > -1 ? filterObj.selectedStatus.type.split(' - ')[1] === 'Valid' ? '1' : '0' : '';
+        const validityStatus = filterObj.selectedStatus.type.indexOf('Closed') > -1 ? filterObj.selectedStatus.type.split(' - ')[1] === 'Valid' ? 'Yes' : 'No' : '';
         qcComponent.getQCAdmin.filter = validityStatus ? qcComponent.getQCAdmin.filter.replace('{{statusFilter}}', "Status eq '" + filterObj.selectedStatus.type.split(' - ')[0] + "' and IsActiveCH eq " + validityStatus + " and ") :
           qcComponent.getQCAdmin.filter.replace('{{statusFilter}}', "Status eq '" + filterObj.selectedStatus.type + "' and ");
       } else {
@@ -182,7 +182,7 @@ export class CDComponent implements OnInit, OnDestroy {
       qcComponent.getQC.filter = qcComponent.getQC.filter.replace('{{startDate}}', startDate)
         .replace('{{endDate}}', endDate);
       if (filterObj && filterObj.selectedStatus && filterObj.selectedStatus.type !== 'All') {
-        const validityStatus = filterObj.selectedStatus.type.indexOf('Closed') > -1 ? filterObj.selectedStatus.type.split(' - ')[1] === 'Valid' ? '1' : '0' : '';
+        const validityStatus = filterObj.selectedStatus.type.indexOf('Closed') > -1 ? filterObj.selectedStatus.type.split(' - ')[1] === 'Valid' ? 'Yes' : 'No' : '';
         qcComponent.getQC.filter = validityStatus ? qcComponent.getQC.filter.replace('{{statusFilter}}', "Status eq '" + filterObj.selectedStatus.type.split(' - ')[0] + "' and IsActiveCH eq " + validityStatus + " and ") :
           qcComponent.getQC.filter.replace('{{statusFilter}}', "Status eq '" + filterObj.selectedStatus.type + "' and ");
       } else {
@@ -211,7 +211,7 @@ export class CDComponent implements OnInit, OnDestroy {
       cd.isLoggedInTL = tl.length > 0 ? true : false;
       cd.formattedSentDate = datePipe.transform(cd.SentDate, 'd MMM, yyyy');
       cd.fullUrl = window.location.origin + '/' + cd.FileURL;
-      validity = cd.IsActiveCH === true ? this.globalConstant.cdStatus.Valid : this.globalConstant.cdStatus.InValid;
+      validity = cd.IsActiveCH === 'Yes' ? this.globalConstant.cdStatus.Valid : this.globalConstant.cdStatus.InValid;
       cd.Status = cd.Status === this.globalConstant.cdStatus.Closed ? cd.Status + ' - ' + validity : cd.Status;
       return cd;
     });

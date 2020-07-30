@@ -337,7 +337,7 @@ export class PreStackcommonService {
         dayResourceCapacity.mandatoryHrs = true;
       }
     }
-    availableHrs = availableHrs.indexOf('-') > -1 ? '0:0' : availableHrs;
+    availableHrs = availableHrs.indexOf('-') > -1 ? '0:0' : this.common.convertToHrsMins(this.common.roundToPrecision(this.common.convertFromHrsMins(availableHrs), 0.25));
     availableHrs = dayResourceCapacity.mandatoryHrs || dayResourceCapacity.totalTimeAllocated >= maxLimit ? availableHrs :
       this.common.addHrsMins([availableHrs, extraHrs]);
     return availableHrs;

@@ -1173,7 +1173,11 @@ export class TimelineComponent
       );
       const milIndex = this.milestoneData.findIndex(e => e.data.id === m.id);
       if (getClientReview) {
-        m.end_date = new Date(getClientReview.start_date);
+        if(getClientReview.start_date > m.end_date) {
+          getClientReview.start_date = new Date(m.end_date);
+        } else {
+          m.end_date = new Date(getClientReview.start_date);
+        }
         getClientReview.start_date = new Date(getClientReview.start_date);
         getClientReview.end_date = new Date(getClientReview.end_date);
       } else {
