@@ -314,12 +314,12 @@ export class UserCapacitycommonService {
 
         const allTimeSpentArray = oUser.TimeSpentTasks.filter(
           (c) =>
-            c.TimeSpentDate.getTime() ===
+          new Date(c.TimeSpentDate).getTime() ===
             new Date(oUser.dates[i].date).getTime()
         )
           ? oUser.TimeSpentTasks.filter(
             (c) =>
-              c.TimeSpentDate.getTime() ===
+            new Date(c.TimeSpentDate).getTime() ===
               new Date(oUser.dates[i].date).getTime()
           ).map(
             (c) =>

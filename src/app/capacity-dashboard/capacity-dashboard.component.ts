@@ -388,7 +388,16 @@ export class CapacityDashboardComponent implements OnInit {
           );
           return false;
         }else{
-          this.EnableBlockResourceDialog();
+          if(this.fetchDataloader){
+            this.EnableBlockResourceDialog();
+          } else {
+            this.commonService.showToastrMessage(
+              this.constants.MessageType.warn,
+              "Need to search user capacity before blocking resource.",
+              false,
+              true
+            );
+          }
         }
        
       }
