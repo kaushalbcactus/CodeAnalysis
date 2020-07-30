@@ -705,7 +705,7 @@ export class TimelineComponent
   /////// Impelement reorder function
   reOrderTaskItems(milestoneData) {
     milestoneData.forEach(milestone => {
-      if (milestone.data.type === "milestone") {
+      if (milestone.data.type === 'milestone' && milestone.data.status !== 'Completed' && milestone.data.status !== 'Deleted') {
         let getSubMil = [],
           getTasks = [];
         getSubMil = milestone.children.filter(
@@ -1507,7 +1507,7 @@ export class TimelineComponent
         case "confirmMilestone":
           this.confirmMilestone(task);
           break;
-        case "confirmSubilestone":
+        case "confirmSubmilestone":
           this.confirmMilestone(task);
           break;
         case "editAllocation":
@@ -1974,16 +1974,16 @@ export class TimelineComponent
       new Date(this.singleTask.end_date).getDate()
     ) {
       if (isStartDate) {
-          this.maxTime = this.singleTask.pUserEndTimePart;
-          this.minTime = "12:00 AM";
-        } else {
-          this.maxTime = "11:45 PM";
-          this.minTime = this.singleTask.pUserStartTimePart;
-        }
+        this.maxTime = this.singleTask.pUserEndTimePart;
+        this.minTime = "12:00 AM";
       } else {
         this.maxTime = "11:45 PM";
-        this.minTime = "12:00 AM";
+        this.minTime = this.singleTask.pUserStartTimePart;
       }
+    } else {
+      this.maxTime = "11:45 PM";
+      this.minTime = "12:00 AM";
+    }
   }
 
   setTime(time) {
@@ -5102,7 +5102,7 @@ export class TimelineComponent
     ) {
       // debugger;
       switch (milestoneTask.skillLevel) {
-        case "Write":
+        case 'Writer':
           writers.push({
             ID: milestoneTask.AssignedTo.ID,
             Name: milestoneTask.AssignedTo.Title
@@ -5116,7 +5116,7 @@ export class TimelineComponent
           });
           arrQualityCheckerIds.push(milestoneTask.AssignedTo.ID);
           break;
-        case "Edit":
+        case 'Editor':
           editors.push({
             ID: milestoneTask.AssignedTo.ID,
             Name: milestoneTask.AssignedTo.Title
@@ -5137,6 +5137,13 @@ export class TimelineComponent
             Name: milestoneTask.AssignedTo.Title
           });
           arrPubSupportIds.push(milestoneTask.AssignedTo.ID);
+          break;
+        case 'Reviewer':
+          reviewers.push({
+            ID: milestoneTask.AssignedTo.ID,
+            Name: milestoneTask.AssignedTo.Title
+          });
+          arrReviewers.push(milestoneTask.AssignedTo.ID);
           break;
         default:
           break;
@@ -6460,8 +6467,8 @@ export class TimelineComponent
 
   async checkForPubSupportTasks(allTasks) {
     const allowedTasks = ['Journal Requirement','Galley', 'Submission Pkg', 'Submit', ];
-    for (const index in allTasks) { 
-      if (allTasks.hasOwnProperty(index)) { 
+    for (const index in allTasks) {
+      if (allTasks.hasOwnProperty(index)) {
         if(allowedTasks.includes(allTasks[index].title)) {
           const batchUrl = [];
           let jcGalleyObj;
@@ -6469,7 +6476,7 @@ export class TimelineComponent
           let jcSubObj;
           let jcReqObj;
           switch(allTasks[index].title) {
-    
+
             case 'Submission Pkg' :
               jcSubObj = Object.assign({}, this.queryConfig);
               jcSubObj.url = this.spServices.getReadURL(this.constants.listNames.JCSubmission.name, this.taskAllocationService.myDashboardComponent.SubmissionPkg);
@@ -6503,7 +6510,7 @@ export class TimelineComponent
               batchUrl.push(jcReqObj);
               break;
             }
-        
+
             let result = await this.spServices.executeBatch(batchUrl);
             let response = result.length > 0 ? result.map(a => a.retItems) : [];
             let jcSubId = '';
