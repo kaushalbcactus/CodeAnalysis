@@ -65,6 +65,12 @@ export class PubsuportConstantsService {
             top: 1,
             orderby: "Created desc"
         },
+        jcSubmissionforResubmit: {
+            select: "ID, Status" ,
+            filter: "Title eq '{{ProjectCode}}' and Status ne 'Deleted'",
+            top: 2,
+            orderby: "Created desc"
+        },
         jcGalley: {
             select: "ID, Title, JCSubmissionID, GalleyDate, GalleyURL, Created",
             filter: "Title eq '{{ProjectCode}}' and JCSubmissionID eq '{{JCSubID}}' ",

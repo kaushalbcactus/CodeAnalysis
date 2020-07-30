@@ -49,7 +49,10 @@
             <tr>
                 <th style="width: 3%;"></th>
                 <th *ngFor="let col of columns" [ngSwitch]="col.field">
-                    <ng-container *ngIf="col.field">
+                    <ng-container *ngIf="col.field == 'ProjectCode'">
+                        <input pInputText type="text" [(ngModel)]="projectCode" (input)="dt.filter($event.target.value, col.field, 'contains')">
+                    </ng-container>
+                    <ng-container *ngIf="col.field && col.field !== 'ProjectCode'">
                         <input pInputText type="text" (input)="dt.filter($event.target.value, col.field, 'contains')">
                     </ng-container>
                 </th>
@@ -201,15 +204,19 @@
                                                     <span>{{item.element.JournalRequirementDate | date:'MMM d, y, hh:mm a'}}</span>
                                                 </td>
                                                 <td>
-                                                    <a style="color: red;" *ngIf="item.element.JournalRequirementURL" (click)="downloadFile(item.element.JournalRequirementURL, item.element.Title+'_JournalRequirementDocument_files')">Download
+                                                    <a style="color: red;" *ngIf="item.element.JournalRequirementURL" (click)="downloadFile(item.element.JournalRequirementURL, item.element.Title+'_JournalRequirementDocument_files')">
                                                         &nbsp;<i class="fa fa-download" aria-hidden="true"></i></a>
+                                                    <a style="color: red;" *ngIf="item.element.JournalRequirementURL" (click)="replaceFile('JournalRequirementURL')">
+                                                        &nbsp;<i class="fa fa-upload" aria-hidden="true"></i></a>
                                                 </td>
                                                 <td>
                                                     <span>{{item.project.JournalSelectionDate | date:'MMM d, y, hh:mm a'}}</span>
                                                 </td>
                                                 <td>
-                                                    <a style="color: red;" *ngIf="item.element.JournalRequirementResponse" (click)="downloadFile(item.element.JournalRequirementResponse, item.element.Title+'_JournalRequirementResponse_files')">Download
+                                                    <a style="color: red;" *ngIf="item.element.JournalRequirementResponse" (click)="downloadFile(item.element.JournalRequirementResponse, item.element.Title+'_JournalRequirementResponse_files')">
                                                         &nbsp;<i class="fa fa-download" aria-hidden="true"></i></a>
+                                                    <a style="color: red;" *ngIf="item.element.JournalRequirementResponse" (click)="replaceFile('JournalRequirementResponse')">
+                                                            &nbsp;<i class="fa fa-upload" aria-hidden="true"></i></a>
                                                 </td>
                                                 <td>
                                                     <a (click)="jcViewDetails(i)" class="btn go view_details" data-parent="detail_1">
@@ -241,9 +248,10 @@
                                                     </td>
                                                     <td colspan="2">
                                                         <label>Journal selection document :</label><br>
-                                                        <a style="color: red;" (click)="downloadFile(journal_Conf_data[0].project.JournalSelectionURL, journal_Conf_data[0].project.ProjectCode+'_JournalSelection_files')">Download
+                                                        <a style="color: red;" *ngIf="journal_Conf_data[0].project.JournalSelectionURL" (click)="downloadFile(journal_Conf_data[0].project.JournalSelectionURL, journal_Conf_data[0].project.ProjectCode+'_JournalSelection_files')">
                                                             &nbsp;<i class="fa fa-download" aria-hidden="true"></i></a>
-
+                                                        <a style="color: red;" *ngIf="journal_Conf_data[0].project.JournalSelectionURL" (click)="replaceFile('JournalSelectionURL')">
+                                                            &nbsp;<i class="fa fa-upload" aria-hidden="true"></i></a>
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -254,8 +262,10 @@
                                                     </td>
                                                     <td colspan="3">
                                                         <label>Published PDF:</label><br>
-                                                        <a style="color: red;" (click)="downloadFile(journal_Conf_details.PublicationURL, journal_Conf_details.Title+'_PublishPDFfile')">Download
+                                                        <a style="color: red;" *ngIf="journal_Conf_details.PublicationURL" (click)="downloadFile(journal_Conf_details.PublicationURL, journal_Conf_details.Title+'_PublishPDFfile')">
                                                             &nbsp;<i class="fa fa-download" aria-hidden="true"></i></a>
+                                                        <a style="color: red;" *ngIf="journal_Conf_details.PublicationURL" (click)="replaceFile('PublicationURL')">
+                                                            &nbsp;<i class="fa fa-upload" aria-hidden="true"></i></a>
                                                     </td>
                                                     <td colspan="3">
                                                         <label>User Name:</label><br>
@@ -338,14 +348,18 @@
                                                                         <span>{{s.SubmissionDate | date:'MMM d, y, hh:mm a'}}</span>
                                                                     </td>
                                                                     <td>
-                                                                        <a style="color: red;" (click)="downloadFile(s.SubmissionPkgURL, s.Title+'_SubmissionPkg_files')">Download
+                                                                        <a style="color: red;" *ngIf="s.SubmissionPkgURL" (click)="downloadFile(s.SubmissionPkgURL, s.Title+'_SubmissionPkg_files')">
                                                                             &nbsp;<i class="fa fa-download"
                                                                                 aria-hidden="true"></i></a>
+                                                                        <a style="color: red;" *ngIf="s.SubmissionPkgURL" (click)="replaceFile('SubmissionPkgURL')">
+                                                                            &nbsp;<i class="fa fa-upload" aria-hidden="true"></i></a>
                                                                     </td>
                                                                     <td>
-                                                                        <a style="color: red;" (click)="downloadFile(s.SubmissionURL, s.Title+'_SubmissionConfirmation_files')">Download
+                                                                        <a style="color: red;" *ngIf="s.SubmissionURL" (click)="downloadFile(s.SubmissionURL, s.Title+'_SubmissionConfirmation_files')">
                                                                             &nbsp;<i class="fa fa-download"
                                                                                 aria-hidden="true"></i></a>
+                                                                        <a style="color: red;" *ngIf="s.SubmissionURL" (click)="replaceFile('SubmissionURL')">
+                                                                            &nbsp;<i class="fa fa-upload" aria-hidden="true"></i></a>
                                                                     </td>
                                                                     <td>
                                                                         <span>{{s.Decision}}</span>
@@ -354,9 +368,11 @@
                                                                         <span>{{s.DecisionDate | date:'MMM d, y, hh:mm a'}}</span>
                                                                     </td>
                                                                     <td>
-                                                                        <a style="color: red;" (click)="downloadFile(s.DecisionURL,s.Title+'_Decision_files')">Download
+                                                                        <a style="color: red;" *ngIf="s.DecisionURL" (click)="downloadFile(s.DecisionURL,s.Title+'_Decision_files')">
                                                                             &nbsp;<i class="fa fa-download"
                                                                                 aria-hidden="true"></i></a>
+                                                                        <a style="color: red;" *ngIf="s.DecisionURL" (click)="replaceFile('DecisionURL')">
+                                                                            &nbsp;<i class="fa fa-upload" aria-hidden="true"></i></a>
                                                                     </td>
                                                                     <td>
                                                                         <a *ngIf="s.Decision === 'Accepted'" (click)="viewGalleyDetails(galleyIndex, s)" class="btn go view_details" data-parent="detail_1">
@@ -388,9 +404,11 @@
                                                                         </td>
                                                                         <td colspan="6">
                                                                             <label>Galley Document</label><br>
-                                                                            <a style="color: red;" (click)="downloadFile(g.GalleyURL,g.Title+'_GalleyDoc_files')">Download
+                                                                            <a style="color: red;" *ngIf="g.GalleyURL" (click)="downloadFile(g.GalleyURL,g.Title+'_GalleyDoc_files')">
                                                                                 &nbsp;<i class="fa fa-download"
                                                                                     aria-hidden="true"></i></a>
+                                                                            <a style="color: red;" *ngIf="g.GalleyURL" (click)="replaceFile('GalleyURL')">
+                                                                                &nbsp;<i class="fa fa-upload" aria-hidden="true"></i></a>
                                                                         </td>
                                                                     </tr>
                                                                 </ng-container>
@@ -1089,5 +1107,30 @@
     <p-footer>
         <button pButton type="button" label="Submit" [disabled]="submitBtn.isClicked" (click)="onSubmit('updateJCRequirementModal')"></button>
         <button pButton type="button" label="Close" (click)="cancelFormSub('updateJCRequirementModal')"></button>
+    </p-footer>
+</p-dialog>
+
+<!--- Replace Existing Document File-->
+
+<p-dialog header="Replace Document" [(visible)]="replaceDocument" [modal]="true" [draggable]="false" [contentStyle]="{'min-height':'150px','max-height':'450px'}" [responsive]="true" [style]="{'width': '45%'}" (onHide)="cancelFormSub('replaceDocument')">
+
+    <form id="myform" [formGroup]="replace_Document_Form">
+        <div class="ui-g">
+            <div class="row container">
+                <div class="col-lg-4">
+                    <label for="upload-document">Upload files:</label>
+                </div>
+                <div class="col-lg-8">
+                    <input type="file" name="myfile" class="form-control" (change)="onReplaceFile($event)" formControlName="documentFile" #fileInput />
+                    <div *ngIf="formSubmit.isSubmit && isValidReplaceDocumentForm.documentFile.errors">
+                        <div *ngIf="isValidReplaceDocumentForm.documentFile.errors.required" style="color:red;">File is required.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <p-footer>
+        <button pButton type="button" label="Submit" [disabled]="submitBtn.isClicked" (click)="onSubmit('replaceDocument')"></button>
+        <button pButton type="button" label="Close" (click)="cancelFormSub('replaceDocument')"></button>
     </p-footer>
 </p-dialog>

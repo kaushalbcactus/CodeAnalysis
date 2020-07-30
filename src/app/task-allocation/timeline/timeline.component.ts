@@ -171,8 +171,9 @@ export class TimelineComponent
     ta: [],
     deliverable: [],
     account: [],
-    projectType: "",
-    practiceArea: ""
+    projectType: '',
+    practiceArea: '',
+    isPubSupport : ''
   };
   public queryConfig = {
     data: null,
@@ -5021,7 +5022,7 @@ export class TimelineComponent
   async saveTasks() {
     this.disableSave = true;
     if (this.milestoneData.length > 0) {
-      const isValid = this.validateSaveTask();
+      const isValid = await this.validateSaveTask();
       if (isValid) {
         this.graphFlag = this.visualgraph;
         this.visualgraph = false;
@@ -6291,7 +6292,7 @@ export class TimelineComponent
     return true;
   }
 
-  validateSaveTask() {
+  async validateSaveTask() {
     const projectBudgetHours = this.oProjectDetails.budgetHours;
     const milestonesData = this.milestoneData;
     const allMilestones = milestonesData
@@ -6338,6 +6339,20 @@ export class TimelineComponent
         this.milestoneData,
         false
       );
+
+      let validateTasks = this.taskAllocateCommonService.getTasksFromMilestones(
+        this.milestoneData.find(m => m.data.type === 'milestone' && m.data.isCurrent && m.data.edited == true),
+        false,
+        this.milestoneData,
+        false
+      );
+
+      // if(this.oProjectDetails.isPubSupport == 'Yes') {
+      //   const validPubSupportTask =  await this.checkForPubSupportTasks(validateTasks);
+      //   if(!validPubSupportTask) {
+      //     return false;
+      //   }
+      // }
 
       let validateDates = AllTasks.filter(
         t =>
@@ -6439,6 +6454,110 @@ export class TimelineComponent
         return false;
       }
       previousNode = milestone.data;
+    }
+    return true;
+  }
+
+  async checkForPubSupportTasks(allTasks) {
+    const allowedTasks = ['Journal Requirement','Galley', 'Submission Pkg', 'Submit', ];
+    for (const index in allTasks) { 
+      if (allTasks.hasOwnProperty(index)) { 
+        if(allowedTasks.includes(allTasks[index].title)) {
+          const batchUrl = [];
+          let jcGalleyObj;
+          let jcsubmitObj;
+          let jcSubObj;
+          let jcReqObj;
+          switch(allTasks[index].title) {
+    
+            case 'Submission Pkg' :
+              jcSubObj = Object.assign({}, this.queryConfig);
+              jcSubObj.url = this.spServices.getReadURL(this.constants.listNames.JCSubmission.name, this.taskAllocationService.myDashboardComponent.SubmissionPkg);
+              jcSubObj.url = jcSubObj.url.replace(/{{projectCode}}/gi, this.oProjectDetails.projectCode).replace(/{{Status}}/gi, 'Selected').replace(/{{StatusResubmit}}/gi, 'Resubmit to same journal');
+              jcSubObj.listName = this.constants.listNames.JCSubmission.name;
+              jcSubObj.type = 'GET';
+              batchUrl.push(jcSubObj);
+              break;
+            case 'Galley':
+              jcGalleyObj = Object.assign({}, this.queryConfig);
+              jcGalleyObj.url = this.spServices.getReadURL(this.constants.listNames.JournalConf.name, this.taskAllocationService.myDashboardComponent.Submit);
+              jcGalleyObj.url = jcGalleyObj.url.replace(/{{projectCode}}/gi, this.oProjectDetails.projectCode).replace(/{{Status}}/gi, 'Accepted').replace(/{{Status1}}/gi, 'Galleyed');
+              jcGalleyObj.listName = this.constants.listNames.JournalConf.name;
+              jcGalleyObj.type = 'GET';
+              batchUrl.push(jcGalleyObj);
+              break;
+            case 'Submit':
+              jcsubmitObj = Object.assign({}, this.queryConfig);
+              jcsubmitObj.url = this.spServices.getReadURL(this.constants.listNames.JournalConf.name, this.taskAllocationService.myDashboardComponent.Submit);
+              jcsubmitObj.url = jcsubmitObj.url.replace(/{{projectCode}}/gi, this.oProjectDetails.projectCode).replace(/{{Status}}/gi, 'Selected').replace(/{{Status1}}/gi, 'Resubmit to same journal');
+              jcsubmitObj.listName = this.constants.listNames.JournalConf.name;
+              jcsubmitObj.type = 'GET';
+              batchUrl.push(jcsubmitObj);
+              break;
+            case 'Journal Requirement':
+              jcReqObj = Object.assign({}, this.queryConfig);
+              jcReqObj.url = this.spServices.getReadURL(this.constants.listNames.JournalConf.name, this.taskAllocationService.myDashboardComponent.JournalRequirement);
+              jcReqObj.url = jcReqObj.url.replace(/{{projectCode}}/gi, this.oProjectDetails.projectCode);
+              jcReqObj.listName = this.constants.listNames.JournalConf.name;
+              jcReqObj.type = 'GET';
+              batchUrl.push(jcReqObj);
+              break;
+            }
+        
+            let result = await this.spServices.executeBatch(batchUrl);
+            let response = result.length > 0 ? result.map(a => a.retItems) : [];
+            let jcSubId = '';
+            let jcId = '';
+            if (response.length > 0) {
+              switch (allTasks[index].title) {
+                case 'Submission Pkg':
+                  jcSubId = response[0].length > 0 ? response[0][0].ID : 0;
+                  if(!jcSubId) {
+                    this.commonService.showToastrMessage(
+                      this.constants.MessageType.error,
+                      'Submission Pkg cant be plotted as PubSupportStatus is not Selected or Resubmit to same journal',
+                      false
+                    );
+                    return false;
+                  }
+                  break;
+                case 'Galley':
+                  jcId = response.length > 1 ? response[1].length > 0 ? response[1][0].ID : 0 : 0;
+                  if(!jcId) {
+                    this.commonService.showToastrMessage(
+                      this.constants.MessageType.error,
+                      'Galley / GalleySlot cant be plotted as as PubSupportStatus is not Accepted or Galleyed',
+                      false
+                    );
+                    return false;
+                  }
+                  break;
+                case 'Submit':
+                  jcId = response.length > 1 ? response[1].length > 0 ? response[1][0].ID : 0 : 0;
+                  if(!jcId) {
+                    this.commonService.showToastrMessage(
+                      this.constants.MessageType.error,
+                      'Submit / SubmitSlot cant be plotted as PubSupportStatus is not Selected or Resubmit to same journal',
+                      false
+                    );
+                    return false;
+                  }
+                  break;
+                case 'Journal Requirement':
+                  jcId = response[0].length > 0 ? response[0][0].ID : 0;
+                  if(!jcId) {
+                    this.commonService.showToastrMessage(
+                      this.constants.MessageType.error,
+                      'Journal Requirement cant be plotted as Journal Information is not added',
+                      false
+                    );
+                    return false;
+                  }
+                  break;
+              }
+            }
+        }
+      }
     }
     return true;
   }
@@ -6576,22 +6695,27 @@ export class TimelineComponent
   }
 
   async setAsNextMilestoneCall(task, msg) {
-    await this.commonService
-      .confirmMessageDialog("Confirmation", msg, null, ["Yes", "No"], false)
-      .then(async Confirmation => {
-        if (Confirmation === "Yes") {
-          this.selectedSubMilestone = task;
-          const validateNextMilestone = this.validateNextMilestone(
-            this.selectedSubMilestone
-          );
+    await this.commonService.confirmMessageDialog('Confirmation', msg, null, ['Yes', 'No'], false).then(async Confirmation => {
+      if (Confirmation === 'Yes') {
+        this.selectedSubMilestone = task;
+        let currMilTasks = this.taskAllocateCommonService.getTasksFromMilestones(
+          this.selectedSubMilestone,
+          false,
+          this.milestoneData,
+          false
+        );
+        // let isValid = this.checkForPubSupportTasks(currMilTasks);
+        // if(isValid){
+          const validateNextMilestone = this.validateNextMilestone(this.selectedSubMilestone);
           if (validateNextMilestone) {
             this.loaderenable = true;
             setTimeout(async () => {
               await this.setAsNextMilestone(this.selectedSubMilestone);
             }, 200);
           }
-        }
-      });
+      //  }
+      }
+    });
   }
 
   async setAsNextMilestone(subMile) {
