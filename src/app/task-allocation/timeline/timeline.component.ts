@@ -5026,7 +5026,7 @@ export class TimelineComponent
   async saveTasks() {
     this.disableSave = true;
     if (this.milestoneData.length > 0) {
-      const isValid = await this.validateSaveTask();
+      const isValid = this.validateSaveTask();
       if (isValid) {
         this.graphFlag = this.visualgraph;
         this.visualgraph = false;
@@ -6303,7 +6303,7 @@ export class TimelineComponent
     return true;
   }
 
-  async validateSaveTask() {
+  validateSaveTask() {
     const projectBudgetHours = this.oProjectDetails.budgetHours;
     const milestonesData = this.milestoneData;
     const allMilestones = milestonesData
@@ -6351,12 +6351,12 @@ export class TimelineComponent
         false
       );
 
-      let validateTasks = this.taskAllocateCommonService.getTasksFromMilestones(
-        this.milestoneData.find(m => m.data.type === 'milestone' && m.data.isCurrent && m.data.edited == true),
-        false,
-        this.milestoneData,
-        false
-      );
+      // let validateTasks = this.taskAllocateCommonService.getTasksFromMilestones(
+      //   this.milestoneData.find(m => m.data.type === 'milestone' && m.data.isCurrent && m.data.edited == true),
+      //   false,
+      //   this.milestoneData,
+      //   false
+      // );
 
       // if(this.oProjectDetails.isPubSupport == 'Yes') {
       //   const validPubSupportTask =  await this.checkForPubSupportTasks(validateTasks);
@@ -6709,12 +6709,12 @@ export class TimelineComponent
     await this.commonService.confirmMessageDialog('Confirmation', msg, null, ['Yes', 'No'], false).then(async Confirmation => {
       if (Confirmation === 'Yes') {
         this.selectedSubMilestone = task;
-        let currMilTasks = this.taskAllocateCommonService.getTasksFromMilestones(
-          this.selectedSubMilestone,
-          false,
-          this.milestoneData,
-          false
-        );
+        // let currMilTasks = this.taskAllocateCommonService.getTasksFromMilestones(
+        //   this.selectedSubMilestone,
+        //   false,
+        //   this.milestoneData,
+        //   false
+        // );
         // let isValid = this.checkForPubSupportTasks(currMilTasks);
         // if(isValid){
           const validateNextMilestone = this.validateNextMilestone(this.selectedSubMilestone);
