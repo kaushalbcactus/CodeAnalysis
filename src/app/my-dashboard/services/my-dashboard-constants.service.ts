@@ -232,7 +232,7 @@ export class MyDashboardConstantsService {
     AllMilestones:
     {
       select: 'ID,Title,SubMilestones',
-      filter: 'ProjectCode eq \'{{projectCode}}\' and ContentType eq \'Summary Task\' and (Status eq \'In Progress\' or (Status eq \'Completed\' and Actual_x0020_End_x0020_Date ge \'{{DateString}}\'))',
+      filter: 'ProjectCode eq \'{{projectCode}}\' and ContentTypeCH eq \'Milestone\' and (Status eq \'In Progress\' or (Status eq \'Completed\' and Actual_x0020_End_x0020_Date ge \'{{DateString}}\'))',
       top: 4500
     },
 

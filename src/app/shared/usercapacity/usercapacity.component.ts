@@ -1791,7 +1791,7 @@ export class UsercapacityComponent implements OnInit {
               const miltasks = arrResults[nCount + 1];
               if (
                 miltasks.length &&
-                miltasks[0].ContentType.Name === "Summary Task"
+                miltasks[0].ContentTypeCH === "Milestone"
               ) {
                 miltasks.splice(0, 1);
               }
