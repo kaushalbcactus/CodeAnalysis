@@ -17,7 +17,9 @@
 
 
 
-
+::ng-deep body .ui-overlaypanel .ui-overlaypanel-close {
+  background-color: #db1721 !important;
+}
 
 /** CSS Fix by Ashish **/
 

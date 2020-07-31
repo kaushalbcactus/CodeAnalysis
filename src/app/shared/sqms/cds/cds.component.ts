@@ -219,6 +219,7 @@ export class CdsComponent implements OnInit, AfterViewChecked, DoCheck {
       arrQCs = await this.getMyQCItems(filterObj);
     }
     this.bindTable(arrQCs);
+    this.qcs = arrQCs;
   }
 
   /**
@@ -388,7 +389,7 @@ export class CdsComponent implements OnInit, AfterViewChecked, DoCheck {
         actionClicked: event.currentTarget.id,
         actionClickedTitle: event.currentTarget.title
       },
-      width: "50vw",
+      width: "60vw",
       header: event.currentTarget.title,
       contentStyle: { "max-height": "100vh", "overflow-y": "auto" },
       closable: true

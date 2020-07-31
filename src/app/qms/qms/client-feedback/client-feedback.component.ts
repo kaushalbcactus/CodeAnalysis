@@ -6,8 +6,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./client-feedback.component.css']
 })
 export class ClientFeedbackComponent implements OnInit {
-  public navLinks = [ {routerLink: ['/qms/clientFeedback/cfpositiveFeedback'], label: 'Positive'},
-                      {routerLink: ['/qms/clientFeedback/clientDissatisfaction'], label: 'Dissatisfaction'},
+  public navLinks = [  {routerLink: ['/qms/clientFeedback/clientDissatisfaction'], label: 'Dissatisfaction'},
+                       {routerLink: ['/qms/clientFeedback/cfpositiveFeedback'], label: 'Positive'},
                     ];
   // Initialize tab value
   public selectedTab = 'externalFeedback';

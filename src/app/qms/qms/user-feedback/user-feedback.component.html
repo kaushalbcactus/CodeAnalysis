@@ -55,8 +55,8 @@
                 </ng-container>
                 <ng-container *ngIf="col.field === 'Rating'">
                     {{rowData[col.field] }}
-                  <div class='overlayIcon' (click)="this.showOverlayPanel($event, rowData['ParameterRatings'], ratingOP)" style="float: right;cursor: pointer;" title="Click to see rating split">
-                    <i class="fa fa-info-circle" aria-hidden="true"></i>
+                  <div class='overlayIcon' (click)="this.showOverlayPanel($event, rowData['ParameterRatings'], ratingOP, displayOverlay)" style="float: right;cursor: pointer;" title="Click to see rating split">
+                    <i #displayOverlay class="fa fa-info-circle" aria-hidden="true"></i>
                   </div>
                 </ng-container>
                 <ng-container *ngIf="col.field === 'Parameters'">

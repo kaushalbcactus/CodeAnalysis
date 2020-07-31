@@ -730,7 +730,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           task.prevTasks = previousTasks === '' ? null : previousTasks;
           task.nextTasks = nextTasks === '' ? null : nextTasks;
           task.milestone = task.Milestone ? task.Milestone : RowData.Milestone;
-          const obj = await this.GetTask(task, false);
+          const obj = await this.GetTask(task, task.ID ? true : false);
           obj.editMode = true;
           obj.edited = task.edited ? task.edited : false;
           RowData.SlotTasks.push(obj);
@@ -934,7 +934,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       task.AssignedUserTimeZone, this.globalService.currentUser.timeZone);
     const convertedEndDate = task.DueDate ? this.commonService.calcTimeForDifferentTimeZone(new Date(task.DueDate),
       this.globalService.currentUser.timeZone, task.AssignedUserTimeZone) :
-      this.commonService.calcTimeForDifferentTimeZone(new Date(task.DueDate),
+      this.commonService.calcTimeForDifferentTimeZone(new Date(task.DueDateDT),
         this.globalService.currentUser.timeZone, task.AssignedUserTimeZone);
     task.jsLocalEndDate = this.commonService.calcTimeForDifferentTimeZone(convertedEndDate,
       task.AssignedUserTimeZone, this.globalService.currentUser.timeZone);
