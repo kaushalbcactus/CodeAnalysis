@@ -9,6 +9,9 @@ import { CreateConferenceComponent } from './pubsupport/create-conference/create
 import { CreateJournalComponent } from './pubsupport/create-journal/create-journal.component';
 import { AddAuthorComponent } from './pubsupport/add-author/add-author.component';
 import { AuthorDetailsComponent } from './pubsupport/author-details/author-details.component';
+import { JournalConferenceDetailsModule } from '../shared/journal-conference-details/journal-conference-details.module';
+import { JournalConferenceDetailsComponent } from 'src/app/shared/journal-conference-details/journal-conference-details.component';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 
 @NgModule({
   declarations: [PubsupportComponent, CreateConferenceComponent, CreateJournalComponent, AddAuthorComponent, AuthorDetailsComponent],
@@ -19,9 +22,10 @@ import { AuthorDetailsComponent } from './pubsupport/author-details/author-detai
     FormsModule,
     ReactiveFormsModule,
     SharedModule,
+    JournalConferenceDetailsModule
     // FileUploadModule
   ],
-  entryComponents: [CreateConferenceComponent, CreateJournalComponent, AddAuthorComponent, AuthorDetailsComponent],
-  providers: [DatePipe, TitleCasePipe]
+  entryComponents: [CreateConferenceComponent, CreateJournalComponent, AddAuthorComponent, AuthorDetailsComponent, JournalConferenceDetailsComponent],
+  providers: [DatePipe, TitleCasePipe,DynamicDialogConfig,DynamicDialogRef]
 })
 export class PubsupportModule { }

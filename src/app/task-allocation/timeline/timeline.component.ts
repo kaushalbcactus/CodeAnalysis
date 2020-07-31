@@ -1751,7 +1751,7 @@ export class TimelineComponent
     return true;
   };
 
-  async onAfterTaskDragCall(id, mode, e) {
+  onAfterTaskDragCall = async (id, mode, e) => {
     this.disableSave = true;
     let task = { ...this.currentTask };
     this.ganttSetTime = false;

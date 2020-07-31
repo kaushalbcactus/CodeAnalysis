@@ -20,6 +20,7 @@ import { ViewUploadDocumentDialogComponent } from 'src/app/shared/view-upload-do
 import { CsFinanceAuditDialogComponent } from './cs-finance-audit-dialog/cs-finance-audit-dialog.component';
 import { InvoiceLineitemsComponent } from './invoice-lineitems/invoice-lineitems.component';
 import { CdpfComponent } from 'src/app/shared/sqms/cdpf/cdpf.component';
+import { JournalConferenceDetailsComponent } from 'src/app/shared/journal-conference-details/journal-conference-details.component';
 
 declare var $;
 @Component({
@@ -331,6 +332,7 @@ export class AllProjectsComponent implements OnInit {
           { label: 'Go to Allocation', command: (event) => this.goToAllocationPage(this.selectedProjectObj) },
           { label: 'Project Scope', command: (event) => this.goToProjectScope(this.selectedProjectObj) },
           { label: 'View CDs/PFs', command: (event) => this.viewCDPF(this.selectedProjectObj) },
+          { label: 'View PubSupport Details', command: (event) => this.viewPubSupportJCDetails(this.selectedProjectObj) },
         ]
       },
       {
@@ -3016,6 +3018,21 @@ export class AllProjectsComponent implements OnInit {
       width: '90vw',
       data: {
         projectCode: projObj.ProjectCode,
+        readOnly: true
+      },
+      contentStyle: { 'max-height': '85vh', 'overflow-y': 'auto' },
+      closable: true
+    });
+    ref.onClose.subscribe(element => {
+    });
+  }
+
+  viewPubSupportJCDetails(projectObj) {
+    const ref = this.dialogService.open(JournalConferenceDetailsComponent, {
+      header: 'Journal/Conference Details - ' + projectObj.ProjectCode + '(' + projectObj.Title + ')',
+      width: '90vw',
+      data: {
+        projectObj,
         readOnly: true
       },
       contentStyle: { 'max-height': '85vh', 'overflow-y': 'auto' },

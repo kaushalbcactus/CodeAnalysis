@@ -44,6 +44,8 @@ import { PreStackAllocationComponent } from '../shared/pre-stack-allocation/pre-
 import { AddReduceSowbudgetDialogComponent } from './projectmanagement/sow/add-reduce-sowbudget-dialog/add-reduce-sowbudget-dialog.component';
 import { SqmsModule } from '../shared/sqms/sqms.module';
 import { CdpfComponent } from '../shared/sqms/cdpf/cdpf.component';
+import { JournalConferenceDetailsModule } from '../shared/journal-conference-details/journal-conference-details.module';
+import { JournalConferenceDetailsComponent } from '../shared/journal-conference-details/journal-conference-details.component';
 
 @NgModule({
   declarations: [
@@ -83,7 +85,8 @@ import { CdpfComponent } from '../shared/sqms/cdpf/cdpf.component';
     UserCapacityModule,
     FlexLayoutModule,
     PreStackAllocationModule,
-    SqmsModule
+    SqmsModule,
+    JournalConferenceDetailsModule
   ],
   exports: [
     AllProjectsComponent
@@ -109,7 +112,8 @@ import { CdpfComponent } from '../shared/sqms/cdpf/cdpf.component';
     ConfirmationDialogComponent,
     PreStackAllocationComponent,
     AddReduceSowbudgetDialogComponent,
-    CdpfComponent
+    CdpfComponent,
+    JournalConferenceDetailsComponent
   ]
 })
 export class ProjectmanagementModule { }

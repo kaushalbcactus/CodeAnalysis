@@ -14,11 +14,15 @@ import { Subject } from 'rxjs';
 import { AddAuthorComponent } from './add-author/add-author.component';
 import { AuthorDetailsComponent } from './author-details/author-details.component';
 import { CommonService } from 'src/app/Services/common.service';
+import { JournalConferenceDetailsComponent } from '../../shared/journal-conference-details/journal-conference-details.component';
 
 @Component({
     selector: 'app-pubsupport',
     templateUrl: './pubsupport.component.html',
     styleUrls: ['./pubsupport.component.css'],
+    providers : [
+        JournalConferenceDetailsComponent
+    ],
     encapsulation: ViewEncapsulation.None
 })
 // tslint: disable
@@ -29,6 +33,8 @@ export class PubsupportComponent implements OnInit {
     type: any;
     projectCode: any;
     jcSubDetails: any = [];
+      @ViewChild('jcDetails', { static: false })
+    journalConfDetails: JournalConferenceDetailsComponent;
 
     constructor(
         private formBuilder: FormBuilder,
@@ -46,7 +52,7 @@ export class PubsupportComponent implements OnInit {
         _applicationRef: ApplicationRef,
         private common: CommonService,
         zone: NgZone,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
     ) {
 
         // this.router.routeReuseStrategy.shouldReuseRoute = () => {
@@ -176,23 +182,14 @@ export class PubsupportComponent implements OnInit {
 
     // SHow Hide JCDetails
     showHideJC = false;
-    // Show Hide Submission Details
-    showHideSubDetailsData = false;
-    showSubDetails = false;
 
-    // ShowHide Galley
-    showHideGalleyData = false;
 
     // show/hide Add Author Component
     @ViewChild('addAuthorcontainer', { read: ViewContainerRef, static: false }) addAuthorcontainer: ViewContainerRef;
     @ViewChild('authorDetailscontainer', { read: ViewContainerRef, static: false }) authorDetailscontainer: ViewContainerRef;
 
-    journal_Conf_details: any = {};
-
     // Year Range
     yearsRange = new Date().getFullYear() - 1 + ':' + (new Date().getFullYear() + 10);
-
-    submission_details_data: any = [];
 
     display = false;
 
@@ -247,23 +244,13 @@ export class PubsupportComponent implements OnInit {
     jcId: any;
 
     // showJournal_i: boolean = true;
-    showJournalRowIndex = 0;
-    state = false;
-    parentRowIndex: number;
+
     journal_Conf_data: any = [];
     selectedProject: any = {};
 
     // Show Hide Submission Details
     showSubDetailsIndex = 0;
     subResponse: any = [];
-    // View Galley Details
-    showHideGalleyDetails = false;
-    galleyDetailsData: any = [];
-
-    galleyIndexChecked: number;
-    galleyRowIndex = 0;
-
-    galleyResponse: any = [];
 
     // Download FIle
     blob: any = [];
@@ -1455,23 +1442,22 @@ export class PubsupportComponent implements OnInit {
     }
 
 
-    jcViewDetails = (index: number) => {
-        this.showJournalRowIndex = index;
-        this.journal_Conf_details = this.journal_Conf_data[index].element;
-        this.state = !this.state;
-    }
     // On Row Expand
     onRowExpand(psProject: any) {
         this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
         this.showHideJC = false;
-        this.getJCDetails(psProject.data);
-        this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
         this.showHideJC = true;
-        this.state = false;
-        this.parentRowIndex = psProject.data.id - 1;
-        this.showSubDetails = false;
+        setTimeout(async ()=>{
+            // this.journalConfDetails.selectedProject = project.data;
+            await this.journalConfDetails.getJCDetails(psProject.data)
+            this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
+        },50)
+        // this.state = false;
+        // this.parentRowIndex = psProject.data.id - 1;
+        // this.showSubDetails = false;
 
     }
+
     async getJCDetails(project: any) {
         // this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
         this.selectedProject = project;
@@ -1500,67 +1486,7 @@ export class PubsupportComponent implements OnInit {
         this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
         this.showHideJC = true;
     }
-    showHideSubDetails(index: number, SelectedProj: any) {
-        this.showHideSubDetailsData = false;
-        this.showSubDetailsIndex = index;
-        this.showSubDetails = !this.showSubDetails;
-        if (this.showSubDetails) {
-            // Galley Index reset
-            this.showHideGalleyData = false;
-            // Show Loadder
-            this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
-
-            // submission_details_data
-            this.getSubmissionDetails(index, SelectedProj.element);
-            this.showHideSubDetailsData = true;
-            this.showHideGalleyDetails = false;
-        }
-    }
-    async getSubmissionDetails(index: any, selectedJC: any) {
-        const obj = Object.assign({}, this.pubsupportService.pubsupportComponent.jcSubmission);
-        obj.filter = obj.filter.replace('{{ProjectCode}}', selectedJC.Title).replace('{{JCID}}', selectedJC.ID);
-        const jsEndpoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.JCSubmission.name + '', obj);
-        const data = [{
-            url: jsEndpoint,
-            type: 'GET',
-            listName: this.constantService.listNames.JCSubmission.name
-        }];
-        this.common.SetNewrelic('PubSupport', 'pubsupport', 'getSubDetailsByProjectCodeAndJCID');
-        const res = await this.spOperationsService.executeBatch(data);
-        this.submission_details_data = res[0].retItems;
-        // Hide Loader
-        this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
-    }
-
-    viewGalleyDetails(index: number, jcSubData: any) {
-        this.galleyRowIndex = index;
-        this.showHideGalleyDetails = !this.showHideGalleyDetails;
-        this.galleyIndexChecked = index;
-        this.showHideGalleyData = false;
-        // this.galleyDetailsData
-        if (this.showHideGalleyDetails) {
-            this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
-            this.getGalleyDetails(index, jcSubData);
-            this.showHideGalleyData = true;
-        }
-    }
-    async getGalleyDetails(index: any, selectedJC: any) {
-        // this.selectedProject = selectedJC;
-        this.galleyDetailsData = [];
-        const obj = Object.assign({}, this.pubsupportService.pubsupportComponent.jcGalley);
-        obj.filter = obj.filter.replace('{{ProjectCode}}', selectedJC.Title).replace('{{JCSubID}}', selectedJC.ID);
-        const jsEndpoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.JCGalley.name + '', obj);
-        const data = [{
-            url: jsEndpoint,
-            type: 'GET',
-            listName: this.constantService.listNames.JCGalley.name
-        }];
-        this.common.SetNewrelic('PubSupport', 'pubsupport', 'getGallyDetailsByProjectCodeAndJCSubID');
-        const res = await this.spOperationsService.executeBatch(data);
-        this.galleyDetailsData = res[0].retItems;
-        this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
-    }
-
+    
     // On Click of Project code
     goToProjectDetails(data: any) {
         window.open(this.globalObject.sharePointPageObject.webRelativeUrl + '/dashboard#/projectMgmt/allProjects?ProjectCode=' +
@@ -1572,21 +1498,6 @@ export class PubsupportComponent implements OnInit {
             this.isSubmisssionDetails = true;
         }, 2000);
     }
-
-    downloadFile(file: string, fileName: string) {
-        console.log('File ', fileName);
-        // console.log('File ', JSON.stringify(fileName));
-        if (file) {
-            this.common.showToastrMessage(this.constantService.MessageType.success, 'Files are downloading...', false);
-            const fileArray = file.split(';#');
-            this.common.SetNewrelic('pubsupport', 'downloadFile', 'createZip');
-            this.spOperationsService.createZip(fileArray, fileName);
-        } else {
-
-            this.common.showToastrMessage(this.constantService.MessageType.warn, 'No file avaliable.', false);
-        }
-    }
-
 
     //********************************************************************************************
     // new File uplad function updated by Maxwell
@@ -2069,8 +1980,9 @@ export class PubsupportComponent implements OnInit {
         this.submit(data1 , 'revertDecision');
     }
 
-    replaceFile(type) {
+    replaceFile(type, project) {
         // this.getJC_JCSubID();
+        this.selectedProject = project;
         this.folderPath = '';
         this.type = type;
         switch(type) {
