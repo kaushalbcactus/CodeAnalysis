@@ -12,7 +12,6 @@ import { CommonService } from 'src/app/Services/common.service';
 import { ViewUploadDocumentDialogComponent } from 'src/app/shared/view-upload-document-dialog/view-upload-document-dialog.component';
 import { Table } from 'primeng/table';
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
-import { JournalConferenceDetailsComponent } from 'src/app/shared/journal-conference-details/journal-conference-details.component';
 
 @Component({
   selector: 'app-search-projects',
@@ -33,8 +32,6 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
   @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
   @ViewChild('project', { static: false }) project: Table;
 
-  @ViewChild('jcDetails', { static: false })
-  journalConfDetails: JournalConferenceDetailsComponent;
 
   selectedDate: DateObj;
   ProjectTitle: any = '';
@@ -356,7 +353,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
   getProjectDetails(project) {
 
     this.showDetails = true;
-    this.step = 5;
+    this.step = 6;
     this.ProjectDetails = project;
 
     this.modalloaderenable = true;

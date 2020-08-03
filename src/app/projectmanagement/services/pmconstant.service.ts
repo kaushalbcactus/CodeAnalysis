@@ -113,7 +113,7 @@ export class PmconstantService {
     ALL_PROJECT_INFORMATION: {
       // tslint:disable-next-line:max-line-length
       select: 'ID,Title,ProjectCode,DeliverableType,SubDeliverable,PrimaryPOC,ClientLegalEntity,ProjectFolder,SOWCode,WBJID,ProjectType,Status,Author/Id,Author/Title,Created,Modified,'
-        + 'Authors,POC,SubDivision, PriorityST, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,'
+        + 'Authors,POC,SubDivision, PriorityST, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,LastSubmissionDate,'
         // tslint:disable-next-line:max-line-length
         + 'DescriptionMT, ConferenceJournal, CommentsMT, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
         + 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID,'
@@ -129,7 +129,7 @@ export class PmconstantService {
     USER_SPECIFIC_PROJECT_INFORMATION: {
       // tslint:disable-next-line:max-line-length
       select: 'ID,Title,ProjectCode,DeliverableType,SubDeliverable,PrimaryPOC,ClientLegalEntity,ProjectFolder,SOWCode,WBJID,ProjectType,Status,Author/Id,Author/Title,Created,Modified,'
-        + 'Authors,POC,SubDivision, PriorityST, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,'
+        + 'Authors,POC,SubDivision, PriorityST, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,LastSubmissionDate,'
         // tslint:disable-next-line:max-line-length
         + 'DescriptionMT, ConferenceJournal, CommentsMT, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
         + 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID,'
@@ -146,7 +146,7 @@ export class PmconstantService {
     USER_SPECIFIC_PROJECT_INFORMATION_MY: {
       // tslint:disable-next-line:max-line-length
       select: 'ID,Title,ProjectCode,DeliverableType,SubDeliverable,PrimaryPOC,ClientLegalEntity,ProjectFolder,SOWCode,WBJID,ProjectType,Status,Author/Id,Author/Title,Created,'
-        + 'Authors,POC,SubDivision, PriorityST, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,'
+        + 'Authors,POC,SubDivision, PriorityST, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,LastSubmissionDate,'
         // tslint:disable-next-line:max-line-length
         + 'DescriptionMT, ConferenceJournal, CommentsMT, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
         + 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID,'
@@ -163,7 +163,7 @@ export class PmconstantService {
     PROJECT_INFORMATION_BY_PROJECTCODE: {
       // tslint:disable-next-line:max-line-length
       select: 'ID,Title,ProjectCode,DeliverableType,SubDeliverable,PrimaryPOC,ClientLegalEntity,ProjectFolder,SOWCode,WBJID,ProjectType,Status,Author/Id,Author/Title,Created,'
-        + 'Authors,POC,SubDivision, PriorityST, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,'
+        + 'Authors,POC,SubDivision, PriorityST, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,LastSubmissionDate,'
         // tslint:disable-next-line:max-line-length
         + 'DescriptionMT, ConferenceJournal, CommentsMT, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
         + 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID,'
@@ -179,7 +179,7 @@ export class PmconstantService {
     PROJECT_INFORMATION_BY_PROJECTCODE_ALL: {
       // tslint:disable-next-line:max-line-length
       select: 'ID,Title,ProjectCode,DeliverableType,SubDeliverable,PrimaryPOC,ClientLegalEntity,ProjectFolder,SOWCode,WBJID,ProjectType,Status,Author/Id,Author/Title,Created,Modified,'
-        + 'Authors,POC,SubDivision, PriorityST, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,'
+        + 'Authors,POC,SubDivision, PriorityST, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,LastSubmissionDate,'
         // tslint:disable-next-line:max-line-length
         + 'DescriptionMT, ConferenceJournal, CommentsMT, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
         + 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID,'

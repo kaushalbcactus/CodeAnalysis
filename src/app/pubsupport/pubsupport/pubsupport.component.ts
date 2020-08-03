@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation, ComponentFactoryResolver, ViewContainerRef, ViewChild, HostListener, ApplicationRef, NgZone } from '@angular/core';
-import { DialogService } from 'primeng';
+import { DialogService, Table } from 'primeng';
 import { MenuItem } from 'primeng';
 import { FormBuilder, FormGroup, Validators, FormControl, MaxLengthValidator } from '@angular/forms';
 import { SPOperationService } from '../../Services/spoperation.service';
@@ -35,6 +35,8 @@ export class PubsupportComponent implements OnInit {
     jcSubDetails: any = [];
       @ViewChild('jcDetails', { static: false })
     journalConfDetails: JournalConferenceDetailsComponent;
+    
+    @ViewChild('dt', { static: false })dt: Table;
 
     constructor(
         private formBuilder: FormBuilder,
@@ -186,7 +188,7 @@ export class PubsupportComponent implements OnInit {
 
     // show/hide Add Author Component
     @ViewChild('addAuthorcontainer', { read: ViewContainerRef, static: false }) addAuthorcontainer: ViewContainerRef;
-    @ViewChild('authorDetailscontainer', { read: ViewContainerRef, static: false }) authorDetailscontainer: ViewContainerRef;
+    // @ViewChild('authorDetailscontainer', { read: ViewContainerRef, static: false }) authorDetailscontainer: ViewContainerRef;
 
     // Year Range
     yearsRange = new Date().getFullYear() - 1 + ':' + (new Date().getFullYear() + 10);
@@ -339,6 +341,11 @@ export class PubsupportComponent implements OnInit {
         this.galleyFormField();
         this.jcDetailsForm();
         this.projectCode = this.route.snapshot.queryParams['ProjectCode'];
+        if(this.projectCode) {
+            setTimeout(()=>{
+                this.dt.filter(this.projectCode, 'ProjectCode', 'contains');
+            },100)
+        }
     }
 
     getDocuTypes() {
@@ -1823,14 +1830,26 @@ export class PubsupportComponent implements OnInit {
         // this.router.navigate([this.router.url]);
     }
 
-    async openAuthorModal(data: any) {
+    async openAuthorModal(projectObj: any) {
 
-        const factory = this.componentFactoryResolver.resolveComponentFactory(AuthorDetailsComponent);
-        const componentRef = this.authorDetailscontainer.createComponent(factory);
-        componentRef.instance.events = data;
-        this.ref = componentRef;
-        // componentRef.instance.formType = 'addAuthor';
-        return;
+        const ref = this.dialogService.open(AuthorDetailsComponent, {
+            header: 'Authors & Authors Form - ' + projectObj.ProjectCode + '(' + projectObj.Title + ')',
+            width: '80%',
+            data: {
+              projectObj
+            },
+            contentStyle: { 'max-height': '450px', 'overflow-y': 'auto' },
+            closable: true
+          });
+          ref.onClose.subscribe(element => {
+        });
+
+        // const factory = this.componentFactoryResolver.resolveComponentFactory(AuthorDetailsComponent);
+        // const componentRef = this.authorDetailscontainer.createComponent(factory);
+        // componentRef.instance.events = data;
+        // this.ref = componentRef;
+        // // componentRef.instance.formType = 'addAuthor';
+        // return;
     }
 
     // tslint:disable-next-line:use-life-cycle-interface

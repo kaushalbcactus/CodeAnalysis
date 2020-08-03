@@ -3,7 +3,9 @@ import { CommonService } from 'src/app/Services/common.service';
 import { ConstantsService } from '../../Services/constants.service';
 import { PubsuportConstantsService } from 'src/app/pubsupport/services/pubsuport-constants.service';
 import { SPOperationService } from '../../Services/spoperation.service';
-import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef, DialogService } from 'primeng';
+import { AuthorDetailsComponent } from 'src/app/pubsupport/pubsupport/author-details/author-details.component';
+import { GlobalService } from 'src/app/Services/global.service';
 
 
 @Component({
@@ -38,26 +40,32 @@ export class JournalConferenceDetailsComponent implements OnInit {
   isUploadIcon: boolean = false;
   @Input() projectObj: any;
   @Output() fileReplace = new EventEmitter<string>();
-
+  // @Output() authorDetails = new EventEmitter<string>();
+  isPubSupportComponent:boolean = false;
 
   constructor(private spOperationsService : SPOperationService,
     private pubsupportService: PubsuportConstantsService,
     private constantService: ConstantsService,
     private common: CommonService,
     private config: DynamicDialogConfig, 
-    public popupRef: DynamicDialogRef) { }
+    public popupRef: DynamicDialogRef,
+    private dialogService: DialogService,
+    private globalObject: GlobalService) { }
 
   ngOnInit() {
     if(this.config.data) {
       this.selectedProject =  this.config.data.projectObj ? this.config.data.projectObj : '';
       if(this.selectedProject) {
         this.onLoad();
+        this.isPubSupportComponent = true;
       }
     } else if(this.projectObj) {
       this.selectedProject =  this.projectObj;
       this.onLoad();
+      this.isPubSupportComponent = true;
     } else {
       this.isUploadIcon = true;
+      this.isPubSupportComponent = false;
     }
   }
 
@@ -190,6 +198,24 @@ export class JournalConferenceDetailsComponent implements OnInit {
     const res = await this.spOperationsService.executeBatch(data);
     this.galleyDetailsData = res[0].retItems;
     this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
+  }
+
+  AuthorDetails(projectObj) {
+    const ref = this.dialogService.open(AuthorDetailsComponent, {
+      header: 'Authors & Authors Form - ' + projectObj.ProjectCode + '(' + projectObj.Title + ')',
+      width: '80%',
+      data: {
+        projectObj
+      },
+      contentStyle: { 'max-height': '450px', 'overflow-y': 'auto' },
+      closable: true
+    });
+    ref.onClose.subscribe(element => {
+  });
+  }
+
+  goToPubSupport(ProjectCode) {
+    window.open(this.globalObject.url + '/pubSupport?ProjectCode=' + ProjectCode, '_blank')
   }
 
 }

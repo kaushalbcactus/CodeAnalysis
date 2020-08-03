@@ -15,7 +15,11 @@
                             <th>Journal <br>Requirement date</th>
                             <th colspan="1">Journal Requirement document</th>
                             <th colspan="1">Journal selection <br>date</th>
-                            <th>Journal Requirement Response</th> 
+                            <th>Journal Requirement Response</th>
+                            <th *ngIf="isPubSupportComponent">PubSupport Status</th>
+                            <th *ngIf="isPubSupportComponent">Submission Date</th>
+                            <th *ngIf="isPubSupportComponent">Author Details</th> 
+                            <th *ngIf="isPubSupportComponent" colspan="1"></th>
                             <th colspan="1"></th>
                         </tr>
                     </thead>
@@ -60,6 +64,20 @@
                                     &nbsp;<i class="fa fa-download" aria-hidden="true"></i></a>
                                 <a class="downloadUpload" *ngIf="item.element.JournalRequirementResponse && isUploadIcon" (click)="replaceFile('JournalRequirementResponse')">
                                         &nbsp;<i class="fa fa-upload" aria-hidden="true"></i></a>
+                            </td>
+                            <td *ngIf="isPubSupportComponent">
+                                <span>{{item.project.PubSupportStatus}}</span>
+                            </td>
+                            <td *ngIf="isPubSupportComponent">
+                                <span>{{item.project.LastSubmissionDate | date:'MMM d, y, hh:mm a' }}</span>
+                            </td>
+                            <td *ngIf="isPubSupportComponent">
+                                <ng-container>
+                                    <a style="color:#d7181f;cursor:pointer" (click)="AuthorDetails(item.project)">Author Details</a>
+                                </ng-container>
+                            </td>
+                            <td *ngIf="isPubSupportComponent">
+                                <a style="color:#d7181f;cursor:pointer"  (click)="goToPubSupport(item.project.ProjectCode)">Open PubSupport</a>
                             </td>
                             <td>
                                 <a (click)="jcViewDetails(i)" class="btn go view_details" data-parent="detail_1">

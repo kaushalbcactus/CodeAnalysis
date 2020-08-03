@@ -1,32 +1,44 @@
-import { Component, OnInit, Input, ComponentFactoryResolver } from '@angular/core';
+import { Component, OnInit, Input, ComponentFactoryResolver, OnDestroy } from '@angular/core';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { PubsuportConstantsService } from '../../Services/pubsuport-constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { CommonService } from 'src/app/Services/common.service';
+import { DynamicDialogRef, DynamicDialogConfig } from 'primeng';
 
 @Component({
     selector: 'app-author-details',
     templateUrl: './author-details.component.html',
     styleUrls: ['./author-details.component.css']
 })
-export class AuthorDetailsComponent implements OnInit {
+export class AuthorDetailsComponent implements OnInit, OnDestroy {
 
-    @Input() events: any;
+    // @Input() events: any;
     authorsData: any = [];
     authorsFiles: any = [];
-    authorDetailModal: boolean;
+    selectedProj: any;
     constructor(
         private spOperationsService: SPOperationService,
         public constantService: ConstantsService,
         public globalObject: GlobalService,
         public pubsupportService: PubsuportConstantsService,
-        public common : CommonService
+        public common : CommonService,
+        public config: DynamicDialogConfig,
+        public ref: DynamicDialogRef
     ) { }
 
     async ngOnInit() {
-        this.authorDetailModal = true;
-        await this.openAuthorModal(this.events);
+        if(this.config.data) {
+            this.selectedProj = this.config.data.projectObj
+            await this.openAuthorModal(this.selectedProj);
+        }
+    }
+
+    ngOnDestroy() {
+        // if (this.ref) {
+        //     this.ref.close();
+        //     this.authorsFiles = [];
+        // }
     }
 
     async openAuthorModal(data: any) {
@@ -53,7 +65,7 @@ export class AuthorDetailsComponent implements OnInit {
 
     async onTabChange() {
         this.authorsFiles = [];
-        const fileEndPoint = this.events.ProjectFolder + '/Publication Support/Forms/';
+        const fileEndPoint = this.selectedProj.ProjectFolder + '/Publication Support/Forms/';
         this.common.SetNewrelic('PubSupport', 'add-author', 'GetDocumnts');
         const authorFilesGet = await this.spOperationsService.readFiles(fileEndPoint);
         // tslint:disable-next-line:only-arrow-functions

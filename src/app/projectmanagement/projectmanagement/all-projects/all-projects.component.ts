@@ -542,6 +542,7 @@ export class AllProjectsComponent implements OnInit {
         projObj.AnnotationBinder = task.AnnotationBinder ? task.AnnotationBinder : 'No';
         projObj.PrimaryResources = this.commonService.returnText(task.PrimaryResMembers.results);
         projObj.PrimaryResourcesId = this.commonService.getResourceId((task.PrimaryResMembers.results));
+        projObj.LastSubmissionDate = task.LastSubmissionDate ? task.LastSubmissionDate : '';
         switch (projObj.Status) {
           case this.constants.projectStatus.InDiscussion:
             projObj.isRedIndicator = true;
@@ -825,6 +826,11 @@ export class AllProjectsComponent implements OnInit {
       menu.model[2].visible = false;
     } else {
       menu.model[3].visible = false;
+      if(this.selectedProjectObj.IsPubSupport === "Yes") {
+        menu.model[1].items[7].visible = true;
+      } else {
+        menu.model[1].items[7].visible = false;
+      }
       switch (status) {
         case this.constants.projectStatus.InDiscussion:
           menu.model[0].items[1].visible = false;
