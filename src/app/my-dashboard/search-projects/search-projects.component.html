@@ -308,11 +308,27 @@
         </mat-expansion-panel>
 
     <!--******************************************************************************************
+      //  dialog to show PubSupport Details
+      ****************************************************************************************** -->
+      <mat-expansion-panel [expanded]="step === 4" (opened)="setStep(4)">
+        <mat-expansion-panel-header>
+          <mat-panel-title style="color:#000000;padding: 5px 0px 0px 0px;">
+            <mat-icon>feedback</mat-icon> &nbsp;&nbsp; PubSupport Details
+          </mat-panel-title>
+
+        </mat-expansion-panel-header>
+        <ng-template matExpansionPanelContent>
+          <app-journal-conference-details [projectObj]="ProjectDetails" #jcDetails></app-journal-conference-details>
+        </ng-template>
+
+      </mat-expansion-panel>
+
+    <!--******************************************************************************************
         //  dialog to view project Timeline
       ****************************************************************************************** -->
 
 
-    <mat-expansion-panel [expanded]="step === 4" (opened)="setStep(4)">
+    <mat-expansion-panel [expanded]="step === 5" (opened)="setStep(5)">
       <mat-expansion-panel-header>
         <mat-panel-title style="color:#000000;padding: 5px 0px 0px 0px;">
           <mat-icon style="vertical-align: middle;">timeline</mat-icon> &nbsp;&nbsp; Project Timeline
@@ -328,7 +344,7 @@
     <!--******************************************************************************************
         //  dialog to show project drafts
         ****************************************************************************************** -->
-    <mat-expansion-panel [expanded]="step === 5" (opened)="setStep(5)">
+    <mat-expansion-panel [expanded]="step === 6" (opened)="setStep(6)">
       <mat-expansion-panel-header>
         <mat-panel-title style="color:#000000;padding: 5px 0px 0px 0px;">
           <mat-icon>folder</mat-icon> &nbsp;&nbsp; Project Drafts

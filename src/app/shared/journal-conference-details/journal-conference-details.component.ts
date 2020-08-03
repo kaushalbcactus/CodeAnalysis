@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, Input } from '@angular/core';
 import { CommonService } from 'src/app/Services/common.service';
 import { ConstantsService } from '../../Services/constants.service';
 import { PubsuportConstantsService } from 'src/app/pubsupport/services/pubsuport-constants.service';
@@ -35,6 +35,8 @@ export class JournalConferenceDetailsComponent implements OnInit {
   // ShowHide Galley
   showHideGalleyData = false;
   selectedProject: any = {};
+  isUploadIcon: boolean = false;
+  @Input() projectObj: any;
   @Output() fileReplace = new EventEmitter<string>();
 
 
@@ -51,6 +53,11 @@ export class JournalConferenceDetailsComponent implements OnInit {
       if(this.selectedProject) {
         this.onLoad();
       }
+    } else if(this.projectObj) {
+      this.selectedProject =  this.projectObj;
+      this.onLoad();
+    } else {
+      this.isUploadIcon = true;
     }
   }
 

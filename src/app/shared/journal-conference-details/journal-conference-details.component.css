@@ -25,6 +25,10 @@
     float: left;
 }
 
+.label {
+    display: table;
+}
+
 .main-table-detail .main-td-table{
     background: #F8F8F8;
 }
@@ -63,7 +67,26 @@ td,th,.header-style td{
 }
 
 table tbody tr .jcDClass{
-    border: 1px solid #d7181f; 
+    border: 1px solid #000000; 
     cursor: auto;
     padding-left: 2em;
 }
+
+td, th {
+    text-align: left;
+    padding: 8px;
+    font-family: Helvetica;
+    font-weight: normal;
+    color: #000000;
+}
+
+.downloadUpload {
+    color: red !important;
+    cursor: pointer;
+}
+
+a:hover {
+    color: red !important;
+    text-decoration: none;
+}
+
