@@ -1155,6 +1155,8 @@ export class TimelineComponent
           e.itemType !== "Adhoc" &&
           e.itemType !== "TB"
       );
+
+
       if (getFirstTasks.length) {
         let firstTask;
         if (getFirstTasks.length > 1) {
@@ -1168,6 +1170,29 @@ export class TimelineComponent
           m.start_date = new Date(firstTask.start_date);
         }
       }
+
+      const getLastTasks = data.filter(
+        e =>
+          e.type === "task" &&
+          e.milestone === m.taskFullName &&
+          e.itemType == "Send to client" &&
+          (!e.nextTask || e.nextTask === 'Client Review')
+      );
+
+      if (getLastTasks.length) {
+        let lastTask;
+        if (getLastTasks.length > 1) {
+          lastTask = this.sortByDate(getLastTasks, "end_date", "desc")[0];
+        } else {
+          lastTask = getLastTasks[0];
+          m.end_date = new Date(lastTask.end_date);
+        }
+
+        if (lastTask.end_date > m.end_date) {
+          m.end_date = new Date(lastTask.end_date);
+        }
+      }
+
       const getClientReview = data.find(
         e => e.itemType === "Client Review" && e.milestone === m.taskFullName
       );
