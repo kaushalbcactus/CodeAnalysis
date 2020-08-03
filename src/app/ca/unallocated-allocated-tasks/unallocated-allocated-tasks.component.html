@@ -93,10 +93,10 @@
                         <ng-template pTemplate="header">
                             <tr>
                                 <th style="width:4%"> Tasks </th>
-                                <th style="width:4%">Spent Hrs</th>
                                 <th style="width:14%">Start Date</th>
                                 <th style="width:14%">End Date</th>
                                 <th style="width:8%">Budget Hrs</th>
+                                <th style="width:4%">Spent Hrs</th>
                                 <th style="width:10%">Assign To</th>
                                 <th style="width:4%">Type</th>
                                 <!-- <th style="width:4%">Allow Start</th> -->
@@ -110,8 +110,7 @@
                                 <td [style.text-align]="'left'">
                                     <span> {{rowData.TaskName}}</span>
                                 </td>
-                                <!-- spent Hrs -->
-                                <td style="text-align: center;">{{rowData.SpentTime}}</td>
+
                                 <!-- Start Date -->
                                 <td style="padding: 5px;">
 
@@ -169,6 +168,8 @@
                                       <i class="fa fa-info-circle" aria-hidden="true"></i>
                                 </span>
                                 </td>
+                                 <!-- spent Hrs -->
+                                 <td style="text-align: center;">{{rowData.SpentTime}}</td>
                                 <!-- Assign To -->
                                 <td>
                                     <span *ngIf="!rowData.editMode  || ( rowData.editMode && (rowData.Status ==='In Progress' || rowData.Status ==='Completed'))"> {{rowData.AssignedTo.Title}}</span>

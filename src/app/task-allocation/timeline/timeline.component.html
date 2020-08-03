@@ -137,10 +137,10 @@
                 <ng-template pTemplate="header">
                     <tr>
                         <th style="width:28%"> </th>
-                        <th style="width:6%">Spent Hrs</th>
                         <th style="width:14%">Start Date</th>
                         <th style="width:14%">End Date</th>
                         <th style="width:9%">Budget Hrs</th>
+                        <th style="width:6%">Spent Hrs</th>
                         <th style="width:4%">TAT</th>
                         <th style="width:15%">Assign To</th>
                         <th style="width:4%">Type</th>
@@ -167,8 +167,7 @@
                             <span>{{rowData.budgetHours}}</span>
 
                         </td>
-                        <!-- spent Hrs -->
-                        <td style="text-align: center;">{{rowData.spentTime}}</td>
+
                         <!-- Start Date -->
                         <td>
 
@@ -230,6 +229,8 @@
                               <i class="fa fa-info-circle" aria-hidden="true"></i>
                           </div>
                         </td>
+                          <!-- spent Hrs -->
+                          <td style="text-align: center;">{{rowData.spentTime}}</td>
                         <!-- TaT -->
                         <td style="text-align: center">
                             <span *ngIf="rowData.type ==='milestone' || rowData.type ==='submilestone'">{{rowData.tatVal}}</span>
