@@ -132,14 +132,14 @@ export class QMSConstantsService {
       getPF: {
         select: 'ID, Title, FileID, FileURL, SentDate,SentBy/ID, SentBy/Title, Modified, Resources/ID, Resources/Title, DeliveryLeads/ID',
         expand: 'SentBy, Resources, DeliveryLeads',
-        filter: "IsActiveCH eq 'Yes' and Status eq 'Accepted' and SentDate ge '{{startDate}}' and SentDate le '{{endDate}}'",
+        filter: "IsActiveCH ne 'No' and Status eq 'Accepted' and SentDate ge '{{startDate}}' and SentDate le '{{endDate}}'",
         top: '{{TopCount}}',
         orderby: 'SentDate desc'
       },
       getPFByProject: {
         select: 'ID, Title, FileID, FileURL, SentDate,SentBy/ID, SentBy/Title, Modified, Resources/ID, Resources/Title, DeliveryLeads/ID',
         expand: 'SentBy, Resources, DeliveryLeads',
-        filter: "IsActiveCH eq 'Yes' and Status eq 'Accepted' and Title eq '{{projectCode}}'",
+        filter: "IsActiveCH ne 'No' and Status eq 'Accepted' and Title eq '{{projectCode}}'",
         top: '{{TopCount}}',
         orderby: 'SentDate desc'
       }
