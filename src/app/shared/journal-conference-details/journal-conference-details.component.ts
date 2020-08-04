@@ -136,7 +136,7 @@ export class JournalConferenceDetailsComponent implements OnInit {
 }
 
   replaceFile(type) {
-    let obj: any = { type:type, project:this.selectedProject }
+    let obj: any = { type:type, project:this.selectedProject , milestone: this.journal_Conf_data[0].element.Milestone}
     this.fileReplace.emit(obj);
     // // this.getJC_JCSubID();
     // this.folderPath = '';
@@ -202,7 +202,7 @@ export class JournalConferenceDetailsComponent implements OnInit {
 
   AuthorDetails(projectObj) {
     const ref = this.dialogService.open(AuthorDetailsComponent, {
-      header: 'Authors & Authors Form - ' + projectObj.ProjectCode + '(' + projectObj.Title + ')',
+      header: 'Authors & Authors Form - ' + projectObj.ProjectCode,
       width: '80%',
       data: {
         projectObj

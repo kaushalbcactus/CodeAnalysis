@@ -26,7 +26,23 @@
 }
 
 .label {
-    display: table;
+    /* display: table; */
+    display: flex;
+}
+
+.label span{
+    flex-grow: 5;
+    font-weight: 700;
+}
+
+.info {
+    flex-grow: 1;
+    float: right;
+    font-weight: 700;
+}
+
+.info span {
+    margin-left: 15px;
 }
 
 .main-table-detail .main-td-table{
@@ -64,6 +80,10 @@ td,th,.header-style td{
     position: relative;
     right: 0px;
     top:5px;
+}
+
+.view_details:hover {
+    color: black !important;
 }
 
 table tbody tr .jcDClass{

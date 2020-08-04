@@ -5051,7 +5051,7 @@ export class TimelineComponent
   async saveTasks() {
     this.disableSave = true;
     if (this.milestoneData.length > 0) {
-      const isValid = this.validateSaveTask();
+      const isValid = await this.validateSaveTask();
       if (isValid) {
         this.graphFlag = this.visualgraph;
         this.visualgraph = false;
@@ -6328,9 +6328,28 @@ export class TimelineComponent
     return true;
   }
 
-  validateSaveTask() {
+  async validateSaveTask() {
     const projectBudgetHours = this.oProjectDetails.budgetHours;
     const milestonesData = this.milestoneData;
+
+    if(this.oProjectDetails.isPubSupport == 'Yes') {
+      const currentMilestone = this.milestoneData.find(m=> m.data.type == 'milestone' && m.data.isCurrent && m.data.edited);
+      let allTasks = [];
+      if(currentMilestone) {
+        if (currentMilestone.data.subMilestonePresent) {
+          currentMilestone.children.forEach(element => {
+              allTasks = [...allTasks, ...this.taskAllocateCommonService.getTasksFromMilestones(element, false, this.milestoneData, false)];
+          });
+        } else {
+          allTasks = this.taskAllocateCommonService.getTasksFromMilestones(currentMilestone, false, this.milestoneData, false);
+        }
+        const validPubSupportTask =  await this.checkForPubSupportTasks(allTasks);
+        if(!validPubSupportTask) {
+          return false;
+        }
+      }
+    }
+
     const allMilestones = milestonesData
       .filter(c => c.data.type === "milestone" && c.data.status !== "Deleted")
       .map(c => c.data);
@@ -6375,20 +6394,6 @@ export class TimelineComponent
         this.milestoneData,
         false
       );
-
-      // let validateTasks = this.taskAllocateCommonService.getTasksFromMilestones(
-      //   this.milestoneData.find(m => m.data.type === 'milestone' && m.data.isCurrent && m.data.edited == true),
-      //   false,
-      //   this.milestoneData,
-      //   false
-      // );
-
-      // if(this.oProjectDetails.isPubSupport == 'Yes') {
-      //   const validPubSupportTask =  await this.checkForPubSupportTasks(validateTasks);
-      //   if(!validPubSupportTask) {
-      //     return false;
-      //   }
-      // }
 
       let validateDates = AllTasks.filter(
         t =>
@@ -6495,10 +6500,11 @@ export class TimelineComponent
   }
 
   async checkForPubSupportTasks(allTasks) {
-    const allowedTasks = ['Journal Requirement','Galley', 'Submission Pkg', 'Submit', ];
+    const allowedTasks = ['Journal Requirement', 'Galley', "GalleySlot" , 'Submission Pkg', 'Submit', 'SubmitSlot'];
+    const status = ['Completed' , 'Auto Closed']; 
     for (const index in allTasks) {
       if (allTasks.hasOwnProperty(index)) {
-        if(allowedTasks.includes(allTasks[index].title)) {
+        if(allowedTasks.includes(allTasks[index].title) && !status.includes(allTasks[index].status)) {
           const batchUrl = [];
           let jcGalleyObj;
           let jcsubmitObj;
@@ -6515,6 +6521,7 @@ export class TimelineComponent
               batchUrl.push(jcSubObj);
               break;
             case 'Galley':
+            case 'GalleySlot':
               jcGalleyObj = Object.assign({}, this.queryConfig);
               jcGalleyObj.url = this.spServices.getReadURL(this.constants.listNames.JournalConf.name, this.taskAllocationService.myDashboardComponent.Submit);
               jcGalleyObj.url = jcGalleyObj.url.replace(/{{projectCode}}/gi, this.oProjectDetails.projectCode).replace(/{{Status}}/gi, 'Accepted').replace(/{{Status1}}/gi, 'Galleyed');
@@ -6523,6 +6530,7 @@ export class TimelineComponent
               batchUrl.push(jcGalleyObj);
               break;
             case 'Submit':
+            case 'SubmitSlot':
               jcsubmitObj = Object.assign({}, this.queryConfig);
               jcsubmitObj.url = this.spServices.getReadURL(this.constants.listNames.JournalConf.name, this.taskAllocationService.myDashboardComponent.Submit);
               jcsubmitObj.url = jcsubmitObj.url.replace(/{{projectCode}}/gi, this.oProjectDetails.projectCode).replace(/{{Status}}/gi, 'Selected').replace(/{{Status1}}/gi, 'Resubmit to same journal');
@@ -6558,7 +6566,8 @@ export class TimelineComponent
                   }
                   break;
                 case 'Galley':
-                  jcId = response.length > 1 ? response[1].length > 0 ? response[1][0].ID : 0 : 0;
+                case 'GalleySlot':
+                  jcId = response[0].length > 0 ? response[0][0].ID : 0
                   if(!jcId) {
                     this.commonService.showToastrMessage(
                       this.constants.MessageType.error,
@@ -6569,7 +6578,8 @@ export class TimelineComponent
                   }
                   break;
                 case 'Submit':
-                  jcId = response.length > 1 ? response[1].length > 0 ? response[1][0].ID : 0 : 0;
+                case 'SubmitSlot':
+                  jcId = response[0].length > 0 ? response[0][0].ID : 0;
                   if(!jcId) {
                     this.commonService.showToastrMessage(
                       this.constants.MessageType.error,
@@ -6734,14 +6744,14 @@ export class TimelineComponent
     await this.commonService.confirmMessageDialog('Confirmation', msg, null, ['Yes', 'No'], false).then(async Confirmation => {
       if (Confirmation === 'Yes') {
         this.selectedSubMilestone = task;
-        // let currMilTasks = this.taskAllocateCommonService.getTasksFromMilestones(
-        //   this.selectedSubMilestone,
-        //   false,
-        //   this.milestoneData,
-        //   false
-        // );
-        // let isValid = this.checkForPubSupportTasks(currMilTasks);
-        // if(isValid){
+        let currMilTasks = this.taskAllocateCommonService.getTasksFromMilestones(
+          this.selectedSubMilestone,
+          false,
+          this.milestoneData,
+          false
+        );
+        let isValid = this.checkForPubSupportTasks(currMilTasks);
+        if(isValid){
           const validateNextMilestone = this.validateNextMilestone(this.selectedSubMilestone);
           if (validateNextMilestone) {
             this.loaderenable = true;
@@ -6749,7 +6759,7 @@ export class TimelineComponent
               await this.setAsNextMilestone(this.selectedSubMilestone);
             }, 200);
           }
-      //  }
+       }
       }
     });
   }

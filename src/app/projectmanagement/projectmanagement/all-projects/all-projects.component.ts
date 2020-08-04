@@ -332,7 +332,7 @@ export class AllProjectsComponent implements OnInit {
           { label: 'Go to Allocation', command: (event) => this.goToAllocationPage(this.selectedProjectObj) },
           { label: 'Project Scope', command: (event) => this.goToProjectScope(this.selectedProjectObj) },
           { label: 'View CDs/PFs', command: (event) => this.viewCDPF(this.selectedProjectObj) },
-          { label: 'View PubSupport Details', command: (event) => this.viewPubSupportJCDetails(this.selectedProjectObj) },
+          { label: 'View PubSupport', command: (event) => this.viewPubSupportJCDetails(this.selectedProjectObj) },
         ]
       },
       {

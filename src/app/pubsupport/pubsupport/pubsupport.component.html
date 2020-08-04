@@ -156,7 +156,7 @@
             <tr *ngIf="showHideJC">
                 <td colspan="10">
                     <!-- <ng-template #jcDetails></ng-template> -->
-                    <app-journal-conference-details #jcDetails (fileReplace)='replaceFile($event.type, $event.project)'></app-journal-conference-details>
+                    <app-journal-conference-details #jcDetails (fileReplace)='replaceFile($event.type, $event.project,$event.milestone)'></app-journal-conference-details>
                 </td>
             </tr>
         </ng-template>

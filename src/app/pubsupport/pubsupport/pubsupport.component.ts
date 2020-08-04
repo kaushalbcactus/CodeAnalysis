@@ -1824,8 +1824,12 @@ export class PubsupportComponent implements OnInit {
 
         setTimeout(() => {
             this.callGetProjects(false);
+            if(this.showHideJC) {
+                this.dt.expandedRowKeys[this.selectedProject.Id] = false;
+                this.expandedRows = this.dt.expandedRowKeys;
+                // this.showHideJC = false;
+            }
         }, 3000);
-
         // this.router.navigated = false;
         // this.router.navigate([this.router.url]);
     }
@@ -1833,7 +1837,7 @@ export class PubsupportComponent implements OnInit {
     async openAuthorModal(projectObj: any) {
 
         const ref = this.dialogService.open(AuthorDetailsComponent, {
-            header: 'Authors & Authors Form - ' + projectObj.ProjectCode + '(' + projectObj.Title + ')',
+            header: 'Authors & Authors Form - ' + projectObj.ProjectCode,
             width: '80%',
             data: {
               projectObj
@@ -1893,7 +1897,6 @@ export class PubsupportComponent implements OnInit {
     }
 
     revertFromDecision(data) {
-        console.log(data)   
         let data1 = [];
         const options = {
           data: null,
@@ -1999,7 +2002,7 @@ export class PubsupportComponent implements OnInit {
         this.submit(data1 , 'revertDecision');
     }
 
-    replaceFile(type, project) {
+    replaceFile(type, project,milestone) {
         // this.getJC_JCSubID();
         this.selectedProject = project;
         this.folderPath = '';
@@ -2010,15 +2013,15 @@ export class PubsupportComponent implements OnInit {
             this.folderPath = this.selectedProject.ProjectFolder.replace(this.globalObject.sharePointPageObject.webRelativeUrl + '/', '') + '/Publication Support/Published Papers';
             break;
             default:
-            this.folderPath = this.selectedProject.ProjectFolder.replace(this.globalObject.sharePointPageObject.webRelativeUrl + '/', '') + '/Drafts/Internal/' + this.selectedProject.Milestones;
+            this.folderPath = this.selectedProject.ProjectFolder.replace(this.globalObject.sharePointPageObject.webRelativeUrl + '/', '') + '/Drafts/Internal/' + milestone;
             break;
         }
         this.replaceDocument = true;
     }
 
-    onReplaceFile(event) {
+    async onReplaceFile(event) {
         if (event.target.files && event.target.files.length > 0) {
-            this.getJC_JCSubID();
+            await this.getJC_JCSubID();
             this.SelectedFile = [];
             this.selectedFile = event.target.files[0];
             let fileName = event.target.files[0].name;
