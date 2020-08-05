@@ -297,7 +297,7 @@ export class TimelineComponent
   }
 
   async getResourceCapacity() {
-    const users = [];
+    let users = [];
     if (this.milestoneData.length) {
       const currentMilestone = this.milestoneData.find(
         m => m.data.itemType === 'milestone' && m.data.isCurrent
@@ -313,6 +313,7 @@ export class TimelineComponent
           )
         );
       });
+      users = [...new Set(users)].filter(Boolean);
       const newdate = this.commonService.calcBusinessDate(
         'Next',
         90,
