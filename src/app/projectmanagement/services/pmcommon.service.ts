@@ -829,7 +829,9 @@ export class PMCommonService {
   getIds(array) {
     const tempArray = [];
     array.forEach(element => {
-      tempArray.push(element.ID);
+      if(element && element.ID) {
+        tempArray.push(element.ID);
+      }
     });
     return tempArray;
   }
