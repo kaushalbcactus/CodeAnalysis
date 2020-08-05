@@ -543,6 +543,8 @@ export class AllProjectsComponent implements OnInit {
         projObj.PrimaryResources = this.commonService.returnText(task.PrimaryResMembers.results);
         projObj.PrimaryResourcesId = this.commonService.getResourceId((task.PrimaryResMembers.results));
         projObj.LastSubmissionDate = task.LastSubmissionDate ? task.LastSubmissionDate : '';
+        projObj.JournalSelectionDate = task.JournalSelectionDate ? task.JournalSelectionDate : '';
+        projObj.JournalSelectionURL = task.JournalSelectionURL ? task.JournalSelectionURL : '';
         switch (projObj.Status) {
           case this.constants.projectStatus.InDiscussion:
             projObj.isRedIndicator = true;

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ComponentFactoryResolver, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, ComponentFactoryResolver, OnDestroy, AfterViewChecked, ChangeDetectorRef } from '@angular/core';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { PubsuportConstantsService } from '../../Services/pubsuport-constants.service';
@@ -11,7 +11,7 @@ import { DynamicDialogRef, DynamicDialogConfig } from 'primeng';
     templateUrl: './author-details.component.html',
     styleUrls: ['./author-details.component.css']
 })
-export class AuthorDetailsComponent implements OnInit, OnDestroy {
+export class AuthorDetailsComponent implements OnInit, AfterViewChecked, OnDestroy {
 
     // @Input() events: any;
     authorsData: any = [];
@@ -24,7 +24,8 @@ export class AuthorDetailsComponent implements OnInit, OnDestroy {
         public pubsupportService: PubsuportConstantsService,
         public common : CommonService,
         public config: DynamicDialogConfig,
-        public ref: DynamicDialogRef
+        public ref: DynamicDialogRef,
+        private cdRef: ChangeDetectorRef
     ) { }
 
     async ngOnInit() {
@@ -39,6 +40,12 @@ export class AuthorDetailsComponent implements OnInit, OnDestroy {
         //     this.ref.close();
         //     this.authorsFiles = [];
         // }
+    }
+
+    ngAfterViewChecked()
+    {
+        this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
+        this.cdRef.detectChanges();
     }
 
     async openAuthorModal(data: any) {
