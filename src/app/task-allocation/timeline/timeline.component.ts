@@ -6218,7 +6218,7 @@ export class TimelineComponent
     //////// Check if all tasks are allocated
     const task = checkTasks.find(
       element =>
-        (!element.AssignedTo || (element.AssignedTo && !element.AssignedTo.Title)) && !element.IsCentrallyAllocated
+        !element.AssignedTo || (element.AssignedTo && !element.AssignedTo.Title)
     );
     if (task) {
       this.commonService.showToastrMessage(
