@@ -188,11 +188,11 @@ export class BlockTimeDialogComponent implements OnInit {
         TaskComments: this.commment,
         Status: 'Completed',
         AssignedToId: this.sharedObject.currentUser.userId,
-        TimeZoneNM: this.sharedObject.DashboardData.ResourceCategorization.find(c => c.ID ===
+        TimeZoneNM: this.sharedObject.DashboardData.ResourceCategorization.find(c => c.UserNamePG.ID ===
           this.sharedObject.currentUser.userId) !== undefined ?
-          this.sharedObject.DashboardData.ResourceCategorization.find(c => c.ID ===
+          this.sharedObject.DashboardData.ResourceCategorization.find(c => c.UserNamePG.ID ===
             this.sharedObject.currentUser.userId).TimeZone !== undefined ?
-            this.sharedObject.DashboardData.ResourceCategorization.find(c => c.ID ===
+            this.sharedObject.DashboardData.ResourceCategorization.find(c => c.UserNamePG.ID ===
               this.sharedObject.currentUser.userId).TimeZone.Title : 5.5 : 5.5,
       };
       this.ref.close(obj);
