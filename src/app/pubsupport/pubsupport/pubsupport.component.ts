@@ -33,6 +33,7 @@ export class PubsupportComponent implements OnInit {
     type: any;
     projectCode: any;
     jcSubDetails: any = [];
+    jcGalleyDetails: any = [];
       @ViewChild('jcDetails', { static: false })
     journalConfDetails: JournalConferenceDetailsComponent;
     
@@ -529,7 +530,14 @@ export class PubsupportComponent implements OnInit {
         }
 
         switch (pubSupportSts) {
-            case '':
+            case '':{
+                this.items = [
+                    { label: 'Add Journal / Conference', command: (e) => this.openMenuContent(e, data) },
+                    { label: 'Add Authors', command: e => this.openMenuContent(e, data) },
+                    { label: 'Update Author forms & emails', command: e => this.openMenuContent(e, data) }
+                ];
+                break;
+            }
             case 'rejected': {
                 this.items = [
                     { label: 'Add Journal / Conference', command: (e) => this.openMenuContent(e, data) },
@@ -836,6 +844,23 @@ export class PubsupportComponent implements OnInit {
         this.replace_Document_Form = this.formBuilder.group({
             documentFile:['', Validators.required]
         })
+    }
+
+    async getGalleyDetails(jcSubId) {
+        const obj = Object.assign({}, this.pubsupportService.pubsupportComponent.jcGalley);
+        obj.filter = obj.filter.replace('{{ProjectCode}}', this.selectedProject.ProjectCode).replace('{{JCSubID}}', jcSubId);
+        const jcGalleyEndpoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.JCGalley.name + '', obj);
+        const objData = [
+            {
+                url: jcGalleyEndpoint,
+                type: 'GET',
+                listName: this.constantService.listNames.JCGalley.name
+            }
+        ];
+
+        this.jcGalleyDetails = [];
+        const arrResults = await this.spOperationsService.executeBatch(objData);
+        this.jcGalleyDetails = arrResults;
     }
 
     async getJC_JCSubID() {
@@ -1530,7 +1555,7 @@ export class PubsupportComponent implements OnInit {
 
     async uploadFileData(type: string) {
         this.common.SetNewrelic('PubSupport', 'pubsupport', 'UploadFile');
-        this.common.UploadFilesProgress(this.SelectedFile, this.FolderName, true).then(uploadedfile => {
+        this.common.UploadFilesProgress(this.SelectedFile, this.FolderName, true).then(async uploadedfile => {
             if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
                 if (uploadedfile[0].hasOwnProperty('odata.error')) {
                     this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
@@ -1571,7 +1596,6 @@ export class PubsupportComponent implements OnInit {
                             case 'DecisionURL':
                             case 'SubmissionURL':
                             case 'SubmissionPkgURL':
-                            case 'PublicationURL':
                             let jcSubId;
                             this.jc_jcSubId[1].retItems.forEach(element => {
                                 if (element) {
@@ -1582,6 +1606,7 @@ export class PubsupportComponent implements OnInit {
                             break;
                             case 'JournalRequirementURL':
                             case 'JournalRequirementResponse':
+                            case 'PublicationURL':
                             let jcId;
 
                             this.jc_jcSubId[0].retItems.forEach(element => {
@@ -1596,12 +1621,20 @@ export class PubsupportComponent implements OnInit {
                             break;
                             case 'GalleyURL':
                             let subId;
+                            let galleyId;
                             this.jc_jcSubId[1].retItems.forEach(element => {
                                 if (element) {
                                     subId = element.ID;
                                 }
+                            });   
+                            await this.getGalleyDetails(subId);
+                            this.jcGalleyDetails[0].retItems.forEach(element => {
+                                if (element) {
+                                    galleyId = element.ID;
+                                }
                             });
-                            data = this.setUploadFileUrl(this.constantService.listNames.JCGalley,subId,uploadedfile[0].ServerRelativeUrl,this.type)
+                            console.log(this.jcGalleyDetails);                    
+                            data = await this.setUploadFileUrl(this.constantService.listNames.JCGalley,galleyId,uploadedfile[0].ServerRelativeUrl,this.type)
                             break;
                         }
                       
@@ -2022,6 +2055,7 @@ export class PubsupportComponent implements OnInit {
     async onReplaceFile(event) {
         if (event.target.files && event.target.files.length > 0) {
             await this.getJC_JCSubID();
+
             this.SelectedFile = [];
             this.selectedFile = event.target.files[0];
             let fileName = event.target.files[0].name;

@@ -6572,7 +6572,7 @@ export class TimelineComponent
                   if(!jcId) {
                     this.commonService.showToastrMessage(
                       this.constants.MessageType.error,
-                      'Galley / GalleySlot cant be plotted as as PubSupportStatus is not Accepted or Galleyed',
+                      'Galley / GalleySlot cant be plotted as PubSupportStatus is not Accepted or Galleyed',
                       false
                     );
                     return false;
@@ -6735,13 +6735,18 @@ export class TimelineComponent
     await this.commonService.confirmMessageDialog('Confirmation', msg, null, ['Yes', 'No'], false).then(async Confirmation => {
       if (Confirmation === 'Yes') {
         this.selectedSubMilestone = task;
-        let currMilTasks = this.taskAllocateCommonService.getTasksFromMilestones(
-          this.selectedSubMilestone,
-          false,
-          this.milestoneData,
-          false
-        );
-        let isValid = this.checkForPubSupportTasks(currMilTasks);
+        let isValid;
+        if(this.oProjectDetails.isPubSupport == 'Yes') {
+          let currMilTasks = this.taskAllocateCommonService.getTasksFromMilestones(
+            this.selectedSubMilestone,
+            false,
+            this.milestoneData,
+            false
+          );
+          isValid = await this.checkForPubSupportTasks(currMilTasks);
+        } else {
+          isValid = true;
+        }
         if(isValid){
           const validateNextMilestone = this.validateNextMilestone(this.selectedSubMilestone);
           if (validateNextMilestone) {
