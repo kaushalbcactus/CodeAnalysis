@@ -17,7 +17,7 @@ import { DataService } from 'src/app/Services/data.service';
 })
 export class CdsComponent implements OnInit, AfterViewChecked, DoCheck {
   isOptionFilter: boolean;
-  @Input() filterObj;
+  @Input() filterObj: any;
   @Input() cdStatus;
   @Input() readOnly;
   @ViewChild('cd', { static: false }) cdTable: Table;
