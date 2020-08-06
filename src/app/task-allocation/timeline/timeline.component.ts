@@ -301,7 +301,7 @@ export class TimelineComponent
   }
 
   async getResourceCapacity() {
-    const users = [];
+    let users = [];
     if (this.milestoneData.length) {
       const currentMilestone = this.milestoneData.find(
         m => m.data.itemType === "milestone" && m.data.isCurrent
@@ -317,6 +317,7 @@ export class TimelineComponent
           )
         );
       });
+      users = [...new Set(users)].filter(Boolean);
       const newdate = this.commonService.calcBusinessDate(
         "Next",
         90,
@@ -6501,7 +6502,7 @@ export class TimelineComponent
 
   async checkForPubSupportTasks(allTasks) {
     const allowedTasks = ['Journal Requirement', 'Galley', "GalleySlot" , 'Submission Pkg', 'Submit', 'SubmitSlot'];
-    const status = ['Completed' , 'Auto Closed']; 
+    const status = ['Completed' , 'Auto Closed'];
     for (const index in allTasks) {
       if (allTasks.hasOwnProperty(index)) {
         if(allowedTasks.includes(allTasks[index].title) && !status.includes(allTasks[index].status)) {
@@ -6610,21 +6611,11 @@ export class TimelineComponent
 
   validateAllocationString(checkTasks) {
     //////// check if multiple days task have allocationperday string
-    const errorTasks = checkTasks.filter(
-      t =>
-        t.edited &&
-        t.itemType !== "Client Review" &&
-        t.itemType !== "Send to client" &&
-        !t.parentSlot &&
-        t.slotType === "Task" &&
-        new Date(t.pUserStartDatePart).getTime() !==
-          new Date(t.pUserEndDatePart).getTime() &&
-        !t.allocationPerDay &&
-        +t.budgetHours &&
-        t.AssignedTo &&
-        t.AssignedTo.ID &&
-        t.AssignedTo.ID !== -1
-    );
+    const errorTasks = checkTasks.filter(t => t.edited && t.itemType !== 'Client Review' && t.itemType !== 'Send to client'
+      && !t.parentSlot && t.slotType === 'Task' && t.status !== 'Abandon' && t.status !== 'Completed' && t.itemType !== 'Adhoc'
+      && new Date(t.pUserStartDatePart).getTime() !== new Date(t.pUserEndDatePart).getTime()
+      && !t.allocationPerDay && +t.budgetHours
+      && t.AssignedTo && t.AssignedTo.ID && t.AssignedTo.ID !== -1);
     if (errorTasks.length) {
       const tasks = errorTasks.map(t => t.title).join(", ");
       this.commonService.showToastrMessage(

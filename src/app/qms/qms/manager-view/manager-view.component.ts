@@ -364,7 +364,7 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
     feedback.hideInnerTable = feedback.eventType === event ? !feedback.hideInnerTable : false;
     filterObject.ratingType = feedback.eventType = event;
     filterObject.collapseMangerView = feedback.hideInnerTable ? true : false;
-    feedbackTableRef.applyFilters(filterObject);
+    feedbackTableRef.applyArrayFilter(filterObject.ratingType, feedback.feedbackForMe);
     filterObject.manager = false;
   }
 

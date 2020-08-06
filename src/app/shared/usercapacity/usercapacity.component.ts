@@ -1756,17 +1756,32 @@ export class UsercapacityComponent implements OnInit {
             piObj.listName = this.globalConstantService.listNames.ProjectInformation.name;
             piObj.type = "GET";
             batchUrl.push(piObj);
-            const tasksObj = Object.assign({}, this.queryConfig);
-            tasksObj.url = this.spService.getReadURL(
-              this.globalConstantService.listNames.Schedules.name,
-              this.sharedConstant.userCapacity.getProjectTasks
-            );
-            tasksObj.url = tasksObj.url
-              .replace("{{projectCode}}", tasks[taskIndex].projectCode)
-              .replace("{{milestone}}", tasks[taskIndex].milestone);
-            tasksObj.listName = this.globalConstantService.listNames.Schedules.name;
-            tasksObj.type = "GET";
-            batchUrl.push(tasksObj);
+            if(tasks[taskIndex].projectCode !== 'Adhoc') {
+              const tasksObj = Object.assign({}, this.queryConfig);
+              tasksObj.url = this.spService.getReadURL(
+                this.globalConstantService.listNames.Schedules.name,
+                this.sharedConstant.userCapacity.getProjectTasks
+              );
+              tasksObj.url = tasksObj.url
+                .replace("{{projectCode}}", tasks[taskIndex].projectCode)
+                .replace("{{milestone}}", tasks[taskIndex].milestone);
+              tasksObj.listName = this.globalConstantService.listNames.Schedules.name;
+              tasksObj.type = "GET";
+              batchUrl.push(tasksObj);
+            } else {
+              const tasksObj = Object.assign({}, this.queryConfig);
+              tasksObj.url = this.spService.getReadURL(
+                this.globalConstantService.listNames.Schedules.name,
+                this.sharedConstant.userCapacity.getProjectTasks
+              );
+              tasksObj.url = tasksObj.url
+                // .replace("{{projectCode}}", tasks[taskIndex].projectCode)
+                // .replace("{{milestone}}", tasks[taskIndex].milestone);
+              tasksObj.listName = this.globalConstantService.listNames.Schedules.name;
+              tasksObj.type = "GET";
+              batchUrl.push(tasksObj);
+            }
+            
 
             // tslint:enable
           }
@@ -1785,16 +1800,22 @@ export class UsercapacityComponent implements OnInit {
           if (tasks.hasOwnProperty(i)) {
             if (tasks[i].projectCode) {
               const arrProject = arrResults[nCount];
-              if (arrProject.length > 0) {
+              if (arrProject && arrProject.length > 0) {
                 tasks[i].shortTitle = arrProject[0].WBJID;
               }
-              const miltasks = arrResults[nCount + 1];
-              if (
-                miltasks.length &&
-                miltasks[0].ContentTypeCH === "Milestone"
-              ) {
-                miltasks.splice(0, 1);
+              let miltasks = arrResults[nCount + 1];
+              if(miltasks) {
+                if (
+                
+                  miltasks.length &&
+                  miltasks[0].ContentTypeCH === "Milestone"
+                ) {
+                  miltasks.splice(0, 1);
+                }
+              } else {
+                miltasks = [];
               }
+             
               // tslint:disable
               for (const index in miltasks) {
                 if (miltasks.hasOwnProperty(index)) {
