@@ -383,7 +383,7 @@ export class MyTimelineComponent implements OnInit {
         "end": element.TATStatus && element.TATStatus === "Yes" && new Date(this.datePipe.transform(element.StartDate, "yyyy-MM-dd")).getTime() !== new Date(this.datePipe.transform(element.DueDateDT, "yyyy-MM-dd")).getTime() ? new Date(new Date(element.DueDateDT).setDate(new Date(element.DueDateDT).getDate() + 1)) : new Date(element.DueDateDT),
         "backgroundColor": element.Status === 'Not Confirmed' ? "#FFD34E" : element.Status === 'Not Started' ? "#5F6273" : element.Status === 'In Progress' ? "#6EDC6C" : element.Status === 'Auto Closed' ? "#8183CC" : element.Status === 'On Hold' ? "#FF3E56" : (element.Status === 'Completed' && element.Task === 'Adhoc') ? element.CommentsMT === "Administrative Work" ?
           '#eb592d' : element.CommentsMT === "Client meeting / client training" ? '#ff8566' : element.CommentsMT === "Internal meeting" ? '#795C32' : '#445cad' : "#3498DB",
-        allDay: element.TATStatus && element.TATStatus === "Yes" ? true : false
+        allDay: element.TATStatus && element.TATStatus === "Yes" ? true : (element.Task === 'Adhoc' && element.CommentsMT === "Administrative Work") ? true :  false
 
       }
       this.events.push(eventObj);

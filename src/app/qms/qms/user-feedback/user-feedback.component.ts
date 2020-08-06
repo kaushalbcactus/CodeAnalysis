@@ -18,7 +18,7 @@ export class UserFeedbackComponent implements OnInit, AfterViewChecked {
   UFColumns: any[];
   UFRows: any = [];
   originalScorecard = [];
-  // ref;
+  ref;
   // @ViewChild('uf', { static: false }) uf: Table;
   @Output() setAverageRating = new EventEmitter<string>();
   @Output() feedbackData = new EventEmitter<any>();
@@ -212,8 +212,8 @@ export class UserFeedbackComponent implements OnInit, AfterViewChecked {
         Score: element.Value ? element.Value : ''
       });
     });
+    this.ref = this.userFeedbackTable;
     return this.UFRows;
-    // this.ref = this.userFeedbackTable;
   }
 
   getAverageRating(itemsArray) {
