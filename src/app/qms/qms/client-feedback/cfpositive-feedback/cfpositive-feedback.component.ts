@@ -189,6 +189,7 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
       pf.isLoggedInDeliveryLead = deliveryLeads.length > 0 ? true : false;
       pf.formattedSentDate = datePipe.transform(pf.SentDate, 'd MMM, yyyy');
       pf.resources = pf.Resources.results ? pf.Resources.results.map(a => a.Title) : [];
+      pf.fullUrl = window.location.origin + '/' + pf.FileURL;
       return pf;
     });
     return arrResult;
@@ -229,7 +230,8 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
         Resources: element.resources,
         FileUrl: element.FileURL,
         IsActive: element.IsActiveCH,
-        isLoggedInDeliveryLead: element.isLoggedInDeliveryLead
+        isLoggedInDeliveryLead: element.isLoggedInDeliveryLead,
+        fullUrl: element.fullUrl
       });
     });
     this.colFilters(this.CFRows);
@@ -237,7 +239,7 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
 
   /**
    * Filter applied of date range to positive feedback
-   * 
+   *
    */
   async applyFilters(filterObj) {
     let arrPFs = this.pfs;

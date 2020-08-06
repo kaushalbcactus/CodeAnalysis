@@ -37,7 +37,7 @@
                         {{rowData[col.field]}}
                     </ng-container>
                     <ng-container *ngIf="col.field == 'Title'">
-                        <a [href]="rowData['FileUrl'].Url" download>{{rowData[col.field]}}</a>
+                        <a [href]="rowData['fullUrl']" download>{{rowData[col.field]}}</a>
                     </ng-container>
                     <ng-container *ngIf="col.field == 'SentDate'">
                         {{rowData[col.field] | date: 'MMM d, yyyy'}}

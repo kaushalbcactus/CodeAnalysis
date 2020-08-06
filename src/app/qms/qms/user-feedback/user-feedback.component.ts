@@ -18,7 +18,7 @@ export class UserFeedbackComponent implements OnInit, AfterViewChecked {
   UFColumns: any[];
   UFRows: any = [];
   originalScorecard = [];
-  ref;
+  // ref;
   // @ViewChild('uf', { static: false }) uf: Table;
   @Output() setAverageRating = new EventEmitter<string>();
   @Output() feedbackData = new EventEmitter<any>();
@@ -183,7 +183,7 @@ export class UserFeedbackComponent implements OnInit, AfterViewChecked {
    *
    * @param  arrScoreCards - array of objects
    */
-  bindTable(arrScoreCards) {
+  getFeebacks(arrScoreCards) {
     // Display average rating and bind to internal component
     const averageRating = this.getAverageRating(arrScoreCards);
     this.setAverageRating.emit(averageRating);
@@ -212,9 +212,8 @@ export class UserFeedbackComponent implements OnInit, AfterViewChecked {
         Score: element.Value ? element.Value : ''
       });
     });
-    this.originalScorecard = [...this.UFRows];
-    this.feedbackData.emit(this.UFRows);
-    this.ref = this.userFeedbackTable;
+    return this.UFRows;
+    // this.ref = this.userFeedbackTable;
   }
 
   getAverageRating(itemsArray) {
@@ -245,22 +244,28 @@ export class UserFeedbackComponent implements OnInit, AfterViewChecked {
         arrScorecard = await this.getScorecardItems(filterObj, '', '');
       }
     }
-    this.bindTable(arrScorecard);
+    const feedbacks = this.getFeebacks(arrScorecard);
+    this.UFRows = [...feedbacks];
+    this.originalScorecard = [...this.UFRows];
+    this.feedbackData.emit(this.UFRows);
     this.colFilters(arrScorecard);
     this.hideTable = false;
     this.hideLoader = true;
     // }, 500);
   }
 
-  async applyArrayFilter(filter) {
+  async applyArrayFilter(filter, scorecard?) {
     let newScorecard = [];
+    const score = scorecard && scorecard.length ? scorecard : this.originalScorecard;
     if (filter === '') {
-      newScorecard = this.originalScorecard.filter(sc => sc.EvaluatorSkill === null || sc.EvaluatorSkill === '' || sc.EvaluatorSkill === 'Review');
+      newScorecard = score.filter(sc => sc.EvaluatorSkill === null || sc.EvaluatorSkill === '' || sc.EvaluatorSkill === 'Review');
     } else {
-      newScorecard = this.originalScorecard.filter(sc => sc.EvaluatorSkill === filter);
+      newScorecard = score.filter(sc => sc.EvaluatorSkill === filter);
     }
-    // this.bindTable(newScorecard);
-    this.UFRows = [...newScorecard];
+    const feedbacks = this.getFeebacks(newScorecard);
+    this.UFRows = [...feedbacks];
+    // this.originalScorecard = [...this.UFRows];
+    this.feedbackData.emit(this.UFRows);
     this.colFilters(newScorecard);
   }
 

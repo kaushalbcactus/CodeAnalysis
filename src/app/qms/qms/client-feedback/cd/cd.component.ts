@@ -295,7 +295,7 @@ export class CDComponent implements OnInit, OnDestroy {
   //   this.success.next(message);
   // }
 
-  
+
   showToastMsg(obj) {
     this.commonService.showToastrMessage(obj.type, obj.detail, false);
   }
