@@ -1391,7 +1391,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         const AllNextTasks = AllTasks.filter(c => (nextTasks.indexOf(c.TaskName) > -1));
 
         const SDTask = AllNextTasks.find(c => c.StartDate < task.DueDate && c.Status !== 'Completed'
-          && c.Status !== 'Auto Closed' && c.Status !== 'Deleted' && c.allowStart === false);
+          && c.Status !== 'Auto Closed' && c.Status !== 'Deleted' && c.DisableCascade === false);
         if (SDTask) {
           // this.errorMessageCount++;
 

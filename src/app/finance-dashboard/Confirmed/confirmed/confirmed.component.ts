@@ -971,9 +971,8 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 this.purchaseOrdersList, this.editorRef, projectAppendix);
             this.proformaModal = false;
             this.isPSInnerLoaderHidden = true;
+           this.reFetchData();
             this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Proforma Number: ' + retCall[0].Title + ' - Added Sucessfully  ', false);
-            this.reFetchData();
-
         } else {
             await this.spServices.executeBatch(batchUrl);
             this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;

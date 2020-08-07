@@ -5,6 +5,7 @@
         "ng": "ng",
         "start1": "ng serve",
         "build": "ng build",
+        "buildprod": "node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng build --configuration=prodcdnSPA",
         "builduat": "node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng build --configuration=uatcdnSPA",
         "buildqa": "node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng build --configuration=qacdnSPA",
         "test": "ng test",
