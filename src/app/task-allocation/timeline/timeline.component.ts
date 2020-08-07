@@ -6505,13 +6505,14 @@ export class TimelineComponent
     const status = ['Completed' , 'Auto Closed'];
     for (const index in allTasks) {
       if (allTasks.hasOwnProperty(index)) {
-        if(allowedTasks.includes(allTasks[index].title) && !status.includes(allTasks[index].status)) {
+        // let taskTitle = allTasks[index].slotType == 'Slot' ?  allTasks[index].title.split(' ')[0] :  allTasks[index].title;
+        if(allowedTasks.includes(allTasks[index].itemType) && !status.includes(allTasks[index].status)) {
           const batchUrl = [];
           let jcGalleyObj;
           let jcsubmitObj;
           let jcSubObj;
           let jcReqObj;
-          switch(allTasks[index].title) {
+          switch(allTasks[index].itemType) {
 
             case 'Submission Pkg' :
               jcSubObj = Object.assign({}, this.queryConfig);
@@ -6554,7 +6555,7 @@ export class TimelineComponent
             let jcSubId = '';
             let jcId = '';
             if (response.length > 0) {
-              switch (allTasks[index].title) {
+              switch (allTasks[index].itemType) {
                 case 'Submission Pkg':
                   jcSubId = response[0].length > 0 ? response[0][0].ID : 0;
                   if(!jcSubId) {
