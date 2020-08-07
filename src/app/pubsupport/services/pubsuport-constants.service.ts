@@ -55,7 +55,7 @@ export class PubsuportConstantsService {
         },
         jcSubmission: {
             select: "ID, Title, JCID, SubmissionDate, SubmissionURL, SubmissionPkgURL, DecisionURL, DecisionDate, Decision, Status, Created ",
-            filter: "Title eq '{{ProjectCode}}' and JCID eq '{{JCID}}' ",
+            filter: "Title eq '{{ProjectCode}}' and JCID eq '{{JCID}}' and Status ne 'Deleted' ",
             top: 4500,
             orderby: "Created desc"
         },
