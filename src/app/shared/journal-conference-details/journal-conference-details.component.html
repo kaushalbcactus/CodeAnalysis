@@ -202,14 +202,14 @@
                                                     <a class="downloadUpload" *ngIf="s.SubmissionPkgURL" (click)="downloadFile(s.SubmissionPkgURL, s.Title+'_SubmissionPkg_files')">
                                                         &nbsp;<i class="fa fa-download"
                                                             aria-hidden="true"></i></a>
-                                                    <a class="downloadUpload" *ngIf="s.SubmissionPkgURL && isUploadIcon" (click)="replaceFile('SubmissionPkgURL')">
+                                                    <a class="downloadUpload" *ngIf="s.SubmissionPkgURL && isUploadIcon" (click)="replaceFile('SubmissionPkgURL',s.ID)">
                                                         &nbsp;<i class="fa fa-upload" aria-hidden="true"></i></a>
                                                 </td>
                                                 <td>
                                                     <a class="downloadUpload" *ngIf="s.SubmissionURL" (click)="downloadFile(s.SubmissionURL, s.Title+'_SubmissionConfirmation_files')">
                                                         &nbsp;<i class="fa fa-download"
                                                             aria-hidden="true"></i></a>
-                                                    <a class="downloadUpload" *ngIf="s.SubmissionURL && isUploadIcon" (click)="replaceFile('SubmissionURL')">
+                                                    <a class="downloadUpload" *ngIf="s.SubmissionURL && isUploadIcon" (click)="replaceFile('SubmissionURL',s.ID)">
                                                         &nbsp;<i class="fa fa-upload" aria-hidden="true"></i></a>
                                                 </td>
                                                 <td>
@@ -258,7 +258,7 @@
                                                         <a class="downloadUpload" *ngIf="g.GalleyURL" (click)="downloadFile(g.GalleyURL,g.Title+'_GalleyDoc_files')">
                                                             &nbsp;<i class="fa fa-download"
                                                                 aria-hidden="true"></i></a>
-                                                        <a class="downloadUpload" *ngIf="g.GalleyURL && isUploadIcon" (click)="replaceFile('GalleyURL')">
+                                                        <a class="downloadUpload" *ngIf="g.GalleyURL && isUploadIcon" (click)="replaceFile('GalleyURL',g.ID)">
                                                             &nbsp;<i class="fa fa-upload" aria-hidden="true"></i></a>
                                                     </td>
                                                 </tr>

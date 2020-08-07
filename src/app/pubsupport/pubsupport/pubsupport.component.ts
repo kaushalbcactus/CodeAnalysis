@@ -38,6 +38,7 @@ export class PubsupportComponent implements OnInit {
     journalConfDetails: JournalConferenceDetailsComponent;
     
     @ViewChild('dt', { static: false })dt: Table;
+    filterID: any;
 
     constructor(
         private formBuilder: FormBuilder,
@@ -1600,7 +1601,7 @@ export class PubsupportComponent implements OnInit {
                             case 'SubmissionPkgURL':
                             let jcSubId;
                             this.jc_jcSubId[1].retItems.forEach(element => {
-                                if (element) {
+                                if (element && this.filterID && this.filterID == element.ID) {
                                     jcSubId = element.ID;
                                 }
                             });
@@ -1631,7 +1632,7 @@ export class PubsupportComponent implements OnInit {
                             });   
                             await this.getGalleyDetails(subId);
                             this.jcGalleyDetails[0].retItems.forEach(element => {
-                                if (element) {
+                                if (element && this.filterID && this.filterID == element.ID) {
                                     galleyId = element.ID;
                                 }
                             });
@@ -2037,8 +2038,9 @@ export class PubsupportComponent implements OnInit {
         this.submit(data1 , 'revertDecision');
     }
 
-    replaceFile(type, project,milestone) {
+    replaceFile(type, project,milestone,id?) {
         // this.getJC_JCSubID();
+        this.filterID = id ? id : '';
         this.selectedProject = project;
         this.folderPath = '';
         this.type = type;

@@ -128,11 +128,18 @@ export class TaskAllocationConstantsService {
         }
     };
     myDashboardComponent = {
+    //   SubmissionPkg: {
+    //     select: 'ID,Title,JCID,SubmissionDate,SubmissionURL,SubmissionPkgURL,DecisionURL,DecisionDate,Decision,Status',
+    //     filter: 'Title eq \'{{projectCode}}\' and (Status eq \'{{Status}}\'  or  Status eq \'{{StatusResubmit}}\')',
+    //     top: 1
+    //   },
+
       SubmissionPkg: {
-        select: 'ID,Title,JCID,SubmissionDate,SubmissionURL,SubmissionPkgURL,DecisionURL,DecisionDate,Decision,Status',
+        select: 'ID,Title,Status',
         filter: 'Title eq \'{{projectCode}}\' and (Status eq \'{{Status}}\'  or  Status eq \'{{StatusResubmit}}\')',
         top: 1
       },
+
   
       GalleySubCat: {
         select: 'ID,Title,JCID,SubmissionDate,SubmissionURL,SubmissionPkgURL,DecisionURL,DecisionDate,Decision,Status',

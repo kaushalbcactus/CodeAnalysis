@@ -6516,9 +6516,9 @@ export class TimelineComponent
 
             case 'Submission Pkg' :
               jcSubObj = Object.assign({}, this.queryConfig);
-              jcSubObj.url = this.spServices.getReadURL(this.constants.listNames.JCSubmission.name, this.taskAllocationService.myDashboardComponent.SubmissionPkg);
+              jcSubObj.url = this.spServices.getReadURL(this.constants.listNames.JournalConf.name, this.taskAllocationService.myDashboardComponent.SubmissionPkg);
               jcSubObj.url = jcSubObj.url.replace(/{{projectCode}}/gi, this.oProjectDetails.projectCode).replace(/{{Status}}/gi, 'Selected').replace(/{{StatusResubmit}}/gi, 'Resubmit to same journal');
-              jcSubObj.listName = this.constants.listNames.JCSubmission.name;
+              jcSubObj.listName = this.constants.listNames.JournalConf.name;
               jcSubObj.type = 'GET';
               batchUrl.push(jcSubObj);
               break;

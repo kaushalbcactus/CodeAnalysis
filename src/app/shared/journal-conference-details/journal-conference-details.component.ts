@@ -135,9 +135,14 @@ export class JournalConferenceDetailsComponent implements OnInit {
     this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
 }
 
-  replaceFile(type) {
+  replaceFile(type,id?) {
     let obj: any = { type:type, project:this.selectedProject , milestone: this.journal_Conf_data[0].element.Milestone}
-    this.fileReplace.emit(obj);
+    if(id) {
+      obj.id = id;
+      this.fileReplace.emit(obj);
+    } else {
+      this.fileReplace.emit(obj);
+    }
     // // this.getJC_JCSubID();
     // this.folderPath = '';
     // this.type = type;
