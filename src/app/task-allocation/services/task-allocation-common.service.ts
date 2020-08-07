@@ -600,7 +600,13 @@ export class TaskAllocationCommonService {
 
   checkNameExists(tasks, milestoneTask, originalName, allResTasks, allTasks) {
     tasks = allTasks.filter(
-      e => e.title === originalName && e.milestone === milestoneTask.milestone
+      e =>  e.Title.replace(
+        this.sharedObject.oTaskAllocation.oProjectDetails.projectCode +
+          " " +
+          milestoneTask.milestone +
+          " ",
+        ""
+      ) === originalName && e.Milestone === milestoneTask.milestone
     );
     if (!tasks.length) {
       tasks = allTasks.filter(e => {

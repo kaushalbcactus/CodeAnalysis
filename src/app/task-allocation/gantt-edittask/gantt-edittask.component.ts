@@ -91,7 +91,7 @@ export class GanttEdittaskComponent implements OnInit {
     this.milestoneData = this.config.data.milestoneData;
     this.milestoneDataCopy = this.config.data.milestoneDataCopy;
     this.allRestructureTasks = this.config.data.allRestructureTasks;
-    this.allTasks = this.allTasks;
+    this.allTasks = this.config.data.allTasks;
     const clickedInputType = this.config.data.clickedInputType;
     this.onLoad(this.task, clickedInputType);
   }
