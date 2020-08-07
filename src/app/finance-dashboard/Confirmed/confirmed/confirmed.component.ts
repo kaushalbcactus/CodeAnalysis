@@ -973,7 +973,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             this.isPSInnerLoaderHidden = true;
             this.reFetchData();
 
-            this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Proforma Number: ' + this.addToProforma_form.getRawValue().ProformaNumber + ' - Added Sucessfully  ', false);
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Proforma Number: ' + retCall[0].Title + ' - Added Sucessfully  ', false);
         } else {
             await this.spServices.executeBatch(batchUrl);
             this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;

@@ -84,6 +84,13 @@ export class AddUpdateProformaDialogComponent implements OnInit {
 
   updateFormValueEdit() {
     this.selectedPurchaseNumber = this.config.data.selectedPurchaseNumber;
+    delete this.selectedPurchaseNumber.__metadata;
+    this.minProformaDate = new Date(Math.max.apply(null, this.config.data.selectedAllRowData.map(e => e.ScheduledDate)));
+    this.showHideState({ value: this.config.data.selectedAllRowData[0].Template })
+    this.generateProformaNumber(this.config.data.selectedCLEData);
+    this.getPOCNamesForEditInv(this.config.data.selectedCLEData);
+    this.getPONumberFromCLE(this.config.data.selectedCLEData.Title);
+    this.ProformaForm.get('POCName').setValue(this.listOfPOCNames.find(c => c.ID === this.selectedPurchaseNumber.POCLookup))
     this.ProformaForm.patchValue({
       ClientLegalEntity: this.config.data.selectedCLEData,
       POName: this.selectedPurchaseNumber,
@@ -94,14 +101,6 @@ export class AddUpdateProformaDialogComponent implements OnInit {
       ProformaDate: new Date(),
       Template: { label: this.config.data.selectedAllRowData[0].Template, value: this.config.data.selectedAllRowData[0].Template },
     });
-
-    this.minProformaDate = new Date(Math.max.apply(null, this.config.data.selectedAllRowData.map(e => e.ScheduledDate)));
-    this.showHideState({ value: this.config.data.selectedAllRowData[0].Template })
-    this.generateProformaNumber(this.config.data.selectedCLEData);
-    this.getPOCNamesForEditInv(this.config.data.selectedCLEData);
-    this.getPONumberFromCLE(this.config.data.selectedCLEData.Title);
-    this.ProformaForm.get('POCName').setValue(this.listOfPOCNames.find(c => c.ID === this.selectedPurchaseNumber.POCLookup))
-
     this.modalloaderenable = false;
   }
 
@@ -133,6 +132,7 @@ export class AddUpdateProformaDialogComponent implements OnInit {
     this.poNames = [];
     this.purchaseOrdersList.map((x) => {
       if (x.ClientLegalEntity === cli) {
+        delete x.__metadata;
         this.poNames.push(x);
       }
     });
