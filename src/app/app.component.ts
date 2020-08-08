@@ -127,9 +127,9 @@ export class AppComponent implements OnDestroy {
       if (currentUserGroups.find(g => g === 'Managers' || g === 'FinanceDashboard Members' || g === 'Invoice_Team')) {
         this.leftNavigation.push({ title: 'Finance Dashboard', href: this.globalService.url + '/financeDashboard', visible: true });
       }
-      if (currentUserGroups.find(g => g === 'Managers' || g === 'AttributeManagement Members')) {
-        this.leftNavigation.push({ title: 'Attr Management', href: this.globalService.sharePointPageObject.webRelativeUrl + '/attribute', visible: true });
-      }
+      // if (currentUserGroups.find(g => g === 'Managers' || g === 'AttributeManagement Members')) {
+      //   this.leftNavigation.push({ title: 'Attr Management', href: this.globalService.sharePointPageObject.webRelativeUrl + '/attribute', visible: true });
+      // }
       if (currentUserGroups.find(g => g === 'Managers' || g === 'AttributeManagement Members')) {
         this.leftNavigation.push({ title: 'Admin', href: this.globalService.url + '/admin', visible: true });
       }

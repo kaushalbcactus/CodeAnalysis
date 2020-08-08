@@ -558,6 +558,7 @@ export class TimeBookingDialogComponent implements OnInit {
                 TaskComments: dbTasks[i].CommentsMT,
                 Title: dbTasks[i].ProjectCode + ' ' + dbTasks[i].Milestone + ' TB ' + this.sharedObject.currentUser.title,
                 AssignedToId: this.sharedObject.currentUser.userId,
+                ContentTypeCH : this.constants.CONTENT_TYPE.TASK
               };
               count++;
               this.commonService.SetNewrelic('MyDashboard', 'time-bookingDialog', 'CreateAndMoveSchedule');
