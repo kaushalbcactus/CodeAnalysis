@@ -1154,7 +1154,7 @@ export class TimelineComponent
           e.milestone === m.taskFullName &&
           !e.previousTask &&
           e.itemType !== "Adhoc" &&
-          e.itemType !== "TB"
+          e.itemType !== "TB" && e.itemType !== "Time Booking"
       );
 
 
@@ -4461,7 +4461,7 @@ export class TimelineComponent
         c.data.type !== 'task' ||
         (c.data.type === 'task' &&
           c.data.itemType.toLowerCase() !== 'adhoc' &&
-          c.data.itemType.toLowerCase() !== 'tb')
+          c.data.itemType.toLowerCase() !== 'tb' && c.data.itemType !== 'Time Booking')
     );
     switch (type) {
       case 'start':
