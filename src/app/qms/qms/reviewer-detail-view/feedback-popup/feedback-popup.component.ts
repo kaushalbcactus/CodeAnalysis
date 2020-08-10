@@ -5,10 +5,9 @@ import { SPOperationService } from '../../../../Services/spoperation.service';
 import { QMSConstantsService } from '../../services/qmsconstants.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { IScorecard, IScorecardTemplate } from '../../../interfaces/qms';
-import { MessageService } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 import { MyDashboardConstantsService } from 'src/app/my-dashboard/services/my-dashboard-constants.service';
 import { DatePipe } from '@angular/common';
-import { isArray } from 'util';
 
 @Component({
   selector: 'app-feedback-popup',
@@ -16,18 +15,14 @@ import { isArray } from 'util';
   styleUrls: ['./feedback-popup.component.css']
 })
 
-
 export class FeedbackPopupComponent implements OnInit {
 
-  @Output() bindTableEvent = new EventEmitter<{}>();
-  @Output() setSuccessMessage = new EventEmitter<{}>();
-  @Output() popupClosed = new EventEmitter<{}>();
   @ViewChild('popupContent', { static: true }) popupContent: ElementRef;
   public popupByJS = false;
   public hidePopupLoader = true;
   public hidePopupTable = false;
   public activeIndex = 0;
-  display = false;
+  // display = false;
   public options = {
     data: null,
     url: '',
@@ -49,14 +44,16 @@ export class FeedbackPopupComponent implements OnInit {
     private qmsConstant: QMSConstantsService,
     public global: GlobalService,
     private common: CommonService,
-    private messageService: MessageService,
     private dashbaordService: MyDashboardConstantsService,
     private datePipe: DatePipe,
     private cdr: ChangeDetectorRef,
+    public config: DynamicDialogConfig,
+    public ref: DynamicDialogRef,
   ) {
   }
 
   ngOnInit() {
+    this.openPopup(this.config.data.qmsTasks, this.config.data.task);
   }
   //#region ForRatingPopup
 
@@ -120,11 +117,10 @@ export class FeedbackPopupComponent implements OnInit {
   saveRatingFeedback() {
     const result = this.validateScorecard();
     if (result) {
-      this.showLoader();
       const prevTasks = this.scorecardTasks.tasks.filter(t => !t.ignoreFeedback);
       setTimeout(async () => {
         await this.save(prevTasks);
-        this.constantsService.loader.isPSInnerLoaderHidden = true;
+        // this.constantsService.loader.isPSInnerLoaderHidden = true;
       }, 300);
     }
   }
@@ -133,29 +129,20 @@ export class FeedbackPopupComponent implements OnInit {
     const emptyScorecard = this.scorecardTasks.tasks.filter(t => !t.ignoreFeedback && t.averageRating <= 0);
     const milestone = this.scorecardTasks.currentTask.Milestone ? this.scorecardTasks.currentTask.Milestone : this.scorecardTasks.currentTask.milestone;
     if (milestone === 'Draft 1' && emptyScorecard.length) {
-      this.messageService.add({
-        key: 'custom', severity: 'warn', summary: 'Warning Message', life: 10000,
-        detail: 'Rating Draft 1 milestone task is mandatory.'
-      });
+      this.common.showToastrMessage(this.constantsService.MessageType.warn,'Rating Draft 1 milestone task is mandatory.',false);
       return false;
     }
     const emptyCommentSC = this.scorecardTasks.tasks.filter(t => !t.ignoreFeedback && !t.feedbackComment.length && t.averageRating < 3);
     if (emptyCommentSC.length) {
       const tasksNames = emptyCommentSC.map(s => s.task);
       const taskString = tasksNames.join(',');
-      this.messageService.add({
-        key: 'custom', severity: 'warn', summary: 'Warning Message', life: 10000,
-        detail: 'Please provide comments for tasks ' + taskString + ' as rating is less than 3'
-      });
+      this.common.showToastrMessage(this.constantsService.MessageType.warn,'Please provide comments for tasks ' + taskString + ' as rating is less than 3',false);
       return false;
     }
     if (emptyScorecard.length) {
       const tasksNames = emptyScorecard.map(s => s.task);
       const taskString = tasksNames.join(',');
-      this.messageService.add({
-        key: 'custom', severity: 'warn', summary: 'Warning Message', life: 10000,
-        detail: 'Please mark ignore to scorecard of task ' + taskString
-      });
+      this.common.showToastrMessage(this.constantsService.MessageType.warn,'Please mark ignore to scorecard of task ' + taskString,true);
       return false;
     }
     return true;
@@ -166,6 +153,7 @@ export class FeedbackPopupComponent implements OnInit {
    *
    */
   async save(previousTasks) {
+    this.constantsService.loader.isPSInnerLoaderHidden = false;
     let firstBatchURL = [];
     // Insert new scorecard item to scorecard list
     const firstPostRequestContent = this.addScorecardItem(previousTasks);
@@ -188,7 +176,12 @@ export class FeedbackPopupComponent implements OnInit {
             //   this.popupClosed.emit(this.scorecardTasks.currentTask);
             //   break;
             case 'Retrospective':
-              this.bindTableEvent.emit(previousTasks[0]);
+              const Retodata = {
+                task: previousTasks[0],
+                message: { type: this.constantsService.MessageType.success, msg: 'Success', detail: 'Rating updated!' }
+              }
+              this.ref.close(Retodata);
+              // this.bindTableEvent.emit(previousTasks[0]);
               break;
             case 'Reviewer':
               previousTasks.forEach(task => {
@@ -196,16 +189,21 @@ export class FeedbackPopupComponent implements OnInit {
                 this.global.oReviewerPendingTasks.splice(taskIndex, 1);
               });
               const reviewerPendingTasks = JSON.parse(JSON.stringify(this.global.oReviewerPendingTasks));
-              this.bindTableEvent.emit(reviewerPendingTasks);
+              const Reviewerdata = {
+                task: reviewerPendingTasks,
+                message: { type: this.constantsService.MessageType.success, msg: 'Success', detail: 'Rating updated!' }
+              }
+              this.ref.close(Reviewerdata);
               break;
           }
         }
-        this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'Rating updated!' });
       }
     }
     if (this.scorecardTasks.currentTask.parent === 'Dashboard') {
-      this.popupClosed.emit(this.scorecardTasks.currentTask);
+      this.ref.close(this.scorecardTasks.currentTask)
+      // this.popupClosed.emit(this.scorecardTasks.currentTask);
     }
+    this.constantsService.loader.isPSInnerLoaderHidden = true;
   }
 
   /**
@@ -221,8 +219,8 @@ export class FeedbackPopupComponent implements OnInit {
         Title: taskDetail.task,
         SubMilestones: taskDetail.submilestones,
         FeedbackType: 'Task Feedback',
-        Comments: taskDetail.feedbackComment,
-        AverageRating: taskDetail.averageRating,
+        CommentsMT: taskDetail.feedbackComment,
+        AverageRatingNM: taskDetail.averageRating,
         AssignedToId: taskDetail.assignedToID,
         DocumentsUrl: taskDetail.documentUrl,
         ReviewerDocsUrl: taskDetail.reviewTaskDocUrl,
@@ -416,7 +414,7 @@ export class FeedbackPopupComponent implements OnInit {
         this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'GetNextPreviousTasksFromParentSlot');
         let res: any = await this.spService.readItems(this.constantsService.listNames.Schedules.name, previousNextTaskChild);
         if (res.hasError) {
-          this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: res.message.value });
+          this.common.showToastrMessage(this.constantsService.MessageType.error,res.message.value,false);
           return;
         }
         res = res.length ? res : [];
@@ -443,7 +441,7 @@ export class FeedbackPopupComponent implements OnInit {
 
     tasks = previousNextTaskChildRes.length ? previousNextTaskChildRes : tasks;
     tasks.map(c => c.StartDate = c.StartDate !== null ? this.datePipe.transform(c.StartDate, 'MMM d, y h:mm a') : '-');
-    tasks.map(c => c.DueDate = c.DueDate !== null ? this.datePipe.transform(c.DueDate, 'MMM d, y h:mm a') : '-');
+    tasks.map(c => c.DueDate = c.DueDateDT !== null ? this.datePipe.transform(c.DueDateDT, 'MMM d, y h:mm a') : '-');
 
     return tasks;
   }
@@ -485,12 +483,13 @@ export class FeedbackPopupComponent implements OnInit {
         tooltip: '' as string
       };
     });
-    this.display = false;
+    // this.display = false;
   }
 
   cancel() {
     if (Object.keys(this.scorecardTasks.currentTask).length > 0) {
-      this.popupClosed.emit(this.scorecardTasks.currentTask);
+      this.ref.close(this.scorecardTasks.currentTask)
+      // this.popupClosed.emit(this.scorecardTasks.currentTask);
     }
     this.closeFeedback(this.scorecardTasks.tasks);
   }
@@ -500,58 +499,41 @@ export class FeedbackPopupComponent implements OnInit {
    * @param content - content dispalyed within popup which is defined in HTML
    */
   async openPopup(tasks: any, reviewTask: {}) {
-    this.showLoader();
-    setTimeout(async () => {
-      const previousTasks = [];
-      this.display = true;
-      this.scorecardTasks.currentTask = reviewTask;
-      this.scorecardTemplates.templates = await this.getTemplates();
-      for (const element of tasks) {
-        const scorecard: IScorecard = {
-          task: element.title ? element.title : element.taskTitle,
-          milestone: element.milestone,
-          submilestones: element.subMilestones,
-          taskID: element.taskID,
-          assignedToID: element.resourceID,
-          assignedTo: element.resource,
-          taskCompletionDate: element.taskCompletionDate,
-          documentUrl: element.documentURL.length > 0 ? element.documentURL.join(';#') : '',
-          reviewTaskDocUrl: element.reviewTaskDocUrl.length > 0 ? element.reviewTaskDocUrl.join(';#') : '',
-          reviewTask: element.reviewTask ? element.reviewTask : '',
-          feedbackComment: '',
-          ignoreFeedback: false,
-          selectedTemplate: {
-            ID: 0 as number,
-            Title: '' as string,
-            tooltip: '' as string,
-          },
-          templateMatrix: [] as Array<{
-            question: string,
-            questionId: number,
-            rating: number,
-            tooltip: string
-          }>,
-          averageRating: 0,
-        };
-        previousTasks.push(scorecard);
-      }
-      this.scorecardTasks.tasks = [...previousTasks];
-      this.showTable();
-      this.activeIndex = 0;
-      this.cdr.detectChanges();
-    }, 300);
-
-  }
-
-  // #endregion ForRatingPopup
-  showTable() {
-    this.constantsService.loader.isPSInnerLoaderHidden = true;
-    this.display = true;
-  }
-
-  showLoader() {
-    this.display = false;
-    this.constantsService.loader.isPSInnerLoaderHidden = false;
+    const previousTasks = [];
+    this.scorecardTasks.currentTask = reviewTask;
+    this.scorecardTemplates.templates = await this.getTemplates();
+    for (const element of tasks) {
+      const scorecard: IScorecard = {
+        task: element.title ? element.title : element.taskTitle,
+        milestone: element.milestone,
+        submilestones: element.subMilestones,
+        taskID: element.taskID,
+        assignedToID: element.resourceID,
+        assignedTo: element.resource,
+        taskCompletionDate: element.taskCompletionDate,
+        documentUrl: element.documentURL.length > 0 ? element.documentURL.join(';#') : '',
+        reviewTaskDocUrl: element.reviewTaskDocUrl.length > 0 ? element.reviewTaskDocUrl.join(';#') : '',
+        reviewTask: element.reviewTask ? element.reviewTask : '',
+        feedbackComment: '',
+        ignoreFeedback: false,
+        selectedTemplate: {
+          ID: 0 as number,
+          Title: '' as string,
+          tooltip: '' as string,
+        },
+        templateMatrix: [] as Array<{
+          question: string,
+          questionId: number,
+          rating: number,
+          tooltip: string
+        }>,
+        averageRating: 0,
+      };
+      previousTasks.push(scorecard);
+    }
+    this.scorecardTasks.tasks = [...previousTasks];
+    this.activeIndex = 0;
+    this.cdr.detectChanges();
   }
 
   onIgnoreClicked(task, e) {

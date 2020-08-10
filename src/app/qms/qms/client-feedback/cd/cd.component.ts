@@ -8,10 +8,7 @@ import { CommonService } from '../../../../Services/common.service';
 import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { DataService } from '../../../../Services/data.service';
 import { Router, NavigationEnd } from '@angular/router';
-// import { Subject } from 'rxjs';
-// import { debounceTime } from 'rxjs/operators';
-// import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { MenuItem, MessageService } from 'primeng/api';
+import { MenuItem } from 'primeng/api';
 import { ActionsPopupComponent } from './actions-popup/actions-popup.component';
 import { Table } from 'primeng/table';
 
@@ -66,7 +63,7 @@ export class CDComponent implements OnInit, OnDestroy {
     public commonService: CommonService,
     public data: DataService,
     private router: Router,
-    private messageService: MessageService,
+
     private qmsConstant: QMSConstantsService,
     private qmsCommon: QMSCommonService,
     private cdr: ChangeDetectorRef,
@@ -172,8 +169,8 @@ export class CDComponent implements OnInit, OnDestroy {
         .replace('{{endDate}}', endDate);
       if (filterObj && filterObj.selectedStatus && filterObj.selectedStatus.type !== 'All') {
         // tslint:disable: quotemark
-        const validityStatus = filterObj.selectedStatus.type.indexOf('Closed') > -1 ? filterObj.selectedStatus.type.split(' - ')[1] === 'Valid' ? '1' : '0' : '';
-        qcComponent.getQCAdmin.filter = validityStatus ? qcComponent.getQCAdmin.filter.replace('{{statusFilter}}', "Status eq '" + filterObj.selectedStatus.type.split(' - ')[0] + "' and IsActive eq " + validityStatus + " and ") :
+        const validityStatus = filterObj.selectedStatus.type.indexOf('Closed') > -1 ? filterObj.selectedStatus.type.split(' - ')[1] === 'Valid' ? 'Yes' : 'No' : '';
+        qcComponent.getQCAdmin.filter = validityStatus ? qcComponent.getQCAdmin.filter.replace('{{statusFilter}}', "Status eq '" + filterObj.selectedStatus.type.split(' - ')[0] + "' and IsActiveCH eq " + validityStatus + " and ") :
           qcComponent.getQCAdmin.filter.replace('{{statusFilter}}', "Status eq '" + filterObj.selectedStatus.type + "' and ");
       } else {
         qcComponent.getQCAdmin.filter = qcComponent.getQCAdmin.filter.replace('{{statusFilter}}', '');
@@ -185,8 +182,8 @@ export class CDComponent implements OnInit, OnDestroy {
       qcComponent.getQC.filter = qcComponent.getQC.filter.replace('{{startDate}}', startDate)
         .replace('{{endDate}}', endDate);
       if (filterObj && filterObj.selectedStatus && filterObj.selectedStatus.type !== 'All') {
-        const validityStatus = filterObj.selectedStatus.type.indexOf('Closed') > -1 ? filterObj.selectedStatus.type.split(' - ')[1] === 'Valid' ? '1' : '0' : '';
-        qcComponent.getQC.filter = validityStatus ? qcComponent.getQC.filter.replace('{{statusFilter}}', "Status eq '" + filterObj.selectedStatus.type.split(' - ')[0] + "' and IsActive eq " + validityStatus + " and ") :
+        const validityStatus = filterObj.selectedStatus.type.indexOf('Closed') > -1 ? filterObj.selectedStatus.type.split(' - ')[1] === 'Valid' ? 'Yes' : 'No' : '';
+        qcComponent.getQC.filter = validityStatus ? qcComponent.getQC.filter.replace('{{statusFilter}}', "Status eq '" + filterObj.selectedStatus.type.split(' - ')[0] + "' and IsActiveCH eq " + validityStatus + " and ") :
           qcComponent.getQC.filter.replace('{{statusFilter}}', "Status eq '" + filterObj.selectedStatus.type + "' and ");
       } else {
         qcComponent.getQC.filter = qcComponent.getQC.filter.replace('{{statusFilter}}', "Status ne 'Deleted' and ");
@@ -214,7 +211,7 @@ export class CDComponent implements OnInit, OnDestroy {
       cd.isLoggedInTL = tl.length > 0 ? true : false;
       cd.formattedSentDate = datePipe.transform(cd.SentDate, 'd MMM, yyyy');
       cd.fullUrl = window.location.origin + '/' + cd.FileURL;
-      validity = cd.IsActive === true ? this.globalConstant.cdStatus.Valid : this.globalConstant.cdStatus.InValid;
+      validity = cd.IsActiveCH === 'Yes' ? this.globalConstant.cdStatus.Valid : this.globalConstant.cdStatus.InValid;
       cd.Status = cd.Status === this.globalConstant.cdStatus.Closed ? cd.Status + ' - ' + validity : cd.Status;
       return cd;
     });
@@ -248,14 +245,13 @@ export class CDComponent implements OnInit, OnDestroy {
       this.CDRows.push({
         ASD: element.ASD,
         CS: element.CS,
-        Category: element.Category ? element.Category : '',
-        Comments: element.Comments,
+        Category: element.CategoryST ? element.CategoryST : '',
+        Comments: element.CommentsMT,
         CorrectiveActions: element.CorrectiveActions,
         FileID: element.FileID,
         FileURL: element.FileURL,
         Id: element.Id,
-        IdentifiedResource: element.IdentifiedResource ? element.IdentifiedResource : '',
-        IsActive: element.IsActive,
+        IsActive: element.IsActiveCH,
         Modified: element.Modified,
         PreventiveActions: element.PreventiveActions,
         RejectionComments: element.RejectionComments,
@@ -270,7 +266,7 @@ export class CDComponent implements OnInit, OnDestroy {
         SentDate: element.SentDate ? new Date(this.datepipe.transform(element.SentDate, 'MMM d, yyyy')) : '',
         SentBy: element.SentBy.Title ? element.SentBy.Title : '',
         Status: element.Status ? element.Status : '',
-        Accountable: element.Category ? element.Category : '',
+        Accountable: element.CategoryST ? element.CategoryST : '',
         SeverityLevel: element.SeverityLevel ? element.SeverityLevel : '',
         Segregation: element.Segregation ? element.Segregation : '',
         BusinessImpact: element.BusinessImpact ? element.BusinessImpact : '',
@@ -299,8 +295,9 @@ export class CDComponent implements OnInit, OnDestroy {
   //   this.success.next(message);
   // }
 
+
   showToastMsg(obj) {
-    this.messageService.add({ severity: obj.type, summary: obj.msg, detail: obj.detail });
+    this.commonService.showToastrMessage(obj.type, obj.detail, false);
   }
 
   /**
@@ -347,14 +344,14 @@ export class CDComponent implements OnInit, OnDestroy {
     if (qcItem.length > 0) {
       // update tabe row columns
       qcItem[0].Status = cd.status;
-      qcItem[0].Category = cd.selectedAccountableGroup ? cd.selectedAccountableGroup : null;
+      qcItem[0].CategoryST = cd.selectedAccountableGroup ? cd.selectedAccountableGroup : null;
       qcItem[0].BusinessImpact = cd.selectedBusinessImpact ? cd.selectedBusinessImpact : null;
       qcItem[0].SeverityLevel = cd.selectedCDCategory ? cd.selectedCDCategory : null;
-      qcItem[0].Comments = cd.resourceIdentifiedComments ? cd.resourceIdentifiedComments : null;
+      qcItem[0].CommentsMT = cd.resourceIdentifiedComments ? cd.resourceIdentifiedComments : null;
       qcItem[0].RootCauseAnalysis = cd.rcaComments ? cd.rcaComments : null;
       qcItem[0].CorrectiveActions = cd.caComments ? cd.caComments : null;
       qcItem[0].PreventiveActions = cd.paComments ? cd.paComments : null;
-      qcItem[0].IsActive = cd.isActive;
+      qcItem[0].IsActiveCH = cd.isActive;
       qcItem[0].RejectionComments = cd.rejectionComments ? cd.rejectionComments : null;
       qcItem[0].Segregation = cd.selectedSegregation ? cd.selectedSegregation : null;
       qcItem[0].Title = cd.projectCode ? cd.projectCode : qcItem[0].Title;

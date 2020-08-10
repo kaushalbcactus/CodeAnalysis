@@ -143,8 +143,8 @@ export class ScorecardsComponent implements OnInit {
     const arrFormattedData: any = [];
     arrResources.forEach(async element => {
       const obj = JSON.parse(JSON.stringify(this.resource));
-      obj.data.userName = element.UserName.Title;
-      obj.data.userId = element.UserName.ID;
+      obj.data.userName = element.UserNamePG.Title;
+      obj.data.userId = element.UserNamePG.ID;
       obj.data.feedbackForMe = element.feedbackForMe;
       // obj.data.averageRating = element.averageRating;
       // obj.data.ratingCount = element.ratingCount;
@@ -164,7 +164,7 @@ export class ScorecardsComponent implements OnInit {
     let arrResourceScoreCards = [];
     let batchURL = [];
     resources.forEach(element => {
-      batchURL = [...batchURL, ...this.getScorecard(element.UserName.ID, topCount, startDate, endDate)];
+      batchURL = [...batchURL, ...this.getScorecard(element.UserNamePG.ID, topCount, startDate, endDate)];
     });
     this.commonService.SetNewrelic('QMS', 'scoreCard', 'getResourceRatingDetail');
     arrResourceScoreCards = await this.spService.executeBatch(batchURL);
@@ -209,7 +209,7 @@ export class ScorecardsComponent implements OnInit {
 
   getAverageRating(itemsArray) {
     const arrTaskFeedback = itemsArray.filter((t) => t.FeedbackType && t.FeedbackType === this.globalConstant.FeedbackType.taskRating);
-    const totalRating = arrTaskFeedback.reduce((a, b) => a + +b.AverageRating, 0);
+    const totalRating = arrTaskFeedback.reduce((a, b) => a + +b.AverageRatingNM, 0);
     const averageRating = +(totalRating / arrTaskFeedback.length).toFixed(2);
     const ratingObj = {
       rating: isNaN(averageRating) ? '0' : '' + averageRating,

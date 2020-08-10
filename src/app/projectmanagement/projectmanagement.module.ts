@@ -7,7 +7,7 @@ import { InactiveComponent } from './projectmanagement/inactive/inactive.compone
 import { ClientReviewComponent } from './projectmanagement/client-review/client-review.component';
 import { ProjectManagementRoutingModule } from './project-management-routing.module';
 import { PrimengModule } from '../primeng/primeng.module';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+// import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AllProjectsComponent } from './projectmanagement/all-projects/all-projects.component';
 import { SOWComponent } from './projectmanagement/sow/sow.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -38,6 +38,10 @@ import { CsFinanceAuditDialogComponent } from './projectmanagement/all-projects/
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { AuditProjectDialogComponent } from './projectmanagement/all-projects/audit-project-dialog/audit-project-dialog.component';
 import { InvoiceLineitemsComponent } from './projectmanagement/all-projects/invoice-lineitems/invoice-lineitems.component';
+import { ConfirmationDialogComponent } from '../shared/confirmation-dialog/confirmation-dialog.component';
+import { PreStackAllocationModule } from '../shared/pre-stack-allocation/pre-stack-allocation.module';
+import { PreStackAllocationComponent } from '../shared/pre-stack-allocation/pre-stack-allocation.component';
+import { AddReduceSowbudgetDialogComponent } from './projectmanagement/sow/add-reduce-sowbudget-dialog/add-reduce-sowbudget-dialog.component';
 
 @NgModule({
   declarations: [
@@ -59,7 +63,8 @@ import { InvoiceLineitemsComponent } from './projectmanagement/all-projects/invo
     ProjectTimelineComponent,
     CsFinanceAuditDialogComponent,
     AuditProjectDialogComponent,
-    InvoiceLineitemsComponent],
+    InvoiceLineitemsComponent,
+    AddReduceSowbudgetDialogComponent],
   imports: [
     SharedModule,
     CommonModule,
@@ -71,10 +76,11 @@ import { InvoiceLineitemsComponent } from './projectmanagement/all-projects/invo
     ReactiveFormsModule,
     TimelineModule,
     CustomMaterialModule,
-    NgbModule,
+    // NgbModule,
     TaskAllocationModule,
     UserCapacityModule,
     FlexLayoutModule,
+    PreStackAllocationModule
   ],
   exports: [
     AllProjectsComponent
@@ -97,6 +103,9 @@ import { InvoiceLineitemsComponent } from './projectmanagement/all-projects/invo
     CsFinanceAuditDialogComponent,
     AuditProjectDialogComponent,
     InvoiceLineitemsComponent,
+    ConfirmationDialogComponent,
+    PreStackAllocationComponent,
+    AddReduceSowbudgetDialogComponent
   ]
 })
 export class ProjectmanagementModule { }

@@ -3,7 +3,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import bootstrapPlugin from '@fullcalendar/bootstrap';
 import interactionPlugin from '@fullcalendar/interaction';
-import { MenuItem, MessageService, DialogService, SelectItem, ConfirmationService } from 'primeng';
+import { MenuItem, DialogService, SelectItem } from 'primeng';
 import { MenuModule, Button } from 'primeng';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -16,6 +16,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { CommonService } from 'src/app/Services/common.service';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
+import { AllocationOverlayComponent } from 'src/app/shared/pre-stack-allocation/allocation-overlay/allocation-overlay.component';
 
 declare var Tooltip: any;
 
@@ -23,7 +24,7 @@ declare var Tooltip: any;
   selector: 'app-my-timeline',
   templateUrl: './my-timeline.component.html',
   styleUrls: ['./my-timeline.component.css'],
-
+  providers: [AllocationOverlayComponent]
 })
 export class MyTimelineComponent implements OnInit {
   @ViewChild('menuPopup', { static: false }) plusmenu: MenuModule;
@@ -82,15 +83,15 @@ export class MyTimelineComponent implements OnInit {
       clockFaceTimeInactiveColor: '#fff'
     }
   };
+  allAdhoc: any;
+  alldbTasks: any[];
 
   constructor(
     public myDashboardConstantsService: MyDashboardConstantsService,
     private constants: ConstantsService,
     public sharedObject: GlobalService,
     private spServices: SPOperationService,
-    public messageService: MessageService,
     public dialogService: DialogService,
-    private confirmationService: ConfirmationService,
     private datePipe: DatePipe,
     public spOperations: SPOperationService,
     private commonService: CommonService,
@@ -99,6 +100,7 @@ export class MyTimelineComponent implements OnInit {
     private readonly _router: Router,
     _applicationRef: ApplicationRef,
     zone: NgZone,
+    private dailyAllocateOP: AllocationOverlayComponent
   ) {
 
     // Browser back button disabled & bookmark issue solution
@@ -220,15 +222,14 @@ export class MyTimelineComponent implements OnInit {
           self.step = 0;
           self.SelectedStatus = undefined;
           self.taskName = eventInfo.event.title.split(':')[0];
-          self.task = self.allTasks.find(c => c.Id === parseInt(eventInfo.event.id));
-
+          self.task = self.alldbTasks.find(c => c.Id === parseInt(eventInfo.event.id));
           self.tasks = [];
           if (self.task.Task !== 'Adhoc') {
             self.taskdisplay = true;
           } else {
 
             if (new Date(self.datePipe.transform(self.EnableEditDate, 'MMM dd, yyyy')).getTime() <= new Date(self.datePipe.transform(self.task.StartDate, 'MMM dd, yyyy')).getTime()) {
-              const Type = self.task.Comments === 'Client meeting / client training' ? 'Client Meeting / Training' : self.task.Comments === 'Internal meeting' ? 'Internal Meeting' : self.task.Comments === 'Internal training' ? 'Training' : 'Admin';
+              const Type = self.task.CommentsMT === 'Client meeting / client training' ? 'Client Meeting / Training' : self.task.CommentsMT === 'Internal meeting' ? 'Internal Meeting' : self.task.CommentsMT === 'Internal training' ? 'Training' : 'Admin';
               self.loadBlockTimeDialog(Type, self.task);
             } else {
               self.taskdisplay = true;
@@ -254,21 +255,25 @@ export class MyTimelineComponent implements OnInit {
 
           self.task.TimeSpent = self.task.TimeSpent === null ? '00:00' : self.task.TimeSpent.replace('.', ':');
           const data = self.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === self.task.ProjectCode);
-
           if (data !== undefined) {
             self.task.ProjectName = data.WBJID !== null ? self.task.ProjectCode + '(' + data.WBJID + ')' : self.task.ProjectCode;
+            self.task.projectType = data.ProjectType; 
           } else {
             self.task.ProjectName = self.task.ProjectCode;
           }
         } else {
-          // tslint:disable-next-line: radix
           self.leave = self.allLeaves.find(c => c.Id === parseInt(eventInfo.event.id));
-          self.displayleave = true;
-
+          const actualStartDate = new Date(self.leave.EventDate);
+          const allowedDate = self.commonService.CalculateminstartDateValue(new Date(), 3);
+          if (actualStartDate.getFullYear() >= allowedDate.getFullYear() &&
+            actualStartDate.getMonth() >= allowedDate.getMonth()) {
+            self.displayleave = true;
+          } else {
+            self.commonService.showToastrMessage(self.constants.MessageType.warn, 'Unable to delete  leaves for ' + self.datePipe.transform(new Date(self.leave.EventDate), 'MMM d , yyyy'), false);
+          }
         }
       },
       customButtons: {
-
         AddnewEvent: {
           click: () => {
             document.getElementById('hiddenButton').click();
@@ -296,11 +301,9 @@ export class MyTimelineComponent implements OnInit {
   }
 
 
-  // *************************************************************************************************************************************
+  // **********************************************************************************************
   // Get Events based on dates
-  // *************************************************************************************************************************************
-
-
+  // **********************************************************************************************
 
   async getEvents(firstLoad, startDate, endDate) {
 
@@ -308,7 +311,6 @@ export class MyTimelineComponent implements OnInit {
     let filterDates = [];
 
     if (firstLoad) {
-
       startDate = new Date(new Date().setDate((new Date().getDate() - new Date().getDay())));
       endDate = new Date(new Date().setDate((new Date().getDate() - new Date().getDay()) + 6));
     }
@@ -320,55 +322,68 @@ export class MyTimelineComponent implements OnInit {
     // Get Tasks
     //**************************************************************************************************
 
-    let MyTimelineObj = Object.assign({}, this.queryConfig);
-    let MyTimelineUrl = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.MyTimeline);
-    MyTimelineUrl.filter = MyTimelineUrl.filter.replace(/{{userId}}/gi, this.sharedObject.currentUser.userId.toString());
-    MyTimelineUrl.filter += this.selectedType.name === 'Completed' ? MyTimelineUrl.filterCompleted : this.selectedType.name === 'Not Completed' ?
-      MyTimelineUrl.filterNotCompleted : this.selectedType.name === 'Planned' ? MyTimelineUrl.filterPlanned : this.selectedType.name === 'Adhoc' ?
-        MyTimelineUrl.filterAdhoc : MyTimelineUrl.filterAll;
-    //  MyTimeline.filter.substring(0, MyTimeline.filter.lastIndexOf("and"));
-    MyTimelineUrl.filter += MyTimelineUrl.filterDate.replace(/{{startDateString}}/gi, filterDates[0]).replace(/{{endDateString}}/gi, filterDates[1]);
-    MyTimelineObj.url = this.spServices.getReadURL(this.constants.listNames.Schedules.name, MyTimelineUrl);
-    MyTimelineObj.listName = this.constants.listNames.Schedules.name;
-    MyTimelineObj.type = 'GET';
-    batchURL.push(MyTimelineObj);
+    if (this.selectedType.name === 'All' || this.selectedType.name === 'Completed' || this.selectedType.name === 'Not Completed' || this.selectedType.name === 'Planned') {
+      let MyTimelineObj = Object.assign({}, this.queryConfig);
+      let MyTimelineUrl = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.MyTimeline);
+      MyTimelineUrl.filter = MyTimelineUrl.filter.replace(/{{userId}}/gi, this.sharedObject.currentUser.userId.toString());
+      MyTimelineUrl.filter += this.selectedType.name === 'Completed' ? MyTimelineUrl.filterCompleted : this.selectedType.name === 'Not Completed' ?
+        MyTimelineUrl.filterNotCompleted : this.selectedType.name === 'Planned' ? MyTimelineUrl.filterPlanned : MyTimelineUrl.filterAll;
+      //  MyTimeline.filter.substring(0, MyTimeline.filter.lastIndexOf("and"));
+      MyTimelineUrl.filter += MyTimelineUrl.filterDate.replace(/{{startDateString}}/gi, filterDates[0]).replace(/{{endDateString}}/gi, filterDates[1]);
+      MyTimelineObj.url = this.spServices.getReadURL(this.constants.listNames.Schedules.name, MyTimelineUrl);
+      MyTimelineObj.listName = this.constants.listNames.Schedules.name;
+      MyTimelineObj.type = 'GET';
+      batchURL.push(MyTimelineObj);
+    }
     // this.spServices.getBatchBodyGet(batchContents, batchGuid, myTaskUrl);
 
     //***********************************************************************************************
     // Get Leaves
     //**************************************************************************************************
+    let MyLeaves = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.LeaveCalendar);
 
-    let myLeavesObj = Object.assign({}, this.queryConfig);
-    let MyLeavesUrl = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.LeaveCalendar);
-    MyLeavesUrl.filter = MyLeavesUrl.filter.replace(/{{currentUser}}/gi, this.sharedObject.currentUser.userId.toString()).replace(/{{startDateString}}/gi, filterDates[0]).replace(/{{endDateString}}/gi, filterDates[1]);
+    MyLeaves.filter = MyLeaves.filter.replace(/{{currentUser}}/gi, this.sharedObject.currentUser.userId.toString()).replace(/{{startDateString}}/gi, filterDates[0]).replace(/{{endDateString}}/gi, filterDates[1])
+    const MyLeavesUrl = this.spServices.getReadURL(this.constants.listNames.LeaveCalendar.name, MyLeaves);
+    this.commonService.setBatchObject(batchURL, MyLeavesUrl, null, this.constants.Method.GET, this.constants.listNames.LeaveCalendar.name);
 
-    myLeavesObj.url = this.spServices.getReadURL(this.constants.listNames.LeaveCalendar.name, MyLeavesUrl);
-    myLeavesObj.listName = this.constants.listNames.LeaveCalendar.name;
-    myLeavesObj.type = 'GET';
-    batchURL.push(myLeavesObj);
+    //***********************************************************************************************
+    // Get Adhoc Tasks
+    //**********************************************************************************************
+    if (this.selectedType.name === 'All' || this.selectedType.name === 'Adhoc') {
+      let MyAdhocTask = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.AdhocTasks);
+
+      MyAdhocTask.filter = MyAdhocTask.filter.replace(/{{userId}}/gi, this.sharedObject.currentUser.userId.toString()).replace(/{{startDateString}}/gi, filterDates[0]).replace(/{{endDateString}}/gi, filterDates[1])
+
+
+      const MyAdhocTaskUrl = this.spServices.getReadURL(this.constants.listNames.AdhocTask.name, MyAdhocTask);
+      this.commonService.setBatchObject(batchURL, MyAdhocTaskUrl, null, this.constants.Method.GET, this.constants.listNames.AdhocTask.name);
+
+    }
     this.commonService.SetNewrelic('MyDashboard', 'my-timeline', 'GetTasksAndLeaves');
     this.response = await this.spServices.executeBatch(batchURL);
 
     // this.response = await this.spServices.getDataByApi(batchGuid, batchContents);
-    this.allTasks = this.response.length ? this.response[0].retItems : [];
-
-    this.allLeaves = this.response.length > 1 ? this.response[1].retItems : [];
+    this.allTasks = this.response.find(c => c.listName === "SchedulesCT") ? this.response.find(c => c.listName === "SchedulesCT").retItems : [];
+    this.allLeaves = this.response.find(c => c.listName === "Leave Calendar") ? this.response.find(c => c.listName === "Leave Calendar").retItems : [];
+    this.allAdhoc = this.response.find(c => c.listName === "AdhocTaskCT") ? this.response.find(c => c.listName === "AdhocTaskCT").retItems : [];
     this.events = [];
 
-    this.allTasks.forEach(element => {
+    this.alldbTasks = [...this.allTasks, ...this.allAdhoc];
+
+    this.alldbTasks.forEach(element => {
 
       if (element.SubMilestones) {
         element.SubMilestones = element.SubMilestones === "Default" ? null : element.SubMilestones
       }
 
       const eventObj = {
-        "title": element.Task === 'Adhoc' ? element.Entity + "-" + element.Comments + " : " + element.TimeSpent : element.SubMilestones ? element.ExpectedTime ? element.Title + ' - ' + element.SubMilestones + " : " + element.ExpectedTime : element.Title + ' - ' + element.SubMilestones : element.ExpectedTime ? element.Title + " : " + element.ExpectedTime : element.Title,
+        "title": element.Task === 'Adhoc' ? element.Entity + "-" + element.CommentsMT + " : " + element.TimeSpent : element.SubMilestones ? element.ExpectedTime ? element.Title + ' - ' + element.SubMilestones + " : " + element.ExpectedTime : element.Title + ' - ' + element.SubMilestones : element.ExpectedTime ? element.Title + " : " + element.ExpectedTime : element.Title,
         "id": element.Id,
         "start": new Date(element.StartDate),
-        "end": element.TATStatus === "Yes" && new Date(this.datePipe.transform(element.StartDate, "yyyy-MM-dd")).getTime() !== new Date(this.datePipe.transform(element.DueDate, "yyyy-MM-dd")).getTime() ? new Date(new Date(element.DueDate).setDate(new Date(element.DueDate).getDate() + 1)) : new Date(element.DueDate),
-        "backgroundColor": element.Status === 'Not Confirmed' ? "#FFD34E" : element.Status === 'Not Started' ? "#5F6273" : element.Status === 'In Progress' ? "#6EDC6C" : element.Status === 'Auto Closed' ? "#8183CC" : element.Status === 'On Hold' ? "#FF3E56" : (element.Status === 'Completed' && element.Task === 'Adhoc') ? element.Comments === "Administrative Work" ?
-          '#eb592d' : element.Comments === "Client meeting / client training" ? '#ff8566' : element.Comments === "Internal meeting" ? '#795C32' : '#445cad' : "#3498DB",
-        allDay: element.TATStatus === "Yes" ? true : false
+        "end": element.TATStatus && element.TATStatus === "Yes" && new Date(this.datePipe.transform(element.StartDate, "yyyy-MM-dd")).getTime() !== new Date(this.datePipe.transform(element.DueDateDT, "yyyy-MM-dd")).getTime() ? new Date(new Date(element.DueDateDT).setDate(new Date(element.DueDateDT).getDate() + 1)) : new Date(element.DueDateDT),
+        "backgroundColor": element.Status === 'Not Confirmed' ? "#FFD34E" : element.Status === 'Not Started' ? "#5F6273" : element.Status === 'In Progress' ? "#6EDC6C" : element.Status === 'Auto Closed' ? "#8183CC" : element.Status === 'On Hold' ? "#FF3E56" : (element.Status === 'Completed' && element.Task === 'Adhoc') ? element.CommentsMT === "Administrative Work" ?
+          '#eb592d' : element.CommentsMT === "Client meeting / client training" ? '#ff8566' : element.CommentsMT === "Internal meeting" ? '#795C32' : '#445cad' : "#3498DB",
+        allDay: element.TATStatus && element.TATStatus === "Yes" ? true : (element.Task === 'Adhoc' && element.CommentsMT === "Administrative Work") ? true :  false
 
       }
       this.events.push(eventObj);
@@ -393,9 +408,9 @@ export class MyTimelineComponent implements OnInit {
   }
 
 
-  // *************************************************************************************************************************************
+  // ********************************************************************************************
   //  convert date into string
-  // *************************************************************************************************************************************
+  // ********************************************************************************************
 
   async getStartEndDates(startDate, endDate) {
     const filterDates = [];
@@ -406,9 +421,9 @@ export class MyTimelineComponent implements OnInit {
 
     return filterDates;
   }
-  // *************************************************************************************************************************************
+  // *********************************************************************************************
   //   to get event on button click
-  // *************************************************************************************************************************************
+  // *********************************************************************************************
 
   bindEvents() {
 
@@ -458,9 +473,9 @@ export class MyTimelineComponent implements OnInit {
   }
 
 
-  // *************************************************************************************************************************************
+  // *********************************************************************************************
   //   to get event on title click
-  // *************************************************************************************************************************************
+  // *********************************************************************************************
 
 
   async setStep(index: number) {
@@ -480,6 +495,8 @@ export class MyTimelineComponent implements OnInit {
       // this.response = await this.spServices.readItem(this.constants.listNames.Schedules.name, +this.task.ID);
       this.task = this.response ? this.response[0] : {};
       //  this.task.AssignedTo = this.sharedObject.currentUser.title;
+      this.task.allocationPerDay = this.task.AllocationPerDay;
+      this.task.showAllocationSplit = this.task.AllocationPerDay ? true : false;
       this.task.TimeSpent = this.task.TimeSpent === null ? '00:00' : this.task.TimeSpent.replace('.', ':');
       const data = this.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === this.task.ProjectCode);
 
@@ -498,6 +515,7 @@ export class MyTimelineComponent implements OnInit {
 
       if (data !== undefined) {
         this.task.ProjectName = data.WBJID !== null ? this.task.ProjectCode + '(' + data.WBJID + ')' : this.task.ProjectCode;
+        this.task.projectType = data.ProjectType;
       } else {
         this.task.ProjectName = this.task.ProjectCode;
       }
@@ -505,10 +523,10 @@ export class MyTimelineComponent implements OnInit {
       if (this.task.Status === 'Not Started') {
         this.SelectedStatus = 'Not Started';
         this.task.StartDate = new Date(this.task.StartDate);
-        this.task.DueDate = new Date(this.task.DueDate);
+        this.task.DueDateDT = new Date(this.task.DueDateDT);
         console.log(this.task.StartDate);
-        this.task['StartTime'] = this.datePipe.transform(this.task.StartDate, 'h:mm a');
-        this.task['DueTime'] = this.datePipe.transform(this.task.DueDate, 'h:mm a');
+        this.task['StartTime'] = this.datePipe.transform(this.task.StartDate, 'hh:mm a');
+        this.task['DueTime'] = this.datePipe.transform(this.task.DueDateDT, 'hh:mm a');
         console.log('this.task ', this.task);
         this.statusOptions = [
           { label: 'Not Started', value: 'Not Started' },
@@ -518,8 +536,8 @@ export class MyTimelineComponent implements OnInit {
       } else if (this.task.Status === 'In Progress') {
         this.SelectedStatus = 'In Progress';
         this.task.StartDate = new Date(this.task.StartDate);
-        this.task.DueDate = new Date(this.task.DueDate);
-        this.task['DueTime'] = this.datePipe.transform(this.task.DueDate, 'h:mm a');
+        this.task.DueDateDT = new Date(this.task.DueDateDT);
+        this.task['DueTime'] = this.datePipe.transform(this.task.DueDateDT, 'hh:mm a');
         this.statusOptions = [
           { label: 'In Progress', value: 'In Progress' },
           { label: 'Completed', value: 'Completed' },
@@ -535,6 +553,11 @@ export class MyTimelineComponent implements OnInit {
     let endTime;
     const startTime = type === 'startTime' ? time.split(':')[0] % 12 + ':' + time.split(':')[1]
       : endTime = time.split(':')[0] % 12 + ':' + time.split(':')[1];
+
+      if(type !== 'startTime' && new Date(this.datePipe.transform(this.task.StartDate, 'yyyy-MM-dd' + 'T' + this.commonService.ConvertTimeformat(24, this.task.StartTime ? this.task.StartTime : this.datePipe.transform(this.task.StartDate, 'hh:mm a')) + ':00.000')).getTime() > new Date(this.datePipe.transform(this.task.DueDateDT, 'yyyy-MM-dd' + 'T' + this.commonService.ConvertTimeformat(24, this.task.DueTime) + ':00.000')).getTime()){
+        this.task.DueTime =  this.task.StartTime ? this.task.StartTime : this.datePipe.transform(this.task.StartDate, 'hh:mm a');
+        this.commonService.showToastrMessage(this.constants.MessageType.warn,'End Time should not be less than start time',false);
+      }
     console.log('Start time: ', startTime + ' endTime ', endTime);
   }
 
@@ -549,9 +572,9 @@ export class MyTimelineComponent implements OnInit {
       this.fullCalendar.calendar.state.dateProfile.currentRange.end);
   }
 
-  // *************************************************************************************************************************************
+  // **********************************************************************************************
   //  dialog for time booking
-  // *************************************************************************************************************************************
+  // **********************************************************************************************
   async loadBlockTimeDialog(event, task) {
     const ref = this.dialogService.open(BlockTimeDialogComponent, {
       data: {
@@ -572,62 +595,35 @@ export class MyTimelineComponent implements OnInit {
           const dbAvailableHours = await this.getAvailableHours(blockTimeobj, 'apply');
 
           const batchURL = [];
-          const options = {
-            data: null,
-            url: '',
-            type: '',
-            listName: ''
-          };
-
-          const leaveCreate = Object.assign({}, options);
-          leaveCreate.data = blockTimeobj;
-          leaveCreate.listName = this.constants.listNames.AvailableHours.name;
-          leaveCreate.type = 'POST';
-          leaveCreate.url = this.spServices.getReadURL(this.constants.listNames.LeaveCalendar.name, null);
-          batchURL.push(leaveCreate);
+          const leaveurl = this.spServices.getReadURL(this.constants.listNames.LeaveCalendar.name, null);
+          this.commonService.setBatchObject(batchURL, leaveurl, blockTimeobj, this.constants.Method.POST, this.constants.listNames.LeaveCalendar.name)
 
           dbAvailableHours.forEach(availableHours => {
-
-            const availableHoursUpdate = Object.assign({}, options);
-            availableHoursUpdate.url = this.spServices.getItemURL(this.constants.listNames.AvailableHours.name, availableHours.ID);
-            availableHoursUpdate.data = availableHours;
-            availableHoursUpdate.type = 'PATCH';
-            availableHoursUpdate.listName = this.constants.listNames.AvailableHours.name;
-            batchURL.push(availableHoursUpdate);
+            const availableHoursurl = this.spServices.getItemURL(this.constants.listNames.AvailableHours.name, availableHours.ID);
+            this.commonService.setBatchObject(batchURL, availableHoursurl, availableHours, this.constants.Method.PATCH, this.constants.listNames.AvailableHours.name)
           });
 
           this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'TimeBookingUpdate');
-
           const arrResults = await this.spServices.executeBatch(batchURL);
-
-          this.messageService.add({
-            key: 'custom', severity: 'success',
-            summary: 'Success Message', detail: 'Leave created successfully.'
-          });
+          this.commonService.showToastrMessage(this.constants.MessageType.success, 'Leave created successfully.', false);
         } else {
           if (task === undefined) {
-            const folderUrl = this.sharedObject.sharePointPageObject.serverRelativeUrl + "/Lists/Schedules/AdhocTasks";
-            this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'CreateAndMoveTask');
-            await this.spServices.createItemAndMove(this.constants.listNames.Schedules.name, blockTimeobj, this.constants.listNames.Schedules.type, folderUrl);
+            this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'Create Adhoc item');
+            await this.spServices.createItem(this.constants.listNames.AdhocTask.name, blockTimeobj, this.constants.listNames.AdhocTask.type);
+            this.commonService.showToastrMessage(this.constants.MessageType.success, 'Time Booking created successfully.', false);
 
-            this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Time Booking created successfully.' });
           } else {
 
             if (blockTimeobj.IsDeleted !== undefined) {
               this.MarkAsDelete();
             } else {
               this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'UpdateTask');
-              await this.spServices.updateItem(this.constants.listNames.Schedules.name, task.ID, blockTimeobj,
-                this.constants.listNames.Schedules.type);
-              this.messageService.add({
-                key: 'custom', severity: 'success', summary: 'Success Message',
-                detail: 'Time Booking updated successfully.'
-              });
+              await this.spServices.updateItem(this.constants.listNames.AdhocTask.name, task.ID, blockTimeobj,
+                this.constants.listNames.AdhocTask.type);
+              this.commonService.showToastrMessage(this.constants.MessageType.success, 'Time Booking updated successfully.', false);
             }
-
           }
         }
-
         this.getEvents(false, this.fullCalendar.calendar.state.dateProfile.currentRange.start,
           this.fullCalendar.calendar.state.dateProfile.currentRange.end);
       }
@@ -645,25 +641,32 @@ export class MyTimelineComponent implements OnInit {
       Status: 'Deleted'
     };
     this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'DeleteTask');
-    await this.spServices.updateItem(this.constants.listNames.Schedules.name, this.task.ID, data, this.constants.listNames.Schedules.type);
-    this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Adhoc  deleted successfully' });
+    await this.spServices.updateItem(this.constants.listNames.AdhocTask.name, this.task.ID, data, this.constants.listNames.AdhocTask.type);
+
+
+    this.commonService.showToastrMessage(this.constants.MessageType.success, 'Adhoc  deleted successfully', false);
     this.getEvents(false, this.fullCalendar.calendar.state.dateProfile.currentRange.start,
       this.fullCalendar.calendar.state.dateProfile.currentRange.end);
-
-
   }
 
   onCloseStartDate() {
-    if (this.task.StartDate > this.task.DueDate) {
-      this.task.DueDate = this.task.StartDate;
+    if (this.task.StartDate > this.task.DueDateDT) {
+      this.task.DueDateDT = this.task.StartDate;
+    }
+  }
+
+  onCloseDueDate(){
+    if(new Date(this.datePipe.transform(this.task.StartDate, 'yyyy-MM-dd' + 'T' + this.commonService.ConvertTimeformat(24,  this.task.StartTime ? this.task.StartTime : this.datePipe.transform(this.task.StartDate, 'hh:mm a')) + ':00.000')).getTime() > new Date(this.datePipe.transform(this.task.DueDateDT, 'yyyy-MM-dd' + 'T' + this.commonService.ConvertTimeformat(24, this.task.DueTime) + ':00.000')).getTime()){
+      this.task.DueTime =  this.task.StartTime ? this.task.StartTime : this.datePipe.transform(this.task.StartDate, 'hh:mm a');
+      this.commonService.showToastrMessage(this.constants.MessageType.warn,'End Time should not be less than start time',false);
     }
   }
 
 
 
-  // *************************************************************************************************************************************
+  // *******************************************************************************************
   // Update Task
-  // *************************************************************************************************************************************
+  // *******************************************************************************************
 
   async UpdateTask() {
 
@@ -690,90 +693,103 @@ export class MyTimelineComponent implements OnInit {
     const earlierStaus = task.Status;
     task.Status = this.SelectedStatus;
     const stval = await this.myDashboardConstantsService.getPrevTaskStatus(task);
-    const allowedStatus = ["Completed", "AllowCompletion", "Auto Closed"];
-    if (allowedStatus.includes(stval)) {
-      if (task.Status === 'Completed' && !task.FinalDocSubmit) {
-        this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: 'No Final Document Found' });
-        task.Status = earlierStaus;
-        this.CalendarLoader = false;
-        return false;
-      } else {
-        this.CalendarLoader = false;
-        if (task.Status === "Completed") {
-
-          this.commonService.confirmMessageDialog('Are you sure that you want to proceed?', ['Yes', 'No'],false).then(async Confirmation => {
-            if (Confirmation === 'Yes') {
-              task.parent = 'Dashboard';
-              const qmsTasks = await this.myDashboardConstantsService.callQMSPopup(task);
-              if (qmsTasks.length) {
-                this.feedbackPopupComponent.openPopup(qmsTasks, task);
-              } else {
-                this.saveTask(task);
-              }
-            } else {
-              task.Status = earlierStaus;
-            }
-          });
-        } else {
-          const batchURL = [];
-          const options = {
-            data: null,
-            url: '',
-            type: '',
-            listName: ''
-          };
-
-          if (this.task.StartTime) {
-            const startTime = this.commonService.ConvertTimeformat(24, this.task.StartTime);
-            this.task.StartDate = this.datePipe.transform(new Date(this.task.StartDate), 'yyyy-MM-dd' + 'T' + startTime + ':00.000');
-          }
-          if (this.task.DueTime) {
-            const endTime = this.commonService.ConvertTimeformat(24, this.task.DueTime);
-            this.task.DueDate = this.datePipe.transform(this.task.DueDate, 'yyyy-MM-dd' + 'T' + endTime + ':00.000');
-          }
-
-          const ProjectInformation = await this.myDashboardConstantsService.getCurrentTaskProjectInformation(task.ProjectCode);
-
-          this.SelectedStatus = undefined;
-          this.taskdisplay = false;
+    const allowedStatus = ["Completed", "Auto Closed"];
+    if (allowedStatus.includes(stval) || stval === '') { 
+      this.updateCurrentTask(this.task,earlierStaus);
+    } else { 
+      this.CalendarLoader = false;
+      this.commonService.confirmMessageDialog('Confirmation', 'Previous task is not completed, do you still want to continue?', null, ['Yes', 'No'], false).then(async Confirmation => {
+        if (Confirmation === 'Yes') {
           this.CalendarLoader = true;
-          const jsonData = {
-            __metadata: { type: this.constants.listNames.Schedules.type },
-            Actual_x0020_Start_x0020_Date: task.Actual_x0020_Start_x0020_Date !== null ? task.Actual_x0020_Start_x0020_Date : new Date(),
-            Status: task.Status,
-            StartDate: this.task.StartDate,
-            DueDate: this.task.DueDate
-          };
-          this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'UpdateTask');
-          const taskUpdate = Object.assign({}, options);
-          taskUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, task.ID);
-          taskUpdate.data = jsonData;
-          taskUpdate.type = 'PATCH';
-          taskUpdate.listName = this.constants.listNames.Schedules.name;
-          batchURL.push(taskUpdate);
-
-          const projectInfoUpdate = Object.assign({}, options);
-          projectInfoUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, ProjectInformation.ID);
-          projectInfoUpdate.data =  { Status: this.constants.STATUS.IN_PROGRESS, __metadata: { type: this.constants.listNames.ProjectInformation.type } };;
-          projectInfoUpdate.type = 'PATCH';
-          projectInfoUpdate.listName = this.constants.listNames.ProjectInformation.name;
-          batchURL.push(projectInfoUpdate);
-          await this.spServices.executeBatch(batchURL);
-          
-          if (task.ParentSlot) {
-            await this.myDashboardConstantsService.getCurrentAndParentTask(task, jsonData.Status);
-          }
-          this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Task updated successfully.' });
-          this.getEvents(false, this.fullCalendar.calendar.state.dateProfile.currentRange.start,
-            this.fullCalendar.calendar.state.dateProfile.currentRange.end);
-
+         this.updateCurrentTask(this.task,earlierStaus);
+        } else {
+          task.Status = earlierStaus;
+          this.CalendarLoader = false;
         }
-      }
+      });
+    }
+  }
 
-    } else {
-      this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: 'Previous task should be completed.' });
+  async updateCurrentTask(task,earlierStaus) {
+    if (task.Status === 'Completed' && !task.FinalDocSubmit) {
+      this.commonService.showToastrMessage(this.constants.MessageType.error, 'No Final Document Found', false);
       task.Status = earlierStaus;
       this.CalendarLoader = false;
+      return false;
+    } else {
+      if (task.Status === "Completed") {
+        if (this.task.DueTime) {
+          const endTime = this.commonService.ConvertTimeformat(24, this.task.DueTime);
+          task.DueDateDT = this.datePipe.transform(this.task.DueDateDT, 'yyyy-MM-dd' + 'T' + endTime + ':00.000');
+        }
+        this.CalendarLoader = false;
+        this.commonService.confirmMessageDialog('Confirmation', 'Are you sure that you want to proceed?', null, ['Yes', 'No'], false).then(async Confirmation => {
+          if (Confirmation === 'Yes') {
+            task.parent = 'Dashboard';
+            const qmsTasks = await this.myDashboardConstantsService.callQMSPopup(task);
+            if (qmsTasks.length) {
+
+              const ref = this.dialogService.open(FeedbackPopupComponent, {
+                data: {
+                  qmsTasks,
+                  task
+                },
+                header: 'Rate Work',
+                width: '70vw',
+                contentStyle: { 'min-height': '30vh', 'max-height': '90vh', 'overflow-y': 'auto' }
+              });
+              ref.onClose.subscribe((feedbacktask: any) => {
+                if (feedbacktask) {
+                  this.saveTask(feedbacktask);
+                }
+              });
+            } else {
+              this.saveTask(task);
+            }
+          } else {
+            task.Status = earlierStaus;
+          }
+        });          
+      }  else if (task.Status === this.constants.STATUS.IN_PROGRESS || (task.Status === this.constants.STATUS.NOT_STARTED && task.projectType === this.constants.PROJECTTYPES.FTE)) {
+        const batchURL = [];
+        if (this.task.StartTime) {
+          const startTime = this.commonService.ConvertTimeformat(24, this.task.StartTime);
+          this.task.StartDate = this.datePipe.transform(new Date(this.task.StartDate), 'yyyy-MM-dd' + 'T' + startTime + ':00.000');
+        }
+        if (this.task.DueTime) {
+          const endTime = this.commonService.ConvertTimeformat(24, this.task.DueTime);
+          this.task.DueDate = this.datePipe.transform(this.task.DueDateDT, 'yyyy-MM-dd' + 'T' + endTime + ':00.000');
+        }
+        this.SelectedStatus = undefined;
+        this.taskdisplay = false;
+        this.CalendarLoader = true;
+        const jsonData = {
+          __metadata: { type: this.constants.listNames.Schedules.type },
+          StartDate: this.task.StartDate,
+          DueDateDT: this.task.DueDate,
+          Status:task.Status
+        };
+
+        if(task.Status === this.constants.STATUS.IN_PROGRESS){
+          jsonData['Actual_x0020_Start_x0020_Date'] = task.Actual_x0020_Start_x0020_Date !== null ? task.Actual_x0020_Start_x0020_Date : new Date();
+          const ProjectInformation = await this.myDashboardConstantsService.getCurrentTaskProjectInformation(task.ProjectCode);
+          const projectInfoUpdateurl = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, ProjectInformation.ID);
+          this.commonService.setBatchObject(batchURL, projectInfoUpdateurl, { Status: this.constants.STATUS.IN_PROGRESS, __metadata: { type: this.constants.listNames.ProjectInformation.type } }, this.constants.Method.PATCH, this.constants.listNames.ProjectInformation.name);
+        }
+
+        const taskUpdateUrl = this.spServices.getItemURL(this.constants.listNames.Schedules.name, task.ID);
+        this.commonService.setBatchObject(batchURL, taskUpdateUrl, jsonData, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
+
+        this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'UpdateTask');
+        await this.spServices.executeBatch(batchURL);
+
+        if (task.Status === this.constants.STATUS.IN_PROGRESS && task.ParentSlot) {
+          await this.myDashboardConstantsService.getCurrentAndParentTask(task, jsonData.Status);
+        }
+        this.commonService.showToastrMessage(this.constants.MessageType.success, ' task updated successfully.', false);
+        this.getEvents(false, this.fullCalendar.calendar.state.dateProfile.currentRange.start,
+          this.fullCalendar.calendar.state.dateProfile.currentRange.end);      
+      }
     }
   }
 
@@ -784,13 +800,9 @@ export class MyTimelineComponent implements OnInit {
     const response = await this.myDashboardConstantsService.CompleteTask(task);
 
     if (response) {
-      this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: response });
-
+      this.commonService.showToastrMessage(this.constants.MessageType.error, response, false);
     } else {
-      this.messageService.add({
-        key: 'custom', severity: 'success', summary: 'Success Message',
-        detail: task.Title + 'Task updated successfully.'
-      });
+      this.commonService.showToastrMessage(this.constants.MessageType.success, task.Title + ' task updated successfully.', false)
     }
     this.getEvents(false, this.fullCalendar.calendar.state.dateProfile.currentRange.start, this.fullCalendar.calendar.state.dateProfile.currentRange.end);
   }
@@ -803,28 +815,23 @@ export class MyTimelineComponent implements OnInit {
 
     let dbRecords = [];
     const batchURL = [];
-    const options = {
-      data: null,
-      url: '',
-      type: '',
-      listName: ''
-    };
 
-    const ResourceId = this.sharedObject.DashboardData.ResourceCategorization.find(c => c.UserName.ID
+
+    const ResourceId = this.sharedObject.DashboardData.ResourceCategorization.find(c => c.UserNamePG.ID
       === this.sharedObject.currentUser.userId) ?
-      this.sharedObject.DashboardData.ResourceCategorization.find(c => c.UserName.ID ===
+      this.sharedObject.DashboardData.ResourceCategorization.find(c => c.UserNamePG.ID ===
         this.sharedObject.currentUser.userId).ID : 0;
-    const AvailableHoursGet = Object.assign({}, options);
+
     const AvailableHoursQuery = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.AvailableHours);
-    AvailableHoursGet.url = this.spServices.getReadURL('' + this.constants.listNames.AvailableHours.name +
+    const AvailableHoursGeturl = this.spServices.getReadURL('' + this.constants.listNames.AvailableHours.name +
       '', AvailableHoursQuery);
-    AvailableHoursGet.url = AvailableHoursGet.url.replace(/{{resourceId}}/gi,
+
+
+    this.commonService.setBatchObject(batchURL, AvailableHoursGeturl.replace(/{{resourceId}}/gi,
       ResourceId).replace(/{{startDateString}}/gi,
         this.datePipe.transform(blockTimeobj.EventDate, 'yyyy-MM-dd')).replace(/{{endDateString}}/gi,
-          this.datePipe.transform(blockTimeobj.EndDate, 'yyyy-MM-dd'));
-    AvailableHoursGet.type = 'GET';
-    AvailableHoursGet.listName = this.constants.listNames.AvailableHours.name;
-    batchURL.push(AvailableHoursGet);
+          this.datePipe.transform(blockTimeobj.EndDate, 'yyyy-MM-dd')), null, this.constants.Method.GET, this.constants.listNames.AvailableHours.name);
+
 
     const LeaveDates = [];
     const startDate = new Date(this.datePipe.transform(blockTimeobj.EventDate, 'yyyy-MM-dd' + 'T00:00:00Z'));
@@ -870,27 +877,14 @@ export class MyTimelineComponent implements OnInit {
     const dbAvailableHours = await this.getAvailableHours(leave, 'discard');
 
     const batchURL = [];
-    const options = {
-      data: null,
-      url: '',
-      type: '',
-      listName: ''
-    };
     leave.IsActive = 'No';
-    const leaveUpdate = Object.assign({}, options);
-    leaveUpdate.url = this.spServices.getItemURL(this.constants.listNames.LeaveCalendar.name, leave.ID);
-    leaveUpdate.data = leave;
-    leaveUpdate.type = 'PATCH';
-    leaveUpdate.listName = this.constants.listNames.LeaveCalendar.name;
-    batchURL.push(leaveUpdate);
+    const leaveUpdateurl = this.spServices.getItemURL(this.constants.listNames.LeaveCalendar.name, leave.ID);
+    this.commonService.setBatchObject(batchURL, leaveUpdateurl, leave, this.constants.Method.PATCH, this.constants.listNames.LeaveCalendar.name)
+
 
     dbAvailableHours.forEach(availableHours => {
-      const availableHoursUpdate = Object.assign({}, options);
-      availableHoursUpdate.url = this.spServices.getItemURL(this.constants.listNames.AvailableHours.name, availableHours.ID);
-      availableHoursUpdate.data = availableHours;
-      availableHoursUpdate.type = 'PATCH';
-      availableHoursUpdate.listName = this.constants.listNames.AvailableHours.name;
-      batchURL.push(availableHoursUpdate);
+      const availableHoursUpdateurl = this.spServices.getItemURL(this.constants.listNames.AvailableHours.name, availableHours.ID);
+      this.commonService.setBatchObject(batchURL, availableHoursUpdateurl, availableHours, this.constants.Method.PATCH, this.constants.listNames.AvailableHours.name)
     });
 
     this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'GetLeavesAndAvailableHours');
@@ -899,7 +893,7 @@ export class MyTimelineComponent implements OnInit {
     this.getEvents(false, this.fullCalendar.calendar.state.dateProfile.currentRange.start,
       this.fullCalendar.calendar.state.dateProfile.currentRange.end);
 
-    this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Leaves deleted successfully.' });
+    this.commonService.showToastrMessage(this.constants.MessageType.success, 'Leaves deleted successfully.', false);
   }
 
   // tslint:disable-next-line: use-life-cycle-interface
@@ -914,20 +908,27 @@ export class MyTimelineComponent implements OnInit {
 
 
   // **************************************************************************************************
-  //   This function is used to open or download project scope 
+  //   This function is used to open or download project scope
   // **************************************************************************************************
   async goToProjectScope(task) {
     const ProjectInformation = await this.myDashboardConstantsService.getCurrentTaskProjectInformation(task.ProjectCode);
     const response = await this.commonService.goToProjectScope(ProjectInformation, ProjectInformation.Status);
     if (response === 'No Document Found.') {
-      this.messageService.add({
-        key: 'custom', severity: 'error', summary: 'Error Message',
-        detail: task.ProjectCode + ' - Project Scope not found.'
-      });
+
+      this.commonService.showToastrMessage(this.constants.MessageType.error, task.ProjectCode + ' - Project Scope not found.', false);
     }
     else {
       window.open(response);
     }
+  }
+
+  showOverlayPanel(event, rowData, dailyAllocateOP, target?) {
+    const allocationPerDay = rowData.allocationPerDay ? rowData.allocationPerDay : '';
+    dailyAllocateOP.showOverlay(event, allocationPerDay, target);
+  }
+
+  hideOverlayPanel() {
+    this.dailyAllocateOP.hideOverlay();
   }
 
 }

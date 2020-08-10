@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { DynamicDialogRef, DynamicDialogConfig, MessageService, ConfirmationService } from 'primeng';
+import { DynamicDialogRef, DynamicDialogConfig } from 'primeng';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
@@ -63,7 +63,7 @@ export class DragDropComponent implements OnInit {
   showSvg = false;
   alldbMilestones: any;
   AlldbRecords: any;
-  allmilestones =[];
+  allmilestones = [];
   enableZoom: boolean = false;
   enablePaan: boolean = false;
   recentEventNode = undefined;
@@ -81,7 +81,6 @@ export class DragDropComponent implements OnInit {
     private spServices: SPOperationService,
     private constants: ConstantsService,
     private taskAllocationService: TaskAllocationConstantsService,
-    private messageService: MessageService,
     private commonService: CommonService) { }
 
   ngOnInit() {
@@ -97,13 +96,13 @@ export class DragDropComponent implements OnInit {
     if (this.data.length > 0) {
       this.data.forEach(element => {
         const temp = {
-          data: element.data.pName.includes('(Current)') ? element.data.pName.replace('(Current)', '').trim() : element.data.pName,
-          id: element.data.pID,
+          data: element.data.title.includes('(Current)') ? element.data.title.replace('(Current)', '').trim() : element.data.title,
+          id: element.data.id,
           position: element.data.position,
           preTask: element.data.previousTask,
           nextTask: element.data.nextTask,
-          taskType: element.data.pName.toLowerCase().indexOf('adhoc') > -1 ? 'Adhoc' :
-            element.data.pName.toLowerCase().indexOf('tb') > -1 ? 'TB' : element.data.itemType,
+          taskType: element.data.title.toLowerCase().indexOf('adhoc') > -1 ? 'Adhoc' :
+            element.data.title.toLowerCase().indexOf('tb') > -1 ? 'TB' : element.data.itemType,
           status: element.data.status,
         };
         this.submilestoneIndex = 0;
@@ -121,17 +120,17 @@ export class DragDropComponent implements OnInit {
         }
         if (element.children !== undefined) {
           if (element.children.length > 0) {
-            
+
             // tslint:disable-next-line: no-shadowed-variable
             element.children.forEach(element => {
               const temp1 = {
-                data: element.data.pName,
-                id: element.data.pID,
+                data: element.data.title,
+                id: element.data.id,
                 position: element.data.position,
                 preTask: element.data.previousTask,
                 nextTask: element.data.nextTask,
-                taskType: element.data.pName.toLowerCase().indexOf('adhoc') > -1 ? 'Adhoc' :
-                  element.data.pName.toLowerCase().indexOf('tb') > -1 ? 'TB' : element.data.itemType,
+                taskType: element.data.title.toLowerCase().indexOf('adhoc') > -1 ? 'Adhoc' :
+                  element.data.title.toLowerCase().indexOf('tb') > -1 ? 'TB' : element.data.itemType,
                 IsCentrallyAllocated: element.data.IsCentrallyAllocated,
                 CentralAllocationDone: element.data.CentralAllocationDone,
                 ActiveCA: element.data.ActiveCA,
@@ -154,13 +153,13 @@ export class DragDropComponent implements OnInit {
                 // tslint:disable-next-line: no-shadowed-variable
                 element.children.forEach(element => {
                   const temp2 = {
-                    data: element.data.pName,
-                    id: element.data.pID,
+                    data: element.data.title,
+                    id: element.data.id,
                     position: element.data.position,
                     preTask: element.data.previousTask,
                     nextTask: element.data.nextTask,
-                    taskType: element.data.pName.toLowerCase().indexOf('adhoc') > -1 ? 'Adhoc' :
-                      element.data.pName.toLowerCase().indexOf('tb') > -1 ? 'TB' : element.data.itemType,
+                    taskType: element.data.title.toLowerCase().indexOf('adhoc') > -1 ? 'Adhoc' :
+                      element.data.title.toLowerCase().indexOf('tb') > -1 ? 'TB' : element.data.itemType,
                     IsCentrallyAllocated: element.data.IsCentrallyAllocated,
                     CentralAllocationDone: element.data.CentralAllocationDone,
                     ActiveCA: element.data.ActiveCA,
@@ -244,22 +243,13 @@ export class DragDropComponent implements OnInit {
               if (errorM <= 0) {
                 errorM++;
                 if (this.milestoneIndex === -1) {
-                  this.messageService.add({
-                    key: 'custom', severity: 'warn',
-                    summary: 'Warning Message', detail: 'Please click on Milestone to add Sub Milestone/Tasks.'
-                  });
+                  this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please click on Milestone to add Sub Milestone/Tasks.', false);
                   return false;
                 } else if (this.submilestoneIndex === -1) {
-                  this.messageService.add({
-                    key: 'custom', severity: 'warn',
-                    summary: 'Warning Message', detail: 'Please click on ' + submilestone.label + ' Sub Milestone to add Tasks.'
-                  });
+                  this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please click on ' + submilestone.label + ' Sub Milestone to add Tasks.', false);
                   return false;
                 } else {
-                  this.messageService.add({
-                    key: 'custom', severity: 'warn',
-                    summary: 'Warning Message', detail: 'Please add Tasks in ' + submilestone.label + ' of ' + milestone.label + '.'
-                  });
+                  this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please add Tasks in ' + submilestone.label + ' of ' + milestone.label + '.', false);
                   return false;
                 }
               }
@@ -272,20 +262,14 @@ export class DragDropComponent implements OnInit {
               });
               if (submilestone.label === 'Default' && submilestone.task.nodes.find(c => c.taskType === 'Client Review') === undefined) {
                 errorM++;
-                this.messageService.add({
-                  key: 'custom', severity: 'warn', summary: 'Warning Message',
-                  detail: 'Please add Client Review Task in ' + submilestone.label + ' of ' + milestone.label
-                });
+                this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please add Client Review Task in ' + submilestone.label + ' of ' + milestone.label, false);
                 return false;
               }
 
               if (milestone.submilestone.nodes.length > 1 && submilestone.label === 'Default' &&
                 submilestone.task.nodes.filter(c => c.taskType !== 'Adhoc' && c.taskType !== 'TB').length > 1) {
                 errorM++;
-                this.messageService.add({
-                  key: 'custom', severity: 'warn', summary: 'Warning Message',
-                  detail: 'Please remove Task in ' + submilestone.label + ' of ' + milestone.label + ' only Client Review is Required.'
-                });
+                this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please remove Task in ' + submilestone.label + ' of ' + milestone.label + ' only Client Review is Required.', false);
                 return false;
               }
               const tempnodes = submilestone.task.nodes.map(c => c.id).filter(c =>
@@ -298,10 +282,7 @@ export class DragDropComponent implements OnInit {
                 const missingLinkTasks = submilestone.task.nodes.filter(c => tempnodes.includes(c.id))
                   .map(c => submilestone.label + ' - ' + c.label);
                 errorM++;
-                this.messageService.add({
-                  key: 'custom', severity: 'warn',
-                  summary: 'Warning Message', detail: 'Paths missing for following tasks ' + missingLinkTasks + ' of ' + milestone.label
-                });
+                this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Paths missing for following tasks ' + missingLinkTasks + ' of ' + milestone.label, false);
                 return false;
               }
             }
@@ -316,13 +297,15 @@ export class DragDropComponent implements OnInit {
                 }
               });
 
-
               const allUniqueLinkPath = [];
               for (const link of submilestone.task.links) {
                 const TargetLinks = submilestone.task.links.filter(c => c.target === link.source);
                 if (TargetLinks.length === 0) {
-                  const curPath = submilestone.task.nodes.find(node => node.id === link.source).taskType;
-                  this.getNextTargetSC(link.source, link.target, submilestone, curPath, allUniqueLinkPath);
+                  const curPath = submilestone.task.nodes.find(node => node.id === link.source);
+                  if (curPath) {
+                    // const curPath = submilestone.task.nodes.find(node => node.id === link.source).taskType;
+                    this.getNextTargetSC(link.source, link.target, submilestone, curPath.taskType, allUniqueLinkPath);
+                  }
                 }
 
                 if (!circularPresent) {
@@ -333,37 +316,25 @@ export class DragDropComponent implements OnInit {
               }
               if (circularPresent) {
                 errorM++;
-                this.messageService.add({
-                  key: 'custom', severity: 'warn', summary: 'Warning Message',
-                  detail: 'Circular links present. Please delete the circular links in ' + submilestone.label + '-' + milestone.label
-                });
+                this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Circular links present. Please delete the circular links in ' + submilestone.label + '-' + milestone.label, false);
                 return false;
               }
               const missingSCInPath = allUniqueLinkPath.filter(t => t !== 'Send to client');
               if ((missingSCInPath.length > 0 || individualTask) && milestone.allsubmilestones.length <= 1 && errorM === 0) {
                 errorM++;
-                this.messageService.add({
-                  key: 'custom', severity: 'warn', summary: 'Warning Message',
-                  detail: 'Send to client task missing for parallel task in ' + submilestone.label + '-' + milestone.label
-                });
+                this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Send to client task missing for parallel task in ' + submilestone.label + '-' + milestone.label, false);
                 return false;
               }
             }
           });
           if (ScPresent === false && milestone.allsubmilestones.length <= 1 && errorM === 0) {
             errorM++;
-            this.messageService.add({
-              key: 'custom', severity: 'warn', summary: 'Warning Message',
-              detail: 'Please add Send to Client in ' + milestone.label
-            });
+            this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please add Send to Client in ' + milestone.label, false);
             return false;
           }
           if (scPrevTaskPresent === false && errorM === 0) {
             errorM++;
-            this.messageService.add({
-              key: 'custom', severity: 'warn', summary: 'Warning Message',
-              detail: 'Send to Client task must have incoming task link in ' + milestone.label
-            });
+            this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Send to Client task must have incoming task link in ' + milestone.label, false);
             return false;
           }
         }
@@ -392,11 +363,9 @@ export class DragDropComponent implements OnInit {
         });
 
         this.ref.close(this.milestonesGraph);
-
-        // this.messageService.add({key: 'custom', severity:'Warn', summary: 'Success Message', detail:'Updating...' });
       }
     } else {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please add Milestone' });
+      this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please add Milestone.', false);
       return false;
     }
   }
@@ -423,18 +392,22 @@ export class DragDropComponent implements OnInit {
   }
 
   getNextTargetSC(source, target, submilestone, currentPath, allPaths) {
-    const currentTaskStatus = submilestone.task.nodes.find(node => node.id === target).status;
-    currentPath = submilestone.task.nodes.find(node => node.id === target).taskType;
-    const TargetLinks = submilestone.task.links.filter(c => c.source === target).map(c => c.target);
-    if (TargetLinks.length) {
-      TargetLinks.forEach(newTarget => {
-        this.getNextTargetSC(source, newTarget, submilestone, currentPath, allPaths);
-      });
-    } else {
-      if (currentTaskStatus !== 'Completed') {
-        allPaths.push(currentPath);
+    const currentNode = submilestone.task.nodes.find(node => node.id === target);
+    if(currentNode) {
+      const currentTaskStatus = currentNode.status;
+      currentPath = submilestone.task.nodes.find(node => node.id === target).taskType;
+      const TargetLinks = submilestone.task.links.filter(c => c.source === target).map(c => c.target);
+      if (TargetLinks.length) {
+        TargetLinks.forEach(newTarget => {
+          this.getNextTargetSC(source, newTarget, submilestone, currentPath, allPaths);
+        });
+      } else {
+        if (currentTaskStatus !== 'Completed') {
+          allPaths.push(currentPath);
+        }
       }
     }
+    
 
   }
 
@@ -467,10 +440,15 @@ export class DragDropComponent implements OnInit {
     let nodeLabel = '';
     if (!event.id) {
       if (miletype === 'milestone') {
-        count =  this.allmilestones.length > 0 && this.allmilestones.find(c=> c.type === event.data) ?
-        this.allmilestones.find(c=> c.type === event.data).milestones.filter(function (node) { return new RegExp(event.data, 'g').test(node) }).length > 0 ? this.allmilestones.find(c=> c.type === event.data).milestones.filter(function (node) { return new RegExp(event.data, 'g').test(node) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => parseInt(c)).length > 0 ? Math.max.apply(null, this.allmilestones.find(c=> c.type === event.data).milestones.filter(function (node) { return new RegExp(event.data, 'g').test(node) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => parseInt(c))) : 1 : 0 : 0;
+        count = this.allmilestones.length > 0 && this.allmilestones.find(c => c.type === event.data) ?
+          this.allmilestones.find(c => c.type === event.data).milestones.filter(function (node) { return new RegExp(event.data, 'g').test(node) }).length > 0 ? this.allmilestones.find(c => c.type === event.data).milestones.filter(function (node) { return new RegExp(event.data, 'g').test(node) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => parseInt(c)).length > 0 ? Math.max.apply(null, this.allmilestones.find(c => c.type === event.data).milestones.filter(function (node) { return new RegExp(event.data, 'g').test(node) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => parseInt(c))) : 1 : 0 : 0;
       }
       else {
+        const selectedMilestone = this.milestonesGraph.nodes[this.milestoneIndex];
+        if (selectedMilestone.status === 'Completed') {
+          this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Submilestone cannot be dropped inside Completed milestone.', false);
+          return false;
+        }
         count = this.milestonesGraph.nodes[this.milestoneIndex].allsubmilestones.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).length > 0 ? this.milestonesGraph.nodes[this.milestoneIndex].allsubmilestones.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => parseInt(c)).length > 0 ? Math.max.apply(null, this.milestonesGraph.nodes[this.milestoneIndex].allsubmilestones.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => parseInt(c))) : 1 : 0;
       }
       nodeLabel = count >= 1 ? (event.data === 'Draft' ? event.data + ' ' + (count + 1) : event.data + ' ' + (count + 1)) : event.data === 'Draft' ? event.data + ' ' + (count + 1) : event.data;
@@ -481,12 +459,12 @@ export class DragDropComponent implements OnInit {
     } else {
       nodeLabel = event.data;
     }
- 
-    if(this.allmilestones.find(c=> c.type === event.data.replace(/[0-9]/g, '').trim())){
-      this.allmilestones.find(c=> c.type === event.data.replace(/[0-9]/g, '').trim()).milestones.push(nodeLabel); 
+
+    if (this.allmilestones.find(c => c.type === event.data.replace(/[0-9]/g, '').trim())) {
+      this.allmilestones.find(c => c.type === event.data.replace(/[0-9]/g, '').trim()).milestones.push(nodeLabel);
     }
-    else{
-      this.allmilestones.push(new Object({type : event.data.replace(/[0-9]/g, '').trim() , milestones:[nodeLabel]}))
+    else {
+      this.allmilestones.push(new Object({ type: event.data.replace(/[0-9]/g, '').trim(), milestones: [nodeLabel] }))
     }
 
     const milestoneTasks = this.AlldbRecords.find(c => c.milestone.Title === nodeLabel) ? this.AlldbRecords.find(c => c.milestone.Title === nodeLabel).tasks : []
@@ -624,7 +602,7 @@ export class DragDropComponent implements OnInit {
       const submilestone = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.find(c => c.label === 'Default');
 
       if (submilestone.task.nodes.length > 1 || submilestone.task.nodes.filter(c => c.taskType !== 'Client Review').length > 0) {
-        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warn Message', detail: 'Please remove Task in Default, only Client Review is Required.' });
+        this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please remove Task in Default, only Client Review is Required.', false);
       }
       else {
 
@@ -702,34 +680,42 @@ export class DragDropComponent implements OnInit {
 
   async GetAllTasksMilestones() {
     const batchUrl = [];
-    const milestoneObj = Object.assign({}, this.queryConfig);
-    milestoneObj.url = this.spServices.getReadURL(this.constants.listNames.Milestones.name,
+    const projectDetails = this.sharedObject.oTaskAllocation.oProjectDetails;
+
+    const DeliverableUrl = this.spServices.getReadURL(this.constants.listNames.DeliverableType.name,
+      this.taskAllocationService.taskallocationComponent.Deliverable);
+    this.commonService.setBatchObject(batchUrl, DeliverableUrl.replace(/{{status}}/gi, 'Yes'), null, this.constants.Method.GET, this.constants.listNames.DeliverableType.name);
+
+    const PracticeAreaUrl = this.spServices.getReadURL(this.constants.listNames.PracticeArea.name,
+      this.taskAllocationService.taskallocationComponent.PracticeArea);
+    this.commonService.setBatchObject(batchUrl, PracticeAreaUrl.replace(/{{status}}/gi, 'Yes'), null, this.constants.Method.GET, this.constants.listNames.PracticeArea.name);
+
+    const milestoneUrl = this.spServices.getReadURL(this.constants.listNames.Milestones.name,
       this.taskAllocationService.taskallocationComponent.milestoneList);
-    milestoneObj.url = milestoneObj.url.replace(/{{status}}/gi, 'Active');
-    milestoneObj.listName = this.constants.listNames.Milestones.name;
-    milestoneObj.type = 'GET';
-    batchUrl.push(milestoneObj);
-    const submilestoneObj = Object.assign({}, this.queryConfig);
-    submilestoneObj.url = this.spServices.getReadURL(this.constants.listNames.SubMilestones.name,
-      this.taskAllocationService.taskallocationComponent.submilestonesList);
-    submilestoneObj.url = submilestoneObj.url.replace(/{{status}}/gi, 'Yes');
-    submilestoneObj.listName = this.constants.listNames.SubMilestones.name;
-    submilestoneObj.type = 'GET';
-    batchUrl.push(submilestoneObj);
-    const tasksObj = Object.assign({}, this.queryConfig);
-    tasksObj.url = this.spServices.getReadURL(this.constants.listNames.MilestoneTasks.name,
+    this.commonService.setBatchObject(batchUrl, milestoneUrl.replace(/{{status}}/gi, 'Active'), null, this.constants.Method.GET, this.constants.listNames.Milestones.name)
+
+    const tasksUrl = this.spServices.getReadURL(this.constants.listNames.MilestoneTasks.name,
       this.taskAllocationService.taskallocationComponent.taskList);
-    tasksObj.url = tasksObj.url.replace(/{{status}}/gi, 'Active').replace(/{{TaskType}}/gi, 'SubTask');
-    tasksObj.listName = this.constants.listNames.MilestoneTasks.name;
-    tasksObj.type = 'GET';
-    batchUrl.push(tasksObj);
+    this.commonService.setBatchObject(batchUrl, tasksUrl.replace(/{{status}}/gi, 'Active').replace(/{{TaskType}}/gi, 'SubTask'), null, this.constants.Method.GET, this.constants.listNames.MilestoneTasks.name);
+
+    const submilestoneUrl = this.spServices.getReadURL(this.constants.listNames.SubMilestones.name,
+      this.taskAllocationService.taskallocationComponent.submilestonesList);
+    this.commonService.setBatchObject(batchUrl, submilestoneUrl.replace(/{{status}}/gi, 'Yes'), null, this.constants.Method.GET, this.constants.listNames.SubMilestones.name);
+
     this.commonService.SetNewrelic('TaskAllocation', 'Drag-Drop', 'GetMilestoneSubmilestoneAndTasks');
     const arrResult = await this.spServices.executeBatch(batchUrl);
-    this.response = arrResult.length ? arrResult.map(a => a.retItems) : [];
-    this.sharedObject.oTaskAllocation.arrMilestones = this.response[0].map(c => c.Title);
-    this.sharedObject.oTaskAllocation.arrSubMilestones = this.response[1].map(c => c.Title);
-    this.sharedObject.oTaskAllocation.arrTasks = this.response[2].map(c => c.Title);
-    this.sharedObject.oTaskAllocation.allTasks = this.response[2];
+
+
+
+    this.sharedObject.oTaskAllocation.arrMilestones = arrResult.find(c => c.listName === this.constants.listNames.DeliverableType.name).retItems.find(c => c.Title === projectDetails.deliverable) && arrResult.find(c => c.listName === this.constants.listNames.DeliverableType.name).retItems.find(c => c.Title === projectDetails.deliverable).Milestones.results.length > 0 ? arrResult.find(c => c.listName === this.constants.listNames.DeliverableType.name).retItems.find(c => c.Title === projectDetails.deliverable).Milestones.results.map(c => c.Title) : arrResult.find(c => c.listName === this.constants.listNames.PracticeArea.name).retItems.find(c => c.Title === projectDetails.practiceArea) && arrResult.find(c => c.listName === this.constants.listNames.PracticeArea.name).retItems.find(c => c.Title === projectDetails.practiceArea).Milestones.results.length > 0 ? arrResult.find(c => c.listName === this.constants.listNames.PracticeArea.name).retItems.find(c => c.Title === projectDetails.practiceArea).Milestones.results.map(c => c.Title) : arrResult.find(c => c.listName === this.constants.listNames.Milestones.name).retItems.map(c => c.Title);
+    this.sharedObject.oTaskAllocation.arrSubMilestones = arrResult.find(c => c.listName === this.constants.listNames.SubMilestones.name).retItems.map(c => c.Title);
+
+
+   this.sharedObject.oTaskAllocation.arrTasks = arrResult.find(c => c.listName === this.constants.listNames.DeliverableType.name).retItems.find(c => c.Title === projectDetails.deliverable) && arrResult.find(c => c.listName === this.constants.listNames.DeliverableType.name).retItems.find(c => c.Title === projectDetails.deliverable).MilestoneTasks.results.length > 0 ? arrResult.find(c => c.listName === this.constants.listNames.DeliverableType.name).retItems.find(c => c.Title === projectDetails.deliverable).MilestoneTasks.results.map(c => c.Title) : arrResult.find(c => c.listName === this.constants.listNames.PracticeArea.name).retItems.find(c => c.Title === projectDetails.practiceArea) && arrResult.find(c => c.listName === this.constants.listNames.PracticeArea.name).retItems.find(c => c.Title === projectDetails.practiceArea).MilestoneTasks.results.length > 0 ? arrResult.find(c => c.listName === this.constants.listNames.PracticeArea.name).retItems.find(c => c.Title === projectDetails.practiceArea).MilestoneTasks.results.map(c => c.Title) : arrResult.find(c => c.listName === this.constants.listNames.MilestoneTasks.name).retItems.map(c => c.Title);
+
+
+this.sharedObject.oTaskAllocation.allTasks = arrResult.find(c => c.listName === this.constants.listNames.DeliverableType.name).retItems.find(c => c.Title === projectDetails.deliverable) && arrResult.find(c => c.listName === this.constants.listNames.DeliverableType.name).retItems.find(c => c.Title === projectDetails.deliverable).MilestoneTasks.results.length > 0 ? arrResult.find(c => c.listName === this.constants.listNames.MilestoneTasks.name).retItems.filter(t=> arrResult.find(c => c.listName === this.constants.listNames.DeliverableType.name).retItems.find(c => c.Title === projectDetails.deliverable).MilestoneTasks.results.map(c => c.ID).includes(t.ID)) : arrResult.find(c => c.listName === this.constants.listNames.PracticeArea.name).retItems.find(c => c.Title === projectDetails.practiceArea) && arrResult.find(c => c.listName === this.constants.listNames.PracticeArea.name).retItems.find(c => c.Title === projectDetails.practiceArea).MilestoneTasks.results.length > 0 ? arrResult.find(c => c.listName === this.constants.listNames.MilestoneTasks.name).retItems.filter(t=> arrResult.find(c => c.listName === this.constants.listNames.PracticeArea.name).retItems.find(c => c.Title === projectDetails.practiceArea).MilestoneTasks.results.map(c => c.ID).includes(t.ID)):arrResult.find(c => c.listName === this.constants.listNames.MilestoneTasks.name).retItems;
+
 
     this.mainloaderenable = false;
 
@@ -797,7 +783,8 @@ export class DragDropComponent implements OnInit {
 
 
   ErrorMessage(event, type) {
-    this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warn Message', detail: type + ' cannot be deleted' });
+
+    this.commonService.showToastrMessage(this.constants.MessageType.warn, type + ' cannot be deleted', false);
     event.preventDefault();
   }
 
@@ -835,7 +822,7 @@ export class DragDropComponent implements OnInit {
                   this.milestoneIndex = this.milestonesGraph.nodes.indexOf(this.milestonesGraph.nodes.find(c => c.color === '#d26767'));
                 }
               }
-              this.messageService.add({ key: 'custom', severity: 'error', summary: 'Deleted', detail: 'Milestone Deleted' });
+              this.commonService.showToastrMessage(this.constants.MessageType.error, 'Milestone Deleted', false);
             } else {
               this.ErrorMessage(event, 'Milestone');
             }
@@ -866,7 +853,7 @@ export class DragDropComponent implements OnInit {
 
               this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.filter(value => !RemoveLinks.includes(value));
               this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links = [... this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links]
-              this.messageService.add({ key: 'custom', severity: 'error', summary: 'Deleted', detail: 'Sub Milestone Deleted' });
+              this.commonService.showToastrMessage(this.constants.MessageType.error, 'Sub Milestone Deleted', false);
             } else {
               this.ErrorMessage(event, 'SubMilestone');
             }
@@ -874,7 +861,8 @@ export class DragDropComponent implements OnInit {
           case 'task':
             if ((node.status === 'Not Confirmed' || node.status === 'Not Saved' || node.status === 'Not Started')) {
               if (node.label === 'Client Review') {
-                this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Cant remove Client Review.' });
+
+                this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Cant remove Client Review.', false);
               }
               else {
                 var source = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.filter(c => c.target === node.id).map(c => c.source);
@@ -905,7 +893,8 @@ export class DragDropComponent implements OnInit {
 
                 this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.filter(value => !RemoveLinks.includes(value));
                 this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links = [... this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links]
-                this.messageService.add({ key: 'custom', severity: 'error', summary: 'Deleted', detail: 'Task Deleted' });
+
+                this.commonService.showToastrMessage(this.constants.MessageType.error, 'Task Deleted', false);
 
                 if (RemoveLinks.filter(c => c.source === node.id).length > 0) {
                   this.previousSource = RemoveLinks.filter(c => c.source === node.id).map(c => c.target);
@@ -1021,7 +1010,8 @@ export class DragDropComponent implements OnInit {
         this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.splice(RemoveLinkindex, 1);
         this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links = [... this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links]
       } else {
-        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Cant remove link as send to client task is completed.' });
+
+        this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Cant remove link as send to client task is completed.', false);
       }
     }
 
@@ -1074,26 +1064,32 @@ export class DragDropComponent implements OnInit {
     const MilTask = this.sharedObject.oTaskAllocation.allTasks.find(c => c.Title === event.data);
     const originalType = event.data;
     event.data = event.data === 'Send to client' ? 'SC' : event.data;
-    if (this.selectedSubMilestone !== 'Default' && event.data === 'Client Review') {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Drop Client Review only in Default submilestone.' });
+    const selectedMilestone = this.milestonesGraph.nodes[this.milestoneIndex];
+    if (selectedMilestone.status === 'Completed') {
+      this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Tasks cannot be dropped inside Completed milestone.', false);
       return false;
     }
-    else if ((this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.length > 1 && this.selectedSubMilestone !== 'Default') || this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.length === 1 || (this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.length > 1 && this.selectedSubMilestone === 'Default' && event.data === 'Client Review')) {
-      var subMilestone = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex];
+    else if (this.selectedSubMilestone !== 'Default' && event.data === 'Client Review') {
+
+      this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Drop Client Review only in Default submilestone.', false);
+      return false;
+    }
+    else if ((selectedMilestone.submilestone.nodes.length > 1 && this.selectedSubMilestone !== 'Default') || selectedMilestone.submilestone.nodes.length === 1 || (selectedMilestone.submilestone.nodes.length > 1 && this.selectedSubMilestone === 'Default' && event.data === 'Client Review')) {
+      var subMilestone = selectedMilestone.submilestone.nodes[this.submilestoneIndex];
       const centrallyAllocated = MilTask !== undefined ? MilTask.IsCentrallyAllocated !== null ? MilTask.IsCentrallyAllocated : 'No' : 'No';
       const centralAllocationDone = MilTask !== undefined ? MilTask.CentralAllocationDone !== null ? MilTask.CentralAllocationDone : 'No' : 'No';
       const activeCA = MilTask !== undefined ? MilTask.ActiveCA !== null ? MilTask.ActiveCA : 'No' : 'No';
       var clPresnet = subMilestone.task.nodes.find(e => (e.taskType === 'Client Review' && event.data === 'Client Review'));
       if (clPresnet) {
-        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Client Review already present' });
+        this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Client Review already present.', false);
         return false;
       }
 
-      if (!this.milestonesGraph.nodes[this.milestoneIndex].allTasks.find(c => c.type === originalType)) {
-        this.milestonesGraph.nodes[this.milestoneIndex].allTasks.push({ type: originalType, tasks: [], slotType: MilTask.TaskType })
+      if (!selectedMilestone.allTasks.find(c => c.type === originalType)) {
+        selectedMilestone.allTasks.push({ type: originalType, tasks: [], slotType: MilTask.TaskTypeCH })
       }
 
-      const TaskOfType = this.milestonesGraph.nodes[this.milestoneIndex].allTasks.find(c => c.type === originalType).tasks;
+      const TaskOfType = selectedMilestone.allTasks.find(c => c.type === originalType).tasks;
       var count = TaskOfType.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).length > 0 ?
         TaskOfType.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => (!isNaN(c) ? parseInt(c) : 0)).length > 0 ?
           Math.max.apply(null, TaskOfType.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => (!isNaN(c) ? parseInt(c) : 0))) : 1 : 0;
@@ -1113,7 +1109,7 @@ export class DragDropComponent implements OnInit {
           CentralAllocationDone: centralAllocationDone === 'Yes' ? 'Yes' : 'No',
           ActiveCA: activeCA === 'Yes' ? 'Yes' : 'No',
           skillLevel: MilTask !== undefined ? MilTask.DefaultSkill !== null ? MilTask.DefaultSkill : '' : '',
-          slotType: MilTask.TaskType ? MilTask.TaskType : ''
+          slotType: MilTask.TaskTypeCH ? MilTask.TaskTypeCH : ''
         };
       }
       else {
@@ -1130,18 +1126,18 @@ export class DragDropComponent implements OnInit {
           CentralAllocationDone: centralAllocationDone === 'Yes' ? 'Yes' : 'No',
           ActiveCA: activeCA === 'Yes' ? 'Yes' : 'No',
           skillLevel: MilTask !== undefined ? MilTask.DefaultSkill !== null ? MilTask.DefaultSkill : '' : '',
-          slotType: MilTask.TaskType ? MilTask.TaskType : ''
+          slotType: MilTask.TaskTypeCH ? MilTask.TaskTypeCH : ''
         };
       }
       this.recentEventNode = node.id;
       node.label = node.label.replace(/[0-9]/g, '').trim() === 'Client Review' ? node.label.replace(/[0-9]/g, '').trim() : node.label;
-      let existObject = this.milestonesGraph.nodes[this.milestoneIndex].allTasks.find(c => c.type === node.taskType);
-      existObject = this.milestonesGraph.nodes[this.milestoneIndex].allTasks.find(c => c.type === node.taskType);
+      let existObject = selectedMilestone.allTasks.find(c => c.type === node.taskType);
+      existObject = selectedMilestone.allTasks.find(c => c.type === node.taskType);
       if (existObject) {
         existObject.tasks.push(node.label);
       }
       else {
-        this.milestonesGraph.nodes[this.milestoneIndex].allTasks.push({ type: node.taskType, tasks: [node.label], slotType: MilTask.TaskType })
+        selectedMilestone.allTasks.push({ type: node.taskType, tasks: [node.label], slotType: MilTask.TaskTypeCH })
       }
 
       subMilestone.task.nodes.push(node);
@@ -1173,7 +1169,8 @@ export class DragDropComponent implements OnInit {
           var findPreNode = subMilestone.task.nodes.find(e => e.id === pathLocation.source);
           var findNextNode = subMilestone.task.nodes.find(e => e.id === pathLocation.target);
           if (node.taskType === 'Send to client') {
-            this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Send to client cant be dropped two tasks so dropped at the end' });
+
+            this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Send to client cant be dropped two tasks so dropped at the end.', false);
           } else if (findPreNode.taskType !== 'Send to client' && findNextNode.taskType !== 'Client Review') {
             if (!(findNextNode.taskType === 'Send to client' && findNextNode.status === 'Completed')) {
               var linkRemoveLink = subMilestone.task.links.findIndex(e => (e.source === pathLocation.source && e.target === pathLocation.target))
@@ -1190,7 +1187,7 @@ export class DragDropComponent implements OnInit {
             }
           }
           else {
-            this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Task cant be added between Send to client and Client Review so dropped at the end' });
+            this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Task cant be added between Send to client and Client Review so dropped at the end', false);
           }
           this.previousSource = undefined;
         }
@@ -1221,18 +1218,17 @@ export class DragDropComponent implements OnInit {
       subMilestone.task.links = [...subMilestone.task.links];
     }
     else {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warn Message', detail: 'Only Client Review  can be added to default sub milestone.' });
+
+      this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Only Client Review  can be added to default sub milestone.', false);
     }
 
     this.resizeGraph = 'task';
     this.GraphResize();
 
   }
-  // *************************************************************************************************************************************
+  // *********************************************************************************************
   // To Add Task To milestonesGraph On Restructure
-  // *************************************************************************************************************************************
-
-
+  // *********************************************************************************************
   loadLinks(event, links) {
 
     if (event.itemType !== "Client Review") {
@@ -1241,7 +1237,7 @@ export class DragDropComponent implements OnInit {
 
       var nodes = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes;
 
-      var currentNode = nodes.find(e => e.label === event.pName);
+      var currentNode = nodes.find(e => e.label === event.title);
       preTasks.forEach(element => {
         var prevNode = nodes.find(e => e.label === element);
         if (prevNode) {
@@ -1354,21 +1350,21 @@ export class DragDropComponent implements OnInit {
               submilestone.task.links.push(link);
             }
             else {
-              this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warn Message', detail: 'Send to client can have only one incoming path' });
+              this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Send to client can have only one incoming path.', false);
             }
           } else {
-            this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warn Message', detail: 'Task cannot be linked to completed send to client task' });
+            this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Task cannot be linked to completed send to client task.', false);
           }
         }
         else if (this.taskDown.taskType !== 'Client Review') {
           submilestone.task.links.push(link);
         }
         else {
-          this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warn Message', detail: 'Client Review cant be start node' });
+          this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Client Review cant be start node.', false);
         }
       }
       else {
-        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warn Message', detail: 'Start and end node cant be same.' });
+        this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Start and end node cant be same.', false);
       }
       this.taskDown.color = '#e2e2e2';
       if (this.taskUp !== null) {
@@ -1577,7 +1573,7 @@ export class DragDropComponent implements OnInit {
     event.data = event.data === 'Send to client' ? 'SC' : event.data;
 
     if (selectedSubMilestone !== 'Default' && event.data === 'Client Review') {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Drop Client Review only in Default submilestone.' });
+      this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Drop Client Review only in Default submilestone.', false);
       return false;
     }
     else if ((this.milestonesGraph.nodes[milestoneIndex].submilestone.nodes.length > 1 && selectedSubMilestone !== 'Default') || this.milestonesGraph.nodes[milestoneIndex].submilestone.nodes.length === 1 || (this.milestonesGraph.nodes[milestoneIndex].submilestone.nodes.length > 1 && selectedSubMilestone === 'Default' && event.data === 'Client Review')) {
@@ -1585,7 +1581,7 @@ export class DragDropComponent implements OnInit {
 
       var clPresnet = subMilestone.task.nodes.find(e => (e.taskType === 'Client Review' && event.data === 'Client Review'));
       if (clPresnet) {
-        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Client Review already present' });
+        this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Client Review already present.', false);
         return false;
       }
 
@@ -1618,7 +1614,7 @@ export class DragDropComponent implements OnInit {
           CentralAllocationDone: CentralAllocationDone === 'Yes' ? 'Yes' : 'No',
           ActiveCA: ActiveCA === 'Yes' ? 'Yes' : 'No',
           skillLevel: MilTask !== undefined ? MilTask.DefaultSkill !== null ? MilTask.DefaultSkill : '' : '',
-          slotType: MilTask.TaskType ? MilTask.TaskType : ''
+          slotType: MilTask.TaskTypeCH ? MilTask.TaskTypeCH : ''
         };
       }
       else {
@@ -1636,7 +1632,7 @@ export class DragDropComponent implements OnInit {
           CentralAllocationDone: CentralAllocationDone === 'Yes' ? 'Yes' : 'No',
           ActiveCA: ActiveCA === 'Yes' ? 'Yes' : 'No',
           skillLevel: MilTask !== undefined ? MilTask.DefaultSkill !== null ? MilTask.DefaultSkill : '' : '',
-          slotType: MilTask.TaskType ? MilTask.TaskType : ''
+          slotType: MilTask.TaskTypeCH ? MilTask.TaskTypeCH : ''
         };
       }
 
@@ -1655,7 +1651,8 @@ export class DragDropComponent implements OnInit {
       ////// Works on links 
     }
     else {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warn Message', detail: 'Only Client Review  can be added to default sub milestone.' });
+
+      this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Only Client Review  can be added to default sub milestone.', false);
     }
   }
 }

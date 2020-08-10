@@ -9,7 +9,7 @@ import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { Subject } from 'rxjs/internal/Subject';
 import { SPOperationService } from '../../../../Services/spoperation.service';
 import { FilterComponent } from '../filter/filter.component';
-import { MenuItem, MessageService } from 'primeng/api';
+import { MenuItem } from 'primeng/api';
 import { PopupComponent } from './popup/popup.component';
 import { QMSConstantsService } from '../../services/qmsconstants.service';
 import { Table } from 'primeng/table';
@@ -27,7 +27,6 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
     private global: GlobalService,
     private datepipe: DatePipe,
     private spService: SPOperationService,
-    private messageService: MessageService,
     private qmsConstant: QMSConstantsService,
     private qmsCommon: QMSCommonService,
     private commonService: CommonService,
@@ -190,6 +189,7 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
       pf.isLoggedInDeliveryLead = deliveryLeads.length > 0 ? true : false;
       pf.formattedSentDate = datePipe.transform(pf.SentDate, 'd MMM, yyyy');
       pf.resources = pf.Resources.results ? pf.Resources.results.map(a => a.Title) : [];
+      pf.fullUrl = window.location.origin + '/' + pf.FileURL;
       return pf;
     });
     return arrResult;
@@ -229,8 +229,9 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
         SentBy: element.SentBy.Title,
         Resources: element.resources,
         FileUrl: element.FileURL,
-        IsActive: element.IsActive,
-        isLoggedInDeliveryLead: element.isLoggedInDeliveryLead
+        IsActive: element.IsActiveCH,
+        isLoggedInDeliveryLead: element.isLoggedInDeliveryLead,
+        fullUrl: element.fullUrl
       });
     });
     this.colFilters(this.CFRows);
@@ -238,7 +239,7 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
 
   /**
    * Filter applied of date range to positive feedback
-   * 
+   *
    */
   async applyFilters(filterObj) {
     let arrPFs = this.pfs;
@@ -261,7 +262,7 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
   }
 
   showToastMsg(obj) {
-    this.messageService.add({ severity: obj.type, summary: obj.msg, detail: obj.detail });
+    this.commonService.showToastrMessage(obj.type,obj.detail,false);
   }
 
   showColumn(): string {
@@ -276,7 +277,7 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
     const pfItem = this.pfs.filter(p => p.ID === +pf.pfID);
     if (pfItem.length > 0) {
       pfItem[0].Title = pf.projectCode ? pf.projectCode : pfItem[0].Title;
-      pfItem[0].resources = pf.resources.results ? pf.resources.results.map(a => a.Title).join(', ') : pf.resources ? pf.resources : '';
+      pfItem[0].resources = pf.resources.results ? pf.resources.results.map(a => a.Title).join(',') : pf.resources ? pf.resources : '';
       pfItem[0].Status = pf.Status ? pf.Status : pfItem[0].Status;
     }
     this.bindTable(this.pfs);

@@ -3,7 +3,6 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { GlobalService } from 'src/app/Services/global.service';
-import { MessageService, SelectItem } from 'primeng/api';
 import { Router, RouterStateSnapshot, ActivatedRoute } from '@angular/router';
 import { MyDashboardConstantsService } from '../../services/my-dashboard-constants.service';
 import { DatePipe } from '@angular/common';
@@ -81,7 +80,6 @@ export class CreateTaskComponent implements OnInit {
     public constantsService: ConstantsService,
     public globalService: GlobalService,
     private myDashboardConstantsService: MyDashboardConstantsService,
-    private messageService: MessageService,
     private router: Router,
     private datePipe: DatePipe,
     private commonService: CommonService,
@@ -329,7 +327,7 @@ export class CreateTaskComponent implements OnInit {
         };
 
         /* tslint:disable:no-string-literal */
-        milestoneDataObj['__metadata'] = { type: 'SP.Data.SchedulesListItem' };
+        milestoneDataObj['__metadata'] = { type: this.constantsService.listNames.Schedules.type };
         /* tslint:enable:no-string-literal */
 
         const milestoneObj = Object.assign({}, this.queryConfig);
@@ -351,20 +349,20 @@ export class CreateTaskComponent implements OnInit {
         Task: this.create_task_form.value.ProjectCode.ServiceLevel,
         StartDate: this.datePipe.transform(new Date(this.create_task_form.value.StartDate),
           'yyyy-MM-dd' + 'T' + startTime + ':00.000'),
-        DueDate: this.datePipe.transform(this.create_task_form.value.EndDate,
+        DueDateDT: this.datePipe.transform(this.create_task_form.value.EndDate,
           'yyyy-MM-dd' + 'T' + endTime + ':00.000'),
         ExpectedTime: '0',
         TimeSpent: '',
-        Comments: this.create_task_form.value.Comments,
+        CommentsMT: this.create_task_form.value.Comments,
         TaskComments: '',
         Status: 'Not Started',
         AssignedToId: this.currentUserInfo.Id.toString(),
-        TimeZone: this.globalService.DashboardData.ResourceCategorization.find(c => c.ID ===
+        TimeZoneNM: this.globalService.DashboardData.ResourceCategorization.find(c => c.ID ===
           this.globalService.currentUser.userId) !== undefined ?
           this.globalService.DashboardData.ResourceCategorization.find(c => c.ID ===
             this.globalService.currentUser.userId).TimeZone !== undefined ?
             this.globalService.DashboardData.ResourceCategorization.find(c => c.ID ===
-              this.globalService.currentUser.userId).TimeZone.Title : '5.5' : '5.5',
+              this.globalService.currentUser.userId).TimeZone.Title : 5.5 : 5.5,
         TATStatus: 'No',
         SubMilestones: this.create_task_form.value.SubMilestones.label ? this.create_task_form.value.SubMilestones.label :
           this.create_task_form.value.SubMilestones,
@@ -377,7 +375,7 @@ export class CreateTaskComponent implements OnInit {
         DisableCascade: 'Yes',
       };
       /* tslint:disable:no-string-literal */
-      taskObj['__metadata'] = { type: 'SP.Data.SchedulesListItem' };
+      taskObj['__metadata'] = { type: this.constantsService.listNames.Schedules.type };
       /* tslint:enable:no-string-literal */
 
       const invObj = Object.assign({}, this.queryConfig);
@@ -403,7 +401,7 @@ export class CreateTaskComponent implements OnInit {
       if (res.length) {
         if (res[0].retItems.hasError) {
           const errorMsg = res[0].retItems.message.value;
-          this.messageService.add({ key: 'errorCT', severity: 'error', summary: 'Error message', detail: errorMsg });
+          this.commonService.showToastrMessage(this.constantsService.MessageType.error,errorMsg,false);
           return false;
         }
         const response = res[0].retItems;
@@ -424,7 +422,8 @@ export class CreateTaskComponent implements OnInit {
         this.commonService.SetNewrelic('MyDashboard', 'fteCreateTask', 'CreateTask');
         const moveToMilestoneRes: any = await this.spOperationsService.executeBatch(batchUrl);
         console.log('res ', moveToMilestoneRes);
-        this.messageService.add({ key: 'successCT', severity: 'success', summary: 'Success message', detail: 'Task created.' });
+
+        this.commonService.showToastrMessage(this.constantsService.MessageType.success,'Task Created',false);
         this.refetchTaskList();
         this.constantsService.loader.isPSInnerLoaderHidden = true;
         this.createTaskModal = false;

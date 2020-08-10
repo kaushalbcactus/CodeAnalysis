@@ -1,6 +1,5 @@
 import { Component, OnInit, ApplicationRef, NgZone, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { DatePipe, PlatformLocation } from '@angular/common';
-import { MessageService, ConfirmationService, Message } from 'primeng/api';
 import { AdminCommonService } from 'src/app/admin/services/admin-common.service';
 import { AdminObjectService } from 'src/app/admin/services/admin-object.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -42,8 +41,6 @@ export class ProjectTypesComponent implements OnInit {
   items = [
     { label: 'Delete', command: (e) => this.delete() }
   ];
-  msgs: Message[] = [];
-
   isOptionFilter: boolean;
   @ViewChild('pt', { static: false }) ptTable: Table;
 
@@ -52,8 +49,6 @@ export class ProjectTypesComponent implements OnInit {
    * Construct a method to create an instance of required component.
    *
    * @param datepipe This is instance referance of `DatePipe` component.
-   * @param messageService This is instance referance of `MessageService` component.
-   * @param confirmationService This is instance referance of `ConfirmationService` component.
    * @param adminCommonService This is instance referance of `AdminCommonService` component.
    * @param adminObject This is instance referance of `AdminObjectService` component.
    * @param spServices This is instance referance of `SPOperationService` component.
@@ -67,8 +62,6 @@ export class ProjectTypesComponent implements OnInit {
    */
   constructor(
     private datepipe: DatePipe,
-    private messageService: MessageService,
-    private confirmationService: ConfirmationService,
     private adminCommonService: AdminCommonService,
     private adminObject: AdminObjectService,
     private spServices: SPOperationService,
@@ -187,27 +180,18 @@ export class ProjectTypesComponent implements OnInit {
    *
    */
   async addProjectType() {
-    const alphaExp = this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL;
-    this.messageService.clear();
+    const alphaExp = new RegExp(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL);
+    this.common.clearToastrMessage();
     if (!this.projectType) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error',
-        summary: 'Error Message', detail: 'Please enter Project Type.'
-      });
+      this.common.showToastrMessage(this.constants.MessageType.warn,'Please enter Project Type.',false);
       return false;
     }
-    if (!this.projectType.match(alphaExp)) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error', summary: 'Error Message',
-        detail: 'Special characters are allowed between alphabets. Allowed special characters are \'-\' and \'_\'.'
-      });
+    if (!alphaExp.test(this.projectType)) {
+      this.common.showToastrMessage(this.constants.MessageType.error,'Special characters are allowed between alphabets. Allowed special characters are \'-\' and \'_\'.',false);
       return false;
     }
     if (this.projectTypeRows.some(a => a.ProjectType.toLowerCase() === this.projectType.toLowerCase())) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error',
-        summary: 'Error Message', detail: 'This Project Type is already exist. Please enter another Project Type.'
-      });
+      this.common.showToastrMessage(this.constants.MessageType.error,'This Project Type is already exist. Please enter another Project Type.',false);
       return false;
     }
     this.adminObject.isMainLoaderHidden = false;
@@ -218,10 +202,7 @@ export class ProjectTypesComponent implements OnInit {
     const result = await this.spServices.createItem(this.constants.listNames.ProjectType.name, data,
       this.constants.listNames.ProjectType.type);
     console.log(result);
-    this.messageService.add({
-      key: 'adminCustom', severity: 'success', sticky: true,
-      summary: 'Success Message', detail: 'The Project Type ' + this.projectType + ' has added successfully.'
-    });
+    this.common.showToastrMessage(this.constants.MessageType.success, 'The Project Type ' + this.projectType + ' has added successfully.',true);
     this.projectType = '';
     await this.loadProjectTypeTable();
     this.adminObject.isMainLoaderHidden = true;
@@ -238,17 +219,14 @@ export class ProjectTypesComponent implements OnInit {
    */
   delete() {
     const data = this.currProjectTypeObj;
-    this.confirmationService.confirm({
-      message: 'Do you want to delete this record?',
-      header: 'Delete Confirmation',
-      icon: 'pi pi-info-circle',
-      key: 'confirm',
-      accept: () => {
+
+    this.common.confirmMessageDialog('Delete Confirmation','Do you want to delete this record?',null,['Yes','No'],false).then(async Confirmation => {
+      if (Confirmation === 'Yes') {
         const updateData = {
           IsActive: this.adminConstants.LOGICAL_FIELD.NO
         };
         this.confirmUpdate(data, updateData, this.constants.listNames.ProjectType.name, this.constants.listNames.ProjectType.type);
-      },
+	  }
     });
   }
 
@@ -263,10 +241,7 @@ export class ProjectTypesComponent implements OnInit {
     this.adminObject.isMainLoaderHidden = false;
     this.common.SetNewrelic('admin', 'admin-attribute-projectTypes', 'updateProjectType');
     const result = await this.spServices.updateItem(listName, data.ID, updateData, type);
-    this.messageService.add({
-      key: 'adminCustom', severity: 'success', sticky: true,
-      summary: 'Success Message', detail: 'The ProjectType ' + data.ProjectType + ' has deleted successfully.'
-    });
+    this.common.showToastrMessage(this.constants.MessageType.success,'The ProjectType ' + data.ProjectType + ' has deleted successfully.',true);
     this.loadProjectTypeTable();
     this.adminObject.isMainLoaderHidden = true;
   }

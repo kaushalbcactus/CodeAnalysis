@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy, HostListener, ElementRef, ViewChild, ChangeDetectorRef, ApplicationRef, NgZone } from '@angular/core';
-import { MessageService } from 'primeng/api';
 import { SPOperationService } from '../../../Services/spoperation.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ConstantsService } from '../../../Services/constants.service';
@@ -12,6 +11,7 @@ import { Subscription } from 'rxjs';
 import { Table } from 'primeng/table';
 import { Router } from '@angular/router';
 import { DialogService } from 'primeng';
+import { MarkAsPaymentDialogComponent } from '../mark-as-payment-dialog/mark-as-payment-dialog.component';
 
 @Component({
     selector: 'app-approved-non-billable',
@@ -19,11 +19,11 @@ import { DialogService } from 'primeng';
     styleUrls: ['./approved-non-billable.component.css']
 })
 export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
+  
     FolderName: string;
     SelectedFile = [];
 
     constructor(
-        private messageService: MessageService,
         private fb: FormBuilder,
         private spServices: SPOperationService,
         public constantService: ConstantsService,
@@ -58,18 +58,9 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
 
     }
 
-    get isValidMarkAsPaymentForm() {
-        return this.markAsPayment_form.controls;
-    }
     tempClick: any;
     approvedNonBillableRes: any = [];
     approvedNonBillableCols: any[];
-
-    // Mark As Paymen
-    markAsPayment_form: FormGroup;
-
-    // Payment Mode array
-    paymentModeArray: any = [];
 
     // Lodder
     isPSInnerLoaderHidden: boolean = true;
@@ -143,19 +134,8 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
     items: any[];
 
     rowItemDetails: any;
-
-    // Modal
-    markAsPaymentModal: boolean = false;
     listOfPOCs: any = [];
-
     vfUnique: boolean = false;
-
-    // Upload File
-    selectedFile: any;
-    filePathUrl: any;
-    fileReader: any;
-    fileUploadedUrl = '';
-
     isOptionFilter: boolean;
 
     async ngOnInit() {
@@ -171,19 +151,11 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
             this.fdDataShareServie.expenseDateRange = this.DateRange;
         }
         this.createANBCols();
-        this.initializeMarkAsPaymentForm_field();
         // Get VendorFreelancer List
         this.freelancerVendersRes = await this.fdDataShareServie.getVendorFreelanceData();
         await this.projectInfo();
         // Resource Categorization
         this.resourceCInfo();
-
-        this.paymentModeArray = [
-            { label: 'BankTransfer', value: 'Bank Transfer' },
-            { label: 'CreditCard', value: 'Credit Card' },
-            { label: 'Cheque', value: 'Cheque' },
-        ];
-
     }
     async projectInfo() {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
@@ -214,16 +186,6 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         }));
     }
 
-    initializeMarkAsPaymentForm_field() {
-        this.markAsPayment_form = this.fb.group({
-            Number: ['', Validators.required],
-            DateSpend: ['', Validators.required],
-            PaymentMode: ['', Validators.required],
-            // ApproverComments: ['', Validators.required],
-            ApproverFileUrl: ['', Validators.required]
-        });
-    }
-
     createANBCols() {
         this.approvedNonBillableCols = [
             { field: 'Number', header: 'Ref. Number', visibility: true },
@@ -252,12 +214,6 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
             { field: 'ApproverComments', header: 'Approver Comments', visibility: false },
             { field: 'ApproverFileUrl', header: 'Approver File Url', visibility: false },
             { field: 'PayingEntity', header: 'Paying Entity', visibility: false },
-            // { field: 'VendorFreelancer', header: 'Vendor Freelancer', visibility: false },
-            // { field: 'AuthorId', header: 'Author Id', visibility: false },
-            // { field: 'RequestType', header: 'Request Type', visibility: false },
-            // { field: 'DollarAmount', header: 'Dollar Amount', visibility: false },
-            // { field: 'InvoiceID', header: 'Invoice ID', visibility: false },
-            // { field: 'POLookup', header: 'PO Lookup', visibility: false },
             { field: '', header: '', visibility: true },
         ];
     }
@@ -307,13 +263,13 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
                 SOWCode: sowCodeFromPI.SOWCode,
                 SOWName: sowItem.Title,
                 ClientLegalEntity: sowCodeFromPI.ClientLegalEntity,
-                Category: element.Category,
+                Category: element.CategoryST,
                 Number: element.Number,
                 ExpenseType: element.SpendType,
                 ClientAmount: parseFloat(element.ClientAmount).toFixed(2),
                 ClientCurrency: element.ClientCurrency,
                 DateCreated: this.datePipe.transform(element.Created, 'MMM dd, yyyy, hh:mm a'),
-                Notes: element.Notes,
+                Notes: element.NotesMT,
                 Created: this.datePipe.transform(element.Created, 'MMM dd, yyyy, hh:mm a'),
                 ModifiedDate: new Date(this.datePipe.transform(element.Modified, 'MMM dd, yyyy')), //
                 ModifiedDateFormat: this.datePipe.transform(element.Modified, 'MMM dd, yyyy, hh:mm a'),
@@ -371,10 +327,6 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         const modified = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map((a: { ModifiedDate: any; }) => { const b = { label: this.datePipe.transform(a.ModifiedDate, 'MMM dd, yyyy'), value: a.ModifiedDate }; return b; }).filter((ele: { label: any; }) => ele.label)));
         this.anonBillableColArray.ModifiedDate = modified.map((a: any) => { const b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter((ele: { label: any; }) => ele.label);
         this.anonBillableColArray.Created = this.uniqueArrayObj(resArray.map((a: { Created: any; }) => { const b = { label: a.Created, value: a.Created }; return b; }).filter((ele: { label: any; }) => ele.label));
-        // this.anonBillableColArray.SOWCode = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; }).filter(ele => ele.label));
-        // this.anonBillableColArray.DateCreated = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.DateCreated, value: a.DateCreated }; return b; }).filter(ele => ele.label));
-        // this.anonBillableColArray.ModifiedDate = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ModifiedDate, value: a.ModifiedDate }; return b; }).filter(ele => ele.label));
-        // this.anonBillableColArray.ModifiedDate = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ModifiedDate, value: a.ModifiedDate }; return b; }).filter(ele => ele.label));
     }
 
     uniqueArrayObj(array: any) {
@@ -402,7 +354,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
             const sts = this.selectedAllRowsItem[0].Status;
             if (element.Status !== sts) {
                 this.approvedSts = false;
-                this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Info message', detail: 'Please select line item with status containing "Payment Pending" & try again.', life: 4000 });
+                this.commonService.showToastrMessage(this.constantService.MessageType.info,'Please select line item with status containing "Payment Pending" & try again.',false);
             }
         }
     }
@@ -423,7 +375,8 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         console.log('selectedAllRowsItem ', this.selectedAllRowsItem);
         this.checkUniqueVF();
         if (!this.selectedAllRowsItem.length) {
-            this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Info message', detail: 'Please select at least 1 Projects & try again', life: 4000 });
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.info,'Please select at least 1 Projects & try again',false);
             return;
         }
         if (this.vfUnique) {
@@ -432,17 +385,29 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
                 const sts = this.checkPPStatus();
                 console.log('Sts ', sts);
                 if (!this.approvedSts) {
-                    this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Info message', detail: 'Please select line item with status containing "Payment Pending".', life: 4000 });
+
+                    this.commonService.showToastrMessage(this.constantService.MessageType.warn,'Please select line item with status containing "Payment Pending".',false);
                     return false;
                 }
                 if (sts) {
-                    this.markAsPaymentModal = true;
+                    const ref = this.dialogService.open(MarkAsPaymentDialogComponent, {
+                        header: 'Mark As Payment',
+                        width: '70vw',
+                        contentStyle: { 'overflow-y': 'visible' },
+                        closable: false,
+                    });
+                    ref.onClose.subscribe((paymentDetails: any) => {
+                        if (paymentDetails) {
+                            this.MarkAsPayment( paymentDetails.paymentForm,'markAsPayment_form',paymentDetails.fileUrl);
+                        }
+                    });
                 } else {
-                    this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Info message', detail: 'Please select line item with status containing "Payment Pending".', life: 4000 });
+
+                    this.commonService.showToastrMessage(this.constantService.MessageType.info,'Please select line item with status containing "Payment Pending".',false);
                 }
             }
         } else {
-            this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Info message', detail: 'Please select same Vendor/Freelance name', life: 4000 });
+            this.commonService.showToastrMessage(this.constantService.MessageType.warn,'Please select same Vendor/Freelance name.',false);
         }
     }
 
@@ -478,180 +443,38 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         }
     }
 
-    cancelFormSub(type: string) {
-        this.formSubmit.isSubmit = false;
-        if (type === 'markAsPayment_form') {
-            this.markAsPayment_form.reset();
+    async MarkAsPayment(markAsPayment_form,type: string, fileUrl){
+        if (fileUrl) {
+            this.isPSInnerLoaderHidden = false;
+            const batchUrl = [];
+            const speInfoData = {
+                __metadata: { type: this.constantService.listNames.SpendingInfo.type },
+                Number: markAsPayment_form.value.Number,
+                DateSpend: markAsPayment_form.value.DateSpend,
+                PaymentMode: markAsPayment_form.value.PaymentMode.value,
+                ApproverFileUrl: fileUrl,
+                Status: 'Approved'
+            };
+
+            this.selectedAllRowsItem.forEach((element: { Id: any; }) => {
+                const spendingInfoObj = Object.assign({}, this.queryConfig);
+                spendingInfoObj.url = this.spServices.getItemURL(this.constantService.listNames.SpendingInfo.name, element.Id);
+                spendingInfoObj.listName = this.constantService.listNames.SpendingInfo.name;
+                spendingInfoObj.type = 'PATCH';
+                spendingInfoObj.data = speInfoData;
+                batchUrl.push(spendingInfoObj);
+            });
+            this.submitForm(batchUrl, type);
         }
     }
 
-    onSubmit(type: string) {
-        this.formSubmit.isSubmit = true;
-        if (type === 'markAsPayment_form') {
-            if (this.markAsPayment_form.invalid) {
-                return;
-            } else if ( this.selectedFile && this.selectedFile.size === 0) {
-                this.messageService.add({
-                    key: 'approvedNonBToast', severity: 'error',
-                    summary: 'Error message', detail: 'Unable to upload file, size of ' + this.selectedFile.name + ' is 0 KB.', life: 2000
-                });
-                return;
-            }
-            this.submitBtn.isClicked = true;
-            console.log('form is submitting ..... for selected row Item i.e ', this.markAsPayment_form.value);
-            this.uploadFileData(type);
-        }
-    }
 
-    //*************************************************************************************************
-    // new File uplad function updated by Maxwell
-    // ************************************************************************************************
-    onFileChange(event: { target: { files: string | any[]; }; }, folderName: string) {
-        this.fileReader = new FileReader();
-        if (event.target.files && event.target.files.length > 0) {
-            this.SelectedFile = [];
-            this.selectedFile = event.target.files[0];
-            const fileName = this.selectedFile.name;
-            const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
-            if (fileName !== sNewFileName) {
-                this.fileInput.nativeElement.value = '';
-                this.markAsPayment_form.get('ApproverFileUrl').setValue('');
-                this.messageService.add({ key: 'approvedNonBToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
-                return false;
-            }
-            this.FolderName = folderName;
-            this.SelectedFile.push(new Object({ name: sNewFileName, file: this.selectedFile }));
-
-        }
-    }
-
-    async uploadFileData(type: string) {
-        const date = new Date();
-        this.commonService.SetNewrelic('Finance-Dashboard', 'approve-nonbillable', 'UploadFile');
-        this.commonService.UploadFilesProgress(this.SelectedFile, 'SpendingInfoFiles/' + this.FolderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM'), true).then(async uploadedfile => {
-            if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
-                if (uploadedfile[0].hasOwnProperty('odata.error')  || uploadedfile[0].hasError) {
-                    this.submitBtn.isClicked = false;
-                    this.messageService.add({
-                        key: 'approvedToast', severity: 'error', summary: 'Error message',
-                        detail: 'File not uploaded, Folder / File Not Found', life: 3000
-                    });
-                } else if (uploadedfile[0].ServerRelativeUrl) {
-                    this.fileUploadedUrl = uploadedfile[0].ServerRelativeUrl;
-                    if (this.fileUploadedUrl) {
-                        this.isPSInnerLoaderHidden = false;
-                        const batchUrl = [];
-                        const speInfoData = {
-                            __metadata: { type: this.constantService.listNames.SpendingInfo.type },
-                            Number: this.markAsPayment_form.value.Number,
-                            DateSpend: this.markAsPayment_form.value.DateSpend,
-                            PaymentMode: this.markAsPayment_form.value.PaymentMode.value,
-                            ApproverFileUrl: this.fileUploadedUrl,
-                            Status: 'Approved'
-                        };
-
-                        this.selectedAllRowsItem.forEach((element: { Id: any; }) => {
-                            const spendingInfoObj = Object.assign({}, this.queryConfig);
-                            spendingInfoObj.url = this.spServices.getItemURL(this.constantService.listNames.SpendingInfo.name, element.Id);
-                            spendingInfoObj.listName = this.constantService.listNames.SpendingInfo.name;
-                            spendingInfoObj.type = 'PATCH';
-                            spendingInfoObj.data = speInfoData;
-                            batchUrl.push(spendingInfoObj);
-                        });
-                        this.submitForm(batchUrl, type);
-                    }
-                }
-            }
-        });
-    }
-
-
-    //*************************************************************************************************
-    // commented old file upload function
-    // ************************************************************************************************
-
-
-    // onFileChange(event: { target: { files: string | any[]; }; }, folderName: string) {
-    //     this.fileReader = new FileReader();
-    //     if (event.target.files && event.target.files.length > 0) {
-    //         this.selectedFile = event.target.files[0];
-    //         const fileName = this.selectedFile.name;
-    //         const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
-    //         if (fileName !== sNewFileName) {
-    //             this.fileInput.nativeElement.value = '';
-    //             this.markAsPayment_form.get('ApproverFileUrl').setValue('');
-    //             this.messageService.add({ key: 'approvedNonBToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
-    //             return false;
-    //         }
-    //         this.fileReader.readAsArrayBuffer(this.selectedFile);
-    //         this.fileReader.onload = () => {
-    //             const date = new Date();
-    //             const folderPath: string = this.globalService.sharePointPageObject.webRelativeUrl + '/SpendingInfoFiles/'
-    //                 + folderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM') + '/';
-    //             this.filePathUrl = this.globalService.sharePointPageObject.webRelativeUrl
-    //                 + '/_api/web/GetFolderByServerRelativeUrl(' + '\'' + folderPath + '\'' + ')/Files/add(url=@TargetFileName,overwrite=\'true\')?' + '&@TargetFileName=\'' + this.selectedFile.name + '\'';
-    //         };
-    //     }
-    // }
-
-    // async uploadFileData(type: string) {
-
-    //     // this.nodeService.uploadFIle(this.filePathUrl, this.fileReader.result).subscribe(res => {
-    //     this.commonService.SetNewrelic('Finance-Dashboard', 'approve-nonbillable', 'UploadFile');
-    //     const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
-    //     if (res) {
-    //         this.fileUploadedUrl = res.ServerRelativeUrl ? res.ServerRelativeUrl : '';
-    //         // console.log('this.fileUploadedUrl ', this.fileUploadedUrl);
-    //         if (this.fileUploadedUrl) {
-    //             const batchUrl = [];
-    //             const speInfoData = {
-    //                 __metadata: { type: this.constantService.listNames.SpendingInfo.type },
-    //                 // PayingEntity: this.markAsPayment_form.value.PayingEntity.Title,
-    //                 Number: this.markAsPayment_form.value.Number,
-    //                 DateSpend: this.markAsPayment_form.value.DateSpend,
-    //                 PaymentMode: this.markAsPayment_form.value.PaymentMode.value,
-    //                 // ApproverComments: this.markAsPayment_form.value.ApproverComments,
-    //                 ApproverFileUrl: this.fileUploadedUrl,
-    //                 Status: 'Approved'
-    //             };
-    //             // speInfoData['__metadata'] = { type: 'SP.Data.SpendingInfoListItem' };
-    //             // let data = [];
-    //             this.selectedAllRowsItem.forEach((element: { Id: any; }) => {
-    //                 const spendingInfoObj = Object.assign({}, this.queryConfig);
-    //                 spendingInfoObj.url = this.spServices.getItemURL(this.constantService.listNames.SpendingInfo.name, element.Id);
-    //                 spendingInfoObj.listName = this.constantService.listNames.SpendingInfo.name;
-    //                 spendingInfoObj.type = 'PATCH';
-    //                 spendingInfoObj.data = speInfoData;
-    //                 batchUrl.push(spendingInfoObj);
-    //             });
-    //             // for (let j = 0; j < this.selectedAllRowsItem.length; j++) {
-    //             //     const element = this.selectedAllRowsItem[j];
-    //             //     const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace("{{Id}}", element.Id);
-    //             //     data.push({
-    //             //         objData: speInfoObj,
-    //             //         endpoint: spEndpoint,
-    //             //         requestPost: false
-    //             //     })
-    //             // }
-    //             this.submitForm(batchUrl, type);
-    //         }
-    //     } else if (res.hasError) {
-    //         this.isPSInnerLoaderHidden = true;
-    //         this.submitBtn.isClicked = false;
-    //         this.messageService.add({ key: 'approvedToast', severity: 'error', summary: 'Error message', detail: 'File not uploaded,Folder / ' + res.message.value + '', life: 3000 });
-    //     }
-    // }
-
-    // batchContents: any = [];
     async submitForm(batchUrl: any[], type: string) {
         this.commonService.SetNewrelic('Finance-Dashboard', 'approve-nonbillable', 'submitForm');
         await this.spServices.executeBatch(batchUrl);
         if (type === 'markAsPayment_form') {
-            this.messageService.add({
-                key: 'approvedNonBToast', severity: 'success', summary: 'Success message',
-                detail: 'Payment marked.', life: 2000
-            });
-            this.markAsPaymentModal = false;
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.success,'Payment marked.',false);
             this.reFetchData();
         }
         this.isPSInnerLoaderHidden = true;

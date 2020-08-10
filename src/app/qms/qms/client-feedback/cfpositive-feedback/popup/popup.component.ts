@@ -171,9 +171,9 @@ export class PopupComponent implements OnInit {
     const emails = [];
     const ids = [];
     resources.forEach(element => {
-      const resourceDetail = allResources.filter(r => r.UserName.ID === element.ID);
-      emails.push(resourceDetail.length > 0 ? resourceDetail[0].UserName.EMail : '');
-      ids.push(resourceDetail.length > 0 ? resourceDetail[0].UserName.ID : '');
+      const resourceDetail = allResources.filter(r => r.UserNamePG.ID === element.ID);
+      emails.push(resourceDetail.length > 0 ? resourceDetail[0].UserNamePG.EMail : '');
+      ids.push(resourceDetail.length > 0 ? resourceDetail[0].UserNamePG.ID : '');
     });
     return {
       emailIDs: emails,
@@ -206,7 +206,7 @@ export class PopupComponent implements OnInit {
       this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'PF Tagged Successfully!' });
       const createPFTemplate = await this.getMailContent(this.qmsConstant.EmailTemplates.PF.CreatePositiveFeedback);
       if (createPFTemplate.length > 0) {
-        let createMailContent = createPFTemplate[0].Content;
+        let createMailContent = createPFTemplate[0].ContentMT;
         const createMailSubject = this.pf.projectCode + '(#' + this.pf.pfID + '): Positive Feedback';
         const strTo = allDeliveryEmails.join(',');
         createMailContent = this.replaceContent(createMailContent, '@@Val1@@', this.global.sharePointPageObject.webAbsoluteUrl + '/dashboard#/qms/clientFeedback/cfpositiveFeedback');
@@ -307,8 +307,8 @@ export class PopupComponent implements OnInit {
 
   updateResourceEmail(obj, array, includeInEMail) {
     array = array.map(dl1 => {
-      const resource = this.global.allResources.filter(u => u.UserName.ID === dl1.ID);
-      dl1.EMail = resource.length > 0 ? resource[0].UserName.EMail : '';
+      const resource = this.global.allResources.filter(u => u.UserNamePG.ID === dl1.ID);
+      dl1.EMail = resource.length > 0 ? resource[0].UserNamePG.EMail : '';
       obj.allResourcesID.push(dl1 !== '' ? dl1.ID : '');
       if (dl1.Title) {
         obj.allResourcesTitle.push(dl1.Title);
@@ -344,7 +344,7 @@ export class PopupComponent implements OnInit {
         this.pf.Status = this.globalConstant.pfStatus.Accepted;
         const notifyPFTemplate = await this.getMailContent(this.qmsConstant.EmailTemplates.PF.NotifyAllOtherResources);
         if (notifyPFTemplate.length > 0) {
-          let notifyMailContent = notifyPFTemplate[0].Content;
+          let notifyMailContent = notifyPFTemplate[0].ContentMT;
           const notifyMailSubject = this.pf.projectCode + '(#' + this.pf.pfID + '): Positive Feedback';
           const strTo = allResourcesEmails.join(',');
           notifyMailContent = this.replaceContent(notifyMailContent, '@@Val1@@', this.global.sharePointPageObject.webAbsoluteUrl + '/dashboard#/qms/personalFeedback/positiveFeedback');

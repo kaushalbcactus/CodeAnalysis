@@ -3,7 +3,6 @@ import { CanActivate, CanActivateChild, CanLoad, Route, UrlSegment, ActivatedRou
 import { Observable } from 'rxjs';
 import { AdminAuthService } from '../auth-service/admin-auth.service';
 import { AdminConstantService } from '../services/admin-constant.service';
-import { MessageService } from 'primeng/api';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +13,6 @@ export class AdminAuthGuard implements CanActivate, CanActivateChild, CanLoad {
     private adminAuthSerivce: AdminAuthService,
     private adminConstantService: AdminConstantService,
     private _router: Router,
-    private messageService: MessageService
   ) {
 
   }

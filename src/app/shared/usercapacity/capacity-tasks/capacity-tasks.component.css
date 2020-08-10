@@ -1,0 +1,46 @@
+#TasksPerDay > table {
+  width: 100%!important;
+}
+.minimise {
+  font-size: 18px;
+  cursor: pointer;
+  vertical-align: text-top;
+}
+::ng-deep .taskTitle a{
+  color: #db1721 !important;
+}
+::ng-deep .table td {
+  /* padding: 0.5rem; */
+  border: 1px solid #dee2e6;
+}
+::ng-deep .tableHeader>td:first-child {
+  background-color: #80808038;
+  font-weight: bold;
+   width: 34%;
+}
+::ng-deep .tableHeader>td {
+  font-weight: bold;
+}
+::ng-deep.tableHeader>td,
+::ng-deep .tableBody>td {
+  width: 12%;
+}
+::ng-deep .tableHeader>td:last-child,
+::ng-deep .tableBody>td:last-child {
+  width: 6%;
+}
+::ng-deep .tableHeader>td:first-child,
+::ng-deep .tableBody>td:first-child {
+  width: 34%;
+}
+
+#TasksPerDay > .ui-table .ui-table-tbody > tr:nth-child(even) {
+  background-color: #ffffff !important;
+  color: #333333 !important;
+}
+::ng-deep tr:nth-child(even) {
+  background-color: #ffffff!important;
+}
+::ng-deep tr:nth-child(odd) {
+  background-color: #ffffff!important;
+}

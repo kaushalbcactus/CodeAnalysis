@@ -7,9 +7,9 @@ import { CommonService } from '../../../Services/common.service';
 import { FeedbackPopupComponent } from './feedback-popup/feedback-popup.component';
 import { QMSConstantsService } from '../services/qmsconstants.service';
 import { QMSCommonService } from '../services/qmscommon.service';
-import { MessageService } from 'primeng/api';
 import { Table } from 'primeng/table';
 import { Router } from '@angular/router';
+import { DialogService } from 'primeng';
 
 @Component({
   selector: 'app-reviewer-detail-view',
@@ -52,8 +52,8 @@ export class ReviewerDetailViewComponent implements OnInit {
     private qmsConstant: QMSConstantsService,
     private commonService: CommonService,
     private qmsCommon: QMSCommonService,
-    private messageService: MessageService,
     private cdr: ChangeDetectorRef,
+    private dialogService : DialogService,
     private platformLocation: PlatformLocation,
     private locationStrategy: LocationStrategy,
     private readonly _router: Router,
@@ -161,7 +161,7 @@ export class ReviewerDetailViewComponent implements OnInit {
     this.milestoneTasks = arrResult.length > 0 ? arrResult[0].retItems : [];
     const reviewerTasks = arrResult.length > 1 ? arrResult[1].retItems : [];
     // let arrReviewTasks = await this.spService.readItems(this.globalConstant.listNames.Schedules.name, reviewerComponent.reviewerPendingTaskURL);
-    let arrReviewTasks = reviewerTasks.length > 0 ? reviewerTasks.filter(t => new Date(t.DueDate).getTime() >= filterDate.getTime()) : [];
+    let arrReviewTasks = reviewerTasks.length > 0 ? reviewerTasks.filter(t => new Date(t.DueDateDT).getTime() >= filterDate.getTime()) : [];
     arrReviewTasks = arrReviewTasks.map(t => {
       const obj = Object.assign({}, t);
       obj.defaultSkill = t.Task.indexOf('Review-') > -1 ? 'Review' : t.Task
@@ -374,7 +374,7 @@ export class ReviewerDetailViewComponent implements OnInit {
   }
 
   showToastMsg(type, msg, detail) {
-    this.messageService.add({ severity: type, summary: msg, detail: detail });
+    this.commonService.showToastrMessage(type,detail,false);
   }
 
 
@@ -414,6 +414,25 @@ export class ReviewerDetailViewComponent implements OnInit {
       }
       this.cdr.detectChanges();
     }
+  }
+
+
+  openfeedbackpopup(qmsTasks,task){
+    const ref = this.dialogService.open(FeedbackPopupComponent, {
+      data: {
+        qmsTasks,
+        task
+      },
+      header: 'Rate Work',
+      width: '70vw',
+      contentStyle: { 'min-height': '30vh', 'max-height': '90vh', 'overflow-y': 'auto' }
+    });
+    ref.onClose.subscribe((feedbackdata: any) => {
+      if(feedbackdata){
+        this.bindReviewerTable(feedbackdata.task);
+        this.callParentSuccessMsg(feedbackdata.message);
+      }
+     });
   }
 
 }

@@ -1,91 +1,128 @@
 .mat-content {
-    text-align: center;
+  text-align: center;
 }
 
 div.ms-wikicontent.ms-rtestate-field {
-    padding-right: 0px !Important;
+  padding-right: 0px !important;
 }
 
 #scInnerLoader {
-    border: 10px solid #f3f3f3;
-    border-radius: 50%;
-    border-top: 10px solid red;
-    border-bottom: 10px solid red;
-    width: 100px;
-    height: 100px;
-    -webkit-animation: spin 2s linear infinite;
-    animation: spin 2s linear infinite;
-    margin: 0 auto;
-    position: relative;
-    top: 50%;
-    transform: translateY(-50%);
+  border: 10px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 10px solid red;
+  border-bottom: 10px solid red;
+  width: 100px;
+  height: 100px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+  margin: 0 auto;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
-p-calendar>span>.ui-button,
+#allocationTypeLoader {
+  border: 3px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 3px solid red;
+  border-bottom: 3px solid red;
+  width: 30px;
+  height: 30px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+  margin: 0 auto;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+p-calendar > span > .ui-button,
 .timePicker {
-    background-color: #ffffff !important;
-    border-color: #ffffff!important;
+  background-color: #ffffff !important;
+  border-color: #ffffff !important;
 }
 
 .timePicker {
-    width: 77% !important;
-    border: none !important;
+  width: 77% !important;
+  border: none !important;
 }
 
 .ngx-material-timepicker-toggle {
-    min-width: 3em !important;
+  min-width: 3em !important;
 }
 
 .ngx-material-timepicker-toggle {
-    display: inline !important;
+  display: inline !important;
 }
 
-.ui-datepicker table td>a.ui-state-active,
-.ui-datepicker table td>span.ui-state-active {
-    background-color: #db1721 !important;
+.ui-datepicker table td > a.ui-state-active,
+.ui-datepicker table td > span.ui-state-active {
+  background-color: #db1721 !important;
 }
 
 body .ui-chkbox .ui-chkbox-box.ui-state-active {
-    border-color: #db1721 !important;
-    background-color: #db1721 !important;
+  border-color: #db1721 !important;
+  background-color: #db1721 !important;
 }
 
 body .ui-chkbox .ui-chkbox-box.ui-state-active:not(.ui-state-disabled):hover {
-    border-color: #9c0b12 !important;
-    background-color: #9c0b12 !important;
+  border-color: #9c0b12 !important;
+  background-color: #9c0b12 !important;
 }
 
-.taskAllocationTimeline .ui-treetable-wrapper tbody.ui-treetable-tbody>tr>td:last-child {
-    overflow: visible;
+.taskAllocationTimeline
+  .ui-treetable-wrapper
+  tbody.ui-treetable-tbody
+  > tr
+  > td:last-child {
+  overflow: visible;
 }
 
-.taskAllocationTimeline .ui-treetable-wrapper tbody.ui-treetable-tbody>tr>td:last-child>div {
-    position: relative;
+.taskAllocationTimeline
+  .ui-treetable-wrapper
+  tbody.ui-treetable-tbody
+  > tr
+  > td:last-child
+  > div {
+  position: relative;
 }
 
-.taskAllocationTimeline .ui-treetable-wrapper tbody.ui-treetable-tbody>tr>td:last-child>div>i {
-    top: 0px !important;
+.taskAllocationTimeline
+  .ui-treetable-wrapper
+  tbody.ui-treetable-tbody
+  > tr
+  > td:last-child
+  > div
+  > i {
+  top: 0px !important;
 }
 
-.taskAllocationTimeline .ui-treetable-wrapper tbody.ui-treetable-tbody>tr>td:last-child>div div.ui-menu {
-    top: 0px !important;
-    left: inherit !important;
-    right: 56px !important;
+.taskAllocationTimeline
+  .ui-treetable-wrapper
+  tbody.ui-treetable-tbody
+  > tr
+  > td:last-child
+  > div
+  div.ui-menu {
+  top: 0px !important;
+  left: inherit !important;
+  right: 56px !important;
 }
 
-#scInnerLoaderText {
-    -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
-    -o-animation: loading-text-opacity 2s linear 0s infinite normal;
-    -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
-    animation: loading-text-opacity 2s linear 0s infinite normal;
-    color: black;
-    font-family: "Helvetica Neue, "Helvetica", ""arial";
-    font-size: 10px;
-    font-weight: bold;
-    opacity: 0.5;
-    text-align: center;
-    text-transform: uppercase;
-    top: 0;
+#scInnerLoaderText,
+#scConfirmLoaderText {
+  -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
+  -o-animation: loading-text-opacity 2s linear 0s infinite normal;
+  -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
+  animation: loading-text-opacity 2s linear 0s infinite normal;
+  color: black;
+  font-family: "Helvetica Neue, " Helvetica ", " "arial";
+  font-size: 10px;
+  font-weight: bold;
+  opacity: 0.5;
+  text-align: center;
+  text-transform: uppercase;
+  top: 0;
 }
 
 .gstartdate div,
@@ -93,354 +130,347 @@ body .ui-chkbox .ui-chkbox-box.ui-state-active:not(.ui-state-disabled):hover {
 .gplanenddate,
 .gstartdate,
 .genddate {
-    text-align: center !important;
-    min-width: 100% !important;
+  text-align: center !important;
+  min-width: 100% !important;
 }
 
 tr.ui-contextmenu-selected {
-    background: none !important;
-    color: #333 !important;
+  background: none !important;
+  color: #333 !important;
 }
 
 .mat-content h4 {
-    color: white !important;
+  color: white !important;
 }
-
 
 /* .milestoneTable>td>.txtTask>.ng-select-container {
     border: none;
     border-radius: 0px;
 } */
 
-#calenderIcon>.ui-calendar-w-btn>.ui-button>.ui-button-icon-left {
-    font-size: 2rem !important;
+#calenderIcon > .ui-calendar-w-btn > .ui-button > .ui-button-icon-left {
+  font-size: 2rem !important;
 }
 
 .ui-button.ui-button-icon-only .ui-button-text {
-    padding: 0px !important;
+  padding: 0px !important;
 }
 
-.milestoneTable>td>span>#calenderIcon>span {
-    width: 100% !important;
+.milestoneTable > td > span > #calenderIcon > span {
+  width: 100% !important;
 }
 
-.milestoneTable>td>span>#calenderIcon>span>button {
-    margin: 0;
-    color: #000000;
-    background-color: #ffffff;
-    border: none;
-    font-size: 14px;
-    transition: background-color 0.2s, box-shadow 0.2s;
-    min-width: 40px !important;
+.milestoneTable > td > span > #calenderIcon > span > button {
+  margin: 0;
+  color: #000000;
+  background-color: #ffffff;
+  border: none;
+  font-size: 14px;
+  transition: background-color 0.2s, box-shadow 0.2s;
+  min-width: 40px !important;
 }
 
 .gtaskname div {
-    min-width: 100% !important;
-    max-width: 100% !important;
-    width: 100% !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+  width: 100% !important;
 }
 
-.mat-expansion-panel:not([class*=mat-elevation-z]) {
-    box-shadow: none;
+.mat-expansion-panel:not([class*="mat-elevation-z"]) {
+  box-shadow: none;
 }
 
 #glisthead,
 .gtasktableh {
-    width: 100% !important;
-    /* overflow-x: auto; */
+  width: 100% !important;
+  /* overflow-x: auto; */
 }
 
 .ui-treetable-table .ui-treetable-toggler .pi-chevron-right:before {
-    content: "\e90d";
+  content: "\e90d";
 }
 
 .ui-treetable-table .ui-treetable-toggler .pi-chevron-down:before {
-    content: "\e90f";
+  content: "\e90f";
 }
 
 .budgetHr:focus {
-    box-shadow: none;
+  box-shadow: none;
 }
 
 .ui-menuitem-icon {
-    font-size: 22px !important;
+  font-size: 22px !important;
 }
 
 .pi-chevron-down,
 .pi-chevron-right {
-    color: #000000;
-    cursor: pointer;
+  color: #000000;
+  cursor: pointer;
 }
 
 @media (min-width: 1400px) {
-    .gtaskname div,
-    .gtaskname,
-    .gadditional,
-    .gresource,
-    .gduration,
-    .gpccomplete,
-    .gcost,
-    .gstartdate,
-    .genddate,
-    .gstartdate div,
-    .gplanstartdate,
-    .gplanenddate,
-    .gtaskheading,
-    .gmajorheading,
-    .gminorheading,
-    .gmajorheading,
-    .gminorheading,
-    .gminorheadingwkend,
-    .gtaskcell,
-    .gtaskcellwkend {
-        font-size: 14px !important;
-    }
-    .VisualRepresentation,
-    .VisualRepresentationpopup .gstartdate div,
-    .gcharttableh {
-        width: 100%;
-    }
-    .VisualRepresentation>ng-gantt>div>.gchartcontainer>.gmainright {
-        width: 650px !important;
-    }
-    .VisualRepresentationpopup>ng-gantt>div>.gchartcontainer>.gmainright {
-        width: 1090px !important;
-    }
-    .gmainleft {
-        width: 750px !important;
-    }
+  .gtaskname div,
+  .gtaskname,
+  .gadditional,
+  .gresource,
+  .gduration,
+  .gpccomplete,
+  .gcost,
+  .gstartdate,
+  .genddate,
+  .gstartdate div,
+  .gplanstartdate,
+  .gplanenddate,
+  .gtaskheading,
+  .gmajorheading,
+  .gminorheading,
+  .gmajorheading,
+  .gminorheading,
+  .gminorheadingwkend,
+  .gtaskcell,
+  .gtaskcellwkend {
+    font-size: 14px !important;
+  }
+  .VisualRepresentation,
+  .VisualRepresentationpopup .gstartdate div,
+  .gcharttableh {
+    width: 100%;
+  }
+  .VisualRepresentation > ng-gantt > div > .gchartcontainer > .gmainright {
+    width: 650px !important;
+  }
+  .VisualRepresentationpopup > ng-gantt > div > .gchartcontainer > .gmainright {
+    width: 1090px !important;
+  }
+  .gmainleft {
+    width: 750px !important;
+  }
 }
 
 @media screen and (max-width: 540px) {
-    .VisualRepresentation,
-    .VisualRepresentationpopup .gstartdate div,
-    .gcharttableh {
-        width: 100%;
-    }
-    .VisualRepresentation>ng-gantt>div>.gchartcontainer>.gmainright {
-        width: 650px !important;
-    }
-    .VisualRepresentationpopup>ng-gantt>div>.gchartcontainer>.gmainright {
-        width: 1090px !important;
-    }
-    .gmainleft {
-        width: 750px !important;
-    }
+  .VisualRepresentation,
+  .VisualRepresentationpopup .gstartdate div,
+  .gcharttableh {
+    width: 100%;
+  }
+  .VisualRepresentation > ng-gantt > div > .gchartcontainer > .gmainright {
+    width: 650px !important;
+  }
+  .VisualRepresentationpopup > ng-gantt > div > .gchartcontainer > .gmainright {
+    width: 1090px !important;
+  }
+  .gmainleft {
+    width: 750px !important;
+  }
 }
 
 @media (min-width: 1025px) and (max-width: 1400px) {
-    .gtaskname div,
-    .gtaskname,
-    .gadditional,
-    .gresource,
-    .gduration,
-    .gpccomplete,
-    .gcost,
-    .gstartdate,
-    .genddate,
-    .gstartdate div,
-    .gplanstartdate,
-    .gplanenddate,
-    .gtaskheading,
-    .gmajorheading,
-    .gminorheading,
-    .gmajorheading,
-    .gminorheading,
-    .gminorheadingwkend,
-    .gtaskcell,
-    .gtaskcellwkend {
-        font-size: 11px;
-    }
-    .VisualRepresentation,
-    .VisualRepresentationpopup .gstartdate div,
-    .gcharttableh {
-        width: 100%;
-    }
-    .VisualRepresentation>ng-gantt>div>.gchartcontainer>.gmainright {
-        width: 450px !important;
-    }
-    .VisualRepresentationpopup>ng-gantt>div>.gchartcontainer>.gmainright {
-        width: 725px !important;
-    }
-    .gmainleft {
-        width: 570px !important;
-    }
+  .gtaskname div,
+  .gtaskname,
+  .gadditional,
+  .gresource,
+  .gduration,
+  .gpccomplete,
+  .gcost,
+  .gstartdate,
+  .genddate,
+  .gstartdate div,
+  .gplanstartdate,
+  .gplanenddate,
+  .gtaskheading,
+  .gmajorheading,
+  .gminorheading,
+  .gmajorheading,
+  .gminorheading,
+  .gminorheadingwkend,
+  .gtaskcell,
+  .gtaskcellwkend {
+    font-size: 11px;
+  }
+  .VisualRepresentation,
+  .VisualRepresentationpopup .gstartdate div,
+  .gcharttableh {
+    width: 100%;
+  }
+  .VisualRepresentation > ng-gantt > div > .gchartcontainer > .gmainright {
+    width: 450px !important;
+  }
+  .VisualRepresentationpopup > ng-gantt > div > .gchartcontainer > .gmainright {
+    width: 725px !important;
+  }
+  .gmainleft {
+    width: 570px !important;
+  }
 }
 
 #timeline-header {
-    border-radius: 5px;
-    box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;
+  border-radius: 5px;
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 1px -2px,
+    rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;
 }
 
-body .ui-treetable .ui-treetable-thead>tr>th,
-body .ui-treetable .ui-treetable-tbody>tr>td {
-    padding: 5px !important;
+body .ui-treetable .ui-treetable-thead > tr > th,
+body .ui-treetable .ui-treetable-tbody > tr > td {
+  padding: 5px !important;
 }
 
-body .ui-treetable .ui-treetable-tbody>tr>td:last-child {
-    padding: 0px !important;
+body .ui-treetable .ui-treetable-tbody > tr > td:last-child {
+  padding: 0px !important;
 }
 
 .table-header-cell-timeline {
-    /* display: table-cell; */
-    padding: 8px;
-    /* border: 1px solid darkgray; */
-    text-align: center;
+  /* display: table-cell; */
+  padding: 8px;
+  /* border: 1px solid darkgray; */
+  text-align: center;
 }
 
 #resp-table-body-timeline {
-    display: table-row-group;
+  display: table-row-group;
 }
 
 .resp-table-row-timeline {
-    display: table-row;
+  display: table-row;
 }
 
 .table-body-cell-timeline {
-    /* display: table-cell; */
-    /* vertical-align: middle; */
-    padding: 8px;
-    /* border: 1px solid darkgray; */
-    background-color: #efefef;
+  /* display: table-cell; */
+  /* vertical-align: middle; */
+  padding: 8px;
+  /* border: 1px solid darkgray; */
+  background-color: #efefef;
 }
 
 .input-color {
-    position: relative;
-    float: left;
+  position: relative;
+  float: left;
 }
 
 .input-color label {
-    padding-left: 45px;
-    margin-bottom: 0.3rem;
+  padding-left: 45px;
+  margin-bottom: 0.3rem;
 }
 
 .input-color .color-box {
-    width: 30px;
-    height: 20px;
-    display: inline-block;
-    background-color: #ccc;
-    position: absolute;
-    left: 13px;
+  width: 30px;
+  height: 20px;
+  display: inline-block;
+  background-color: #ccc;
+  position: absolute;
+  left: 13px;
 }
 
 #taskName {
-    border: none;
+  border: none;
 }
-
 
 /* completed */
 
 .gtaskblue {
-    height: 14px !important;
-    background: #3498DB !important;
-    margin-top: 0px !important;
+  height: 14px !important;
+  background: #3498db !important;
+  margin-top: 0px !important;
 }
 
 .gtaskbluecomplete {
-    float: left;
-    overflow: hidden;
-    height: 14px;
-    filter: alpha(opacity=80);
-    opacity: 0.8;
-    background-color: #3498DB !important;
-    margin-top: 0px !important;
-    margin-bottom: 0px;
+  float: left;
+  overflow: hidden;
+  height: 14px;
+  filter: alpha(opacity=80);
+  opacity: 0.8;
+  background-color: #3498db !important;
+  margin-top: 0px !important;
+  margin-bottom: 0px;
 }
-
 
 /* In progress */
 
 .gtaskgreen {
-    height: 14px !important;
-    background: #6EDC6C !important;
-    margin-top: 0px !important;
+  height: 14px !important;
+  background: #6edc6c !important;
+  margin-top: 0px !important;
 }
-
 
 /* AutoClosed */
 
 .gtaskred {
-    height: 14px !important;
-    background: #8183CC !important;
-    margin-top: 0px !important;
+  height: 14px !important;
+  background: #8183cc !important;
+  margin-top: 0px !important;
 }
 
 .gtaskgreencomplete {
-    float: left;
-    overflow: hidden;
-    height: 14px !important;
-    filter: alpha(opacity=80);
-    opacity: 0.8;
-    background-color: #6EDC6C !important;
-    margin-top: 0px;
-    margin-bottom: 0px;
+  float: left;
+  overflow: hidden;
+  height: 14px !important;
+  filter: alpha(opacity=80);
+  opacity: 0.8;
+  background-color: #6edc6c !important;
+  margin-top: 0px;
+  margin-bottom: 0px;
 }
-
 
 /* Planned */
 
 .gtaskyellow {
-    height: 14px !important;
-    background: #FFD34E !important;
-    margin-top: 0px !important;
+  height: 14px !important;
+  background: #ffd34e !important;
+  margin-top: 0px !important;
 }
 
 .gtaskyellowcomplete {
-    float: left;
-    overflow: hidden;
-    height: 14px !important;
-    filter: alpha(opacity=80);
-    opacity: 0.8;
-    background-color: #FFD34E !important;
-    margin-top: 0px !important;
-    margin-bottom: 0px;
+  float: left;
+  overflow: hidden;
+  height: 14px !important;
+  filter: alpha(opacity=80);
+  opacity: 0.8;
+  background-color: #ffd34e !important;
+  margin-top: 0px !important;
+  margin-bottom: 0px;
 }
-
 
 /* Not Started */
 
 .ggroupblack {
-    height: 14px !important;
-    background: #5F6273 !important;
-    margin-top: 0px !important;
+  height: 14px !important;
+  background: #5f6273 !important;
+  margin-top: 0px !important;
 }
 
 .ggroupblackcomplete {
-    float: left;
-    overflow: hidden;
-    height: 14px !important;
-    filter: alpha(opacity=80);
-    opacity: 0.8;
-    background-color: #5F6273 !important;
-    margin-top: 0px !important;
-    margin-bottom: 0px;
+  float: left;
+  overflow: hidden;
+  height: 14px !important;
+  filter: alpha(opacity=80);
+  opacity: 0.8;
+  background-color: #5f6273 !important;
+  margin-top: 0px !important;
+  margin-bottom: 0px;
 }
-
 
 /* on hold */
 
 .gtaskred {
-    height: 14px !important;
-    background: #FF3E56 !important;
-    margin-top: 0px !important;
+  height: 14px !important;
+  background: #ff3e56 !important;
+  margin-top: 0px !important;
 }
 
 .gtaskred {
-    float: left;
-    overflow: hidden;
-    height: 14px !important;
-    filter: alpha(opacity=80);
-    opacity: 0.8;
-    background-color: #FF3E56 !important;
-    margin-top: 0px !important;
-    margin-bottom: 0px;
+  float: left;
+  overflow: hidden;
+  height: 14px !important;
+  filter: alpha(opacity=80);
+  opacity: 0.8;
+  background-color: #ff3e56 !important;
+  margin-top: 0px !important;
+  margin-bottom: 0px;
 }
 
 .ggroupblackendpointright,
 .ggroupblackendpointleft {
-    border: none;
+  border: none;
 }
-
 
 /* change connector line and arrow color */
 
@@ -448,112 +478,362 @@ body .ui-treetable .ui-treetable-tbody>tr>td:last-child {
 .gDepSS,
 .gDepSF,
 .gDepFF {
-    border-color: #cdcdcd !important;
+  border-color: #cdcdcd !important;
 }
 
 .gDepFSArw,
 .gDepSSArw {
-    border-left: 4px solid #cdcdcd !important;
+  border-left: 4px solid #cdcdcd !important;
 }
 
 .gDepFFArw,
 .gDepSFArw {
-    border-right: 4px solid #cdcdcd !important;
+  border-right: 4px solid #cdcdcd !important;
 }
 
 .ggroupblack1 {
-    float: left;
-    overflow: hidden;
-    height: 3px;
-    filter: alpha(opacity=80);
-    opacity: 0.8;
-    background-color: #777777;
-    margin-top: 2px;
-    margin-bottom: 2px;
+  float: left;
+  overflow: hidden;
+  height: 3px;
+  filter: alpha(opacity=80);
+  opacity: 0.8;
+  background-color: #777777;
+  margin-top: 2px;
+  margin-bottom: 2px;
 }
 
 .ggroupblack2 {
-    float: left;
-    overflow: hidden;
-    height: 3px;
-    filter: alpha(opacity=80);
-    opacity: 0.8;
-    background-color: #777777;
-    margin-top: 2px;
-    margin-bottom: 2px;
+  float: left;
+  overflow: hidden;
+  height: 3px;
+  filter: alpha(opacity=80);
+  opacity: 0.8;
+  background-color: #777777;
+  margin-top: 2px;
+  margin-bottom: 2px;
 }
 
 .ggroupblack3 {
-    float: left;
-    overflow: hidden;
-    height: 3px;
-    filter: alpha(opacity=80);
-    opacity: 0.8;
-    background-color: #777777;
-    margin-top: 2px;
-    margin-bottom: 2px;
+  float: left;
+  overflow: hidden;
+  height: 3px;
+  filter: alpha(opacity=80);
+  opacity: 0.8;
+  background-color: #777777;
+  margin-top: 2px;
+  margin-bottom: 2px;
 }
 
 #nextMilestone {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .mat-expansion-panel-body {
-    padding: 0 6px 16px !important;
+  padding: 0 6px 16px !important;
 }
 
 .timePicker {
-    text-transform: uppercase;
-    margin-top: 5px;
+  text-transform: uppercase;
+  margin-top: 5px;
 }
 
 #modalInnerLoader {
-    border: 5px solid #f3f3f3;
-    border-radius: 50%;
-    border-top: 5px solid red;
-    border-bottom: 5px solid red;
-    width: 50px;
-    height: 50px;
-    -webkit-animation: spin 2s linear infinite;
-    animation: spin 2s linear infinite;
-    margin: 0 auto;
-    position: relative;
-    top: 50%;
-    transform: translateY(-50%);
+  border: 5px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 5px solid red;
+  border-bottom: 5px solid red;
+  width: 50px;
+  height: 50px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+  margin: 0 auto;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 #modalInnerLoaderText {
-    -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
-    -o-animation: loading-text-opacity 2s linear 0s infinite normal;
-    -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
-    animation: loading-text-opacity 2s linear 0s infinite normal;
-    color: black;
-    font-family: "Helvetica Neue, "Helvetica", ""arial";
-    font-size: 10px;
-    font-weight: bold;
-    opacity: 0.5;
-    text-align: center;
-    text-transform: uppercase;
-    top: 0;
+  -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
+  -o-animation: loading-text-opacity 2s linear 0s infinite normal;
+  -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
+  animation: loading-text-opacity 2s linear 0s infinite normal;
+  color: black;
+  font-family: "Helvetica Neue, " Helvetica ", " "arial";
+  font-size: 10px;
+  font-weight: bold;
+  opacity: 0.5;
+  text-align: center;
+  text-transform: uppercase;
+  top: 0;
 }
 
 body .ui-inputswitch.ui-inputswitch-checked .ui-inputswitch-slider {
-    background-color: #db1721 !important;
+  background-color: #db1721 !important;
 }
 
-body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight {
-    background-color: #db1721 !important;
+body
+  .ui-dropdown-panel
+  .ui-dropdown-items
+  .ui-dropdown-item.ui-state-highlight {
+  background-color: #db1721 !important;
 }
 
 body .ui-dropdown-panel .ui-dropdown-filter-container .ui-dropdown-filter-icon {
-    color: #db1721 !important;
+  color: #db1721 !important;
 }
- div.sticky {
-    margin: 0px !important;
-    padding: 0px 0px 5px 0px !important;
-    position: sticky !important;
-    overflow: visible !important;
-    background-color: #f4f4f4 !important;
-    z-index: 990 !important;
-    top: 0 !important;
-  }
+div.sticky {
+  margin: 0px !important;
+  padding: 0px 0px 5px 0px !important;
+  position: sticky !important;
+  overflow: visible !important;
+  background-color: #f4f4f4 !important;
+  z-index: 990 !important;
+  top: 0 !important;
+}
+
+.width {
+  width: 100%;
+}
+
+.planned_task {
+  border: 2px solid #ffd34e !important;
+  /* color:#6ba8e3; */
+  background: #ffd34e !important;
+}
+.planned_task .gantt_task_progress {
+  background: #ffd34e;
+}
+
+.notstarted_task {
+  border: 2px solid #5f6273 !important;
+  /* color:#6ba8e3; */
+  background: #5f6273 !important;
+}
+.notstarted_task .gantt_task_progress {
+  background: #5f6273 !important;
+}
+
+.inprogress_task {
+  border: 2px solid #6edc6c !important;
+  /* color:#6ba8e3; */
+  background: #6edc6c !important;
+}
+.inprogress_task .gantt_task_progress {
+  background: #6edc6c !important;
+}
+
+.completed_task {
+  border: 2px solid #3498db !important;
+  /* color:#6ba8e3; */
+  background: #3498db !important;
+}
+.completed_task .gantt_task_progress {
+  background: #3498db !important;
+}
+
+.autoclosed_task {
+  border: 2px solid #8183cc !important;
+  /* color:#6ba8e3; */
+  background: #8183cc !important;
+}
+.autoclosed_task .gantt_task_progress {
+  background: #8183cc !important;
+}
+
+.onhold_task {
+  border: 2px solid #ff3e56 !important;
+  /* color:#6ba8e3; */
+  background: #ff3e56 !important;
+}
+.onhold_task .gantt_task_progress {
+  background: #ff3e56 !important;
+}
+
+.gantt_grid_scale .gantt_grid_head_cell,
+.gantt_task .gantt_task_scale .gantt_scale_cell {
+  font-weight: bold;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.resource_marker {
+  text-align: center;
+}
+.resource_marker div {
+  width: 28px;
+  height: 28px;
+  line-height: 29px;
+  display: inline-block;
+
+  color: #fff;
+  margin: 3px;
+}
+.resource_marker.workday_ok div {
+  border-radius: 15px;
+  background: #51c185;
+}
+
+.resource_marker.workday_over div {
+  border-radius: 3px;
+  background: #ff8686;
+}
+
+.folder_row {
+  font-weight: bold;
+}
+
+.highlighted_resource,
+.highlighted_resource.odd {
+  background-color: rgba(255, 251, 224, 0.6);
+}
+
+.resource-controls .gantt_layout_content {
+  padding: 7px;
+  overflow: hidden;
+}
+.resource-controls label {
+  margin: 0 10px;
+  vertical-align: bottom;
+  display: inline-block;
+  color: #3e3e3e;
+  padding: 2px;
+  transition: box-shadow 0.2s;
+}
+
+.resource-controls label:hover {
+  box-shadow: 0 2px rgba(84, 147, 255, 0.42);
+}
+
+.resource-controls label.active,
+.resource-controls label.active:hover {
+  box-shadow: 0 2px #5493ffae;
+  color: #1f1f1f;
+}
+
+.resource-controls input {
+  vertical-align: top;
+}
+
+.gantt_task_cell.week_end {
+  background-color: #e8e8e87d;
+}
+
+.gantt_task_row.gantt_selected .gantt_task_cell.week_end {
+  background-color: #e8e8e87d !important;
+}
+
+.group_row,
+.group_row.odd,
+.gantt_task_row.group_row {
+  background-color: rgba(232, 232, 232, 0.6);
+}
+
+.mr-20 {
+  margin-right: 20px;
+}
+
+.mt-20 {
+  margin-top: 20px;
+}
+
+.saveTaskButton {
+  margin-right: 15px !important;
+  background-color: #db1721 !important;
+  border: 1px solid #db1721 !important;
+}
+
+.mt-50 {
+  margin-top: 50px;
+}
+
+.ui-dropdown {
+  min-width: 10.5em !important;
+}
+
+.footerBtn .cancelBtn {
+  color: #333333 !important;
+  border: 1px solid #f4f4f4 !important;
+  background-color: ghostwhite !important;
+}
+
+.footerBtn {
+  /* margin-top: 15px; */
+  float: right;
+}
+
+.gantt_cell:nth-child(2) .gantt_tree_content {
+  border-radius: 16px;
+  width: 100%;
+  height: 80%;
+  margin: 0% 0;
+  padding-left: 10px;
+  line-height: 230%;
+}
+
+.gantt_task_drag.task_left.task_start_date {
+  background-color: #ff3e56 !important;
+  left: -12px !important;
+}
+.gantt_task_drag.task_right.task_end_date {
+  background-color: darkgreen !important;
+  right: -12px !important;
+}
+.fa .fa-info-circle {
+  font-size: 0.85em !important;
+}
+.overlayIcon {
+  float: right !important;
+  margin-right: 22px !important;
+  font-size: 0.75em !important;
+  margin-top: 1px !important;
+}
+.budgetHr {
+  width: 70% !important;
+}
+.ui-overlaypanel-close {
+  background-color: #db1721 !important;
+}
+
+/* .ui-sidebar-top.ui-sidebar-lg, .resourcePanel .ui-sidebar-bottom.ui-sidebar-lg */
+.ui-sidebar-top.ui-sidebar-lg,
+.ui-sidebar-bottom.ui-sidebar-lg {
+  height: 35em !important;
+}
+
+.resourcePanel #capacityTable > .capacityBody {
+  /* overflow-y: auto !important; */
+  height: 265px !important;
+  /* display: block !important; */
+}
+
+.resourcePanel .ui-card-content > form > div {
+  padding-bottom: 0px !important;
+}
+
+.gantt_last_cell .contextMenu {
+  padding: 10px 20px 10px 20px;
+  background-color: beige;
+}
+
+.resourcePanel
+  .ui-multiselect-panel
+  .ui-multiselect-items
+  .ui-multiselect-item.ui-state-highlight {
+  background-color: #db1721 !important;
+  color: #ffffff !important;
+  border: 1px solid #db1721 !important;
+}
+
+.ganttOverlayIcon {
+  cursor: pointer;
+  padding: 0 10px;
+} 
+
+.gantt_task_line .gantt_link_control.task_right {
+  right: -22px !important;
+}
+
+.gantt_task_line .gantt_link_control.task_left {
+  left: -22px !important;
+}
+ 

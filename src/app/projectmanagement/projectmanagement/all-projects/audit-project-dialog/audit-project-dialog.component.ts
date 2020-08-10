@@ -1,5 +1,5 @@
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
-import { DynamicDialogConfig, DynamicDialogRef, MessageService } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 
 @Component({
   selector: 'app-audit-project-dialog',
@@ -18,7 +18,6 @@ export class AuditProjectDialogComponent implements OnInit {
   enableConfirm = false;
   constructor(public config: DynamicDialogConfig,
     public ref: DynamicDialogRef,
-    public messageService: MessageService,
     elRef: ElementRef) {
     this.elRef = elRef;
   }
@@ -27,13 +26,12 @@ export class AuditProjectDialogComponent implements OnInit {
     this.addRollingProjectArray = this.config.data;
   }
 
-
+  
   close() {
     this.ref.close();
-  }
+  }                                                                             
 
   onRowSelect(event) {
-
     event.data.checked = true;
     this.enableDisableConfirmButton();
   }
@@ -46,7 +44,7 @@ export class AuditProjectDialogComponent implements OnInit {
   keyPress(event: any) {
     this.enableDisableConfirmButton();
   }
-
+                                             
 
 
   enableDisableConfirmButton() {

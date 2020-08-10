@@ -1,0 +1,69 @@
+::ng-deep .mainlable {
+    font-size: 14px !important;
+    color: #c72e2e !important;
+}
+
+::ng-deep .ui-float-label {
+    float: left !important;
+}
+
+/* ::ng-deep .ui-datepicker table td>a.ui-state-active,
+::ng-deep .ui-datepicker table td>span.ui-state-active, */
+::ng-deep .customDate .ui-calendar-button,
+::ng-deep .customDate .ui-button-icon-only
+/* ::ng-deep body .ui-multiselect-panel .ui-multiselect-items .ui-multiselect-item.ui-state-highlight,
+::ng-deep body .ui-chkbox .ui-chkbox-box.ui-state-active  */
+{
+    background-color: #C53E3E !important;
+    color: #ffffff !important;
+    border: 1px solid #C53E3E !important;
+}
+
+::ng-deep .evenrow {
+    padding: 0.5em 0em 0.5em 0em !important;
+}
+
+::ng-deep .ui-dropdown-item.ui-state-highlight {
+    background-color: #C53E3E !important;
+    color: #ffffff !important;
+}
+
+::ng-deep .oddrow {
+    padding: 0.5em 0.1em 0.5em 0.1em !important;
+}
+
+::ng-deep button.ui-datepicker-trigger.ui-calendar-button span.ui-button-text.ui-clickable {
+    padding: 7px !important;
+}
+
+::ng-deep body .ui-chkbox .ui-chkbox-box.ui-state-active:not(.ui-state-disabled):hover {
+    border-color: #8c4141 !important;
+    background-color: #8c4141 !important;
+}
+
+.search {
+    padding: 0.429em !important;
+}
+
+.resourceView {
+    float: left;
+    margin: 0px 15px;
+    margin-top: -2.0em;
+    white-space: nowrap!important;
+}
+
+.ui-float-label> label {
+    top: -13px !important;
+}
+::ng-deep .ui-helper-clearfix {
+  border: 1px solid #a6a6a6!important;
+}
+::ng-deep .ui-dropdown {
+  min-width: fit-content!important;
+}
+.spansubmit {
+  display: inline!important;
+}
+.btnSubmit {
+  margin-top: 0.5em!important;
+}

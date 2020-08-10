@@ -3,7 +3,6 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { PubsuportConstantsService } from '../../Services/pubsuport-constants.service';
-import { MessageService } from 'primeng';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -42,7 +41,6 @@ export class AddAuthorComponent implements OnInit {
         public constantService: ConstantsService,
         public globalObject: GlobalService,
         public pubsupportService: PubsuportConstantsService,
-        private messageService: MessageService,
         private router: Router,
         private common: CommonService
     ) { }
@@ -100,15 +98,27 @@ export class AddAuthorComponent implements OnInit {
             return;
         }
         this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
-        this.add_author_form.value.Title = this.selectedRowItem.ProjectCode;
-        this.add_author_form.value.__metadata = { type: this.constantService.listNames.addAuthor.type };
+        //this.add_author_form.value.Title = this.selectedRowItem.ProjectCode;
+        //this.add_author_form.value.__metadata = { type: this.constantService.listNames.Authors.type };
         // const endpoint = this.pubsupportService.pubsupportComponent.addAuthor.addAuthorDetails;
-        const endpoint = this.spOperationsService.getReadURL(this.constantService.listNames.addAuthor.name);
+        // Added by Arvind
+        let obj = this.add_author_form.value;
+        obj['Title'] = this.selectedRowItem.ProjectCode;
+        obj['CommentsMT'] = obj['Comments'];
+        delete obj['Comments'];
+        obj['FirstNameST'] =  obj['FirstName'];
+        delete obj['FirstName'];
+        obj['AddressMT'] = obj['Address'];
+        delete obj['Address'];
+        obj['__metadata'] = { type: this.constantService.listNames.Authors.type };
+        // Arvind code end here.
+        const endpoint = this.spOperationsService.getReadURL(this.constantService.listNames.Authors.name);
         const data = [{
-            data: this.add_author_form.value,
+            // data: this.add_author_form.value,
+            data: obj,
             url: endpoint,
             type: 'POST',
-            listName: this.constantService.listNames.addAuthor.name
+            listName: this.constantService.listNames.Authors.name
         }];
         this.submit(data, type);
     }
@@ -122,12 +132,9 @@ export class AddAuthorComponent implements OnInit {
             res = result[0].retItems;
         }
         if (res.hasOwnProperty('hasError')) {
-            this.messageService.add({ key: 'myKey1', severity: 'error', summary: 'Error message', detail: res.message.value, life: 4000 });
+            this.common.showToastrMessage(this.constantService.MessageType.error,res.message.value,false);
         } else if (type === 'addAuthor') {
-            this.messageService.add({
-                key: 'myKey1', severity: 'success', summary: 'Success message',
-                detail: 'Author Created.', life: 4000
-            });
+            this.common.showToastrMessage(this.constantService.MessageType.success,'Author Created.',false);
             this.addAuthorModal = false;
             this.add_author_form.reset();
             this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;

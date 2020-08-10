@@ -41,11 +41,11 @@
             </tr>
             <tr *ngIf="rowItemData.ScheduledDate">
                 <td [ngStyle]="{'color':'#d7181f'}">Scheduled Date</td>
-                <td>{{rowItemData.ScheduledDate |date:'medium'}}</td>
+                <td>{{rowItemData.ScheduledDate |date:'mediumDate'}}</td>
             </tr>
             <tr *ngIf="rowItemData.ProposedEndDate">
                 <td [ngStyle]="{'color':'#d7181f'}">Proposed End Date</td>
-                <td>{{rowItemData.ProposedEndDate |date:'medium'}}</td>
+                <td>{{rowItemData.ProposedEndDate |date:'mediumDate'}}</td>
             </tr>
             <tr>
                 <td [ngStyle]="{'color':'#d7181f'}">Currency</td>

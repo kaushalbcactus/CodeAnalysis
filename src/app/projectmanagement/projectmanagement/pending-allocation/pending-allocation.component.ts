@@ -176,7 +176,7 @@ export class PendingAllocationComponent implements OnInit {
         const poc = this.pmObject.projectContactsItems.filter((obj) => {
           return (obj.ID === task.PrimaryPOC);
         });
-        paObj.POC = poc.length > 0 ? poc[0].FullName : '';
+        paObj.POC = poc.length > 0 ? poc[0].FullNameCC : '';
         // Adding the particular value into the array for sorting and filtering.
         projectCodeTempArray.push({ label: paObj.ProjectCode, value: paObj.ProjectCode });
         shortTitleTempArray.push({ label: paObj.ShortTitle, value: paObj.ShortTitle });
@@ -255,9 +255,9 @@ export class PendingAllocationComponent implements OnInit {
   }
 
   goToAllocationPage(task) {
-    window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +
-      '/dashboard#/taskAllocation?ProjectCode=' + task.ProjectCode, '_blank');
+    window.open(this.globalObject.url + '/taskAllocation?ProjectCode=' + task.ProjectCode, '_blank');
   }
+  
   goToProjectManagement(task) {
     // window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +
     //   '/Pages/ProjectManagement.aspx?ProjectCode=' + task.ProjectCode, '_blank');

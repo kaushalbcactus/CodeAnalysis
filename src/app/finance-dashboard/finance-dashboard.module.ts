@@ -2,7 +2,6 @@
 
 import { NgModule } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-
 import { FinanceDashboardRoutingModule } from './finance-dashboard-routing.module';
 import { FinanceDashboardComponent } from './finance-dashboard/finance-dashboard.component';
 import { PrimengModule } from '../primeng/primeng.module';
@@ -31,6 +30,12 @@ import { IliTableAttributeComponent } from './Scheduled/ili-table-attribute/ili-
 import { PfTableAttributeComponent } from './Scheduled/pf-table-attribute/pf-table-attribute.component';
 import { ProTableAttributeComponent } from './Proforma/pro-table-attribute/pro-table-attribute.component';
 import { InvTableAttributeComponent } from './Outstanding-Invoices/inv-table-attribute/inv-table-attribute.component';
+import { ScheduleOopInvoiceDialogComponent } from './Expenditure/approved-billable/schedule-oop-invoice-dialog/schedule-oop-invoice-dialog.component';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { MarkAsPaymentDialogComponent } from './Expenditure/mark-as-payment-dialog/mark-as-payment-dialog.component';
+import { ApproveBillingDialogComponent } from './Scheduled/hourly-based/approve-billing-dialog/approve-billing-dialog.component';
+import { EditInvoiceDialogComponent } from './edit-invoice-dialog/edit-invoice-dialog.component';
+import { AddUpdateProformaDialogComponent } from './add-update-proforma-dialog/add-update-proforma-dialog.component';
 
 @NgModule({
   declarations: [
@@ -56,6 +61,11 @@ import { InvTableAttributeComponent } from './Outstanding-Invoices/inv-table-att
     PfTableAttributeComponent,
     ProTableAttributeComponent,
     InvTableAttributeComponent,
+    ScheduleOopInvoiceDialogComponent,
+    MarkAsPaymentDialogComponent,
+    ApproveBillingDialogComponent,
+    EditInvoiceDialogComponent,
+    AddUpdateProformaDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -63,12 +73,11 @@ import { InvTableAttributeComponent } from './Outstanding-Invoices/inv-table-att
     PrimengModule,
     SharedModule,
     TimelineModule,
-    CKEditorModule
+    CKEditorModule,
+    FlexLayoutModule
   ],
   entryComponents: [
     RejectExpenseComponent,
-    ApprovedNonBillableComponent,
-    ApprovedBillableComponent,
     PendingExpenseComponent,
     DeliverableBasedComponent,
     HourlyBasedComponent,
@@ -80,10 +89,16 @@ import { InvTableAttributeComponent } from './Outstanding-Invoices/inv-table-att
     SaveYourViewComponent,
     TableAttributeComponent,
     EditorComponent,
+    ScheduleOopInvoiceDialogComponent,
+    MarkAsPaymentDialogComponent,
+    ApproveBillingDialogComponent,
+    AddUpdateProformaDialogComponent,
+    EditInvoiceDialogComponent
   ],
   providers: [
     FDResolve,
     EditorComponent
   ]
 })
-export class FinanceDashboardModule { }
+export class FinanceDashboardModule {
+ }

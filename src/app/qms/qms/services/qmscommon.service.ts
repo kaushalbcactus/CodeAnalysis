@@ -1,6 +1,5 @@
 import { SPOperationService } from './../../../Services/spoperation.service';
 import { Injectable } from '@angular/core';
-import { MessageService } from 'primeng';
 import { CommonService } from 'src/app/Services/common.service';
 
 @Injectable({
@@ -17,7 +16,7 @@ export class QMSCommonService {
 
   public selectedComponent: any;
 
-  constructor(private spService: SPOperationService, private messageService: MessageService, private common:CommonService) { }
+  constructor(private spService: SPOperationService, private common:CommonService) { }
   /**
    * Fetch tasks documents
    */

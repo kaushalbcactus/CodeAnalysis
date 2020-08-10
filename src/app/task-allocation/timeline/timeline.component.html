@@ -1,12 +1,3 @@
-<div fxLayout="column" style="padding: 2vw;" fxLayoutAlign="center center" *ngIf="!GanttChartView && projectDetails !== undefined">
-    <div id="modalInnerLoader"></div>
-    <div id="modalInnerLoaderText">Loading...</div>
-</div>
-
-
-<p-toast [style]="{marginTop: '80px'}" position="top-center" key="tc" [modal]="true" [baseZIndex]="5000" closable="false"></p-toast>
-
-
 <div fxLayout="row" fxLayoutAlign="start center" style="width:100%;">
 
     <div *ngIf="GanttChartView" fxLayout="column" fxLayoutAlign="center start" style="margin-top: 1vh;width: 100%;">
@@ -16,12 +7,6 @@
            ********************************************************************************************************** -->
         <div fxLayout="row" fxLayoutGap="20px" style="padding: 10px 0px 30px 0px;" fxLayoutAlign="space-around center">
 
-            <div *ngIf="(visualgraph === false && oProjectDetails.status !== 'On Hold' && oProjectDetails.status !== 'In Discussion' && oProjectDetails.status !== 'Closed' &&oProjectDetails.status !== 'Cancelled' && oProjectDetails.status !== 'Awaiting Cancel Approval' && oProjectDetails.status !== 'Pending Closure' && oProjectDetails.status !== 'Audit In Progress' && oProjectDetails.projectType !== 'FTE-Writing') && !projectDetails">
-                <button mat-raised-button type="button" (click)="showRestructure()">
-                    <mat-icon>create</mat-icon> Restructure Project
-                </button>
-
-            </div>
             <div fxLayout="row" id="timeline-header" fxLayoutAlign="center start">
                 <div class="table-header-cell-timeline">
                     Budget Hrs
@@ -48,12 +33,32 @@
                     <div id="availableBudgetHrs">{{oProjectDetails.availableHours}}</div>
                 </div>
             </div>
+
+            <div *ngIf="(oProjectDetails.status !== 'In Discussion' && oProjectDetails.status !== 'Closed' &&oProjectDetails.status !== 'Cancelled' && oProjectDetails.status !== 'Awaiting Cancel Approval' && oProjectDetails.status !== 'Pending Closure' && oProjectDetails.status !== 'Audit In Progress' && oProjectDetails.projectType !== 'FTE-Writing') && !projectDetails">
+                <button mat-raised-button type="button" (click)="showRestructure()">
+                    <mat-icon>create</mat-icon> Restructure
+                </button>
+
+            </div>
+
             <div>
                 <button type="button" mat-raised-button (click)="showVisualRepresentation()">
                     <mat-icon *ngIf="visualgraph === true"> table_chart</mat-icon>
                     <mat-icon *ngIf="visualgraph === false"> show_chart</mat-icon>
-                    {{ visualgraph === false ? 'Visual Representation' : 'Table Representation' }}
+                    {{ visualgraph === false ? 'Gantt Chart' : 'Table' }}
                 </button>
+            </div>
+            <!-- <div>
+                <button class="mr-20" type="button" mat-raised-button>Show Timeline</button>
+            </div> -->
+            <div *ngIf='visualgraph'>
+                <button class="mr-20" type="button" mat-raised-button (click)="zoomIn()"><mat-icon>zoom_in</mat-icon></button>
+                <button class="mr-20" type="button" mat-raised-button (click)="zoomOut()"><mat-icon>zoom_out</mat-icon></button>
+                <!-- <button class="mr-20" type="button" mat-raised-button (click)="ganttExportToExcel()">Export To
+                    Excel</button> -->
+                <i style="font-size: 1.8em;cursor: pointer;vertical-align: top;
+                    margin: 7px 15px 0px 0px;" (click)="ganttExportToExcel()" title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
+                <p-dropdown #mySelect [options]="scales" [style]="{'width': '150px'}" [(ngModel)]="selectedScale" (onChange)="setScale(mySelect.value)" optionLabel="label"></p-dropdown>
             </div>
         </div>
 
@@ -83,26 +88,33 @@
                     <label>Auto Closed</label>
                     <div class="color-box" style="background-color: #8183CC;"></div>
                 </div>
-                <div class="input-color">
-                    <label>On Hold</label>
-                    <div class="color-box" style="background-color: #FF3E56;"></div>
-                </div>
             </div>
             <div>
-                <div *ngIf="!visualgraph" class="input-color" fxLayoutAlign="end center" style="margin-right: 10px;">
-                    <button *ngIf="!projectDetails" mat-raised-button type="button" (click)="onPopupload()" [disabled]="disableSave">
-                        <mat-icon>refresh</mat-icon> Refresh
+                <div class="input-color">
+                    <label>Equal allocation per day</label>
+                    <div class="color-box" style="background-color: indianred;"></div>
+                </div>
+                <!-- <div class="input-color">
+                  <label>Daily Split</label>
+                  <div class="color-box" style="background-color: rgb(160, 247, 142)"></div>
+              </div> -->
+            </div>
+            <div>
+                <div *ngIf="visualgraph" class="input-color" fxLayoutAlign="end center" style="margin-right: 10px;">
+                    <button mat-raised-button type="button" title="Refresh Gantt" (click)="loadComponentRefresh()">
+                        <mat-icon>refresh</mat-icon>
                     </button>
                 </div>
-                <div *ngIf="!visualgraph && changeInRestructure " class="input-color" fxLayoutAlign="end center" style="margin-right: 10px;">
+                <div *ngIf="changeInRestructure " class="input-color" fxLayoutAlign="end center" style="margin-right: 10px;">
                     <button *ngIf="!projectDetails" mat-raised-button type="button" (click)="CancelChanges(projectDetails,'discardAll')" [disabled]="disableSave">
                         <mat-icon>delete_forever</mat-icon> Discard All
                     </button>
                 </div>
-                <div *ngIf=" !visualgraph && oProjectDetails.status !== 'On Hold' && oProjectDetails.status !== 'In Discussion' && oProjectDetails.status !== 'Closed' &&oProjectDetails.status !== 'Cancelled' && oProjectDetails.status !== 'Awaiting Cancel Approval' && oProjectDetails.status !== 'Pending Closure' && oProjectDetails.status !== 'Audit In Progress' && oProjectDetails.projectType !== 'FTE-Writing'"
+
+                <div *ngIf="oProjectDetails.status !== 'On Hold' && oProjectDetails.status !== 'In Discussion' && oProjectDetails.status !== 'Closed' &&oProjectDetails.status !== 'Cancelled' && oProjectDetails.status !== 'Awaiting Cancel Approval' && oProjectDetails.status !== 'Pending Closure' && oProjectDetails.status !== 'Audit In Progress' && oProjectDetails.projectType !== 'FTE-Writing'"
                     class="input-color" fxLayoutAlign="end center">
-                    <button *ngIf="!projectDetails" mat-raised-button type="button" [disabled]="disableSave" (click)="saveTasks()">
-                        <mat-icon>save</mat-icon> Save Tasks
+                    <button *ngIf="!projectDetails && !this.confirmMilestoneLoader" mat-raised-button type="button" [disabled]="disableSave" (click)="saveTasks()">
+                        <mat-icon>save</mat-icon> Save
                     </button>
                 </div>
             </div>
@@ -111,78 +123,58 @@
 
         <div fxLayout="column" style="padding: 10vw;width: 100%;" fxLayoutAlign="center center" *ngIf="loaderenable">
             <div id="scInnerLoader"></div>
-            <div id="scInnerLoaderText">Loading...</div>
+            <div id="scInnerLoaderText" *ngIf="!confirmMilestoneLoader">Loading...</div>
+            <div id="scConfirmLoaderText" *ngIf="confirmMilestoneLoader">Checking for allocation more than 10 hours...</div>
         </div>
-
-
-        <p-confirmDialog #cd header="Confirmation" [style]="{width: '50vw'}" icon="pi pi-exclamation-triangle">
-            <p-footer>
-                <button type="button" style="background-color: #C53E3E;border-color:#C53E3E;" pButton icon="pi pi-check" label="Yes" (click)="cd.accept()"></button>
-                <button type="button" style="background-color:silver;border-color:silver" pButton icon="pi pi-times" label="No" (click)="cd.reject()"></button>
-
-            </p-footer>
-        </p-confirmDialog>
 
         <!-- **********************************************************************************************************
                                                           Table View Data
            ********************************************************************************************************** -->
-        <div fxLayout="row" class="taskAllocationTimeline" fxLayoutAlign="center start" [hidden]="visualgraph === true" *ngIf="!loaderenable">
-            <p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom" position="bottom-center">
-            </p-toast>
-            <!-- <p-treeTable [value]="milestoneData" [(contextMenuSelection)]="selectedNode" [contextMenu]="!projectDetails ? milestones : ''" (onContextMenuSelect)="milestoneContextMenuEvent($event, milestones)"> -->
+        <div fxLayout="row" class="taskAllocationTimeline" *ngIf="!loaderenable" fxLayoutAlign="center start" [hidden]="!tableView">
 
             <p-treeTable [value]="milestoneData">
 
-
                 <ng-template pTemplate="header">
                     <tr>
-                        <th style="width:30%"> </th>
-                        <th style="width:5%">Budget Hrs</th>
-                        <th style="width:5%">Spent Hrs</th>
-                        <th style="width:15%">Start Date</th>
-                        <th style="width:15%">End Date</th>
+                        <th style="width:28%"> </th>
+                        <th style="width:14%">Start Date</th>
+                        <th style="width:14%">End Date</th>
+                        <th style="width:9%">Budget Hrs</th>
+                        <th style="width:6%">Spent Hrs</th>
                         <th style="width:4%">TAT</th>
                         <th style="width:15%">Assign To</th>
-                        <th style="width:5%">Allow Start</th>
+                        <th style="width:4%">Type</th>
                         <th style="width:5%">Disable Cascade</th>
                         <th style="width:3%"> </th>
                     </tr>
                 </ng-template>
 
                 <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
-                    <!-- [ttContextMenuRow]="rowNode" -->
-                    <tr *ngIf="(rowData.status !== 'Deleted')" class="milestoneTable" [style.font-weight]="rowData.type === 'milestone' || rowData.type === 'submilestone' || rowData.pName ==='Client Review' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.pName.indexOf('Slot') > -1) ? '700':''">
-                        <!-- task Name -->
-                        <td [style.text-align]="'left'" [style.padding-left.px]="rowData.pName ==='Client Review' ? '20':''" [style.backgroundColor]="rowData.slotColor">
-                            <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
-                            <span *ngIf="rowData.type !=='task' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.pName.indexOf('Slot') > -1)">
-                                {{rowData.pName}}</span>
-                            <span style="color:#dc2038;cursor: pointer;" *ngIf="(rowData.type ==='task' && rowData.IsCentrallyAllocated !== 'Yes') || (rowData.IsCentrallyAllocated === 'Yes' && rowData.pName.indexOf('Slot') < 0)" (click)="ViewTaskDetails(rowData)"> {{rowData.pName}}</span>
+                    <tr *ngIf="(rowData.status !== 'Deleted')" class="milestoneTable" [style.font-weight]="rowData.type === 'milestone' || rowData.type === 'submilestone' || rowData.title ==='Client Review' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.title.indexOf('Slot') > -1) ? '700':''">
 
-                            <div id="nextMilestone" [title]=" rowData.type==='milestone' ? 'Set as Current Milestone':'Set as Current Sub-Milestone'" (click)=" setAsNextMilestoneCall(rowData,rowNode)" *ngIf="(rowData.isNext === true && !rowData.subMilestonePresent && !changeInRestructure) || (rowData.type==='submilestone' && rowData.isCurrent && !changeInRestructure) || (rowData.type==='submilestone' && rowData.isNext &&   !changeInRestructure)  "
-                                style="display: inline;" [hidden]=" (rowData.type==='milestone' && (oProjectDetails.status === 'On Hold' || oProjectDetails.status ==='In Discussion' || oProjectDetails.projectType === 'FTE-Writing' || rowData.status === 'Completed' || rowData.pID === -1)) || (rowData.type==='submilestone' &&  rowData.status !== 'Not Confirmed' || oProjectDetails.status === 'On Hold') || projectDetails ">
+                        <td [style.text-align]="'left'" [style.padding-left.px]="rowData.title ==='Client Review' ? '20':''" [style.backgroundColor]="rowData.slotColor">
+                            <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
+                            <span *ngIf="rowData.type !=='task' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.title.indexOf('Slot') > -1)">
+                                {{rowData.text}}</span>
+                            <span style="color:#dc2038;cursor: pointer;" *ngIf="(rowData.type ==='task' && rowData.IsCentrallyAllocated !== 'Yes') || (rowData.IsCentrallyAllocated === 'Yes' && rowData.title.indexOf('Slot') < 0)" (click)="viewTaskDetails(rowData)"> {{rowData.text}}</span>
+
+                            <div id="nextMilestone" [title]=" rowData.type==='milestone' ? 'Set as Current Milestone':'Set as Current Sub-Milestone'" (click)=" confirmMilestone(rowData,rowNode)" *ngIf="(rowData.isNext === true && !rowData.subMilestonePresent && !changeInRestructure) || (rowData.type==='submilestone' && rowData.isCurrent && !changeInRestructure) || (rowData.type==='submilestone' && rowData.isNext &&   !changeInRestructure)  "
+                                style="display: inline;" [hidden]=" (rowData.type==='milestone' && (oProjectDetails.status ==='In Discussion' || oProjectDetails.projectType === 'FTE-Writing' || rowData.status === 'Completed' || rowData.id === -1)) || (rowData.type==='submilestone' &&  rowData.status !== 'Not Confirmed') || projectDetails ">
                                 <i class="pi pi-check" style="font-size: 2em;vertical-align: middle;"></i>
                             </div>
                         </td>
-                        <!-- Budget Hrs -->
-                        <td style="text-align: center;" *ngIf="!projectDetails">
-                            <span *ngIf="(rowData.type === 'milestone' && rowData.status !== 'Not Saved' && !rowData.isCurrent && !rowData.isFuture) || (rowData.type ==='task' && !rowData.editMode && rowData.itemType !== 'Client Review' && rowData.itemType !== 'Send to client')">{{rowData.budgetHours}}</span>
-                            <input type="number" class="form-control budgetHr" required="required" min="0" value="0" onchange="validity.valid||(value='0');" step="0.25" *ngIf="(rowData.type !=='milestone' && rowData.type !=='submilestone' && rowData.editMode && (rowData.itemType !== 'Client Review' &&  rowData.itemType !== 'Send to client')) || ((rowData.status ==='In Progress' || rowData.status ==='Not Started' || rowData.status ==='Not Confirmed' || rowData.status ==='Not Saved') && rowData.type === 'milestone')"
-                                required="required" style="border:none;border-radius: 0px;height: 25px;text-align: center;padding:0px;" [id]="rowData.pID" (ngModelChange)="modelChanged(rowData)" [(ngModel)]="rowData.budgetHours">
+                        <td style="text-align: center;" *ngIf="projectDetails">
+                            <span>{{rowData.budgetHours}}</span>
+
                         </td>
 
-                        <td style="text-align: center;" *ngIf="projectDetails">
-                            {{rowData.budgetHours}}
-                        </td>
-                        <!-- spent Hrs -->
-                        <td style="text-align: center;">{{rowData.spentTime}}</td>
                         <!-- Start Date -->
                         <td>
 
-                            <span [title]="rowData.pUserStart |  date:' d MMM, y, h:mm a'" *ngIf="(!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat === true) || rowData.type === 'milestone' || rowData.type === 'submilestone'">{{rowData.pStart |  date:' d MMM, y' }}</span>
-                            <span [title]="rowData.pUserStart |  date:' d MMM, y, h:mm a'" *ngIf="(!rowData.editMode && rowData.type === 'task' &&  rowData.tat !== true) || (rowData.type === 'task' && rowData.editMode && rowData.status === 'In Progress')">{{rowData.pStart |  date:' d MMM, y, h:mm a' }}</span>
+                            <span [title]="rowData.pUserStart |  date:' d MMM, y, h:mm a'" *ngIf="(!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat === true) || rowData.type === 'milestone' || rowData.type === 'submilestone'">{{rowData.start_date |  date:' d MMM, y' }}</span>
+                            <span [title]="rowData.pUserStart |  date:' d MMM, y, h:mm a'" *ngIf="(!rowData.editMode && rowData.type === 'task' &&  rowData.tat !== true) || (rowData.type === 'task' && rowData.editMode && rowData.status === 'In Progress') || (rowData.type === 'task' && rowData.editMode && rowData.itemType ==='Client Review')">{{rowData.start_date |  date:' d MMM, y, h:mm a' }}</span>
 
-                            <span *ngIf="rowData.editMode && rowData.type === 'task'  && rowData.status !== 'In Progress'">
+                            <span *ngIf="rowData.editMode && rowData.type === 'task'  && rowData.status !== 'In Progress' && rowData.itemType !== 'Client Review' && (rowData.status === 'Not Started' || rowData.status === 'Not Confirmed' || rowData.status === 'Not Saved')">
                                 <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserStartDatePart"
                                     [disabledDays]="[0,6]" [readonlyInput]="true" dateFormat="dd M , yy"
                                     yearRange="{{yearsRange}}" hideOnDateTimeSelect="true" [stepMinute]="15"
@@ -202,10 +194,11 @@
                         </td>
                         <!-- End Date -->
                         <td>
-                            <span [title]="rowData.pUserEnd |  date:' d MMM, y, h:mm a'" *ngIf="(!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat === true) || rowData.type === 'milestone' || rowData.type === 'submilestone'">{{rowData.pEnd |  date:' d MMM, y' }}</span>
-                            <span [title]="rowData.pUserEnd |  date:' d MMM, y, h:mm a'" *ngIf="!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat !== true">{{rowData.pEnd |  date:' d MMM, y, h:mm a' }}</span>
+                            <span [title]="rowData.pUserEnd |  date:' d MMM, y, h:mm a'" *ngIf="(!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat === true) || rowData.type === 'milestone' || rowData.type === 'submilestone'">{{rowData.end_date |  date:' d MMM, y' }}</span>
+                            <span [title]="rowData.pUserEnd |  date:' d MMM, y, h:mm a'" *ngIf="(!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat !== true) || (rowData.type === 'task' && rowData.editMode && rowData.itemType ==='Send to client')">{{rowData.end_date |  date:' d MMM, y, h:mm a' }}</span>
 
-                            <span *ngIf="rowData.editMode && rowData.type === 'task'">
+
+                            <span *ngIf="rowData.editMode && rowData.type === 'task' && rowData.itemType !=='Send to client' && (rowData.status === 'Not Started' || rowData.status === 'Not Confirmed' || rowData.status === 'In Progress' || rowData.status === 'Not Saved')">
 
                                 <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserEndDatePart"
                                     [disabledDays]="[0,6]" [readonlyInput]="true" dateFormat="dd M , yy"
@@ -224,22 +217,38 @@
                                 </ngx-material-timepicker>
                             </span>
                         </td>
+                        <!-- Budget Hrs -->
+                        <td style="text-align: center;" *ngIf="!projectDetails">
+                          <div *ngIf="(rowData.type === 'milestone' && rowData.status !== 'Not Saved' && rowData.status !== 'Not Confirmed' && !rowData.isCurrent) || (rowData.type ==='task' && !rowData.editMode && rowData.itemType !== 'Client Review' && rowData.itemType !== 'Send to client')"
+                              style="float: left;margin-left: 22px;">{{rowData.budgetHours}}</div>
+                          <input type="number" class="form-control budgetHr" required="required" oninput="validity.valid||(value='0');" min="0" max="{{rowData.ExpectedBudgetHrs}}" value="0" step="0.25" *ngIf="(rowData.type !=='milestone' && rowData.type !=='submilestone' && rowData.editMode
+                              && (rowData.itemType !== 'Client Review' &&  rowData.itemType !== 'Send to client')) ||
+                              ((rowData.status ==='In Progress' || rowData.status ==='Not Started' || rowData.status ==='Not Confirmed' || rowData.status ==='Not Saved') && rowData.type === 'milestone')" required="required" style="border:none;border-radius: 0px;height: 25px;text-align: center;padding:0px;float: left;"
+                              [id]="rowData.id" (change)="budgetHrsChanged(rowData)" [(ngModel)]="rowData.budgetHours">
+                          <div class='overlayIcon' (click)="this.showOverlayPanel($event, rowData, dailyAllocateOP)" style="float: right;cursor: pointer;" title="Click to see allocation split" *ngIf="rowData.showAllocationSplit">
+                              <i class="fa fa-info-circle" aria-hidden="true"></i>
+                          </div>
+                        </td>
+                          <!-- spent Hrs -->
+                          <td style="text-align: center;">{{rowData.spentTime}}</td>
                         <!-- TaT -->
                         <td style="text-align: center">
                             <span *ngIf="rowData.type ==='milestone' || rowData.type ==='submilestone'">{{rowData.tatVal}}</span>
                             <span *ngIf="!rowData.editMode && rowData.type ==='task' && rowData.itemType !=='Client Review' && rowData.itemType !=='Send to client' ">{{rowData.tat === true ? 'Yes' :'No'}}</span>
-                            <p-checkbox *ngIf="rowData.editMode && rowData.type === 'task' 
-                            && rowData.itemType !=='Client Review' && rowData.itemType !=='Send to client' && (rowData.IsCentrallyAllocated !== 'Yes' || rowData.slotType === 'Both' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.pName.indexOf('Slot') < 0))"
-                                (onChange)="ChangeEndDate($event, rowData)" [(ngModel)]="rowData.pName ==='Client Review' ? 'Yes' : rowData.tat" binary="true">
-                            </p-checkbox>
+
+
+                            <p-inputSwitch *ngIf="rowData.editMode && rowData.type === 'task'
+                                && rowData.itemType !=='Client Review' && rowData.itemType !=='Send to client' && (rowData.IsCentrallyAllocated !== 'Yes' || rowData.slotType === 'Both' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.title.indexOf('Slot') < 0))"
+                                [disabled]=" rowData.title ==='Client Review'" (onChange)="ChangeEndDate($event, rowData)" [(ngModel)]="rowData.title ==='Client Review' ? 'Yes' : rowData.tat"></p-inputSwitch>
                         </td>
 
                         <!-- Assign To -->
                         <td>
-                            <span *ngIf="!rowData.editMode && (rowData.IsCentrallyAllocated !== 'Yes' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.pName.indexOf('Slot') < 0))"> {{rowData.pRes}}</span>
-                            <p-dropdown [style]="{'width':'100%'}" *ngIf="rowData.editMode && rowData.type !=='milestone' && rowData.type !=='submilestone' && (rowData.IsCentrallyAllocated !== 'Yes' || rowData.slotType === 'Both' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.pName.indexOf('Slot') < 0))"
+                            <span *ngIf="!rowData.editMode && (rowData.IsCentrallyAllocated !== 'Yes' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.title.indexOf('Slot') < 0))">
+                                {{rowData.AssignedTo.Title}}</span>
+                            <p-dropdown [style]="{'width':'100%'}" *ngIf="rowData.editMode && rowData.type !=='milestone' && rowData.type !=='submilestone' && (rowData.IsCentrallyAllocated !== 'Yes' || rowData.slotType === 'Both' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.title.indexOf('Slot') < 0))"
                                 #assignedTo class="txtTask" [options]="rowData.assignedUsers" [disabled]="rowData.status=== 'In Progress'" [panelStyle]="{minWidth:'15em' }" [(ngModel)]="rowData.AssignedTo" placeholder="Select Resource" [showClear]="true"
-                                [group]="true" filter="true" (onChange)="assignedToUserChanged(rowData, milestoneData)">
+                                [group]="true" filter="true" (onChange)="assignedToUserChanged(rowData)">
                                 <ng-template let-group pTemplate="group">
                                     <span style="margin-left:.25em">{{group.label}}</span>
                                 </ng-template>
@@ -248,48 +257,54 @@
                                 </ng-template>
                             </p-dropdown>
                         </td>
-                        <!-- Allow start -->
-                        <td [ngStyle]="{'text-align': 'rowData.editMode' ? 'center':'left'}">
-                            <span *ngIf="((rowData.editMode || !rowData.editMode) && rowData.type ==='milestone'  && rowData.type !=='submilestone') || (!rowData.editMode && rowData.type !=='milestone'  && rowData.type !=='submilestone' ) ">{{rowData.allowStart === true ? 'Yes':'No'}}</span>
-                            <!-- && (rowData.IsCentrallyAllocated !== 'Yes' || rowData.slotType === 'Both' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.pName.indexOf('Slot') < 0)) -->
-                            <p-inputSwitch *ngIf="rowData.editMode && (rowData.type !== 'milestone' && rowData.type !=='submilestone') && (rowData.itemType !=='Client Review' && rowData.itemType !=='Send to client')" [(ngModel)]="rowData.allowStart"></p-inputSwitch>
-                            <!-- rowData.IsCentrallyAllocated !== 'Yes'" -->
-                            <!-- <p-checkbox *ngIf="rowData.editMode && (rowData.type !== 'milestone' && rowData.type !=='submilestone') && (rowData.pName !=='Client Review' && rowData.pName !=='SC')" [(ngModel)]="rowData.allowStart" binary="true"></p-checkbox> -->
+                        <!--Daily Allocation Type-->
+                        <td [style.backgroundColor]="rowData?.allocationColor">
+                            <div fxLayout="column" fxLayoutAlign="center center" *ngIf="rowData?.allocationTypeLoader">
+                                <div id="allocationTypeLoader"></div>
+                            </div>
                         </td>
-                        <!-- Disable cascade -->
-
                         <td [ngStyle]="{'text-align': 'rowData.editMode' ? 'center':'left'}">
                             <span *ngIf="rowData.type==='task' && !rowData.editMode">{{rowData.DisableCascade === true  ? 'Yes':'No'}}</span>
 
                             <p-inputSwitch *ngIf="rowData.editMode && rowData.type==='task' && rowData.itemType !== 'Client Review'" [(ngModel)]="rowData.DisableCascade"></p-inputSwitch>
-
-                            <!-- {{rowData.DisableCascade}} -->
-
-                            <!-- <span *ngIf="rowData.type==='task'"> {{rowData.DisableCascade === 'Yes' ? 'No':'Yes'}}</span> -->
                         </td>
 
                         <!-- Menu option -->
                         <td [style.backgroundColor]="rowData.color">
 
-                            <button *ngIf="rowData.type === 'task' && rowData.milestoneStatus !== 'Completed' && (rowData.status !== 'Completed' && rowData.status !=='Abandon' && rowData.status !=='Auto Closed' && rowData.status !=='Hold' && rowData.status !== 'Not Saved') && !changeInRestructure"
-                                [hidden]="rowData.editMode === false" type="button" (click)="CancelChanges(rowData,'task')" style="line-height: 0px;height: 0px;" mat-icon-button title="Cancel">
-                                <mat-icon> cancel</mat-icon>
-                            </button>
-
-                            <div *ngIf=" !rowData.editMode && rowData.type === 'task' && rowData.milestoneStatus !== 'Completed' &&
-                            (rowData.status !== 'Completed' && rowData.status !== 'Abandon' && rowData.status !== 'Auto Closed'
-                              && rowData.status !== 'Hold') && !projectDetails && !rowData.parentSlot" style="text-align: center;">
+                            <!-- <div  *ngIf="!rowData.editMode && rowData.type === 'milestone' && rowData.status !== 'Completed' && rowData.status !== 'Auto Closed' && !changeInRestructure"
+                                      style="text-align: center;">
                                 <p-menu #popupMenu [popup]="true" [style]="{'text-align': 'left'}" [model]="taskMenu">
                                 </p-menu>
 
-                                <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData,rowNode, popupMenu);popupMenu.show($event);"></i>
+                                <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData, rowNode);popupMenu.show($event);"></i>
+                            </div> -->
+
+                          <div  *ngIf="(rowData.type === 'task' && rowData.milestoneStatus !== 'Completed' && rowData.status !== 'Completed' && rowData.status !=='Abandon' && rowData.status !=='Auto Closed' && rowData.status !=='Hold' && rowData.status !== 'Not Saved') || (rowData.type === 'milestone' && rowData.status !== 'Completed' && rowData.status !== 'Auto Closed') && !changeInRestructure"
+                                      [hidden]="rowData.editMode === false"
+                                      style="text-align: center;">
+                                <p-menu #popupMenu [popup]="true" [style]="{'text-align': 'left'}" [model]="taskMenu">
+                                </p-menu>
+
+                                <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData, rowNode);popupMenu.show($event);"></i>
                             </div>
 
-                            <div *ngIf=" rowData.editMode && rowData.type === 'task' && rowData.status === 'Not Saved' && rowData.itemType !== 'Client Review' && rowData.itemType !== 'Send to client'">
+                            <div *ngIf="(!rowData.editMode && (rowData.type === 'task' && rowData.milestoneStatus !== 'Completed' &&
+                            (rowData.status !== 'Completed' && rowData.status !== 'Abandon' && rowData.status !== 'Auto Closed'
+                              && rowData.status !== 'Hold') && !projectDetails && !rowData.parentSlot)) || !rowData.editMode && (rowData.type === 'milestone' && rowData.status !== 'Completed' && rowData.status !== 'Auto Closed' && !changeInRestructure)"
+                                style="text-align: center;">
                                 <p-menu #popupMenu [popup]="true" [style]="{'text-align': 'left'}" [model]="taskMenu">
                                 </p-menu>
 
-                                <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopupEdit(rowData,rowNode, popupMenu);popupMenu.show($event);"></i>
+                                <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData,rowNode);popupMenu.show($event);"></i>
+                            </div>
+
+                            <div
+                                *ngIf=" rowData.editMode && rowData.type === 'task' && rowData.status === 'Not Saved' && rowData.itemType !== 'Client Review' && rowData.itemType !== 'Send to client'">
+                                <p-menu #popupMenu [popup]="true" [style]="{'text-align': 'left'}" [model]="taskMenu">
+                                </p-menu>
+
+                                <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData,rowNode);popupMenu.show($event);"></i>
                             </div>
                         </td>
                     </tr>
@@ -305,28 +320,24 @@
 
             </p-treeTable>
 
-            <!-- <p-contextMenu #milestones [hidden]="contextMenuvisible" appendTo="body" [model]="contextMenuOptions">
-            </p-contextMenu> -->
 
-            <!-- **********************************************************************************************************
-                                                         Comment Popup
-           ********************************************************************************************************** -->
-            <p-dialog header="Any specific instructions for task" [closable]="false" [modal]="true" [style]="{width: '450px', minWidth: '300px'}" [(visible)]="displayComment">
-                <textarea *ngIf="displayComment" placeholder="Leave Comment" rows="8" cols="30" pInputTextarea autoResize="autoResize" style="width:100%;padding: 3%;" [(ngModel)]="task.scope"> </textarea>
-                <p-footer>
-                    <button type="button" pButton icon="pi pi-check" style="background-color: #af0b14;border-color:#af0b14;" (click)=" displayComment=false" label="Save"></button>
-                    <button type="button" pButton icon="pi pi-times" (click)="cancelComment();displayComment=false" label="Cancel" class="ui-button-secondary"></button>
-                </p-footer>
-            </p-dialog>
         </div>
 
         <!-- **********************************************************************************************************
                                                          gantt chart Data
            ********************************************************************************************************** -->
-        <div fxLayout="row" fxLayoutAlign=" start center" [ngClass]="projectDetails  ? 'VisualRepresentationpopup':'VisualRepresentation'" [hidden]="visualgraph === false">
-            <ng-gantt style="width:100%;" *ngIf='visualgraph' [options]="editorOptions" [data]="GanttchartData" #gantteditor></ng-gantt>
-        </div>
+        <div fxLayout="row" fxLayoutAlign=" start center" [ngClass]="projectDetails  ? 'VisualRepresentationpopup':'VisualRepresentation'" [hidden]="!visualgraph || loaderenable" style="width:100%">
+            <!--&& loaderenable === true-->
 
+            <div style="width:100%">
+                <ng-template #ganttcontainer></ng-template>
+            </div>
+        </div>
+        <app-allocation-overlay #dailyAllocateOP></app-allocation-overlay>
+
+        <input [hidden]='true' readonly [ngxTimepicker]="ganttPicker" [(ngModel)]="taskTime" [min]="minTime" [max]="maxTime" class="timePicker">
+        <ngx-material-timepicker [preventOverlayClick]="true" (closed)="timeChange()" #ganttPicker (timeSet)="setTime($event)" [ngxMaterialTimepickerTheme]="darkTheme" [minutesGap]="15">
+        </ngx-material-timepicker>
     </div>
 
 
@@ -403,3 +414,39 @@
         </tbody>
     </table>
 </div>
+
+<p-dialog [(visible)]="showBudgetHrs" [modal]="true" [draggable]="false" [responsive]="true" [style]="{'width': '30%', 'top':'0px'}" [closeOnEscape]="false" [closable]="false">
+    <p-header>
+        Change Budget Hours
+        <div class="footerBtn" fxLayout="row" fxLayoutAlign="end center">
+            <button type="button" pButton icon="pi pi-save" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="saveTask(true,null)" label="Save" class="saveTaskButton"></button>
+            <button type="button" pButton icon="pi pi-times" (click)="close()" label="Cancel" class="cancelBtn" style="background-color:ghostwhite;"></button>
+        </div>
+    </p-header>
+    <form>
+        <div class="p-grid mt-20">
+            <div class="p-col-4">
+                Budget Hrs
+            </div>
+            <div class="p-col-4">
+                <input type="number" pInputText [(ngModel)]="budgetHrs" [ngModelOptions]="{standalone: true}" (change)="setBudgetHours(budgetHrsTask)" oninput="validity.valid||(value='0');" min="0" max={{maxBudgetHrs}} value="0" step="0.25">
+            </div>
+        </div>
+    </form>
+</p-dialog>
+
+
+<p-sidebar [(visible)]="displayBody" position="bottom" styleClass="ui-sidebar-lg resourcePanel" [showCloseIcon]="false" [closeOnEscape]="false" (onHide)="onClose()">
+    <app-resource-selection *ngIf="hideResourceSelection" #resourceSelect></app-resource-selection>
+</p-sidebar>
+
+<!-- **********************************************************************************************************
+                                                         Comment Popup
+    ********************************************************************************************************** -->
+<p-dialog header="Any specific instructions for task" [closable]="false" [modal]="true" [style]="{width: '450px', minWidth: '300px'}" [(visible)]="displayComment">
+    <textarea *ngIf="displayComment" placeholder="Leave Comment" rows="8" cols="30" pInputTextarea autoResize="autoResize" style="width:100%;padding: 3%;" [(ngModel)]="task.scope"> </textarea>
+    <p-footer>
+        <button type="button" pButton icon="pi pi-check" style="background-color: #af0b14;border-color:#af0b14;" (click)="displayComment=false" label="Save"></button>
+        <button type="button" pButton icon="pi pi-times" (click)="cancelComment();displayComment=false" label="Cancel" class="ui-button-secondary"></button>
+    </p-footer>
+</p-dialog>

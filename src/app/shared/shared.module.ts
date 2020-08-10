@@ -4,12 +4,10 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NumberOnlyDirective } from './directives/number-only.directive';
 import { InputPatterenDirective } from './directives/input-patteren.directive';
-
 import { PrimengModule } from '../primeng/primeng.module';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { FileUploadProgressDialogComponent } from './file-upload-progress-dialog/file-upload-progress-dialog.component';
-
-
+import { FlexLayoutModule } from '@angular/flex-layout';
 @NgModule({
   declarations: [
     NumberOnlyDirective,
@@ -22,7 +20,8 @@ import { FileUploadProgressDialogComponent } from './file-upload-progress-dialog
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    PrimengModule
+    PrimengModule,
+    FlexLayoutModule
   ],
   exports: [
     ReactiveFormsModule,

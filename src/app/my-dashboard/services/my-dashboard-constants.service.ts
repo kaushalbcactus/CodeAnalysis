@@ -3,7 +3,6 @@ import { ConstantsService } from '../../Services/constants.service';
 import { GlobalService } from '../../Services/global.service';
 import { DatePipe } from '@angular/common';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
-import { MessageService } from 'primeng/api';
 import { CommonService } from 'src/app/Services/common.service';
 import { Subject, Observable } from 'rxjs';
 import { ISPRequest } from 'src/app/qms/interfaces/qms';
@@ -33,7 +32,6 @@ export class MyDashboardConstantsService {
     public sharedObject: GlobalService,
     private datePipe: DatePipe,
     private spServices: SPOperationService,
-    public messageService: MessageService,
     public common: CommonService,
     public qmsConstant: QMSConstantsService) { }
 
@@ -52,46 +50,48 @@ export class MyDashboardConstantsService {
 
     common: {
       getAllResource: {
-        select: 'ID,UserName/ID,UserName/EMail,UserName/Title,UserName/Name,TimeZone/Title,Designation, Manager/ID, Manager/Title, Tasks/ID, Tasks/Title',
-        expand: 'UserName,TimeZone,Manager,Tasks',
-        filter: 'IsActive eq \'Yes\'',
+        select: 'ID,UserNamePG/ID,UserNamePG/EMail,UserNamePG/Title,UserNamePG/Name,TimeZone/Title,Designation, Manager/ID, Manager/Title, Tasks/ID, Tasks/Title',
+        expand: 'UserNamePG,TimeZone,Manager,Tasks',
+        filter: 'IsActiveCH eq \'Yes\'',
         top: '4500'
       },
       getMailTemplate: {
-        select: 'Content',
+        select: 'ContentMT',
         filter: 'Title eq \'{{templateName}}\''
       }
     },
     MyTasks: {
 
-      select: 'ID,Title,Status,StartDate,DueDate,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,Comments,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,SubMilestones, IsCentrallyAllocated,ParentSlot,AssignedTo/Title,AssignedTo/EMail',
-      orderby: 'DueDate asc',
+      select: 'ID,Title,Status,StartDate,DueDateDT,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,CommentsMT,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,SubMilestones, IsCentrallyAllocated,ParentSlot,AssignedTo/Title,AssignedTo/EMail,AllocationPerDay',
+      orderby: 'DueDateDT asc',
       filter: 'AssignedTo eq  {{userId}} and (Task ne \'Send to client\') and (Task ne \'Follow up\') and (Task ne \'Client Review\') and (Task ne \'Time Booking\') and (Task ne \'Blocking\') and ',
       filterStatus: '(Status ne \'Completed\') and (Status ne \'Auto Closed\')  and (Status ne \'Deleted\') and (Status ne \'Abandon\') and (Status ne \'Hold Request\') and (Status ne \'Abandon Request\') and (Status ne \'Hold\') and (Status ne \'Project on Hold\')',
       filterCompleted: '(Status eq \'Completed\' or Status eq \'Auto Closed\') and (Task ne \'Adhoc\')',
-      filterDate: 'and((StartDate ge \'{{startDateString}}\' and StartDate le \'{{endDateString}}\') or (DueDate ge \'{{startDateString}}\' and DueDate le \'{{endDateString}}\') or (StartDate le \'{{startDateString}}\' and DueDate ge \'{{endDateString}}\'))',
+      filterNotStartedInProgress:'(Status eq \'Not Started\' or Status eq \'In Progress\')',
+      //filterDate: 'and ((StartDate ge \'{{startDateString}}\' and StartDate le \'{{endDateString}}\') or (DueDate ge \'{{startDateString}}\' and DueDate le \'{{endDateString}}\') or (StartDate le \'{{startDateString}}\' and DueDate ge \'{{endDateString}}\'))',
+      filterDate: 'and((StartDate ge \'{{startDateString}}\' and StartDate le \'{{endDateString}}\') or (DueDateDT ge \'{{startDateString}}\' and DueDateDT le \'{{endDateString}}\') or (StartDate le \'{{startDateString}}\' and DueDateDT ge \'{{endDateString}}\'))',
       expand: 'AssignedTo/Title'
 
     },
     ClientLegalEntitys: {
-      select: 'ID,Title,Acronym,Geography,ClientGroup,Bucket,DistributionList',
+      select: 'ID,Title,Acronym,ClientGroup,Bucket,DistributionList',
       orderby: 'Title asc',
-      filter: 'IsActive eq \'yes\'',
+      filter: 'IsActiveCH eq \'yes\'',
       top: 4500
     },
     ResourceCategorization: {
-      select: 'ID,UserName/ID,UserName/Title,Account/ID,Account/Title,Manager/ID,Manager/Title,Designation,PrimarySkill,SkillLevel/ID,SkillLevel/Title,TimeZone/ID,TimeZone/Title,IsActive,IsFTE',
-      expand: 'UserName/ID,UserName/Title,Account/ID,Account/Title,Manager/ID,Manager/Title,SkillLevel,TimeZone/ID,TimeZone/Title',
-      filter: 'IsActive eq \'Yes\'',
-      orderby: 'UserName/Title',
+      select: 'ID,UserNamePG/ID,UserNamePG/Title,Account/ID,Account/Title,Manager/ID,Manager/Title,Designation,PrimarySkill,SkillLevel/ID,SkillLevel/Title,TimeZone/ID,TimeZone/Title,IsActiveCH,IsFTE',
+      expand: 'UserNamePG/ID,UserNamePG/Title,Account/ID,Account/Title,Manager/ID,Manager/Title,SkillLevel,TimeZone/ID,TimeZone/Title',
+      filter: 'IsActiveCH eq \'Yes\'',
+      orderby: 'UserNamePG/Title',
       top: 4500
     },
     ProjectContacts: {
-      select: 'ID,Title,FName,LName,EmailAddress,Designation,Phone,Address,FullName,Department,Status,ReferralSource,RelationshipStrength,EngagementPlan,Comments,ProjectContactsType,ProjectContactsType,ClientLegalEntity',
+      select: 'ID,Title,FName,LName,EmailAddress,Designation,Phone,AddressMT,FullNameCC,DepartmentST,Status,ReferralSource,RelationshipStrength,EngagementPlan,CommentsMT,ProjectContactsType,ProjectContactsType,ClientLegalEntity',
       top: '4500'
     },
     ProjectInformations: {
-      select: 'ID,Title,ProjectCode,Status,ClientLegalEntity,Milestones,WBJID,ProjectFolder',
+      select: 'ID,Title,ProjectCode,Status,ClientLegalEntity,Milestones,WBJID,ProjectFolder,ProjectType',
       filter: '(Status eq \'Author Review\' or Status eq \'In Progress\' or Status eq \'Ready for Client\' or Status eq \'Unallocated\')',
       orderby: 'ProjectCode asc',
       top: '4500'
@@ -113,17 +113,17 @@ export class MyDashboardConstantsService {
       top: '4500'
     },
     previousNextTask: {
-      select: 'ID,Title,StartDate,DueDate,Status,Task,NextTasks,PrevTasks,Milestone,SubMilestones,IsCentrallyAllocated,ParentSlot,Start_x0020_Date_x0020_Text,End_x0020_Date_x0020_Text,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail,Actual_x0020_End_x0020_Date',
+      select: 'ID,Title,StartDate,DueDateDT,Status,Task,NextTasks,PrevTasks,Milestone,SubMilestones,IsCentrallyAllocated,ParentSlot,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail,Actual_x0020_End_x0020_Date',
       filter: '',
       expand: 'AssignedTo/Title'
     },
     previousNextTaskParent: {
-      select: 'ID,Title,StartDate,DueDate,Status,Task,NextTasks,PrevTasks,Milestone,SubMilestones,IsCentrallyAllocated,ParentSlot,Start_x0020_Date_x0020_Text,End_x0020_Date_x0020_Text,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail,ProjectCode',
+      select: 'ID,Title,StartDate,DueDateDT,Status,Task,NextTasks,PrevTasks,Milestone,SubMilestones,IsCentrallyAllocated,ParentSlot,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail,ProjectCode',
       filter: 'ID eq {{ParentSlotId}}',
       expand: 'AssignedTo/Title'
     },
     nextPreviousTaskChild: {
-      select: 'ID,Title,StartDate,DueDate,Status,Task,NextTasks,PrevTasks,Milestone,SubMilestones,IsCentrallyAllocated,ParentSlot,Start_x0020_Date_x0020_Text,End_x0020_Date_x0020_Text,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail,Actual_x0020_End_x0020_Date',
+      select: 'ID,Title,StartDate,DueDateDT,Status,Task,NextTasks,PrevTasks,Milestone,SubMilestones,IsCentrallyAllocated,ParentSlot,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail,Actual_x0020_End_x0020_Date',
       filter: 'ParentSlot eq {{ParentSlotId}} and Status ne \'Deleted\'',
       expand: 'AssignedTo/Title'
     },
@@ -138,7 +138,7 @@ export class MyDashboardConstantsService {
       expand: 'AssignedTo/Title'
     },
     TimeSpent: {
-      select: 'ID,Title,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,DueDate,Status,ExpectedTime,TimeSpentPerDay,TimeSpentSubmitStatus',
+      select: 'ID,Title,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,DueDateDT,Status,ExpectedTime,TimeSpentPerDay',
       // filter: 'ID eq {{taskId}}',
     },
     Comments: {
@@ -147,9 +147,9 @@ export class MyDashboardConstantsService {
     },
     Milestone: {
 
-      select: 'ID,Title,AssignedTo/Id,AssignedTo/Title,DueDate,TaskComments,SubMilestones',
+      select: 'ID,Title,AssignedTo/Id,AssignedTo/Title,DueDateDT,TaskComments,SubMilestones',
       expand: 'AssignedTo',
-      orderby: 'DueDate desc',
+      orderby: 'DueDateDT desc',
       filter: 'ProjectCode eq \'{{ProjectCode}}\' and Milestone eq \'{{Milestone}}\''
 
     },
@@ -187,33 +187,39 @@ export class MyDashboardConstantsService {
     },
 
     MyTimeline: {
-      select: 'ID,Title,Status,StartDate,DueDate,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,Comments,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,TATStatus,Entity,SubMilestones',
-      orderby: 'DueDate asc',
+      select: 'ID,Title,Status,StartDate,DueDateDT,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,CommentsMT,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,TATStatus,Entity,SubMilestones,AllocationPerDay',
+      orderby: 'DueDateDT asc',
       filter: 'AssignedTo eq  {{userId}} and (Task ne \'Send to client\') and (Task ne \'Follow up\') and (Task ne \'Client Review\') and  (Task ne \'Time Booking\') and (Task ne \'Blocking\') and ',
       filterNotCompleted: '(Status ne \'Completed\') and (Status ne \'Not Confirmed\') and (Status ne \'Deleted\') and (Status ne \'Abandon\') and (Status ne \'Hold Request\') and (Status ne \'Abandon Request\') and (Status ne \'Hold\') and (Status ne \'Project on Hold\') and (Status ne \'Auto Closed\')',
       filterPlanned: '(Status eq \'Not Confirmed\')',
       filterCompleted: '(Task ne \'Adhoc\') and ((Status eq \'Completed\' ) or (Status eq \'Auto Closed\'))',
-      filterAdhoc: '(Task eq \'Adhoc\' and ProjectCode eq \'Adhoc\' and Status eq \'Completed\')',
       filterAll: '(Status ne \'Deleted\')',
-      filterDate: 'and((StartDate ge \'{{startDateString}}\' and StartDate le \'{{endDateString}}\') or (DueDate ge \'{{startDateString}}\' and DueDate le \'{{endDateString}}\') or (StartDate le \'{{startDateString}}\' and DueDate ge \'{{endDateString}}\'))',
+      filterDate: 'and((StartDate ge \'{{startDateString}}\' and StartDate le \'{{endDateString}}\') or (DueDateDT ge \'{{startDateString}}\' and DueDateDT le \'{{endDateString}}\') or (StartDate le \'{{startDateString}}\' and DueDateDT ge \'{{endDateString}}\'))',
       top: 4500
     },
     TaskDetails: {
-      select: 'ID,Title,Status,StartDate,DueDate,SubMilestones,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,Comments,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,TATStatus,Entity,AssignedTo/Id,AssignedTo/Title',
+      select: 'ID,Title,Status,StartDate,DueDateDT,SubMilestones,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,CommentsMT,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,TATStatus,Entity,AssignedTo/Id,AssignedTo/Title',
       filter: 'ID eq {{taskId}}',
       expand: 'AssignedTo',
     },
     ClientLegalEntities: {
       select: 'ID,Title',
       orderby: 'Title asc',
-      filter: 'IsActive eq \'Yes\'',
+      filter: 'IsActiveCH eq \'Yes\'',
       top: 4500
     },
     LeaveCalendar: {
-
       select: 'ID,EventDate,EndDate,IsHalfDay,Title,IsActive',
       filter: '(UserName/Id eq {{currentUser}} and IsActive eq \'Yes\' ) and ((EventDate ge \'{{startDateString}}\' and EventDate le \'{{endDateString}}\') or (EndDate ge \'{{startDateString}}\' and EndDate le \'{{endDateString}}\') or (EventDate le \'{{startDateString}}\' and EndDate ge \'{{endDateString}}\'))',
       orderby: 'Created',
+      top: 4500
+    },
+
+    AdhocTasks: {
+      select: 'ID,Title,Status,StartDate,DueDateDT,TimeSpent,CommentsMT,Task,TaskComments,Entity',
+      orderby: 'DueDateDT asc',
+      filter: 'AssignedTo eq  {{userId}} and  Status eq \'Completed\'',
+      filterDate: 'and((StartDate ge \'{{startDateString}}\' and StartDate le \'{{endDateString}}\') or (DueDateDT ge \'{{startDateString}}\' and DueDateDT le \'{{endDateString}}\') or (StartDate le \'{{startDateString}}\' and DueDateDT ge \'{{endDateString}}\'))',
       top: 4500
     },
     AvailableHours: {
@@ -226,21 +232,21 @@ export class MyDashboardConstantsService {
     AllMilestones:
     {
       select: 'ID,Title,SubMilestones',
-      filter: 'ProjectCode eq \'{{projectCode}}\' and ContentType eq \'Summary Task\' and (Status eq \'In Progress\' or (Status eq \'Completed\' and Actual_x0020_End_x0020_Date ge \'{{DateString}}\'))',
+      filter: 'ProjectCode eq \'{{projectCode}}\' and ContentTypeCH eq \'Milestone\' and (Status eq \'In Progress\' or (Status eq \'Completed\' and Actual_x0020_End_x0020_Date ge \'{{DateString}}\'))',
       top: 4500
     },
 
     MyTimelineForBooking: {
-      select: 'ID,Title,Status,StartDate,DueDate,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,Comments,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,TATStatus,Entity,TimeSpentPerDay,SubMilestones',
-      orderby: 'DueDate asc',
+      select: 'ID,Title,Status,StartDate,DueDateDT,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,CommentsMT,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,TATStatus,Entity,TimeSpentPerDay,SubMilestones',
+      orderby: 'DueDateDT asc',
       filter: 'AssignedTo eq  {{userId}} and ',
       filterNotCompleted: '(Status ne \'Not Confirmed\') and (Status ne \'Deleted\') and (Status ne \'Abandon\') and (Status ne \'Hold Request\') and (Status ne \'Abandon Request\') and (Status ne \'Hold\') and (Status ne \'Project on Hold\')',
-      filterDate: 'and ((StartDate ge \'{{startDateString}}\' and StartDate le \'{{endDateString}}\') or (DueDate ge \'{{startDateString}}\' and DueDate le \'{{endDateString}}\') or (Actual_x0020_Start_x0020_Date ge \'{{startDateString}}\' and Actual_x0020_Start_x0020_Date le \'{{endDateString}}\') or (Actual_x0020_End_x0020_Date ge \'{{startDateString}}\' and Actual_x0020_End_x0020_Date le \'{{endDateString}}\') or (StartDate le \'{{startDateString}}\' and DueDate ge \'{{endDateString}}\') or (StartDate ge \'{{startDateString}}\' and DueDate le \'{{endDateString}}\') or (Actual_x0020_Start_x0020_Date le \'{{startDateString}}\' and DueDate ge \'{{endDateString}}\'))',
+      filterDate: 'and ((StartDate ge \'{{startDateString}}\' and StartDate le \'{{endDateString}}\') or (DueDateDT ge \'{{startDateString}}\' and DueDateDT le \'{{endDateString}}\') or (Actual_x0020_Start_x0020_Date ge \'{{startDateString}}\' and Actual_x0020_Start_x0020_Date le \'{{endDateString}}\') or (Actual_x0020_End_x0020_Date ge \'{{startDateString}}\' and Actual_x0020_End_x0020_Date le \'{{endDateString}}\') or (StartDate le \'{{startDateString}}\' and DueDateDT ge \'{{endDateString}}\') or (StartDate ge \'{{startDateString}}\' and DueDateDT le \'{{endDateString}}\') or (Actual_x0020_Start_x0020_Date le \'{{startDateString}}\' and DueDateDT ge \'{{endDateString}}\'))',
       top: 4500
     },
     ProjectInformation:
     {
-      select: 'ID,Title,ProjectCode,ProjectFolder,ClientLegalEntity,PrimaryPOC,Status,DeliverableType,Milestone,Milestones,SubDeliverable,ServiceLevel,TA,Indication,Molecule,Complexity,Priority,ProposedStartDate,ProposedEndDate,ActualStartDate,ActualEndDate,IsPubSupport,PubSupportStatus,ConferenceJournal,Authors,Comments,WBJID,SOWCode,ProjectType,Created,Author/Title,BusinessVertical,SubDivision,SOWBoxLink,Description',
+      select: 'ID,Title,ProjectCode,ProjectFolder,ClientLegalEntity,PrimaryPOC,Status,DeliverableType,Milestone,Milestones,SubDeliverable,ServiceLevel,TA,Indication,Molecule,PriorityST,ProposedStartDate,ProposedEndDate,ActualStartDate,ActualEndDate,IsPubSupport,PubSupportStatus,ConferenceJournal,Authors,CommentsMT,WBJID,SOWCode,ProjectType,Created,Author/Title,BusinessVertical,SubDivision,SOWBoxLink,DescriptionMT',
       filterByCode: 'ProjectCode eq \'{{projectCode}}\'',
       filterByTitle: 'WBJID eq \'{{shortTitle}}\'',
       filter: '',
@@ -260,7 +266,7 @@ export class MyDashboardConstantsService {
 
 
     ClientReviewSchedules: {
-      select: 'ID,Title,Status,Task,Milestone,Start_x0020_Date_x0020_Text,End_x0020_Date_x0020_Text,ProjectCode',
+      select: 'ID,Title,Status,Task,Milestone,ProjectCode',
       filter: 'ProjectCode eq \'{{projectCode}}\' and Task eq \'Client Review\' and (Status eq \'Completed\' or (Status eq \'Not Started\' and PreviousTaskClosureDate ne null))'
     }
 
@@ -367,7 +373,7 @@ export class MyDashboardConstantsService {
         this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'GetNextPreviousTasksFromParentSlot');
         let res: any = await this.spServices.readItems(this.constants.listNames.Schedules.name, previousNextTaskChild);
         if (res.hasError) {
-          this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: res.message.value });
+          this.common.showToastrMessage(this.constants.MessageType.error,res.message.value,false);
           return;
         }
         res = res.length ? res : [];
@@ -400,7 +406,7 @@ export class MyDashboardConstantsService {
     this.tasks = this.previousNextTaskChildRes.length ? this.previousNextTaskChildRes : this.tasks;
     console.log('previousNextTaskChildRes ', this.previousNextTaskChildRes);
     this.tasks.map(c => c.StartDate = c.StartDate !== null ? this.datePipe.transform(c.StartDate, 'MMM d, y h:mm a') : '-');
-    this.tasks.map(c => c.DueDate = c.DueDate !== null ? this.datePipe.transform(c.DueDate, 'MMM d, y h:mm a') : '-');
+    this.tasks.map(c => c.DueDate = c.DueDateDT !== null ? this.datePipe.transform(c.DueDateDT, 'MMM d, y h:mm a') : '-');
 
     return this.tasks;
   }
@@ -412,7 +418,7 @@ export class MyDashboardConstantsService {
     if (task.Status === 'Completed' || task.Status === 'Auto Closed') {
       let PastDate = await this.RemoveBusinessDays(new Date(), 2);
       PastDate = new Date(PastDate.getFullYear(), PastDate.getMonth(), PastDate.getDate());
-      let TaskEndDate = task.Actual_x0020_End_x0020_Date ? new Date(task.Actual_x0020_End_x0020_Date) : new Date(task.DueDate);
+      let TaskEndDate = task.Actual_x0020_End_x0020_Date ? new Date(task.Actual_x0020_End_x0020_Date) : new Date(task.DueDateDT);
       TaskEndDate = new Date(TaskEndDate.getFullYear(), TaskEndDate.getMonth(), TaskEndDate.getDate());
       EnableNotification = PastDate.getTime() <= TaskEndDate.getTime() ? true : false;
     }
@@ -435,7 +441,7 @@ export class MyDashboardConstantsService {
     this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'GetNextPreviousTasksStatus');
     this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, currentTask);
     for (const element of this.response) {
-      if (element.AllowCompletion === 'No') {
+      // if (element.AllowCompletion === 'No') {
 
         const nextPrevTasks = await this.getNextPreviousTask(element);
         const prevTaskResponse = nextPrevTasks.filter(e => e.TaskType === 'Previous Task');
@@ -445,11 +451,11 @@ export class MyDashboardConstantsService {
             status = obj.Status;
           }
         } else {
-          status = 'AllowCompletion';
+          status = '';
         }
-      } else {
-        status = 'AllowCompletion';
-      }
+      // } else {
+      //   status = '';
+      // }
     }
     return status;
   }
@@ -541,7 +547,7 @@ export class MyDashboardConstantsService {
       const projInfoRes = currentParentTasks.length ? currentParentTasks[2].retItems[0] : null;
       if (!currentTaskRes.NextTasks) {
         if (parentTaskRes.Status !== 'Completed') {
-          const ctDueDate = new Date(this.datePipe.transform(currentTaskRes.DueDate, 'MMM d, y h:mm a'));
+          const ctDueDate = new Date(this.datePipe.transform(currentTaskRes.DueDateDT, 'MMM d, y h:mm a'));
           const todayDate = new Date();
           const ONE_HOUR = 60 * 60 * 1000;
           const timeDiff = ctDueDate.getTime() - todayDate.getTime();
@@ -549,18 +555,18 @@ export class MyDashboardConstantsService {
 
           if (ctDueDate > todayDate && timeDiff > ONE_HOUR) {
             const earlyTaskCompleteObj = {
-              __metadata: { type: this.constants.listNames.EarlyTaskComplete.type },
+              __metadata: { type: this.constants.listNames.EarlyTaskCompleteNotifications.type },
               Title: currentTaskRes.Title,
               ProjectCode: currentTaskRes.ProjectCode,
               ProjectCSId: { results: pcmLevels.map(x => x.ID) },
-              IsActive: 'Yes'
+              IsActiveCH: 'Yes'
             };
             batchURL = [];
             batchURL.push({
               data: earlyTaskCompleteObj,
-              url: this.spServices.getReadURL(this.constants.listNames.EarlyTaskComplete.name, null),
+              url: this.spServices.getReadURL(this.constants.listNames.EarlyTaskCompleteNotifications.name, null),
               type: 'POST',
-              listName: this.constants.listNames.EarlyTaskComplete.name
+              listName: this.constants.listNames.EarlyTaskCompleteNotifications.name
             });
             this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'EarlyTaskNotification');
             const res = await this.spServices.executeBatch(batchURL);
@@ -723,11 +729,12 @@ export class MyDashboardConstantsService {
 
     const batchUrl = [];
     const data = {
-      __metadata: { type: 'SP.Data.SchedulesListItem' },
+      __metadata: { type: this.constants.listNames.Schedules.type },
       Actual_x0020_End_x0020_Date: new Date(),
       Actual_x0020_Start_x0020_Date: task.Actual_x0020_Start_x0020_Date !== null ? task.Actual_x0020_Start_x0020_Date : new Date(),
       Status: task.Status,
       TaskComments: task.TaskComments,
+      DueDateDT: task.DueDateDT
     };
     const newdata = task.IsCentrallyAllocated === 'Yes' ? { ...data, ActiveCA: 'No' } : { ...data };
     const taskObj = Object.assign({}, this.queryConfig);
@@ -746,7 +753,7 @@ export class MyDashboardConstantsService {
       });
       if (task.Task === 'Submission Pkg') {
         const jcSubmissionData = {
-          __metadata: { type: 'SP.Data.JCSubmissionListItem' },
+          __metadata: { type: this.constants.listNames.JCSubmission.type },
           SubmissionPkgURL: docUrl
         };
         const jcSubObj = Object.assign({}, this.queryConfig);
@@ -758,21 +765,21 @@ export class MyDashboardConstantsService {
 
       } else if (task.Task === 'Galley') {
         const jcSubmissionData = {
-          __metadata: { type: 'SP.Data.JCGalleyListItem' },
+          __metadata: { type: this.constants.listNames.JCGalley.type },
           Title: task.ProjectCode,
           JCSubmissionID: this.jcSubId,
           GalleyDate: new Date().toISOString(),
           GalleyURL: docUrl
         };
         const jcSubObj = Object.assign({}, this.queryConfig);
-        jcSubObj.url = this.spServices.getReadURL(this.constants.listNames.jcGalley.name);
+        jcSubObj.url = this.spServices.getReadURL(this.constants.listNames.JCGalley.name);
         jcSubObj.data = jcSubmissionData;
-        jcSubObj.listName = this.constants.listNames.jcGalley.name;
+        jcSubObj.listName = this.constants.listNames.JCGalley.name;
         jcSubObj.type = 'POST';
         batchUrl.push(jcSubObj);
 
         const jcSubData = {
-          __metadata: { type: 'SP.Data.JCSubmissionListItem' },
+          __metadata: { type: this.constants.listNames.JCSubmission.type },
           Status: 'Galleyed'
         };
         const jcObj = Object.assign({}, this.queryConfig);
@@ -783,7 +790,7 @@ export class MyDashboardConstantsService {
         batchUrl.push(jcObj);
 
         const jcConData = {
-          __metadata: { type: 'SP.Data.JournalConferenceListItem' },
+          __metadata: { type: this.constants.listNames.JournalConf.type },
           Status: 'Galleyed'
         };
         const jcConObj = Object.assign({}, this.queryConfig);
@@ -794,7 +801,7 @@ export class MyDashboardConstantsService {
         batchUrl.push(jcConObj);
 
         const projectInfoData = {
-          __metadata: { type: 'SP.Data.ProjectInformationListItem' },
+          __metadata: { type: this.constants.listNames.ProjectInformation.type },
           PubSupportStatus: 'Galleyed'
         };
         const projectInfoObj = Object.assign({}, this.queryConfig);
@@ -806,7 +813,7 @@ export class MyDashboardConstantsService {
 
       } else if (task.Task === 'Submit') {
         const jcSubmissionData = {
-          __metadata: { type: 'SP.Data.JCSubmissionListItem' },
+          __metadata: { type: this.constants.listNames.JCSubmission.type },
           Status: 'Submitted',
           SubmissionDate: new Date().toISOString(),
           SubmissionURL: docUrl
@@ -819,7 +826,7 @@ export class MyDashboardConstantsService {
         batchUrl.push(jcSubmissionObj);
 
         const jcConData = {
-          __metadata: { type: 'SP.Data.JournalConferenceListItem' },
+          __metadata: { type: this.constants.listNames.JournalConf.type },
           Status: 'Submitted'
         };
         const jcConObj = Object.assign({}, this.queryConfig);
@@ -830,7 +837,7 @@ export class MyDashboardConstantsService {
         batchUrl.push(jcConObj);
 
         const projectInfoData = {
-          __metadata: { type: 'SP.Data.ProjectInformationListItem' },
+          __metadata: { type: this.constants.listNames.ProjectInformation.type },
           PubSupportStatus: 'Submitted',
           LastSubmissionDate: new Date().toISOString()
         };
@@ -843,7 +850,7 @@ export class MyDashboardConstantsService {
 
       } else if (task.Task === 'Journal Selection') {
         const projectInfoData = {
-          __metadata: { type: 'SP.Data.ProjectInformationListItem' },
+          __metadata: { type: this.constants.listNames.ProjectInformation.type },
           JournalSelectionURL: docUrl,
           JournalSelectionDate: new Date().toISOString()
         };
@@ -856,7 +863,7 @@ export class MyDashboardConstantsService {
 
       } else if (task.Task === 'Journal Requirement') {
         const jcConData = {
-          __metadata: { type: 'SP.Data.JournalConferenceListItem' },
+          __metadata: { type: this.constants.listNames.JournalConf.type },
           JournalRequirementDate: new Date().toISOString(),
           JournalRequirementURL: docUrl
         };
@@ -877,20 +884,20 @@ export class MyDashboardConstantsService {
 
     if (sendToClientPresent) {
       const data1 = {
-        __metadata: { type: 'SP.Data.ProjectInformationListItem' },
+        __metadata: { type: this.constants.listNames.ProjectInformation.type },
         Status: 'Ready for Client'
       };
       const scObj = Object.assign({}, this.queryConfig);
       scObj.data = data1;
-      scObj.url = this.spServices.getItemURL(this.constants.listNames.projectInfo.name, +this.projectInfo.ID);
-      scObj.listName = this.constants.listNames.projectInfo.name;
+      scObj.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, +this.projectInfo.ID);
+      scObj.listName = this.constants.listNames.ProjectInformation.name;
       scObj.type = 'PATCH';
       batchUrl.push(scObj);
     }
     let mailSubject = task.ProjectCode + '(' + this.projectInfo.WBJID + '): Task Completed';
     nextTasks.forEach(element => {
       const postdata = {
-        __metadata: { type: 'SP.Data.SchedulesListItem' },
+        __metadata: { type: this.constants.listNames.Schedules.type },
         PreviousTaskClosureDate: new Date()
       };
       const nextTaskObj = Object.assign({}, this.queryConfig);
@@ -900,7 +907,7 @@ export class MyDashboardConstantsService {
       nextTaskObj.type = 'PATCH';
       batchUrl.push(nextTaskObj);
       if (element.AssignedTo.EMail) {
-        let EmailTemplate = this.Emailtemplate.Content;
+        let EmailTemplate = this.Emailtemplate.ContentMT;
         const objEmailBody = [];
         // tslint:disable: object-literal-key-quotes
         objEmailBody.push({
@@ -930,7 +937,7 @@ export class MyDashboardConstantsService {
         });
         objEmailBody.push({
           'key': '@@Val7@@',
-          'value': element.DueDate
+          'value': element.DueDateDT
         });
         objEmailBody.push({
           'key': '@@Val8@@',
@@ -1056,7 +1063,12 @@ export class MyDashboardConstantsService {
   async callQMSPopup(currentTask) {
     const qmsTasks = [];
     const batchUrl = [];
-    let previousTasks = currentTask.prevTaskDetails ? currentTask.prevTaskDetails : [];
+    let prevTasks = [];
+    if (!currentTask.prevTaskDetails) {
+      const nextPreviousTasks = await this.getNextPreviousTask(currentTask);
+      prevTasks = nextPreviousTasks.length ? nextPreviousTasks.filter(c => c.TaskType === 'Previous Task') : [];
+    }
+    let previousTasks = currentTask.prevTaskDetails ? currentTask.prevTaskDetails : prevTasks;
     if (previousTasks.length) {
       previousTasks = previousTasks.filter(pt => pt.Status === 'Completed' || pt.Status === 'Auto Closed');
       const project = this.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === currentTask.ProjectCode);
@@ -1101,7 +1113,7 @@ export class MyDashboardConstantsService {
           const reviewer = 'Reviewer';
           let arrPrevTaskDocUrl = documents.filter(d => d.ListItemAllFields.TaskName === previousTask.Title && d.ListItemAllFields.Status.indexOf('Complete') > -1);
           arrPrevTaskDocUrl = arrPrevTaskDocUrl.length ? arrPrevTaskDocUrl.map(d => d.ServerRelativeUrl) : '';
-          let arrReviewDocUrl = documents.filter(d => d.ListItemAllFields.TaskName === currentTask.Title && d.ListItemAllFields.Status.indexOf('Complete') > -1);
+          let arrReviewDocUrl =  documents.filter(d => d.ListItemAllFields.TaskName === currentTask.Title && d.ListItemAllFields.Status.indexOf('Complete') > -1);
           arrReviewDocUrl = arrReviewDocUrl ? arrReviewDocUrl.map(d => d.ServerRelativeUrl) : '';
           previousTask.skill = this.getResourceSkill(previousTask);
           previousTask.isResourceEQG = arrEQGSkills.findIndex(t => previousTask.skill.includes(t)) > -1 ? true : false;
@@ -1124,7 +1136,7 @@ export class MyDashboardConstantsService {
               reviewTask: {
                 ID: currentTask.ID,
                 Title: currentTask.Title ? currentTask.Title : currentTask.Title,
-                PrevTasks: currentTask.prevTaskDetails,
+                PrevTasks: previousTasks,
                 Rated: currentTask.Rated,
                 defaultSkill: currentTask.defaultSkill
               },
@@ -1142,7 +1154,7 @@ export class MyDashboardConstantsService {
 
   getResourceSkill(task) {
     const assignedTo = task.AssignedTo ? task.AssignedTo : -1;
-    const resource = this.sharedObject.DashboardData.ResourceCategorization.find(res => res.UserName.ID === assignedTo.Id);
+    const resource = this.sharedObject.DashboardData.ResourceCategorization.find(res => res.UserNamePG.ID === assignedTo.Id);
     const skill = resource ? resource.SkillLevel.Title ? resource.SkillLevel.Title : '' : '';
     return skill;
   }
@@ -1162,8 +1174,76 @@ export class MyDashboardConstantsService {
     }
     return tempDate;
   }
-  
+
+
+  async getOpenTaskForDialog() {
+
+    const Dates = await this.CalculateDatesDiffernce('Past', 30, null);
+    this.common.SetNewrelic('MyCurrentCompletedTask', status, 'GetTasks');
+    const mytasks = Object.assign({}, this.mydashboardComponent.MyTasks);
+    mytasks.filter = mytasks.filter.replace(/{{userId}}/gi, this.sharedObject.currentUser.userId.toString());
+    mytasks.filter += mytasks.filterNotStartedInProgress;
+    // mytasks.filter += mytasks.filterStatus;
+    mytasks.filter += mytasks.filterDate.replace(/{{startDateString}}/gi, Dates[0]).replace(/{{endDateString}}/gi, Dates[1]);
+    this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, mytasks);
+    const res = this.response.length ? this.response : [];
+    return res;
+
+  }
+
+
+
+  // ****************************************************************************************
+  // get the dates based on working days past and future and custom dates  
+  // ****************************************************************************************
+
+  CalculateDatesDiffernce(nextLast, days, rangeDates) {
+    const filterDates = [];
+    let startDate = new Date(new Date().setDate(new Date().getDate() + 1));
+    let endDate = new Date(new Date().setDate(new Date().getDate() - 1));
+    if (nextLast === 'Next') {
+      startDate = startDate.getDay() === 6 ? new Date(startDate.setDate(startDate.getDate() + 2)) :
+        startDate.getDay() === 0 ? new Date(startDate.setDate(startDate.getDate() + 1)) :
+          new Date(startDate.setDate(startDate.getDate()));
+      endDate = this.addBusinessDays(startDate, days - 1);
+    } else if (nextLast === 'Past') {
+      endDate = endDate.getDay() === 6 ? new Date(endDate.setDate(endDate.getDate() - 1)) :
+        endDate.getDay() === 0 ? new Date(endDate.setDate(endDate.getDate() - 2)) :
+          new Date(endDate.setDate(endDate.getDate()));
+
+      startDate = this.RemoveBusinessDays(endDate, days - 1);
+    } else if (nextLast === 'Custom') {
+
+      startDate = rangeDates[0];
+      endDate = rangeDates[1];
+
+    } else if (nextLast === 'Today') {
+      startDate = new Date();
+      endDate = new Date();
+    }
+
+    const startmonth = startDate.getMonth() + 1;
+    const endMonth = endDate.getMonth() + 1;
+    filterDates.push(startDate.getFullYear() + '-' + (startmonth < 10 ? '0' + startmonth : startmonth) +
+      '-' + (startDate.getDate() < 10 ? '0' + startDate.getDate() : startDate.getDate()) + 'T00:00:01.000Z');
+    filterDates.push(endDate.getFullYear() + '-' + (endMonth < 10 ? '0' + endMonth : endMonth) + '-' +
+      (endDate.getDate() < 10 ? '0' + endDate.getDate() : endDate.getDate()) + 'T23:59:00.000Z');
+
+    return filterDates;
+  }
+
+  // ********************************************************************************************************
+  // Add days to get end date for next days
+  // *********************************************************************************************************
+  addBusinessDays(date, days) {
+    date = new Date(date.getTime());
+    const day = date.getDay();
+    date.setDate(date.getDate() + days + (day === 6 ? 2 : +!day) + (Math.floor((days - 1 + (day % 6 || 1)) / 5) * 2));
+    return date;
+  }
+
 }
+
 
 
 

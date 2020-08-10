@@ -143,6 +143,7 @@ export class PositiveFeedbackComponent implements OnInit, OnDestroy {
       pf.isLoggedInDeliveryLead = deliveryLeads.length > 0 ? true : false;
       pf.formattedSentDate = datePipe.transform(pf.SentDate, 'd MMM, yyyy');
       pf.resources = pf.Resources.results ? pf.Resources.results.map(a => a.Title).join(', ') : '';
+      pf.fullUrl = window.location.origin + '/' + pf.FileURL;
       return pf;
     });
     return arrResult;
@@ -182,7 +183,7 @@ export class PositiveFeedbackComponent implements OnInit, OnDestroy {
         SentDate: element.SentDate ? new Date(this.datepipe.transform(element.SentDate, 'MMM d, yyyy')) : '',
         SentBy: element.SentBy.Title ? element.SentBy.Title : '',
         resources: element.resources,
-        fileUrl: element.FileURL.Url,
+        fileUrl: element.fullUrl,
         DeliveryLeads: element.DeliveryLeads,
         FileID: element.FileID,
         Modified: element.Modified,

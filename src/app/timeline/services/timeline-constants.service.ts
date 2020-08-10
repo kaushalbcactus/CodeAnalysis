@@ -8,7 +8,7 @@ export class TimelineConstantsService {
   constructor() { }
   public common = {
     getProjectContacts: {
-      select: 'ID, FullName',
+      select: 'ID, FullNameCC',
       top: '4500'
     },
     getPO: {
@@ -17,7 +17,7 @@ export class TimelineConstantsService {
     },
     getClientLegalEntity: {
       select: 'Title, ListName',
-      filter: "IsActive eq 'Yes'",
+      filter: "IsActiveCH eq 'Yes'",
       top: '4500'
     }
   };
@@ -98,11 +98,11 @@ export class TimelineConstantsService {
 
   public projectManagement = {
     projectInformation: {
-      propertiesRequired: ['Title','ProjectType', 'PubSupportStatus', 'Description', 'ConferenceJournal','SOWCode', 'Authors', 'Comments', 'BusinessVertical', 'PrimaryPOC', 'TA', 'Indication', 'Molecule', 'Priority',
+      propertiesRequired: ['Title','ProjectType', 'PubSupportStatus', 'DescriptionMT', 'ConferenceJournal','SOWCode', 'Authors', 'CommentsMT', 'BusinessVertical', 'PrimaryPOC', 'TA', 'Indication', 'Molecule', 'PriorityST',
         'Status', 'IsPubSupport', 'SOWBoxLink', 'SOWLink', 'BD', 'CMLevel1', 'CMLevel2', 'DeliveryLevel1', 'DeliveryLevel2', 'WBJID', 'Milestone',
         'ProposedStartDate', 'ProposedEndDate'],
       getVersions: {
-        select: 'Id,ProjectType, Description,ClientLegalEntity, PubSupportStatus, BusinessVertical, ProjectCode, SOWCode, Comments, ProjectFolder, PrimaryPOC, TA, Indication, Molecule, Priority, Authors,' +
+        select: 'Id,ProjectType, DescriptionMT,ClientLegalEntity, PubSupportStatus, BusinessVertical, ProjectCode, SOWCode, CommentsMT, ProjectFolder, PrimaryPOC, TA, Indication, Molecule, PriorityST, Authors,' +
           'Status, IsPubSupport, SOWBoxLink, SOWLink, Title, WBJID, Milestone, ProposedStartDate, ProposedEndDate, ConferenceJournal, BD/LookupId, BD/LookupValue,' +
           'CMLevel1/LookupId, CMLevel1/LookupValue, CMLevel2/LookupId, CMLevel2/LookupValue, DeliveryLevel1/LookupId, DeliveryLevel1/LookupValue,' +
           'DeliveryLevel2/LookupId, DeliveryLevel2/LookupValue,' +
@@ -168,9 +168,9 @@ export class TimelineConstantsService {
       }
     },
     sow: {
-      propertiesRequired: ['Title', 'PrimaryPOC', 'Comments', 'BusinessVertical', 'CreatedDate','ExpiryDate' , 'Status', 'SOWLink', 'CMLevel1', 'CMLevel2', 'DeliveryLevel1', 'DeliveryLevel2', 'BD'],
+      propertiesRequired: ['Title', 'PrimaryPOC', 'CommentsMT', 'BusinessVertical', 'CreatedDate','ExpiryDate' , 'Status', 'SOWLink', 'CMLevel1', 'CMLevel2', 'DeliveryLevel1', 'DeliveryLevel2', 'BD'],
       getVersions: {
-        select: 'Id,Title,PrimaryPOC, ClientLegalEntity, Comments, SOWCode, BusinessVertical, CreatedDate,ExpiryDate , Status, SOWLink, BD/LookupId, BD/LookupValue,' +
+        select: 'Id,Title,PrimaryPOC, ClientLegalEntity, CommentsMT, SOWCode, BusinessVertical, CreatedDate,ExpiryDate , Status, SOWLink, BD/LookupId, BD/LookupValue,' +
           'CMLevel1/LookupId, CMLevel1/LookupValue, CMLevel2/LookupId, CMLevel2/LookupValue, DeliveryLevel1/LookupId, DeliveryLevel1/LookupValue,' +
           'DeliveryLevel2/LookupId, DeliveryLevel2/LookupValue,' +
           'IsCurrentVersion,VersionLabel, VersionId, Modified, Editor/LookupId, Editor/LookupValue',

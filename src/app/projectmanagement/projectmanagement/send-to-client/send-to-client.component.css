@@ -1,22 +1,24 @@
+
+  
   ::ng-deep .slaExist .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child {
      overflow: visible;
  }
- 
+
  ::ng-deep .slaExist .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div {
      position: relative;
  }
- 
+
  ::ng-deep .slaExist .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div>i {
      top: 0px !important;
  }
- 
+
  ::ng-deep .slaExist .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div div.ui-menu {
      top: 0px !important;
      left: inherit !important;
      right: 40px !important;
  }
  /** Loader **/
- 
+
  @-webkit-keyframes spin {
      0% {
          -webkit-transform: rotate(0deg);
@@ -25,7 +27,7 @@
          -webkit-transform: rotate(360deg);
      }
  }
- 
+
  @keyframes spin {
      0% {
          transform: rotate(0deg);
@@ -34,7 +36,7 @@
          transform: rotate(360deg);
      }
  }
- 
+
  .spanner {
      position: absolute;
      /* top: calc( 100vh - 35vh); */
@@ -49,14 +51,14 @@
      z-index: 1000;
      visibility: hidden;
  }
- 
+
  .overlay {
      position: fixed;
      width: 100%;
      height: 100%;
      visibility: hidden;
  }
- 
+
  .loader,
  .loader:before,
  .loader:after {
@@ -68,7 +70,7 @@
      -webkit-animation: load7 1.8s infinite ease-in-out;
      animation: load7 1.8s infinite ease-in-out;
  }
- 
+
  .loader {
      color: #ffffff;
      font-size: 10px;
@@ -82,24 +84,24 @@
      animation-delay: -0.16s;
      margin-top: 10%;
  }
- 
+
  .loader:before,
  .loader:after {
      content: '';
      position: absolute;
      top: 0;
  }
- 
+
  .loader:before {
      left: -3.5em;
      -webkit-animation-delay: -0.32s;
      animation-delay: -0.32s;
  }
- 
+
  .loader:after {
      left: 3.5em;
  }
- 
+
  @-webkit-keyframes load7 {
      0%,
      80%,
@@ -110,7 +112,7 @@
          box-shadow: 0 2.5em 0 0;
      }
  }
- 
+
  @keyframes load7 {
      0%,
      80%,
@@ -121,11 +123,11 @@
          box-shadow: 0 2.5em 0 0;
      }
  }
- 
+
  .show {
      visibility: visible;
  }
- 
+
  .spanner,
  .overlay {
      opacity: 0;
@@ -133,7 +135,7 @@
      -moz-transition: all 0.3s;
      transition: all 0.3s;
  }
- 
+
  .spanner.show,
  .overlay.show {
      opacity: 1

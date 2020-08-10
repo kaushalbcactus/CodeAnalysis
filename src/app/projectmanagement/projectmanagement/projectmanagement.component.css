@@ -327,6 +327,14 @@ table.popup-rating-row tr td {
     text-align: left
 }
 
+table.popup-rating-row tr td:first-child {
+    width: 40%
+}
+
+table.popup-rating-row tr td:last-child {
+    width: 60%
+}
+
 .save-rating {
     background-color: #B71C1C;
     padding: 12px 50px;
@@ -1133,11 +1141,12 @@ body .ui-accordion .ui-accordion-header:not(.ui-state-disabled).ui-state-active:
     color: #ffffff !important;
 }
 
-body .ui-dialog .ui-dialog-titlebar {
+
+/* body .ui-dialog .ui-dialog-titlebar {
     background-color: #fff;
     font-weight: 500;
     font-size: 20px;
-}
+} */
 
 
 /* .ui-dialog .ui-dialog-titlebar-icon span {

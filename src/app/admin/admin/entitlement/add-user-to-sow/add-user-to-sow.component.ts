@@ -1,5 +1,4 @@
 import { Component, OnInit, OnChanges, SimpleChange, ApplicationRef, NgZone } from '@angular/core';
-import { MessageService } from 'primeng/api';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { AdminObjectService } from 'src/app/admin/services/admin-object.service';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
@@ -39,7 +38,6 @@ export class AddUserToSowComponent implements OnInit {
   /**
    * Construct a method to create an instance of required component.
    *
-   * @param messageService This is instance referance of `MessageService` component.
    * @param spServices This is instance referance of `SPOperationService` component.
    * @param adminObject This is instance referance of `AdminObjectService` component.
    * @param adminConstants This is instance referance of `AdminConstantService` component.
@@ -51,7 +49,6 @@ export class AddUserToSowComponent implements OnInit {
    * @param zone This is instance referance of `NgZone` component.
    */
   constructor(
-    private messageService: MessageService,
     private spServices: SPOperationService,
     private adminObject: AdminObjectService,
     private adminConstants: AdminConstantService,
@@ -88,10 +85,9 @@ export class AddUserToSowComponent implements OnInit {
   }
 
   showToastMsg() {
-    this.messageService.add({
-      key: 'adminAuth', severity: 'info', sticky: true,
-      summary: 'Info Message', detail: 'You don\'\t have permission,please contact SP Team.'
-    });
+
+    this.common.showToastrMessage(this.constants.MessageType.warn,'You don\'\t have permission,please contact SP Team.',true);
+
   }
 
   /**
@@ -114,8 +110,8 @@ export class AddUserToSowComponent implements OnInit {
         this.adminObject.resourceCatArray : results[0].retItems;
       if (userResults && userResults.length) {
         userResults.forEach(element => {
-          if (element.Role === this.adminConstants.FILTER.CM_LEVEL_1 || element.Role === this.adminConstants.FILTER.CM_LEVEL_2 || element.Role === this.adminConstants.FILTER.DELIVERY_LEVEL_1 || element.Role === this.adminConstants.FILTER.DELIVERY_LEVEL_2) {
-            this.users.push({ label: element.UserName.Title, value: element });
+          if (element.RoleCH === this.adminConstants.FILTER.CM_LEVEL_1 || element.RoleCH === this.adminConstants.FILTER.CM_LEVEL_2 || element.RoleCH === this.adminConstants.FILTER.DELIVERY_LEVEL_1 || element.RoleCH === this.adminConstants.FILTER.DELIVERY_LEVEL_2) {
+            this.users.push({ label: element.UserNamePG.Title, value: element });
           }
         });
       }
@@ -176,7 +172,8 @@ export class AddUserToSowComponent implements OnInit {
     const sResult = await this.spServices.readItems(this.constants.listNames.SOW.name, getSOW);
     if (sResult && sResult.length) {
       let disableCount = 0;
-      sResult.forEach(item => {
+      const ApprovedSow = sResult.length ? sResult.filter(c=>c.Status=this.constants.SOW_STATUS.APPROVED):[];
+      ApprovedSow.forEach(item => {
         const obj = Object.assign({}, this.adminObject.sowObj);
         obj.CMLevel1 = item.CMLevel1 && item.CMLevel1.results && item.CMLevel1.results.length ?
           item.CMLevel1.results : [];
@@ -192,17 +189,17 @@ export class AddUserToSowComponent implements OnInit {
         obj.IsCheckBoxChecked = false;
         obj.SOWCode = item.SOWCode ? item.SOWCode : '';
         if (item.CMLevel2 && item.CMLevel2.hasOwnProperty('ID')
-          && userObj.UserName.ID === item.CMLevel2.ID ||
+          && userObj.UserNamePG.ID === item.CMLevel2.ID ||
           item.DeliveryLevel2 && item.DeliveryLevel2.hasOwnProperty('ID')
-          && userObj.UserName.ID === item.DeliveryLevel2.ID) {
+          && userObj.UserNamePG.ID === item.DeliveryLevel2.ID) {
           obj.IsTypeChangedDisabled = true;
           disableCount++;
           obj.AccessType = this.adminConstants.ACCESS_TYPE.ACCOUNTABLE;
           obj.CurrentAccess = this.adminConstants.ACCESS_TYPE.ACCOUNTABLE;
         } else if (item.CMLevel1 && item.CMLevel1.hasOwnProperty('results') && item.CMLevel1.results.length
-          && item.CMLevel1.results.some(a => a.ID === userObj.UserName.ID) ||
+          && item.CMLevel1.results.some(a => a.ID === userObj.UserNamePG.ID) ||
           item.DeliveryLevel1 && item.DeliveryLevel1.hasOwnProperty('results') && item.DeliveryLevel1.results.length
-          && item.DeliveryLevel1.results.some(a => a.ID === userObj.UserName.ID)) {
+          && item.DeliveryLevel1.results.some(a => a.ID === userObj.UserNamePG.ID)) {
           obj.AccessType = this.adminConstants.ACCESS_TYPE.ACCESS;
           obj.IsTypeChangedDisabled = false;
           obj.CurrentAccess = this.adminConstants.ACCESS_TYPE.ACCESS;
@@ -214,7 +211,7 @@ export class AddUserToSowComponent implements OnInit {
         tempArray.push(obj);
       });
       this.sowList = tempArray;
-      if (disableCount === sResult.length) {
+      if (disableCount === ApprovedSow.length) {
         this.disableTableHeader = true;
       } else {
         this.disableTableHeader = false;
@@ -241,15 +238,12 @@ export class AddUserToSowComponent implements OnInit {
    * @param sowObj It required sowObj as a parameter to check the user access type.
    */
   typeChange(sowObj) {
-    this.messageService.clear();
+    this.common.clearToastrMessage();
     const userObj = this.selectedUser;
-    if (sowObj && sowObj.CMLevel1 && sowObj.CMLevel1.length && sowObj.CMLevel1[0].ID === userObj.UserName.ID) {
+    if (sowObj && sowObj.CMLevel1 && sowObj.CMLevel1.length && sowObj.CMLevel1[0].ID === userObj.UserNamePG.ID) {
       if (sowObj.AccessType === this.adminConstants.ACCESS_TYPE.ACCOUNTABLE) {
-        this.messageService.add({
-          key: 'adminCustom', severity: 'error', sticky: true,
-          summary: 'Error Message', detail: 'The user ' + userObj.UserName.Title + ' cannot be made accountable.'
-            + ' Since he is only available in Access. Hence resetting the accessType to Access'
-        });
+        this.common.showToastrMessage(this.constants.MessageType.error,'The user ' + userObj.UserName.Title + ' cannot be made accountable.'
+        + ' Since he is only available in Access. Hence resetting the accessType to Access',true);
         setTimeout(() => {
           sowObj.AccessType = this.adminConstants.ACCESS_TYPE.ACCESS;
         }, 500);
@@ -292,7 +286,7 @@ export class AddUserToSowComponent implements OnInit {
    *
    */
   async save() {
-    this.messageService.clear();
+    this.common.clearToastrMessage();
     console.log(this.selectedUser);
     console.log(this.selectedClient);
     console.log(this.selectedSow);
@@ -303,25 +297,19 @@ export class AddUserToSowComponent implements OnInit {
       type: '',
       listName: ''
     };
-    if (!this.selectedUser || !this.selectedUser.hasOwnProperty('UserName')) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error', sticky: true,
-        summary: 'Error Message', detail: 'Please select the user.'
-      });
+    if (!this.selectedUser || !this.selectedUser.hasOwnProperty('UserNamePG')) {
+
+      this.common.showToastrMessage(this.constants.MessageType.warn,'Please select the user.',false);
       return false;
     }
     if (!this.selectedClient) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error', sticky: true,
-        summary: 'Error Message', detail: 'Please select the client'
-      });
+
+      this.common.showToastrMessage(this.constants.MessageType.warn,'Please select the client',true);
       return false;
     }
     if (!this.selectedSow.length) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error', sticky: true,
-        summary: 'Error Message', detail: 'Please select atleast one SOW.'
-      });
+
+      this.common.showToastrMessage(this.constants.MessageType.warn,'Please select atleast one SOW.',false);
       return false;
     }
     if (this.selectedSow.length) {
@@ -339,13 +327,13 @@ export class AddUserToSowComponent implements OnInit {
         if (element.DeliveryLevel1 && element.DeliveryLevel1.length) {
           element.DeliveryLevel1IDArray = element.DeliveryLevel1.map(x => x.ID);
         }
-        element.AllResourcesIDArray.push(this.selectedUser.UserName.ID);
+        element.AllResourcesIDArray.push(this.selectedUser.UserNamePG.ID);
         if (element.AccessType === this.adminConstants.ACCESS_TYPE.ACCESS) {
-          element.CMLevel1IDArray.push(this.selectedUser.UserName.ID);
-          element.DeliveryLevel1IDArray.push(this.selectedUser.UserName.ID);
+          element.CMLevel1IDArray.push(this.selectedUser.UserNamePG.ID);
+          element.DeliveryLevel1IDArray.push(this.selectedUser.UserNamePG.ID);
         } else if (element.AccessType === this.adminConstants.ACCESS_TYPE.ACCOUNTABLE) {
           // remove the current user if present in CMLevel1.
-          const cmIndex = element.CMLevel1IDArray.indexOf(this.selectedUser.UserName.ID);
+          const cmIndex = element.CMLevel1IDArray.indexOf(this.selectedUser.UserNamePG.ID);
           if (cmIndex > -1) {
             element.IsUserExistInCMLevel1 = true;
             element.CMLevel1IDArray.splice(cmIndex, 1);
@@ -355,7 +343,7 @@ export class AddUserToSowComponent implements OnInit {
           // This is non mandatory field so first check whether records present in DeliveryLevel1
           // remove the current user if present in DeliveryLevel1.
           if (element.DeliveryLevel1IDArray && element.DeliveryLevel1IDArray.length) {
-            const delIndex = element.DeliveryLevel1IDArray.indexOf(this.selectedUser.UserName.ID);
+            const delIndex = element.DeliveryLevel1IDArray.indexOf(this.selectedUser.UserNamePG.ID);
             if (delIndex > -1) {
               element.IsUserExistInDeliveryLevel1 = true;
               element.DeliveryLevel1IDArray.splice(delIndex, 1);
@@ -378,18 +366,12 @@ export class AddUserToSowComponent implements OnInit {
       if (batchURL && batchURL.length) {
         this.common.SetNewrelic('admin', 'admin-entitlement-adduserToSow', 'UpdateSows');
         const updateResult = await this.spServices.executeBatch(batchURL);
-        this.messageService.add({
-          key: 'adminCustom', severity: 'success', sticky: true,
-          summary: 'Success Message', detail: 'The user has been added into the selected SOW\'s\.'
-        });
+        this.common.showToastrMessage(this.constants.MessageType.success,'The user has been added into the selected SOW\'s\.',true);
         setTimeout(() => {
           this.clientChange();
         }, 500);
       } else {
-        this.messageService.add({
-          key: 'adminCustom', severity: 'info', sticky: true,
-          summary: 'Info Message', detail: 'The user NOT added into the selected SOW\'s\.'
-        });
+        this.common.showToastrMessage(this.constants.MessageType.info,'The user NOT added into the selected SOW\'s\.',true);
       }
     }
   }

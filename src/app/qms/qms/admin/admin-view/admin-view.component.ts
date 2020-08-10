@@ -9,9 +9,10 @@ import { GlobalService } from '../../../../Services/global.service';
 import { SPCommonService } from '../../../../Services/spcommon.service';
 import { QMSConstantsService } from '../../services/qmsconstants.service';
 import { QMSCommonService } from '../../services/qmscommon.service';
-import { MessageService } from 'primeng/api';
 import { Table } from 'primeng/table';
 import { Router } from '@angular/router';
+import { FeedbackPopupComponent } from '../../reviewer-detail-view/feedback-popup/feedback-popup.component';
+import { DialogService } from 'primeng';
 
 @Component({
   selector: 'app-admin-view',
@@ -73,7 +74,8 @@ export class AdminViewComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private spService: SPOperationService, private globalConstant: ConstantsService,
     public datepipe: DatePipe, private global: GlobalService, private qmsConstant: QMSConstantsService,
-    private qmsCommon: QMSCommonService, private messageService: MessageService,
+    private qmsCommon: QMSCommonService,
+    private dialogService: DialogService,
     private platformLocation: PlatformLocation,
     private locationStrategy: LocationStrategy,
     private readonly _router: Router,
@@ -225,7 +227,7 @@ export class AdminViewComponent implements OnInit, OnDestroy {
     if (element && !this.global.viewTabsPermission.hideAdmin) {
       this.showLoader();
       setTimeout(async () => {
-        const tasks = await this.getResourceTasks(4500, element.value.UserName.ID);
+        const tasks = await this.getResourceTasks(4500, element.value.UserNamePG.ID);
         this.bindAdminView(tasks);
         this.showAdminTable = true;
         this.showTable();
@@ -342,7 +344,7 @@ export class AdminViewComponent implements OnInit, OnDestroy {
   }
 
   showToastMsg(objMsg) {
-    this.messageService.add({ severity: objMsg.type, summary: objMsg.msg, detail: objMsg.detail });
+    this.commonService.showToastrMessage(objMsg.type,objMsg.detail,false);
   }
 
   isOptionFilter: boolean;
@@ -367,4 +369,23 @@ export class AdminViewComponent implements OnInit, OnDestroy {
       this.cdr.detectChanges();
     }
   }
+
+  openfeedbackpopup(qmsTasks,task){
+    const ref = this.dialogService.open(FeedbackPopupComponent, {
+      data: {
+        qmsTasks,
+        task
+      },
+      header: 'Rate Work',
+      width: '70vw',
+      contentStyle: { 'min-height': '30vh', 'max-height': '90vh', 'overflow-y': 'auto' }
+    });
+    ref.onClose.subscribe((feedbackdata: any) => {
+      if(feedbackdata){
+        this.updateReviewerTable(feedbackdata.task);
+        this.showToastMsg(feedbackdata.message);
+      }
+     });
+  }
+
 }

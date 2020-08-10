@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, SimpleChanges } from '@angular/core';
-import { DynamicDialogConfig, DynamicDialogRef, MessageService } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
 import { DatePipe } from '@angular/common';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
@@ -39,6 +39,7 @@ export class TimeSpentDialogComponent implements OnInit {
   };
   task: any;
   SelectedTabType: any;
+  buttonloader: boolean= false;
   constructor(
     public config: DynamicDialogConfig,
     public ref: DynamicDialogRef,
@@ -47,7 +48,6 @@ export class TimeSpentDialogComponent implements OnInit {
     public sharedObject: GlobalService,
     private datePipe: DatePipe,
     private spServices: SPOperationService,
-    public messageService: MessageService,
     private commonService: CommonService
   ) { }
 
@@ -108,7 +108,7 @@ export class TimeSpentDialogComponent implements OnInit {
 
       let endDate = this.SelectedTabType === 'MyCompletedTask' || task.Status === 'Completed' ? new Date(this.datePipe.transform(new Date(new Date(task.Actual_x0020_End_x0020_Date)), 'MMM d, y')) : new Date(this.datePipe.transform(new Date(), 'MMM d, y'));
 
-      endDate = task.Status === 'Auto Closed' ? new Date(this.datePipe.transform(task.DueDate, 'MMM d, y')) : endDate;
+      endDate = task.Status === 'Auto Closed' ? new Date(this.datePipe.transform(task.DueDateDT, 'MMM d, y')) : endDate;
 
       this.dateArray = await this.CalculatePastBusinessDays(new Date(startDate), new Date(endDate));
       this.dateArray.reverse();
@@ -117,7 +117,7 @@ export class TimeSpentDialogComponent implements OnInit {
 
         if (this.SelectedTabType === 'MyCompletedTask' || task.Status === 'Completed' || task.Status === 'Auto Closed') {
 
-          endDate = task.Status === 'Auto Closed' ? new Date(this.datePipe.transform(task.DueDate, 'MMM d, y')) : new Date(new Date(this.datePipe.transform(new Date(task.Actual_x0020_End_x0020_Date), 'MMM d,y')));
+          endDate = task.Status === 'Auto Closed' ? new Date(this.datePipe.transform(task.DueDateDT, 'MMM d, y')) : new Date(new Date(this.datePipe.transform(new Date(task.Actual_x0020_End_x0020_Date), 'MMM d,y')));
 
           startDate = task.Status === 'Auto Closed' ? new Date(this.datePipe.transform(task.StartDate, 'MMM d, y')) : new Date(new Date(this.datePipe.transform(new Date(task.Actual_x0020_Start_x0020_Date), 'MMM d,y')));
         } else {
@@ -134,7 +134,7 @@ export class TimeSpentDialogComponent implements OnInit {
 
         if (this.SelectedTabType === 'MyCompletedTask' || task.Status === 'Completed' || task.Status === 'Auto Closed') {
 
-          endDate = task.Status === 'Auto Closed' ? new Date(this.datePipe.transform(task.DueDate, 'MMM d, y')) : new Date(new Date(this.datePipe.transform(new Date(task.Actual_x0020_End_x0020_Date), 'MMM d,y')));
+          endDate = task.Status === 'Auto Closed' ? new Date(this.datePipe.transform(task.DueDateDT, 'MMM d, y')) : new Date(new Date(this.datePipe.transform(new Date(task.Actual_x0020_End_x0020_Date), 'MMM d,y')));
 
           startDate = task.Status === 'Auto Closed' ? new Date(this.datePipe.transform(task.StartDate, 'MMM d, y')) : new Date(new Date(this.datePipe.transform(new Date(task.Actual_x0020_Start_x0020_Date), 'MMM d,y')));
 
@@ -242,9 +242,11 @@ export class TimeSpentDialogComponent implements OnInit {
       dateArray: this.dateArray
     };
     if (this.config.data) {
+      this.buttonloader = true;
       await this.saveTimeSpentdb(this.task, this.dateArray)
       this.ref.close(data);
     } else {
+      
       this.modalloaderenable = true;
       await this.saveTimeSpentdb(this.task, this.dateArray)
       this.modalloaderenable = false;
@@ -269,11 +271,11 @@ export class TimeSpentDialogComponent implements OnInit {
     };
     let ActualStartDate;
     if (dateArray.find(c => c.time !== '00:00') !== undefined) {
-      //   this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Updating...' });
       ActualStartDate = this.datePipe.transform(dateArray.find(c => c.time !== '00:00').actualDate, 'yyyy-MM-dd') + 'T09:00:00.000';
 
     } else {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please define time.' });
+
+      this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please define time.',false)
       return false;
     }
     if (task !== undefined) {
@@ -325,7 +327,7 @@ export class TimeSpentDialogComponent implements OnInit {
     if (task.ParentSlot) {
       await this.myDashboardConstantsService.getCurrentAndParentTask(task, jsonData.Status);
     }  
-    this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Task Time updated successfully.' });
+    this.commonService.showToastrMessage(this.constants.MessageType.success,'Task Time updated successfully.',false);
   }
 
 

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DynamicDialogConfig, DynamicDialogRef, MessageService } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
 import { AdminCommonService } from 'src/app/admin/services/admin-common.service';
@@ -68,19 +68,18 @@ export class AddEditUserProfileComponent implements OnInit {
     public config: DynamicDialogConfig,
     private fb: FormBuilder,
     public ref: DynamicDialogRef,
-    public messageService: MessageService,
     private adminCommonService: AdminCommonService,
     private constants: ConstantsService,
     private adminConstants: AdminConstantService,
     private spServices: SPOperationService,
     private common: CommonService, ) { }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.minPastMonth = new Date(new Date().setDate(new Date().getDate() - 30));
     const currentYear = new Date();
-    this.yearRange = (currentYear.getFullYear() - 10) + ':' + (currentYear.getFullYear() + 10);
+    this.yearRange = this.common.getyearRange();
     this.initialAddUserForm();
-    this.loadDropDownValue();
+    await  this.loadDropDownValue();
     if (this.config.data) {
       this.currUserObj = this.config.data;
       this.showEditUserModal();
@@ -91,11 +90,8 @@ export class AddEditUserProfileComponent implements OnInit {
       this.addUser.get('workWednessday').setValue(true);
       this.addUser.get('workThursday').setValue(true);
       this.addUser.get('workFriday').setValue(true);
-
+      this.modalloaderenable = false;
     }
-
-
-
   }
 
   // tslint:disable-next-line: member-ordering
@@ -222,10 +218,7 @@ export class AddEditUserProfileComponent implements OnInit {
   */
   onManagerChange() {
     if (this.addUser.value.manager && !this.addUser.value.manager.hasOwnProperty('EntityData')) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error',
-        summary: 'Error Message', detail: 'Please select proper manager name.'
-      });
+      this.common.showToastrMessage(this.constants.MessageType.warn,'Please select proper manager name.',false);
     } else {
       const managerEffectiveDateControl = this.addUser.get('managerEffectiveDate');
       if (this.showeditUser && this.currUserObj.ManagerEmail !== this.addUser.value.manager.EntityData.Email) {
@@ -426,7 +419,7 @@ export class AddEditUserProfileComponent implements OnInit {
   * 3. If user changes the value of `Manger`,` Practice Area`, `Time Zone`, `Primary Skill` and `Skill level` field then
   * `Manager Effective Date`, `Practice Area Effective Date`, `Time Zone Effective Date`, `Primary Skill Effective Date`
   * and `Skill Level Effective Date` will become mandatory field respectively.
-  * 4. If user changes the value of `IsActive` field from `Yes` to `No` then `Date of Exit` field become mandatory.
+  * 4. If user changes the value of `IsActiveCH` field from `Yes` to `No` then `Date of Exit` field become mandatory.
   */
   async showEditUserModal() {
     this.addUser.reset();
@@ -445,10 +438,12 @@ export class AddEditUserProfileComponent implements OnInit {
     await this.setUserFormField(userObj);
     this.showeditUser = true;
     this.upObject.isFormSubmit = false;
+
+    this.modalloaderenable = false;
   }
   /**
    * Construct a method to set the value into form field
-   * load the dropdown value of `IsActive` field
+   * load the dropdown value of `IsActiveCH` field
    * @param userObj The userObj as paramater which is required for setting the form field value.
    */
   setUserFormField(userObj) {
@@ -484,13 +479,15 @@ export class AddEditUserProfileComponent implements OnInit {
     // Convert Practice area(;#) to array
     const paArray = userObj.PracticeArea ? userObj.PracticeArea.split(',') : [];
     if (paArray.length) {
-      const val = [];
-      paArray.forEach(element => {
-        val.push(element);
-      });
+      // const val = [];
+      // paArray.forEach(element => {
+      //   val.push(element);
+      // });
+
+      const selectedValue =this.adminDropDown.practiceAreaArray.filter(c=> paArray.includes(c.value)) ? this.adminDropDown.practiceAreaArray.filter(c=> paArray.includes(c.value)).map(c=>c.value) : [];
 
       this.addUser.patchValue({
-        practiceArea: val
+        practiceArea: selectedValue
       });
       // this.addUser.get('practiceArea').setValue(val);
       // this.addUser.value.practiceArea.updateValueAndValidity();
@@ -862,8 +859,6 @@ export class AddEditUserProfileComponent implements OnInit {
           this.adminDropDown.isFTEArray.push({ label: element, value: element });
         });
       }
-
-      this.modalloaderenable = false;
     }
   }
 
@@ -875,7 +870,7 @@ export class AddEditUserProfileComponent implements OnInit {
    *
    * @description
    * It will prepare the request as per following Sequence.
-   * 1. Bucket          - Get data from `FocusGroup` list based on filter `IsActive='Yes'`.
+   * 1. Bucket          - Get data from `FocusGroup` list based on filter `IsActiveCH='Yes'`.
    * 2. Practice Area   - Get data from `FocusGroup` list.
    * 3. TimeZones       - Get data from `TimeZones` list.
    * 4. InCapacity      - Get data for ChoiceField `InCapacity` from ResourceCategorization list.
@@ -908,13 +903,13 @@ export class AddEditUserProfileComponent implements OnInit {
     bucketGet.listName = this.constants.listNames.FocusGroup.name;
     batchURL.push(bucketGet);
 
-    // Get Practice Area from BusinessVerticals list ##1;
+    // Get Practice Area from PracticeArea list ##1;
     const practiceAreaGet = Object.assign({}, options);
     const practiceAreaFilter = Object.assign({}, this.adminConstants.QUERY.GET_PRACTICE_AREA);
-    practiceAreaGet.url = this.spServices.getReadURL(this.constants.listNames.BusinessVerticals.name,
+    practiceAreaGet.url = this.spServices.getReadURL(this.constants.listNames.PracticeArea.name,
       practiceAreaFilter);
     practiceAreaGet.type = 'GET';
-    practiceAreaGet.listName = this.constants.listNames.BusinessVerticals.name;
+    practiceAreaGet.listName = this.constants.listNames.PracticeArea.name;
     batchURL.push(practiceAreaGet);
 
     // Get TimeZones from TimeZones list ##2
@@ -1133,24 +1128,18 @@ export class AddEditUserProfileComponent implements OnInit {
        * Need to validate if username and manager is properly selected or entered.
        */
       if (UserDetails.value.username && !UserDetails.value.username.hasOwnProperty('EntityData')) {
-        this.messageService.add({
-          key: 'adminCustom', severity: 'error',
-          summary: 'Error Message', detail: 'Please select proper username name.'
-        });
+
+        this.common.showToastrMessage(this.constants.MessageType.warn,'Please select proper username name.',false);
         return false;
       }
       if (UserDetails.value.manager && !UserDetails.value.manager.hasOwnProperty('EntityData')) {
-        this.messageService.add({
-          key: 'adminCustom', severity: 'error',
-          summary: 'Error Message', detail: 'Please select proper manager name.'
-        });
+
+        this.common.showToastrMessage(this.constants.MessageType.warn,'Please select proper manager name.',false);
         return false;
       }
       if (new Date(UserDetails.value.dateofjoin) > new Date(UserDetails.value.liveDate)) {
-        this.messageService.add({
-          key: 'adminCustom', severity: 'error',
-          summary: 'Error Message', detail: 'Date of joining cannot be greater than go live date.'
-        });
+
+        this.common.showToastrMessage(this.constants.MessageType.warn,'Date of joining cannot be greater than go live date.',false);
         return false;
       }
 

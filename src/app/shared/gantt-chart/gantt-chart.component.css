@@ -1,0 +1,138 @@
+@import "../../dhtmlx-gantt/codebase/dhtmlxgantt.css";
+  .gantt-chart{
+      position: relative !important;
+      width: 100%;
+      height: 500px;
+  }
+
+    html, body {
+      padding: 0px;
+      margin: 0px;
+      height: 100%;
+  }
+
+  /* .tableLoader{
+      position: fixed;
+      width:100%;
+      left:0;right:0;top:0;bottom:0;
+      background-color: rgba(255,255,255,0.7);
+      z-index:9999;
+    } */
+    /** Loader **/
+  @-webkit-keyframes spin {
+      0% { -webkit-transform: rotate(0deg); }
+      100% { -webkit-transform: rotate(360deg); }
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    #innerLoader{
+        border: 10px solid #f3f3f3 ;
+          border-radius: 50% ;
+          border-top: 10px solid red ;
+          border-bottom: 10px solid red ;
+          width: 100px ;
+          height: 100px ;
+          -webkit-animation: spin 2s linear infinite ;
+          animation: spin 2s linear infinite ;
+          margin: 0 auto ;
+          position: relative ;
+          top: 50% ;
+          transform: translateY(-50%) ;
+      }
+
+      #innerLoaderText{
+          -moz-animation: loading-text-opacity 2s linear 0s infinite normal ;
+          -o-animation: loading-text-opacity 2s linear 0s infinite normal ;
+          -webkit-animation: loading-text-opacity 2s linear 0s infinite normal ;
+          animation: loading-text-opacity 2s linear 0s infinite normal ;
+          color: black ;
+          font-family: "Helvetica Neue, "Helvetica", ""arial" ;
+          font-size: 10px ;
+          font-weight: bold ;
+          opacity: 0.5 ;
+          text-align: center ;
+          text-transform: uppercase ;
+          top: 0 ;
+      }
+
+
+  #ganttchart {
+      width:100%;
+      height: 800px;
+      height:calc(100vh - 52px);
+  }
+
+  .gantt_tooltip {
+    z-index: 1100;
+  }
+
+  .planned_task{
+    border:2px solid #FFD34E !important;
+    /* color:#6ba8e3; */
+    background: #FFD34E !important;
+  }
+  .planned_task .gantt_task_progress{
+    background:#FFD34E;
+  }
+
+  .notstarted_task{
+    border:2px solid #5F6273 !important;
+    /* color:#6ba8e3; */
+    background: #5F6273 !important;
+  }
+  .notstarted_task .gantt_task_progress{
+    background:#5F6273 !important;
+  }
+
+  .inprogress_task{
+    border:2px solid #6EDC6C !important;
+    /* color:#6ba8e3; */
+    background: #6EDC6C !important;
+  }
+  .inprogress_task .gantt_task_progress{
+    background:#6EDC6C !important;
+  }
+
+  .completed_task{
+    border:2px solid #3498DB !important;
+    /* color:#6ba8e3; */
+    background: #3498DB !important;
+  }
+  .completed_task .gantt_task_progress{
+    background:#3498DB !important;
+  }
+
+  .autoclosed_task{
+    border:2px solid #8183CC !important;
+    /* color:#6ba8e3; */
+    background: #8183CC !important;
+  }
+  .autoclosed_task .gantt_task_progress{
+    background:#8183CC !important;
+  }
+
+  .onhold_task{
+    border:2px solid #FF3E56 !important;
+    /* color:#6ba8e3; */
+    background: #FF3E56 !important;
+  }
+  .onhold_task .gantt_task_progress{
+    background:#FF3E56 !important;
+  }
+
+
+  .gantt_cell:nth-child(2) .gantt_tree_content{
+    border-radius: 16px;
+    width: 100%;
+    height: 80%;
+    margin: 5% 0;
+    line-height: 230%;
+  }
+
+  .contextMenu{
+    padding: 0px 10px 0px 10px;
+  }

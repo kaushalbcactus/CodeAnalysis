@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
-import { MessageService, DynamicDialogConfig, DynamicDialogRef } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
 import { AdminCommonService } from 'src/app/admin/services/admin-common.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
@@ -24,7 +24,6 @@ export class AddEditPoDialogComponent implements OnInit {
   modalloaderenable = true;
   constructor(
     private frmbuilder: FormBuilder,
-    private messageService: MessageService,
     private adminCommonService: AdminCommonService,
     private adminConstants: AdminConstantService,
     public config: DynamicDialogConfig,
@@ -148,7 +147,7 @@ export class AddEditPoDialogComponent implements OnInit {
   *  2. TA                    - Get data for `TA` from `TA` list.
   *  3. Molecule              - Get data for `Molecule` from `Molecule` list.
   *  4. PO Buying Entity      - Get choice field data for `BuyingEntity` from `PO` list.
-  *  5. CM Level 2            - Get data for `CM Level 2` from `ResourceCategorization` list based on filter `Role='CM Level 2'`.
+  *  5. CM Level 2            - Get data for `CM Level 2` from `ResourceCategorization` list based on filter `RoleCH='CM Level 2'`.
   *  6. Currency              - Get data for `Currency` from `Currency` list.
   * @Note
   * 1. If `dropdown.CurrencyArray` & `dropdown.CMLevel2Array` is not null then it will not query the `Currency` and
@@ -168,7 +167,7 @@ export class AddEditPoDialogComponent implements OnInit {
       if (pocArray && pocArray.length) {
         this.adminObject.dropdown.POPointOfContactArray = [];
         pocArray.forEach(element => {
-          this.adminObject.dropdown.POPointOfContactArray.push({ label: element.FullName, value: element.ID });
+          this.adminObject.dropdown.POPointOfContactArray.push({ label: element.FullNameCC, value: element.ID });
         });
       }
       if (taArray && taArray.length) {
@@ -180,8 +179,17 @@ export class AddEditPoDialogComponent implements OnInit {
       if (moleculeArray && moleculeArray.length) {
         this.adminObject.dropdown.POMoleculeArray = [];
         moleculeArray.forEach(element => {
-          this.adminObject.dropdown.POMoleculeArray.push({ label: element.Title, value: element.Title });
+          if(!this.adminObject.dropdown.POMoleculeArray.find(c=>c.value === element.Title)){
+            this.adminObject.dropdown.POMoleculeArray.push({ label: element.Title, value: element.Title });
+          }
         });
+
+        if(!this.config.data.poObject){
+          this.PoForm.patchValue({
+            molecule : this.adminObject.dropdown.POMoleculeArray.find(c=>c.value === 'NA') ? 
+            this.adminObject.dropdown.POMoleculeArray.find(c=>c.value === 'NA').value :''
+          })
+        }
       }
       if (poBuyingEntityArray && poBuyingEntityArray.length) {
         const tempArray = poBuyingEntityArray[0].Choices.results;
@@ -212,7 +220,7 @@ export class AddEditPoDialogComponent implements OnInit {
    * 2. TA                    - Get data for `TA` from `TA` list.
    * 3. Molecule              - Get data for `Molecule` from `Molecule` list.
    * 4. PO Buying Entity      - Get choice field data for `BuyingEntity` from `PO` list.
-   * 5. CM Level 2            - Get data for `CM Level 2` from `ResourceCategorization` list based on filter `Role='CM Level 2'`.
+   * 5. CM Level 2            - Get data for `CM Level 2` from `ResourceCategorization` list based on filter `RoleCH='CM Level 2'`.
    * 6. Currency              - Get data for `Currency` from `Currency` list.
    *
    * @Note
@@ -323,23 +331,23 @@ export class AddEditPoDialogComponent implements OnInit {
     this.adminObject.dropdown.DeliveryLevel1Array = [];
     this.adminObject.dropdown.DeliveryLevel2Array = [];
     array.forEach(element => {
-      const role = element.Role;
+      const role = element.RoleCH;
       switch (role) {
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.CMLevel1:
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.CMLevel2:
-          this.adminObject.dropdown.CMLevel1Array.push({ label: element.UserName.Title, value: element.UserName.ID });
+          this.adminObject.dropdown.CMLevel1Array.push({ label: element.UserNamePG.Title, value: element.UserNamePG.ID });
           break;
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.DELIVERY_LEVEL_1:
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.DELIVERY_LEVEL_2:
-          this.adminObject.dropdown.DeliveryLevel1Array.push({ label: element.UserName.Title, value: element.UserName.ID });
+          this.adminObject.dropdown.DeliveryLevel1Array.push({ label: element.UserNamePG.Title, value: element.UserNamePG.ID });
           break;
       }
       switch (role) {
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.CMLevel2:
-          this.adminObject.dropdown.CMLevel2Array.push({ label: element.UserName.Title, value: element.UserName.ID });
+          this.adminObject.dropdown.CMLevel2Array.push({ label: element.UserNamePG.Title, value: element.UserNamePG.ID });
           break;
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.DELIVERY_LEVEL_2:
-          this.adminObject.dropdown.DeliveryLevel2Array.push({ label: element.UserName.Title, value: element.UserName.ID });
+          this.adminObject.dropdown.DeliveryLevel2Array.push({ label: element.UserNamePG.Title, value: element.UserNamePG.ID });
           break;
       }
     });
@@ -387,10 +395,7 @@ export class AddEditPoDialogComponent implements OnInit {
         if (!this.showeditPO) {
           if (this.PORows.some(a =>
             a.PoNumber.toLowerCase() === this.PoForm.value.poNumber.toLowerCase())) {
-            this.messageService.add({
-              key: 'adminCustom', severity: 'error',
-              summary: 'Error Message', detail: 'This PO number is already exist. Please enter another PO number.'
-            });
+            this.common.showToastrMessage(this.constantsService.MessageType.warn, 'This PO number is already exist. Please enter another PO number.', false);
             return false;
           }
         }
@@ -401,10 +406,8 @@ export class AddEditPoDialogComponent implements OnInit {
         this.ref.close(data);
       }
       else {
-        this.messageService.add({
-          key: 'adminCustom', severity: 'error',
-          summary: 'Error Message', detail: 'Unable to upload file, size of ' + this.selectedFile[0].name + ' is 0 KB.'
-        });
+
+        this.common.showToastrMessage(this.constantsService.MessageType.warn, 'Unable to upload file, size of ' + this.selectedFile[0].name + ' is 0 KB.', false);
         return false;
       }
 

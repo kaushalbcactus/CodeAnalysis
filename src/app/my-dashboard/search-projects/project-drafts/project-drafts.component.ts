@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
-import { DynamicDialogConfig, MessageService, MenuItem } from 'primeng';
+import { DynamicDialogConfig, MenuItem } from 'primeng';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { MyDashboardConstantsService } from '../../services/my-dashboard-constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -42,7 +42,6 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
   menuItems: any = [];
   constructor(
     public config: DynamicDialogConfig,
-    public messageService: MessageService,
     private constants: ConstantsService,
     private myDashboardConstantsService: MyDashboardConstantsService,
     private spServices: SPOperationService,
@@ -128,14 +127,6 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
     this.response = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, project);
     this.sharedObject.DashboardData.ProjectInformation = this.response.length > 0 ? this.response[0] : {};
 
-    // this.batchContents = new Array();
-    // const batchGuid = this.spServices.generateUUID();
-    // const project = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.projectInfo);
-    // project.filter = project.filter.replace(/{{projectCode}}/gi, ProjectCode);
-    // const projectUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', project);
-    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, projectUrl);
-    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-    // this.sharedObject.DashboardData.ProjectInformation = this.response[0][0];
   }
 
   // **************************************************************************************************
@@ -151,15 +142,7 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
     let completeFolderRelativeUrl = '';
     const folderUrl = this.ProjectInformation.ProjectFolder;
     completeFolderRelativeUrl = folderUrl + documentsUrl;
-    // const Url = this.sharedObject.sharePointPageObject.serverRelativeUrl +
-    //   // tslint:disable-next-line: quotemark
-    //   "/_api/web/getfolderbyserverrelativeurl('" + completeFolderRelativeUrl + "')/Files?$expand=ListItemAllFields";
-
-    // this.batchContents = new Array();
-    // const batchGuid = this.spServices.generateUUID();
-
-    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, Url);
-    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+  
     this.commonService.SetNewrelic('MyDashboard', 'SearchProjetc-ProjectDraft', 'GetDocumentsByTab');
     this.response = await this.spServices.readFiles(completeFolderRelativeUrl);
 
@@ -178,12 +161,9 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
         }
         this.loaderenable = false;
         this.DocumentArray.map(c => c.taskName = c.ListItemAllFields.TaskName != null ? c.ListItemAllFields.TaskName : '');
-        // if (users.length) {
+      
         this.DocumentArray.map(c => c.modifiedUserName = users.find(d => d.Id ===
           c.ListItemAllFields.EditorId) !== undefined ? users.find(d => d.Id === c.ListItemAllFields.EditorId).Title : '');
-        // } else if (users) {
-        //   this.DocumentArray.map(c => c.modifiedUserName = (users.Id === c.ListItemAllFields.EditorId).Title : '');
-        // }
 
         this.DocumentArray.map(c => c.status = c.ListItemAllFields.Status !== null ? c.ListItemAllFields.Status : '');
         this.DocumentArray.map(c => c.isFileMarkedAsFinal = c.status.split(' ').splice(-1)[0] === 'Complete' ? true : false);
@@ -207,15 +187,12 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
     this.selectedDocuments = [];
   }
 
-  // **************************************************************************************************
+  // *********************************************************************************************
   //  fetch  user data for Document
-  // **************************************************************************************************
+  // *********************************************************************************************
 
   async getUsers(Ids) {
     const batchURL = [];
-
-    // this.batchContents = new Array();
-    // const batchGuid = this.spServices.generateUUID();
 
     Ids.forEach(element => {
       const userDetailObj = Object.assign({}, this.queryConfig);
@@ -223,11 +200,9 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
       userDetailObj.listName = 'UserInfo';
       userDetailObj.type = 'GET';
       batchURL.push(userDetailObj);
-      // const url = this.sharedObject.sharePointPageObject.serverRelativeUrl + '/_api/Web/GetUserById(' + element + ')';
-      // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, url);
+    
     });
     this.commonService.SetNewrelic('MyDashboard', 'SearchProjetc-ProjectDraft', 'GetUsersByIds');
-    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
     this.response = await this.spServices.executeBatch(batchURL);
     this.response = this.response.length > 0 ? this.response.map(c => c.retItems) : [];
     return this.response;
@@ -244,9 +219,8 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
       this.commonService.SetNewrelic('MyDashboard', 'searchproject-project-drafts', 'createZip');
       this.spServices.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), this.selectedTab);
     } else {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select Files.', life: 4000 });
+
+      this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Please Select Files.',false);
     }
   }
-
-
 }

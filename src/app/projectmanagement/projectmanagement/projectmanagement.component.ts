@@ -1,7 +1,7 @@
 import { Component, OnInit, NgZone, ViewEncapsulation, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { GlobalService } from 'src/app/Services/global.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
-import { MenuItem, MessageService, ConfirmationService } from 'primeng/api';
+import { MenuItem } from 'primeng/api';
 import { PmconstantService } from '../services/pmconstant.service';
 import { PMObjectService } from '../services/pmobject.service';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
@@ -54,12 +54,10 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     private spServices: SPOperationService,
     private pmConstant: PmconstantService,
     private frmbuilder: FormBuilder,
-    public messageService: MessageService,
     public pmService: PMCommonService,
     private router: Router,
     private dataService: DataService,
     private commonService: CommonService,
-    private confirmationService: ConfirmationService,
     public dialogService: DialogService,
   ) { }
   ngOnInit() {
@@ -197,7 +195,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    */
   onChangeClientLegalEntity() {
     if (this.addSowForm.value.clientLegalEntity) {
-      this.pmObject.addSOW.ClientLegalEntity = this.addSowForm.value.clientLegalEntity;
+    this.pmObject.addSOW.ClientLegalEntity = this.addSowForm.value.clientLegalEntity;
     }
     if (this.pmObject.addSOW.ClientLegalEntity) {
       this.sowDropDown.POC = [];
@@ -207,8 +205,8 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       if (poc && poc.length) {
         // tslint:disable-next-line:no-shadowed-variable
         poc.forEach(element => {
-          this.sowDropDown.POC.push({ label: element.FullName, value: element.ID });
-          this.sowDropDown.POCOptional.push({ label: element.FullName, value: element.ID });
+          this.sowDropDown.POC.push({ label: element.FullNameCC, value: element.ID });
+          this.sowDropDown.POCOptional.push({ label: element.FullNameCC, value: element.ID });
         });
       }
       const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
@@ -218,7 +216,6 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
         this.addSowForm.get('cactusBillingEntity').setValue(clientInfo[0].BillingEntity);
         if (clientInfo[0].CMLevel1 && clientInfo[0].CMLevel1.results && clientInfo[0].CMLevel1.results.length) {
           const cm1 = this.pmService.getIds(clientInfo[0].CMLevel1.results);
-          // const found = this.sowDropDown.CMLevel1.some(r => cm1.indexOf(r) >= 0); // Commented by kaushal on 12-07-2019
           const found = this.sowDropDown.CMLevel1.some(r => cm1.indexOf(r.value) >= 0);
           if (found) {
             this.addSowForm.get('cm').setValue(cm1);
@@ -301,15 +298,15 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.addSowForm.get('total').setValue(this.pmObject.addSOW.Budget.Net +
       this.pmObject.addSOW.Budget.OOP + this.pmObject.addSOW.Budget.Tax);
 
-    if (!this.addSowForm.value.net) {
-      this.addSowForm.get('net').setValue(0);
-    }
-    if (!this.addSowForm.value.oop) {
-      this.addSowForm.get('oop').setValue(0);
-    }
-    if (!this.addSowForm.value.tax) {
-      this.addSowForm.get('tax').setValue(0);
-    }
+      if(!this.addSowForm.value.net) {
+        this.addSowForm.get('net').setValue(0);
+      }
+      if(!this.addSowForm.value.oop) {
+        this.addSowForm.get('oop').setValue(0);
+      }
+      if(!this.addSowForm.value.tax) {
+        this.addSowForm.get('tax').setValue(0);
+      }
   }
 
 
@@ -325,10 +322,8 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
   async createSOW() {
 
     if (this.selectedFile && this.selectedFile.size === 0) {
-      this.messageService.add({
-        key: 'custom', severity: 'error',
-        summary: 'Error Message', detail: 'Unable to upload file, size of ' + this.selectedFile.name + ' is 0 KB.'
-      });
+
+      this.commonService.showToastrMessage(this.constant.MessageType.error,this.constant.Messages.ZeroKbFile.replace('{{fileName}}', this.selectedFile.name),false);
       return false;
     }
     else {
@@ -336,10 +331,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       if (this.addSowForm.valid) {
         this.pmObject.isSOWFormSubmit = false;
         if (!this.selectedFile && !this.pmObject.addSOW.ID) {
-          this.messageService.add({
-            key: 'custom', severity: 'error',
-            summary: 'Error Message', detail: 'Please select SOW document.'
-          });
+          this.commonService.showToastrMessage(this.constant.MessageType.error,'Please select SOW document.',false);
           return false;
         }
         // get all the value from form.
@@ -358,10 +350,8 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
           const creationDate = new Date(this.pmObject.addSOW.SOWCreationDate);
           const expirtyDate = new Date(this.pmObject.addSOW.SOWExpiryDate);
           if (expirtyDate <= creationDate) {
-            this.messageService.add({
-              key: 'custom', severity: 'error',
-              summary: 'Error Message', detail: 'SOW expiry date should be greater than sow creation date.'
-            });
+
+            this.commonService.showToastrMessage(this.constant.MessageType.error,'SOW expiry date should be greater than sow creation date.',false);
             return;
           }
         }
@@ -436,9 +426,6 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     }
   }
 
-
-
-
   getFileAndFolderName() {
     this.FolderName = '';
     this.SelectedFile = [];
@@ -453,148 +440,6 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.FolderName = libraryName + '/' + docFolder;
     this.SelectedFile.push(new Object({ name: this.selectedFile.name, file: this.selectedFile }));
   }
-
-  // async submitFile() {
-  //   const docFolder = 'Finance/SOW';
-  //   let libraryName = '';
-  //   const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
-  //     x.Title === this.pmObject.addSOW.ClientLegalEntity);
-  //   if (clientInfo && clientInfo.length) {
-  //     this.currClientLegalEntityObj = clientInfo;
-  //     libraryName = clientInfo[0].ListName;
-  //   }
-  //   const folderPath: string = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + libraryName + '/' + docFolder;
-  //   this.filePathUrl = await this.spServices.getFileUploadUrl(folderPath, this.selectedFile.name, true);
-  //   this.commonService.SetNewrelic('ProjectManagement', 'projectmanagement-submitFile', 'uploadFile');
-  //   const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
-  //   console.log(res);
-  //   // Added by kaushal on 12-07-2019
-  //   if (res.hasOwnProperty('ServerRelativeUrl') && res.hasOwnProperty('Name')) { // && !res.hasOwnProperty('hasError')
-  //     this.pmObject.addSOW.SOWFileURL = res.ServerRelativeUrl;
-  //     this.pmObject.addSOW.SOWFileName = res.Name;
-  //     this.pmObject.addSOW.SOWDocProperties = res;
-  //   }
-  //   return res;
-  // }
-
-
-  //*************************************************************************************************
-  // commented old file upload function
-  // ************************************************************************************************
-
-
-  // async createSOW() {
-
-  //   this.pmObject.isSOWFormSubmit = true;
-  //   if (this.addSowForm.valid) {
-  //     this.pmObject.isSOWFormSubmit = false;
-  //     if (!this.selectedFile && !this.pmObject.addSOW.ID) {
-  //       this.messageService.add({
-  //         key: 'custom', severity: 'error',
-  //         summary: 'Error Message', detail: 'Please select SOW document.'
-  //       });
-  //       return false;
-  //     }
-  //     // get all the value from form.
-  //     this.pmObject.addSOW.ClientLegalEntity = this.addSowForm.value.clientLegalEntity ? this.addSowForm.value.clientLegalEntity :
-  //       this.pmObject.addSOW.ClientLegalEntity;
-  //     this.pmObject.addSOW.SOWCode = this.addSowForm.value.sowCode ? this.addSowForm.value.sowCode + '-SOW' : this.pmObject.addSOW.SOWCode;
-  //     this.pmObject.addSOW.BillingEntity = this.addSowForm.value.cactusBillingEntity;
-  //     this.pmObject.addSOW.PracticeArea = this.addSowForm.value.practiceArea;
-  //     this.pmObject.addSOW.Poc = this.addSowForm.value.poc;
-  //     this.pmObject.addSOW.PocOptional = this.addSowForm.value.pocOptional;
-  //     this.pmObject.addSOW.SOWTitle = this.addSowForm.value.sowTitle;
-  //     this.pmObject.addSOW.SOWCreationDate = this.addSowForm.value.sowCreationDate ? this.addSowForm.value.sowCreationDate :
-  //       this.pmObject.addSOW.SOWCreationDate;
-  //     this.pmObject.addSOW.SOWExpiryDate = this.addSowForm.value.sowExpiryDate;
-  //     if (this.pmObject.addSOW.SOWCreationDate && this.pmObject.addSOW.SOWExpiryDate) {
-  //       const creationDate = new Date(this.pmObject.addSOW.SOWCreationDate);
-  //       const expirtyDate = new Date(this.pmObject.addSOW.SOWExpiryDate);
-  //       if (expirtyDate <= creationDate) {
-  //         this.messageService.add({
-  //           key: 'custom', severity: 'error',
-  //           summary: 'Error Message', detail: 'SOW expiry date should be greater than sow creation date.'
-  //         });
-  //         return;
-  //       }
-  //     }
-  //     this.pmObject.isMainLoaderHidden = false;
-  //     this.pmObject.addSOW.Status = this.addSowForm.value.status ? this.addSowForm.value.status : this.pmObject.addSOW.Status;
-  //     this.pmObject.addSOW.Comments = this.addSowForm.value.comments;
-  //     this.pmObject.addSOW.Currency = this.addSowForm.value.currency ? this.addSowForm.value.currency : this.pmObject.addSOW.Currency;
-  //     this.pmObject.addSOW.Budget.Total = this.addSowForm.value.total;
-  //     this.pmObject.addSOW.CM1 = this.addSowForm.value.cm;
-  //     this.pmObject.addSOW.CM2 = this.addSowForm.value.cm2;
-  //     this.pmObject.addSOW.DeliveryOptional = this.addSowForm.value.deliveryOptional;
-  //     this.pmObject.addSOW.Delivery = this.addSowForm.value.delivery;
-  //     this.pmObject.addSOW.SOWOwner = this.addSowForm.value.sowOwner;
-  //     // Add user to all operation field.
-  //     this.pmObject.addSOW.AllOperationId.push(this.pmObject.currLoginInfo.Id);
-  //     if (this.pmObject.addSOW.CM1 && this.pmObject.addSOW.CM1.length) {
-  //       this.pmObject.addSOW.CM1.forEach(element => {
-  //         this.pmObject.addSOW.AllOperationId.push(element);
-  //       });
-  //     }
-  //     if (this.pmObject.addSOW.Delivery && this.pmObject.addSOW.Delivery.length) {
-  //       this.pmObject.addSOW.Delivery.forEach(element => {
-  //         this.pmObject.addSOW.AllOperationId.push(element);
-  //       });
-  //     }
-  //     this.pmObject.addSOW.AllOperationId.push(this.pmObject.addSOW.SOWOwner);
-  //     this.pmObject.addSOW.AllOperationId.push(this.pmObject.addSOW.CM2);
-  //     this.pmObject.addSOW.AllOperationId.push(this.pmObject.addSOW.DeliveryOptional);
-  //     let fileUploadResult = {};
-  //     if (this.selectedFile) {
-  //       fileUploadResult = await this.submitFile();
-  //     }
-  //     this.pmObject.addSOW.isSOWCodeDisabled = false;
-  //     this.pmObject.addSOW.isStatusDisabled = true;
-  //     if (this.selectedFile && !fileUploadResult.hasOwnProperty('hasError')) {
-  //       if (!this.pmObject.addSOW.ID) {
-  //         await this.createUpdateSOW(false, this.pmObject.addSOW);
-  //       }
-  //       if (this.pmObject.addSOW.ID) {
-  //         await this.createUpdateSOW(true, this.pmObject.addSOW);
-  //       }
-  //     } else {
-  //       if (!this.pmObject.addSOW.ID) {
-  //         await this.createUpdateSOW(false, this.pmObject.addSOW);
-  //       }
-  //       if (this.pmObject.addSOW.ID) {
-  //         await this.createUpdateSOW(true, this.pmObject.addSOW);
-  //       }
-  //     }
-  //     this.selectedFile = null;
-  //   } else {
-  //     this.validateAllFormFields(this.addSowForm);
-  //   }
-  // }
-
-  /**
-  * This method is used to upload the file on finance/sow.
-  */
-  // async submitFile() {
-  //   const docFolder = 'Finance/SOW';
-  //   let libraryName = '';
-  //   const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
-  //     x.Title === this.pmObject.addSOW.ClientLegalEntity);
-  //   if (clientInfo && clientInfo.length) {
-  //     this.currClientLegalEntityObj = clientInfo;
-  //     libraryName = clientInfo[0].ListName;
-  //   }
-  //   const folderPath: string = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + libraryName + '/' + docFolder;
-  //   this.filePathUrl = await this.spServices.getFileUploadUrl(folderPath, this.selectedFile.name, true);
-  //   this.commonService.SetNewrelic('ProjectManagement', 'projectmanagement-submitFile', 'uploadFile');
-  //   const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
-  //   console.log(res);
-  //   // Added by kaushal on 12-07-2019
-  //   if (res.hasOwnProperty('ServerRelativeUrl') && res.hasOwnProperty('Name')) { // && !res.hasOwnProperty('hasError')
-  //     this.pmObject.addSOW.SOWFileURL = res.ServerRelativeUrl;
-  //     this.pmObject.addSOW.SOWFileName = res.Name;
-  //     this.pmObject.addSOW.SOWDocProperties = res;
-  //   }
-  //   return res;
-  // }
   /**
    * This method is used to set the field properties.
    */
@@ -646,7 +491,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    * @param event event parameter should be file properties.
    */
 
-  //  commentedd by maxwell not in use 
+  //  commentedd by maxwell not in use
   // async uploadDocuments(event) {
   //   const docFolder = 'Finance/SOW';
   //   let libraryName = '';
@@ -771,91 +616,91 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    * This method is used send email when budget will updated.
    * @param sowObj Pass sowObj as parameter.
    */
-  updateBudgetEmail(sowObj) {
-    const objEmailBody = [];
-    const mailSubject = sowObj.SOWCode + ' - Budget Updated';
-    objEmailBody.push({
-      key: '@@SowCode@@',
-      value: sowObj.SOWCode
-    });
-    objEmailBody.push({
-      key: '@@ClientName@@',
-      value: sowObj.ClientLegalEntity
-    });
-    objEmailBody.push({
-      key: '@@Title@@',
-      value: sowObj.SOWTitle
-    });
-    objEmailBody.push({
-      key: '@@POC@@',
-      value: this.pmService.extractNamefromPOC([sowObj.Poc])
-    });
-    objEmailBody.push({
-      key: '@@Currency@@',
-      value: sowObj.Currency
-    });
-    objEmailBody.push({
-      key: '@@Comments@@',
-      value: sowObj.Comments
-    });
-    objEmailBody.push({
-      key: '@@TotalBudget@@',
-      value: sowObj.Budget.Total
-    });
-    objEmailBody.push({
-      key: '@@AddendumTotalvalue@@',
-      value: sowObj.Addendum.TotalBudget
-    });
-    objEmailBody.push({
-      key: '@@NewTotalBudget@@',
-      value: parseFloat((sowObj.Budget.Total + sowObj.Addendum.TotalBudget).toFixed(2))
-    });
+  // updateBudgetEmail(sowObj) {
+  //   const objEmailBody = [];
+  //   const mailSubject = sowObj.SOWCode + ' - Budget Updated';
+  //   objEmailBody.push({
+  //     key: '@@SowCode@@',
+  //     value: sowObj.SOWCode
+  //   });
+  //   objEmailBody.push({
+  //     key: '@@ClientName@@',
+  //     value: sowObj.ClientLegalEntity
+  //   });
+  //   objEmailBody.push({
+  //     key: '@@Title@@',
+  //     value: sowObj.SOWTitle
+  //   });
+  //   objEmailBody.push({
+  //     key: '@@POC@@',
+  //     value: this.pmService.extractNamefromPOC([sowObj.Poc])
+  //   });
+  //   objEmailBody.push({
+  //     key: '@@Currency@@',
+  //     value: sowObj.Currency
+  //   });
+  //   objEmailBody.push({
+  //     key: '@@Comments@@',
+  //     value: sowObj.Comments
+  //   });
+  //   objEmailBody.push({
+  //     key: '@@TotalBudget@@',
+  //     value: sowObj.Budget.Total
+  //   });
+  //   objEmailBody.push({
+  //     key: '@@AddendumTotalvalue@@',
+  //     value: sowObj.Addendum.TotalBudget
+  //   });
+  //   objEmailBody.push({
+  //     key: '@@NewTotalBudget@@',
+  //     value: parseFloat((sowObj.Budget.Total + sowObj.Addendum.TotalBudget).toFixed(2))
+  //   });
 
-    objEmailBody.push({
-      key: '@@NetBudget@@',
-      value: sowObj.Budget.Net
-    });
-    objEmailBody.push({
-      key: '@@AddendumNetvalue@@',
-      value: sowObj.Addendum.NetBudget
-    });
-    objEmailBody.push({
-      key: '@@NewNetBudget@@',
-      value: parseFloat((sowObj.Budget.Net + sowObj.Addendum.NetBudget).toFixed(2))
-    });
+  //   objEmailBody.push({
+  //     key: '@@NetBudget@@',
+  //     value: sowObj.Budget.Net
+  //   });
+  //   objEmailBody.push({
+  //     key: '@@AddendumNetvalue@@',
+  //     value: sowObj.Addendum.NetBudget
+  //   });
+  //   objEmailBody.push({
+  //     key: '@@NewNetBudget@@',
+  //     value: parseFloat((sowObj.Budget.Net + sowObj.Addendum.NetBudget).toFixed(2))
+  //   });
 
-    objEmailBody.push({
-      key: '@@OOPBudget@@',
-      value: sowObj.Budget.OOP
-    });
-    objEmailBody.push({
-      key: '@@AddendumOOPvalue@@',
-      value: sowObj.Addendum.OOPBudget
-    });
-    objEmailBody.push({
-      key: '@@NewOOPBudget@@',
-      value: parseFloat((sowObj.Budget.OOP + sowObj.Addendum.OOPBudget).toFixed(2))
-    });
+  //   objEmailBody.push({
+  //     key: '@@OOPBudget@@',
+  //     value: sowObj.Budget.OOP
+  //   });
+  //   objEmailBody.push({
+  //     key: '@@AddendumOOPvalue@@',
+  //     value: sowObj.Addendum.OOPBudget
+  //   });
+  //   objEmailBody.push({
+  //     key: '@@NewOOPBudget@@',
+  //     value: parseFloat((sowObj.Budget.OOP + sowObj.Addendum.OOPBudget).toFixed(2))
+  //   });
 
-    objEmailBody.push({
-      key: '@@TaxBudget@@',
-      value: sowObj.Budget.Tax
-    });
-    objEmailBody.push({
-      key: '@@AddendumTaxvalue@@',
-      value: sowObj.Addendum.TaxBudget
-    });
-    objEmailBody.push({
-      key: '@@NewTaxBudget@@',
-      value: parseFloat((sowObj.Budget.Tax + sowObj.Addendum.TaxBudget).toFixed(2))
-    });
-    let arrayTo = [];
-    let tempArray = [];
-    tempArray = tempArray.concat(sowObj.SOWOwner, sowObj.CM1, sowObj.CM2, sowObj.DeliveryOptional, sowObj.Delivery);
-    arrayTo = this.pmService.getEmailId(tempArray);
-    this.pmService.getTemplate(this.constant.EMAIL_TEMPLATE_NAME.SOW_BUDGET_UPDATED, objEmailBody, mailSubject, arrayTo,
-      [this.pmObject.currLoginInfo.Email]); // Send Mail
-  }
+  //   objEmailBody.push({
+  //     key: '@@TaxBudget@@',
+  //     value: sowObj.Budget.Tax
+  //   });
+  //   objEmailBody.push({
+  //     key: '@@AddendumTaxvalue@@',
+  //     value: sowObj.Addendum.TaxBudget
+  //   });
+  //   objEmailBody.push({
+  //     key: '@@NewTaxBudget@@',
+  //     value: parseFloat((sowObj.Budget.Tax + sowObj.Addendum.TaxBudget).toFixed(2))
+  //   });
+  //   let arrayTo = [];
+  //   let tempArray = [];
+  //   tempArray = tempArray.concat(sowObj.SOWOwner, sowObj.CM1, sowObj.CM2, sowObj.DeliveryOptional, sowObj.Delivery);
+  //   arrayTo = this.pmService.getEmailId(tempArray);
+  //   this.pmService.getTemplate(this.constant.EMAIL_TEMPLATE_NAME.SOW_BUDGET_UPDATED, objEmailBody, mailSubject, arrayTo,
+  //     [this.pmObject.currLoginInfo.Email]); // Send Mail
+  // }
   /**
    * This method is used to add or udpate the SOW.
    * @param sowObj The parameter shoudl be SOW list object.
@@ -883,10 +728,8 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
           this.constant.listNames.ClientLegalEntity.type);
         this.addUpdateSOWsendEmail(sowObj, this.constant.SOW_STATUS.APPROVED);
         this.pmObject.isMainLoaderHidden = true;
-        this.messageService.add({
-          key: 'custom', severity: 'success', sticky: true,
-          summary: 'Success Message', detail: 'SOW Created - ' + sowObj.SOWCode + ' Successfully.'
-        });
+
+        this.commonService.showToastrMessage(this.constant.MessageType.success,'SOW Created - ' + sowObj.SOWCode + ' Successfully.',true);
         setTimeout(() => {
           this.pmObject.isAddSOWVisible = false;
           this.pmObject.isSOWFormSubmit = false;
@@ -907,10 +750,8 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.commonService.SetNewrelic('projectManagment', 'projectManagement', 'updateSow');
       await this.spServices.updateItem(this.constant.listNames.SOW.name, sowObj.ID, data, this.constant.listNames.SOW.type);
       this.addUpdateSOWsendEmail(sowObj, this.constant.SOW_STATUS.UPDATE);
-      this.messageService.add({
-        key: 'custom', severity: 'success', sticky: true,
-        summary: 'Success Message', detail: 'SOW Updated - ' + sowObj.SOWCode + ' Successfully.'
-      });
+
+      this.commonService.showToastrMessage(this.constant.MessageType.success,'SOW Updated - ' + sowObj.SOWCode + ' Successfully.',true);
       this.pmObject.isMainLoaderHidden = true;
       setTimeout(() => {
         if (this.router.url === '/projectMgmt/allSOW') {
@@ -955,14 +796,14 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       BillingEntity: sowObj.BillingEntity,
       Status: sowObj.Status,
       Title: sowObj.SOWTitle,
-      Comments: sowObj.Comments,
+      CommentsMT: sowObj.Comments,
       Currency: sowObj.Currency,
       TotalBudget: sowObj.Budget.Total,
       NetBudget: sowObj.Budget.Net,
       OOPBudget: sowObj.Budget.OOP,
       TaxBudget: sowObj.Budget.Tax,
       BusinessVertical: sowObj.PracticeArea.join(';#'),
-      Year: year,
+      //Year: year,
       CreatedDate: sowObj.SOWCreationDate,
       ExpiryDate: sowObj.SOWExpiryDate,
       SOWLink: sowObj.SOWFileURL ? sowObj.SOWFileURL : sowObj.SOWDocument,
@@ -1060,16 +901,16 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
   /**
    * This method is used to close the additional Popup.
    */
-  closeAdditonalPop() {
-    this.addAdditionalBudgetForm.reset();
-    this.myInputVariable.nativeElement.value = '';
-    this.pmObject.isSOWFormSubmit = false;
-    this.pmObject.isAdditionalBudgetVisible = false;
-    this.selectedFile = null;
-    if (this.router.url === '/projectMgmt/allSOW') {
-      this.dataService.publish('reload-EditSOW');
-    }
-  }
+  // closeAdditonalPop() {
+  //   this.addAdditionalBudgetForm.reset();
+  //   this.myInputVariable.nativeElement.value = '';
+  //   this.pmObject.isSOWFormSubmit = false;
+  //   this.pmObject.isAdditionalBudgetVisible = false;
+  //   this.selectedFile = null;
+  //   if (this.router.url === '/projectMgmt/allSOW') {
+  //     this.dataService.publish('reload-EditSOW');
+  //   }
+  // }
   /**
    * This method is used to add sow total.
    */
@@ -1083,163 +924,6 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.pmObject.addSOW.Additonal.OOPBudget + this.pmObject.addSOW.Additonal.TaxBudget;
     this.addAdditionalBudgetForm.get('addTotal').setValue(parseFloat(AddBudgets.toFixed(2)));
   }
-  /**
-   * This method is used to add additional budget.
-   */
-  async addAdditionalBudget() {
-    this.pmObject.isSOWFormSubmit = true;
-    if (this.addAdditionalBudgetForm.valid) {
-      this.pmObject.isSOWFormSubmit = false;
-      if (!this.selectedFile) {
-        this.messageService.add({
-          key: 'custom', severity: 'error',
-          summary: 'Error Message', detail: 'Please select SOW document.'
-        });
-        return;
-      } else if (this.selectedFile && this.selectedFile.size === 0) {
-        this.messageService.add({
-          key: 'custom', severity: 'error',
-          summary: 'Error Message', detail: 'Unable to upload file, size of ' + this.selectedFile.name + ' is 0 KB.'
-        });
-        return;
-      }
-      this.pmObject.isMainLoaderHidden = false;
-      const d = new Date();
-      const today = this.pmService.toISODateString(d);
-      let currSelectedSOW;
-      let sowItemResult = [];
-      if (this.pmObject.selectedSOWTask) {
-        currSelectedSOW = this.pmObject.selectedSOWTask;
-        const sowItemFilter = Object.assign({}, this.pmConstant.SOW_QUERY.SOW_BY_ID);
-        sowItemFilter.filter = sowItemFilter.filter.replace(/{{Id}}/gi, currSelectedSOW.ID);
-        this.commonService.SetNewrelic('projectManagment', 'projectManagement', 'getSow');
-        sowItemResult = await this.spServices.readItems(this.constant.listNames.SOW.name, sowItemFilter);
-        if (sowItemResult && sowItemResult.length) {
-          this.pmObject.addSOW.Budget.Total = sowItemResult[0].TotalBudget ? sowItemResult[0].TotalBudget : 0;
-          this.pmObject.addSOW.Budget.Net = sowItemResult[0].NetBudget ? sowItemResult[0].NetBudget : 0;
-          this.pmObject.addSOW.Budget.OOP = sowItemResult[0].OOPBudget ? sowItemResult[0].OOPBudget : 0;
-          this.pmObject.addSOW.Budget.Tax = sowItemResult[0].TaxBudget ? sowItemResult[0].TaxBudget : 0;
-          this.pmService.setGlobalVariable(sowItemResult[0]);
-        }
-      }
-      if (this.pmObject.addSOW.SOWDocument.indexOf(this.selectedFile.name) > -1) {
-        this.messageService.add({
-          key: 'custom', severity: 'error',
-          summary: 'Error Message', detail: 'Addendum SOW document name same as original document name.'
-        });
-        this.pmObject.isSOWFormSubmit = true;
-        this.pmObject.isMainLoaderHidden = true;
-        return;
-      }
-      if (this.selectedFile) {
-        this.pmObject.isMainLoaderHidden = true;
-        this.getFileAndFolderName();
-        this.commonService.SetNewrelic('ProjectManagement', 'projectmanagement-AddAditionBudget', 'uploadFile');
-        this.commonService.UploadFilesProgress(this.SelectedFile, this.FolderName, true).then(async uploadedfile => {
-          if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
-            if (uploadedfile[0].hasOwnProperty('ServerRelativeUrl') && uploadedfile[0].hasOwnProperty('Name')) {
-              this.pmObject.addSOW.SOWFileURL = uploadedfile[0].ServerRelativeUrl;
-              this.pmObject.addSOW.SOWFileName = uploadedfile[0].Name;
-              this.pmObject.addSOW.SOWDocProperties = uploadedfile;
-            }
-            this.pmObject.isMainLoaderHidden = false;
-            await this.ContinueAddBudget(today, sowItemResult, currSelectedSOW);
-          }
-        });
-      }
-      else {
-        await this.ContinueAddBudget(today, sowItemResult, currSelectedSOW);
-      }
-    } else {
-      this.validateAllFormFields(this.addAdditionalBudgetForm);
-      if (!this.selectedFile) {
-        this.messageService.add({
-          key: 'custom', severity: 'error',
-          summary: 'Error Message', detail: 'Please select SOW document.'
-        });
-        return false;
-      }
-    }
-  }
-
-  //  AddBugetDetails Method After FileUpload
-
-  async ContinueAddBudget(today, sowItemResult, currSelectedSOW) {
-    const batchURL = [];
-    const options = {
-      data: null,
-      url: '',
-      type: '',
-      listName: ''
-    };
-
-
-    // Assign form value to global variable
-    this.pmObject.addSOW.Addendum.TotalBudget = this.addAdditionalBudgetForm.value.addTotal;
-    this.pmObject.addSOW.Addendum.NetBudget = this.addAdditionalBudgetForm.value.addNet;
-    this.pmObject.addSOW.Addendum.OOPBudget = this.addAdditionalBudgetForm.value.addOOP ? this.addAdditionalBudgetForm.value.addOOP : 0;
-    this.pmObject.addSOW.Addendum.TaxBudget = this.addAdditionalBudgetForm.value.addTax ? this.addAdditionalBudgetForm.value.addTax : 0;
-    // create sow obj for update the sow list.
-    const updateSOWObj = {
-      TotalBudget: this.pmObject.addSOW.Addendum.TotalBudget + this.pmObject.addSOW.Budget.Total,
-      NetBudget: this.pmObject.addSOW.Addendum.NetBudget + this.pmObject.addSOW.Budget.Net,
-      OOPBudget: this.pmObject.addSOW.Addendum.OOPBudget + this.pmObject.addSOW.Budget.OOP,
-      TaxBudget: this.pmObject.addSOW.Addendum.TaxBudget + this.pmObject.addSOW.Budget.Tax,
-      SOWLink: this.pmObject.addSOW.SOWFileURL,
-      __metadata: {
-        type: this.constant.listNames.SOW.type
-      }
-    };
-    // create budgetbreakup obj for create new item in SOWBudgetBreakup list.
-    const newBudgetSOWObj = {
-      TotalBudget: this.pmObject.addSOW.Addendum.TotalBudget + this.pmObject.addSOW.Budget.Total,
-      NetBudget: this.pmObject.addSOW.Addendum.NetBudget + this.pmObject.addSOW.Budget.Net,
-      OOPBudget: this.pmObject.addSOW.Addendum.OOPBudget + this.pmObject.addSOW.Budget.OOP,
-      TaxBudget: this.pmObject.addSOW.Addendum.TaxBudget + this.pmObject.addSOW.Budget.Tax,
-      AddendumTotalBudget: this.pmObject.addSOW.Addendum.TotalBudget,
-      AddendumNetBudget: this.pmObject.addSOW.Addendum.NetBudget,
-      AddendumOOPBudget: this.pmObject.addSOW.Addendum.OOPBudget,
-      AddendumTaxBudget: this.pmObject.addSOW.Addendum.TaxBudget,
-      Currency: this.pmObject.addSOW.Currency,
-      SOWCode: this.pmObject.addSOW.SOWCode,
-      Status: this.pmObject.addSOW.Status,
-      InternalReviewStartDate: today,
-      ClientReviewStartDate: today,
-      ClientReviewCompletionDate: today,
-      InternalReviewCompletionDate: today,
-      __metadata: {
-        type: this.constant.listNames.SOWBudgetBreakup.type
-      }
-    };
-    const updateSowData = Object.assign({}, options);
-    updateSowData.data = updateSOWObj;
-    updateSowData.listName = this.constant.listNames.SOW.name;
-    updateSowData.type = 'PATCH';
-    updateSowData.url = this.spServices.getItemURL(this.constant.listNames.SOW.name, currSelectedSOW.ID);
-    batchURL.push(updateSowData);
-
-    const insertSOWBudgetBreakup = Object.assign({}, options);
-    insertSOWBudgetBreakup.data = newBudgetSOWObj;
-    insertSOWBudgetBreakup.listName = this.constant.listNames.SOWBudgetBreakup.name;
-    insertSOWBudgetBreakup.type = 'POST';
-    insertSOWBudgetBreakup.url = this.spServices.getReadURL(this.constant.listNames.SOWBudgetBreakup.name, null);
-    batchURL.push(insertSOWBudgetBreakup);
-    this.commonService.SetNewrelic('projectManagment', 'projectManagement', 'GetSowSowBudBreakup');
-    const res = await this.spServices.executeBatch(batchURL);
-    if (sowItemResult && sowItemResult.length) {
-      this.updateBudgetEmail(this.pmObject.addSOW);
-      this.pmObject.isMainLoaderHidden = true;
-      this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Budget updated Successfully.' });
-      console.log(res);
-      setTimeout(() => {
-        this.closeAdditonalPop();
-      }, this.pmConstant.TIME_OUT);
-    }
-    this.selectedFile = null;
-  }
-
-
-
   /**
    * This method is used to get the edit SOWObj value based on selected sow.
    */
@@ -1298,14 +982,11 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    */
   closeSOW() {
     this.pmObject.isSOWCloseVisible = true;
-    this.confirmationService.confirm({
-      header: 'Close SOW',
-      icon: 'pi pi-exclamation-triangle',
-      message: 'Are you sure you want to close the SOW ?',
-      accept: () => {
+    this.commonService.confirmMessageDialog('Confirmation','Are you sure you want to close the SOW ?',null,['Yes','No'],false).then(async Confirmation => {
+      if (Confirmation === 'Yes') {
         this.updateStatus();
       }
-    });
+    })
   }
   /**
    * This method is used to update the sow status based on selected sow.
@@ -1346,10 +1027,8 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       const sowItem = arrResults[0].retItems[0];
       this.pmService.setGlobalVariable(sowItem);
       this.pmObject.addSOW.ID = currSelectedSOW.ID;
-      this.messageService.add({
-        key: 'custom', severity: 'success', sticky: true,
-        summary: 'Success Message', detail: 'SOW ' + currSelectedSOW.SOWCode + ' Closed Successfully.'
-      });
+
+      this.commonService.showToastrMessage(this.constant.MessageType.success,'SOW ' + currSelectedSOW.SOWCode + ' Closed Successfully.',true);
       setTimeout(() => {
         this.addUpdateSOWsendEmail(this.pmObject.addSOW, this.constant.SOW_STATUS.CLOSED);
         if (this.router.url === '/projectMgmt/allSOW') {

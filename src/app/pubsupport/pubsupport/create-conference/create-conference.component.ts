@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { DynamicDialogRef, MessageService, DynamicDialogConfig } from 'primeng';
+import { DynamicDialogRef, DynamicDialogConfig } from 'primeng';
 import { PubsuportConstantsService } from '../../Services/pubsuport-constants.service';
 import { SPOperationService } from '../../../Services/spoperation.service';
 import { ConstantsService } from '../../../Services/constants.service';
@@ -34,7 +34,6 @@ export class CreateConferenceComponent implements OnInit {
         public psConstantService: PubsuportConstantsService,
         private spOperationsService: SPOperationService,
         private constantService: ConstantsService,
-        private messageService: MessageService,
         public config: DynamicDialogConfig,
         private common: CommonService
 
@@ -71,7 +70,7 @@ export class CreateConferenceComponent implements OnInit {
         const result = await this.spOperationsService.executeBatch(data);
         const res = result[0].retItems;
         if (res.hasError) {
-            this.messageService.add({ key: 'myKey1', severity: 'error', summary: 'Error', detail: res.message.value, life: 4000 });
+            this.common.showToastrMessage(this.constantService.MessageType.error,res.message.value,false);
         } else {
             this.conferenceListArray = res;
             console.log('conferenceListArray ', this.conferenceListArray);
@@ -117,6 +116,12 @@ export class CreateConferenceComponent implements OnInit {
             console.log('createConference_form ', this.createConference_form.value);
             let obj = this.createConference_form.value;
             obj['__metadata'] = { type: this.constantService.listNames.Conference.type };
+            // Added code by Arvind.
+            obj['CommentsMT'] = obj['Comments'];
+            delete obj['Comments'];
+            obj['IsActiveCH'] = obj['IsActive'];
+            delete obj['IsActive'];
+            
             const endpoint = this.spOperationsService.getReadURL(this.constantService.listNames.Conference.name);
             const data = [{
                 data: obj,
@@ -137,5 +142,7 @@ export class CreateConferenceComponent implements OnInit {
             this.ref.close(res);
         }
     }
+
+    
 
 }

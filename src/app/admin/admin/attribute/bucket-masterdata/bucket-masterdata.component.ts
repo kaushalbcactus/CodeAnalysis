@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewEncapsulation, ApplicationRef, NgZone, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { DatePipe, PlatformLocation } from '@angular/common';
-import { MessageService, Message, ConfirmationService } from 'primeng/api';
 import { CommonService } from '../../../../Services/common.service';
 import { AdminObjectService } from 'src/app/admin/services/admin-object.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -43,7 +42,6 @@ export class BucketMasterdataComponent implements OnInit {
   editClient = false;
   clientList: any = [];
   bucketData: any;
-  msgs: Message[] = [];
   selectedClient: any = [];
   selectedRowItems: any = [];
   selectedBucket: any;
@@ -61,8 +59,6 @@ export class BucketMasterdataComponent implements OnInit {
    * Construct a method to create an instance of required component.
    *
    * @param datepipe This is instance referance of `DatePipe` component.
-   * @param messageService This is instance referance of `MessageService` component.
-   * @param confirmationService This is instance referance of `ConfirmationService` component.
    * @param adminObject This is instance referance of `AdminObjectService` component.
    * @param spServices This is instance referance of `SPOperationService` component.
    * @param constants This is instance referance of `ConstantsService` component.
@@ -75,10 +71,10 @@ export class BucketMasterdataComponent implements OnInit {
    * @common zone This is instance referance of `CommonService` component.
    *
    */
+
+   
   constructor(
     private datepipe: DatePipe,
-    private messageService: MessageService,
-    private confirmationService: ConfirmationService,
     private adminObject: AdminObjectService,
     private spServices: SPOperationService,
     private constants: ConstantsService,
@@ -135,10 +131,8 @@ export class BucketMasterdataComponent implements OnInit {
     if (results && results.length) {
       this.bucketArray = results[0].retItems;
       if (results[1].retItems.hasError) {
-        this.messageService.add({
-          key: 'adminCustomError', severity: 'error', summary: 'Error Message',
-          detail: results[1].retItems.message.value
-        });
+
+        this.common.showToastrMessage(this.constants.MessageType.error,results[1].retItems.message.value,false);
         this.adminObject.isMainLoaderHidden = true;
         return false;
       }
@@ -172,8 +166,8 @@ export class BucketMasterdataComponent implements OnInit {
    *
    * @description
    * It will prepare the request as per following Sequence.
-   * 1. Bucket  - Get data from `Focus Group` list based on filter `IsActive='Yes'`.
-   * 2. ClientLegalEntity - Get data from `ClientLegalEntity` list based on filter `IsActive='Yes'`.
+   * 1. Bucket  - Get data from `Focus Group` list based on filter `IsActiveCH='Yes'`.
+   * 2. ClientLegalEntity - Get data from `ClientLegalEntity` list based on filter `IsActiveCH='Yes'`.
    *
    * @return An Array of the response in `JSON` format in above sequence.
    */
@@ -188,7 +182,7 @@ export class BucketMasterdataComponent implements OnInit {
     // Get Bucket value  from FocusGroup list ##0;
     const bucketGet = Object.assign({}, options);
     const bucketFilter = Object.assign({}, this.adminConstants.QUERY.GET_FOCUS_GROUP_BY_ACTIVE);
-    bucketFilter.filter = bucketFilter.filter.replace(/{{isActive}}/gi, '1');
+    bucketFilter.filter = bucketFilter.filter.replace(/{{isActive}}/gi, this.adminConstants.LOGICAL_FIELD.YES);
     bucketGet.url = this.spServices.getReadURL(this.constants.listNames.FocusGroup.name,
       bucketFilter);
     bucketGet.type = 'GET';
@@ -372,41 +366,31 @@ export class BucketMasterdataComponent implements OnInit {
    *
    */
   async addBucketData() {
-    const alphaExp = this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL;
-    this.messageService.clear();
+    const alphaExp = new RegExp(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL);
+    this.common.clearToastrMessage();
     if (!this.bucketData) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error',
-        summary: 'Error Message', detail: 'Please enter bucket name.'
-      });
+      this.common.showToastrMessage(this.constants.MessageType.error,'Please enter bucket name.',false);
       return false;
     }
-    if (!this.bucketData.match(alphaExp)) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error', summary: 'Error Message',
-        detail: 'Special characters are allowed between alphabets. Allowed special characters are \'-\' and \'_\'.'
-      });
+    if (!alphaExp.test(this.bucketData)) {
+      this.common.showToastrMessage(this.constants.MessageType.error,'Special characters are allowed between alphabets. Allowed special characters are \'-\' and \'_\'.',false);
       return false;
     }
     if (this.bucketDataRows.some(a => a.Bucket.toLowerCase() === this.bucketData.toLowerCase())) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error',
-        summary: 'Error Message', detail: 'This bucket is already exist. Please enter another bucket name.'
-      });
+      this.common.showToastrMessage(this.constants.MessageType.error,'This bucket is already exist. Please enter another bucket name.',false);
       return false;
     }
     this.adminObject.isMainLoaderHidden = false;
     const data = {
-      Title: this.bucketData
+      Title: this.bucketData,
+      IsActiveCH: this.adminConstants.LOGICAL_FIELD.YES
     };
     this.common.SetNewrelic('admin', 'admin-attribute-bucketMasterData', 'CreateFocusData');
     const result = await this.spServices.createItem(this.constants.listNames.FocusGroup.name, data,
       this.constants.listNames.FocusGroup.type);
     console.log(result);
-    this.messageService.add({
-      key: 'adminCustom', severity: 'success', sticky: true,
-      summary: 'Success Message', detail: 'The bucket ' + this.bucketData + ' has added successfully.'
-    });
+
+    this.common.showToastrMessage(this.constants.MessageType.success,'The bucket ' + this.bucketData + ' has added successfully.',true)
     this.bucketData = '';
     await this.loadBucketTable();
     this.adminObject.isMainLoaderHidden = true;
@@ -416,24 +400,22 @@ export class BucketMasterdataComponent implements OnInit {
    *
    * @description
    *
-   * This method mark the bucket as `IsActive='NO'` in `FocusGroup` list so that it is not visible in table.
+   * This method mark the bucket as `IsActiveCH='NO'` in `FocusGroup` list so that it is not visible in table.
    *
    * @param data Pass data as parameter which contains value of bucket row.
    */
   delete(data) {
     console.log(data);
-    this.confirmationService.confirm({
-      message: 'Do you want to delete this record?',
-      header: 'Delete Confirmation',
-      icon: 'pi pi-info-circle',
-      key: 'confirm',
-      accept: () => {
+
+    this.common.confirmMessageDialog('Delete Confirmation','Do you want to delete this record?',null,['Yes','No'],false).then(async Confirmation => {
+      if (Confirmation === 'Yes') {
         const updateData = {
-          IsActive: false
+          IsActiveCH: this.adminConstants.LOGICAL_FIELD.NO
         };
         this.confirmUpdate(data, updateData, this.constants.listNames.FocusGroup.name, this.constants.listNames.FocusGroup.type);
-      },
+      }
     });
+
   }
   /**
    * Construct a method to save the update the data.
@@ -446,10 +428,8 @@ export class BucketMasterdataComponent implements OnInit {
     this.adminObject.isMainLoaderHidden = false;
     this.common.SetNewrelic('admin', 'admin-attribute-bucketMasterData', 'updateFocusGroup');
     const result = await this.spServices.updateItem(listName, data.ID, updateData, type);
-    this.messageService.add({
-      key: 'adminCustom', severity: 'success', sticky: true,
-      summary: 'Success Message', detail: 'The bucket ' + data.Bucket + ' has deleted successfully.'
-    });
+
+    this.common.showToastrMessage(this.constants.MessageType.success,'The bucket ' + data.Bucket + ' has deleted successfully.',true);
     this.loadBucketTable();
     this.adminObject.isMainLoaderHidden = true;
   }
@@ -470,10 +450,8 @@ export class BucketMasterdataComponent implements OnInit {
     console.log(this.selectedBucket);
     console.log(this.selectedRowItems);
     if (!this.selectedClient.length) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error',
-        summary: 'Error Message', detail: 'Please select atleast one client.'
-      });
+
+      this.common.showToastrMessage(this.constants.MessageType.error,'Please select atleast one client.',false);
       return false;
     }
     const batchURL = [];
@@ -504,10 +482,8 @@ export class BucketMasterdataComponent implements OnInit {
       // const results = await this.spServices.executeBatch(batchURL);
       const updateResult = await this.updateCLEMapping(batchURL);
       this.editClient = false;
-      this.messageService.add({
-        key: 'adminCustom', severity: 'success', sticky: true,
-        summary: 'Success Message', detail: 'The selected clients are updated successfully.'
-      });
+
+      this.common.showToastrMessage(this.constants.MessageType.success,'The selected clients are updated successfully.',true)
       this.loadBucketTable();
       this.adminObject.isMainLoaderHidden = true;
     }
@@ -601,7 +577,7 @@ export class BucketMasterdataComponent implements OnInit {
             const tempDate = this.selectedClient.filter(a => a.Title === cleObj.CLEName);
             const updateData = {
               __metadata: { type: this.constants.listNames.CLEBucketMapping.type },
-              EndDate: new Date(new Date(tempDate[0].EffectiveDate).setDate(new Date(tempDate[0].EffectiveDate).getDate() - 1))
+              EndDateDT: new Date(new Date(tempDate[0].EffectiveDate).setDate(new Date(tempDate[0].EffectiveDate).getDate() - 1))
             };
             const updateCleMapping = Object.assign({}, options);
             updateCleMapping.data = updateData;

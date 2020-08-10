@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, HostListener, ApplicationRef, NgZone, ChangeDetectorRef, EmbeddedViewRef, ComponentRef } from '@angular/core';
-import { MessageService, MenuItem } from 'primeng/api';
+import {MenuItem } from 'primeng/api';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -88,7 +88,6 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
   dialogComponentRef: ComponentRef<TimelineHistoryComponent>
 
   constructor(
-    public messageService: MessageService,
     private constants: ConstantsService,
     private myDashboardConstantsService: MyDashboardConstantsService,
     private spServices: SPOperationService,
@@ -146,7 +145,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     ];
   }
 
-
+  
   // *************************************************************************************************************************************
   // hide popup menu on production
   // *************************************************************************************************************************************
@@ -285,10 +284,8 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     this.modalloaderenable = true;
 
     if (!this.ProjectCode && !this.ProjectTitle) {
-      this.messageService.add({
-        key: 'custom', severity: 'warn', summary: 'Warning Message',
-        detail: 'Please Enter Project Code or Project Short Title.'
-      });
+
+      this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please Enter Project Code or Project Short Title.',false);
     } else {
       this.loaderenable = true;
       // this.batchContents = new Array();
@@ -332,18 +329,11 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
       } else {
         this.loaderenable = false;
         if (this.ProjectCode !== '') {
-          this.messageService.add({
-            key: 'custom', severity: 'error', summary: 'Warning Message',
-            // tslint:disable-next-line: quotemark
-            detail: "Project code doesn't exist. Please verify if it is correct."
-          });
+
+          this.commonService.showToastrMessage(this.constants.MessageType.error,"Project code doesn't exist. Please verify if it is correct.",false);
         } else {
           this.loaderenable = false;
-          this.messageService.add({
-            key: 'custom', severity: 'error', summary: 'Warning Message',
-            // tslint:disable-next-line: quotemark
-            detail: "Project Short Title doesn't exist. Please verify if it is correct."
-          });
+          this.commonService.showToastrMessage(this.constants.MessageType.error,"Project Short Title doesn't exist. Please verify if it is correct.",false);
         }
       }
 
@@ -370,7 +360,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     this.ProjectPopupDetails.IsSearchProject = true;
     this.ProjectPopupDetails.POC = this.sharedObject.DashboardData.ProjectContacts.find(c => c.ID ===
       project.PrimaryPOC) !== undefined ? this.sharedObject.DashboardData.ProjectContacts.find(c =>
-        c.ID === project.PrimaryPOC).FullName : '';
+        c.ID === project.PrimaryPOC).FullNameCC : '';
 
     this.modalloaderenable = false;
 
@@ -506,10 +496,8 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
   async goToProjectScope(project) {
     const response = await this.commonService.goToProjectScope(project, project.Status);
     if (response === 'No Document Found.') {
-      this.messageService.add({
-        key: 'custom', severity: 'error', summary: 'Error Message',
-        detail: project.ProjectCode + ' - Project Scope not found.'
-      });
+
+      this.commonService.showToastrMessage(this.constants.MessageType.error,project.ProjectCode + ' - Project Scope not found.', false);
     }
     else {
       window.open(response);

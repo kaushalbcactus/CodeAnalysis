@@ -1,4 +1,4 @@
-import { BrowserModule , Title } from '@angular/platform-browser';
+import { BrowserModule, Title } from '@angular/platform-browser';
 import { CommonModule, DatePipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -6,9 +6,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-// FIle upload
-// import { FileUploadModule  } from 'ng2-file-upload';
 import { DataService } from './Services/data.service';
 import { TimelineHistoryComponent } from './timeline/timeline-history/timeline-history.component';
 import { MessageService } from 'primeng/api';
@@ -16,7 +13,7 @@ import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.com
 import { PrimengModule } from './primeng/primeng.module';
 import { FileUploadProgressDialogComponent } from './shared/file-upload-progress-dialog/file-upload-progress-dialog.component';
 import { ConfirmationDialogComponent } from './shared/confirmation-dialog/confirmation-dialog.component';
-
+import { ToastModule } from 'primeng/toast';
 
 @NgModule({
   imports: [
@@ -28,14 +25,14 @@ import { ConfirmationDialogComponent } from './shared/confirmation-dialog/confir
     AppRoutingModule,
     HttpClientModule,
     CommonModule,
-    NgbModule,
-    PrimengModule
+    PrimengModule,
+    ToastModule
   ],
   declarations: [
     AppComponent,
-    PageNotFoundComponent,
+    PageNotFoundComponent
   ],
-  entryComponents:[FileUploadProgressDialogComponent,ConfirmationDialogComponent],
+  entryComponents: [FileUploadProgressDialogComponent, ConfirmationDialogComponent],
   providers: [DataService, TimelineHistoryComponent, DatePipe, MessageService, Title],
   bootstrap: [AppComponent]
 })

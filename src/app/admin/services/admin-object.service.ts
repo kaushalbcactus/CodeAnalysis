@@ -225,6 +225,7 @@ export class AdminObjectService {
     InvoicedRevenue: 0,
     InvoicedTax: 0,
     Link: '',
+    poDocLink:null,
     LastUpdated: new Date(),
     LastUpdatedBy: '',
     LastUpdatedFormat: '',
@@ -247,6 +248,8 @@ export class AdminObjectService {
     TotalInvoiced: 0,
     TotalLinked: 0,
     TotalScheduled: 0,
+    BalancedRevenue: 0,
+    BalancedOOP:0,
     CMLevel2: '',
   };
 

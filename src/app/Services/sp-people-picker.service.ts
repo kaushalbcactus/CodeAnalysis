@@ -59,10 +59,10 @@ export class SpPeoplePickerService {
             const user = users[i];
             if (user.Resolved === true) {
             const objUser = arrUsers.filter(function(objt) {
-               return objt.UserName.EMail === users[i].EntityData.Email;
+               return objt.UserNamePG.EMail === users[i].EntityData.Email;
             });
             if (objUser.length > 0) {
-                const userID = objUser[0].UserName.ID;
+                const userID = objUser[0].UserNamePG.ID;
                 userInfo.push(userID);
             }
           }
@@ -83,7 +83,7 @@ export class SpPeoplePickerService {
             const user = users[i];
             if (user.Resolved === true) {
                 const objUser = arrUsers.filter(function(objt) {
-                    return objt.UserName.EMail === users[i].EntityData.Email;
+                    return objt.UserNamePG.EMail === users[i].EntityData.Email;
                 });
               if (objUser.length > 0) {
                 userInfo.push(users[i].Key);

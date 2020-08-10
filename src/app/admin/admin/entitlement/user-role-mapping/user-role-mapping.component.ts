@@ -5,7 +5,6 @@ import { ConstantsService } from 'src/app/Services/constants.service';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
 import { AdminObjectService } from 'src/app/admin/services/admin-object.service';
 import { AdminCommonService } from 'src/app/admin/services/admin-common.service';
-import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { CommonService } from 'src/app/Services/common.service';
 
@@ -45,7 +44,6 @@ export class UserRoleMappingComponent implements OnInit {
    * @param constants This is instance referance of `ConstantsService` component.
    * @param adminConstants This is instance referance of `AdminConstantService` component.
    * @param adminObject This is instance referance of `AdminObjectService` component.
-   * @param messageService This is instance referance of `MessageService` component.
    * @param adminCommonService This is instance referance of `AdminCommonService` component.
    * @param platformLocation This is instance referance of `PlatformLocation` component.
    * @param router This is instance referance of `Router` component.
@@ -58,7 +56,6 @@ export class UserRoleMappingComponent implements OnInit {
     private constants: ConstantsService,
     private adminConstants: AdminConstantService,
     private adminObject: AdminObjectService,
-    private messageService: MessageService,
     private adminCommonService: AdminCommonService,
     private platformLocation: PlatformLocation,
     private router: Router,
@@ -91,10 +88,8 @@ export class UserRoleMappingComponent implements OnInit {
   }
 
   showToastMsg() {
-    this.messageService.add({
-      key: 'adminAuth', severity: 'info', sticky: true,
-      summary: 'Info Message', detail: 'You don\'\t have permission,please contact SP Team.'
-    });
+
+    this.common.showToastrMessage(this.constants.MessageType.warn,'You don\'\t have permission,please contact SP Team.',true);
   }
   /**
    * Construct a request for calling the batches request and load the dropdown and groups values.
@@ -115,7 +110,7 @@ export class UserRoleMappingComponent implements OnInit {
       const userResults = results[0].retItems;
       if (userResults && userResults.length) {
         userResults.forEach(element => {
-          this.users.push({ label: element.UserName.Title, value: element.UserName });
+          this.users.push({ label: element.UserNamePG.Title, value: element.UserNamePG });
         });
       }
       // load groups
@@ -137,7 +132,7 @@ export class UserRoleMappingComponent implements OnInit {
    *
    * @description
    * It will prepare the request as per following Sequence.
-   * 1. Users           - Get data from `ResourceCategorization` list based on filter `IsActive='Yes'`.
+   * 1. Users           - Get data from `ResourceCategorization` list based on filter `IsActiveCH='Yes'`.
    * 2. Groups          - Get data from Groups.
    *
    * @return An Array of the response in `JSON` format in above sequence.
@@ -182,7 +177,7 @@ export class UserRoleMappingComponent implements OnInit {
    *
    */
   async onUserChange() {
-    this.messageService.clear();
+    this.common.clearToastrMessage();
     this.adminObject.isMainLoaderHidden = false;
     const currentUserId = this.selectedUser.value.ID;
     await this.highlightGroups(currentUserId);
@@ -207,10 +202,7 @@ export class UserRoleMappingComponent implements OnInit {
       if (this.userInfo.Groups && this.userInfo.Groups.results && this.userInfo.Groups.results.length) {
         this.userExistGroupArray = this.userInfo.Groups.results.map(x => x.Title);
       } else {
-        this.messageService.add({
-          key: 'adminCustom', severity: 'error',
-          summary: 'Error Message', detail: 'User does not exist in any groups.'
-        });
+        this.common.showToastrMessage(this.constants.MessageType.error,'User does not exist in any groups.',false);
       }
     }
     return this.selectedRoles = this.userExistGroupArray;
@@ -221,7 +213,7 @@ export class UserRoleMappingComponent implements OnInit {
    * @description
    *
    * This method will extract the column object value from an array and stores into the column dropdown array and display
-   * the values into the User,Role,Action,By and Date column dropdown.
+   * the values into the User,RoleCH,Action,By and Date column dropdown.
    *
    * @param colData Pass colData as a parameter which contains an array of column object.
    *
@@ -235,7 +227,7 @@ export class UserRoleMappingComponent implements OnInit {
     }));
     this.userRoleColArray.Role = this.adminCommonService.uniqueArrayObj(colData.map(a => {
       const b = {
-        label: a.Role, value: a.Role
+        label: a.RoleCH, value: a.RoleCH
       };
       return b;
     }));
@@ -270,19 +262,13 @@ export class UserRoleMappingComponent implements OnInit {
    */
   async save() {
     if (!this.selectedUser) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error', sticky: true,
-        summary: 'Error Message', detail: 'Please select user.'
-      });
+      this.common.showToastrMessage(this.constants.MessageType.warn,'Please select user.',true);
       return false;
     }
     const removeGroups = this.userExistGroupArray.filter(x => !this.selectedRoles.includes(x));
     const groups = this.selectedRoles;
     if (!groups.length && !removeGroups.length) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error', sticky: true,
-        summary: 'Error Message', detail: 'Please select any one group.'
-      });
+      this.common.showToastrMessage(this.constants.MessageType.warn,'Please select any one group.',true);
       return false;
     }
     this.adminObject.isMainLoaderHidden = false;
@@ -321,10 +307,7 @@ export class UserRoleMappingComponent implements OnInit {
       const sResult = await this.spServices.executeBatch(batchURL);
       if (sResult && sResult.length) {
         this.adminObject.isMainLoaderHidden = true;
-        this.messageService.add({
-          key: 'adminCustom', severity: 'success', sticky: true,
-          summary: 'Success Message', detail: 'User - ' + this.userInfo.Title + ' has been updated successfully'
-        });
+        this.common.showToastrMessage(this.constants.MessageType.success,'User - ' + this.userInfo.Title + ' has been updated successfully',true);
       }
     }
     this.adminObject.isMainLoaderHidden = true;

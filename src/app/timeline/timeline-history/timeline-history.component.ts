@@ -170,7 +170,7 @@ export class TimelineHistoryComponent implements OnInit {
     await this.intialRequestCreation(moduleName, requestType, clickedInvItemId);
     this.differenceProcessing(this.timelineBaseObj, this.initialRequest[0]);
     this.initialRequest.splice(0, 1);
-    this.responseCreation(this.timelineBaseObj.entityType, this.timelineBaseObj);
+    this.responseCreation(requestType, this.timelineBaseObj);
     this.assimilation();
     this.updateInitialStruture(this.timelineBaseObj);
     await this.creationComplete(moduleName);
@@ -855,10 +855,10 @@ export class TimelineHistoryComponent implements OnInit {
               break;
             case this.globalConstant.invoiceLineItemsList.columns.MainPOC:
               const currentPOC = this.arrProjectContacts.filter(pc => pc.Id === versionDetail.MainPOC);
-              const currentPOCDetail = currentPOC.length > 0 ? currentPOC[0] : { FullName: '' };
+              const currentPOCDetail = currentPOC.length > 0 ? currentPOC[0] : { FullNameCC: '' };
               obj.activity_type = 'Invoice Edited';
               obj.activity_sub_type = 'POC updated';
-              obj.activity_description = 'POC updated to ' + currentPOCDetail.FullName;
+              obj.activity_description = 'POC updated to ' + currentPOCDetail.FullNameCC;
               break;
             case this.globalConstant.invoiceLineItemsList.columns.PO:
               const currentPO = this.arrPO.filter(po => po.Id === versionDetail.PO);
@@ -1451,10 +1451,10 @@ export class TimelineHistoryComponent implements OnInit {
               break;
             case this.globalConstant.projectList.columns.PrimaryPOC:
               const currentPOC = this.arrProjectContacts.filter(pc => pc.Id === versionDetail.PrimaryPOC);
-              const currentPOCDetail = currentPOC.length > 0 ? currentPOC[0] : { FullName: '' };
+              const currentPOCDetail = currentPOC.length > 0 ? currentPOC[0] : { FullNameCC: '' };
               obj.activity_type = 'Project updated';
               obj.activity_sub_type = 'POC updated';
-              obj.activity_description = 'POC updated to ' + currentPOCDetail.FullName;
+              obj.activity_description = 'POC updated to ' + currentPOCDetail.FullNameCC;
               break;
             case this.globalConstant.projectList.columns.Priority:
               obj.activity_type = 'Project updated';
@@ -1877,10 +1877,10 @@ export class TimelineHistoryComponent implements OnInit {
           switch (key) {
             case this.globalConstant.sowList.columns.PrimaryPOC:
               const currentPOC = this.arrProjectContacts.filter(pc => pc.Id === versionDetail.PrimaryPOC);
-              const currentPOCDetail = currentPOC.length > 0 ? currentPOC[0] : { FullName: '' };
+              const currentPOCDetail = currentPOC.length > 0 ? currentPOC[0] : { FullNameCC: '' };
               obj.activity_type = 'SOW updated';
               obj.activity_sub_type = 'POC updated';
-              obj.activity_description = 'POC updated to ' + currentPOCDetail.FullName;
+              obj.activity_description = 'POC updated to ' + currentPOCDetail.FullNameCC;
               break;
             case this.globalConstant.sowList.columns.Title:
               obj.activity_type = 'SOW updated';

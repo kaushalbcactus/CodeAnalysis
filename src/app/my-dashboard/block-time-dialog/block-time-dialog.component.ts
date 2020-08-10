@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DynamicDialogConfig, DynamicDialogRef, MessageService } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -25,7 +25,7 @@ export class BlockTimeDialogComponent implements OnInit {
   endtime: any;
   eventDate: any;
   eventEndDate: any;
-  yearsRange = new Date().getFullYear() - 1+ ':' + (new Date().getFullYear() + 10);
+  yearsRange = new Date().getFullYear() - 1 + ':' + (new Date().getFullYear() + 10);
   darkTheme: NgxMaterialTimepickerTheme = {
     container: {
       bodyBackgroundColor: '#424242',
@@ -52,7 +52,6 @@ export class BlockTimeDialogComponent implements OnInit {
   constructor(
     public config: DynamicDialogConfig,
     public ref: DynamicDialogRef,
-    public messageService: MessageService,
     private constants: ConstantsService,
     private myDashboardConstantsService: MyDashboardConstantsService,
     private spServices: SPOperationService,
@@ -74,19 +73,19 @@ export class BlockTimeDialogComponent implements OnInit {
         this.datePipe.transform(this.data.task.StartDate, 'hh:mm aa').toLowerCase() : this.data.task.TimeSpent;
       this.minEndTime = this.starttime;
       this.minDateValue = await this.myDashboardConstantsService.CalculateminstartDateValue(this.eventDate, 3);
-      this.endtime = this.datePipe.transform(this.data.task.DueDate, 'hh:mm aa').toLowerCase();
+      this.endtime = this.datePipe.transform(this.data.task.DueDateDT, 'hh:mm aa').toLowerCase();
       this.commment = this.data.task.TaskComments !== null ? this.data.task.TaskComments : undefined;
 
     } else {
       if (this.data.timeblockType !== 'Leave') {
         this.minDateValue = await this.myDashboardConstantsService.CalculateminstartDateValue(new Date(), 3);
       } else {
-        const WeekDate = new Date(new Date().getTime() - 60 * 60 * 24 * 14 * 1000);
-        const day = WeekDate.getDay();
-        const monday = (WeekDate.getDate() - day + (day === 0 ? -6 : 1)) - 1;
-        const tempdate = new Date(WeekDate.setDate(monday));
-        const newDate = new Date(tempdate.getTime());
-        this.minDateValue = new Date(newDate.setDate(newDate.getDate() + 1));
+        const actualStartDate = new Date();
+        const allowedDate = this.common.CalculateminstartDateValue(new Date(), 3);
+        if (actualStartDate.getFullYear() >= allowedDate.getFullYear() &&
+          actualStartDate.getMonth() >= allowedDate.getMonth()) {
+            this.minDateValue = new Date(allowedDate.setDate(1));
+        }
       }
     }
     this.mode = this.data.mode;
@@ -122,8 +121,6 @@ export class BlockTimeDialogComponent implements OnInit {
 
 
   SetTime(time) {
-    // const timespent = (time.split(':')[0] % 12) > 12 ?
-    //   time.split(':')[0] % 12 + ':' + time.split(':')[1] : time.split(':')[0] + ':' + time.split(':')[1];
     const timespent = time.split(':')[0] % 12 + ':' + time.split(':')[1];
     this.starttime = timespent;
   }
@@ -139,31 +136,25 @@ export class BlockTimeDialogComponent implements OnInit {
     if ((!this.SelectedClientLegalEntity && this.data.timeblockType !== 'Admin') &&
       (!this.SelectedClientLegalEntity && this.data.timeblockType !== 'Internal Meeting') &&
       (!this.SelectedClientLegalEntity && this.data.timeblockType !== 'Training')) {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select Client.' });
+      this.common.showToastrMessage(this.constants.MessageType.warn, 'Please Select Client.', false);
       return false;
     } else if (!this.eventDate) {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select  Date.' });
+      this.common.showToastrMessage(this.constants.MessageType.warn, 'Please Select Date.', false);
       return false;
     } else if (!this.starttime) {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Define Start Time.' });
+      this.common.showToastrMessage(this.constants.MessageType.warn, 'Please Define Start Time.', false);
       return false;
     } else if (!this.endtime && this.data.timeblockType !== 'Admin') {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Define End Time.' });
+      this.common.showToastrMessage(this.constants.MessageType.warn, 'Please Define End Time.', false);
       return false;
     } else if (!this.commment) {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please add Comments.' });
+      this.common.showToastrMessage(this.constants.MessageType.warn, 'Please add Comments.', false);
       return false;
     } else if (this.starttime === this.endtime) {
-      this.messageService.add({
-        key: 'custom', severity: 'warn', summary: 'Warning Message',
-        detail: 'End Time should be Greater than Start Time.'
-      });
+      this.common.showToastrMessage(this.constants.MessageType.warn, 'End Time should be Greater than Start Time.', false);
       return false;
     } else if (this.starttime === '0:00') {
-      this.messageService.add({
-        key: 'custom', severity: 'warn', summary: 'Warning Message',
-        detail: 'Total hours should be Greater than 0.'
-      });
+      this.common.showToastrMessage(this.constants.MessageType.warn, 'Total hours should be Greater than 0.', false);
       return false;
     } else {
       let timeDifference;
@@ -180,41 +171,29 @@ export class BlockTimeDialogComponent implements OnInit {
         startDateTime = new Date(this.datePipe.transform(this.eventDate, 'yyyy-MM-dd') + 'T09:00:00.000');
         endDateTime = new Date(this.datePipe.transform(this.eventDate, 'yyyy-MM-dd') + 'T19:00:00.000');
       }
-
-
-
       const obj = {
         __metadata: this.mode === 'create' ? {
-          // tslint:disable-next-line: object-literal-key-quotes
-          'type': 'SP.Data.SchedulesListItem'
+          type: this.constants.listNames.AdhocTask.type
         } : undefined,
         Title: 'Adhoc ' + this.datePipe.transform(this.eventDate, 'dd MMM') + ' ' + this.sharedObject.currentUser.title,
         Entity: this.data.timeblockType === 'Admin' || this.data.timeblockType === 'Training' ||
           this.data.timeblockType === 'Internal Meeting' ? 'CACTUS Internal India' : this.SelectedClientLegalEntity,
-        ProjectCode: 'Adhoc',
         Task: 'Adhoc',
         StartDate: startDateTime,
-        DueDate: endDateTime,
-        Actual_x0020_Start_x0020_Date: startDateTime,
-        Actual_x0020_End_x0020_Date: endDateTime,
-        ExpectedTime: '0',
+        DueDateDT: endDateTime,
         TimeSpent: this.data.timeblockType === 'Admin' ? this.starttime.replace(':', '.') : timeDifference.replace(':', '.'),
-        Comments: this.data.timeblockType === 'Client Meeting / Training' ?
+        CommentsMT: this.data.timeblockType === 'Client Meeting / Training' ?
           'Client meeting / client training' : this.data.timeblockType === 'Internal Meeting' ?
             'Internal meeting' : this.data.timeblockType === 'Training' ? 'Internal training' : 'Administrative Work',
         TaskComments: this.commment,
         Status: 'Completed',
         AssignedToId: this.sharedObject.currentUser.userId,
-        TimeZone: this.sharedObject.DashboardData.ResourceCategorization.find(c => c.ID ===
+        TimeZoneNM: this.sharedObject.DashboardData.ResourceCategorization.find(c => c.UserNamePG.ID ===
           this.sharedObject.currentUser.userId) !== undefined ?
-          this.sharedObject.DashboardData.ResourceCategorization.find(c => c.ID ===
+          this.sharedObject.DashboardData.ResourceCategorization.find(c => c.UserNamePG.ID ===
             this.sharedObject.currentUser.userId).TimeZone !== undefined ?
-            this.sharedObject.DashboardData.ResourceCategorization.find(c => c.ID ===
-              this.sharedObject.currentUser.userId).TimeZone.Title : '5.5' : '5.5',
-        TATStatus: this.data.timeblockType === 'Admin' ? 'Yes' : 'No',
-
-
-
+            this.sharedObject.DashboardData.ResourceCategorization.find(c => c.UserNamePG.ID ===
+              this.sharedObject.currentUser.userId).TimeZone.Title : 5.5 : 5.5,
       };
       this.ref.close(obj);
     }
@@ -231,19 +210,22 @@ export class BlockTimeDialogComponent implements OnInit {
 
 
     if (!this.eventDate) {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select Start Date.' });
+
+      this.common.showToastrMessage(this.constants.MessageType.warn, 'Please Select Start Date.', false);
       return false;
     } else if (!this.eventEndDate) {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select End Date.' });
+      this.common.showToastrMessage(this.constants.MessageType.warn, 'Please Select End Date.', false);
       return false;
-    } else if (!this.commment) {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please add Comments.' });
+    } else if (this.eventEndDate < this.eventDate ) {
+      this.common.showToastrMessage(this.constants.MessageType.warn, 'End date should be greater than start date.', false);
+      return false;
+    }else if (!this.commment) {
+      this.common.showToastrMessage(this.constants.MessageType.warn, 'Please add Comments.', false);
       return false;
     } else {
       const obj = {
         __metadata: {
-          // tslint:disable-next-line: object-literal-key-quotes
-          'type': this.constants.listNames.LeaveCalendar.type
+          type: this.constants.listNames.LeaveCalendar.type
         },
         Title: this.IsHalfDay ? this.sharedObject.currentUser.title + ' on half day leave' :
           this.sharedObject.currentUser.title + ' on leave',
@@ -259,13 +241,8 @@ export class BlockTimeDialogComponent implements OnInit {
       if (validation) {
         this.ref.close(obj);
       } else {
-
-        this.messageService.add({
-          key: 'custom', severity: 'warn', summary: 'Warning Message',
-          detail: 'Leave already exist between ' +
-            this.datePipe.transform(this.eventDate, 'MMM dd, yyyy') + ' and ' + this.datePipe.transform(this.eventEndDate, 'MMM dd, yyyy')
-        });
-
+        this.common.showToastrMessage(this.constants.MessageType.warn, 'Leave already exist between ' +
+          this.datePipe.transform(this.eventDate, 'MMM dd, yyyy') + ' and ' + this.datePipe.transform(this.eventEndDate, 'MMM dd, yyyy'), false);
       }
 
     }
@@ -274,22 +251,14 @@ export class BlockTimeDialogComponent implements OnInit {
   async validateLeave(EventDate, EndDate) {
     let validation = true;
     const batchURL = [];
-    const options = {
-      data: null,
-      url: '',
-      type: '',
-      listName: ''
-    };
-
-    const leavesGet = Object.assign({}, options);
-    leavesGet.url = this.spServices.getReadURL(this.constants.listNames.LeaveCalendar.name,
+  
+    const url = this.spServices.getReadURL(this.constants.listNames.LeaveCalendar.name,
       this.myDashboardConstantsService.mydashboardComponent.LeaveCalendar);
-    leavesGet.url = leavesGet.url.replace(/{{currentUser}}/gi,
-      this.sharedObject.currentUser.userId.toString()).replace(/{{startDateString}}/gi,
-        EventDate).replace(/{{endDateString}}/gi, EndDate);
-    leavesGet.type = 'GET';
-    leavesGet.listName = this.constants.listNames.LeaveCalendar.name;
-    batchURL.push(leavesGet);
+
+    this.common.setBatchObject(batchURL, url.replace(/{{currentUser}}/gi,
+    this.sharedObject.currentUser.userId.toString()).replace(/{{startDateString}}/gi,
+      EventDate).replace(/{{endDateString}}/gi, EndDate), null, this.constants.Method.GET,this.constants.listNames.LeaveCalendar.name)
+
     this.common.SetNewrelic('MyDashboard', 'BlockTimeDialogComponent', 'ValidateLeave');
     const arrResults = await this.spServices.executeBatch(batchURL);
 
@@ -359,17 +328,13 @@ export class BlockTimeDialogComponent implements OnInit {
 
 
   EnableHalfDay() {
-
     if (new Date(this.datePipe.transform(this.eventDate, 'MMM dd, yyyy')).getTime() ===
       new Date(this.datePipe.transform(this.eventEndDate, 'MMM dd, yyyy')).getTime()) {
-
       this.halfDayEnable = true;
     } else {
       this.IsHalfDay = false;
       this.halfDayEnable = false;
     }
-
-
   }
 
 }

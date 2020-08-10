@@ -9,6 +9,6 @@
     background-color: #ffffff !important;
 }
 
-::ng-deep .ui-dialog-footer {
+::ng-deep .footer-buttons {
     padding: 0em !important;
 }

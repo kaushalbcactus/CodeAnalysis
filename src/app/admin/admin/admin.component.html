@@ -1,10 +1,6 @@
 <div class="tableLoader" [hidden]='adminObject.isMainLoaderHidden'>
-  <div id="mainLoader"></div>
-  <div id="mainLoaderText">Loading...</div>
+    <div id="mainLoader"></div>
+    <div id="mainLoaderText">Loading...</div>
 </div>
 <p-tabMenu [model]="this.adminConstantService.DefaultMenu.List"></p-tabMenu>
 <router-outlet></router-outlet>
-<p-confirmDialog key="confirm"></p-confirmDialog>
-<p-toast position="bottom-right" key="adminCustom"></p-toast>
-<p-toast position="bottom-right" key="adminCustomError"></p-toast>
-<p-toast position="bottom-center" key="adminAuth"></p-toast>

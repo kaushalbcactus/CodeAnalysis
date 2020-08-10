@@ -1,6 +1,8 @@
-::ng-deep .financeTable .ui-table table, .ui-table table
-{  table-layout:auto !important;
+::ng-deep .financeTable .ui-table table,
+.ui-table table {
+    table-layout: auto !important;
 }
+
 ::ng-deep .ui-table-tablewrapper {
     width: auto!important;
 }
@@ -10,7 +12,10 @@
     /* overflow: auto; */
     width: auto !important;
 }
-.ui-table .ui-table-tbody > tr, .ui-table .ui-table-thead > tr > th, .ui-table .ui-table-tfoot > tr > td{
+
+.ui-table .ui-table-tbody>tr,
+.ui-table .ui-table-thead>tr>th,
+.ui-table .ui-table-tfoot>tr>td {
     max-width: 300px !important;
     font-size: 12px;
     padding: 0px !important;
@@ -22,5 +27,22 @@
     text-overflow: ellipsis !important;
     border-width: 1px;
 }
+
+::ng-deep .UserButton {
+    position: fixed !important;
+    width: 85% !important;
+    margin: -50px !important;
+}
+
+::ng-deep .pCalendarBtn {
+    width: 100% !important;
+}
+
+
+/* ::ng-deep .pCalendarBtn>input {
+    width: 89% !important;
+} */
+
+
 /* 
   table td {border:inset 1px #000;} */

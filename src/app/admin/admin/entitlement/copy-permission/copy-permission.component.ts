@@ -1,5 +1,5 @@
 import { Component, OnInit, ApplicationRef, NgZone } from '@angular/core';
-import { SelectItem, MenuItem, MessageService, ConfirmationService } from 'primeng/api';
+import { MenuItem } from 'primeng/api';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
 import { AdminObjectService } from 'src/app/admin/services/admin-object.service';
@@ -44,11 +44,9 @@ export class CopyPermissionComponent implements OnInit {
    * Construct a method to create an instance of required component.
    *
    * @param spServices This is instance referance of `SPOperationService` component.
-   * @param messageService This is instance referance of `MessageService` component.
    * @param adminConstants This is instance referance of `AdminConstantService` component.
    * @param adminObject This is instance referance of `AdminObjectService` component.
    * @param constants This is instance referance of `ConstantsService` component.
-   * @param confirmationService This is instance referance of `ConfirmationService` component.
    * @param platformLocation This is instance referance of `PlatformLocation` component.
    * @param router This is instance referance of `Router` component.
    * @param applicationRef This is instance referance of `ApplicationRef` component.
@@ -56,11 +54,9 @@ export class CopyPermissionComponent implements OnInit {
    */
   constructor(
     private spServices: SPOperationService,
-    private messageService: MessageService,
     private adminConstants: AdminConstantService,
     private adminObject: AdminObjectService,
     private constants: ConstantsService,
-    private confirmationService: ConfirmationService,
     private platformLocation: PlatformLocation,
     private router: Router,
     private applicationRef: ApplicationRef,
@@ -115,8 +111,8 @@ export class CopyPermissionComponent implements OnInit {
         this.adminObject.resourceCatArray : results[0].retItems;
       if (userResults && userResults.length) {
         userResults.forEach(element => {
-          this.sourceUsersArray.push({ label: element.UserName.Title, value: element.UserName.ID });
-          this.destinationUsersArray.push({ label: element.UserName.Title, value: element.UserName.ID });
+          this.sourceUsersArray.push({ label: element.UserNamePG.Title, value: element.UserNamePG.ID });
+          this.destinationUsersArray.push({ label: element.UserNamePG.Title, value: element.UserNamePG.ID });
         });
       }
       // Added resouce to global variable.
@@ -130,7 +126,7 @@ export class CopyPermissionComponent implements OnInit {
    *
    * @description
    * It will prepare the request as per following Sequence.
-   * 1. Users           - Get data from `ResourceCategorization` list based on filter `IsActive='Yes'`.
+   * 1. Users           - Get data from `ResourceCategorization` list based on filter `IsActiveCH='Yes'`.
    *
    * @return An Array of the response in `JSON` format in above sequence.
    */
@@ -221,20 +217,17 @@ export class CopyPermissionComponent implements OnInit {
    * i.e Source users group is equal to destination user group.
    */
   copyPermission() {
-    this.messageService.clear();
+    this.common.clearToastrMessage();
     const isValid = this.validateForms();
     if (isValid) {
-      this.confirmationService.confirm({
-        message: 'Are you sure that you want to copy permission? '
-          + '\nNote: It will remove all the previous permission and copy '
-          + 'the same permission levels of all selected users.',
-        header: 'Confirmation',
-        icon: 'pi pi-exclamation-triangle',
-        key: 'confirm',
-        accept: () => {
-          this.savePermission(this.adminConstants.ACTION.COPY);
-        }
-      });
+
+      this.common.confirmMessageDialog('Confirmation', 'Are you sure that you want to copy permission? '
+        + '\nNote: It will remove all the previous permission and copy '
+        + 'the same permission levels of all selected users.', null, ['Yes', 'No'], false).then(async Confirmation => {
+          if (Confirmation === 'Yes') {
+            this.savePermission(this.adminConstants.ACTION.COPY);
+          }
+        });
     }
   }
   /**
@@ -250,17 +243,12 @@ export class CopyPermissionComponent implements OnInit {
    * i.e Source users group is equal to destination user group plus existing groups.
    */
   addPermission() {
-    // this.messageService.clear();
     const isValid = this.validateForms();
     if (isValid) {
-      this.confirmationService.confirm({
-        message: 'Are you sure that you want to add permission? '
-          + '\n Note: It will not remove previous permission instead it will add '
-          + 'additional permission of selected users.',
-        header: 'Confirmation',
-        icon: 'pi pi-exclamation-triangle',
-        key: 'confirm',
-        accept: () => {
+      this.common.confirmMessageDialog('Confirmation', 'Are you sure that you want to add permission? '
+      + '\n Note: It will not remove previous permission instead it will add '
+      + 'additional permission of selected users.', null, ['Yes', 'No'], false).then(async Confirmation => {
+        if (Confirmation === 'Yes') {
           this.savePermission(this.adminConstants.ACTION.ADD);
         }
       });
@@ -294,10 +282,8 @@ export class CopyPermissionComponent implements OnInit {
     const actionResult = await this.getAddCopyGroups(action);
     if (!actionResult.length) {
       this.adminObject.isMainLoaderHidden = true;
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error', sticky: true,
-        summary: 'Error Message', detail: 'The selected source users doesn\'t\ have any permission.'
-      });
+
+      this.common.showToastrMessage(this.constants.MessageType.warn,'The selected source users doesn\'t\ have any permission.',true);
       return false;
     }
     if (actionResult.length) {
@@ -344,17 +330,12 @@ export class CopyPermissionComponent implements OnInit {
         const result = await this.spServices.executeBatch(batchURL);
         if (result && result.length && action === this.adminConstants.ACTION.ADD) {
           this.viewArray.finalResultArray = this.permission.addGroups.concat(this.permission.destinationGroups);
-          this.messageService.add({
-            key: 'adminCustom', severity: 'success', sticky: true,
-            summary: 'Success Message', detail: 'The permission has added successfully to the user - ' + destinationUser.Title + '.'
-          });
+          this.common.showToastrMessage(this.constants.MessageType.success,'The permission has added successfully to the user - ' + destinationUser.Title + '.',true);
         }
         if (result && result.length && action === this.adminConstants.ACTION.COPY) {
           this.viewArray.finalResultArray = this.permission.addGroups;
-          this.messageService.add({
-            key: 'adminCustom', severity: 'success', sticky: true,
-            summary: 'Success Message', detail: 'The permission has copied successfully to the user - ' + destinationUser.Title + '.'
-          });
+
+          this.common.showToastrMessage(this.constants.MessageType.success,'The permission has copied successfully to the user - ' + destinationUser.Title + '.',true);
         }
       }
       this.adminObject.isMainLoaderHidden = true;
@@ -441,7 +422,7 @@ export class CopyPermissionComponent implements OnInit {
    * else return null.
    */
   async getSourceUsersGroups(sourceUserIdArray) {
-    this.messageService.clear();
+    this.common.clearToastrMessage();
     const batchURL = [];
     const options = {
       data: null,
@@ -484,10 +465,8 @@ export class CopyPermissionComponent implements OnInit {
       return tempSourceArray;
     } else {
       this.sourceUsers = [];
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error', sticky: true,
-        summary: 'Error Message', detail: 'The selected source users doesn\'t\ have any permission. Kindly select another user'
-      });
+
+      this.common.showToastrMessage(this.constants.MessageType.error,'The selected source users doesn\'t\ have any permission. Kindly select another user',true);
       return null;
     }
   }
@@ -540,17 +519,13 @@ export class CopyPermissionComponent implements OnInit {
    */
   validateForms() {
     if (!this.sourceUsers.length) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error', sticky: true,
-        summary: 'Error Message', detail: 'Please select atleast one user.'
-      });
+
+      this.common.showToastrMessage(this.constants.MessageType.error,'Please select atleast one user.',true);
       return false;
     }
     if (!this.destinationUser) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error', sticky: true,
-        summary: 'Error Message', detail: 'Please select user to add/copy permission.'
-      });
+
+      this.common.showToastrMessage(this.constants.MessageType.error,'Please select user to add/copy permission.',true);
       return false;
     }
     return true;

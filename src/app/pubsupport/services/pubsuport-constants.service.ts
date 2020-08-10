@@ -37,12 +37,12 @@ export class PubsuportConstantsService {
         },
         clientLegalEntity: {
             select: "ID,Title,ListName",
-            filter: "IsActive eq 'Yes'",
+            filter: "IsActiveCH eq 'Yes'",
             orderby: "Title",
             top: 4500
         },
         journalConf: {
-            select: "ID, Title, Name, IF, RejectionRate, ExpectedReviewPeriod, JournalEditorInfo, IsSelected, Status, UserName, Password, PublicationDate, PublicationURL, PublicationTitle, Citation, PDFAvailable, JournalRequirementURL, EntryType, AbstractSubmissionDeadline, CongressDate, Milestone, JournalRequirementDate, Created, Comments, JournalRequirementResponse, JournalConferenceId",
+            select: "ID, Title, NameST, IF, RejectionRate, ExpectedReviewPeriod, JournalEditorInfo, IsSelected, Status, UserNameST, Password, PublicationDate, PublicationURL, PublicationTitle, Citation, PDFAvailable, JournalRequirementURL, EntryType, AbstractSubmissionDeadline, CongressDate, Milestone, JournalRequirementDate, Created, CommentsMT, JournalRequirementResponse, JournalConferenceId",
             filter: "Title eq '{{ProjectCode}}' and Status ne 'Cancelled' ",
             top: 4500,
             orderby: "Created desc"
@@ -72,20 +72,20 @@ export class PubsuportConstantsService {
             orderby: "Created desc"
         },
         authors: {
-            select: "ID, FirstName,LastName,Comments,HighestDegree,EmailAddress,Address,Affiliation,Phone_x0020_No,Fax,AuthorType",
+            select: "ID, FirstNameST,LastName,CommentsMT,HighestDegree,EmailAddress,AddressMT,Affiliation,Phone_x0020_No,Fax,AuthorType",
             filter: "Title eq '{{ProjectCode}}' ",
             top: 4500
         },
         journal: {
-            select: "ID,JournalName,Comments,ImpactFactor,RejectionRate,ExpectedReviewPeriod,JournalEditorInfo,IsActive",
+            select: "ID,JournalName,CommentsMT,ImpactFactor,RejectionRate,ExpectedReviewPeriod,JournalEditorInfo,IsActiveCH",
             top: 4500,
-            filter: "IsActive eq 'Yes'",
+            filter: "IsActiveCH eq 'Yes'",
             orderby: "Created desc"
         },
         conference: {
-            select: "ID,ConferenceName,ConferenceDate,SubmissionDeadline,Comments,IsActive",
+            select: "ID,ConferenceName,ConferenceDate,SubmissionDeadline,CommentsMT,IsActiveCH",
             top: 4500,
-            filter: "IsActive eq 'Yes'",
+            filter: "IsActiveCH eq 'Yes'",
             orderby: "Created desc"
         }
     }

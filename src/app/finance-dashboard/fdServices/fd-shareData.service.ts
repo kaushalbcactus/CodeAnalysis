@@ -7,6 +7,8 @@ import { GlobalService } from 'src/app/Services/global.service';
 import { DatePipe } from '@angular/common';
 import { Observable, Subject } from 'rxjs';
 import { CommonService } from 'src/app/Services/common.service';
+import { EditInvoiceDialogComponent } from '../edit-invoice-dialog/edit-invoice-dialog.component';
+import { DialogService } from 'primeng';
 
 @Injectable({
     providedIn: 'root'
@@ -18,7 +20,8 @@ export class FDDataShareService {
         private fdConstantsService: FdConstantsService,
         private globalObject: GlobalService,
         private datePipe: DatePipe,
-        private commonService: CommonService
+        private commonService: CommonService,
+        private dialogService: DialogService
     ) { }
     private subject = new Subject<any>();
     private expenseCreate = new Subject<any>();
@@ -133,9 +136,9 @@ export class FDDataShareService {
             // tslint:disable-next-line: prefer-for-of
             for (let e = 0; e < resCatEmails.length; e++) {
                 const element = resCatEmails[e];
-                if (element.UserName) {
-                    if (element.UserName.EMail) {
-                        csMember.push(element.UserName.EMail);
+                if (element.UserNamePG) {
+                    if (element.UserNamePG.EMail) {
+                        csMember.push(element.UserNamePG.EMail);
                     }
                 } else if (element) {
                     csMember.push(element.EMail);
@@ -222,7 +225,7 @@ export class FDDataShareService {
             const obj = [{
                 url: this.spServices.getReadURL(this.constantService.listNames.SOW.name, this.fdConstantsService.fdComponent.sowList),
                 type: 'GET',
-                listName: this.constantService.listNames.ProjectFinances
+                listName: this.constantService.listNames.SOW
             }];
             this.commonService.SetNewrelic('Finance-Dashboard', 'fd-shareData', 'GetSowData');
             const res = await this.spServices.executeBatch(obj);
@@ -261,7 +264,7 @@ export class FDDataShareService {
 
     getResDetailById(data, ele) {
         const found = data.find((x) => {
-            if (x.UserName.ID === ele.EditorId) {
+            if (x.UserNamePG.ID === ele.EditorId) {
                 return x;
             }
         });
@@ -347,7 +350,7 @@ export class FDDataShareService {
             const obj = [{
                 url: this.spServices.getReadURL(this.constantService.listNames.ProjectInformation.name, this.fdConstantsService.fdComponent.projectInfo),
                 type: 'GET',
-                listName: this.constantService.listNames.ProjectFinances
+                listName: this.constantService.listNames.ProjectInformation.name
             }];
             this.commonService.SetNewrelic('Finance-Dashboard', 'fd-shareData', 'checkProjectAvailability');
             const res = await this.spServices.executeBatch(obj);
@@ -372,8 +375,8 @@ export class FDDataShareService {
         batchUrl.push(cleObj);
 
         const projectPOObj = Object.assign({}, this.queryConfig);
-        projectPOObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectPO.name, this.fdConstantsService.fdComponent.projectPO);
-        projectPOObj.listName = this.constantService.listNames.ProjectPO.name;
+        projectPOObj.url = this.spServices.getReadURL(this.constantService.listNames.PO.name, this.fdConstantsService.fdComponent.projectPO);
+        projectPOObj.listName = this.constantService.listNames.PO.name;
         projectPOObj.type = 'GET';
         batchUrl.push(projectPOObj);
         if (type === 'hourly') {
@@ -441,7 +444,7 @@ export class FDDataShareService {
 
             ///// Call service
             this.commonService.SetNewrelic('Finance-Dashboard', 'fdsharedata-CallProformaCreation', 'executeJS');
-            const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
+            const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice3/PDFService.svc/GeneratePDF';
             await this.spServices.executeJS(pdfService, pdfContent);
         }
     }
@@ -458,7 +461,7 @@ export class FDDataShareService {
 
         ///// Call service
         this.commonService.SetNewrelic('Finance-Dashboard', 'fd-shareData-callProformaInvoiceEdit', 'executeJS');
-        const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
+        const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice3/PDFService.svc/GeneratePDF';
         await this.spServices.executeJS(pdfService, pdfContent);
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
         this.fdConstantsService.fdComponent.selectedComp.reFetchData(refetchType);
@@ -471,7 +474,7 @@ export class FDDataShareService {
         if (oProformaObj.AddressType === 'Client') {
             address = oCle.APAddress ? oCle.APAddress : '';
         } else {
-            address = oPOC.Address ? oPOC.Address : '';
+            address = oPOC.AddressMT ? oPOC.AddressMT : '';
         }
 
         let addressArr = address.split(';#');
@@ -611,7 +614,7 @@ export class FDDataShareService {
             pdfCall.ListName = oCLE.ListName;
             pdfCall.HtmlContent = proformHtml;
             this.commonService.SetNewrelic('Finance-Dashboard', 'proforma', 'executeJS');
-            const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
+            const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice3/PDFService.svc/GeneratePDF';
             await this.spServices.executeJS(pdfService, pdfCall);
         } catch (e) {
             response = false; // error in the above string (in this case, yes)!
@@ -619,6 +622,77 @@ export class FDDataShareService {
         return response;
     }
 
+    EditInvoiceDialogProcess(InvoiceType,data,editInvoice) {
+        const batchUrl=[];
+        let iliData;
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
+        if (InvoiceType === 'hourly') {
+            iliData = {
+                __metadata: { type: this.constantService.listNames.ProjectFinances.type },
+                Budget: editInvoice.value.Rate,
+                HoursSpent: editInvoice.value.HoursSpent
+            }
+        }
+        else {
+            iliData = {
+                __metadata: { type: this.constantService.listNames.InvoiceLineItems.type },
+                AddressType: editInvoice.value.AddressType.value,
+                ScheduledDate: editInvoice.value.ScheduledDate,
+                MainPOC: editInvoice.value.POCName.ID
+            };
+        }
+        const url = InvoiceType === 'hourly' ? this.spServices.getItemURL(this.constantService.listNames.ProjectFinances.name, +data.PFID) : this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, +data.Id);
+        const ListName = InvoiceType === 'hourly' ? this.constantService.listNames.ProjectFinances.name : this.constantService.listNames.InvoiceLineItems.name
+        this.commonService.setBatchObject(batchUrl, url, iliData, this.constantService.Method.PATCH, ListName)
+
+        return batchUrl;
+    }
 
 
+    getCSDetails(res) {
+        if (res.hasOwnProperty('CS') && res.CS.hasOwnProperty('results') && res.CS.results.length) {
+            const title = [];
+            for (let i = 0; i < res.CS.results.length; i++) {
+                const element = res.CS.results[i];
+                title.push(element.Title);
+            }
+            return title.toString();
+        } else {
+            return '';
+        }
+    }
+
+
+    AddToProformaProcessData(proformaForm) {
+
+        const batchUrl = [];
+        const prfData = {
+            __metadata: { type: this.constantService.listNames.Proforma.type },
+            ClientLegalEntity: proformaForm.value.ClientLegalEntity.Title,
+            PO: proformaForm.value.POName.Id,
+            MainPOC: proformaForm.value.POCName.ID,
+            Title: proformaForm.value.ProformaNumber,
+            ProformaTitle: proformaForm.value.ProformaTitle,
+            Template: proformaForm.value.Template.value,
+            State: proformaForm.value.State ? proformaForm.value.State.Title : '',
+            Amount: proformaForm.value.Amount,
+            Currency: proformaForm.value.Currency,
+            AddressType: proformaForm.value.AddressType.value,
+            ProformaType: proformaForm.value.ProformaType.value,
+            AdditionalInfo: proformaForm.value.AdditionalComments,
+            ProformaDate: proformaForm.value.ProformaDate,
+            Status: this.constantService.proformaList.status.Created
+        }
+
+        this.commonService.setBatchObject(batchUrl, this.spServices.getReadURL(this.constantService.listNames.Proforma.name), prfData, this.constantService.Method.POST, this.constantService.listNames.Proforma.name);
+
+        let cleData = {
+            __metadata: { type: this.constantService.listNames.ClientLegalEntity.type },
+            ID: proformaForm.value.ClientLegalEntity.Id,
+            ProformaCounter: proformaForm.value.ClientLegalEntity.ProformaCounter ? proformaForm.value.ClientLegalEntity.ProformaCounter + 1 : 1
+        }
+        this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constantService.listNames.ClientLegalEntity.name, +proformaForm.value.ClientLegalEntity.Id), cleData, this.constantService.Method.PATCH, this.constantService.listNames.ClientLegalEntity.name);
+
+        return batchUrl;
+    }
 }

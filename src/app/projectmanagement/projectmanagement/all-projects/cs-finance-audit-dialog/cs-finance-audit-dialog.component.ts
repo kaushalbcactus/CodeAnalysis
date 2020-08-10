@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
-import { DynamicDialogConfig, DynamicDialogRef, MessageService, Table, DialogService } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef, Table, DialogService } from 'primeng';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { AuditProjectDialogComponent } from '../audit-project-dialog/audit-project-dialog.component';
@@ -75,7 +75,6 @@ export class CsFinanceAuditDialogComponent implements OnInit {
   ErrorProjectCodes = [];
   constructor(public config: DynamicDialogConfig,
     public csref: DynamicDialogRef,
-    public messageService: MessageService,
     public dialogService: DialogService,
     public pmObject: PMObjectService,
     private globalObject: GlobalService,
@@ -95,7 +94,6 @@ export class CsFinanceAuditDialogComponent implements OnInit {
 
 
   ngAfterViewInit() {
-
     if (this.config.data.tableData.filters.ProjectCode) {
       this.columnFilter.ProjectCode = this.allProjects.ProjectCode.map(c => c.value).filter(c => this.config.data.tableData.filters.ProjectCode.value.includes(c));
       this.allProjectRef.filter(this.columnFilter.ProjectCode, 'ProjectCode', 'in')
@@ -197,19 +195,13 @@ export class CsFinanceAuditDialogComponent implements OnInit {
 
   }
 
-
-
   // **************************************************************************************
   // On row checkbox select for finance (maximum 10 rows are allowed)
   // **************************************************************************************
 
   onRowSelect() {
     if (this.selectedProjects.length > 10 && this.AuditType === 'Finance') {
-
-      this.messageService.add({
-        key: 'custom', severity: 'error', summary: 'Error Message',
-        detail: 'Maximum 10 projects allowed for audit.'
-      });
+      this.commonService.showToastrMessage(this.constants.MessageType.error,'Maximum 10 projects allowed for audit.',false);
     }
     else if (this.AuditType === 'Finance') {
       if (this.selectedProjects.length === 10) {
@@ -267,10 +259,8 @@ export class CsFinanceAuditDialogComponent implements OnInit {
           };
 
           await this.UpdateProjects(piUdpate);
-          this.messageService.add({
-            key: 'custom', severity: 'success', summary: 'Success Message',
-            detail: 'Selected Projects Updated Successfully.'
-          });
+
+          this.commonService.showToastrMessage(this.constants.MessageType.success,'Selected Projects Updated Successfully.',false);
         }
       });
     } else {
@@ -283,6 +273,7 @@ export class CsFinanceAuditDialogComponent implements OnInit {
         dbInvoiceLineItems = [].concat(...dbExpenseInvoiceArray.filter(c => c.listName === 'InvoiceLineItems').map(c => c.retItems));
         dbExpenseLineItems = [].concat(...dbExpenseInvoiceArray.filter(c => c.listName === 'SpendingInfo').map(c => c.retItems));
       }
+
       let UniqueInvalidInvoices = [];
       if (dbInvoiceLineItems) {
         if (dbInvoiceLineItems.filter(c => c.Status !== 'Approved')) {
@@ -291,13 +282,13 @@ export class CsFinanceAuditDialogComponent implements OnInit {
       }
       let UniqueInvalidExpenses = [];
       if (dbExpenseLineItems) {
-        const AllBillable = dbExpenseLineItems.filter(c => c.Category === 'Billable');
+        const AllBillable = dbExpenseLineItems.filter(c => c.CategoryST === 'Billable');
         let UniqueInvalidBilledExpenses = [];
         let UniqueInvalidNonBilledExpenses = [];
         if (AllBillable) {
           UniqueInvalidBilledExpenses = AllBillable.filter(c => c.Status.indexOf('Billed') === -1 && c.Status !== 'Rejected' && c.Status !== 'Cancelled') ? AllBillable.filter(c => c.Status.indexOf('Billed') === -1 && c.Status !== 'Rejected' && c.Status !== 'Cancelled').map(c => c.Title).filter((item, index) => AllBillable.filter(c => c.Status.indexOf('Billed') === -1 && c.Status !== 'Rejected' && c.Status !== 'Cancelled').map(c => c.Title).indexOf(item) === index) : [];
         }
-        const AllNonBillable = dbExpenseLineItems.filter(c => c.Category === 'Non Billable');
+        const AllNonBillable = dbExpenseLineItems.filter(c => c.CategoryST === 'Non Billable');
         if (AllNonBillable) {
           UniqueInvalidNonBilledExpenses = AllNonBillable.filter(c => c.Status.indexOf('Approved') === -1 && c.Status !== 'Rejected' && c.Status !== 'Cancelled') ? AllNonBillable.filter(c => c.Status.indexOf('Approved') === -1 && c.Status !== 'Rejected' && c.Status !== 'Cancelled').map(c => c.Title).filter((item, index) => AllNonBillable.filter(c => c.Status.indexOf('Approved') === -1 && c.Status !== 'Rejected' && c.Status !== 'Cancelled').map(c => c.Title).indexOf(item) === index) : [];
         }
@@ -307,23 +298,17 @@ export class CsFinanceAuditDialogComponent implements OnInit {
       const errorMessage = [];
       if (UniqueInvalidExpenses.length > 0 || UniqueInvalidInvoices.length > 0) {
         if (UniqueInvalidInvoices.length > 0) {
-          errorMessage.push({
-            key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
-            detail: UniqueInvalidInvoices.join(', ') + ' line items are not invoiced.'
-          });
+          this.commonService.showToastrMessage(this.constants.MessageType.error,UniqueInvalidInvoices.join(', ') + ' line items are not invoiced.',true);
         }
 
         if (UniqueInvalidExpenses.length > 0) {
-          errorMessage.push({
-            key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
-            detail: UniqueInvalidExpenses.join(', ') + ' expense are not invoiced.'
-          })
+
+          this.commonService.showToastrMessage(this.constants.MessageType.error, UniqueInvalidExpenses.join(', ') + ' expense are not invoiced.',true);
         }
 
         this.ErrorProjectCodes.push.apply(this.ErrorProjectCodes, [...new Set([].concat(UniqueInvalidInvoices, UniqueInvalidExpenses))]);
         this.selectedProjects = this.selectedProjects.filter(c => !this.ErrorProjectCodes.includes(c.ProjectCode));
         this.checked = this.selectedProjects.length >= 10 ? true : false;
-        this.messageService.addAll(errorMessage);
         this.modalloaderenable = false;
         this.buttonloader = false;
       }
@@ -352,11 +337,8 @@ export class CsFinanceAuditDialogComponent implements OnInit {
               __metadata: { type: this.constants.listNames.ProjectInformation.type }
             };
             await this.UpdateProjects(piUdpate);
-            this.messageService.add({
-              key: 'custom', severity: 'success', summary: 'Success Message',
-              detail: 'Selected projects closed successfully.'
-            });
 
+            this.commonService.showToastrMessage(this.constants.MessageType.success,'Selected projects closed successfully.',false);
           }
         });
       }
@@ -372,6 +354,7 @@ export class CsFinanceAuditDialogComponent implements OnInit {
     let batchResults = [];
     let batchURL = [];
     let finalArray = [];
+
     this.selectedProjects.forEach(async element => {
       const ProjectUpdate = Object.assign({}, this.options);
       ProjectUpdate.data = piUdpate;
@@ -474,6 +457,7 @@ export class CsFinanceAuditDialogComponent implements OnInit {
   MultipleSelectRows(AuditType) {
     setTimeout(() => {
       if (AuditType === 'Finance') {
+
         if (this.allProjectRef.filteredValue) {
           if (this.allProjectRef.filteredValue.length > 10 && !this.checked) {
             this.selectedProjects = this.allProjectRef.filteredValue.slice(this.allProjectRef.first, this.allProjectRef.first + 10)

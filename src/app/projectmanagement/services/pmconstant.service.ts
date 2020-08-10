@@ -31,14 +31,14 @@ export class PmconstantService {
     BLUE: 'Blue'
   };
   public resourceQueryOptions = {
-    select: 'ID,UserName/ID,UserName/Title,Role',
-    expand: 'UserName/ID,UserName/Title',
-    filter: 'UserName/ID eq {0}',
+    select: 'ID,UserNamePG/ID,UserNamePG/Title,RoleCH',
+    expand: 'UserNamePG/ID,UserNamePG/Title',
+    filter: 'UserNamePG/ID eq {0}',
     top: 4200
   };
   public projectContactQueryOptions = {
-    select: 'ID,Title,FullName,FName,LName,EmailAddress,Designation,Phone,Address,FullName,Department,'
-      + 'Status,ReferralSource,RelationshipStrength,EngagementPlan,Comments,ProjectContactsType,ProjectContactsType,ClientLegalEntity',
+    select: 'ID,Title,FullNameCC,FName,LName,EmailAddress,Designation,Phone,AddressMT,FullNameCC,DepartmentST,'
+      + 'Status,ReferralSource,RelationshipStrength,EngagementPlan,CommentsMT,ProjectContactsType,ProjectContactsType,ClientLegalEntity',
     top: 4200
   };
   public projectInformationQueryOptions = {
@@ -49,6 +49,11 @@ export class PmconstantService {
     expand: 'CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title',
     filter: '(Status ne \'Closed\') and (Status ne \'Cancelled\')',
     top: 4200
+  };
+  public ProjectInformation_Get_ProjectFolder_Options = {
+    select: 'ID,Title,ProjectCode,ProjectFolder',
+    filter: 'ProjectCode eq \'{{projectCode}}\'',
+    top: 1
   };
   public previousTaskOptions = {
     select: 'ID,Title,Status, AssignedTo/ID,AssignedTo/Title, IsCentrallyAllocated',
@@ -65,7 +70,7 @@ export class PmconstantService {
   };
 
   public crTaskOptions = {
-    select: 'ID,Title,Status, AssignedTo/ID,AssignedTo/Title,DueDate',
+    select: 'ID,Title,Status, AssignedTo/ID,AssignedTo/Title,DueDateDT',
     expand: 'AssignedTo/ID,AssignedTo/Title',
     filter: 'Title eq \'{0}\''
   };
@@ -77,7 +82,7 @@ export class PmconstantService {
   };
 
   public projectOptions = {
-    select: 'ID,Title,Task,Status,NextTasks,ExpectedTime,PrevTasks,Milestone,SubMilestones,DisableCascade, ParentSlot,FileSystemObjectType',
+    select: 'ID,Title,Task,Status,NextTasks,ExpectedTime,PrevTasks,Milestone,SubMilestones,DisableCascade, ParentSlot,FileSystemObjectType,ContentTypeCH',
     filter: "ProjectCode eq '{{projectCode}}'",
     top: 4500
   };
@@ -86,7 +91,7 @@ export class PmconstantService {
   public pInfoPendingAllocationIndiviualViewOptions = {
     select: 'PubSupportStatus,PrimaryResMembers/Id,PrimaryResMembers/Title,AllDeliveryResources/Id,'
       + 'AllDeliveryResources/Title,AllOperationresources/Id,AllOperationresources/Title,ClientLegalEntity,Title,'
-      + 'ID,DeliverableType,SubDeliverable,TA,Molecule,ProjectCode,Status,Milestone,WBJID,StatusReportDesc,NextSCDate,PrimaryPOC,Description',
+      + 'ID,DeliverableType,SubDeliverable,TA,Molecule,ProjectCode,Status,Milestone,WBJID,StatusReportDesc,PrimaryPOC,DescriptionMT',
     expand: 'PrimaryResMembers/Id,PrimaryResMembers/Title,AllDeliveryResources/Id,AllDeliveryResources/Title,'
       + 'AllOperationresources/Id,AllOperationresources/Title,PrimaryResMembers/Id,PrimaryResMembers/Title',
     filter: '((AllOperationresources/Id eq {{UserID}}) and (Status eq \'Unallocated\'))',
@@ -96,7 +101,7 @@ export class PmconstantService {
   public pInfoInactiveProjectIndiviualViewOptions = {
     select: 'PubSupportStatus,PrimaryResMembers/Id,PrimaryResMembers/Title,AllDeliveryResources/Id,'
       + 'AllDeliveryResources/Title,AllOperationresources/Id,AllOperationresources/Title,ClientLegalEntity,Title,'
-      + 'ID,DeliverableType,SubDeliverable,TA,Molecule,ProjectCode,Status,Milestone,WBJID,StatusReportDesc,NextSCDate,PrimaryPOC,Description',
+      + 'ID,DeliverableType,SubDeliverable,TA,Molecule,ProjectCode,Status,Milestone,WBJID,StatusReportDesc,PrimaryPOC,DescriptionMT',
     expand: 'PrimaryResMembers/Id,PrimaryResMembers/Title,AllDeliveryResources/Id,AllDeliveryResources/Title,'
       + 'AllOperationresources/Id,AllOperationresources/Title,PrimaryResMembers/Id,PrimaryResMembers/Title',
     filter: '((AllOperationresources/Id eq {{UserID}}) and '
@@ -108,9 +113,9 @@ export class PmconstantService {
     ALL_PROJECT_INFORMATION: {
       // tslint:disable-next-line:max-line-length
       select: 'ID,Title,ProjectCode,DeliverableType,SubDeliverable,PrimaryPOC,ClientLegalEntity,ProjectFolder,SOWCode,WBJID,ProjectType,Status,Author/Id,Author/Title,Created,Modified,'
-        + 'Authors,POC,SubDivision, Priority, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,'
+        + 'Authors,POC,SubDivision, PriorityST, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,'
         // tslint:disable-next-line:max-line-length
-        + 'Description, ConferenceJournal, Comments, PO, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
+        + 'DescriptionMT, ConferenceJournal, CommentsMT, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
         + 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID,'
         + 'DeliveryLevel2/Title, BusinessVertical, BillingEntity, SOWLink, PubSupportStatus, IsStandard, StandardService,SlideCount,PageCount,ReferenceCount,AnnotationBinder,'
         + 'PrimaryResMembers/Id,PrimaryResMembers/Title,Editor/Title',
@@ -124,9 +129,9 @@ export class PmconstantService {
     USER_SPECIFIC_PROJECT_INFORMATION: {
       // tslint:disable-next-line:max-line-length
       select: 'ID,Title,ProjectCode,DeliverableType,SubDeliverable,PrimaryPOC,ClientLegalEntity,ProjectFolder,SOWCode,WBJID,ProjectType,Status,Author/Id,Author/Title,Created,Modified,'
-        + 'Authors,POC,SubDivision, Priority, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,'
+        + 'Authors,POC,SubDivision, PriorityST, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,'
         // tslint:disable-next-line:max-line-length
-        + 'Description, ConferenceJournal, Comments, PO, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
+        + 'DescriptionMT, ConferenceJournal, CommentsMT, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
         + 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID,'
         + 'DeliveryLevel2/Title, BusinessVertical, BillingEntity, SOWLink, PubSupportStatus, IsStandard, StandardService,SlideCount,PageCount,ReferenceCount,AnnotationBinder,'
         + 'PrimaryResMembers/Id,PrimaryResMembers/Title,Editor/Title',
@@ -141,9 +146,9 @@ export class PmconstantService {
     USER_SPECIFIC_PROJECT_INFORMATION_MY: {
       // tslint:disable-next-line:max-line-length
       select: 'ID,Title,ProjectCode,DeliverableType,SubDeliverable,PrimaryPOC,ClientLegalEntity,ProjectFolder,SOWCode,WBJID,ProjectType,Status,Author/Id,Author/Title,Created,'
-        + 'Authors,POC,SubDivision, Priority, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,'
+        + 'Authors,POC,SubDivision, PriorityST, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,'
         // tslint:disable-next-line:max-line-length
-        + 'Description, ConferenceJournal, Comments, PO, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
+        + 'DescriptionMT, ConferenceJournal, CommentsMT, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
         + 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID,'
         + 'DeliveryLevel2/Title, BusinessVertical, BillingEntity, SOWLink, PubSupportStatus, IsStandard, StandardService,SlideCount,PageCount,ReferenceCount,AnnotationBinder,'
         + 'PrimaryResMembers/Id,PrimaryResMembers/Title',
@@ -158,9 +163,9 @@ export class PmconstantService {
     PROJECT_INFORMATION_BY_PROJECTCODE: {
       // tslint:disable-next-line:max-line-length
       select: 'ID,Title,ProjectCode,DeliverableType,SubDeliverable,PrimaryPOC,ClientLegalEntity,ProjectFolder,SOWCode,WBJID,ProjectType,Status,Author/Id,Author/Title,Created,'
-        + 'Authors,POC,SubDivision, Priority, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,'
+        + 'Authors,POC,SubDivision, PriorityST, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,'
         // tslint:disable-next-line:max-line-length
-        + 'Description, ConferenceJournal, Comments, PO, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
+        + 'DescriptionMT, ConferenceJournal, CommentsMT, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
         + 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID,'
         + 'DeliveryLevel2/Title, BusinessVertical, BillingEntity, SOWLink, PubSupportStatus, IsStandard, StandardService,SlideCount,PageCount,ReferenceCount,AnnotationBinder,'
         + 'PrimaryResMembers/Id,PrimaryResMembers/Title',
@@ -174,9 +179,9 @@ export class PmconstantService {
     PROJECT_INFORMATION_BY_PROJECTCODE_ALL: {
       // tslint:disable-next-line:max-line-length
       select: 'ID,Title,ProjectCode,DeliverableType,SubDeliverable,PrimaryPOC,ClientLegalEntity,ProjectFolder,SOWCode,WBJID,ProjectType,Status,Author/Id,Author/Title,Created,Modified,'
-        + 'Authors,POC,SubDivision, Priority, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,'
+        + 'Authors,POC,SubDivision, PriorityST, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,'
         // tslint:disable-next-line:max-line-length
-        + 'Description, ConferenceJournal, Comments, PO, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
+        + 'DescriptionMT, ConferenceJournal, CommentsMT, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
         + 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID,'
         + 'DeliveryLevel2/Title, BusinessVertical, BillingEntity, SOWLink, PubSupportStatus, IsStandard, StandardService,SlideCount,PageCount,ReferenceCount,AnnotationBinder,'
         + 'PrimaryResMembers/Id,PrimaryResMembers/Title,Editor/Title',
@@ -190,7 +195,7 @@ export class PmconstantService {
   };
   public SOW_QUERY = {
     ALL_SOW: {
-      select: 'ID,Title,SOWCode,PrimaryPOC,ClientLegalEntity,Author/Id,Author/Title,Created,TotalBudget,NetBudget,OOPBudget,TaxBudget,Comments,Status,ExpiryDate,BusinessVertical,BD,'
+      select: 'ID,Title,SOWCode,PrimaryPOC,ClientLegalEntity,Author/Id,Author/Title,Created,TotalBudget,NetBudget,OOPBudget,TaxBudget,CommentsMT,Status,ExpiryDate,BusinessVertical,BD,'
         + 'TotalLinked, RevenueLinked, OOPLinked, TaxLinked, TotalScheduled, ScheduledRevenue, TotalInvoiced, InvoicedRevenue,'
         + 'BillingEntity, AdditionalPOC, CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title,'
         + 'DeliveryLevel2/ID, DeliveryLevel2/Title, Currency, BD/ID, BD/Title,Editor/Title,Modified',
@@ -211,7 +216,7 @@ export class PmconstantService {
       top: 1
     },
     USER_SPECIFIC_SOW: {
-      select: 'ID,Title,SOWCode,PrimaryPOC,ClientLegalEntity,Author/Id,Author/Title,Created,TotalBudget,NetBudget,OOPBudget,TaxBudget,Comments,Status,ExpiryDate,BusinessVertical,BD,'
+      select: 'ID,Title,SOWCode,PrimaryPOC,ClientLegalEntity,Author/Id,Author/Title,Created,TotalBudget,NetBudget,OOPBudget,TaxBudget,CommentsMT,Status,ExpiryDate,BusinessVertical,BD,'
         + 'TotalLinked, RevenueLinked, OOPLinked, TaxLinked, TotalScheduled, ScheduledRevenue, TotalInvoiced, InvoicedRevenue,'
         + 'BillingEntity, AdditionalPOC, CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title,'
         + 'DeliveryLevel2/ID, DeliveryLevel2/Title, Currency, BD/ID, BD/Title,Editor/Title,Modified',
@@ -224,7 +229,7 @@ export class PmconstantService {
       top: 4500
     },
     CONTENT_QUERY: {
-      select: 'Content',
+      select: 'ContentMT',
       filter: 'Title eq \'{{templateName}}\''
     },
 
@@ -243,10 +248,10 @@ export class PmconstantService {
       filter: 'SOWCode eq eq \'{{predecessor}}\'',
     },
     SOW_BY_ID: {
-      select: 'ID,Title,SOWCode,ClientLegalEntity,SOWTitle, TotalBudget, NetBudget, OOPBudget, TaxBudget , Currency, Status,'
+      select: 'ID,Title,SOWCode,ClientLegalEntity, TotalBudget, NetBudget, OOPBudget, TaxBudget , Currency, Status,'
         + 'TotalLinked,RevenueLinked,OOPLinked,TaxLinked,SOWLink,'
-        + 'PrimaryPOC,BusinessVertical,Comments,BD/ID, BD/Title,CMLevel1/ID, CMLevel1/Title,CMLevel2/ID, CMLevel2/Title,'
-        + 'DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title,Year, AdditionalPOC, BillingEntity,'
+        + 'PrimaryPOC,BusinessVertical,CommentsMT,BD/ID, BD/Title,CMLevel1/ID, CMLevel1/Title,CMLevel2/ID, CMLevel2/Title,'
+        + 'DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title, AdditionalPOC, BillingEntity,'
         + 'CreatedDate, ExpiryDate',
       expand: 'BD/ID, BD/Title,CMLevel1/ID, CMLevel1/Title,CMLevel2/ID, CMLevel2/Title,DeliveryLevel1/ID,'
         + 'DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title ',
@@ -257,22 +262,22 @@ export class PmconstantService {
     BILLING_ENTITY: {
       select: 'Title, InvoiceTemplate, Acronym',
       orderby: 'Title',
-      filter: "IsActive eq 'Yes'",
+      filter: "IsActiveCH eq 'Yes'",
       top: 4900
     },
     PRACTICE_AREA: {
       select: 'Title',
       orderby: 'Title',
-      filter: "IsActive eq 'Yes'",
+      filter: "IsActiveCH eq 'Yes'",
       top: 4900
     },
     CLIENT_LEGAL_ENTITY: {
-      select: 'ID,Title,Acronym,Currency,InvoiceName,ListName,APAddress,TimeZone, SOWCounter, IsCentrallyAllocated, BillingEntity, ListName, '
+      select: 'ID,Title,Acronym,Currency,InvoiceName,ListName,APAddress,TimeZoneNM, SOWCounter, BillingEntity, ListName, '
         + 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title,'
         + 'DeliveryLevel2/ID, DeliveryLevel2/Title',
       expand: 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title,'
         + 'DeliveryLevel2/ID, DeliveryLevel2/Title',
-      filter: "IsActive eq 'Yes'",
+      filter: "IsActiveCH eq 'Yes'",
       orderby: 'Title',
       top: 4900
     },
@@ -285,7 +290,7 @@ export class PmconstantService {
       select: 'Title,Acronym',
       orderby: 'Title',
       top: 4900,
-      filter: "Active eq 'Yes'",
+      filter: "IsActiveCH eq 'Yes'",
     },
     MILESTONE_TYPE: {
       select: 'Title,Mandatory',
@@ -295,11 +300,11 @@ export class PmconstantService {
     MOLECULES: {
       select: 'Title',
       orderby: 'Title',
-      filter: "IsActive eq 'Yes'",
+      filter: "IsActiveCH eq 'Yes'",
       top: 4900
     },
     PROJECT_CONTANTCS: {
-      select: 'ID,Title,ClientLegalEntity,Address,Designation,EmailAddress,FName,ID,LName,Phone, FullName',
+      select: 'ID,Title,ClientLegalEntity,AddressMT,Designation,EmailAddress,FName,ID,LName,Phone, FullNameCC',
       orderby: 'Title',
       filter: "Status eq 'Active'",
       top: 4900
@@ -318,7 +323,7 @@ export class PmconstantService {
     TA: {
       select: 'Title',
       orderby: 'Title',
-      filter: "Active eq 'Yes'",
+      filter: "IsActiveCH eq 'Yes'",
       top: 4900
     }
   };
@@ -348,23 +353,23 @@ export class PmconstantService {
       select: 'ID,Title,BillingEntity,Acronym,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title',
       // tslint:disable-next-line:max-line-length
       expand: 'CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Titl,DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title',
-      filter: "IsActive eq 'Yes'",
+      filter: "IsActiveCH eq 'Yes'",
       top: 4900
     },
     DELIVERY_TYPE: {
-      select: 'ID,Title,Acronym,Active',
-      filter: 'Active eq \'Yes\'',
+      select: 'ID,Title,Acronym,IsActiveCH',
+      filter: 'IsActiveCH eq \'Yes\'',
       orderby: 'Title',
       top: 4900
     },
     STANDARD_RESOURCES_CATEGORIZATION: {
       // tslint:disable-next-line:max-line-length
-      select: 'ID,MaxHrs,PrimarySkill,UserName/ID,UserName/EMail,UserName/Title,TimeZone/Title,SkillLevel/Title,Tasks/Title,Tasks/Status,Deliverables/Title,DeliverableExclusion/Title,TA/Title,TAExclusion/Title,Account/Title,Role,Categories',
+      select: 'ID,MaxHrs,PrimarySkill,UserNamePG/ID,UserNamePG/EMail,UserNamePG/Title,TimeZone/Title,SkillLevel/Title,Tasks/Title,Tasks/Status,Deliverables/Title,DeliverableExclusion/Title,TA/Title,TAExclusion/Title,Account/Title,RoleCH',
       // tslint:disable-next-line:max-line-length
-      expand: 'UserName/ID,UserName/EMail,UserName/Title,TimeZone/Title,SkillLevel/Title,Tasks/Title,Tasks/Status,Deliverables/Title,DeliverableExclusion/Title,TA/Title,TAExclusion/Title,Account/Title',
-      filter: 'IsActive eq \'Yes\' and SkillLevel/Title ne null',
+      expand: 'UserNamePG/ID,UserNamePG/EMail,UserNamePG/Title,TimeZone/Title,SkillLevel/Title,Tasks/Title,Tasks/Status,Deliverables/Title,DeliverableExclusion/Title,TA/Title,TAExclusion/Title,Account/Title',
+      filter: 'IsActiveCH eq \'Yes\' and SkillLevel/Title ne null',
       top: 4900,
-      orderby: 'UserName/Title asc'
+      orderby: 'UserNamePG/Title asc'
     },
     NON_STANDARD_SUB_TYPE: {
       select: 'ID,Title',
@@ -378,11 +383,11 @@ export class PmconstantService {
     },
     NON_STANDARD_RESOURCE_CATEGORIZATION: {
       // tslint:disable-next-line:max-line-length
-      select: 'ID,MaxHrs,PrimarySkill,UserName/ID,UserName/EMail,UserName/Title,TimeZone/Title,SkillLevel/Title,Tasks/Title,Tasks/Status,Deliverables/Title,DeliverableExclusion/Title,TA/Title,TAExclusion/Title,Account/Title,IsFTE',
+      select: 'ID,MaxHrs,PrimarySkill,UserNamePG/ID,UserNamePG/EMail,UserNamePG/Title,TimeZone/Title,SkillLevel/Title,Tasks/Title,Tasks/Status,Deliverables/Title,DeliverableExclusion/Title,TA/Title,TAExclusion/Title,Account/Title,IsFTE',
       // tslint:disable-next-line:max-line-length
-      expand: 'UserName/ID,UserName/EMail,UserName/Title,TimeZone/Title,SkillLevel/Title,Tasks/Title,Tasks/Status,Deliverables/Title,DeliverableExclusion/Title,TA/Title,TAExclusion/Title,Account/Title',
-      filter: 'IsActive eq \'Yes\' and SkillLevel/Title ne null',
-      orderby: 'UserName/Title asc',
+      expand: 'UserNamePG/ID,UserNamePG/EMail,UserNamePG/Title,TimeZone/Title,SkillLevel/Title,Tasks/Title,Tasks/Status,Deliverables/Title,DeliverableExclusion/Title,TA/Title,TAExclusion/Title,Account/Title',
+      filter: 'IsActiveCH eq \'Yes\' and SkillLevel/Title ne null',
+      orderby: 'UserNamePG/Title asc',
       top: 4900
     }
   };
@@ -434,7 +439,7 @@ export class PmconstantService {
   };
   public FINANCE_QUERY = {
     GET_OOP: {
-      select: 'ID,Title,Amount,ClientAmount,Category,Currency,DollarAmount,FileURL,FiscalYear,Number,' +
+      select: 'ID,Title,Amount,ClientAmount,CategoryST,Currency,DollarAmount,FileURL,Number,' +
         'PayingEntity,ClientCurrency,VendorFreelancer,RequestType,Status,SpendType,Editor/Title',
       filter: 'Title eq \'{{projectCode}}\' and Status eq \'{{status}}\'',
       filterByProjectCode: 'Title eq \'{{projectCode}}\'',
@@ -443,14 +448,14 @@ export class PmconstantService {
     },
 
     GET_PO: {
-      select: 'ID,Title, ClientLegalEntity, Currency, Number, Name, Amount, AmountOOP, AmountRevenue, AmountTax,POCategory,POExpiryDate,'
+      select: 'ID,Title, ClientLegalEntity, Currency, Number, NameST, Amount, AmountOOP, AmountRevenue, AmountTax,POCategory,POExpiryDate,'
         + 'TotalLinked, RevenueLinked, OOPLinked, TaxLinked,TotalScheduled,ScheduledRevenue',
       filter: 'ClientLegalEntity eq \'{{clientLegalEntity}}\'',
       orderby: 'Created desc',
       top: 4900
     },
     GET_ClosePO: {
-      select: 'ID,Title, ClientLegalEntity, Currency, Number, Name, Amount, AmountOOP, AmountRevenue, AmountTax,POCategory,POExpiryDate,'
+      select: 'ID,Title, ClientLegalEntity, Currency, Number, NameST, Amount, AmountOOP, AmountRevenue, AmountTax,POCategory,POExpiryDate,'
         + 'TotalLinked, RevenueLinked, OOPLinked, TaxLinked,TotalScheduled,ScheduledRevenue',
       filter: 'Id eq \'{{Id}}\'',
       orderby: 'Created desc',
@@ -458,22 +463,22 @@ export class PmconstantService {
     },
 
     GET_RESOUCEBYID: {
-      select: 'ID,MaxHrs,UserName/ID,UserName/EMail,UserName/Title,TimeZone/Title,IsFTE',
-      expand: 'UserName/ID,UserName/EMail,UserName/Title,TimeZone/Title',
-      filter: 'UserName/ID eq  \'{{Id}}\'',
-      orderby: 'UserName/Title asc',
+      select: 'ID,MaxHrs,UserNamePG/ID,UserNamePG/EMail,UserNamePG/Title,TimeZone/Title,IsFTE',
+      expand: 'UserNamePG/ID,UserNamePG/EMail,UserNamePG/Title,TimeZone/Title',
+      filter: 'UserNamePG/ID eq  \'{{Id}}\'',
+      orderby: 'UserNamePG/Title asc',
 
     },
 
     GET_FinancePO: {
-      select: 'ID,Title, ClientLegalEntity, Currency, Number, Name, Amount, AmountOOP, AmountRevenue, AmountTax,POCategory,POExpiryDate,'
+      select: 'ID,Title, ClientLegalEntity, Currency, Number, NameST, Amount, AmountOOP, AmountRevenue, AmountTax,POCategory,POExpiryDate,'
         + 'TotalLinked, RevenueLinked, OOPLinked, TaxLinked,TotalScheduled,ScheduledRevenue',
       filter: 'Status eq \'Active\' and ClientLegalEntity eq \'{{clientLegalEntity}}\' and  Currency eq \'{{currency}}\'',
       orderby: 'Created desc',
       top: 4900
     },
     GET_SCHEDULES_BY_PROJECTCODE: {
-      select: 'ID,Title,Task,Status,FileSystemObjectType,Milestone,StartDate,DueDate,Actual_x0020_End_x0020_Date,Actual_x0020_Start_x0020_Date',
+      select: 'ID,Title,Task,Status,FileSystemObjectType,Milestone,StartDate,DueDateDT,Actual_x0020_End_x0020_Date,Actual_x0020_Start_x0020_Date',
       orderby: 'StartDate asc',
       filter: "ProjectCode eq '{{projectCode}}'",
       top: 4500
@@ -495,14 +500,14 @@ export class PmconstantService {
     },
     PROJECT_BUDGET_BREAKUP: {
       select: 'ID, Title, ProjectLookup, Status, ApprovalDate, OriginalBudget, NetBudget, OOPBudget, TaxBudget, ProjectCode,'
-        + ' BudgetHours, Reason, Comments',
+        + ' BudgetHours, Reason, CommentsMT',
       filter: 'ProjectCode eq \'{{projectCode}}\' and (Status eq \'Approval Pending\')',
       top: 1
     },
     ADV_INVOICES: {
       select: 'ID, ClientLegalEntity, Amount, AddressType, InvoiceNumber, PO, ProformaLookup, IsTaggedFully, TaggedAmount,AuxiliaryInvoiceName,'
         + ' InvoiceDate, MainPOC, FileURL',
-      filter: 'ClientLegalEntity eq \'{{clientLegalEntity}}\' and IsTaggedFully eq \'No\'',
+      filter: 'ClientLegalEntity eq \'{{clientLegalEntity}}\' and InvoiceType eq \'revenue\' and IsTaggedFully eq \'No\'',
       top: 4500
     },
     GET_PROJECT_TYPE: {
@@ -563,14 +568,14 @@ export class PmconstantService {
       top: 4900
     },
     SOW_BY_SOWCODE: {
-      select: 'ID, ClientLegalEntity, SOWTitle, Currency, TotalBudget, NetBudget, OOPBudget, TaxBudget, Status,'
+      select: 'ID,ClientLegalEntity,Currency,TotalBudget,NetBudget,OOPBudget,TaxBudget,Status,'
         + 'PrimaryPOC,TotalScheduled, ScheduledRevenue, TotalLinked, RevenueLinked',
       filter: 'SOWCode eq \'{{sowCode}}\'',
       top: 4900
     },
     PROJECT_BUDGET_BREAKUP_CANCELLED_BY_PROJECTCODE: {
       select: 'ID, Title, ProjectLookup, Status, ApprovalDate, OriginalBudget, NetBudget, OOPBudget, TaxBudget, ProjectCode,'
-        + ' BudgetHours, Reason, Comments',
+        + ' BudgetHours, Reason, CommentsMT',
       filter: 'ProjectCode eq \'{{projectCode}}\' and (Status eq \'Approved\' or Status eq \'Approval Pending\')'
     },
     PROJECT_FINANCE_BREAKUP_CANCELLED_BY_PROJECTCODE: {
@@ -578,13 +583,13 @@ export class PmconstantService {
       filter: 'ProjectNumber eq \'{{projectCode}}\' and Status eq \'Active\''
     },
     GET_SCHEDULE_LIST_ITEM_BY_PROJECT_CODE: {
-      select: 'ID,Title,Milestone,Status,Task,ProjectCode,TimeSpent,DueDate,IsCentrallyAllocated',
+      select: 'ID,Title,Milestone,Status,Task,ProjectCode,TimeSpent,DueDateDT,IsCentrallyAllocated',
       filter: 'ProjectCode eq \'{{projectCode}}\''
     },
     GET_EARLY_TASK_COMPLETED: {
-      select: 'ID,Title,ProjectCode,IsActive,ProjectCS/ID,ProjectCS/Title',
+      select: 'ID,Title,ProjectCode,IsActiveCH,ProjectCS/ID,ProjectCS/Title',
       expand: 'ProjectCS/ID,ProjectCS/Title',
-      filter: 'IsActive eq \'Yes\' and ProjectCSId eq {{UserID}} and Created ge \'{{LastOnceHour}}\''
+      filter: 'IsActiveCH eq \'Yes\' and ProjectCSId eq {{UserID}} and Created ge \'{{LastOnceHour}}\''
     }
   };
   public PROJECT_TYPE = {
@@ -618,8 +623,26 @@ export class PmconstantService {
     APPROVED: 'Approved',
     REJECTED: 'Rejected',
     ON_HOLD: 'On Hold',
-    OFF_HOLD: 'Off Hold'
+    OFF_HOLD: 'Off Hold',
+    ADD: 'Add',
+    REDUCE: 'Reduce',
+    RESTRUCTURE: 'Restructure'
   };
+
+  public CURRENCY = [
+    { label: 'AUD', value: '$' },
+    { label: 'BRL', value: 'R$' },
+    { label: 'CNY', value: '¥ /元' },
+    { label: 'DKK', value: 'kr' },
+    { label: 'EUR', value: '€' },
+    { label: 'GBP', value: '£' },
+    { label: 'INR', value: '₹' },
+    { label: 'JPY', value: '¥' },
+    { label: 'KRW', value: '₩' },
+    { label: 'NTD', value: 'NT$' },
+    { label: 'SGD', value: '$' },
+    { label: 'USD', value: '$' },
+  ]
   public PROJECT_BUDGET_DECREASE_REASON = {
     SCOPE_REDUCE: 'Scope reduction',
     QUALITY: 'Client discount - quality complaints',

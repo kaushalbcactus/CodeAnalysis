@@ -1,5 +1,4 @@
 import { Component, OnInit, ApplicationRef, NgZone } from '@angular/core';
-import { MessageService } from 'primeng/api';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { AdminObjectService } from 'src/app/admin/services/admin-object.service';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
@@ -39,7 +38,6 @@ export class AddUserToProjectsComponent implements OnInit {
   /**
    * Construct a method to create an instance of required component.
    *
-   * @param messageService This is instance referance of `MessageService` component.
    * @param spServices This is instance referance of `SPOperationService` component.
    * @param adminObject This is instance referance of `AdminObjectService` component.
    * @param adminConstants This is instance referance of `AdminConstantService` component.
@@ -51,7 +49,6 @@ export class AddUserToProjectsComponent implements OnInit {
    * @param zone This is instance referance of `NgZone` component.
    */
   constructor(
-    private messageService: MessageService,
     private spServices: SPOperationService,
     private adminObject: AdminObjectService,
     private adminConstants: AdminConstantService,
@@ -103,8 +100,8 @@ export class AddUserToProjectsComponent implements OnInit {
         this.adminObject.resourceCatArray : results[0].retItems;
       if (userResults && userResults.length) {
         userResults.forEach(element => {
-          if (element.Role === this.adminConstants.FILTER.CM_LEVEL_1 || element.Role === this.adminConstants.FILTER.CM_LEVEL_2 || element.Role === this.adminConstants.FILTER.DELIVERY_LEVEL_1 || element.Role === this.adminConstants.FILTER.DELIVERY_LEVEL_2) {
-            this.users.push({ label: element.UserName.Title, value: element });
+          if (element.RoleCH === this.adminConstants.FILTER.CM_LEVEL_1 || element.RoleCH === this.adminConstants.FILTER.CM_LEVEL_2 || element.RoleCH === this.adminConstants.FILTER.DELIVERY_LEVEL_1 || element.RoleCH === this.adminConstants.FILTER.DELIVERY_LEVEL_2) {
+            this.users.push({ label: element.UserNamePG.Title, value: element });
           }
         });
       }
@@ -166,7 +163,8 @@ export class AddUserToProjectsComponent implements OnInit {
     const sResult = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, getProjInfo);
     if (sResult && sResult.length) {
       let disableCount = 0;
-      sResult.forEach(item => {
+      const dbProjects = sResult.length ? sResult.filter(c=>c.Status !== this.constants.projectList.status.Cancelled && c.Status !== this.constants.projectList.status.Closed) :[];
+      dbProjects.forEach(item => {
         const obj = Object.assign({}, this.adminObject.projObj);
         obj.CMLevel1 = item.CMLevel1 && item.CMLevel1.results && item.CMLevel1.results.length ? item.CMLevel1.results : [];
         obj.CMLevel2 = item.CMLevel2 && item.CMLevel2.hasOwnProperty('ID') ? item.CMLevel2 : '';
@@ -182,17 +180,17 @@ export class AddUserToProjectsComponent implements OnInit {
         obj.ProjectCode = item.ProjectCode ? item.ProjectCode : '';
         obj.WBJID = item.WBJID ? item.WBJID : '';
         if (item.CMLevel2 && item.CMLevel2.hasOwnProperty('ID')
-          && userObj.UserName.ID === item.CMLevel2.ID ||
+          && userObj.UserNamePG.ID === item.CMLevel2.ID ||
           item.DeliveryLevel2 && item.DeliveryLevel2.hasOwnProperty('ID')
-          && userObj.UserName.ID === item.DeliveryLevel2.ID) {
+          && userObj.UserNamePG.ID === item.DeliveryLevel2.ID) {
           obj.IsTypeChangedDisabled = true;
           disableCount++;
           obj.AccessType = this.adminConstants.ACCESS_TYPE.ACCOUNTABLE;
           obj.CurrentAccess = this.adminConstants.ACCESS_TYPE.ACCOUNTABLE;
         } else if (item.CMLevel1 && item.CMLevel1.hasOwnProperty('results') && item.CMLevel1.results.length
-          && item.CMLevel1.results.some(a => a.ID === userObj.UserName.ID) ||
+          && item.CMLevel1.results.some(a => a.ID === userObj.UserNamePG.ID) ||
           item.DeliveryLevel1 && item.DeliveryLevel1.hasOwnProperty('results') && item.DeliveryLevel1.results.length
-          && item.DeliveryLevel1.results.some(a => a.ID === userObj.UserName.ID)) {
+          && item.DeliveryLevel1.results.some(a => a.ID === userObj.UserNamePG.ID)) {
           obj.AccessType = this.adminConstants.ACCESS_TYPE.ACCESS;
           obj.CurrentAccess = this.adminConstants.ACCESS_TYPE.ACCESS;
           obj.IsTypeChangedDisabled = false;
@@ -204,7 +202,7 @@ export class AddUserToProjectsComponent implements OnInit {
         tempArray.push(obj);
       });
       this.projectList = tempArray;
-      if (disableCount === sResult.length) {
+      if (disableCount === dbProjects.length) {
         this.disableTableHeader = true;
       } else {
         this.disableTableHeader = false;
@@ -231,15 +229,13 @@ export class AddUserToProjectsComponent implements OnInit {
    * @param projObj It required projObj as a parameter to check the user access type.
    */
   typeChange(projObj) {
-    this.messageService.clear();
+    this.common.clearToastrMessage();
     const userObj = this.selectedUser;
-    if (projObj && projObj.CMLevel1 && projObj.CMLevel1.length && projObj.CMLevel1[0].ID === userObj.UserName.ID) {
+    if (projObj && projObj.CMLevel1 && projObj.CMLevel1.length && projObj.CMLevel1[0].ID === userObj.UserNamePG.ID) {
       if (projObj.AccessType === this.adminConstants.ACCESS_TYPE.ACCOUNTABLE) {
-        this.messageService.add({
-          key: 'adminCustom', severity: 'error', sticky: true,
-          summary: 'Error Message', detail: 'The user ' + userObj.UserName.Title + ' cannot be made accountable.'
-            + ' Since he is only available in Access. Hence resetting the accessType to Access'
-        });
+
+        this.common.showToastrMessage(this.constants.MessageType.error, 'The user ' + userObj.UserName.Title + ' cannot be made accountable.'
+        + ' Since he is only available in Access. Hence resetting the accessType to Access',true);
         setTimeout(() => {
           projObj.AccessType = this.adminConstants.ACCESS_TYPE.ACCESS;
         }, 500);
@@ -284,7 +280,7 @@ export class AddUserToProjectsComponent implements OnInit {
     console.log(this.selectedUser);
     console.log(this.selectedClient);
     console.log(this.selectedProject);
-    this.messageService.clear();
+    this.common.clearToastrMessage();
     const batchURL = [];
     const options = {
       data: null,
@@ -292,25 +288,18 @@ export class AddUserToProjectsComponent implements OnInit {
       type: '',
       listName: ''
     };
-    if (!this.selectedUser || !this.selectedUser.hasOwnProperty('UserName')) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error', sticky: true,
-        summary: 'Error Message', detail: 'Please select the user.'
-      });
+    if (!this.selectedUser || !this.selectedUser.hasOwnProperty('UserNamePG')) {
+
+      this.common.showToastrMessage(this.constants.MessageType.warn,'Please select the user.',true);
       return false;
     }
     if (!this.selectedClient) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error', sticky: true,
-        summary: 'Error Message', detail: 'Please select the client'
-      });
+      this.common.showToastrMessage(this.constants.MessageType.warn,'Please select the client',true);
       return false;
     }
     if (!this.selectedProject.length) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error', sticky: true,
-        summary: 'Error Message', detail: 'Please select atleast one project.'
-      });
+
+      this.common.showToastrMessage(this.constants.MessageType.warn,'Please select atleast one project.',true);
       return false;
     }
     if (this.selectedProject.length) {
@@ -328,13 +317,13 @@ export class AddUserToProjectsComponent implements OnInit {
         if (element.DeliveryLevel1 && element.DeliveryLevel1.length) {
           element.DeliveryLevel1IDArray = element.DeliveryLevel1.map(x => x.ID);
         }
-        element.AllOperationresourcesIDArray.push(this.selectedUser.UserName.ID);
+        element.AllOperationresourcesIDArray.push(this.selectedUser.UserNamePG.ID);
         if (element.AccessType === this.adminConstants.ACCESS_TYPE.ACCESS) {
-          element.CMLevel1IDArray.push(this.selectedUser.UserName.ID);
-          element.DeliveryLevel1IDArray.push(this.selectedUser.UserName.ID);
+          element.CMLevel1IDArray.push(this.selectedUser.UserNamePG.ID);
+          element.DeliveryLevel1IDArray.push(this.selectedUser.UserNamePG.ID);
         } else if (element.AccessType === this.adminConstants.ACCESS_TYPE.ACCOUNTABLE) {
           // remove the current user if present in CMLevel1.
-          const cmIndex = element.CMLevel1IDArray.indexOf(this.selectedUser.UserName.ID);
+          const cmIndex = element.CMLevel1IDArray.indexOf(this.selectedUser.UserNamePG.ID);
           if (cmIndex > -1) {
             element.IsUserExistInCMLevel1 = true;
             element.CMLevel1IDArray.splice(cmIndex, 1);
@@ -342,7 +331,7 @@ export class AddUserToProjectsComponent implements OnInit {
             element.IsUserExistInCMLevel1 = false;
           }
           // remove the current user if present in DeliveryLevel1.
-          const delIndex = element.DeliveryLevel1IDArray.indexOf(this.selectedUser.UserName.ID);
+          const delIndex = element.DeliveryLevel1IDArray.indexOf(this.selectedUser.UserNamePG.ID);
           if (delIndex > -1) {
             element.IsUserExistInDeliveryLevel1 = true;
             element.DeliveryLevel1IDArray.splice(delIndex, 1);
@@ -365,18 +354,12 @@ export class AddUserToProjectsComponent implements OnInit {
       if (batchURL && batchURL.length) {
         this.common.SetNewrelic('admin', 'admin-entitlement-adduserToProject', 'updateProjectInformation');
         const updateResult = await this.spServices.executeBatch(batchURL);
-        this.messageService.add({
-          key: 'adminCustom', severity: 'success', sticky: true,
-          summary: 'Success Message', detail: 'The user has been added into the selected Projects.'
-        });
+        this.common.showToastrMessage(this.constants.MessageType.success,'The user has been added into the selected Projects.',true);
         setTimeout(() => {
           this.clientChange();
         }, 500);
       } else {
-        this.messageService.add({
-          key: 'adminCustom', severity: 'info', sticky: true,
-          summary: 'Info Message', detail: 'The user NOT added into the selected Projects.'
-        });
+        this.common.showToastrMessage(this.constants.MessageType.info,'The user NOT added into the selected Projects.',false);
       }
     }
   }

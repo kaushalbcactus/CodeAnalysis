@@ -1,25 +1,34 @@
-<table *ngIf="selectedTask.milestoneTasks.length > 0" class="allTaskDialog" style="width:100%;margin:10px 0px 0px 0px;">
-    <tbody>
-        <tr>
-            <th> Task Name </th>
-            <th> Start Date </th>
-            <th> End Date </th>
-            <th>Status</th>
-            <th>Allocated</th>
-            <th>Resource</th>
-
-        </tr>
-        <tr *ngFor='let task of selectedTask.milestoneTasks'>
-
-            <td>{{task.Title}} <span *ngIf='task.SubMilestones'> - {{task.SubMilestones}}</span></td>
-            <td>{{task.StartDate | date : "dd MMM yy h:mm a"}}</td>
-            <td>{{task.DueDate | date : "dd MMM yy h:mm a"}}</td>
-            <td>{{task.Status}}</td>
-            <td> {{task.ExpectedTime}} </td>
-            <td> {{task.AssignedTo.Title}} </td>
-        </tr>
-    </tbody>
+<table
+  *ngIf="selectedTask.milestoneTasks.length > 0"
+  class="allTaskDialog"
+  style="width: 100%; margin: 10px 0px 0px 0px;"
+>
+  <tbody>
+    <tr>
+      <th>Task Name</th>
+      <th>Start Date</th>
+      <th>End Date</th>
+      <th>Status</th>
+      <th>Allocated</th>
+      <th>Resource</th>
+    </tr>
+    <tr *ngFor="let task of selectedTask.milestoneTasks">
+      <td>
+        {{ task.Title }}
+        <span *ngIf="task.SubMilestones"> - {{ task.SubMilestones }}</span>
+      </td>
+      <td>{{ task.StartDate | date: "dd MMM yy h:mm a" }}</td>
+      <td>{{ task.DueDateDT | date: "dd MMM yy h:mm a" }}</td>
+      <td>{{ task.Status }}</td>
+      <td>{{ task.ExpectedTime }}</td>
+      <td>{{ task.AssignedTo.Title }}</td>
+    </tr>
+  </tbody>
 </table>
 
-<span *ngIf="selectedTask.milestoneTasks.length === 0" style="font-size: 1.5em;
-font-weight: 600;"> No Task Available. </span>
+<span
+  *ngIf="selectedTask.milestoneTasks.length === 0"
+  style="font-size: 1.5em; font-weight: 600;"
+>
+  No Task Available.
+</span>

@@ -1,0 +1,60 @@
+<div class="p-row p-dir-col">
+    <p-card class="p-col">
+        <form class="p-grid" #searchForm="ngForm" [formGroup]="searchCapacityForm" (ngSubmit)="onSubmit()">
+            <div class="p-col-12 p-justify-between p-align-center" style="padding: 20px 0px 20px 0px;">
+              <div class="p-col-2 evenrow resourceView">
+                    <label class="mainlable">Task</label>
+                    <h5>{{header}}</h5>
+              </div>
+              <span class="p-col-1 ui-float-label ui-fluid oddrow" >
+                <p-dropdown [options]="resourceType" formControlName="resourceType"
+                (onChange)="onChange('', $event)" resetFilterOnHide="true"
+                (keydown.enter)="$event.preventDefault()" defaultLabel="Select Resource"
+                [style]="{width:'100%'}" [filter]="true"></p-dropdown>
+                  <label for="float-input" style="top: -.75em;" class="mainlable">Resource Type</label>
+              </span>
+              <span class="p-col-1 ui-float-label ui-fluid oddrow">
+                <p-dropdown [options]="isfte" formControlName="isfte"
+                    (onChange)="onChange('', $event)" resetFilterOnHide="true"
+                    (keydown.enter)="$event.preventDefault()" defaultLabel="Select Resource"
+                    [style]="{width:'100%'}" [filter]="true"></p-dropdown>
+                <label for="float-input" class="mainlable">Is FTE</label>
+            </span>
+              <span class="p-col-1 ui-float-label ui-fluid oddrow" >
+                    <p-multiSelect [options]="Buckets" formControlName="bucket" (onChange)="onChange('', $event)"
+                        resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" defaultLabel="Select"
+                        [style]="{width:'100%'}">
+                    </p-multiSelect>
+                    <label for="float-input" class="mainlable">Bucket</label>
+              </span>
+              <span class="p-col-2 ui-float-label ui-fluid oddrow">
+                    <p-multiSelect [options]="PracticeAreas" formControlName="practicearea"
+                        (onChange)="onChange('', $event)" resetFilterOnHide="true"
+                        (keydown.enter)="$event.preventDefault()" defaultLabel="Select Practice Area"
+                        [style]="{width:'100%'}">
+                    </p-multiSelect>
+                    <label for="float-input" class="mainlable">Practice Area</label>
+              </span>
+              <span class="p-col-2 ui-float-label ui-fluid oddrow">
+                    <p-multiSelect [options]="filteredResources" formControlName="resources"
+                        (onChange)="onChange('resourceFilter', $event)" resetFilterOnHide="true"
+                        (keydown.enter)="$event.preventDefault()" defaultLabel="Select Resource"
+                        [style]="{width:'100%'}"></p-multiSelect>
+                    <label for="float-input" class="mainlable">Resources</label>
+              </span>
+              <span class="p-col-2 ui-float-label ui-fluid oddrow">
+                    <p-calendar formControlName="rangeDates" selectionMode="range" styleClass="customDate" [style]="{'width':'100%'}"
+                        numberOfMonths='1' dateFormat="M dd, yy" [showIcon]="true" [disabledDays]="[0,6]"
+                        [readonlyInput]="true" placeholder="Select Custom Dates" [style]="{'cursor': 'pointer'}"
+                        [required]="true"></p-calendar>
+                    <label for="float-input" style="top: -.75em;" class="mainlable">Custom Dates</label>
+              </span>
+              <span class="oddrow spansubmit">
+                  <button pButton type="submit" icon="pi pi-search" class="ui-button-raised ui-button-danger search btnSubmit"></button>
+                  <div style="top: -.75em;" class="mainlable"></div>
+              </span>
+            </div>
+        </form>
+    </p-card>
+</div>
+<app-usercapacity #userCapacity (resourceSelect)="confirmChangeResource($event)" [parentModule]="'allocation'"></app-usercapacity>

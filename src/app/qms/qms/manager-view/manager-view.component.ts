@@ -5,10 +5,8 @@ import { CommonService } from '../../../Services/common.service';
 import { DataService } from '../../../Services/data.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { GlobalService } from '../../../Services/global.service';
-// import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-import { TreeNode, MessageService } from 'primeng/api';
 import { UserFeedbackComponent } from '../user-feedback/user-feedback.component';
 import { QMSConstantsService } from '../services/qmsconstants.service';
 import { PlatformLocation, LocationStrategy } from '@angular/common';
@@ -83,7 +81,7 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
     type: '',
     listName: ''
   };
-  constructor(private spService: SPOperationService, private globalConstant: ConstantsService, private messageService: MessageService,
+  constructor(private spService: SPOperationService, private globalConstant: ConstantsService,
     private common: CommonService, private data: DataService, private router: Router, private global: GlobalService,
     private qmsConstant: QMSConstantsService, private platformLocation: PlatformLocation,
     private locationStrategy: LocationStrategy, private readonly _router: Router, _applicationRef: ApplicationRef, zone: NgZone
@@ -164,7 +162,7 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
     let resources = await this.spService.readItems(this.globalConstant.listNames.ResourceCategorization.name, managerComponent.getManagerResources);
     resources = resources.length > 0 ? resources : [];
     resources = resources.map(item => item)
-      .filter((value, index, self) => self.findIndex(s => s.UserName.ID === value.UserName.ID) === index);
+      .filter((value, index, self) => self.findIndex(s => s.UserNamePG.ID === value.UserNamePG.ID) === index);
     return resources;
   }
 
@@ -189,19 +187,19 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
     this.common.SetNewrelic('QMS', 'manager-view', 'GetAllResources');
     const arrResult = await this.spService.executeBatch(batchURL);
     let resources = arrResult.length > 0 ? arrResult[0].retItems : [];
-    const managerInResourceIndex = resources.findIndex(r => r.UserName.ID === managerID);
+    const managerInResourceIndex = resources.findIndex(r => r.UserNamePG.ID === managerID);
     if (managerInResourceIndex > -1) {
       resources.splice(managerInResourceIndex, 1);
     }
     let leaders = arrResult.length > 0 ? arrResult[1].retItems : [];
     leaders = leaders.map(obj => ({
-      ...obj, UserName: { ID: obj.Id, Title: obj.Title }
+      ...obj, UserNamePG: { ID: obj.Id, Title: obj.Title }
     }));
-    const currentUserIndex = leaders.findIndex(u => u.UserName.ID === this.global.currentUser.userId);
+    const currentUserIndex = leaders.findIndex(u => u.UserNamePG.ID === this.global.currentUser.userId);
     if (currentUserIndex > -1) {
       leaders.splice(currentUserIndex, 1);
       resources = [...resources, ...leaders].map(item => item)
-        .filter((value, index, self) => self.findIndex(s => s.UserName.ID === value.UserName.ID) === index);
+        .filter((value, index, self) => self.findIndex(s => s.UserNamePG.ID === value.UserNamePG.ID) === index);
     }
     return resources;
   }
@@ -210,8 +208,8 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
     const arrFormattedData: any = [];
     arrResources.forEach(async element => {
       const obj = JSON.parse(JSON.stringify(this.resource));
-      obj.data.userName = element.UserName.Title;
-      obj.data.userId = element.UserName.ID;
+      obj.data.userName = element.UserNamePG.Title;
+      obj.data.userId = element.UserNamePG.ID;
       obj.data.feedbackForMe = element.feedbackForMe;
       obj.data.evaluatorSkill = element.EvaluatorSkill;
       // obj.data.averageRating = element.averageRating;
@@ -303,7 +301,7 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
     let arrResourceScoreCards = [];
     let batchURL = [];
     resources.forEach(element => {
-      batchURL = [...batchURL, ...this.getScorecard(element.UserName.ID, topCount, startDate, endDate)];
+      batchURL = [...batchURL, ...this.getScorecard(element.UserNamePG.ID, topCount, startDate, endDate)];
     });
     this.common.SetNewrelic('QMS', 'manager-view', 'getResourceRatingDetail');
     arrResourceScoreCards = await this.spService.executeBatch(batchURL);
@@ -339,7 +337,7 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
   async addScorecardItem(feedback) {
     const scorecardDetails = {
       FeedbackType: 'Qualitative',
-      Comments: feedback.comments,
+      CommentsMT: feedback.comments,
       AssignedToId: feedback.userId
     };
     this.common.SetNewrelic('QMS', 'manager-view', 'addScorecardItem');
@@ -366,7 +364,7 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
     feedback.hideInnerTable = feedback.eventType === event ? !feedback.hideInnerTable : false;
     filterObject.ratingType = feedback.eventType = event;
     filterObject.collapseMangerView = feedback.hideInnerTable ? true : false;
-    feedbackTableRef.applyFilters(filterObject);
+    feedbackTableRef.applyArrayFilter(filterObject.ratingType, feedback.feedbackForMe);
     filterObject.manager = false;
   }
 
@@ -380,7 +378,7 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
 
   getAverageRating(itemsArray) {
     const arrTaskFeedback = itemsArray.filter((t) => t.FeedbackType && t.FeedbackType === this.globalConstant.FeedbackType.taskRating);
-    const totalRating = arrTaskFeedback.reduce((a, b) => a + +b.AverageRating, 0);
+    const totalRating = arrTaskFeedback.reduce((a, b) => a + +b.AverageRatingNM, 0);
     const averageRating = +(totalRating / arrTaskFeedback.length).toFixed(2);
     const ratingObj = {
       rating: isNaN(averageRating) ? '0' : '' + averageRating,
@@ -405,6 +403,6 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
   }
 
   showSuccessMsg() {
-    this.messageService.add({ severity: 'success', summary: 'No Reportees present', detail: '' });
+    this.common.showToastrMessage(this.globalConstant.MessageType.success,'No Reportees present',false)
   }
 }

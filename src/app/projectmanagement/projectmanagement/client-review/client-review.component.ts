@@ -8,7 +8,7 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { PmconstantService } from '../../services/pmconstant.service';
 import { PMObjectService } from '../../services/pmobject.service';
-import { MenuItem, MessageService } from 'primeng/api';
+import { MenuItem} from 'primeng/api';
 import { PMCommonService } from '../../services/pmcommon.service';
 import { Router } from '@angular/router';
 import { Table } from 'primeng/table';
@@ -83,8 +83,7 @@ export class ClientReviewComponent implements OnInit {
     PreviousTaskStatus: [],
     DeliveryDate: [],
     nextTaskArray: [],
-    previousTaskArray: [],
-
+    previousTaskArray: []
   };
   constructor(
     public globalObject: GlobalService,
@@ -101,7 +100,6 @@ export class ClientReviewComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private platformLocation: PlatformLocation,
     private locationStrategy: LocationStrategy,
-    private messageService: MessageService,
     _applicationRef: ApplicationRef,
     zone: NgZone,
   ) {
@@ -205,7 +203,7 @@ export class ClientReviewComponent implements OnInit {
     const startDateString = new Date(this.commonService.formatDate(startDate) + ' 00:00:00').toISOString();
     const endDateString = new Date(this.commonService.formatDate(endDate) + ' 23:59:00').toISOString();
     const currentFilter = '((StartDate ge \'' + startDateString + '\' or StartDate le \'' + endDateString
-      + '\') and (DueDate ge \'' + startDateString + '\' and DueDate le \'' + endDateString
+      + '\') and (DueDateDT ge \'' + startDateString + '\' and DueDateDT le \'' + endDateString
       + '\')) and (Status eq \'Not Started\') and (Task eq \'Client Review\')'
       + ' and PreviousTaskClosureDate ne null and AssignedTo eq ' + this.globalObject.currentUser.userId + '';
     this.getCR(currentFilter);
@@ -213,13 +211,12 @@ export class ClientReviewComponent implements OnInit {
 
   async getCR(currentFilter) {
     const queryOptions = {
-      select: 'ID,Title,ProjectCode,StartDate,DueDate,PreviousTaskClosureDate,Milestone,PrevTasks,NextTasks,Status',
+      select: 'ID,Title,ProjectCode,StartDate,DueDateDT,PreviousTaskClosureDate,Milestone,PrevTasks,NextTasks',
       filter: currentFilter,
       top: 4200
     };
     this.commonService.SetNewrelic('projectManagment', 'client-review', 'GetSchedules');
     this.crArrays.taskItems = await this.spServices.readItems(this.Constant.listNames.Schedules.name, queryOptions);
-
     const projectCodeTempArray = [];
     const shortTitleTempArray = [];
     const clientLegalEntityTempArray = [];
@@ -270,11 +267,11 @@ export class ClientReviewComponent implements OnInit {
           });
 
           if (projecContObj.length) {
-            crObj.POC = projecContObj[0].FullName;
+            crObj.POC = projecContObj[0].FullNameCC;
           }
         }
-        crObj.DueDate = new Date(this.datePipe.transform(task.DueDate, 'MMM dd, yyyy, h:mm a'));
-        crObj.DueDateFormat = new Date(this.datePipe.transform(crObj.DueDate, 'MMM dd, yyyy, h:mm a'));
+        crObj.DueDate = new Date(this.datePipe.transform(task.DueDateDT, 'MMM dd, yyyy, h:mm a'));
+        crObj.DueDateFormat = new Date(this.datePipe.transform(crObj.DueDateDT, 'MMM dd, yyyy, h:mm a'));
         crObj.Milestone = task.Milestone;
 
         // Check Task Due is greater or smaller than current date.
@@ -331,8 +328,8 @@ export class ClientReviewComponent implements OnInit {
         if (prevTask[0] && prevTask[0].length) {
           taskItem.PreviousTaskStatus = prevTask[0][0].Status;
           this.crArrays.previousTaskArray.push(prevTask[0]);
-          taskItem.DeliveryDate = prevTask[0][0].DueDate ? new Date(prevTask[0][0].DueDate) : null;
-          taskItem.DeliveryDateFormat = this.datePipe.transform(new Date(prevTask[0][0].DueDate), 'MMM dd, yyyy, h:mm a');
+          taskItem.DeliveryDate = prevTask[0][0].DueDateDT ? new Date(prevTask[0][0].DueDateDT) : null;
+          taskItem.DeliveryDateFormat = this.datePipe.transform(new Date(prevTask[0][0].DueDateDT), 'MMM dd, yyyy, h:mm a');
           deliveryDateTempArray.push({ label: taskItem.DeliveryDate, value: taskItem.DeliveryDate });
         }
       }
@@ -404,14 +401,13 @@ export class ClientReviewComponent implements OnInit {
     // }
   }
   goToAllocationPage(task) {
-    window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +
-      '/dashboard#/taskAllocation?ProjectCode=' + task.ProjectCode, '_blank');
+    window.open(this.globalObject.url + '/taskAllocation?ProjectCode=' + task.ProjectCode, '_blank');
   }
+  
   goToProjectManagement(task) {
     this.pmObject.columnFilter.ProjectCode = [task.ProjectCode];
     this.router.navigate(['/projectMgmt/allProjects']);
   }
-
   closeTask(task) {
     if (task.PreviousTaskStatus === 'Completed') {
       this.loaderView.nativeElement.classList.add('show');
@@ -419,12 +415,7 @@ export class ClientReviewComponent implements OnInit {
       this.closeTaskWithStatus(task, this.crRef);
     } else {
 
-      this.messageService.add({
-        key: 'custom', severity: 'warn', summary: 'Warning Message',
-        detail: 'Previous task should be Completed or Auto Closed'
-      });
-
-
+      this.commonService.showToastrMessage(this.Constant.MessageType.warn,'Previous task should be Completed or Auto Closed',false);
       // this.changeErrorMessage('Previous task should be Completed or Auto Closed');
     }
   }
@@ -461,15 +452,15 @@ export class ClientReviewComponent implements OnInit {
           taskObj.type = 'PATCH';
           batchUrl.push(taskObj);
 
-          // update Milestone
-          if (response.length > 0) {
-            const milestoneObj = Object.assign({}, this.options);
-            milestoneObj.url = this.spServices.getItemURL(this.Constant.listNames.Schedules.name, response[0].Id);
-            milestoneObj.data = { Status: 'Completed', __metadata: { type: this.Constant.listNames.Schedules.type } };
-            milestoneObj.listName = this.Constant.listNames.Schedules.name;
-            milestoneObj.type = 'PATCH';
-            batchUrl.push(milestoneObj);
-          }
+      // update Milestone
+      if (response.length > 0) {
+        const milestoneObj = Object.assign({}, this.options);
+        milestoneObj.url = this.spServices.getItemURL(this.Constant.listNames.Schedules.name, response[0].Id);
+        milestoneObj.data = { Status: 'Completed', __metadata: { type: this.Constant.listNames.Schedules.type } };
+        milestoneObj.listName = this.Constant.listNames.Schedules.name;
+        milestoneObj.type = 'PATCH';
+        batchUrl.push(milestoneObj);
+      }
 
           //  update ProjectInformation
           const projectID = this.pmObject.allProjectItems.filter(item => item.ProjectCode === task.ProjectCode);
@@ -483,10 +474,8 @@ export class ClientReviewComponent implements OnInit {
           await this.spServices.executeBatch(batchUrl);
 
           this.isCRInnerLoaderHidden = true;
-          this.messageService.add({
-            key: 'custom', severity: 'success', sticky: true,
-            summary: 'Success Message', detail: task.Title + ' is completed Sucessfully'
-          });
+
+          this.commonService.showToastrMessage(this.Constant.MessageType.success,task.Title + ' is completed Sucessfully.',true);
 
           const index = this.pmObject.clientReviewArray.findIndex(item => item.ID === task.ID);
           this.pmObject.clientReviewArray.splice(index, 1);
@@ -504,11 +493,8 @@ export class ClientReviewComponent implements OnInit {
     } else {
       this.loaderView.nativeElement.classList.remove('show');
       this.spannerView.nativeElement.classList.remove('show');
-      this.messageService.add({
-        key: 'custom', severity: 'success', sticky: true,
-        summary: 'Success Message', detail: task.Title + ' is already completed or closed or auto closed. Hence record is refreshed in 30 sec.'
-      });
 
+      this.commonService.showToastrMessage(this.Constant.MessageType.info,task.Title + ' is already completed or closed or auto closed. Hence record is refreshed in 30 sec.',true);
       setTimeout(() => {
         this.ngOnInit();
       }, 3000);
@@ -532,7 +518,6 @@ export class ClientReviewComponent implements OnInit {
     this.selectedCRTask = rowData;
     menu.model[3].visible = this.selectedOption.name === 'Closed' ? false : true;
   }
-
   @HostListener('document:click', ['$event'])
   clickout(event) {
     if (event.target.className === "pi pi-ellipsis-v") {

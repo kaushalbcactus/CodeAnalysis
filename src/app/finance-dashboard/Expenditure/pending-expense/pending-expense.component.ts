@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, HostListener, ViewChild, ElementRef, ChangeDetectorRef, ApplicationRef, NgZone } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
-import { SelectItem, MessageService } from 'primeng/api';
+import { SelectItem } from 'primeng/api';
 import { SPOperationService } from '../../../Services/spoperation.service';
 import { ConstantsService } from '../../../Services/constants.service';
 import { GlobalService } from '../../../Services/global.service';
@@ -22,7 +22,6 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
     FolderName: string;
     SelectedFile: any;
     constructor(
-        private messageService: MessageService,
         private fb: FormBuilder,
         private spServices: SPOperationService,
         public constantService: ConstantsService,
@@ -444,7 +443,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 SOWCode: sowCodeFromPI.SOWCode,
                 SOWName: sowItem.Title,
                 ClientLegalEntity: sowCodeFromPI.ClientLegalEntity,
-                Category: element.Category,
+                Category: element.CategoryST,
                 PONumber: element.PONumber,
                 ExpenseType: element.SpendType,
                 ClientAmount: parseFloat(element.ClientAmount ? element.ClientAmount : 0).toFixed(2),
@@ -453,8 +452,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 CreatedDateFormat: this.datePipe.transform(element.Created, 'MMM dd, yyyy, hh:mm a'),
                 CreatedBy: element.Author ? element.Author.Title : '',
                 ModifiedBy: element.Editor ? element.Editor.Title : '',
-
-                Notes: element.Notes,
+                NotesMT: element.Notes,
                 Modified: new Date(this.datePipe.transform(element.Modified, 'MMM dd, yyyy')),
                 ModifiedDateFormat: this.datePipe.transform(element.Modified, 'MMM dd, yyyy, hh:mm a'),
                 RequestType: element.RequestType,
@@ -578,7 +576,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         // let uniqueRT = this.checkSameRT();
         // console.log('uniqueRT ', uniqueRT);
         if (!this.selectedAllRowsItem.length) {
-            this.messageService.add({ key: 'pendingExpenseToast', severity: 'info', summary: 'Info message', detail: 'Please select at least one line item try agian.', life: 3000 });
+            this.commonService.showToastrMessage(this.constantService.MessageType.warn,'Please select at least one line item try agian.',false);
             return false;
         }
         let uniqueRT = false;
@@ -607,7 +605,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             this.selectedRowItem = this.selectedAllRowsItem[0];
         } else {
             this.displayModal = false;
-            this.messageService.add({ key: 'pendingExpenseToast', severity: 'info', summary: 'Info message', detail: 'Please select same Request type & try agian.', life: 3000 });
+            this.commonService.showToastrMessage(this.constantService.MessageType.info,'Please select same Request type & try agian.',false);
         }
     }
 
@@ -683,7 +681,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             if (fileName !== sNewFileName) {
                 this.fileInput.nativeElement.value = '';
                 this.approveExpense_form.get('ApproverFileUrl').setValue('');
-                this.messageService.add({ key: 'pendingExpenseToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
+                this.commonService.showToastrMessage(this.constantService.MessageType.error,'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'',false);
                 return false;
             }
             this.FolderName = folderName;
@@ -700,10 +698,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
                 if (uploadedfile[0].hasOwnProperty('odata.error') || uploadedfile[0].hasError) {
                     this.submitBtn.isClicked = false;
-                    this.messageService.add({
-                        key: 'pendingExpenseToast', severity: 'error', summary: 'Error message',
-                        detail: 'File not uploaded, Folder / File Not Found', life: 3000
-                    });
+                    this.commonService.showToastrMessage(this.constantService.MessageType.error,'File not uploaded, Folder / File Not Found.',false);
                 } else if (uploadedfile[0].ServerRelativeUrl) {
                     this.isPSInnerLoaderHidden = false;
                     this.fileUploadedUrl = uploadedfile[0].ServerRelativeUrl;
@@ -736,82 +731,6 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         });
     }
 
-
-    //*************************************************************************************************
-    // commented old file upload function
-    // ************************************************************************************************
-
-
-
-
-    // onFileChange(event, folderName: string) {
-    //     this.fileReader = new FileReader();
-    //     if (event.target.files && event.target.files.length > 0) {
-    //         this.selectedFile = event.target.files[0];
-    //         const fileName = this.selectedFile.name;
-    //         const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
-    //         if (fileName !== sNewFileName) {
-    //             this.fileInput.nativeElement.value = '';
-    //             this.approveExpense_form.get('ApproverFileUrl').setValue('');
-    //             this.messageService.add({ key: 'pendingExpenseToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
-    //             return false;
-    //         }
-    //         this.fileReader.readAsArrayBuffer(this.selectedFile);
-    //         this.fileReader.onload = () => {
-    //             const date = new Date();
-    //             const folderPath: string = this.globalService.sharePointPageObject.webRelativeUrl + '/SpendingInfoFiles/' + folderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM') + '/';
-    //             this.filePathUrl = this.globalService.sharePointPageObject.webRelativeUrl + '/_api/web/GetFolderByServerRelativeUrl(' + '\'' + folderPath + '\'' + ')/Files/add(url=@TargetFileName,overwrite=\'true\')?' + '&@TargetFileName=\'' + this.selectedFile.name + '\'';
-    //         };
-    //     }
-    // }
-
-    // async uploadFileData(type: string) {
-    //     this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'UploadFiles');
-    //     const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
-    //     if (res.ServerRelativeUrl) {
-    //         this.fileUploadedUrl = res.ServerRelativeUrl ? res.ServerRelativeUrl : '';
-    //         // console.log('this.fileUploadedUrl ', this.fileUploadedUrl);
-    //         if (this.fileUploadedUrl) {
-    //             const batchUrl = [];
-    //             const speInfoObj = {
-    //                 PayingEntity: this.approveExpense_form.value.PayingEntity.Title,
-    //                 Number: this.approveExpense_form.value.Number,
-    //                 DateSpend: this.approveExpense_form.value.DateSpend,
-    //                 PaymentMode: this.approveExpense_form.value.PaymentMode.value,
-    //                 ApproverComments: this.approveExpense_form.value.ApproverComments,
-    //                 ApproverFileUrl: this.fileUploadedUrl,
-    //                 Status: 'Approved'
-    //             };
-    //             speInfoObj['__metadata'] = { type: 'SP.Data.SpendingInfoListItem' };
-    //             // let data = [];
-    //             for (let inv = 0; inv < this.selectedAllRowsItem.length; inv++) {
-    //                 const element = this.selectedAllRowsItem[inv];
-    //                 // const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace("{{Id}}", element.Id);
-    //                 // data.push({
-    //                 //     objData: speInfoObj,
-    //                 //     endpoint: spEndpoint,
-    //                 //     requestPost: false
-    //                 // })
-
-    //                 const expenseObj = Object.assign({}, this.queryConfig);
-    //                 expenseObj.url = this.spServices.getItemURL(this.constantService.listNames.SpendingInfo.name, +element.Id);
-    //                 expenseObj.listName = this.constantService.listNames.SpendingInfo.name;
-    //                 expenseObj.type = 'PATCH';
-    //                 expenseObj.data = speInfoObj;
-    //                 batchUrl.push(expenseObj);
-    //             }
-    //             this.submitForm(batchUrl, type);
-    //         }
-    //     } else if (res.hasError) {
-    //         this.isPSInnerLoaderHidden = true;
-    //         this.submitBtn.isClicked = false;
-    //         this.messageService.add({
-    //             key: 'pendingExpenseToast', severity: 'error', summary: 'Error message',
-    //             detail: 'File not uploaded,Folder / ' + res.message.value + '', life: 3000
-    //         });
-    //     }
-    // }
-
     onSubmit(type: string) {
         this.formSubmit.isSubmit = true;
         const batchUrl = [];
@@ -825,16 +744,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 ApproverComments: this.cancelReject_form.value.ApproverComments,
                 Status: 'Cancelled'
             };
-            speInfoObj['__metadata'] = { type: 'SP.Data.SpendingInfoListItem' };
-            // const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace("{{Id}}",
-            //                       this.selectedRowItem.Id);
-            // let data = [
-            //     {
-            //         objData: speInfoObj,
-            //         endpoint: spEndpoint,
-            //         requestPost: false
-            //     }
-            // ]
+            speInfoObj['__metadata'] = { type: this.constantService.listNames.SpendingInfo.type};
             const cancelExpenseObj = Object.assign({}, this.queryConfig);
             cancelExpenseObj.url = this.spServices.getItemURL(this.constantService.listNames.SpendingInfo.name, +this.selectedRowItem.Id);
             cancelExpenseObj.listName = this.constantService.listNames.SpendingInfo.name;
@@ -854,17 +764,10 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 ApproverComments: this.cancelReject_form.value.ApproverComments,
                 Status: 'Rejected'
             };
-            speInfoObj['__metadata'] = { type: 'SP.Data.SpendingInfoListItem' };
+            speInfoObj['__metadata'] = { type: this.constantService.listNames.SpendingInfo.type };
             // let data = [];
             for (let inv = 0; inv < this.selectedAllRowsItem.length; inv++) {
                 const element = this.selectedAllRowsItem[inv];
-                // tslint:disable-next-line: max-line-length
-                // const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace("{{Id}}", element.Id);
-                // data.push({
-                //     objData: speInfoObj,
-                //     endpoint: spEndpoint,
-                //     requestPost: false
-                // })
                 const rejectExpenseObj = Object.assign({}, this.queryConfig);
                 rejectExpenseObj.url = this.spServices.getItemURL(this.constantService.listNames.SpendingInfo.name, +element.Id);
                 rejectExpenseObj.listName = this.constantService.listNames.SpendingInfo.name;
@@ -878,10 +781,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 return;
             }
             else if (this.selectedFile && this.selectedFile.size === 0) {
-                this.messageService.add({
-                    key: 'pendingExpenseToast', severity: 'error',
-                    summary: 'Error message', detail: 'Unable to upload file, size of ' + this.selectedFile.name + ' is 0 KB.', life: 2000
-                });
+                this.commonService.showToastrMessage(this.constantService.MessageType.error,this.constantService.Messages.ZeroKbFile.replace('{{fileName}}',this.selectedFile.name),false);
                 return;
             }
 
@@ -895,16 +795,10 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                     DateSpend: this.datePipe.transform(new Date(), 'MM/dd/yyyy'),
                     Status: 'Approved Payment Pending'
                 };
-                speInfoObj['__metadata'] = { type: 'SP.Data.SpendingInfoListItem' };
+                speInfoObj['__metadata'] = { type: this.constantService.listNames.SpendingInfo.type };
                 // let data = [];
                 for (let inv = 0; inv < this.selectedAllRowsItem.length; inv++) {
                     const element = this.selectedAllRowsItem[inv];
-                    // const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace("{{Id}}", element.Id);;
-                    // data.push({
-                    //     objData: speInfoObj,
-                    //     endpoint: spEndpoint,
-                    //     requestPost: false
-                    // })
                     const invPayObj = Object.assign({}, this.queryConfig);
                     invPayObj.url = this.spServices.getItemURL(this.constantService.listNames.SpendingInfo.name, +element.Id);
                     invPayObj.listName = this.constantService.listNames.SpendingInfo.name;
@@ -924,17 +818,13 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         this.commonService.SetNewrelic('Finance-Dashboard', 'pending-expense', 'submitform');
         await this.spServices.executeBatch(batchUrl);
         if (type === 'Approve Expense') {
-            this.messageService.add({
-                key: 'pendingExpenseToast', severity: 'success', summary: 'Success message',
-                detail: 'Expense Approved.', life: 2000
-            });
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.success,'Expense Approved.',false);
             this.displayModal = false;
             this.sendMailToSelectedLineItems(type);
         } else if (type === 'Cancel Expense' || type === 'Reject Expense') {
-            this.messageService.add({
-                key: 'pendingExpenseToast', severity: 'success', summary: 'Success message',
-                detail: 'Submitted.', life: 2000
-            });
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.success,'Submitted.',false);
             this.displayModal = false;
             this.sendMailToSelectedLineItems(type);
         }
@@ -1041,7 +931,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
 
     getResourceData(ele) {
         const found = this.rcData.find((x) => {
-            if (x.UserName.ID === ele.ID) {
+            if (x.UserNamePG.ID === ele.ID) {
                 return x;
             }
         });
@@ -1054,7 +944,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
 
     getAuthor(id) {
         const found = this.rcData.find((x) => {
-            if (x.UserName.ID === id) {
+            if (x.UserNamePG.ID === id) {
                 return x;
             }
         });
@@ -1071,7 +961,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         const mailSubject = type === 'Approve Expense' ? expense.ProjectCode + ' : Expense Approved' : type === 'Cancel Expense' ? expense.ProjectCode + ' : Expense Cancelled' :
             expense.ProjectCode + ' : Expense Rejected';
 
-        let mailContent = this.mailContentRes[0].retItems[0].Content;
+        let mailContent = this.mailContentRes[0].retItems[0].ContentMT;
         mailContent = this.replaceContent(mailContent, '@@Val1@@', val1);
         mailContent = this.replaceContent(mailContent, '@@Val2@@', expense.Category);
         mailContent = this.replaceContent(mailContent, '@@Val4@@', expense.ExpenseType);
@@ -1081,7 +971,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         mailContent = this.replaceContent(mailContent, '@@Val10@@', this.approveExpense_form.value.ApproverComments ? this.approveExpense_form.value.ApproverComments : this.cancelReject_form.value.ApproverComments);
 
         mailContent = this.replaceContent(mailContent, '@@Val0@@', expense.Id);
-        mailContent = this.replaceContent(mailContent, '@@Val13@@', author.hasOwnProperty('UserName') ? author.UserName.Title : 'Member');
+        mailContent = this.replaceContent(mailContent, '@@Val13@@', author.hasOwnProperty('UserNamePG') ? author.UserNamePG.Title : 'Member');
         mailContent = this.replaceContent(mailContent, '@@Val14@@', this.currentUserInfoData.Title);
         if (type === 'Approve Expense') {
             mailContent = this.replaceContent(mailContent, '@@Val15@@', this.approveExpense_form.value.PayingEntity.Title);

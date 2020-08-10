@@ -7,62 +7,61 @@
 </div>
 
 <div class="p-row p-dir-col" *ngIf="!mainloaderenable">
-    <p-toast key="toastMessage" [style]="{marginTop: '80px'}" position="top-center"></p-toast>
-    <p-card class="p-col topCardPosition">
-        <form class="p-grid" #searchForm="ngForm" [formGroup]="searchCapacityForm" (ngSubmit)="onSubmit()">
-            <div class="p-col-12 p-justify-between p-align-center" style="padding: 20px 0px 20px 0px;">
+    <p-card class="topCardPosition">
+        <form class="p-grid" #searchForm="ngForm" [formGroup]="searchCapacityForm" (ngSubmit)="onSubmit('search')">
+            <div class="p-col-12 p-justify-between p-align-center" style="padding: 20px 0px 5px 0px;">
                 <span class="p-col ui-float-label ui-fluid evenrow" style="width:11%;">
-                    <p-multiSelect [options]="Buckets" formControlName="bucket" (onChange)="onChange($event,'bucket')" 
-                    resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" defaultLabel="Select"  
+                    <p-multiSelect [options]="Buckets" formControlName="bucket" (onChange)="onChange($event,'bucket')"
+                    resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" defaultLabel="Select"
                     [style]="{width:'100%'}">
                     </p-multiSelect>
                     <label for="float-input" class="mainlable">Bucket</label>
                 </span>
 
                 <span class="p-col-2 ui-float-label ui-fluid oddrow" style="width: 15%;">
-                    <p-multiSelect [options]="PracticeAreas" formControlName="practicearea"   (onChange)="onChange($event,'practicearea')"  
-                    resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" defaultLabel="Select Practice Area"  
+                    <p-multiSelect [options]="PracticeAreas" formControlName="practicearea"   (onChange)="onChange($event,'practicearea')"
+                    resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" defaultLabel="Select Practice Area"
                     [style]="{width:'100%'}"></p-multiSelect>
                     <label for="float-input" class="mainlable">Practice Area</label>
                 </span>
                 <span class="p-col-2 ui-float-label ui-fluid evenrow">
-                    <p-multiSelect [options]="Skills" formControlName="skill" (onChange)="onChange($event,'skill')" 
-                    resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" defaultLabel="Select Skill"  
+                    <p-multiSelect [options]="Skills" formControlName="skill" (onChange)="onChange($event,'skill')"
+                    resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" defaultLabel="Select Skill"
                     [style]="{width:'100%'}"></p-multiSelect>
                     <label for="float-input" class="mainlable">Skill</label>
                 </span>
 
                 <span class="p-col-2 ui-float-label ui-fluid oddrow">
-                    <p-multiSelect [options]="Resources" formControlName="resources" (onChange)="onChange($event,'resource')" 
-                    resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" defaultLabel="Select Resource"  
+                    <p-multiSelect [options]="Resources" formControlName="resources" (onChange)="onChange($event,'resource')"
+                    resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" defaultLabel="Select Resource"
                     [style]="{width:'100%'}"></p-multiSelect>
                     <label for="float-input" class="mainlable">Resources</label>
                 </span>
                 <span class="p-col-2 ui-float-label ui-fluid evenrow" style="width: 11%;">
-                    <p-dropdown [options]="Statuses" formControlName="status" (onChange)="onChange($event,'taskType')"   (keydown.enter)="$event.preventDefault()" defaultLabel="Select Status"  
+                    <p-dropdown [options]="Statuses" formControlName="status" (onChange)="onChange($event,'taskType')"   (keydown.enter)="$event.preventDefault()" defaultLabel="Select Status"
                     [style]="{width:'100%'}"></p-dropdown>
                     <label for="float-input" class="mainlable">Task Status</label>
                 </span>
                 <span class="p-col-2 ui-float-label ui-fluid oddrow" style="width: 12%;">
-                    <p-dropdown  [options]="ResourceType" formControlName="resourcetype" 
-                    resetFilterOnHide="true" (onChange)="!fetchDataloader"  (keydown.enter)="$event.preventDefault()" defaultLabel="Select Resource Type"  
+                    <p-dropdown  [options]="ResourceType" formControlName="resourcetype"
+                    resetFilterOnHide="true" (onChange)="fetchDataloader = false"  (keydown.enter)="$event.preventDefault()" defaultLabel="Select Resource Type"
                     [style]="{width:'100%'}"></p-dropdown >
                     <label for="float-input" class="mainlable">Resources Type</label>
                 </span>
                 <span class="p-col-2 ui-float-label ui-fluid evenrow" style="width: 17%;">
                     <p-calendar formControlName="rangeDates" selectionMode="range" [style]="{'width':'100%'}"
-                        numberOfMonths='1' dateFormat="M dd, yy" [showIcon]="true" [disabledDays]="[0,6]"
+                        numberOfMonths='1' dateFormat="M dd, yy" [showIcon]="true" [disabledDays]="[0,6]" (onClose)="fetchDataloader = false"
                         [readonlyInput]="true" placeholder="Select Custom Dates" [style]="{'cursor': 'pointer'}"
                         [required]="true"></p-calendar>
                     <label for="float-input" style="top: -.75em;" class="mainlable">Custom Dates</label>
                 </span>
 
-               
+
             </div>
             <div style="width: 100%;">
-                <div class="ui-card-title" style="font-size: 15px; float: left;">Selected User Capacity</div>
+
                 <div style="float: left;">
-                    <div style="padding: 0px 0px 0px 50px;">
+                    <div>
                         <span style="float: left;font-size: 14px;padding-right: 10px; font-weight: 700;"> Days : </span>
                         <div class="input-color">
                             <label>Available</label>
@@ -84,10 +83,10 @@
                             <label>Trainee</label>
                             <div class="color-box" style="background-color: #ffffff;border: 1px solid #cdcdcd;"></div>
                         </div>
-                    <!-- </div> -->
-                <!-- </div>
+                        <!-- </div> -->
+                        <!-- </div>
                 <div class="col-3 ui-card-title p-col-align-center p-justify-end" style="padding: 0px;"> -->
-                    <!-- <div style="float: right;"> -->
+                        <!-- <div style="float: right;"> -->
                         <span style="float: left;font-size: 14px;padding-right: 10px; padding-left: 25px;  font-weight: 700;"> Tasks : </span>
                         <div class="input-color">
                             <label>Confirmed</label>
@@ -100,63 +99,24 @@
 
                     </div>
                 </div>
-                 <!-- <p-footer> -->
-                    <div  style="padding: 0px;float: right">
-                    <button pButton type="submit" icon="pi pi-search" class="ui-button-raised ui-button-danger" style="float: right;margin: 0px 12px 0px 4px !important;"></button>
-                    <button pButton type="button" icon="pi pi-refresh" style="float: right !important;" class="ui-button-raised ui-button-danger" (click)="onChange($event,'');searchForm.reset()"></button>
+                <!-- <p-footer> -->
+                <div style="padding: 0px;float: right">
+                    <button pButton type="submit" title="Search" icon="pi pi-search" class="ui-button-raised ui-button-danger" style="float: right !important;margin: 0px 12px 0px 4px !important;"></button>
+                    <button pButton type="button" title="Block Resource" icon="fa fa-user-plus" style="float: right !important;margin: 0px 4px 0px 4px !important;" class="ui-button-raised ui-button-danger" (click)="onSubmit('blockResource')"></button>
+
+                    <button pButton type="button" title="Refresh" icon="pi pi-refresh" style="float: right !important;margin: 0px 4px 0px 4px !important;" class="ui-button-raised ui-button-danger" (click)="onChange($event,'');searchForm.reset()"></button>
                     <!-- </p-footer> -->
-                    </div>
-                    <div style="clear: both"></div>
+                </div>
+                <div style="clear: both"></div>
             </div>
         </form>
         <div class="p-col" [hidden]="!fetchDataloader">
             <div [hidden]="!userCapacityEnable">
-                <app-usercapacity #InitialUserCapacity></app-usercapacity>
+                <app-usercapacity #InitialUserCapacity (updateblocking)="UpdateBlocking($event)" (selectedUserEvent)="receiveSelectedUser($event)" [parentModule]="'capacity'"></app-usercapacity>
             </div>
 
         </div>
 
 
     </p-card>
-    <!-- <p-card class="p-col" [hidden]="!fetchDataloader">
-        <div class="p-grid">
-            <div class="col-3 ui-card-title" style="font-size: 15px;">Selected User Capacity</div>
-            <div class="col-5 ui-card-title p-col-align-center p-justify-between">
-                <div>
-                    <span style="float: left;font-size: 14px;padding-right: 10px;"> Days : </span>
-                    <div class="input-color">
-                        <label>Available</label>
-                        <div class="color-box" style="background-color: #55bf3b;left: 0px;"></div>
-                    </div>
-                    <div class="input-color">
-                        <label>Fully/Over Allocated</label>
-                        <div class="color-box" style="background-color: #EF3D3D;"></div>
-                    </div>
-                    <div class="input-color">
-                        <label>Leave / Not Working </label>
-                        <div class="color-box" style="background-color: #808080;"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-4 ui-card-title p-col-align-center p-justify-between">
-                <div>
-                    <span style="float: left;font-size: 14px;padding-right: 10px;"> Tasks : </span>
-                    <div class="input-color">
-                        <label>Confirmed</label>
-                        <div class="color-box" style="background-color: #ffff00;left: 0px;"></div>
-                    </div>
-                    <div class="input-color">
-                        <label>Planned / Blocked</label>
-                        <div class="color-box" style="background-color: #7798bf;"></div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
-        <div [hidden]="!userCapacityEnable">
-            <app-usercapacity #InitialUserCapacity></app-usercapacity>
-        </div>
-
-    </p-card> -->
 </div>

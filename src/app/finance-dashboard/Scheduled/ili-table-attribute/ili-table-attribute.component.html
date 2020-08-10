@@ -45,7 +45,7 @@
             </tr>
             <tr>
                 <td [ngStyle]="{'color':'#d7181f'}">Scheduled Date</td>
-                <td>{{rowItemData.ScheduledDate | date:'medium'}}</td>
+                <td>{{rowItemData.ScheduledDate | date:'mediumDate'}}</td>
             </tr>
             <tr>
                 <td [ngStyle]="{'color':'#d7181f'}">Scheduled Type</td>
@@ -71,10 +71,10 @@
                 <td [ngStyle]="{'color':'#d7181f'}">Status</td>
                 <td>{{rowItemData.Status}}</td>
             </tr>
-            <tr>
+            <!-- <tr>
                 <td [ngStyle]="{'color':'#d7181f'}">Notes</td>
                 <td>{{rowItemData.Notes}}</td>
-            </tr>
+            </tr> -->
 
             <tr>
                 <td [ngStyle]="{'color':'#d7181f'}">POC Name</td>
@@ -98,7 +98,7 @@
             </tr>
             <tr>
                 <td [ngStyle]="{'color':'#d7181f'}">Modified</td>
-                <td>{{rowItemData.Modified | date:'medium'}}</td>
+                <td>{{rowItemData.Modified | date:'mediumDate'}}</td>
             </tr>
             <tr>
                 <td [ngStyle]="{'color':'#d7181f'}">Modified By</td>

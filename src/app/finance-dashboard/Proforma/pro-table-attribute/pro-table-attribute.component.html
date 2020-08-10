@@ -21,7 +21,7 @@
             </tr>
             <tr>
                 <td [ngStyle]="{'color':'#d7181f'}">Proforma Date</td>
-                <td>{{rowItemData.ProformaDate | date:'medium'}}</td>
+                <td>{{rowItemData.ProformaDate | date:'mediumDate'}}</td>
             </tr>
             <tr>
                 <td [ngStyle]="{'color':'#d7181f'}">Proforma Type</td>
@@ -66,8 +66,7 @@
 
             <tr>
                 <td [ngStyle]="{'color':'#d7181f'}">File URL</td>
-                <td><a href="{{rowItemData.FileURL}}" target="_blank" style="color:red"
-                        *ngIf="rowItemData.FileURL">Click here</a>
+                <td><a href="{{rowItemData.FileURL}}" target="_blank" style="color:red" *ngIf="rowItemData.FileURL">Click here</a>
                 </td>
             </tr>
             <tr>

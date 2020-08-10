@@ -1,6 +1,7 @@
 import { Directive, ElementRef, HostListener, OnInit, Input, HostBinding } from '@angular/core';
-import { MessageService } from 'primeng/api';
 import { NG_VALUE_ACCESSOR, NgControl, FormControlName } from '@angular/forms';
+import { CommonService } from 'src/app/Services/common.service';
+import { ConstantsService } from 'src/app/Services/constants.service';
 
 @Directive({
     selector: '[inputPatteren]'
@@ -14,8 +15,9 @@ export class InputPatterenDirective implements OnInit {
     private element: HTMLInputElement;
     constructor(
         private el: ElementRef,
-        private messageService: MessageService,
-        public model: FormControlName
+        public model: FormControlName,
+        private common:CommonService,
+        private constants:ConstantsService
     ) {
         //elRef will get a reference to the element where
         //the directive is placed
@@ -31,7 +33,7 @@ export class InputPatterenDirective implements OnInit {
         if (initialValue) {
             this.el.nativeElement.value = this.checkPatteren(initialValue);
             if (initialValue !== this.el.nativeElement.value) {
-                this.messageService.add({ key: 'adminAuth1', severity: 'error', summary: 'Error message', detail: 'Allowed special characters are \'-\' and \'_\'.', life: 3000 });
+                this.common.showToastrMessage(this.constants.MessageType.error,'Allowed special characters are \'-\' and \'_\'.',false);
                 event.stopPropagation();
                 this.value = initialValue.substring(0, initialValue.length - 1);
                 this.model.control.setValue(this.value);
@@ -45,14 +47,4 @@ export class InputPatterenDirective implements OnInit {
             return inputStr.replace(/[^a-zA-Z0-9\s_-]*/g, '');
         }
     }
-
-    // @HostListener('keypress', ['$event']) keypress(e) {
-    //     let charCode = (e.which) ? e.which : e.keyCode;
-    //     if (charCode != 46 && charCode > 31 && (charCode < 48 || charCode > 57)) {
-    //         this.messageService.add({ key: 'fdToast', severity: 'error', summary: 'Error message', detail: 'Please enter only numbers.', life: 3000 });
-    //         return false;
-    //     }
-    //     return true;
-    // }
-
 }

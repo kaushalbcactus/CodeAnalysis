@@ -349,6 +349,7 @@ export class PMObjectService {
       NetBalance: 0,
       OOPBalance: 0,
       TaxBalance: 0,
+      LastUpdated: new Date()
     },
     CM1: [],
     CM1Text: '',
@@ -496,8 +497,13 @@ export class PMObjectService {
       toggleCapacity: true,
       showTime: false,
       assignedUserTimeZone: '+5.5',
+      Milestone: '',
       SubMilestone: '',
       userId: 0,
+      taskFullName: '',
+      allocationPerDay: '',
+      allocationType: '',
+      allocationColor: ''
     },
   };
   public currLoginInfo: any = [];
@@ -524,6 +530,7 @@ export class PMObjectService {
   public taskArray = [];
   public fileReader: any = '';
   public updateInvoices = [];
+
 }
 
 

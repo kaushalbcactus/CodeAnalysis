@@ -226,7 +226,7 @@ export class CACommonService {
   }
   /**
    * This method is used to clean the array.
-   * @param actual 
+   * @param actual
    */
   cleanArray(actual) {
     const newArray = new Array();
@@ -242,10 +242,10 @@ export class CACommonService {
 
   /**
    * This method is used to get all the items required for unallocated and allocated task.
-   * @param resourceCategorizationList 
-   * @param projectInformationList 
-   * @param scheduleList 
-   * @param scheduleQueryOptions 
+   * @param resourceCategorizationList
+   * @param projectInformationList
+   * @param scheduleList
+   * @param scheduleQueryOptions
    */
   async getItems(scheduleQueryOptions) {
     // const batchGuid = this.spServices.generateUUID();
@@ -302,17 +302,18 @@ export class CACommonService {
   }
   /**
    * This method will create and object for unallocated and allocated task and assigned the value to it.
-   * @param taskCounter 
-   * @param schedulesItemFetch 
-   * @param task 
-   * @param projects 
-   * @param resourceList 
-   * @param completeTaskArray 
-   * @param scTempArrays 
+   * @param taskCounter
+   * @param schedulesItemFetch
+   * @param task
+   * @param projects
+   * @param resourceList
+   * @param completeTaskArray
+   * @param scTempArrays
    */
   getCaProperties(taskCounter, schedulesItemFetch, task, projects, resourceList, completeTaskArray, scTempArrays) {
 
-    let scObj = $.extend(true, {}, this.caGlobalService.caObject);
+    // let scObj = $.extend(true, {}, this.caGlobalService.caObject);
+    let scObj = {...this.caGlobalService.caObject};
     taskCounter++;
     let projectItem = projects.filter(function (proj) { return proj.ProjectCode === task.ProjectCode });
     if (taskCounter <= 30) {
@@ -325,8 +326,6 @@ export class CACommonService {
         schedulesItemFetch.push(queryObj);
       }
     }
-    //const resourcesList = $.extend(true, [], resourceList);
-    //const resPool = this.getResourceByMatrix(resourcesList, task.Task, task.SkillLevel, projectItem[0].ClientLegalEntity, projectItem[0].TA, projectItem[0].DeliverableType);
     scObj.Id = task.ID;
     scObj.ClientName = projectItem.length ? projectItem[0].ClientLegalEntity : '';
     scObj.ProjectCode = task.ProjectCode;
@@ -335,26 +334,26 @@ export class CACommonService {
     scObj.SubMilestones = task.SubMilestones;
     scObj.Task = task.Task;
     scObj.Displaytask = $.trim(task.Title.replace(scObj.ProjectCode + '', '').replace(scObj.Milestone + '', ''));
-    scObj.Timezone = task.TimeZone;
+    scObj.Timezone = task.TimeZoneNM;
     scObj.Title = task.Title;
     scObj.TaskName = $.trim(task.Title.replace(scObj.ProjectCode + '', '').replace(scObj.Milestone + '', ''));
     scObj.DeliveryType = projectItem.length ? projectItem[0].DeliverableType :'';
     scObj.EstimatedTime = task.ExpectedTime;
     scObj.StartTime = task.StartDate;
-    scObj.EndTime = task.DueDate;
+    scObj.EndTime = task.DueDateDT;
     scObj.StartDate = new Date(task.StartDate);
-    scObj.DueDate = new Date(task.DueDate);
+    scObj.DueDate = new Date(task.DueDateDT);
     scObj.StartDateText = this.datePipe.transform(scObj.StartDate, 'd MMM, yyyy, hh:mm a');
     scObj.DueDateText = this.datePipe.transform(scObj.DueDate, 'd MMM, yyyy, hh:mm a');
-    scObj.NextTaskStartDate = new Date(); // nextTaskItem[0].StartDate;
-    scObj.LastTaskEndDate = new Date(); // prevTaskItem[0].StartDate;
-    scObj.sendToClientDate = new Date(); // sentToClientItem[0].StartDate;
+    scObj.NextTaskStartDate = new Date();
+    scObj.LastTaskEndDate = new Date();
+    scObj.sendToClientDate = new Date();
     scObj.NextTaskStartDateText = '';
     scObj.LastTaskEndDateText = '';
     scObj.SendToClientDateText = '';
     scObj.NextTasks = task.NextTasks ? task.NextTasks : '';
     scObj.PrevTasks = task.PrevTasks ? task.PrevTasks : '';
-    scObj.TaskScope = task.Comments;
+    scObj.TaskScope = task.CommentsMT;
     scObj.PrevTaskComments = '';
     scObj.allocatedResource = '';
     scObj.AssignedTo = task.AssignedTo.Title;
@@ -364,13 +363,13 @@ export class CACommonService {
     scObj.editImageUrl = this.globalService.imageSrcURL.editImageURL;
     scObj.taskScopeImageUrl = this.globalService.imageSrcURL.scopeImageURL;
     scObj.taskDeleteImageUrl = this.globalService.imageSrcURL.cancelImageURL;
-    //scObj.resources = $.extend(true, [], resPool);
     scObj.selectedResources = [];
     scObj.mileStoneTask = [];
     scObj.projectTask = [];
     scObj.Type = 'Slot';
     scObj.editMode = false;
     scObj.CentralAllocationDone = task.CentralAllocationDone;
+    scObj.showAllocationSplit = task.AllocationPerDay ? true : false;
     scTempArrays.clientLegalEntityTempArray.push({ label: scObj.ClientName, value: scObj.ClientName });
     scTempArrays.projectCodeTempArray.push({ label: scObj.ProjectCode, value: scObj.ProjectCode });
     scTempArrays.milestoneTempArray.push({ label: scObj.Milestone, value: scObj.Milestone });
@@ -379,18 +378,12 @@ export class CACommonService {
     scTempArrays.allocatedTempArray.push({ label: scObj.EstimatedTime, value: scObj.EstimatedTime });
     scTempArrays.startTimeTempArray.push({ label: scObj.StartDateText, value: scObj.StartDate });
     scTempArrays.endTimeTempArray.push({ label: scObj.DueDateText, value: scObj.DueDate });
-    // const resExt = $.extend(true, [], resPool);
-    // for (const retRes of resExt) {
-    //   retRes.timeAvailable = 0;
-    //   retRes.Color = 'green';
-    //   scObj.selectedResources.push(retRes);
-    // }
     completeTaskArray.push(scObj);
   }
   /**
-   * This method is used to get all the milestones and all the tasks within the milestones. 
-   * @param scheduleList 
-   * @param arrTasks 
+   * This method is used to get all the milestones and all the tasks within the milestones.
+   * @param scheduleList
+   * @param arrTasks
    */
   public async getMilestoneSchedules(scheduleList, arrTasks) {
     const batchUrl = [];
@@ -421,9 +414,9 @@ export class CACommonService {
   }
   /**
    * This method will fired when sorting or pagination action performed.
-   * @param event 
-   * @param completeTaskArray 
-   * @param filterColumns 
+   * @param event
+   * @param completeTaskArray
+   * @param filterColumns
    */
   lazyLoadTask(event, completeTaskArray, filterColumns) {
     this.filterAction(event.multiSortMeta, event.sortOrder, event.globalFilter, event.filters, event.first, event.rows, completeTaskArray, filterColumns);
@@ -431,14 +424,14 @@ export class CACommonService {
 
   /**
    * This method is used filter the task based on selected filter.
-   * @param sortField 
-   * @param sortOrder 
-   * @param globalFilter 
-   * @param localFilter 
-   * @param first 
-   * @param rows 
-   * @param completeTaskArray 
-   * @param filterColumns 
+   * @param sortField
+   * @param sortOrder
+   * @param globalFilter
+   * @param localFilter
+   * @param first
+   * @param rows
+   * @param completeTaskArray
+   * @param filterColumns
    */
   filterAction(sortField, sortOrder, globalFilter, localFilter, first, rows, completeTaskArray, filterColumns) {
     this.caGlobalService.loading = true;
@@ -450,7 +443,7 @@ export class CACommonService {
             this.customSort(data, sortField[i].field, sortField[i].order);
           }
           // sortField.forEach(element => {
-        
+
           // });
           // this.customSort(data, sortField, sortOrder);
         }
@@ -489,8 +482,8 @@ export class CACommonService {
 
   /**
    * This method is used to filter the data on column basis.
-   * @param row 
-   * @param filter 
+   * @param row
+   * @param filter
    */
   filterLocal(row, filter) {
     let isInFilter = false;
@@ -519,9 +512,9 @@ export class CACommonService {
   }
   /**
    * This will method is used to filter the data globally.
-   * @param row 
-   * @param value 
-   * @param filterColumns 
+   * @param row
+   * @param value
+   * @param filterColumns
    */
   globalFilter(row, value, filterColumns) {
     for (let i = 0; i < filterColumns.length; i++) {
@@ -538,9 +531,9 @@ export class CACommonService {
   }
   /**
    * This method is used to sort the column data either ascending or descending.
-   * @param data 
-   * @param fieldName 
-   * @param order 
+   * @param data
+   * @param fieldName
+   * @param order
    */
   customSort(data, fieldName: string, order: number) {
     data.sort((data1, data2) => {
@@ -579,8 +572,8 @@ export class CACommonService {
   }
   /**
    * This method will get all the items from schedule list.
-   * @param localSchedulItemFetch 
-   * @param items 
+   * @param localSchedulItemFetch
+   * @param items
    */
   async getScheduleItems(items, arrMilestoneTasks) {
     // const arrMilestoneTasks = await this.getMilestoneSchedules(this.globalConstantService.listNames.Schedules.name, localSchedulItemFetch);
@@ -591,16 +584,16 @@ export class CACommonService {
 
   /**
    * This method is used to seperate the resource based on their role.
-   * @param filterResource 
-   * @param task 
-   * @param skillLevel 
-   * @param clientLegalEntity 
-   * @param ta 
-   * @param deliverableType 
+   * @param filterResource
+   * @param task
+   * @param skillLevel
+   * @param clientLegalEntity
+   * @param ta
+   * @param deliverableType
    */
   getResourceByMatrix(filterResource, task, skillLevel, clientLegalEntity, ta, deliverableType) {
 
-  
+
     const deliverable = deliverableType;
     const resources = filterResource;
     const filteredResources = [];
@@ -640,17 +633,17 @@ export class CACommonService {
 
             filteredResources.push(element);
           }
-          element.Title = element.UserName.Title;
+          element.Title = element.UserNamePG.Title;
         }
-       
+
       });
       return filteredResources;
     }
   }
   /**
    * This method is used to sort resources either ascending or descending with multiple property.
-   * @param filteredResources 
-   * @param task 
+   * @param filteredResources
+   * @param task
    */
   sortResources(filteredResources, task) {
     // if (task.projectTask.length > 0) {
@@ -663,7 +656,7 @@ export class CACommonService {
     //       return tasobj.Status === 'Completed' && task.task === tasobj.Task;
     //     });
     //   }
-      
+
     // }
     // else {
     //   return filteredResources;
@@ -697,8 +690,8 @@ export class CACommonService {
 
   /**
    * This method is used to get the Next, Previous, SCTask and Previous to SCTask date.
-   * @param task 
-   * @param arrMilestoneTasks 
+   * @param task
+   * @param arrMilestoneTasks
    */
   async getMiscDates(task, arrMilestoneTasks) {
 
@@ -719,7 +712,7 @@ export class CACommonService {
           nextTasks.push(milTasks[i]);
         }
       }
-     
+
       if (nextTasks.length) {
         nextTasks.sort(function (a, b) {
           return a.StartDate - b.StartDate;
@@ -755,9 +748,9 @@ export class CACommonService {
         });
         if (prevTasks.length) {
           prevTasks.sort(function (a, b) {
-            return b.DueDate - a.DueDate;
+            return b.DueDateDT - a.DueDateDT;
           });
-          task.LastTaskEndDate = prevTasks[0].DueDate;
+          task.LastTaskEndDate = prevTasks[0].DueDateDT;
           task.LastTaskEndDateText = this.datePipe.transform(task.LastTaskEndDate, 'd MMM, yyyy, hh:mm a');
         }
       }
@@ -766,8 +759,8 @@ export class CACommonService {
   }
   /**
    * This method is used to get the sc task start date by traversing the milestone.
-   * @param currentTraverseTask 
-   * @param milTasks 
+   * @param currentTraverseTask
+   * @param milTasks
    */
   getSCTask(currentTraverseTask, milTasks) {
     const currentMilTask = milTasks.filter(function (milTask) {
@@ -788,10 +781,10 @@ export class CACommonService {
   }
   /**
    * This method is used to show the comments when user click on task scope option.
-   * @param task 
-   * @param popupTaskScopeContent 
-   * @param completeTaskArray 
-   * @param modalService 
+   * @param task
+   * @param popupTaskScopeContent
+   * @param completeTaskArray
+   * @param modalService
    */
   getAllocateTaskScope(task, popupTaskScopeContent, completeTaskArray, modalService) {
     const index = completeTaskArray.findIndex(item => item.id === task.id);
@@ -811,8 +804,8 @@ export class CACommonService {
   }
   /**
    * This method is used to remove the duplicate from array based on property.
-   * @param array 
-   * @param param 
+   * @param array
+   * @param param
    */
   unique(array, param) {
     return array.filter(function (item, pos, array) {
@@ -830,18 +823,17 @@ export class CACommonService {
   }
   /**
    * This method is used to update the comments in for particular task in schedule list.
-   * @param task 
-   * @param comments 
+   * @param task
+   * @param comments
    */
   async saveTaskScopeComments(task, comments) {
-    const options = { 'Comments': comments };
-    // this.spServices.update(this.globalConstantService.listNames.Schedules.name, task.id, options, 'SP.Data.SchedulesListItem');
+    const options = { 'CommentsMT': comments };
     await this.spServices.updateItem(this.globalConstantService.listNames.Schedules.name, task.id, options, this.globalConstantService.listNames.Schedules.type);
   }
   /**
    * This method is used to sort the array using multiple properties.
-   * @param array 
-   * @param attrs 
+   * @param array
+   * @param attrs
    */
   sortByAttribute(array, ...attrs) {
     // generate an array of predicate-objects contains
@@ -900,13 +892,13 @@ export class CACommonService {
     //   qualityChecker = [],
 
     //   arrQCNames = [],
-    //   editors = [], 
+    //   editors = [],
     //   arrEditorsNames = [],
-    //   graphics = [], 
+    //   graphics = [],
     //   arrGraphicsNames = [],
-    //   pubSupport = [], 
+    //   pubSupport = [],
     //   arrPubSupportNames = [],
-    //   reviewers = [], 
+    //   reviewers = [],
     //   arrReviewesNames = [],
     let arrPrimaryResourcesIds = [];
 
@@ -958,7 +950,6 @@ export class CACommonService {
       QCId: { results: updatedResources.qualityChecker.results },
       GraphicsMembersId: { results: updatedResources.graphicsMembers.results },
     };
-    // this.spServices.update(projectInformationList, project.ID, updateProjectRes, 'SP.Data.ProjectInformationListItem');
     await this.spServices.updateItem(this.globalConstantService.listNames.ProjectInformation.name, project.ID, updateProjectRes, this.globalConstantService.listNames.ProjectInformation.type);
   }
 
@@ -979,13 +970,13 @@ export class CACommonService {
     //   qualityChecker = [],
 
     //   arrQCNames = [],
-    //   editors = [], 
+    //   editors = [],
     //   arrEditorsNames = [],
-    //   graphics = [], 
+    //   graphics = [],
     //   arrGraphicsNames = [],
-    //   pubSupport = [], 
+    //   pubSupport = [],
     //   arrPubSupportNames = [],
-    //   reviewers = [], 
+    //   reviewers = [],
     //   arrReviewesNames = [],
     let arrPrimaryResourcesIds = [];
 
@@ -1002,18 +993,18 @@ export class CACommonService {
         case 'QC':
         case 'Review-QC':
         case 'Inco-QC':
-          arrQualityCheckerIds.push(task.allocatedResource.UserName.ID);
+          arrQualityCheckerIds.push(task.allocatedResource.UserNamePG.ID);
           break;
         case 'Edit':
         case 'Review-Edit':
         case 'Inco-Edit':
         case 'Galley':
-          arrEditorsIds.push(task.allocatedResource.UserName.ID);
+          arrEditorsIds.push(task.allocatedResource.UserNamePG.ID);
           break;
         case 'Graphics':
         case 'Review-Graphics':
         case 'Inco-Graphics':
-          arrGraphicsIds.push(task.allocatedResource.UserName.ID);
+          arrGraphicsIds.push(task.allocatedResource.UserNamePG.ID);
           break;
       }
     }
@@ -1037,7 +1028,6 @@ export class CACommonService {
       QCId: { results: updatedResources.qualityChecker.results },
       GraphicsMembersId: { results: updatedResources.graphicsMembers.results },
     };
-    // this.spServices.update(projectInformationList, project.ID, updateProjectRes, 'SP.Data.ProjectInformationListItem');
     await this.spServices.updateItem(this.globalConstantService.listNames.ProjectInformation.name, project.ID, updateProjectRes, this.globalConstantService.listNames.ProjectInformation.type);
   }
 

@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewEncapsulation, ViewChild, OnDestroy, HostListener, ChangeDetectorRef, ApplicationRef, NgZone } from '@angular/core';
-import { Message, ConfirmationService, MessageService, SelectItem } from 'primeng/api';
-import { Calendar, Table } from 'primeng';
+import { Message, SelectItem } from 'primeng/api';
+import { Calendar, Table, DialogService } from 'primeng';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -13,6 +13,8 @@ import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/time
 import { EditorComponent } from 'src/app/finance-dashboard/PDFEditing/editor/editor.component';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { EditInvoiceDialogComponent } from '../../edit-invoice-dialog/edit-invoice-dialog.component';
+import { AddUpdateProformaDialogComponent } from '../../add-update-proforma-dialog/add-update-proforma-dialog.component';
 
 @Component({
     selector: 'app-confirmed',
@@ -21,10 +23,10 @@ import { Subscription } from 'rxjs';
     // encapsulation: ViewEncapsulation.None
 })
 export class ConfirmedComponent implements OnInit, OnDestroy {
+    yearRange: any;
 
 
     constructor(
-        private confirmationService: ConfirmationService,
         private fb: FormBuilder,
         private globalService: GlobalService,
         private spServices: SPOperationService,
@@ -32,10 +34,10 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         private fdConstantsService: FdConstantsService,
         public fdDataShareServie: FDDataShareService,
         private datePipe: DatePipe,
-        private messageService: MessageService,
         private commonService: CommonService,
         private router: Router,
         private cdr: ChangeDetectorRef,
+        private dialogService: DialogService,
         private platformLocation: PlatformLocation,
         private locationStrategy: LocationStrategy,
         private readonly _router: Router,
@@ -152,7 +154,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         POCName: []
     };
 
-
     // On Row Selection
     // Row Selection Array
     selectedTotalAmt = 0;
@@ -166,7 +167,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         text: ''
     };
 
-    revertInvModal = false;
     isHourlyProject = false;
     selectedRowItem: any;
 
@@ -184,17 +184,19 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     isOptionFilter: boolean;
 
     async ngOnInit() {
-
+        this.proformatTemplates = this.fdConstantsService.fdComponent.ProformaTemplates;
+        this.yearRange = this.commonService.getyearRange();
+        this.addressTypes = this.fdConstantsService.fdComponent.addressTypes;
         this.createANBCols();
         // this.getApprovedNonBillable();
         this.createAddToProformaFormField();
 
         // Address & Proforma type
-        this.getAddressType();
+
         this.getProformaType();
         this.usStatesInfo();
         this.currencyInfo();
-        this.getProformaTemplates();
+
 
         // Get Projects
         await this.projectInfo();
@@ -211,7 +213,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         calendar.updateUI();
     }
     async projectInfo() {
-        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
+        this.isPSInnerLoaderHidden = false;
         // Check PI list
         await this.fdDataShareServie.checkProjectsAvailable();
 
@@ -240,13 +242,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         }));
     }
 
-    // Set Address type
-    getAddressType() {
-        this.addressTypes = [
-            { label: 'Client', value: 'Client' },
-            { label: 'POC', value: 'POC' },
-        ];
-    }
 
     getProformaType() {
         this.listOfproformaType = [
@@ -296,16 +291,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         }));
     }
 
-    getProformaTemplates() {
-        this.proformatTemplates = [
-            { label: 'US', value: 'US' },
-            { label: 'India', value: 'India' },
-            { label: 'China', value: 'China' },
-            { label: 'Japan', value: 'Japan' },
-            { label: 'Korea', value: 'Korea' },
-            { label: 'ROW', value: 'ROW' }
-        ];
-    }
+
 
     createAddToProformaFormField() {
         this.addToProforma_form = this.fb.group({
@@ -362,36 +348,21 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     // Get Confirmed InvoiceItemList
 
     async getRequiredData() {
-        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
+        this.isPSInnerLoaderHidden = false;
         this.confirmedRes = [];
         this.po = {};
         this.selectedAllRowData = [];
         this.selectedTotalAmt = 0;
-        // const batchContents = new Array();
-        // const batchGuid = this.spServices.generateUUID();
-        // const invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.InvoiceLineItems.name + '',
-        // this.fdConstantsService.fdComponent.invoiceLineItems);
-        // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
         const invoiceObj = Object.assign({}, this.fdConstantsService.fdComponent.invoiceLineItems);
         this.commonService.SetNewrelic('Finance-Dashboard', 'confirmed-GetInvoiceLineItem', 'readItems');
         const res = await this.spServices.readItems(this.constantService.listNames.InvoiceLineItems.name, invoiceObj);
-        // let endPoints = [invoicesQuery];
-        // let userBatchBody = '';
-        // for (let i = 0; i < endPoints.length; i++) {
-        //     const element = endPoints[i];
-        //     this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
-        // }
-        // batchContents.push('--batch_' + batchGuid + '--');
-        // userBatchBody = batchContents.join('\r\n');
-        // let arrResults: any = [];
-        // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
-        // console.log('REs in Confirmed Invoice ', res);
         const arrResults = res.length ? res : [];
         if (arrResults.length) {
             // this.formatData(arrResults);
             this.confirmedILIarray = arrResults;
             this.getPOListItems(arrResults);
         }
+        this.isPSInnerLoaderHidden = true;
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
         // });
     }
@@ -403,22 +374,19 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             const pocItem = this.searchPOCName(element.MainPOC, this.projectContactsData);
             let pocName = '';
             if (pocItem) {
-                pocName = pocItem.FullName ? ' - ' + pocItem.FullName : '';
+                pocName = pocItem.FullNameCC ? ' - ' + pocItem.FullNameCC : '';
                 pocItem.pocName = pocName;
             }
             if (poItem) {
                 this.purchaseOrders.push(poItem);
             }
         }
-        // this.selectedPurchaseNumber = this.selectedPurchaseNumber ? this.selectedPurchaseNumber : '';
-        // console.log('this.purchaseOrders ', this.purchaseOrders);
-        // console.log('this.confirmedPOList ', this.confirmedPOList);
+
         if (this.selectedDDPO.hasOwnProperty('value')) {
             this.selectedPurchaseNumber = this.purchaseOrders ? this.purchaseOrders.find(item => item.Id ===
                 this.selectedDDPO.value.ID) : '';
             this.onChange(this.selectedDDPO);
         }
-        // console.log('this.selectedPurchaseNumber ', this.selectedPurchaseNumber);
     }
 
     searchPOId(poId, myArray) {
@@ -495,10 +463,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
             const project: any = this.getProject(element);
-            // let resCInfo = await this.fdDataShareServie.getResDetailById(this.rcData, element);
-            // if (resCInfo && resCInfo.hasOwnProperty('UserName') && resCInfo.UserName.hasOwnProperty('Title')) {
-            //     resCInfo = resCInfo.UserName.Title
-            // }
             const sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(element.SOWCode);
             const sowCode = element.SOWCode ? element.SOWCode : '';
             const sowName = sowItem.Title ? sowItem.Title : '';
@@ -507,16 +471,16 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 sowcn = sowCode + ' / ' + sowName;
             }
             const poItem = await this.getPONumber(element);
-            let pnumber = poItem.Number ? poItem.Number : '';
-            const pname = poItem.Name ? poItem.Name : '';
-            if (pnumber === 'NA') {
-                pnumber = '';
-            }
-            let ponn = pnumber + ' ' + pname;
-            if (pname && pnumber) {
-                ponn = pnumber + ' / ' + pname;
-            }
-            const POValues = ponn;
+            // let pnumber = poItem.Number ? poItem.Number : '';
+            // const pname = poItem.Name ? poItem.Name : '';
+            // if (pnumber === 'NA') {
+            //     pnumber = '';
+            // }
+            // let ponn = pnumber + ' ' + pname;
+            // if (pname && pnumber) {
+            //     ponn = pnumber + ' / ' + pname;
+            // }
+            // const POValues = ponn;
 
             this.confirmedRes.push({
                 Id: element.ID,
@@ -524,10 +488,10 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 SOWCode: element.SOWCode,
                 SOWValue: sowcn,
                 SOWName: sowItem.Title,
-                ProjectMileStone: project ? project.Milestone : '', // this.getMilestones(element),
-                POValues,
+                ProjectMileStone: project ? project.Milestone : '',
                 PONumber: poItem.Number,
                 POName: poItem.Name,
+                ClientName: this.selectedPurchaseNumber.ClientLegalEntity,
                 ClientLegalEntity: this.selectedPurchaseNumber.ClientLegalEntity,
                 ScheduledDate: new Date(this.datePipe.transform(element.ScheduledDate, 'MMM dd, yyyy')), // this.datePipe.transform(element.ScheduledDate, 'MMM dd, yyyy'),
                 ScheduledDateFormat: this.datePipe.transform(element.ScheduledDate, 'MMM dd, yyyy'),
@@ -535,9 +499,10 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 Amount: element.Amount,
                 Currency: element.Currency,
                 POCName: this.getPOCName(element),
+                POCId: element.MainPOC,
                 AddressType: element.AddressType,
                 ProjectTitle: project ? project.Title : '',
-                CS: this.getCSDetails(element),
+                CS: this.fdDataShareServie.getCSDetails(element),
                 PracticeArea: this.getPracticeArea(element).BusinessVertical,
                 TaggedDate: element.TaggedDate,
                 Status: element.Status,
@@ -605,18 +570,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         return found ? found.FName + ' ' + found.LName : '';
     }
 
-    getCSDetails(res) {
-        if (res.hasOwnProperty('CS') && res.CS.hasOwnProperty('results') && res.CS.results.length) {
-            const title = [];
-            for (let i = 0; i < res.CS.results.length; i++) {
-                const element = res.CS.results[i];
-                title.push(element.Title);
-            }
-            return title.toString();
-        } else {
-            return '';
-        }
-    }
 
     // Project PO
     getPONumber(poId) {
@@ -700,26 +653,13 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         cnf1.exportCSV();
     }
 
-    confirm1() {
-        const pInfo = this.getPIByPC(this.selectedRowItem);
-        console.log('pInfo ', pInfo);
-        this.commonService.confirmMessageDialog('Are you sure that you want to revert the invoice from confirmed to scheduled status?', ['Yes', 'No'], false).then(async Confirmation => {
-            if (Confirmation === 'Yes') {
-                this.msgs = [{ severity: 'info', summary: 'Confirmed', detail: 'You have Confirmed' }];
-                // Call server service here
-                this.onSubmit('revertInvoice');
-            }
-            else if (Confirmation === 'No') {
-                this.msgs = [{ severity: 'info', summary: 'Cancel', detail: 'You have canceled' }];
-            }
-        });
-    }
     // Open popups
     openPopup(data, popUpData) {
         // console.log('Row data  ', data);
         // console.log('pubSupportSts  ', pubSupportSts);
 
         this.items = [
+            { label: 'Edit Line item', command: (e) => this.openMenuContent(e, data) },
             { label: 'Revert Invoice', command: (e) => this.openMenuContent(e, data) },
             { label: 'Details', command: (e) => this.openMenuContent(e, data) },
             { label: 'Show History', command: (e) => this.openMenuContent(e, data) },
@@ -734,28 +674,55 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         this.confirmDialog.title = event.item.label;
         if (this.confirmDialog.title.toLowerCase() === 'revert invoice') {
             // this.confirm1();
+            let additionalMessage = null;
             const pInfo = this.getPIByPC(this.selectedRowItem);
             if (pInfo.hasOwnProperty('ProjectType')) {
                 if (pInfo.ProjectType.includes('Rolling')) {
                     this.isHourlyProject = true;
+                    additionalMessage = 'Note: This hourly billed project will be converted to delivery based project with Budget' + this.selectedRowItem.Currency + ' ' + this.selectedRowItem.Amount
                 }
             }
-
-            // console.log('pInfo ', pInfo);
-            this.revertInvModal = true;
+            this.commonService.confirmMessageDialog('Confirmation', ' Are you sure that you want to revert the invoice of ' + this.selectedRowItem.ProjectCode + ' from confirmed to scheduled status?', additionalMessage, ['Yes', 'No'], false).then(async Confirmation => {
+                if (Confirmation === 'Yes') {
+                    this.commonService.showToastrMessage(this.constantService.MessageType.info, 'You have Confirmed', false);
+                    this.onSubmit('revertInvoice');
+                }
+                else if (Confirmation === 'No') {
+                    this.commonService.showToastrMessage(this.constantService.MessageType.info, 'You have Cancelled.', false);
+                }
+            });
         } else if (this.confirmDialog.title.toLowerCase() === 'show history') {
             this.timeline.showTimeline(data.Id, 'FD', 'InvoiceLineItems');
         } else if (event.item.label === 'Details') {
             this.rightSideBar = !this.rightSideBar;
             return;
         }
+        else if (this.confirmDialog.title === 'Edit Line item') {
+
+            const ref = this.dialogService.open(EditInvoiceDialogComponent, {
+                header: 'Edit Line item',
+                width: '75vw',
+                data: {
+                    InvoiceType: this.selectedRowItem.ScheduleType,
+                    projectContactsData: this.projectContactsData,
+                    selectedRowItem: this.selectedRowItem,
+                },
+                contentStyle: { 'max-height': '80vh', 'overflow-y': 'auto' },
+                closable: false,
+            });
+            ref.onClose.subscribe((editInvoice: any) => {
+                if (editInvoice) {
+                    const batchURL = this.fdDataShareServie.EditInvoiceDialogProcess(this.selectedRowItem.ScheduleType,this.selectedRowItem, editInvoice)
+                    this.commonService.SetNewrelic('Finance-Dashboard', 'confirmed', 'updateInvoiceLineItem');
+                    this.submitForm(batchURL, 'editInvoice');
+                }
+            });
+        }
     }
     addProforma() {
         if (!this.selectedPurchaseNumber) {
-            this.messageService.add({
-                key: 'confirmInfoToast', severity: 'info', summary: 'Info message',
-                detail: 'Please select Purchase order Number & try again.', life: 2000
-            });
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.info, 'Please select Purchase order Number & try again.', false);
         } else {
             if (this.selectedAllRowData.length) {
                 for (let i = 0; i < this.selectedAllRowData.length; i++) {
@@ -763,55 +730,42 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
 
                     const scheduleType = this.selectedAllRowData[0].ScheduleType;
                     if (element.ScheduleType !== scheduleType) {
-                        this.messageService.add({
-                            key: 'confirmInfoToast', severity: 'info', summary: 'Info message',
-                            detail: 'Please select same Schedule type & try again.', life: 2000
-                        });
+
+                        this.commonService.showToastrMessage(this.constantService.MessageType.info, 'Please select same Schedule type & try again.', false);
                         return;
                     }
                 }
                 if (new Date(this.selectedPurchaseNumber.POExpiryDate) >= new Date()) {
-                    const format = 'dd MMM , yyyy';
-                    let myDate = new Date();
-                    const locale = 'en-IN';
-                    this.minProformaDate = new Date(Math.max.apply(null, this.selectedAllRowData.map(e => e.ScheduledDate)));
-                    myDate = this.minProformaDate > myDate ? this.minProformaDate : myDate;
-                    const formattedDate = formatDate(myDate, format, locale);
-                    this.addToProforma_form.patchValue({
-                        ClientLegalEntity: this.selectedPurchaseNumber.ClientLegalEntity,
-                        POName: this.selectedPurchaseNumber.Number,
-                        Currency: this.selectedPurchaseNumber.Currency,
-                        Amount: this.selectedTotalAmt,
-                        ProformaType: this.selectedAllRowData[0].ScheduleType,
-                        ProformaTitle: this.selectedAllRowData.length > 1 ? '' : this.selectedAllRowData[0].ProjectTitle,
-                        ProformaDate: formattedDate,
-                        Template: { label: this.selectedAllRowData[0].Template, value: this.selectedAllRowData[0].Template },
+                    const ref = this.dialogService.open(AddUpdateProformaDialogComponent, {
+                        header: 'Add to Proforma Form',
+                        width: '75vw',
+                        data: {
+                            Type: 'Add to proforma',
+                            selectedTotalAmt: this.selectedTotalAmt,
+                            cleData: this.cleData,
+                            selectedCLEData: this.getCLEObj(this.selectedPurchaseNumber.ClientLegalEntity),
+                            selectedPurchaseNumber: this.selectedPurchaseNumber,
+                            selectedAllRowData: this.selectedAllRowData,
+                            projectContactsData: this.projectContactsData,
+                            purchaseOrdersList: this.purchaseOrdersList
+                        },
+                        contentStyle: { 'max-height': '80vh', 'overflow-y': 'auto' },
+                        closable: false,
                     });
-
-                    this.minProformaDate = new Date(Math.max.apply(null, this.selectedAllRowData.map(e => e.ScheduledDate)));
-                    this.proformaModal = true;
-                    this.isTemplate4US = this.selectedAllRowData[0].Template === 'US' ? true : false;
-                    if (this.isTemplate4US) {
-                        this.addToProforma_form.addControl('State', new FormControl('', Validators.required));
-                    } else {
-                        this.addToProforma_form.removeControl('State');
-                    }
-
-                    const cle = this.getCLEObj(this.selectedPurchaseNumber.ClientLegalEntity);
-                    this.generateProformaNumber(cle);
-                    this.getPOCNamesForEditInv(cle);
+                    ref.onClose.subscribe((proformaForm: any) => {
+                        if (proformaForm) {
+                            this.isPSInnerLoaderHidden = false;
+                            const batchUrl = this.fdDataShareServie.AddToProformaProcessData(proformaForm);
+                            this.submitForm(batchUrl, 'add2Proforma');
+                        }
+                    });
                 } else {
-                    this.messageService.add({
-                        key: 'confirmInfoToast', severity: 'info', summary: 'Info message',
-                        detail: 'Proforma cant be generated on Expired PO', life: 2000
-                    });
+
+                    this.commonService.showToastrMessage(this.constantService.MessageType.info, 'Proforma cant be generated on Expired PO', false);
                 }
 
             } else {
-                this.messageService.add({
-                    key: 'confirmInfoToast', severity: 'info', summary: 'Info message',
-                    detail: 'Please select one of Row Item & try again.', life: 2000
-                });
+                this.commonService.showToastrMessage(this.constantService.MessageType.info, 'Please select one of Row Item & try again.', false);
             }
         }
     }
@@ -855,8 +809,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         if (formType === 'editDeliverable') {
             this.addToProforma_form.reset();
             this.proformaModal = false;
-        } else if (formType === 'revertInvoice') {
-            this.revertInvModal = false;
         }
         this.formSubmit.isSubmit = false;
         this.submitBtn.isClicked = false;
@@ -939,7 +891,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             // const data = [];
             const batchUrl = [];
             this.isPSInnerLoaderHidden = false;
-            this.revertInvModal = false;
             // console.log('form is submitting ..... for selected row Item i.e ', this.selectedRowItem);
             const iliData = {
                 __metadata: {
@@ -993,56 +944,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             }
             this.submitForm(batchUrl, type);
 
-        } else if (type === 'add2Proforma') {
-            const batchUrl = [];
-            if (this.addToProforma_form.invalid) {
-                return;
-            }
-            this.isPSInnerLoaderHidden = false;
-            this.submitBtn.isClicked = true;
-            // console.log('form is submitting ..... & Form data is ', this.addToProforma_form.getRawValue());
-            // let obj: any = {};
-            const prfData = {
-                __metadata: {
-                    type: this.constantService.listNames.Proforma.type
-                },
-                ClientLegalEntity: this.addToProforma_form.getRawValue().ClientLegalEntity,
-                PO: this.selectedPurchaseNumber.ID, // this.addToProforma_form.value.POName.Id,
-                MainPOC: this.addToProforma_form.value.POCName.ID,
-                Title: this.addToProforma_form.getRawValue().ProformaNumber,
-                ProformaTitle: this.addToProforma_form.value.ProformaTitle,
-                Template: this.addToProforma_form.value.Template.value,
-                State: this.addToProforma_form.value.State ? this.addToProforma_form.value.State.Title : '',
-                Amount: this.addToProforma_form.getRawValue().Amount,
-                Currency: this.addToProforma_form.getRawValue().Currency,
-                AddressType: this.addToProforma_form.value.AddressType.value,
-                ProformaType: this.addToProforma_form.getRawValue().ProformaType,
-                AdditionalInfo: this.addToProforma_form.value.AdditionalComments,
-                ProformaDate: this.addToProforma_form.value.ProformaDate,
-                Status: 'Created'
-            };
-            const proformaObj = Object.assign({}, this.queryConfig);
-            proformaObj.url = this.spServices.getReadURL(this.constantService.listNames.Proforma.name);
-            proformaObj.listName = this.constantService.listNames.Proforma.name;
-            proformaObj.type = 'POST';
-            proformaObj.data = prfData;
-            batchUrl.push(proformaObj);
-            // Get Cle
-            const currentCle = this.getCLEObj(prfData.ClientLegalEntity);
-            const cleData = {
-                __metadata: {
-                    type: this.constantService.listNames.ClientLegalEntity.type
-                },
-                ID: currentCle.Id,
-                ProformaCounter: currentCle.ProformaCounter ? currentCle.ProformaCounter + 1 : 1
-            };
-            const cleObj = Object.assign({}, this.queryConfig);
-            cleObj.url = this.spServices.getItemURL(this.constantService.listNames.ClientLegalEntity.name, currentCle.Id);
-            cleObj.listName = this.constantService.listNames.ClientLegalEntity.name;
-            cleObj.type = 'PATCH';
-            cleObj.data = cleData;
-            batchUrl.push(cleObj);
-            this.submitForm(batchUrl, type);
         }
     }
     async submitForm(batchUrl, type: string) {
@@ -1053,7 +954,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             // const lineItemArray = [];
             const innerBatchUrl = [];
             this.selectedAllRowData.forEach(element => {
-
                 const prfData = {
                     __metadata: {
                         type: this.constantService.listNames.InvoiceLineItems.type
@@ -1061,12 +961,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                     Status: 'Proforma Created',
                     ProformaLookup: retCall[0].ID
                 };
-                const prfObj = Object.assign({}, this.queryConfig);
-                prfObj.url = this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, element.Id);
-                prfObj.listName = this.constantService.listNames.InvoiceLineItems.name;
-                prfObj.type = 'PATCH';
-                prfObj.data = prfData;
-                innerBatchUrl.push(prfObj);
+                this.commonService.setBatchObject(innerBatchUrl, this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, element.Id),prfData,this.constantService.Method.PATCH,this.constantService.listNames.InvoiceLineItems.name);
             });
 
             this.commonService.SetNewrelic('Finance-Dashboard', 'confirmed', 'AddProforma');
@@ -1077,27 +972,21 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             this.proformaModal = false;
             this.isPSInnerLoaderHidden = true;
             this.reFetchData();
-            this.messageService.add({
-                key: 'custom', severity: 'success', summary: 'Proforma Added',
-                detail: 'Proforma Number: ' + this.addToProforma_form.getRawValue().ProformaNumber, life: 20000
-            });
 
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Proforma Number: ' + retCall[0].Title + ' - Added Sucessfully  ', false);
         } else {
             await this.spServices.executeBatch(batchUrl);
+            this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
             if (type === 'revertInvoice') {
-                this.messageService.add({
-                    key: 'confirmSuccessToast', severity: 'success', summary: 'Success message',
-                    detail: 'Reverted the invoice of '+ this.selectedRowItem.ProjectCode +' from Confirmed to Scheduled.', life: 20000
-                });
+
+                this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Reverted the invoice of ' + this.selectedRowItem.ProjectCode + ' from Confirmed to Scheduled.', false);
                 this.reFetchData();
             } else if (type === 'editInvoice') {
-                this.messageService.add({
-                    key: 'confirmSuccessToast', severity: 'success', summary: 'Success message',
-                    detail: 'Invoice Updated.', life: 20000
-                });
+
+                this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Invoice Updated.', false);
                 this.reFetchData();
             }
-            this.isPSInnerLoaderHidden = true;
+
         }
     }
 
@@ -1163,8 +1052,11 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
 
     reFetchData() {
+
+
         setTimeout(async () => {
             // Refetch PO/CLE Data
+            this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
             await this.fdDataShareServie.getClePO('confirm');
             // Fetch latest PO & CLE
             this.poInfo();
@@ -1258,5 +1150,4 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         }
         this.cdr.detectChanges();
     }
-
 }

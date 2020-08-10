@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DynamicDialogConfig, DynamicDialogRef, MessageService } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
@@ -19,7 +19,6 @@ export class AddEditClientlegalentityDialogComponent implements OnInit {
   constructor(
     public config: DynamicDialogConfig,
     public ref: DynamicDialogRef,
-    public messageService: MessageService,
     private datepipe: DatePipe,
     private frmbuilder: FormBuilder,
     private adminCommonService: AdminCommonService,
@@ -27,7 +26,6 @@ export class AddEditClientlegalentityDialogComponent implements OnInit {
     private constantsService: ConstantsService,
     private spServices: SPOperationService,
     private adminObject: AdminObjectService,
-    // private confirmationService: ConfirmationService,
     // private platformLocation: PlatformLocation,
     // private router: Router,
     // private applicationRef: ApplicationRef,
@@ -110,13 +108,13 @@ export class AddEditClientlegalentityDialogComponent implements OnInit {
    *
    * @description
    * It will prepare the request as per following Sequence.
-   * 1. ClientGroup          - Get data from `ClientGroup` list based on filter `IsActive='Yes'`.
+   * 1. ClientGroup          - Get data from `ClientGroup` list based on filter `IsActiveCH='Yes'`.
    * 2. Market               - Get choice field data for `Market` from `ClientLegalEntity` list.
-   * 3. TimeZones            - Get data from `TimeZones` list based on filter `IsActive='Yes'`.
-   * 4. Billing Entity       - Get data from `BillingEntity` list based on filter `IsActive='Yes'`.
-   * 5. Resource             - Get data from `ResourceCategorization` list based on filter `IsActive='Yes'`.
-   * 6. Currency             - Get data from `Currency` list based on filter `IsActive='Yes'`.
-   * 7. Bucket               - Get data from `Focus Group` list based on filter `IsActive='Yes'`.
+   * 3. TimeZones            - Get data from `TimeZones` list based on filter `IsActiveCH='Yes'`.
+   * 4. Billing Entity       - Get data from `BillingEntity` list based on filter `IsActiveCH='Yes'`.
+   * 5. Resource             - Get data from `ResourceCategorization` list based on filter `IsActiveCH='Yes'`.
+   * 6. Currency             - Get data from `Currency` list based on filter `IsActiveCH='Yes'`.
+   * 7. Bucket               - Get data from `Focus Group` list based on filter `IsActiveCH='Yes'`.
    *
    * @return An Array of the response in `JSON` format in above sequence.
    */
@@ -212,20 +210,20 @@ export class AddEditClientlegalentityDialogComponent implements OnInit {
    * @description
    * This method is used to iterate the response and add into the dropdown array in label and value pair.
    *
-   * 1. ClientGroup dropdown         - Iterate data from `ClientGroup` list based on filter `IsActive='Yes'`.
+   * 1. ClientGroup dropdown         - Iterate data from `ClientGroup` list based on filter `IsActiveCH='Yes'`.
    * 2. Market dropdown              - Iterate choice field data for `Market` from `ClientLegalEntity` list.
-   * 3. TimeZones dropdown           - Iterate data from `TimeZones` list based on filter `IsActive='Yes'`.
-   * 4. Billing Entity dropdown      - Iterate data from `BillingEntity` list based on filter `IsActive='Yes'`.
-   * 5. Currency dropdown            - Iterate data from `Currency` list based on filter `IsActive='Yes'`.
-   * 6. Bucket dropdown              - Iterate data from `Focus Group` list based on filter `IsActive='Yes'`.
-   * 7. CMLevel1 dropdwon            - Iterate data from `ResourceCategorization` list based on filter `IsActive='Yes'`
-   * and `Role='CMLevel1'`.
-   * 8. CMLevel2 dropdwon            - Iterate data from `ResourceCategorization` list based on filter `IsActive='Yes'`
-   * and `Role='CMLevel2'`.
-   * 9. DeliveryLevel1 dropdwon      - Iterate data from `ResourceCategorization` list based on filter `IsActive='Yes'`
-   * and `Role='DeliveryLevel1'`.
-   * 10. DeliveryLevel2 dropdwon      - Iterate data from `ResourceCategorization` list based on filter `IsActive='Yes'`
-   * and `Role='DeliveryLevel2'`.
+   * 3. TimeZones dropdown           - Iterate data from `TimeZones` list based on filter `IsActiveCH='Yes'`.
+   * 4. Billing Entity dropdown      - Iterate data from `BillingEntity` list based on filter `IsActiveCH='Yes'`.
+   * 5. Currency dropdown            - Iterate data from `Currency` list based on filter `IsActiveCH='Yes'`.
+   * 6. Bucket dropdown              - Iterate data from `Focus Group` list based on filter `IsActiveCH='Yes'`.
+   * 7. CMLevel1 dropdwon            - Iterate data from `ResourceCategorization` list based on filter `IsActiveCH='Yes'`
+   * and `RoleCH='CMLevel1'`.
+   * 8. CMLevel2 dropdwon            - Iterate data from `ResourceCategorization` list based on filter `IsActiveCH='Yes'`
+   * and `RoleCH='CMLevel2'`.
+   * 9. DeliveryLevel1 dropdwon      - Iterate data from `ResourceCategorization` list based on filter `IsActiveCH='Yes'`
+   * and `RoleCH='DeliveryLevel1'`.
+   * 10. DeliveryLevel2 dropdwon      - Iterate data from `ResourceCategorization` list based on filter `IsActiveCH='Yes'`
+   * and `RoleCH='DeliveryLevel2'`.
    * 11. PORequired dropdown          - Value is `Yes` and `No`.
    *
    */
@@ -304,23 +302,23 @@ export class AddEditClientlegalentityDialogComponent implements OnInit {
     this.adminObject.dropdown.DeliveryLevel1Array = [];
     this.adminObject.dropdown.DeliveryLevel2Array = [];
     array.forEach(element => {
-      const role = element.Role;
+      const role = element.RoleCH;
       switch (role) {
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.CMLevel1:
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.CMLevel2:
-          this.adminObject.dropdown.CMLevel1Array.push({ label: element.UserName.Title, value: element.UserName.ID });
+          this.adminObject.dropdown.CMLevel1Array.push({ label: element.UserNamePG.Title, value: element.UserNamePG.ID });
           break;
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.DELIVERY_LEVEL_1:
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.DELIVERY_LEVEL_2:
-          this.adminObject.dropdown.DeliveryLevel1Array.push({ label: element.UserName.Title, value: element.UserName.ID });
+          this.adminObject.dropdown.DeliveryLevel1Array.push({ label: element.UserNamePG.Title, value: element.UserNamePG.ID });
           break;
       }
       switch (role) {
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.CMLevel2:
-          this.adminObject.dropdown.CMLevel2Array.push({ label: element.UserName.Title, value: element.UserName.ID });
+          this.adminObject.dropdown.CMLevel2Array.push({ label: element.UserNamePG.Title, value: element.UserNamePG.ID });
           break;
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.DELIVERY_LEVEL_2:
-          this.adminObject.dropdown.DeliveryLevel2Array.push({ label: element.UserName.Title, value: element.UserName.ID });
+          this.adminObject.dropdown.DeliveryLevel2Array.push({ label: element.UserNamePG.Title, value: element.UserNamePG.ID });
           break;
       }
     });
@@ -436,18 +434,12 @@ export class AddEditClientlegalentityDialogComponent implements OnInit {
       if (!this.showEditClient) {
         if (this.clientMasterDataRows.some(a =>
           a.ClientLegalEntity && a.ClientLegalEntity.toLowerCase() === this.addClient.value.name.toLowerCase())) {
-          this.messageService.add({
-            key: 'adminCustom', severity: 'error',
-            summary: 'Error Message', detail: 'This Client is already exist. Please enter another client name.'
-          });
+            this.common.showToastrMessage(this.constantsService.MessageType.warn,'This Client is already exist. Please enter another client name.',false);
           return false;
         }
         if (this.clientMasterDataRows.some(a =>
           a.Acronym && a.Acronym.toLowerCase() === this.addClient.value.acronym.toLowerCase())) {
-          this.messageService.add({
-            key: 'adminCustom', severity: 'error',
-            summary: 'Error Message', detail: 'This Acronym is already exist. Please enter another acronym.'
-          });
+            this.common.showToastrMessage(this.constantsService.MessageType.warn, 'This Acronym is already exist. Please enter another acronym.',false);
           return false;
         }
       }

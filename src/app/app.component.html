@@ -28,9 +28,15 @@
         <a href="mailto:sp.support@cactusglobal.com?subject=SP issue:"><i class="pi pi-envelope help-icon"></i></a>
     </div>
 </div>
+
+<p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="cls_toastrMessage" [hideTransitionOptions]="'0ms'" position="top-center" preventOpenDuplicates="true"> </p-toast>
+
+<p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="cls_ModaltoastrMessage" [hideTransitionOptions]="'0ms'" position="top-center" [modal]="true" [baseZIndex]="5000" preventOpenDuplicates="true">
+
+</p-toast>
 <div class="routerOutlet">
-    <router-outlet></router-outlet>
+
+    <router-outlet>
+
+    </router-outlet>
 </div>
-
-
-<p-toast position="bottom-right" key="fileuploadMessage"></p-toast>

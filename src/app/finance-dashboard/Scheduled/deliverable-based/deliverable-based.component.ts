@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild, ViewEncapsulation, OnDestroy, HostListener, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
-import { MessageService, Message, SelectItem } from 'primeng/api';
-import { Calendar, Table } from 'primeng';
-import { ConfirmationService } from 'primeng/api';
+import { SelectItem } from 'primeng/api';
+import { Calendar, Table, DialogService } from 'primeng';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
 import { formatDate, DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
@@ -13,6 +12,7 @@ import { FDDataShareService } from '../../fdServices/fd-shareData.service';
 import { TimelineHistoryComponent } from './../../../timeline/timeline-history/timeline-history.component';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
+import { EditInvoiceDialogComponent } from '../../edit-invoice-dialog/edit-invoice-dialog.component';
 
 @Component({
     selector: 'app-deliverable-based',
@@ -22,7 +22,6 @@ import { Router } from '@angular/router';
 })
 export class DeliverableBasedComponent implements OnInit, OnDestroy {
     constructor(
-        private confirmationService: ConfirmationService,
         private fb: FormBuilder,
         private globalService: GlobalService,
         private spServices: SPOperationService,
@@ -30,9 +29,9 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         public fdConstantsService: FdConstantsService,
         public fdDataShareServie: FDDataShareService,
         private datePipe: DatePipe,
-        private messageService: MessageService,
         private commonService: CommonService,
         private cdr: ChangeDetectorRef,
+        public dialogService: DialogService,
         private platformLocation: PlatformLocation,
         private locationStrategy: LocationStrategy,
         private readonly _router: Router,
@@ -57,13 +56,9 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
 
     }
 
-    get isValidEditDeliverableForm() {
-        return this.editDeliverable_form.controls;
-    }
     tempClick: any;
     deliverableBasedRes: any = [];
     deliverableBasedCols: any[];
-    msgs: Message[] = [];
 
     // Address Type
     addressTypes: any = [];
@@ -171,6 +166,8 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     isOptionFilter: boolean;
 
     async ngOnInit() {
+
+        this.addressTypes = this.fdConstantsService.fdComponent.addressTypes;
         // SetDefault Values
         if (this.fdDataShareServie.scheduleDateRange.startDate) {
             this.DateRange = this.fdDataShareServie.scheduleDateRange;
@@ -185,7 +182,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
 
         this.createDBICols();
         // this.getApprovedNonBillable();
-        this.createEditDeliverableFormField();
+        // this.createEditDeliverableFormField();
 
         // Get Projects
         await this.projectInfo();
@@ -197,10 +194,6 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
 
         // Get Deliverable-based Invoices
         this.getRequiredData();
-
-        // Load address type
-        this.getAddressType();
-
         // For Mail
         this.currentUserInfoData = await this.fdDataShareServie.getCurrentUserInfo();
         console.log('this.currentUserInfoData  ', this.currentUserInfoData);
@@ -258,27 +251,6 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
                 console.log('Resource Categorization ', this.rcData);
             }
         }));
-    }
-
-
-    getAddressType() {
-        this.addressTypes = [
-            { label: 'Client', value: 'Client' },
-            { label: 'POC', value: 'POC' },
-        ];
-    }
-
-    createEditDeliverableFormField() {
-        this.editDeliverable_form = this.fb.group({
-            ProjectCode: [{ value: '', disabled: true }, Validators.required],
-            PONumber: [{ value: '', disabled: true }, Validators.required],
-            ScheduledType: [{ value: '', disabled: true }, Validators.required],
-            Amount: [{ value: '', disabled: true }, Validators.required],
-            Currency: [{ value: '', disabled: true }, Validators.required],
-            ScheduledDate: ['', Validators.required],
-            POCName: ['', Validators.required],
-            AddressType: ['', Validators.required],
-        });
     }
 
     createDBICols() {
@@ -370,7 +342,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
                 ponn = pnumber + ' / ' + pname;
             }
             const POValues = ponn;
-          
+
             this.deliverableBasedRes.push({
                 Id: element.ID,
                 ProjectCode: element.Title,
@@ -393,9 +365,9 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
                 AddressType: element.AddressType,
                 showMenu: this.showMenu(element),
 
-                CS: this.getCSDetails(element),
+                CS: this.fdDataShareServie.getCSDetails(element),
                 PracticeArea: this.getPracticeArea(element).BusinessVertical,
-                POName: poItem.Name,
+                POName: poItem.NameST,
                 TaggedDate: element.TaggedDate,
                 Status: element.Status,
                 ProformaLookup: element.ProformaLookup,
@@ -459,19 +431,6 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         return found ? found : '';
     }
 
-    getCSDetails(res) {
-        if (res.hasOwnProperty('CS') && res.CS.hasOwnProperty('results') && res.CS.results.length) {
-            const title = [];
-            for (let i = 0; i < res.CS.results.length; i++) {
-                const element = res.CS.results[i];
-                title.push(element.Title);
-            }
-            return title.toString();
-        } else {
-            return '';
-        }
-    }
-
     createColFieldValues(resArray) {
         this.deliverableBasedColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
         this.deliverableBasedColArray.ShortTitle = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ShortTitle, value: a.ShortTitle }; return b; }).filter(ele => ele.label)));
@@ -511,18 +470,13 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     }
 
     confirm1() {
-        this.confirmationService.confirm({
-            message: 'Are you sure that you want to confirm the invoice scheduled for the project?',
-            header: 'Confirmation',
-            icon: 'pi pi-exclamation-triangle',
-            key: 'deliverableBased',
-            accept: () => {
-                this.msgs = [{ severity: 'info', summary: 'Confirmed', detail: 'You have Confirmed' }];
+        this.commonService.confirmMessageDialog('Confirmation', 'Are you sure that you want to confirm the invoice scheduled for the project?', null, ['Yes', 'No'], false).then(async Confirmation => {
+            if (Confirmation === 'Yes') {
                 // Call server service here
                 this.onSubmit('confirmInvoice');
-            },
-            reject: () => {
-                this.msgs = [{ severity: 'info', summary: 'Cancel', detail: 'You have canceled' }];
+            }
+            else if (Confirmation === 'No') {
+                this.commonService.showToastrMessage(this.constantService.MessageType.info, 'You have Cancelled', false);
             }
         });
     }
@@ -545,33 +499,23 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
                 projectData.Status !== this.constantService.projectList.status.OnHold)) {
             this.items.push({ label: 'Confirm Invoice', command: (e) => this.openMenuContent(e, data) });
         } else {
-            if (projectData.Status === this.constantService.projectList.status.InDiscussion ||
+            if (projectData && (projectData.Status === this.constantService.projectList.status.InDiscussion ||
                 projectData.Status === this.constantService.projectList.status.AwaitingCancelApproval ||
-                projectData.Status === this.constantService.projectList.status.OnHold) {
-                    this.messageService.add({
-                        key: 'deliverableInfoToast', severity: 'info', summary: 'Info message',
-                        detail: 'Project status is '+ projectData.Status +', so can not confirm the line item.',
-                        life: 4000
-                    });
+                projectData.Status === this.constantService.projectList.status.OnHold)) {
+
+                this.commonService.showToastrMessage(this.constantService.MessageType.info, 'Project status is ' + projectData.Status + ', so can not confirm the line item.', false);
             } else if (!(date >= last3Days && date <= lastDay)) {
-                this.messageService.add({
-                    key: 'deliverableInfoToast', severity: 'info', summary: 'Info message',
-                    detail: 'To confirm the line item, scheduled Date should be between last 3 working days & last date of the current month.',
-                    life: 4000
-                });
+
+                this.commonService.showToastrMessage(this.constantService.MessageType.info, 'To confirm the line item, scheduled Date should be between last 3 working days & last date of the current month.', false);
             } else if (!retPO) {
-                this.messageService.add({
-                    key: 'deliverableInfoToast', severity: 'info', summary: 'Info message',
-                    detail: 'PO not available for the selected line item.', life: 4000
-                });
+
+                this.commonService.showToastrMessage(this.constantService.MessageType.info, 'PO not available for the selected line item.', false);
             } else if (!(new Date(retPO.POExpiryDate) >= todaysDateTimeZero)) {
-                this.messageService.add({
-                    key: 'deliverableInfoToast', severity: 'info', summary: 'Info message',
-                    detail: 'PO expired on' + this.datePipe.transform(retPO.POExpiryDate, 'MMM dd, yyyy'), life: 4000
-                });
+
+                this.commonService.showToastrMessage(this.constantService.MessageType.info, 'PO expired on' + this.datePipe.transform(retPO.POExpiryDate, 'MMM dd, yyyy'), false);
             }
         }
-        this.items.push({ label: 'Edit Invoice', command: (e) => this.openMenuContent(e, data) });
+        this.items.push({ label: 'Edit Line item', command: (e) => this.openMenuContent(e, data) });
         this.items.push({ label: 'View Project Details', command: (e) => this.openMenuContent(e, data) });
         this.items.push({ label: 'Details', command: (e) => this.openMenuContent(e, data) });
         this.items.push({ label: 'Show History', command: (e) => this.openMenuContent(e, data) });
@@ -585,11 +529,25 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             this.confirm1();
             this.getApproveExpenseMailContent('ConfirmInvoice');
             this.getPIByTitle(this.selectedRowItem);
-        } else if (this.deliverableDialog.title.toLowerCase() === 'edit invoice') {
-            // this.deliverableDialog.text = event.item.label.replace('Expense', '');
-            this.deliverableModal = true;
-            this.updateInvoice();
-            this.getPOCNamesForEditInv(data);
+        } else if (this.deliverableDialog.title === 'Edit Line item') {
+            const ref = this.dialogService.open(EditInvoiceDialogComponent, {
+                header: 'Edit Line item',
+                width: '75vw',
+                data: {
+                    InvoiceType: 'revenue',
+                    projectContactsData: this.projectContactsData,
+                    selectedRowItem: this.selectedRowItem,
+                },
+                contentStyle: { 'max-height': '80vh', 'overflow-y': 'auto' },
+                closable: false,
+            });
+            ref.onClose.subscribe((editInvoice: any) => {
+                if (editInvoice) {
+                    const batchURL = this.fdDataShareServie.EditInvoiceDialogProcess('revenue',this.selectedRowItem, editInvoice)
+                    this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-DeliverableBased', 'updateInvoiceLineItem');
+                    this.submitForm(batchURL, 'editInvoice');
+                }
+            });
         } else if (this.deliverableDialog.title.toLowerCase() === 'view project details') {
             this.goToProjectDetails(this.selectedRowItem);
         } else if (this.deliverableDialog.title.toLowerCase() === 'show history') {
@@ -605,56 +563,6 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         window.open(this.globalService.sharePointPageObject.webAbsoluteUrl + '/dashboard#/projectMgmt?ProjectCode=' + data.ProjectCode);
     }
 
-    updateInvoice() {
-        const format = 'dd MMM , yyyy';
-        const myDate = new Date(this.selectedRowItem.ScheduledDate);
-        const locale = 'en-IN';
-        const formattedDate = formatDate(myDate, format, locale);
-        this.editDeliverable_form.patchValue({
-            ProjectCode: this.selectedRowItem.ProjectCode,
-            PONumber: this.selectedRowItem.PONumber,
-            ScheduledType: 'revenue',
-            Amount: this.selectedRowItem.Amount,
-            Currency: this.selectedRowItem.Currency,
-            ScheduledDate: formattedDate,
-            AddressType: { label: this.selectedRowItem.AddressType, value: this.selectedRowItem.AddressType }
-        });
-
-        const last3Days = this.commonService.getLastWorkingDay(3, new Date());
-        this.minScheduleDate = last3Days;
-    }
-    getPOCNamesForEditInv(rowItem: any) {
-
-        this.listOfPOCNames = [];
-        let rowVal: any = {};
-        this.projectContactsData.filter((item) => {
-            if (item.ClientLegalEntity === rowItem.ClientName) {
-                this.listOfPOCNames.push(item);
-                if (item.ID === rowItem.POCId) {
-                    rowVal = item;
-                }
-            }
-        });
-        console.log('this.listOfPOCNames ', this.listOfPOCNames);
-        if (Object.keys(rowVal).length) {
-            this.editDeliverable_form.patchValue({
-                POCName: rowVal
-            });
-        }
-    }
-
-    pocChange(event) {
-        console.log('event ', event);
-    }
-
-    cancelFormSub(formType) {
-        if (formType === 'editDeliverable') {
-            this.editDeliverable_form.reset();
-            this.deliverableModal = false;
-        }
-        this.formSubmit.isSubmit = false;
-        this.submitBtn.isClicked = false;
-    }
 
     onSubmit(type: string) {
         this.formSubmit.isSubmit = true;
@@ -664,7 +572,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             const iliData = {
                 Status: 'Confirmed'
             };
-            iliData['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
+            iliData['__metadata'] = { type: this.constantService.listNames.InvoiceLineItems.type };
             const iliObj = Object.assign({}, this.queryConfig);
             iliObj.url = this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, +this.selectedRowItem.Id);
             iliObj.listName = this.constantService.listNames.InvoiceLineItems.name;
@@ -675,47 +583,22 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-DeliverableBased', 'updateInvoiceLineItem');
             this.submitForm(batchUrl, type);
 
-        } else if (type === 'editInvoice') {
-            if (this.editDeliverable_form.invalid) {
-                return;
-            }
-            this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
-            // console.log('form is submitting ..... for selected row Item i.e ', this.editDeliverable_form.value);
-            const iliData = {
-                AddressType: this.editDeliverable_form.value.AddressType.value,
-                ScheduledDate: this.editDeliverable_form.value.ScheduledDate,
-                MainPOC: this.editDeliverable_form.value.POCName.ID
-            };
-            iliData['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
-            const iliObj = Object.assign({}, this.queryConfig);
-            iliObj.url = this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, +this.selectedRowItem.Id);
-            iliObj.listName = this.constantService.listNames.InvoiceLineItems.name;
-            iliObj.type = 'PATCH';
-            iliObj.data = iliData;
-            batchUrl.push(iliObj);
-            this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-DeliverableBased', 'updateInvoiceLineItem');
-            this.submitForm(batchUrl, type);
-            this.cancelFormSub('editDeliverable');
         }
     }
 
     // batchContents: any = [];
     async submitForm(batchUrl, type: string) {
         await this.spServices.executeBatch(batchUrl);
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
         if (type === 'confirmInvoice') {
-            this.messageService.add({
-                key: 'deliverableSuccessToast', severity: 'success',
-                summary: 'Success message', detail: 'Invoice is Confirmed.', life: 2000
-            });
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Invoice is Confirmed.', false);
+
             this.invoiceConfirmMail();
         } else if (type === 'editInvoice') {
-            this.messageService.add({
-                key: 'deliverableSuccessToast', severity: 'success',
-                summary: 'Success message', detail: 'Invoice Updated.', life: 2000
-            });
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Invoice Updated.', false);
             this.reFetchData();
         }
-        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
+
     }
 
     async getApproveExpenseMailContent(type) {
@@ -767,7 +650,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
 
     getResourceData(ele) {
         const found = this.rcData.find((x) => {
-            if (x.UserName.ID === ele.ID) {
+            if (x.UserNamePG.ID === ele.ID) {
                 return x;
             }
         });
@@ -781,11 +664,11 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     invoiceConfirmMail() {
         const mailSubject = this.selectedRowItem.ProjectCode + '/' + this.selectedRowItem.ClientName + ': Confirmed line item for billing';
 
-        let mailContent = this.mailContentRes[0].Content;
+        let mailContent = this.mailContentRes[0].ContentMT;
         mailContent = this.replaceContent(mailContent, '@@Val1@@', 'Hello Invoice Team');
         mailContent = this.replaceContent(mailContent, '@@Val2@@', this.selectedRowItem.ProjectCode);
         mailContent = this.replaceContent(mailContent, '@@Val3@@', this.selectedRowItem.ClientName);
-        mailContent = this.replaceContent(mailContent, '@@Val4@@', this.selectedRowItem.PO);
+        mailContent = this.replaceContent(mailContent, '@@Val4@@', this.selectedRowItem.PONumber);
         mailContent = this.replaceContent(mailContent, '@@Val5@@', this.datePipe.transform(this.selectedRowItem.ScheduledDate, 'MMM dd, yyyy'));
         mailContent = this.replaceContent(mailContent, '@@Val6@@', this.selectedRowItem.Currency + ' ' + this.selectedRowItem.Amount);
         mailContent = this.replaceContent(mailContent, '@@Val7@@', this.selectedRowItem.SOWCode);
@@ -831,6 +714,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     }
 
     reFetchData() {
+
         setTimeout(() => {
             this.getRequiredData();
         }, 3000);

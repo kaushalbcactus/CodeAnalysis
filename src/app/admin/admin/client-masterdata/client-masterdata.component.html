@@ -323,20 +323,20 @@
                 <tr>
                     <th></th>
                     <th *ngFor="let col of columns" [hidden]="!col.visibility" [ngSwitch]="col.field">
-                        <p-multiSelect *ngSwitchCase="'FName'" [style]="{'width':'100%'}" [options]="adminObject.POCColArray.FName" defaultLabel="First Name" (onChange)="poc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
-                            resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'LName'" [style]="{'width':'100%'}" [options]="adminObject.POCColArray.LName" defaultLabel="Last Name" (onChange)="poc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
-                            resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'EmailAddress'" [style]="{'width':'100%'}" [options]="adminObject.POCColArray.EmailAddress" defaultLabel="Email" (onChange)="poc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+                        <p-multiSelect #pocFName *ngSwitchCase="'FName'" [style]="{'width':'100%'}" [options]="adminObject.POCColArray.FName" defaultLabel="First Name" (onChange)="poc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
                             [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}" [options]="adminObject.POCColArray.LastUpdated" defaultLabel="LastUpdated" (onChange)="poc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+                        <p-multiSelect #pocLName *ngSwitchCase="'LName'" [style]="{'width':'100%'}" [options]="adminObject.POCColArray.LName" defaultLabel="Last Name" (onChange)="poc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
                             [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}" [options]="adminObject.POCColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy" (onChange)="poc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+                        <p-multiSelect #pocEmail *ngSwitchCase="'EmailAddress'" [style]="{'width':'100%'}" [options]="adminObject.POCColArray.EmailAddress" defaultLabel="Email" (onChange)="poc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
                             [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
+                        </p-multiSelect>
+                        <p-multiSelect pocLUpdated *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}" [options]="adminObject.POCColArray.LastUpdated" defaultLabel="LastUpdated" (onChange)="poc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                            filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
+                        </p-multiSelect>
+                        <p-multiSelect pocLUpdatedBy *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}" [options]="adminObject.POCColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy" (onChange)="poc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                            filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                     </th>
                     <th></th>
@@ -432,22 +432,22 @@
                 <tr>
                     <th></th>
                     <th *ngFor="let col of columns" [hidden]="!col.visibility" [ngSwitch]="col.field">
-                        <p-multiSelect *ngSwitchCase="'PoName'" [style]="{'width':'100%'}" [options]="adminObject.POColArray.PoName" defaultLabel="Po Name" (onChange)="poTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
-                            resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'PoNumber'" [style]="{'width':'100%'}" [options]="adminObject.POColArray.PoNumber" defaultLabel="Po Number" (onChange)="poTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+                        <p-multiSelect #poName *ngSwitchCase="'PoName'" [style]="{'width':'100%'}" [options]="adminObject.POColArray.PoName" defaultLabel="Po Name" (onChange)="poTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
                             [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'AmountRevenue'" [style]="{'width':'100%'}" [options]="adminObject.POColArray.AmountRevenue" defaultLabel="Revenue" (onChange)="poTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+                        <p-multiSelect #poNo *ngSwitchCase="'PoNumber'" [style]="{'width':'100%'}" [options]="adminObject.POColArray.PoNumber" defaultLabel="Po Number" (onChange)="poTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
                             [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'AmountOOP'" [style]="{'width':'100%'}" [options]="adminObject.POColArray.AmountOOP" defaultLabel="OOP" (onChange)="poTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
-                            resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect #poRevenue *ngSwitchCase="'AmountRevenue'" [style]="{'width':'100%'}" [options]="adminObject.POColArray.AmountRevenue" defaultLabel="Revenue" (onChange)="poTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                            filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}" [options]="adminObject.POColArray.LastUpdated" defaultLabel="LastUpdated" (onChange)="poTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+                        <p-multiSelect #poOOP *ngSwitchCase="'AmountOOP'" [style]="{'width':'100%'}" [options]="adminObject.POColArray.AmountOOP" defaultLabel="OOP" (onChange)="poTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
                             [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}" [options]="adminObject.POColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy" (onChange)="poTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                        <p-multiSelect #poLUpdated *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}" [options]="adminObject.POColArray.LastUpdated" defaultLabel="LastUpdated" (onChange)="poTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                            filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
+                        </p-multiSelect>
+                        <p-multiSelect #poLUpdatedBy *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}" [options]="adminObject.POColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy" (onChange)="poTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
                             filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                     </th>
@@ -458,7 +458,12 @@
                 <tr>
                     <td>{{ rowIndex+1 }}</td>
                     <td>
-                        {{rowData.PoName}}
+                        <span *ngIf="rowData.poDocLink;else isName"><a href="{{rowData.poDocLink}}" target="_blank" style="color:red; cursor: pointer;">  {{rowData.PoName}}</a>
+                            </span>
+
+                        <ng-template #isName>
+                            {{rowData.PoName}}
+                        </ng-template>
                     </td>
                     <td>
                         {{rowData.PoNumber}}
@@ -536,5 +541,3 @@
         </p-table>
     </p-sidebar>
 </div>
-
-<p-toast position="bottom-center" key="adminAuth1"></p-toast>

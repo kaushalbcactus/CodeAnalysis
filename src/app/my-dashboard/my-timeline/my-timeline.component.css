@@ -396,3 +396,10 @@ th {
 ::ng-deep .fc-content {
     cursor: pointer !important;
 }
+
+.overlayIcon {
+    /* float: right !important; */
+    margin-left: 20px !important;
+    font-size: 0.75em !important;
+    margin-top: 1px !important;
+  }

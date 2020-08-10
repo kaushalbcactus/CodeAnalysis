@@ -3,18 +3,16 @@
     <div id="scInnerLoaderText">Loading...</div>
 </div>
 
-<div class="p-grid">
+<div class="p-col">
     <div class="p-col-12 p-md-12 p-lg-12 f-right">
         <div style="display: -webkit-inline-box;">
 
             <div class="box" style="margin-right: 20px" *ngIf="constantService.userPermission.isFDUserAdmin">
-                <button pButton type="button" class="fdBtn" label="Mark As Payment"
-                    (click)="openPopup('markAsPaymentModal')" style="float:left"></button>
+                <button pButton type="button" class="fdBtn" label="Mark As Payment" (click)="openPopup('markAsPaymentModal')" style="float:left"></button>
             </div>
             <div class="box">
                 <!-- <button type="button" pButton label="Export" (click)="fdDataShareServie.convertToExcelFile(anb)"></button> -->
-                <i style="font-size: 1.8em;cursor: pointer;" (click)=" fdDataShareServie.convertToExcelFile(anb)"
-                    title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
+                <i style="font-size: 1.8em;cursor: pointer;" (click)=" fdDataShareServie.convertToExcelFile(anb)" title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
             </div>
         </div>
     </div>
@@ -22,9 +20,7 @@
 </div>
 
 <div class="financeTable">
-    <p-table #anb [columns]="approvedNonBillableCols" [value]="approvedNonBillableRes" [paginator]="true" [rows]="10"
-         (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)"
-        selectionMode="" [(selection)]="selectedAllRowsItem" exportFilename="Approved_NonBillable_Expenses">
+    <p-table #anb [columns]="approvedNonBillableCols" [value]="approvedNonBillableRes" [paginator]="true" [rows]="10" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)" selectionMode="" [(selection)]="selectedAllRowsItem" exportFilename="Approved_NonBillable_Expenses">
         <ng-template pTemplate="header" let-columns>
 
             <tr>
@@ -32,8 +28,7 @@
                 <th style="width: 2.25em">
                     <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
                 </th>
-                <th *ngFor="let col of columns" [pSortableColumn]="col.field" 
-                    [hidden]="!col.visibility">
+                <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
                     {{col.header}}
                     <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
                 </th>
@@ -44,47 +39,47 @@
                 <th></th>
                 <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
                     <ng-container *ngIf="col.field">
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ProjectCode'" [options]="anonBillableColArray.ProjectCode"
-                            defaultLabel="All" [maxSelectedLabels]="1" (onChange)="anb.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'ProjectCode'" [options]="anonBillableColArray.ProjectCode" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="anb.filter($event.value, col.field, 'in')"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'VendorName'" [options]="anonBillableColArray.VendorName"
-                            defaultLabel="All" [maxSelectedLabels]="1" (onChange)="anb.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'VendorName'" [options]="anonBillableColArray.VendorName" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="anb.filter($event.value, col.field, 'in')"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'Number'" [options]="anonBillableColArray.Number"
-                            defaultLabel="All" [maxSelectedLabels]="1" (onChange)="anb.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Number'" [options]="anonBillableColArray.Number" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="anb.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                            (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'DateSpend'" [options]="anonBillableColArray.DateSpend"
-                            defaultLabel="All" [maxSelectedLabels]="1" (onChange)="anb.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'DateSpend'" [options]="anonBillableColArray.DateSpend" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="anb.filter($event.value, col.field, 'in')"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ExpenseType'" [options]="anonBillableColArray.ExpenseType"
-                            defaultLabel="All" [maxSelectedLabels]="1" (onChange)="anb.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'ExpenseType'" [options]="anonBillableColArray.ExpenseType" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="anb.filter($event.value, col.field, 'in')"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'PaymentMode'" [options]="anonBillableColArray.PaymentMode"
-                            defaultLabel="All" [maxSelectedLabels]="1" (onChange)="anb.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'PaymentMode'" [options]="anonBillableColArray.PaymentMode" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="anb.filter($event.value, col.field, 'in')"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ClientAmount'" [options]="anonBillableColArray.ClientAmount"
-                            defaultLabel="All" [maxSelectedLabels]="1" (onChange)="anb.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'ClientAmount'" [options]="anonBillableColArray.ClientAmount" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="anb.filter($event.value, col.field, 'in')"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ClientCurrency'" [options]="anonBillableColArray.ClientCurrency"
-                            defaultLabel="All" [maxSelectedLabels]="1" (onChange)="anb.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'ClientCurrency'" [options]="anonBillableColArray.ClientCurrency" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="anb.filter($event.value, col.field, 'in')"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'PayingEntity'" [options]="anonBillableColArray.PayingEntity"
-                            defaultLabel="All" [maxSelectedLabels]="1" (onChange)="anb.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'PayingEntity'" [options]="anonBillableColArray.PayingEntity" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="anb.filter($event.value, col.field, 'in')"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'Status'" [options]="anonBillableColArray.Status"
-                            defaultLabel="All" [maxSelectedLabels]="1" (onChange)="anb.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Status'" [options]="anonBillableColArray.Status" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="anb.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                            (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'SpendDate'" [options]="anonBillableColArray.SpendDate"
-                            defaultLabel="All" [maxSelectedLabels]="1" (onChange)="anb.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'SpendDate'" [options]="anonBillableColArray.SpendDate" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="anb.filter($event.value, col.field, 'in')"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'Created'" [options]="anonBillableColArray.Created"
-                            defaultLabel="All" [maxSelectedLabels]="1" (onChange)="anb.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Created'" [options]="anonBillableColArray.Created" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="anb.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                            (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ModifiedBy'" [options]="anonBillableColArray.ModifiedBy"
-                            defaultLabel="All" [maxSelectedLabels]="1" (onChange)="anb.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'ModifiedBy'" [options]="anonBillableColArray.ModifiedBy" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="anb.filter($event.value, col.field, 'in')"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ModifiedDate'" [options]="anonBillableColArray.ModifiedDate"
-                            defaultLabel="All" [maxSelectedLabels]="1" (onChange)="anb.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'ModifiedDate'" [options]="anonBillableColArray.ModifiedDate" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="anb.filter($event.value, col.field, 'in')"
+                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                     </ng-container>
                 </th>
@@ -109,8 +104,7 @@
                     <ng-container *ngIf="col.field == ''">
                         <div>
                             <p-menu #popupMenu [popup]="true" [model]="items" styleClass="borderMenu"></p-menu>
-                            <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
-                                (click)="openTableAtt(rowData, popupMenu);popupMenu.show($event);"></i>
+                            <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;" (click)="openTableAtt(rowData, popupMenu);popupMenu.show($event);"></i>
                         </div>
                     </ng-container>
                 </td>
@@ -129,82 +123,3 @@
         <app-table-attribute [rowItemData]="rowItemDetails"></app-table-attribute>
     </ng-container>
 </p-sidebar>
-
-
-<!-- Mark As Payment Modal -->
-<p-dialog header="Mark As Payment" [(visible)]="markAsPaymentModal" [modal]="true" [draggable]="false"
-    [responsive]="true" [contentStyle]="{'max-height':'350px', 'top':'0px'}" [style]="{'width': '40%'}"
-    (onHide)="cancelFormSub('markAsPayment_form')">
-
-    <form [formGroup]="markAsPayment_form">
-        <div class="ui-g">
-            <!-- <div> -->
-            <div class="ui-g-4">Reference Number</div>
-            <div class="ui-g-6">
-                <input type="text" pInputText formControlName="Number" />
-                <div *ngIf="formSubmit.isSubmit && isValidMarkAsPaymentForm.Number.errors">
-                    <div *ngIf="isValidMarkAsPaymentForm.Number.errors.required" style="color:red;">Please
-                        provide Reference number.</div>
-                </div>
-            </div>
-        </div>
-        <div class="ui-g mb-15">
-            <div class="ui-g-4">Payment Date</div>
-            <div class="ui-g-6 box1">
-                <p-calendar styleClass="pCalendarBtn" [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy"
-                    yearRange="2019:2030" [disabledDays]="[0,6]" [yearNavigator]="true" formControlName="DateSpend">
-                </p-calendar>
-                <div *ngIf="formSubmit.isSubmit && isValidMarkAsPaymentForm.DateSpend.errors">
-                    <div *ngIf="isValidMarkAsPaymentForm.DateSpend.errors.required" style="color:red;">Please
-                        provide Payment Date.</div>
-                </div>
-            </div>
-        </div>
-        <div class="ui-g">
-            <div class="ui-g-4">Payment Mode</div>
-            <div class="ui-g-6">
-                <p-dropdown resetFilterOnHide="true"[options]="paymentModeArray" [showClear]="false" placeholder="Select a Payment Mode"
-                    [style]="{'width':'100%'}" formControlName="PaymentMode" optionLabel="value"
-                    onfocus='this.size=10;'>
-                </p-dropdown>
-                <div *ngIf="formSubmit.isSubmit && isValidMarkAsPaymentForm.PaymentMode.errors">
-                    <div *ngIf="isValidMarkAsPaymentForm.PaymentMode.errors.required" style="color:red;">Please
-                        provide Payment Mode.</div>
-                </div>
-            </div>
-        </div>
-        <!-- <div class="ui-g">
-            <div class="ui-g-4">Notes</div>
-            <div class="ui-g-6">
-                <textarea [rows]="4" [cols]="30" pInputTextarea autoResize="autoResize"
-                    formControlName="ApproverComments"></textarea>
-                <div *ngIf="formSubmit.isSubmit && isValidMarkAsPaymentForm.ApproverComments.errors">
-                    <div *ngIf="isValidMarkAsPaymentForm.ApproverComments.errors.required" style="color:red;">Please
-                        provide Note.</div>
-                </div>
-            </div>
-        </div> -->
-        <div class="ui-g">
-            <div class="ui-g-4">Upload File</div>
-            <div class="ui-g-6">
-                <input type="file" name="myfile" class="form-control" id="myfile"
-                    (change)="onFileChange($event, 'ApprovedExpenseFiles')" #fileInput
-                    formControlName="ApproverFileUrl" />
-                <div *ngIf="formSubmit.isSubmit && isValidMarkAsPaymentForm.ApproverFileUrl.errors">
-                    <div *ngIf="isValidMarkAsPaymentForm.ApproverFileUrl.errors.required" style="color:red;">Please
-                        provide file.</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- <div [ngStyle]="{'margin-top':selectedRowItem.RequestType !== 'Credit Card' ? '45%' : '0px' }"></div> -->
-        <!-- </div> -->
-    </form>
-    <p-footer>
-        <button pButton type="button" class="fdBtn" label="Mark As Payment" [disabled]="submitBtn.isClicked"
-            (click)="onSubmit('markAsPayment_form')"></button>
-    </p-footer>
-</p-dialog>
-
-<!-- Toast Messages -->
-<p-toast position="bottom-center" key="approvedNonBToast"></p-toast>

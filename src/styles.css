@@ -33,6 +33,7 @@ button.ui-datepicker-trigger.ui-calendar-button span.ui-button-text.ui-clickable
     padding: 5px !important;
 }
 
+
 /* P-dialog Footer button  */
 
 .ui-dialog-footer .ui-button {
@@ -43,15 +44,17 @@ button.ui-datepicker-trigger.ui-calendar-button span.ui-button-text.ui-clickable
 body .ui-radiobutton .ui-radiobutton-box.ui-state-active {
     border-color: #c53e3e !important;
     background-color: #c53e3e !important;
-    color: #ffffff  !important;
+    color: #ffffff !important;
 }
 
-body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight{
+body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight {
     background-color: #c53e3e !important;
 }
 
-body .ui-datepicker table td.ui-datepicker-today > a.ui-state-active, body .ui-datepicker table td.ui-datepicker-today > span.ui-state-active,
-body .ui-datepicker table td > a.ui-state-active, body .ui-datepicker table td > span.ui-state-active {
+body .ui-datepicker table td.ui-datepicker-today>a.ui-state-active,
+body .ui-datepicker table td.ui-datepicker-today>span.ui-state-active,
+body .ui-datepicker table td>a.ui-state-active,
+body .ui-datepicker table td>span.ui-state-active {
     background-color: #c53e3e !important;
 }
 
@@ -59,23 +62,32 @@ body .ui-datepicker table td > a.ui-state-active, body .ui-datepicker table td >
 /* Loadder ICON  */
 
 @-webkit-keyframes spin {
-    0% { -webkit-transform: rotate(0deg); }
-    100% { -webkit-transform: rotate(360deg); }
-  }
+    0% {
+        -webkit-transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
+}
 
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
 
-.tableLoader{
-    position: fixed; /* or absolute */
+.tableLoader {
+    position: fixed;
+    /* or absolute */
     /* top: 20%; */
     width: 100% !important;
     z-index: 9999;
     background-color: rgba(255, 255, 255, 0.7);
     height: 100% !important;
-  }
+}
 
 #scInnerLoader {
     border: 10px solid #f3f3f3 !important;
@@ -162,8 +174,81 @@ body .ui-datepicker table td > a.ui-state-active, body .ui-datepicker table td >
     /* top: 0;
     margin-bottom: 1%; */
 }
+
 body .ui-table .ui-sortable-column.ui-state-highlight,
 body .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active,
 body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight {
     background-color: #C53E3E !important;
 }
+
+.ui-toast-detail {
+    white-space: pre-line;
+}
+
+
+/* Dynamic Dialog common Css  */
+
+.dialogSaveCancel {
+    text-align: right !important;
+}
+
+.dynamicDialogSave {
+    margin: -55px 0px 0px -160px !important;
+    position: fixed !important;
+    cursor: pointer !important;
+    background-color: #C53E3E !important;
+    border-color: #C53E3E !important;
+}
+
+.dynamicDialogCancel {
+    margin: -55px 0px 0px -75px !important;
+    position: fixed !important;
+    cursor: pointer !important;
+    background-color: #C53E3E !important;
+    border-color: #C53E3E !important;
+}
+
+#modalInnerLoader {
+    border: 5px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 5px solid red;
+    border-bottom: 5px solid red;
+    width: 50px;
+    height: 50px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    margin: 0 auto;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#modalInnerLoaderText {
+    -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
+    -o-animation: loading-text-opacity 2s linear 0s infinite normal;
+    -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
+    animation: loading-text-opacity 2s linear 0s infinite normal;
+    color: black;
+    font-family: "Helvetica Neue, "Helvetica", ""arial";
+    font-size: 10px;
+    font-weight: bold;
+    opacity: 0.5;
+    text-align: center;
+    text-transform: uppercase;
+    top: 0;
+}
+
+.textfeildClass {
+    width: 100% !important;
+}
+
+.pCalendarBtn {
+    width: 100% !important;
+}
+
+.pCalendarBtn>input {
+    width: calc(100% - 30px) !important;
+}
+
+
+/* Dynamic Dialog common Css end  */

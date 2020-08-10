@@ -2,7 +2,6 @@ import { Component, OnInit, Output, EventEmitter, OnDestroy, Input, HostListener
 import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
-import { MessageService } from 'primeng/api';
 import { CommonService } from 'src/app/Services/common.service';
 
 @Component({
@@ -32,7 +31,6 @@ export class ResourcesComponent implements OnInit {
     public sharedObject: GlobalService,
     private spService: SPOperationService,
     private constants: ConstantsService,
-    private messageService: MessageService,
     private commonService: CommonService) { }
   ngOnInit() {
     this.loadResources();
@@ -74,7 +72,7 @@ export class ResourcesComponent implements OnInit {
     this.editorusers = [];
     this.graphicsusers = [];
     this.pubsupportusers = [];
-    this.allPrimaryResources = this.resources.map(o => new Object({ Id: o.UserName.ID, UserName: o.UserName.Title }));
+    this.allPrimaryResources = this.resources.map(o => new Object({ Id: o.UserNamePG.ID, UserName: o.UserNamePG.Title }));
     this.filterPrimaryResources = this.allPrimaryResources;
     const projectDetails = this.sharedTaskAllocateObj.oProjectDetails;
     if (projectDetails.primaryResources.results) {
@@ -162,14 +160,11 @@ export class ResourcesComponent implements OnInit {
     }
     this.commonService.SetNewrelic('TaskAllocation', 'resources', 'SaveResources');
     await this.spService.updateItem(this.constants.listNames.ProjectInformation.name, project.projectID,
-      oBj, 'SP.Data.ProjectInformationListItem');
+      oBj, this.constants.listNames.ProjectInformation.type);
     this.commonService.SetNewrelic('TaskAllocation', 'resources-getProjectResources', 'saveResources');
     await this.commonService.getProjectResources(project.projectCode, true, false);
-
     this.loaderEnable = false;
-    this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Resources updated successfully.' });
-
-
+    this.commonService.showToastrMessage(this.constants.MessageType.success,'Resources updated successfully.',false);
   }
 
 

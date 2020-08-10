@@ -1,5 +1,4 @@
 import { Component, OnInit, Input, OnDestroy, HostListener, ApplicationRef, NgZone, ChangeDetectorRef, ViewChild } from '@angular/core';
-import { MessageService } from 'primeng/api';
 import { FormBuilder } from '@angular/forms';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
@@ -41,8 +40,7 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
     private subscription: Subscription = new Subscription();
     @ViewChild('rc', { static: false }) canRejExpenseTable: Table;
 
-    constructor(
-        private messageService: MessageService,
+    constructor( 
         private fb: FormBuilder,
         private spServices: SPOperationService,
         private constantService: ConstantsService,
@@ -222,7 +220,7 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
                 SOWCode: sowCodeFromPI.SOWCode,
                 SOWName: sowItem.Title,
                 ClientLegalEntity: sowCodeFromPI.ClientLegalEntity,
-                Category: element.Category,
+                Category: element.CategoryST,
                 // PONumber: element.PONumber,
                 ExpenseType: element.SpendType,
                 ClientAmount: element.Amount,
@@ -230,7 +228,7 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
                 Created: this.datePipe.transform(element.Created, 'MMM dd, yyy, hh:mm a'),
                 CreatedBy: element.Author ? element.Author.Title : '',
                 ModifiedBy: element.Editor ? element.Editor.Title : '',
-                Notes: element.Notes,
+                Notes: element.NotesMT,
                 ModifiedDateFormat: this.datePipe.transform(element.Modified, 'MMM dd, yyy, hh:mm a'),
                 RequestType: element.RequestType,
                 ApproverComments: element.ApproverComments,
@@ -263,7 +261,7 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
 
     getCreatedModifiedByFromRC(id) {
         let found = this.rcData.find((x) => {
-            if (x.UserName.ID == id) {
+            if (x.UserNamePG.ID == id) {
                 return x;
             }
         })

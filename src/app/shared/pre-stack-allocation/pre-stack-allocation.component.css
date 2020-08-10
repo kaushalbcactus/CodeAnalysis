@@ -1,0 +1,77 @@
+.budgetHr:focus {
+  box-shadow: none;
+}
+
+
+.footer {
+  position: fixed !important;
+  width: 90vw !important;
+  margin: -50px !important;
+}
+.pBtnCancel {
+  margin-right: 10px;
+}
+.dateCol {
+  width: 10%;
+}
+.hrsCol {
+  width: 60%;
+}
+.minsCol {
+  width: 23%;
+}
+.valueCol {
+  width: 7%;
+}
+#dailyAllocationLoader {
+  border: 10px solid #f3f3f3 !important;
+  border-radius: 50% !important;
+  border-top: 10px solid red !important;
+  border-bottom: 10px solid red !important;
+  width: 100px !important;
+  height: 100px !important;
+  -webkit-animation: spin 2s linear infinite !important;
+  animation: spin 2s linear infinite !important;
+  margin: 0 auto !important;
+  position: relative !important;
+  top: 25% !important;
+  transform: translateY(-50%) !important;
+}
+
+#dailyAllocationLoaderText {
+  -moz-animation: loading-text-opacity 2s linear 0s infinite normal !important;
+  -o-animation: loading-text-opacity 2s linear 0s infinite normal !important;
+  -webkit-animation: loading-text-opacity 2s linear 0s infinite normal !important;
+  animation: loading-text-opacity 2s linear 0s infinite normal !important;
+  color: black !important;
+  font-family: "Helvetica Neue, "Helvetica", ""arial" !important;
+  font-size: 10px !important;
+  font-weight: bold !important;
+  opacity: 0.5 !important;
+  text-align: center !important;
+  text-transform: uppercase !important;
+  top: 27% !important;
+  position: relative;
+}
+::ng-deep .ng5-slider .ng5-slider-pointer  {
+  background-color: transparent !important;
+  /* border: 1px solid; */
+}
+::ng-deep .ng5-slider .ng5-slider-pointer:after {
+  background: black !important;
+}
+.timepicker {
+  margin-left: -10px;
+}
+::ng-deep .saveTaskButton {
+  margin-right: 15px !important;
+  background-color: #db1721 !important;
+  border: 1px solid #db1721 !important;
+}
+::ng-deep .allocationDate {
+  cursor: pointer!important;
+  color: #db1721 !important;
+}
+.leave {
+  background-color: #808080;
+}

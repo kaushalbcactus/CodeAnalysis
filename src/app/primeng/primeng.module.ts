@@ -12,10 +12,9 @@ import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { DropdownModule } from 'primeng/dropdown';
-import { MessageService, ConfirmationService } from 'primeng/api';
 import { TabViewModule } from 'primeng/tabview';
 import {
-  MenubarModule, OverlayPanelModule, InputTextareaModule, InputTextModule, AutoComplete, TieredMenuModule
+  MenubarModule, OverlayPanelModule, InputTextareaModule, InputTextModule, AutoComplete, TieredMenuModule, SelectButtonModule
 } from 'primeng';
 import { DragDropModule } from 'primeng/dragdrop';
 import { CalendarModule } from 'primeng/calendar';
@@ -36,6 +35,9 @@ import { ListboxModule } from 'primeng/listbox';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { TooltipModule } from 'primeng/tooltip';
 import { InputSwitchModule } from 'primeng/inputswitch';
+import {SliderModule} from 'primeng/slider';
+import {RatingModule} from 'primeng/rating';
+
 @NgModule({
   declarations: [],
   imports: [
@@ -49,6 +51,7 @@ import { InputSwitchModule } from 'primeng/inputswitch';
     AutoCompleteModule,
     DynamicDialogModule,
     TreeTableModule,
+    SliderModule,
     // DataTableModule,
     FieldsetModule,
     DialogModule,
@@ -81,8 +84,10 @@ import { InputSwitchModule } from 'primeng/inputswitch';
     AutoCompleteModule,
     TooltipModule,
     TieredMenuModule,
-    InputSwitchModule, DragDropModule
+    InputSwitchModule, DragDropModule,
+    SelectButtonModule,
+    RatingModule
   ],
-  providers: [ConfirmationService, DialogService, MessageService]
+  providers: [ DialogService]
 })
 export class PrimengModule { }

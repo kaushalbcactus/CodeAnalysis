@@ -10,6 +10,11 @@ export class GlobalService {
   public url: any;
   public userInfo: any;
   public oReviewerPendingTasks = [];
+  public isResourceChange: boolean = false;
+  public data: any;
+  public resourceHeader = "";
+  public user;
+  public currentTaskData: any;
   public oTask = {
     resource: '',
     taskTitle: '',
@@ -198,7 +203,7 @@ export class GlobalService {
       CMLevel2: null,
       Milestone: null,
       nextMilestone: null,
-      futureMilestones: null,
+    // futureMilestones: null,
       prevMilestone: null,
       arrMilestones: null,
       oPrjFinance: null,
