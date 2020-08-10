@@ -55,18 +55,18 @@
                                 <span>{{item.element.JournalRequirementDate | date:'MMM d, y, hh:mm a'}}</span>
                             </td>
                             <td>
-                                <a class="downloadUpload" *ngIf="item.element.JournalRequirementURL" (click)="downloadFile(item.element.JournalRequirementURL, item.element.Title+'_JournalRequirementDocument_files')">
+                                <a class="downloadUpload" title="Download Document" *ngIf="item.element.JournalRequirementURL" (click)="downloadFile(item.element.JournalRequirementURL, item.element.Title+'_JournalRequirementDocument_files')">
                                     &nbsp;<i class="fa fa-download" aria-hidden="true"></i></a>
-                                <a class="downloadUpload" *ngIf="item.element.JournalRequirementURL && isUploadIcon" (click)="replaceFile('JournalRequirementURL')">
+                                <a class="downloadUpload" title="Replace Document" *ngIf="item.element.JournalRequirementURL && isUploadIcon" (click)="replaceFile('JournalRequirementURL',item.element.ID)">
                                     &nbsp;<i class="fa fa-upload" aria-hidden="true"></i></a>
                             </td>
                             <td>
                                 <span>{{item.project.JournalSelectionDate | date:'MMM d, y, hh:mm a'}}</span>
                             </td>
                             <td>
-                                <a class="downloadUpload" *ngIf="item.element.JournalRequirementResponse" (click)="downloadFile(item.element.JournalRequirementResponse, item.element.Title+'_JournalRequirementResponse_files')">
+                                <a class="downloadUpload" title="Download Document" *ngIf="item.element.JournalRequirementResponse" (click)="downloadFile(item.element.JournalRequirementResponse, item.element.Title+'_JournalRequirementResponse_files')">
                                     &nbsp;<i class="fa fa-download" aria-hidden="true"></i></a>
-                                <a class="downloadUpload" *ngIf="item.element.JournalRequirementResponse && isUploadIcon" (click)="replaceFile('JournalRequirementResponse')">
+                                <a class="downloadUpload" title="Replace Document" *ngIf="item.element.JournalRequirementResponse && isUploadIcon" (click)="replaceFile('JournalRequirementResponse',item.element.ID)">
                                         &nbsp;<i class="fa fa-upload" aria-hidden="true"></i></a>
                             </td>
                             <td>
@@ -99,9 +99,9 @@
                                 </td>
                                 <td colspan="2">
                                     <label>Journal selection document :</label><br>
-                                    <a class="downloadUpload" *ngIf="journal_Conf_data[0]?.project.JournalSelectionURL" (click)="downloadFile(journal_Conf_data[0].project.JournalSelectionURL, journal_Conf_data[0].project.ProjectCode+'_JournalSelection_files')">
+                                    <a class="downloadUpload" title="Download Document" *ngIf="journal_Conf_data[0]?.project.JournalSelectionURL" (click)="downloadFile(journal_Conf_data[0].project.JournalSelectionURL, journal_Conf_data[0].project.ProjectCode+'_JournalSelection_files')">
                                         &nbsp;<i class="fa fa-download" aria-hidden="true"></i></a>
-                                    <a class="downloadUpload" *ngIf="journal_Conf_data[0]?.project.JournalSelectionURL && isUploadIcon" (click)="replaceFile('JournalSelectionURL')">
+                                    <a class="downloadUpload" title="Replace Document" *ngIf="journal_Conf_data[0]?.project.JournalSelectionURL && isUploadIcon" (click)="replaceFile('JournalSelectionURL')">
                                         &nbsp;<i class="fa fa-upload" aria-hidden="true"></i></a>
                                 </td>
                             </tr>
@@ -113,9 +113,9 @@
                                 </td>
                                 <td colspan="3">
                                     <label>Published PDF:</label><br>
-                                    <a class="downloadUpload" *ngIf="journal_Conf_details.PublicationURL" (click)="downloadFile(journal_Conf_details.PublicationURL, journal_Conf_details.Title+'_PublishPDFfile')">
+                                    <a class="downloadUpload" title="Download Document" *ngIf="journal_Conf_details.PublicationURL" (click)="downloadFile(journal_Conf_details.PublicationURL, journal_Conf_details.Title+'_PublishPDFfile')">
                                         &nbsp;<i class="fa fa-download" aria-hidden="true"></i></a>
-                                    <a class="downloadUpload" *ngIf="journal_Conf_details.PublicationURL && isUploadIcon" (click)="replaceFile('PublicationURL')">
+                                    <a class="downloadUpload" title="Replace Document" *ngIf="journal_Conf_details.PublicationURL && isUploadIcon" (click)="replaceFile('PublicationURL',journal_Conf_details.ID )">
                                         &nbsp;<i class="fa fa-upload" aria-hidden="true"></i></a>
                                 </td>
                                 <td colspan="3">
@@ -199,17 +199,17 @@
                                                     <span>{{s.SubmissionDate | date:'MMM d, y, hh:mm a'}}</span>
                                                 </td>
                                                 <td>
-                                                    <a class="downloadUpload" *ngIf="s.SubmissionPkgURL" (click)="downloadFile(s.SubmissionPkgURL, s.Title+'_SubmissionPkg_files')">
+                                                    <a class="downloadUpload" title="Download Document" *ngIf="s.SubmissionPkgURL" (click)="downloadFile(s.SubmissionPkgURL, s.Title+'_SubmissionPkg_files')">
                                                         &nbsp;<i class="fa fa-download"
                                                             aria-hidden="true"></i></a>
-                                                    <a class="downloadUpload" *ngIf="s.SubmissionPkgURL && isUploadIcon" (click)="replaceFile('SubmissionPkgURL',s.ID)">
+                                                    <a class="downloadUpload" title="Replace Document" *ngIf="s.SubmissionPkgURL && isUploadIcon" (click)="replaceFile('SubmissionPkgURL',s.ID)">
                                                         &nbsp;<i class="fa fa-upload" aria-hidden="true"></i></a>
                                                 </td>
                                                 <td>
-                                                    <a class="downloadUpload" *ngIf="s.SubmissionURL" (click)="downloadFile(s.SubmissionURL, s.Title+'_SubmissionConfirmation_files')">
+                                                    <a class="downloadUpload" title="Download Document" *ngIf="s.SubmissionURL" (click)="downloadFile(s.SubmissionURL, s.Title+'_SubmissionConfirmation_files')">
                                                         &nbsp;<i class="fa fa-download"
                                                             aria-hidden="true"></i></a>
-                                                    <a class="downloadUpload" *ngIf="s.SubmissionURL && isUploadIcon" (click)="replaceFile('SubmissionURL',s.ID)">
+                                                    <a class="downloadUpload" title="Replace Document" *ngIf="s.SubmissionURL && isUploadIcon" (click)="replaceFile('SubmissionURL',s.ID)">
                                                         &nbsp;<i class="fa fa-upload" aria-hidden="true"></i></a>
                                                 </td>
                                                 <td>
@@ -219,10 +219,10 @@
                                                     <span>{{s.DecisionDate | date:'MMM d, y, hh:mm a'}}</span>
                                                 </td>
                                                 <td>
-                                                    <a class="downloadUpload" *ngIf="s.DecisionURL" (click)="downloadFile(s.DecisionURL,s.Title+'_Decision_files')">
+                                                    <a class="downloadUpload" title="Download Document" *ngIf="s.DecisionURL" (click)="downloadFile(s.DecisionURL,s.Title+'_Decision_files')">
                                                         &nbsp;<i class="fa fa-download"
                                                             aria-hidden="true"></i></a>
-                                                    <a class="downloadUpload" *ngIf="s.DecisionURL && isUploadIcon" (click)="replaceFile('DecisionURL')">
+                                                    <a class="downloadUpload" title="Replace Document" *ngIf="s.DecisionURL && isUploadIcon" (click)="replaceFile('DecisionURL',s.ID)">
                                                         &nbsp;<i class="fa fa-upload" aria-hidden="true"></i></a>
                                                 </td>
                                                 <td>
@@ -255,10 +255,10 @@
                                                     </td>
                                                     <td colspan="6">
                                                         <label>Galley Document</label><br>
-                                                        <a class="downloadUpload" *ngIf="g.GalleyURL" (click)="downloadFile(g.GalleyURL,g.Title+'_GalleyDoc_files')">
+                                                        <a class="downloadUpload" title="Download Document" *ngIf="g.GalleyURL" (click)="downloadFile(g.GalleyURL,g.Title+'_GalleyDoc_files')">
                                                             &nbsp;<i class="fa fa-download"
                                                                 aria-hidden="true"></i></a>
-                                                        <a class="downloadUpload" *ngIf="g.GalleyURL && isUploadIcon" (click)="replaceFile('GalleyURL',g.ID)">
+                                                        <a class="downloadUpload" title="Replace Document" *ngIf="g.GalleyURL && isUploadIcon" (click)="replaceFile('GalleyURL',g.ID)">
                                                             &nbsp;<i class="fa fa-upload" aria-hidden="true"></i></a>
                                                     </td>
                                                 </tr>

@@ -870,8 +870,14 @@ export class PubsupportComponent implements OnInit {
         const obj = Object.assign({}, this.pubsupportService.pubsupportComponent.activeJC);
         obj.filter = obj.filter.replace('{{ProjectCode}}', this.selectedProject.ProjectCode).replace('{{Status}}',
             this.selectedProject.PubSupportStatus);
+        const obj1 = Object.assign({}, this.pubsupportService.pubsupportComponent.activeJournalConference);
+        obj1.filter = obj1.filter.replace('{{ProjectCode}}', this.selectedProject.ProjectCode);
+        const obj2 = Object.assign({}, this.pubsupportService.pubsupportComponent.activeJCSub);
+        obj2.filter = obj2.filter.replace('{{ProjectCode}}', this.selectedProject.ProjectCode);
         const jcEndpoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.JournalConf.name + '', obj);
         const jcsEndpoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.JCSubmission.name + '', obj);
+        const jc1Endpoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.JournalConf.name + '', obj1);
+        const jcsubEndpoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.JCSubmission.name + '', obj2);
         const objData = [
             {
                 url: jcEndpoint,
@@ -880,6 +886,16 @@ export class PubsupportComponent implements OnInit {
             },
             {
                 url: jcsEndpoint,
+                type: 'GET',
+                listName: this.constantService.listNames.JCSubmission.name
+            },
+            {
+                url: jc1Endpoint,
+                type: 'GET',
+                listName: this.constantService.listNames.JournalConf.name
+            },
+            {
+                url: jcsubEndpoint,
                 type: 'GET',
                 listName: this.constantService.listNames.JCSubmission.name
             },
@@ -1600,7 +1616,7 @@ export class PubsupportComponent implements OnInit {
                             case 'SubmissionURL':
                             case 'SubmissionPkgURL':
                             let jcSubId;
-                            this.jc_jcSubId[1].retItems.forEach(element => {
+                            this.jc_jcSubId[3].retItems.forEach(element => {
                                 if (element && this.filterID && this.filterID == element.ID) {
                                     jcSubId = element.ID;
                                 }
@@ -1611,9 +1627,8 @@ export class PubsupportComponent implements OnInit {
                             case 'JournalRequirementResponse':
                             case 'PublicationURL':
                             let jcId;
-
-                            this.jc_jcSubId[0].retItems.forEach(element => {
-                                if (element) {
+                            this.jc_jcSubId[2].retItems.forEach(element => {
+                                if (element && this.filterID && this.filterID == element.ID) {
                                     jcId = element.ID;
                                 }
                             });

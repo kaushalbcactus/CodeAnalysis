@@ -162,7 +162,7 @@ export class GanttEdittaskComponent implements OnInit {
       endDate: task.end_date,
       tat: task.tat,
       disableCascade: task.DisableCascade,
-      resource: task.AssignedTo.ID ? task.AssignedTo : (task.slotType === 'Slot' ? { ID: undefined, Email: undefined, Title:  task.skillLevel, SkillText: task.skillLevel } : null),
+      resource: task.AssignedTo.ID ? task.AssignedTo : (task.slotType === 'Slot' ? { ID: undefined, Email: undefined, Title:  task.skillLevel, SkillText: task.skillLevel } : task.AssignedTo),
       startDateTimePart: startTime,
       endDateTimePart: endTime,
     });
