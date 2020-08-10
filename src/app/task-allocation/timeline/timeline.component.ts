@@ -6426,7 +6426,8 @@ export class TimelineComponent
   validateAllocationString(checkTasks) {
     //////// check if multiple days task have allocationperday string
     const errorTasks = checkTasks.filter(t => t.edited && t.itemType !== 'Client Review' && t.itemType !== 'Send to client'
-      && !t.parentSlot && t.slotType === 'Task' && t.status !== 'Abandon' && t.status !== 'Completed' && t.itemType !== 'Adhoc'
+      && !t.parentSlot && t.slotType === 'Task' && t.status !== 'Abandon' && t.status !== 'Completed' && t.status !== 'Auto Closed' 
+      && t.status !== 'Deleted' && t.itemType !== 'Adhoc'
       && new Date(t.pUserStartDatePart).getTime() !== new Date(t.pUserEndDatePart).getTime()
       && !t.allocationPerDay && +t.budgetHours
       && t.AssignedTo && t.AssignedTo.ID && t.AssignedTo.ID !== -1);
