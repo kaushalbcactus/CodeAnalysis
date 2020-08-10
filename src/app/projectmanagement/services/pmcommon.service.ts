@@ -1429,7 +1429,7 @@ export class PMCommonService {
           // create the milestone folder.
           const milestoneFolderBody = {
             __metadata: { type: 'SP.Folder' },
-            ServerRelativeUrl: projectFolder + '/' + milestoneObj.data.Name // projectCode- folder Internal
+            ServerRelativeUrl: projectFolder + '/Drafts/Internal/' + milestoneObj.data.Name // projectCode- folder Internal
           };
           const createForderObj = Object.assign({}, options);
           createForderObj.data = milestoneFolderBody;

@@ -6,6 +6,8 @@ import {
   ViewEncapsulation,
   ViewChild,
   ChangeDetectorRef,
+  ViewChildren,
+  QueryList,
 } from "@angular/core";
 import { DatePipe, PlatformLocation, LocationStrategy } from "@angular/common";
 import {
@@ -25,7 +27,7 @@ import { Router } from "@angular/router";
 import { removeSummaryDuplicates } from "@angular/compiler";
 import { GlobalService } from "src/app/Services/global.service";
 import { CommonService } from "src/app/Services/common.service";
-import { Table, DialogService } from "primeng";
+import { Table, DialogService, MultiSelect } from "primeng";
 import { AddEditClientlegalentityDialogComponent } from "./add-edit-clientlegalentity-dialog/add-edit-clientlegalentity-dialog.component";
 import { AddEditSubdivisionComponent } from "./add-edit-subdivision/add-edit-subdivision.component";
 import { AddEditPocComponent } from "./add-edit-poc/add-edit-poc.component";
@@ -48,7 +50,27 @@ import { PMObjectService } from "src/app/projectmanagement/services/pmobject.ser
  *
  */
 export class ClientMasterdataComponent implements OnInit {
+
+  // for PO  reset 
+  @ViewChild('poTable', { static: false }) poTable: Table;
+  @ViewChildren('poName') poName: QueryList<MultiSelect>;
+  @ViewChildren('poNo') poNo: QueryList<MultiSelect>;
+  @ViewChildren('poRevenur') poRevenur: QueryList<MultiSelect>;
+  @ViewChildren('poOOP') poOOP: QueryList<MultiSelect>;
+  @ViewChildren('poLUpdated') poLUpdated: QueryList<MultiSelect>;
+  @ViewChildren('poLUpdatedBy') poLUpdatedBy: QueryList<MultiSelect>;
   modalloaderenable: boolean;
+
+
+  //for poc reset
+  @ViewChild('poc', { static: false }) poc: Table;
+  @ViewChildren('pocFName') pocFName: QueryList<MultiSelect>;
+  @ViewChildren('pocLName') pocLName: QueryList<MultiSelect>;
+  @ViewChildren('pocEmail') pocEmail: QueryList<MultiSelect>;
+  @ViewChildren('pocLUpdated') pocLUpdated: QueryList<MultiSelect>;
+  @ViewChildren('pocLUpdatedBy') pocLUpdatedBy: QueryList<MultiSelect>;
+
+
   /**
    * Construct a method to create an instance of required component.
    *
@@ -813,6 +835,8 @@ export class ClientMasterdataComponent implements OnInit {
    *
    */
   async showPOC() {
+
+    this.resetPOCTable();
     this.constantsService.loader.isPSInnerLoaderHidden = false;
     const tempArray = [];
     this.POCRows = [];
@@ -867,6 +891,33 @@ export class ClientMasterdataComponent implements OnInit {
     }
     this.constantsService.loader.isPSInnerLoaderHidden = true;
     this.showPointofContact = true;
+  }
+
+
+
+
+  resetPOCTable(){
+    this.poc.reset();
+    this.pocFName['_results'].forEach(ds => {
+      ds.value = null;
+      ds.updateLabel();
+    });
+    this.pocLName['_results'].forEach(ds => {
+      ds.value = null;
+      ds.updateLabel();
+    });
+    this.pocEmail['_results'].forEach(ds => {
+      ds.value = null;
+      ds.updateLabel();
+    });
+    this.pocLUpdated['_results'].forEach(ds => {
+      ds.value = null;
+      ds.updateLabel();
+    });
+    this.pocLUpdatedBy['_results'].forEach(ds => {
+      ds.value = null;
+      ds.updateLabel();
+    });
   }
   /**
    * Construct a method to map the array values into particular column dropdown.
@@ -1003,6 +1054,7 @@ export class ClientMasterdataComponent implements OnInit {
    *
    */
   async showPO() {
+    this.resetPOTable();
     this.constantsService.loader.isPSInnerLoaderHidden = false;
     const tempArray = [];
     this.PORows = [];
@@ -1084,10 +1136,43 @@ export class ClientMasterdataComponent implements OnInit {
       });
       this.PORows = tempArray;
       this.POFilters(this.PORows);
+     
     }
     this.constantsService.loader.isPSInnerLoaderHidden = true;
     this.showPurchaseOrder = true;
   }
+
+  resetPOTable(){
+    this.poTable.reset();
+    this.poName['_results'].forEach(ds => {
+      ds.value = null;
+      ds.updateLabel();
+    });
+    this.poNo['_results'].forEach(ds => {
+      ds.value = null;
+      ds.updateLabel();
+    });
+    this.poRevenur['_results'].forEach(ds => {
+      ds.value = null;
+      ds.updateLabel();
+    });
+    this.poOOP['_results'].forEach(ds => {
+      ds.value = null;
+      ds.updateLabel();
+    });
+    this.poLUpdated['_results'].forEach(ds => {
+      ds.value = null;
+      ds.updateLabel();
+    });
+    this.poLUpdatedBy['_results'].forEach(ds => {
+      ds.value = null;
+      ds.updateLabel();
+    });
+  }
+
+
+
+
   /**
    * Construct a method to map the array values into particular column dropdown.
    *
@@ -1252,6 +1337,7 @@ export class ClientMasterdataComponent implements OnInit {
    *  Pass `true` to replace the item in the array
    */
   async loadRecentPORecords(ID, action) {
+
     const tempArray = [];
     const poGet = Object.assign({}, this.adminConstants.QUERY.GET_PO_BY_ID);
     poGet.filter = poGet.filter
@@ -1351,6 +1437,7 @@ export class ClientMasterdataComponent implements OnInit {
       return tempArray;
     }
 
+    this.resetPOTable();
     this.modalloaderenable = false;
   }
   /**
@@ -2034,6 +2121,7 @@ export class ClientMasterdataComponent implements OnInit {
         this.POCRows.unshift(obj);
       }
       this.POCRows = [...this.POCRows];
+      this.resetPOCTable();
       this.POCFilters(this.POCRows);
     }
   }
