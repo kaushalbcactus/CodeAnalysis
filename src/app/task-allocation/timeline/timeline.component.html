@@ -163,10 +163,7 @@
                                 <i class="pi pi-check" style="font-size: 2em;vertical-align: middle;"></i>
                             </div>
                         </td>
-                        <td style="text-align: center;" *ngIf="projectDetails">
-                            <span>{{rowData.budgetHours}}</span>
-
-                        </td>
+                        
 
                         <!-- Start Date -->
                         <td>
@@ -217,7 +214,11 @@
                                 </ngx-material-timepicker>
                             </span>
                         </td>
+                        
                         <!-- Budget Hrs -->
+                        <td style="text-align: center;" *ngIf="projectDetails">
+                            <span>{{rowData.budgetHours}}</span>
+                        </td>
                         <td style="text-align: center;" *ngIf="!projectDetails">
                           <div *ngIf="(rowData.type === 'milestone' && rowData.status !== 'Not Saved' && rowData.status !== 'Not Confirmed' && !rowData.isCurrent) || (rowData.type ==='task' && !rowData.editMode && rowData.itemType !== 'Client Review' && rowData.itemType !== 'Send to client')"
                               style="float: left;margin-left: 22px;">{{rowData.budgetHours}}</div>
