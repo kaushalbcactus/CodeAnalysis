@@ -8,7 +8,7 @@
                     <div class="info" *ngIf="isPubSupportComponent && journal_Conf_data.length">
                         <span>PubSupport Status : {{journal_Conf_data[0]?.project.PubSupportStatus}}</span>
                         <span>Submission Date : {{journal_Conf_data[0]?.project.LastSubmissionDate | date:'MMM d, y, hh:mm a' }}</span>
-                        <span>Author Details : <a style="color:#d7181f;cursor:pointer" (click)="AuthorDetails(journal_Conf_data[0]?.project)">Author Details</a></span>
+                        <span><a style="color:#d7181f;cursor:pointer" (click)="AuthorDetails(journal_Conf_data[0]?.project)">Author Details</a></span>
                         <span><a style="color:#d7181f;cursor:pointer"  (click)="goToPubSupport(journal_Conf_data[0]?.project.ProjectCode)">Open PubSupport</a></span>
                     </div>
                 </div>
