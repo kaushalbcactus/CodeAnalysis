@@ -945,15 +945,15 @@ export class TimelineComponent
       }
 
       ////// Assign users & hours
+      this.assignProjectHours(
+        projectHoursSpent,
+        projectHoursAllocated,
+        projectAvailableHours,
+        totalMilestoneBudgetHours
+      );
 
       if (this.projectDetails === undefined) {
         this.assignUsers(allRetrievedTasks);
-        this.assignProjectHours(
-          projectHoursSpent,
-          projectHoursAllocated,
-          projectAvailableHours,
-          totalMilestoneBudgetHours
-        );
       }
 
       this.reOrderTaskItems(this.milestoneData);
