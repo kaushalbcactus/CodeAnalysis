@@ -970,15 +970,15 @@ export class TimelineComponent
       }
 
       ////// Assign users & hours
+      this.assignProjectHours(
+        projectHoursSpent,
+        projectHoursAllocated,
+        projectAvailableHours,
+        totalMilestoneBudgetHours
+      );
 
       if (this.projectDetails === undefined) {
         this.assignUsers(allRetrievedTasks);
-        this.assignProjectHours(
-          projectHoursSpent,
-          projectHoursAllocated,
-          projectAvailableHours,
-          totalMilestoneBudgetHours
-        );
       }
 
       this.reOrderTaskItems(this.milestoneData);
@@ -1015,9 +1015,10 @@ export class TimelineComponent
     } else {
       this.ganttChart.ganttAttachEvents();
     }
+    await this.getResourceCapacity();
     this.loaderenable = false;
     this.GanttChartView = true;
-    await this.getResourceCapacity();
+
   }
 
   assignProjectHours(
@@ -1178,7 +1179,7 @@ export class TimelineComponent
           e.milestone === m.taskFullName &&
           !e.previousTask &&
           e.itemType !== "Adhoc" &&
-          e.itemType !== "TB"
+          e.itemType !== "TB" && e.itemType !== "Time Booking"
       );
 
 
@@ -4484,10 +4485,10 @@ export class TimelineComponent
   sortDates(node, type) {
     const nodeCopy = Object.assign({}, node).children.filter(
       c =>
-        c.data.type !== "task" ||
-        (c.data.type === "task" &&
-          c.data.itemType.toLowerCase() !== "adhoc" &&
-          c.data.itemType.toLowerCase() !== "tb")
+        c.data.type !== 'task' ||
+        (c.data.type === 'task' &&
+          c.data.itemType.toLowerCase() !== 'adhoc' &&
+          c.data.itemType.toLowerCase() !== 'tb' && c.data.itemType !== 'Time Booking')
     );
     switch (type) {
       case "start":
@@ -6613,7 +6614,7 @@ export class TimelineComponent
   validateAllocationString(checkTasks) {
     //////// check if multiple days task have allocationperday string
     const errorTasks = checkTasks.filter(t => t.edited && t.itemType !== 'Client Review' && t.itemType !== 'Send to client'
-      && !t.parentSlot && t.slotType === 'Task' && t.status !== 'Abandon' && t.status !== 'Completed' && t.status !== 'Auto Closed' 
+      && !t.parentSlot && t.slotType === 'Task' && t.status !== 'Abandon' && t.status !== 'Completed' && t.status !== 'Auto Closed'
       && t.status !== 'Deleted' && t.itemType !== 'Adhoc'
       && new Date(t.pUserStartDatePart).getTime() !== new Date(t.pUserEndDatePart).getTime()
       && !t.allocationPerDay && +t.budgetHours
