@@ -320,7 +320,7 @@ export class TimelineComponent
       users = [...new Set(users)].filter(Boolean);
       const newdate = this.commonService.calcBusinessDate(
         "Next",
-        90,
+        30,
         new Date(stDate)
       );
       this.sharedObject.oCapacity = await this.usercapacityComponent.applyFilterReturn(
@@ -333,7 +333,9 @@ export class TimelineComponent
   }
 
   public getAllResources(tasks) {
-    const validTasks = tasks.filter(t => t.Status !== "Deleted");
+    const validTasks = tasks.filter(t => t.Status !== "Deleted" && t.Status !== 'Completed' 
+    && t.Status !== 'Auto Closed' && t.Task !== 'Time Booking' && t.Task !== 'Send to client'
+    && t.Task !== 'Client Review' && t.Task !== 'Adhoc');
     let resources = validTasks.map(t => t.AssignedTo.ID);
     resources = [...new Set(resources)].filter(res => res && res > 0);
     return resources;

@@ -658,7 +658,7 @@ export class StandardprojectComponent implements OnInit {
       startDate = this.ngStandardProposedStartDate;
     }
     if (this.selectedSkillObject.value.userType != 'Type') {
-      let endDate = this.calcBusinessNextDate(startDate, 90);
+      let endDate = this.calcBusinessNextDate(startDate, 30);
       let resource = [];
       resource.push(this.selectedSkillObject.value, this.selectedResourceObject.value);
       const currentUser = this.pmObject.oProjectManagement.oResourcesCat.find(u => u.UserNamePG.ID === this.userProperties.Id);
