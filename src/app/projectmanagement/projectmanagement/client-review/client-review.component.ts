@@ -577,7 +577,7 @@ export class ClientReviewComponent implements OnInit {
       const startDateString = new Date(this.commonService.formatDate(startDate) + ' 00:00:00').toISOString();
       const endDateString = new Date(this.commonService.formatDate(endDate) + ' 23:59:00').toISOString();
       const currentFilter = ' AssignedTo eq ' + this.globalObject.currentUser.userId + ' and (((StartDate ge \'' + startDateString + '\' or StartDate le \'' + endDateString
-        + '\') and (DueDate ge \'' + startDateString + '\' and DueDate le \'' + endDateString
+        + '\') and (DueDateDT ge \'' + startDateString + '\' and DueDateDT le \'' + endDateString
         + '\')) or  ((Actual_x0020_Start_x0020_Date ge \'' + startDateString + '\' or Actual_x0020_Start_x0020_Date le \'' + endDateString
         + '\') and (Actual_x0020_End_x0020_Date ge \'' + startDateString + '\' and Actual_x0020_End_x0020_Date le \'' + endDateString
         + '\')))  and (Status eq \'Completed\') and (Task eq \'Client Review\')'
