@@ -1034,7 +1034,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             mailContent = this.replaceContent(mailContent, '@@Val5@@', expense.Currency + ' ' + parseFloat(expense.Amount).toFixed(2));
             mailContent = this.replaceContent(mailContent, '@@Val6@@', expense.ClientAmount ? expense.ClientCurrency +
                 ' ' + parseFloat(expense.ClientAmount).toFixed(2) : '--');
-            mailContent = this.replaceContent(mailContent, '@@Val7@@', expense.Notes);
+            mailContent = this.replaceContent(mailContent, '@@Val7@@', expense.NotesMT);
             mailContent = this.replaceContent(mailContent, '@@Val10@@', this.globalService.sharePointPageObject.rootsite +
                 '' + expense.FileURL);
             mailContent = this.replaceContent(mailContent, '@@Val11@@', this.globalService.sharePointPageObject.rootsite +
