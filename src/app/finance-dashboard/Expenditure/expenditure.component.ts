@@ -1029,7 +1029,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
                 'Client legal entity' : 'Project');
             mailContent = this.replaceContent(mailContent, '@@Val0@@', expense.ID);
             mailContent = this.replaceContent(mailContent, '@@Val1@@', val1);
-            mailContent = this.replaceContent(mailContent, '@@Val2@@', expense.Category);
+            mailContent = this.replaceContent(mailContent, '@@Val2@@', expense.CategoryST);
             mailContent = this.replaceContent(mailContent, '@@Val4@@', expense.SpendType);
             mailContent = this.replaceContent(mailContent, '@@Val5@@', expense.Currency + ' ' + parseFloat(expense.Amount).toFixed(2));
             mailContent = this.replaceContent(mailContent, '@@Val6@@', expense.ClientAmount ? expense.ClientCurrency +
