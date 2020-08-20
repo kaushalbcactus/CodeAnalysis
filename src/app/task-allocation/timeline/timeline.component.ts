@@ -5171,7 +5171,7 @@ export class TimelineComponent
           });
           arrPubSupportIds.push(milestoneTask.AssignedTo.ID);
           break;
-        case 'Reviewer':
+        case 'Review':
           reviewers.push({
             ID: milestoneTask.AssignedTo.ID,
             Name: milestoneTask.AssignedTo.Title
