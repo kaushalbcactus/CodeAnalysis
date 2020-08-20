@@ -87,7 +87,8 @@ export class AddUpdateProformaDialogComponent implements OnInit {
     delete this.selectedPurchaseNumber.__metadata;
     this.minProformaDate = new Date(Math.max.apply(null, this.config.data.selectedAllRowData.map(e => e.ScheduledDate)));
     this.showHideState({ value: this.config.data.selectedAllRowData[0].Template })
-    this.generateProformaNumber(this.config.data.selectedCLEData);
+    const prfType = this.config.data.selectedAllRowData[0].ScheduleType;
+    this.generateProformaNumber(this.config.data.selectedCLEData, prfType);
     this.getPOCNamesForEditInv(this.config.data.selectedCLEData);
     this.getPONumberFromCLE(this.config.data.selectedCLEData.Title);
     this.ProformaForm.get('POCName').setValue(this.listOfPOCNames.find(c => c.ID === this.selectedPurchaseNumber.POCLookup))
@@ -110,7 +111,7 @@ export class AddUpdateProformaDialogComponent implements OnInit {
     if (data) {
       let cleItem = data.value;
       this.getPONumberFromCLE(data.value.Title);
-      this.generateProformaNumber(cleItem);
+      this.generateProformaNumber(cleItem, '');
       this.getPOCNamesForEditInv(data.value);
     }
   }
@@ -175,14 +176,17 @@ export class AddUpdateProformaDialogComponent implements OnInit {
     }))
   }
 
-  generateProformaNumber(cle: any) {
+  generateProformaNumber(cle: any, prfData: string) {
     let cleAcronym = '';
     let proformaCounter: number = 0;
     let proformaDate = '';
     let isOOP: boolean = false;
-    if (this.ProformaForm.value.ProformaType) {
-      isOOP = this.ProformaForm.value.ProformaType.value.toLowerCase() === 'oop' ? true : false;
+    if (prfData) {
+      isOOP = prfData.toLowerCase() === 'oop' ? true : false;
     }
+    else if (this.ProformaForm.value.ProformaType) {
+      isOOP = this.ProformaForm.value.ProformaType.value.toLowerCase() === 'oop' ? true : false;
+    } 
     if (cle) {
       cleAcronym = cle.Acronym ? cle.Acronym : '';
       // console.log('cleAcronym,', cleAcronym);
