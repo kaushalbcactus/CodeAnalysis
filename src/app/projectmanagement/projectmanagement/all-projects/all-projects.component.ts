@@ -21,6 +21,7 @@ import { CsFinanceAuditDialogComponent } from './cs-finance-audit-dialog/cs-fina
 import { InvoiceLineitemsComponent } from './invoice-lineitems/invoice-lineitems.component';
 import { CdpfComponent } from 'src/app/shared/sqms/cdpf/cdpf.component';
 import { JournalConferenceDetailsComponent } from 'src/app/shared/journal-conference-details/journal-conference-details.component';
+import { ProjectBudgetBreakupComponent } from './project-budget-breakup/project-budget-breakup.component';
 
 declare var $;
 @Component({
@@ -341,6 +342,7 @@ export class AllProjectsComponent implements OnInit {
           { label: 'Manage Finance', command: (event) => this.manageFinances(this.selectedProjectObj) },
           { label: 'Change SOW', command: (event) => this.moveSOW(this.selectedProjectObj) },
           { label: 'Expense', command: (event) => this.showExpense(this.selectedProjectObj) },
+          { label: 'Project Budget', command: (event) => this.showProjectBudgetBreakup(this.selectedProjectObj) }
         ]
       },
       { label: 'View Details', command: (event) => this.sendOutput.next(this.selectedProjectObj) },
@@ -3042,6 +3044,20 @@ export class AllProjectsComponent implements OnInit {
       data: {
         projectObj,
         readOnly: true
+      },
+      contentStyle: { 'max-height': '85vh', 'overflow-y': 'auto' },
+      closable: true
+    });
+    ref.onClose.subscribe(element => {
+    });
+  }
+
+  showProjectBudgetBreakup(projectObj) {
+    const ref = this.dialogService.open(ProjectBudgetBreakupComponent, {
+      header: 'Project Budget - ' + projectObj.ProjectCode + '(' + projectObj.Title + ')',
+      width: '90vw',
+      data: {
+        projectCode: projectObj.ProjectCode
       },
       contentStyle: { 'max-height': '85vh', 'overflow-y': 'auto' },
       closable: true

@@ -1,0 +1,118 @@
+<div *ngIf="projectCode">
+<p-table #PBBTable [columns]="PBBColumns" [value]="PBBDetails">
+    <ng-template pTemplate="header" let-columns>
+        <tr>
+            <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                {{ col.header }}
+                <p-sortIcon *ngIf="col.field" [field]="col.field"></p-sortIcon>
+            </th>
+        </tr>
+        <!-- <tr>
+            <th *ngFor="let col of columns" [ngSwitch]="col.field">
+                <ng-container *ngIf="col.field">
+                    <input pInputText type="text" (input)="dt.filter($event.target.value, col.field, 'contains')">
+                </ng-container>
+            </th>
+        </tr> -->
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+        <tr>
+            <td>
+                {{rowData.ApprovalDate | date:'MMM dd, yyyy'}}
+            </td>
+            <td>
+                {{rowData.Status}}
+            </td>
+            <td>
+                {{rowData.OriginalBudget}}
+            </td>
+            <td>
+                {{rowData.NetBudget}}
+            </td>
+            <td>
+                {{rowData.OOPBudget}}
+            </td>
+            <td>
+                {{rowData.TaxBudget}}
+            </td>
+            <td>
+                {{rowData.BudgetHours}}
+            </td>
+            <td>
+                {{rowData.Reason}}
+            </td>
+            <td>
+                {{rowData.CommentsMT}}
+            </td>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage" let-columns>
+        <tr>
+            <td [attr.colspan]="columns.length">
+                No Data found
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
+</div>
+
+<div *ngIf="sowCode">
+<p-table #SowBudgetTable [columns]="sowBudgetColumns" [value]="sowBudgetDetails">
+    <ng-template pTemplate="header" let-columns>
+        <tr>
+            <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                {{ col.header }}
+                <p-sortIcon *ngIf="col.field" [field]="col.field"></p-sortIcon>
+            </th>
+        </tr>
+        <!-- <tr>
+            <th *ngFor="let col of columns" [ngSwitch]="col.field">
+                <ng-container *ngIf="col.field">
+                    <input pInputText type="text" (input)="dt.filter($event.target.value, col.field, 'contains')">
+                </ng-container>
+            </th>
+        </tr> -->
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+        <tr>
+            <td>
+                {{rowData.Status}}
+            </td>
+            <td>
+                {{rowData.TotalBudget}}
+            </td>
+            <td>
+                {{rowData.NetBudget}}
+            </td>
+            <td>
+                {{rowData.OOPBudget}}
+            </td>
+            <td>
+                {{rowData.TaxBudget}}
+            </td>
+            <td>
+                {{rowData.AddendumTotalBudget}}
+            </td>
+            <td>
+                {{rowData.AddendumNetBudget}}
+            </td>
+            <td>
+                {{rowData.AddendumOOPBudget}}
+            </td>
+            <td>
+                {{rowData.AddendumTaxBudget}}
+            </td>
+            <td>
+                {{rowData.Currency}}
+            </td>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage" let-columns>
+        <tr>
+            <td [attr.colspan]="columns.length">
+                No Data found
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
+</div>

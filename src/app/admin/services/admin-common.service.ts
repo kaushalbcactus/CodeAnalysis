@@ -250,6 +250,10 @@ export class AdminCommonService {
     return null;
   }
 
+  async getITInfo() {
+    this.commonService.SetNewrelic('Finance-Dashboard', 'fd-shareData', 'getGroupInfo');
+    return await this.spServices.getGroupInfo('Invoice_Team');
+  }
 
 
   

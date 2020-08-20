@@ -309,7 +309,7 @@ export class AdminConstantService {
         "POExpiryDate,RevenueLinked,ScheduledOOP,ScheduledRevenue,Status,TA,TaxLinked,TotalInvoiced," +
         "TotalLinked,TotalScheduled,AmountTax,CMLevel2/ID,CMLevel2/Title,Editor/ID,Editor/Title",
       filter:
-        "Status eq '{{active}}' and ClientLegalEntity eq '{{clientLegalEntity}}'",
+        "Status eq '{{active}}' or Status eq 'Closed' and ClientLegalEntity eq '{{clientLegalEntity}}'",
       expand: "CMLevel2/ID,CMLevel2/Title,Editor/ID,Editor/Title",
       orderby: "Modified desc",
       top: 4900,
@@ -343,6 +343,10 @@ export class AdminConstantService {
       filter: "Bucket eq '{{bucket}}' and EndDateDT eq null",
       orderby: "ID asc",
       top: 4900,
+    },
+    CONTENT_QUERY: {
+      select: 'ContentMT',
+      filter: 'Title eq \'{{templateName}}\''
     },
   };
   public LOGICAL_FIELD = {

@@ -69,6 +69,7 @@ export class ClientMasterdataComponent implements OnInit {
   @ViewChildren('pocEmail') pocEmail: QueryList<MultiSelect>;
   @ViewChildren('pocLUpdated') pocLUpdated: QueryList<MultiSelect>;
   @ViewChildren('pocLUpdatedBy') pocLUpdatedBy: QueryList<MultiSelect>;
+  groupITInfo: any;
 
 
   /**
@@ -2380,6 +2381,10 @@ export class ClientMasterdataComponent implements OnInit {
       "getPOPOBudgetBreakup"
     );
     await this.spServices.executeBatch(batchURL);
+    this.groupITInfo = await this.adminCommonService.getITInfo();
+        console.log('this.groupITInfo  ', this.groupITInfo);
+    await this.sendNotificationMail(this.constantsService.EMAIL_TEMPLATE_NAME.PO_BUDGET_UPDATED,'PO Budget Updated', this.adminObject)
+
 
     this.common.showToastrMessage(
       this.constantsService.MessageType.success,
@@ -2497,5 +2502,65 @@ export class ClientMasterdataComponent implements OnInit {
         this.confirmBudgetUpdate();
       }
     });
+  }
+  
+
+  async sendNotificationMail(val, header, selectedObj) {
+    const queryText = val;
+    let arrayTo = [];
+    const objEmailBody = [];
+
+    const mailSubject = this.currPOObj.PoName + ' - ' + header;
+
+      objEmailBody.push({ key: '@@ClientName@@', value: this.currClientObj.ClientLegalEntity });
+        objEmailBody.push({ key: '@@PO@@', value: this.currPOObj.PoName });
+        // objEmailBody.push({ key: '@@POC@@', value: this.currPOObj.POCLookup });
+        objEmailBody.push({ key: '@@Currency@@', value: this.currClientObj.Currency });
+        objEmailBody.push({ key: '@@TotalBudget@@', value: this.adminObject.oldBudget.Amount });
+        objEmailBody.push({ key: '@@NetBudget@@', value: this.adminObject.oldBudget.AmountRevenue });
+        objEmailBody.push({ key: '@@OOPBudget@@', value: this.adminObject.oldBudget.AmountOOP });
+        objEmailBody.push({ key: '@@TaxBudget@@', value: this.adminObject.oldBudget.AmountTax });
+        objEmailBody.push({ key: '@@AddendumTotalvalue@@', value: this.adminObject.newBudget.Amount });
+        objEmailBody.push({ key: '@@AddendumNetvalue@@', value: this.adminObject.newBudget.AmountRevenue });
+        objEmailBody.push({ key: '@@AddendumOOPvalue@@', value: this.adminObject.newBudget.AmountOOP });
+        objEmailBody.push({ key: '@@AddendumTaxvalue@@', value: this.adminObject.newBudget.AmountTax });
+        objEmailBody.push({ key: '@@NewTotalBudget@@', value: this.adminObject.finalBudget.Amount });
+        objEmailBody.push({ key: '@@NewNetBudget@@', value: this.adminObject.finalBudget.AmountRevenue });
+        objEmailBody.push({ key: '@@NewOOPBudget@@', value: this.adminObject.finalBudget.AmountOOP });
+        objEmailBody.push({ key: '@@NewTaxBudget@@', value: this.adminObject.finalBudget.AmountTax });
+  
+    arrayTo = this.getTosList();
+    this.getTemplate(queryText, objEmailBody, mailSubject, arrayTo)
+  }
+
+  onlyUnique(value, index, self) {
+    return self.indexOf(value) === index;
+  }
+
+  getTosList() {
+    const itApprovers = this.groupITInfo.results;
+    let arrayTo = [];
+    if (itApprovers.length) {
+        for (const i in itApprovers) {
+            if (itApprovers[i].Email !== undefined && itApprovers[i].Email !== '') {
+                arrayTo.push(itApprovers[i].Email);
+            }
+        }
+    }
+    arrayTo = arrayTo.filter(this.onlyUnique);
+    console.log('arrayTo ', arrayTo);
+    return arrayTo;
+  }
+
+  async getTemplate(templateName, objEmailBody, mailSubject, arrayTo, cc?) {
+    const contentFilter = Object.assign({}, this.adminConstants.QUERY.CONTENT_QUERY);
+    // tslint:disable-next-line:max-line-length
+    contentFilter.filter = contentFilter.filter.replace(/{{templateName}}/gi, templateName);
+    const body = await this.spServices.readItems(this.constantsService.listNames.MailContent.name, contentFilter);
+    let mailBody = body[0].ContentMT;
+    objEmailBody.forEach(element => {
+      mailBody = mailBody.replace(RegExp(element.key, 'gi'), element.value);
+    });
+    this.spServices.sendMail(arrayTo.join(','), this.globalObject.currentUser.email, mailSubject, mailBody);
   }
 }

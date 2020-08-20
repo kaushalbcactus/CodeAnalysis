@@ -471,6 +471,7 @@ export class ConstantsService {
     BUDGET_REDUCTION: "ApproveProjectBudget",
     BUDGET_APPROVAL: "OutcomeBudgetApproval",
     ON_HOLD: "Hold",
+    PO_BUDGET_UPDATED: "POBudgetUpdated",
   };
   public invoiceList = {
     status: {

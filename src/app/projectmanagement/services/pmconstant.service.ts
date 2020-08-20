@@ -243,6 +243,12 @@ export class PmconstantService {
       filter: 'SOWCode eq \'{{SOWCodeStr}}\'',
       orderby: 'ID desc'
     },
+    SOW_BUDGET_BREAKUP_ALL: {
+      // tslint:disable-next-line:max-line-length
+      select: 'SOWCode,Status,Currency,TotalBudget,NetBudget,OOPBudget,TaxBudget,AddendumTotalBudget,AddendumNetBudget,AddendumOOPBudget,AddendumTaxBudget,Modified',
+      filter: 'SOWCode eq \'{{SOWCodeStr}}\'',
+      orderby: 'ID desc'
+    },
     PREDECESSOR: {
       select: '',
       filter: 'SOWCode eq eq \'{{predecessor}}\'',
@@ -515,7 +521,13 @@ export class PmconstantService {
       filter: 'IsActive eq \'{{isActive}}\'',
       top: 4500,
       orderby: 'Title asc'
-    }
+    },
+    PROJECT_BUDGET_BREAKUP_FOR_ALL: {
+      select: 'ID, Title, ProjectLookup, Status, ApprovalDate, OriginalBudget, NetBudget, OOPBudget, TaxBudget, ProjectCode,'
+        + ' BudgetHours, Reason, CommentsMT',
+      filter: 'ProjectCode eq \'{{projectCode}}\'',
+      top: 4500
+    },
   };
   public QUERY = {
     GET_TIMESPENT: {
