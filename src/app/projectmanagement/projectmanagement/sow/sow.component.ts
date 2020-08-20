@@ -213,7 +213,7 @@ export class SOWComponent implements OnInit, OnDestroy {
       },
       {
         label: 'Show History', target: '_blank',
-        command: (task) => this.timeline.showTimeline(this.pmObject.selectedSOWTask.ID, 'ProjectMgmt', 'SOW')
+        command: (task) => this.timeline.showTimeline(this.pmObject.selectedSOWTask.ID, 'ProjectMgmt', this.constants.listNames.SOW.name)
       }
     ];
     this.subscription = this.dataService.on('reload-EditSOW').pipe(takeUntil(this._destroy$)).subscribe(() => this.loadSOWInit());
@@ -714,7 +714,7 @@ export class SOWComponent implements OnInit, OnDestroy {
 
 
   // ***************************************************************************************************
-  // open dialog module to add / reduce sow budget of selected row item 
+  // open dialog module to add / reduce sow budget of selected row item
   // ***************************************************************************************************
 
 
@@ -841,9 +841,9 @@ export class SOWComponent implements OnInit, OnDestroy {
               createSendEmailObj.type = 'POST';
               createSendEmailObj.listName = this.constants.listNames.SendEmail.name;
               batchURL.push(createSendEmailObj);
-              
+
             // });
-           
+
 
             this.commonService.SetNewrelic('projectManagment', 'projectManagement', 'GetSowSowBudBreakup');
             const res = await this.spServices.executeBatch(batchURL);
