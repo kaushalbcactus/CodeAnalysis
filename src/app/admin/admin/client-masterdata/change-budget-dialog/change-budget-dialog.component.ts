@@ -7,6 +7,7 @@ import { AdminObjectService } from 'src/app/admin/services/admin-object.service'
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { CommonService } from 'src/app/Services/common.service';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-change-budget-dialog',
@@ -42,6 +43,8 @@ export class ChangeBudgetDialogComponent implements OnInit {
   currency: string;
   BalancedRevenue: number;
   BalancedOOP: number;
+  selectedFile: any;
+  SelectedFile: any = [];
   constructor(private frmbuilder: FormBuilder, 
     private adminCommonService: AdminCommonService,
     private adminConstants: AdminConstantService,
@@ -50,12 +53,14 @@ export class ChangeBudgetDialogComponent implements OnInit {
     public adminObject: AdminObjectService,
     private constantsService: ConstantsService,
     private spServices: SPOperationService,
-    private common: CommonService, ) {
+    private common: CommonService,
+    private datePipe: DatePipe ) {
     this.changeBudgetForm = this.frmbuilder.group({
       total: [0, Validators.required],
       revenue: [0, Validators.required],
       oop: [0, Validators.required],
       tax: [0, Validators.required],
+      poFile: ['', Validators.required]
     });
   }
 
@@ -173,7 +178,11 @@ export class ChangeBudgetDialogComponent implements OnInit {
       this.common.showToastrMessage(this.constantsService.MessageType.error,'Total should be Positive Number',false);
       return false;
     }
-    this.ref.close(true);
+    let obj = {
+      budgeDetails: true,
+      selectedFile: this.SelectedFile
+    }
+    this.ref.close(obj);
   }
   /**
    * Construct a method to subtract the budget from existing budget.
@@ -261,7 +270,11 @@ export class ChangeBudgetDialogComponent implements OnInit {
       this.common.showToastrMessage(this.constantsService.MessageType.error,'Tax Amount must be less than or equal to existing Tax',false);
       return false;
     }
-    this.ref.close(true);
+    let obj = {
+      budgeDetails: true,
+      selectedFile: this.SelectedFile
+    }
+    this.ref.close(obj);
   }
   /**
    * Construct a method to add budget from one category to another category without affecting the total budget.
@@ -348,7 +361,11 @@ export class ChangeBudgetDialogComponent implements OnInit {
       this.common.showToastrMessage(this.constantsService.MessageType.error,'Total Should be Zero',false);
       return false;
     }
-    this.ref.close(true);
+    let obj = {
+      budgeDetails: true,
+      selectedFile: this.SelectedFile
+    }
+    this.ref.close(obj);
   }
 
 
@@ -369,6 +386,20 @@ export class ChangeBudgetDialogComponent implements OnInit {
       this.adminObject.po.total = +(this.adminObject.po.revenue + this.adminObject.po.oop + this.adminObject.po.tax).toFixed(2);
       this.changeBudgetForm.get('total').setValue(this.adminObject.po.total);
     
+  }
+
+  onFileChange(event) {
+    this.selectedFile = null;
+    if (event.target.files && event.target.files.length > 0) {
+      this.selectedFile = event.target.files;
+      this.selectedFile = event.target.files[0];
+      let fileName = event.target.files[0].name;
+      fileName = fileName.split(/\.(?=[^\.]+$)/)[0] + '.' + this.datePipe.transform(new Date(),
+        'ddMMyyyyhhmmss') + '.' + fileName.split(/\.(?=[^\.]+$)/)[1];
+      this.SelectedFile.push(new Object({ name: fileName, file: this.selectedFile }));
+      console.log(this.SelectedFile);
+    }
+           
   }
 
 }

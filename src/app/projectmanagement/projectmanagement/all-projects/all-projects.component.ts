@@ -321,6 +321,14 @@ export class AllProjectsComponent implements OnInit {
         {
           label: 'Off Hold', command: (event) =>
             this.InvoiceLineItemsPopup(this.selectedProjectObj, this.constants.projectStatus.Unallocated)
+        },
+        {
+          label: 'Move to Finance Audit', command: (event) =>
+            this.revertFromClosed(this.selectedProjectObj)
+        },
+        {
+          label: 'Move to CS Audit', command: (event) =>
+            this.revertFromPendingClosure(this.selectedProjectObj)
         }]
       },
       {
@@ -842,6 +850,8 @@ export class AllProjectsComponent implements OnInit {
           menu.model[0].items[3].visible = false;
           menu.model[0].items[5].visible = false;
           menu.model[0].items[6].visible = false;
+          menu.model[0].items[7].visible = false;
+          menu.model[0].items[8].visible = false;
           break;
         case this.constants.projectStatus.Unallocated:
         case this.constants.projectStatus.InProgress:
@@ -851,6 +861,8 @@ export class AllProjectsComponent implements OnInit {
           menu.model[0].items[2].visible = false;
           menu.model[0].items[3].visible = false;
           menu.model[0].items[6].visible = false;
+          menu.model[0].items[7].visible = false;
+          menu.model[0].items[8].visible = false;
           break;
 
         case this.constants.projectStatus.OnHold:
@@ -860,6 +872,8 @@ export class AllProjectsComponent implements OnInit {
           menu.model[0].items[3].visible = false;
           menu.model[0].items[4].visible = false;
           menu.model[0].items[5].visible = false;
+          menu.model[0].items[7].visible = false;
+          menu.model[0].items[8].visible = false;
           break
 
         case this.constants.projectStatus.AuditInProgress:
@@ -870,17 +884,26 @@ export class AllProjectsComponent implements OnInit {
           // menu.model[0].items[4].visible = false;
           break;
         case this.constants.projectStatus.PendingClosure:
-          menu.model[0].visible = false;
-          // menu.model[0].items[0].visible = false;
-          // menu.model[0].items[1].visible = false;
-          // menu.model[0].items[2].visible = false;
-          // menu.model[0].items[4].visible = false;
-          // menu.model[1].items[1].visible = false;
-          // menu.model[0].items[5].visible = false;
-          // menu.model[0].items[6].visible = false;
+          // menu.model[0].visible = false;
+          menu.model[0].items[0].visible = false;
+          menu.model[0].items[1].visible = false;
+          menu.model[0].items[2].visible = false;
+          menu.model[0].items[3].visible = false;
+          menu.model[0].items[4].visible = false;
+          menu.model[0].items[5].visible = false;
+          menu.model[0].items[6].visible = false;
+          menu.model[0].items[7].visible = false;
           break;
         case this.constants.projectStatus.Closed:
-          menu.model[0].visible = false;
+          // menu.model[0].visible = false;
+          menu.model[0].items[0].visible = false;
+          menu.model[0].items[1].visible = false;
+          menu.model[0].items[2].visible = false;
+          menu.model[0].items[3].visible = false;
+          menu.model[0].items[4].visible = false;
+          menu.model[0].items[5].visible = false;
+          menu.model[0].items[6].visible = false;
+          menu.model[0].items[8].visible = false;
           break;
         case this.constants.projectStatus.Cancelled:
           menu.model[0].visible = false;
@@ -1908,6 +1931,101 @@ export class AllProjectsComponent implements OnInit {
         this.router.navigate(['/projectMgmt/allProjects']);
       }
     }, this.pmConstant.TIME_OUT);
+  }
+
+  async revertFromClosed(selectedProjectObj) {
+    this.commonService.confirmMessageDialog('Change Status of Project -' + selectedProjectObj.ProjectCode + '', 'Are you sure you want to change the Status of Project - ' + selectedProjectObj.ProjectCode + ''
+    + ' from \'' + selectedProjectObj.Status + '\' to \'' + this.constants.projectStatus.NewPendingClosure + '\'?', null, ['Yes', 'No'], false).then(async Confirmation => {
+      if (Confirmation === 'Yes') {
+    const batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    const piUdateData: any = {
+      __metadata: {
+        type: this.constants.listNames.ProjectInformation.type
+      },
+      Status: this.constants.projectStatus.PendingClosure,
+      PrevStatus: selectedProjectObj.Status,
+      ActualEndDate: null
+    };
+
+    const piUpdate = Object.assign({}, options);
+    piUpdate.data = piUdateData;
+    piUpdate.listName = this.constants.listNames.ProjectInformation.name;
+    piUpdate.type = 'PATCH';
+    piUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, selectedProjectObj.ID);
+    batchURL.push(piUpdate);
+
+    // console.log(batchURL)
+
+    if (batchURL.length) {
+      this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'revertClosed');
+      await this.spServices.executeBatch(batchURL);
+
+      this.commonService.showToastrMessage(this.constants.MessageType.success, 'Project - ' + selectedProjectObj.ProjectCode + ' Updated Successfully.', true);
+    }
+
+    setTimeout(() => {
+      if (this.router.url === '/projectMgmt/allProjects') {
+        this.pmObject.allProjectItems = [];
+        this.reloadAllProject();
+      } else {
+        this.router.navigate(['/projectMgmt/allProjects']);
+      }
+    }, this.pmConstant.TIME_OUT);
+  }
+})
+  }
+
+  async revertFromPendingClosure(selectedProjectObj) {
+    this.commonService.confirmMessageDialog('Change Status of Project -' + selectedProjectObj.ProjectCode + '', 'Are you sure you want to change the Status of Project - ' + selectedProjectObj.ProjectCode + ''
+    + ' from \'' + this.constants.projectStatus.NewPendingClosure + '\' to \'' + this.constants.projectStatus.NewAuditInProgress + '\'?', null, ['Yes', 'No'], false).then(async Confirmation => {
+      if (Confirmation === 'Yes') {
+    const batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    const piUdateData: any = {
+      __metadata: {
+        type: this.constants.listNames.ProjectInformation.type
+      },
+      Status: this.constants.projectStatus.AuditInProgress,
+      PrevStatus: selectedProjectObj.Status,
+    };
+
+    const piUpdate = Object.assign({}, options);
+    piUpdate.data = piUdateData;
+    piUpdate.listName = this.constants.listNames.ProjectInformation.name;
+    piUpdate.type = 'PATCH';
+    piUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, selectedProjectObj.ID);
+    batchURL.push(piUpdate);
+
+    // console.log(batchURL)
+
+    if (batchURL.length) {
+      this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'revertPendingClosure');
+      await this.spServices.executeBatch(batchURL);
+
+      this.commonService.showToastrMessage(this.constants.MessageType.success, 'Project - ' + selectedProjectObj.ProjectCode + ' Updated Successfully.', true);
+    }
+
+    setTimeout(() => {
+      if (this.router.url === '/projectMgmt/allProjects') {
+        this.pmObject.allProjectItems = [];
+        this.reloadAllProject();
+      } else {
+        this.router.navigate(['/projectMgmt/allProjects']);
+      }
+    }, this.pmConstant.TIME_OUT);
+    }
+    })
   }
 
 

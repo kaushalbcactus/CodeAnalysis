@@ -104,3 +104,7 @@ table td {
     text-transform: uppercase;
     top: 0;
 }
+
+.editpoc {
+    padding: 0.5rem !important;
+}

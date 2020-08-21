@@ -2496,12 +2496,52 @@ export class ClientMasterdataComponent implements OnInit {
       closable: false,
     });
 
-    ref.onClose.subscribe((budgetDetails: any) => {
-      if (budgetDetails) {
+    ref.onClose.subscribe(async (budgetObj: any) => {
+      if (budgetObj) {
         this.modalloaderenable = true;
-        this.confirmBudgetUpdate();
+        await this.uploadFile(budgetObj.selectedFile);
+        await this.confirmBudgetUpdate();
       }
     });
+  }
+
+  uploadFile(selectedFile) {
+    this.common
+      .UploadFilesProgress(
+        selectedFile,
+        this.currClientObj.ListName +
+          "/" +
+          this.adminConstants.FOLDER_LOCATION.PO,
+        true
+      )
+      .then(async (uploadedfile) => {
+        if (
+          selectedFile.length > 0 &&
+          selectedFile.length === uploadedfile.length
+        ) {
+          if (!uploadedfile[0].hasOwnProperty("odata.error")) {
+            this.common.showToastrMessage(
+              this.constantsService.MessageType.success,
+              "File uploaded sucessfully.",
+              false
+            );           
+          } else {
+            this.common.showToastrMessage(
+              this.constantsService.MessageType.error,
+              "Error while uploading file.",
+              false
+            );
+          }
+        }
+      })
+      .catch((error) => {
+        console.log("Error while uploading" + error);
+        this.common.showToastrMessage(
+          this.constantsService.MessageType.error,
+          "Error while uploading file.",
+          false
+        );
+      });
   }
   
 
