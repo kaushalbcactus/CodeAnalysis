@@ -622,7 +622,9 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         this.cancelRejectDialog.title = event.item.label;
         if (this.cancelRejectDialog.title.toLowerCase() === 'cancel expense' || this.cancelRejectDialog.title.toLowerCase() === 'reject expense') {
 
-            this.cancelRejectDialog.title.toLowerCase() === 'cancel expense' ? this.getApproveExpenseMailContent('CancelExpense') : this.getApproveExpenseMailContent('RejectExpense');
+            this.cancelRejectDialog.title.toLowerCase() === 'cancel expense' ?
+            this.getApproveExpenseMailContent(this.constantService.EMAIL_TEMPLATE_NAME.CANCEL_EXPENSE)
+                : this.getApproveExpenseMailContent(this.constantService.EMAIL_TEMPLATE_NAME.REJECT_EXPENSE);
 
             this.cancelRejectDialog.text = event.item.label.replace('Expense', '');
         } else if (this.cancelRejectDialog.title.toLowerCase() === 'approve expense') {
@@ -657,7 +659,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         }
         this.biilingEntityInfo();
         // Get Mail Content
-        this.getApproveExpenseMailContent('ApproveExpense');
+        this.getApproveExpenseMailContent(this.constantService.EMAIL_TEMPLATE_NAME.APPROVE_EXPENSE);
     }
 
     // Get Selected BE

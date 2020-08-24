@@ -198,6 +198,11 @@ export class PmconstantService {
       orderby: 'Modified desc',
       top: 4500
     },
+    PROJECT_INFORMATION_BY_PROJECTCODE_MILESTONE: {
+      select: 'ID, Milestone',
+      filter: 'ProjectCode eq \'{{projectCode}}\'',
+      top: 4500
+    }
   };
   public SOW_QUERY = {
     ALL_SOW: {

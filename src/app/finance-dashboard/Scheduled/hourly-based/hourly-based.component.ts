@@ -1225,7 +1225,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     const ProposeCMailContentEndpoint = {
       filter: this.fdConstantsService.fdComponent.mailContent.filter.replace(
         "{{MailType}}",
-        "AuditProject"
+        this.constantService.EMAIL_TEMPLATE_NAME.AUDIT_PROJECT
       ),
       select: this.fdConstantsService.fdComponent.mailContent.select,
       top: this.fdConstantsService.fdComponent.mailContent.top,
