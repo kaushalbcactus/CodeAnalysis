@@ -18,8 +18,8 @@ import { EntitlementComponent } from './admin/entitlement/entitlement.component'
 import { RoleUserMappingComponent } from './admin/entitlement/role-user-mapping/role-user-mapping.component';
 import { UserRoleMappingComponent } from './admin/entitlement/user-role-mapping/user-role-mapping.component';
 import { CopyPermissionComponent } from './admin/entitlement/copy-permission/copy-permission.component';
-import { AddUserToSowComponent } from './admin/entitlement/add-user-to-sow/add-user-to-sow.component';
-import { AddUserToProjectsComponent } from './admin/entitlement/add-user-to-projects/add-user-to-projects.component';
+ import { AddUserToSowComponent } from './admin/entitlement/add-user-to-sow/add-user-to-sow.component';
+ import { AddUserToProjectsComponent } from './admin/entitlement/add-user-to-projects/add-user-to-projects.component';
 import { ReferenceDataComponent } from './admin/reference-data/reference-data.component';
 import { RulesComponent } from './admin/rules/rules.component';
 // import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -33,6 +33,8 @@ import { AddEditPocComponent } from './admin/client-masterdata/add-edit-poc/add-
 import { AddEditPoDialogComponent } from './admin/client-masterdata/add-edit-po-dialog/add-edit-po-dialog.component';
 import { ChangeBudgetDialogComponent } from './admin/client-masterdata/change-budget-dialog/change-budget-dialog.component';
 import { CustomMaterialModule } from '../shared/material.module';
+import { AddAccessComponent } from './admin/entitlement/add-access/add-access.component';
+import { RemoveAccessComponent } from './admin/entitlement/remove-access/remove-access.component';
 
 
 @NgModule({
@@ -52,15 +54,17 @@ import { CustomMaterialModule } from '../shared/material.module';
     ReferenceDataComponent,
     RulesComponent,
     CopyPermissionComponent,
-    AddUserToSowComponent,
-    AddUserToProjectsComponent,
+     AddUserToSowComponent,
+     AddUserToProjectsComponent,
     GroupDescriptionComponent,
     AddEditUserProfileComponent,
     AddEditClientlegalentityDialogComponent,
     AddEditSubdivisionComponent,
     AddEditPocComponent,
     AddEditPoDialogComponent,
-    ChangeBudgetDialogComponent],
+    ChangeBudgetDialogComponent,
+    AddAccessComponent,
+    RemoveAccessComponent],
   imports: [
     SharedModule,
     AdminRoutingModule,
