@@ -668,7 +668,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     const mailQueryOptions = {
       select: 'ContentMT',
       // tslint:disable-next-line: quotemark
-      filter: "Title eq 'ClosedTaskNotification'",
+      filter: "Title eq '" + this.constants.EMAIL_TEMPLATE_NAME.CLOSED_TASK_NOTIFICATION + "'",
 
     };
     const mailTemplateGet = Object.assign({}, options);
