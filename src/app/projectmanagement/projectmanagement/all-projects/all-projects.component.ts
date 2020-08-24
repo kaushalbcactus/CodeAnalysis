@@ -838,7 +838,7 @@ export class AllProjectsComponent implements OnInit {
       menu.model[2].visible = false;
     } else {
       menu.model[3].visible = false;
-      if(this.selectedProjectObj.IsPubSupport === "Yes") {
+      if (this.selectedProjectObj.IsPubSupport === "Yes") {
         menu.model[1].items[7].visible = true;
       } else {
         menu.model[1].items[7].visible = false;
@@ -1823,37 +1823,37 @@ export class AllProjectsComponent implements OnInit {
     batchURL.push(piUpdate);
 
     filterTasks.forEach(element => {
-      if (element.IsCentrallyAllocated == 'No') {
-        if (element.Task == "Client Review") {
+      // if (element.IsCentrallyAllocated == 'No') {
+      if (element.Task == "Client Review") {
+        const scheduleStatusUpdate = Object.assign({}, options);
+        scheduleStatusUpdate.data = scCRUpdateData;
+        scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
+        scheduleStatusUpdate.type = 'PATCH';
+        scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
+          element.ID);
+        batchURL.push(scheduleStatusUpdate);
+      } else {
+        if (element.Status == this.constants.STATUS.NOT_STARTED) {
           const scheduleStatusUpdate = Object.assign({}, options);
-          scheduleStatusUpdate.data = scCRUpdateData;
+          scheduleStatusUpdate.data = scNotStartedUpdateData;
           scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
           scheduleStatusUpdate.type = 'PATCH';
           scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
             element.ID);
           batchURL.push(scheduleStatusUpdate);
-        } else {
-          if (element.Status == this.constants.STATUS.NOT_STARTED) {
-            const scheduleStatusUpdate = Object.assign({}, options);
-            scheduleStatusUpdate.data = scNotStartedUpdateData;
-            scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
-            scheduleStatusUpdate.type = 'PATCH';
-            scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
-              element.ID);
-            batchURL.push(scheduleStatusUpdate);
-          } else if (element.Status == this.constants.STATUS.IN_PROGRESS) {
-            const scheduleStatusUpdate = Object.assign({}, options);
-            const scInProgressUpdateDataNew = Object.assign({}, scInProgressUpdateData);
-            scInProgressUpdateDataNew.ExpectedTime = element.TimeSpent;
-            scInProgressUpdateDataNew.DueDateDT = new Date(element.DueDateDT) < new Date() ? new Date(element.DueDateDT) : new Date();
-            scheduleStatusUpdate.data = scInProgressUpdateDataNew;
-            scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
-            scheduleStatusUpdate.type = 'PATCH';
-            scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
-              element.ID);
-            batchURL.push(scheduleStatusUpdate);
-          }
+        } else if (element.Status == this.constants.STATUS.IN_PROGRESS) {
+          const scheduleStatusUpdate = Object.assign({}, options);
+          const scInProgressUpdateDataNew = Object.assign({}, scInProgressUpdateData);
+          scInProgressUpdateDataNew.ExpectedTime = element.TimeSpent;
+          scInProgressUpdateDataNew.DueDateDT = new Date(element.DueDateDT) < new Date() ? new Date(element.DueDateDT) : new Date();
+          scheduleStatusUpdate.data = scInProgressUpdateDataNew;
+          scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
+          scheduleStatusUpdate.type = 'PATCH';
+          scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
+            element.ID);
+          batchURL.push(scheduleStatusUpdate);
         }
+        // }
       }
     });
 

@@ -472,6 +472,8 @@ export class ConstantsService {
     BUDGET_APPROVAL: "OutcomeBudgetApproval",
     ON_HOLD: "Hold",
     PO_BUDGET_UPDATED: "POBudgetUpdated",
+    TASK_CREATION: "TaskCreation",
+    CENTRAL_TASK_CREATION: 'CentralTaskCreation'
   };
   public invoiceList = {
     status: {

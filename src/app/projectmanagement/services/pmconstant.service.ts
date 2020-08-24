@@ -81,6 +81,12 @@ export class PmconstantService {
     top: 4200
   };
 
+  public milestoneTaskOptions = {
+    select: 'ID,Title,Task,Status,ProjectCode,Milestone,SubMilestones, ContentTypeCH',
+    filter: "ProjectCode eq '{{projectCode}}' and (Milestone eq '{{milestone}}' or Title eq '{{milestone}}')",
+    top: 4500
+  };
+
   public projectOptions = {
     select: 'ID,Title,Task,Status,NextTasks,ExpectedTime,PrevTasks,Milestone,SubMilestones,DisableCascade, ParentSlot,FileSystemObjectType,ContentTypeCH',
     filter: "ProjectCode eq '{{projectCode}}'",

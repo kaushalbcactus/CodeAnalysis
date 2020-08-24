@@ -684,7 +684,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
           this.onSubmit(confirmInvoice, "confirmInvoice");
         }
       });
-      this.getConfirmMailContent("ConfirmInvoice");
+      this.getConfirmMailContent(this.constantService.EMAIL_TEMPLATE_NAME.INVOICE_CONFIRM);
       this.getPIByTitle(this.selectedRowItem);
     } else if (this.hourlyDialog.title === "Edit Line item") {
       const ref = this.dialogService.open(EditInvoiceDialogComponent, {
