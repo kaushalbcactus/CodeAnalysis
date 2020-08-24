@@ -334,8 +334,8 @@ export class TimelineComponent
 
   public getAllResources(tasks) {
     const validTasks = tasks.filter(t => t.Status !== "Deleted" && t.Status !== 'Completed'
-      && t.Status !== 'Auto Closed' && t.Task !== 'Time Booking' && t.Task !== 'Send to client'
-      && t.Task !== 'Client Review' && t.Task !== 'Adhoc');
+    && t.Status !== 'Auto Closed' && t.Task !== 'Time Booking' && t.Task !== 'Send to client'
+    && t.Task !== 'Client Review' && t.Task !== 'Adhoc');
     let resources = validTasks.map(t => t.AssignedTo.ID);
     resources = [...new Set(resources)].filter(res => res && res > 0);
     return resources;
@@ -4983,7 +4983,7 @@ export class TimelineComponent
         project: this.oProjectDetails,
         slot,
         subject: slot.data.title + " deallocated",
-        template: "CentralTaskCreation"
+        template: this.constants.EMAIL_TEMPLATE_NAME.CENTRAL_TASK_CREATION
       });
     }
   }
@@ -5614,7 +5614,7 @@ export class TimelineComponent
         this.oProjectDetails,
         milestoneTask,
         milestoneTask.title + " Created",
-        "CentralTaskCreation"
+        this.constants.EMAIL_TEMPLATE_NAME.CENTRAL_TASK_CREATION
       );
     }
     let addUpdateTask;
@@ -5830,7 +5830,7 @@ export class TimelineComponent
         milestoneTask,
         projectDetails,
         "Email",
-        "TaskCreation"
+        this.constants.EMAIL_TEMPLATE_NAME.TASK_CREATION
       );
       const arrayTo = [];
 
@@ -6772,11 +6772,8 @@ export class TimelineComponent
     const projectID = this.oProjectDetails.projectID;
     let bSubMilNew = false;
     let bCurrentMilestoneUpdated = false;
-    if (
-      subMile.type === "submilestone" &&
-      subMile.milestone ===
-      this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone
-    ) {
+    if ( subMile.type === "submilestone"
+        && subMile.milestone === this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone) {
       bCurrentMilestoneUpdated = true;
       bSubMilNew = true;
     } else if (subMile.type === "submilestone") {
@@ -6788,27 +6785,18 @@ export class TimelineComponent
     });
     let previousTasks, newTasks, updateProjectBody, updateCurrMilBody;
     if (bCurrentMilestoneUpdated) {
-      let prevSubMil = currentMilestone.children.filter(
-        c =>
-          parseInt(c.data.position, 10) === parseInt(subMile.position, 10) - 1
-      );
+      const currentMilSubmil = currentMilestone.children ? currentMilestone.children : []
+      const prevSubMil = currentMilSubmil.filter(c => parseInt(c.data.position, 10) === parseInt(subMile.position, 10) - 1);
       prevSubMil.forEach(element => {
-        const subMilTasks = this.taskAllocateCommonService.getTasksFromMilestones(
-          element,
-          true,
-          this.milestoneData,
-          false
-        );
-        previousTasks = previousTasks
-          ? [...previousTasks, ...subMilTasks]
-          : [...subMilTasks];
+        const subMilTasks = this.taskAllocateCommonService.getTasksFromMilestones(element, true, this.milestoneData,false);
+        previousTasks = previousTasks ? [...previousTasks, ...subMilTasks] : [...subMilTasks];
       });
-      newTasks = this.taskAllocateCommonService.getTasksFromMilestones(
-        subMile,
-        true,
-        this.milestoneData,
-        false
-      );
+      newTasks = this.taskAllocateCommonService.getTasksFromMilestones(subMile, true, this.milestoneData, false);
+      newTasks = newTasks.filter(c => c.itemType !== "Client Review");
+      previousTasks = previousTasks.filter(c => c.itemType !== "Client Review");
+      // const isLastSubMilestone = +subMile.position === currentMilSubmil.length ? true : false;
+      // if(!isLastSubMilestone) {
+      // }
     } else {
       const newCurrentMilestone = this.milestoneData.find(obj => {
         return (
@@ -6968,7 +6956,7 @@ export class TimelineComponent
           this.oProjectDetails,
           element,
           element.title + " Created",
-          "CentralTaskCreation"
+          this.constants.EMAIL_TEMPLATE_NAME.CENTRAL_TASK_CREATION
         );
       }
       element.status = "Not Started";

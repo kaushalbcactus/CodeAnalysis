@@ -71,7 +71,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     @ViewChild('paymentResolvedFile', { static: false }) paymentResolvedFile: ElementRef;
     @ViewChild('outi', { static: false }) outInvTable: Table;
 
-    // List of Subscribers 
+    // List of Subscribers
     private subscription: Subscription = new Subscription();
     SelectedFile: any;
     FolderName: string;
@@ -110,7 +110,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         const currentUserId = this.globalService.currentUser.userId;
-        //Get  User Info 
+        //Get  User Info
         this.currentUserInfo(currentUserId);
 
         // POC & PO Number
@@ -191,10 +191,10 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     }
     currentPageNumber: number;
     paginate(event) {
-        //event.first: Index of first record being displayed 
-        //event.rows: Number of rows to display in new page 
-        //event.page: Index of the new page 
-        //event.pageCount: Total number of pages 
+        //event.first: Index of first record being displayed
+        //event.rows: Number of rows to display in new page
+        //event.page: Index of the new page
+        //event.pageCount: Total number of pages
         this.currentPageNumber = event.first;
         let pageIndex = event.first / event.rows + 1 // Index of the new page if event.page not defined.
     }
@@ -548,7 +548,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         } else if (this.confirmDialog.title.toLowerCase() === 'sent to ap') {
             this.sentToAPModal = true;
         } else if (this.confirmDialog.title.toLowerCase() === 'show history') {
-            this.timeline.showTimeline(data.Id, 'FD', 'Invoices');
+            this.timeline.showTimeline(data.Id, 'FD', this.constantService.listNames.Invoices.name);
         } else if (event.item.label === 'Details') {
             this.rightSideBar = !this.rightSideBar;
             return;
@@ -1070,7 +1070,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
 
 
     //*************************************************************************************************
-    // regenerate invoice for line item  
+    // regenerate invoice for line item
     // ************************************************************************************************
 
 
