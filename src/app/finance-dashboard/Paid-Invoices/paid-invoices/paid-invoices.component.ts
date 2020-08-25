@@ -71,7 +71,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
     @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
     @ViewChild('popupMenu', { static: false }) popupMenu;
     @ViewChild('pi', { static: true }) paidInvTable: Table;
-    // List of Subscribers 
+    // List of Subscribers
     private subscription: Subscription = new Subscription();
 
 
@@ -118,7 +118,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         this.DateRange.endDate = new Date(this.datePipe.transform(this.rangeDates[1], "yyyy-MM-dd") + " 23:59:00").toISOString();
         // this.fdDataShareServie.DateRange = this.DateRange;
 
-        //Get  User Info 
+        //Get  User Info
         const currentUserId = this.globalService.currentUser.userId;
         this.currentUserInfo(currentUserId);
 
@@ -595,7 +595,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         //     this.creditOrDebitModal = true;
         // } else
         if (this.confirmDialog.title.toLowerCase() === 'show history') {
-            this.timeline.showTimeline(data.Id, 'FD', 'Invoices');
+            this.timeline.showTimeline(data.Id, 'FD', this.constantService.listNames.Invoices.name);
         } else if (event.item.label === 'Details') {
             this.rightSideBar = !this.rightSideBar;
             return;
