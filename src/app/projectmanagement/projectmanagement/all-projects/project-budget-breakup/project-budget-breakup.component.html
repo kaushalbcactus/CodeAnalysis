@@ -89,6 +89,8 @@
         <tr>
             <th></th>
             <th *ngFor="let col of columns" [hidden]="!col.visibility" [ngSwitch]="col.field">
+            <p-multiSelect *ngSwitchCase="'InternalReviewStartDate'" [style]="{'width':'100%'}" [options]="this.SOWBudgetFilters.InternalReviewStartDate" defaultLabel="Internal Review Start Date" (onChange)="SowBudgetTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+            filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
             <p-multiSelect *ngSwitchCase="'Status'" [style]="{'width':'100%'}" [options]="this.SOWBudgetFilters.Status" defaultLabel="Status" (onChange)="SowBudgetTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
             filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
             <p-multiSelect *ngSwitchCase="'TotalBudget'" [style]="{'width':'100%'}" [options]="this.SOWBudgetFilters.TotalBudget" defaultLabel="Total Budget" (onChange)="SowBudgetTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
@@ -107,8 +109,8 @@
                 filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
             <p-multiSelect *ngSwitchCase="'AddendumTaxBudget'" [style]="{'width':'100%'}" [options]="this.SOWBudgetFilters.AddendumTaxBudget" defaultLabel="Addendum Tax Budget" (onChange)="SowBudgetTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
                 filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-            <p-multiSelect *ngSwitchCase="'Currency'" [style]="{'width':'100%'}" [options]="this.SOWBudgetFilters.Currency" defaultLabel="Currency" (onChange)="SowBudgetTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+            <!-- <p-multiSelect *ngSwitchCase="'Currency'" [style]="{'width':'100%'}" [options]="this.SOWBudgetFilters.Currency" defaultLabel="Currency" (onChange)="SowBudgetTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect> -->
             </th>
         </tr>
     </ng-template>
@@ -116,6 +118,9 @@
         <tr>
             <td>
                 {{ rowIndex+1 }}
+            </td>
+            <td>
+                {{ rowData.InternalReviewStartDate | date:'MMM dd, yyyy'}}
             </td>
             <td>
                 {{rowData.Status}}
@@ -144,9 +149,9 @@
             <td>
                 {{rowData.AddendumTaxBudget}}
             </td>
-            <td>
+            <!-- <td>
                 {{rowData.Currency}}
-            </td>
+            </td> -->
         </tr>
     </ng-template>
     <ng-template pTemplate="emptymessage" let-columns>

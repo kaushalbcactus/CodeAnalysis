@@ -10,6 +10,9 @@
             <div class="box" style="margin-right: 20px;">
                 <button type="button" class="fdBtn" pButton icon="fa fa-plus-circle" iconPos="left" label="Create Proforma" (click)="showProformaDialog()"></button>
             </div>
+            <div class="box" style="margin-right: 20px;flex-grow: 1;">
+                    <button type="button" class="fdBtn" pButton label="Sent to Client" (click)="sentToClient()"></button>
+                </div>
             <div class="box">
                 <!-- <button type="button" pButton label="Export" (click)="fdDataShareServie.convertToExcelFile(pfc)"></button> -->
                 <i style="font-size: 1.8em;cursor: pointer;" (click)="fdDataShareServie.convertToExcelFile(pfc)" title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>

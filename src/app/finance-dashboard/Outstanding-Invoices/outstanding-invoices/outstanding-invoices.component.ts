@@ -25,7 +25,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     outstandingInCols: any[];
     SelectedAuxInvoiceName = '';
     // Row Selection Array
-    selectedRowData: any = [];
+    selectedRowData: any[] = [];
 
     // Forms
     paymentResoved_form: FormGroup;
@@ -535,6 +535,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     openMenuContent(event, data) {
         console.log(JSON.stringify(data));
         this.selectedRowItem = data;
+        this.selectedRowData = [data];
         console.log(event);
         this.confirmDialog.title = event.item.label;
         if (this.confirmDialog.title.toLowerCase() === 'mark as payment resolved') {
@@ -683,7 +684,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 return false;
             }
             let cleListName = this.getCLEListNameFromCLE(this.selectedRowItem.ClientLegalEntity)
-            this.FolderName = cleListName + '/Finance/Invoice/' + folderName;
+            this.FolderName = cleListName + '/Finance/' + folderName;
             this.SelectedFile.push(new Object({ name: this.selectedFile.name, file: this.selectedFile }));
         }
     }
@@ -856,21 +857,41 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         } else if (type === 'sentToAP') {
             this.isPSInnerLoaderHidden = false;
             this.submitBtn.isClicked = true;
-            const sts = this.constantService.invoicesStatus.SentToAP;
-            // sts = type === 'Mark as Sent to Client' ? 'Sent' : 'Rejected'
-            const invData = {
-                __metadata: {
-                    type: this.constantService.listNames.Invoices.type
-                },
-                Status: sts
-            };
-            const invObj = Object.assign({}, this.queryConfig);
-            invObj.url = this.spServices.getItemURL(this.constantService.listNames.Invoices.name, +this.selectedRowItem.Id);
-            invObj.listName = this.constantService.listNames.Invoices.name;
-            invObj.type = 'PATCH';
-            invObj.data = invData;
-            batchUrl.push(invObj);
+            // this.selectedRowData = [this.selectedRowItem]
 
+            for (let i = 0; i < this.selectedRowData.length; i++) {
+                const element = this.selectedRowData[i];
+
+                const sts = this.constantService.invoicesStatus.SentToAP;
+                const invData = {
+                    __metadata: {
+                        type: this.constantService.listNames.Invoices.type
+                    },
+                    Status: sts
+                };
+                const invObj = Object.assign({}, this.queryConfig);
+                invObj.url = this.spServices.getItemURL(this.constantService.listNames.Invoices.name, element.Id);
+                invObj.listName = this.constantService.listNames.Invoices.name;
+                invObj.type = 'PATCH';
+                invObj.data = invData;
+                batchUrl.push(invObj);
+            }
+
+            // const sts = this.constantService.invoicesStatus.SentToAP;
+            // // sts = type === 'Mark as Sent to Client' ? 'Sent' : 'Rejected'
+            // const invData = {
+            //     __metadata: {
+            //         type: this.constantService.listNames.Invoices.type
+            //     },
+            //     Status: sts
+            // };
+            // const invObj = Object.assign({}, this.queryConfig);
+            // invObj.url = this.spServices.getItemURL(this.constantService.listNames.Invoices.name, +this.selectedRowItem.Id);
+            // invObj.listName = this.constantService.listNames.Invoices.name;
+            // invObj.type = 'PATCH';
+            // invObj.data = invData;
+            // batchUrl.push(invObj);
+            console.log(batchUrl);
             this.commonService.SetNewrelic('Finance-Dashboard', 'outstanding-invoices', 'submitForm');
             this.submitForm(batchUrl, type);
         }
@@ -970,7 +991,8 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             this.reFetchData();
         } else if (type === "sentToAP") {
 
-            this.commonService.showToastrMessage(this.constantService.MessageType.success, this.selectedRowItem.InvoiceNumber + ' ' + 'Invoice Status Changed.', true);
+            // this.commonService.showToastrMessage(this.constantService.MessageType.success, this.selectedRowItem.InvoiceNumber + ' ' + 'Invoice Status Changed.', true);
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Invoice Status Changed.', true);
             this.sentToAPModal = false;
             this.reFetchData();
         } else if (type === "disputeInvoice") {
@@ -1102,6 +1124,21 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
 
     }
 
+    sentToAP() {
+        if (this.selectedRowData.length) {
+            const filterData = this.selectedRowData.filter(e=> e.Status !== 'Generated');
+            if(!filterData.length) {
+                this.sentToAPModal = true;
+            } else {
+                this.commonService.showToastrMessage(this.constantService.MessageType.info, 'Please select only those Row Item whose Invoices is Generated. ', false);
+            }
+        } else {
+            this.isPSInnerLoaderHidden = true;
+            this.submitBtn.isClicked = false;
+            this.sentToAPModal = false;
+            this.commonService.showToastrMessage(this.constantService.MessageType.info, 'Please select one of Row Item & try again.', false);
+        }
+    }
 
 
 }
