@@ -785,6 +785,12 @@ export class UserCapacitycommonService {
             (c.AvailableHoursRID = selectedUsers.find(
               (c) =>
                 c.ResourceUserID === oCapacity.arrUserDetails[indexUser].uid
+            ).OriginalUserID ? selectedUsers.find(
+              (c) =>
+                c.ResourceUserID === oCapacity.arrUserDetails[indexUser].uid
+            ).OriginalUserID : selectedUsers.find(
+              (c) =>
+                c.ResourceUserID === oCapacity.arrUserDetails[indexUser].uid
             ).ID)
         );
 
