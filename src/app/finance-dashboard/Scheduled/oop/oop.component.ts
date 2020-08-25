@@ -747,7 +747,7 @@ export class OopComponent implements OnInit, OnDestroy {
     this.deliverableDialog.title = event.item.label;
     if (this.deliverableDialog.title.toLowerCase() === "confirm invoice") {
       this.confirm1();
-      this.getApproveExpenseMailContent("ConfirmInvoice");
+      this.getApproveExpenseMailContent(this.constantService.EMAIL_TEMPLATE_NAME.INVOICE_CONFIRM);
       this.getPIByTitle(this.selectedRowItem);
     } else if (this.deliverableDialog.title === "Edit Line item") {
       const ref = this.dialogService.open(EditInvoiceDialogComponent, {
@@ -781,7 +781,7 @@ export class OopComponent implements OnInit, OnDestroy {
     ) {
       this.goToProjectDetails(this.selectedRowItem);
     } else if (this.deliverableDialog.title.toLowerCase() === "show history") {
-      this.timeline.showTimeline(data.Id, "FD", "InvoiceLineItems");
+      this.timeline.showTimeline(data.Id, "FD", this.constantService.listNames.InvoiceLineItems.name);
     } else if (event.item.label === "Details") {
       this.rightSideBar = !this.rightSideBar;
       return;

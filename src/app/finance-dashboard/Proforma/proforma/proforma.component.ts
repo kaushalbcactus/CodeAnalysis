@@ -82,7 +82,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
 
     @ViewChild('pfc', { static: false }) proformaTable;
 
-    // List of Subscribers 
+    // List of Subscribers
     private subscription: Subscription = new Subscription();
     FolderName: string;
     SelectedFile: any;
@@ -129,7 +129,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         this.createInvoiceFormFiled();
         this.createPocFormField();
 
-        //Get  User Info 
+        //Get  User Info
         const currentUserId = this.globalService.currentUser.userId;
         this.currentUserInfo(currentUserId);
 
@@ -150,7 +150,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
     updateCalendarUI(calendar: Calendar) {
         calendar.updateUI();
     }
-    // Project Info 
+    // Project Info
     projectInfoData: any = [];
     async projectInfo() {
         // Check PI list
@@ -221,10 +221,10 @@ export class ProformaComponent implements OnInit, OnDestroy {
     }
     currentPageNumber: number;
     paginate(event) {
-        //event.first: Index of first record being displayed 
-        //event.rows: Number of rows to display in new page 
-        //event.page: Index of the new page 
-        //event.pageCount: Total number of pages 
+        //event.first: Index of first record being displayed
+        //event.rows: Number of rows to display in new page
+        //event.page: Index of the new page
+        //event.pageCount: Total number of pages
         this.currentPageNumber = event.first;
         let pageIndex = event.first / event.rows + 1 // Index of the new page if event.page not defined.
     }
@@ -581,7 +581,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 this.getILIByPID();
 
             } else if (this.confirmDialog.title.toLowerCase() === 'show history') {
-                this.timeline.showTimeline(data.Id, 'FD', 'Proforma');
+                this.timeline.showTimeline(data.Id, 'FD', this.constantService.listNames.Proforma.name);
             } else if (this.confirmDialog.title.toLowerCase() === 'edit proforma') {
                 const proformaObj = JSON.parse(data.ProformaHtml);
                 if (proformaObj.hasOwnProperty('saveObj')) {
@@ -655,7 +655,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             }
         } else {
             if (this.confirmDialog.title.toLowerCase() === 'show history') {
-                this.timeline.showTimeline(data.Id, 'FD', 'InvoiceLineItems');
+                this.timeline.showTimeline(data.Id, 'FD', this.constantService.listNames.InvoiceLineItems.name);
 
             } else if (event.item.label === 'Details') {
                 this.rightSideBarInvoice = !this.rightSideBarInvoice;
@@ -1335,7 +1335,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             }
 
             this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constantService.listNames.Proforma.name, +this.selectedRowItem.Id), prfData, this.constantService.Method.PATCH, this.constantService.listNames.Proforma.name);
-          
+
             for (let j = 0; j < this.iliByPidRes.length; j++) {
                 let invData = {
                     __metadata: { type: this.constantService.listNames.InvoiceLineItems.type },
