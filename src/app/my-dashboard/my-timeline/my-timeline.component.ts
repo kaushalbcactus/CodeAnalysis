@@ -257,7 +257,7 @@ export class MyTimelineComponent implements OnInit {
           const data = self.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === self.task.ProjectCode);
           if (data !== undefined) {
             self.task.ProjectName = data.WBJID !== null ? self.task.ProjectCode + '(' + data.WBJID + ')' : self.task.ProjectCode;
-            self.task.projectType = data.ProjectType; 
+            self.task.projectType = data.ProjectType;
           } else {
             self.task.ProjectName = self.task.ProjectCode;
           }
@@ -383,7 +383,7 @@ export class MyTimelineComponent implements OnInit {
         "end": element.TATStatus && element.TATStatus === "Yes" && new Date(this.datePipe.transform(element.StartDate, "yyyy-MM-dd")).getTime() !== new Date(this.datePipe.transform(element.DueDateDT, "yyyy-MM-dd")).getTime() ? new Date(new Date(element.DueDateDT).setDate(new Date(element.DueDateDT).getDate() + 1)) : new Date(element.DueDateDT),
         "backgroundColor": element.Status === 'Not Confirmed' ? "#FFD34E" : element.Status === 'Not Started' ? "#5F6273" : element.Status === 'In Progress' ? "#6EDC6C" : element.Status === 'Auto Closed' ? "#8183CC" : element.Status === 'On Hold' ? "#FF3E56" : (element.Status === 'Completed' && element.Task === 'Adhoc') ? element.CommentsMT === "Administrative Work" ?
           '#eb592d' : element.CommentsMT === "Client meeting / client training" ? '#ff8566' : element.CommentsMT === "Internal meeting" ? '#795C32' : '#445cad' : "#3498DB",
-        allDay: element.TATStatus && element.TATStatus === "Yes" ? true : (element.Task === 'Adhoc' && element.CommentsMT === "Administrative Work") ? true :  false
+        allDay: element.TATStatus && element.TATStatus === "Yes" ? true : (element.Task === 'Adhoc' && element.CommentsMT === "Administrative Work") ? true : false
 
       }
       this.events.push(eventObj);
@@ -554,10 +554,10 @@ export class MyTimelineComponent implements OnInit {
     const startTime = type === 'startTime' ? time.split(':')[0] % 12 + ':' + time.split(':')[1]
       : endTime = time.split(':')[0] % 12 + ':' + time.split(':')[1];
 
-      if(type !== 'startTime' && new Date(this.datePipe.transform(this.task.StartDate, 'yyyy-MM-dd' + 'T' + this.commonService.ConvertTimeformat(24, this.task.StartTime ? this.task.StartTime : this.datePipe.transform(this.task.StartDate, 'hh:mm a')) + ':00.000')).getTime() > new Date(this.datePipe.transform(this.task.DueDateDT, 'yyyy-MM-dd' + 'T' + this.commonService.ConvertTimeformat(24, this.task.DueTime) + ':00.000')).getTime()){
-        this.task.DueTime =  this.task.StartTime ? this.task.StartTime : this.datePipe.transform(this.task.StartDate, 'hh:mm a');
-        this.commonService.showToastrMessage(this.constants.MessageType.warn,'End Time should not be less than start time',false);
-      }
+    if (type !== 'startTime' && new Date(this.datePipe.transform(this.task.StartDate, 'yyyy-MM-dd' + 'T' + this.commonService.ConvertTimeformat(24, this.task.StartTime ? this.task.StartTime : this.datePipe.transform(this.task.StartDate, 'hh:mm a')) + ':00.000')).getTime() > new Date(this.datePipe.transform(this.task.DueDateDT, 'yyyy-MM-dd' + 'T' + this.commonService.ConvertTimeformat(24, this.task.DueTime) + ':00.000')).getTime()) {
+      this.task.DueTime = this.task.StartTime ? this.task.StartTime : this.datePipe.transform(this.task.StartDate, 'hh:mm a');
+      this.commonService.showToastrMessage(this.constants.MessageType.warn, 'End Time should not be less than start time', false);
+    }
     console.log('Start time: ', startTime + ' endTime ', endTime);
   }
 
@@ -655,14 +655,19 @@ export class MyTimelineComponent implements OnInit {
     }
   }
 
-  onCloseDueDate(){
-    if(new Date(this.datePipe.transform(this.task.StartDate, 'yyyy-MM-dd' + 'T' + this.commonService.ConvertTimeformat(24,  this.task.StartTime ? this.task.StartTime : this.datePipe.transform(this.task.StartDate, 'hh:mm a')) + ':00.000')).getTime() > new Date(this.datePipe.transform(this.task.DueDateDT, 'yyyy-MM-dd' + 'T' + this.commonService.ConvertTimeformat(24, this.task.DueTime) + ':00.000')).getTime()){
-      this.task.DueTime =  this.task.StartTime ? this.task.StartTime : this.datePipe.transform(this.task.StartDate, 'hh:mm a');
-      this.commonService.showToastrMessage(this.constants.MessageType.warn,'End Time should not be less than start time',false);
+  onCloseDueDate() {
+    if (new Date(this.datePipe.transform(this.task.StartDate, 'yyyy-MM-dd' + 'T' + this.commonService.ConvertTimeformat(24, this.task.StartTime ? this.task.StartTime : this.datePipe.transform(this.task.StartDate, 'hh:mm a')) + ':00.000')).getTime() > new Date(this.datePipe.transform(this.task.DueDateDT, 'yyyy-MM-dd' + 'T' + this.commonService.ConvertTimeformat(24, this.task.DueTime) + ':00.000')).getTime()) {
+      this.task.DueTime = this.task.StartTime ? this.task.StartTime : this.datePipe.transform(this.task.StartDate, 'hh:mm a');
+      this.commonService.showToastrMessage(this.constants.MessageType.warn, 'End Time should not be less than start time', false);
     }
   }
 
-
+  validateTask(task): string {
+    task.pUserStart = task.StartDate;
+    task.pUserEnd = task.DueDateDT;
+    const errorMsgs = this.commonService.validateTaskDuration([task], 50);
+    return errorMsgs;
+  }
 
   // *******************************************************************************************
   // Update Task
@@ -693,15 +698,21 @@ export class MyTimelineComponent implements OnInit {
     const earlierStaus = task.Status;
     task.Status = this.SelectedStatus;
     const stval = await this.myDashboardConstantsService.getPrevTaskStatus(task);
+    const errorMsgs = this.validateTask(task);
+    if (errorMsgs) {
+      this.commonService.showToastrMessage(this.constants.MessageType.error, errorMsgs, true);
+      this.CalendarLoader = false;
+      return false;
+    }
     const allowedStatus = ["Completed", "Auto Closed"];
-    if (allowedStatus.includes(stval) || stval === '') { 
-      this.updateCurrentTask(this.task,earlierStaus);
-    } else { 
+    if (allowedStatus.includes(stval) || stval === '') {
+      this.updateCurrentTask(this.task, earlierStaus);
+    } else {
       this.CalendarLoader = false;
       this.commonService.confirmMessageDialog('Confirmation', 'Previous task is not completed, do you still want to continue?', null, ['Yes', 'No'], false).then(async Confirmation => {
         if (Confirmation === 'Yes') {
           this.CalendarLoader = true;
-         this.updateCurrentTask(this.task,earlierStaus);
+          this.updateCurrentTask(this.task, earlierStaus);
         } else {
           task.Status = earlierStaus;
           this.CalendarLoader = false;
@@ -710,7 +721,7 @@ export class MyTimelineComponent implements OnInit {
     }
   }
 
-  async updateCurrentTask(task,earlierStaus) {
+  async updateCurrentTask(task, earlierStaus) {
     if (task.Status === 'Completed' && !task.FinalDocSubmit) {
       this.commonService.showToastrMessage(this.constants.MessageType.error, 'No Final Document Found', false);
       task.Status = earlierStaus;
@@ -749,8 +760,8 @@ export class MyTimelineComponent implements OnInit {
           } else {
             task.Status = earlierStaus;
           }
-        });          
-      }  else if (task.Status === this.constants.STATUS.IN_PROGRESS || (task.Status === this.constants.STATUS.NOT_STARTED && task.projectType === this.constants.PROJECTTYPES.FTE)) {
+        });
+      } else if (task.Status === this.constants.STATUS.IN_PROGRESS || (task.Status === this.constants.STATUS.NOT_STARTED && task.projectType === this.constants.PROJECTTYPES.FTE)) {
         const batchURL = [];
         if (this.task.StartTime) {
           const startTime = this.commonService.ConvertTimeformat(24, this.task.StartTime);
@@ -767,10 +778,10 @@ export class MyTimelineComponent implements OnInit {
           __metadata: { type: this.constants.listNames.Schedules.type },
           StartDate: this.task.StartDate,
           DueDateDT: this.task.DueDate,
-          Status:task.Status
+          Status: task.Status
         };
 
-        if(task.Status === this.constants.STATUS.IN_PROGRESS){
+        if (task.Status === this.constants.STATUS.IN_PROGRESS) {
           jsonData['Actual_x0020_Start_x0020_Date'] = task.Actual_x0020_Start_x0020_Date !== null ? task.Actual_x0020_Start_x0020_Date : new Date();
           const ProjectInformation = await this.myDashboardConstantsService.getCurrentTaskProjectInformation(task.ProjectCode);
           const projectInfoUpdateurl = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, ProjectInformation.ID);
@@ -788,7 +799,7 @@ export class MyTimelineComponent implements OnInit {
         }
         this.commonService.showToastrMessage(this.constants.MessageType.success, ' task updated successfully.', false);
         this.getEvents(false, this.fullCalendar.calendar.state.dateProfile.currentRange.start,
-          this.fullCalendar.calendar.state.dateProfile.currentRange.end);      
+          this.fullCalendar.calendar.state.dateProfile.currentRange.end);
       }
     }
   }
