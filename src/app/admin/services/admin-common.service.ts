@@ -255,6 +255,18 @@ export class AdminCommonService {
     return await this.spServices.getGroupInfo('Invoice_Team');
   }
 
+  async getTemplate(templateName, objEmailBody, mailSubject, arrayTo, cc?) : Promise<any> {
+    const contentFilter = Object.assign({}, this.adminConstants.QUERY.CONTENT_QUERY);
+    // tslint:disable-next-line:max-line-length
+    contentFilter.filter = contentFilter.filter.replace(/{{templateName}}/gi, templateName);
+    const body = await this.spServices.readItems(this.constants.listNames.MailContent.name, contentFilter);
+    let mailBody = body[0].ContentMT;
+    objEmailBody.forEach(element => {
+      mailBody = mailBody.replace(RegExp(element.key, 'gi'), element.value);
+    });
+    
+    return mailBody;
+  }
 
   
 }

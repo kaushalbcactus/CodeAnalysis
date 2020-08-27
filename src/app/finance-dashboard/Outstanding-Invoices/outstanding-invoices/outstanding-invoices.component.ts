@@ -683,7 +683,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 this.commonService.showToastrMessage(this.constantService.MessageType.error, this.constantService.Messages.SpecialCharMsg, false);
                 return false;
             }
-            let cleListName = this.getCLEListNameFromCLE(this.selectedRowItem.ClientLegalEntity)
+            let cleListName = this.getCLEListNameFromCLE(this.selectedRowData[0].ClientLegalEntity)
             this.FolderName = cleListName + '/Finance/' + folderName;
             this.SelectedFile.push(new Object({ name: this.selectedFile.name, file: this.selectedFile }));
         }
@@ -752,13 +752,27 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                                 PaymentURL: uploadedfile[0].ServerRelativeUrl ? uploadedfile[0].ServerRelativeUrl : ''
                             };
                         }
-                        invData['__metadata'] = { type: this.constantService.listNames.Invoices.type };
-                        const invObj = Object.assign({}, this.queryConfig);
-                        invObj.url = this.spServices.getItemURL(this.constantService.listNames.Invoices.name, +this.selectedRowItem.Id);
-                        invObj.listName = this.constantService.listNames.Invoices.name;
-                        invObj.type = 'PATCH';
-                        invObj.data = invData;
-                        batchUrl.push(invObj);
+
+                        for (let i = 0; i < this.selectedRowData.length; i++) {
+                            const element = this.selectedRowData[i];
+                            
+                            // if(type === 'paymentResoved') {
+                            //     invData = {
+                            //         Status: 'Paid',
+                            //         PaymentURL: uploadedfile[0].ServerRelativeUrl ? uploadedfile[0].ServerRelativeUrl : ''
+                            //     };
+                            // }
+                            invData['__metadata'] = { type: this.constantService.listNames.Invoices.type };
+                            const invObj = Object.assign({}, this.queryConfig);
+                            invObj.url = this.spServices.getItemURL(this.constantService.listNames.Invoices.name, +element.Id);
+                            invObj.listName = this.constantService.listNames.Invoices.name;
+                            invObj.type = 'PATCH';
+                            invObj.data = invData;
+                            batchUrl.push(invObj);
+                        }
+
+                        console.log(batchUrl);
+
                         this.submitForm(batchUrl, type);
                     }
                 }
@@ -1001,7 +1015,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             this.disputeInvoiceModal = false;
         } else if (type === "paymentResoved") {
 
-            this.commonService.showToastrMessage(this.constantService.MessageType.success, this.selectedRowItem.InvoiceNumber + ' ' + 'Success.', true);
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Success.', true);
             this.paymentResovedModal = false;
             this.reFetchData();
         } else if (type === "replaceInvoice") {
@@ -1126,7 +1140,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
 
     sentToAP() {
         if (this.selectedRowData.length) {
-            const filterData = this.selectedRowData.filter(e=> e.Status !== 'Generated');
+            const filterData = this.selectedRowData.filter(e=> e.InvoiceStatus !== 'Generated');
             if(!filterData.length) {
                 this.sentToAPModal = true;
             } else {
@@ -1140,5 +1154,26 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         }
     }
 
+    uploadReceipts() {
+        if (this.selectedRowData.length) {
+            const filterData = this.selectedRowData.filter(e=> e.InvoiceStatus !== 'Sent to AP');
+            const cle = this.selectedRowData[0].ClientLegalEntity;
+            const cleCheck = this.selectedRowData.filter(c=> c.ClientLegalEntity !== cle ); 
+            if(!filterData.length && !cleCheck.length) {
+                this.paymentResovedModal = true;
+            } else {
+                if(cleCheck.length) {
+                    this.commonService.showToastrMessage(this.constantService.MessageType.info, 'Please select only those Row Item whose Client is Similar. ', false);
+                } else {
+                    this.commonService.showToastrMessage(this.constantService.MessageType.info, 'Please select only those Row Item whose Invoices is Sent to AP. ', false);
+                }
+            }
+        } else {
+            this.isPSInnerLoaderHidden = true;
+            this.submitBtn.isClicked = false;
+            this.paymentResovedModal = false;
+            this.commonService.showToastrMessage(this.constantService.MessageType.info, 'Please select one of Row Item & try again.', false);
+        }
+    }
 
 }

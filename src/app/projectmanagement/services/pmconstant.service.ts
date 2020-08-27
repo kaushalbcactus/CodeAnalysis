@@ -258,7 +258,7 @@ export class PmconstantService {
       // tslint:disable-next-line:max-line-length
       select: 'SOWCode,Status,Currency,TotalBudget,NetBudget,OOPBudget,TaxBudget,AddendumTotalBudget,AddendumNetBudget,AddendumOOPBudget,AddendumTaxBudget,InternalReviewStartDate',
       filter: 'SOWCode eq \'{{SOWCodeStr}}\'',
-      orderby: 'ID desc'
+      orderby: 'InternalReviewStartDate desc'
     },
     PREDECESSOR: {
       select: '',
@@ -537,6 +537,7 @@ export class PmconstantService {
       select: 'ID, Title, ProjectLookup, Status, ApprovalDate, OriginalBudget, NetBudget, OOPBudget, TaxBudget, ProjectCode,'
         + ' BudgetHours, Reason, CommentsMT',
       filter: 'ProjectCode eq \'{{projectCode}}\'',
+      orderby: 'ApprovalDate desc',
       top: 4500
     },
   };
