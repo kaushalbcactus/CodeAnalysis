@@ -1842,7 +1842,7 @@ export class PMCommonService {
       data.NextTasks = milestoneTask.NextTasks;
       data.PrevTasks = milestoneTask.PrevTasks;
     }
-    if ((milestoneTask.Skill === 'Writer' && milestoneTask.Task.indexOf('Slot') > -1) ||
+    if (milestoneTask.Skill === 'Pub Support' ||
       milestoneTask.Skill === 'Editor' || milestoneTask.Skill === 'QC' || milestoneTask.Skill === 'Graphics') {
       data.IsCentrallyAllocated = 'Yes';
       data.ContentTypeCH = this.constant.CONTENT_TYPE.SLOT;
