@@ -6791,7 +6791,12 @@ export class TimelineComponent
       });
       newTasks = this.taskAllocateCommonService.getTasksFromMilestones(subMile, true, this.milestoneData, false);
       newTasks = newTasks.filter(c => c.itemType !== "Client Review");
-      previousTasks = previousTasks.filter(c => c.itemType !== "Client Review");
+      if(previousTasks && previousTasks.length) {
+
+        previousTasks = previousTasks.filter(c => c.itemType !== "Client Review");
+      } else {
+        previousTasks = [];
+      }
       // const isLastSubMilestone = +subMile.position === currentMilSubmil.length ? true : false;
       // if(!isLastSubMilestone) {
       // }
