@@ -163,6 +163,9 @@ export class StandardprojectComponent implements OnInit {
       await this.getStandardTemplate();
       this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetUserInfo');
       this.userProperties = await this.spService.getUserInfo(this.sharedObject.currentUser.userId);
+      const rcId = this.pmObject.oProjectManagement.oResourcesCat
+                   .find(u => u.UserNamePG.ID === this.userProperties.Id);
+      this.userProperties.rcId = rcId ? rcId.ID : 0;
     } else {
       this.setDropdownField();
     }
@@ -663,6 +666,7 @@ export class StandardprojectComponent implements OnInit {
       resource.push(this.selectedSkillObject.value, this.selectedResourceObject.value);
       const currentUser = this.pmObject.oProjectManagement.oResourcesCat.find(u => u.UserNamePG.ID === this.userProperties.Id);
       if (currentUser) {
+
         resource.push(currentUser);
       }
       this.pmObject.oTaskAllocation.oAllSelectedResource = resource;
@@ -914,6 +918,7 @@ export class StandardprojectComponent implements OnInit {
         ngPrimetaskObj.data.minEndDateValue = ngPrimetaskObj.data.StartDate;
         ngPrimetaskObj.data.MileId = ngPrimemilestoneObj.data.MileId + ';#' + this.pmConstant.task.CLIENT_REVIEW;
         ngPrimetaskObj.data.AssignedTo = this.userProperties.Title;
+        ngPrimetaskObj.data.ResourceID = this.userProperties.rcId;
         ngPrimetaskObj.data.showHyperLink = false;
         this.standardFiles.push(ngPrimetaskObj);
         date = this.calcBusinessNextDate(ngPrimetaskObj.data.EndDate, 1);
@@ -1074,6 +1079,7 @@ export class StandardprojectComponent implements OnInit {
             if (taskObj.data.Task === this.pmConstant.task.SEND_TO_CLIENT) {
               taskObj.AssignedTo = this.userProperties.Title;
               taskObj.data.AssignedTo = this.userProperties.Title;
+              taskObj.data.ResourceID = this.userProperties.rcId;
               startdate = this.setDefaultAMHours(milestoneObj.data.StartDate);
               taskObj.data.isEndDateDisabled = true;
             }
@@ -1108,6 +1114,7 @@ export class StandardprojectComponent implements OnInit {
             if (filterResource && filterResource.length) {
               taskObj.data.AssignedTo = filterResource[0].UserNamePG.Title;
               taskObj.data.userId = filterResource[0].UserNamePG.ID;
+              taskObj.data.ResourceID = filterResource[0].ID;
               // startdate = this.checkUserAvailability(startdate, taskObj);
             } else {
               taskObj.data.AssignedTo = milestoneTask[index].Skill;
@@ -1123,6 +1130,7 @@ export class StandardprojectComponent implements OnInit {
             }
             if (taskObj.data.Task === this.pmConstant.task.SEND_TO_CLIENT) {
               taskObj.data.AssignedTo = this.userProperties.Title;
+              taskObj.data.ResourceID = this.userProperties.rcId;
               taskObj.isHoursDisabled = true;
               taskObj.data.showHyperLink = false;
             }

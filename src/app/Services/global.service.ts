@@ -168,6 +168,7 @@ export class GlobalService {
     email: '',
     timeZone: 0,
     designation: '',
+    rcId: 0,
     // webAbsoluteUrl: '',
     // serverRelativeUrl: '',
     loggedInUserInfo: [],

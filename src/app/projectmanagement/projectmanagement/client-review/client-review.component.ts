@@ -211,7 +211,7 @@ export class ClientReviewComponent implements OnInit {
 
   async getCR(currentFilter) {
     const queryOptions = {
-      select: 'ID,Title,ProjectCode,StartDate,DueDateDT,PreviousTaskClosureDate,Milestone,PrevTasks,NextTasks',
+      select: 'ID,Title,ProjectCode,StartDate,DueDateDT,PreviousTaskClosureDate,Milestone,PrevTasks,NextTasks, ResourceID',
       filter: currentFilter,
       top: 4200
     };

@@ -503,7 +503,8 @@ export class PMObjectService {
       taskFullName: '',
       allocationPerDay: '',
       allocationType: '',
-      allocationColor: ''
+      allocationColor: '',
+      rcId: -1
     },
   };
   public currLoginInfo: any = [];

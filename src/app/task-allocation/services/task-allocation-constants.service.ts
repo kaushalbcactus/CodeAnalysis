@@ -84,7 +84,7 @@ export class TaskAllocationConstantsService {
             top: 4500
         },
         userCapacity: {
-            select: 'ID,Milestone,Task,Status,Title,TimeSpent,ExpectedTime,StartDate,DueDateDT,TimeZoneNM',
+            select: 'ID,Milestone,Task,Status,Title,TimeSpent,ExpectedTime,StartDate,DueDateDT,TimeZoneNM, ResourceID',
             orderby: 'StartDate',
             filter: "(AssignedTo/Id eq '{{selectedUserID}}') and((StartDate ge '{{startDateString}}' and StartDate le '{{endDateString}}') or (DueDateDT ge '{{startDateString}}' and DueDateDT le '{{endDateString}}') or (StartDate le '{{startDateString}}' and DueDateDT ge '{{endDateString}}')) and Status ne 'Abandon' and Status ne 'Deleted'",
             top: 4500
@@ -140,7 +140,7 @@ export class TaskAllocationConstantsService {
         top: 1
       },
 
-  
+
       GalleySubCat: {
         select: 'ID,Title,JCID,SubmissionDate,SubmissionURL,SubmissionPkgURL,DecisionURL,DecisionDate,Decision,Status',
         filter: 'Title eq \'{{projectCode}}\' and (Status eq \'{{Status}}\' or  Status eq \'{{Status1}}\')',

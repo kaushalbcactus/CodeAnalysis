@@ -1720,7 +1720,9 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       this.sendMail(task, slot);
       task.assignedUserChanged = false;
     }
-
+    const assignedToId =  task.allocatedResource ? task.allocatedResource.UserNamePG.hasOwnProperty('ID') ?
+                          task.allocatedResource.UserNamePG.ID : -1 : -1;
+    const assignedRCId = this.resourceList.find(r => r.UserNamePG.ID === assignedToId);
     if (bAdd) {
 
       const addData = {
@@ -1731,6 +1733,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         AllowCompletion: task.allowStart === true ? 'Yes' : 'No',
         AssignedToId: task.allocatedResource ? task.allocatedResource.UserNamePG.hasOwnProperty('ID') ?
           task.allocatedResource.UserNamePG.ID : -1 : -1,
+        ResourceID: assignedRCId ? assignedRCId.ID : -1,
         TimeZoneNM: task.allocatedResource ? task.allocatedResource.TimeZone.hasOwnProperty('Title')
           ? task.allocatedResource.TimeZone.Title : +5.5 : +5.5,
         CommentsMT: task.TaskScope,

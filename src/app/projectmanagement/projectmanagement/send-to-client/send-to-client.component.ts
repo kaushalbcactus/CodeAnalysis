@@ -350,7 +350,7 @@ export class SendToClientComponent implements OnInit {
 
   async getSendToClient(currentFilter) {
     const queryOptions = {
-      select: 'ID,Title,ProjectCode,StartDate,DueDateDT,PreviousTaskClosureDate,Milestone,PrevTasks,SubMilestones, NextTasks',
+      select: 'ID,Title,ProjectCode,StartDate,DueDateDT,PreviousTaskClosureDate,Milestone,PrevTasks,SubMilestones, NextTasks, ResourceID',
       filter: currentFilter,
       top: 4200
     };

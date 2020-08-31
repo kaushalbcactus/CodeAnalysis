@@ -334,8 +334,8 @@ export class TimelineComponent
 
   public getAllResources(tasks) {
     const validTasks = tasks.filter(t => t.Status !== "Deleted" && t.Status !== 'Completed'
-    && t.Status !== 'Auto Closed' && t.Task !== 'Time Booking' && t.Task !== 'Send to client'
-    && t.Task !== 'Client Review' && t.Task !== 'Adhoc');
+      && t.Status !== 'Auto Closed' && t.Task !== 'Time Booking' && t.Task !== 'Send to client'
+      && t.Task !== 'Client Review' && t.Task !== 'Adhoc');
     let resources = validTasks.map(t => t.AssignedTo.ID);
     resources = [...new Set(resources)].filter(res => res && res > 0);
     return resources;
@@ -5535,7 +5535,10 @@ export class TimelineComponent
     };
   }
   addUpdateTaskObject(milestoneTask) {
-    // debugger
+    const assginedToId = milestoneTask.AssignedTo ? milestoneTask.AssignedTo.hasOwnProperty("ID") ? milestoneTask.AssignedTo.ID
+                          : -1 : -1
+    const assignedRCId = this.sharedObject.oTaskAllocation.oResources
+                        .find(r => r.UserNamePG.ID === assginedToId);
     return {
       __metadata: { type: this.constants.listNames.Schedules.type },
       CommentsMT: milestoneTask.scope,
@@ -5547,11 +5550,8 @@ export class TimelineComponent
           ? "Yes"
           : "No",
       TATBusinessDays: milestoneTask.tatVal,
-      AssignedToId: milestoneTask.AssignedTo
-        ? milestoneTask.AssignedTo.hasOwnProperty("ID")
-          ? milestoneTask.AssignedTo.ID
-          : -1
-        : -1,
+      AssignedToId: assginedToId,
+      ResourceID: assignedRCId ? assignedRCId.OriginalUserID : -1,
       TimeZoneNM: +milestoneTask.assignedUserTimeZone,
       Status: milestoneTask.status,
       NextTasks: this.setPreviousAndNext(
@@ -6772,8 +6772,8 @@ export class TimelineComponent
     const projectID = this.oProjectDetails.projectID;
     let bSubMilNew = false;
     let bCurrentMilestoneUpdated = false;
-    if ( subMile.type === "submilestone"
-        && subMile.milestone === this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone) {
+    if (subMile.type === "submilestone"
+      && subMile.milestone === this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone) {
       bCurrentMilestoneUpdated = true;
       bSubMilNew = true;
     } else if (subMile.type === "submilestone") {
@@ -6788,7 +6788,7 @@ export class TimelineComponent
       const currentMilSubmil = currentMilestone.children ? currentMilestone.children : []
       const prevSubMil = currentMilSubmil.filter(c => parseInt(c.data.position, 10) === parseInt(subMile.position, 10) - 1);
       prevSubMil.forEach(element => {
-        const subMilTasks = this.taskAllocateCommonService.getTasksFromMilestones(element, true, this.milestoneData,false);
+        const subMilTasks = this.taskAllocateCommonService.getTasksFromMilestones(element, true, this.milestoneData, false);
         previousTasks = previousTasks ? [...previousTasks, ...subMilTasks] : [...subMilTasks];
       });
       newTasks = this.taskAllocateCommonService.getTasksFromMilestones(subMile, true, this.milestoneData, false);

@@ -76,6 +76,7 @@ export class QmsAuthService {
       this.global.currentUser.email = resource[0].UserNamePG.EMail;
       this.global.currentUser.timeZone = resource[0].TimeZone.Title;
       this.global.currentUser.designation = resource[0].Designation;
+      this.global.currentUser.rcId = resource[0].Id;
     }
     if (!this.hideReviewerTaskPending) {
       // this.navLinks.push({ routerLink: ['/qms/pendingFeedback'], label: 'Pending Feedback', value: 'PendingFeedback' });

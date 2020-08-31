@@ -1786,8 +1786,7 @@ export class PMCommonService {
       SkillLevel: milestoneTask.Skill,
       CentralAllocationDone: 'No',
       DisableCascade: 'No',
-      AllocationPerDay: milestoneTask.allocationPerDay ? milestoneTask.allocationPerDay : ''
-
+      AllocationPerDay: milestoneTask.allocationPerDay ? milestoneTask.allocationPerDay : '',
     };
     if (milestoneTask.userId > 0) {
       data.AssignedToId = milestoneTask.userId;
@@ -1795,6 +1794,7 @@ export class PMCommonService {
     if (milestoneTask.Task === 'Send to client') {
       data.AssignedToId = this.globalObject.currentUser.userId;
     }
+    data.ResourceID = milestoneTask.ResourceID ? milestoneTask.ResourceID : -1;
     if (milestoneTask.hasOwnProperty('PreviousTask')) {
       let sNextTask = '';
       let sPrevTask = '';

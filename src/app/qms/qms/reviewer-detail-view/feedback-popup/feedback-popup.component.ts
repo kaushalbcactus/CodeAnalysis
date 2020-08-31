@@ -129,20 +129,20 @@ export class FeedbackPopupComponent implements OnInit {
     const emptyScorecard = this.scorecardTasks.tasks.filter(t => !t.ignoreFeedback && t.averageRating <= 0);
     const milestone = this.scorecardTasks.currentTask.Milestone ? this.scorecardTasks.currentTask.Milestone : this.scorecardTasks.currentTask.milestone;
     if (milestone === 'Draft 1' && emptyScorecard.length) {
-      this.common.showToastrMessage(this.constantsService.MessageType.warn,'Rating Draft 1 milestone task is mandatory.',false);
+      this.common.showToastrMessage(this.constantsService.MessageType.warn, 'Rating Draft 1 milestone task is mandatory.', false);
       return false;
     }
     const emptyCommentSC = this.scorecardTasks.tasks.filter(t => !t.ignoreFeedback && !t.feedbackComment.length && t.averageRating < 3);
     if (emptyCommentSC.length) {
       const tasksNames = emptyCommentSC.map(s => s.task);
       const taskString = tasksNames.join(',');
-      this.common.showToastrMessage(this.constantsService.MessageType.warn,'Please provide comments for tasks ' + taskString + ' as rating is less than 3',false);
+      this.common.showToastrMessage(this.constantsService.MessageType.warn, 'Please provide comments for tasks ' + taskString + ' as rating is less than 3', false);
       return false;
     }
     if (emptyScorecard.length) {
       const tasksNames = emptyScorecard.map(s => s.task);
       const taskString = tasksNames.join(',');
-      this.common.showToastrMessage(this.constantsService.MessageType.warn,'Please mark ignore to scorecard of task ' + taskString,true);
+      this.common.showToastrMessage(this.constantsService.MessageType.warn, 'Please mark ignore to scorecard of task ' + taskString, true);
       return false;
     }
     return true;
@@ -214,6 +214,11 @@ export class FeedbackPopupComponent implements OnInit {
     const batchURL = [];
     let scorecardDetails: {};
     previousTasks.forEach(taskDetail => {
+      // tslint:disable-next-line: one-variable-per-declaration
+      const rcList = this.global.allResources.length ? this.global.allResources :
+                     this.global.DashboardData.ResourceCategorization ?
+                     this.global.DashboardData.ResourceCategorization : [];
+      const assignedToRC = rcList.find(u => u.UserNamePG.ID === taskDetail.assignedToID);
       scorecardDetails = {
         __metadata: { type: this.constantsService.listNames.Scorecard.type },
         Title: taskDetail.task,
@@ -222,9 +227,11 @@ export class FeedbackPopupComponent implements OnInit {
         CommentsMT: taskDetail.feedbackComment,
         AverageRatingNM: taskDetail.averageRating,
         AssignedToId: taskDetail.assignedToID,
+        ResourceID: assignedToRC ? assignedToRC.ID : 0,
         DocumentsUrl: taskDetail.documentUrl,
         ReviewerDocsUrl: taskDetail.reviewTaskDocUrl,
         TemplateName: taskDetail.selectedTemplate.Title,
+        AuthorId: this.global.currentUser.rcId,
         EvaluatorSkill: taskDetail.reviewTask ? taskDetail.reviewTask.defaultSkill ? taskDetail.reviewTask.defaultSkill : '' : ''
       };
       if (taskDetail.taskCompletionDate) {
@@ -414,7 +421,7 @@ export class FeedbackPopupComponent implements OnInit {
         this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'GetNextPreviousTasksFromParentSlot');
         let res: any = await this.spService.readItems(this.constantsService.listNames.Schedules.name, previousNextTaskChild);
         if (res.hasError) {
-          this.common.showToastrMessage(this.constantsService.MessageType.error,res.message.value,false);
+          this.common.showToastrMessage(this.constantsService.MessageType.error, res.message.value, false);
           return;
         }
         res = res.length ? res : [];

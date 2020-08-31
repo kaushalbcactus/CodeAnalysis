@@ -694,6 +694,12 @@ export class CommonService {
     this.response = arrResult.length > 0 ? arrResult.map(a => a.retItems) : [];
     if (this.response.length > 0) {
       this.sharedTaskAllocateObj.oResources = this.response.length > 2 ? this.response[2] : this.sharedTaskAllocateObj.oResources;
+      // fetch rc id for current user and update user properties
+      const currentUserResCat = this.sharedTaskAllocateObj.oResources.filter((item) =>
+      item.UserNamePG.ID === this.sharedObject.currentUser.userId);
+      if (currentUserResCat.length) {
+        this.sharedObject.currentUser.rcId = currentUserResCat[0].ID ? currentUserResCat[0].ID : 0;
+      }
       this.sharedTaskAllocateObj.oCentralGroup = this.response.length > 2 ? this.response[3] : this.sharedTaskAllocateObj.oCentralGroup;
       const project = this.response[0] !== "" ? this.response[0].length > 0 ? this.setLevel1Email(this.response[0][0]) : [] : [];
       if (project.length > 0) {

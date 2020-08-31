@@ -290,7 +290,7 @@ export class TimeBookingDialogComponent implements OnInit {
     this.allTasks = resAdhoc.length > 0 ? [...this.allTasks, ...resAdhoc] : this.allTasks;
 
     const tempMilestones = this.allTasks.map(o => new Object({
-      ID: o.ID, 
+      ID: o.ID,
       Entity: o.Entity,
       Title: o.Title,
       Task: o.Task,
@@ -558,6 +558,7 @@ export class TimeBookingDialogComponent implements OnInit {
                 TaskComments: dbTasks[i].CommentsMT,
                 Title: dbTasks[i].ProjectCode + ' ' + dbTasks[i].Milestone + ' TB ' + this.sharedObject.currentUser.title,
                 AssignedToId: this.sharedObject.currentUser.userId,
+                ResourceID: this.sharedObject.currentUser.rcId,
                 ContentTypeCH : this.constants.CONTENT_TYPE.TASK
               };
               count++;

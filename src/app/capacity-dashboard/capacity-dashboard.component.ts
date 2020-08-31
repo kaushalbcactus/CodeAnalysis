@@ -473,6 +473,7 @@ export class CapacityDashboardComponent implements OnInit {
           TimeZoneNM: parseFloat(blockResource.Resource.TimeZone.Title),
           ExpectedTime: blockResource.budgetHours.toString(),
           AllocationPerDay: blockResource.allocationPerDay,
+          ResourceID: blockResource.Resource.ID
         };
         console.log(blockResource);
         this.commonService.SetNewrelic(

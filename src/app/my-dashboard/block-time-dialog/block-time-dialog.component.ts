@@ -188,6 +188,7 @@ export class BlockTimeDialogComponent implements OnInit {
         TaskComments: this.commment,
         Status: 'Completed',
         AssignedToId: this.sharedObject.currentUser.userId,
+        ResourceID: this.sharedObject.currentUser.rcId,
         TimeZoneNM: this.sharedObject.DashboardData.ResourceCategorization.find(c => c.UserNamePG.ID ===
           this.sharedObject.currentUser.userId) !== undefined ?
           this.sharedObject.DashboardData.ResourceCategorization.find(c => c.UserNamePG.ID ===
@@ -234,7 +235,8 @@ export class BlockTimeDialogComponent implements OnInit {
         Description: this.commment,
         IsHalfDay: this.IsHalfDay,
         IsActive: 'Yes',
-        UserNameId: this.sharedObject.currentUser.userId
+        UserNameId: this.sharedObject.currentUser.userId,
+        ResourceID: this.sharedObject.currentUser.rcId
       };
       const validation = await this.validateLeave(this.datePipe.transform(this.eventDate, 'yyyy-MM-dd')
         + 'T09:00:00.000', this.datePipe.transform(this.eventEndDate, 'yyyy-MM-dd') + 'T19:00:00.000');
@@ -251,7 +253,7 @@ export class BlockTimeDialogComponent implements OnInit {
   async validateLeave(EventDate, EndDate) {
     let validation = true;
     const batchURL = [];
-  
+
     const url = this.spServices.getReadURL(this.constants.listNames.LeaveCalendar.name,
       this.myDashboardConstantsService.mydashboardComponent.LeaveCalendar);
 

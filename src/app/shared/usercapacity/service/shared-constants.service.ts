@@ -9,7 +9,7 @@ export class SharedConstantsService {
   // tslint:disable
   public userCapacity = {
     fetchTasks: {
-      select: 'ID,Milestone,ProjectCode,SubMilestones,Task,Status,Title,TimeSpent,ExpectedTime,StartDate,DueDateDT,TimeZoneNM,ParentSlot,AllocationPerDay,CommentsMT,Entity,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail',
+      select: 'ID,Milestone,ProjectCode,SubMilestones,Task,Status,Title,TimeSpent,ExpectedTime,StartDate,DueDateDT,TimeZoneNM,ParentSlot,AllocationPerDay,CommentsMT,Entity,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail, ResourceID',
       filter: "(AssignedTo/Id eq {{userID}}) and(" +
         "(StartDate ge '{{startDateString}}' and StartDate le '{{endDateString}}')" +
         "or (DueDateDT ge '{{startDateString}}' and DueDateDT le '{{endDateString}}')" +
@@ -34,7 +34,7 @@ export class SharedConstantsService {
     },
 
     fetchSpentTimeTasks: {
-      select: 'ID,Milestone,ProjectCode,SubMilestones,Task,Status,Title,TimeSpent,ExpectedTime,StartDate,DueDateDT,TimeZoneNM,ParentSlot,TimeSpentPerDay,AssignedTo/Title,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,CommentsMT,Entity',
+      select: 'ID,Milestone,ProjectCode,SubMilestones,Task,Status,Title,TimeSpent,ExpectedTime,StartDate,DueDateDT,TimeZoneNM,ParentSlot,TimeSpentPerDay,AssignedTo/Title,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,CommentsMT,Entity, ResourceID',
       filter : "(AssignedTo/Id eq {{userID}}) and ((Status eq 'Completed' and(" +
       "(StartDate ge '{{startDateString}}' and StartDate le '{{endDateString}}')" +
       " or (DueDateDT ge '{{startDateString}}' and DueDateDT le '{{endDateString}}')" +
@@ -58,7 +58,7 @@ export class SharedConstantsService {
     },
 
     fetchBlockResource: {
-      select: 'ID,Title,Status,ExpectedTime,StartDate,DueDateDT,TimeZoneNM,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail,AllocationPerDay',
+      select: 'ID,Title,Status,ExpectedTime,StartDate,DueDateDT,TimeZoneNM,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail,AllocationPerDay, ResourceID',
       filter: "(AssignedTo/Id eq {{userID}}) and(" +
         "(StartDate ge '{{startDateString}}' and StartDate le '{{endDateString}}')" +
         "or (DueDateDT ge '{{startDateString}}' and DueDateDT le '{{endDateString}}')" +

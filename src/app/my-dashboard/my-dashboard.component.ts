@@ -118,11 +118,11 @@ export class MyDashboardComponent implements OnInit {
 
   async checkTaskAvailable() {
     const res = await this.myDashboardConstantsService.getOpenTaskForDialog();
-    if (res.length > 0) { 
-      const ref = this.dialogService.open(CurrentCompletedTasksTableComponent, { 
+    if (res.length > 0) {
+      const ref = this.dialogService.open(CurrentCompletedTasksTableComponent, {
           data: {
             allpopupTasks  : res,
-          
+
           },
         header: 'Open Tasks',
         width: '90vw',
@@ -187,6 +187,7 @@ export class MyDashboardComponent implements OnInit {
     if (currentUserResCat.length) {
       this.isUserFTE = currentUserResCat[0].IsFTE && currentUserResCat[0].IsFTE === 'Yes' ? true : false;
       this.myDashboardConstantsService.mydashboardComponent.user.isUserFTE = this.isUserFTE;
+      this.sharedObject.currentUser.rcId = currentUserResCat[0].ID ? currentUserResCat[0].ID : 0;
     }
     console.log(this.isUserFTE);
     this.sharedObject.DashboardData.ProjectContacts = this.response.length > 0 ? this.response[2].retItems : [];

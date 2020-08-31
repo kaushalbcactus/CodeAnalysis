@@ -62,7 +62,7 @@ export class MyDashboardConstantsService {
     },
     MyTasks: {
 
-      select: 'ID,Title,Status,StartDate,DueDateDT,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,CommentsMT,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,SubMilestones, IsCentrallyAllocated,ParentSlot,AssignedTo/Title,AssignedTo/EMail,AllocationPerDay',
+      select: 'ID,Title,Status,StartDate,DueDateDT,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,CommentsMT,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,SubMilestones, IsCentrallyAllocated,ParentSlot,AssignedTo/Title,AssignedTo/EMail,AllocationPerDay, ResourceID',
       orderby: 'DueDateDT asc',
       filter: 'AssignedTo eq  {{userId}} and (Task ne \'Send to client\') and (Task ne \'Follow up\') and (Task ne \'Client Review\') and (Task ne \'Time Booking\') and (Task ne \'Blocking\') and ',
       filterStatus: '(Status ne \'Completed\') and (Status ne \'Auto Closed\')  and (Status ne \'Deleted\') and (Status ne \'Abandon\') and (Status ne \'Hold Request\') and (Status ne \'Abandon Request\') and (Status ne \'Hold\') and (Status ne \'Project on Hold\')',
@@ -128,7 +128,7 @@ export class MyDashboardConstantsService {
       expand: 'AssignedTo/Title'
     },
     previousTaskStatus: {
-      select: 'ID,Title,Status,NextTasks,Task,AllowCompletion,PrevTasks,AssignedTo/Title,ParentSlot',
+      select: 'ID,Title,Status,NextTasks,Task,AllowCompletion,PrevTasks,AssignedTo/Title, ResourceID, ParentSlot',
       filter: 'ID eq {{taskId}} and AssignedTo eq {{userID}} ',
       expand: 'AssignedTo/Title'
     },
@@ -187,7 +187,7 @@ export class MyDashboardConstantsService {
     },
 
     MyTimeline: {
-      select: 'ID,Title,Status,StartDate,DueDateDT,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,CommentsMT,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,TATStatus,Entity,SubMilestones,AllocationPerDay',
+      select: 'ID,Title,Status,StartDate,DueDateDT,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,CommentsMT,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,TATStatus,Entity,SubMilestones,AllocationPerDay, ResourceID',
       orderby: 'DueDateDT asc',
       filter: 'AssignedTo eq  {{userId}} and (Task ne \'Send to client\') and (Task ne \'Follow up\') and (Task ne \'Client Review\') and  (Task ne \'Time Booking\') and (Task ne \'Blocking\') and ',
       filterNotCompleted: '(Status ne \'Completed\') and (Status ne \'Not Confirmed\') and (Status ne \'Deleted\') and (Status ne \'Abandon\') and (Status ne \'Hold Request\') and (Status ne \'Abandon Request\') and (Status ne \'Hold\') and (Status ne \'Project on Hold\') and (Status ne \'Auto Closed\')',
@@ -216,7 +216,7 @@ export class MyDashboardConstantsService {
     },
 
     AdhocTasks: {
-      select: 'ID,Title,Status,StartDate,DueDateDT,TimeSpent,CommentsMT,Task,TaskComments,Entity',
+      select: 'ID,Title,Status,StartDate,DueDateDT,TimeSpent,CommentsMT,Task,TaskComments,Entity, ResourceID',
       orderby: 'DueDateDT asc',
       filter: 'AssignedTo eq  {{userId}} and  Status eq \'Completed\'',
       filterDate: 'and((StartDate ge \'{{startDateString}}\' and StartDate le \'{{endDateString}}\') or (DueDateDT ge \'{{startDateString}}\' and DueDateDT le \'{{endDateString}}\') or (StartDate le \'{{startDateString}}\' and DueDateDT ge \'{{endDateString}}\'))',
@@ -237,7 +237,7 @@ export class MyDashboardConstantsService {
     },
 
     MyTimelineForBooking: {
-      select: 'ID,Title,Status,StartDate,DueDateDT,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,CommentsMT,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,TATStatus,Entity,TimeSpentPerDay,SubMilestones',
+      select: 'ID,Title,Status,StartDate,DueDateDT,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,CommentsMT,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,TATStatus,Entity,TimeSpentPerDay,SubMilestones, ResourceID',
       orderby: 'DueDateDT asc',
       filter: 'AssignedTo eq  {{userId}} and ',
       filterNotCompleted: '(Status ne \'Not Confirmed\') and (Status ne \'Deleted\') and (Status ne \'Abandon\') and (Status ne \'Hold Request\') and (Status ne \'Abandon Request\') and (Status ne \'Hold\') and (Status ne \'Project on Hold\')',

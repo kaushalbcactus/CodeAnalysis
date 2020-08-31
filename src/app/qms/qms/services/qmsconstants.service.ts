@@ -38,14 +38,14 @@ export class QMSConstantsService {
   };
   public reviewerComponent = {
     reviewerPendingTaskURL: {
-      select: 'ID, Title, Task, SubMilestones, ProjectCode, Status, Milestone, AssignedTo/ID, AssignedTo/Title,DueDateDT, PrevTasks, Rated',
+      select: 'ID, Title, Task, SubMilestones, ProjectCode, Status, Milestone, AssignedTo/ID, AssignedTo/Title,DueDateDT, PrevTasks, Rated, ResourceID',
       expand: 'AssignedTo/ID, AssignedTo/Title',
       filter: "AssignedTo/ID eq '" + this.global.currentUser.userId + "' and (Status eq 'Completed' or Status eq 'Auto Closed')" +
         " and startswith(Task,'Review-') and  DueDateDT ge '{{PrevMonthDate}}' and IsRated ne 1",
       top: '{{TopCount}}'
     },
     prevOfReviewTasksUrl: {
-      select: 'ID, Title, Task, SubMilestones, ProjectCode, Status, Milestone, AssignedTo/ID, AssignedTo/Title, Actual_x0020_End_x0020_Date, PrevTasks, NextTasks, Rated',
+      select: 'ID, Title, Task, SubMilestones, ProjectCode, Status, Milestone, AssignedTo/ID, AssignedTo/Title, Actual_x0020_End_x0020_Date, PrevTasks, NextTasks, Rated, ResourceID',
       expand: 'AssignedTo/ID, AssignedTo/Title',
       filter: "Title eq '{{PrevTaskTitle}}' and Rated ne 1",
       top: '1'
@@ -86,7 +86,7 @@ export class QMSConstantsService {
         top: '1'
       },
       getScorecard: {
-        select: 'ID,Title,SubMilestones, CommentsMT,Created, AssignedTo/ID, AssignedTo/Title, Author/ID, Author/Title, DocumentsUrl, FeedbackType, SubmissionDate, AverageRatingNM, EvaluatorSkill',
+        select: 'ID,Title,SubMilestones, CommentsMT,Created, AssignedTo/ID, AssignedTo/Title, Author/ID, Author/Title, DocumentsUrl, FeedbackType, SubmissionDate, AverageRatingNM, EvaluatorSkill, ResourceID, AuthorID',
         expand: 'AssignedTo, Author',
         filter: "AssignedTo/ID eq '{{AssignedTo}}' {{RatingType}} {{FeedbackTypeFilter}} and Created ge '{{startDate}}' and Created le '{{endDate}}' and  Validity ne 0",
         top: '{{TopCount}}',
@@ -153,7 +153,7 @@ export class QMSConstantsService {
         orderby: 'Created desc'
       },
       getResourceScorecard: {
-        select: 'ID,Title, SubMilestones, CommentsMT,Created, AssignedTo/ID, AssignedTo/Title, Author/ID, Author/Title, DocumentsUrl, FeedbackType, SubmissionDate, AverageRatingNM',
+        select: 'ID,Title, SubMilestones, CommentsMT,Created, AssignedTo/ID, AssignedTo/Title, Author/ID, Author/Title, DocumentsUrl, FeedbackType, SubmissionDate, AverageRatingNM, ResourceID, AuthorID',
         expand: 'AssignedTo, Author',
         filter: "AssignedTo/ID eq  '{{AssignedTo}}' {{FeedbackTypeFilter}} and Created ge '{{startDate}}' and Created le '{{endDate}}' and  Validity ne 0",
         top: '{{TopCount}}',
@@ -175,20 +175,20 @@ export class QMSConstantsService {
       filter: "IsActiveCH eq 'Yes' and Manager/ID eq '{{ManagerID}}'",
       top: '{{TopCount}}'
     },
-    getQualitativeFeedback: {
-      select: 'ID,Title, CommentsMT,Created, AssignedTo/ID, AssignedTo/Title, Author/ID, Author/Title, FeedbackType',
-      expand: 'AssignedTo, Author',
-      filter: "AssignedTo/ID eq '{{AssignedTo}}' and FeedbackType eq '" + this.globalConstant.FeedbackType.qualitative + "' and Created ge '{{startDate}}' and Created le '{{endDate}}'",
-      top: '{{TopCount}}',
-      orderby: 'Created desc'
-    },
-    getPositveFeedback: {
-      select: 'ID, Title, FileID, FileURL, SentDate,SentBy/ID, SentBy/Title, Modified, Resources/ID',
-      expand: 'SentBy, Resources',
-      filter: "Resources/ID eq '{{AssignedTo}}' and SentDate ge '{{startDate}}' and SentDate le '{{endDate}}'",
-      top: '{{TopCount}}',
-      orderby: 'SentDate desc'
-    }
+    // getQualitativeFeedback: {
+    //   select: 'ID,Title, CommentsMT,Created, AssignedTo/ID, AssignedTo/Title, Author/ID, Author/Title, FeedbackType',
+    //   expand: 'AssignedTo, Author',
+    //   filter: "AssignedTo/ID eq '{{AssignedTo}}' and FeedbackType eq '" + this.globalConstant.FeedbackType.qualitative + "' and Created ge '{{startDate}}' and Created le '{{endDate}}'",
+    //   top: '{{TopCount}}',
+    //   orderby: 'Created desc'
+    // },
+    // getPositveFeedback: {
+    //   select: 'ID, Title, FileID, FileURL, SentDate,SentBy/ID, SentBy/Title, Modified, Resources/ID',
+    //   expand: 'SentBy, Resources',
+    //   filter: "Resources/ID eq '{{AssignedTo}}' and SentDate ge '{{startDate}}' and SentDate le '{{endDate}}'",
+    //   top: '{{TopCount}}',
+    //   orderby: 'SentDate desc'
+    // }
   };
 
   public AdminViewComponent = {
@@ -200,7 +200,7 @@ export class QMSConstantsService {
       orderby: 'UserNamePG/Title asc'
     },
     resourceTaskUrl: {
-      select: 'ID, Title, ProjectCode, SubMilestones, Status, Milestone, AssignedTo/ID, AssignedTo/Title, Actual_x0020_End_x0020_Date, PrevTasks, NextTasks, Rated, IsRated',
+      select: 'ID, Title, ProjectCode, SubMilestones, Status, Milestone, AssignedTo/ID, AssignedTo/Title, Actual_x0020_End_x0020_Date, PrevTasks, NextTasks, Rated, IsRated, ResourceID',
       expand: 'AssignedTo/ID, AssignedTo/Title',
       filter: "AssignedTo/ID eq '{{resourceID}}' and Task eq '{{TaskType}}' and (Status eq 'Completed' or Status eq 'Auto Closed')" +
         " and  DueDateDT ge '{{PrevMonthDate}}'",
