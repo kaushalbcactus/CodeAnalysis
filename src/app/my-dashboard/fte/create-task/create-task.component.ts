@@ -388,6 +388,7 @@ export class CreateTaskComponent implements OnInit {
         IsCentrallyAllocated: 'No',
         ActiveCA: 'No',
         DisableCascade: 'Yes',
+        ContentTypeCH: this.constantsService.CONTENT_TYPE.TASK,
       };
       /* tslint:disable:no-string-literal */
       taskObj['__metadata'] = { type: this.constantsService.listNames.Schedules.type };
