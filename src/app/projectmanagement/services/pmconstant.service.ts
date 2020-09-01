@@ -489,7 +489,7 @@ export class PmconstantService {
 
     GET_FinancePO: {
       select: 'ID,Title, ClientLegalEntity, Currency, Number, NameST, Amount, AmountOOP, AmountRevenue, AmountTax,POCategory,POExpiryDate,'
-        + 'TotalLinked, RevenueLinked, OOPLinked, TaxLinked,TotalScheduled,ScheduledRevenue',
+        + 'TotalLinked, RevenueLinked, OOPLinked, TaxLinked,TotalScheduled,ScheduledRevenue,ScheduledOOP',
       filter: 'Status eq \'Active\' and ClientLegalEntity eq \'{{clientLegalEntity}}\' and  Currency eq \'{{currency}}\'',
       orderby: 'Created desc',
       top: 4900
@@ -540,6 +540,12 @@ export class PmconstantService {
       orderby: 'ApprovalDate desc',
       top: 4500
     },
+    SPENDING_INFO: {
+      select: "ID,Title,Number,Header,DateSpend,SpendType,PaymentMode,Currency,Amount,ClientCurrency,ClientAmount,DollarAmount,Status,FileURL,NotesMT,InvoiceID,CategoryST,Modified,POLookup,ApproverComments,ApproverFileUrl,Created,PayingEntity,VendorFreelancer,RequestType,ClientApprovalFileURL,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title",
+      filter: "Title eq '{{Title}}' ",
+      expand: "Editor,Author",
+      top: 1,
+    }
   };
   public QUERY = {
     GET_TIMESPENT: {

@@ -77,6 +77,9 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     FolderName: string;
     editAuxiliary = false;
     DisplayInvoiceWithAuxiliaryArray = [];
+    iliByidRes: any = [];
+    pfresp: any = [];
+    pfbresp: any = [];
 
     constructor(
         private fb: FormBuilder,
@@ -471,16 +474,18 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         if (data.InvoiceStatus) {
             invoiceSts = data.InvoiceStatus.toLowerCase();
         }
-
+        this.items = [
+            { label: 'Detag Invoice', command: (e) => this.openMenuContent(e, data) },
+        ]
         switch (invoiceSts) {
             case 'sent to ap': {
-                this.items = [
+                this.items.push(
                     // { label: 'Export Invoice', command: (e) => this.openMenuContent(e, data) },
                     { label: 'Mark as Payment Resolved', command: (e) => this.openMenuContent(e, data) },
                     // { label: 'Dispute Invoice', command: (e) => this.openMenuContent(e, data) },
                     // { label: 'Mark as Debit/Credit Note', command: (e) => this.openMenuContent(e, data) },
                     { label: 'Replace Invoice', command: (e) => this.openMenuContent(e, data) },
-                ];
+                );
 
                 if (data.InvoiceHtml) {
                     this.items.push({ label: 'Edit Line item', command: (e) => this.openMenuContent(e, data) });
@@ -488,18 +493,18 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 break;
             }
             case 'generated': {
-                this.items = [
+                this.items.push(
                     { label: 'Sent to AP', command: (e) => this.openMenuContent(e, data) },
                     { label: 'Replace Invoice', command: (e) => this.openMenuContent(e, data) },
-                ];
+                );
                 if (data.InvoiceHtml) {
                     this.items.push({ label: 'Edit Line item', command: (e) => this.openMenuContent(e, data) });
                 }
                 break;
             }
             case 'dispute': {
-                this.items = [
-                    { label: 'Mark as Payment Resolved', command: (e) => this.openMenuContent(e, data) }]
+                this.items.push(
+                    { label: 'Mark as Payment Resolved', command: (e) => this.openMenuContent(e, data) });
                 break;
             }
             default: {
@@ -621,10 +626,203 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             this.editAuxiliary = true;
         } else if (this.confirmDialog.title === 'Regenerate Invoice') {
             this.generateExistingInvoice(data);
+        } else if(this.confirmDialog.title === 'Detag Invoice') {
+            this.commonService.confirmMessageDialog("Detag Invoice", "Are you sure you want to detag invoice", null, ['Yes', 'No'], false).then(async Confirmation => {
+                if (Confirmation === 'Yes') {
+                    this.onSubmit("Detag Invoice");
+                }
+                else if (Confirmation === 'No') {
+                    this.commonService.showToastrMessage(this.constantService.MessageType.info, 'You have canceled', false);
+                }
+            });
         }
 
     }
 
+    async getInvoiceLineItemByID() {
+        this.iliByidRes = [];
+        // this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
+        const iliObj = Object.assign({}, this.fdConstantsService.fdComponent.invoiceLineItemByInvoice);
+        iliObj.filter = iliObj.filter.replace('{{InvoiceLookup}}', this.selectedRowItem.Id);
+        this.commonService.SetNewrelic('Finance-Dashboard', 'Invoices', 'GetInviceLineItem');
+        const res = await this.spServices.readItems(this.constantService.listNames.InvoiceLineItems.name, iliObj);
+        const arrResults = res.length ? res : [];
+        // if (arrResults.length) {
+        // console.log(arrResults[0]);
+        this.iliByidRes = arrResults;
+        console.log('this.iliByidRes ', this.iliByidRes);
+
+        this.getFinanceListData(this.iliByidRes[0]);
+        // }
+        // this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
+    }
+
+    async getFinanceListData(data) {
+        const batchUrl = [];
+        this.pfresp = [];
+        this.pfbresp = [];
+        const pfObj = Object.assign({}, this.queryConfig);
+        pfObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectFinances.name,
+            this.fdConstantsService.fdComponent.projectFinances);
+        pfObj.url = pfObj.url.replace('{{ProjectCode}}', data.Title);
+        pfObj.listName = this.constantService.listNames.ProjectFinances.name;
+        pfObj.type = 'GET';
+        batchUrl.push(pfObj);
+
+        const pfbObj = Object.assign({}, this.queryConfig);
+        pfbObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectFinanceBreakup.name,
+            this.fdConstantsService.fdComponent.projectFinanceBreakupFromPO);
+        pfbObj.url = pfbObj.url.replace('{{ProjectCode}}', data.Title).replace('{{PO}}', data.PO);
+        pfbObj.listName = this.constantService.listNames.ProjectFinanceBreakup.name;
+        pfbObj.type = 'GET';
+        batchUrl.push(pfbObj);
+
+        const res = await this.spServices.executeBatch(batchUrl);
+
+        const arrResults = res.length ? res.map(a => a.retItems) : [];
+        if (arrResults.length) {
+            this.pfresp = arrResults[0] ? arrResults[0] : [];
+            this.pfbresp = arrResults[1] ? arrResults[1] : [];
+            console.log('this.pfresp ', this.pfresp);
+            console.log('this.pfbresp ', this.pfbresp);
+
+        }
+
+        await this.updateFinanceListData();
+    }
+
+    updateFinanceListData() {
+        const batchUrl = [];
+        let pfs: any = [];
+        let pfbs: any = [];
+        let pfsItem: any = {};
+        let pfbsItems: any = [];
+
+        this.iliByidRes.forEach(element => {
+
+            let invData = {
+                __metadata: { type: this.constantService.listNames.InvoiceLineItems.type },
+                Status: 'Scheduled',
+                ProformaLookup: null,
+                InvoiceLookup: null
+            }
+            this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, +this.iliByidRes[0].Id), invData, this.constantService.Method.PATCH, this.constantService.listNames.InvoiceLineItems.name);
+
+            let invoiceData = {
+                __metadata: { type: this.constantService.listNames.Invoices.type },
+                Status: 'Deleted',
+            }
+            this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constantService.listNames.Invoices.name, +this.selectedRowItem.Id), invoiceData, this.constantService.Method.PATCH, this.constantService.listNames.Invoices.name);
+
+            const pfsItems = this.pfresp.filter(pf => pf.Title === element.Title);
+            pfsItem = pfsItems.length > 0 ? pfsItems[0] : {};
+            if (pfsItem) {
+                element.Amount = parseFloat(element.Amount.toFixed(2));
+                // InvoicedRevenue: (pfsItem.InvoicedRevenue ? pfsItem.InvoicedRevenue : 0 + element.Amount ? element.Amount : 0),
+                if (this.selectedRowItem.InvoiceType === 'revenue') {
+                    pfsItem.InvoicedRevenue = pfsItem.InvoicedRevenue ? parseFloat(pfsItem.InvoicedRevenue.toFixed(2)) - element.Amount : 0 - element.Amount;
+                    pfsItem.ScheduledRevenue = pfsItem.ScheduledRevenue ? parseFloat(pfsItem.ScheduledRevenue.toFixed(2)) + element.Amount : 0 + element.Amount;
+                    pfsItem.Invoiced = pfsItem.Invoiced ? parseFloat(pfsItem.Invoiced.toFixed(2)) - element.Amount : 0 - element.Amount;
+                    pfsItem.InvoicesScheduled = pfsItem.InvoicesScheduled ? parseFloat(pfsItem.InvoicesScheduled.toFixed(2)) + element.Amount : 0 + element.Amount
+                    pfs.push({
+                        Id: pfsItem.Id,
+                        InvoicedRevenue: (pfsItem.InvoicedRevenue),
+                        ScheduledRevenue: (pfsItem.ScheduledRevenue),
+                        Invoiced: (pfsItem.Invoiced),
+                        InvoicesScheduled: (pfsItem.InvoicesScheduled),
+                    });
+                } else if (this.selectedRowItem.InvoiceType === 'oop') {
+                    pfsItem.ScheduledOOP = pfsItem.ScheduledOOP ? parseFloat(pfsItem.ScheduledOOP.toFixed(2)) + element.Amount : 0 + element.Amount;
+                    pfsItem.InvoicedOOP = pfsItem.InvoicedOOP ? parseFloat(pfsItem.InvoicedOOP.toFixed(2)) - element.Amount : 0 - element.Amount;
+                    pfsItem.Invoiced = pfsItem.Invoiced ? parseFloat(pfsItem.Invoiced.toFixed(2)) - element.Amount : 0 - element.Amount;
+                    pfsItem.InvoicesScheduled = pfsItem.InvoicesScheduled ? parseFloat(pfsItem.InvoicesScheduled.toFixed(2)) + element.Amount : 0 + element.Amount;
+                    pfs.push({
+                        Id: pfsItem.Id,
+                        ScheduledOOP: (pfsItem.ScheduledOOP),
+                        InvoicedOOP: (pfsItem.InvoicedOOP),
+                        Invoiced: (pfsItem.Invoiced),
+                        InvoicesScheduled: (pfsItem.InvoicesScheduled),
+                    });
+                }
+            }
+            // PFB
+            // let pfbsItem = await this.findpfbFrompfbRes(element);
+            pfbsItems = this.pfbresp.filter(pfb => pfb.ProjectNumber === element.Title && pfb.POLookup === element.PO);
+            if (pfbsItems.length) {
+                pfbsItems.forEach(pfbsItem => {
+                    if (this.selectedRowItem.InvoiceType === 'revenue') {
+                        pfbsItem.InvoicedRevenue = pfbsItem.InvoicedRevenue ? parseFloat(pfbsItem.InvoicedRevenue.toFixed(2)) - element.Amount : 0 - element.Amount;
+                        pfbsItem.ScheduledRevenue = pfbsItem.ScheduledRevenue ? parseFloat(pfbsItem.ScheduledRevenue.toFixed(2)) + element.Amount : 0 + element.Amount;
+                        pfbsItem.TotalInvoiced = pfbsItem.TotalInvoiced ? parseFloat(pfbsItem.TotalInvoiced.toFixed(2)) - element.Amount : 0 - element.Amount;
+                        pfbsItem.TotalScheduled = pfbsItem.TotalScheduled ? parseFloat(pfbsItem.TotalScheduled.toFixed(2)) + element.Amount : 0 + element.Amount;
+                        pfbs.push({
+                            Id: pfbsItem.Id,
+                            InvoicedRevenue: (pfbsItem.InvoicedRevenue),
+                            ScheduledRevenue: (pfbsItem.ScheduledRevenue),
+                            TotalInvoiced: (pfbsItem.TotalInvoiced),
+                            TotalScheduled: (pfbsItem.TotalScheduled),
+                        })
+                    } else if (this.selectedRowItem.InvoiceType === 'oop') {
+                        pfbsItem.ScheduledOOP = pfbsItem.ScheduledOOP ? parseFloat(pfbsItem.ScheduledOOP.toFixed(2)) + element.Amount : 0 + element.Amount;
+                        pfbsItem.InvoicedOOP = pfbsItem.InvoicedOOP ? parseFloat(pfbsItem.InvoicedOOP.toFixed(2)) - element.Amount : 0 - element.Amount;
+                        pfbsItem.TotalInvoiced = pfbsItem.TotalInvoiced ? parseFloat(pfbsItem.TotalInvoiced.toFixed(2)) - element.Amount : 0 - element.Amount;
+                        pfbsItem.TotalScheduled = pfbsItem.TotalScheduled ? parseFloat(pfbsItem.TotalScheduled.toFixed(2)) + element.Amount : 0 + element.Amount;
+                        pfbs.push({
+                            Id: pfbsItem.Id,
+                            ScheduledOOP: (pfbsItem.ScheduledOOP),
+                            InvoicedOOP: (pfbsItem.InvoicedOOP),
+                            TotalInvoiced: (pfbsItem.TotalInvoiced),
+                            TotalScheduled: (pfbsItem.TotalScheduled),
+                        })
+                    }
+                });
+            }
+        });
+
+        if (pfs.length) {
+            for (let pf = 0; pf < pfs.length; pf++) {
+                const element = pfs[pf];
+                element['__metadata'] = { type: this.constantService.listNames.ProjectFinances.type };
+                const pfObj = Object.assign({}, this.queryConfig);
+                pfObj.url = this.spServices.getItemURL(this.constantService.listNames.ProjectFinances.name, +element.Id);
+                pfObj.listName = this.constantService.listNames.ProjectFinances.name;
+                pfObj.type = 'PATCH';
+                pfObj.data = element;
+                batchUrl.push(pfObj);
+                // data.push({
+                //     objData: element,
+                //     endpoint: this.fdConstantsService.fdComponent.addUpdateProjectFinances.update.replace("{{Id}}", element.Id),
+                //     requestPost: false
+                // });
+            }
+        }
+
+        if (pfbs.length) {
+            for (let pfb = 0; pfb < pfbs.length; pfb++) {
+                const element = pfbs[pfb];
+                element['__metadata'] = { type: this.constantService.listNames.ProjectFinanceBreakup.type };
+                const pfbObj = Object.assign({}, this.queryConfig);
+                pfbObj.url = this.spServices.getItemURL(this.constantService.listNames.ProjectFinanceBreakup.name, +element.Id);
+                pfbObj.listName = this.constantService.listNames.ProjectFinanceBreakup.name;
+                pfbObj.type = 'PATCH';
+                pfbObj.data = element;
+                batchUrl.push(pfbObj);
+                // data.push({
+                //     objData: element,
+                //     endpoint: this.fdConstantsService.fdComponent.addUpdateProjectFinanceBreakup.update.replace("{{Id}}", element.Id),
+                //     requestPost: false
+                // });
+            }
+        }
+
+        console.log(batchUrl);
+        this.submitForm(batchUrl, 'Detag Invoice');
+    }
+
+    async detagInvoice() {
+        await this.getInvoiceLineItemByID();
+    }
+    
     setAppendixCol(sContent) {
         var oDiv = document.createElement('div');
         oDiv.innerHTML = sContent;
@@ -938,6 +1136,8 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 this.submitForm(batchUrl, type);
             }
 
+        } else if(type === 'Detag Invoice') {
+            this.detagInvoice();
         }
     }
 
@@ -1030,6 +1230,9 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Auxiliary Name for ' + this.selectedRowItem.InvoiceNumber + ' ' + ' updated sucessfully.', true);
             this.formSubmit.isSubmit = false;
             this.submitBtn.isClicked = false;
+            this.reFetchData();
+        } else if(type === 'Detag Invoice') {
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, this.selectedRowItem.InvoiceNumber + ' ' + ' Detach sucessfully.', true);
             this.reFetchData();
         }
 

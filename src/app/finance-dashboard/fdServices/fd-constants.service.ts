@@ -326,6 +326,12 @@ export class FdConstantsService {
             expand: "CS/ID,CS/Title,Editor,Author"
         },
 
+        invoiceLineItemByInvoice: {
+            select: "ID,Title,Status,ScheduledDate,Amount,Currency,PO,MainPOC,ScheduleType,InvoiceLookup,Expenses,AddressType,Template,SOWCode,ProformaLookup",
+            filter: "InvoiceLookup eq '{{InvoiceLookup}}' ",
+            top: 4500
+        },
+
         // Mail Content
         mailContent: {
             select: "ID,Title,ContentMT",
