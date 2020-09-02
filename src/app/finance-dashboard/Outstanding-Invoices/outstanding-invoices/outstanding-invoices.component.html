@@ -10,7 +10,18 @@
     <div class="ui-g-3"></div>
     <div class="ui-g-3"></div>
     <div class="ui-g-3 f-right" style="display: flex;">
-        <div class="box" style="margin-right: 20px;flex-grow: 1;">
+        <div class="box mr-20 fg">
+            <button
+            type="button"
+            class="fdBtn"
+            pButton
+            icon="fa fa-upload"
+            iconPos="left"
+            label="Upload Payment Receipt"
+            (click)="uploadReceipts()"
+        ></button>
+        </div>
+        <div class="box mr-20">
             <button
                 type="button"
                 class="fdBtn"
@@ -20,7 +31,7 @@
             ></button>
         </div>
         <div class="box">
-            <i style="font-size: 1.8em;cursor: pointer;margin-top: 2px;" (click)=" fdDataShareServie.convertToExcelFile(outi)" title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
+            <i (click)=" fdDataShareServie.convertToExcelFile(outi)" title="Export To Excel" class="fa fa-fw fa-file-excel-o excel-icon"></i>
         </div>
     </div>
 </div>

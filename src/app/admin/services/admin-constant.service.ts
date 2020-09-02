@@ -309,7 +309,19 @@ export class AdminConstantService {
         "POExpiryDate,RevenueLinked,ScheduledOOP,ScheduledRevenue,Status,TA,TaxLinked,TotalInvoiced," +
         "TotalLinked,TotalScheduled,AmountTax,CMLevel2/ID,CMLevel2/Title,Editor/ID,Editor/Title",
       filter:
-        "Status eq '{{active}}' or Status eq 'Closed' and ClientLegalEntity eq '{{clientLegalEntity}}'",
+        "Status eq '{{active}}' and ClientLegalEntity eq '{{clientLegalEntity}}'",
+      expand: "CMLevel2/ID,CMLevel2/Title,Editor/ID,Editor/Title",
+      orderby: "Modified desc",
+      top: 4900,
+    },
+    GET_PO_BY_CLOSED: {
+      select:
+        "ID,Title,Amount,AmountOOP,AmountRevenue,BuyingEntity,ClientLegalEntity,Currency,InvoicedOOP," +
+        "InvoicedRevenue,InvoicedTax,Link,Modified,Molecule,NameST,Number,OOPLinked,POCategory,POCLookup," +
+        "POExpiryDate,RevenueLinked,ScheduledOOP,ScheduledRevenue,Status,TA,TaxLinked,TotalInvoiced," +
+        "TotalLinked,TotalScheduled,AmountTax,CMLevel2/ID,CMLevel2/Title,Editor/ID,Editor/Title",
+      filter:
+        "Status eq 'Closed' and ClientLegalEntity eq '{{clientLegalEntity}}' and Number eq '{{poNumber}}'",
       expand: "CMLevel2/ID,CMLevel2/Title,Editor/ID,Editor/Title",
       orderby: "Modified desc",
       top: 4900,

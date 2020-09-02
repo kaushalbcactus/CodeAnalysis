@@ -1386,7 +1386,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             let sts = '';
             sts = type === 'Mark as Sent to Client' ? 'Sent' : 'Rejected'
 
-            this.commonService.showToastrMessage(this.constantService.MessageType.success, this.selectedRowItem.ProformaNumber + ' ' + 'Status changed to "' + sts + '" Successfully.', true);
+            this.commonService.showToastrMessage(this.constantService.MessageType.success,  'Proforma Status changed to "' + sts + '" Successfully.', true);
             this.reFetchData(type);
         } else if (type === "createProforma") {
             await this.fdDataShareServie.callProformaCreation(arrResults[0], this.cleData, this.projectContactsData, this.purchaseOrdersList, this.editorRef, []);
