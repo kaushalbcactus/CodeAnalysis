@@ -110,7 +110,7 @@ export class ApproveBillingDialogComponent implements OnInit {
       this.ApproveInvoiceForm.get('approvalDate').clearValidators();
       this.ApproveInvoiceForm.get('TagAmount').setValidators([Validators.required, this.common.checkGTZeroNumberValidator()]);
       this.ApproveInvoiceForm.get('InvoiceId').setValidators([Validators.required]);
-      this.setInvData();
+      // this.setInvData();
     }
 
     this.ApproveInvoiceForm.get('approvalDate').updateValueAndValidity();

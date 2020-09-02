@@ -134,14 +134,14 @@ export class FdConstantsService {
         },
 
         spendingInfoForBillable: {
-            select: "ID,Title,Number,Header,DateSpend,SpendType,PaymentMode,Currency,Amount,ClientCurrency,ClientAmount,DollarAmount,Status,FileURL,NotesMT,InvoiceID,CategoryST,Modified,POLookup,ApproverComments,ApproverFileUrl,Created,PayingEntity,VendorFreelancer,RequestType,ClientApprovalFileURL,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title",
+            select: "ID,Title,Number,Header,DateSpend,SpendType,PaymentMode,Currency,Amount,ClientCurrency,ClientAmount,DollarAmount,Status,FileURL,NotesMT,InvoiceID,CategoryST,Modified,POLookup,ApproverComments,ApproverFileUrl,Created,PayingEntity,VendorFreelancer,RequestType,ClientApprovalFileURL,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title,CSId,CategoryST,Currency,NotesMT,SpendType",
             filter: "CategoryST eq 'Billable' and (Status eq 'Approved Payment Pending' or Status eq 'Approved' or Status eq 'Billed Payment Pending' or (Status eq 'Billed' and DateSpend ge '{{StartDate}}' and DateSpend le '{{EndDate}}'))",
             expand: "Editor,Author",
             top: 4500,
             // orderby: "{{Category}} desc"
         },
         spendingInfoForBillableCS: {
-            select: "ID,Title,Number,Header,DateSpend,SpendType,PaymentMode,Currency,Amount,ClientCurrency,ClientAmount,DollarAmount,Status,FileURL,NotesMT,InvoiceID,CategoryST,Modified,POLookup,ApproverComments,ApproverFileUrl,Created,PayingEntity,VendorFreelancer,RequestType,ClientApprovalFileURL,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title",
+            select: "ID,Title,Number,Header,DateSpend,SpendType,PaymentMode,Currency,Amount,ClientCurrency,ClientAmount,DollarAmount,Status,FileURL,NotesMT,InvoiceID,CategoryST,Modified,POLookup,ApproverComments,ApproverFileUrl,Created,PayingEntity,VendorFreelancer,RequestType,ClientApprovalFileURL,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title,CSId,CategoryST,Currency,NotesMT,SpendType",
             filter: "CategoryST eq 'Billable' and CSId eq {{UserID}} and (Status eq 'Approved Payment Pending' or Status eq 'Approved' or Status eq 'Billed Payment Pending' or (Status eq 'Billed' and DateSpend ge '{{StartDate}}' and DateSpend le '{{EndDate}}'))",
             expand: "Editor,Author",
             top: 4500,
@@ -218,13 +218,13 @@ export class FdConstantsService {
         // ,TotalBudget,NetBudget,TotalLinked,TotalInvoiced,TotalScheduled,ScheduledRevenue,RevenueLinked
 
         projectBudgetBreakup: {
-            select: "ID, ProjectLookup, BudgetHours,AuthorId,EditorId,OriginalBudget,OOPBudget",
+            select: "ID, ProjectLookup, BudgetHours,AuthorId,EditorId,OriginalBudget,OOPBudget,NetBudget",
             filter: "ProjectCode eq '{{ProjectCode}}' ",
             // top: 1
         },
 
         projectFinanceBreakup: {
-            select: "ID,POLookup,ProjectNumber,AuthorId,EditorId",
+            select: "ID,POLookup,ProjectNumber,AuthorId,EditorId,Amount,AmountRevenue,TotalScheduled,ScheduledRevenue,InvoicedRevenue,TotalInvoiced",
             filter: "ProjectNumber eq '{{ProjectCode}}' and Status ne 'Deleted' ",
             // top: 1
         },
@@ -343,6 +343,25 @@ export class FdConstantsService {
             select: 'ID, ClientLegalEntity, Amount, AddressType, InvoiceNumber, PO, ProformaLookup, IsTaggedFully, TaggedAmount,AuxiliaryInvoiceName,'
                 + ' InvoiceDate, MainPOC, FileURL',
             filter: 'ClientLegalEntity eq \'{{clientLegalEntity}}\' and InvoiceType eq \'{{invoiceType}}\' and IsTaggedFully eq \'No\'',
+            top: 4500
+        },
+
+        invoiceLineItemByProject: {
+            select: "ID,Title,Status,Amount,PO,MainPOC,ScheduleType,InvoiceLookup,ProformaLookup",
+            filter: "Title eq '{{ProjectCode}}' ",
+            top: 4500
+        },
+
+        invoiceData: {
+            select: 'ID, ClientLegalEntity, Amount, AddressType, InvoiceNumber, PO, ProformaLookup, IsTaggedFully, TaggedAmount,AuxiliaryInvoiceName,'
+            + ' InvoiceDate, MainPOC, FileURL',
+            filter: 'ClientLegalEntity eq \'{{clientLegalEntity}}\' and InvoiceType eq \'{{invoiceType}}\' and IsTaggedFully eq \'Yes\'',
+            top: 4500
+        },
+
+        invoiceLineItemsByClient: {
+            select: "ID,Title,Status,Amount,PO,MainPOC,ScheduleType,InvoiceLookup,ProformaLookup",
+            filter: "Title eq '{{ProjectCode}}'  and ScheduleType eq \'{{ScheduleType}}\'",
             top: 4500
         },
 
