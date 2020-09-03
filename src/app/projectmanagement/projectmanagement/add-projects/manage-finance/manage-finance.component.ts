@@ -60,7 +60,9 @@ export class ManageFinanceComponent implements OnInit {
     showInvoice: false,
     isExsitPO: false,
     status: '',
-    edited: false
+    edited: false,
+    scValue: '',
+    poRevenue: 0
   };
   poInfoData = [];
   poAddObj = {
@@ -336,7 +338,8 @@ export class ManageFinanceComponent implements OnInit {
       return;
     }
 
-    const tempbudgetObject = $.extend(true, {}, this.budgetObj);
+    // const tempbudgetObject = $.extend(true, {}, this.budgetObj);
+    const tempbudgetObject = Object.assign(true, {}, this.budgetObj);
     if (this.existBudgetArray.retItems && this.existBudgetArray.retItems.length) {
       tempbudgetObject.oop = this.existBudgetArray.retItems[0].OOPBudget;
       tempbudgetObject.budget_hours = this.budgetHours + this.existBudgetArray.retItems[0].BudgetHrs;
@@ -356,7 +359,8 @@ export class ManageFinanceComponent implements OnInit {
     tempbudgetObject.reasonType = sReasonType;
     this.budgetData.push(tempbudgetObject);
     // add to assigned object.
-    const unassignedObj = $.extend(true, {}, this.unassignedBudgetobj);
+    // const unassignedObj = $.extend(true, {}, this.unassignedBudgetobj);
+    const unassignedObj = Object.assign(true, {}, this.unassignedBudgetobj);
     if (this.existBudgetArray && this.existBudgetArray.length) {
       unassignedObj.total = this.updatedBudget + this.existBudgetArray.retItems[0].Budget;
       unassignedObj.revenue = this.updatedBudget + this.existBudgetArray.retItems[0].RevenueBudget;
@@ -672,7 +676,8 @@ export class ManageFinanceComponent implements OnInit {
         }
         this.showPo = true;
         this.error = false;
-        const tempPOObj = $.extend(true, {}, this.poObj);
+        // const tempPOObj = $.extend(true, {}, this.poObj);
+        const tempPOObj = Object.assign(true, {}, this.poObj);
         tempPOObj.poId = this.selectedPo;
         const poValue = this.poArray.filter(x => x.ID === this.selectedPo);
         if (poValue && poValue.length) {
@@ -847,7 +852,8 @@ export class ManageFinanceComponent implements OnInit {
       this.commonService.showToastrMessage(this.constant.MessageType.error, 'Amount to be tagged cannot be greater than amount to be scheduled on PO', true);
       return;
     }
-    const tempPOObj = $.extend(true, {}, this.poAddObj);
+    // const tempPOObj = $.extend(true, {}, this.poAddObj);
+    const tempPOObj = JSON.parse(JSON.stringify(this.poAddObj));
     tempPOObj.poId = this.selectedPo;
     tempPOObj.inv_number = oInv.InvoiceNumber;
     tempPOObj.auxiliaryInvoiceName = oInv.AuxiliaryInvoiceName;
@@ -1024,7 +1030,8 @@ export class ManageFinanceComponent implements OnInit {
           this.addInvoiceErrorMsg = this.pmConstant.ERROR.INVOICE_AMOUNT_ZERO;
           return;
         }
-        const tempPOObj = $.extend(true, {}, this.poAddObj);
+        // const tempPOObj = $.extend(true, {}, this.poAddObj);
+        const tempPOObj = JSON.parse(JSON.stringify(this.poAddObj));
         tempPOObj.poId = retPOInfo.poId;
         tempPOObj.inv_number = '';
         tempPOObj.prf_number = '';
@@ -1230,7 +1237,7 @@ export class ManageFinanceComponent implements OnInit {
     //   this.showHourly = false;
     //   this.isrevenueFieldDisabled = true;
     //   this.isPoRevenueDisabled = true;
-    // } 
+    // }
     else {
       this.showHourly = false;
       this.isrevenueFieldDisabled = false;
@@ -1293,7 +1300,8 @@ export class ManageFinanceComponent implements OnInit {
       this.existPBBBudgetArray = result[3];
       await this.getInitData(projObj.ProjectCode, projObj.ClientLegalEntity,
         this.existBudgetArray.retItems[0].Currency);
-      const tempbudgetObject = $.extend(true, {}, this.budgetObj);
+      // const tempbudgetObject = $.extend(true, {}, this.budgetObj);
+      const tempbudgetObject = Object.assign(true, {}, this.budgetObj);
       this.budgetHours = 0;
       tempbudgetObject.revenue = this.existBudgetArray.retItems[0].RevenueBudget;
       tempbudgetObject.tax = this.existBudgetArray.retItems[0].TaxBudget;
@@ -1338,7 +1346,8 @@ export class ManageFinanceComponent implements OnInit {
       // add appropriate value for unassigned project.
       for (let index = 0; index < this.existPOArray.retItems.length; index++) {
         const poItem = this.existPOArray.retItems[index];
-        const tempPOObj = $.extend(true, {}, this.poObj);
+        // const tempPOObj = $.extend(true, {}, this.poObj);
+        const tempPOObj = Object.assign(true, {}, this.poObj);
         tempPOObj.poId = poItem.POLookup;
         const poValue = this.poArray.filter(x => x.ID === poItem.POLookup);
         if (poValue && poValue.length) {
@@ -1381,7 +1390,8 @@ export class ManageFinanceComponent implements OnInit {
         let count = 0;
         const invoicePermormaNumberArray = await this.getInvoiceProformaNumber(inoviceItems);
         inoviceItems.forEach(invoiceItem => {
-          const invoiceObj = $.extend(true, {}, this.poAddObj);
+          // const invoiceObj = $.extend(true, {}, this.poAddObj);
+          const invoiceObj = JSON.parse(JSON.stringify(this.poAddObj));
           const invoiceNumber = invoicePermormaNumberArray
             .filter(c => c.listName === this.constant.listNames.Invoices.name)
             .filter(x => x.retItems && x.retItems.length && x.retItems[0].ID === invoiceItem.InvoiceLookup);
@@ -1485,7 +1495,8 @@ export class ManageFinanceComponent implements OnInit {
         }
       }
 
-      const unassignedObj = $.extend(true, {}, this.unassignedBudgetobj);
+      // const unassignedObj = $.extend(true, {}, this.unassignedBudgetobj);
+      const unassignedObj = Object.assign(true, {}, this.unassignedBudgetobj);
       this.unassignedBudget = [];
 
       unassignedObj.total = tempbudgetObject.total - poTotal;

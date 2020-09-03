@@ -19,12 +19,19 @@ export class SpPeoplePickerService {
     schema['AllowMultipleValues'] = true;
     schema['MaximumEntitySuggestions'] = 50;
     schema['Width'] = '160px';
-    $.each(['sp.core.js', 'sp.runtime.js', 'sp.js', 'autofill.js',
-        'clientpeoplepicker.js', 'clientforms.js', 'clienttemplates.js'], function (idx, val) {
-        if (!_v_dictSod[val]) {
-            RegisterSod(val, '\u002f_layouts\u002f15\u002f' + val);
-        }
-    });
+    const arrFiles = ['sp.core.js', 'sp.runtime.js', 'sp.js', 'autofill.js',
+    'clientpeoplepicker.js', 'clientforms.js', 'clienttemplates.js'];
+    for (const val of arrFiles) {
+      if (!_v_dictSod[val]) {
+        RegisterSod(val, '\u002f_layouts\u002f15\u002f' + val);
+    }
+    }
+    // $.each(['sp.core.js', 'sp.runtime.js', 'sp.js', 'autofill.js',
+    //     'clientpeoplepicker.js', 'clientforms.js', 'clienttemplates.js'], function (idx, val) {
+    //     if (!_v_dictSod[val]) {
+    //         RegisterSod(val, '\u002f_layouts\u002f15\u002f' + val);
+    //     }
+    // });
   //  SP.SOD.loadMultiple(['sp.core.js', 'sp.runtime.js', 'sp.js', 'autofill.js',
   //      'clientpeoplepicker.js', 'clientforms.js', 'clienttemplates.js'], function () {
     SPClientPeoplePicker_InitStandaloneControlWrapper(eleId, null, schema);

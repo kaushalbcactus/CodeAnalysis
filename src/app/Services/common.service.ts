@@ -282,7 +282,8 @@ export class CommonService {
         this.pmObject.loading.inActiveProject = true;
         break;
     }
-    let data = $.extend(true, [], sendToClient);
+    // let data = $.extend(true, [], sendToClient);
+    let data = [...sendToClient];
     setTimeout(() => {
       if (data) {
         if (sortField) {
@@ -486,9 +487,12 @@ export class CommonService {
     let sReturn = '';
     let arrItem = [];
     if (arrText) {
-      $.each(arrText, function (index, value1) {
-        arrItem.push(value1.Title);
-      });
+      for (const text of arrText) {
+        arrItem.push(text.Title);
+      }
+      // $.each(arrText, function (index, value1) {
+      //   arrItem.push(value1.Title);
+      // });
     }
 
     if (arrItem.length) {
@@ -501,13 +505,13 @@ export class CommonService {
     let sReturn = {};
     let arrItem = [];
     if (arr) {
-      $.each(arr, function (index, value1) {
+      for (const res of arr) {
         sReturn = {
-          Id: value1.Id,
-          Title: value1.Title
+          Id: res.Id,
+          Title: res.Title
         }
         arrItem.push(sReturn);
-      });
+      }
     }
     return arrItem;
   }

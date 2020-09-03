@@ -50,6 +50,10 @@ export class StandardprojectComponent implements OnInit {
   public isStandardLoaderHidden = false;
   public isStandardTableHidden = true;
   public isStandardFetchTableHidden = true;
+  public disableStdPrjBudgetHrs: boolean;
+  public disableStdTimeline: boolean;
+  public disableNonStdTimeline: boolean;
+  public disableStdTimelineCapacity: boolean;
   public standardMilestone = {
     milestones: [],
   };
@@ -497,7 +501,9 @@ export class StandardprojectComponent implements OnInit {
       temSkillArray = this.removeDuplicates(temSkillArray, 'Title')
       let userResource = this.pmCommonService.getResourceByMatrix(await this.getResources(temSkillArray), this.deliverableType);
       if (userResource && userResource.length) {
-        this.skillTypesArray = $.merge(temSkillArray, userResource);
+        // this.skillTypesArray = $.merge(temSkillArray, userResource);
+        temSkillArray = [...temSkillArray, ...userResource];
+        this.skillTypesArray = temSkillArray;
       } else {
         this.skillTypesArray = temSkillArray;
       }
@@ -507,8 +513,12 @@ export class StandardprojectComponent implements OnInit {
       tempReviewArray.push(tempReviewer);
       let reviewResource = this.pmCommonService.getResourceByMatrix(await this.getResources(tempReviewArray), this.deliverableType);
       if (reviewResource && reviewResource.length) {
-        this.reviewerListArray = $.merge(tempReviewArray, reviewResource);
-        this.sharedTaskAllocateObj.oAllResource = $.merge(userResource, reviewResource);
+        // this.reviewerListArray = $.merge(tempReviewArray, reviewResource);
+        // this.sharedTaskAllocateObj.oAllResource = $.merge(userResource, reviewResource);
+        tempReviewArray = [...tempReviewArray, ...reviewResource];
+        this.reviewerListArray = tempReviewArray;
+        userResource = [...userResource, ...reviewResource];
+        this.sharedTaskAllocateObj.oAllResource = userResource;
       } else {
         this.reviewerListArray = tempReviewArray;
       }
@@ -710,7 +720,8 @@ export class StandardprojectComponent implements OnInit {
   public async createMilestone(index, isCreate, StartDate) {
     if (isCreate && index < this.sharedTaskAllocateObj.oMilestones.length) {
       let orginalMilestone = this.sharedTaskAllocateObj.oMilestones;
-      let milestoneObj: any = $.extend(true, {}, this.pmObject.ngPrimeMilestoneGlobalObj);
+      // let milestoneObj: any = $.extend(true, {}, this.pmObject.ngPrimeMilestoneGlobalObj);
+      let milestoneObj: any = JSON.parse(JSON.stringify(this.pmObject.ngPrimeMilestoneGlobalObj));
       milestoneObj.TemplateMileStone = orginalMilestone[index].Title;
       milestoneObj.MilestoneName = orginalMilestone[index].MilestoneName;
       milestoneObj.data.Name = orginalMilestone[index].MilestoneName;
@@ -799,7 +810,8 @@ export class StandardprojectComponent implements OnInit {
     let displayOrder: Number = 0;
     if (isCreate && milestoneObj.SubMilestones && milestoneObj.SubMilestones.length) {
       for (let submilestoneObj of milestoneObj.SubMilestones) {
-        let ngPrimeSubmilestoneObj: any = $.extend(true, {}, this.pmObject.ngPrimeSubMilestoneGlobalObj);
+        // let ngPrimeSubmilestoneObj: any = $.extend(true, {}, this.pmObject.ngPrimeSubMilestoneGlobalObj);
+        let ngPrimeSubmilestoneObj: any = JSON.parse(JSON.stringify(this.pmObject.ngPrimeSubMilestoneGlobalObj));
         if (displayOrder !== submilestoneObj.displayOrder) {
           if (displayOrder !== 0) {
             // get the length of ngPrimemilestoneObj.children to get submilestone task
@@ -898,7 +910,8 @@ export class StandardprojectComponent implements OnInit {
     let date = new Date();
     if (isCreate) {
       if (ngPrimemilestoneObj.data.clientReviewStartDate && ngPrimemilestoneObj.data.clientReviewEndDate) {
-        let ngPrimetaskObj: any = $.extend(true, {}, this.pmObject.ngPrimeTaskGlobalObj);
+        // let ngPrimetaskObj: any = $.extend(true, {}, this.pmObject.ngPrimeTaskGlobalObj);
+        let ngPrimetaskObj: any = JSON.parse(JSON.stringify(this.pmObject.ngPrimeTaskGlobalObj));
         ngPrimetaskObj.data.Name = this.pmConstant.task.CLIENT_REVIEW;
         ngPrimetaskObj.data.Hours = 0;
         ngPrimetaskObj.data.isEndDateDisabled = false;
@@ -1020,7 +1033,8 @@ export class StandardprojectComponent implements OnInit {
           return false;
         }
         if (isCreate) {
-          let taskObj: any = $.extend(true, {}, this.pmObject.ngPrimeTaskGlobalObj);
+          // let taskObj: any = $.extend(true, {}, this.pmObject.ngPrimeTaskGlobalObj);
+          let taskObj: any = JSON.parse(JSON.stringify(this.pmObject.ngPrimeTaskGlobalObj));
           taskObj.data.Title = milestoneTask[index].Title;
           taskObj.Milestones = milestoneTask[index].Milestones.Title;
           taskObj.data.Milestone = milestoneObj.MilestoneName;
@@ -1823,20 +1837,20 @@ export class StandardprojectComponent implements OnInit {
    * This method is used to toggle the milestone by clicking on '+' sign on milestone
    * @param event Provide the event.
    */
-  public toggleMilestoneTask(event) {
-    const toggleElement = event.target;
-    $('.standardMilestoneTaskRow').slideUp();
-    $('.toggle').attr('src', '' + this.sharedObject.sharePointPageObject.publicCdn + '/expand-black.png');
-    this.successMessage = null;
-    this.infoMessage = null;
-    if ($(toggleElement).parent().parent().next().is(':visible')) {
-      $(toggleElement).parent().parent().next().slideUp();
-      $(toggleElement).attr('src', '' + this.sharedObject.sharePointPageObject.publicCdn + '/expand-black.png');
-    } else {
-      $(toggleElement).parent().parent().next().slideDown();
-      $(toggleElement).attr('src', '' + this.sharedObject.sharePointPageObject.publicCdn + '/collapse-black.png');
-    }
-  }
+  // public toggleMilestoneTask(event) {
+  //   const toggleElement = event.target;
+  //   $('.standardMilestoneTaskRow').slideUp();
+  //   $('.toggle').attr('src', '' + this.sharedObject.sharePointPageObject.publicCdn + '/expand-black.png');
+  //   this.successMessage = null;
+  //   this.infoMessage = null;
+  //   if ($(toggleElement).parent().parent().next().is(':visible')) {
+  //     $(toggleElement).parent().parent().next().slideUp();
+  //     $(toggleElement).attr('src', '' + this.sharedObject.sharePointPageObject.publicCdn + '/expand-black.png');
+  //   } else {
+  //     $(toggleElement).parent().parent().next().slideDown();
+  //     $(toggleElement).attr('src', '' + this.sharedObject.sharePointPageObject.publicCdn + '/collapse-black.png');
+  //   }
+  // }
   /**
    * This method is called when the generate button clicked.
    */
@@ -2241,10 +2255,14 @@ export class StandardprojectComponent implements OnInit {
     this.isResourceDisabled = true;
     this.isReviewerDisabled = true;
     this.isProposedStartDateDisabled = true;
-    $('#standardProjectBudgetHrs').attr("disabled", 'true');
-    $('#standardTimeline').attr("disabled", 'true');
-    $('#nonStandardTimeline').attr("disabled", 'true');
-    $('#standardTimelineCapacity').attr("disabled", 'true');
+    this.disableStdPrjBudgetHrs = true;
+    this.disableStdTimeline = true;
+    this.disableNonStdTimeline = true
+    this.disableStdTimelineCapacity = true;
+    // $('#standardProjectBudgetHrs').attr("disabled", 'true');
+    // $('#standardTimeline').attr("disabled", 'true');
+    // $('#nonStandardTimeline').attr("disabled", 'true');
+    // $('#standardTimelineCapacity').attr("disabled", 'true');
     // $('#standardTimelineConfirm').attr("disabled", 'true');
     this.confirmDisabled = true;
     $('#standardTimelineGenerate').attr("disabled", 'true');

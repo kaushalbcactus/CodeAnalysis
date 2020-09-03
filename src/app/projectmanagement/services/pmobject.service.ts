@@ -113,7 +113,8 @@ export class PMObjectService {
     PrimaryResource: '',
     PrimaryResourceText: '',
     Milestone: '',
-    Status: ''
+    Status: '',
+    ShortTitle: ''
   };
   public allProject = {
     SLA: '',
@@ -198,7 +199,8 @@ export class PMObjectService {
     ScheduledRevenue: 0,
     TotalInvoiced: 0,
     InvoicedRevenue: 0,
-    ClientLegalEntity: ''
+    ClientLegalEntity: '',
+    Title: ''
   };
   public userRights = {
     isMangers: false,

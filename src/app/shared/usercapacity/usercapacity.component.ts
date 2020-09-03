@@ -134,8 +134,8 @@ export class UsercapacityComponent implements OnInit {
             : "Total Trainee: " + data.task.resources.length;
         this.taskStatus = data.taskStatus;
       }
-      let setResourcesExtn = $.extend(true, [], data.task.resources);
-
+      // let setResourcesExtn = $.extend(true, [], data.task.resources);
+      let setResourcesExtn = [...data.task.resources];
       const oCapacity = await this.applyFilterReturn(
         data.startTime,
         data.endTime,
@@ -1781,7 +1781,7 @@ export class UsercapacityComponent implements OnInit {
               tasksObj.type = "GET";
               batchUrl.push(tasksObj);
             }
-            
+
 
             // tslint:enable
           }
@@ -1806,7 +1806,7 @@ export class UsercapacityComponent implements OnInit {
               let miltasks = arrResults[nCount + 1];
               if(miltasks) {
                 if (
-                
+
                   miltasks.length &&
                   miltasks[0].ContentTypeCH === "Milestone"
                 ) {
@@ -1815,7 +1815,7 @@ export class UsercapacityComponent implements OnInit {
               } else {
                 miltasks = [];
               }
-             
+
               // tslint:disable
               for (const index in miltasks) {
                 if (miltasks.hasOwnProperty(index)) {

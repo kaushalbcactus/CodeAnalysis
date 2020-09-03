@@ -382,7 +382,8 @@ export class SendToClientComponent implements OnInit {
       // const batchGuid = this.spServices.generateUUID();
       const batchUrl = [];
       for (const task of this.scArrays.taskItems) {
-        const scObj: any = $.extend(true, {}, this.pmObject.sendToClient);
+        // const scObj: any = $.extend(true, {}, this.pmObject.sendToClient);
+        const scObj: any = Object.assign(true, {}, this.pmObject.sendToClient);
         scObj.ID = task.ID;
         scObj.Title = task.Title;
         scObj.ProjectCode = task.ProjectCode;

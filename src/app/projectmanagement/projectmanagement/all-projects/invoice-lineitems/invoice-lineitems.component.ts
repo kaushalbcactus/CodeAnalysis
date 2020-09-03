@@ -53,7 +53,8 @@ export class InvoiceLineitemsComponent implements OnInit {
     const filterInvoiceLineItems = invoiceLineItems.filter(e=> e.Status == "Scheduled")
 
     filterInvoiceLineItems.forEach(invoiceItem => {
-      const invoiceObj = $.extend(true, {}, this.poAddObj);
+      // const invoiceObj = $.extend(true, {}, this.poAddObj);
+      const invoiceObj = Object.assign(true, {}, this.poAddObj);
       invoiceObj.date = new Date(this.datePipe.transform(invoiceItem.ScheduledDate, 'MMM d, y'));
       invoiceObj.amount = invoiceItem.Amount;
       invoiceObj.type = invoiceItem.ScheduleType;
@@ -69,7 +70,7 @@ export class InvoiceLineitemsComponent implements OnInit {
 
   saveInvoiceLineItems(poData) {
     this.lineItemsUpdate.invoiceLineItems = poData;
-    this.lineItemsUpdate.status = this.status 
+    this.lineItemsUpdate.status = this.status
     this.ref.close(this.lineItemsUpdate)
   }
 

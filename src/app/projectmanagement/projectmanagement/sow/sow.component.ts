@@ -318,7 +318,8 @@ export class SOWComponent implements OnInit, OnDestroy {
       this.pmObject.activeIndex = 0;
       const tempAllSOWArray = [];
       for (const task of this.pmObject.allSOWItems) {
-        const sowObj = $.extend(true, {}, this.pmObject.allSOW);
+        // const sowObj = $.extend(true, {}, this.pmObject.allSOW);
+        const sowObj = JSON.parse(JSON.stringify(this.pmObject.allSOW));
         sowObj.ID = task.ID;
         sowObj.SOWCode = task.SOWCode;
         sowObj.ShortTitle = task.Title;
@@ -537,7 +538,8 @@ export class SOWComponent implements OnInit, OnDestroy {
     const tempProjectArray = [];
     if (sResults && sResults.length) {
       sResults.forEach(projectItem => {
-        const projectObj = $.extend(true, {}, this.projectObj);
+        // const projectObj = $.extend(true, {}, this.projectObj);
+        const projectObj = Object.assign(true, {}, this.projectObj);
         projectObj.ID = projectItem.ID;
         projectObj.DeliverableType = projectItem.DeliverableType;
         projectObj.ProjectCode = projectItem.ProjectCode;
@@ -577,7 +579,8 @@ export class SOWComponent implements OnInit, OnDestroy {
     const tempProjectArray = [];
     let AllArrayObj = [];
     this.ProjectArray.forEach(projectItem => {
-      const projectObj = $.extend(true, {}, this.projectObj);
+      // const projectObj = $.extend(true, {}, this.projectObj);
+      const projectObj = Object.assign(true, {}, this.projectObj);
       projectObj.ID = projectItem.ID;
       projectObj.DeliverableType = projectItem.DeliverableType;
       projectObj.ProjectCode = projectItem.ProjectCode;

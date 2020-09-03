@@ -161,7 +161,8 @@ export class PendingAllocationComponent implements OnInit {
       const tempPAArray = [];
       // Iterate each CR Task
       for (const task of this.paArrays.projectItems) {
-        const paObj = $.extend(true, {}, this.pmObject.paObj);
+        // const paObj = $.extend(true, {}, this.pmObject.paObj);
+        const paObj = Object.assign(true, {}, this.pmObject.paObj);
         paObj.ID = task.ID;
         paObj.ProjectCode = task.ProjectCode;
         paObj.ShortTitle = task.WBJID;
@@ -257,7 +258,7 @@ export class PendingAllocationComponent implements OnInit {
   goToAllocationPage(task) {
     window.open(this.globalObject.url + '/taskAllocation?ProjectCode=' + task.ProjectCode, '_blank');
   }
-  
+
   goToProjectManagement(task) {
     // window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +
     //   '/Pages/ProjectManagement.aspx?ProjectCode=' + task.ProjectCode, '_blank');

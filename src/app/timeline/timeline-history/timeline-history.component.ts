@@ -255,7 +255,7 @@ export class TimelineHistoryComponent implements OnInit {
   async intialRequestCreation(moduleName, type, clickedItemId) {
     switch (type) {
       case 'ProjectMgmt_Invoices':
-      case 'FD_Invoices':
+      case 'FD_InvoicesCT':
         this.initialRequest = await this.getInvoiceVersions(moduleName, clickedItemId, '0', this.top);
         break;
       case 'ProjectMgmt_Proforma':
@@ -308,39 +308,40 @@ export class TimelineHistoryComponent implements OnInit {
 
   responseCreation(type, obj) {
     switch (type) {
-      case 'ProjectMgmt_Invoices':
-      case 'FD_Invoices':
+      case 'ProjectMgmt_InvoicesCT':
+      case 'FD_InvoicesCT':
         obj.data = this.setInvoiceVersion(obj.versions, obj.verDifference);
         break;
-      case 'ProjectMgmt_Proforma':
-      case 'FD_Proforma':
+      case 'ProjectMgmt_ProformaCT':
+      case 'FD_ProformaCT':
         obj.data = this.setProformaVersion(obj.versions, obj.verDifference);
         break;
-      case 'FD_ProjectInformation':
-      case 'FD_ProjectFinances':
+      case 'FD_ProjectInformationCT':
+      case 'FD_ProjectFinancesCT':
         obj.data = this.setFDPrjVersion(obj.versions, obj.verDifference);
         break;
-      case 'ProjectMgmt_ProjectFinances':
+      case 'ProjectMgmt_ProjectFinancesCT':
         obj.data = this.setPrjFinanceVersion(obj.versions, obj.verDifference);
         break;
-      case 'ProjectMgmt_InvoiceLineItems':
-      case 'FD_InvoiceLineItems':
+      case 'ProjectMgmt_InvoiceLineItemsCT':
+      case 'FD_InvoiceLineItemsCT':
         obj.data = this.setInvLineItemsVersion(obj.versions, obj.verDifference);
         break;
       case 'ProjectMgmt_ProjectFromDashboard':
-      case 'ProjectMgmt_ProjectInformation':
+      case 'ProjectMgmt_ProjectInformationCT':
+      case 'projMgmt_Project':
         obj.data = this.setPrjVersion(obj.versions, obj.verDifference, type);
         break;
-      case 'ProjectMgmt_ProjectBudgetBreakup':
+      case 'ProjectMgmt_ProjectBudgetBreakupCT':
         obj.data = this.setPrjBudgetBreakupVersion(obj.versions, obj.verDifference);
         break;
-      case 'ProjectMgmt_ProjectFinanceBreakup':
+      case 'ProjectMgmt_ProjectFinanceBreakupCT':
         obj.data = this.setPrjFinanceBreakupVersion(obj.versions, obj.verDifference);
         break;
-      case 'ProjectMgmt_SOW':
+      case 'ProjectMgmt_SOWCT':
         obj.data = this.setSowVersion(obj.versions, obj.verDifference);
         break;
-      case 'ProjectMgmt_SOWBudgetBreakup':
+      case 'ProjectMgmt_SOWBudgetBreakupCT':
         obj.data = this.setSowBudgetBreakupVersion(obj.versions, obj.verDifference);
         break;
       case 'ProjectMgmt_Documents':

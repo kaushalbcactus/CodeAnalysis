@@ -192,7 +192,7 @@ export class CaDragdropComponent implements OnInit {
 
     const TaskOfType = this.TempMilestoneAllTasks.find(c => c.type === originalType && c.milestone === this.data.Milestone) ?
       this.TempMilestoneAllTasks.find(c => c.type === originalType && c.milestone === this.data.Milestone).tasks : [];
-    // tslint:disable 
+    // tslint:disable
     count = TaskOfType.filter((task) => { return new RegExp(Task.Title, 'g').test(task); }).length > 0 ?
       TaskOfType.filter(function (task) { return new RegExp(Task.Title, 'g').test(task) }).filter((v) => { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(Task.Title, 'g'), '') }).map(c => (!isNaN(c) ? parseInt(c) : 0)).length > 0 ?
         Math.max.apply(null, TaskOfType.filter(function (task) { return new RegExp(Task.Title, 'g').test(task) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(Task.Title, 'g'), '') }).map(c => (!isNaN(c) ? parseInt(c) : 0))) : 1 : 0;
@@ -304,7 +304,7 @@ export class CaDragdropComponent implements OnInit {
 
 
     if (!event.TaskName) {
-      event.TaskName = $.trim(event.Title.replace(event.ProjectCode + '', '').replace(event.Milestone + '', ''));
+      event.TaskName = (event.Title.replace(event.ProjectCode + '', '').replace(event.Milestone + '', '')).trim();
     }
     const Task = this.allConstantTasks.find(c => c.Title === event.TaskName.replace(/[0-9]/g, '')
       .replace(/\s+$/, ''));

@@ -160,7 +160,8 @@ export class InactiveComponent implements OnInit {
       this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
       // Iterate each CR Task
       for (const task of this.iapArrays.projectItems) {
-        const paObj = $.extend(true, {}, this.pmObject.paObj);
+        // const paObj = $.extend(true, {}, this.pmObject.paObj);
+        const paObj = Object.assign(true, {}, this.pmObject.paObj);
         paObj.ID = task.ID;
         paObj.ProjectCode = task.ProjectCode;
         paObj.ShortTitle = task.WBJID;

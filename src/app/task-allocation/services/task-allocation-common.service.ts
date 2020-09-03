@@ -137,41 +137,46 @@ export class TaskAllocationCommonService {
   }
 
   sortResources(filteredResources) {
-    const sortedResources = [];
+    let sortedResources = [];
     const type = filteredResources.filter(function (objt) {
       return objt.userType === 'Skill';
     });
     if (type.length) {
-      $.merge(sortedResources, type);
+      // $.merge(sortedResources, type);
+      sortedResources = [...sortedResources, ...type];
     }
     const allocated = filteredResources.filter(function (objt) {
       return objt.userType === 'Allocated';
     });
     if (allocated.length) {
-      $.merge(sortedResources, allocated);
+      // $.merge(sortedResources, allocated);
+      sortedResources = [...sortedResources, ...allocated];
     }
     const recommended = filteredResources.filter(function (objt) {
       return objt.userType === 'Recommended';
     });
     if (recommended.length) {
-      $.merge(sortedResources, recommended);
+      // $.merge(sortedResources, recommended);
+      sortedResources = [...sortedResources, ...recommended];
     }
     const other = filteredResources.filter(function (objt) {
       return objt.userType === 'Other';
     });
     if (other.length) {
-      $.merge(sortedResources, other);
+      // $.merge(sortedResources, other);
+      sortedResources = [...sortedResources, ...other];
     }
     const cmL2 = filteredResources.filter(function (objt) {
       return objt.userType === '';
     });
     if (cmL2.length) {
-      $.merge(sortedResources, cmL2);
+      // $.merge(sortedResources, cmL2);
+      sortedResources = [...sortedResources, ...cmL2];
     }
     return sortedResources;
   }
 
-  /////// Check this once 
+  /////// Check this once
   getSkillName(sText) {
     let skillName = '';
     if (sText) {
@@ -562,7 +567,7 @@ export class TaskAllocationCommonService {
         newName = milestoneTask.itemType;
         newName = this.getNewTaskName(milestoneTask, newName, allResTasks, allTasks);
       }
-     
+
 
       if (milestoneTask.nextTask) {
         this.changeNextTaskPrevTask(

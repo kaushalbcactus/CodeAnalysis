@@ -84,7 +84,8 @@ export class SelectSOWComponent implements OnInit {
     if (this.pmObject.allSOWItems && this.pmObject.allSOWItems.length) {
       const tempAllSOWArray = [];
       for (const task of this.pmObject.allSOWItems) {
-        const sowObj = $.extend(true, {}, this.pmObject.selectSOW);
+        // const sowObj = $.extend(true, {}, this.pmObject.selectSOW);
+        const sowObj = Object.assign(true, {}, this.pmObject.selectSOW);
         sowObj.ID = task.ID;
         sowObj.Title = task.Title;
         sowObj.SOWCode = task.SOWCode;
@@ -130,7 +131,7 @@ export class SelectSOWComponent implements OnInit {
     }
   }
   async setSelectedSOWObject(sow) {
-   
+
     const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.SOW_CODE);
     sowFilter.filter = sowFilter.filter.replace('{{sowcode}}',sow.SOWCode);
     this.commonService.SetNewrelic('projectManagment', 'addproj-selectSow', 'GetSow');
@@ -138,7 +139,7 @@ export class SelectSOWComponent implements OnInit {
     this.pmObject.addProject.SOWSelect.SOWSelectedItem = {};
     this.pmObject.addProject.SOWSelect.sowTotalBalance = 0;
     this.pmObject.addProject.SOWSelect.sowNetBalance = 0;
-    
+
     if (arrResults && arrResults.length) {
 
       const sowObject =arrResults[0];

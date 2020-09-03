@@ -423,7 +423,7 @@ export class UserCapacitycommonService {
       "h:" +
       oUser.Bench.split(":")[1] +
       "m";
-      
+
     oUser.dayTasks = [];
     oUser.TimeSpentDayTasks = [];
     return oUser;
@@ -1163,17 +1163,19 @@ export class UserCapacitycommonService {
         if (leaves.hasOwnProperty(i)) {
           let arrLeaves = [];
           let arrLeavesDates = [];
-          arrLeaves = $.merge(
-            arrLeaves,
-            this.getDates(leaves[i].EventDate, leaves[i].EndDate, true)
-              .dateArray
-          );
+          // arrLeaves = $.merge(
+          //   arrLeaves,
+          //   this.getDates(leaves[i].EventDate, leaves[i].EndDate, true)
+          //     .dateArray
+          // );
+          arrLeaves = [...arrLeaves, ...this.getDates(leaves[i].EventDate, leaves[i].EndDate, true).dateArray]
           if (!leaves[i].IsHalfDay) {
-            arrLeavesDates = $.merge(
-              arrLeavesDates,
-              this.getDates(leaves[i].EventDate, leaves[i].EndDate, true)
-                .dateArray
-            );
+            // arrLeavesDates = $.merge(
+            //   arrLeavesDates,
+            //   this.getDates(leaves[i].EventDate, leaves[i].EndDate, true)
+            //     .dateArray
+            // );
+            arrLeavesDates = [...arrLeavesDates, ...this.getDates(leaves[i].EventDate, leaves[i].EndDate, true).dateArray ]
           }
           for (const j in arrLeaves) {
             if (arrLeaves.hasOwnProperty(j)) {
@@ -1196,7 +1198,8 @@ export class UserCapacitycommonService {
             }
           }
           if (arrLeavesDates.length) {
-            $.merge(oUser.leaves, arrLeavesDates);
+            // $.merge(oUser.leaves, arrLeavesDates);
+            oUser.leaves = [...oUser.leaves, ...arrLeavesDates]
           }
         }
       }

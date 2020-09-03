@@ -349,7 +349,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
       this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Fetching available resources...', true, true);
       setTimeout(async () => {
-        const setResourcesExtn = $.extend(true, [], task.resources);
+        // const setResourcesExtn = $.extend(true, [], task.resources);
+        const setResourcesExtn = [...task.resources];
         const startTime = new Date(new Date(task.StartTime).setHours(0, 0, 0, 0));
         const endTime = new Date(new Date(task.EndTime).setHours(23, 59, 59, 0));
 
@@ -358,7 +359,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         const oCapacity = await this.usercapacityComponent.applyFilterReturn(startTime, endTime,
           setResourcesExtn, []);
         task.capacity = oCapacity;
-        const setResources = $.extend(true, [], task.resources);
+        // const setResources = $.extend(true, [], task.resources);
+        const setResources = [...task.resources];
         for (const resource of setResources) {
           const retResource = oCapacity.arrUserDetails.filter(user => user.uid === resource.UserNamePG.ID);
           this.setColorCode(retResource, resource, task);
@@ -372,7 +374,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
         if (task.PreviousAssignedUser && task.PreviousAssignedUser.ID > -1 && task.CentralAllocationDone === 'No') {
 
-          const resourcesList = $.extend(true, [], this.resourceList);
+          // const resourcesList = $.extend(true, [], this.resourceList);
+          const resourcesList = [...this.resourceList];
           let ExistingUser = res.find(c => c.UserNamePG.ID === task.PreviousAssignedUser.ID &&
             c.UserNamePG.Title === task.PreviousAssignedUser.Title);
           if (ExistingUser) {
@@ -391,7 +394,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
             }
           }
         }
-        const resExtn = $.extend(true, [], res);
+        // const resExtn = $.extend(true, [], res);
+        const resExtn = [...res];
         if (resExtn) {
           const UniqueUserType = resExtn.map(c => c.userType).filter((item, index) => resExtn.map(c => c.userType).indexOf(item) === index);
           for (const retRes of UniqueUserType) {
@@ -778,7 +782,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           id: dbTask.Id,
           type: dbTask.Task,
           milestone: dbTask.Milestone,
-          tasks: dbMilestoneTasks.filter(s => s.Task === tasktype).map(c => $.trim(c.Title.replace(c.ProjectCode + '', '').replace(c.Milestone + '', '')))
+          tasks: dbMilestoneTasks.filter(s => s.Task === tasktype).map(c => (c.Title.replace(c.ProjectCode + '', '').replace(c.Milestone + '', '')).trim())
         };
       });
 
@@ -899,9 +903,10 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     };
     task.projectCode = task.projectCode ? task.projectCode : task.ProjectCode;
     const projectItem = this.projects.filter((proj) => proj.ProjectCode === task.projectCode);
-    const resourcesList = $.extend(true, [], this.resourceList);
+    // const resourcesList = $.extend(true, [], this.resourceList);
+    const resourcesList = [...this.resourceList];
     if (!task.TaskName) {
-      task.TaskName = $.trim(task.Title.replace(task.ProjectCode + '', '').replace(task.Milestone + '', ''));
+      task.TaskName = (task.Title.replace(task.ProjectCode + '', '').replace(task.Milestone + '', '')).trim();
     }
     const resPool = this.caCommonService.getResourceByMatrix(resourcesList, task.Task ? task.Task : task.taskType ? task.taskType : '', task.SkillLevel,
       projectItem[0].ClientLegalEntity, projectItem[0].TA, projectItem[0].DeliverableType);
@@ -940,7 +945,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       task.AssignedUserTimeZone, this.globalService.currentUser.timeZone);
 
     const SelectedResources = [];
-    const resExt = $.extend(true, [], resPool);
+    // const resExt = $.extend(true, [], resPool);
+    const resExt = [...resPool];
     for (const retRes of resExt) {
       retRes.timeAvailable = 0;
       retRes.Color = 'green';
@@ -975,7 +981,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     taskObj.UserEndDatePart = this.getDatePart(convertedEndDate);
     taskObj.UserEndTimePart = this.getTimePart(convertedEndDate);
     taskObj.TaskScope = task.CommentsMT;
-    taskObj.resources = $.extend(true, [], resPool);
+    // taskObj.resources = $.extend(true, [], resPool);
+    taskObj.resources = [...resPool];
     taskObj.AssignedTo = task.AssignedTo ? task.AssignedTo : task.AssignedTo ? task.AssignedTo : [];
     taskObj.allocatedResource = task.AssignedTo && task.AssignedTo.hasOwnProperty('ID') && task.AssignedTo.ID > -1 ?
       resPool.find(c => c.UserNamePG.ID === task.AssignedTo.ID && c.Title === task.AssignedTo.Title) ?
@@ -1013,14 +1020,16 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
   async GetResourceOnEdit(task) {
 
-    const setResourcesExtn = $.extend(true, [], task.resources);
+    // const setResourcesExtn = $.extend(true, [], task.resources);
+    const setResourcesExtn = [...task.resources];
     const startTime = new Date(new Date(task.StartTime).setHours(0, 0, 0, 0));
     const endTime = new Date(new Date(task.EndTime).setHours(23, 59, 59, 0));
     this.commonService.SetNewrelic('unallocated-allocated', 'CA', 'fetchUserBasedOnCapacity');
     const oCapacity = await this.usercapacityComponent.applyFilterReturn(startTime, endTime,
       setResourcesExtn, []);
     task.capacity = oCapacity;
-    const setResources = $.extend(true, [], task.resources);
+    // const setResources = $.extend(true, [], task.resources);
+    const setResources = [...task.resources];
     for (const resource of setResources) {
       const retResource = oCapacity.arrUserDetails.filter(user => user.uid === resource.UserNamePG.ID);
       this.setColorCode(retResource, resource, task);
@@ -1033,7 +1042,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     const res = this.caCommonService.sortResources(setResources, task);
 
     if (task.PreviousAssignedUser && task.PreviousAssignedUser.ID > -1 && task.CentralAllocationDone === 'No') {
-      const resourcesList = $.extend(true, [], this.resourceList);
+      // const resourcesList = $.extend(true, [], this.resourceList);
+      const resourcesList = [...this.resourceList];
       let ExistingUser = res.find(c => c.UserNamePG.ID === task.PreviousAssignedUser.ID
         && c.UserNamePG.Title === task.PreviousAssignedUser.Title);
       if (ExistingUser) {
@@ -1048,7 +1058,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       }
     }
 
-    const resExtn = $.extend(true, [], res);
+    // const resExtn = $.extend(true, [], res);
+    const resExtn = [...res];
     if (resExtn) {
       const UniqueUserType = resExtn.map(c => c.userType).filter((item, index) => resExtn.map(c => c.userType).indexOf(item) === index);
       for (const retRes of UniqueUserType) {
@@ -1359,7 +1370,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
         // check for task already exists new (Maxwell)
 
-        const dbProjectTasks = dbAllProjectTasks.filter(c => c.ProjectCode === slot.ProjectCode && c.Milestone === slot.Milestone).map(c => $.trim(c.Title.replace(c.ProjectCode + '', '').replace(c.Milestone + '', '')));
+        const dbProjectTasks = dbAllProjectTasks.filter(c => c.ProjectCode === slot.ProjectCode && c.Milestone === slot.Milestone).map(c => (c.Title.replace(c.ProjectCode + '', '').replace(c.Milestone + '', '')).trim());
         if (slot.SlotTasks.filter(c => c.Id === undefined)) {
           const ExisitingTasks = slot.SlotTasks.filter(c => c.Status === 'Not Saved').map(c => c.TaskName).filter(c => dbProjectTasks.includes(c))
 

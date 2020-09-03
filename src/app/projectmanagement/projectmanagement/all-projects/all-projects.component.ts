@@ -468,7 +468,8 @@ export class AllProjectsComponent implements OnInit {
     if (this.pmObject.allProjectItems && this.pmObject.allProjectItems.length) {
       const tempAllProjectArray = [];
       for (const task of this.pmObject.allProjectItems) {
-        const projObj = $.extend(true, {}, this.pmObject.allProject);
+        // const projObj = $.extend(true, {}, this.pmObject.allProject);
+        const projObj = JSON.parse(JSON.stringify(this.pmObject.allProject));
         projObj.ID = task.ID;
         projObj.Title = task.Title;
         projObj.SOWCode = task.SOWCode;
@@ -1738,7 +1739,8 @@ export class AllProjectsComponent implements OnInit {
     this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetSchedulesByProjCode');
     const tasks = await this.spServices.readItems(this.constants.listNames.Schedules.name, scheduleFilter);
 
-    const filterTasks = tasks.filter(e => e.Task !== 'Select one' && e.Milestone == this.selectedProjectObj.Milestone)
+    const filterTasks = tasks.filter(e => e.Task !== 'Select one' && e.Status !== this.constants.STATUS.DELETED
+                                     && e.Milestone === this.selectedProjectObj.Milestone);
 
     const scNotStartedUpdateData = {
       __metadata: {
@@ -1798,7 +1800,7 @@ export class AllProjectsComponent implements OnInit {
     batchURL.push(piUpdate);
 
     filterTasks.forEach(element => {
-      if (element.IsCentrallyAllocated == 'No') {
+      // if (element.IsCentrallyAllocated == 'No') {
         if (element.Task == "Client Review") {
           const scheduleStatusUpdate = Object.assign({}, options);
           scheduleStatusUpdate.data = scCRUpdateData;
@@ -1828,7 +1830,7 @@ export class AllProjectsComponent implements OnInit {
               element.ID);
             batchURL.push(scheduleStatusUpdate);
           }
-        }
+        // }
       }
     });
 

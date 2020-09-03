@@ -8,7 +8,7 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { PmconstantService } from '../../services/pmconstant.service';
 import { PMObjectService } from '../../services/pmobject.service';
-import { MenuItem} from 'primeng/api';
+import { MenuItem } from 'primeng/api';
 import { PMCommonService } from '../../services/pmcommon.service';
 import { Router } from '@angular/router';
 import { Table } from 'primeng/table';
@@ -244,8 +244,8 @@ export class ClientReviewComponent implements OnInit {
       let taskCount = 0;
       let arrResults = [];
       for (const task of this.crArrays.taskItems) {
-        const crObj: any = $.extend(true, {}, this.pmObject.clientReviewObj);
-
+        // const crObj: any = $.extend(true, {}, this.pmObject.clientReviewObj);
+        const crObj: any = Object.assign(true, {}, this.pmObject.clientReviewObj);
         crObj.ID = task.ID;
         crObj.Title = task.Title;
         crObj.ProjectCode = task.ProjectCode;
@@ -403,7 +403,7 @@ export class ClientReviewComponent implements OnInit {
   goToAllocationPage(task) {
     window.open(this.globalObject.url + '/taskAllocation?ProjectCode=' + task.ProjectCode, '_blank');
   }
-  
+
   goToProjectManagement(task) {
     this.pmObject.columnFilter.ProjectCode = [task.ProjectCode];
     this.router.navigate(['/projectMgmt/allProjects']);
@@ -415,7 +415,7 @@ export class ClientReviewComponent implements OnInit {
       this.closeTaskWithStatus(task, this.crRef);
     } else {
 
-      this.commonService.showToastrMessage(this.Constant.MessageType.warn,'Previous task should be Completed or Auto Closed',false);
+      this.commonService.showToastrMessage(this.Constant.MessageType.warn, 'Previous task should be Completed or Auto Closed', false);
       // this.changeErrorMessage('Previous task should be Completed or Auto Closed');
     }
   }
@@ -452,15 +452,15 @@ export class ClientReviewComponent implements OnInit {
           taskObj.type = 'PATCH';
           batchUrl.push(taskObj);
 
-      // update Milestone
-      if (response.length > 0) {
-        const milestoneObj = Object.assign({}, this.options);
-        milestoneObj.url = this.spServices.getItemURL(this.Constant.listNames.Schedules.name, response[0].Id);
-        milestoneObj.data = { Status: 'Completed', __metadata: { type: this.Constant.listNames.Schedules.type } };
-        milestoneObj.listName = this.Constant.listNames.Schedules.name;
-        milestoneObj.type = 'PATCH';
-        batchUrl.push(milestoneObj);
-      }
+          // update Milestone
+          if (response.length > 0) {
+            const milestoneObj = Object.assign({}, this.options);
+            milestoneObj.url = this.spServices.getItemURL(this.Constant.listNames.Schedules.name, response[0].Id);
+            milestoneObj.data = { Status: 'Completed', __metadata: { type: this.Constant.listNames.Schedules.type } };
+            milestoneObj.listName = this.Constant.listNames.Schedules.name;
+            milestoneObj.type = 'PATCH';
+            batchUrl.push(milestoneObj);
+          }
 
           //  update ProjectInformation
           const projectID = this.pmObject.allProjectItems.filter(item => item.ProjectCode === task.ProjectCode);
@@ -475,7 +475,7 @@ export class ClientReviewComponent implements OnInit {
 
           this.isCRInnerLoaderHidden = true;
 
-          this.commonService.showToastrMessage(this.Constant.MessageType.success,task.Title + ' is completed Sucessfully.',true);
+          this.commonService.showToastrMessage(this.Constant.MessageType.success, task.Title + ' is completed Sucessfully.', true);
 
           const index = this.pmObject.clientReviewArray.findIndex(item => item.ID === task.ID);
           this.pmObject.clientReviewArray.splice(index, 1);
@@ -494,7 +494,7 @@ export class ClientReviewComponent implements OnInit {
       this.loaderView.nativeElement.classList.remove('show');
       this.spannerView.nativeElement.classList.remove('show');
 
-      this.commonService.showToastrMessage(this.Constant.MessageType.info,task.Title + ' is already completed or closed or auto closed. Hence record is refreshed in 30 sec.',true);
+      this.commonService.showToastrMessage(this.Constant.MessageType.info, task.Title + ' is already completed or closed or auto closed. Hence record is refreshed in 30 sec.', true);
       setTimeout(() => {
         this.ngOnInit();
       }, 3000);
