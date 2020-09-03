@@ -134,7 +134,6 @@ export class CommonService {
     return tempDate;
   }
 
-
   removeFileNameSpecialChar(fileName) {
     //// Check files if it contains special characters
     const sFileName = fileName;
@@ -287,12 +286,12 @@ export class CommonService {
     setTimeout(() => {
       if (data) {
         if (sortField) {
-          this.customSort(data, sortField, sortOrder);
+          this.customSort(data, sortOrder, sortField);
         }
         if (globalFilter) {
           data = data.filter(row => this.globalFilter(row, globalFilter, filterColumns));
         }
-        if (!globalFilter && !$.isEmptyObject(localFilter)) {
+        if (!globalFilter && this.isEmptyObject(localFilter)) {
           data = data.filter(row => this.filterLocal(row, localFilter));
         }
         const items = data.slice(first, (first + rows));
@@ -356,29 +355,59 @@ export class CommonService {
     }, 1000);
   }
   // tslint:disable
+  // filterLocal(row, filter) {
+  //   let isInFilter = false;
+  //   let noFilter = true;
+  //   for (var columnName in filter) {
+  //     if (row[columnName] == null) {
+  //       return;
+  //     }
+  //     noFilter = false;
+  //     let rowValue: String = row[columnName].toString().toLowerCase();
+  //     let filterMatchMode: String = filter[columnName].matchMode;
+  //     if (filterMatchMode.includes("contains") && rowValue.includes(filter[columnName].value.toLowerCase())) {
+  //       isInFilter = true;
+  //     } else if (filterMatchMode.includes("startsWith") && rowValue.startsWith(filter[columnName].value.toLowerCase())) {
+  //       isInFilter = true;
+  //     } else if (filterMatchMode.includes("in") && filter[columnName].value.includes(row[columnName])) {
+  //       isInFilter = true;
+  //     }
+  //     else
+  //       return false;
+  //   }
+  //   if (noFilter) { isInFilter = true; }
+  //   return isInFilter;
+  // }
+
+  /**
+   * This method is used to filter the data on column basis.
+   */
   filterLocal(row, filter) {
     let isInFilter = false;
     let noFilter = true;
-    for (var columnName in filter) {
-      if (row[columnName] == null) {
-        return;
+    for (const columnName in filter) {
+      if (columnName !== 'global') {
+        if (row[columnName] == null) {
+          return;
+        }
+        noFilter = false;
+        const rowValue: string = row[columnName].toString().toLowerCase();
+        const filterMatchMode: string = filter[columnName].matchMode;
+        if (filterMatchMode.includes('contains') && rowValue.includes(filter[columnName].value)) {
+          isInFilter = true;
+        } else if (filterMatchMode.includes('startsWith') && rowValue.startsWith(filter[columnName].value.toLowerCase())) {
+          isInFilter = true;
+        } else if (filterMatchMode.includes('in') && filter[columnName].value.includes(row[columnName])) {
+          isInFilter = true;
+        } else {
+          return false;
+        }
       }
-      noFilter = false;
-      let rowValue: String = row[columnName].toString().toLowerCase();
-      let filterMatchMode: String = filter[columnName].matchMode;
-      if (filterMatchMode.includes("contains") && rowValue.includes(filter[columnName].value.toLowerCase())) {
-        isInFilter = true;
-      } else if (filterMatchMode.includes("startsWith") && rowValue.startsWith(filter[columnName].value.toLowerCase())) {
-        isInFilter = true;
-      } else if (filterMatchMode.includes("in") && filter[columnName].value.includes(row[columnName])) {
-        isInFilter = true;
-      }
-      else
-        return false;
     }
     if (noFilter) { isInFilter = true; }
     return isInFilter;
   }
+
   globalFilter(row, value, filterColumns) {
     for (let i = 0; i < filterColumns.length; i++) {
       let column = filterColumns[i];
@@ -393,10 +422,32 @@ export class CommonService {
     return false;
   }
 
-  customSort(data, fieldName: string, order: number) {
+  // customSort(data, fieldName: string, order: number) {
+  //   data.sort((row1, row2) => {
+  //     const val1 = row1[fieldName];
+  //     const val2 = row2[fieldName];
+  //     if (val1 === val2) {
+  //       return 0;
+  //     }
+  //     let result = -1;
+  //     if (val1 > val2) {
+  //       result = 1;
+  //     }
+  //     if (order < 0) {
+  //       result = -result;
+  //     }
+  //     return result;
+  //   });
+  //   return data;
+  // }
+
+  /**
+   * This method is used to sort the column data either ascending or descending.
+   */
+  customSort(data, order: number, fieldName?: string) {
     data.sort((row1, row2) => {
-      const val1 = row1[fieldName];
-      const val2 = row2[fieldName];
+      const val1 = fieldName ? row1[fieldName] : row1;
+      const val2 = fieldName ? row2[fieldName] : row2;
       if (val1 === val2) {
         return 0;
       }
@@ -411,6 +462,7 @@ export class CommonService {
     });
     return data;
   }
+
   async getTaskDocument(folderUrl, documentUrl) {
     let completeFolderRelativeUrl = folderUrl + documentUrl;
     this.SetNewrelic('Services', 'Common-getTaskDocuments', 'readFiles');
@@ -1150,5 +1202,12 @@ export class CommonService {
       }
     });
     return dayTimeSpent;
+  }
+
+  isEmptyObject(obj) {
+    if (Object.keys(obj).length === 0 && obj.constructor === Object) {
+      return true;
+    }
+    return false;
   }
 }

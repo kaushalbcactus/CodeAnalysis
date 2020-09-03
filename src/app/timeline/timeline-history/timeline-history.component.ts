@@ -94,11 +94,8 @@ export class TimelineHistoryComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    console.log('timelineTable ', this.timelineTable);
     this.lazy = true;
-    /**
-     * fetches project contacts and po on page load
-     */
+
   }
 
   // #region component initialization
@@ -357,7 +354,7 @@ export class TimelineHistoryComponent implements OnInit {
     const assimilateObj = JSON.parse(JSON.stringify(this.timelineBaseObj));
     arrData = this.getDataFromObj(assimilateObj, arrData);
     const finalData = [...this.timelineData, ...arrData];
-    this.timelineData = this.customSort(finalData, -1, 'date_time');
+    this.timelineData = this.commonService.customSort(finalData, -1, 'date_time');
     this.timelineDataCopy = JSON.parse(JSON.stringify(this.timelineData));
     this.filter = this.getFilterData(this.timelineData);
     this.hideLoader = true;
@@ -390,7 +387,7 @@ export class TimelineHistoryComponent implements OnInit {
   loadData(event: LazyLoadEvent) {
     this.loading = true;
     setTimeout(() => {
-      if (this.checkIfEmptyObject(event.filters) && !this.filterEnabled) {
+      if (this.commonService.isEmptyObject(event.filters) && !this.filterEnabled) {
         if (event.first > this.tableCSSTop) {
           this.tableCSSTop = event.first;
           this.loadNextDataSet(event);
@@ -1035,7 +1032,7 @@ export class TimelineHistoryComponent implements OnInit {
       }
     });
     Object.values(objFilter).forEach(arrColumn => {
-      arrColumn = this.customSort(arrColumn, 1, 'value');
+      arrColumn = this.commonService.customSort(arrColumn, 1, 'value');
     });
     return objFilter;
   }
@@ -1057,15 +1054,15 @@ export class TimelineHistoryComponent implements OnInit {
     this.loading = true;
     let temp = JSON.parse(JSON.stringify(originalData));
     if (temp) {
-      if (!this.checkIfEmptyObject(localFilter)) {
-        temp = temp.filter(row => this.filterLocal(row, localFilter));
+      if (!this.commonService.isEmptyObject(localFilter)) {
+        temp = temp.filter(row => this.commonService.filterLocal(row, localFilter));
         temp = temp.length > 0 ? temp : [];
       } else {
         this.filterEnabled = false;
         temp = JSON.parse(JSON.stringify(originalData));
       }
       if (sortField) {
-        temp = this.customSort(temp, sortOrder, sortField);
+        temp = this.commonService.customSort(temp, sortOrder, sortField);
       }
       setTimeout(() => {
         this.setHeader();
@@ -1075,63 +1072,58 @@ export class TimelineHistoryComponent implements OnInit {
     return temp;
   }
 
-  /**
-   * This method is used to filter the data on column basis.
-   */
-  filterLocal(row, filter) {
-    let isInFilter = false;
-    let noFilter = true;
-    for (const columnName in filter) {
-      if (columnName !== 'global') {
-        if (row[columnName] == null) {
-          return;
-        }
-        noFilter = false;
-        const rowValue: string = row[columnName].toString().toLowerCase();
-        const filterMatchMode: string = filter[columnName].matchMode;
-        if (filterMatchMode.includes('contains') && rowValue.includes(filter[columnName].value)) {
-          isInFilter = true;
-        } else if (filterMatchMode.includes('startsWith') && rowValue.startsWith(filter[columnName].value.toLowerCase())) {
-          isInFilter = true;
-        } else if (filterMatchMode.includes('in') && filter[columnName].value.includes(row[columnName])) {
-          isInFilter = true;
-        } else {
-          return false;
-        }
-      }
-    }
-    if (noFilter) { isInFilter = true; }
-    return isInFilter;
-  }
+  // /**
+  //  * This method is used to filter the data on column basis.
+  //  */
+  // filterLocal(row, filter) {
+  //   let isInFilter = false;
+  //   let noFilter = true;
+  //   for (const columnName in filter) {
+  //     if (columnName !== 'global') {
+  //       if (row[columnName] == null) {
+  //         return;
+  //       }
+  //       noFilter = false;
+  //       const rowValue: string = row[columnName].toString().toLowerCase();
+  //       const filterMatchMode: string = filter[columnName].matchMode;
+  //       if (filterMatchMode.includes('contains') && rowValue.includes(filter[columnName].value)) {
+  //         isInFilter = true;
+  //       } else if (filterMatchMode.includes('startsWith') && rowValue.startsWith(filter[columnName].value.toLowerCase())) {
+  //         isInFilter = true;
+  //       } else if (filterMatchMode.includes('in') && filter[columnName].value.includes(row[columnName])) {
+  //         isInFilter = true;
+  //       } else {
+  //         return false;
+  //       }
+  //     }
+  //   }
+  //   if (noFilter) { isInFilter = true; }
+  //   return isInFilter;
+  // }
 
-  /**
-   * This method is used to sort the column data either ascending or descending.
-   */
-  customSort(data, order: number, fieldName?: string) {
-    data.sort((row1, row2) => {
-      const val1 = fieldName ? row1[fieldName] : row1;
-      const val2 = fieldName ? row2[fieldName] : row2;
-      if (val1 === val2) {
-        return 0;
-      }
-      let result = -1;
-      if (val1 > val2) {
-        result = 1;
-      }
-      if (order < 0) {
-        result = -result;
-      }
-      return result;
-    });
-    return data;
-  }
+  // /**
+  //  * This method is used to sort the column data either ascending or descending.
+  //  */
+  // customSort(data, order: number, fieldName?: string) {
+  //   data.sort((row1, row2) => {
+  //     const val1 = fieldName ? row1[fieldName] : row1;
+  //     const val2 = fieldName ? row2[fieldName] : row2;
+  //     if (val1 === val2) {
+  //       return 0;
+  //     }
+  //     let result = -1;
+  //     if (val1 > val2) {
+  //       result = 1;
+  //     }
+  //     if (order < 0) {
+  //       result = -result;
+  //     }
+  //     return result;
+  //   });
+  //   return data;
+  // }
 
-  checkIfEmptyObject(obj) {
-    if (Object.keys(obj).length === 0 && obj.constructor === Object) {
-      return true;
-    }
-    return false;
-  }
+
 
   /**
    * Resets table height and scroll position based on direction
@@ -2045,7 +2037,7 @@ export class TimelineHistoryComponent implements OnInit {
       this.getFilterData(this.timelineData);
       this.cdr.detectChanges();
     }
-    
+
   }
 
   isEmpty(obj) {

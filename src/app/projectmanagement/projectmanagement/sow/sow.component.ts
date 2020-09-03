@@ -429,9 +429,9 @@ export class SOWComponent implements OnInit, OnDestroy {
     this.allSOW.Currency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
 
     const RevenueBudget = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.RevenueBudget, value: a.RevenueBudget }; return b; }).filter(ele => ele.label));
-    this.allSOW.RevenueBudget = this.commonService.customSort(RevenueBudget, 'label', 1);
+    this.allSOW.RevenueBudget = this.commonService.customSort(RevenueBudget, 1, 'label');
     const OOPBudget = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.OOPBudget, value: a.OOPBudget }; return b; }).filter(ele => ele.label));
-    this.allSOW.OOPBudget = this.commonService.customSort(OOPBudget, 'label', 1);
+    this.allSOW.OOPBudget = this.commonService.customSort(OOPBudget, 1, 'label');
     this.allSOW.CreatedBy = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.CreatedBy, value: a.CreatedBy }; return b; }).filter(ele => ele.label)));
     this.allSOW.CreatedDate = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.CreatedDateFormat, value: a.CreatedDateFormat }; return b; }).filter(ele => ele.label)));
     this.allSOW.POC = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POC, value: a.POC }; return b; }).filter(ele => ele.label)));
@@ -714,7 +714,7 @@ export class SOWComponent implements OnInit, OnDestroy {
 
 
   // ***************************************************************************************************
-  // open dialog module to add / reduce sow budget of selected row item 
+  // open dialog module to add / reduce sow budget of selected row item
   // ***************************************************************************************************
 
 
@@ -841,9 +841,9 @@ export class SOWComponent implements OnInit, OnDestroy {
               createSendEmailObj.type = 'POST';
               createSendEmailObj.listName = this.constants.listNames.SendEmail.name;
               batchURL.push(createSendEmailObj);
-              
+
             // });
-           
+
 
             this.commonService.SetNewrelic('projectManagment', 'projectManagement', 'GetSowSowBudBreakup');
             const res = await this.spServices.executeBatch(batchURL);
