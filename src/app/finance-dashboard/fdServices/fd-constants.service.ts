@@ -327,9 +327,11 @@ export class FdConstantsService {
         },
 
         invoiceLineItemByInvoice: {
-            select: "ID,Title,Status,ScheduledDate,Amount,Currency,PO,MainPOC,ScheduleType,InvoiceLookup,Expenses,AddressType,Template,SOWCode,ProformaLookup",
+            select: "ID,Title,Status,ScheduledDate,Amount,Currency,PO,MainPOC,ScheduleType,InvoiceLookup,Expenses,AddressType,Template,SOWCode,ProformaLookup,Modified,CS,CS/ID,CS/Title,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title",
             filter: "InvoiceLookup eq '{{InvoiceLookup}}' ",
-            top: 4500
+            top: 4500,
+            expand: "CS/ID,CS/Title,Editor,Author"
+
         },
 
         // Mail Content
@@ -364,6 +366,12 @@ export class FdConstantsService {
             filter: "Title eq '{{ProjectCode}}'  and ScheduleType eq \'{{ScheduleType}}\'",
             top: 4500
         },
+
+        GET_PO_BY_ID: {
+            lect: "ID,Title,NameST,Amount,ClientLegalEntity,Status,POExpiryDate,Currency,AmountRevenue,TotalLinked,RevenueLinked,TotalScheduled,ScheduledRevenue,Number,ScheduledOOP,InvoicedOOP, InvoicedRevenue, AmountOOP, POCLookup, OOPLinked,TotalInvoiced",
+            filter: "Status eq 'Active' and ID eq {{ItemID}}",
+            top: 4500,
+          },
 
 
               // Add Update

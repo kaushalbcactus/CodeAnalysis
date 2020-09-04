@@ -321,7 +321,7 @@ export class AdminConstantService {
         "POExpiryDate,RevenueLinked,ScheduledOOP,ScheduledRevenue,Status,TA,TaxLinked,TotalInvoiced," +
         "TotalLinked,TotalScheduled,AmountTax,CMLevel2/ID,CMLevel2/Title,Editor/ID,Editor/Title",
       filter:
-        "Status eq 'Closed' and ClientLegalEntity eq '{{clientLegalEntity}}' and Number eq '{{poNumber}}'",
+        "Status eq 'Closed' or Status eq 'InActive' and ClientLegalEntity eq '{{clientLegalEntity}}' and Number eq '{{poNumber}}'",
       expand: "CMLevel2/ID,CMLevel2/Title,Editor/ID,Editor/Title",
       orderby: "Modified desc",
       top: 4900,

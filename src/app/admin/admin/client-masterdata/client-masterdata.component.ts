@@ -2388,7 +2388,7 @@ export class ClientMasterdataComponent implements OnInit {
    * 2. If `Action='Reduce'` it will subtract budget from the existing budget.
    * 3. If `Action='Restructure'` it will adjust budget from one category to another category with total as zero.
    */
-  async confirmBudgetUpdate() {
+  async confirmBudgetUpdate(selectedFile) {
     this.adminObject.finalBudget.Amount =
       this.adminObject.oldBudget.Amount + this.adminObject.newBudget.Amount;
     this.adminObject.finalBudget.AmountRevenue =
@@ -2406,6 +2406,7 @@ export class ClientMasterdataComponent implements OnInit {
       AmountRevenue: this.adminObject.finalBudget.AmountRevenue,
       AmountOOP: this.adminObject.finalBudget.AmountOOP,
       AmountTax: this.adminObject.finalBudget.AmountTax,
+      Link: selectedFile[0].name,
     };
     const poBudgetBreakupData = {
       __metadata: {
@@ -2570,7 +2571,7 @@ export class ClientMasterdataComponent implements OnInit {
       if (budgetObj) {
         this.modalloaderenable = true;
         await this.uploadFile(budgetObj.selectedFile);
-        await this.confirmBudgetUpdate();
+        await this.confirmBudgetUpdate(budgetObj.selectedFile);
       }
     });
   }

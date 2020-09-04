@@ -358,6 +358,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         Category: element.Category,
         Number: element.Number,
         ExpenseType: element.SpendType,
+        Amount: parseFloat(element.Amount).toFixed(2),
         ClientAmount: parseFloat(element.ClientAmount).toFixed(2),
         ClientCurrency: element.ClientCurrency,
         VendorName: this.getVendorNameById(element),
@@ -1008,16 +1009,20 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
   }
   updateStsToBilled(arrRet: any) {
     const batchURL = [];
-    // let pendingAmount = this.scheduleInvoiceForm ? this.scheduleInvoiceForm.getRawValue().Amount - this.scheduleInvoiceForm.getRawValue().TagAmount : 0;
-    // if(pendingAmount == 0) {
+    let pendingAmount = this.scheduleInvoiceForm ? this.scheduleInvoiceForm.getRawValue().Amount - this.scheduleInvoiceForm.getRawValue().TagAmount : 0;
       for (let j = 0; j < this.selectedAllRowsItem.length; j++) {
         const element = this.selectedAllRowsItem[j];
+        const clientAmt = element.ClientAmount - pendingAmount;
+        const amt = element.Amount - pendingAmount;
         const spObj = {
           __metadata: { type: this.constantService.listNames.SpendingInfo.type },
           Status: element.Status.replace("Approved", "Billed"),
           InvoiceID: arrRet[0].retItems.ID.toString(),
         };
-
+        if(this.scheduleInvoiceType !== 'new') {
+          spObj['ClientAmount'] = clientAmt.toString();
+          spObj['Amount'] = amt.toString();
+        }
         const url = this.spServices.getItemURL(
           this.constantService.listNames.SpendingInfo.name,
           element.Id
@@ -1029,7 +1034,6 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
           this.constantService.Method.PATCH,
           this.constantService.listNames.SpendingInfo.name
         );
-      // }
     }
     console.log("this.updateSpeLineItems ", this.updateSpeLineItems);
     this.submitForm(batchURL, "updateScheduledOopLineItem");
@@ -1107,9 +1111,9 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
           Number: element.Number,
           SpendType: element.SpendType,
           Currency: element.Currency,
-          Amount: element.Amount,
+          Amount: pendingAmount.toString(),
           ClientCurrency: element.ClientCurrency,
-          ClientAmount: pendingAmount,
+          ClientAmount: pendingAmount.toString(),
           Status: 'Approved',
           FileURL: element.FileURL,
           ClientApprovalFileURL: element.ClientApprovalFileURL,

@@ -163,6 +163,7 @@ export class ManageFinanceComponent implements OnInit {
   spendingInfoDetails: any = [];
   allPbbDetails: any = [];
   invoiceType: any = 'revenue';
+  sowList: any;
 
   constructor(
     private frmbuilder: FormBuilder,
@@ -191,6 +192,7 @@ export class ManageFinanceComponent implements OnInit {
   }
 
   async reInitializePopup() {
+    this.sowList = [];
     this.poList = [];
     this.pmObject.addProject.FinanceManagement.POListArray = [];
     this.pmObject.addProject.FinanceManagement.POArray = [];
@@ -802,6 +804,8 @@ export class ManageFinanceComponent implements OnInit {
         element.poInfo[0].showAdd = false;
         if (element.poInfo[0].total === 0) {
           element.poInfo[0].showDelete = true;
+        } else {
+          element.poInfo[0].showDelete = false;
         }
       });
       this.isPoRevenueDisabled = true;
@@ -814,6 +818,9 @@ export class ManageFinanceComponent implements OnInit {
         element.poInfo[0].showAdd = true;
         if (element.poInfo[0].total === 0) {
           element.poInfo[0].showDelete = true;
+        } else {
+          element.poInfo[0].showDelete = false;
+
         }
       });
     } else {
@@ -824,6 +831,14 @@ export class ManageFinanceComponent implements OnInit {
     }
     this.selectedPo = '';
     this.budgetData[0].edited = true;
+    // const zeroInv = element.poInfoData.filter(e => e.amount === 0);
+    // zeroInv.forEach(elementInv => {
+    //   const invIndex = element.poInfoData.findIndex(item => item === elementInv);
+    //   element.poInfoData.splice(invIndex, 1);
+    //   elementInv.poId = tempPOObj.poId;
+    //   elementInv.status = 'Scheduled';
+    //   tempObj.poInfoData.push(elementInv);
+    // });
   }
   setInvData() {
     const invID = this.advanceInvID;
@@ -1167,113 +1182,159 @@ export class ManageFinanceComponent implements OnInit {
   }
 
   async cancelOOP(rowData) {
-    const batchUrl = [];
-    let invLineItem = {
-      __metadata: { type: this.constant.listNames.InvoiceLineItems.type },
-      Status: 'Deleted'
-    }
-    await this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constant.listNames.InvoiceLineItems.name, +rowData.Id), invLineItem, this.constant.Method.PATCH, this.constant.listNames.InvoiceLineItems.name);
+    this.commonService.confirmMessageDialog("Delete OOP", "Are you sure you want to delete oop", null, ['Yes', 'No'], false).then(async Confirmation => {
+      if (Confirmation === 'Yes') {
+        const sowItem = await this.getSowDetails(this.projObj.SOWCode);
+        await this.getSpendingDetails(rowData);
+        let poItem = this.poArray.filter(e=> e.ID == rowData.poId);
+        const batchUrl = [];
+        let invLineItem = {
+          __metadata: { type: this.constant.listNames.InvoiceLineItems.type },
+          Status: 'Deleted'
+        }
+        await this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constant.listNames.InvoiceLineItems.name, +rowData.Id), invLineItem, this.constant.Method.PATCH, this.constant.listNames.InvoiceLineItems.name);
 
-    let spendInfo = {
-      __metadata: { type: this.constant.listNames.SpendingInfo.type },
-      Status: 'Approved'
-    }
-    await this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constant.listNames.SpendingInfo.name, +this.spendingInfoDetails.retItems[0].Id), spendInfo, this.constant.Method.PATCH, this.constant.listNames.SpendingInfo.name);
+        let spendInfo = {
+          __metadata: { type: this.constant.listNames.SpendingInfo.type },
+          Status: 'Approved'
+        }
+        await this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constant.listNames.SpendingInfo.name, +this.spendingInfoDetails.retItems[0].Id), spendInfo, this.constant.Method.PATCH, this.constant.listNames.SpendingInfo.name);
 
-    const poLinkedAmt =
-      parseFloat(this.poArray[0].OOPLinked ? this.poArray[0].OOPLinked : 0) -
-      parseFloat(rowData.amount);
-    const poTotalLinkedAmt =
-      parseFloat(this.poArray[0].TotalLinked ? this.poArray[0].TotalLinked : 0) -
-      parseFloat(rowData.amount);
-    const poScheduledOOP =
-      parseFloat(this.poArray[0].ScheduledOOP ? this.poArray[0].ScheduledOOP : 0) -
-      parseFloat(rowData.amount);
-    const poTotalScheduled =
-      parseFloat(this.poArray[0].TotalScheduled ? this.poArray[0].TotalScheduled : 0) -
-      parseFloat(rowData.amount);
+        const poLinkedAmt = poItem[0].OOPLinked ? parseFloat(poItem[0].OOPLinked) - parseFloat(rowData.amount): 0 ;
+        const poTotalLinkedAmt = poItem[0].TotalLinked ? parseFloat(poItem[0].TotalLinked) - parseFloat(rowData.amount): 0 ;
+        const poScheduledOOP = poItem[0].ScheduledOOP ? parseFloat(poItem[0].ScheduledOOP) - parseFloat(rowData.amount): 0 ;
+        const poTotalScheduled = poItem[0].TotalScheduled ? parseFloat(poItem[0].TotalScheduled) - parseFloat(rowData.amount): 0 ;
 
-      let poData = {
-        __metadata: { type: this.constant.listNames.PO.type },
-        OOPLinked: poLinkedAmt.toFixed(2),
-        TotalLinked: poTotalLinkedAmt.toFixed(2),
-        ScheduledOOP: poScheduledOOP.toFixed(2),
-        TotalScheduled: poTotalScheduled.toFixed(2),
+          let poData = {
+            __metadata: { type: this.constant.listNames.PO.type },
+            OOPLinked: poLinkedAmt.toFixed(2),
+            TotalLinked: poTotalLinkedAmt.toFixed(2),
+            ScheduledOOP: poScheduledOOP.toFixed(2),
+            TotalScheduled: poTotalScheduled.toFixed(2),
+          }
+
+        await this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constant.listNames.PO.name, rowData.poId), poData, this.constant.Method.PATCH, this.constant.listNames.PO.name);
+
+        let pbb = {
+          __metadata: {
+            type: this.constant.listNames.ProjectBudgetBreakup.type,
+          },
+          ProjectLookup: this.projObj.ID,
+          Status: this.constant.STATUS.APPROVED,
+          ApprovalDate: new Date().toISOString(),
+          OriginalBudget: - parseFloat(rowData.amount),
+          OOPBudget: - parseFloat(rowData.amount),
+          ProjectCode: this.projObj.ProjectCode,
+        };
+
+        await this.commonService.setBatchObject(batchUrl, this.spServices.getReadURL(this.constant.listNames.ProjectBudgetBreakup.name), pbb, this.constant.Method.POST, this.constant.listNames.ProjectBudgetBreakup.name);
+
+        const oldScheduledOOP = this.existBudgetArray.retItems[0].ScheduledOOP
+        ? this.existBudgetArray.retItems[0].ScheduledOOP
+        : 0;
+      const oldTotalScheduled = this.existBudgetArray.retItems[0].InvoicesScheduled
+        ? this.existBudgetArray.retItems[0].InvoicesScheduled
+        : 0;
+      
+        let pfdata =  {
+          __metadata: {
+          type: this.constant.listNames.ProjectFinances.type,
+        },
+        ScheduledOOP: parseFloat(oldScheduledOOP) - parseFloat(rowData.amount),
+        InvoicesScheduled:  parseFloat(oldTotalScheduled) - parseFloat(rowData.amount),
+        Budget: this.existBudgetArray.retItems[0].Budget ? parseFloat(this.existBudgetArray.retItems[0].Budget) - parseFloat(rowData.amount)
+        : parseFloat(rowData.amount) - 0 ,
+        OOPBudget: this.existBudgetArray.retItems[0].OOPBudget
+        ? parseFloat(this.existBudgetArray.retItems[0].OOPBudget) -
+          parseFloat(rowData.amount)
+        : parseFloat(rowData.amount) - 0 ,
+        }
+
+        await this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constant.listNames.ProjectFinances.name, this.existBudgetArray.retItems[0].Id), pfdata, this.constant.Method.PATCH, this.constant.listNames.ProjectFinances.name);
+
+
+        let pfbAmountOOP = parseFloat(rowData.amount);
+        let pfbAmount = parseFloat(rowData.amount);
+        let pfbScheduledOOP = parseFloat(rowData.amount);
+        let pfbTotalScheduled = parseFloat(
+          rowData.amount
+        );
+
+          pfbScheduledOOP = parseFloat(this.existPOArray.retItems[0].ScheduledOOP
+            ? this.existPOArray.retItems[0].ScheduledOOP
+            : 0) - parseFloat(rowData.amount);
+          pfbTotalScheduled = parseFloat(this.existPOArray.retItems[0].TotalScheduled
+            ? this.existPOArray.retItems[0].TotalScheduled
+            : 0) - parseFloat(rowData.amount);
+          pfbAmountOOP = parseFloat(this.existPOArray.retItems[0].AmountOOP
+            ? this.existPOArray.retItems[0].AmountOOP
+            : 0) - parseFloat(rowData.amount);
+          pfbAmount = parseFloat(this.existPOArray.retItems[0].Amount
+            ? this.existPOArray.retItems[0].Amount
+            : 0) - parseFloat(rowData.amount);
+
+        let pfbdata = {
+          __metadata: {
+            type: this.constant.listNames.ProjectFinanceBreakup.type,
+          },
+          Amount: pfbAmount,
+          AmountOOP: pfbAmountOOP,       
+          ScheduledOOP: pfbScheduledOOP,      
+          TotalScheduled: pfbTotalScheduled,       
+        } 
+      
+        await this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constant.listNames.ProjectFinanceBreakup.name, this.existPOArray.retItems[0].Id), pfbdata, this.constant.Method.PATCH, this.constant.listNames.ProjectFinanceBreakup.name);
+
+        let sowdata = {
+          __metadata: {
+            type: this.constant.listNames.SOW.type,
+          },
+          TotalLinked: sowItem.TotalLinked
+            ? parseFloat(sowItem.TotalLinked) - rowData.amount
+            : rowData.amount,
+          OOPLinked: sowItem.OOPLinked
+            ? parseFloat(sowItem.OOPLinked) - rowData.amount
+            : rowData.amount,
+          TotalScheduled: sowItem.TotalScheduled
+            ? parseFloat(sowItem.TotalScheduled) - rowData.amount
+            : rowData.amount,
+          ScheduledOOP: sowItem.ScheduledOOP
+            ? parseFloat(sowItem.ScheduledOOP) - rowData.amount
+            : rowData.amount,
+        } 
+
+        await this.commonService.setBatchObject(batchUrl,
+          this.spServices.getItemURL(this.constant.listNames.SOW.name,sowItem.ID),
+          sowdata,
+          this.constant.Method.PATCH,
+          this.constant.listNames.SOW.name
+        );
+
+        await this.spServices.executeBatch(batchUrl);
+        // this.poData.forEach((e)=>{ 
+        //   let currentPo = e.poInfo.filter(e1=> e1.poId == rowData.poId)[0];
+
+        // })
+        this.commonService.showToastrMessage(this.constant.MessageType.success, 'OOP line item is Cancelled', true);
+        setTimeout(() => {
+          this.reInitializePopup();
+        }, this.pmConstant.TIME_OUT);
       }
+    })
+  }
 
-    await this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constant.listNames.PO.name, rowData.poId), poData, this.constant.Method.PATCH, this.constant.listNames.PO.name);
-
-    let pbb = {
-      __metadata: {
-        type: this.constant.listNames.ProjectBudgetBreakup.type,
-      },
-      OriginalBudget: parseFloat(this.allPbbDetails.retItems[0].OriginalBudget) - parseFloat(rowData.amount),
-      OOPBudget: parseFloat(this.allPbbDetails.retItems[0].OOPBudget) - parseFloat(rowData.amount),
-    };
-
-    await this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constant.listNames.ProjectBudgetBreakup.name, this.allPbbDetails.retItems[0].Id), pbb, this.constant.Method.PATCH, this.constant.listNames.ProjectBudgetBreakup.name);
-
-    const oldScheduledOOP = this.existBudgetArray.retItems[0].ScheduledOOP
-    ? this.existBudgetArray.retItems[0].ScheduledOOP
-    : 0;
-  const oldTotalScheduled = this.existBudgetArray.retItems[0].InvoicesScheduled
-    ? this.existBudgetArray.retItems[0].InvoicesScheduled
-    : 0;
-   
-    let pfdata =  {
-      __metadata: {
-      type: this.constant.listNames.ProjectFinances.type,
-    },
-    ScheduledOOP: parseFloat(oldScheduledOOP) - parseFloat(rowData.amount),
-    InvoicesScheduled:  parseFloat(oldTotalScheduled) - parseFloat(rowData.amount),
-    Budget: this.existBudgetArray.retItems[0].Budget ? parseFloat(this.existBudgetArray.retItems[0].Budget) - parseFloat(rowData.amount)
-    : parseFloat(rowData.amount) - 0 ,
-    OOPBudget: this.existBudgetArray.retItems[0].OOPBudget
-    ? parseFloat(this.existBudgetArray.retItems[0].OOPBudget) -
-      parseFloat(rowData.amount)
-    : parseFloat(rowData.amount) - 0 ,
+  async getSowDetails(sowCode) {
+    if (this.sowList.length === 0) {
+      const res = await this.spServices.readItems(
+        this.constant.listNames.SOW.name,
+        this.pmConstant.FINANCE_QUERY.sowList
+      );
+      this.sowList = res.length ? res : [];
     }
 
-    await this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constant.listNames.ProjectFinances.name, this.existBudgetArray.retItems[0].Id), pfdata, this.constant.Method.PATCH, this.constant.listNames.ProjectFinances.name);
-
-
-    let pfbAmountOOP = parseFloat(rowData.amount);
-    let pfbAmount = parseFloat(rowData.amount);
-    let pfbScheduledOOP = parseFloat(rowData.amount);
-    let pfbTotalScheduled = parseFloat(
-      rowData.amount
-    );
-
-      pfbScheduledOOP = parseFloat(this.existPOArray.retItems[0].ScheduledOOP
-        ? this.existPOArray.retItems[0].ScheduledOOP
-        : 0) - parseFloat(rowData.amount);
-      pfbTotalScheduled = parseFloat(this.existPOArray.retItems[0].TotalScheduled
-        ? this.existPOArray.retItems[0].TotalScheduled
-        : 0) - parseFloat(rowData.amount);
-      pfbAmountOOP = parseFloat(this.existPOArray.retItems[0].AmountOOP
-        ? this.existPOArray.retItems[0].AmountOOP
-        : 0) - parseFloat(rowData.amount);
-      pfbAmount = parseFloat(this.existPOArray.retItems[0].Amount
-        ? this.existPOArray.retItems[0].Amount
-        : 0) - parseFloat(rowData.amount);
-
-    let pfbdata = {
-      __metadata: {
-        type: this.constant.listNames.ProjectFinanceBreakup.type,
-      },
-      Amount: pfbAmount,
-      AmountOOP: pfbAmountOOP,       
-      ScheduledOOP: pfbScheduledOOP,      
-      TotalScheduled: pfbTotalScheduled,       
-    } 
-  
-    await this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constant.listNames.ProjectFinanceBreakup.name, this.existPOArray.retItems[0].Id), pfbdata, this.constant.Method.PATCH, this.constant.listNames.ProjectFinanceBreakup.name);
-
-    await this.spServices.executeBatch(batchUrl);
-    this.commonService.showToastrMessage(this.constant.MessageType.success, 'OOP line item is Cancelled', true);
-    setTimeout(() => {
-      this.reInitializePopup();
-    }, this.pmConstant.TIME_OUT);
+    return this.sowList.find((c) => c.SOWCode === sowCode)
+      ? this.sowList.find((c) => c.SOWCode === sowCode)
+      : "";
   }
 
   lineItemConfirmAllowed(invoice) {
@@ -1414,7 +1475,7 @@ export class ManageFinanceComponent implements OnInit {
      const spendingInfoGet = Object.assign({}, options);
      const spendingInfoFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.SPENDING_INFO);
      spendingInfoFilter.filter = spendingInfoFilter.filter.replace(/{{Title}}/gi,
-       projObj.ProjectCode);
+       projObj.ProjectCode).replace(/{{Title}}/gi,projObj.ProjectCode);
      spendingInfoGet.url = this.spServices.getReadURL(this.constant.listNames.SpendingInfo.name,
        spendingInfoFilter);
      spendingInfoGet.type = 'GET';
@@ -1440,7 +1501,7 @@ export class ManageFinanceComponent implements OnInit {
       this.existPOArray = result[1];
       this.existPOInvoiceArray = result[2];
       this.existPBBBudgetArray = result[3];
-      this.spendingInfoDetails = result[4];
+      // this.spendingInfoDetails = result[4];
       this.allPbbDetails = result[5];
       await this.getInitData(projObj.ProjectCode, projObj.ClientLegalEntity,
         this.existBudgetArray.retItems[0].Currency);
@@ -1718,6 +1779,29 @@ export class ManageFinanceComponent implements OnInit {
     const invoiceProformaResult = await this.spServices.executeBatch(batchURL);
     if (invoiceProformaResult && invoiceProformaResult.length) {
       return invoiceProformaResult;
+    }
+  }
+
+  async getSpendingDetails(data) {
+    const batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    const spendingInfoGet = Object.assign({}, options);
+    const spendingInfoFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.SPENDING_INFO);
+    spendingInfoFilter.filter = spendingInfoFilter.filter.replace(/{{Title}}/gi,
+      this.projObj.ProjectCode).replace(/{{InvoiceID}}/gi,data.Id);
+    spendingInfoGet.url = this.spServices.getReadURL(this.constant.listNames.SpendingInfo.name,
+      spendingInfoFilter);
+    spendingInfoGet.type = 'GET';
+    spendingInfoGet.listName = this.constant.listNames.SpendingInfo.name;
+    batchURL.push(spendingInfoGet);
+    const result = await this.spServices.executeBatch(batchURL);
+    if (result && result.length) {
+      this.spendingInfoDetails = result[0];
     }
   }
 

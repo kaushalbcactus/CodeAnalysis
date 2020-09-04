@@ -417,13 +417,12 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
             PFID: data[pf][0].ID,
             Currency: data[pf][0].Currency,
             Rate: parseFloat(data[pf][0].Budget).toFixed(2),
-            HoursSpent: invoiceTotalAmount ? ((total - invoiceTotalAmount) / rate)  : parseFloat(data[pf][0].HoursSpent.toFixed(2)),
+            HoursSpent: parseFloat(data[pf][0].HoursSpent.toFixed(2)),
             BudgetHrs: data[pf][0].BudgetHrs,
             Template: data[pf][0].Template,
             TotalInvoice: this.updateTotal(
               data[pf][0].Budget,
-              data[pf][0].HoursSpent,
-              invoiceTotalAmount
+              data[pf][0].HoursSpent
             ),
             Modified: data[pf][0].Modified,
             ApprovedBudget: data[pf][0].ApprovedBudget,
@@ -450,11 +449,11 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     this.createColFieldValues(this.hourlyBasedRes);
   }
 
-  updateTotal(rate, hrs, invoiceAmount) {
-    // return (rate * hrs).toFixed(2);
-    let total: any =  (rate * hrs).toFixed(2);
-    let finalTotal = invoiceAmount ? total - invoiceAmount : total;
-    return finalTotal;
+  updateTotal(rate, hrs) {
+    return (rate * hrs).toFixed(2);
+    // let total: any =  (rate * hrs).toFixed(2);
+    // let finalTotal = invoiceAmount ? total - invoiceAmount : total;
+    // return finalTotal;
   }
 
   // Project Current Milestones
@@ -922,8 +921,8 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     let pendingAmount = 0;
     // let pendingHrs = 0;
 
-    if(invoiceform.Invoice.Amount < (rate * hrs)) {
-      totalVal = invoiceform.Invoice.Amount;
+    if(Invoiceform.getRawValue().InvoiceAmount < (rate * hrs)) {
+      totalVal = Invoiceform.getRawValue().InvoiceAmount;
       finalHrs = totalVal/rate;
       pendingAmount =  totalAmount - totalVal;
       // pendingHrs = (pendingAmount/rate);
@@ -945,8 +944,21 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     }
 
     let url;
+    if(pendingAmount !== 0) {
+      url = this.spServices.getReadURL(
+        this.constantService.listNames.InvoiceLineItems.name
+      );
+      this.commonService.setBatchObject(
+        batchUrl,
+        url,
+        this.getInvoiceLineItemData(invoiceform, piId, totalVal, pendingAmount, 'new'),
+        this.constantService.Method.POST,
+        this.constantService.listNames.InvoiceLineItems.name
+      );
+    }
+
     // Update ProjectInformation
-    if(pendingAmount == 0) {
+    // if(pendingAmount == 0) {
       const piData = {
         __metadata: {
           type: this.constantService.listNames.ProjectInformation.type,
@@ -967,7 +979,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         this.constantService.Method.PATCH,
         this.constantService.listNames.ProjectInformation.name
       );
-    }
+    // }
 
     // Update ProjectFinanceBreakup
     url = this.spServices.getItemURL(
@@ -1153,10 +1165,10 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     return pfData;
   }
 
-  getInvoiceLineItemData(invoiceform, piId, totalVal) {
+  getInvoiceLineItemData(invoiceform, piId, totalVal,pendingAmount?,type?) {
     const Invoiceform = invoiceform.ApproveInvoiceForm;
     const Invoice = invoiceform.Invoice;
-    const InvoiceType = Invoiceform.value.InvoiceType;
+    const InvoiceType = type ? type : Invoiceform.value.InvoiceType;
     const iliData = {
       __metadata: {
         type: this.constantService.listNames.InvoiceLineItems.type,
@@ -1170,7 +1182,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         InvoiceType === "new"
           ? Invoiceform.value.approvalDate
           : Invoice.InvoiceDate,
-      Amount: totalVal,
+      Amount: type ? pendingAmount : totalVal,
       Currency: this.selectedRowItem.Currency,
       PO: this.poLookupDataObj.ID,
       MainPOC: InvoiceType === "new" ? piId.PrimaryPOC : Invoice.MainPOC,
