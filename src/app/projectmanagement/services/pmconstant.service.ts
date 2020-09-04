@@ -64,7 +64,7 @@ export class PmconstantService {
     select: 'ID,Title,Status, AssignedTo/ID,AssignedTo/Title',
     expand: 'AssignedTo/ID,AssignedTo/Title',
     filter: 'ParentSlot eq \'{0}\' and Status ne \'Deleted\' and NextTasks eq null',
-     orderby: 'DueDate desc',
+     orderby: 'DueDateDT desc',
     top: 4200
 
   };
