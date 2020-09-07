@@ -7,9 +7,12 @@
 <div class="p-col">
     <div class="p-col-12 p-md-12 p-lg-12 f-right">
         <div style="display: -webkit-inline-box;">
-            <div class="box" style="margin-right: 20px;">
+            <div class="box mr-20">
                 <button type="button" class="fdBtn" pButton icon="fa fa-plus-circle" iconPos="left" label="Create Proforma" (click)="showProformaDialog()"></button>
             </div>
+            <div class="box mr-20 fg">
+                    <button type="button" class="fdBtn" pButton label="Sent to Client" (click)="sentToClient()"></button>
+                </div>
             <div class="box">
                 <!-- <button type="button" pButton label="Export" (click)="fdDataShareServie.convertToExcelFile(pfc)"></button> -->
                 <i style="font-size: 1.8em;cursor: pointer;" (click)="fdDataShareServie.convertToExcelFile(pfc)" title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
@@ -98,7 +101,7 @@
                     <ng-container *ngIf="col.field == ''">
                         <div>
                             <p-menu #popupMenu [popup]="true" [model]="items" styleClass="borderMenu"></p-menu>
-                            <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;" (click)="openPopup(rowData, popupMenu);popupMenu.show($event);"></i>
+                            <i class="pi pi-ellipsis-v menu" (click)="openPopup(rowData, popupMenu);popupMenu.show($event);"></i>
                         </div>
                     </ng-container>
                 </td>
@@ -216,6 +219,39 @@
     <p-footer>
         <button pButton type="button" class="fdBtn" label="Save" [disabled]="submitBtn.isClicked" (click)="onSubmit('generateInvoice')"></button>
         <button pButton type="button" class="fdBtn" label="Cancel" (click)="cancelFormSub('generateInvoice')"></button>
+    </p-footer>
+
+</p-dialog>
+
+<!-- Change POC -->
+<p-dialog header="Change POC" [(visible)]="editPOCModal" [modal]="true" [draggable]="false" [responsive]="true" [style]="{'width': '40%'}" [maximizable]="false" (onHide)="cancelFormSub('editPOC')" [responsive]="true" [contentStyle]="{'overflow' : 'visible'}">
+    <form [formGroup]="editPOC_form">
+        <div class="ui-g">
+            <div class="ui-g-6">
+                POC Name
+            </div>
+            <div class="ui-g-6">
+                <div class="p-col-6 p-md-8 p-lg-8 editpoc">
+
+                    <p-dropdown resetFilterOnHide="true" [options]="listOfPOCNames" formControlName="POCName" placeholder="Select POC Name" [filter]="true" optionLabel="FullNameCC" [style]="{'width':'100%'}" appendTo="body">
+                        <ng-template let-item pTemplate="item">
+                            <div class="ui-helper-clearfix dropdown">
+                                <div class="dropdown-item">{{item.label }}</div>
+                            </div>
+                        </ng-template>
+                    </p-dropdown>
+                    <div class="error" *ngIf="formSubmit.isSubmit && editPOC_form.controls.POCName.errors">
+                        <div *ngIf="editPOC_form.controls.POCName.errors.required">
+                            Please provide POC Name.</div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </form>
+    <p-footer>
+        <button pButton type="button" class="fdBtn" label="Save" [disabled]="submitBtn.isClicked" (click)="onSubmit('editPOC')"></button>
+        <button pButton type="button" class="fdBtn" label="Cancel" (click)="cancelFormSub('editPOC')"></button>
     </p-footer>
 
 </p-dialog>

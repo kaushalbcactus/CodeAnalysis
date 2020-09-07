@@ -3,7 +3,7 @@ import { Component, OnInit, ElementRef, ViewChild, ChangeDetectorRef } from '@an
 import { SPCommonService } from '../../Services/spcommon.service';
 import { TimelineConstantsService } from './../services/timeline-constants.service';
 import { DatePipe } from '@angular/common';
-import { LazyLoadEvent} from 'primeng/primeng';
+import { LazyLoadEvent } from 'primeng/primeng';
 import { SPOperationService } from '../../Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { CommonService } from 'src/app/Services/common.service';
@@ -185,35 +185,35 @@ export class TimelineHistoryComponent implements OnInit {
     const obj = JSON.parse(JSON.stringify(this.ObjTimeline));
     obj.ID = timelineProcessObjID.ID ? timelineProcessObjID.ID : timelineProcessObjID;
     switch (type) {
-      case 'ProjectMgmt_Invoices':
-      case 'FD_Invoices':
+      case 'ProjectMgmt_InvoicesCT':
+      case 'FD_InvoicesCT':
         obj.versionUrl = this.constant.financeDashboard.invoice.getInvoiceVersion;
         obj.propertiesRequired = this.constant.financeDashboard.invoice.propertiesRequired;
         obj.entityType = moduleName + '_' + this.globalConstant.listNames.Invoices.name;
         break;
-      case 'ProjectMgmt_Proforma':
-      case 'FD_Proforma':
+      case 'ProjectMgmt_ProformaCT':
+      case 'FD_ProformaCT':
         obj.versionUrl = this.constant.financeDashboard.proforma.getProformaVersion;
         obj.propertiesRequired = this.constant.financeDashboard.proforma.propertiesRequired;
         obj.entityType = moduleName + '_' + this.globalConstant.listNames.Proforma.name;
         break;
-      case 'ProjectMgmt_InvoiceLineItems':
-      case 'FD_InvoiceLineItems':
+      case 'ProjectMgmt_InvoiceLineItemsCT':
+      case 'FD_InvoiceLineItemsCT':
         obj.versionUrl = this.constant.financeDashboard.invoiceLineItem.getInvoiceLineItemsVersion;
         obj.propertiesRequired = this.constant.financeDashboard.invoiceLineItem.propertiesRequired;
         obj.entityType = moduleName + '_' + this.globalConstant.listNames.InvoiceLineItems.name;
         break;
-      case 'FD_Rolling':
+      case 'FD_RollingCT':
         obj.versionUrl = this.constant.financeDashboard.project.getProjectVersions;
         obj.propertiesRequired = this.constant.financeDashboard.project.propertiesRequired;
         obj.entityType = moduleName + '_' + this.globalConstant.listNames.ProjectInformation.name;
         break;
-      case 'FD_ProjectFinances':
+      case 'FD_ProjectFinancesCT':
         obj.versionUrl = this.constant.financeDashboard.projectFinance.getProjectFinanceVersions;
         obj.propertiesRequired = this.constant.financeDashboard.projectFinance.propertiesRequired;
         obj.entityType = moduleName + '_' + this.globalConstant.listNames.ProjectFinances.name;
         break;
-      case 'ProjectMgmt_ProjectFinances':
+      case 'ProjectMgmt_ProjectFinancesCT':
         obj.versionUrl = this.constant.projectManagement.projectFinance.getProjectFinanceVersions;
         obj.propertiesRequired = this.constant.projectManagement.projectFinance.propertiesRequired;
         obj.entityType = moduleName + '_' + this.globalConstant.listNames.ProjectFinances.name;
@@ -231,22 +231,22 @@ export class TimelineHistoryComponent implements OnInit {
         obj.status = 'Pending';
         obj.data = timelineProcessObjID;
         break;
-      case 'ProjectMgmt_ProjectBudgetBreakup':
+      case 'ProjectMgmt_ProjectBudgetBreakupCT':
         obj.versionUrl = this.constant.projectManagement.projectBudgetBreakup.getVersions;
         obj.propertiesRequired = this.constant.projectManagement.projectBudgetBreakup.propertiesRequired;
         obj.entityType = moduleName + '_' + this.globalConstant.listNames.ProjectBudgetBreakup.name;
         break;
-      case 'ProjectMgmt_ProjectFinanceBreakup':
+      case 'ProjectMgmt_ProjectFinanceBreakupCT':
         obj.versionUrl = this.constant.projectManagement.projectFinanceBreakup.getVersions;
         obj.propertiesRequired = this.constant.projectManagement.projectFinanceBreakup.propertiesRequired;
         obj.entityType = moduleName + '_' + this.globalConstant.listNames.ProjectFinanceBreakup.name;
         break;
-      case 'ProjectMgmt_SOW':
+      case 'ProjectMgmt_SOWCT':
         obj.versionUrl = this.constant.projectManagement.sow.getVersions;
         obj.propertiesRequired = this.constant.projectManagement.sow.propertiesRequired;
         obj.entityType = moduleName + '_' + this.globalConstant.listNames.SOW.name;
         break;
-      case 'ProjectMgmt_SOWBudgetBreakup':
+      case 'ProjectMgmt_SOWBudgetBreakupCT':
         obj.versionUrl = this.constant.projectManagement.sowBudgetBreakup.getVersions;
         obj.propertiesRequired = this.constant.projectManagement.sowBudgetBreakup.propertiesRequired;
         obj.entityType = moduleName + '_' + this.globalConstant.listNames.SOWBudgetBreakup.name;
@@ -258,41 +258,41 @@ export class TimelineHistoryComponent implements OnInit {
   async intialRequestCreation(moduleName, type, clickedItemId) {
     let initialRequest = [];
     switch (type) {
-      case 'ProjectMgmt_Invoices':
+      case 'ProjectMgmt_InvoicesCT':
       case 'FD_InvoicesCT':
         initialRequest = await this.getInvoiceVersions(moduleName, clickedItemId, '0', this.top);
         break;
-      case 'ProjectMgmt_Proforma':
+      case 'ProjectMgmt_ProformaCT':
       case 'FD_Proforma':
         initialRequest = await this.getProforma(moduleName, clickedItemId, '0', this.top);
         break;
-      case 'ProjectMgmt_InvoiceLineItems':
+      case 'ProjectMgmt_InvoiceLineItemsCT':
       case 'FD_InvoiceLineItems':
         initialRequest = await this.getInvoiceLineItems(moduleName, clickedItemId, '0', this.top);
         break;
       case 'FD_Rolling':
         initialRequest = await this.getFDProjectVersions(moduleName, clickedItemId, '0', '1');
         break;
-      case 'FD_ProjectFinances':
+      case 'FD_ProjectFinancesCT':
         initialRequest = await this.getFDProjectFinanceVersions(moduleName, clickedItemId, '0', this.top);
         break;
-      case 'ProjectMgmt_ProjectFinances':
+      case 'ProjectMgmt_ProjectFinancesCT':
         initialRequest = await this.getProjectFinanceVersions(moduleName, clickedItemId, '0', this.top);
         break;
       case 'ProjectMgmt_ProjectFromDashboard':
       case 'ProjectMgmt_Project':
         initialRequest = await this.getProjectVersions(moduleName, clickedItemId, '0', this.top, type);
         break;
-      case 'ProjectMgmt_ProjectBudgetBreakup':
+      case 'ProjectMgmt_ProjectBudgetBreakupCT':
         initialRequest = await this.getProjectBudgetVersions(moduleName, clickedItemId, '0', this.top);
         break;
-      case 'ProjectMgmt_ProjectFinanceBreakup':
+      case 'ProjectMgmt_ProjectFinanceBreakupCT':
         initialRequest = await this.getProjectFinanceBreakupVersions(moduleName, clickedItemId, '0', this.top);
         break;
-      case 'ProjectMgmt_SOW':
+      case 'ProjectMgmt_SOWCT':
         initialRequest = await this.getSowVersions(moduleName, clickedItemId, '0', this.top);
         break;
-      case 'ProjectMgmt_SOWBudgetBreakup':
+      case 'ProjectMgmt_SOWBudgetBreakupCT':
         initialRequest = await this.getSowBudgetBreakupVersions(moduleName, clickedItemId, '0', this.top);
         break;
     }
@@ -333,6 +333,7 @@ export class TimelineHistoryComponent implements OnInit {
       case 'FD_InvoiceLineItemsCT':
         data = this.setInvLineItemsVersion(obj.versions, obj.verDifference);
         break;
+      case 'ProjectMgmt_Project':
       case 'ProjectMgmt_ProjectFromDashboard':
       case 'ProjectMgmt_ProjectInformationCT':
       case 'ProjectMgmt_Project':
@@ -2039,7 +2040,7 @@ export class TimelineHistoryComponent implements OnInit {
         this.getFilterData(obj.tableData.value)
         this.cdr.detectChanges();
       }
-      console.log('this.objTimelineData ',this.filter);
+      console.log('this.objTimelineData ', this.filter);
     } else {
       this.lazy = true;
       this.getFilterData(this.timelineData);

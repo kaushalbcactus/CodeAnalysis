@@ -314,6 +314,18 @@ export class AdminConstantService {
       orderby: "Modified desc",
       top: 4900,
     },
+    GET_PO_BY_CLOSED: {
+      select:
+        "ID,Title,Amount,AmountOOP,AmountRevenue,BuyingEntity,ClientLegalEntity,Currency,InvoicedOOP," +
+        "InvoicedRevenue,InvoicedTax,Link,Modified,Molecule,NameST,Number,OOPLinked,POCategory,POCLookup," +
+        "POExpiryDate,RevenueLinked,ScheduledOOP,ScheduledRevenue,Status,TA,TaxLinked,TotalInvoiced," +
+        "TotalLinked,TotalScheduled,AmountTax,CMLevel2/ID,CMLevel2/Title,Editor/ID,Editor/Title",
+      filter:
+        "Status eq 'Closed' or Status eq 'InActive' and ClientLegalEntity eq '{{clientLegalEntity}}' and Number eq '{{poNumber}}'",
+      expand: "CMLevel2/ID,CMLevel2/Title,Editor/ID,Editor/Title",
+      orderby: "Modified desc",
+      top: 4900,
+    },
     GET_PO_BY_ID: {
       select:
         "ID,Title,Amount,AmountOOP,AmountRevenue,BuyingEntity,ClientLegalEntity,Currency,InvoicedOOP," +
@@ -343,6 +355,10 @@ export class AdminConstantService {
       filter: "Bucket eq '{{bucket}}' and EndDateDT eq null",
       orderby: "ID asc",
       top: 4900,
+    },
+    CONTENT_QUERY: {
+      select: 'ContentMT',
+      filter: 'Title eq \'{{templateName}}\''
     },
   };
   public LOGICAL_FIELD = {

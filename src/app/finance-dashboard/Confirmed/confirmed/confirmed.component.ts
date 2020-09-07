@@ -692,7 +692,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 }
             });
         } else if (this.confirmDialog.title.toLowerCase() === 'show history') {
-            this.timeline.showTimeline(data.Id, 'FD', 'InvoiceLineItems');
+            this.timeline.showTimeline(data.Id, 'FD', this.constantService.listNames.InvoiceLineItems.name);
         } else if (event.item.label === 'Details') {
             this.rightSideBar = !this.rightSideBar;
             return;

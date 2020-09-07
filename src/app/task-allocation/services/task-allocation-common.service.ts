@@ -126,6 +126,10 @@ export class TaskAllocationCommonService {
             filteredResources.push(element);
           }
           element.Title = element.UserNamePG.Title;
+          if(!element.OriginalUserID) {
+            element.OriginalUserID = element.ID;
+          }
+          
           element.ID = element.UserNamePG.ID;
           element.Id = element.UserNamePG.ID;
           element.Name = element.UserNamePG.Name;

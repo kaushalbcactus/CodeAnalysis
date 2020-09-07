@@ -21,6 +21,7 @@ import { CsFinanceAuditDialogComponent } from './cs-finance-audit-dialog/cs-fina
 import { InvoiceLineitemsComponent } from './invoice-lineitems/invoice-lineitems.component';
 import { CdpfComponent } from 'src/app/shared/sqms/cdpf/cdpf.component';
 import { JournalConferenceDetailsComponent } from 'src/app/shared/journal-conference-details/journal-conference-details.component';
+import { ProjectBudgetBreakupComponent } from './project-budget-breakup/project-budget-breakup.component';
 
 declare var $;
 @Component({
@@ -320,6 +321,14 @@ export class AllProjectsComponent implements OnInit {
         {
           label: 'Off Hold', command: (event) =>
             this.InvoiceLineItemsPopup(this.selectedProjectObj, this.constants.projectStatus.Unallocated)
+        },
+        {
+          label: 'Move to Finance Audit', command: (event) =>
+            this.revertFromClosed(this.selectedProjectObj)
+        },
+        {
+          label: 'Move to CS Audit', command: (event) =>
+            this.revertFromPendingClosure(this.selectedProjectObj)
         }]
       },
       {
@@ -341,6 +350,7 @@ export class AllProjectsComponent implements OnInit {
           { label: 'Manage Finance', command: (event) => this.manageFinances(this.selectedProjectObj) },
           { label: 'Change SOW', command: (event) => this.moveSOW(this.selectedProjectObj) },
           { label: 'Expense', command: (event) => this.showExpense(this.selectedProjectObj) },
+          { label: 'Project Budget', command: (event) => this.showProjectBudgetBreakup(this.selectedProjectObj) }
         ]
       },
       { label: 'View Details', command: (event) => this.sendOutput.next(this.selectedProjectObj) },
@@ -829,7 +839,7 @@ export class AllProjectsComponent implements OnInit {
       menu.model[2].visible = false;
     } else {
       menu.model[3].visible = false;
-      if(this.selectedProjectObj.IsPubSupport === "Yes") {
+      if (this.selectedProjectObj.IsPubSupport === "Yes") {
         menu.model[1].items[7].visible = true;
       } else {
         menu.model[1].items[7].visible = false;
@@ -841,6 +851,8 @@ export class AllProjectsComponent implements OnInit {
           menu.model[0].items[3].visible = false;
           menu.model[0].items[5].visible = false;
           menu.model[0].items[6].visible = false;
+          menu.model[0].items[7].visible = false;
+          menu.model[0].items[8].visible = false;
           break;
         case this.constants.projectStatus.Unallocated:
         case this.constants.projectStatus.InProgress:
@@ -850,6 +862,8 @@ export class AllProjectsComponent implements OnInit {
           menu.model[0].items[2].visible = false;
           menu.model[0].items[3].visible = false;
           menu.model[0].items[6].visible = false;
+          menu.model[0].items[7].visible = false;
+          menu.model[0].items[8].visible = false;
           break;
 
         case this.constants.projectStatus.OnHold:
@@ -859,6 +873,8 @@ export class AllProjectsComponent implements OnInit {
           menu.model[0].items[3].visible = false;
           menu.model[0].items[4].visible = false;
           menu.model[0].items[5].visible = false;
+          menu.model[0].items[7].visible = false;
+          menu.model[0].items[8].visible = false;
           break
 
         case this.constants.projectStatus.AuditInProgress:
@@ -869,17 +885,26 @@ export class AllProjectsComponent implements OnInit {
           // menu.model[0].items[4].visible = false;
           break;
         case this.constants.projectStatus.PendingClosure:
-          menu.model[0].visible = false;
-          // menu.model[0].items[0].visible = false;
-          // menu.model[0].items[1].visible = false;
-          // menu.model[0].items[2].visible = false;
-          // menu.model[0].items[4].visible = false;
-          // menu.model[1].items[1].visible = false;
-          // menu.model[0].items[5].visible = false;
-          // menu.model[0].items[6].visible = false;
+          // menu.model[0].visible = false;
+          menu.model[0].items[0].visible = false;
+          menu.model[0].items[1].visible = false;
+          menu.model[0].items[2].visible = false;
+          menu.model[0].items[3].visible = false;
+          menu.model[0].items[4].visible = false;
+          menu.model[0].items[5].visible = false;
+          menu.model[0].items[6].visible = false;
+          menu.model[0].items[7].visible = false;
           break;
         case this.constants.projectStatus.Closed:
-          menu.model[0].visible = false;
+          // menu.model[0].visible = false;
+          menu.model[0].items[0].visible = false;
+          menu.model[0].items[1].visible = false;
+          menu.model[0].items[2].visible = false;
+          menu.model[0].items[3].visible = false;
+          menu.model[0].items[4].visible = false;
+          menu.model[0].items[5].visible = false;
+          menu.model[0].items[6].visible = false;
+          menu.model[0].items[8].visible = false;
           break;
         case this.constants.projectStatus.Cancelled:
           menu.model[0].visible = false;
@@ -1803,7 +1828,18 @@ export class AllProjectsComponent implements OnInit {
       // if (element.IsCentrallyAllocated == 'No') {
         if (element.Task == "Client Review") {
           const scheduleStatusUpdate = Object.assign({}, options);
-          scheduleStatusUpdate.data = scCRUpdateData;
+          scheduleStatusUpdate.data = scNotStartedUpdateData;
+          scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
+          scheduleStatusUpdate.type = 'PATCH';
+          scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
+            element.ID);
+          batchURL.push(scheduleStatusUpdate);
+        } else if (element.Status == this.constants.STATUS.IN_PROGRESS) {
+          const scheduleStatusUpdate = Object.assign({}, options);
+          const scInProgressUpdateDataNew = Object.assign({}, scInProgressUpdateData);
+          scInProgressUpdateDataNew.ExpectedTime = element.TimeSpent;
+          scInProgressUpdateDataNew.DueDateDT = new Date(element.DueDateDT) < new Date() ? new Date(element.DueDateDT) : new Date();
+          scheduleStatusUpdate.data = scInProgressUpdateDataNew;
           scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
           scheduleStatusUpdate.type = 'PATCH';
           scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
@@ -1908,6 +1944,101 @@ export class AllProjectsComponent implements OnInit {
         this.router.navigate(['/projectMgmt/allProjects']);
       }
     }, this.pmConstant.TIME_OUT);
+  }
+
+  async revertFromClosed(selectedProjectObj) {
+    this.commonService.confirmMessageDialog('Change Status of Project -' + selectedProjectObj.ProjectCode + '', 'Are you sure you want to change the Status of Project - ' + selectedProjectObj.ProjectCode + ''
+    + ' from \'' + selectedProjectObj.Status + '\' to \'' + this.constants.projectStatus.NewPendingClosure + '\'?', null, ['Yes', 'No'], false).then(async Confirmation => {
+      if (Confirmation === 'Yes') {
+    const batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    const piUdateData: any = {
+      __metadata: {
+        type: this.constants.listNames.ProjectInformation.type
+      },
+      Status: this.constants.projectStatus.PendingClosure,
+      PrevStatus: selectedProjectObj.Status,
+      ActualEndDate: null
+    };
+
+    const piUpdate = Object.assign({}, options);
+    piUpdate.data = piUdateData;
+    piUpdate.listName = this.constants.listNames.ProjectInformation.name;
+    piUpdate.type = 'PATCH';
+    piUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, selectedProjectObj.ID);
+    batchURL.push(piUpdate);
+
+    // console.log(batchURL)
+
+    if (batchURL.length) {
+      this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'revertClosed');
+      await this.spServices.executeBatch(batchURL);
+
+      this.commonService.showToastrMessage(this.constants.MessageType.success, 'Project - ' + selectedProjectObj.ProjectCode + ' Updated Successfully.', true);
+    }
+
+    setTimeout(() => {
+      if (this.router.url === '/projectMgmt/allProjects') {
+        this.pmObject.allProjectItems = [];
+        this.reloadAllProject();
+      } else {
+        this.router.navigate(['/projectMgmt/allProjects']);
+      }
+    }, this.pmConstant.TIME_OUT);
+  }
+})
+  }
+
+  async revertFromPendingClosure(selectedProjectObj) {
+    this.commonService.confirmMessageDialog('Change Status of Project -' + selectedProjectObj.ProjectCode + '', 'Are you sure you want to change the Status of Project - ' + selectedProjectObj.ProjectCode + ''
+    + ' from \'' + this.constants.projectStatus.NewPendingClosure + '\' to \'' + this.constants.projectStatus.NewAuditInProgress + '\'?', null, ['Yes', 'No'], false).then(async Confirmation => {
+      if (Confirmation === 'Yes') {
+    const batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    const piUdateData: any = {
+      __metadata: {
+        type: this.constants.listNames.ProjectInformation.type
+      },
+      Status: this.constants.projectStatus.AuditInProgress,
+      PrevStatus: selectedProjectObj.Status,
+    };
+
+    const piUpdate = Object.assign({}, options);
+    piUpdate.data = piUdateData;
+    piUpdate.listName = this.constants.listNames.ProjectInformation.name;
+    piUpdate.type = 'PATCH';
+    piUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, selectedProjectObj.ID);
+    batchURL.push(piUpdate);
+
+    // console.log(batchURL)
+
+    if (batchURL.length) {
+      this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'revertPendingClosure');
+      await this.spServices.executeBatch(batchURL);
+
+      this.commonService.showToastrMessage(this.constants.MessageType.success, 'Project - ' + selectedProjectObj.ProjectCode + ' Updated Successfully.', true);
+    }
+
+    setTimeout(() => {
+      if (this.router.url === '/projectMgmt/allProjects') {
+        this.pmObject.allProjectItems = [];
+        this.reloadAllProject();
+      } else {
+        this.router.navigate(['/projectMgmt/allProjects']);
+      }
+    }, this.pmConstant.TIME_OUT);
+    }
+    })
   }
 
 
@@ -3044,6 +3175,20 @@ export class AllProjectsComponent implements OnInit {
       data: {
         projectObj,
         readOnly: true
+      },
+      contentStyle: { 'max-height': '85vh', 'overflow-y': 'auto' },
+      closable: true
+    });
+    ref.onClose.subscribe(element => {
+    });
+  }
+
+  showProjectBudgetBreakup(projectObj) {
+    const ref = this.dialogService.open(ProjectBudgetBreakupComponent, {
+      header: 'Project Budget - ' + projectObj.ProjectCode + '(' + projectObj.Title + ')',
+      width: '90vw',
+      data: {
+        projectCode: projectObj.ProjectCode
       },
       contentStyle: { 'max-height': '85vh', 'overflow-y': 'auto' },
       closable: true

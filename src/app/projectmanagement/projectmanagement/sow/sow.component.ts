@@ -15,6 +15,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { GlobalService } from 'src/app/Services/global.service';
 import { AddReduceSowbudgetDialogComponent } from './add-reduce-sowbudget-dialog/add-reduce-sowbudget-dialog.component';
+import { ProjectBudgetBreakupComponent } from '../all-projects/project-budget-breakup/project-budget-breakup.component';
 
 declare var $;
 @Component({
@@ -212,8 +213,12 @@ export class SOWComponent implements OnInit, OnDestroy {
         command: (event) => this.closeSOW(this.pmObject.selectedSOWTask)
       },
       {
+        label: 'SOW Budget', target: '_blank',
+        command: (event) => this.showSOWBudgetBreakup(this.pmObject.selectedSOWTask)
+      },
+      {
         label: 'Show History', target: '_blank',
-        command: (task) => this.timeline.showTimeline(this.pmObject.selectedSOWTask.ID, 'ProjectMgmt', 'SOW')
+        command: (task) => this.timeline.showTimeline(this.pmObject.selectedSOWTask.ID, 'ProjectMgmt', this.constants.listNames.SOW.name)
       }
     ];
     this.subscription = this.dataService.on('reload-EditSOW').pipe(takeUntil(this._destroy$)).subscribe(() => this.loadSOWInit());
@@ -271,6 +276,20 @@ export class SOWComponent implements OnInit, OnDestroy {
   viewProjectSOW(task) {
     this.pmObject.isProjectVisible = true;
     this.setStep(0);
+  }
+
+  showSOWBudgetBreakup(sowTask) {
+    const ref = this.dialogService.open(ProjectBudgetBreakupComponent, {
+      header: 'SOW Budget - ' + sowTask.SOWCode + '(' + sowTask.ShortTitle + ')',
+      width: '90vw',
+      data: {
+        sowCode:  sowTask.SOWCode
+      },
+      contentStyle: { 'max-height': '85vh', 'overflow-y': 'auto' },
+      closable: true
+    });
+    ref.onClose.subscribe(element => {
+    });
   }
   /**
    * This method is used to show all sow.

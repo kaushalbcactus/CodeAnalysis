@@ -550,7 +550,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       const fromUser = this.globalService.currentUser.email;
       const user = task.allocatedResource.UserNamePG;
       const mailSubject = task.ProjectCode + '(' + slot.ProjectName + ')' + ': Task created';
-      const objEmailBody = await this.getsendEmailObjBody(task, slot, 'TaskCreation');
+      const objEmailBody = await this.getsendEmailObjBody(task, slot, this.constants.EMAIL_TEMPLATE_NAME.TASK_CREATION);
       const arrayTo = [];
       if (user !== 'SelectOne' && user !== '' && user != null) {
         const userEmail = user.EMail;

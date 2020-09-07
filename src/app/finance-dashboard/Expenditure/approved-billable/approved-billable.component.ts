@@ -40,6 +40,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
   SOW: any;
   sowList: any = [];
   scheduleInvoiceType: string;
+  scheduleInvoiceForm: any;
   constructor(
     private fb: FormBuilder,
     private spServices: SPOperationService,
@@ -357,6 +358,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         Category: element.Category,
         Number: element.Number,
         ExpenseType: element.SpendType,
+        Amount: parseFloat(element.Amount).toFixed(2),
         ClientAmount: parseFloat(element.ClientAmount).toFixed(2),
         ClientCurrency: element.ClientCurrency,
         VendorName: this.getVendorNameById(element),
@@ -390,7 +392,12 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         POLookup: element.POLookup,
         // Created: element.Created,
         // PONumber: this.getPONumber(element),
-        // ProformaDate: this.datePipe.transform(element.ProformaDate, 'MMM d, y, hh:mm a')
+        // ProformaDate: this.datePipe.transform(element.ProformaDate, 'MMM d, y, hh:mm a'),
+        CSId: element.CSId,
+        CategoryST: element.CategoryST,
+        Currency: element.Currency,
+        NotesMT: element.NotesMT,
+        SpendType: element.SpendType
       });
     }
     this.approvedBillableRes = [...this.approvedBillableRes];
@@ -653,6 +660,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
               this.pcmLevels = scheduleInvoice.pcmLevels;
               this.invoice = scheduleInvoice.Invoice;
               const ScheduleInvoiceForm = scheduleInvoice.ScheduleInvoiceForm;
+              this.scheduleInvoiceForm = scheduleInvoice.ScheduleInvoiceForm;
               this.scheduleInvoiceType = ScheduleInvoiceForm.get(
                 "InvoiceType"
               ).value;
@@ -795,6 +803,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
 
   // PF
   getPFData(ScheduleInvoiceForm, InvoiceType: string) {
+    let Amount = InvoiceType === 'new' ? parseFloat(ScheduleInvoiceForm.getRawValue().Amount) : parseFloat(ScheduleInvoiceForm.getRawValue().TagAmount);
     const oldScheduledOOP = this.pfListItem[0].ScheduledOOP
       ? this.pfListItem[0].ScheduledOOP
       : 0;
@@ -803,27 +812,27 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
       : 0;
     const totalBudget = this.pfListItem[0].Budget
       ? parseFloat(this.pfListItem[0].Budget) +
-        parseFloat(ScheduleInvoiceForm.getRawValue().Amount)
-      : 0 + parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+        Amount
+      : 0 + Amount;
     const oopBudget = this.pfListItem[0].OOPBudget
       ? parseFloat(this.pfListItem[0].OOPBudget) +
-        parseFloat(ScheduleInvoiceForm.getRawValue().Amount)
-      : 0 + parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+        Amount
+      : 0 + Amount;
     const pfScheduledOOP =
       parseFloat(oldScheduledOOP) +
-      parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+      Amount;
     const pfTotalScheduled =
       parseFloat(oldTotalScheduled) +
-      parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+      Amount;
 
     const totalInvoiced = this.pfListItem[0].Invoiced
       ? parseFloat(this.pfListItem[0].Invoiced) +
-        parseFloat(ScheduleInvoiceForm.getRawValue().Amount)
-      : 0 + parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+        Amount
+      : 0 + Amount;
     const oopInvoiced = this.pfListItem[0].InvoicedOOP
       ? parseFloat(this.pfListItem[0].InvoicedOOP) +
-        parseFloat(ScheduleInvoiceForm.getRawValue().Amount)
-      : 0 + parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+        Amount
+      : 0 + Amount;
 
     if (InvoiceType === "new") {
       return {
@@ -850,14 +859,13 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
 
   // PFB
   getPFBData(ScheduleInvoiceForm, InvoiceType: string) {
-    let pfbAmountOOP = parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
-    let pfbAmount = parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
-    let pfbScheduledOOP = parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
-    let pfbTotalScheduled = parseFloat(
-      ScheduleInvoiceForm.getRawValue().Amount
-    );
-    let totalInvoiced = parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
-    let oopInvoiced = parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+    let Amount = InvoiceType === 'new' ? parseFloat(ScheduleInvoiceForm.getRawValue().Amount) : parseFloat(ScheduleInvoiceForm.getRawValue().TagAmount);
+    let pfbAmountOOP = Amount;
+    let pfbAmount = Amount;
+    let pfbScheduledOOP = Amount;
+    let pfbTotalScheduled = Amount
+    let totalInvoiced = Amount;
+    let oopInvoiced = Amount;
     if (this.pfbListItem.length > 0) {
       const oldScheduledOOP = this.pfbListItem[0].ScheduledOOP
         ? this.pfbListItem[0].ScheduledOOP
@@ -878,23 +886,17 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         ? this.pfbListItem[0].InvoicedOOP
         : 0;
       pfbScheduledOOP =
-        parseFloat(oldScheduledOOP) +
-        parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+        parseFloat(oldScheduledOOP) + Amount;
       pfbTotalScheduled =
-        parseFloat(oldTotalScheduled) +
-        parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+        parseFloat(oldTotalScheduled) + Amount;
       pfbAmountOOP =
-        parseFloat(oldAmountOOP) +
-        parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+        parseFloat(oldAmountOOP) + Amount;
       pfbAmount =
-        parseFloat(oldTotalAmount) +
-        parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+        parseFloat(oldTotalAmount) + Amount;
       totalInvoiced =
-        parseFloat(oldtotalInvoiced) +
-        parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+        parseFloat(oldtotalInvoiced) + Amount;
       oopInvoiced =
-        parseFloat(oldoopInvoiced) +
-        parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+        parseFloat(oldoopInvoiced) + Amount;
     }
 
     let Data;
@@ -925,7 +927,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
   }
 
   // PBB
-  getPBBData(ScheduleInvoiceForm) {
+  getPBBData(ScheduleInvoiceForm,InvoiceType) {
     return {
       __metadata: {
         type: this.constantService.listNames.ProjectBudgetBreakup.type,
@@ -933,8 +935,8 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
       ProjectLookup: this.projectInfoLineItem.Id,
       Status: this.constantService.STATUS.APPROVED,
       ApprovalDate: new Date().toISOString(),
-      OriginalBudget: parseFloat(ScheduleInvoiceForm.getRawValue().Amount),
-      OOPBudget: parseFloat(ScheduleInvoiceForm.getRawValue().Amount),
+      OriginalBudget: InvoiceType === 'new' ? parseFloat(ScheduleInvoiceForm.getRawValue().Amount) : parseFloat(ScheduleInvoiceForm.getRawValue().TagAmount),
+      OOPBudget: InvoiceType === 'new' ? parseFloat(ScheduleInvoiceForm.getRawValue().Amount) : parseFloat(ScheduleInvoiceForm.getRawValue().TagAmount),
       ProjectCode: ScheduleInvoiceForm.getRawValue().ProjectCode,
     };
   }
@@ -1007,25 +1009,31 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
   }
   updateStsToBilled(arrRet: any) {
     const batchURL = [];
-    for (let j = 0; j < this.selectedAllRowsItem.length; j++) {
-      const element = this.selectedAllRowsItem[j];
-      const spObj = {
-        __metadata: { type: this.constantService.listNames.SpendingInfo.type },
-        Status: element.Status.replace("Approved", "Billed"),
-        InvoiceID: arrRet[0].retItems.ID.toString(),
-      };
-
-      const url = this.spServices.getItemURL(
-        this.constantService.listNames.SpendingInfo.name,
-        element.Id
-      );
-      this.commonService.setBatchObject(
-        batchURL,
-        url,
-        spObj,
-        this.constantService.Method.PATCH,
-        this.constantService.listNames.SpendingInfo.name
-      );
+    let pendingAmount = this.scheduleInvoiceForm ? this.scheduleInvoiceForm.getRawValue().Amount - this.scheduleInvoiceForm.getRawValue().TagAmount : 0;
+      for (let j = 0; j < this.selectedAllRowsItem.length; j++) {
+        const element = this.selectedAllRowsItem[j];
+        const clientAmt = element.ClientAmount - pendingAmount;
+        const amt = element.Amount - pendingAmount;
+        const spObj = {
+          __metadata: { type: this.constantService.listNames.SpendingInfo.type },
+          Status: element.Status.replace("Approved", "Billed"),
+          InvoiceID: arrRet[0].retItems.ID.toString(),
+        };
+        if(this.scheduleInvoiceType !== 'new') {
+          spObj['ClientAmount'] = clientAmt.toString();
+          spObj['Amount'] = amt.toString();
+        }
+        const url = this.spServices.getItemURL(
+          this.constantService.listNames.SpendingInfo.name,
+          element.Id
+        );
+        this.commonService.setBatchObject(
+          batchURL,
+          url,
+          spObj,
+          this.constantService.Method.PATCH,
+          this.constantService.listNames.SpendingInfo.name
+        );
     }
     console.log("this.updateSpeLineItems ", this.updateSpeLineItems);
     this.submitForm(batchURL, "updateScheduledOopLineItem");
@@ -1093,7 +1101,45 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
 
   onSubmit(scheduleOopInvoice_form, InvoiceType: string, type: string) {
     const batchURL = [];
+    let finalAddEArray = []
+    let pendingAmount = this.scheduleInvoiceForm ? InvoiceType === 'new' ? 0 : this.scheduleInvoiceForm.getRawValue().Amount - this.scheduleInvoiceForm.getRawValue().TagAmount : 0;
+    if(pendingAmount !== 0) { 
+      for (let j = 0; j < this.selectedAllRowsItem.length; j++) {
+        const element = this.selectedAllRowsItem[j];
+        finalAddEArray.push({
+          Title: element.ProjectCode,
+          Number: element.Number,
+          SpendType: element.SpendType,
+          Currency: element.Currency,
+          Amount: pendingAmount.toString(),
+          ClientCurrency: element.ClientCurrency,
+          ClientAmount: pendingAmount.toString(),
+          Status: 'Approved',
+          FileURL: element.FileURL,
+          ClientApprovalFileURL: element.ClientApprovalFileURL,
+          NotesMT: element.Notes,
+          CategoryST: element.CategoryST,
+          CSId: element.CSId,
+          RequestType: element.RequestType,
+          VendorFreelancer: element.VendorFreelancer,
+          PayingEntity: element.PayingEntity,
+          ApproverComments: element.ApproverComments,
+          DateSpend: element.DateSpend,
+          PaymentMode: element.PaymentMode
+        });
+      }
 
+      for (let j = 0; j < finalAddEArray.length; j++) {
+        const element = finalAddEArray[j];
+        element['__metadata'] = { type: this.constantService.listNames.SpendingInfo.type };
+        const addExpenseObj = Object.assign({}, this.queryConfig);
+        addExpenseObj.url = this.spServices.getReadURL(this.constantService.listNames.SpendingInfo.name);
+        addExpenseObj.listName = this.constantService.listNames.SpendingInfo.name;
+        addExpenseObj.type = 'POST';
+        addExpenseObj.data = element;
+        batchURL.push(addExpenseObj);
+      }
+    }
     let url = this.spServices.getReadURL(
       this.constantService.listNames.InvoiceLineItems.name,
       null
@@ -1122,9 +1168,10 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         this.constantService.listNames.PO.name
       );
     } else {
-      const TaggedAmount =
-        parseFloat(this.invoice.TaggedAmount) +
-        parseFloat(scheduleOopInvoice_form.getRawValue().Amount);
+      const TaggedAmount = InvoiceType === 'new' ?  (parseFloat(this.invoice.TaggedAmount) +
+      parseFloat(scheduleOopInvoice_form.getRawValue().Amount)) :
+        (parseFloat(this.invoice.TaggedAmount) +
+        parseFloat(scheduleOopInvoice_form.getRawValue().TagAmount));
       const invoiceData = {
         __metadata: { type: this.constantService.listNames.Invoices.type },
         TaggedAmount: TaggedAmount,
@@ -1151,7 +1198,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     this.commonService.setBatchObject(
       batchURL,
       url,
-      this.getPBBData(scheduleOopInvoice_form),
+      this.getPBBData(scheduleOopInvoice_form,InvoiceType),
       this.constantService.Method.POST,
       this.constantService.listNames.ProjectBudgetBreakup.name
     );
@@ -1190,7 +1237,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
       url,
       this.getPFBData(scheduleOopInvoice_form, InvoiceType),
       Type,
-      this.constantService.listNames.ProjectFinances.name
+      this.constantService.listNames.ProjectFinanceBreakup.name
     );
 
     // sowUpdate
@@ -1212,7 +1259,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
   }
 
   getsowData(scheduleOopInvoice_form, InvoiceType: string) {
-    const Amount = parseFloat(scheduleOopInvoice_form.getRawValue().Amount);
+    const Amount = InvoiceType === "new" ? parseFloat(scheduleOopInvoice_form.getRawValue().Amount) : parseFloat(scheduleOopInvoice_form.getRawValue().TagAmount);
     const Data = {
       __metadata: { type: this.constantService.listNames.SOW.type },
       TotalLinked: this.SOW.TotalLinked
@@ -1253,7 +1300,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         InvoiceType === "new"
           ? scheduleOopInvoice_form.getRawValue().ScheduledDate
           : this.invoice.InvoiceDate,
-      Amount: scheduleOopInvoice_form.getRawValue().Amount,
+      Amount: InvoiceType === "new" ? scheduleOopInvoice_form.getRawValue().Amount : scheduleOopInvoice_form.getRawValue().TagAmount,
       AddressType:
         InvoiceType === "new"
           ? scheduleOopInvoice_form.getRawValue().AddressType.value
