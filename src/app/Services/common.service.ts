@@ -1213,6 +1213,7 @@ export class CommonService {
       return true;
     }
     return false;
+  }
   validateTaskDuration(nodes, days: number): string {
     let errorMsgs = '';
     for (const node of nodes) {

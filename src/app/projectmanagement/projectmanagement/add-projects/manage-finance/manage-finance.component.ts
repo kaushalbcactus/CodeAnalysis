@@ -62,7 +62,8 @@ export class ManageFinanceComponent implements OnInit {
     status: '',
     edited: false,
     scValue: '',
-    poRevenue: 0
+    poRevenue: 0,
+    poOOP: 0
   };
   poInfoData = [];
   poAddObj = {
@@ -1242,7 +1243,7 @@ export class ManageFinanceComponent implements OnInit {
       const oldTotalScheduled = this.existBudgetArray.retItems[0].InvoicesScheduled
         ? this.existBudgetArray.retItems[0].InvoicesScheduled
         : 0;
-      
+
         let pfdata =  {
           __metadata: {
           type: this.constant.listNames.ProjectFinances.type,
@@ -1285,11 +1286,11 @@ export class ManageFinanceComponent implements OnInit {
             type: this.constant.listNames.ProjectFinanceBreakup.type,
           },
           Amount: pfbAmount,
-          AmountOOP: pfbAmountOOP,       
-          ScheduledOOP: pfbScheduledOOP,      
-          TotalScheduled: pfbTotalScheduled,       
-        } 
-      
+          AmountOOP: pfbAmountOOP,
+          ScheduledOOP: pfbScheduledOOP,
+          TotalScheduled: pfbTotalScheduled,
+        }
+
         await this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constant.listNames.ProjectFinanceBreakup.name, this.existPOArray.retItems[0].Id), pfbdata, this.constant.Method.PATCH, this.constant.listNames.ProjectFinanceBreakup.name);
 
         let sowdata = {
@@ -1308,7 +1309,7 @@ export class ManageFinanceComponent implements OnInit {
           ScheduledOOP: sowItem.ScheduledOOP
             ? parseFloat(sowItem.ScheduledOOP) - rowData.amount
             : rowData.amount,
-        } 
+        }
 
         await this.commonService.setBatchObject(batchUrl,
           this.spServices.getItemURL(this.constant.listNames.SOW.name,sowItem.ID),
@@ -1318,7 +1319,7 @@ export class ManageFinanceComponent implements OnInit {
         );
 
         await this.spServices.executeBatch(batchUrl);
-        // this.poData.forEach((e)=>{ 
+        // this.poData.forEach((e)=>{
         //   let currentPo = e.poInfo.filter(e1=> e1.poId == rowData.poId)[0];
 
         // })

@@ -145,20 +145,20 @@ export class ProjectBudgetBreakupComponent implements OnInit {
     budgetGet.listName = this.constants.listNames.SOWBudgetBreakup.name;
     this.batchUrl.push(budgetGet);
     const results = await this.spServices.executeBatch(this.batchUrl);
-    return results[0].retItems;    
+    return results[0].retItems;
   }
 
   forMultipleValues() {
     if(this.sowBudgetDetails.length > 1) {
       for(let i= 0;i < this.sowBudgetDetails.length - 1;i++) {
         let element = this.sowBudgetDetails[i];
-        
-        element.TotalBudget = element.AddendumTotalBudget 
+
+        element.TotalBudget = element.AddendumTotalBudget
         element.NetBudget = element.AddendumNetBudget
-        element.OOPBudget = element.AddendumOOPBudget 
+        element.OOPBudget = element.AddendumOOPBudget
         element.TaxBudget = element.AddendumTaxBudget
       }
-    } 
+    }
   }
 
   colFiltersForPBB(colData) {
@@ -171,20 +171,26 @@ export class ProjectBudgetBreakupComponent implements OnInit {
     const OriginalBudget = this.uniqueArrayObj(colData,'OriginalBudget')
     this.PBBFilters.OriginalBudget = this.common.customSort(
       OriginalBudget,
-      "label",
-      1
+      1,
+      'label'
     );
     const NetBudget = this.uniqueArrayObj(colData,'NetBudget')
-    this.PBBFilters.NetBudget = this.common.customSort(NetBudget, "label", 1);
+    this.PBBFilters.NetBudget = this.common.customSort(NetBudget,
+      1,
+      'label');
     const OOPBudget = this.uniqueArrayObj(colData,'OOPBudget')
-    this.PBBFilters.OOPBudget = this.common.customSort(OOPBudget, "label", 1);
+    this.PBBFilters.OOPBudget = this.common.customSort(OOPBudget,
+      1,
+      'label');
     const TaxBudget = this.uniqueArrayObj(colData,'TaxBudget')
-    this.PBBFilters.TaxBudget = this.common.customSort(TaxBudget, "label", 1);
+    this.PBBFilters.TaxBudget = this.common.customSort(TaxBudget,
+      1,
+      'label');
     const BudgetHours = this.uniqueArrayObj(colData,'BudgetHours');
     this.PBBFilters.BudgetHours = this.common.customSort(
       BudgetHours,
-      "label",
-      1
+      1,
+      'label'
     );
     this.PBBFilters.Reason = this.common.sortData(
       this.uniqueArrayObj(colData,'Reason')
@@ -196,58 +202,58 @@ export class ProjectBudgetBreakupComponent implements OnInit {
 
   colFiltersForSOW(colData) {
     this.SOWBudgetFilters.InternalReviewStartDate = this.common.sortData(
-      this.uniqueArrayObj(colData,'InternalReviewStartDate',"Date")
+      this.uniqueArrayObj(colData, 'InternalReviewStartDate',"Date")
     );
     this.SOWBudgetFilters.Status = this.common.sortData(
-      this.uniqueArrayObj(colData,'Status')
+      this.uniqueArrayObj(colData, 'Status')
     );
-    const TotalBudget = this.uniqueArrayObj(colData,'TotalBudget');
+    const TotalBudget = this.uniqueArrayObj(colData, 'TotalBudget');
     this.SOWBudgetFilters.TotalBudget = this.common.customSort(
       TotalBudget,
-      "label",
-      1
+      1,
+      'label'
     );
     const NetBudget = this.uniqueArrayObj(colData,'NetBudget');
     this.SOWBudgetFilters.NetBudget = this.common.customSort(
       NetBudget,
-      "label",
-      1
+      1,
+      'label'
     );
     const OOPBudget = this.uniqueArrayObj(colData,'OOPBudget');
     this.SOWBudgetFilters.OOPBudget = this.common.customSort(
       OOPBudget,
-      "label",
-      1
+      1,
+      'label'
     );
     const TaxBudget = this.uniqueArrayObj(colData,'TaxBudget');
     this.SOWBudgetFilters.TaxBudget = this.common.customSort(
       TaxBudget,
-      "label",
-      1
+      1,
+      'label'
     );
     const AddendumTotalBudget = this.uniqueArrayObj(colData,'AddendumTotalBudget');
     this.SOWBudgetFilters.AddendumTotalBudget = this.common.customSort(
       AddendumTotalBudget,
-      "label",
-      1
+      1,
+      'label'
     );
     const AddendumNetBudget = this.uniqueArrayObj(colData,'AddendumNetBudget');
     this.SOWBudgetFilters.AddendumNetBudget = this.common.customSort(
       AddendumNetBudget,
-      "label",
-      1
+      1,
+      'label'
     );
     const AddendumOOPBudget = this.uniqueArrayObj(colData,'AddendumOOPBudget');
     this.SOWBudgetFilters.AddendumOOPBudget = this.common.customSort(
       AddendumOOPBudget,
-      "label",
-      1
+      1,
+      'label'
     );
     const AddendumTaxBudget = this.uniqueArrayObj(colData,'AddendumTaxBudget');
     this.SOWBudgetFilters.AddendumTaxBudget = this.common.customSort(
       AddendumTaxBudget,
-      "label",
-      1
+      1,
+      'label'
     );
     // this.SOWBudgetFilters.Currency = this.common.sortData(
     //   this.uniqueArrayObj(

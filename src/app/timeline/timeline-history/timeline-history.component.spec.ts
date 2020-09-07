@@ -96,9 +96,9 @@ describe('TimelineHistoryComponent', () => {
     }));
   });
 
-  it('should return 5 version differences', () => {
+  it('should return data object', () => {
     timelineObj.versionDiff = component.differenceProcessing(timelineObj, projectVersions);
-    const data = component.responseCreation('ProjectMgmt_Project', projectVersions);
-    expect(data.length).toEqual(5);
+    const data = component.responseCreation('ProjectMgmt_Project', timelineObj);
+    expect(data.length).toEqual(1);
   });
 });
