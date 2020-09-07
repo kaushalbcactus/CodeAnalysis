@@ -288,7 +288,7 @@ export class SPOperationService {
   }
 
   getItemURL(listName: string, id: any, options?: any) {
-    let url = this.apiUrl.replace('{0}', listName) + '(' + id + ')';
+  let url = this.apiUrl.replace('{0}', listName) + '(' + id + ')';
     url = this.readBuilder(url, options);
     return url;
   }

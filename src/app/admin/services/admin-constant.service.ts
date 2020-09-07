@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { filter } from 'rxjs/operators';
 
 @Injectable({
   providedIn: "root",
@@ -6,6 +7,46 @@ import { Injectable } from "@angular/core";
 export class AdminConstantService {
   constructor() {}
   public QUERY = {
+    GET_PROJECT_INFO_BY_USERROLE: {
+      select:
+        "ID,Title,SOWCode,BusinessVertical,WBJID,ProjectCode,ClientLegalEntity,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title," +
+        "DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title,AllOperationresources/ID,AllOperationresources/Title,Status,CSRule,DeliveryRule",
+      expand:
+        "CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title," +
+        "DeliveryLevel2/ID,DeliveryLevel2/Title,AllOperationresources/ID,AllOperationresources/Title",
+      filter:
+        "Status ne 'Closed' and Status ne 'Cancelled' and {{userRole}}",
+      top: 4900,
+    },
+    GET_SOW_BY_USERROLE: {
+      select:
+        "ID,Title,SOWCode,BusinessVertical,ClientLegalEntity,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title," +
+        "DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title,AllResources/ID,AllResources/Title,Status,CSRule,DeliveryRule",
+      expand:
+        "CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title," +
+        "DeliveryLevel2/ID,DeliveryLevel2/Title,AllResources/ID,AllResources/Title",
+      filter:
+        "Status eq 'Approved' and {{userRole}}",
+      top: 4900,
+    },
+    GET_QC_BY_USERROLE:{
+      select:"ID,Title,Status,CS/ID,CS/Title,TL/ID,TL/Title,CSRule,DeliveryRule",
+      expand:"CS,TL",
+      filter:"Status ne 'Closed' and {{userRole}}",
+      top: 4900
+    },
+    GET_POSITIVE_FEEDBACKS_BY_USERROLE: {
+      select:"ID,Title,Status,DeliveryLeads/ID,DeliveryLeads/Title,CSRule,DeliveryRule",
+      expand:"DeliveryLeads",
+      filter:"(Status eq 'Pending' or Status eq 'Approved') and {{userRole}}",
+      top: 4900
+    },
+    GET_ALL_ACTIVE_RULES:{
+      select:"ID,Title,TypeST,ResourceType,OwnerPG/ID,OwnerPG/Title,Access/ID,Access/Title,DisplayOrder,IsActiveCH,Rule",
+      expand:"OwnerPG,Access",
+      filter: "IsActiveCH eq '{{isActive}}'",
+      top: 4900
+    },
     GET_BUCKET: {
       select: "ID,Title",
       filter: "IsActiveCH eq 'Yes'",
@@ -384,6 +425,7 @@ export class AdminConstantService {
     CM_LEVEL_2: "CM L2",
     DELIVERY_LEVEL_1: "Delivery L1",
     DELIVERY_LEVEL_2: "Delivery L2",
+    DELIVERY: "Delivery"
   };
   public ACCESS_TYPE = {
     ACCESS: "Access",
@@ -447,4 +489,10 @@ export class AdminConstantService {
     EAPA: false,
     EA: false,
   };
+  public ATTRIBUTES = {
+    PROJECTCODE:"Project",
+    SOWCODE: "SOW",
+    CLIENTDISSATISFACTION:"CD",
+    POSITIVEFEEDBACK: "PF"
+  }
 }

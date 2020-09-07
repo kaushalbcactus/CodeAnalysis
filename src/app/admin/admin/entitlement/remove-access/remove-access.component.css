@@ -1,0 +1,10 @@
+.setDropdownHeader{
+    background: #C53E3E;
+    color: white;
+    height: 30px;
+    padding-left: 5px;
+}
+::ng-deep .removeAccessTable .ui-table table,
+.ui-table table {
+    table-layout: auto !important;
+}
