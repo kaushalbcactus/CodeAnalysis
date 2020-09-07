@@ -1675,50 +1675,50 @@ export class UsercapacityComponent implements OnInit {
   // }
 
   changeHeight(user, objt) {
-    if (objt.currentTarget.classList[1] === "more") {
-      $(objt.currentTarget)
-        .parent()
-        .parent()
-        .parent()
-        .next()
-        .find("div")
-        .not(":visible")
-        .addClass(user.uid + "overFlowTasks");
-      const height =
-        +user.maxHeight.split("px")[0] > +user.height.split("px")[0]
-          ? user.maxHeight
-          : user.height;
-      $("." + user.uid + "taskrow").css("height", height);
-      $("." + user.uid + "overFlowTasks").show();
-      $("." + user.uid + "more").hide();
-      $("." + user.uid + "less").show();
-    } else {
-      $("." + user.uid + "taskrow").css("height", user.height);
-      $("." + user.uid + "overFlowTasks").hide();
-      $("." + user.uid + "more").show();
-      $("." + user.uid + "less").hide();
-    }
+    // if (objt.currentTarget.classList[1] === "more") {
+    //   $(objt.currentTarget)
+    //     .parent()
+    //     .parent()
+    //     .parent()
+    //     .next()
+    //     .find("div")
+    //     .not(":visible")
+    //     .addClass(user.uid + "overFlowTasks");
+    //   const height =
+    //     +user.maxHeight.split("px")[0] > +user.height.split("px")[0]
+    //       ? user.maxHeight
+    //       : user.height;
+    //   $("." + user.uid + "taskrow").css("height", height);
+    //   $("." + user.uid + "overFlowTasks").show();
+    //   $("." + user.uid + "more").hide();
+    //   $("." + user.uid + "less").show();
+    // } else {
+    //   $("." + user.uid + "taskrow").css("height", user.height);
+    //   $("." + user.uid + "overFlowTasks").hide();
+    //   $("." + user.uid + "more").show();
+    //   $("." + user.uid + "less").hide();
+    // }
   }
 
   fetchProjectTaskDetails(user, tasks, date, objt) {
-    if (tasks.length > 0) {
-      // const oItem = $(objt.target).closest('.UserTasksRow').siblings('.TaskPerDayRow');
-      $("." + user.uid + "loaderenable").show();
-      const oItem = $(objt.target)
-        .closest(".UserTasksRow")
-        .find(".TaskPerDayRow");
-      oItem.hide();
-      oItem.find("#TasksPerDay").hide();
-      oItem.find(".innerTableLoader").show();
-      oItem.slideDown();
-      setTimeout(() => {
-        this.bindProjectTaskDetails(tasks, objt, user);
-      }, 300);
+    // if (tasks.length > 0) {
+    //   // const oItem = $(objt.target).closest('.UserTasksRow').siblings('.TaskPerDayRow');
+    //   $("." + user.uid + "loaderenable").show();
+    //   const oItem = $(objt.target)
+    //     .closest(".UserTasksRow")
+    //     .find(".TaskPerDayRow");
+    //   oItem.hide();
+    //   oItem.find("#TasksPerDay").hide();
+    //   oItem.find(".innerTableLoader").show();
+    //   oItem.slideDown();
+    //   setTimeout(() => {
+    //     this.bindProjectTaskDetails(tasks, objt, user);
+    //   }, 300);
 
-      user.dates.map((c) => delete c.backgroundColor);
-      date.backgroundColor = "#ffeb9c";
-      this.getColor(date);
-    }
+    //   user.dates.map((c) => delete c.backgroundColor);
+    //   date.backgroundColor = "#ffeb9c";
+    //   this.getColor(date);
+    // }
   }
 
   loadComponent() {
@@ -1869,21 +1869,21 @@ export class UsercapacityComponent implements OnInit {
       );
       user.dayTasks = tasks;
 
-      $("." + user.uid + "loaderenable").hide();
-      const oTd = $(objt.target).closest("td");
-      // const oUserRow = $(objt.target).closest('.UserTasksRow').find('.TaskPerDayRow');
+      // $("." + user.uid + "loaderenable").hide();
+      // const oTd = $(objt.target).closest("td");
+      // // const oUserRow = $(objt.target).closest('.UserTasksRow').find('.TaskPerDayRow');
 
-      // const oUserTaskRow = $(objt.target).next('TaskPerDayRow');
+      // // const oUserTaskRow = $(objt.target).next('TaskPerDayRow');
 
-      const oUserTaskRow = $(objt.target)
-        .closest(".UserTasksRow")
-        .find(".TaskPerDayRow");
-      oUserTaskRow.find(".innerTableLoader").slideUp(function () {
-        oUserTaskRow.find("#TasksPerDay").slideDown();
-      });
-      oTd.parent().find(".highlightCell").removeClass("highlightCell");
-      oTd.addClass("highlightCell");
-      $(".innerTableLoader").hide();
+      // const oUserTaskRow = $(objt.target)
+      //   .closest(".UserTasksRow")
+      //   .find(".TaskPerDayRow");
+      // oUserTaskRow.find(".innerTableLoader").slideUp(function () {
+      //   oUserTaskRow.find("#TasksPerDay").slideDown();
+      // });
+      // oTd.parent().find(".highlightCell").removeClass("highlightCell");
+      // oTd.addClass("highlightCell");
+      // $(".innerTableLoader").hide();
     }
   }
 
@@ -1898,17 +1898,17 @@ export class UsercapacityComponent implements OnInit {
       if (SpentTasks.length > 0) {
         user.TimeSpentDayTasks = SpentTasks;
         // $('.' + user.uid + 'spentloaderenable').show();
-        const oItem = $(objt.target).closest(".spenttaskRow").next("tr");
-        oItem.hide();
-        oItem.find("#spentTasksPerDay").hide();
-        oItem.slideDown();
-        oItem.find(".innerspentTableLoader").show();
-        $(objt.target)
-          .closest("td")
-          .siblings()
-          .closest(".highlightCell")
-          .removeClass("highlightCell");
-        $(objt.target).closest("td").addClass("highlightCell");
+        // const oItem = $(objt.target).closest(".spenttaskRow").next("tr");
+        // oItem.hide();
+        // oItem.find("#spentTasksPerDay").hide();
+        // oItem.slideDown();
+        // oItem.find(".innerspentTableLoader").show();
+        // $(objt.target)
+        //   .closest("td")
+        //   .siblings()
+        //   .closest(".highlightCell")
+        //   .removeClass("highlightCell");
+        // $(objt.target).closest("td").addClass("highlightCell");
 
         const batchUrl = [];
         const projectAdded = [];
@@ -1957,8 +1957,8 @@ export class UsercapacityComponent implements OnInit {
           }
         }
 
-        oItem.find("#spentTasksPerDay").show();
-        oItem.find(".innerspentTableLoader").hide();
+        // oItem.find("#spentTasksPerDay").show();
+        // oItem.find(".innerspentTableLoader").hide();
 
         user.dates.map((c) => delete c.TimespentbackgroundColor);
         date.TimespentbackgroundColor = "#ffeb9c";
@@ -2077,9 +2077,9 @@ export class UsercapacityComponent implements OnInit {
       user.dayTasks = [];
       user.dates.map((c) => delete c.backgroundColor);
     } else {
-      const oCollpase = $(objt).closest(".SpentTaskPerDayRow");
-      oCollpase.prev().find(".highlightCell").removeClass("highlightCell");
-      oCollpase.slideUp();
+      // const oCollpase = $(objt).closest(".SpentTaskPerDayRow");
+      // oCollpase.prev().find(".highlightCell").removeClass("highlightCell");
+      // oCollpase.slideUp();
       user.TimeSpentDayTasks = [];
       user.dates.map((c) => delete c.TimespentbackgroundColor);
     }

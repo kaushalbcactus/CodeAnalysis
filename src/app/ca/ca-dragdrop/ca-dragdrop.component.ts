@@ -175,9 +175,9 @@ export class CaDragdropComponent implements OnInit {
   NodePosition() {
     let Count = 0;
     this.nodes.forEach(element => {
-      const position = $($('.task-drop .nodes').children()[Count]).position();
-      element.top = position.top;
-      element.left = position.left;
+      // const position = $($('.task-drop .nodes').children()[Count]).position();
+      // element.top = position.top;
+      // element.left = position.left;
       Count++;
     });
 

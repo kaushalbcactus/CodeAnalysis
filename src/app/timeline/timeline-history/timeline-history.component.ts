@@ -8,6 +8,7 @@ import { SPOperationService } from '../../Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { Table } from 'primeng/table';
+import { Versionhistory } from '../interfaces/versionhistory';
 
 
 @Component({
@@ -49,7 +50,7 @@ export class TimelineHistoryComponent implements OnInit {
     activitySubType: [],
     activityBy: []
   };
-  public ObjTimeline = {
+  public ObjTimeline: Versionhistory = {
     ID: '',
     moduleName: '',
     entityType: '',
@@ -163,7 +164,7 @@ export class TimelineHistoryComponent implements OnInit {
 
   async initializeTimeline(clickedInvItemId, moduleName, type) {
     const requestType = moduleName + '_' + type;
-    this.createStructure(this.timelineBaseObj, moduleName, requestType, clickedInvItemId);
+    this.timelineBaseObj = this.createStructure(moduleName, requestType, clickedInvItemId);
     await this.intialRequestCreation(moduleName, requestType, clickedInvItemId);
     this.differenceProcessing(this.timelineBaseObj, this.initialRequest[0]);
     this.initialRequest.splice(0, 1);
@@ -180,7 +181,8 @@ export class TimelineHistoryComponent implements OnInit {
   // #region Finance Dashboard
 
   // #region progressive scroll processing
-  createStructure(obj, moduleName, type, timelineProcessObjID) {
+  createStructure(moduleName, type, timelineProcessObjID) {
+    const obj = JSON.parse(JSON.stringify(this.ObjTimeline));
     obj.ID = timelineProcessObjID.ID ? timelineProcessObjID.ID : timelineProcessObjID;
     switch (type) {
       case 'ProjectMgmt_Invoices':
@@ -250,6 +252,7 @@ export class TimelineHistoryComponent implements OnInit {
         obj.entityType = moduleName + '_' + this.globalConstant.listNames.SOWBudgetBreakup.name;
         break;
     }
+    return obj;
   }
 
   async intialRequestCreation(moduleName, type, clickedItemId) {
@@ -373,8 +376,8 @@ export class TimelineHistoryComponent implements OnInit {
         if (returnTypes.retItems && returnTypes.retItems.length > 0) {
           this.timelineBaseObj['timelineprocess_' + returnTypes.listName] = [];
           returnTypes.retItems.forEach(element => {
-            const childObj = JSON.parse(JSON.stringify(this.ObjTimeline));
-            this.createStructure(childObj, moduleName, returnTypes.listName, element);
+            // const childObj = JSON.parse(JSON.stringify(this.ObjTimeline));
+            const childObj = this.createStructure(moduleName, returnTypes.listName, element);
             this.timelineBaseObj['timelineprocess_' + returnTypes.listName].push(childObj);
           });
         }

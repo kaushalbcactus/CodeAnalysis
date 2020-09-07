@@ -818,10 +818,10 @@ export class CACommonService {
    * This method is used to resize the header for different size of screen.
    */
   setHeader() {
-    const headerMaxHeight = $('.ui-table-scrollable-header').height();
-    const headertableHeight = $('.ui-table-scrollable-header-box').height();
-    const diffHeight = headerMaxHeight - headertableHeight;
-    $('.ui-table-scrollable-body').css('margin-top', -diffHeight);
+    // const headerMaxHeight = $('.ui-table-scrollable-header').height();
+    // const headertableHeight = $('.ui-table-scrollable-header-box').height();
+    // const diffHeight = headerMaxHeight - headertableHeight;
+    // $('.ui-table-scrollable-body').css('margin-top', -diffHeight);
   }
   /**
    * This method is used to update the comments in for particular task in schedule list.
