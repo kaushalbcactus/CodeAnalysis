@@ -165,10 +165,10 @@ export class TimelineHistoryComponent implements OnInit {
   async initializeTimeline(clickedInvItemId, moduleName, type) {
     const requestType = moduleName + '_' + type;
     this.timelineBaseObj = this.createStructure(moduleName, requestType, clickedInvItemId);
-    await this.intialRequestCreation(moduleName, requestType, clickedInvItemId);
-    this.differenceProcessing(this.timelineBaseObj, this.initialRequest[0]);
+    this.initialRequest = await this.intialRequestCreation(moduleName, requestType, clickedInvItemId);
+    this.timelineBaseObj.verDifference = this.differenceProcessing(this.timelineBaseObj, this.initialRequest[0]);
     this.initialRequest.splice(0, 1);
-    this.responseCreation(requestType, this.timelineBaseObj);
+    this.timelineBaseObj.data = this.responseCreation(requestType, this.timelineBaseObj);
     this.assimilation();
     this.updateInitialStruture(this.timelineBaseObj);
     await this.creationComplete(moduleName);
@@ -256,49 +256,51 @@ export class TimelineHistoryComponent implements OnInit {
   }
 
   async intialRequestCreation(moduleName, type, clickedItemId) {
+    let initialRequest = [];
     switch (type) {
       case 'ProjectMgmt_Invoices':
       case 'FD_InvoicesCT':
-        this.initialRequest = await this.getInvoiceVersions(moduleName, clickedItemId, '0', this.top);
+        initialRequest = await this.getInvoiceVersions(moduleName, clickedItemId, '0', this.top);
         break;
       case 'ProjectMgmt_Proforma':
       case 'FD_Proforma':
-        this.initialRequest = await this.getProforma(moduleName, clickedItemId, '0', this.top);
+        initialRequest = await this.getProforma(moduleName, clickedItemId, '0', this.top);
         break;
       case 'ProjectMgmt_InvoiceLineItems':
       case 'FD_InvoiceLineItems':
-        this.initialRequest = await this.getInvoiceLineItems(moduleName, clickedItemId, '0', this.top);
+        initialRequest = await this.getInvoiceLineItems(moduleName, clickedItemId, '0', this.top);
         break;
       case 'FD_Rolling':
-        this.initialRequest = await this.getFDProjectVersions(moduleName, clickedItemId, '0', '1');
+        initialRequest = await this.getFDProjectVersions(moduleName, clickedItemId, '0', '1');
         break;
       case 'FD_ProjectFinances':
-        this.initialRequest = await this.getFDProjectFinanceVersions(moduleName, clickedItemId, '0', this.top);
+        initialRequest = await this.getFDProjectFinanceVersions(moduleName, clickedItemId, '0', this.top);
         break;
       case 'ProjectMgmt_ProjectFinances':
-        this.initialRequest = await this.getProjectFinanceVersions(moduleName, clickedItemId, '0', this.top);
+        initialRequest = await this.getProjectFinanceVersions(moduleName, clickedItemId, '0', this.top);
         break;
       case 'ProjectMgmt_ProjectFromDashboard':
       case 'ProjectMgmt_Project':
-        this.initialRequest = await this.getProjectVersions(moduleName, clickedItemId, '0', this.top, type);
+        initialRequest = await this.getProjectVersions(moduleName, clickedItemId, '0', this.top, type);
         break;
       case 'ProjectMgmt_ProjectBudgetBreakup':
-        this.initialRequest = await this.getProjectBudgetVersions(moduleName, clickedItemId, '0', this.top);
+        initialRequest = await this.getProjectBudgetVersions(moduleName, clickedItemId, '0', this.top);
         break;
       case 'ProjectMgmt_ProjectFinanceBreakup':
-        this.initialRequest = await this.getProjectFinanceBreakupVersions(moduleName, clickedItemId, '0', this.top);
+        initialRequest = await this.getProjectFinanceBreakupVersions(moduleName, clickedItemId, '0', this.top);
         break;
       case 'ProjectMgmt_SOW':
-        this.initialRequest = await this.getSowVersions(moduleName, clickedItemId, '0', this.top);
+        initialRequest = await this.getSowVersions(moduleName, clickedItemId, '0', this.top);
         break;
       case 'ProjectMgmt_SOWBudgetBreakup':
-        this.initialRequest = await this.getSowBudgetBreakupVersions(moduleName, clickedItemId, '0', this.top);
+        initialRequest = await this.getSowBudgetBreakupVersions(moduleName, clickedItemId, '0', this.top);
         break;
     }
+    return initialRequest;
   }
 
   differenceProcessing(obj, versions) {
-    obj.verDifference = this.getVerDifference(versions, obj);
+    return this.getVerDifference(versions, obj);
   }
 
   getVerDifference(versions, obj) {
@@ -310,47 +312,49 @@ export class TimelineHistoryComponent implements OnInit {
   }
 
   responseCreation(type, obj) {
+    let data:any;
     switch (type) {
       case 'ProjectMgmt_InvoicesCT':
       case 'FD_InvoicesCT':
-        obj.data = this.setInvoiceVersion(obj.versions, obj.verDifference);
+        data = this.setInvoiceVersion(obj.versions, obj.verDifference);
         break;
       case 'ProjectMgmt_ProformaCT':
       case 'FD_ProformaCT':
-        obj.data = this.setProformaVersion(obj.versions, obj.verDifference);
+        data = this.setProformaVersion(obj.versions, obj.verDifference);
         break;
       case 'FD_ProjectInformationCT':
       case 'FD_ProjectFinancesCT':
-        obj.data = this.setFDPrjVersion(obj.versions, obj.verDifference);
+        data = this.setFDPrjVersion(obj.versions, obj.verDifference);
         break;
       case 'ProjectMgmt_ProjectFinancesCT':
-        obj.data = this.setPrjFinanceVersion(obj.versions, obj.verDifference);
+        data = this.setPrjFinanceVersion(obj.versions, obj.verDifference);
         break;
       case 'ProjectMgmt_InvoiceLineItemsCT':
       case 'FD_InvoiceLineItemsCT':
-        obj.data = this.setInvLineItemsVersion(obj.versions, obj.verDifference);
+        data = this.setInvLineItemsVersion(obj.versions, obj.verDifference);
         break;
       case 'ProjectMgmt_ProjectFromDashboard':
       case 'ProjectMgmt_ProjectInformationCT':
-      case 'projMgmt_Project':
-        obj.data = this.setPrjVersion(obj.versions, obj.verDifference, type);
+      case 'ProjectMgmt_Project':
+        data = this.setPrjVersion(obj.versions, obj.verDifference, type);
         break;
       case 'ProjectMgmt_ProjectBudgetBreakupCT':
-        obj.data = this.setPrjBudgetBreakupVersion(obj.versions, obj.verDifference);
+        data = this.setPrjBudgetBreakupVersion(obj.versions, obj.verDifference);
         break;
       case 'ProjectMgmt_ProjectFinanceBreakupCT':
-        obj.data = this.setPrjFinanceBreakupVersion(obj.versions, obj.verDifference);
+        data = this.setPrjFinanceBreakupVersion(obj.versions, obj.verDifference);
         break;
       case 'ProjectMgmt_SOWCT':
-        obj.data = this.setSowVersion(obj.versions, obj.verDifference);
+        data = this.setSowVersion(obj.versions, obj.verDifference);
         break;
       case 'ProjectMgmt_SOWBudgetBreakupCT':
-        obj.data = this.setSowBudgetBreakupVersion(obj.versions, obj.verDifference);
+        data = this.setSowBudgetBreakupVersion(obj.versions, obj.verDifference);
         break;
       case 'ProjectMgmt_Documents':
-        obj.data = this.setPrjDocuments(obj.ID);
+        data = this.setPrjDocuments(obj.ID);
         break;
     }
+    return data;
   }
 
   assimilation() {
@@ -426,9 +430,9 @@ export class TimelineHistoryComponent implements OnInit {
     let processingObjs = [];
     processingObjs = this.updateStructure(this.timelineBaseObj, retVersions, processingObjs);
     processingObjs.forEach(element => {
-      this.differenceProcessing(element, element.versions);
+      element.verDifference = this.differenceProcessing(element, element.versions);
       this.markDone(element);
-      this.responseCreation(element.entityType, element);
+      element.data = this.responseCreation(element.entityType, element);
     });
     this.assimilation();
     await this.checkStructure();
@@ -446,7 +450,7 @@ export class TimelineHistoryComponent implements OnInit {
     obj.verDifference = [];
     obj.data = [];
     if (obj.entityType === 'ProjectMgmt_Documents' && obj.status === 'Pending') {
-      this.responseCreation(obj.entityType, obj);
+      obj.data = this.responseCreation(obj.entityType, obj);
       obj.status = 'Done';
     }
     if (obj.status === 'Pending') {

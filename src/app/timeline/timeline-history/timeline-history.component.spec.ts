@@ -6,10 +6,13 @@ import { TimelineHistoryComponent } from './timeline-history.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { MessageService } from 'primeng/api';
 import { BrowserAnimationsModule, NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { Versionhistory } from '../interfaces/versionhistory';
+import { TimelineModule } from '../timeline.module';
+import { Timeline } from '../interfaces/timeline.model';
 describe('TimelineHistoryComponent', () => {
   let component: TimelineHistoryComponent;
   let fixture: ComponentFixture<TimelineHistoryComponent>;
+  let projectVersions: any[];
+  let timelineObj: any;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -30,6 +33,9 @@ describe('TimelineHistoryComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(TimelineHistoryComponent);
     component = fixture.componentInstance;
+    const timeline = new Timeline();
+    projectVersions = timeline.projectVersions;
+    timelineObj = timeline.timelineObj;
     fixture.detectChanges();
   });
 
@@ -76,4 +82,23 @@ describe('TimelineHistoryComponent', () => {
     }));
   });
 
+  it('should return 5 version differences', () => {
+    const versions = component.differenceProcessing(timelineObj, projectVersions);
+    expect(versions.length).toEqual(5);
+  });
+
+  it('should check if "Status" property validated for 4th item', () => {
+    const versions = component.differenceProcessing(timelineObj, projectVersions);
+    expect(versions[4]).toEqual(jasmine.objectContaining({
+      changedProperties: {
+        Status: 'Author Review'
+      }
+    }));
+  });
+
+  it('should return 5 version differences', () => {
+    timelineObj.versionDiff = component.differenceProcessing(timelineObj, projectVersions);
+    const data = component.responseCreation('ProjectMgmt_Project', projectVersions);
+    expect(data.length).toEqual(5);
+  });
 });
