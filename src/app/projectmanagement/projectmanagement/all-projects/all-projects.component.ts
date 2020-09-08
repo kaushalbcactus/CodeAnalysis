@@ -19,6 +19,8 @@ import { Table } from 'primeng/table';
 import { ViewUploadDocumentDialogComponent } from 'src/app/shared/view-upload-document-dialog/view-upload-document-dialog.component';
 import { CsFinanceAuditDialogComponent } from './cs-finance-audit-dialog/cs-finance-audit-dialog.component';
 import { InvoiceLineitemsComponent } from './invoice-lineitems/invoice-lineitems.component';
+import { CdpfComponent } from 'src/app/shared/sqms/cdpf/cdpf.component';
+import { JournalConferenceDetailsComponent } from 'src/app/shared/journal-conference-details/journal-conference-details.component';
 
 declare var $;
 @Component({
@@ -329,6 +331,8 @@ export class AllProjectsComponent implements OnInit {
           { label: 'Timeline', command: (event) => this.projectTimeline(this.selectedProjectObj) },
           { label: 'Go to Allocation', command: (event) => this.goToAllocationPage(this.selectedProjectObj) },
           { label: 'Project Scope', command: (event) => this.goToProjectScope(this.selectedProjectObj) },
+          { label: 'View CDs/PFs', command: (event) => this.viewCDPF(this.selectedProjectObj) },
+          { label: 'View PubSupport', command: (event) => this.viewPubSupportJCDetails(this.selectedProjectObj) },
         ]
       },
       {
@@ -538,6 +542,9 @@ export class AllProjectsComponent implements OnInit {
         projObj.AnnotationBinder = task.AnnotationBinder ? task.AnnotationBinder : 'No';
         projObj.PrimaryResources = this.commonService.returnText(task.PrimaryResMembers.results);
         projObj.PrimaryResourcesId = this.commonService.getResourceId((task.PrimaryResMembers.results));
+        projObj.LastSubmissionDate = task.LastSubmissionDate ? task.LastSubmissionDate : '';
+        projObj.JournalSelectionDate = task.JournalSelectionDate ? task.JournalSelectionDate : '';
+        projObj.JournalSelectionURL = task.JournalSelectionURL ? task.JournalSelectionURL : '';
         switch (projObj.Status) {
           case this.constants.projectStatus.InDiscussion:
             projObj.isRedIndicator = true;
@@ -821,6 +828,11 @@ export class AllProjectsComponent implements OnInit {
       menu.model[2].visible = false;
     } else {
       menu.model[3].visible = false;
+      if (this.selectedProjectObj.IsPubSupport === "Yes") {
+        menu.model[1].items[7].visible = true;
+      } else {
+        menu.model[1].items[7].visible = false;
+      }
       switch (status) {
         case this.constants.projectStatus.InDiscussion:
           menu.model[0].items[1].visible = false;
@@ -1786,37 +1798,37 @@ export class AllProjectsComponent implements OnInit {
     batchURL.push(piUpdate);
 
     filterTasks.forEach(element => {
-      if (element.IsCentrallyAllocated == 'No') {
-        if (element.Task == "Client Review") {
+      // if (element.IsCentrallyAllocated == 'No') {
+      if (element.Task == "Client Review") {
+        const scheduleStatusUpdate = Object.assign({}, options);
+        scheduleStatusUpdate.data = scCRUpdateData;
+        scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
+        scheduleStatusUpdate.type = 'PATCH';
+        scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
+          element.ID);
+        batchURL.push(scheduleStatusUpdate);
+      } else {
+        if (element.Status == this.constants.STATUS.NOT_STARTED) {
           const scheduleStatusUpdate = Object.assign({}, options);
-          scheduleStatusUpdate.data = scCRUpdateData;
+          scheduleStatusUpdate.data = scNotStartedUpdateData;
           scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
           scheduleStatusUpdate.type = 'PATCH';
           scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
             element.ID);
           batchURL.push(scheduleStatusUpdate);
-        } else {
-          if (element.Status == this.constants.STATUS.NOT_STARTED) {
-            const scheduleStatusUpdate = Object.assign({}, options);
-            scheduleStatusUpdate.data = scNotStartedUpdateData;
-            scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
-            scheduleStatusUpdate.type = 'PATCH';
-            scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
-              element.ID);
-            batchURL.push(scheduleStatusUpdate);
-          } else if (element.Status == this.constants.STATUS.IN_PROGRESS) {
-            const scheduleStatusUpdate = Object.assign({}, options);
-            const scInProgressUpdateDataNew = Object.assign({}, scInProgressUpdateData);
-            scInProgressUpdateDataNew.ExpectedTime = element.TimeSpent;
-            scInProgressUpdateDataNew.DueDateDT = new Date(element.DueDateDT) < new Date() ? new Date(element.DueDateDT) : new Date();
-            scheduleStatusUpdate.data = scInProgressUpdateDataNew;
-            scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
-            scheduleStatusUpdate.type = 'PATCH';
-            scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
-              element.ID);
-            batchURL.push(scheduleStatusUpdate);
-          }
+        } else if (element.Status == this.constants.STATUS.IN_PROGRESS) {
+          const scheduleStatusUpdate = Object.assign({}, options);
+          const scInProgressUpdateDataNew = Object.assign({}, scInProgressUpdateData);
+          scInProgressUpdateDataNew.ExpectedTime = element.TimeSpent;
+          scInProgressUpdateDataNew.DueDateDT = new Date(element.DueDateDT) < new Date() ? new Date(element.DueDateDT) : new Date();
+          scheduleStatusUpdate.data = scInProgressUpdateDataNew;
+          scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
+          scheduleStatusUpdate.type = 'PATCH';
+          scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
+            element.ID);
+          batchURL.push(scheduleStatusUpdate);
         }
+        // }
       }
     });
 
@@ -3007,5 +3019,34 @@ export class AllProjectsComponent implements OnInit {
 
   }
 
+  viewCDPF(projObj) {
+    const ref = this.dialogService.open(CdpfComponent, {
+      header: 'CDs/PFs - ' + projObj.ProjectCode + '(' + projObj.Title + ')',
+      width: '90vw',
+      data: {
+        projectCode: projObj.ProjectCode,
+        readOnly: true
+      },
+      contentStyle: { 'max-height': '85vh', 'overflow-y': 'auto' },
+      closable: true
+    });
+    ref.onClose.subscribe(element => {
+    });
+  }
+
+  viewPubSupportJCDetails(projectObj) {
+    const ref = this.dialogService.open(JournalConferenceDetailsComponent, {
+      header: 'Journal/Conference Details - ' + projectObj.ProjectCode + '(' + projectObj.Title + ')',
+      width: '90vw',
+      data: {
+        projectObj,
+        readOnly: true
+      },
+      contentStyle: { 'max-height': '85vh', 'overflow-y': 'auto' },
+      closable: true
+    });
+    ref.onClose.subscribe(element => {
+    });
+  }
 
 }

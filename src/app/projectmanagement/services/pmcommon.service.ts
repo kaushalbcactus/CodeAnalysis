@@ -829,7 +829,7 @@ export class PMCommonService {
   getIds(array) {
     const tempArray = [];
     array.forEach(element => {
-      if(element && element.ID) {
+      if (element && element.ID) {
         tempArray.push(element.ID);
       }
     });
@@ -1842,7 +1842,8 @@ export class PMCommonService {
       data.NextTasks = milestoneTask.NextTasks;
       data.PrevTasks = milestoneTask.PrevTasks;
     }
-    if (milestoneTask.Skill === 'Editor' || milestoneTask.Skill === 'QC' || milestoneTask.Skill === 'Graphics') {
+    if (milestoneTask.Skill === 'Pub Support' ||
+      milestoneTask.Skill === 'Editor' || milestoneTask.Skill === 'QC' || milestoneTask.Skill === 'Graphics') {
       data.IsCentrallyAllocated = 'Yes';
       data.ContentTypeCH = this.constant.CONTENT_TYPE.SLOT;
     } else {

@@ -146,23 +146,6 @@ export class GanttEdittaskComponent implements OnInit {
       }
     }
 
-    // if (task.status == 'Not Confirmed' || task.status == "Not Started" || task.status == "Not Saved") {
-    //   // if (task.itemType !== 'Client Review') {
-    //   //   this.editTaskForm.controls['startDate'].enable();
-    //   //   this.editTaskForm.controls['startDateTimePart'].enable();
-    //   // }
-    //   // if (task.itemType !== 'Send to client') {
-    //   //   // this.editTaskForm.controls['endDate'].enable();
-    //   //   // this.editTaskForm.controls['endDateTimePart'].enable();
-    //   // }
-    // } else if (task.status == "In Progress") {
-    //   this.editTaskForm.controls['startDate'].disable();
-    //   this.editTaskForm.controls['startDateTimePart'].disable();
-    //   if (task.itemType !== 'Send to client') {
-    //     this.editTaskForm.controls['endDate'].enable();
-    //     this.editTaskForm.controls['endDateTimePart'].enable();
-    //   }
-    // }
     const startTime = this.taskAllocateCommonService.setMinutesAfterDrag(task.start_date);
     task.start_date = new Date(this.datepipe.transform(task.start_date, 'MMM d, y') + ' ' + startTime);
     const endTime = this.taskAllocateCommonService.setMinutesAfterDrag(task.end_date);
@@ -179,7 +162,7 @@ export class GanttEdittaskComponent implements OnInit {
       endDate: task.end_date,
       tat: task.tat,
       disableCascade: task.DisableCascade,
-      resource: task.AssignedTo.ID ? task.AssignedTo : (task.slotType === 'Slot' ? { ID: undefined, Email: undefined, Title:  task.skillLevel, SkillText: task.skillLevel } : null),
+      resource: task.AssignedTo.ID ? task.AssignedTo : (task.slotType === 'Slot' ? { ID: undefined, Email: undefined, Title:  task.skillLevel, SkillText: task.skillLevel } : task.AssignedTo),
       startDateTimePart: startTime,
       endDateTimePart: endTime,
     });

@@ -471,6 +471,8 @@ export class ConstantsService {
     BUDGET_REDUCTION: "ApproveProjectBudget",
     BUDGET_APPROVAL: "OutcomeBudgetApproval",
     ON_HOLD: "Hold",
+    TASK_CREATION: "TaskCreation",
+    CENTRAL_TASK_CREATION: 'CentralTaskCreation'
   };
   public invoiceList = {
     status: {

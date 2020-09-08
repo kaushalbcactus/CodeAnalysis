@@ -8,8 +8,17 @@
 ::ng-deep .deletePopup, .tagPopup {
   float: left;
 }
-::ng-deep .viewCommentsPopupTable, .tagPopup {
+::ng-deep .viewCommentsPopupTable {
   width: 100%
+}
+
+::ng-deep .mandatory {
+  color: darkred!important;
+  padding-left: 6px!important;
+}
+
+::ng-deep .tagPopup .ui-dropdown {
+  width: 17.5em!important;
 }
 ::ng-deep .cdPopupTable td{
   padding: 15px;
@@ -28,9 +37,9 @@
 ::ng-deep .full-width {
   width:100%;
 }
-::ng-deep .closePopupTable .textArea {
+/* ::ng-deep .closePopupTable .textArea {
   padding-bottom: 24px;
-}
+} */
 ::ng-deep #identifyAccountableTable .ui-dropdown {
   width: 95%;
   float: left;
@@ -73,7 +82,56 @@
   bottom: 22px;
   right: 104px;
 
-  
+
+}
+
+.footer {
+  background-color: #ffffff;
+  color: #333333;
+  padding: 0.571em 1em;
+  margin: 0;
+  text-align: right;
+  position: relative;
+  top: -1px;
+}
+::ng-deep .popupTextArea {
+  width: 95%!important;
+}
+::ng-deep .wordCount {
+  font-size: x-small!important;
+}
+.rejectionComments {
+  padding-bottom: 10px;
+}
+
+#cdLoader {
+  border: 10px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 10px solid red;
+  border-bottom: 10px solid red;
+  width: 100px;
+  height: 100px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+  margin: 0 auto;
+  position: relative;
+  top: 27%;
+  transform: translateY(-50%);
+  margin-top: 1%;
+}
+
+#cdLoaderText {
+  -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
+  -o-animation: loading-text-opacity 2s linear 0s infinite normal;
+  -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
+  animation: loading-text-opacity 2s linear 0s infinite normal;
+  color: black;
+  font-family: "Helvetica Neue, "Helvetica", ""arial";
+  font-size: 10px;
+  font-weight: bold;
+  opacity: 0.5;
+  text-align: center;
+  text-transform: uppercase;
 }
 @-webkit-keyframes spin {
   0% { -webkit-transform: rotate(0deg); }

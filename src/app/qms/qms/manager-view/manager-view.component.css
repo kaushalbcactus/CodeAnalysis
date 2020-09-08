@@ -1,6 +1,6 @@
-::ng-deep .mat-form-field {
+/* ::ng-deep .mat-form-field {
   width: 100%;
-}
+} */
 ::ng-deep #managerContent .download-worksheet {
   margin-top:15px;
 }

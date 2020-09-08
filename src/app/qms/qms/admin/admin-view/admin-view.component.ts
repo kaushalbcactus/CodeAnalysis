@@ -377,7 +377,7 @@ export class AdminViewComponent implements OnInit, OnDestroy {
         task
       },
       header: 'Rate Work',
-      width: '70vw',
+      width: '38vw',
       contentStyle: { 'min-height': '30vh', 'max-height': '90vh', 'overflow-y': 'auto' }
     });
     ref.onClose.subscribe((feedbackdata: any) => {

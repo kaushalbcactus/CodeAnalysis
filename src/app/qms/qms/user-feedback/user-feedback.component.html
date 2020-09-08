@@ -47,11 +47,17 @@
     <ng-template pTemplate="body" let-rowData let-columns="columns">
         <tr>
             <td *ngFor="let col of columns" [hidden]="!col.visibility">
-                <ng-container *ngIf="col.field != '' && col.field != 'Parameters' &&  col.field !== 'Date'">
+                <ng-container *ngIf="col.field != '' && col.field != 'Parameters' &&  col.field !== 'Date' && col.field !== 'Rating'">
                     {{rowData[col.field]}}
                 </ng-container>
                 <ng-container *ngIf="col.field === 'Date'">
                     {{rowData[col.field] | date:'MMM d, yyyy' }}
+                </ng-container>
+                <ng-container *ngIf="col.field === 'Rating'">
+                    {{rowData[col.field] }}
+                  <div class='overlayIcon' (click)="this.showOverlayPanel($event, rowData['ParameterRatings'], ratingOP, displayOverlay)" style="float: right;cursor: pointer;" title="Click to see rating split">
+                    <i #displayOverlay class="fa fa-info-circle" aria-hidden="true"></i>
+                  </div>
                 </ng-container>
                 <ng-container *ngIf="col.field === 'Parameters'">
                     <div [innerHTML]="rowData[col.field]"></div>
@@ -67,7 +73,7 @@
         </tr>
     </ng-template>
 </p-table>
-
+<app-rating-overlay #ratingOP></app-rating-overlay>
 <div class="tableLoader" [hidden]='hideLoader'>
     <div id="mainLoader"></div>
     <div id="mainLoaderText">Loading...</div>

@@ -1,0 +1,112 @@
+.model-open td:nth-child(2){
+    color: #BA2525;
+    text-align: left;
+    font-weight: normal;
+}
+/* tr.model-open{
+    cursor: pointer;
+} */
+.model-open td table tr td:nth-child(2){
+    color: #000000 !important;
+}
+
+.model-open.active td .accordian-inner:after{
+    font-family: FontAwesome;
+    content: "\f107";
+    display: inline-block;
+    padding-right: 3px;
+    vertical-align: middle;
+    font-weight: 900;
+}
+
+.main-td-table div span{
+    margin-top: 5px;
+    margin-bottom: 10px;
+    float: left;
+}
+
+.label {
+    /* display: table; */
+    display: flex;
+}
+
+.label span{
+    flex-grow: 5;
+    font-weight: 700;
+}
+
+.info {
+    flex-grow: 1;
+    float: right;
+    font-weight: 700;
+}
+
+.info span {
+    margin-left: 15px;
+}
+
+.main-table-detail .main-td-table{
+    background: #F8F8F8;
+}
+
+.header-style{background: #F8F8F8;}
+td,th,.header-style td{
+    border-top: 1px solid #E0E0E0;
+    border-bottom: 1px solid #E0E0E0;
+}
+.header-style{height: 54px;border-radius: 3px;}
+.header-style th{ text-align: left !important;padding: 8px;color: #777777;font-size: 14px;}
+
+.table-accordian tbody tr > table .header-style {background: #FAFAFA}
+
+.inner-hide-detail tr{
+    background: #FAFAFA;
+}
+.inner-hide-detail tr.inner-first-accordian{
+    background: #fff;
+}
+
+.view_details{
+    position: relative;
+}
+.submission-inner-table{background: #EBEBEB !important;}
+.submission-inner{background: #fff !important;}
+.view_details i{
+    position: absolute;
+    right: -25px;
+    top: 3px;}
+.view_details_gallery i{
+    float: right;
+    position: relative;
+    right: 0px;
+    top:5px;
+}
+
+.view_details:hover {
+    color: black !important;
+}
+
+table tbody tr .jcDClass{
+    border: 1px solid #000000; 
+    cursor: auto;
+    padding-left: 2em;
+}
+
+td, th {
+    text-align: left;
+    padding: 8px;
+    font-family: Helvetica;
+    font-weight: normal;
+    color: #000000;
+}
+
+.downloadUpload {
+    color: red !important;
+    cursor: pointer;
+}
+
+a:hover {
+    color: red !important;
+    text-decoration: none;
+}
+

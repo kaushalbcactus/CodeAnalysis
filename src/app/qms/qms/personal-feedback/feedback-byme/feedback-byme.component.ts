@@ -211,9 +211,11 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
         } else if (arrScoreCards[i]) {
           arrScoreCards[i].ParameterRating = '';
           arrScoreCards[i].Value = '';
+          arrScoreCards[i].parameters = [];
           arrRatings[i].retItems.forEach(elem => {
             arrScoreCards[i].ParameterRating = arrScoreCards[i].ParameterRating + elem.Parameter.Title + '\n';
             arrScoreCards[i].Value = arrScoreCards[i].Value + elem.Rating + '\n';
+            arrScoreCards[i].parameters.push({property: elem.Parameter.Title, value: elem.Rating});
           });
         }
       }
@@ -251,7 +253,8 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
         Rating: element.AverageRatingNM ? element.AverageRatingNM : '',
         Comments: element.CommentsMT ? element.CommentsMT : '',
         Parameters: element.ParameterRating ? element.ParameterRating : '',
-        Score: element.Value ? element.Value : ''
+        Score: element.Value ? element.Value : '',
+        ParameterRatings: element.parameters ? element.parameters : []
       });
     });
     this.ref = this.fb;
@@ -320,5 +323,8 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
       }
       this.cdr.detectChanges();
     }
+  }
+  showOverlayPanel(event, rowData, ratingOP, target?) {
+    ratingOP.showOverlay(event, rowData, target);
   }
 }

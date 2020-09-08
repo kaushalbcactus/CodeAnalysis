@@ -102,7 +102,7 @@ export class QMSConstantsService {
     External: {
       getQC: {
         select: 'ID, Title, FileID, FileURL, SentDate,SentBy/ID, SentBy/Title, Modified, Status, CategoryST,' +
-          'Resources/ID, SeverityLevel, BusinessImpact,Segregation,' +
+          'Resources/ID, SeverityLevel, BusinessImpact,Segregation, RejectionComments,' +
           'CommentsMT, RootCauseAnalysis, CorrectiveActions, PreventiveActions, IsActiveCH',
         expand: 'SentBy, Resources',
         filter: "Status ne 'Deleted' and Resources/ID eq '" + this.global.currentUser.userId + "' and SentDate ge '{{startDate}}' and SentDate le '{{endDate}}'",
@@ -111,19 +111,35 @@ export class QMSConstantsService {
       },
       getQCDownload: {
         select: 'ID, Title, FileID, FileURL, SentDate,SentBy/ID, SentBy/Title, Modified, Status, CategoryST,' +
-          'Resources/ID, SeverityLevel, BusinessImpact,Segregation,' +
+          'Resources/ID, SeverityLevel, BusinessImpact,Segregation, RejectionComments,' +
           'CommentsMT, RootCauseAnalysis, CorrectiveActions, PreventiveActions, IsActiveCH',
         expand: 'SentBy, Resources',
         filter: "Status ne 'Deleted' and Resources/ID eq '{{AssignedTo}}' and SentDate ge '{{startDate}}' and SentDate le '{{endDate}}'",
         top: '{{TopCount}}',
         orderby: 'SentDate desc'
       },
+      getQCByProject: {
+        select: 'ID, Title, FileID, FileURL, SentDate,SentBy/ID, SentBy/Title, Modified, Status, CategoryST,' +
+          'Resources/ID, SeverityLevel, BusinessImpact,Segregation, RejectionComments,' +
+          'CommentsMT, RootCauseAnalysis, CorrectiveActions, PreventiveActions, IsActiveCH',
+        expand: 'SentBy, Resources',
+        filter: "Status ne 'Deleted' and Title eq '{{projectCode}}'",
+        top: '{{TopCount}}',
+        orderby: 'SentDate desc'
+      }
     },
     PositiveFeedbacks: {
       getPF: {
         select: 'ID, Title, FileID, FileURL, SentDate,SentBy/ID, SentBy/Title, Modified, Resources/ID, Resources/Title, DeliveryLeads/ID',
         expand: 'SentBy, Resources, DeliveryLeads',
-        filter: "IsActiveCH eq 'Yes' and Status eq 'Accepted' and SentDate ge '{{startDate}}' and SentDate le '{{endDate}}'",
+        filter: "IsActiveCH ne 'No' and Status eq 'Accepted' and SentDate ge '{{startDate}}' and SentDate le '{{endDate}}'",
+        top: '{{TopCount}}',
+        orderby: 'SentDate desc'
+      },
+      getPFByProject: {
+        select: 'ID, Title, FileID, FileURL, SentDate,SentBy/ID, SentBy/Title, Modified, Resources/ID, Resources/Title, DeliveryLeads/ID',
+        expand: 'SentBy, Resources, DeliveryLeads',
+        filter: "IsActiveCH ne 'No' and Status eq 'Accepted' and Title eq '{{projectCode}}'",
         top: '{{TopCount}}',
         orderby: 'SentDate desc'
       }

@@ -49,7 +49,10 @@
             <tr>
                 <th style="width: 3%;"></th>
                 <th *ngFor="let col of columns" [ngSwitch]="col.field">
-                    <ng-container *ngIf="col.field">
+                    <ng-container *ngIf="col.field == 'ProjectCode'">
+                        <input pInputText type="text" [(ngModel)]="projectCode" (input)="dt.filter($event.target.value, col.field, 'contains')">
+                    </ng-container>
+                    <ng-container *ngIf="col.field && col.field !== 'ProjectCode'">
                         <input pInputText type="text" (input)="dt.filter($event.target.value, col.field, 'contains')">
                     </ng-container>
                 </th>
@@ -152,263 +155,8 @@
         <ng-template let-car pTemplate="rowexpansion" let-parentIndex="plistIndex">
             <tr *ngIf="showHideJC">
                 <td colspan="10">
-                    <table>
-                        <tbody>
-                            <!--Inner Open Main Accordian Start-->
-                            <tr colspan="10" class="model-open main-table-detail">
-                                <td colspan="10" class="main-td-table">
-                                    <div><span>Journal/Conference Details</span></div>
-                                    <table>
-                                        <!--Inner Open Main Accordian Head Start-->
-                                        <thead>
-                                            <tr class="header-style">
-                                                <th>No</th>
-                                                <th>Journal/Conference Name</th>
-                                                <th>Type</th>
-                                                <th>Milestone</th>
-                                                <th>Journal <br>Requirement date</th>
-                                                <th colspan="1">Journal Requirement document</th>
-                                                <th colspan="1">Journal selection <br>date</th>
-                                                <th>Journal Requirement Response</th>
-                                                <th colspan="1"></th>
-                                            </tr>
-                                        </thead>
-                                        <!--Inner Open Main Accordian Head End-->
-                                        <!-- <tbody *ngIf="journal_Conf_data &&journal_Conf_data[0].element.length == 0"> -->
-                                        <tbody *ngIf="journal_Conf_data.length == 0">
-                                            <tr>
-                                                <td colspan="10" style="text-align:center;color:#d7181f;cursor: auto !important;">
-                                                    <b>No Data available.</b>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                        <tbody class="inner-hide-detail" *ngFor="let item of journal_Conf_data; let i = index">
-                                            <tr class="model-open inner-first-accordian">
-                                                <td>
-                                                    <span>{{i + 1}}</span>
-                                                </td>
-                                                <td>
-                                                    <!-- <span> Journal of Pharmacology and<br> Experimental Therapeutics</span> -->
-                                                    <span>{{item.element.NameST}}</span>
-                                                </td>
-                                                <td>
-                                                    <span>{{item.element.EntryType}}</span>
-                                                </td>
-                                                <td>
-                                                    <span>{{item.element.Milestone}}</span>
-                                                </td>
-                                                <td>
-                                                    <span>{{item.element.JournalRequirementDate | date:'MMM d, y, hh:mm a'}}</span>
-                                                </td>
-                                                <td>
-                                                    <a style="color: red;" *ngIf="item.element.JournalRequirementURL" (click)="downloadFile(item.element.JournalRequirementURL, item.element.Title+'_JournalRequirementDocument_files')">Download
-                                                        &nbsp;<i class="fa fa-download" aria-hidden="true"></i></a>
-                                                </td>
-                                                <td>
-                                                    <span>{{item.project.JournalSelectionDate | date:'MMM d, y, hh:mm a'}}</span>
-                                                </td>
-                                                <td>
-                                                    <a style="color: red;" *ngIf="item.element.JournalRequirementResponse" (click)="downloadFile(item.element.JournalRequirementResponse, item.element.Title+'_JournalRequirementResponse_files')">Download
-                                                        &nbsp;<i class="fa fa-download" aria-hidden="true"></i></a>
-                                                </td>
-                                                <td>
-                                                    <a (click)="jcViewDetails(i)" class="btn go view_details" data-parent="detail_1">
-                                                        <i class="pi pi-plus-circle" *ngIf="i+1" style="padding-top: 5px;"></i>
-                                                        <i class="pi pi-minus-circle" *ngIf="state && i == showJournalRowIndex" style="padding-top: 5px;"></i> View details
-                                                    </a>
-
-                                                </td>
-                                                <td colspan="1"></td>
-
-                                            </tr>
-
-                                            <!--Inner Open First View Detail End-->
-                                            <!--View Detail Start-->
-                                            <ng-container *ngIf="state &&  i === showJournalRowIndex">
-                                                <tr class="jcDClass">
-                                                    <td colspan="2">
-                                                        <label>Submission deadline:</label><br>
-                                                        <span><b>{{journal_Conf_details.AbstractSubmissionDeadline | date:'MMM d, y'}}
-                                                            </b></span>
-                                                    </td>
-                                                    <td colspan="3">
-                                                        <label>Conference date: </label><br>
-                                                        <span><b>{{journal_Conf_details.CongressDate | date:'MMM d, y'}}</b></span>
-                                                    </td>
-                                                    <td colspan="3">
-                                                        <label>Status: </label><br>
-                                                        <span><b>{{journal_Conf_details.Status}}</b></span>
-                                                    </td>
-                                                    <td colspan="2">
-                                                        <label>Journal selection document :</label><br>
-                                                        <a style="color: red;" (click)="downloadFile(journal_Conf_data[0].project.JournalSelectionURL, journal_Conf_data[0].project.ProjectCode+'_JournalSelection_files')">Download
-                                                            &nbsp;<i class="fa fa-download" aria-hidden="true"></i></a>
-
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td colspan="2">
-                                                        <label>Publication Date: </label><br>
-                                                        <span><b>{{journal_Conf_details.PublicationDate | date:'MMM d, y'}}
-                                                            </b></span>
-                                                    </td>
-                                                    <td colspan="3">
-                                                        <label>Published PDF:</label><br>
-                                                        <a style="color: red;" (click)="downloadFile(journal_Conf_details.PublicationURL, journal_Conf_details.Title+'_PublishPDFfile')">Download
-                                                            &nbsp;<i class="fa fa-download" aria-hidden="true"></i></a>
-                                                    </td>
-                                                    <td colspan="3">
-                                                        <label>User Name:</label><br>
-                                                        <span><b> {{journal_Conf_details.UserNameST}}</b></span>
-                                                    </td>
-                                                    <td colspan="2">
-                                                        <label>Password: </label><br>
-                                                        <span><b>{{journal_Conf_details.Password}}</b></span>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td colspan="2">
-                                                        <label>Publication Title: </label><br>
-                                                        <span><b>{{journal_Conf_details.PublicationTitle}}</b></span>
-                                                    </td>
-                                                    <td colspan="3">
-                                                        <label>Citation:</label><br>
-                                                        <span><b>{{journal_Conf_details.Citation}}</b></span>
-                                                    </td>
-                                                    <td colspan="3">
-                                                        <label>Comments</label><br>
-                                                        <span><b>{{journal_Conf_details.CommentsMT}}</b></span>
-                                                    </td>
-                                                    <td colspan="2">
-                                                        <label>Journal Editor Info: </label><br>
-                                                        <span><b> {{journal_Conf_details.JournalEditorInfo}}</b></span>
-                                                    </td>
-                                                </tr>
-                                            </ng-container>
-                                            <!--View Detail End-->
-
-                                            <!--Submission Detail Accordian Start-->
-                                            <tr class="model-open accordion">
-                                                <td colspan="10">
-                                                    <div class="row container">
-                                                        <div class="col-sm-4">
-                                                            <a (click)="showHideSubDetails(i, item)" class="btn go view_details" data-parent="detail_1">
-                                                                <i class="pi pi-chevron-right" [hidden]="showSubDetails && i == showSubDetailsIndex" style="padding-top: 5px;"></i>
-                                                                <i class="pi pi-chevron-down" *ngIf="showSubDetails && i == showSubDetailsIndex" style="padding-top: 5px;"></i> Submission Details
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
-
-                                            <ng-container *ngIf="showSubDetails &&  i == showSubDetailsIndex">
-                                                <tr colspan="10" *ngIf="showHideSubDetailsData">
-                                                    <td colspan="10" class="submission-inner-table">
-                                                        <table>
-                                                            <!--Submission Detail Head Start-->
-                                                            <thead style="color:#d7181f;padding-left:30px;">
-                                                                <tr class="header-style">
-                                                                    <th>No</th>
-                                                                    <th>Submission Date</th>
-                                                                    <th>Submission Package</th>
-                                                                    <th>Submission Confirmation</th>
-                                                                    <th>Decision</th>
-                                                                    <th>Decision Date</th>
-                                                                    <th>Decision Document</th>
-                                                                    <th></th>
-                                                                    <th></th>
-                                                                </tr>
-                                                            </thead>
-                                                            <!--Submission Detail Head End-->
-
-                                                            <tbody *ngIf="submission_details_data.length === 0">
-                                                                <tr>
-                                                                    <td colspan="9" style="text-align:center;color:#d7181f;cursor: auto !important;">
-                                                                        <b>No Submission Detail available.</b>
-                                                                    </td>
-                                                                </tr>
-                                                            </tbody>
-                                                            <!--Submission Detail Body Start-->
-                                                            <tbody *ngFor="let s of submission_details_data; let galleyIndex=index;">
-                                                                <tr>
-                                                                    <td>
-                                                                        <span>{{galleyIndex + 1}}</span>
-                                                                    </td>
-                                                                    <td width="215">
-                                                                        <span>{{s.SubmissionDate | date:'MMM d, y, hh:mm a'}}</span>
-                                                                    </td>
-                                                                    <td>
-                                                                        <a style="color: red;" (click)="downloadFile(s.SubmissionPkgURL, s.Title+'_SubmissionPkg_files')">Download
-                                                                            &nbsp;<i class="fa fa-download"
-                                                                                aria-hidden="true"></i></a>
-                                                                    </td>
-                                                                    <td>
-                                                                        <a style="color: red;" (click)="downloadFile(s.SubmissionURL, s.Title+'_SubmissionConfirmation_files')">Download
-                                                                            &nbsp;<i class="fa fa-download"
-                                                                                aria-hidden="true"></i></a>
-                                                                    </td>
-                                                                    <td>
-                                                                        <span>{{s.Decision}}</span>
-                                                                    </td>
-                                                                    <td>
-                                                                        <span>{{s.DecisionDate | date:'MMM d, y, hh:mm a'}}</span>
-                                                                    </td>
-                                                                    <td>
-                                                                        <a style="color: red;" (click)="downloadFile(s.DecisionURL,s.Title+'_Decision_files')">Download
-                                                                            &nbsp;<i class="fa fa-download"
-                                                                                aria-hidden="true"></i></a>
-                                                                    </td>
-                                                                    <td>
-                                                                        <a *ngIf="s.Decision === 'Accepted'" (click)="viewGalleyDetails(galleyIndex, s)" class="btn go view_details" data-parent="detail_1">
-                                                                            <i class="pi pi-plus-circle" *ngIf="!showHideGalleyDetails" style="padding-top: 5px;"></i>
-                                                                            <i class="pi pi-minus-circle" *ngIf="showHideGalleyDetails" style="padding-top: 5px;"></i> View galley details
-                                                                        </a>
-
-                                                                    </td>
-                                                                    <td></td>
-                                                                </tr>
-                                                                <ng-container *ngIf="galleyDetailsData.length === 0 && showHideGalleyData && galleyIndex === galleyIndexChecked">
-                                                                    <tr>
-                                                                        <td colspan="9" style="text-align:center;color:#d7181f;cursor: auto !important;top: 15px;">
-                                                                            <b>No Galley Details available.</b>
-                                                                        </td>
-                                                                    </tr>
-                                                                </ng-container>
-                                                                <ng-container *ngIf="showHideGalleyDetails && galleyIndex === galleyIndexChecked && showHideGalleyData">
-                                                                    <!--View Gallery Detail Start-->
-                                                                    <tr *ngFor="let g of galleyDetailsData; let i=index;">
-                                                                        <td></td>
-                                                                        <td>
-                                                                            <label>Galley N0.</label><br>
-                                                                            <span><b>{{i + 1}}</b></span>
-                                                                        </td>
-                                                                        <td>
-                                                                            <label>Galley Date:</label><br>
-                                                                            <span><b>{{g.GalleyDate | date:'MMM d, y, hh:mm a'}}</b></span>
-                                                                        </td>
-                                                                        <td colspan="6">
-                                                                            <label>Galley Document</label><br>
-                                                                            <a style="color: red;" (click)="downloadFile(g.GalleyURL,g.Title+'_GalleyDoc_files')">Download
-                                                                                &nbsp;<i class="fa fa-download"
-                                                                                    aria-hidden="true"></i></a>
-                                                                        </td>
-                                                                    </tr>
-                                                                </ng-container>
-                                                            </tbody>
-                                                            <!--Submission Detail Body Start-->
-                                                        </table>
-                                                    </td>
-                                                </tr>
-                                            </ng-container>
-                                            <!--Submission Detail Accordian End-->
-                                        </tbody>
-                                    </table>
-                                </td>
-                            </tr>
-                            <!--Inner Open Main Accordian Start-->
-                        </tbody>
-                        <!--Main Body Part Start-->
-                    </table>
+                    <!-- <ng-template #jcDetails></ng-template> -->
+                    <app-journal-conference-details #jcDetails (fileReplace)='replaceFile($event.type, $event.project,$event.milestone,$event.id)'></app-journal-conference-details>
                 </td>
             </tr>
         </ng-template>
@@ -425,7 +173,7 @@
 <!-- Add author Component End -->
 
 <!-- Add author Component Start-->
-<ng-container #authorDetailscontainer></ng-container>
+<!-- <ng-container #authorDetailscontainer></ng-container> -->
 <!-- Add author Component End -->
 
 <!-- Update author forms & emails -->
@@ -1089,5 +837,30 @@
     <p-footer>
         <button pButton type="button" label="Submit" [disabled]="submitBtn.isClicked" (click)="onSubmit('updateJCRequirementModal')"></button>
         <button pButton type="button" label="Close" (click)="cancelFormSub('updateJCRequirementModal')"></button>
+    </p-footer>
+</p-dialog>
+
+<!--- Replace Existing Document File-->
+
+<p-dialog header="Replace Document" [(visible)]="replaceDocument" [modal]="true" [draggable]="false" [contentStyle]="{'min-height':'150px','max-height':'450px'}" [responsive]="true" [style]="{'width': '45%'}" (onHide)="cancelFormSub('replaceDocument')">
+
+    <form id="myform" [formGroup]="replace_Document_Form">
+        <div class="ui-g">
+            <div class="row container">
+                <div class="col-lg-4">
+                    <label for="upload-document">Upload files:</label>
+                </div>
+                <div class="col-lg-8">
+                    <input type="file" name="myfile" class="form-control" (change)="onReplaceFile($event)" formControlName="documentFile" #fileInput />
+                    <div *ngIf="formSubmit.isSubmit && isValidReplaceDocumentForm.documentFile.errors">
+                        <div *ngIf="isValidReplaceDocumentForm.documentFile.errors.required" style="color:red;">File is required.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <p-footer>
+        <button pButton type="button" label="Submit" [disabled]="submitBtn.isClicked" (click)="onSubmit('replaceDocument')"></button>
+        <button pButton type="button" label="Close" (click)="cancelFormSub('replaceDocument')"></button>
     </p-footer>
 </p-dialog>

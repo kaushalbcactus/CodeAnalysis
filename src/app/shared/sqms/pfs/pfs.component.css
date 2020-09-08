@@ -1,0 +1,42 @@
+.cdFilters .statusFilter{
+  display: none;
+}
+/* .mat-button{
+  font-size: 20px;
+  min-width: 47px;
+} */
+.actions {
+  padding-left: 22px;
+}
+.hidden-row{
+  display:none;
+}
+.inactiveIcon{
+  margin-left: 8px;
+}
+::ng-deep .cd-rating{background: #4faf54;color: #fff;padding: 0px 8px;border-radius: 3px;display: inline-block;margin-right: 3px}
+::ng-deep .commentsText {
+width: 100%;
+}
+::ng-deep .pfTable div.ui-table-wrapper {
+overflow: visible!important;
+}
+
+::ng-deep .pfTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child {
+  overflow: visible;
+}
+
+::ng-deep .pfTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div {
+  position: relative;
+}
+
+::ng-deep .pfTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div>i {
+  top: 0px !important;
+}
+
+::ng-deep .pfTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div div.ui-menu {
+  top: 0px !important;
+  left: inherit !important;
+  right: 40px !important;
+}
+

@@ -1,11 +1,6 @@
 <div id="personalFeedBackContent">
 
   <p-tabMenu [model]="navLinks" class="innerTab personalTabs">
-    <!-- <ng-template pTemplate="link" let-link let-i="index">
-      <div class="ui-menuitem-text">
-        {{link.label}}
-      </div>
-    </ng-template> -->
   </p-tabMenu>
 
   <app-filters #filters (callApplyFilter)="personalFeedbackCalled($event)"></app-filters>

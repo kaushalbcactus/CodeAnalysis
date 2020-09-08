@@ -53,9 +53,21 @@ export class PubsuportConstantsService {
             top: 1,
             orderby: "Created desc"
         },
+        activeJournalConference: {
+            select: "ID",
+            filter: "Title eq '{{ProjectCode}}' and Status ne 'Deleted'",
+            top: 4500,
+            orderby: "Created desc"
+        },
+        activeJCSub: {
+            select: "ID",
+            filter: "Title eq '{{ProjectCode}}' and Status ne 'Deleted'",
+            top: 4500,
+            orderby: "Created desc"
+        },
         jcSubmission: {
             select: "ID, Title, JCID, SubmissionDate, SubmissionURL, SubmissionPkgURL, DecisionURL, DecisionDate, Decision, Status, Created ",
-            filter: "Title eq '{{ProjectCode}}' and JCID eq '{{JCID}}' ",
+            filter: "Title eq '{{ProjectCode}}' and JCID eq '{{JCID}}' and Status ne 'Deleted' ",
             top: 4500,
             orderby: "Created desc"
         },
@@ -63,6 +75,12 @@ export class PubsuportConstantsService {
             select: "ID",
             filter: "Title eq '{{ProjectCode}}' and Status eq '{{Status}}'",
             top: 1,
+            orderby: "Created desc"
+        },
+        jcSubmissionforResubmit: {
+            select: "ID, Status" ,
+            filter: "Title eq '{{ProjectCode}}' and Status ne 'Deleted'",
+            top: 2,
             orderby: "Created desc"
         },
         jcGalley: {

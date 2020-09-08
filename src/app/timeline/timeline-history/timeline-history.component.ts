@@ -3,7 +3,7 @@ import { Component, OnInit, ElementRef, ViewChild, ChangeDetectorRef } from '@an
 import { SPCommonService } from '../../Services/spcommon.service';
 import { TimelineConstantsService } from './../services/timeline-constants.service';
 import { DatePipe } from '@angular/common';
-import { LazyLoadEvent} from 'primeng/primeng';
+import { LazyLoadEvent } from 'primeng/primeng';
 import { SPOperationService } from '../../Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { CommonService } from 'src/app/Services/common.service';
@@ -186,35 +186,35 @@ export class TimelineHistoryComponent implements OnInit {
   createStructure(obj, moduleName, type, timelineProcessObjID) {
     obj.ID = timelineProcessObjID.ID ? timelineProcessObjID.ID : timelineProcessObjID;
     switch (type) {
-      case 'ProjectMgmt_Invoices':
-      case 'FD_Invoices':
+      case 'ProjectMgmt_InvoicesCT':
+      case 'FD_InvoicesCT':
         obj.versionUrl = this.constant.financeDashboard.invoice.getInvoiceVersion;
         obj.propertiesRequired = this.constant.financeDashboard.invoice.propertiesRequired;
         obj.entityType = moduleName + '_' + this.globalConstant.listNames.Invoices.name;
         break;
-      case 'ProjectMgmt_Proforma':
-      case 'FD_Proforma':
+      case 'ProjectMgmt_ProformaCT':
+      case 'FD_ProformaCT':
         obj.versionUrl = this.constant.financeDashboard.proforma.getProformaVersion;
         obj.propertiesRequired = this.constant.financeDashboard.proforma.propertiesRequired;
         obj.entityType = moduleName + '_' + this.globalConstant.listNames.Proforma.name;
         break;
-      case 'ProjectMgmt_InvoiceLineItems':
-      case 'FD_InvoiceLineItems':
+      case 'ProjectMgmt_InvoiceLineItemsCT':
+      case 'FD_InvoiceLineItemsCT':
         obj.versionUrl = this.constant.financeDashboard.invoiceLineItem.getInvoiceLineItemsVersion;
         obj.propertiesRequired = this.constant.financeDashboard.invoiceLineItem.propertiesRequired;
         obj.entityType = moduleName + '_' + this.globalConstant.listNames.InvoiceLineItems.name;
         break;
-      case 'FD_Rolling':
+      case 'FD_RollingCT':
         obj.versionUrl = this.constant.financeDashboard.project.getProjectVersions;
         obj.propertiesRequired = this.constant.financeDashboard.project.propertiesRequired;
         obj.entityType = moduleName + '_' + this.globalConstant.listNames.ProjectInformation.name;
         break;
-      case 'FD_ProjectFinances':
+      case 'FD_ProjectFinancesCT':
         obj.versionUrl = this.constant.financeDashboard.projectFinance.getProjectFinanceVersions;
         obj.propertiesRequired = this.constant.financeDashboard.projectFinance.propertiesRequired;
         obj.entityType = moduleName + '_' + this.globalConstant.listNames.ProjectFinances.name;
         break;
-      case 'ProjectMgmt_ProjectFinances':
+      case 'ProjectMgmt_ProjectFinancesCT':
         obj.versionUrl = this.constant.projectManagement.projectFinance.getProjectFinanceVersions;
         obj.propertiesRequired = this.constant.projectManagement.projectFinance.propertiesRequired;
         obj.entityType = moduleName + '_' + this.globalConstant.listNames.ProjectFinances.name;
@@ -232,22 +232,22 @@ export class TimelineHistoryComponent implements OnInit {
         obj.status = 'Pending';
         obj.data = timelineProcessObjID;
         break;
-      case 'ProjectMgmt_ProjectBudgetBreakup':
+      case 'ProjectMgmt_ProjectBudgetBreakupCT':
         obj.versionUrl = this.constant.projectManagement.projectBudgetBreakup.getVersions;
         obj.propertiesRequired = this.constant.projectManagement.projectBudgetBreakup.propertiesRequired;
         obj.entityType = moduleName + '_' + this.globalConstant.listNames.ProjectBudgetBreakup.name;
         break;
-      case 'ProjectMgmt_ProjectFinanceBreakup':
+      case 'ProjectMgmt_ProjectFinanceBreakupCT':
         obj.versionUrl = this.constant.projectManagement.projectFinanceBreakup.getVersions;
         obj.propertiesRequired = this.constant.projectManagement.projectFinanceBreakup.propertiesRequired;
         obj.entityType = moduleName + '_' + this.globalConstant.listNames.ProjectFinanceBreakup.name;
         break;
-      case 'ProjectMgmt_SOW':
+      case 'ProjectMgmt_SOWCT':
         obj.versionUrl = this.constant.projectManagement.sow.getVersions;
         obj.propertiesRequired = this.constant.projectManagement.sow.propertiesRequired;
         obj.entityType = moduleName + '_' + this.globalConstant.listNames.SOW.name;
         break;
-      case 'ProjectMgmt_SOWBudgetBreakup':
+      case 'ProjectMgmt_SOWBudgetBreakupCT':
         obj.versionUrl = this.constant.projectManagement.sowBudgetBreakup.getVersions;
         obj.propertiesRequired = this.constant.projectManagement.sowBudgetBreakup.propertiesRequired;
         obj.entityType = moduleName + '_' + this.globalConstant.listNames.SOWBudgetBreakup.name;
@@ -257,41 +257,41 @@ export class TimelineHistoryComponent implements OnInit {
 
   async intialRequestCreation(moduleName, type, clickedItemId) {
     switch (type) {
-      case 'ProjectMgmt_Invoices':
-      case 'FD_Invoices':
+      case 'ProjectMgmt_InvoicesCT':
+      case 'FD_InvoicesCT':
         this.initialRequest = await this.getInvoiceVersions(moduleName, clickedItemId, '0', this.top);
         break;
-      case 'ProjectMgmt_Proforma':
-      case 'FD_Proforma':
+      case 'ProjectMgmt_ProformaCT':
+      case 'FD_ProformaCT':
         this.initialRequest = await this.getProforma(moduleName, clickedItemId, '0', this.top);
         break;
-      case 'ProjectMgmt_InvoiceLineItems':
-      case 'FD_InvoiceLineItems':
+      case 'ProjectMgmt_InvoiceLineItemsCT':
+      case 'FD_InvoiceLineItemsCT':
         this.initialRequest = await this.getInvoiceLineItems(moduleName, clickedItemId, '0', this.top);
         break;
       case 'FD_Rolling':
         this.initialRequest = await this.getFDProjectVersions(moduleName, clickedItemId, '0', '1');
         break;
-      case 'FD_ProjectFinances':
+      case 'FD_ProjectFinancesCT':
         this.initialRequest = await this.getFDProjectFinanceVersions(moduleName, clickedItemId, '0', this.top);
         break;
-      case 'ProjectMgmt_ProjectFinances':
+      case 'ProjectMgmt_ProjectFinancesCT':
         this.initialRequest = await this.getProjectFinanceVersions(moduleName, clickedItemId, '0', this.top);
         break;
       case 'ProjectMgmt_ProjectFromDashboard':
       case 'ProjectMgmt_Project':
         this.initialRequest = await this.getProjectVersions(moduleName, clickedItemId, '0', this.top, type);
         break;
-      case 'ProjectMgmt_ProjectBudgetBreakup':
+      case 'ProjectMgmt_ProjectBudgetBreakupCT':
         this.initialRequest = await this.getProjectBudgetVersions(moduleName, clickedItemId, '0', this.top);
         break;
-      case 'ProjectMgmt_ProjectFinanceBreakup':
+      case 'ProjectMgmt_ProjectFinanceBreakupCT':
         this.initialRequest = await this.getProjectFinanceBreakupVersions(moduleName, clickedItemId, '0', this.top);
         break;
-      case 'ProjectMgmt_SOW':
+      case 'ProjectMgmt_SOWCT':
         this.initialRequest = await this.getSowVersions(moduleName, clickedItemId, '0', this.top);
         break;
-      case 'ProjectMgmt_SOWBudgetBreakup':
+      case 'ProjectMgmt_SOWBudgetBreakupCT':
         this.initialRequest = await this.getSowBudgetBreakupVersions(moduleName, clickedItemId, '0', this.top);
         break;
     }
@@ -311,42 +311,43 @@ export class TimelineHistoryComponent implements OnInit {
 
   responseCreation(type, obj) {
     switch (type) {
-      case 'ProjectMgmt_Invoices':
-      case 'FD_Invoices':
+      case 'ProjectMgmt_InvoicesCT':
+      case 'FD_InvoicesCT':
         obj.data = this.setInvoiceVersion(obj.versions, obj.verDifference);
         break;
-      case 'ProjectMgmt_Proforma':
-      case 'FD_Proforma':
+      case 'ProjectMgmt_ProformaCT':
+      case 'FD_ProformaCT':
         obj.data = this.setProformaVersion(obj.versions, obj.verDifference);
         break;
-      case 'FD_ProjectInformation':
-      case 'FD_ProjectFinances':
+      case 'FD_ProjectInformationCT':
+      case 'FD_ProjectFinancesCT':
         obj.data = this.setFDPrjVersion(obj.versions, obj.verDifference);
         break;
-      case 'ProjectMgmt_ProjectFinances':
+      case 'ProjectMgmt_ProjectFinancesCT':
         obj.data = this.setPrjFinanceVersion(obj.versions, obj.verDifference);
         break;
-      case 'ProjectMgmt_InvoiceLineItems':
-      case 'FD_InvoiceLineItems':
+      case 'ProjectMgmt_InvoiceLineItemsCT':
+      case 'FD_InvoiceLineItemsCT':
         obj.data = this.setInvLineItemsVersion(obj.versions, obj.verDifference);
         break;
+      case 'ProjectMgmt_Project':
       case 'ProjectMgmt_ProjectFromDashboard':
-      case 'ProjectMgmt_ProjectInformation':
+      case 'ProjectMgmt_ProjectInformationCT':
         obj.data = this.setPrjVersion(obj.versions, obj.verDifference, type);
         break;
-      case 'ProjectMgmt_ProjectBudgetBreakup':
+      case 'ProjectMgmt_ProjectBudgetBreakupCT':
         obj.data = this.setPrjBudgetBreakupVersion(obj.versions, obj.verDifference);
         break;
-      case 'ProjectMgmt_ProjectFinanceBreakup':
+      case 'ProjectMgmt_ProjectFinanceBreakupCT':
         obj.data = this.setPrjFinanceBreakupVersion(obj.versions, obj.verDifference);
         break;
-      case 'ProjectMgmt_SOW':
+      case 'ProjectMgmt_SOWCT':
         obj.data = this.setSowVersion(obj.versions, obj.verDifference);
         break;
-      case 'ProjectMgmt_SOWBudgetBreakup':
+      case 'ProjectMgmt_SOWBudgetBreakupCT':
         obj.data = this.setSowBudgetBreakupVersion(obj.versions, obj.verDifference);
         break;
-      case 'ProjectMgmt_Documents':
+      case 'ProjectMgmt_DocumentsCT':
         obj.data = this.setPrjDocuments(obj.ID);
         break;
     }
@@ -390,6 +391,7 @@ export class TimelineHistoryComponent implements OnInit {
   loadData(event: LazyLoadEvent) {
     this.loading = true;
     setTimeout(() => {
+
       if (this.checkIfEmptyObject(event.filters) && !this.filterEnabled) {
         if (event.first > this.tableCSSTop) {
           this.tableCSSTop = event.first;
@@ -2039,13 +2041,13 @@ export class TimelineHistoryComponent implements OnInit {
         this.getFilterData(obj.tableData.value)
         this.cdr.detectChanges();
       }
-      console.log('this.objTimelineData ',this.filter);
+      console.log('this.objTimelineData ', this.filter);
     } else {
       this.lazy = true;
       this.getFilterData(this.timelineData);
       this.cdr.detectChanges();
     }
-    
+
   }
 
   isEmpty(obj) {

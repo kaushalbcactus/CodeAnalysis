@@ -1,10 +1,11 @@
-import { Component, OnInit, ViewChild, ElementRef, OnChanges, Input, NgZone } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Input} from '@angular/core';
 import { gantt, Gantt } from '../../dhtmlx-gantt/codebase/source/dhtmlxgantt';
 // import { gantt, Gantt } from '../../dhtmlx-gantt/codebase/dhtmlxganttmin';
 import '../../dhtmlx-gantt/codebase/ext/dhtmlxgantt_tooltip';
 import '../../dhtmlx-gantt/codebase/ext/dhtmlxgantt_marker';
 
 import '../../dhtmlx-gantt/codebase/ext/api';
+import { GanttService } from './service/gantt.service';
 
 @Component({
   selector: 'app-gantt-chart',
@@ -23,14 +24,18 @@ export class GanttChartComponent implements OnInit {
   label = "label";
   resource = [];
   tasks = {};
+  @Input() ganttData: any
+  @Input() beforeTaskDrag: (id: any, mode: any, event: any) => boolean;
+  @Input() taskClick: (taskId: any, event: any) => boolean;
+  @Input() afterTaskDrag: (id: any, mode: any, event: any) => boolean;
+  @Input() beforeTaskChanged: (id: any, mode: any, task: any) => boolean;
 
-  constructor() { }
+  constructor(public ganttService: GanttService) { }
 
   ngOnInit() {
-
   }
 
-  onLoad(data, resource) {
+  onLoad(resource) {
 
     var zoomConfig = {
       levels: [
@@ -404,7 +409,7 @@ export class GanttChartComponent implements OnInit {
 
     gantt.config.fit_tasks = true;
 
-    this.ganttParseObject = data;
+    this.ganttParseObject = this.ganttData;
 
     gantt.config.skip_off_time = true;
 
@@ -422,18 +427,55 @@ export class GanttChartComponent implements OnInit {
 
     gantt.init(this.ganttContainer.nativeElement)
     gantt.config.branch_loading = true;
-    gantt.parse(data);
+    gantt.parse(this.ganttData);
+    
+  }
 
+  ganttAttachEvents() {
+
+    if (this.ganttService.attachedEvents.length) {
+      this.ganttService.attachedEvents.forEach(element => {
+        gantt.detachEvent(element);
+      });
+      this.ganttService.attachedEvents = [];
+    }
+    
+    const beforeTaskChanged = gantt.attachEvent("onBeforeTaskChanged", (id, mode, task) => {
+      let drag = this.beforeTaskChanged(id,mode,task);
+      return drag;
+    });
+
+    this.ganttService.attachedEvents.push(beforeTaskChanged);
+    
+    const beforeTaskDrag = gantt.attachEvent(
+    "onBeforeTaskDrag",
+    (id, mode, event) => {
+      let drag = this.beforeTaskDrag(id,mode,event);
+      return drag;        
+    })
+
+    this.ganttService.attachedEvents.push(beforeTaskDrag);
+
+    const taskClick = gantt.attachEvent("onTaskClick", (taskId, event) => {
+      let drag = this.taskClick(taskId,event);
+      return drag;
+    });
+    this.ganttService.attachedEvents.push(taskClick);
+
+    const afterTaskDrag = gantt.attachEvent("onAfterTaskDrag", (id, mode, event) => {
+      let drag = this.afterTaskDrag(id,mode,event);
+      return drag;
+    });
+
+    this.ganttService.attachedEvents.push(afterTaskDrag);
   }
 
 
   setScaleConfig(value) {
-    // this.showLoader();
     gantt.ext.zoom.setLevel(value);
     setTimeout(() => {
       gantt.init(this.ganttContainer.nativeElement);
       gantt.parse(this.ganttParseObject);
-      // this.showTable();
     }, 300);
   }
 
@@ -448,11 +490,9 @@ export class GanttChartComponent implements OnInit {
   zoomIn() {
     gantt.ext.zoom.zoomIn();
     if (gantt.ext.zoom.getCurrentLevel() === 0) {
-      // this.showLoader();
       gantt.init(this.ganttContainer.nativeElement);
       setTimeout(() => {
         gantt.parse(this.ganttParseObject);
-        // this.showTable();
       }, 300);
     }
   }
@@ -460,11 +500,9 @@ export class GanttChartComponent implements OnInit {
   zoomOut() {
     gantt.ext.zoom.zoomOut();
     if (gantt.ext.zoom.getCurrentLevel() >= 1 && gantt.ext.zoom.getCurrentLevel() <= 5) {
-      // this.showLoader();
       setTimeout(() => {
         gantt.init(this.ganttContainer.nativeElement)
         gantt.parse(this.ganttParseObject);
-        // this.showTable();
       }, 300);
     }
   }

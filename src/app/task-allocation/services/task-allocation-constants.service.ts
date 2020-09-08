@@ -31,7 +31,7 @@ export class TaskAllocationConstantsService {
     };
     taskallocationComponent = {
         projectResources: {
-            select: 'ID,ProjectCode,Milestone,Status,PrevStatus,WBJID,ProjectFolder,Milestones,TA,DeliverableType,ClientLegalEntity,ProjectType,BusinessVertical, Writers/ID,Writers/Name,Writers/Title,Reviewers/ID,Reviewers/Name,Reviewers/Title,QC/ID,QC/Name,QC/Title, Editors/ID,Editors/Name,Editors/Title,PSMembers/ID,PSMembers/Name,PSMembers/Title, GraphicsMembers/ID,GraphicsMembers/Name,GraphicsMembers/Title, PrimaryResMembers/ID,PrimaryResMembers/Name,PrimaryResMembers/Title, AllDeliveryResources/ID, AllDeliveryResources/Name, AllDeliveryResources/Title,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail',
+            select: 'ID,ProjectCode,Milestone,Status,PrevStatus,WBJID,ProjectFolder,Milestones,TA,DeliverableType,ClientLegalEntity,ProjectType,BusinessVertical, Writers/ID,Writers/Name,Writers/Title,Reviewers/ID,Reviewers/Name,Reviewers/Title,QC/ID,QC/Name,QC/Title, Editors/ID,Editors/Name,Editors/Title,PSMembers/ID,PSMembers/Name,PSMembers/Title, GraphicsMembers/ID,GraphicsMembers/Name,GraphicsMembers/Title, PrimaryResMembers/ID,PrimaryResMembers/Name,PrimaryResMembers/Title, AllDeliveryResources/ID, AllDeliveryResources/Name, AllDeliveryResources/Title,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail,IsPubSupport',
             expand: 'Writers/ID,Writers/Name,Writers/Title,Reviewers/ID,Reviewers/Name,Reviewers/Title,QC/ID,QC/Name,QC/Title, Editors/ID,Editors/Name,Editors/Title,PSMembers/ID,PSMembers/Name,PSMembers/Title, GraphicsMembers/ID,GraphicsMembers/Name,GraphicsMembers/Title, PrimaryResMembers/ID,PrimaryResMembers/Name,PrimaryResMembers/Title,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail,AllDeliveryResources/ID,AllDeliveryResources/Name,AllDeliveryResources/Title',
             filter: "ProjectCode eq '{{ProjectCode}}'",
             top: 4500
@@ -127,4 +127,36 @@ export class TaskAllocationConstantsService {
           top: 4500
         }
     };
+    myDashboardComponent = {
+    //   SubmissionPkg: {
+    //     select: 'ID,Title,JCID,SubmissionDate,SubmissionURL,SubmissionPkgURL,DecisionURL,DecisionDate,Decision,Status',
+    //     filter: 'Title eq \'{{projectCode}}\' and (Status eq \'{{Status}}\'  or  Status eq \'{{StatusResubmit}}\')',
+    //     top: 1
+    //   },
+
+      SubmissionPkg: {
+        select: 'ID,Title,Status',
+        filter: 'Title eq \'{{projectCode}}\' and (Status eq \'{{Status}}\'  or  Status eq \'{{StatusResubmit}}\')',
+        top: 1
+      },
+
+  
+      GalleySubCat: {
+        select: 'ID,Title,JCID,SubmissionDate,SubmissionURL,SubmissionPkgURL,DecisionURL,DecisionDate,Decision,Status',
+        filter: 'Title eq \'{{projectCode}}\' and (Status eq \'{{Status}}\' or  Status eq \'{{Status1}}\')',
+        top: 1
+      },
+      Submit: {
+        select: 'ID,Title,Status',
+        filter: 'Title eq \'{{projectCode}}\' and (Status eq \'{{Status}}\' or  Status eq \'{{Status1}}\')',
+        top: 1
+      },
+      JournalRequirement:
+      {
+        select: 'ID,Title,Status',
+        filter: 'Title eq \'{{projectCode}}\'',
+        top: 1,
+        orderby: 'Created desc'
+      }
+    }
 }

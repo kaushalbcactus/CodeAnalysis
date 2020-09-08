@@ -314,12 +314,12 @@ export class UserCapacitycommonService {
 
         const allTimeSpentArray = oUser.TimeSpentTasks.filter(
           (c) =>
-            c.TimeSpentDate.getTime() ===
+          new Date(c.TimeSpentDate).getTime() ===
             new Date(oUser.dates[i].date).getTime()
         )
           ? oUser.TimeSpentTasks.filter(
             (c) =>
-              c.TimeSpentDate.getTime() ===
+            new Date(c.TimeSpentDate).getTime() ===
               new Date(oUser.dates[i].date).getTime()
           ).map(
             (c) =>
@@ -783,6 +783,12 @@ export class UserCapacitycommonService {
         oCapacity.arrUserDetails.map(
           (c) =>
             (c.AvailableHoursRID = selectedUsers.find(
+              (c) =>
+                c.ResourceUserID === oCapacity.arrUserDetails[indexUser].uid
+            ).OriginalUserID ? selectedUsers.find(
+              (c) =>
+                c.ResourceUserID === oCapacity.arrUserDetails[indexUser].uid
+            ).OriginalUserID : selectedUsers.find(
               (c) =>
                 c.ResourceUserID === oCapacity.arrUserDetails[indexUser].uid
             ).ID)

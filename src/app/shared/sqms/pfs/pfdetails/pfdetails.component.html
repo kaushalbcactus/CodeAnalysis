@@ -1,10 +1,5 @@
 <!-- Modal Dialog for Positive feedback-->
 
-<p-dialog #pfPopupContent [modal]="true" [(visible)]="display" [closable]="false"
-  [style]="{width: '664px',heigth: '800px'}" positionTop="35">
-  <p-header>
-    <h4>{{pf.actionClickedTitle}}</h4>
-  </p-header>
   <div class="popupLoader" [hidden]="hidePopupLoader">
     <div id="mainLoader"></div>
     <div id="mainLoaderText">PLEASE WAIT...UPDATING PF</div>
@@ -41,8 +36,8 @@
       </tr>
     </table>
   </div>
-  <p-footer>
-    <div [hidden]='hidePopupTable'>
+<div class="footer">
+      <div [hidden]='hidePopupTable'>
       <button type="button" class="btn btn-light button cancelbtn" (click)="close()">Cancel</button>
 
       <button type="button" id='tagBtn' class="btn btn-light button savebtn" (click)="tag()"
@@ -51,5 +46,5 @@
       <button type="button" id='confirm' class="btn btn-light button savebtn" (click)="updatePF()"
         [hidden]="pf.actionClicked !== 'accept' && pf.actionClicked !== 'reject'">Confirm</button>
     </div>
-  </p-footer>
-</p-dialog>
+</div>
+

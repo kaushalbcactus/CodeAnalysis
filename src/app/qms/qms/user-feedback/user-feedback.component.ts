@@ -57,8 +57,8 @@ export class UserFeedbackComponent implements OnInit, AfterViewChecked {
       { field: 'Task', header: 'Task', visibility: true, exportable: true },
       { field: 'Type', header: 'Type', visibility: true, exportable: true },
       { field: 'Feedbackby', header: 'Feedback By', visibility: true, exportable: true },
-      { field: 'EvaluatorSkill', header: 'Evaluator Skill', visibility: true, exportable: true },
       { field: 'Rating', header: 'Rating', visibility: true, exportable: true },
+      { field: 'EvaluatorSkill', header: 'Evaluator Skill', visibility: true, exportable: true },
       { field: 'Comments', header: 'Comments', visibility: true, exportable: true },
       { field: 'Parameters', header: 'Parameters', visibility: false, exportable: true },
       { field: 'Score', header: 'Score', visibility: false, exportable: true }
@@ -165,11 +165,13 @@ export class UserFeedbackComponent implements OnInit, AfterViewChecked {
         } else if (arrScoreCards[i]) {
           arrScoreCards[i].ParameterRating = '';
           arrScoreCards[i].Value = '';
+          arrScoreCards[i].parameters = [];
           arrRatings[i].retItems.forEach(elem => {
             arrScoreCards[i].ParameterRating = filterObj.managerView ? arrScoreCards[i].ParameterRating + elem.Parameter.Title + '<br style="mso-data-placement:same-cell;" />' :
               arrScoreCards[i].ParameterRating + elem.Parameter.Title + '\n';
             arrScoreCards[i].Value = filterObj.managerView ? arrScoreCards[i].Value + elem.Rating + '<br style="mso-data-placement:same-cell;" />' :
               arrScoreCards[i].Value + elem.Rating + '\n';
+            arrScoreCards[i].parameters.push({property: elem.Parameter.Title, value: elem.Rating});
           });
         }
       }
@@ -209,7 +211,8 @@ export class UserFeedbackComponent implements OnInit, AfterViewChecked {
         Rating: element.AverageRatingNM ? element.AverageRatingNM : '',
         Comments: element.CommentsMT ? element.CommentsMT : '',
         Parameters: element.ParameterRating ? element.ParameterRating : '',
-        Score: element.Value ? element.Value : ''
+        Score: element.Value ? element.Value : '',
+        ParameterRatings: element.parameters ? element.parameters : []
       });
     });
     this.ref = this.userFeedbackTable;
@@ -297,6 +300,28 @@ export class UserFeedbackComponent implements OnInit, AfterViewChecked {
       }
       this.cdr.detectChanges();
     }
+  }
+
+  showOverlayPanel(event, rowData, ratingOP, target?) {
+    ratingOP.showOverlay(event, rowData, event.target.parentElement);
+    setTimeout(() => {
+      let panel: any = document.querySelector(
+        ".ratingOverlayComp > div"
+      );
+      let panelContainer: any = document.getElementById("s4-workspace");
+      let topAdject = -250;
+      if (panelContainer) {
+        topAdject =
+          panelContainer.scrollTop > 0
+            ? panelContainer.scrollTop - panel.clientHeight
+            : 0;
+        if (topAdject < 0) {
+          topAdject = panelContainer.scrollTop;
+        }
+      }
+      panel.style.top = event.pageY + topAdject + "px";
+      // panel.style.left = event.pageX + "px";
+    }, 50);
   }
 
 }

@@ -1,18 +1,18 @@
 import { Component, OnInit, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
-import { GlobalService } from '../../../../../Services/global.service';
-import { ConstantsService } from '../../../../../Services/constants.service';
-import { SPOperationService } from '../../../../../Services/spoperation.service';
-import { SPCommonService } from '../../../../../Services/spcommon.service';
-import { QMSConstantsService } from '../../../services/qmsconstants.service';
+import { GlobalService } from 'src/app/Services/global.service';
+import { ConstantsService } from 'src/app/Services/constants.service';
 import { CommonService } from 'src/app/Services/common.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
+import { QMSConstantsService } from 'src/app/qms/qms/services/qmsconstants.service';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 
 @Component({
-  selector: 'app-popup',
-  templateUrl: './popup.component.html',
-  styleUrls: ['./popup.component.css']
+  selector: 'app-pfdetails',
+  templateUrl: './pfdetails.component.html',
+  styleUrls: ['./pfdetails.component.css']
 })
-export class PopupComponent implements OnInit {
-  @ViewChild('pfPopupContent', { static: true }) popupContent: ElementRef;
+export class PfdetailsComponent implements OnInit {
+  // @ViewChild('pfPopupContent', { static: true }) popupContent: ElementRef;
 
   display = false;
   @Output() bindTableEvent = new EventEmitter<{}>();
@@ -79,21 +79,28 @@ export class PopupComponent implements OnInit {
     private globalConstant: ConstantsService,
     private commonService: CommonService,
     private spService: SPOperationService,
-    private qmsConstant: QMSConstantsService) {
+    private qmsConstant: QMSConstantsService,
+    private popupData: DynamicDialogConfig,
+    public popupConfig: DynamicDialogRef) {
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    const content = this.popupData.data;
+    if (content) {
+      const resourceDetails = await this.getResourceDetails(content.Title);
+      this.setPFObject(content, resourceDetails);
+    }
   }
 
-  async openPopup(element: any, content: any) {
-    this.display = true;
-    const currentElement = {
-      currentTarget: element.currentTarget,
-      Status: element.Status
-    };
-    const resourceDetails = await this.getResourceDetails(content.Title);
-    this.setPFObject(currentElement, content, resourceDetails);
-  }
+  // async openPopup(element: any, content: any) {
+  //   this.display = true;
+  //   const currentElement = {
+  //     currentTarget: element.currentTarget,
+  //     Status: element.Status
+  //   };
+  //   const resourceDetails = await this.getResourceDetails(content.Title);
+  //   this.setPFObject(currentElement, content, resourceDetails);
+  // }
 
   async getResourceDetails(code) {
     const batchURL = [];
@@ -126,12 +133,12 @@ export class PopupComponent implements OnInit {
    * @param element-button clicked
    * @param content-cd row
    */
-  setPFObject(element, content, resourceDetails) {
+  setPFObject(content, resourceDetails) {
     this.pf.pfID = '' + content.ID;
     this.pf.projectCode = content.Title;
-    this.pf.actionClicked = element.currentTarget.id;
-    this.pf.Status = element.Status ? element.Status : '';
-    this.pf.actionClickedTitle = element.currentTarget.title;
+    this.pf.actionClicked = content.actionClicked;
+    this.pf.Status = content.status ? content.status : '';
+    this.pf.actionClickedTitle = content.actionClickedTitle;
     this.pf.deliveryLeads = content.DeliveryLeads && content.DeliveryLeads.results ? this.getResourceEmail(content.DeliveryLeads.results) : this.pf.deliveryLeads;
     this.pf.allDeliveryResources = resourceDetails.AllDeliveryResources && resourceDetails.AllDeliveryResources.results ? this.getResourceEmail(resourceDetails.AllDeliveryResources.results) : this.pf.allDeliveryResources;
     this.pf.primaryResources = resourceDetails.PrimaryResMembers && resourceDetails.PrimaryResMembers.results ? this.getResourceEmail(resourceDetails.PrimaryResMembers.results) : this.pf.primaryResources;
@@ -147,14 +154,20 @@ export class PopupComponent implements OnInit {
    * reset accountable resource and close popup
    */
   close() {
-    this.resetAccountableResource();
-    this.display = false;
+    // this.resetAccountableResource();
+    // this.display = false;
+    this.popupConfig.close({
+      pf: [],
+      action: 'Cancel',
+      msgType: '',
+      msg: ''
+    });
   }
 
-  resetAccountableResource() {
-    this.pf.selectedGroup = null;
-    this.pf.selectedTaggedItem = null;
-  }
+  // resetAccountableResource() {
+  //   this.pf.selectedGroup = null;
+  //   this.pf.selectedTaggedItem = null;
+  // }
 
   /**
    * updates CD
@@ -182,10 +195,11 @@ export class PopupComponent implements OnInit {
   }
 
   tag() {
+    let msg = '';
     this.hidePopupLoader = false;
     this.hidePopupTable = true;
     setTimeout(async () => {
-      const delivery1 = this.pf.selectedTaggedItem.DeliveryLevel1.results ? this.pf.selectedTaggedItem.DeliveryLevel1.results : [];
+      // const delivery1 = this.pf.selectedTaggedItem.DeliveryLevel1.results ? this.pf.selectedTaggedItem.DeliveryLevel1.results : [];
       const delivery2 = [this.pf.selectedTaggedItem.DeliveryLevel2.ID ? this.pf.selectedTaggedItem.DeliveryLevel2.ID : ''];
       const delivery2Email = [this.pf.selectedTaggedItem.DeliveryLevel2.EMail ? this.pf.selectedTaggedItem.DeliveryLevel2.EMail : ''];
       const allDeliveryEmails = [...delivery2Email];
@@ -201,9 +215,10 @@ export class PopupComponent implements OnInit {
 
       this.update(pfDetails);
       // Send updated pf to PF component and update CD
-      this.bindTableEvent.emit(this.pf);
+      // this.bindTableEvent.emit(this.pf);
       // tslint:disable-next-line
-      this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'PF Tagged Successfully!' });
+      msg = 'Positive feedback tagged successfully.';
+      // this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'PF Tagged Successfully!' });
       const createPFTemplate = await this.getMailContent(this.qmsConstant.EmailTemplates.PF.CreatePositiveFeedback);
       if (createPFTemplate.length > 0) {
         let createMailContent = createPFTemplate[0].ContentMT;
@@ -213,9 +228,15 @@ export class PopupComponent implements OnInit {
         this.commonService.SetNewrelic('QMS', 'ClientFeedBack-cfposition', 'sendMail');
         this.spService.sendMail(strTo, this.global.currentUser.email, createMailSubject, createMailContent, this.global.currentUser.email);
       }
-      this.close();
+      // this.close();
       this.hidePopupLoader = true;
       this.hidePopupTable = false;
+      this.popupConfig.close({
+        pf: this.pf,
+        action: 'tag',
+        msgType: this.globalConstant.MessageType.success,
+        msg
+      });
     });
   }
 
@@ -353,11 +374,18 @@ export class PopupComponent implements OnInit {
         }
       }
       this.update(pfDetails);
-      await this.bindTableEvent.emit(this.pf);
-      this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'Positive feedback ' + this.pf.Status + '!' });
-      this.close();
+      const msg = 'Positive feedback ' + this.pf.Status + '.';
+      // await this.bindTableEvent.emit(this.pf);
+      // this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'Positive feedback ' + this.pf.Status + '!' });
+      // this.close();
       this.hidePopupLoader = true;
       this.hidePopupTable = false;
+      this.popupConfig.close({
+        pf: this.pf,
+        action: 'updatePF',
+        msgType: this.globalConstant.MessageType.success,
+        msg
+      });
     });
   }
 

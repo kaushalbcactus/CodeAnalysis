@@ -28,7 +28,7 @@
   </div>
 
     <!-- **********************************************************************************************************
-                                                         loader enable 
+                                                         loader enable
 ********************************************************************************************************** -->
   <div fxLayout="column" style="padding: 10vw;width: 100%;" fxLayoutAlign="center center" *ngIf="loaderenable">
     <div id="scInnerLoader"></div>
@@ -220,7 +220,7 @@
 
 
 
-    <!--****************************************************************************************** 
+    <!--******************************************************************************************
               //  dialog to display Project Resources
         ****************************************************************************************** -->
 
@@ -276,7 +276,7 @@
 
     </mat-expansion-panel>
 
-    <!--****************************************************************************************** 
+    <!--******************************************************************************************
         //  dialog to view shared  Document
       ****************************************************************************************** -->
     <mat-expansion-panel [expanded]="step === 2" (opened)="setStep(2)">
@@ -291,12 +291,44 @@
 
     </mat-expansion-panel>
 
-    <!--****************************************************************************************** 
+     <!--******************************************************************************************
+        //  dialog to show CDs/PFs
+        ****************************************************************************************** -->
+        <mat-expansion-panel [expanded]="step === 3" (opened)="setStep(3)">
+          <mat-expansion-panel-header>
+            <mat-panel-title style="color:#000000;padding: 5px 0px 0px 0px;">
+              <mat-icon>feedback</mat-icon> &nbsp;&nbsp; PF's / Cd's
+            </mat-panel-title>
+
+          </mat-expansion-panel-header>
+          <ng-template matExpansionPanelContent>
+            <app-cdpf [prjCode]="ProjectDetails.ProjectCode"></app-cdpf>
+          </ng-template>
+
+        </mat-expansion-panel>
+
+    <!--******************************************************************************************
+      //  dialog to show PubSupport Details
+      ****************************************************************************************** -->
+      <mat-expansion-panel *ngIf="ProjectPopupDetails.IsPubSupport == 'Yes'" [expanded]="step === 4" (opened)="setStep(4)">
+        <mat-expansion-panel-header>
+          <mat-panel-title style="color:#000000;padding: 5px 0px 0px 0px;">
+            <mat-icon>event_note</mat-icon> &nbsp;&nbsp; PubSupport Details
+          </mat-panel-title>
+
+        </mat-expansion-panel-header>
+        <ng-template matExpansionPanelContent>
+          <app-journal-conference-details [projectObj]="ProjectDetails"></app-journal-conference-details>
+        </ng-template>
+
+      </mat-expansion-panel>
+
+    <!--******************************************************************************************
         //  dialog to view project Timeline
       ****************************************************************************************** -->
 
 
-    <mat-expansion-panel [expanded]="step === 3" (opened)="setStep(3)">
+    <mat-expansion-panel [expanded]="step === 5" (opened)="setStep(5)">
       <mat-expansion-panel-header>
         <mat-panel-title style="color:#000000;padding: 5px 0px 0px 0px;">
           <mat-icon style="vertical-align: middle;">timeline</mat-icon> &nbsp;&nbsp; Project Timeline
@@ -309,10 +341,10 @@
 
     </mat-expansion-panel>
 
-    <!--****************************************************************************************** 
+    <!--******************************************************************************************
         //  dialog to show project drafts
         ****************************************************************************************** -->
-    <mat-expansion-panel [expanded]="step === 4" (opened)="setStep(4)">
+    <mat-expansion-panel [expanded]="step === 6" (opened)="setStep(6)">
       <mat-expansion-panel-header>
         <mat-panel-title style="color:#000000;padding: 5px 0px 0px 0px;">
           <mat-icon>folder</mat-icon> &nbsp;&nbsp; Project Drafts

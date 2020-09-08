@@ -71,7 +71,7 @@ export class PreStackcommonService {
         allocationType: ''
       };
       const resourceCapacity: IUserCapacity = await this.recalculateUserCapacity(allocationData);
-      const allocationSplit = await this.performAllocation(resourceCapacity, allocationData, false, null, null, []);
+      const allocationSplit = await this.performAllocation(resourceCapacity, allocationData, false, []);
       const objDailyAllocation: IPreStack = this.getAllocationPerDay(resourceCapacity, allocationData, allocationSplit.arrAllocation);
       this.setAllocationPerDay(objDailyAllocation, milestoneTask);
       milestoneTask.allocationAlert = false;
@@ -200,7 +200,7 @@ export class PreStackcommonService {
    * Perform prestack allocation or equal split allocation
    */
   async performAllocation(resource: IUserCapacity, allocationData: IDailyAllocationTask,
-    allocationChanged: boolean, oldValue, oldAllocation, allocationSplit): Promise<IPerformAllocationObject> {
+    allocationChanged: boolean, allocationSplit): Promise<IPerformAllocationObject> {
     let arrAllocation = JSON.parse(JSON.stringify(allocationSplit));
     allocationSplit = !allocationData.allocationType ? await this.checkDailyAllocation(resource, allocationData) : [];
     if (!allocationSplit.length) {
@@ -257,7 +257,6 @@ export class PreStackcommonService {
    * Fetch user capacity based task start and end date
    */
   async getResourceCapacity(task: IDailyAllocationTask): Promise<IUserCapacity> {
-    // const taskStatus: string[] = this.allocationConstant.taskStatus.indexOf(task.status) > -1 ? this.allocationConstant.taskStatus : [];
     // tslint:disable-next-line: max-line-length
     const oCapacity = await this.userCapacityCommon.factoringTimeForAllocation(task.startDate, task.endDate, task.resource, [task], this.allocationConstant.taskStatus, this.allocationConstant.adhocStatus);
     const resource: IUserCapacity = oCapacity.arrUserDetails.length ? oCapacity.arrUserDetails[0] : {};
@@ -268,7 +267,7 @@ export class PreStackcommonService {
    * Main method performing pre stack allocation
    */
   async checkResourceAvailability(resource: IUserCapacity, extraHrs: string, taskBudgetHrs: string,
-    allocationData: IDailyAllocationTask, maxLimit: number) {
+                                  allocationData: IDailyAllocationTask, maxLimit: number) {
     const resourceDailyDetails = resource.dates.filter(d => [0, 6].indexOf(new Date(d.date).getDay()) < 0); // .filter(d => d.userCapacity !== 'Leave');
     const boundaries = this.getDayAvailibilty(resourceDailyDetails, allocationData, 0);
     const sliderMaxHrs: number = +resource.maxHrs + 3.75;
@@ -468,7 +467,7 @@ export class PreStackcommonService {
     const availableHours = resourceCapacity.maxHrs + 2;
     const singleDayTask = (new Date(allocationData.startDate).getTime() === new Date(allocationData.endDate).getTime()) ? true : false;
     let allocationAlert = singleDayTask && (+availableHours < +allocationData.budgetHrs) ? true : false;
-    allocationAlert = !allocationAlert && !singleDayTask && allocationData.allocationType !== 'Daily Allocation' ?  true : false;
+    allocationAlert = !allocationAlert && !singleDayTask && allocationData.allocationType !== 'Daily Allocation' ? true : false;
     return ({
       allocationPerDay,
       allocationAlert,
@@ -484,7 +483,7 @@ export class PreStackcommonService {
     if (allocationData.strAllocation && !allocationData.allocationType) {
       allocationSplit = this.showAllocation(resource, allocationData);
     } else {
-      const arrAllocation: IPerformAllocationObject = await this.performAllocation(resource, allocationData, false, null, null, []);
+      const arrAllocation: IPerformAllocationObject = await this.performAllocation(resource, allocationData, false, []);
       allocationSplit = arrAllocation.arrAllocation;
     }
     return allocationSplit;

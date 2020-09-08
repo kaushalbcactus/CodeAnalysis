@@ -22,17 +22,18 @@ import { ManagerViewComponent } from './qms/manager-view/manager-view.component'
 import { QMSComponent } from './qms/qms.component';
 import { AdminViewComponent } from './qms/admin/admin-view/admin-view.component';
 import { CDComponent } from './qms/client-feedback/cd/cd.component';
-import { ActionsPopupComponent } from './qms/client-feedback/cd/actions-popup/actions-popup.component';
 import { FilterComponent } from './qms/client-feedback/filter/filter.component';
 import { ClientFeedbackComponent } from './qms/client-feedback/client-feedback.component';
 import { CFPositiveFeedbackComponent } from './qms/client-feedback/cfpositive-feedback/cfpositive-feedback.component';
 import { PositiveFeedbackComponent } from './qms/personal-feedback/positive-feedback/positive-feedback.component';
-import { PopupComponent } from './qms/client-feedback/cfpositive-feedback/popup/popup.component';
 import { FeedbackBymeComponent } from './qms/personal-feedback/feedback-byme/feedback-byme.component';
 import { ScorecardsComponent } from './qms/admin/scorecards/scorecards.component';
 import { AdminComponent } from './qms/admin/admin.component';
 import { AverageRatingComponent } from './qms/average-rating/average-rating.component';
 import { DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng';
+import { RatingOverlayComponent } from './qms/user-feedback/rating-overlay/rating-overlay.component';
+import { SqmsModule } from '../shared/sqms/sqms.module';
+
 
 @NgModule({
   declarations: [
@@ -46,17 +47,16 @@ import { DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng';
     QMSComponent,
     AdminViewComponent,
     CDComponent,
-    ActionsPopupComponent,
     FilterComponent,
     ClientFeedbackComponent,
     CFPositiveFeedbackComponent,
     PositiveFeedbackComponent,
-    PopupComponent,
     FeedbackBymeComponent,
     ScorecardsComponent,
     AdminComponent,
     ReviewerDetailViewComponent,
     AverageRatingComponent,
+    RatingOverlayComponent
   ],
   imports: [
     CommonModule,
@@ -69,9 +69,10 @@ import { DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng';
     MatSortModule,
     MatTableModule,
     MatTabsModule,
-    PrimengModule
-  ],
-  entryComponents:[FeedbackPopupComponent],
+    PrimengModule,
+    SqmsModule
+    ],
+  entryComponents: [FeedbackPopupComponent],
   exports: [
     FeedbackPopupComponent
   ],
