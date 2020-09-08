@@ -101,4 +101,11 @@ describe('TimelineHistoryComponent', () => {
     const data = component.responseCreation('ProjectMgmt_Project', timelineObj);
     expect(data.length).toEqual(1);
   });
+  it('should return processed data', () => {
+    timelineObj.versionDiff = component.differenceProcessing(timelineObj, projectVersions);
+    timelineObj.data = component.responseCreation('ProjectMgmt_Project', timelineObj);
+    const data = component.assimilation(timelineObj);
+    expect(data.length).toEqual(1);
+  });
+
 });

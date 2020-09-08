@@ -169,10 +169,12 @@ export class TimelineHistoryComponent implements OnInit {
     this.timelineBaseObj.verDifference = this.differenceProcessing(this.timelineBaseObj, this.initialRequest[0]);
     this.initialRequest.splice(0, 1);
     this.timelineBaseObj.data = this.responseCreation(requestType, this.timelineBaseObj);
-    this.assimilation();
+    this.timelineData = this.assimilation(this.timelineBaseObj);
+    this.timelineDataCopy = JSON.parse(JSON.stringify(this.timelineData));
+    this.filter = this.getFilterData(this.timelineData);
     this.updateInitialStruture(this.timelineBaseObj);
     await this.creationComplete(moduleName);
-
+    this.hideLoader = true;
     // this.loading = false;
   }
 
@@ -312,7 +314,7 @@ export class TimelineHistoryComponent implements OnInit {
   }
 
   responseCreation(type, obj) {
-    let data:any;
+    let data: any;
     switch (type) {
       case 'ProjectMgmt_InvoicesCT':
       case 'FD_InvoicesCT':
@@ -358,15 +360,17 @@ export class TimelineHistoryComponent implements OnInit {
     return data;
   }
 
-  assimilation() {
+  assimilation(timelineObj) {
     let arrData = [];
-    const assimilateObj = JSON.parse(JSON.stringify(this.timelineBaseObj));
+    const assimilateObj = JSON.parse(JSON.stringify(timelineObj));
     arrData = this.getDataFromObj(assimilateObj, arrData);
     const finalData = [...this.timelineData, ...arrData];
-    this.timelineData = this.commonService.customSort(finalData, -1, 'date_time');
-    this.timelineDataCopy = JSON.parse(JSON.stringify(this.timelineData));
-    this.filter = this.getFilterData(this.timelineData);
-    this.hideLoader = true;
+    const timelineData = this.commonService.customSort(finalData, -1, 'date_time');
+    return timelineData;
+    // this.timelineData = this.commonService.customSort(finalData, -1, 'date_time');
+    // this.timelineDataCopy = JSON.parse(JSON.stringify(this.timelineData));
+    // this.filter = this.getFilterData(this.timelineData);
+    // this.hideLoader = true;
   }
 
   updateInitialStruture(obj) {
@@ -435,8 +439,11 @@ export class TimelineHistoryComponent implements OnInit {
       this.markDone(element);
       element.data = this.responseCreation(element.entityType, element);
     });
-    this.assimilation();
+    this.timelineData = this.assimilation(this.timelineBaseObj);
+    this.timelineDataCopy = JSON.parse(JSON.stringify(this.timelineData));
+    this.filter = this.getFilterData(this.timelineData);
     await this.checkStructure();
+    this.hideLoader = true;
   }
 
   async processStructure() {
