@@ -39,7 +39,7 @@ export class RemoveAccessComponent implements OnInit {
   isRemoveButtonDisabled: boolean = true;
   isRefreshButtonDisabled: boolean = true;
   isSearchButtonDisabled: boolean = true;
-  isRuleTable :boolean = false;
+  isRuleTable: boolean = false;
   attribute: string = "";
   tableDataArray = [];
   ruleTableArray = [];
@@ -174,7 +174,10 @@ export class RemoveAccessComponent implements OnInit {
     if (this.filterResource && this.attribute) {
       this.allRules.forEach(rule => {
         rule.RuleArray = JSON.parse(rule.Rule);
+        rule.RuleText = rule.RuleArray.map(x => x.Value).join(",");
+        rule.OwnerText = rule.OwnerPG && rule.OwnerPG.Title ? rule.OwnerPG.Title : '';
         if (this.attribute === rule.TypeST && rule.Access && rule.Access.results && rule.Access.results.length) {
+          rule.AccessText = rule.Access.results.length ? rule.Access.results.map(x => x.Title).join(",") : '';
           rule.Access.results.forEach(element => {
             if (element.ID === this.resourceId) {
               this.ruleTableArray.push(rule);
@@ -183,13 +186,46 @@ export class RemoveAccessComponent implements OnInit {
         }
       });
     }
-    if(this.ruleTableArray.length) {
+    if (this.ruleTableArray.length) {
       console.log("Rule Table Array", this.ruleTableArray);
       this.isRuleTable = true;
     }
   }
-  showOverlayPanel() {
+  /**
+   * This method is used to show overlay panel
+   */
+  showOverlayPanel(rowItem) {
+    console.log("Overlay", rowItem);
+    //Check the filterresource Role
+    const role = this.filterResource.RoleCH;
+    let csRuleIdArray = [];
+    let delRuleIdArray = [];
+    this.ruleTableArray = [];
+    if (role === this.adminConstants.FILTER.CM_LEVEL_1 || role === this.adminConstants.FILTER.CM_LEVEL_2) {
+      csRuleIdArray = rowItem.CSRule ? rowItem.CSRule.split(',') : [];
+      this.ruleTableArray = this.getRules(csRuleIdArray);
+    }
+    if (role === this.adminConstants.FILTER.DELIVERY || role === this.adminConstants.FILTER.DELIVERY_LEVEL_1 || role === this.adminConstants.FILTER.DELIVERY_LEVEL_2) {
+      delRuleIdArray = rowItem.DeliveryRule ? rowItem.DeliveryRule.split(',') : [];
+      this.ruleTableArray = this.getRules(csRuleIdArray);
+    }
+    this.isRuleTable = true;
+  }
 
+  getRules(ruleIdArray) {
+    const tempRuleArray = [];
+    ruleIdArray.forEach(element => {
+      this.allRules.forEach(rule => {
+        if (+element === rule.ID) {
+          rule.RuleArray = JSON.parse(rule.Rule);
+          rule.RuleText = rule.RuleArray.map(x => x.Value).join(",");
+          rule.OwnerText = rule.OwnerPG && rule.OwnerPG.Title ? rule.OwnerPG.Title : '';
+          rule.AccessText = rule.Access && rule.Access.results && rule.Access.results.length ? rule.Access.results.map(x => x.Title).join(",") : '';
+          tempRuleArray.push(rule);
+        }
+      });
+    });
+    return tempRuleArray;
   }
   /**
    * This method is called when resourceName or attribute changes.
@@ -339,9 +375,9 @@ export class RemoveAccessComponent implements OnInit {
     ];
     this.rulesCols = [
       { field: "ID", header: "Rule Id", visibility: true },
-      { field: "Rule", header: "Rule", visibility: true },
-      { field: "Owner", header: "Owner", visibility: true },
-      { field: "Access", header: "Access", visibility: true },
+      { field: "RuleText", header: "Rule", visibility: true },
+      { field: "OwnerText", header: "Owner", visibility: true },
+      { field: "AccessText", header: "Access", visibility: true },
     ];
 
   }

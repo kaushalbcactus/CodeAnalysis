@@ -35,7 +35,7 @@ import { ChangeBudgetDialogComponent } from './admin/client-masterdata/change-bu
 import { CustomMaterialModule } from '../shared/material.module';
 import { AddAccessComponent } from './admin/entitlement/add-access/add-access.component';
 import { RemoveAccessComponent } from './admin/entitlement/remove-access/remove-access.component';
-import { RuleOverlayComponent } from './admin/entitlement/remove-access/rule-overlay/rule-overlay.component';
+import { ShowRuleComponent } from './admin/entitlement/remove-access/show-rule/show-rule.component';
 
 @NgModule({
   declarations: [
@@ -65,7 +65,7 @@ import { RuleOverlayComponent } from './admin/entitlement/remove-access/rule-ove
     ChangeBudgetDialogComponent,
     AddAccessComponent,
     RemoveAccessComponent,
-    RuleOverlayComponent],
+    ShowRuleComponent],
   imports: [
     SharedModule,
     AdminRoutingModule,

@@ -41,28 +41,32 @@
         </div>
     </form>
 </div>
-<div *ngIf="isRuleTable" [hidden]="adminObject.isMainLoaderHidden && ruleTableArray.length === 0">
-    <p-table [columns]="rulesCols" [value]="ruleTableArray" [paginator]="true" [rows]="10">
-        <ng-template pTemplate="header" let-columns let-rowData="rowData">
-            <tr>
-                <th>S.No</th>
-                <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
-                    {{col.header}}
-                    <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
-                </th>
-            </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-node="rowData" let-rowData let-columns="columns" let-rowIndex="rowIndex">
-            <tr>
-                <td>{{rowIndex+1}}</td>
-                <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility"
-                    [ngStyle]="{'background-color':rowData.IsAdhoc ? '#f7e7b7' : ''}">
-                    {{rowData[col.field]}}
-                </td>
-            </tr>
-        </ng-template>
-    </p-table>
-</div>
+<p-overlayPanel #ruleOP [showCloseIcon]="true" [style]="{width: '450px'}">
+    <ng-template pTemplate>
+        <app-show-rule [rulesColumns]="rulesCols" [ruleItems]="ruleTableArray"></app-show-rule>
+        <!-- <p-table [columns]="rulesCols" [value]="ruleTableArray" [paginator]="true" [rows]="10">
+                <ng-template pTemplate="header" let-columns let-rowData="rowData">
+                    <tr>
+                        <th>S.No</th>
+                        <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
+                            {{col.header}}
+                            <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
+                        </th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-node="rowData" let-rowData let-columns="columns"
+                    let-rowIndex="rowIndex">
+                    <tr>
+                        <td>{{rowIndex+1}}</td>
+                        <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility"
+                            [ngStyle]="{'background-color':rowData.IsAdhoc ? '#f7e7b7' : ''}">
+                            {{rowData[col.field]}}
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table> -->
+    </ng-template>
+</p-overlayPanel>
 <div *ngIf="!isRuleTable" class="removeAccessTable"
     [hidden]="adminObject.isMainLoaderHidden && tableDataArray.length === 0">
     <div *ngIf="attribute === adminConstants.ATTRIBUTES.PROJECTCODE">
@@ -139,8 +143,9 @@
                         {{rowData[col.field]}}
                     </td>
                     <td>
-                        <div style="float: right;cursor: pointer;" (click)="showOverlayPanel()">
-                            <i class='overlayIcon' #displayOverlay class="fa fa-info-circle" aria-hidden="true"></i>
+                        <div style="float: right;cursor: pointer;"
+                            (click)="ruleOP.show($event);showOverlayPanel(rowData)" title="Click to see the rule">
+                            <i class='overlayIcon' class="fa fa-info-circle" aria-hidden="true"></i>
                         </div>
                     </td>
                 </tr>
@@ -214,7 +219,7 @@
                         {{rowData[col.field]}}
                     </td>
                     <td>
-                        <div style="float: right;cursor: pointer;" (click)="showOverlayPanel()">
+                        <div style="float: right;cursor: pointer;" (click)="showOverlayPanel(rowData)">
                             <i class='overlayIcon' #displayOverlay class="fa fa-info-circle" aria-hidden="true"></i>
                         </div>
                     </td>

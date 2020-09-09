@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RuleOverlayComponent } from './rule-overlay.component';
+import { ShowRuleComponent } from './show-rule.component';
 
-describe('RuleOverlayComponent', () => {
-  let component: RuleOverlayComponent;
-  let fixture: ComponentFixture<RuleOverlayComponent>;
+describe('ShowRuleComponent', () => {
+  let component: ShowRuleComponent;
+  let fixture: ComponentFixture<ShowRuleComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ RuleOverlayComponent ]
+      declarations: [ ShowRuleComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(RuleOverlayComponent);
+    fixture = TestBed.createComponent(ShowRuleComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
