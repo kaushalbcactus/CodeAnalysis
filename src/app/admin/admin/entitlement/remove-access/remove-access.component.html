@@ -5,9 +5,7 @@
                 <h5>Resources</h5>
             </div>
             <div class="p-col-3">
-                <p-dropdown [options]="dropDown.resourceNameArray" formControlName="resourceName" filter="true"
-                    resetFilterOnHide="true" placeholder='Select Resource' [style]="{'width':'100%'}"
-                    (onChange)="onAttributesChanged()">
+                <p-dropdown [options]="dropDown.resourceNameArray" formControlName="resourceName" filter="true" resetFilterOnHide="true" placeholder='Select Resource' [style]="{'width':'100%'}" (onChange)="onAttributesChanged()">
                 </p-dropdown>
                 <div class="error" *ngIf="isRemoveAccessFormSubmit && removeAccess.controls.resourceName.errors">
                     <div *ngIf="removeAccess.controls.resourceName.errors.required">
@@ -18,9 +16,7 @@
                 <h5>Attributes</h5>
             </div>
             <div class="p-col-3">
-                <p-dropdown [options]="dropDown.attributesArray" formControlName="attributes" filter="true"
-                    resetFilterOnHide="true" placeholder='Select Attributes' [style]="{'width':'100%'}"
-                    (onChange)="onAttributesChanged()">
+                <p-dropdown [options]="dropDown.attributesArray" formControlName="attributes" filter="true" resetFilterOnHide="true" placeholder='Select Attributes' [style]="{'width':'100%'}" (onChange)="onAttributesChanged()">
                 </p-dropdown>
                 <div class="error" *ngIf="isRemoveAccessFormSubmit && removeAccess.controls.attributes.errors">
                     <div *ngIf="removeAccess.controls.attributes.errors.required">
@@ -28,15 +24,9 @@
                 </div>
             </div>
             <div class="p-col-4">
-                <button type="button" pButton [disabled]="isSearchButtonDisabled" icon="pi pi-search" id="searchId"
-                    [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" label="Search" class="adminBtn"
-                    (click)="searchAcess()"></button>
-                <button type="button" pButton [disabled]="isRemoveButtonDisabled" icon="pi pi-minus" id="removeAccessId"
-                    [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" label="Remove Access" class="adminBtn"
-                    (click)="removeUsers()"></button>
-                <button type="button" pButton [disabled]="isRefreshButtonDisabled" icon="pi pi-refresh" id="refreshId"
-                    [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" label="Refresh" class="adminBtn"
-                    (click)="refresh()"></button>
+                <button type="button" pButton [disabled]="isSearchButtonDisabled" icon="pi pi-search" id="searchId" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" label="Search" class="adminBtn" (click)="searchAcess()"></button>
+                <button type="button" pButton [disabled]="isRemoveButtonDisabled" icon="pi pi-minus" id="removeAccessId" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" label="Remove Access" class="adminBtn" (click)="removeUsers()"></button>
+                <button type="button" pButton [disabled]="isRefreshButtonDisabled" icon="pi pi-refresh" id="refreshId" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" label="Refresh" class="adminBtn" (click)="refresh()"></button>
             </div>
         </div>
     </form>
@@ -44,12 +34,9 @@
 <div *ngIf="isRuleTable">
     <app-show-rule [rulesColumns]="rulesCols" [ruleItems]="ruleTableArray"></app-show-rule>
 </div>
-<div *ngIf="!isRuleTable" class="removeAccessTable"
-    [hidden]="adminObject.isMainLoaderHidden && tableDataArray.length === 0">
+<div *ngIf="!isRuleTable" class="removeAccessTable" [hidden]="adminObject.isMainLoaderHidden && tableDataArray.length === 0">
     <div *ngIf="attribute === adminConstants.ATTRIBUTES.PROJECTCODE">
-        <p-table #projCode [columns]="projectCodeCols" [value]="tableDataArray" [paginator]="true" [rows]="10"
-            [(selection)]="selectedAllRowsItem" (onRowSelect)="onRowSelect($event)"
-            (onRowUnselect)="onRowUnselect($event)" selectionMode="" class="cls_abmaintable">
+        <p-table #projCode [columns]="projectCodeCols" [value]="tableDataArray" [paginator]="true" [rows]="10" [(selection)]="selectedAllRowsItem" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)" selectionMode="" class="cls_abmaintable">
             <ng-template pTemplate="header" let-columns let-rowData="rowData">
                 <tr>
                     <th>S.No</th>
@@ -68,39 +55,21 @@
                     <th></th>
                     <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
                         <ng-container *ngIf="col.field">
-                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                                *ngSwitchCase="'ProjectCode'" [options]="projectCodeColArray.ProjectCode"
-                                defaultLabel="All" [maxSelectedLabels]="1"
-                                (onChange)="projCode.filter($event.value, col.field, 'in')"
-                                (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"
-                                class="cls_abNumber">
+                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'ProjectCode'" [options]="projectCodeColArray.ProjectCode" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="projCode.filter($event.value, col.field, 'in')"
+                                (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" class="cls_abNumber">
                             </p-multiSelect>
-                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                                *ngSwitchCase="'BusinessVertical'" [options]="projectCodeColArray.PracticeArea"
-                                defaultLabel="All" [maxSelectedLabels]="1"
-                                (onChange)="projCode.filter($event.value, col.field, 'in')"
-                                (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"
-                                class="cls_abProjectCode">
+                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'BusinessVertical'" [options]="projectCodeColArray.PracticeArea" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="projCode.filter($event.value, col.field, 'in')"
+                                (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" class="cls_abProjectCode">
                             </p-multiSelect>
 
-                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                                *ngSwitchCase="'WBJID'" [options]="projectCodeColArray.WBJID" defaultLabel="All"
-                                [maxSelectedLabels]="1" (onChange)="projCode.filter($event.value, col.field, 'in')"
-                                (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"
-                                class="cls_abVendorName">
+                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'WBJID'" [options]="projectCodeColArray.WBJID" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="projCode.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                                (onPanelShow)="isOptionFilter=true;" class="cls_abVendorName">
                             </p-multiSelect>
-                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                                *ngSwitchCase="'ClientLegalEntity'" [options]="projectCodeColArray.ClientLegalEntity"
-                                defaultLabel="All" [maxSelectedLabels]="1"
-                                (onChange)="projCode.filter($event.value, col.field, 'in')"
-                                (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"
-                                class="cls_abExpenseType">
+                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'ClientLegalEntity'" [options]="projectCodeColArray.ClientLegalEntity" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="projCode.filter($event.value, col.field, 'in')"
+                                (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" class="cls_abExpenseType">
                             </p-multiSelect>
-                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                                *ngSwitchCase="'Status'" [options]="projectCodeColArray.Status" defaultLabel="All"
-                                [maxSelectedLabels]="1" (onChange)="projCode.filter($event.value, col.field, 'in')"
-                                (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"
-                                class="cls_abClientAmount">
+                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Status'" [options]="projectCodeColArray.Status" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="projCode.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                                (onPanelShow)="isOptionFilter=true;" class="cls_abClientAmount">
                             </p-multiSelect>
                         </ng-container>
                     </th>
@@ -115,13 +84,11 @@
                         <p-tableCheckbox class="cls_abcheckbox{{rowIndex+1}}" [value]="rowData"></p-tableCheckbox>
                     </td>
 
-                    <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility"
-                        [ngStyle]="{'background-color':rowData.IsAdhoc ? '#f7e7b7' : ''}">
+                    <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility" [ngStyle]="{'background-color':rowData.IsAdhoc ? '#f7e7b7' : ''}">
                         {{rowData[col.field]}}
                     </td>
                     <td>
-                        <div style="float: right;cursor: pointer;"
-                            (click)="ruleOP.show($event);showOverlayPanel(rowData)" title="Click to see the rule">
+                        <div style="float: right;cursor: pointer;" (click)="showOverlayPanel($event, rowData)" title="Click to see the rule">
                             <i class='overlayIcon' class="fa fa-info-circle" aria-hidden="true"></i>
                         </div>
                     </td>
@@ -130,9 +97,7 @@
         </p-table>
     </div>
     <div *ngIf="attribute === adminConstants.ATTRIBUTES.SOWCODE">
-        <p-table #sowCode [columns]="sowCodeCols" [value]="tableDataArray" [paginator]="true" [rows]="10"
-            [(selection)]="selectedAllRowsItem" (onRowSelect)="onRowSelect($event)"
-            (onRowUnselect)="onRowUnselect($event)" selectionMode="" class="cls_abmaintable">
+        <p-table #sowCode [columns]="sowCodeCols" [value]="tableDataArray" [paginator]="true" [rows]="10" [(selection)]="selectedAllRowsItem" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)" selectionMode="" class="cls_abmaintable">
             <ng-template pTemplate="header" let-columns let-rowData="rowData">
                 <tr>
                     <th>S.No</th>
@@ -151,31 +116,17 @@
                     <th></th>
                     <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
                         <ng-container *ngIf="col.field">
-                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                                *ngSwitchCase="'Title'" [options]="sowCodeColArray.Title" defaultLabel="All"
-                                [maxSelectedLabels]="1" (onChange)="sowCode.filter($event.value, col.field, 'in')"
-                                (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"
-                                class="cls_abProjectCode">
+                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Title'" [options]="sowCodeColArray.Title" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="sowCode.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                                (onPanelShow)="isOptionFilter=true;" class="cls_abProjectCode">
                             </p-multiSelect>
-                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                                *ngSwitchCase="'SOWCode'" [options]="sowCodeColArray.SOWCode" defaultLabel="All"
-                                [maxSelectedLabels]="1" (onChange)="sowCode.filter($event.value, col.field, 'in')"
-                                (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"
-                                class="cls_abNumber">
+                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'SOWCode'" [options]="sowCodeColArray.SOWCode" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="sowCode.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                                (onPanelShow)="isOptionFilter=true;" class="cls_abNumber">
                             </p-multiSelect>
-                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                                *ngSwitchCase="'BusinessVertical'" [options]="sowCodeColArray.PracticeArea"
-                                defaultLabel="All" [maxSelectedLabels]="1"
-                                (onChange)="sowCode.filter($event.value, col.field, 'in')"
-                                (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"
-                                class="cls_abExpenseType">
+                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'BusinessVertical'" [options]="sowCodeColArray.PracticeArea" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="sowCode.filter($event.value, col.field, 'in')"
+                                (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" class="cls_abExpenseType">
                             </p-multiSelect>
-                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                                *ngSwitchCase="'ClientLegalEntity'" [options]="sowCodeColArray.ClientLegalEntity"
-                                defaultLabel="All" [maxSelectedLabels]="1"
-                                (onChange)="sowCode.filter($event.value, col.field, 'in')"
-                                (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"
-                                class="cls_abVendorName">
+                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'ClientLegalEntity'" [options]="sowCodeColArray.ClientLegalEntity" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="sowCode.filter($event.value, col.field, 'in')"
+                                (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" class="cls_abVendorName">
                             </p-multiSelect>
                         </ng-container>
                     </th>
@@ -191,12 +142,11 @@
                         <p-tableCheckbox class="cls_abcheckbox{{rowIndex+1}}" [value]="rowData"></p-tableCheckbox>
                     </td>
 
-                    <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility"
-                        [ngStyle]="{'background-color':rowData.IsAdhoc ? '#f7e7b7' : ''}">
+                    <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility" [ngStyle]="{'background-color':rowData.IsAdhoc ? '#f7e7b7' : ''}">
                         {{rowData[col.field]}}
                     </td>
                     <td>
-                        <div style="float: right;cursor: pointer;" (click)="showOverlayPanel(rowData)">
+                        <div style="float: right;cursor: pointer;" (click)="showOverlayPanel(showOverlayPanel,rowData)">
                             <i class='overlayIcon' #displayOverlay class="fa fa-info-circle" aria-hidden="true"></i>
                         </div>
                     </td>
@@ -205,9 +155,7 @@
         </p-table>
     </div>
     <div *ngIf="attribute === adminConstants.ATTRIBUTES.CLIENTDISSATISFACTION">
-        <p-table #qcTable [columns]="qcCols" [value]="tableDataArray" [paginator]="true" [rows]="10"
-            [(selection)]="selectedAllRowsItem" (onRowSelect)="onRowSelect($event)"
-            (onRowUnselect)="onRowUnselect($event)" selectionMode="" class="cls_abmaintable">
+        <p-table #qcTable [columns]="qcCols" [value]="tableDataArray" [paginator]="true" [rows]="10" [(selection)]="selectedAllRowsItem" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)" selectionMode="" class="cls_abmaintable">
             <ng-template pTemplate="header" let-columns let-rowData="rowData">
                 <tr>
                     <th>S.No</th>
@@ -226,17 +174,11 @@
                     <th></th>
                     <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
                         <ng-container *ngIf="col.field">
-                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                                *ngSwitchCase="'Title'" [options]="qcColArray.Title" defaultLabel="All"
-                                [maxSelectedLabels]="1" (onChange)="qcTable.filter($event.value, col.field, 'in')"
-                                (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"
-                                class="cls_abProjectCode">
+                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Title'" [options]="qcColArray.Title" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="qcTable.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                                (onPanelShow)="isOptionFilter=true;" class="cls_abProjectCode">
                             </p-multiSelect>
-                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                                *ngSwitchCase="'Status'" [options]="qcColArray.Status" defaultLabel="All"
-                                [maxSelectedLabels]="1" (onChange)="qcTable.filter($event.value, col.field, 'in')"
-                                (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"
-                                class="cls_abNumber">
+                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Status'" [options]="qcColArray.Status" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="qcTable.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                                (onPanelShow)="isOptionFilter=true;" class="cls_abNumber">
                             </p-multiSelect>
                         </ng-container>
                     </th>
@@ -252,8 +194,7 @@
                         <p-tableCheckbox class="cls_abcheckbox{{rowIndex+1}}" [value]="rowData"></p-tableCheckbox>
                     </td>
 
-                    <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility"
-                        [ngStyle]="{'background-color':rowData.IsAdhoc ? '#f7e7b7' : ''}">
+                    <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility" [ngStyle]="{'background-color':rowData.IsAdhoc ? '#f7e7b7' : ''}">
                         {{rowData[col.field]}}
                     </td>
                     <td>
@@ -266,9 +207,7 @@
         </p-table>
     </div>
     <div *ngIf="attribute === adminConstants.ATTRIBUTES.POSITIVEFEEDBACK">
-        <p-table #pfTable [columns]="pfCols" [value]="tableDataArray" [paginator]="true" [rows]="10"
-            [(selection)]="selectedAllRowsItem" (onRowSelect)="onRowSelect($event)"
-            (onRowUnselect)="onRowUnselect($event)" selectionMode="" class="cls_abmaintable">
+        <p-table #pfTable [columns]="pfCols" [value]="tableDataArray" [paginator]="true" [rows]="10" [(selection)]="selectedAllRowsItem" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)" selectionMode="" class="cls_abmaintable">
             <ng-template pTemplate="header" let-columns let-rowData="rowData">
                 <tr>
                     <th>S.No</th>
@@ -287,17 +226,11 @@
                     <th></th>
                     <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
                         <ng-container *ngIf="col.field">
-                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                                *ngSwitchCase="'Title'" [options]="pfColArray.Title" defaultLabel="All"
-                                [maxSelectedLabels]="1" (onChange)="pfTable.filter($event.value, col.field, 'in')"
-                                (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"
-                                class="cls_abProjectCode">
+                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Title'" [options]="pfColArray.Title" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="pfTable.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                                (onPanelShow)="isOptionFilter=true;" class="cls_abProjectCode">
                             </p-multiSelect>
-                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                                *ngSwitchCase="'Status'" [options]="pfColArray.Status" defaultLabel="All"
-                                [maxSelectedLabels]="1" (onChange)="pfTable.filter($event.value, col.field, 'in')"
-                                (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"
-                                class="cls_abNumber">
+                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Status'" [options]="pfColArray.Status" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="pfTable.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                                (onPanelShow)="isOptionFilter=true;" class="cls_abNumber">
                             </p-multiSelect>
                         </ng-container>
                     </th>
@@ -311,8 +244,7 @@
                     <td>
                         <p-tableCheckbox class="cls_abcheckbox{{rowIndex+1}}" [value]="rowData"></p-tableCheckbox>
                     </td>
-                    <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility"
-                        [ngStyle]="{'background-color':rowData.IsAdhoc ? '#f7e7b7' : ''}">
+                    <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility" [ngStyle]="{'background-color':rowData.IsAdhoc ? '#f7e7b7' : ''}">
                         {{rowData[col.field]}}
                     </td>
                     <td>
@@ -324,17 +256,21 @@
             </ng-template>
         </p-table>
     </div>
-    <p-overlayPanel #ruleOP [showCloseIcon]="true" [style]="{width: '450px'}">
-        <ng-template pTemplate>
-            <app-show-rule [rulesColumns]="rulesCols" [ruleItems]="ruleTableArray"></app-show-rule>
+    <p-overlayPanel #ruleOP [showCloseIcon]="true">
+
+        <ng-template #showRuleDetailsview>
+
         </ng-template>
+
+
+        <!-- <ng-template pTemplate>
+           
+        </ng-template> -->
     </p-overlayPanel>
 </div>
-<div *ngIf="adminObject.isMainLoaderHidden && tableDataArray.length == 0 && !isRuleTable"
-    style=" color:red;text-align: center;padding-top: 20px;">
+<div *ngIf="adminObject.isMainLoaderHidden && tableDataArray.length == 0 && !isRuleTable" style=" color:red;text-align: center;padding-top: 20px;">
     No data available.
 </div>
-<div *ngIf="adminObject.isMainLoaderHidden && ruleTableArray.length == 0 && isRuleTable"
-    style=" color:red;text-align: center;padding-top: 20px;">
+<div *ngIf="adminObject.isMainLoaderHidden && ruleTableArray.length == 0 && isRuleTable" style=" color:red;text-align: center;padding-top: 20px;">
     No data available.
 </div>

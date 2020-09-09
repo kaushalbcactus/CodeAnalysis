@@ -79,7 +79,7 @@ import { ShowRuleComponent } from './admin/entitlement/remove-access/show-rule/s
   ],
   providers: [
   ],
-  entryComponents : [AddEditUserProfileComponent, AddEditClientlegalentityDialogComponent,AddEditSubdivisionComponent, AddEditPocComponent,AddEditPoDialogComponent,ChangeBudgetDialogComponent]
+  entryComponents : [AddEditUserProfileComponent, AddEditClientlegalentityDialogComponent,AddEditSubdivisionComponent, AddEditPocComponent,AddEditPoDialogComponent,ChangeBudgetDialogComponent,ShowRuleComponent]
 
 })
 export class AdminModule { }

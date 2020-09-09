@@ -8,11 +8,12 @@ import { Component, OnInit, Input } from '@angular/core';
 export class ShowRuleComponent implements OnInit {
   @Input() ruleItems;
   @Input() rulesColumns;
-  ruleTableArray:[];
-  rulesCols: [];
+  ruleTableArray =[];
+  rulesCols =[];
   constructor() { }
 
   ngOnInit() {
+    debugger
     this.ruleTableArray = this.ruleItems;
     this.rulesCols = this.rulesColumns;
     

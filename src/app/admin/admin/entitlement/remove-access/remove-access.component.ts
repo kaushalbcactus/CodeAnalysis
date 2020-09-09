@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ViewChild, ViewContainerRef, ComponentFactoryResolver } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { AdminConstantService } from "src/app/admin/services/admin-constant.service";
 import { AdminCommonService } from "src/app/admin/services/admin-common.service";
@@ -9,6 +9,8 @@ import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { AdminObjectService } from 'src/app/admin/services/admin-object.service';
 import { TLSSocket } from 'tls';
 import { async } from '@angular/core/testing';
+import { OverlayPanel } from 'primeng';
+import { ShowRuleComponent } from './show-rule/show-rule.component';
 
 @Component({
   selector: "app-remove-access",
@@ -16,6 +18,11 @@ import { async } from '@angular/core/testing';
   styleUrls: ["./remove-access.component.css"],
 })
 export class RemoveAccessComponent implements OnInit {
+  @ViewChild("ruleOP", { static: false }) panel: OverlayPanel;
+  @ViewChild('showRuleDetailsview', { read: ViewContainerRef, static: false }) showRuleDetailsview: ViewContainerRef;
+ 
+  enableOverlayPanel: boolean =false;
+  ref: any;
   constructor(
     private frmbuilder: FormBuilder,
     public adminConstants: AdminConstantService,
@@ -24,7 +31,8 @@ export class RemoveAccessComponent implements OnInit {
     private spServices: SPOperationService,
     private constants: ConstantsService,
     public adminObject: AdminObjectService,
-    private constantsService: ConstantsService
+    private constantsService: ConstantsService,
+    private componentFactoryResolver: ComponentFactoryResolver,
   ) {
     this.removeAccess = frmbuilder.group({
       resourceName: ["", Validators.required],
@@ -80,6 +88,7 @@ export class RemoveAccessComponent implements OnInit {
     this.loaddropdown();
     this.createTableCols();
   }
+ 
   /**
    * This method is used to load the resourceName dropdown
    */
@@ -194,7 +203,7 @@ export class RemoveAccessComponent implements OnInit {
   /**
    * This method is used to show overlay panel
    */
-  showOverlayPanel(rowItem) {
+  showOverlayPanel(event,rowItem,target?:string) {
     console.log("Overlay", rowItem);
     //Check the filterresource Role
     const role = this.filterResource.RoleCH;
@@ -209,6 +218,17 @@ export class RemoveAccessComponent implements OnInit {
       delRuleIdArray = rowItem.DeliveryRule ? rowItem.DeliveryRule.split(',') : [];
       this.ruleTableArray = this.getRules(csRuleIdArray);
     }
+
+    this.showRuleDetailsview.clear();
+    const factory = this.componentFactoryResolver.resolveComponentFactory(ShowRuleComponent);
+    const componentRef = this.showRuleDetailsview.createComponent(factory);
+    componentRef.instance.ruleItems = this.ruleTableArray;
+    componentRef.instance.rulesColumns =  this.rulesCols ;
+    this.ref = componentRef;
+
+    this.enableOverlayPanel = true;
+    this.panel.show(event, target);
+
     //this.isRuleTable = true;
   }
 
