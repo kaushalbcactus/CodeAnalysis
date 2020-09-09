@@ -1,19 +1,19 @@
-import { Injectable } from '@angular/core';
-import { PeoplePickerQuery } from '../peoplePickerModel/people-picker.query';
-import { Observable } from 'rxjs';
-import { mergeMap } from 'rxjs/operators';
-import { FormDigestResponse } from '../peoplePickerModel/people-picker.response';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { GlobalService } from 'src/app/Services/global.service';
-import { AdminConstantService } from './admin-constant.service';
-import { SPOperationService } from 'src/app/Services/spoperation.service';
-import { ConstantsService } from 'src/app/Services/constants.service';
-import { ControlContainer } from '@angular/forms/forms';
-import { CommonService } from 'src/app/Services/common.service';
+import { Injectable } from "@angular/core";
+import { PeoplePickerQuery } from "../peoplePickerModel/people-picker.query";
+import { Observable } from "rxjs";
+import { mergeMap, filter } from "rxjs/operators";
+import { FormDigestResponse } from "../peoplePickerModel/people-picker.response";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { GlobalService } from "src/app/Services/global.service";
+import { AdminConstantService } from "./admin-constant.service";
+import { SPOperationService } from "src/app/Services/spoperation.service";
+import { ConstantsService } from "src/app/Services/constants.service";
+import { ControlContainer } from "@angular/forms/forms";
+import { CommonService } from "src/app/Services/common.service";
 const PEOPLE_PICKER_URL =
-  '_api/SP.UI.ApplicationPages.ClientPeoplePickerWebServiceInterface.ClientPeoplePickerSearchUser';
+  "_api/SP.UI.ApplicationPages.ClientPeoplePickerWebServiceInterface.ClientPeoplePickerSearchUser";
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class AdminCommonService {
   constructor(
@@ -23,25 +23,34 @@ export class AdminCommonService {
     private spServices: SPOperationService,
     private commonService: CommonService,
     private constants: ConstantsService
-  ) { }
+  ) {}
   public getUserSuggestions(query: PeoplePickerQuery): Observable<any> {
-    return this.httpClient.post('' + this.globalObject.sharePointPageObject.webAbsoluteUrl + '/_api/contextinfo', '').pipe(
-      mergeMap((xRequest: FormDigestResponse) => {
-        const digest = xRequest.FormDigestValue;
-        const headers = new HttpHeaders({
-          accept: 'application/json;odata=verbose',
-          'X-RequestDigest': digest
-        });
-        const httpOptions = {
-          headers
-        };
-        return this.httpClient.post(
-          this.globalObject.sharePointPageObject.webAbsoluteUrl + '/' + PEOPLE_PICKER_URL,
-          query,
-          httpOptions
-        );
-      })
-    );
+    return this.httpClient
+      .post(
+        "" +
+          this.globalObject.sharePointPageObject.webAbsoluteUrl +
+          "/_api/contextinfo",
+        ""
+      )
+      .pipe(
+        mergeMap((xRequest: FormDigestResponse) => {
+          const digest = xRequest.FormDigestValue;
+          const headers = new HttpHeaders({
+            accept: "application/json;odata=verbose",
+            "X-RequestDigest": digest,
+          });
+          const httpOptions = {
+            headers,
+          };
+          return this.httpClient.post(
+            this.globalObject.sharePointPageObject.webAbsoluteUrl +
+              "/" +
+              PEOPLE_PICKER_URL,
+            query,
+            httpOptions
+          );
+        })
+      );
   }
   /**
    * /**
@@ -53,7 +62,7 @@ export class AdminCommonService {
    */
   getIds(array) {
     const tempArray = [];
-    array.forEach(element => {
+    array.forEach((element) => {
       tempArray.push(element.ID);
     });
     return tempArray;
@@ -69,7 +78,7 @@ export class AdminCommonService {
   extractNamefromId(array, ids, prop) {
     const tempArray = [];
     array.forEach((element) => {
-      ids.forEach(tempOjb => {
+      ids.forEach((tempOjb) => {
         if (element.ID === tempOjb) {
           tempArray.push(element[prop]);
         }
@@ -91,22 +100,33 @@ export class AdminCommonService {
     const batchURL = [];
     const options = {
       data: null,
-      url: '',
-      type: '',
-      listName: ''
+      url: "",
+      type: "",
+      listName: "",
     };
 
     // Get all user from ResourceCategorization list ##1
     const userGet = Object.assign({}, options);
-    const userFilter = Object.assign({}, this.adminConstants.QUERY.GET_RESOURCE_CATEGERIZATION_ORDER_BY_USERNAME);
-    userFilter.filter = userFilter.filter.replace(/{{isActive}}/gi,
-      this.adminConstants.LOGICAL_FIELD.YES);
-    userGet.url = this.spServices.getReadURL(this.constants.listNames.ResourceCategorization.name,
-      userFilter);
-    userGet.type = 'GET';
+    const userFilter = Object.assign(
+      {},
+      this.adminConstants.QUERY.GET_RESOURCE_CATEGERIZATION_ORDER_BY_USERNAME
+    );
+    userFilter.filter = userFilter.filter.replace(
+      /{{isActive}}/gi,
+      this.adminConstants.LOGICAL_FIELD.YES
+    );
+    userGet.url = this.spServices.getReadURL(
+      this.constants.listNames.ResourceCategorization.name,
+      userFilter
+    );
+    userGet.type = "GET";
     userGet.listName = this.constants.listNames.ResourceCategorization.name;
     batchURL.push(userGet);
-    this.commonService.SetNewrelic('admin', 'admin-commonService', 'GetResourceCategorization');
+    this.commonService.SetNewrelic(
+      "admin",
+      "admin-commonService",
+      "GetResourceCategorization"
+    );
     const result = await this.spServices.executeBatch(batchURL);
     console.log(result);
     return result;
@@ -123,22 +143,52 @@ export class AdminCommonService {
    *
    */
   async getClients(userObj) {
-    const cleGet = Object.assign({}, this.adminConstants.QUERY.GET_CLIENTLEGALENTITY_BY_USER_ROLE);
-    if (userObj.RoleCH && (userObj.RoleCH === this.adminConstants.FILTER.CM_LEVEL_1 || userObj.RoleCH === this.adminConstants.FILTER.CM_LEVEL_2)) {
-      cleGet.filter = 'CMLevel1/ID eq ' + userObj.UserNamePG.ID + ' or ' + 'CMLevel2/ID eq ' + userObj.UserNamePG.ID + '';
+    const cleGet = Object.assign(
+      {},
+      this.adminConstants.QUERY.GET_CLIENTLEGALENTITY_BY_USER_ROLE
+    );
+    if (
+      userObj.RoleCH &&
+      (userObj.RoleCH === this.adminConstants.FILTER.CM_LEVEL_1 ||
+        userObj.RoleCH === this.adminConstants.FILTER.CM_LEVEL_2)
+    ) {
+      cleGet.filter =
+        "CMLevel1/ID eq " +
+        userObj.UserNamePG.ID +
+        " or " +
+        "CMLevel2/ID eq " +
+        userObj.UserNamePG.ID +
+        "";
     }
     // if (userObj.RoleCH && userObj.RoleCH === this.adminConstants.FILTER.CM_LEVEL_2) {
     //   cleGet.filter = 'CMLevel2/ID eq ' + userObj.UserName.ID + '';
     // }
-    if (userObj.RoleCH && (userObj.RoleCH === this.adminConstants.FILTER.DELIVERY_LEVEL_1 || userObj.RoleCH === this.adminConstants.FILTER.DELIVERY_LEVEL_2)) {
-      cleGet.filter = 'DeliveryLevel1/ID eq ' + userObj.UserNamePG.ID + ' or ' + 'DeliveryLevel2/ID eq ' + userObj.UserNamePG.ID + '';
+    if (
+      userObj.RoleCH &&
+      (userObj.RoleCH === this.adminConstants.FILTER.DELIVERY_LEVEL_1 ||
+        userObj.RoleCH === this.adminConstants.FILTER.DELIVERY_LEVEL_2)
+    ) {
+      cleGet.filter =
+        "DeliveryLevel1/ID eq " +
+        userObj.UserNamePG.ID +
+        " or " +
+        "DeliveryLevel2/ID eq " +
+        userObj.UserNamePG.ID +
+        "";
     }
     // if (userObj.RoleCH && userObj.RoleCH === this.adminConstants.FILTER.DELIVERY_LEVEL_2) {
     //   cleGet.filter = 'DeliveryLevel2/ID eq ' + userObj.UserName.ID + '';
     // }
 
-    this.commonService.SetNewrelic('admin', 'commonService-GetClientLegalEntity', 'readItems');
-    const results = await this.spServices.readItems(this.constants.listNames.ClientLegalEntity.name, cleGet);
+    this.commonService.SetNewrelic(
+      "admin",
+      "commonService-GetClientLegalEntity",
+      "readItems"
+    );
+    const results = await this.spServices.readItems(
+      this.constants.listNames.ClientLegalEntity.name,
+      cleGet
+    );
     return results;
   }
   /**
@@ -158,44 +208,48 @@ export class AdminCommonService {
     const data: any = {
       __metadata: { type: listType },
     };
-    if (type === 'sow') {
+    if (type === "sow") {
       data.AllResourcesId = {
-        results: listObj.AllResourcesIDArray
+        results: listObj.AllResourcesIDArray,
       };
-    } else if (type === 'projects') {
+    } else if (type === "projects") {
       data.AllOperationresourcesId = {
-        results: listObj.AllOperationresourcesIDArray
+        results: listObj.AllOperationresourcesIDArray,
       };
     }
-    if (userObj.RoleCH === this.adminConstants.FILTER.CM_LEVEL_1 ||
-      userObj.RoleCH === this.adminConstants.FILTER.CM_LEVEL_2) {
+    if (
+      userObj.RoleCH === this.adminConstants.FILTER.CM_LEVEL_1 ||
+      userObj.RoleCH === this.adminConstants.FILTER.CM_LEVEL_2
+    ) {
       if (listObj.AccessType === this.adminConstants.ACCESS_TYPE.ACCESS) {
         data.CMLevel1Id = {
-          results: listObj.CMLevel1IDArray
+          results: listObj.CMLevel1IDArray,
         };
       }
       if (listObj.AccessType === this.adminConstants.ACCESS_TYPE.ACCOUNTABLE) {
         // If user is present in CMLevel1 then remove from it.
         if (listObj.IsUserExistInCMLevel1) {
           data.CMLevel1Id = {
-            results: listObj.CMLevel1IDArray
+            results: listObj.CMLevel1IDArray,
           };
         }
         data.CMLevel2Id = userObj.UserNamePG.ID;
       }
     }
-    if (userObj.RoleCH === this.adminConstants.FILTER.DELIVERY_LEVEL_1 ||
-      userObj.RoleCH === this.adminConstants.FILTER.DELIVERY_LEVEL_2) {
+    if (
+      userObj.RoleCH === this.adminConstants.FILTER.DELIVERY_LEVEL_1 ||
+      userObj.RoleCH === this.adminConstants.FILTER.DELIVERY_LEVEL_2
+    ) {
       if (listObj.AccessType === this.adminConstants.ACCESS_TYPE.ACCESS) {
         data.DeliveryLevel1Id = {
-          results: listObj.DeliveryLevel1IDArray
+          results: listObj.DeliveryLevel1IDArray,
         };
       }
       if (listObj.AccessType === this.adminConstants.ACCESS_TYPE.ACCOUNTABLE) {
         // If user is present in DeliveryLevel1 then remove from it.
         if (listObj.IsUserExistInDeliveryLevel1) {
           data.DeliveryLevel1Id = {
-            results: listObj.DeliveryLevel1IDArray
+            results: listObj.DeliveryLevel1IDArray,
           };
         }
         data.DeliveryLevel2Id = userObj.UserNamePG.ID;
@@ -215,13 +269,15 @@ export class AdminCommonService {
    * @return array It will returns an array having a unique value into the array.
    */
   uniqueArrayObj(array: any) {
-    let sts: any = '';
-    return sts = Array.from(new Set(array.map(s => s.label))).map(label1 => {
-      return {
-        label: label1,
-        value: array.find(s => s.label === label1).value
-      };
-    });
+    let sts: any = "";
+    return (sts = Array.from(new Set(array.map((s) => s.label))).map(
+      (label1) => {
+        return {
+          label: label1,
+          value: array.find((s) => s.label === label1).value,
+        };
+      }
+    ));
   }
   /**
    * This method is used to validate the number.
@@ -230,7 +286,9 @@ export class AdminCommonService {
    *
    * @returns `positiveNumber` if conditions fails else `null`
    */
-  checkPositiveNumber(control: ControlContainer): { [key: string]: boolean; } | null {
+  checkPositiveNumber(
+    control: ControlContainer
+  ): { [key: string]: boolean } | null {
     if (isNaN(control.value) || Number(control.value) < 0) {
       return { positiveNumber: true };
     }
@@ -243,7 +301,7 @@ export class AdminCommonService {
    *
    * @returns `positiveNumber` if conditions fails else `null`
    */
-  lessThanZero(control: ControlContainer): { [key: string]: boolean; } | null {
+  lessThanZero(control: ControlContainer): { [key: string]: boolean } | null {
     if (isNaN(control.value) || Number(control.value) <= 0) {
       return { nonZeroNumber: true };
     }
@@ -251,10 +309,11 @@ export class AdminCommonService {
   }
 
   async getITInfo() {
-    this.commonService.SetNewrelic('Finance-Dashboard', 'fd-shareData', 'getGroupInfo');
-    return await this.spServices.getGroupInfo('Invoice_Team');
+    this.commonService.SetNewrelic(
+      "Finance-Dashboard",
+      "fd-shareData",
+      "getGroupInfo"
+    );
+    return await this.spServices.getGroupInfo("Invoice_Team");
   }
-
-
-  
 }

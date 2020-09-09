@@ -14,7 +14,7 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { DropdownModule } from 'primeng/dropdown';
 import { TabViewModule } from 'primeng/tabview';
 import {
-  MenubarModule, OverlayPanelModule, InputTextareaModule, InputTextModule, AutoComplete, TieredMenuModule, SelectButtonModule
+  MenubarModule, OverlayPanelModule, InputTextareaModule, InputTextModule, AutoComplete, TieredMenuModule, SelectButtonModule, PanelModule, ScrollPanelModule
 } from 'primeng';
 import { DragDropModule } from 'primeng/dragdrop';
 import { CalendarModule } from 'primeng/calendar';
@@ -55,6 +55,7 @@ import {RatingModule} from 'primeng/rating';
     // DataTableModule,
     FieldsetModule,
     DialogModule,
+    PanelModule,
     MenuModule,
     ButtonModule,
     CardModule,
@@ -86,7 +87,8 @@ import {RatingModule} from 'primeng/rating';
     TieredMenuModule,
     InputSwitchModule, DragDropModule,
     SelectButtonModule,
-    RatingModule
+    RatingModule,
+    ScrollPanelModule
   ],
   providers: [ DialogService]
 })

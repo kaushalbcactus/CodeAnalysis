@@ -1,1 +1,17 @@
-<p>add-access works!</p>
+<p-accordion [activeIndex]="index" (onClose)="onTabClose($event)" (onOpen)="onTabOpen($event)">
+    <p-accordionTab header="Project" class="" [selected]="true">
+
+        <app-project-access [RuleType]="ruleType"></app-project-access>
+
+    </p-accordionTab>
+    <p-accordionTab header="SOW" class="">
+        <ng-template pTemplate="content">
+            <app-project-access [RuleType]="ruleType"></app-project-access>
+        </ng-template>
+    </p-accordionTab>
+    <p-accordionTab header="CD / TA" class="">
+        <ng-template pTemplate="content">
+            <app-project-access [RuleType]="ruleType"></app-project-access>
+        </ng-template>
+    </p-accordionTab>
+</p-accordion>

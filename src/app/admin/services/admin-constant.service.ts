@@ -345,10 +345,30 @@ export class AdminConstantService {
       top: 4900,
     },
     CONTENT_QUERY: {
-      select: 'ContentMT',
-      filter: 'Title eq \'{{templateName}}\''
+      select: "ContentMT",
+      filter: "Title eq '{{templateName}}'",
+    },
+    GET_SUB_DIVISION_BY_ACTIVEONLY: {
+      select: "ID,Title,ClientLegalEntity",
+      filter: "IsActiveCH eq '{{isActive}}'",
+      orderby: "Modified desc",
+      top: 4900,
+    },
+    GET_RULES_BY_ACTIVE: {
+      select: "ID,Title,OwnerPG/ID,OwnerPG/Title,DisplayOrder,ResourceType,Rule,IsActiveCH, Access/ID,Access/Title",
+      filter: "IsActiveCH eq '{{isActive}}' and TypeST eq '{{type}}'",
+      expand: "OwnerPG, Access",
+      orderby: "DisplayOrder desc",
+      top: 4900,
+    },
+    GET_RULES_PARAMETER_BY_ACTIVE: {
+      select: "ID,Title,DisplayName,ListName,Query,Dependency,DisplayOrder",
+      filter: "IsActiveCH eq '{{isActive}}' and TypeST eq '{{type}}'",
+      orderby: "DisplayOrder asc",
+      top: 4900,
     },
   };
+  
   public LOGICAL_FIELD = {
     YES: "Yes",
     NO: "No",
