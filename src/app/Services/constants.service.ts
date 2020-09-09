@@ -7,7 +7,7 @@ import { GlobalService } from "./global.service";
   providedIn: "root",
 })
 export class ConstantsService {
-  constructor(public globalService: GlobalService) {}
+  constructor(public globalService: GlobalService) { }
   loader = {
     isPSInnerLoaderHidden: false,
   };
@@ -365,7 +365,7 @@ export class ConstantsService {
     RuleStore:{
       name: "RuleStoreCT",
       type: "SP.Data.RuleStoreCTListItem",
-      contentTypeId: "",
+      contentTypeId: "0x01001C131EF299CBF741A4E84C62523A293A*",
     },
     RuleParameters:{
       name: "RuleParametersCT",

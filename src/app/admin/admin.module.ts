@@ -37,6 +37,7 @@ import { AddAccessComponent } from './admin/entitlement/add-access/add-access.co
 import { RemoveAccessComponent } from './admin/entitlement/remove-access/remove-access.component';
 import { ProjectAccessComponent } from './admin/entitlement/add-access/project-access/project-access.component';
 
+import { ShowRuleComponent } from './admin/entitlement/remove-access/show-rule/show-rule.component';
 
 @NgModule({
   declarations: [
@@ -66,7 +67,8 @@ import { ProjectAccessComponent } from './admin/entitlement/add-access/project-a
     ChangeBudgetDialogComponent,
     AddAccessComponent,
     RemoveAccessComponent,
-    ProjectAccessComponent],
+    ProjectAccessComponent,
+    ShowRuleComponent],
   imports: [
     SharedModule,
     AdminRoutingModule,
