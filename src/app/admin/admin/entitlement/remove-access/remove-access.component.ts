@@ -209,7 +209,7 @@ export class RemoveAccessComponent implements OnInit {
       delRuleIdArray = rowItem.DeliveryRule ? rowItem.DeliveryRule.split(',') : [];
       this.ruleTableArray = this.getRules(csRuleIdArray);
     }
-    this.isRuleTable = true;
+    //this.isRuleTable = true;
   }
 
   getRules(ruleIdArray) {
