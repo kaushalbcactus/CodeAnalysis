@@ -13,10 +13,7 @@ export class ShowRuleComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    debugger
     this.ruleTableArray = this.ruleItems;
     this.rulesCols = this.rulesColumns;
-    
   }
-
 }

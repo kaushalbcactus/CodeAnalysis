@@ -146,8 +146,8 @@
                         {{rowData[col.field]}}
                     </td>
                     <td>
-                        <div style="float: right;cursor: pointer;" (click)="showOverlayPanel(showOverlayPanel,rowData)">
-                            <i class='overlayIcon' #displayOverlay class="fa fa-info-circle" aria-hidden="true"></i>
+                        <div style="float: right;cursor: pointer;" (click)="showOverlayPanel($event, rowData)" title="Click to see the rule">
+                            <i class='overlayIcon' class="fa fa-info-circle" aria-hidden="true"></i>
                         </div>
                     </td>
                 </tr>
@@ -198,8 +198,8 @@
                         {{rowData[col.field]}}
                     </td>
                     <td>
-                        <div style="float: right;cursor: pointer;" (click)="showOverlayPanel()">
-                            <i class='overlayIcon' #displayOverlay class="fa fa-info-circle" aria-hidden="true"></i>
+                        <div style="float: right;cursor: pointer;" (click)="showOverlayPanel($event, rowData)" title="Click to see the rule">
+                            <i class='overlayIcon' class="fa fa-info-circle" aria-hidden="true"></i>
                         </div>
                     </td>
                 </tr>
@@ -248,8 +248,8 @@
                         {{rowData[col.field]}}
                     </td>
                     <td>
-                        <div style="float: right;cursor: pointer;" (click)="showOverlayPanel()">
-                            <i class='overlayIcon' #displayOverlay class="fa fa-info-circle" aria-hidden="true"></i>
+                        <div style="float: right;cursor: pointer;" (click)="showOverlayPanel($event, rowData)" title="Click to see the rule">
+                            <i class='overlayIcon' class="fa fa-info-circle" aria-hidden="true"></i>
                         </div>
                     </td>
                 </tr>
@@ -257,13 +257,8 @@
         </p-table>
     </div>
     <p-overlayPanel #ruleOP [showCloseIcon]="true">
-
-        <ng-template #showRuleDetailsview> </ng-template>
-
-
-        <!-- <ng-template pTemplate>
-           
-        </ng-template> -->
+        <ng-template #showRuleDetailsview>
+        </ng-template>
     </p-overlayPanel>
 </div>
 <div *ngIf="adminObject.isMainLoaderHidden && tableDataArray.length == 0 && !isRuleTable" style=" color:red;text-align: center;padding-top: 20px;">
