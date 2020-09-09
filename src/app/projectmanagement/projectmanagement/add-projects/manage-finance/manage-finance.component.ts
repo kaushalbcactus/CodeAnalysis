@@ -756,12 +756,14 @@ export class ManageFinanceComponent implements OnInit {
       this.commonService.showToastrMessage(this.constant.MessageType.error, 'Enter' + this.invoiceType + 'amount to be assigned to PO.', true);
     }
 
-    const nAvailableToTag = reservePO.AmountRevenue - reservePO.RevenueLinked +
-      (poExistItem ? (poExistItem.AmountRevenue - retPOInfo.revenue) : 0);
+    const nAvailableToTag = this.invoiceType == 'revenue' ? reservePO.AmountRevenue - reservePO.RevenueLinked +
+      (poExistItem ? (poExistItem.AmountRevenue - retPOInfo.revenue) : 0) : reservePO.AmountOOP - reservePO.OOPLinked +
+      (poExistItem ? (poExistItem.AmountOOP - retPOInfo.oop) : 0) ;
 
-    if (nAvailableToTag < retPOInfo.poRevenue) {
+      const available = this.invoiceType == 'revenue' ? nAvailableToTag < retPOInfo.poRevenue : nAvailableToTag < retPOInfo.poOOP
 
-      this.commonService.showToastrMessage(this.constant.MessageType.error, 'PO revenue balance should be greater than or equal to the amount to reserved on PO.', true);
+    if (available) {
+      this.commonService.showToastrMessage(this.constant.MessageType.error, 'PO' + this.invoiceType + 'balance should be greater than or equal to the amount to reserved on PO.', true);
       return;
     }
 
@@ -785,7 +787,7 @@ export class ManageFinanceComponent implements OnInit {
       // this.unassignedBudget[0].tax = this.unassignedBudget[0].tax - retPOInfo.tax;
     }
     // Add the value to Po header.
-    this.poHeader.total = this.poHeader.total + retPOInfo.poRevenue + retPOInfo.poOOP;
+    this.poHeader.total = (this.poHeader.total + retPOInfo.poRevenue + retPOInfo.poOOP).toFixed(2);
     this.poHeader.revenue = this.poHeader.revenue + retPOInfo.poRevenue;
     // this.poHeader.tax = this.poHeader.tax + retPOInfo.tax;
     this.poHeader.oop = this.poHeader.oop + retPOInfo.poOOP;
@@ -807,6 +809,13 @@ export class ManageFinanceComponent implements OnInit {
         } else {
           element.poInfo[0].showDelete = false;
         }
+        const invLineItem = element.poInfoData.filter(e => e.amount === 0 && e.type =='oop')
+        invLineItem.forEach(elementInv => { 
+          const invIndex = element.poInfoData.findIndex(item => item === elementInv);
+          element.poInfoData.splice(invIndex, 1);
+          elementInv.poId = this.selectedPo;
+          this.poData[poIndex].poInfoData.push(elementInv);
+        });
       });
       this.isPoRevenueDisabled = true;
       this.isAddToProjectHidden = true;
@@ -990,13 +999,14 @@ export class ManageFinanceComponent implements OnInit {
         if (this.invoiceObj.amount > amount) {
           //// Reduce all
           this.invoiceType == "revenue" ? (retPOInfo.scRevenue = retPOInfo.scRevenue - this.invoiceObj.amount + amount) : (retPOInfo.scOOP = retPOInfo.scOOP - this.invoiceObj.amount + amount);
-          retPOInfo.scTotal = retPOInfo.scTotal - this.invoiceObj.amount + amount;
-          this.poHeader.total = this.poHeader.total - this.invoiceObj.amount + amount;
+          retPOInfo.scTotal = parseFloat((retPOInfo.scTotal - this.invoiceObj.amount + amount).toFixed(2));
+          let poHeaderTotal = (this.poHeader.total - this.invoiceObj.amount + amount).toFixed(2);
+          this.poHeader.total = parseFloat(poHeaderTotal);
           this.invoiceType == "revenue" ? this.poHeader.revenue = this.poHeader.revenue - this.invoiceObj.amount + amount : this.poHeader.oop = this.poHeader.oop - this.invoiceObj.amount + amount;
           this.invoiceType == "revenue" ? this.unassignedBudget[0].revenue = this.unassignedBudget[0].revenue + (this.invoiceObj.amount - amount) : this.unassignedBudget[0].oop = this.unassignedBudget[0].oop + (this.invoiceObj.amount - amount);
           this.unassignedBudget[0].total = this.unassignedBudget[0].total + (this.invoiceObj.amount - amount);
           this.invoiceType == "revenue" ? retPOInfo.revenue = retPOInfo.revenue - this.invoiceObj.amount + amount : retPOInfo.oop = retPOInfo.oop - this.invoiceObj.amount + amount;
-          retPOInfo.total = retPOInfo.total - this.invoiceObj.amount + amount;
+          retPOInfo.total = parseFloat((retPOInfo.total - this.invoiceObj.amount + amount).toFixed(2));
           retPOInfo.showAdd = true;
           retPOInfo.showDelete = false;
           if (retPOInfo.oop === retPOInfo.scOOP || retPOInfo.revenue === retPOInfo.scRevenue) {

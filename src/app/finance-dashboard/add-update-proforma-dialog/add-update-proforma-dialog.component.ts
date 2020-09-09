@@ -80,6 +80,16 @@ export class AddUpdateProformaDialogComponent implements OnInit {
       AdditionalComments: [''],
       ProformaDate: [new Date(), Validators.required],
     })
+
+    this.ProformaForm.get('Amount').valueChanges.subscribe(amount => {
+      if (this.selectedPOItem && amount) {
+        if(this.ProformaForm.controls.ProformaType.value) {
+          let availableBudget = this.ProformaForm.controls.ProformaType.value.value == 'oop' ? (this.selectedPOItem.value.AmountOOP ? this.selectedPOItem.value.AmountOOP : 0) - (this.selectedPOItem.value.InvoicedOOP ? this.selectedPOItem.value.InvoicedOOP : 0) - (this.selectedPOItem.value.ScheduledOOP ? this.selectedPOItem.value.ScheduledOOP : 0) : (this.selectedPOItem.value.AmountRevenue ? this.selectedPOItem.value.AmountRevenue : 0) - (this.selectedPOItem.value.InvoicedRevenue ? this.selectedPOItem.value.InvoicedRevenue : 0) - (this.selectedPOItem.value.ScheduledRevenue ? this.selectedPOItem.value.ScheduledRevenue : 0);
+          this.ProformaForm.get('Amount').setValidators([Validators.required, Validators.max(availableBudget)]);
+          this.ProformaForm.get('Amount').updateValueAndValidity();
+        }
+      }
+    });
   }
 
   updateFormValueEdit() {
@@ -144,13 +154,6 @@ export class AddUpdateProformaDialogComponent implements OnInit {
   onPOChange(data: any) {
     // console.log('Data ', data);
     this.selectedPOItem = data;
-    if (this.selectedPOItem.value) {
-      let poScheduled = parseFloat(this.selectedPOItem.value.TotalScheduled ? this.selectedPOItem.value.TotalScheduled : 0);
-      let poInvoiced = parseFloat(this.selectedPOItem.value.TotalInvoiced ? this.selectedPOItem.value.TotalInvoiced : 0);
-      let availableBudget = (this.selectedPOItem.value.Amount ? this.selectedPOItem.value.Amount : 0) - (poScheduled + poInvoiced);
-      this.ProformaForm.get('Amount').setValidators([Validators.required, Validators.max(availableBudget)]);
-      this.ProformaForm.get('Amount').updateValueAndValidity();
-    }
     this.ProformaForm.patchValue({
       Currency: data.value.Currency
     })
@@ -200,6 +203,14 @@ export class AddUpdateProformaDialogComponent implements OnInit {
       let finalVal = isOOP ? (cleAcronym + '-PRF' + '-' + proformaDate + '-' + sFinalNum + '-OOP') :
         (cleAcronym + '-PRF' + '-' + proformaDate + '-' + sFinalNum);
       this.ProformaForm.get('ProformaNumber').setValue(finalVal);
+    }
+
+    if (this.selectedPOItem) {
+      if(this.ProformaForm.controls.ProformaType.value) {
+        let availableBudget = this.ProformaForm.controls.ProformaType.value.value == 'oop' ? (this.selectedPOItem.value.AmountOOP ? this.selectedPOItem.value.AmountOOP : 0) - (this.selectedPOItem.value.InvoicedOOP ? this.selectedPOItem.value.InvoicedOOP : 0) - (this.selectedPOItem.value.ScheduledOOP ? this.selectedPOItem.value.ScheduledOOP : 0) : (this.selectedPOItem.value.AmountRevenue ? this.selectedPOItem.value.AmountRevenue : 0) - (this.selectedPOItem.value.InvoicedRevenue ? this.selectedPOItem.value.InvoicedRevenue : 0) - (this.selectedPOItem.value.ScheduledRevenue ? this.selectedPOItem.value.ScheduledRevenue : 0);
+        this.ProformaForm.get('Amount').setValidators([Validators.required, Validators.max(availableBudget)]);
+        this.ProformaForm.get('Amount').updateValueAndValidity();
+      }
     }
   }
 
