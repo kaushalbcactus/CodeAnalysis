@@ -20,7 +20,6 @@ import { ShowRuleComponent } from './show-rule/show-rule.component';
 export class RemoveAccessComponent implements OnInit {
   @ViewChild("ruleOP", { static: false }) panel: OverlayPanel;
   @ViewChild('showRuleDetailsview', { read: ViewContainerRef, static: false }) showRuleDetailsview: ViewContainerRef;
- 
   enableOverlayPanel: boolean =false;
   ref: any;
   constructor(
@@ -228,8 +227,6 @@ export class RemoveAccessComponent implements OnInit {
 
     this.enableOverlayPanel = true;
     this.panel.show(event, target);
-
-    //this.isRuleTable = true;
   }
 
   getRules(ruleIdArray) {
