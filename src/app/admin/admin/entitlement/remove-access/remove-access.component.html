@@ -88,7 +88,7 @@
                         {{rowData[col.field]}}
                     </td>
                     <td>
-                        <div style="float: right;cursor: pointer;" (click)="showOverlayPanel($event, rowData)" title="Click to see the rule">
+                        <div *ngIf="!rowData.IsAdhoc" style="float: right;cursor: pointer;" (click)="showOverlayPanel($event, rowData)" title="Click to see the rule">
                             <i class='overlayIcon' class="fa fa-info-circle" aria-hidden="true"></i>
                         </div>
                     </td>
@@ -146,7 +146,7 @@
                         {{rowData[col.field]}}
                     </td>
                     <td>
-                        <div style="float: right;cursor: pointer;" (click)="showOverlayPanel($event, rowData)" title="Click to see the rule">
+                        <div *ngIf="!rowData.IsAdhoc" style="float: right;cursor: pointer;" (click)="showOverlayPanel($event, rowData)" title="Click to see the rule">
                             <i class='overlayIcon' class="fa fa-info-circle" aria-hidden="true"></i>
                         </div>
                     </td>
@@ -198,7 +198,7 @@
                         {{rowData[col.field]}}
                     </td>
                     <td>
-                        <div style="float: right;cursor: pointer;" (click)="showOverlayPanel($event, rowData)" title="Click to see the rule">
+                        <div *ngIf="!rowData.IsAdhoc" style="float: right;cursor: pointer;" (click)="showOverlayPanel($event, rowData)" title="Click to see the rule">
                             <i class='overlayIcon' class="fa fa-info-circle" aria-hidden="true"></i>
                         </div>
                     </td>
@@ -248,7 +248,7 @@
                         {{rowData[col.field]}}
                     </td>
                     <td>
-                        <div style="float: right;cursor: pointer;" (click)="showOverlayPanel($event, rowData)" title="Click to see the rule">
+                        <div *ngIf="!rowData.IsAdhoc" style="float: right;cursor: pointer;" (click)="showOverlayPanel($event, rowData)" title="Click to see the rule">
                             <i class='overlayIcon' class="fa fa-info-circle" aria-hidden="true"></i>
                         </div>
                     </td>
