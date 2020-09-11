@@ -1264,7 +1264,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
           ? scheduleOopInvoice_form.getRawValue().POCName.Id
           : this.invoice.MainPOC,
       SOWCode: this.projectInfoLineItem.SOWCode,
-      CSId: { results: this.pcmLevels.map((x) => x.ID) },
+      AccessId: { results: this.pcmLevels.map((x) => x.ID) },
       Template: this.pfListItem[0].Template,
       Status:
         InvoiceType === "new"

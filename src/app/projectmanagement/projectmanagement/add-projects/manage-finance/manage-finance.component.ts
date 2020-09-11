@@ -2419,7 +2419,7 @@ export class ManageFinanceComponent implements OnInit {
           AddressType: element.address,
           Template: this.existBudgetArray.retItems[0].Template,
           SOWCode: projObj.SOWCode,
-          CSId: {
+          AccessId: {
             results: CSIdArray
           },
         };
