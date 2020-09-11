@@ -62,6 +62,17 @@ export class AddUpdateProformaDialogComponent implements OnInit {
     else {
       this.updateFormValueEdit();
     }
+
+    this.ProformaForm.get('Amount').valueChanges.subscribe(amount => {
+      if (this.selectedPOItem && amount) {
+        if(this.ProformaForm.controls.ProformaType.value) {
+          let availableBudget = this.ProformaForm.controls.ProformaType.value.value == 'oop' ? (this.selectedPOItem.value.AmountOOP ? this.selectedPOItem.value.AmountOOP : 0) - (this.selectedPOItem.value.InvoicedOOP ? this.selectedPOItem.value.InvoicedOOP : 0) - (this.selectedPOItem.value.ScheduledOOP ? this.selectedPOItem.value.ScheduledOOP : 0) : (this.selectedPOItem.value.AmountRevenue ? this.selectedPOItem.value.AmountRevenue : 0) - (this.selectedPOItem.value.InvoicedRevenue ? this.selectedPOItem.value.InvoicedRevenue : 0) - (this.selectedPOItem.value.ScheduledRevenue ? this.selectedPOItem.value.ScheduledRevenue : 0);
+          this.ProformaForm.get('Amount').setValidators([Validators.required, Validators.max(availableBudget)]);
+          
+        }
+      }
+    });
+    this.ProformaForm.get('Amount').updateValueAndValidity();
   }
 
   InitializeForm() {
@@ -81,15 +92,6 @@ export class AddUpdateProformaDialogComponent implements OnInit {
       ProformaDate: [new Date(), Validators.required],
     })
 
-    this.ProformaForm.get('Amount').valueChanges.subscribe(amount => {
-      if (this.selectedPOItem && amount) {
-        if(this.ProformaForm.controls.ProformaType.value) {
-          let availableBudget = this.ProformaForm.controls.ProformaType.value.value == 'oop' ? (this.selectedPOItem.value.AmountOOP ? this.selectedPOItem.value.AmountOOP : 0) - (this.selectedPOItem.value.InvoicedOOP ? this.selectedPOItem.value.InvoicedOOP : 0) - (this.selectedPOItem.value.ScheduledOOP ? this.selectedPOItem.value.ScheduledOOP : 0) : (this.selectedPOItem.value.AmountRevenue ? this.selectedPOItem.value.AmountRevenue : 0) - (this.selectedPOItem.value.InvoicedRevenue ? this.selectedPOItem.value.InvoicedRevenue : 0) - (this.selectedPOItem.value.ScheduledRevenue ? this.selectedPOItem.value.ScheduledRevenue : 0);
-          this.ProformaForm.get('Amount').setValidators([Validators.required, Validators.max(availableBudget)]);
-          this.ProformaForm.get('Amount').updateValueAndValidity();
-        }
-      }
-    });
   }
 
   updateFormValueEdit() {

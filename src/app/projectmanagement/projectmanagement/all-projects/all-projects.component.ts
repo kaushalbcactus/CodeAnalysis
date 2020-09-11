@@ -153,6 +153,7 @@ export class AllProjectsComponent implements OnInit {
   CSButtonEnable = false;
   FinanceButtonEnable = false;
   res: void;
+  groupITInfo: any;
   constructor(
     public pmObject: PMObjectService,
     private datePipe: DatePipe,
@@ -2023,9 +2024,11 @@ export class AllProjectsComponent implements OnInit {
     // console.log(batchURL)
 
     if (batchURL.length) {
+      this.groupITInfo = await this.spServices.getGroupInfo('Invoice_Team');
       this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'revertPendingClosure');
       await this.spServices.executeBatch(batchURL);
-
+      await this.sendNotificationMail(this.constants.EMAIL_TEMPLATE_NAME.NOTIFY_PM,
+        'Revert to CS Audit', selectedProjectObj, status,true);
       this.commonService.showToastrMessage(this.constants.MessageType.success, 'Project - ' + selectedProjectObj.ProjectCode + ' Updated Successfully.', true);
     }
 
@@ -2465,7 +2468,7 @@ export class AllProjectsComponent implements OnInit {
    * @param val pass the template name.
    * @param header pass the header.
    */
-  async sendNotificationMail(val, header, selectedProjectObj, status) {
+  async sendNotificationMail(val, header, selectedProjectObj, status, revertStatusCsAudit?) {
     const queryText = val;
     const projectCode = selectedProjectObj.ProjectCode;
     let arrayTo = [];
@@ -2497,6 +2500,19 @@ export class AllProjectsComponent implements OnInit {
     } else {
       tempArray = tempArray.concat(cm1IdArray, selectedProjectObj.CMLevel2ID);
       arrayTo = this.pmCommonService.getEmailId(tempArray);
+      if(revertStatusCsAudit) {
+        const itApprovers = this.groupITInfo.results;
+        let arrayTo = [];
+        if (itApprovers.length) {
+            for (const i in itApprovers) {
+                if (itApprovers[i].Email && itApprovers[i].Email !== undefined && itApprovers[i].Email !== '') {
+                    arrayTo.push(itApprovers[i].Email);
+                }
+            }
+        }
+        arrayTo = [...new Set(arrayTo)]
+        arrayCC = arrayTo;
+      }
       objEmailBody.push({ key: '@@Val1@@', value: projectCode });
       if (status !== this.constants.projectStatus.SentToAMForApproval) {
         objEmailBody.push({ key: '@@Val2@@', value: selectedProjectObj.ClientLegalEntity });

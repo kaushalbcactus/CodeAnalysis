@@ -12,6 +12,7 @@ import { Table } from 'primeng/table';
 import { Router } from '@angular/router';
 import { DialogService } from 'primeng';
 import { MarkAsPaymentDialogComponent } from '../mark-as-payment-dialog/mark-as-payment-dialog.component';
+import { ApproveRejectExpenseDialogComponent } from '../approve-reject-expense-dialog/approve-reject-expense-dialog.component';
 
 @Component({
     selector: 'app-approved-non-billable',
@@ -22,6 +23,17 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
   
     FolderName: string;
     SelectedFile = [];
+    expenseForm: any;
+    mailContentRes: any;
+    selectedProjectInfo: any;
+    cleForselectedPI: any;
+    cmLevelIdList: any = [];
+    selectedPI: any = [];
+    cleData: any = [];
+    currentUserInfoData: any;
+    groupITInfo: any;
+    groupInfo: any;
+    resCatEmails: any = [];
 
     constructor(
         private fb: FormBuilder,
@@ -79,6 +91,11 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
     DateRange: any = {
         startDate: '',
         endDate: '',
+    };
+
+    cancelRejectDialog: any = {
+        title: '',
+        text: ''
     };
 
     freelancerVendersRes: any = [];
@@ -140,6 +157,10 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
 
     async ngOnInit() {
         this.fdConstantsService.fdComponent.hideDatesSection = false;
+
+        this.currentUserInfoData = await this.fdDataShareServie.getCurrentUserInfo();
+        this.groupInfo = await this.fdDataShareServie.getGroupInfo();
+        this.groupITInfo = await this.fdDataShareServie.getITInfo();
         // SetDefault Values
         if (this.fdDataShareServie.expenseDateRange.startDate) {
             this.DateRange = this.fdDataShareServie.expenseDateRange;
@@ -182,6 +203,15 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
             if (res) {
                 this.rcData = res;
                 console.log('Resource Categorization ', this.rcData);
+            }
+        }));
+    }
+
+    cleInfo() {
+        this.subscription.add(this.fdDataShareServie.defaultCLEData.subscribe((res) => {
+            if (res) {
+                this.cleData = res;
+                console.log('Client Legal Entity ', this.cleData);
             }
         }));
     }
@@ -364,13 +394,70 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
     }
     openTableAtt(data: any, popUpData: any) {
         this.items = [];
+        const groups = this.globalService.userInfo.Groups.results.map(x => x.LoginName);
+        if(data.Status == 'Approved') {
+            this.items = [
+                { label: 'Reject Expense', command: (e) => this.openMenuContent(e, data) }
+            ];
+        }
         this.items.push({ label: 'Details', command: (e: any) => this.openMenuContent(e, data) });
     }
     openMenuContent(event: any, data: any) {
         console.log(JSON.stringify(data));
         this.rowItemDetails = data;
-        this.rightSideBar = !this.rightSideBar;
+        if(event.item.label == 'Details'){
+            this.rightSideBar = !this.rightSideBar;
+        } else if(event.item.label == "Reject Expense") {
+            this.cancelRejectDialog.title = event.item.label;
+            this.cancelRejectDialog.text = event.item.label.replace(' Expense', '');
+            this.approveRejectExpenseDialog();
+        }
     }
+
+    approveRejectExpenseDialog() {
+        const ref = this.dialogService.open(ApproveRejectExpenseDialogComponent, {
+            data: {
+              expenseDialog: this.cancelRejectDialog,
+              selectedRowItem:  this.rowItemDetails
+            },
+            header: this.cancelRejectDialog.title,
+            contentStyle: { height: '450px !important' },
+            width: '50%',
+            closable: false,
+          });
+          ref.onClose.subscribe(async expense => {
+              if(expense) {
+                this.expenseForm = expense.form;
+                this.mailContentRes = expense.mailContent;
+                await this.onSubmit(expense.type, expense.form);
+              }
+          })
+    }
+
+    onSubmit(type: string,expenseForm) {
+        this.formSubmit.isSubmit = true;
+        const batchUrl = [];
+        if (type === 'Reject Expense') {
+
+            this.isPSInnerLoaderHidden = false;
+            this.submitBtn.isClicked = true;
+            // console.log('form is submitting ..... expenseForm ', expenseForm.value);
+            const speInfoObj = {
+                ApproverComments: expenseForm.value.ApproverComments,
+                Status: 'Rejected'
+            };
+            speInfoObj['__metadata'] = { type: this.constantService.listNames.SpendingInfo.type };
+            // let data = [];
+            const rejectExpenseObj = Object.assign({}, this.queryConfig);
+            rejectExpenseObj.url = this.spServices.getItemURL(this.constantService.listNames.SpendingInfo.name, +this.rowItemDetails.Id);
+            rejectExpenseObj.listName = this.constantService.listNames.SpendingInfo.name;
+            rejectExpenseObj.type = 'PATCH';
+            rejectExpenseObj.data = speInfoObj;
+            batchUrl.push(rejectExpenseObj);
+            this.submitForm(batchUrl, type);
+        }
+    }
+
     openPopup(modal: string) {
         console.log('selectedAllRowsItem ', this.selectedAllRowsItem);
         this.checkUniqueVF();
@@ -476,10 +563,203 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
 
             this.commonService.showToastrMessage(this.constantService.MessageType.success,'Payment marked.',false);
             this.reFetchData();
+        } else if (type === 'Reject Expense') {
+
+            this.commonService.showToastrMessage(this.constantService.MessageType.success,'Submitted.',false);
+            // this.displayModal = false;
+            this.sendMailToSelectedLineItems(type);
         }
-        this.isPSInnerLoaderHidden = true;
         this.submitBtn.isClicked = false;
     }
+
+    sendMailToSelectedLineItems(type: string) {
+        const element = this.rowItemDetails;
+        this.getPIorClient(element);
+        this.sendApproveCanRejExpMail(element, type);
+    }
+
+    getPIorClient(rowItem) {
+        if (rowItem.ProjectCode && rowItem.ClientLegalEntity) {
+            const pc = rowItem.ProjectCode;
+            console.log('Project Code is ', pc);
+            this.selectedProjectInfo = this.getPIByTitle(pc);
+            console.log('this.selectedProjectInfo ', this.selectedProjectInfo);
+            this.getResCatByCMLevel();
+            this.cleForselectedPI = this.getCleByPC(pc);
+        } else {
+            this.cleForselectedPI = this.getCleByPC(rowItem.ProjectCode);
+            console.log('this.cleForselectedPI ', this.cleForselectedPI);
+            this.getResCatByCMLevel();
+        }
+    }
+
+    getResCatByCMLevel() {
+        this.cmLevelIdList = [];
+        for (let l = 0; l < this.selectedPI.length; l++) {
+            const elements = this.selectedPI[l];
+            if (Array.isArray(elements)) {
+                for (let e = 0; e < elements.length; e++) {
+                    const ele = elements[e];
+                    this.cmLevelIdList.push(ele);
+                }
+            } else {
+                this.cmLevelIdList.push(elements);
+            }
+        }
+        console.log('this.cmLevelIdList ', this.cmLevelIdList);
+        this.resCatEmails = [];
+        this.resourceCatData();
+    }
+
+    resourceCatData() {
+        for (let c = 0; c < this.cmLevelIdList.length; c++) {
+            const element = this.cmLevelIdList[c];
+            // this.resCatEmails.push(this.getResourceData(element))
+            const item = this.getResourceData(element);
+            item ? this.resCatEmails.push(item) : '';
+            // if (item) {
+            //     this.resCatEmails.push(item);
+            // }
+        }
+        console.log('resCatEmails ', this.resCatEmails);
+    }
+
+    getResourceData(ele) {
+        const found = this.rcData.find((x) => {
+            if (x.UserNamePG.ID === ele.ID) {
+                return x;
+            }
+        });
+        return found ? found : '';
+    }
+
+    getCleByPC(title) {
+        const found = this.cleData.find((x) => {
+            if (x.Title === title) {
+                if (x.CMLevel1.hasOwnProperty('results')) {
+                    this.selectedPI = x.CMLevel1.results;
+                }
+                return x;
+            }
+        });
+        return found ? found : '';
+    }
+
+    getPIByTitle(title) {
+        const found = this.projectInfoData.find((x) => {
+            if (x.ProjectCode === title) {
+                if (x.CMLevel1.hasOwnProperty('results')) {
+                    this.selectedPI = x.CMLevel1.results;
+                }
+                console.log('this.selectedPI ', this.selectedPI);
+                return x;
+            }
+        });
+        return found ? found : '';
+    }
+
+    getAuthor(id) {
+        const found = this.rcData.find((x) => {
+            if (x.UserNamePG.ID === id) {
+                return x;
+            }
+        });
+        return found ? found : '';
+    }
+
+    replaceContent(mailContent, key, value) {
+        return mailContent.replace(new RegExp(key, 'g'), value);
+    }
+
+    sendApproveCanRejExpMail(expense, type: string) {
+        // let isCleData = this.getCleByPC(expense.projectCode);
+        const isCleData = this.cleForselectedPI;
+        const author = this.getAuthor(expense.AuthorId);
+        const val1 = isCleData.hasOwnProperty('ClientLegalEntity') ? expense.ProjectCode + ' (' + isCleData.ClientLegalEntity + ')' : expense.ProjectCode;
+
+        // var mailTemplate =  data.Status === "Approved" ? "ApproveExpense" :  data.Status === "Cancelled" ? "CancelExpense" : "RejectExpense";
+        const mailSubject = expense.ProjectCode + ' : Expense Rejected';
+
+        let mailContent = this.mailContentRes[0].retItems[0].ContentMT;
+        mailContent = this.replaceContent(mailContent, '@@Val1@@', val1);
+        mailContent = this.replaceContent(mailContent, '@@Val2@@', expense.Category);
+        mailContent = this.replaceContent(mailContent, '@@Val4@@', expense.ExpenseType);
+        mailContent = this.replaceContent(mailContent, '@@Val5@@', expense.Currency + ' ' + parseFloat(expense.Amount).toFixed(2));
+        mailContent = this.replaceContent(mailContent, '@@Val6@@', expense.ClientAmount ? expense.ClientCurrency + ' ' + parseFloat(expense.ClientAmount).toFixed(2) : '--');
+        mailContent = this.replaceContent(mailContent, '@@Val7@@', expense.Notes);
+        mailContent = this.replaceContent(mailContent, '@@Val10@@', this.expenseForm.value.ApproverComments ? this.expenseForm.value.ApproverComments : this.expenseForm.value.ApproverComments);
+
+        mailContent = this.replaceContent(mailContent, '@@Val0@@', expense.Id);
+        mailContent = this.replaceContent(mailContent, '@@Val13@@', author.hasOwnProperty('UserNamePG') ? author.UserNamePG.Title : 'Member');
+        mailContent = this.replaceContent(mailContent, '@@Val14@@', this.currentUserInfoData.Title);
+
+        const ccUser = this.getCCList(type, expense);
+        // ccUser.push(this.currentUserInfoData.Email);
+        const tos = this.getTosList(type, expense);
+        this.commonService.SetNewrelic('Finance-Dashboard', 'pending-expense', 'sendMail');
+        this.spServices.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
+        this.isPSInnerLoaderHidden = false;
+        this.reFetchData();
+    }
+
+    getCCList(type: string, expense) {
+        let arrayCC = [];
+        const itApprovers = this.groupITInfo.results;
+        const approvers = this.groupInfo.results;
+        if (type === 'Reject Expense') {
+            // Current User
+            arrayCC.push(this.currentUserInfoData.Email);
+            // Expense Approver Member
+            if (approvers.length) {
+                for (const i in approvers) {
+                    if (approvers[i].Email !== undefined && approvers[i].Email !== '') {
+                        arrayCC.push(approvers[i].Email);
+                    }
+                }
+            }
+            // Invoice Team Member
+            if (itApprovers.length) {
+                arrayCC = arrayCC.concat(this.fdDataShareServie.getITMember(itApprovers));
+            }
+        }
+
+        arrayCC = arrayCC.filter(this.onlyUnique);
+        console.log('arrayCC ', arrayCC);
+        return arrayCC;
+    }
+
+    getTosList(type: string, expense) {
+        let arrayTo = [];
+        const approvers = this.groupInfo.results;
+        if (type === 'Reject Expense' || type === 'Approve Expense') {
+            // Creator
+            arrayTo.push(expense.AuthorEMail);
+
+            // CS Team Member
+            if (this.resCatEmails.length) {
+                arrayTo = arrayTo.concat(this.fdDataShareServie.getCSMember(this.resCatEmails));
+            }
+
+        } else if (type === 'Cancel Expense') {
+            // Expense Approver Member
+            if (approvers.length) {
+                for (const i in approvers) {
+                    if (approvers[i].Email !== undefined && approvers[i].Email !== '') {
+                        arrayTo.push(approvers[i].Email);
+                    }
+                }
+            }
+        }
+        // arrayTo.push(this.currentUserInfoData.Email);
+        arrayTo = arrayTo.filter(this.onlyUnique);
+        console.log('arrayTo ', arrayTo);
+        return arrayTo;
+    }
+
+    onlyUnique(value, index, self) {
+        return self.indexOf(value) === index;
+    }
+
 
     reFetchData() {
         setTimeout(() => {

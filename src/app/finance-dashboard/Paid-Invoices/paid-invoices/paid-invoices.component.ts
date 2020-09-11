@@ -870,6 +870,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
             let invData = {
                 __metadata: { type: this.constantService.listNames.InvoiceLineItems.type },
                 Status: 'Scheduled',
+                ScheduledDate: new Date(),
                 ProformaLookup: null,
                 InvoiceLookup: null
             }
