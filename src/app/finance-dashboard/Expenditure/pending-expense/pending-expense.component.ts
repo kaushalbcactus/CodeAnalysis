@@ -683,7 +683,9 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
               if(expense) {
                 this.expenseForm = expense.form;
                 this.mailContentRes = expense.mailContent;
-                await this.onFileChange(expense.event, expense.folderName);
+                if(expense.event)  { 
+                    await this.onFileChange(expense.event, expense.folderName);
+                }
                 await this.onSubmit(expense.type, expense.form);
               }
           })

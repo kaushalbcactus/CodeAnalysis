@@ -164,6 +164,7 @@ export class ManageFinanceComponent implements OnInit {
   allPbbDetails: any = [];
   invoiceType: any = 'revenue';
   sowList: any;
+  currentId: any;
 
   constructor(
     private frmbuilder: FormBuilder,
@@ -1253,11 +1254,11 @@ export class ManageFinanceComponent implements OnInit {
         ScheduledOOP: parseFloat(oldScheduledOOP) - parseFloat(rowData.amount),
         InvoicesScheduled:  parseFloat(oldTotalScheduled) - parseFloat(rowData.amount),
         Budget: this.existBudgetArray.retItems[0].Budget ? parseFloat(this.existBudgetArray.retItems[0].Budget) - parseFloat(rowData.amount)
-        : parseFloat(rowData.amount) - 0 ,
+        : 0 ,
         OOPBudget: this.existBudgetArray.retItems[0].OOPBudget
         ? parseFloat(this.existBudgetArray.retItems[0].OOPBudget) -
           parseFloat(rowData.amount)
-        : parseFloat(rowData.amount) - 0 ,
+        : 0 ,
         }
 
         await this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constant.listNames.ProjectFinances.name, this.existBudgetArray.retItems[0].Id), pfdata, this.constant.Method.PATCH, this.constant.listNames.ProjectFinances.name);
@@ -1269,19 +1270,17 @@ export class ManageFinanceComponent implements OnInit {
         let pfbTotalScheduled = parseFloat(
           rowData.amount
         );
-
-          pfbScheduledOOP = parseFloat(this.existPOArray.retItems[0].ScheduledOOP
-            ? this.existPOArray.retItems[0].ScheduledOOP
-            : 0) - parseFloat(rowData.amount);
-          pfbTotalScheduled = parseFloat(this.existPOArray.retItems[0].TotalScheduled
-            ? this.existPOArray.retItems[0].TotalScheduled
-            : 0) - parseFloat(rowData.amount);
-          pfbAmountOOP = parseFloat(this.existPOArray.retItems[0].AmountOOP
-            ? this.existPOArray.retItems[0].AmountOOP
-            : 0) - parseFloat(rowData.amount);
-          pfbAmount = parseFloat(this.existPOArray.retItems[0].Amount
-            ? this.existPOArray.retItems[0].Amount
-            : 0) - parseFloat(rowData.amount);
+        
+          for(let i=0;i<this.existPOArray.retItems.length;i++) {
+            let element = this.existPOArray.retItems[i];
+            if(element.POLookup == rowData.poId) {
+              this.currentId = element.Id
+              pfbScheduledOOP = element.ScheduledOOP ? parseFloat(element.ScheduledOOP) - parseFloat(rowData.amount) : 0;
+              pfbTotalScheduled = element.TotalScheduled ? parseFloat(element.TotalScheduled)  - parseFloat(rowData.amount) : 0;
+              pfbAmountOOP =element.AmountOOP ?  parseFloat(element.AmountOOP) - parseFloat(rowData.amount) : 0 ;
+              pfbAmount = element.Amount ? parseFloat(element.Amount) - parseFloat(rowData.amount) : 0 ;
+            }
+          }
 
         let pfbdata = {
           __metadata: {
@@ -1293,7 +1292,7 @@ export class ManageFinanceComponent implements OnInit {
           TotalScheduled: pfbTotalScheduled,       
         } 
       
-        await this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constant.listNames.ProjectFinanceBreakup.name, this.existPOArray.retItems[0].Id), pfbdata, this.constant.Method.PATCH, this.constant.listNames.ProjectFinanceBreakup.name);
+        await this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constant.listNames.ProjectFinanceBreakup.name, this.currentId), pfbdata, this.constant.Method.PATCH, this.constant.listNames.ProjectFinanceBreakup.name);
 
         let sowdata = {
           __metadata: {

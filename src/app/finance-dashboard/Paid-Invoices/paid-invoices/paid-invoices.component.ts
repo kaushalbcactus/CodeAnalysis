@@ -1007,7 +1007,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
     async submitForm(batchUrl, type: string) {
         await this.spServices.executeBatch(batchUrl);
         if(type === 'Detag Invoice') {
-            this.commonService.showToastrMessage(this.constantService.MessageType.success, this.selectedRowItem.ProjectCode + ' ' + ' Detach sucessfully from ' + this.parentData.InvoiceNumber , true);
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, this.selectedRowItem.ProjectCode + ' ' + ' Detached successfully from ' + this.parentData.InvoiceNumber , true);
             this.reFetchData();
         }
     }

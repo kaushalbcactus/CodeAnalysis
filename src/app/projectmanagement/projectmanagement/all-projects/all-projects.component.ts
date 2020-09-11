@@ -2501,6 +2501,7 @@ export class AllProjectsComponent implements OnInit {
       tempArray = tempArray.concat(cm1IdArray, selectedProjectObj.CMLevel2ID);
       arrayTo = this.pmCommonService.getEmailId(tempArray);
       if(revertStatusCsAudit) {
+        objEmailBody.push({ key: `'Unallocated'`, value: 'Moved to CS Audit from Finance Audit' });
         const itApprovers = this.groupITInfo.results;
         let arrayTo = [];
         if (itApprovers.length) {

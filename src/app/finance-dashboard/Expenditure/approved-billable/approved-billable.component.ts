@@ -635,7 +635,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
   openTableAtt(data, popUpData) {
     this.items = [];
     console.log("this.selectedAllRowsItem ", this.selectedAllRowsItem);
-    if(data.Status == 'Approved') {
+    if(data.Status == 'Approved' || data.Status == 'Approved Payment Pending') {
         this.items = [
             { label: 'Reject Expense', command: (e) => this.openMenuContent(e, data) }
         ];

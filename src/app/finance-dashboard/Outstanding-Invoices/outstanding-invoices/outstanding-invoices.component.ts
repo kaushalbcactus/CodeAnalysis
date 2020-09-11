@@ -1389,7 +1389,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             this.submitBtn.isClicked = false;
             this.reFetchData();
         } else if(type === 'Detag Invoice') {
-            this.commonService.showToastrMessage(this.constantService.MessageType.success, this.selectedRowItem.ProjectCode + ' ' + ' Detach sucessfully from ' + this.parentData.InvoiceNumber , true);
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, this.selectedRowItem.ProjectCode + ' ' + ' Detached successfully from ' + this.parentData.InvoiceNumber , true);
             this.reFetchData();
         }
 
