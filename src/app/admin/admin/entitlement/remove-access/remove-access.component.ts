@@ -20,7 +20,7 @@ import { ShowRuleComponent } from './show-rule/show-rule.component';
 export class RemoveAccessComponent implements OnInit {
   @ViewChild("ruleOP", { static: false }) panel: OverlayPanel;
   @ViewChild('showRuleDetailsview', { read: ViewContainerRef, static: false }) showRuleDetailsview: ViewContainerRef;
-  enableOverlayPanel: boolean =false;
+  enableOverlayPanel: boolean = false;
   ref: any;
   constructor(
     private frmbuilder: FormBuilder,
@@ -87,7 +87,7 @@ export class RemoveAccessComponent implements OnInit {
     this.loaddropdown();
     this.createTableCols();
   }
- 
+
   /**
    * This method is used to load the resourceName dropdown
    */
@@ -170,7 +170,6 @@ export class RemoveAccessComponent implements OnInit {
     this.ruleTableArray = [];
     this.tableDataArray = [];
     this.isRefreshButtonDisabled = false;
-    this.isSearchButtonDisabled = false;
     this.resourceId = this.removeAccess.value.resourceName;
     this.attribute = this.removeAccess.value.attributes;
     // extract the role of user based on selected users.
@@ -180,12 +179,13 @@ export class RemoveAccessComponent implements OnInit {
       }
     });
     if (this.filterResource && this.attribute) {
+      this.isSearchButtonDisabled = false;
       this.allRules.forEach(rule => {
         rule.RuleArray = JSON.parse(rule.Rule);
-        rule.RuleText = rule.RuleArray.map(x => x.Value).join(",");
+        rule.RuleText = rule.RuleArray.map(x => x.Value).join(", ");
         rule.OwnerText = rule.OwnerPG && rule.OwnerPG.Title ? rule.OwnerPG.Title : '';
         if (this.attribute === rule.TypeST && rule.Access && rule.Access.results && rule.Access.results.length) {
-          rule.AccessText = rule.Access.results.length ? rule.Access.results.map(x => x.Title).join(",") : '';
+          rule.AccessText = rule.Access.results.length ? rule.Access.results.map(x => x.Title).join(", ") : '';
           rule.Access.results.forEach(element => {
             if (element.ID === this.resourceId) {
               this.ruleTableArray.push(rule);
@@ -202,7 +202,7 @@ export class RemoveAccessComponent implements OnInit {
   /**
    * This method is used to show overlay panel
    */
-  showOverlayPanel(event,rowItem,target?:string) {
+  showOverlayPanel(event, rowItem, target?: string) {
     console.log("Overlay", rowItem);
     //Check the filterresource Role
     const role = this.filterResource.RoleCH;
@@ -222,7 +222,7 @@ export class RemoveAccessComponent implements OnInit {
     const factory = this.componentFactoryResolver.resolveComponentFactory(ShowRuleComponent);
     const componentRef = this.showRuleDetailsview.createComponent(factory);
     componentRef.instance.ruleItems = this.ruleTableArray;
-    componentRef.instance.rulesColumns =  this.rulesCols ;
+    componentRef.instance.rulesColumns = this.rulesCols;
     this.ref = componentRef;
 
     this.enableOverlayPanel = true;
@@ -235,9 +235,9 @@ export class RemoveAccessComponent implements OnInit {
       this.allRules.forEach(rule => {
         if (+element === rule.ID) {
           rule.RuleArray = JSON.parse(rule.Rule);
-          rule.RuleText = rule.RuleArray.map(x => x.Value).join(",");
+          rule.RuleText = rule.RuleArray.map(x => x.Value).join(", ");
           rule.OwnerText = rule.OwnerPG && rule.OwnerPG.Title ? rule.OwnerPG.Title : '';
-          rule.AccessText = rule.Access && rule.Access.results && rule.Access.results.length ? rule.Access.results.map(x => x.Title).join(",") : '';
+          rule.AccessText = rule.Access && rule.Access.results && rule.Access.results.length ? rule.Access.results.map(x => x.Title).join(", ") : '';
           tempRuleArray.push(rule);
         }
       });
@@ -247,9 +247,8 @@ export class RemoveAccessComponent implements OnInit {
   /**
    * This method is called when resourceName or attribute changes.
    */
-  async searchAcess() {
+  async searchAccess() {
     if (this.removeAccess.valid) {
-      this.isRemoveButtonDisabled = false;
       this.isRuleTable = false;
       this.ruleTableArray = [];
       this.tableDataArray = [];
@@ -544,14 +543,17 @@ export class RemoveAccessComponent implements OnInit {
   }
   onRowSelect(event) {
     console.log(event);
+    this.isRemoveButtonDisabled = false;
     console.log("ON Row Select", this.selectedAllRowsItem);
   }
 
   onRowUnselect(event) {
+    this.isRemoveButtonDisabled = true;
     console.log("ON Row UnSelect", this.selectedAllRowsItem);
   }
 
   selectAllRows() {
+    this.isRemoveButtonDisabled = false;
     console.log('in selectAllRows ', this.selectedAllRowsItem);
   }
   /**
@@ -570,71 +572,75 @@ export class RemoveAccessComponent implements OnInit {
     if (!this.selectedAllRowsItem.length) {
       this.commonService.showToastrMessage(this.constantsService.MessageType.error, 'Please Select atleast one ' + this.attribute + '.', false);
     } else {
-      this.adminObject.isMainLoaderHidden = false;
-      let batchURL = [];
-      const options = {
-        data: null,
-        url: '',
-        type: '',
-        listName: ''
-      };
-      this.selectedAllRowsItem.forEach(async element => {
-        element.CMLevel1IDArray = [];
-        element.DeliveryLevel1IDArray = [];
-        element.AllOperationresourcesIDArray = [];
-        element.AllResourcesIDArray = [];
-        element.TLIDArray = [];
-        element.CSIDArray = [];
-        element.DeliveryLeadsIDArray = [];
-        switch (this.attribute) {
-          case this.adminConstants.ATTRIBUTES.PROJECTCODE:
-          case this.adminConstants.ATTRIBUTES.SOWCODE:
-            if (element.CMLevel1 && element.CMLevel1.results && element.CMLevel1.results.length) {
-              element.CMLevel1IDArray = element.CMLevel1.results.filter(x => x.ID !== this.filterResource.UserNamePG.ID).map(x => x.ID);
+      this.commonService.confirmMessageDialog('Delete Confirmation', 'Do you want to delete this record?', null, ['Yes', 'No'], false).then(async Confirmation => {
+        if (Confirmation === 'Yes') {
+          this.adminObject.isMainLoaderHidden = false;
+          let batchURL = [];
+          const options = {
+            data: null,
+            url: '',
+            type: '',
+            listName: ''
+          };
+          this.selectedAllRowsItem.forEach(async element => {
+            element.CMLevel1IDArray = [];
+            element.DeliveryLevel1IDArray = [];
+            element.AllOperationresourcesIDArray = [];
+            element.AllResourcesIDArray = [];
+            element.TLIDArray = [];
+            element.CSIDArray = [];
+            element.DeliveryLeadsIDArray = [];
+            switch (this.attribute) {
+              case this.adminConstants.ATTRIBUTES.PROJECTCODE:
+              case this.adminConstants.ATTRIBUTES.SOWCODE:
+                if (element.CMLevel1 && element.CMLevel1.results && element.CMLevel1.results.length) {
+                  element.CMLevel1IDArray = element.CMLevel1.results.filter(x => x.ID !== this.filterResource.UserNamePG.ID).map(x => x.ID);
+                }
+                if (element.DeliveryLevel1 && element.DeliveryLevel1.results && element.DeliveryLevel1.results.length) {
+                  element.DeliveryLevel1IDArray = element.DeliveryLevel1.results.filter(x => x.ID !== this.filterResource.UserNamePG.ID).map(x => x.ID);
+                }
+                if (this.attribute === this.adminConstants.ATTRIBUTES.PROJECTCODE) {
+                  if (element.AllOperationresources && element.AllOperationresources.results && element.AllOperationresources.results.length) {
+                    element.AllOperationresourcesIDArray = element.AllOperationresources.results.filter(x => x.ID !== this.filterResource.UserNamePG.ID).map(x => x.ID);
+                  }
+                  this.getUserBatchURL(options, this.constants.listNames.ProjectInformation.name, this.constants.listNames.ProjectInformation.type, element, batchURL)
+                } else {
+                  if (element.AllResources && element.AllResources.results && element.AllResources.results.length) {
+                    element.AllResourcesIDArray = element.AllResources.results.filter(x => x.ID !== this.filterResource.UserNamePG.ID).map(x => x.ID);
+                  }
+                  this.getUserBatchURL(options, this.constants.listNames.SOW.name, this.constants.listNames.SOW.type, element, batchURL)
+                }
+                break;
+              case this.adminConstants.ATTRIBUTES.CLIENTDISSATISFACTION:
+                if (element.TL && element.TL.results && element.TL.results.length) {
+                  element.TLIDArray = element.TL.results.filter(x => x.ID !== this.filterResource.UserNamePG.ID).map(x => x.ID);
+                }
+                if (element.CS && element.CS.results && element.CS.results.length) {
+                  element.CSIDArray = element.CS.results.filter(x => x.ID !== this.filterResource.UserNamePG.ID).map(x => x.ID);
+                }
+                this.getUserBatchURL(options, this.constants.listNames.QualityComplaints.name, this.constants.listNames.QualityComplaints.type, element, batchURL)
+                break;
+              case this.adminConstants.ATTRIBUTES.POSITIVEFEEDBACK:
+                if (element.DeliveryLeads && element.DeliveryLeads.results && element.DeliveryLeads.results.length) {
+                  element.DeliveryLeadsIDArray = element.DeliveryLeads.results.filter(x => x.ID !== this.filterResource.UserNamePG.ID).map(x => x.ID);
+                }
+                this.getUserBatchURL(options, this.constants.listNames.PositiveFeedbacks.name, this.constants.listNames.PositiveFeedbacks.type, element, batchURL)
+                break;
             }
-            if (element.DeliveryLevel1 && element.DeliveryLevel1.results && element.DeliveryLevel1.results.length) {
-              element.DeliveryLevel1IDArray = element.DeliveryLevel1.results.filter(x => x.ID !== this.filterResource.UserNamePG.ID).map(x => x.ID);
+            if (batchURL.length === 99) {
+              this.commonService.SetNewrelic('admin', 'admin-entitlement-removeAccess', 'removeUsers');
+              await this.spServices.executeBatch(batchURL);
+              batchURL = [];
             }
-            if (this.attribute === this.adminConstants.ATTRIBUTES.PROJECTCODE) {
-              if (element.AllOperationresources && element.AllOperationresources.results && element.AllOperationresources.results.length) {
-                element.AllOperationresourcesIDArray = element.AllOperationresources.results.filter(x => x.ID !== this.filterResource.UserNamePG.ID).map(x => x.ID);
-              }
-              this.getUserBatchURL(options, this.constants.listNames.ProjectInformation.name, this.constants.listNames.ProjectInformation.type, element, batchURL)
-            } else {
-              if (element.AllResources && element.AllResources.results && element.AllResources.results.length) {
-                element.AllResourcesIDArray = element.AllResources.results.filter(x => x.ID !== this.filterResource.UserNamePG.ID).map(x => x.ID);
-              }
-              this.getUserBatchURL(options, this.constants.listNames.SOW.name, this.constants.listNames.SOW.type, element, batchURL)
-            }
-            break;
-          case this.adminConstants.ATTRIBUTES.CLIENTDISSATISFACTION:
-            if (element.TL && element.TL.results && element.TL.results.length) {
-              element.TLIDArray = element.TL.results.filter(x => x.ID !== this.filterResource.UserNamePG.ID).map(x => x.ID);
-            }
-            if (element.CS && element.CS.results && element.CS.results.length) {
-              element.CSIDArray = element.CS.results.filter(x => x.ID !== this.filterResource.UserNamePG.ID).map(x => x.ID);
-            }
-            this.getUserBatchURL(options, this.constants.listNames.QualityComplaints.name, this.constants.listNames.QualityComplaints.type, element, batchURL)
-            break;
-          case this.adminConstants.ATTRIBUTES.POSITIVEFEEDBACK:
-            if (element.DeliveryLeads && element.DeliveryLeads.results && element.DeliveryLeads.results.length) {
-              element.DeliveryLeadsIDArray = element.DeliveryLeads.results.filter(x => x.ID !== this.filterResource.UserNamePG.ID).map(x => x.ID);
-            }
-            this.getUserBatchURL(options, this.constants.listNames.PositiveFeedbacks.name, this.constants.listNames.PositiveFeedbacks.type, element, batchURL)
-            break;
-        }
-        if (batchURL.length === 99) {
-          this.commonService.SetNewrelic('admin', 'admin-entitlement-removeAccess', 'removeUsers');
-          await this.spServices.executeBatch(batchURL);
-          batchURL = [];
+          });
+          if (batchURL.length) {
+            this.commonService.SetNewrelic('admin', 'admin-entitlement-removeAccess', 'removeUsers');
+            await this.spServices.executeBatch(batchURL);
+          }
+          this.commonService.showToastrMessage(this.constantsService.MessageType.success, 'Access has removed for ' + this.attribute + ' successfully.', true);
+          this.searchAcess();
         }
       });
-      if (batchURL.length) {
-        this.commonService.SetNewrelic('admin', 'admin-entitlement-removeAccess', 'removeUsers');
-        await this.spServices.executeBatch(batchURL);
-      }
-      this.commonService.showToastrMessage(this.constantsService.MessageType.success, 'Access has removed for ' + this.attribute + ' successfully.', true);
-      this.searchAcess();
     }
   }
   async getUserBatchURL(options, listName, listType, element, batchURL) {
