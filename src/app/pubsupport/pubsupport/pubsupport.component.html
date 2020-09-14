@@ -246,14 +246,14 @@
                 <select id="type" name="Decision" class="form-control" formControlName="Decision">
                     <option value="">Select</option>
                     <option value="Accepted"
-                        *ngIf="selectedProject.DeliverableType != 'Poster' && selectedProject.DeliverableType != 'Oral Presentation' ">
+                        *ngIf="selectedProject.DeliverableType != 'Poster' && selectedProject.DeliverableType != 'Oral Presentation' && selectedProject.DeliverableType != 'Slide Deck' ">
                         Accepted</option>
                     <option value="Presented"
-                        *ngIf="selectedProject.DeliverableType== 'Poster' || selectedProject.DeliverableType== 'Oral Presentation' ">
+                        *ngIf="selectedProject.DeliverableType== 'Poster' || selectedProject.DeliverableType== 'Oral Presentation' && selectedProject.DeliverableType != 'Slide Deck' ">
                         Presented</option>
                     <option value="Rejected">Rejected</option>
                     <option value="Resubmit to same journal"
-                        *ngIf="selectedProject.DeliverableType != 'Poster' && selectedProject.DeliverableType != 'Oral Presentation' && selectedProject.DeliverableType != 'Abstract'  ">
+                        *ngIf="selectedProject.DeliverableType != 'Poster' && selectedProject.DeliverableType != 'Oral Presentation' && selectedProject.DeliverableType != 'Abstract' && selectedProject.DeliverableType != 'Slide Deck'  ">
                         Resubmit to same journal</option>
                 </select>
                 <div *ngIf="formSubmit.isSubmit && isValidDecisionForm.Decision.errors">
