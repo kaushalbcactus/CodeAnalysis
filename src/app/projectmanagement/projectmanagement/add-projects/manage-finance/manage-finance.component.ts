@@ -841,6 +841,13 @@ export class ManageFinanceComponent implements OnInit {
     }
     this.selectedPo = '';
     this.budgetData[0].edited = true;
+
+    const isTotalMatched = this.isScheduledMatched();
+    if (isTotalMatched) {
+      this.showSave = true;
+    } else {
+      this.showSave = false;
+    }
     // const zeroInv = element.poInfoData.filter(e => e.amount === 0);
     // zeroInv.forEach(elementInv => {
     //   const invIndex = element.poInfoData.findIndex(item => item === elementInv);
