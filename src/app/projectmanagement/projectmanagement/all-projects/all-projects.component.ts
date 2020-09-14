@@ -351,7 +351,7 @@ export class AllProjectsComponent implements OnInit {
           { label: 'Manage Finance', command: (event) => this.manageFinances(this.selectedProjectObj) },
           { label: 'Change SOW', command: (event) => this.moveSOW(this.selectedProjectObj) },
           { label: 'Expense', command: (event) => this.showExpense(this.selectedProjectObj) },
-          { label: 'Project Budget', command: (event) => this.showProjectBudgetBreakup(this.selectedProjectObj) }
+          { label: 'Budget Breakup', command: (event) => this.showProjectBudgetBreakup(this.selectedProjectObj) }
         ]
       },
       { label: 'View Details', command: (event) => this.sendOutput.next(this.selectedProjectObj) },
@@ -3202,7 +3202,7 @@ export class AllProjectsComponent implements OnInit {
 
   showProjectBudgetBreakup(projectObj) {
     const ref = this.dialogService.open(ProjectBudgetBreakupComponent, {
-      header: 'Project Budget - ' + projectObj.ProjectCode + '(' + projectObj.Title + ')',
+      header: 'Project Budget Breakup - ' + projectObj.ProjectCode + '(' + projectObj.Title + ')',
       width: '90vw',
       data: {
         projectCode: projectObj.ProjectCode
