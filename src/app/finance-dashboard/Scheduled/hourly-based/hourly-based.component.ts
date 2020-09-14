@@ -1189,7 +1189,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
       ScheduleType: "revenue",
       AddressType: InvoiceType === "new" ? "Client" : Invoice.AddressType,
       Template: this.selectedRowItem.Template,
-      CSId: { results: this.pcmLevels.map((x) => x.ID) },
+      AccessId: { results: this.pcmLevels.map((x) => x.ID) },
       SOWCode: this.selectedRowItem.SOWCode,
     };
 
