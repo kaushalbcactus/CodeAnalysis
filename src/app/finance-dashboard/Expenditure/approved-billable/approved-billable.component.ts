@@ -423,7 +423,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         // Created: element.Created,
         // PONumber: this.getPONumber(element),
         // ProformaDate: this.datePipe.transform(element.ProformaDate, 'MMM d, y, hh:mm a'),
-        CSId: element.CSId,
+        AccessId: element.AccessId,
         CategoryST: element.CategoryST,
         Currency: element.Currency,
         NotesMT: element.NotesMT,
@@ -1397,7 +1397,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
           ClientApprovalFileURL: element.ClientApprovalFileURL,
           NotesMT: element.Notes,
           CategoryST: element.CategoryST,
-          CSId: element.CSId,
+          AccessId: element.AccessId,
           RequestType: element.RequestType,
           VendorFreelancer: element.VendorFreelancer,
           PayingEntity: element.PayingEntity,
@@ -1589,7 +1589,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
           ? scheduleOopInvoice_form.getRawValue().POCName.Id
           : this.invoice.MainPOC,
       SOWCode: this.projectInfoLineItem.SOWCode,
-      CSId: { results: this.pcmLevels.map((x) => x.ID) },
+      AccessId: { results: this.pcmLevels.map((x) => x.ID) },
       Template: this.pfListItem[0].Template,
       Status:
         InvoiceType === "new"

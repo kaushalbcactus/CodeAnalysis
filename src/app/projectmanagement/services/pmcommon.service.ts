@@ -1311,7 +1311,7 @@ export class PMCommonService {
           AddressType: element.address,
           Template: billingEntity && billingEntity.length ? billingEntity[0].InvoiceTemplate : '',
           SOWCode: addObj.SOWSelect.SOWCode,
-          CSId: {
+          AccessId: {
             results: CSIdArray
           },
         };
