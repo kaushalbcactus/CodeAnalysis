@@ -28,6 +28,7 @@ import { Router } from "@angular/router";
 import { DialogService } from "primeng";
 import { ScheduleOopInvoiceDialogComponent } from "./schedule-oop-invoice-dialog/schedule-oop-invoice-dialog.component";
 import { MarkAsPaymentDialogComponent } from "../mark-as-payment-dialog/mark-as-payment-dialog.component";
+import { ApproveRejectExpenseDialogComponent } from '../approve-reject-expense-dialog/approve-reject-expense-dialog.component';
 
 @Component({
   selector: "app-approved-billable",
@@ -40,6 +41,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
   SOW: any;
   sowList: any = [];
   scheduleInvoiceType: string;
+  scheduleInvoiceForm: any;
   constructor(
     private fb: FormBuilder,
     private spServices: SPOperationService,
@@ -170,12 +172,32 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
 
   isOptionFilter: boolean;
 
+  cancelRejectDialog: any = {
+    title: '',
+    text: ''
+  };
+  expenseForm: any;
+    mailContentRes: any;
+    selectedProjectInfo: any;
+    cleForselectedPI: any;
+    cmLevelIdList: any = [];
+    selectedPI: any = [];
+    cleData: any = [];
+    currentUserInfoData: any;
+    groupITInfo: any;
+    groupInfo: any;
+    resCatEmails: any = [];
+
+
   async ngOnInit() {
     const currentYear = new Date();
     this.yearRange =
       currentYear.getFullYear() - 10 + ":" + (currentYear.getFullYear() + 10);
 
     this.fdConstantsService.fdComponent.hideDatesSection = false;
+    this.currentUserInfoData = await this.fdDataShareServie.getCurrentUserInfo();
+    this.groupInfo = await this.fdDataShareServie.getGroupInfo();
+    this.groupITInfo = await this.fdDataShareServie.getITInfo();
     // SetDefault Values
     if (this.fdDataShareServie.expenseDateRange.startDate) {
       this.DateRange = this.fdDataShareServie.expenseDateRange;
@@ -208,6 +230,15 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         }
       })
     );
+  }
+
+  cleInfo() {
+    this.subscription.add(this.fdDataShareServie.defaultCLEData.subscribe((res) => {
+        if (res) {
+            this.cleData = res;
+            console.log('Client Legal Entity ', this.cleData);
+        }
+    }));
   }
   poInfo() {
     this.subscription.add(
@@ -357,6 +388,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         Category: element.Category,
         Number: element.Number,
         ExpenseType: element.SpendType,
+        Amount: parseFloat(element.Amount).toFixed(2),
         ClientAmount: parseFloat(element.ClientAmount).toFixed(2),
         ClientCurrency: element.ClientCurrency,
         VendorName: this.getVendorNameById(element),
@@ -390,7 +422,12 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         POLookup: element.POLookup,
         // Created: element.Created,
         // PONumber: this.getPONumber(element),
-        // ProformaDate: this.datePipe.transform(element.ProformaDate, 'MMM d, y, hh:mm a')
+        // ProformaDate: this.datePipe.transform(element.ProformaDate, 'MMM d, y, hh:mm a'),
+        AccessId: element.AccessId,
+        CategoryST: element.CategoryST,
+        Currency: element.Currency,
+        NotesMT: element.NotesMT,
+        SpendType: element.SpendType
       });
     }
     this.approvedBillableRes = [...this.approvedBillableRes];
@@ -598,6 +635,11 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
   openTableAtt(data, popUpData) {
     this.items = [];
     console.log("this.selectedAllRowsItem ", this.selectedAllRowsItem);
+    if(data.Status == 'Approved' || data.Status == 'Approved Payment Pending') {
+        this.items = [
+            { label: 'Reject Expense', command: (e) => this.openMenuContent(e, data) }
+        ];
+    }
     this.items.push({
       label: "Details",
       command: (e) => this.openMenuContent(e, data),
@@ -606,7 +648,55 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
   openMenuContent(event, data) {
     console.log(JSON.stringify(data));
     this.rowItemDetails = data;
-    this.rightSideBar = !this.rightSideBar;
+    if(event.item.label == "Details") {
+      this.rightSideBar = !this.rightSideBar;
+    }
+    else if(event.item.label == "Reject Expense") {
+      this.cancelRejectDialog.title = event.item.label;
+      this.cancelRejectDialog.text = event.item.label.replace(' Expense', '');
+      this.approveRejectExpenseDialog();
+    }
+  }
+
+  approveRejectExpenseDialog() {
+    const ref = this.dialogService.open(ApproveRejectExpenseDialogComponent, {
+        data: {
+          expenseDialog: this.cancelRejectDialog,
+          selectedRowItem:  this.rowItemDetails
+        },
+        header: this.cancelRejectDialog.title,
+        contentStyle: { height: '450px !important' },
+        width: '50%',
+        closable: false,
+      });
+      ref.onClose.subscribe(async expense => {
+          if(expense) {
+            this.expenseForm = expense.form;
+            this.mailContentRes = expense.mailContent;
+            await this.rejectSubmit(expense.type, expense.form);
+          }
+      })
+  }
+
+  rejectSubmit(type: string,expenseForm) {
+    const batchUrl = [];
+    if (type === 'Reject Expense') {
+
+      // console.log('form is submitting ..... expenseForm ', expenseForm.value);
+      const speInfoObj = {
+          ApproverComments: expenseForm.value.ApproverComments,
+          Status: 'Rejected'
+      };
+      speInfoObj['__metadata'] = { type: this.constantService.listNames.SpendingInfo.type };
+      // let data = [];
+          const rejectExpenseObj = Object.assign({}, this.queryConfig);
+          rejectExpenseObj.url = this.spServices.getItemURL(this.constantService.listNames.SpendingInfo.name, +this.rowItemDetails.Id);
+          rejectExpenseObj.listName = this.constantService.listNames.SpendingInfo.name;
+          rejectExpenseObj.type = 'PATCH';
+          rejectExpenseObj.data = speInfoObj;
+          batchUrl.push(rejectExpenseObj);
+      this.submitForm(batchUrl, type);
+    }
   }
 
   openPopup(modal: string) {
@@ -653,6 +743,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
               this.pcmLevels = scheduleInvoice.pcmLevels;
               this.invoice = scheduleInvoice.Invoice;
               const ScheduleInvoiceForm = scheduleInvoice.ScheduleInvoiceForm;
+              this.scheduleInvoiceForm = scheduleInvoice.ScheduleInvoiceForm;
               this.scheduleInvoiceType = ScheduleInvoiceForm.get(
                 "InvoiceType"
               ).value;
@@ -795,6 +886,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
 
   // PF
   getPFData(ScheduleInvoiceForm, InvoiceType: string) {
+    let Amount = InvoiceType === 'new' ? parseFloat(ScheduleInvoiceForm.getRawValue().Amount) : parseFloat(ScheduleInvoiceForm.getRawValue().TagAmount);
     const oldScheduledOOP = this.pfListItem[0].ScheduledOOP
       ? this.pfListItem[0].ScheduledOOP
       : 0;
@@ -803,27 +895,27 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
       : 0;
     const totalBudget = this.pfListItem[0].Budget
       ? parseFloat(this.pfListItem[0].Budget) +
-        parseFloat(ScheduleInvoiceForm.getRawValue().Amount)
-      : 0 + parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+        Amount
+      : 0 + Amount;
     const oopBudget = this.pfListItem[0].OOPBudget
       ? parseFloat(this.pfListItem[0].OOPBudget) +
-        parseFloat(ScheduleInvoiceForm.getRawValue().Amount)
-      : 0 + parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+        Amount
+      : 0 + Amount;
     const pfScheduledOOP =
       parseFloat(oldScheduledOOP) +
-      parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+      Amount;
     const pfTotalScheduled =
       parseFloat(oldTotalScheduled) +
-      parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+      Amount;
 
     const totalInvoiced = this.pfListItem[0].Invoiced
       ? parseFloat(this.pfListItem[0].Invoiced) +
-        parseFloat(ScheduleInvoiceForm.getRawValue().Amount)
-      : 0 + parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+        Amount
+      : 0 + Amount;
     const oopInvoiced = this.pfListItem[0].InvoicedOOP
       ? parseFloat(this.pfListItem[0].InvoicedOOP) +
-        parseFloat(ScheduleInvoiceForm.getRawValue().Amount)
-      : 0 + parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+        Amount
+      : 0 + Amount;
 
     if (InvoiceType === "new") {
       return {
@@ -850,14 +942,13 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
 
   // PFB
   getPFBData(ScheduleInvoiceForm, InvoiceType: string) {
-    let pfbAmountOOP = parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
-    let pfbAmount = parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
-    let pfbScheduledOOP = parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
-    let pfbTotalScheduled = parseFloat(
-      ScheduleInvoiceForm.getRawValue().Amount
-    );
-    let totalInvoiced = parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
-    let oopInvoiced = parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+    let Amount = InvoiceType === 'new' ? parseFloat(ScheduleInvoiceForm.getRawValue().Amount) : parseFloat(ScheduleInvoiceForm.getRawValue().TagAmount);
+    let pfbAmountOOP = Amount;
+    let pfbAmount = Amount;
+    let pfbScheduledOOP = Amount;
+    let pfbTotalScheduled = Amount
+    let totalInvoiced = Amount;
+    let oopInvoiced = Amount;
     if (this.pfbListItem.length > 0) {
       const oldScheduledOOP = this.pfbListItem[0].ScheduledOOP
         ? this.pfbListItem[0].ScheduledOOP
@@ -878,23 +969,17 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         ? this.pfbListItem[0].InvoicedOOP
         : 0;
       pfbScheduledOOP =
-        parseFloat(oldScheduledOOP) +
-        parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+        parseFloat(oldScheduledOOP) + Amount;
       pfbTotalScheduled =
-        parseFloat(oldTotalScheduled) +
-        parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+        parseFloat(oldTotalScheduled) + Amount;
       pfbAmountOOP =
-        parseFloat(oldAmountOOP) +
-        parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+        parseFloat(oldAmountOOP) + Amount;
       pfbAmount =
-        parseFloat(oldTotalAmount) +
-        parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+        parseFloat(oldTotalAmount) + Amount;
       totalInvoiced =
-        parseFloat(oldtotalInvoiced) +
-        parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+        parseFloat(oldtotalInvoiced) + Amount;
       oopInvoiced =
-        parseFloat(oldoopInvoiced) +
-        parseFloat(ScheduleInvoiceForm.getRawValue().Amount);
+        parseFloat(oldoopInvoiced) + Amount;
     }
 
     let Data;
@@ -925,7 +1010,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
   }
 
   // PBB
-  getPBBData(ScheduleInvoiceForm) {
+  getPBBData(ScheduleInvoiceForm,InvoiceType) {
     return {
       __metadata: {
         type: this.constantService.listNames.ProjectBudgetBreakup.type,
@@ -933,8 +1018,8 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
       ProjectLookup: this.projectInfoLineItem.Id,
       Status: this.constantService.STATUS.APPROVED,
       ApprovalDate: new Date().toISOString(),
-      OriginalBudget: parseFloat(ScheduleInvoiceForm.getRawValue().Amount),
-      OOPBudget: parseFloat(ScheduleInvoiceForm.getRawValue().Amount),
+      OriginalBudget: InvoiceType === 'new' ? parseFloat(ScheduleInvoiceForm.getRawValue().Amount) : parseFloat(ScheduleInvoiceForm.getRawValue().TagAmount),
+      OOPBudget: InvoiceType === 'new' ? parseFloat(ScheduleInvoiceForm.getRawValue().Amount) : parseFloat(ScheduleInvoiceForm.getRawValue().TagAmount),
       ProjectCode: ScheduleInvoiceForm.getRawValue().ProjectCode,
     };
   }
@@ -1003,29 +1088,230 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         true
       );
       this.reFetchData();
+    } else if (type === "Reject Expense") {
+      this.commonService.showToastrMessage(this.constantService.MessageType.success,'Submitted.',false);
+      // this.displayModal = false;
+      this.sendMailToSelectedLineItems(type);
+      // this.reFetchData();
     }
   }
+
+  sendMailToSelectedLineItems(type: string) {
+    const element = this.rowItemDetails;
+    this.getPIorClient(element);
+    this.sendApproveCanRejExpMail(element, type);
+  }
+
+  getPIorClient(rowItem) {
+    if (rowItem.ProjectCode && rowItem.ClientLegalEntity) {
+        const pc = rowItem.ProjectCode;
+        console.log('Project Code is ', pc);
+        this.selectedProjectInfo = this.getPIByTitle(pc);
+        console.log('this.selectedProjectInfo ', this.selectedProjectInfo);
+        this.getResCatByCMLevel();
+        this.cleForselectedPI = this.getCleByPC(pc);
+    } else {
+        this.cleForselectedPI = this.getCleByPC(rowItem.ProjectCode);
+        console.log('this.cleForselectedPI ', this.cleForselectedPI);
+        this.getResCatByCMLevel();
+    }
+  }
+
+  getResCatByCMLevel() {
+      this.cmLevelIdList = [];
+      for (let l = 0; l < this.selectedPI.length; l++) {
+          const elements = this.selectedPI[l];
+          if (Array.isArray(elements)) {
+              for (let e = 0; e < elements.length; e++) {
+                  const ele = elements[e];
+                  this.cmLevelIdList.push(ele);
+              }
+          } else {
+              this.cmLevelIdList.push(elements);
+          }
+      }
+      console.log('this.cmLevelIdList ', this.cmLevelIdList);
+      this.resCatEmails = [];
+      this.resourceCatData();
+  }
+
+  resourceCatData() {
+      for (let c = 0; c < this.cmLevelIdList.length; c++) {
+          const element = this.cmLevelIdList[c];
+          // this.resCatEmails.push(this.getResourceData(element))
+          const item = this.getResourceData(element);
+          item ? this.resCatEmails.push(item) : '';
+          // if (item) {
+          //     this.resCatEmails.push(item);
+          // }
+      }
+      console.log('resCatEmails ', this.resCatEmails);
+  }
+
+  getResourceData(ele) {
+      const found = this.rcData.find((x) => {
+          if (x.UserNamePG.ID === ele.ID) {
+              return x;
+          }
+      });
+      return found ? found : '';
+  }
+
+  getCleByPC(title) {
+      const found = this.cleData.find((x) => {
+          if (x.Title === title) {
+              if (x.CMLevel1.hasOwnProperty('results')) {
+                  this.selectedPI = x.CMLevel1.results;
+              }
+              return x;
+          }
+      });
+      return found ? found : '';
+  }
+
+  getPIByTitle(title) {
+      const found = this.projectInfoData.find((x) => {
+          if (x.ProjectCode === title) {
+              if (x.CMLevel1.hasOwnProperty('results')) {
+                  this.selectedPI = x.CMLevel1.results;
+              }
+              console.log('this.selectedPI ', this.selectedPI);
+              return x;
+          }
+      });
+      return found ? found : '';
+  }
+
+  getAuthor(id) {
+      const found = this.rcData.find((x) => {
+          if (x.UserNamePG.ID === id) {
+              return x;
+          }
+      });
+      return found ? found : '';
+  }
+
+  replaceContent(mailContent, key, value) {
+      return mailContent.replace(new RegExp(key, 'g'), value);
+  }
+
+  sendApproveCanRejExpMail(expense, type: string) {
+      // let isCleData = this.getCleByPC(expense.projectCode);
+      const isCleData = this.cleForselectedPI;
+      const author = this.getAuthor(expense.AuthorId);
+      const val1 = isCleData.hasOwnProperty('ClientLegalEntity') ? expense.ProjectCode + ' (' + isCleData.ClientLegalEntity + ')' : expense.ProjectCode;
+
+      // var mailTemplate =  data.Status === "Approved" ? "ApproveExpense" :  data.Status === "Cancelled" ? "CancelExpense" : "RejectExpense";
+      const mailSubject = expense.ProjectCode + ' : Expense Rejected';
+
+      let mailContent = this.mailContentRes[0].retItems[0].ContentMT;
+      mailContent = this.replaceContent(mailContent, '@@Val1@@', val1);
+      mailContent = this.replaceContent(mailContent, '@@Val2@@', expense.Category);
+      mailContent = this.replaceContent(mailContent, '@@Val4@@', expense.ExpenseType);
+      mailContent = this.replaceContent(mailContent, '@@Val5@@', expense.Currency + ' ' + parseFloat(expense.Amount).toFixed(2));
+      mailContent = this.replaceContent(mailContent, '@@Val6@@', expense.ClientAmount ? expense.ClientCurrency + ' ' + parseFloat(expense.ClientAmount).toFixed(2) : '--');
+      mailContent = this.replaceContent(mailContent, '@@Val7@@', expense.Notes);
+      mailContent = this.replaceContent(mailContent, '@@Val10@@', this.expenseForm.value.ApproverComments ? this.expenseForm.value.ApproverComments : this.expenseForm.value.ApproverComments);
+
+      mailContent = this.replaceContent(mailContent, '@@Val0@@', expense.Id);
+      mailContent = this.replaceContent(mailContent, '@@Val13@@', author.hasOwnProperty('UserNamePG') ? author.UserNamePG.Title : 'Member');
+      mailContent = this.replaceContent(mailContent, '@@Val14@@', this.currentUserInfoData.Title);
+
+      const ccUser = this.getCCList(type, expense);
+      // ccUser.push(this.currentUserInfoData.Email);
+      const tos = this.getTosList(type, expense);
+      this.commonService.SetNewrelic('Finance-Dashboard', 'pending-expense', 'sendMail');
+      this.spServices.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
+      this.reFetchData();
+  }
+
+  getCCList(type: string, expense) {
+      let arrayCC = [];
+      const itApprovers = this.groupITInfo.results;
+      const approvers = this.groupInfo.results;
+      if (type === 'Reject Expense') {
+          // Current User
+          arrayCC.push(this.currentUserInfoData.Email);
+          // Expense Approver Member
+          if (approvers.length) {
+              for (const i in approvers) {
+                  if (approvers[i].Email !== undefined && approvers[i].Email !== '') {
+                      arrayCC.push(approvers[i].Email);
+                  }
+              }
+          }
+          // Invoice Team Member
+          if (itApprovers.length) {
+              arrayCC = arrayCC.concat(this.fdDataShareServie.getITMember(itApprovers));
+          }
+      }
+
+      arrayCC = arrayCC.filter(this.onlyUnique);
+      console.log('arrayCC ', arrayCC);
+      return arrayCC;
+  }
+
+  getTosList(type: string, expense) {
+      let arrayTo = [];
+      const approvers = this.groupInfo.results;
+      if (type === 'Reject Expense' || type === 'Approve Expense') {
+          // Creator
+          arrayTo.push(expense.AuthorEMail);
+
+          // CS Team Member
+          if (this.resCatEmails.length) {
+              arrayTo = arrayTo.concat(this.fdDataShareServie.getCSMember(this.resCatEmails));
+          }
+
+      } else if (type === 'Cancel Expense') {
+          // Expense Approver Member
+          if (approvers.length) {
+              for (const i in approvers) {
+                  if (approvers[i].Email !== undefined && approvers[i].Email !== '') {
+                      arrayTo.push(approvers[i].Email);
+                  }
+              }
+          }
+      }
+      // arrayTo.push(this.currentUserInfoData.Email);
+      arrayTo = arrayTo.filter(this.onlyUnique);
+      console.log('arrayTo ', arrayTo);
+      return arrayTo;
+  }
+
+  onlyUnique(value, index, self) {
+      return self.indexOf(value) === index;
+  }
+
+
+
   updateStsToBilled(arrRet: any) {
     const batchURL = [];
-    for (let j = 0; j < this.selectedAllRowsItem.length; j++) {
-      const element = this.selectedAllRowsItem[j];
-      const spObj = {
-        __metadata: { type: this.constantService.listNames.SpendingInfo.type },
-        Status: element.Status.replace("Approved", "Billed"),
-        InvoiceID: arrRet[0].retItems.ID.toString(),
-      };
-
-      const url = this.spServices.getItemURL(
-        this.constantService.listNames.SpendingInfo.name,
-        element.Id
-      );
-      this.commonService.setBatchObject(
-        batchURL,
-        url,
-        spObj,
-        this.constantService.Method.PATCH,
-        this.constantService.listNames.SpendingInfo.name
-      );
+    let pendingAmount = this.scheduleInvoiceForm ? this.scheduleInvoiceForm.getRawValue().Amount - this.scheduleInvoiceForm.getRawValue().TagAmount : 0;
+      for (let j = 0; j < this.selectedAllRowsItem.length; j++) {
+        const element = this.selectedAllRowsItem[j];
+        const clientAmt = element.ClientAmount - pendingAmount;
+        const amt = element.Amount - pendingAmount;
+        const spObj = {
+          __metadata: { type: this.constantService.listNames.SpendingInfo.type },
+          Status: element.Status.replace("Approved", "Billed"),
+          InvoiceID: arrRet[0].retItems.ID.toString(),
+        };
+        if(this.scheduleInvoiceType !== 'new') {
+          spObj['ClientAmount'] = clientAmt.toString();
+          spObj['Amount'] = amt.toString();
+        }
+        const url = this.spServices.getItemURL(
+          this.constantService.listNames.SpendingInfo.name,
+          element.Id
+        );
+        this.commonService.setBatchObject(
+          batchURL,
+          url,
+          spObj,
+          this.constantService.Method.PATCH,
+          this.constantService.listNames.SpendingInfo.name
+        );
     }
     console.log("this.updateSpeLineItems ", this.updateSpeLineItems);
     this.submitForm(batchURL, "updateScheduledOopLineItem");
@@ -1093,7 +1379,45 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
 
   onSubmit(scheduleOopInvoice_form, InvoiceType: string, type: string) {
     const batchURL = [];
+    let finalAddEArray = []
+    let pendingAmount = this.scheduleInvoiceForm ? InvoiceType === 'new' ? 0 : this.scheduleInvoiceForm.getRawValue().Amount - this.scheduleInvoiceForm.getRawValue().TagAmount : 0;
+    if(pendingAmount !== 0) { 
+      for (let j = 0; j < this.selectedAllRowsItem.length; j++) {
+        const element = this.selectedAllRowsItem[j];
+        finalAddEArray.push({
+          Title: element.ProjectCode,
+          Number: element.Number,
+          SpendType: element.SpendType,
+          Currency: element.Currency,
+          Amount: pendingAmount.toString(),
+          ClientCurrency: element.ClientCurrency,
+          ClientAmount: pendingAmount.toString(),
+          Status: 'Approved',
+          FileURL: element.FileURL,
+          ClientApprovalFileURL: element.ClientApprovalFileURL,
+          NotesMT: element.Notes,
+          CategoryST: element.CategoryST,
+          AccessId: element.AccessId,
+          RequestType: element.RequestType,
+          VendorFreelancer: element.VendorFreelancer,
+          PayingEntity: element.PayingEntity,
+          ApproverComments: element.ApproverComments,
+          DateSpend: element.DateSpend,
+          PaymentMode: element.PaymentMode
+        });
+      }
 
+      for (let j = 0; j < finalAddEArray.length; j++) {
+        const element = finalAddEArray[j];
+        element['__metadata'] = { type: this.constantService.listNames.SpendingInfo.type };
+        const addExpenseObj = Object.assign({}, this.queryConfig);
+        addExpenseObj.url = this.spServices.getReadURL(this.constantService.listNames.SpendingInfo.name);
+        addExpenseObj.listName = this.constantService.listNames.SpendingInfo.name;
+        addExpenseObj.type = 'POST';
+        addExpenseObj.data = element;
+        batchURL.push(addExpenseObj);
+      }
+    }
     let url = this.spServices.getReadURL(
       this.constantService.listNames.InvoiceLineItems.name,
       null
@@ -1122,9 +1446,10 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         this.constantService.listNames.PO.name
       );
     } else {
-      const TaggedAmount =
-        parseFloat(this.invoice.TaggedAmount) +
-        parseFloat(scheduleOopInvoice_form.getRawValue().Amount);
+      const TaggedAmount = InvoiceType === 'new' ?  (parseFloat(this.invoice.TaggedAmount) +
+      parseFloat(scheduleOopInvoice_form.getRawValue().Amount)) :
+        (parseFloat(this.invoice.TaggedAmount) +
+        parseFloat(scheduleOopInvoice_form.getRawValue().TagAmount));
       const invoiceData = {
         __metadata: { type: this.constantService.listNames.Invoices.type },
         TaggedAmount: TaggedAmount,
@@ -1151,7 +1476,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     this.commonService.setBatchObject(
       batchURL,
       url,
-      this.getPBBData(scheduleOopInvoice_form),
+      this.getPBBData(scheduleOopInvoice_form,InvoiceType),
       this.constantService.Method.POST,
       this.constantService.listNames.ProjectBudgetBreakup.name
     );
@@ -1190,7 +1515,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
       url,
       this.getPFBData(scheduleOopInvoice_form, InvoiceType),
       Type,
-      this.constantService.listNames.ProjectFinances.name
+      this.constantService.listNames.ProjectFinanceBreakup.name
     );
 
     // sowUpdate
@@ -1212,7 +1537,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
   }
 
   getsowData(scheduleOopInvoice_form, InvoiceType: string) {
-    const Amount = parseFloat(scheduleOopInvoice_form.getRawValue().Amount);
+    const Amount = InvoiceType === "new" ? parseFloat(scheduleOopInvoice_form.getRawValue().Amount) : parseFloat(scheduleOopInvoice_form.getRawValue().TagAmount);
     const Data = {
       __metadata: { type: this.constantService.listNames.SOW.type },
       TotalLinked: this.SOW.TotalLinked
@@ -1253,7 +1578,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         InvoiceType === "new"
           ? scheduleOopInvoice_form.getRawValue().ScheduledDate
           : this.invoice.InvoiceDate,
-      Amount: scheduleOopInvoice_form.getRawValue().Amount,
+      Amount: InvoiceType === "new" ? scheduleOopInvoice_form.getRawValue().Amount : scheduleOopInvoice_form.getRawValue().TagAmount,
       AddressType:
         InvoiceType === "new"
           ? scheduleOopInvoice_form.getRawValue().AddressType.value
@@ -1264,7 +1589,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
           ? scheduleOopInvoice_form.getRawValue().POCName.Id
           : this.invoice.MainPOC,
       SOWCode: this.projectInfoLineItem.SOWCode,
-      CSId: { results: this.pcmLevels.map((x) => x.ID) },
+      AccessId: { results: this.pcmLevels.map((x) => x.ID) },
       Template: this.pfListItem[0].Template,
       Status:
         InvoiceType === "new"

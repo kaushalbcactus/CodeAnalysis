@@ -1,9 +1,10 @@
-import { Component, OnInit } from "@angular/core";
-import { DynamicDialogConfig } from "primeng";
+import { Component, OnInit, ViewChild } from "@angular/core";
+import { DynamicDialogConfig, Table } from "primeng";
 import { PmconstantService } from "src/app/projectmanagement/services/pmconstant.service";
 import { ConstantsService } from "src/app/Services/constants.service";
 import { SPOperationService } from "src/app/Services/spoperation.service";
-import { CommonService } from 'src/app/Services/common.service';
+import { CommonService } from "src/app/Services/common.service";
+import { DatePipe } from "@angular/common";
 
 @Component({
   selector: "app-project-budget-breakup",
@@ -32,10 +33,11 @@ export class ProjectBudgetBreakupComponent implements OnInit {
     private pmConstant: PmconstantService,
     private constants: ConstantsService,
     private spServices: SPOperationService,
-    private common: CommonService
+    private common: CommonService,
+    private datePipe: DatePipe
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     this.projectCode = this.config.data.projectCode;
     this.sowCode = this.config.data.sowCode;
     this.PBBColumns = [
@@ -58,37 +60,53 @@ export class ProjectBudgetBreakupComponent implements OnInit {
       }
     ];
     this.sowBudgetColumns = [
+      {
+        field: "InternalReviewStartDate",
+        header: "Approval Date",
+        visibility: true
+      },
       { field: "Status", header: "Status", visibility: true },
       { field: "TotalBudget", header: "Total Budget ", visibility: true },
       { field: "NetBudget", header: "Revenue", visibility: true },
       { field: "OOPBudget", header: "OOP", visibility: true },
       { field: "TaxBudget", header: "Tax", visibility: true },
-      {
-        field: "AddendumTotalBudget",
-        header: "Addendum Total Budget",
-        visibility: true
-      },
-      {
-        field: "AddendumNetBudget",
-        header: "Addendum Net Budget",
-        visibility: true
-      },
-      {
-        field: "AddendumOOPBudget",
-        header: "Addendum OOP Budget",
-        visibility: true
-      },
-      {
-        field: "AddendumTaxBudget",
-        header: "Addendum Tax Budget",
-        visibility: true
-      },
-      { field: "Currency", header: "Currency", visibility: true }
+      // {
+      //   field: "AddendumTotalBudget",
+      //   header: "Addendum Total Budget",
+      //   visibility: false
+      // },
+      // {
+      //   field: "AddendumNetBudget",
+      //   header: "Addendum Net Budget",
+      //   visibility: false
+      // },
+      // {
+      //   field: "AddendumOOPBudget",
+      //   header: "Addendum OOP Budget",
+      //   visibility: false
+      // },
+      // {
+      //   field: "AddendumTaxBudget",
+      //   header: "Addendum Tax Budget",
+      //   visibility: false
+      // }
+      // { field: "Currency", header: "Currency", visibility: true }
     ];
     if (this.projectCode) {
-      this.getProjectBudgetBrekup();
+      this.PBBDetails = await this.getProjectBudgetBrekup();
+      this.PBBDetails.forEach((part, index, arr) => {
+        arr[index].ApprovalDate = new Date(arr[index].ApprovalDate);
+      });
+      this.sortData(this.PBBDetails, "ApprovalDate");
+      this.colFiltersForPBB(this.PBBDetails);
     } else if (this.sowCode) {
-      this.getSowBudgetBrekup();
+      this.sowBudgetDetails = await this.getSowBudgetBrekup();
+      this.sowBudgetDetails.forEach((ele, index, arr) => {
+        arr[index].InternalReviewStartDate = new Date(arr[index].InternalReviewStartDate);
+      });
+      this.sortData(this.sowBudgetDetails, "InternalReviewStartDate");
+      this.forMultipleValues();
+      this.colFiltersForSOW(this.sowBudgetDetails);
     }
   }
 
@@ -110,9 +128,7 @@ export class ProjectBudgetBreakupComponent implements OnInit {
     pbbGet.listName = this.constants.listNames.ProjectBudgetBreakup.name;
     this.batchUrl.push(pbbGet);
     const result = await this.spServices.executeBatch(this.batchUrl);
-    this.PBBDetails = result[0].retItems;
-    this.sortData(this.PBBDetails, 'ApprovalDate');
-    this.colFiltersForPBB(this.PBBDetails);
+    return result[0].retItems;
   }
 
   async getSowBudgetBrekup() {
@@ -129,188 +145,139 @@ export class ProjectBudgetBreakupComponent implements OnInit {
     budgetGet.listName = this.constants.listNames.SOWBudgetBreakup.name;
     this.batchUrl.push(budgetGet);
     const results = await this.spServices.executeBatch(this.batchUrl);
-    this.sowBudgetDetails = results[0].retItems;
-    this.sortData(this.sowBudgetDetails, 'InternalReviewStartDate');
-    this.colFiltersForSOW(this.SOWBudgetFilters);
+    return results[0].retItems;    
+  }
+
+  forMultipleValues() {
+    if(this.sowBudgetDetails.length > 1) {
+      for(let i= 0;i < this.sowBudgetDetails.length - 1;i++) {
+        let element = this.sowBudgetDetails[i];
+        
+        element.TotalBudget = element.AddendumTotalBudget 
+        element.NetBudget = element.AddendumNetBudget
+        element.OOPBudget = element.AddendumOOPBudget 
+        element.TaxBudget = element.AddendumTaxBudget
+      }
+    } 
   }
 
   colFiltersForPBB(colData) {
-    this.PBBFilters.ApprovalDate= this.common.sortData(
-      this.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.ApprovalDate, value: a.ApprovalDate };
-          return b;
-        })
-      )
+    this.PBBFilters.ApprovalDate = this.common.sortData(
+      this.uniqueArrayObj(colData,'ApprovalDate',"Date")
     );
-    this.PBBFilters.Status= this.common.sortData(
-      this.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.Status, value: a.Status };
-          return b;
-        })
-      )
+    this.PBBFilters.Status = this.common.sortData(
+      this.uniqueArrayObj(colData,'Status')
     );
-    this.PBBFilters.OriginalBudget= this.common.sortData(
-      this.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.OriginalBudget, value: a.OriginalBudget };
-          return b;
-        })
-      )
+    const OriginalBudget = this.uniqueArrayObj(colData,'OriginalBudget')
+    this.PBBFilters.OriginalBudget = this.common.customSort(
+      OriginalBudget,
+      "label",
+      1
     );
-    this.PBBFilters.NetBudget= this.common.sortData(
-      this.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.NetBudget, value: a.NetBudget };
-          return b;
-        })
-      )
+    const NetBudget = this.uniqueArrayObj(colData,'NetBudget')
+    this.PBBFilters.NetBudget = this.common.customSort(NetBudget, "label", 1);
+    const OOPBudget = this.uniqueArrayObj(colData,'OOPBudget')
+    this.PBBFilters.OOPBudget = this.common.customSort(OOPBudget, "label", 1);
+    const TaxBudget = this.uniqueArrayObj(colData,'TaxBudget')
+    this.PBBFilters.TaxBudget = this.common.customSort(TaxBudget, "label", 1);
+    const BudgetHours = this.uniqueArrayObj(colData,'BudgetHours');
+    this.PBBFilters.BudgetHours = this.common.customSort(
+      BudgetHours,
+      "label",
+      1
     );
-    this.PBBFilters.OOPBudget= this.common.sortData(
-      this.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.OOPBudget, value: a.OOPBudget };
-          return b;
-        })
-      )
+    this.PBBFilters.Reason = this.common.sortData(
+      this.uniqueArrayObj(colData,'Reason')
     );
-    this.PBBFilters.TaxBudget= this.common.sortData(
-      this.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.TaxBudget, value: a.TaxBudget };
-          return b;
-        })
-      )
-    );
-    this.PBBFilters.BudgetHours= this.common.sortData(
-      this.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.BudgetHours, value: a.BudgetHours };
-          return b;
-        })
-      )
-    );
-    this.PBBFilters.Reason= this.common.sortData(
-      this.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.Reason, value: a.Reason };
-          return b;
-        })
-      )
-    );
-    this.PBBFilters.CommentsMT= this.common.sortData(
-      this.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.CommentsMT, value: a.CommentsMT };
-          return b;
-        })
-      )
+    this.PBBFilters.CommentsMT = this.common.sortData(
+      this.uniqueArrayObj(colData,'CommentsMT')
     );
   }
 
   colFiltersForSOW(colData) {
+    this.SOWBudgetFilters.InternalReviewStartDate = this.common.sortData(
+      this.uniqueArrayObj(colData,'InternalReviewStartDate',"Date")
+    );
     this.SOWBudgetFilters.Status = this.common.sortData(
-      this.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.Status, value: a.Status };
-          return b;
-        })
-      )
+      this.uniqueArrayObj(colData,'Status')
     );
-    this.SOWBudgetFilters.TotalBudget = this.common.sortData(
-      this.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.TotalBudget, value: a.TotalBudget };
-          return b;
-        })
-      )
+    const TotalBudget = this.uniqueArrayObj(colData,'TotalBudget');
+    this.SOWBudgetFilters.TotalBudget = this.common.customSort(
+      TotalBudget,
+      "label",
+      1
     );
-    this.SOWBudgetFilters.NetBudget = this.common.sortData(
-      this.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.NetBudget, value: a.NetBudget };
-          return b;
-        })
-      )
+    const NetBudget = this.uniqueArrayObj(colData,'NetBudget');
+    this.SOWBudgetFilters.NetBudget = this.common.customSort(
+      NetBudget,
+      "label",
+      1
     );
-    this.SOWBudgetFilters.OOPBudget = this.common.sortData(
-      this.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.OOPBudget, value: a.OOPBudget };
-          return b;
-        })
-      )
+    const OOPBudget = this.uniqueArrayObj(colData,'OOPBudget');
+    this.SOWBudgetFilters.OOPBudget = this.common.customSort(
+      OOPBudget,
+      "label",
+      1
     );
-    this.SOWBudgetFilters.TaxBudget = this.common.sortData(
-      this.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.TaxBudget, value: a.TaxBudget };
-          return b;
-        })
-      )
+    const TaxBudget = this.uniqueArrayObj(colData,'TaxBudget');
+    this.SOWBudgetFilters.TaxBudget = this.common.customSort(
+      TaxBudget,
+      "label",
+      1
     );
-    this.SOWBudgetFilters.AddendumTotalBudget = this.common.sortData(
-      this.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.AddendumTotalBudget, value: a.AddendumTotalBudget };
-          return b;
-        })
-      )
+    const AddendumTotalBudget = this.uniqueArrayObj(colData,'AddendumTotalBudget');
+    this.SOWBudgetFilters.AddendumTotalBudget = this.common.customSort(
+      AddendumTotalBudget,
+      "label",
+      1
     );
-    this.SOWBudgetFilters.AddendumNetBudget = this.common.sortData(
-      this.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.AddendumNetBudget, value: a.AddendumNetBudget };
-          return b;
-        })
-      )
+    const AddendumNetBudget = this.uniqueArrayObj(colData,'AddendumNetBudget');
+    this.SOWBudgetFilters.AddendumNetBudget = this.common.customSort(
+      AddendumNetBudget,
+      "label",
+      1
     );
-    this.SOWBudgetFilters.AddendumOOPBudget = this.common.sortData(
-      this.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.AddendumOOPBudget, value: a.AddendumOOPBudget };
-          return b;
-        })
-      )
+    const AddendumOOPBudget = this.uniqueArrayObj(colData,'AddendumOOPBudget');
+    this.SOWBudgetFilters.AddendumOOPBudget = this.common.customSort(
+      AddendumOOPBudget,
+      "label",
+      1
     );
-    this.SOWBudgetFilters.AddendumTaxBudget = this.common.sortData(
-      this.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.AddendumTaxBudget, value: a.AddendumTaxBudget };
-          return b;
-        })
-      )
+    const AddendumTaxBudget = this.uniqueArrayObj(colData,'AddendumTaxBudget');
+    this.SOWBudgetFilters.AddendumTaxBudget = this.common.customSort(
+      AddendumTaxBudget,
+      "label",
+      1
     );
-    this.SOWBudgetFilters.Currency = this.common.sortData(
-      this.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.Currency, value: a.Currency };
-          return b;
-        })
-      )
-    );
+    // this.SOWBudgetFilters.Currency = this.common.sortData(
+    //   this.uniqueArrayObj(
+    //     colData.map(a => {
+    //       const b = { label: a.Currency, value: a.Currency };
+    //       return b;
+    //     })
+    //   )
+    // );
   }
 
-  uniqueArrayObj(array: any) {
-    let sts: any = '';
-    return sts = Array.from(new Set(array.map(s => s.label))).map(label1 => {
-      const keys = {
-        label: label1,
-        value: array.find(s => s.label === label1).value
-      };
-      return keys ? keys : '';
-    });
+  uniqueArrayObj(array: any,field, date?) {
+    // let column = field;
+    return [...new Set(array.map(element => element[field]))].map(a => {
+      const b = date == 'Date' ? { label: this.datePipe.transform(a,"MMM dd, yyyy"), value: a } : { label: a, value: a }
+      // const b = { label: a, value: a };
+      return b;
+    })
+    .filter(ele => ele.label)
   }
 
   sortData(arr, field) {
-    arr.sort(function(a,b){
-      if(a.field === "" || a.field === null) return -1;
-      if(b.field === "" || b.field === null) return 0;
-      let d1 = new Date(a.field).getTime();
-      let d2 = new Date(b.field).getTime();
-      
-      return d1 < d2 ? -1 : d1 > d2 ? 1 : 0
+    let column = field;
+    arr.sort((a, b) => {
+      if (a[column] === "" || a[column] === null) return -1;
+      if (b[column] === "" || b[column] === null) return 0;
+      // let d1 = new Date(a[column]).getTime();
+      // let d2 = new Date(b[column]).getTime();
+
+      // return d1 < d2 ? -1 : d1 > d2 ? 1 : 0;
     });
-  } 
+  }
 }

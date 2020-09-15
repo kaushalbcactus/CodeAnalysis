@@ -274,6 +274,15 @@ export class CreateTaskComponent implements OnInit {
     }
   }
 
+  validateTask(): string {
+    const task = {
+      pUserStart: this.create_task_form.value.StartDate,
+      pUserEnd: this.create_task_form.value.EndDate,
+    };
+    const errorMsgs = this.commonService.validateTaskDuration([task], 50);
+    return errorMsgs;
+  }
+
   SetTime(time, type: string) {
     let endTime;
     const startTime = type === 'startTime' ? time.split(':')[0] % 12 + ':' + time.split(':')[1]
@@ -305,6 +314,12 @@ export class CreateTaskComponent implements OnInit {
       this.checkSubMilestone(this.enteredSubMile);
       if (this.create_task_form.invalid) {
         this.submitBtn.isClicked = false;
+        return false;
+      }
+      const errorMsgs = this.validateTask();
+      if (errorMsgs) {
+        this.submitBtn.isClicked = false;
+        this.commonService.showToastrMessage(this.constantsService.MessageType.error, errorMsgs, true);
         return false;
       }
       this.submitBtn.isClicked = true;
@@ -373,6 +388,7 @@ export class CreateTaskComponent implements OnInit {
         IsCentrallyAllocated: 'No',
         ActiveCA: 'No',
         DisableCascade: 'Yes',
+        ContentTypeCH: this.constantsService.CONTENT_TYPE.TASK,
       };
       /* tslint:disable:no-string-literal */
       taskObj['__metadata'] = { type: this.constantsService.listNames.Schedules.type };

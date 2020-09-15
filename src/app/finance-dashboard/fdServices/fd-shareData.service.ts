@@ -650,10 +650,10 @@ export class FDDataShareService {
 
 
     getCSDetails(res) {
-        if (res.hasOwnProperty('CS') && res.CS.hasOwnProperty('results') && res.CS.results.length) {
+        if (res.hasOwnProperty('Access') && res.Access.hasOwnProperty('results') && res.Access.results.length) {
             const title = [];
-            for (let i = 0; i < res.CS.results.length; i++) {
-                const element = res.CS.results[i];
+            for (let i = 0; i < res.Access.results.length; i++) {
+                const element = res.Access.results[i];
                 title.push(element.Title);
             }
             return title.toString();
