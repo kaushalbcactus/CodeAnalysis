@@ -64,7 +64,7 @@ export class PmconstantService {
     select: 'ID,Title,Status, AssignedTo/ID,AssignedTo/Title',
     expand: 'AssignedTo/ID,AssignedTo/Title',
     filter: 'ParentSlot eq \'{0}\' and Status ne \'Deleted\' and NextTasks eq null',
-     orderby: 'DueDate desc',
+     orderby: 'DueDateDT desc',
     top: 4200
 
   };
@@ -542,9 +542,14 @@ export class PmconstantService {
     },
     SPENDING_INFO: {
       select: "ID,Title,Number,Header,DateSpend,SpendType,PaymentMode,Currency,Amount,ClientCurrency,ClientAmount,DollarAmount,Status,FileURL,NotesMT,InvoiceID,CategoryST,Modified,POLookup,ApproverComments,ApproverFileUrl,Created,PayingEntity,VendorFreelancer,RequestType,ClientApprovalFileURL,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title",
-      filter: "Title eq '{{Title}}' ",
+      filter: "Title eq '{{Title}}' and InvoiceID eq {{invoiceId}}",
       expand: "Editor,Author",
       top: 1,
+    },
+    sowList: {
+      select: "ID,SOWCode,Title,ClientLegalEntity,Currency,BillingEntity,TotalLinked,OOPLinked,InvoicedOOP,TotalInvoiced,TotalScheduled,ScheduledOOP",
+      filter: "Status ne 'CLosed' or Status ne 'Cancelled' ",
+      top: 4500
     }
   };
   public QUERY = {

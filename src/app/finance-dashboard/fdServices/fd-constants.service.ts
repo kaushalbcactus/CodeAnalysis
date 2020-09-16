@@ -113,7 +113,7 @@ export class FdConstantsService {
         },
         spendingInfoCS: {
             select: "ID,Title,Number,Header,DateSpend,SpendType,PaymentMode,Currency,Amount,ClientCurrency,ClientAmount,DollarAmount,Status,FileURL,NotesMT,InvoiceID,CategoryST,Modified,POLookup,ApproverComments,ApproverFileUrl,Created,PayingEntity,VendorFreelancer,RequestType,ClientApprovalFileURL,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title",
-            filter: "Status eq '{{Status}}' and CSId eq {{UserID}}",
+            filter: "Status eq '{{Status}}' and AccessId eq {{UserID}}",
             expand: "Editor,Author",
             top: 4500,
             orderby: "{{Status}} desc"
@@ -127,22 +127,22 @@ export class FdConstantsService {
         },
         spendingInfoForNonBillableCS: {
             select: "ID,Title,Number,Header,DateSpend,SpendType,PaymentMode,Currency,Amount,ClientCurrency,ClientAmount,DollarAmount,Status,FileURL,NotesMT,InvoiceID,CategoryST,Modified,POLookup,ApproverComments,ApproverFileUrl,Created,PayingEntity,VendorFreelancer,RequestType,ClientApprovalFileURL,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title",
-            filter: "(Status eq 'Approved Payment Pending' or Status eq 'Approved') and CategoryST eq 'Non Billable'  and CSId eq {{UserID}} and DateSpend ge '{{StartDate}}' and DateSpend le '{{EndDate}}'",
+            filter: "(Status eq 'Approved Payment Pending' or Status eq 'Approved') and CategoryST eq 'Non Billable'  and AccessId eq {{UserID}} and DateSpend ge '{{StartDate}}' and DateSpend le '{{EndDate}}'",
             expand: "Editor,Author",
             top: 4500,
             // orderby: "Non Billable desc"
         },
 
         spendingInfoForBillable: {
-            select: "ID,Title,Number,Header,DateSpend,SpendType,PaymentMode,Currency,Amount,ClientCurrency,ClientAmount,DollarAmount,Status,FileURL,NotesMT,InvoiceID,CategoryST,Modified,POLookup,ApproverComments,ApproverFileUrl,Created,PayingEntity,VendorFreelancer,RequestType,ClientApprovalFileURL,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title",
+            select: "ID,Title,Number,Header,DateSpend,SpendType,PaymentMode,Currency,Amount,ClientCurrency,ClientAmount,DollarAmount,Status,FileURL,NotesMT,InvoiceID,CategoryST,Modified,POLookup,ApproverComments,ApproverFileUrl,Created,PayingEntity,VendorFreelancer,RequestType,ClientApprovalFileURL,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title,AccessId,CategoryST,Currency,NotesMT,SpendType",
             filter: "CategoryST eq 'Billable' and (Status eq 'Approved Payment Pending' or Status eq 'Approved' or Status eq 'Billed Payment Pending' or (Status eq 'Billed' and DateSpend ge '{{StartDate}}' and DateSpend le '{{EndDate}}'))",
             expand: "Editor,Author",
             top: 4500,
             // orderby: "{{Category}} desc"
         },
         spendingInfoForBillableCS: {
-            select: "ID,Title,Number,Header,DateSpend,SpendType,PaymentMode,Currency,Amount,ClientCurrency,ClientAmount,DollarAmount,Status,FileURL,NotesMT,InvoiceID,CategoryST,Modified,POLookup,ApproverComments,ApproverFileUrl,Created,PayingEntity,VendorFreelancer,RequestType,ClientApprovalFileURL,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title",
-            filter: "CategoryST eq 'Billable' and CSId eq {{UserID}} and (Status eq 'Approved Payment Pending' or Status eq 'Approved' or Status eq 'Billed Payment Pending' or (Status eq 'Billed' and DateSpend ge '{{StartDate}}' and DateSpend le '{{EndDate}}'))",
+            select: "ID,Title,Number,Header,DateSpend,SpendType,PaymentMode,Currency,Amount,ClientCurrency,ClientAmount,DollarAmount,Status,FileURL,NotesMT,InvoiceID,CategoryST,Modified,POLookup,ApproverComments,ApproverFileUrl,Created,PayingEntity,VendorFreelancer,RequestType,ClientApprovalFileURL,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title,AccessId,CategoryST,Currency,NotesMT,SpendType",
+            filter: "CategoryST eq 'Billable' and AccessId eq {{UserID}} and (Status eq 'Approved Payment Pending' or Status eq 'Approved' or Status eq 'Billed Payment Pending' or (Status eq 'Billed' and DateSpend ge '{{StartDate}}' and DateSpend le '{{EndDate}}'))",
             expand: "Editor,Author",
             top: 4500,
             // orderby: "{{Category}} desc"
@@ -156,43 +156,43 @@ export class FdConstantsService {
         },
         spendingInfoForRCCS: {
             select: "ID,Title,Number,Header,DateSpend,SpendType,PaymentMode,Currency,Amount,ClientCurrency,ClientAmount,DollarAmount,Status,FileURL,NotesMT,InvoiceID,CategoryST,Modified,POLookup,ApproverComments,ApproverFileUrl,Created,PayingEntity,VendorFreelancer,RequestType,ClientApprovalFileURL,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title",
-            filter: "(Status eq 'Rejected' or Status eq 'Cancelled') and Modified ge '{{StartDate}}' and Modified le '{{EndDate}}'  and CSId eq {{UserID}} ",
+            filter: "(Status eq 'Rejected' or Status eq 'Cancelled') and Modified ge '{{StartDate}}' and Modified le '{{EndDate}}'  and AccessId eq {{UserID}} ",
             expand: "Editor,Author",
             top: 4500
         },
         // Schedule Deliverable
         invoicesDel: {
             // select: "ID,Title,SOWCode,ScheduledDate,Amount,Currency,MainPOC,AddressType,PO,Status,Template,ScheduleType,SOWCode,CS/ID,CS/Title",
-            select: "ID,Title,TaggedDate,ScheduledDate,Amount,Currency,PO,Status,ProformaLookup,ScheduleType,InvoiceLookup,MainPOC,AddressType,Template,SOWCode,Modified,Modified,CS,CS/ID,CS/Title,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title",
+            select: "ID,Title,TaggedDate,ScheduledDate,Amount,Currency,PO,Status,ProformaLookup,ScheduleType,InvoiceLookup,MainPOC,AddressType,Template,SOWCode,Modified,Modified,Access,Access/ID,Access/Title,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title",
             filter: "Status eq 'Scheduled' and ScheduleType eq 'revenue' and (ScheduledDate ge '{{StartDate}}' and ScheduledDate le '{{EndDate}}') ",
             top: 4500,
             orderby: "ScheduledDate asc",
-            expand: "CS/ID,CS/Title,Editor,Author"
+            expand: "Access/ID,Access/Title,Editor,Author"
         },
         // Schedule Deliverable
         invoicesDelCS: {
             // select: "ID,Title,SOWCode,ScheduledDate,Amount,Currency,MainPOC,AddressType,PO,Status,Template,ScheduleType,SOWCode,CS/ID,CS/Title",
-            select: "ID,Title,TaggedDate,ScheduledDate,Amount,Currency,PO,Status,ProformaLookup,ScheduleType,InvoiceLookup,MainPOC,AddressType,Template,SOWCode,Modified,Modified,CS,CS/ID,CS/Title,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title",
-            filter: "Status eq 'Scheduled' and ScheduleType eq 'revenue' and (ScheduledDate ge '{{StartDate}}' and ScheduledDate le '{{EndDate}}') and CSId eq {{UserID}}",
+            select: "ID,Title,TaggedDate,ScheduledDate,Amount,Currency,PO,Status,ProformaLookup,ScheduleType,InvoiceLookup,MainPOC,AddressType,Template,SOWCode,Modified,Modified,Access,Access/ID,Access/Title,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title",
+            filter: "Status eq 'Scheduled' and ScheduleType eq 'revenue' and (ScheduledDate ge '{{StartDate}}' and ScheduledDate le '{{EndDate}}') and AccessId eq {{UserID}}",
             top: 4500,
             orderby: "ScheduledDate asc",
-            expand: "CS/ID,CS/Title,Editor,Author"
+            expand: "Access/ID,Access/Title,Editor,Author"
         },
         // Schedule OOP Invoices
         invoicesOOP: {
-            select: "ID,Title,TaggedDate,ScheduledDate,Amount,Currency,PO,Status,ProformaLookup,ScheduleType,InvoiceLookup,MainPOC,AddressType,Template,SOWCode,Modified,Modified,CS,CS/ID,CS/Title,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title",
+            select: "ID,Title,TaggedDate,ScheduledDate,Amount,Currency,PO,Status,ProformaLookup,ScheduleType,InvoiceLookup,MainPOC,AddressType,Template,SOWCode,Modified,Modified,Access,Access/ID,Access/Title,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title",
             filter: "Status eq 'Scheduled' and ScheduleType eq 'oop' and (ScheduledDate ge '{{StartDate}}' and ScheduledDate le '{{EndDate}}')  ",
             top: 4500,
             orderby: "ScheduledDate asc",
-            expand: "CS/ID,CS/Title,Editor,Author"
+            expand: "Access/ID,Access/Title,Editor,Author"
         },
         // Schedule OOP Invoices
         invoicesOOPCS: {
-            select: "ID,Title,TaggedDate,ScheduledDate,Amount,Currency,PO,Status,ProformaLookup,ScheduleType,InvoiceLookup,MainPOC,AddressType,Template,SOWCode,Modified,Modified,CS,CS/ID,CS/Title,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title",
-            filter: "Status eq 'Scheduled' and ScheduleType eq 'oop' and (ScheduledDate ge '{{StartDate}}' and ScheduledDate le '{{EndDate}}') and CSId eq {{UserID}}",
+            select: "ID,Title,TaggedDate,ScheduledDate,Amount,Currency,PO,Status,ProformaLookup,ScheduleType,InvoiceLookup,MainPOC,AddressType,Template,SOWCode,Modified,Modified,Access,Access/ID,Access/Title,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title",
+            filter: "Status eq 'Scheduled' and ScheduleType eq 'oop' and (ScheduledDate ge '{{StartDate}}' and ScheduledDate le '{{EndDate}}') and AccessId eq {{UserID}}",
             top: 4500,
             orderby: "ScheduledDate asc",
-            expand: "CS/ID,CS/Title,Editor,Author"
+            expand: "Access/ID,Access/Title,Editor,Author"
         },
         // hourly based
         projectFinances: {
@@ -218,13 +218,13 @@ export class FdConstantsService {
         // ,TotalBudget,NetBudget,TotalLinked,TotalInvoiced,TotalScheduled,ScheduledRevenue,RevenueLinked
 
         projectBudgetBreakup: {
-            select: "ID, ProjectLookup, BudgetHours,AuthorId,EditorId,OriginalBudget,OOPBudget",
+            select: "ID, ProjectLookup, BudgetHours,AuthorId,EditorId,OriginalBudget,OOPBudget,NetBudget",
             filter: "ProjectCode eq '{{ProjectCode}}' ",
             // top: 1
         },
 
         projectFinanceBreakup: {
-            select: "ID,POLookup,ProjectNumber,AuthorId,EditorId",
+            select: "ID,POLookup,ProjectNumber,AuthorId,EditorId,Amount,AmountRevenue,TotalScheduled,ScheduledRevenue,InvoicedRevenue,TotalInvoiced",
             filter: "ProjectNumber eq '{{ProjectCode}}' and Status ne 'Deleted' ",
             // top: 1
         },
@@ -244,11 +244,11 @@ export class FdConstantsService {
         // Confirmed
         invoiceLineItems: {
             // select: "ID,Title,SOWCode,ScheduledDate,Amount,Currency,MainPOC,AddressType,PO,Status,Template,ScheduleType,SOWCode,CS/ID,CS/Title&$Expand=CS/ID,CS/Title",
-            select: "ID,Title,TaggedDate,ScheduledDate,Amount,Currency,PO,Status,ProformaLookup,ScheduleType,InvoiceLookup,MainPOC,AddressType,Template,SOWCode,Modified,Modified,CS,CS/ID,CS/Title,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title",
+            select: "ID,Title,TaggedDate,ScheduledDate,Amount,Currency,PO,Status,ProformaLookup,ScheduleType,InvoiceLookup,MainPOC,AddressType,Template,SOWCode,Modified,Modified,Access,Access/ID,Access/Title,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title",
             filter: "Status eq 'Confirmed' ",
             orderby: "ScheduledDate asc",
             top: 4500,
-            expand: "CS/ID,CS/Title,Editor,Author"
+            expand: "Access/ID,Access/Title,Editor,Author"
         },
 
         // Proforma
@@ -320,16 +320,18 @@ export class FdConstantsService {
         },
 
         invoiceLineItemProforma:{
-            select:"ID,Title,TaggedDate,ScheduledDate,Amount,Currency,PO,Status,ProformaLookup,ScheduleType,InvoiceLookup,MainPOC,AddressType,Template,SOWCode,Modified,Modified,CS,CS/ID,CS/Title,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title",
+            select:"ID,Title,TaggedDate,ScheduledDate,Amount,Currency,PO,Status,ProformaLookup,ScheduleType,InvoiceLookup,MainPOC,AddressType,Template,SOWCode,Modified,Modified,Access,Access/ID,Access/Title,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title",
             filter: "ProformaLookup eq '{{ProformaLookup}}' ",
             top: 4500,
-            expand: "CS/ID,CS/Title,Editor,Author"
+            expand: "Access/ID,Access/Title,Editor,Author"
         },
 
         invoiceLineItemByInvoice: {
-            select: "ID,Title,Status,ScheduledDate,Amount,Currency,PO,MainPOC,ScheduleType,InvoiceLookup,Expenses,AddressType,Template,SOWCode,ProformaLookup",
+            select: "ID,Title,Status,ScheduledDate,Amount,Currency,PO,MainPOC,ScheduleType,InvoiceLookup,Expenses,AddressType,Template,SOWCode,ProformaLookup,Modified,Access,Access/ID,Access/Title,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title",
             filter: "InvoiceLookup eq '{{InvoiceLookup}}' ",
-            top: 4500
+            top: 4500,
+            expand: "Access/ID,Access/Title,Editor,Author"
+
         },
 
         // Mail Content
@@ -345,6 +347,31 @@ export class FdConstantsService {
             filter: 'ClientLegalEntity eq \'{{clientLegalEntity}}\' and InvoiceType eq \'{{invoiceType}}\' and IsTaggedFully eq \'No\'',
             top: 4500
         },
+
+        invoiceLineItemByProject: {
+            select: "ID,Title,Status,Amount,PO,MainPOC,ScheduleType,InvoiceLookup,ProformaLookup",
+            filter: "Title eq '{{ProjectCode}}' ",
+            top: 4500
+        },
+
+        invoiceData: {
+            select: 'ID, ClientLegalEntity, Amount, AddressType, InvoiceNumber, PO, ProformaLookup, IsTaggedFully, TaggedAmount,AuxiliaryInvoiceName,'
+            + ' InvoiceDate, MainPOC, FileURL',
+            filter: 'ClientLegalEntity eq \'{{clientLegalEntity}}\' and InvoiceType eq \'{{invoiceType}}\' and IsTaggedFully eq \'Yes\'',
+            top: 4500
+        },
+
+        invoiceLineItemsByClient: {
+            select: "ID,Title,Status,Amount,PO,MainPOC,ScheduleType,InvoiceLookup,ProformaLookup",
+            filter: "Title eq '{{ProjectCode}}'  and ScheduleType eq \'{{ScheduleType}}\'",
+            top: 4500
+        },
+
+        GET_PO_BY_ID: {
+            lect: "ID,Title,NameST,Amount,ClientLegalEntity,Status,POExpiryDate,Currency,AmountRevenue,TotalLinked,RevenueLinked,TotalScheduled,ScheduledRevenue,Number,ScheduledOOP,InvoicedOOP, InvoicedRevenue, AmountOOP, POCLookup, OOPLinked,TotalInvoiced",
+            filter: "Status eq 'Active' and ID eq {{ItemID}}",
+            top: 4500,
+          },
 
 
               // Add Update

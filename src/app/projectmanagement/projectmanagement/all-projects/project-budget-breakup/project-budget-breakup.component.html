@@ -89,7 +89,7 @@
         <tr>
             <th></th>
             <th *ngFor="let col of columns" [hidden]="!col.visibility" [ngSwitch]="col.field">
-            <p-multiSelect *ngSwitchCase="'InternalReviewStartDate'" [style]="{'width':'100%'}" [options]="this.SOWBudgetFilters.InternalReviewStartDate" defaultLabel="Internal Review Start Date" (onChange)="SowBudgetTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+            <p-multiSelect *ngSwitchCase="'InternalReviewStartDate'" [style]="{'width':'100%'}" [options]="this.SOWBudgetFilters.InternalReviewStartDate" defaultLabel="Approval Date" (onChange)="SowBudgetTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
             filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
             <p-multiSelect *ngSwitchCase="'Status'" [style]="{'width':'100%'}" [options]="this.SOWBudgetFilters.Status" defaultLabel="Status" (onChange)="SowBudgetTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
             filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>

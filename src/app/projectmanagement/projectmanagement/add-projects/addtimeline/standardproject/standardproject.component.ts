@@ -415,7 +415,8 @@ export class StandardprojectComponent implements OnInit {
       const standardMilestoneTaskOptions = {
         select: 'ID,Title,Skill,Hours,TaskDays,UseTaskDays,Milestones/ID,Milestones/Title,TaskName/ID,TaskName/Title,PreviousTask/ID,PreviousTask/Title,SubMilestones/ID,SubMilestones/Title',
         expand: 'Milestones/ID,Milestones/Title,TaskName/ID,TaskName/Title,PreviousTask/ID,PreviousTask/Title,SubMilestones/ID,SubMilestones/Title',
-        filter: 'Milestones/Title eq \'' + milestone.Title + '\''
+        filter: 'Milestones/Title eq \'' + milestone.Title + '\'',
+        top: 4900
       };
       // getMilestone Task
       const milestoneTaskGet = Object.assign({}, options);
@@ -443,7 +444,8 @@ export class StandardprojectComponent implements OnInit {
       select: 'ID,Title,BaseSkill,IsActiveCH,Deliverable/ID,Deliverable/Title,SubDeliverable/ID,SubDeliverable/Title,Services/ID,Services/Title',
       expand: 'Deliverable/ID,Deliverable/Title,SubDeliverable/ID,SubDeliverable/Title,Services/ID,Services/Title',
       filter: 'IsActiveCH eq \'Yes\'',
-      orderby: 'Title'
+      orderby: 'Title',
+      top: 4900
     };
     this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetStandardServiceName');
     const result = await this.spService.readItems(this.constants.listNames.StandardServices.name, standardServiceOptions);

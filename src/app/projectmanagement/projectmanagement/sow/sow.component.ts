@@ -213,7 +213,7 @@ export class SOWComponent implements OnInit, OnDestroy {
         command: (event) => this.closeSOW(this.pmObject.selectedSOWTask)
       },
       {
-        label: 'SOW Budget', target: '_blank',
+        label: 'Budget Breakup', target: '_blank',
         command: (event) => this.showSOWBudgetBreakup(this.pmObject.selectedSOWTask)
       },
       {
@@ -280,7 +280,7 @@ export class SOWComponent implements OnInit, OnDestroy {
 
   showSOWBudgetBreakup(sowTask) {
     const ref = this.dialogService.open(ProjectBudgetBreakupComponent, {
-      header: 'SOW Budget - ' + sowTask.SOWCode + '(' + sowTask.ShortTitle + ')',
+      header: 'SOW Budget Breakup - ' + sowTask.SOWCode + '(' + sowTask.ShortTitle + ')',
       width: '90vw',
       data: {
         sowCode:  sowTask.SOWCode

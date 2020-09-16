@@ -12,6 +12,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Table } from 'primeng/table';
 import { DialogService } from 'primeng';
+import { ApproveRejectExpenseDialogComponent } from '../approve-reject-expense-dialog/approve-reject-expense-dialog.component';
 
 @Component({
     selector: 'app-pending-expense',
@@ -201,6 +202,8 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
     resCatEmails: any = [];
 
     isOptionFilter: boolean;
+
+    expenseForm: any;
 
     async ngOnInit() {
         // let snapData = this.route.snapshot.data['fdData'];
@@ -591,20 +594,22 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             }
         }
         if (uniqueRT && type === 'approve') {
-            this.displayModal = true;
+            // this.displayModal = true;
             this.cancelRejectDialog.title = 'Approve Expense';
             this.cancelRejectDialog.text = 'Approve';
-            this.addRemoveFormFieldForAE(selectedRT);
+            // this.addRemoveFormFieldForAE(selectedRT);
             this.selectedRowItem = this.selectedAllRowsItem[0];
+            this.approveRejectExpenseDialog();
         } else if (uniqueRT && type === 'reject') {
             this.getApproveExpenseMailContent('RejectExpense');
-            this.displayModal = true;
+            // this.displayModal = true;
             this.cancelRejectDialog.title = 'Reject Expense';
             this.cancelRejectDialog.text = 'Reject';
             // this.addRemoveFormFieldForAE(selectedRT);
             this.selectedRowItem = this.selectedAllRowsItem[0];
+            this.approveRejectExpenseDialog();
         } else {
-            this.displayModal = false;
+            // this.displayModal = false;
             this.commonService.showToastrMessage(this.constantService.MessageType.info,'Please select same Request type & try agian.',false);
         }
     }
@@ -622,24 +627,25 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         this.cancelRejectDialog.title = event.item.label;
         if (this.cancelRejectDialog.title.toLowerCase() === 'cancel expense' || this.cancelRejectDialog.title.toLowerCase() === 'reject expense') {
 
-            this.cancelRejectDialog.title.toLowerCase() === 'cancel expense' ?
-            this.getApproveExpenseMailContent(this.constantService.EMAIL_TEMPLATE_NAME.CANCEL_EXPENSE)
-                : this.getApproveExpenseMailContent(this.constantService.EMAIL_TEMPLATE_NAME.REJECT_EXPENSE);
+            // this.cancelRejectDialog.title.toLowerCase() === 'cancel expense' ?
+            // this.getApproveExpenseMailContent(this.constantService.EMAIL_TEMPLATE_NAME.CANCEL_EXPENSE)
+            //     : this.getApproveExpenseMailContent(this.constantService.EMAIL_TEMPLATE_NAME.REJECT_EXPENSE);
 
             this.cancelRejectDialog.text = event.item.label.replace('Expense', '');
         } else if (this.cancelRejectDialog.title.toLowerCase() === 'approve expense') {
             this.cancelRejectDialog.text = event.item.label.replace('Expense', '');
-            if (this.selectedRowItem.RequestType === 'Invoice Payment') {
-                this.addRemoveFormFieldForAE('Invoice Payment');
-            } else if (this.selectedRowItem.RequestType === 'Credit Card') {
-                this.addRemoveFormFieldForAE('Credit Card');
-            }
+            // if (this.selectedRowItem.RequestType === 'Invoice Payment') {
+            //     this.addRemoveFormFieldForAE('Invoice Payment');
+            // } else if (this.selectedRowItem.RequestType === 'Credit Card') {
+            //     this.addRemoveFormFieldForAE('Credit Card');
+            // }
 
         } else if (event.item.label === 'Details') {
             this.rightSideBar = !this.rightSideBar;
             return;
         }
-        this.displayModal = true;
+        this.approveRejectExpenseDialog();
+        // this.displayModal = true;
         // document.getElementById("openModalButton").click();
     }
 
@@ -662,14 +668,29 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         this.getApproveExpenseMailContent(this.constantService.EMAIL_TEMPLATE_NAME.APPROVE_EXPENSE);
     }
 
-    // Get Selected BE
-    selectedBE(be: any) {
-        console.log('BE ', be);
+    approveRejectExpenseDialog() {
+        const ref = this.dialogService.open(ApproveRejectExpenseDialogComponent, {
+            data: {
+              expenseDialog: this.cancelRejectDialog,
+              selectedRowItem: this.selectedRowItem
+            },
+            header: this.cancelRejectDialog.title,
+            contentStyle: { height: '450px !important' },
+            width: '50%',
+            closable: false,
+          });
+          ref.onClose.subscribe(async expense => {
+              if(expense) {
+                this.expenseForm = expense.form;
+                this.mailContentRes = expense.mailContent;
+                if(expense.event)  { 
+                    await this.onFileChange(expense.event, expense.folderName);
+                }
+                await this.onSubmit(expense.type, expense.form);
+              }
+          })
     }
-
-    selectedPaymentMode(val: any) {
-        console.log('Payment Mode ', val);
-    }
+    
 
     //*************************************************************************************************
     // new File uplad function updated by Maxwell
@@ -707,11 +728,11 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                     if (this.fileUploadedUrl) {
                         const batchUrl = [];
                         const speInfoObj = {
-                            PayingEntity: this.approveExpense_form.value.PayingEntity.Title,
-                            Number: this.approveExpense_form.value.Number,
-                            DateSpend: this.approveExpense_form.value.DateSpend,
-                            PaymentMode: this.approveExpense_form.value.PaymentMode.value,
-                            ApproverComments: this.approveExpense_form.value.ApproverComments,
+                            PayingEntity: this.expenseForm.value.PayingEntity.Title,
+                            Number: this.expenseForm.value.Number,
+                            DateSpend: this.expenseForm.value.DateSpend,
+                            PaymentMode: this.expenseForm.value.PaymentMode.value,
+                            ApproverComments: this.expenseForm.value.ApproverComments,
                             ApproverFileUrl: this.fileUploadedUrl,
                             Status: 'Approved'
                         };
@@ -733,17 +754,17 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         });
     }
 
-    onSubmit(type: string) {
+    onSubmit(type: string,expenseForm) {
         this.formSubmit.isSubmit = true;
         const batchUrl = [];
         if (type === 'Cancel Expense') {
-            if (this.cancelReject_form.invalid) {
+            if (expenseForm.invalid) {
                 return;
             }
             this.isPSInnerLoaderHidden = false;
-            // console.log('form is submitting ..... this.cancelReject_form ', this.cancelReject_form.value);
+            // console.log('form is submitting ..... expenseForm ', expenseForm.value);
             const speInfoObj = {
-                ApproverComments: this.cancelReject_form.value.ApproverComments,
+                ApproverComments: expenseForm.value.ApproverComments,
                 Status: 'Cancelled'
             };
             speInfoObj['__metadata'] = { type: this.constantService.listNames.SpendingInfo.type};
@@ -756,14 +777,14 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             this.submitForm(batchUrl, type);
 
         } else if (type === 'Reject Expense') {
-            if (this.cancelReject_form.invalid) {
+            if (expenseForm.invalid) {
                 return;
             }
             this.isPSInnerLoaderHidden = false;
             this.submitBtn.isClicked = true;
-            // console.log('form is submitting ..... this.cancelReject_form ', this.cancelReject_form.value);
+            // console.log('form is submitting ..... expenseForm ', expenseForm.value);
             const speInfoObj = {
-                ApproverComments: this.cancelReject_form.value.ApproverComments,
+                ApproverComments: expenseForm.value.ApproverComments,
                 Status: 'Rejected'
             };
             speInfoObj['__metadata'] = { type: this.constantService.listNames.SpendingInfo.type };
@@ -779,7 +800,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             }
             this.submitForm(batchUrl, type);
         } else if (type === 'Approve Expense') {
-            if (this.approveExpense_form.invalid) {
+            if (expenseForm.invalid) {
                 return;
             }
             else if (this.selectedFile && this.selectedFile.size === 0) {
@@ -789,11 +810,11 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
 
             this.isPSInnerLoaderHidden = false;
             this.submitBtn.isClicked = true;
-            // console.log('form is submitting ..... this.approveExpense_form ', this.approveExpense_form.value);
+            // console.log('form is submitting ..... expenseForm ', expenseForm.value);
             if (this.selectedRowItem.RequestType === 'Invoice Payment') {
                 const speInfoObj = {
-                    PayingEntity: this.approveExpense_form.value.PayingEntity.Title,
-                    ApproverComments: this.approveExpense_form.value.ApproverComments,
+                    PayingEntity: expenseForm.value.PayingEntity.Title,
+                    ApproverComments: expenseForm.value.ApproverComments,
                     DateSpend: this.datePipe.transform(new Date(), 'MM/dd/yyyy'),
                     Status: 'Approved Payment Pending'
                 };
@@ -822,12 +843,12 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         if (type === 'Approve Expense') {
 
             this.commonService.showToastrMessage(this.constantService.MessageType.success,'Expense Approved.',false);
-            this.displayModal = false;
+            // this.displayModal = false;
             this.sendMailToSelectedLineItems(type);
         } else if (type === 'Cancel Expense' || type === 'Reject Expense') {
 
             this.commonService.showToastrMessage(this.constantService.MessageType.success,'Submitted.',false);
-            this.displayModal = false;
+            // this.displayModal = false;
             this.sendMailToSelectedLineItems(type);
         }
         this.isPSInnerLoaderHidden = true;
@@ -970,17 +991,17 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         mailContent = this.replaceContent(mailContent, '@@Val5@@', expense.Currency + ' ' + parseFloat(expense.Amount).toFixed(2));
         mailContent = this.replaceContent(mailContent, '@@Val6@@', expense.ClientAmount ? expense.ClientCurrency + ' ' + parseFloat(expense.ClientAmount).toFixed(2) : '--');
         mailContent = this.replaceContent(mailContent, '@@Val7@@', expense.Notes);
-        mailContent = this.replaceContent(mailContent, '@@Val10@@', this.approveExpense_form.value.ApproverComments ? this.approveExpense_form.value.ApproverComments : this.cancelReject_form.value.ApproverComments);
+        mailContent = this.replaceContent(mailContent, '@@Val10@@', this.expenseForm.value.ApproverComments ? this.expenseForm.value.ApproverComments : this.expenseForm.value.ApproverComments);
 
         mailContent = this.replaceContent(mailContent, '@@Val0@@', expense.Id);
         mailContent = this.replaceContent(mailContent, '@@Val13@@', author.hasOwnProperty('UserNamePG') ? author.UserNamePG.Title : 'Member');
         mailContent = this.replaceContent(mailContent, '@@Val14@@', this.currentUserInfoData.Title);
         if (type === 'Approve Expense') {
-            mailContent = this.replaceContent(mailContent, '@@Val15@@', this.approveExpense_form.value.PayingEntity.Title);
+            mailContent = this.replaceContent(mailContent, '@@Val15@@', this.expenseForm.value.PayingEntity.Title);
             if (expense.RequestType !== 'Invoice Payment') {
-                mailContent = this.replaceContent(mailContent, '@@Val8@@', this.approveExpense_form.value.PaymentMode.value);
-                mailContent = this.replaceContent(mailContent, '@@Val9@@', this.datePipe.transform(this.approveExpense_form.value.DateSpend, 'dd MMMM yyyy, hh:mm a'));
-                mailContent = this.replaceContent(mailContent, '@@Val11@@', this.approveExpense_form.value.Number);
+                mailContent = this.replaceContent(mailContent, '@@Val8@@', this.expenseForm.value.PaymentMode.value);
+                mailContent = this.replaceContent(mailContent, '@@Val9@@', this.datePipe.transform(this.expenseForm.value.DateSpend, 'dd MMMM yyyy, hh:mm a'));
+                mailContent = this.replaceContent(mailContent, '@@Val11@@', this.expenseForm.value.Number);
                 mailContent = this.replaceContent(mailContent, '@@Val12@@', this.globalService.sharePointPageObject.rootsite + '' + this.fileUploadedUrl);
             } else {
                 mailContent = this.replaceContent(mailContent, '@@Val8@@', '');

@@ -37,8 +37,8 @@
 </div>
 
 <div class="financeTable">
-    <p-table #outi [columns]="outstandingInCols" [value]="outstandingInvoicesRes" [paginator]="true" [rows]="10" [(selection)]="selectedRowData" selectionMode="multiple" (onRowSelect)="onRowSelect($event)" exportFilename="Outstanding_Invoices" [(first)]="pageNumber"
-        (onPage)="paginate($event)">
+    <p-table #outi dataKey="Id" [columns]="outstandingInCols" [value]="outstandingInvoicesRes" [paginator]="true" [rows]="10" [(selection)]="selectedRowData" selectionMode="multiple" (onRowSelect)="onRowSelect($event)" exportFilename="Outstanding_Invoices" [(first)]="pageNumber"
+        (onPage)="paginate($event)" rowExpandMode="multiple" [expandedRowKeys]="expandedRows" (onRowExpand)="OnRowExpand($event)">
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th>S.No</th>
@@ -92,10 +92,14 @@
                 </th>
             </tr>
         </ng-template>
-        <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+
+        <ng-template pTemplate="body" let-rowData let-expanded="expanded" let-columns="columns" let-rowIndex="rowIndex">
             <tr>
                 <td>
                     {{rowIndex+1}}
+                    <a href="#" [pRowToggler]="rowData" style="vertical-align: middle;">
+                        <i [ngClass]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
+                    </a>
                 </td>
                 <td>
                     <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
@@ -123,6 +127,53 @@
                 </td>
             </tr>
         </ng-template>
+
+        <ng-template pTemplate="rowexpansion" let-invoice let-columns="columns">
+            <tr *ngIf="invoice.loaderenable">
+                <td colspan="13">
+                    <div id="modalInnerLoader"></div>
+                    <div id="modalInnerLoaderText">Loading...</div>
+                </td>
+            </tr>
+            <tr *ngIf="!invoice.loaderenable">
+                <td [attr.colspan]="13" style="padding: 0px;">
+                    <p-table #invoicesTable [columns]="invoiceCols" class="invoicesTable" [style]="{'font-size':'13px'}" [value]="invoice.invoiceDetails">
+                        <ng-template pTemplate="header" let-columns>
+
+                            <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                                {{col.header}}
+                                <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
+                            </th>
+
+                        </ng-template>
+
+                        <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex" let-columns="columns">
+                            <tr class="milestoneTable" *ngIf="!invoice.loaderenable">
+                                <td *ngFor="let col of columns;index as i">
+                                    <ng-container>
+                                        {{rowData[col.field]}}
+                                    </ng-container>
+
+                                </td>
+                                <td>
+                                    <div>
+                                        <p-menu #popupMenu [popup]="true" [model]="items" [style]="{'text-align': 'left'}" styleClass="borderMenu"></p-menu>
+                                        <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;" (click)="openPopup(rowData, popupMenu,proforma);popupMenu.show($event);"></i>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage" let-columns>
+                            <tr>
+                                <td [attr.colspan]="columns.length">
+                                    No records found
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </td>
+            </tr>
+        </ng-template>
     </p-table>
 </div>
 <!-- Table End  -->
@@ -132,6 +183,13 @@
 <p-sidebar [(visible)]="rightSideBar" position="right" [style]="{overflow:'auto'}" styleClass="ui-sidebar-md">
     <ng-container *ngIf="rightSideBar">
         <app-inv-table-attribute [rowItemData]="selectedRowItem"></app-inv-table-attribute>
+    </ng-container>
+</p-sidebar>
+
+<!-- Right Side Bar Invoice -->
+<p-sidebar [(visible)]="rightSideBarInvoice" position="right" [style]="{overflow:'auto'}" styleClass="ui-sidebar-md">
+    <ng-container *ngIf="rightSideBarInvoice">
+        <app-ili-table-attribute [rowItemData]="selectedRowItem"></app-ili-table-attribute>
     </ng-container>
 </p-sidebar>
 
