@@ -554,7 +554,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             }
         } else {
             this.items = [
-                { label: 'Detag Invoice', command: (e) => this.openMenuContent(e, data) },
+                { label: 'Detag Project', command: (e) => this.openMenuContent(e, data) },
                 { label: 'View Project Details', command: (e) => this.openMenuContent(e, data) }
             ]
         }
@@ -669,13 +669,13 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 this.generateExistingInvoice(data);
             } 
         } else {
-            if(this.confirmDialog.title === 'Detag Invoice') {
-                this.commonService.confirmMessageDialog("Detag Invoice", "Are you sure you want to detag invoice", null, ['Yes', 'No'], false).then(async Confirmation => {
+            if(this.confirmDialog.title === 'Detag Project') {
+                this.commonService.confirmMessageDialog("Detag Project", "Are you sure you want to detag project", null, ['Yes', 'No'], false).then(async Confirmation => {
                     if (Confirmation === 'Yes') {
-                        this.onSubmit("Detag Invoice");
+                        this.onSubmit("Detag Project");
                     }
                     else if (Confirmation === 'No') {
-                        this.commonService.showToastrMessage(this.constantService.MessageType.info, 'You have canceled', false);
+                        this.commonService.showToastrMessage(this.constantService.MessageType.info, 'You have cancelled', false);
                     }
                 });
             } else if (this.confirmDialog.title.toLowerCase() === 'show history') {
@@ -972,8 +972,8 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             }
         }
 
-        console.log(batchUrl);
-        this.submitForm(batchUrl, 'Detag Invoice');
+        // console.log(batchUrl);
+        this.submitForm(batchUrl, 'Detag Project');
     }
 
     async detagInvoice() {
@@ -1126,7 +1126,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                             batchUrl.push(invObj);
                         }
 
-                        console.log(batchUrl);
+                        // console.log(batchUrl);
 
                         this.submitForm(batchUrl, type);
                     }
@@ -1293,7 +1293,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 this.submitForm(batchUrl, type);
             }
 
-        } else if(type === 'Detag Invoice') {
+        } else if(type === 'Detag Project') {
             this.detagInvoice();
         }
     }
@@ -1372,7 +1372,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             this.disputeInvoiceModal = false;
         } else if (type === "paymentResoved") {
 
-            this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Success.', true);
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Payment receipts uploaded successfully.', true);
             this.paymentResovedModal = false;
             this.reFetchData();
         } else if (type === "replaceInvoice") {
@@ -1388,7 +1388,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             this.formSubmit.isSubmit = false;
             this.submitBtn.isClicked = false;
             this.reFetchData();
-        } else if(type === 'Detag Invoice') {
+        } else if(type === 'Detag Project') {
             this.commonService.showToastrMessage(this.constantService.MessageType.success, this.selectedRowItem.ProjectCode + ' ' + ' Detached successfully from ' + this.parentData.InvoiceNumber , true);
             this.reFetchData();
         }

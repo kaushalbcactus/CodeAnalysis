@@ -611,7 +611,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         // }
         if(data.ScheduleType == 'oop' || data.ScheduleType == 'revenue') {
             this.items = [
-                { label: 'Detag Invoice', command: (e) => this.openMenuContent(e, data) },
+                { label: 'Detag Project', command: (e) => this.openMenuContent(e, data) },
                 { label: 'View Project Details', command: (e) => this.openMenuContent(e, data) }
             ]
         } 
@@ -656,13 +656,13 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
             }
         }
         else {
-            if(this.confirmDialog.title === 'Detag Invoice') {
-                this.commonService.confirmMessageDialog("Detag Invoice", "Are you sure you want to detag invoice", null, ['Yes', 'No'], false).then(async Confirmation => {
+            if(this.confirmDialog.title === 'Detag Project') {
+                this.commonService.confirmMessageDialog("Detag Project", "Are you sure you want to detag project", null, ['Yes', 'No'], false).then(async Confirmation => {
                     if (Confirmation === 'Yes') {
-                        this.onSubmit("Detag Invoice");
+                        this.onSubmit("Detag Project");
                     }
                     else if (Confirmation === 'No') {
-                        this.commonService.showToastrMessage(this.constantService.MessageType.info, 'You have canceled', false);
+                        this.commonService.showToastrMessage(this.constantService.MessageType.info, 'You have cancelled', false);
                     }
                 });
             } else if (this.confirmDialog.title.toLowerCase() === 'show history') {
@@ -796,7 +796,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
             }
             console.log('form is submitting ..... & Form data is ', this.creditOrDebitNote_form.value);
             // this.submitForm();
-        } else if(type === 'Detag Invoice') {
+        } else if(type === 'Detag Project') {
             this.detagInvoice();
         }
     }
@@ -1001,12 +1001,12 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         }
 
         console.log(batchUrl);
-        this.submitForm(batchUrl, 'Detag Invoice');
+        this.submitForm(batchUrl, 'Detag Project');
     }
 
     async submitForm(batchUrl, type: string) {
         await this.spServices.executeBatch(batchUrl);
-        if(type === 'Detag Invoice') {
+        if(type === 'Detag Project') {
             this.commonService.showToastrMessage(this.constantService.MessageType.success, this.selectedRowItem.ProjectCode + ' ' + ' Detached successfully from ' + this.parentData.InvoiceNumber , true);
             this.reFetchData();
         }

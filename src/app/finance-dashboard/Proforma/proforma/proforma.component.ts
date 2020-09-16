@@ -475,7 +475,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             }
             else if (Confirmation === 'No') {
 
-                this.commonService.showToastrMessage(this.constantService.MessageType.info, 'You have canceled', false);
+                this.commonService.showToastrMessage(this.constantService.MessageType.info, 'You have cancelled', false);
             }
         });
 
