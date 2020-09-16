@@ -266,7 +266,7 @@ export class PMCommonService {
 
   async getUserProperties(): Promise<any> {
     if (this.pmObject.projectContactsItems.length === 0) {
-      this.commonService.SetNewrelic('Project-Management', 'pmcommon', 'getUserInfo');
+      this.commonService.SetNewrelic('projectManagment', 'pmcommon', 'getUserInfo');
       const userProp = await this.spServices.getUserInfo(this.globalObject.currentUser.userId);
       this.pmObject.currLoginInfo = userProp;
       if (userProp && userProp.Groups && userProp.Groups.results && userProp.Groups.results.length) {

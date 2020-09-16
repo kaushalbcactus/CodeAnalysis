@@ -199,7 +199,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       mainQuery.filter += mainQuery.filterSlot;
     }
 
-    this.commonService.SetNewrelic('caCommon', 'CA', 'GetRCPISchedules' + this.selectedTab);
+    this.commonService.SetNewrelic('CA', 'caCommon', 'GetRCPISchedules' + this.selectedTab);
     const arrResults = await this.caCommonService.getItems(mainQuery);
     this.resourceList = arrResults[0];
     this.projects = arrResults[1];
@@ -353,7 +353,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         const startTime = new Date(new Date(task.StartTime).setHours(0, 0, 0, 0));
         const endTime = new Date(new Date(task.EndTime).setHours(23, 59, 59, 0));
 
-        this.commonService.SetNewrelic('unallocated-allocated', 'CA', 'checkUserCapacity');
+        this.commonService.SetNewrelic('CA', 'unallocated-allocated', 'checkUserCapacity');
 
         const oCapacity = await this.usercapacityComponent.applyFilterReturn(startTime, endTime,
           setResourcesExtn, []);
@@ -586,7 +586,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
     const mailObj = this.caConstant.getMailTemplate;
     mailObj.filter = mailObj.filter.replace('{{templateName}}', templateName);
-    this.commonService.SetNewrelic('unallocated-allocated', 'CA-GetMailContent', 'readItems');
+    this.commonService.SetNewrelic('CA', 'GetMailContent', 'readItems');
     const templateData = await this.spServices.readItems(this.constants.listNames.MailContent.name,
       mailObj);
     mailContent = templateData.length > 0 ? templateData[0].ContentMT : [];
@@ -710,7 +710,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
                 tasksObj.listName = this.constants.listNames.MilestoneSubTaskMatrix.name;
                 tasksObj.type = 'GET';
                 batchUrl.push(tasksObj);
-                this.commonService.SetNewrelic('unallocated-allocated', 'CA', 'AddRowMilestoneSubTaskMatrix');
+                this.commonService.SetNewrelic('CA', 'unallocated-allocated', 'AddRowMilestoneSubTaskMatrix');
                 const arrResult = await this.spServices.executeBatch(batchUrl);
                 const response = arrResult.length ? arrResult[0].retItems : [];
                 this.BudgetHoursTask = response;
@@ -1016,7 +1016,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     const setResourcesExtn = $.extend(true, [], task.resources);
     const startTime = new Date(new Date(task.StartTime).setHours(0, 0, 0, 0));
     const endTime = new Date(new Date(task.EndTime).setHours(23, 59, 59, 0));
-    this.commonService.SetNewrelic('unallocated-allocated', 'CA', 'fetchUserBasedOnCapacity');
+    this.commonService.SetNewrelic('CA', 'unallocated-allocated', 'fetchUserBasedOnCapacity');
     const oCapacity = await this.usercapacityComponent.applyFilterReturn(startTime, endTime,
       setResourcesExtn, []);
     task.capacity = oCapacity;
@@ -1443,7 +1443,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
             tasksObj.listName = this.constants.listNames.ProjectInformation.name;
             tasksObj.type = 'GET';
             batchUrl.push(tasksObj);
-            this.commonService.SetNewrelic('unallocated-allocated', 'CA', 'GetProjectInfoByProjectCode');
+            this.commonService.SetNewrelic('CA', 'unallocated-allocated', 'GetProjectInfoByProjectCode');
             const arrResult = await this.spServices.executeBatch(batchUrl);
             const oProjectDetails = arrResult.length ? arrResult[0].retItems[0] : [];
             const arrEditorsIds = this.getIDFromItem(oProjectDetails.Editors);
@@ -1640,7 +1640,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         batchUrl.push(taskObj);
       }
     }
-    this.commonService.SetNewrelic('unallocated-allocated', 'CA', 'SaveTasks');
+    this.commonService.SetNewrelic('CA', 'unallocated-allocated', 'SaveTasks');
     const responseInLines = await this.executeBulkRequests(UpdateProjectInfo, batchUrl);
     /*if (responseInLines.length > 0) {
       let counter = 0;

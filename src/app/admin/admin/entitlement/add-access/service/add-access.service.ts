@@ -127,9 +127,9 @@ export class AddAccessService {
 
   async processData(batchURL, filterData) {
     this.commonService.SetNewrelic(
-      "GetDataOnAddAccess",
+      "admin",
       "AddAccessService",
-      "AddAccess"
+      "GetDataOnAddAccess"
     );
     const arrResults = await this.spServices.executeBatch(batchURL);
     filterData.PRACTICEAREA =
@@ -322,9 +322,9 @@ export class AddAccessService {
     }
 
     this.commonService.SetNewrelic(
-      "GetParametersQueryData",
+      "admin",
       "AddAccessService",
-      "AddAccess"
+      "GetParametersQueryData"
     );
     const arrResults = await this.spServices.executeBatch(batchURL);
 

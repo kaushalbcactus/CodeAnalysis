@@ -573,7 +573,7 @@ export class UserCapacitycommonService {
 
             if (batchUrl.length === 99) {
               this.common.SetNewrelic(
-                "Shared",
+                "CapacityDashboard",
                 "UserCapacity",
                 "fetchTaskByUsers"
               );
@@ -584,7 +584,7 @@ export class UserCapacitycommonService {
             }
             if (adhocTasksBatchUrl.length === 99) {
               this.common.SetNewrelic(
-                "Shared",
+                "CapacityDashboard",
                 "UserCapacity",
                 "fetchAdhocTaskByUsers"
               );
@@ -595,7 +595,7 @@ export class UserCapacitycommonService {
             }
             if (blockResBatchUrl.length === 99) {
               this.common.SetNewrelic(
-                "Shared",
+                "CapacityDashboard",
                 "UserCapacity",
                 "fetchBlockResourceData"
               );
@@ -626,20 +626,20 @@ export class UserCapacitycommonService {
       }
     }
     if (batchUrl.length) {
-      this.common.SetNewrelic("Shared", "UserCapacity", "fetchTaskByUsers");
+      this.common.SetNewrelic("CapacityDashboard", "UserCapacity", "fetchTaskByUsers");
       batchResults = await this.spService.executeBatch(batchUrl);
       tempFinalArray = [...tempFinalArray, ...batchResults];
     }
 
 
     if (adhocTasksBatchUrl.length) {
-      this.common.SetNewrelic("Shared", "UserCapacity", "fetchAdhocTaskByUsers");
+      this.common.SetNewrelic("CapacityDashboard", "UserCapacity", "fetchAdhocTaskByUsers");
       adhocResbatchResults = await this.spService.executeBatch(adhocTasksBatchUrl);
       tempAdhocResFinalArray = [...tempAdhocResFinalArray, ...adhocResbatchResults];
     }
     if (blockResBatchUrl.length) {
       this.common.SetNewrelic(
-        "Shared",
+        "CapacityDashboard",
         "UserCapacity",
         "fetchBlockResourceData"
       );
@@ -653,7 +653,7 @@ export class UserCapacitycommonService {
     }
     if (TimeSpentbatchUrl.length) {
       this.common.SetNewrelic(
-        "Shared",
+        "CapacityDashboard",
         "UserCapacity",
         "fetchSpentTaskByUsers"
       );
@@ -795,7 +795,7 @@ export class UserCapacitycommonService {
         );
 
         if (batchURL.length === 99) {
-          this.common.SetNewrelic("Shared", "UserCapacity", "fetchTaskByUsers");
+          this.common.SetNewrelic("CapacityDashboard", "UserCapacity", "fetchTaskByUsers");
           batchResults = await this.spService.executeBatch(batchURL);
           console.log(batchResults);
           finalArray = [...finalArray, ...batchResults];
@@ -821,7 +821,7 @@ export class UserCapacitycommonService {
 
         if (batchURL.length === 99) {
           this.common.SetNewrelic(
-            "Shared",
+            "CapacityDashboard",
             "UserCapacity",
             "getLeavesbyUserIdAndSDED"
           );
@@ -854,7 +854,7 @@ export class UserCapacitycommonService {
 
     if (batchURL.length) {
       this.common.SetNewrelic(
-        "Shared",
+        "CapacityDashboard",
         "UserCapacity",
         "getLeavesbyUserIdAndSDEDAndAHbyUserID"
       );

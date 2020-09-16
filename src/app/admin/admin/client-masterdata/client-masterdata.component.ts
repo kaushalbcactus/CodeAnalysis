@@ -2186,7 +2186,7 @@ export class ClientMasterdataComponent implements OnInit {
     const tempFiles = [
       new Object({ name: selectedFile[0].name, file: selectedFile[0] }),
     ];
-    this.common.SetNewrelic("Admin-ClientMasterData", "SavePO", "UploadFile");
+    this.common.SetNewrelic("admin", "SavePO", "UploadFile");
     this.common
       .UploadFilesProgress(
         tempFiles,

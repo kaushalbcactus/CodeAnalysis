@@ -461,7 +461,7 @@ export class CommonService {
   }
 
   async checkTaskStatus(task) {
-    this.SetNewrelic('Service', 'Common-Service', 'readItem');
+    this.SetNewrelic('Services', 'Common-Service', 'readItem');
     const currentTask = await this.spServices.readItem(this.constants.listNames.Schedules.name, task.ID);
     let isActionRequired: boolean;
     if (currentTask) {

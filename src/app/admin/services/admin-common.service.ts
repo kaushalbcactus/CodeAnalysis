@@ -310,8 +310,8 @@ export class AdminCommonService {
 
   async getITInfo() {
     this.commonService.SetNewrelic(
-      "Finance-Dashboard",
-      "fd-shareData",
+      "admin",
+      "adminCommonGetGroup",
       "getGroupInfo"
     );
     return await this.spServices.getGroupInfo("Invoice_Team");

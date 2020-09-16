@@ -1831,7 +1831,7 @@ export class ManageFinanceComponent implements OnInit {
     });
   }
   async commitInvoiceItem(rowData) {
-    this.commonService.SetNewrelic('Finance-Dashboard', 'manage-finance-commitInvoiceItem', 'getGroupInfo');
+    this.commonService.SetNewrelic('projectManagment', 'manage-finance-commitInvoiceItem', 'getGroupInfo');
     const groupInfo = await this.spServices.getGroupInfo('Invoice_Team');
     const approvers = groupInfo.results;
     const arrayTo = [];
@@ -2130,7 +2130,7 @@ export class ManageFinanceComponent implements OnInit {
 
           let milestoneCall = Object.assign({}, this.pmConstant.FINANCE_QUERY.GET_SCHEDULES_BY_PROJECTCODE);
           milestoneCall.filter = milestoneCall.filter.replace(/{{projectCode}}/gi, this.projObj.ProjectCode);
-          this.commonService.SetNewrelic('Project-Management', 'manage-finance', 'AddUpdatePO-GetSchedules');
+          this.commonService.SetNewrelic('projectManagment', 'manage-finance', 'AddUpdatePO-GetSchedules');
           const response = await this.spServices.readItems(this.constant.listNames.Schedules.name, milestoneCall);
           let Resources;
 
@@ -2142,7 +2142,7 @@ export class ManageFinanceComponent implements OnInit {
             if (!Resources) {
               let resouceCall = Object.assign({}, this.pmConstant.FINANCE_QUERY.GET_RESOUCEBYID);
               resouceCall.filter = resouceCall.filter.replace(/{{Id}}/gi, this.projObj.PrimaryResourcesId[0].Id);
-              this.commonService.SetNewrelic('Project-Management', 'manage-finance', 'AddUpdatePO-GetResource');
+              this.commonService.SetNewrelic('projectManagment', 'manage-finance', 'AddUpdatePO-GetResource');
               Resources = await this.spServices.readItems(this.constant.listNames.ResourceCategorization.name, resouceCall);
             }
 

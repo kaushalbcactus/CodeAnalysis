@@ -20,7 +20,7 @@ export class AdminAuthService {
 
   async getUserRole() {
     this.constantsService.loader.isPSInnerLoaderHidden = false;
-    this.commonService.SetNewrelic('Admin', 'admin-auth', 'getUserInfo');
+    this.commonService.SetNewrelic('admin', 'admin-auth', 'getUserInfo');
     this.globalObject.userInfo = await this.spOperationsServices.getUserInfo(this.globalObject.currentUser.userId);
     console.log('this.globalObject.userInfo ', this.globalObject.userInfo);
     if (this.globalObject.userInfo.Groups.results.length) {

@@ -375,7 +375,7 @@ export class FeedbackPopupComponent implements OnInit {
     if (task.ParentSlot) {
       const parentPreviousNextTask = Object.assign({}, this.dashbaordService.mydashboardComponent.previousNextTaskParent);
       parentPreviousNextTask.filter = parentPreviousNextTask.filter.replace('{{ParentSlotId}}', task.ParentSlot);
-      this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'GetNextPreviousTasks');
+      this.common.SetNewrelic('QMS', 'ReviewDetails-View-Feedbackpopup', 'GetNextPreviousTasks');
       let parentTask = await this.spService.readItems(this.constantsService.listNames.Schedules.name, parentPreviousNextTask);
       parentTask = parentTask.length ? parentTask[0] : [];
       if (!currentTaskPrevTask) {
@@ -397,7 +397,7 @@ export class FeedbackPopupComponent implements OnInit {
     }
     const previousNextTask = Object.assign({}, this.dashbaordService.mydashboardComponent.previousNextTask);
     previousNextTask.filter = taskFilter;
-    this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'GetNextPreviousTasksFromSchedules');
+    this.common.SetNewrelic('QMS', 'ReviewDetails-View-Feedbackpopup', 'GetNextPreviousTasksFromSchedules');
     const response = await this.spService.readItems(this.constantsService.listNames.Schedules.name, previousNextTask);
 
     tasks = response.length ? response : [];
@@ -411,7 +411,7 @@ export class FeedbackPopupComponent implements OnInit {
         let previousNextTaskChild: any = [];
         previousNextTaskChild = Object.assign({}, this.dashbaordService.mydashboardComponent.nextPreviousTaskChild);
         previousNextTaskChild.filter = previousNextTaskChild.filter.replace('{{ParentSlotId}}', ele.ID.toString());
-        this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'GetNextPreviousTasksFromParentSlot');
+        this.common.SetNewrelic('QMS', 'ReviewDetails-View-Feedbackpopup', 'GetNextPreviousTasksFromParentSlot');
         let res: any = await this.spService.readItems(this.constantsService.listNames.Schedules.name, previousNextTaskChild);
         if (res.hasError) {
           this.common.showToastrMessage(this.constantsService.MessageType.error,res.message.value,false);

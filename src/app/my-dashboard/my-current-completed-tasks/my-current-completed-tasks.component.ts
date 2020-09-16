@@ -118,7 +118,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
   
-    this.commonService.SetNewrelic('MyCurrentCompletedTask', this.route.snapshot.data.type, 'GetEmailTemplate');
+    this.commonService.SetNewrelic('MyDashboard','MyCurrentCompletedTask' + this.route.snapshot.data.type, 'GetEmailTemplate');
     this.myDashboardConstantsService.getEmailTemplate();
   }
 
@@ -132,7 +132,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
   async GetDatabyDateSelection(event, days) {
     this.loaderenable = true;
     this.enableTableView = false;
-    this.commonService.SetNewrelic('MyCurrentCompletedTask', this.route.snapshot.data.type, 'GetTasks');
+    this.commonService.SetNewrelic('MyDashboard','MyCurrentCompletedTask' + this.route.snapshot.data.type, 'GetTasks');
     this.TabName = this.route.snapshot.data.type;
     this.days = days;
     this.selectedTab = event;
@@ -164,7 +164,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
 
   async getStatusFilterDropDownValue(status, filterDates) {
 
-    this.commonService.SetNewrelic('MyCurrentCompletedTask', status, 'GetTasks');
+    this.commonService.SetNewrelic('MyDashboard','MyCurrentCompletedTask' + status, 'GetTasks');
     const mytasks = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.MyTasks);
     mytasks.filter = mytasks.filter.replace(/{{userId}}/gi, this.sharedObject.currentUser.userId.toString());
     mytasks.filter += status === 'MyCompletedTask' ? mytasks.filterCompleted : mytasks.filterStatus;

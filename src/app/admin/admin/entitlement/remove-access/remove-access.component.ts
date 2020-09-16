@@ -638,7 +638,7 @@ export class RemoveAccessComponent implements OnInit {
             await this.spServices.executeBatch(batchURL);
           }
           this.commonService.showToastrMessage(this.constantsService.MessageType.success, 'Access has removed for ' + this.attribute + ' successfully.', true);
-          this.searchAcess();
+          this.searchAccess();
         }
       });
     }

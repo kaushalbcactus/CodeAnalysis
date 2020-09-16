@@ -206,7 +206,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
 
     const project = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.projectInfo);
     project.filter = project.filter.replace(/{{projectCode}}/gi, ProjectCode);
-    this.commonService.SetNewrelic('Shared', 'viewUpladDoc', 'getProjInfobyProjectCode');
+    this.commonService.SetNewrelic('ViewDocuments', 'viewUpladDoc', 'getProjInfobyProjectCode');
     const arrResult = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, project);
     this.sharedObject.DashboardData.ProjectInformation = arrResult.length ? arrResult[0] : {};
 
@@ -257,7 +257,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       const schedulesInfo = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ClientReviewSchedules);
       schedulesInfo.filter = schedulesInfo.filter
         .replace(/{{projectCode}}/gi, this.selectedTask.ProjectCode);
-      this.commonService.SetNewrelic('Shared', 'view-uploadDocumentDialog', 'GetCRDocuments');
+      this.commonService.SetNewrelic('ViewDocuments', 'view-uploadDocumentDialog', 'GetCRDocuments');
       const results = await this.spServices.readItems(this.constants.listNames.Schedules.name, schedulesInfo);
 
       if (results) {
@@ -293,7 +293,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     }
     else {
       completeFolderRelativeUrl = folderUrl + documentsUrl;
-      this.commonService.SetNewrelic('Shared', 'viewUpladDoc', 'getDocumentsByTabType');
+      this.commonService.SetNewrelic('ViewDocuments', 'viewUpladDoc', 'getDocumentsByTabType');
       this.response = await this.spServices.readFiles(completeFolderRelativeUrl);
       this.allDocuments = this.response.length ? this.response : [];
     }
@@ -363,7 +363,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       // const url = this.sharedObject.sharePointPageObject.serverRelativeUrl + '/_api/Web/GetUserById(' + element + ')';
       // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, url);
     });
-    this.commonService.SetNewrelic('Shared', 'viewUpladDoc', 'getUsersById');
+    this.commonService.SetNewrelic('ViewDocuments', 'viewUpladDoc', 'getUsersById');
     this.response = await this.spServices.executeBatch(batchUrl);
     this.response = this.response.length ? this.response.map(a => a.retItems) : [];
     // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
@@ -410,7 +410,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
         taskObj.type = 'PATCH';
         batchUrl.push(taskObj);
         this.selectedTask.FinalDocSubmit = true;
-        this.commonService.SetNewrelic('Shared', 'viewUpladDoc', 'UpdateSchedules');
+        this.commonService.SetNewrelic('ViewDocuments', 'viewUpladDoc', 'UpdateSchedules');
         const response = await this.spServices.executeBatch(batchUrl);
         this.selectedDocuments = [];
         if (this.enableNotification) {
@@ -447,16 +447,16 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   downloadFile() {
     if (this.selectedDocuments.length > 0) {
       if (this.selectedTask.DisplayTitle) {
-        this.commonService.SetNewrelic('Shared', 'downloadFile-DisplayTitle', 'createZip');
+        this.commonService.SetNewrelic('ViewDocuments', 'downloadFile-DisplayTitle', 'createZip');
         this.spServices.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), this.selectedTask.DisplayTitle);
       } else if (this.selectedTask.ProjectName) {
-        this.commonService.SetNewrelic('Shared', 'downloadFile-ProjectName', 'createZip');
+        this.commonService.SetNewrelic('ViewDocuments', 'downloadFile-ProjectName', 'createZip');
         this.spServices.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl),
           this.selectedTask.ProjectName + ' ' + this.selectedTask.Milestone + ' ' + this.selectedTask.Task);
       } else {
         const downloadName = this.selectedTask.WBJID ? this.selectedTask.ProjectCode + ' (' +
           this.selectedTask.WBJID + ' )' : this.selectedTask.ProjectCode;
-        this.commonService.SetNewrelic('Shared', 'downloadFile', 'createZip');
+        this.commonService.SetNewrelic('ViewDocuments', 'downloadFile', 'createZip');
         this.spServices.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), downloadName);
       }
 
@@ -591,7 +591,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       batchUrl.push(taskObj);
 
     });
-    this.commonService.SetNewrelic('Shared', 'viewUpladDoc', 'linkDocToProject');
+    this.commonService.SetNewrelic('ViewDocuments', 'viewUpladDoc', 'linkDocToProject');
     await this.spServices.executeBatch(batchUrl);
 
     if (this.ModifiedSelectedTaskName === 'Client Review' && this.selectedTab === 'My Drafts') {
@@ -647,7 +647,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
         for (const data of objEmailBody) {
           mailBody = mailBody.replace(RegExp(data.key, 'gi'), data.value);
         }
-        this.commonService.SetNewrelic('Shared', 'viewUpladDoc', 'SendMails');
+        this.commonService.SetNewrelic('ViewDocuments', 'viewUpladDoc', 'SendMails');
         // Send  email
         this.spServices.sendMail(iterator.AssignedTo.EMail, task.AssignedTo.EMail, mailSubject, mailBody, task.AssignedTo.EMail);
 
@@ -677,7 +677,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     mailTemplateGet.listName = this.constants.listNames.MailContent.name;
     batchURL.push(mailTemplateGet);
 
-    this.commonService.SetNewrelic('Shared', 'viewUpladDoc', 'getEmailTemplate');
+    this.commonService.SetNewrelic('ViewDocuments', 'viewUpladDoc', 'getEmailTemplate');
     const arrResults = await this.spServices.executeBatch(batchURL);
 
     if (arrResults[0].retItems) {
