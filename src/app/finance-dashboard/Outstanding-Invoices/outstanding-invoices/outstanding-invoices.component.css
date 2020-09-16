@@ -25,3 +25,17 @@
 }
 
   table td {border:inset 1px #000;}
+
+.mr-20 {
+    margin-right: 20px;
+}
+
+.fg {
+    flex-grow: 1;
+} 
+
+.excel-icon {
+    font-size: 1.8em !important;
+    cursor: pointer !important;
+    margin-top: 2px !important;
+}

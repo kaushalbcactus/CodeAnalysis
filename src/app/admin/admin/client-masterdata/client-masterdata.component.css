@@ -36,3 +36,7 @@
     text-transform: uppercase;
     top: 0;
 }
+
+.adminTable {
+    min-height: 100px;
+}

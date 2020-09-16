@@ -69,6 +69,12 @@ export class ClientMasterdataComponent implements OnInit {
   @ViewChildren('pocEmail') pocEmail: QueryList<MultiSelect>;
   @ViewChildren('pocLUpdated') pocLUpdated: QueryList<MultiSelect>;
   @ViewChildren('pocLUpdatedBy') pocLUpdatedBy: QueryList<MultiSelect>;
+  groupITInfo: any;
+  AllValues: { name: string; value: string; }[];
+  selectedOption: any;
+  providedPONumber: string;
+  showTable: boolean;
+  showPOInput: boolean;
 
 
   /**
@@ -188,6 +194,15 @@ export class ClientMasterdataComponent implements OnInit {
    *
    */
   ngOnInit() {
+    this.showTable = true;
+    this.AllValues = [
+      { name: 'Open', value: 'Open' },
+      { name: 'Closed', value: 'Closed' }
+    ];
+    this.selectedOption = this.AllValues[0];
+    this.showPOInput = false;
+    this.providedPONumber = '';
+
     this.clientMasterDataColumns = [
       {
         field: "ClientLegalEntity",
@@ -1052,10 +1067,22 @@ export class ClientMasterdataComponent implements OnInit {
    *
    */
   async showPO() {
-    this.resetPOTable();
+    this.selectedOption = this.AllValues[0];
+    this.providedPONumber = '';
+    this.showPOInput = false;
+    this.showTable = true;
+    setTimeout(() => {
+      this.resetPOTable();
+    },100)
     this.constantsService.loader.isPSInnerLoaderHidden = false;
-    const tempArray = [];
     this.PORows = [];
+    const results = await this.getAllActivePOData();
+    this.PORows = await this.setPODataObject(results);
+    this.constantsService.loader.isPSInnerLoaderHidden = true;
+    this.showPurchaseOrder = true;
+  }
+
+  async getAllActivePOData() {
     const getPOInfo = Object.assign(
       {},
       this.adminConstants.QUERY.GET_PO_BY_ACTIVE
@@ -1064,10 +1091,14 @@ export class ClientMasterdataComponent implements OnInit {
       .replace(/{{active}}/gi, this.adminConstants.LOGICAL_FIELD.ACTIVE)
       .replace(/{{clientLegalEntity}}/gi, this.currClientObj.ClientLegalEntity);
     this.common.SetNewrelic("admin", "admin-clientMaster", "getPO");
-    const results = await this.spServices.readItems(
+    return await this.spServices.readItems(
       this.constantsService.listNames.PO.name,
       getPOInfo
     );
+  }
+
+  async setPODataObject(results) {
+    const tempArray = [];
     if (results && results.length) {
       results.forEach((item) => {
         const obj = Object.assign({}, this.adminObject.poObj);
@@ -1132,12 +1163,9 @@ export class ClientMasterdataComponent implements OnInit {
         obj.CMLevel2 = item.CMLevel2;
         tempArray.push(obj);
       });
-      this.PORows = tempArray;
-      this.POFilters(this.PORows);
-     
+      this.POFilters(tempArray);
+      return tempArray;
     }
-    this.constantsService.loader.isPSInnerLoaderHidden = true;
-    this.showPurchaseOrder = true;
   }
 
   resetPOTable(){
@@ -2297,6 +2325,49 @@ export class ClientMasterdataComponent implements OnInit {
     return data;
   }
 
+  async onChangeSelect(event) {
+    if (this.selectedOption.name === 'Open') {
+      this.constantsService.loader.isPSInnerLoaderHidden = false;
+      this.showTable = false;
+      this.showPOInput = false;
+      const results = await this.getAllActivePOData();
+      this.PORows = await this.setPODataObject(results);
+      this.showTable = true;
+      this.constantsService.loader.isPSInnerLoaderHidden = true;
+    } else {
+      this.showTable = false;
+      this.PORows = [];
+      this.showPOInput = true;
+      this.providedPONumber = '';
+    }
+  }
+
+  async searchClosedPO(event) {
+    this.constantsService.loader.isPSInnerLoaderHidden = false;
+    await this.getPOList();
+    this.showTable = true;
+    this.constantsService.loader.isPSInnerLoaderHidden = true;
+  }
+
+  async getPOList() {
+    const poNumber = this.providedPONumber;
+    const getPO = Object.assign(
+      {},
+      this.adminConstants.QUERY.GET_PO_BY_CLOSED
+    );
+    getPO.filter = getPO.filter
+    .replace(/{{clientLegalEntity}}/gi, this.currClientObj.ClientLegalEntity)
+    .replace(/{{poNumber}}/gi, poNumber);
+    this.common.SetNewrelic("admin", "admin-clientMaster", "getPO");
+    const results = await this.spServices.readItems(
+      this.constantsService.listNames.PO.name,
+      getPO
+    );
+
+    this.PORows = await this.setPODataObject(results);
+
+  }
+
   // **************************************************************************************************
   // PO Details end
   // **************************************************************************************************
@@ -2316,7 +2387,7 @@ export class ClientMasterdataComponent implements OnInit {
    * 2. If `Action='Reduce'` it will subtract budget from the existing budget.
    * 3. If `Action='Restructure'` it will adjust budget from one category to another category with total as zero.
    */
-  async confirmBudgetUpdate() {
+  async confirmBudgetUpdate(selectedFile) {
     this.adminObject.finalBudget.Amount =
       this.adminObject.oldBudget.Amount + this.adminObject.newBudget.Amount;
     this.adminObject.finalBudget.AmountRevenue =
@@ -2334,6 +2405,7 @@ export class ClientMasterdataComponent implements OnInit {
       AmountRevenue: this.adminObject.finalBudget.AmountRevenue,
       AmountOOP: this.adminObject.finalBudget.AmountOOP,
       AmountTax: this.adminObject.finalBudget.AmountTax,
+      Link: selectedFile[0].name,
     };
     const poBudgetBreakupData = {
       __metadata: {
@@ -2379,6 +2451,10 @@ export class ClientMasterdataComponent implements OnInit {
       "getPOPOBudgetBreakup"
     );
     await this.spServices.executeBatch(batchURL);
+    this.groupITInfo = await this.adminCommonService.getITInfo();
+        console.log('this.groupITInfo  ', this.groupITInfo);
+    await this.sendNotificationMail(this.constantsService.EMAIL_TEMPLATE_NAME.PO_BUDGET_UPDATED,'PO Budget Updated', this.adminObject)
+
 
     this.common.showToastrMessage(
       this.constantsService.MessageType.success,
@@ -2490,11 +2566,97 @@ export class ClientMasterdataComponent implements OnInit {
       closable: false,
     });
 
-    ref.onClose.subscribe((budgetDetails: any) => {
-      if (budgetDetails) {
+    ref.onClose.subscribe(async (budgetObj: any) => {
+      if (budgetObj) {
         this.modalloaderenable = true;
-        this.confirmBudgetUpdate();
+        await this.uploadFile(budgetObj.selectedFile);
+        await this.confirmBudgetUpdate(budgetObj.selectedFile);
       }
     });
   }
+
+  uploadFile(selectedFile) {
+    this.common
+      .UploadFilesProgress(
+        selectedFile,
+        this.currClientObj.ListName +
+          "/" +
+          this.adminConstants.FOLDER_LOCATION.PO,
+        true
+      )
+      .then(async (uploadedfile) => {
+        if (
+          selectedFile.length > 0 &&
+          selectedFile.length === uploadedfile.length
+        ) {
+          if (!uploadedfile[0].hasOwnProperty("odata.error")) {
+            this.common.showToastrMessage(
+              this.constantsService.MessageType.success,
+              "File uploaded sucessfully.",
+              false
+            );           
+          } else {
+            this.common.showToastrMessage(
+              this.constantsService.MessageType.error,
+              "Error while uploading file.",
+              false
+            );
+          }
+        }
+      })
+      .catch((error) => {
+        console.log("Error while uploading" + error);
+        this.common.showToastrMessage(
+          this.constantsService.MessageType.error,
+          "Error while uploading file.",
+          false
+        );
+      });
+  }
+  
+
+  async sendNotificationMail(val, header, selectedObj) {
+    const queryText = val;
+    let arrayTo = [];
+    const objEmailBody = [];
+
+    const mailSubject = this.currPOObj.PoName + ' - ' + header;
+
+      objEmailBody.push({ key: '@@ClientName@@', value: this.currClientObj.ClientLegalEntity });
+        objEmailBody.push({ key: '@@PO@@', value: this.currPOObj.PoName });
+        // objEmailBody.push({ key: '@@POC@@', value: this.currPOObj.POCLookup });
+        objEmailBody.push({ key: '@@Currency@@', value: this.currClientObj.Currency });
+        objEmailBody.push({ key: '@@TotalBudget@@', value: this.adminObject.oldBudget.Amount });
+        objEmailBody.push({ key: '@@NetBudget@@', value: this.adminObject.oldBudget.AmountRevenue });
+        objEmailBody.push({ key: '@@OOPBudget@@', value: this.adminObject.oldBudget.AmountOOP });
+        objEmailBody.push({ key: '@@TaxBudget@@', value: this.adminObject.oldBudget.AmountTax });
+        objEmailBody.push({ key: '@@AddendumTotalvalue@@', value: this.adminObject.newBudget.Amount });
+        objEmailBody.push({ key: '@@AddendumNetvalue@@', value: this.adminObject.newBudget.AmountRevenue });
+        objEmailBody.push({ key: '@@AddendumOOPvalue@@', value: this.adminObject.newBudget.AmountOOP });
+        objEmailBody.push({ key: '@@AddendumTaxvalue@@', value: this.adminObject.newBudget.AmountTax });
+        objEmailBody.push({ key: '@@NewTotalBudget@@', value: this.adminObject.finalBudget.Amount });
+        objEmailBody.push({ key: '@@NewNetBudget@@', value: this.adminObject.finalBudget.AmountRevenue });
+        objEmailBody.push({ key: '@@NewOOPBudget@@', value: this.adminObject.finalBudget.AmountOOP });
+        objEmailBody.push({ key: '@@NewTaxBudget@@', value: this.adminObject.finalBudget.AmountTax });
+  
+    arrayTo = this.getTosList();
+    const mailBody = await this.adminCommonService.getTemplate(queryText, objEmailBody, mailSubject, arrayTo);
+    this.spServices.sendMail(arrayTo.join(','), this.globalObject.currentUser.email, mailSubject, mailBody);
+  }
+
+  getTosList() {
+    const itApprovers = this.groupITInfo.results;
+    let arrayTo = [];
+    if (itApprovers.length) {
+        for (const i in itApprovers) {
+            if (itApprovers[i].Email && itApprovers[i].Email !== undefined && itApprovers[i].Email !== '') {
+                arrayTo.push(itApprovers[i].Email);
+            }
+        }
+    }
+    arrayTo = [...new Set(arrayTo)]
+    console.log('arrayTo ', arrayTo);
+    return arrayTo;
+  }
+
 }

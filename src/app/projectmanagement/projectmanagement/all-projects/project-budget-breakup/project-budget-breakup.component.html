@@ -1,0 +1,170 @@
+<div *ngIf="projectCode">
+<p-table #PBBTable [columns]="PBBColumns" [value]="PBBDetails">
+    <ng-template pTemplate="header" let-columns>
+        <tr>
+            <th>Sr No.</th>
+            <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
+                {{ col.header }}
+                <p-sortIcon *ngIf="col.field" [field]="col.field"></p-sortIcon>
+            </th>
+        </tr>
+        <tr>
+            <th></th>
+            <th *ngFor="let col of columns" [hidden]="!col.visibility" [ngSwitch]="col.field">
+            <p-multiSelect *ngSwitchCase="'ApprovalDate'" [style]="{'width':'100%'}" [options]="this.PBBFilters.ApprovalDate" defaultLabel="Approval Date" (onChange)="PBBTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+            filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+            <p-multiSelect *ngSwitchCase="'Status'" [style]="{'width':'100%'}" [options]="this.PBBFilters.Status" defaultLabel="Status" (onChange)="PBBTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+            <p-multiSelect *ngSwitchCase="'OriginalBudget'" [style]="{'width':'100%'}" [options]="this.PBBFilters.OriginalBudget" defaultLabel="Original Budget" (onChange)="PBBTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+                [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+            <p-multiSelect *ngSwitchCase="'NetBudget'" [style]="{'width':'100%'}" [options]="this.PBBFilters.NetBudget" defaultLabel="Net Budget" (onChange)="PBBTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+                [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+            <p-multiSelect *ngSwitchCase="'OOPBudget'" [style]="{'width':'100%'}" [options]="this.PBBFilters.OOPBudget" defaultLabel="OOP Budget" (onChange)="PBBTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+                [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+            <p-multiSelect *ngSwitchCase="'TaxBudget'" [style]="{'width':'100%'}" [options]="this.PBBFilters.TaxBudget" defaultLabel="Tax Budget" (onChange)="PBBTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+            <p-multiSelect *ngSwitchCase="'BudgetHours'" [style]="{'width':'100%'}" [options]="this.PBBFilters.BudgetHours" defaultLabel="Budget Hours" (onChange)="PBBTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+            <p-multiSelect *ngSwitchCase="'Reason'" [style]="{'width':'100%'}" [options]="this.PBBFilters.Reason" defaultLabel="Reason" (onChange)="PBBTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+            <p-multiSelect *ngSwitchCase="'CommentsMT'" [style]="{'width':'100%'}" [options]="this.PBBFilters.CommentsMT" defaultLabel="Comments" (onChange)="PBBTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+            </th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+        <tr>
+            <td>
+                {{ rowIndex+1 }}
+            </td>
+            <td>
+                {{rowData.ApprovalDate | date:'MMM dd, yyyy'}}
+            </td>
+            <td>
+                {{rowData.Status}}
+            </td>
+            <td>
+                {{rowData.OriginalBudget}}
+            </td>
+            <td>
+                {{rowData.NetBudget}}
+            </td>
+            <td>
+                {{rowData.OOPBudget}}
+            </td>
+            <td>
+                {{rowData.TaxBudget}}
+            </td>
+            <td>
+                {{rowData.BudgetHours}}
+            </td>
+            <td>
+                {{rowData.Reason}}
+            </td>
+            <td>
+                {{rowData.CommentsMT}}
+            </td>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage" let-columns>
+        <tr>
+            <td [attr.colspan]="columns.length">
+                No Data found
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
+</div>
+
+<div *ngIf="sowCode">
+<p-table #SowBudgetTable [columns]="sowBudgetColumns" [value]="sowBudgetDetails">
+    <ng-template pTemplate="header" let-columns>
+        <tr>
+            <th>Sr No.</th>
+            <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
+                {{ col.header }}
+                <p-sortIcon *ngIf="col.field" [field]="col.field"></p-sortIcon>
+            </th>
+        </tr>
+        <tr>
+            <th></th>
+            <th *ngFor="let col of columns" [hidden]="!col.visibility" [ngSwitch]="col.field">
+            <p-multiSelect *ngSwitchCase="'InternalReviewStartDate'" [style]="{'width':'100%'}" [options]="this.SOWBudgetFilters.InternalReviewStartDate" defaultLabel="Approval Date" (onChange)="SowBudgetTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+            filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+            <p-multiSelect *ngSwitchCase="'Status'" [style]="{'width':'100%'}" [options]="this.SOWBudgetFilters.Status" defaultLabel="Status" (onChange)="SowBudgetTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+            filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+            <p-multiSelect *ngSwitchCase="'TotalBudget'" [style]="{'width':'100%'}" [options]="this.SOWBudgetFilters.TotalBudget" defaultLabel="Total Budget" (onChange)="SowBudgetTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+            <p-multiSelect *ngSwitchCase="'NetBudget'" [style]="{'width':'100%'}" [options]="this.SOWBudgetFilters.NetBudget" defaultLabel="Net Budget" (onChange)="SowBudgetTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+                [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+            <p-multiSelect *ngSwitchCase="'OOPBudget'" [style]="{'width':'100%'}" [options]="this.SOWBudgetFilters.OOPBudget" defaultLabel="OOP Budget" (onChange)="SowBudgetTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+                [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+            <p-multiSelect *ngSwitchCase="'TaxBudget'" [style]="{'width':'100%'}" [options]="this.SOWBudgetFilters.TaxBudget" defaultLabel="Tax Budget" (onChange)="SowBudgetTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+                [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+            <p-multiSelect *ngSwitchCase="'AddendumTotalBudget'" [style]="{'width':'100%'}" [options]="this.SOWBudgetFilters.AddendumTotal" defaultLabel="Addendum Total Budget" (onChange)="SowBudgetTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+            <p-multiSelect *ngSwitchCase="'AddendumNetBudget'" [style]="{'width':'100%'}" [options]="this.SOWBudgetFilters.AddendumNetBudget" defaultLabel="Addendum Net Budget" (onChange)="SowBudgetTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+            <p-multiSelect *ngSwitchCase="'AddendumOOPBudget'" [style]="{'width':'100%'}" [options]="this.SOWBudgetFilters.AddendumOOPBudget" defaultLabel="Addendum OOP Budget" (onChange)="SowBudgetTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+            <p-multiSelect *ngSwitchCase="'AddendumTaxBudget'" [style]="{'width':'100%'}" [options]="this.SOWBudgetFilters.AddendumTaxBudget" defaultLabel="Addendum Tax Budget" (onChange)="SowBudgetTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+            <!-- <p-multiSelect *ngSwitchCase="'Currency'" [style]="{'width':'100%'}" [options]="this.SOWBudgetFilters.Currency" defaultLabel="Currency" (onChange)="SowBudgetTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect> -->
+            </th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+        <tr>
+            <td>
+                {{ rowIndex+1 }}
+            </td>
+            <td *ngFor="let col of columns" [hidden]="!col.visibility">
+                <ng-container *ngIf="col.field == 'InternalReviewStartDate'">
+                    {{ rowData[col.field] | date:'MMM dd, yyyy'}}
+                </ng-container>
+                <ng-container *ngIf="col.field && col.field !== 'InternalReviewStartDate'">
+                    {{rowData[col.field]}}
+                </ng-container>
+            </td>
+            <!-- <td>
+                {{rowData.Status}}
+            </td>
+            <td>
+                {{rowData.TotalBudget}}
+            </td>
+            <td>
+                {{rowData.NetBudget}}
+            </td>
+            <td>
+                {{rowData.OOPBudget}}
+            </td>
+            <td>
+                {{rowData.TaxBudget}}
+            </td>
+            <td>
+                {{rowData.AddendumTotalBudget}}
+            </td>
+            <td>
+                {{rowData.AddendumNetBudget}}
+            </td>
+            <td>
+                {{rowData.AddendumOOPBudget}}
+            </td>
+            <td>
+                {{rowData.AddendumTaxBudget}}
+            </td> -->
+            <!-- <td>
+                {{rowData.Currency}}
+            </td> -->
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage" let-columns>
+        <tr>
+            <td [attr.colspan]="columns.length">
+                No Data found
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
+</div>

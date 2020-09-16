@@ -582,7 +582,8 @@ export class PubsupportComponent implements OnInit {
                 // this.items = [];
 
                 // tslint:disable-next-line: max-line-length
-                if (this.selectedProject.DeliverableType !== 'Abstract' && this.selectedProject.DeliverableType !== 'Poster' && this.selectedProject.DeliverableType !== 'Oral Presentation') {
+                if (this.selectedProject.DeliverableType !== 'Abstract' && this.selectedProject.DeliverableType !== 'Poster' && this.selectedProject.DeliverableType !== 'Oral Presentation'
+                && this.selectedProject.DeliverableType !== 'Slide Deck') {
                     this.items = [
                         { label: 'Override Galley', command: e => this.openMenuContent(e, data) },
                         { label: 'Revert Decision', command: e => this.openMenuContent(e, data) }
@@ -682,7 +683,8 @@ export class PubsupportComponent implements OnInit {
             // this.journalConfFormField();
             this.addJCDetailsModal = true;
             this.formatMilestone(this.milestonesList);
-            if (this.selectedProject.DeliverableType === 'Abstract' || this.selectedProject.DeliverableType === 'Poster' || this.selectedProject.DeliverableType === 'Oral Presentation') {
+            if (this.selectedProject.DeliverableType === 'Abstract' || this.selectedProject.DeliverableType === 'Poster' || this.selectedProject.DeliverableType === 'Oral Presentation'
+            || this.selectedProject.DeliverableType === 'Slide Deck') {
                 this.documentTypes = [
                     { label: 'Select type', value: '' },
                     { label: 'Conference', value: 'Conference' }

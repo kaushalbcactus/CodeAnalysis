@@ -637,7 +637,7 @@ export class OopComponent implements OnInit, OnDestroy {
             {
               severity: "info",
               summary: "Cancel",
-              detail: "You have canceled",
+              detail: "You have cancelled",
             },
           ];
         }

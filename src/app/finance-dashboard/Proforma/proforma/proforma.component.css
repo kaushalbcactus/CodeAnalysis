@@ -104,3 +104,27 @@ table td {
     text-transform: uppercase;
     top: 0;
 }
+
+.editpoc {
+    padding: 0.5rem !important;
+}
+
+.dropdown {
+    position: relative;height: 25px;
+}
+
+.dropdown-item {
+    font-size:14px;float:left;margin-top:4px;
+}
+
+.mr-20 {
+    margin-right: 20px;
+}
+
+.fg {
+    flex-grow: 1;
+}
+
+.menu {
+    font-size:2em;top: 100px !important;cursor: pointer;
+}

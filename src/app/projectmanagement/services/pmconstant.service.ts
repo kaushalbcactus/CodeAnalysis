@@ -64,7 +64,7 @@ export class PmconstantService {
     select: 'ID,Title,Status, AssignedTo/ID,AssignedTo/Title',
     expand: 'AssignedTo/ID,AssignedTo/Title',
     filter: 'ParentSlot eq \'{0}\' and Status ne \'Deleted\' and NextTasks eq null',
-     orderby: 'DueDate desc',
+     orderby: 'DueDateDT desc',
     top: 4200
 
   };
@@ -198,6 +198,11 @@ export class PmconstantService {
       orderby: 'Modified desc',
       top: 4500
     },
+    PROJECT_INFORMATION_BY_PROJECTCODE_MILESTONE: {
+      select: 'ID, Milestone',
+      filter: 'ProjectCode eq \'{{projectCode}}\'',
+      top: 4500
+    }
   };
   public SOW_QUERY = {
     ALL_SOW: {
@@ -248,6 +253,12 @@ export class PmconstantService {
       select: 'SOWCode,Currency,TotalBudget,NetBudget,OOPBudget,TaxBudget,AddendumTotalBudget,AddendumNetBudget,AddendumOOPBudget,AddendumTaxBudget',
       filter: 'SOWCode eq \'{{SOWCodeStr}}\'',
       orderby: 'ID desc'
+    },
+    SOW_BUDGET_BREAKUP_ALL: {
+      // tslint:disable-next-line:max-line-length
+      select: 'SOWCode,Status,Currency,TotalBudget,NetBudget,OOPBudget,TaxBudget,AddendumTotalBudget,AddendumNetBudget,AddendumOOPBudget,AddendumTaxBudget,InternalReviewStartDate',
+      filter: 'SOWCode eq \'{{SOWCodeStr}}\'',
+      orderby: 'InternalReviewStartDate desc'
     },
     PREDECESSOR: {
       select: '',
@@ -478,7 +489,7 @@ export class PmconstantService {
 
     GET_FinancePO: {
       select: 'ID,Title, ClientLegalEntity, Currency, Number, NameST, Amount, AmountOOP, AmountRevenue, AmountTax,POCategory,POExpiryDate,'
-        + 'TotalLinked, RevenueLinked, OOPLinked, TaxLinked,TotalScheduled,ScheduledRevenue',
+        + 'TotalLinked, RevenueLinked, OOPLinked, TaxLinked,TotalScheduled,ScheduledRevenue,ScheduledOOP',
       filter: 'Status eq \'Active\' and ClientLegalEntity eq \'{{clientLegalEntity}}\' and  Currency eq \'{{currency}}\'',
       orderby: 'Created desc',
       top: 4900
@@ -521,6 +532,24 @@ export class PmconstantService {
       filter: 'IsActive eq \'{{isActive}}\'',
       top: 4500,
       orderby: 'Title asc'
+    },
+    PROJECT_BUDGET_BREAKUP_FOR_ALL: {
+      select: 'ID, Title, ProjectLookup, Status, ApprovalDate, OriginalBudget, NetBudget, OOPBudget, TaxBudget, ProjectCode,'
+        + ' BudgetHours, Reason, CommentsMT',
+      filter: 'ProjectCode eq \'{{projectCode}}\'',
+      orderby: 'ApprovalDate desc',
+      top: 4500
+    },
+    SPENDING_INFO: {
+      select: "ID,Title,Number,Header,DateSpend,SpendType,PaymentMode,Currency,Amount,ClientCurrency,ClientAmount,DollarAmount,Status,FileURL,NotesMT,InvoiceID,CategoryST,Modified,POLookup,ApproverComments,ApproverFileUrl,Created,PayingEntity,VendorFreelancer,RequestType,ClientApprovalFileURL,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title",
+      filter: "Title eq '{{Title}}' and InvoiceID eq {{invoiceId}}",
+      expand: "Editor,Author",
+      top: 1,
+    },
+    sowList: {
+      select: "ID,SOWCode,Title,ClientLegalEntity,Currency,BillingEntity,TotalLinked,OOPLinked,InvoicedOOP,TotalInvoiced,TotalScheduled,ScheduledOOP",
+      filter: "Status ne 'CLosed' or Status ne 'Cancelled' ",
+      top: 4500
     }
   };
   public QUERY = {

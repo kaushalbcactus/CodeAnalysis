@@ -176,6 +176,22 @@
                 </div>
             </div>
 
+
+            <div class="p-grid">
+
+            <div class="p-grid p-col">
+                <div class="p-col-2"><span class="compulsory">*</span>PO File</div>
+                <div class="p-col-4">
+                <input type="file" style="width: 100%;" formControlName="poFile" (change)="onFileChange($event)" pInputText>
+                <div class="error" *ngIf="isBudgetFormSubmit && changeBudgetForm.controls.poFile.errors">
+                    <div *ngIf="changeBudgetForm.controls.poFile.errors.required">
+                        PO File is required</div>
+                </div>
+            </div>
+            </div>
+            </div>
+
+
         </form>
 
     </p-card>

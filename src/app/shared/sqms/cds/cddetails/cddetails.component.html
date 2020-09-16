@@ -113,18 +113,22 @@
               <td>
                 <span class="ui-float-label">
                   <textarea id="float-input" class="popupTextArea" rows="4" maxlength="1500" color="#B13E3E" readonly pInputTextarea  [(ngModel)]="qc.resourceIdentifiedComments"></textarea>
-
                 </span>
-                <label class="wordCount">{{qc.resourceIdentifiedComments.length}} / 1500</label>
+                <div class="hint">
+                  <span class="hint-label">CD Details</span>
+                  <span class="wordCount">{{qc.resourceIdentifiedComments.length}} / 1500</span>
+                </div>
               </td>
           </tr>
           <tr>
               <td>
                 <span class="ui-float-label">
                   <textarea id="float-input" class="popupTextArea" rows="4" maxlength="1500" readonly color="#B13E3E" pInputTextarea  [(ngModel)]="qc.rcaComments"></textarea>
-
                 </span>
-                <label class="wordCount">{{qc.rcaComments.length}} / 1500</label>
+                <div class="hint">
+                  <span class="hint-label">Root Cause Analysis</span>
+                  <span class="wordCount">{{qc.rcaComments.length}} / 1500</span>
+                </div>
               </td>
           </tr>
           <tr>
@@ -133,25 +137,32 @@
                   <textarea id="float-input" rows="4" class="popupTextArea" maxlength="1500" readonly color="#B13E3E" pInputTextarea  [(ngModel)]="qc.caComments"></textarea>
 
                 </span>
-                <label class="wordCount">{{qc.caComments.length}} / 1500</label>
+                <div class="hint">
+                  <span class="hint-label">Corrective Actions</span>
+                  <span class="wordCount">{{qc.caComments.length}} / 1500</span>
+                </div>
               </td>
           </tr>
           <tr>
               <td>
                 <span class="ui-float-label">
                   <textarea id="float-input" rows="4" class="popupTextArea" maxlength="1500" readonly color="#B13E3E" pInputTextarea  [(ngModel)]="qc.paComments"></textarea>
-
                 </span>
-                <label class="wordCount">{{qc.paComments.length}} / 1500</label>
+                <div class="hint">
+                  <span class="hint-label">Preventive Actions</span>
+                  <span class="wordCount">{{qc.paComments.length}} / 1500</span>
+                </div>
               </td>
           </tr>
           <tr *ngIf="qc.rejectionComments">
               <td>
                 <span class="ui-float-label">
                   <textarea id="float-input" rows="4" class="popupTextArea" maxlength="1500" readonly color="#B13E3E" pInputTextarea  [(ngModel)]="qc.rejectionComments"></textarea>
-
                 </span>
-                <label class="wordCount">{{qc.rejectionComments.length}} / 1500</label>
+                <div class="hint">
+                  <span class="hint-label">Rejection Comments</span>
+                  <span class="wordCount">{{qc.rejectionComments.length}} / 1500</span>
+                </div>
               </td>
           </tr>
       </table>

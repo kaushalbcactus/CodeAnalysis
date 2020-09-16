@@ -29,7 +29,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
     proformaCols: any[];
 
     // Row Selection Array
-    selectedRowData: any = [];
+    selectedRowData: any[] = [];
 
     // Show Hide State
     isTemplate4US: boolean = false;
@@ -37,7 +37,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
     // Edit Deliverable Form
     replaceProforma_form: FormGroup;
     generateInvoice_form: FormGroup;
-
+    
     // Show Hide Request Modal
     showHideREModal: boolean = false;
     selectedCurrency: string = '';
@@ -73,6 +73,8 @@ export class ProformaComponent implements OnInit, OnDestroy {
     pageNumber: number = 0;
     generateInvoiceInProgress: boolean = false;
     expandedRows: any = {};
+    editPOC_form:FormGroup;
+    editPOCModal:boolean = false;
 
     @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
     @ViewChild('editorRef', { static: false }) editorRef: EditorComponent;
@@ -86,6 +88,8 @@ export class ProformaComponent implements OnInit, OnDestroy {
     SelectedFile: any;
     invoiceCols: { field: string; header: string; }[];
     selectedProforma: any;
+    listOfPOCNames: any = [];
+    selectedOption: any;
 
 
     constructor(
@@ -123,6 +127,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         this.proformatTemplates = this.fdConstantsService.fdComponent.ProformaTemplates;
         this.createRepProFormField()
         this.createInvoiceFormFiled();
+        this.createPocFormField();
 
         //Get  User Info
         const currentUserId = this.globalService.currentUser.userId;
@@ -290,6 +295,12 @@ export class ProformaComponent implements OnInit, OnDestroy {
     createInvoiceFormFiled() {
         this.generateInvoice_form = this.fb.group({
             InvoiceDate: [new Date(), [Validators.required]]
+        })
+    }
+
+    createPocFormField() {
+        this.editPOC_form= this.fb.group({
+            POCName: ["" , Validators.required]
         })
     }
 
@@ -464,7 +475,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             }
             else if (Confirmation === 'No') {
 
-                this.commonService.showToastrMessage(this.constantService.MessageType.info, 'You have canceled', false);
+                this.commonService.showToastrMessage(this.constantService.MessageType.info, 'You have cancelled', false);
             }
         });
 
@@ -480,6 +491,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         // console.log('Row data  ', data);
 
         this.selectedProforma = proforma ? proforma : undefined;
+        this.selectedOption = data;
         let proformaSts: string = '';
         this.items = [];
 
@@ -503,7 +515,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 this.items.push({ label: 'Regenerate Proforma', command: (e) => this.openMenuContent(e, data) });
             }
 
-            this.items.push({ label: 'Reject Proforma', command: (e) => this.openMenuContent(e, data) }, { label: 'Replace Proforma', command: (e) => this.openMenuContent(e, data) })
+            this.items.push({ label: 'Edit Poc', command: (e) => this.openMenuContent(e, data) },{ label: 'Reject Proforma', command: (e) => this.openMenuContent(e, data) }, { label: 'Replace Proforma', command: (e) => this.openMenuContent(e, data) })
         }
         else {
             this.items.push(
@@ -547,6 +559,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         this.submitBtn.isClicked = false;
         this.formSubmit.isSubmit = false;
         this.selectedRowItem = data;
+        this.selectedRowData = [data];
         if (data.type === 'Proforma') {
 
             if (this.confirmDialog.title.toLowerCase() === 'mark as sent to client') {
@@ -636,6 +649,9 @@ export class ProformaComponent implements OnInit, OnDestroy {
             }
             else if (this.confirmDialog.title === 'Regenerate Proforma') {
                 this.generateExistingProforma(data);
+            } else if (this.confirmDialog.title === 'Edit Poc') {
+                this.editPOCModal = true;
+                this.getPOCNames(data);
             }
         } else {
             if (this.confirmDialog.title.toLowerCase() === 'show history') {
@@ -1275,6 +1291,9 @@ export class ProformaComponent implements OnInit, OnDestroy {
         } else if (formType === 'generateInvoice') {
             // this.generateInvoice_form.reset();
             this.generateInvoiceModal = false;
+        } else if (formType === 'editPOC') {
+            // this.generateInvoice_form.reset();
+            this.editPOCModal = false;
         }
         this.formSubmit.isSubmit = false;
         this.submitBtn.isClicked = false;
@@ -1297,12 +1316,17 @@ export class ProformaComponent implements OnInit, OnDestroy {
         if (type === 'Mark as Sent to Client') {
             this.submitBtn.isClicked = true;
             this.isPSInnerLoaderHidden = false;
-            let prfData = {
-                __metadata: { type: this.constantService.listNames.Proforma.type },
-                Status: type === 'Mark as Sent to Client' ? 'Sent' : 'Rejected'
-            }
-            this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constantService.listNames.Proforma.name, +this.selectedRowItem.Id), prfData, this.constantService.Method.PATCH, this.constantService.listNames.Proforma.name);
+            for (let i = 0; i < this.selectedRowData.length; i++) {
+                const element = this.selectedRowData[i];
 
+                let prfData = {
+                    __metadata: { type: this.constantService.listNames.Proforma.type },
+                    Status: type === 'Mark as Sent to Client' ? 'Sent' : 'Rejected'
+                }
+                this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constantService.listNames.Proforma.name, element.Id), prfData, this.constantService.Method.PATCH, this.constantService.listNames.Proforma.name);
+            }
+
+            console.log(batchUrl);
             this.submitForm(batchUrl, type);
         } else if (type === 'Reject Proforma') {
             let prfData = {
@@ -1342,6 +1366,13 @@ export class ProformaComponent implements OnInit, OnDestroy {
             this.isPSInnerLoaderHidden = false;
             // console.log('form is submitting ..... & Form data is ', this.generateInvoice_form.value);
             this.generateInvoiceNumber();
+        } else if(type == 'editPOC') {
+            if(this.editPOC_form.invalid) {
+                return;
+            }
+            this.setPOC();
+            this.submitBtn.isClicked = true;
+            this.isPSInnerLoaderHidden = false;
         }
     }
 
@@ -1355,7 +1386,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             let sts = '';
             sts = type === 'Mark as Sent to Client' ? 'Sent' : 'Rejected'
 
-            this.commonService.showToastrMessage(this.constantService.MessageType.success, this.selectedRowItem.ProformaNumber + ' ' + 'Status changed to "' + sts + '" Successfully.', true);
+            this.commonService.showToastrMessage(this.constantService.MessageType.success,  'Proforma Status changed to "' + sts + '" Successfully.', true);
             this.reFetchData(type);
         } else if (type === "createProforma") {
             await this.fdDataShareServie.callProformaCreation(arrResults[0], this.cleData, this.projectContactsData, this.purchaseOrdersList, this.editorRef, []);
@@ -1414,13 +1445,17 @@ export class ProformaComponent implements OnInit, OnDestroy {
         else if (type === 'editInvoice') {
             this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Invoice Updated.', false);
             this.reFetchData(type);
+        } else if (type === 'editPOC') {
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Proforma POC Updated.', false);
+            this.editPOCModal = false;
+            this.reFetchData(type);
         }
         this.isPSInnerLoaderHidden = true;
 
     }
 
     async reFetchData(type: string) {
-        if (type === "Mark as Sent to Client" || type === "Reject Proforma" || type === "replaceProforma" || type === 'editInvoice') {
+        if (type === "Mark as Sent to Client" || type === "Reject Proforma" || type === "replaceProforma" || type === 'editInvoice' || type === 'editPOC') {
             await this.getRequiredData();
         } else if (type === 'createProforma' || type === 'generateInvoice') {
             // Refetch PO/CLE Data
@@ -1744,5 +1779,53 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 this.submitForm(batchUrl, 'createProforma');
             }
         });
+    }
+
+    getPOCNames(rowItem: any) {
+        this.listOfPOCNames = [];
+        let rowVal: any = {};
+        this.projectContactsData.filter((item) => {
+          if (item.ClientLegalEntity === rowItem.ClientLegalEntity) {
+            this.listOfPOCNames.push(item);
+            if (item.ID === rowItem.MainPOC) {
+              rowVal = item;
+            }
+          }
+        });
+        if (Object.keys(rowVal).length) {
+          this.editPOC_form.patchValue({
+            POCName: rowVal,
+          });
+        }
+      }
+    
+    setPOC() {
+        const  batchUrl = []
+        const proformaData = {
+            __metadata: { type: this.constantService.listNames.Proforma.type },
+            MainPOC: this.editPOC_form.controls.POCName.value.Id,
+            FileURL: null,
+        }
+        const url = this.spServices.getItemURL(this.constantService.listNames.Proforma.name, this.selectedOption.Id);
+        this.commonService.setBatchObject(batchUrl, url, proformaData, this.constantService.Method.PATCH, this.constantService.listNames.Proforma.name);
+        this.commonService.SetNewrelic('Finance-Dashboard', 'Proforma', 'POCUpdated');
+        this.submitForm(batchUrl, 'editPOC');
+    }
+
+    sentToClient() {
+        if (this.selectedRowData.length) {
+            const filterData = this.selectedRowData.filter(e=> e.Status !== 'Created');
+            if(!filterData.length) {
+                this.proformaConfirmationModal.type = 'Mark as Sent to Client';
+                this.proformaConfirmationModal.msg = 'Are you sure you want to change proforma status to "Sent" ?';
+                this.proformaConfirmationModal.title = 'Update Proforma';
+                this.confirm1(this.proformaConfirmationModal);
+            } else {
+                this.commonService.showToastrMessage(this.constantService.MessageType.info, 'Please select only those Row Item whose Proforma is Created.', false);    
+            }
+        } else {
+            this.submitBtn.isClicked = false;
+            this.commonService.showToastrMessage(this.constantService.MessageType.info, 'Please select one of Row Item & try again.', false);
+        }
     }
 }

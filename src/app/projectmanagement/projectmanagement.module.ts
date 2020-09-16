@@ -46,6 +46,7 @@ import { SqmsModule } from '../shared/sqms/sqms.module';
 import { CdpfComponent } from '../shared/sqms/cdpf/cdpf.component';
 import { JournalConferenceDetailsModule } from '../shared/journal-conference-details/journal-conference-details.module';
 import { JournalConferenceDetailsComponent } from '../shared/journal-conference-details/journal-conference-details.component';
+import { ProjectBudgetBreakupComponent } from './projectmanagement/all-projects/project-budget-breakup/project-budget-breakup.component';
 
 @NgModule({
   declarations: [
@@ -68,7 +69,8 @@ import { JournalConferenceDetailsComponent } from '../shared/journal-conference-
     CsFinanceAuditDialogComponent,
     AuditProjectDialogComponent,
     InvoiceLineitemsComponent,
-    AddReduceSowbudgetDialogComponent],
+    AddReduceSowbudgetDialogComponent,
+    ProjectBudgetBreakupComponent],
   imports: [
     SharedModule,
     CommonModule,
@@ -113,7 +115,8 @@ import { JournalConferenceDetailsComponent } from '../shared/journal-conference-
     PreStackAllocationComponent,
     AddReduceSowbudgetDialogComponent,
     CdpfComponent,
-    JournalConferenceDetailsComponent
+    JournalConferenceDetailsComponent,
+    ProjectBudgetBreakupComponent
   ]
 })
 export class ProjectmanagementModule { }

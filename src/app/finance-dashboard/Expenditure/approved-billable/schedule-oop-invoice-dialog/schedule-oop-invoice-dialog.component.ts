@@ -435,7 +435,7 @@ export class ScheduleOopInvoiceDialogComponent implements OnInit {
       this.ScheduleInvoiceForm.get("InvoiceId").setValidators([
         Validators.required,
       ]);
-      this.setInvData();
+      // this.setInvData();
     }
 
     this.ScheduleInvoiceForm.get("ScheduledDate").updateValueAndValidity();

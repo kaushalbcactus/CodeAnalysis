@@ -471,8 +471,15 @@ export class ConstantsService {
     BUDGET_REDUCTION: "ApproveProjectBudget",
     BUDGET_APPROVAL: "OutcomeBudgetApproval",
     ON_HOLD: "Hold",
+    PO_BUDGET_UPDATED: "POBudgetUpdated",
     TASK_CREATION: "TaskCreation",
-    CENTRAL_TASK_CREATION: 'CentralTaskCreation'
+    CENTRAL_TASK_CREATION: 'CentralTaskCreation',
+    APPROVE_EXPENSE: 'ApproveExpense',
+    NEXT_TASK_TEMPLATE: 'NextTaskTemplate',
+    CANCEL_EXPENSE: 'CancelExpense',
+    REJECT_EXPENSE: 'RejectExpense',
+    CLOSED_TASK_NOTIFICATION: 'ClosedTaskNotification',
+    REALLOCATIONSLOTNOTIFICATION: 'ReallocationSlotNotification'
   };
   public invoiceList = {
     status: {

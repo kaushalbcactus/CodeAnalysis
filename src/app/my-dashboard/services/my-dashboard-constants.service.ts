@@ -985,7 +985,7 @@ export class MyDashboardConstantsService {
   async getEmailTemplate() {
     this.common.SetNewrelic('MyDashboard', 'MyDashboard', 'GetEmailTemplate');
     const common = this.mydashboardComponent.common;
-    common.getMailTemplate.filter = common.getMailTemplate.filter.replace('{{templateName}}', 'NextTaskTemplate');
+    common.getMailTemplate.filter = common.getMailTemplate.filter.replace('{{templateName}}', this.constants.EMAIL_TEMPLATE_NAME.NEXT_TASK_TEMPLATE);
     const templateData = await this.spServices.readItems(this.constants.listNames.MailContent.name,
       common.getMailTemplate);
     this.Emailtemplate = templateData.length > 0 ? templateData[0] : [];
@@ -1194,7 +1194,7 @@ export class MyDashboardConstantsService {
 
 
   // ****************************************************************************************
-  // get the dates based on working days past and future and custom dates  
+  // get the dates based on working days past and future and custom dates
   // ****************************************************************************************
 
   CalculateDatesDiffernce(nextLast, days, rangeDates) {
