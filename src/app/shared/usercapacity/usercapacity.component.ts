@@ -1789,7 +1789,7 @@ export class UsercapacityComponent implements OnInit {
       }
       if (batchUrl.length) {
         this.common.SetNewrelic(
-          "Shared",
+          "CapacityDashboard",
           "UserCapacity",
           "getProInfoByPCAndTaskByPCandMilestone"
         );
@@ -1937,7 +1937,7 @@ export class UsercapacityComponent implements OnInit {
         }
 
         if (batchUrl.length) {
-          this.common.SetNewrelic("Shared", "UserCapacity", "getProInfoByPC");
+          this.common.SetNewrelic("CapacityDashboard", "UserCapacity", "getProInfoByPC");
           let arrResults = await this.spService.executeBatch(batchUrl);
           arrResults = arrResults.length
             ? arrResults.map((a) => a.retItems[0])

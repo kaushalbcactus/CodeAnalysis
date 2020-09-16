@@ -281,7 +281,7 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
   async getNextPreviousTaskDialog(task) {
     this.tableloaderenable = true;
     let tasks = [];
-    this.commonService.SetNewrelic('MyCurrentCompletedTask', this.route.snapshot.data.type, 'GetTasks');
+    this.commonService.SetNewrelic('MyDashboard', 'MyCurrentCompletedTask' + this.route.snapshot.data.type, 'GetTasks');
     tasks = await this.myDashboardConstantsService.getNextPreviousTask(task);
     this.tableloaderenable = false;
     const ref = this.dialogService.open(PreviosNextTasksDialogComponent, {
@@ -319,7 +319,7 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
           task.parent = 'Dashboard';
           task.TaskComments = Commentobj.comment;
           task.Status = 'Completed';
-          this.commonService.SetNewrelic('MyCurrentCompletedTask', this.route.snapshot.data.type, 'CompleteTask');
+          this.commonService.SetNewrelic('MyDashboard','MyCurrentCompletedTask' + this.route.snapshot.data.type, 'CompleteTask');
           const qmsTasks = await this.myDashboardConstantsService.callQMSPopup(task);
           if (qmsTasks.length) {
 
@@ -385,7 +385,7 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
       TaskComments: comment
     };
 
-    this.commonService.SetNewrelic('MyCurrentCompletedTask', this.route.snapshot.data.type, 'UpdateComment');
+    this.commonService.SetNewrelic('MyDashboard', 'MyCurrentCompletedTask' + this.route.snapshot.data.type, 'UpdateComment');
     await this.spServices.updateItem(this.constants.listNames.Schedules.name, task.ID, data, this.constants.listNames.Schedules.type);
     this.commonService.showToastrMessage(this.constants.MessageType.success, 'Comment saved successfully', false)
   }

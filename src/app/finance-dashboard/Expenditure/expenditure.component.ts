@@ -796,7 +796,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
                     ClientApprovalFileURL: this.caFileUploadedUrl,
                     NotesMT: this.addExpenditure_form.value.Notes,
                     CategoryST: this.addExpenditure_form.value.Billable,
-                    CSId: { results: this.pcmLevels.map(x => x.ID) },
+                    AccessId: { results: this.pcmLevels.map(x => x.ID) },
                     // ApproverFileUrl: '',
                     // PayingEntity: this.addExpenditure_form.value.PayingEntity.Title,
                     RequestType: this.addExpenditure_form.value.PaymentRequest,

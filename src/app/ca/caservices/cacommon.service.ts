@@ -313,7 +313,7 @@ export class CACommonService {
   getCaProperties(taskCounter, schedulesItemFetch, task, projects, resourceList, completeTaskArray, scTempArrays) {
 
     // let scObj = $.extend(true, {}, this.caGlobalService.caObject);
-    let scObj = {...this.caGlobalService.caObject};
+    let scObj = { ...this.caGlobalService.caObject };
     taskCounter++;
     let projectItem = projects.filter(function (proj) { return proj.ProjectCode === task.ProjectCode });
     if (taskCounter <= 30) {
@@ -329,7 +329,7 @@ export class CACommonService {
     scObj.Id = task.ID;
     scObj.ClientName = projectItem.length ? projectItem[0].ClientLegalEntity : '';
     scObj.ProjectCode = task.ProjectCode;
-    scObj.ProjectManagementURL = scObj.ProjectName = projectItem.length ?  projectItem[0].WBJID : '';
+    scObj.ProjectManagementURL = scObj.ProjectName = projectItem.length ? projectItem[0].WBJID : '';
     scObj.Milestone = task.Milestone;
     scObj.SubMilestones = task.SubMilestones;
     scObj.Task = task.Task;
@@ -337,7 +337,7 @@ export class CACommonService {
     scObj.Timezone = task.TimeZoneNM;
     scObj.Title = task.Title;
     scObj.TaskName = $.trim(task.Title.replace(scObj.ProjectCode + '', '').replace(scObj.Milestone + '', ''));
-    scObj.DeliveryType = projectItem.length ? projectItem[0].DeliverableType :'';
+    scObj.DeliveryType = projectItem.length ? projectItem[0].DeliverableType : '';
     scObj.EstimatedTime = task.ExpectedTime;
     scObj.StartTime = task.StartDate;
     scObj.EndTime = task.DueDateDT;
@@ -405,7 +405,7 @@ export class CACommonService {
     // const userBatchBody = batchContents.join('\r\n');
     // const arrResults = await this.spServices.executeGetBatchRequest(batchGuid, userBatchBody);
 
-    this.commonService.SetNewrelic('caCommon', 'CA', 'GetMilestoneSchedules');
+    this.commonService.SetNewrelic('CA', 'caCommon', 'GetMilestoneSchedules');
     const arrResults = await this.spServices.executeBatch(batchUrl);
     for (const count in arrTasks) {
       arrTasks[count].MilestoneTasks = arrResults[count].retItems;
@@ -537,37 +537,37 @@ export class CACommonService {
    */
   customSort(data, fieldName: string, order: number) {
     data.sort((data1, data2) => {
-    //   const val1 = row1[fieldName];
-    //   const val2 = row2[fieldName];
-    //   if (val1 === val2) {
-    //     return 0;
-    //   }
-    //   let result = -1;
-    //   if (val1 > val2) {
-    //     result = 1;
-    //   }
-    //   if (order < 0) {
-    //     result = -result;
-    //   }
-    //   return result;
-    // });
+      //   const val1 = row1[fieldName];
+      //   const val2 = row2[fieldName];
+      //   if (val1 === val2) {
+      //     return 0;
+      //   }
+      //   let result = -1;
+      //   if (val1 > val2) {
+      //     result = 1;
+      //   }
+      //   if (order < 0) {
+      //     result = -result;
+      //   }
+      //   return result;
+      // });
 
-    let value1 = data1[fieldName];
-    let value2 = data2[fieldName];
-    let result = null;
+      let value1 = data1[fieldName];
+      let value2 = data2[fieldName];
+      let result = null;
 
-    if (value1 == null && value2 != null)
+      if (value1 == null && value2 != null)
         result = -1;
-    else if (value1 != null && value2 == null)
+      else if (value1 != null && value2 == null)
         result = 1;
-    else if (value1 == null && value2 == null)
+      else if (value1 == null && value2 == null)
         result = 0;
-    else if (typeof value1 === 'string' && typeof value2 === 'string')
+      else if (typeof value1 === 'string' && typeof value2 === 'string')
         result = value1.localeCompare(value2);
-    else
+      else
         result = (value1 < value2) ? -1 : (value1 > value2) ? 1 : 0;
 
-    return (order * result);
+      return (order * result);
     });
   }
   /**
@@ -624,8 +624,8 @@ export class CACommonService {
               return objt.Title === clientLegalEntity;
             }) : [];
           if ((recomendedUserByDelv.length > 0 || recomendedUserByTa.length > 0
-            || recomendedUserByAccount.length > 0) ) {
-              ////&& skillLevel === $.trim(resSkill)
+            || recomendedUserByAccount.length > 0)) {
+            ////&& skillLevel === $.trim(resSkill)
             element.userType = 'Recommended';
             filteredResources.push(element);
           } else {
@@ -662,30 +662,30 @@ export class CACommonService {
     //   return filteredResources;
     // }
     const sortedResources = [];
-      const recommended = filteredResources.filter(function (objt) {
-        return objt.userType === 'Recommended' || objt.userType === 'Best Fit';
+    const recommended = filteredResources.filter(function (objt) {
+      return objt.userType === 'Recommended' || objt.userType === 'Best Fit';
+    });
+    if (recommended.length) {
+      for (const user of recommended) {
+        user.userType = 'Recommended';
+      }
+      recommended.sort(function (a, b) {
+        return b['timeAvailable'] - a['timeAvailable'] || a['Title'] - b['Title'];
       });
-      if (recommended.length) {
-        for (const user of recommended) {
-          user.userType = 'Recommended';
-        }
-        recommended.sort(function (a, b) {
-          return b['timeAvailable'] - a['timeAvailable'] || a['Title'] - b['Title'];
-        });
 
-        recommended[0].userType = 'Best Fit';
-        $.merge(sortedResources, recommended);
-      }
-      const other = filteredResources.filter(function (objt) {
-        return objt.userType === 'Other';
+      recommended[0].userType = 'Best Fit';
+      $.merge(sortedResources, recommended);
+    }
+    const other = filteredResources.filter(function (objt) {
+      return objt.userType === 'Other';
+    });
+    if (other.length) {
+      other.sort(function (a, b) {
+        return b['timeAvailable'] - a['timeAvailable'] || a['Title'] - b['Title'];
       });
-      if (other.length) {
-        other.sort(function (a, b) {
-          return b['timeAvailable'] - a['timeAvailable'] || a['Title'] - b['Title'];
-        });
-        $.merge(sortedResources, other);
-      }
-      return sortedResources;
+      $.merge(sortedResources, other);
+    }
+    return sortedResources;
   }
 
   /**
@@ -704,8 +704,7 @@ export class CACommonService {
       task.mileStoneTask = milTasks;
       const nextTasks = [];
 
-      for(let i=0; i< milTasks.length ; i++)
-      {
+      for (let i = 0; i < milTasks.length; i++) {
         let taskArr = [];
         taskArr = milTasks[i].PrevTasks ? milTasks[i].PrevTasks.split(";#") : [];
         if (taskArr.indexOf(task.Title) > -1) {
@@ -1054,7 +1053,7 @@ export class CACommonService {
       tasksObj.listName = this.globalConstantService.listNames.MilestoneTasks.name;
       tasksObj.type = 'GET';
       batchUrl.push(tasksObj);
-      this.commonService.SetNewrelic('caCommon', 'CA', 'GetTaskBySlotType');
+      this.commonService.SetNewrelic('CA', 'caCommon', 'GetTaskBySlotType');
       const arrResult = await this.spServices.executeBatch(batchUrl);
       const response = arrResult.length ? arrResult[0].retItems : [];
       this.alldbConstantTasks = response;
@@ -1072,7 +1071,7 @@ export class CACommonService {
 
   }
 
-  async  getSlotTasks(event) {
+  async getSlotTasks(event) {
     let response = [];
 
     const batchUrl = [];
@@ -1084,7 +1083,7 @@ export class CACommonService {
     tasksObj.listName = this.globalConstantService.listNames.Schedules.name;
     tasksObj.type = 'GET';
     batchUrl.push(tasksObj);
-    this.commonService.SetNewrelic('caCommon', 'CA', 'GetSlotTaskBySlotId');
+    this.commonService.SetNewrelic('CA', 'caCommon', 'GetSlotTaskBySlotId');
     const arrResult = await this.spServices.executeBatch(batchUrl);
     response = arrResult.length ? arrResult[0].retItems : [];
 

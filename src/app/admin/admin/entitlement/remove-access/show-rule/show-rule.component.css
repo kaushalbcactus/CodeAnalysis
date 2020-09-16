@@ -1,0 +1,12 @@
+::ng-deep .ruleTable .ui-table .ui-table-thead > tr > th:nth-child(1), 
+::ng-deep .ruleTable .ui-table .ui-table-thead > tr > th:nth-child(2),
+::ng-deep .ruleTable .ui-table .ui-table-tbody > tr > td:nth-child(1),
+::ng-deep .ruleTable .ui-table .ui-table-tbody > tr > th:nth-child(2)
+{
+    width: 8% !important;
+}
+
+::ng-deep .ruleTable .ui-table .ui-table-thead > tr > th:nth-child(4),
+::ng-deep .ruleTable .ui-table .ui-table-tbody > tr > td:nth-child(4){
+    width: 20% !important;
+}

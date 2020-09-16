@@ -26,7 +26,7 @@ export class EntitlementComponent implements OnInit {
   }
   async checkUserPresentInGroup() {
     const isPresent = false;
-    this.commonService.SetNewrelic('Admin', 'entitlement', 'getUserInfo');
+    this.commonService.SetNewrelic('admin', 'entitlement', 'getUserInfo');
     const userInfo = await this.spServices.getUserInfo(this.globalObject.currentUser.userId);
     if (userInfo && userInfo.hasOwnProperty('Groups')) {
       if (userInfo.Groups && userInfo.Groups.results && userInfo.Groups.results.length) {

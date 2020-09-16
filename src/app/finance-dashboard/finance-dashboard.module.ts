@@ -36,6 +36,7 @@ import { MarkAsPaymentDialogComponent } from './Expenditure/mark-as-payment-dial
 import { ApproveBillingDialogComponent } from './Scheduled/hourly-based/approve-billing-dialog/approve-billing-dialog.component';
 import { EditInvoiceDialogComponent } from './edit-invoice-dialog/edit-invoice-dialog.component';
 import { AddUpdateProformaDialogComponent } from './add-update-proforma-dialog/add-update-proforma-dialog.component';
+import { ApproveRejectExpenseDialogComponent } from './Expenditure/approve-reject-expense-dialog/approve-reject-expense-dialog.component';
 
 @NgModule({
   declarations: [
@@ -66,6 +67,7 @@ import { AddUpdateProformaDialogComponent } from './add-update-proforma-dialog/a
     ApproveBillingDialogComponent,
     EditInvoiceDialogComponent,
     AddUpdateProformaDialogComponent,
+    ApproveRejectExpenseDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -93,7 +95,8 @@ import { AddUpdateProformaDialogComponent } from './add-update-proforma-dialog/a
     MarkAsPaymentDialogComponent,
     ApproveBillingDialogComponent,
     AddUpdateProformaDialogComponent,
-    EditInvoiceDialogComponent
+    EditInvoiceDialogComponent,
+    ApproveRejectExpenseDialogComponent
   ],
   providers: [
     FDResolve,

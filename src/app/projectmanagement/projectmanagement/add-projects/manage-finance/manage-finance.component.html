@@ -221,8 +221,8 @@
                                             </p-overlayPanel>
                                         </span>
 
-                                        <i *ngIf="rowData.isInvoiceItemEdit"  class="pi pi-pencil"  style="font-size:2em;cursor: pointer;vertical-align: middle;" (click)="editInvoiceItem(rowData)"></i>
-
+                                        <i *ngIf="rowData.isInvoiceItemEdit || rowData.type== 'oop' && rowData.status== 'Scheduled' "  class="pi pi-pencil"  style="font-size:2em;cursor: pointer;vertical-align: middle;" (click)="editInvoiceItem(rowData)"></i>
+                                        <i *ngIf="rowData.type == 'oop' && rowData.status == 'Scheduled'"   class="pi pi-trash"  style="font-size:2em;cursor: pointer;vertical-align: middle;" (click)="cancelOOP(rowData)"></i>
 
                                     </td>
                                 </tr>

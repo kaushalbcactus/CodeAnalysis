@@ -23,9 +23,12 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     tempClick: any;
     outstandingInvoicesRes: any = [];
     outstandingInCols: any[];
+    invoiceCols: { field: string; header: string; }[];
     SelectedAuxInvoiceName = '';
+    expandedRows: any = {};
+    parentData: any;
     // Row Selection Array
-    selectedRowData: any = [];
+    selectedRowData: any[] = [];
 
     // Forms
     paymentResoved_form: FormGroup;
@@ -56,6 +59,8 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
 
     // Right side bar
     rightSideBar: boolean = false;
+    rightSideBarInvoice: boolean = false;
+
     public queryConfig = {
         data: null,
         url: '',
@@ -77,6 +82,11 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     FolderName: string;
     editAuxiliary = false;
     DisplayInvoiceWithAuxiliaryArray = [];
+    iliByidRes: any = [];
+    pfresp: any = [];
+    pfbresp: any = [];
+    proformaData: any = [];
+    poItem: any = [];
 
     constructor(
         private fb: FormBuilder,
@@ -133,6 +143,20 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         // Get details
         this.getRequiredData();
         //will set table to given page number
+    }
+
+    projectInfoData: any = [];
+
+    async projectInfo() {
+        // Check PI list
+        await this.fdDataShareServie.checkProjectsAvailable();
+
+        this.subscription.add(this.fdDataShareServie.defaultPIData.subscribe((res) => {
+            if (res) {
+                this.projectInfoData = res;
+                // console.log('PI Data ', this.projectInfoData);
+            }
+        }))
     }
 
     //  Purchase Order Number
@@ -288,6 +312,19 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             { field: 'Created', header: 'Created', visibility: false },
             { field: '', header: '', visibility: true },
         ];
+
+        this.invoiceCols = [
+            { field: 'ProjectCode', header: 'Project Code', },
+            { field: 'ShortTitle', header: 'Short Title', },
+            { field: 'SOWValue', header: 'SOW Code / Name', },
+            { field: 'ProjectMileStone', header: 'Milestone', },
+            { field: 'POValues', header: 'PO No / Name', },
+            { field: 'ClientName', header: 'Client', },
+            { field: 'ScheduledDateFormat', header: 'Schedule Date', },
+            { field: 'Amount', header: 'Amount', },
+            { field: 'Currency', header: 'Currency', },
+            { field: 'POCName', header: 'POC Name', },
+        ]
     }
 
     // Logged In user Info
@@ -310,7 +347,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     // Get Proformas InvoiceItemList
 
     async getRequiredData() {
-
+        this.expandedRows = {};
         const outInvObj = Object.assign({}, this.fdConstantsService.fdComponent.invoicesForMangerIT);
         this.commonService.SetNewrelic('Finance-Dashboard', 'outstanding-invoices', 'invoicesForMangerIT');
         const res = await this.spServices.readItems(this.constantService.listNames.Invoices.name, outInvObj);
@@ -472,47 +509,54 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             invoiceSts = data.InvoiceStatus.toLowerCase();
         }
 
-        switch (invoiceSts) {
-            case 'sent to ap': {
-                this.items = [
-                    // { label: 'Export Invoice', command: (e) => this.openMenuContent(e, data) },
-                    { label: 'Mark as Payment Resolved', command: (e) => this.openMenuContent(e, data) },
-                    // { label: 'Dispute Invoice', command: (e) => this.openMenuContent(e, data) },
-                    // { label: 'Mark as Debit/Credit Note', command: (e) => this.openMenuContent(e, data) },
-                    { label: 'Replace Invoice', command: (e) => this.openMenuContent(e, data) },
-                ];
-
-                if (data.InvoiceHtml) {
-                    this.items.push({ label: 'Edit Line item', command: (e) => this.openMenuContent(e, data) });
+        if(data.InvoiceType == 'oop' || data.InvoiceType == 'revenue') {
+            switch (invoiceSts) {
+                case 'sent to ap': {
+                    this.items.push(
+                        // { label: 'Export Invoice', command: (e) => this.openMenuContent(e, data) },
+                        { label: 'Mark as Payment Resolved', command: (e) => this.openMenuContent(e, data) },
+                        // { label: 'Dispute Invoice', command: (e) => this.openMenuContent(e, data) },
+                        // { label: 'Mark as Debit/Credit Note', command: (e) => this.openMenuContent(e, data) },
+                        { label: 'Replace Invoice', command: (e) => this.openMenuContent(e, data) },
+                    );
+    
+                    if (data.InvoiceHtml) {
+                        this.items.push({ label: 'Edit Line item', command: (e) => this.openMenuContent(e, data) });
+                    }
+                    break;
                 }
-                break;
-            }
-            case 'generated': {
-                this.items = [
-                    { label: 'Sent to AP', command: (e) => this.openMenuContent(e, data) },
-                    { label: 'Replace Invoice', command: (e) => this.openMenuContent(e, data) },
-                ];
-                if (data.InvoiceHtml) {
-                    this.items.push({ label: 'Edit Line item', command: (e) => this.openMenuContent(e, data) });
+                case 'generated': {
+                    this.items.push(
+                        { label: 'Sent to AP', command: (e) => this.openMenuContent(e, data) },
+                        { label: 'Replace Invoice', command: (e) => this.openMenuContent(e, data) },
+                    );
+                    if (data.InvoiceHtml) {
+                        this.items.push({ label: 'Edit Line item', command: (e) => this.openMenuContent(e, data) });
+                    }
+                    break;
                 }
-                break;
+                case 'dispute': {
+                    this.items.push(
+                        { label: 'Mark as Payment Resolved', command: (e) => this.openMenuContent(e, data) });
+                    break;
+                }
+                default: {
+                    this.items = [];
+                    break;
+                }
             }
-            case 'dispute': {
-                this.items = [
-                    { label: 'Mark as Payment Resolved', command: (e) => this.openMenuContent(e, data) }]
-                break;
+            if (!data.FileURL && data.ProformaLookup && (data.Template === 'US' || data.Template === 'India' || data.Template === 'Japan')) {
+                this.items.push({ label: 'Regenerate Invoice', command: (e) => this.openMenuContent(e, data) });
             }
-            default: {
-                this.items = [];
-                break;
+    
+            if (data.InvoiceStatus === this.constantService.STATUS.GENERATED || data.InvoiceStatus === this.constantService.STATUS.SENTTOAP) {
+                this.items.push({ label: 'Edit Invoice Number', command: (e) => this.openMenuContent(e, data) })
             }
-        }
-        if (!data.FileURL && data.ProformaLookup && (data.Template === 'US' || data.Template === 'India' || data.Template === 'Japan')) {
-            this.items.push({ label: 'Regenerate Invoice', command: (e) => this.openMenuContent(e, data) });
-        }
-
-        if (data.InvoiceStatus === this.constantService.STATUS.GENERATED || data.InvoiceStatus === this.constantService.STATUS.SENTTOAP) {
-            this.items.push({ label: 'Edit Invoice Number', command: (e) => this.openMenuContent(e, data) })
+        } else {
+            this.items = [
+                { label: 'Detag Project', command: (e) => this.openMenuContent(e, data) },
+                { label: 'View Project Details', command: (e) => this.openMenuContent(e, data) }
+            ]
         }
 
         this.items.push(
@@ -535,95 +579,407 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     openMenuContent(event, data) {
         console.log(JSON.stringify(data));
         this.selectedRowItem = data;
+        this.selectedRowData = [data];
         console.log(event);
         this.confirmDialog.title = event.item.label;
-        if (this.confirmDialog.title.toLowerCase() === 'mark as payment resolved') {
-            this.paymentResovedModal = true;
-        } else if (this.confirmDialog.title.toLowerCase() === 'dispute invoice') {
-            this.disputeInvoiceModal = true;
-        } else if (this.confirmDialog.title.toLowerCase() === 'replace invoice') {
-            this.replaceInvoiceModal = true;
-        } else if (this.confirmDialog.title.includes("Debit/Credit Note")) {
-            this.creditOrDebitModal = true;
-        } else if (this.confirmDialog.title.toLowerCase() === 'sent to ap') {
-            this.sentToAPModal = true;
-        } else if (this.confirmDialog.title.toLowerCase() === 'show history') {
-            this.timeline.showTimeline(data.Id, 'FD', this.constantService.listNames.Invoices.name);
-        } else if (event.item.label === 'Details') {
-            this.rightSideBar = !this.rightSideBar;
-            return;
-        } else if (this.confirmDialog.title === 'Edit Line item') {
-            const invObj = JSON.parse(data.InvoiceHtml);
-            if (invObj.hasOwnProperty('saveObj')) {
-                this.fdConstantsService.fdComponent.selectedEditObject.Code = data.InvoiceNumber;
-                const oCLE = this.cleData.find(e => e.Title === data.ClientLegalEntity);
-                this.fdConstantsService.fdComponent.selectedEditObject.ListName = oCLE.ListName;
-                this.fdConstantsService.fdComponent.selectedEditObject.ID = data.Id;
-                this.fdConstantsService.fdComponent.selectedEditObject.Type = 'Invoice';
-                this.fdConstantsService.fdComponent.selectedComp = this;
-                //invObj.saveObj.serviceDetailHeader = 'INVOICE DETAILS';
-                this.editorRef.serviceDetailHeader = 'INVOICE DETAILS';
-                switch (data.Template) {
-                    case 'US':
-                        this.editorRef.JapanTemplateCopy = {};
-                        this.editorRef.IndiaTemplateCopy = {};
-                        this.editorRef.USTemplateCopy = invObj.saveObj;
-                        if (this.editorRef.USTemplateCopy.appendix) {
-                            this.editorRef.showAppendix = true;
-                            this.setAppendixCol(this.editorRef.USTemplateCopy.appendix);
-                        } else {
-                            this.editorRef.showAppendix = false;
-                        }
-                        this.editorRef.displayJapan = false;
-                        this.editorRef.displayUS = true;
-                        this.editorRef.displayIndia = false;
-                        this.editorRef.enableButton();
-                        break;
-                    case 'Japan':
-                        this.editorRef.USTemplateCopy = {};
-                        this.editorRef.IndiaTemplateCopy = {};
-                        this.editorRef.JapanTemplateCopy = invObj.saveObj;
-                        if (this.editorRef.JapanTemplateCopy.appendix) {
-                            this.editorRef.showAppendix = true;
-                            this.setAppendixCol(this.editorRef.JapanTemplateCopy.appendix);
-                        } else {
-                            this.editorRef.showAppendix = false;
-                        }
-                        this.editorRef.displayJapan = true;
-                        this.editorRef.displayUS = false;
-                        this.editorRef.displayIndia = false;
-                        this.editorRef.enableButton();
-                        break;
-                    case 'India':
 
-                        this.editorRef.JapanTemplateCopy = {};
-                        this.editorRef.USTemplateCopy = {};
-                        this.editorRef.IndiaTemplateCopy = invObj.saveObj;
-                        if (this.editorRef.IndiaTemplateCopy.appendix) {
-                            this.editorRef.showAppendix = true;
-                            this.setAppendixCol(this.editorRef.IndiaTemplateCopy.appendix);
-                        } else {
-                            this.editorRef.showAppendix = false;
-                        }
-                        this.editorRef.displayJapan = false;
-                        this.editorRef.displayUS = false;
-                        this.editorRef.displayIndia = true;
-                        this.editorRef.enableButton();
-                        break;
+        if(data.InvoiceType == 'oop' || data.InvoiceType == 'revenue') {
+            if (this.confirmDialog.title.toLowerCase() === 'mark as payment resolved') {
+                this.paymentResovedModal = true;
+            } else if (this.confirmDialog.title.toLowerCase() === 'dispute invoice') {
+                this.disputeInvoiceModal = true;
+            } else if (this.confirmDialog.title.toLowerCase() === 'replace invoice') {
+                this.replaceInvoiceModal = true;
+            } else if (this.confirmDialog.title.includes("Debit/Credit Note")) {
+                this.creditOrDebitModal = true;
+            } else if (this.confirmDialog.title.toLowerCase() === 'sent to ap') {
+                this.sentToAPModal = true;
+            } else if (this.confirmDialog.title.toLowerCase() === 'show history') {
+                this.timeline.showTimeline(data.Id, 'FD', this.constantService.listNames.Invoices.name);
+            } else if (event.item.label === 'Details') {
+                this.rightSideBar = !this.rightSideBar;
+                return;
+            } else if (this.confirmDialog.title === 'Edit Line item') {
+                const invObj = JSON.parse(data.InvoiceHtml);
+                if (invObj.hasOwnProperty('saveObj')) {
+                    this.fdConstantsService.fdComponent.selectedEditObject.Code = data.InvoiceNumber;
+                    const oCLE = this.cleData.find(e => e.Title === data.ClientLegalEntity);
+                    this.fdConstantsService.fdComponent.selectedEditObject.ListName = oCLE.ListName;
+                    this.fdConstantsService.fdComponent.selectedEditObject.ID = data.Id;
+                    this.fdConstantsService.fdComponent.selectedEditObject.Type = 'Invoice';
+                    this.fdConstantsService.fdComponent.selectedComp = this;
+                    //invObj.saveObj.serviceDetailHeader = 'INVOICE DETAILS';
+                    this.editorRef.serviceDetailHeader = 'INVOICE DETAILS';
+                    switch (data.Template) {
+                        case 'US':
+                            this.editorRef.JapanTemplateCopy = {};
+                            this.editorRef.IndiaTemplateCopy = {};
+                            this.editorRef.USTemplateCopy = invObj.saveObj;
+                            if (this.editorRef.USTemplateCopy.appendix) {
+                                this.editorRef.showAppendix = true;
+                                this.setAppendixCol(this.editorRef.USTemplateCopy.appendix);
+                            } else {
+                                this.editorRef.showAppendix = false;
+                            }
+                            this.editorRef.displayJapan = false;
+                            this.editorRef.displayUS = true;
+                            this.editorRef.displayIndia = false;
+                            this.editorRef.enableButton();
+                            break;
+                        case 'Japan':
+                            this.editorRef.USTemplateCopy = {};
+                            this.editorRef.IndiaTemplateCopy = {};
+                            this.editorRef.JapanTemplateCopy = invObj.saveObj;
+                            if (this.editorRef.JapanTemplateCopy.appendix) {
+                                this.editorRef.showAppendix = true;
+                                this.setAppendixCol(this.editorRef.JapanTemplateCopy.appendix);
+                            } else {
+                                this.editorRef.showAppendix = false;
+                            }
+                            this.editorRef.displayJapan = true;
+                            this.editorRef.displayUS = false;
+                            this.editorRef.displayIndia = false;
+                            this.editorRef.enableButton();
+                            break;
+                        case 'India':
+    
+                            this.editorRef.JapanTemplateCopy = {};
+                            this.editorRef.USTemplateCopy = {};
+                            this.editorRef.IndiaTemplateCopy = invObj.saveObj;
+                            if (this.editorRef.IndiaTemplateCopy.appendix) {
+                                this.editorRef.showAppendix = true;
+                                this.setAppendixCol(this.editorRef.IndiaTemplateCopy.appendix);
+                            } else {
+                                this.editorRef.showAppendix = false;
+                            }
+                            this.editorRef.displayJapan = false;
+                            this.editorRef.displayUS = false;
+                            this.editorRef.displayIndia = true;
+                            this.editorRef.enableButton();
+                            break;
+                    }
                 }
+                // this.pdfEditor.getInvoiceData(JSON.parse(data.ProformaHtml));
             }
-            // this.pdfEditor.getInvoiceData(JSON.parse(data.ProformaHtml));
+            else if (this.confirmDialog.title === 'Edit Invoice Number') {
+    
+                this.SelectedAuxInvoiceName = this.selectedRowItem.AuxiliaryInvoiceName;
+                this.editAuxiliary = true;
+            } else if (this.confirmDialog.title === 'Regenerate Invoice') {
+                this.generateExistingInvoice(data);
+            } 
+        } else {
+            if(this.confirmDialog.title === 'Detag Project') {
+                this.commonService.confirmMessageDialog("Detag Project", "Are you sure you want to detag project", null, ['Yes', 'No'], false).then(async Confirmation => {
+                    if (Confirmation === 'Yes') {
+                        this.onSubmit("Detag Project");
+                    }
+                    else if (Confirmation === 'No') {
+                        this.commonService.showToastrMessage(this.constantService.MessageType.info, 'You have cancelled', false);
+                    }
+                });
+            } else if (this.confirmDialog.title.toLowerCase() === 'show history') {
+                this.timeline.showTimeline(data.Id, 'FD', this.constantService.listNames.InvoiceLineItems.name);
+            } else if (this.confirmDialog.title === 'Details') {
+                this.rightSideBarInvoice = !this.rightSideBarInvoice;
+                return;
+            } else if (this.confirmDialog.title === 'View Project Details') {
+                window.open(this.globalService.sharePointPageObject.webAbsoluteUrl + '/dashboard#/projectMgmt?ProjectCode=' + data.ProjectCode);
+            }
         }
-        else if (this.confirmDialog.title === 'Edit Invoice Number') {
 
-            this.SelectedAuxInvoiceName = this.selectedRowItem.AuxiliaryInvoiceName;
-            this.editAuxiliary = true;
-        } else if (this.confirmDialog.title === 'Regenerate Invoice') {
-            this.generateExistingInvoice(data);
-        }
+       
 
     }
 
+    async OnRowExpand(event) {
+        event.data.loaderenable = true;
+        event.data.invoiceDetails = [];
+        this.parentData = event.data;
+        let batchUrl = [];
+        const url = this.spServices.getReadURL(this.constantService.listNames.InvoiceLineItems.name,
+            this.fdConstantsService.fdComponent.invoiceLineItemByInvoice).replace('{{InvoiceLookup}}', event.data.Id);
+        this.commonService.setBatchObject(batchUrl, url, null, this.constantService.Method.GET, this.constantService.listNames.InvoiceLineItems.type)
+        const response = await this.spServices.executeBatch(batchUrl);
+        const Invoices = response.length > 0 ? response[0].retItems : [];
+        if (Invoices.length > 0) {
+            if (this.projectInfoData.length === 0) {
+                await this.projectInfo();
+            }
+            for (let i = 0; i < Invoices.length; i++) {
+                let poItem = this.getPONumber(Invoices[i]);
+                let pnumber = poItem.Number ? poItem.Number : '';
+                const pname = poItem.NameST ? poItem.NameST : '';
+                if (pnumber === 'NA') {
+                    pnumber = '';
+                }
+                let ponn = pnumber + ' ' + pname;
+                if (pname && pnumber) {
+                    ponn = pnumber + ' / ' + pname;
+                }
+                const sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(Invoices[i].SOWCode);
+                const sowCode = Invoices[i].SOWCode ? Invoices[i].SOWCode : '';
+                const sowName = sowItem.Title ? sowItem.Title : '';
+                let sowcn = sowCode + ' ' + sowName;
+                if (sowCode && sowName) {
+                    sowcn = sowCode + ' / ' + sowName;
+                }
+                const projcd = this.projectContactsData.find(c => c.ID === Invoices[i].MainPOC);
+                const piInfo = this.projectInfoData.find(c => c.ProjectCode === Invoices[i].Title);
+                event.data.invoiceDetails.push({
+                    Id: Invoices[i].ID,
+                    ProjectCode: Invoices[i].Title,
+                    ProjectTitle: piInfo && piInfo.Title ? piInfo.Title : '',
+                    ShortTitle: piInfo && piInfo.WBJID ? piInfo.WBJID : '',
+                    SOWCode: Invoices[i].SOWCode,
+                    SOWValue: sowcn,
+                    SOWName: sowItem.Title,
+                    ProjectMileStone: piInfo && piInfo.Milestone ? piInfo.Milestone : '',
+                    POValues: ponn,
+                    PONumber: poItem.Number,
+                    PO: Invoices[i].PO,
+                    POCId: Invoices[i].MainPOC,
+                    ClientName: piInfo && piInfo.ClientLegalEntity ? piInfo.ClientLegalEntity : '',
+                    ScheduledDate: new Date(this.datePipe.transform(Invoices[i].ScheduledDate, 'MMM dd, yyyy')),
+                    ScheduledDateFormat: this.datePipe.transform(Invoices[i].ScheduledDate, 'MMM dd, yyyy'),
+                    Amount: Invoices[i].Amount,
+                    Currency: Invoices[i].Currency,
+                    POCName: projcd ? projcd.FName + ' ' + projcd.LName : '',
+                    AddressType: Invoices[i].AddressType,
+                    CS: this.fdDataShareServie.getCSDetails(Invoices[i]),
+                    PracticeArea: piInfo && piInfo.BusinessVertical ? piInfo.BusinessVertical : '',
+                    POName: poItem.NameST,
+                    TaggedDate: Invoices[i].TaggedDate,
+                    Status: Invoices[i].Status,
+                    ProformaLookup: Invoices[i].ProformaLookup,
+                    ScheduleType: Invoices[i].ScheduleType,
+                    InvoiceLookup: Invoices[i].InvoiceLookup,
+                    Template: Invoices[i].Template,
+                    Modified: this.datePipe.transform(Invoices[i].Modified, 'MMM dd, yyyy'),
+                    ModifiedBy: Invoices[i].Editor ? Invoices[i].Editor.Title : ''
+                })
+            }
+        }
+        event.data.loaderenable = false;
+    }
+
+    // async getProforma(lineItem) {
+    //     const prfObj = Object.assign({}, this.fdConstantsService.fdComponent.proformaForUser);
+    //     prfObj.filter = prfObj.filter.replace('{{ItemID}}', lineItem.ProformaLookup);
+    //     const res = await this.spServices.readItems(this.constantService.listNames.Proforma.name, prfObj);
+    //     this.proformaData = res.length ? res[0] : [];
+    // }
+
+    // async getPOData(lineItem) {
+    //     const poObj = Object.assign({}, this.fdConstantsService.fdComponent.GET_PO_BY_ID);
+    //     poObj.filter = poObj.filter.replace('{{ItemID}}', lineItem.PO);
+    //     const res = await this.spServices.readItems(this.constantService.listNames.PO.name, poObj);
+    //     this.poItem = res.length ? res[0] : [];
+    // }
+
+    // async getInvoiceLineItemByID() {
+    //     this.iliByidRes = [];
+    //     // this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
+    //     const iliObj = Object.assign({}, this.fdConstantsService.fdComponent.invoiceLineItemByInvoice);
+    //     iliObj.filter = iliObj.filter.replace('{{itemId}}', this.selectedRowItem.InvoiceLookup);
+    //     this.commonService.SetNewrelic('Finance-Dashboard', 'Invoices', 'GetInviceLineItem');
+    //     const res = await this.spServices.readItems(this.constantService.listNames.Invoices.name, iliObj);
+    //     const arrResults = res.length ? res : [];
+    //     // if (arrResults.length) {
+    //     // console.log(arrResults[0]);
+    //     this.iliByidRes = arrResults;
+    //     console.log('this.iliByidRes ', this.iliByidRes);
+
+    //     this.getFinanceListData(this.iliByidRes[0]);
+    //     // }
+    //     // this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
+    // }
+
+    async getFinanceListData() {
+        const batchUrl = [];
+        this.pfresp = [];
+        this.pfbresp = [];
+        const pfObj = Object.assign({}, this.queryConfig);
+        pfObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectFinances.name,
+            this.fdConstantsService.fdComponent.projectFinances);
+        pfObj.url = pfObj.url.replace('{{ProjectCode}}', this.selectedRowItem.ProjectCode);
+        pfObj.listName = this.constantService.listNames.ProjectFinances.name;
+        pfObj.type = 'GET';
+        batchUrl.push(pfObj);
+
+        const pfbObj = Object.assign({}, this.queryConfig);
+        pfbObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectFinanceBreakup.name,
+            this.fdConstantsService.fdComponent.projectFinanceBreakupFromPO);
+        pfbObj.url = pfbObj.url.replace('{{ProjectCode}}', this.selectedRowItem.ProjectCode).replace('{{PO}}', this.selectedRowItem.PO);
+        pfbObj.listName = this.constantService.listNames.ProjectFinanceBreakup.name;
+        pfbObj.type = 'GET';
+        batchUrl.push(pfbObj);
+
+        const res = await this.spServices.executeBatch(batchUrl);
+
+        const arrResults = res.length ? res.map(a => a.retItems) : [];
+        if (arrResults.length) {
+            this.pfresp = arrResults[0] ? arrResults[0] : [];
+            this.pfbresp = arrResults[1] ? arrResults[1] : [];
+            console.log('this.pfresp ', this.pfresp);
+            console.log('this.pfbresp ', this.pfbresp);
+
+        }
+        // await this.getPOData(data)
+        // await this.getProforma(data);
+        await this.updateFinanceListData();
+    }
+
+    updateFinanceListData() {
+        const batchUrl = [];
+        let pfs: any = [];
+        let pfbs: any = [];
+        let pfsItem: any = {};
+        let pfbsItems: any = [];
+
+        // this.iliByidRes.forEach(element => {
+
+            let invData = {
+                __metadata: { type: this.constantService.listNames.InvoiceLineItems.type },
+                Status: 'Scheduled',
+                ScheduledDate: new Date(),
+                ProformaLookup: null,
+                InvoiceLookup: null
+            }
+            this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, +this.selectedRowItem.Id), invData, this.constantService.Method.PATCH, this.constantService.listNames.InvoiceLineItems.name);
+
+            let invoiceData = {
+                __metadata: { type: this.constantService.listNames.Invoices.type },
+                IsTaggedFully: 'No',
+                TaggedAmount: this.parentData.TaggedAmount ? this.parentData.TaggedAmount - this.selectedRowItem.Amount : 0 
+            }
+            this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constantService.listNames.Invoices.name, +this.parentData.Id), invoiceData, this.constantService.Method.PATCH, this.constantService.listNames.Invoices.name);
+
+            // let proformaData = {
+            //     __metadata: { type: this.constantService.listNames.Proforma.type },
+            //     Status: 'Deleted',
+            // }
+            // this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constantService.listNames.Proforma.name, +this.proformaData.Id), proformaData, this.constantService.Method.PATCH, this.constantService.listNames.Proforma.name);
+            // let poData: any = {};
+            // if (this.selectedRowItem.InvoiceType === 'revenue') {
+            //     // if (this.addILIObj.IsTaggedFully === 'Yes') {
+            //         poData.ScheduledRevenue = (this.poItem.ScheduledRevenue ? parseFloat(this.poItem.ScheduledRevenue.toFixed(2)) + this.selectedRowItem.Amount : 0 + this.selectedRowItem.Amount);
+            //         poData.TotalScheduled = (this.poItem.TotalScheduled ? parseFloat(this.poItem.TotalScheduled.toFixed(2)) + this.selectedRowItem.Amount : 0 + this.selectedRowItem.Amount);
+            //     // }
+            //     poData.InvoicedRevenue = (this.poItem.InvoicedRevenue ? parseFloat(this.poItem.InvoicedRevenue.toFixed(2)) - this.selectedRowItem.Amount : 0 - this.selectedRowItem.Amount);
+            //     poData.TotalInvoiced = (this.poItem.TotalInvoiced ? parseFloat(this.poItem.TotalInvoiced.toFixed(2)) - this.selectedRowItem.Amount : 0 - this.selectedRowItem.Amount);
+            // } else if (this.selectedRowItem.InvoiceType === 'oop') {
+            //     // if (this.addILIObj.IsTaggedFully === 'Yes') {
+            //         poData.ScheduledOOP = (this.poItem.ScheduledOOP ? parseFloat(this.poItem.ScheduledOOP.toFixed(2)) + this.selectedRowItem.Amount : 0 + this.selectedRowItem.Amount);
+            //         poData.TotalScheduled = (this.poItem.TotalScheduled ? parseFloat(this.poItem.TotalScheduled.toFixed(2)) + this.selectedRowItem.Amount : 0 + this.selectedRowItem.Amount);
+            //     // }
+            //     poData.InvoicedOOP = (this.poItem.InvoicedOOP ? parseFloat(this.poItem.InvoicedOOP.toFixed(2)) - this.selectedRowItem.Amount : 0 - this.selectedRowItem.Amount);
+            //     poData.TotalInvoiced = (this.poItem.TotalInvoiced ? parseFloat(this.poItem.TotalInvoiced.toFixed(2)) - this.selectedRowItem.Amount : 0 - this.selectedRowItem.Amount);
+            // }
+
+            // poData['__metadata'] = { type: this.constantService.listNames.PO.type };
+
+            // this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constantService.listNames.PO.name, +this.poItem.Id), proformaData, this.constantService.Method.PATCH, this.constantService.listNames.PO.name);
+
+
+            const pfsItems = this.pfresp.filter(pf => pf.Title === this.selectedRowItem.ProjectCode);
+            pfsItem = pfsItems.length > 0 ? pfsItems[0] : {};
+            if (pfsItem) {
+                const amount = parseFloat(this.selectedRowItem.Amount.toFixed(2));
+                if (this.selectedRowItem.ScheduleType === 'revenue') {
+                    pfsItem.InvoicedRevenue = pfsItem.InvoicedRevenue ? parseFloat(pfsItem.InvoicedRevenue.toFixed(2)) - amount : 0;
+                    pfsItem.ScheduledRevenue = pfsItem.ScheduledRevenue ? parseFloat(pfsItem.ScheduledRevenue.toFixed(2)) + amount : 0 + amount;
+                    pfsItem.Invoiced = pfsItem.Invoiced ? parseFloat(pfsItem.Invoiced.toFixed(2)) - amount : 0;
+                    pfsItem.InvoicesScheduled = pfsItem.InvoicesScheduled ? parseFloat(pfsItem.InvoicesScheduled.toFixed(2)) + amount : 0 + amount
+                    pfs.push({
+                        Id: pfsItem.Id,
+                        InvoicedRevenue: (pfsItem.InvoicedRevenue),
+                        ScheduledRevenue: (pfsItem.ScheduledRevenue),
+                        Invoiced: (pfsItem.Invoiced),
+                        InvoicesScheduled: (pfsItem.InvoicesScheduled),
+                    });
+                } else if (this.selectedRowItem.ScheduleType === 'oop') {
+                    pfsItem.ScheduledOOP = pfsItem.ScheduledOOP ? parseFloat(pfsItem.ScheduledOOP.toFixed(2)) + amount : 0 + amount;
+                    pfsItem.InvoicedOOP = pfsItem.InvoicedOOP ? parseFloat(pfsItem.InvoicedOOP.toFixed(2)) - amount : 0;
+                    pfsItem.Invoiced = pfsItem.Invoiced ? parseFloat(pfsItem.Invoiced.toFixed(2)) - amount : 0;
+                    pfsItem.InvoicesScheduled = pfsItem.InvoicesScheduled ? parseFloat(pfsItem.InvoicesScheduled.toFixed(2)) + amount : 0 + amount;
+                    pfs.push({
+                        Id: pfsItem.Id,
+                        ScheduledOOP: (pfsItem.ScheduledOOP),
+                        InvoicedOOP: (pfsItem.InvoicedOOP),
+                        Invoiced: (pfsItem.Invoiced),
+                        InvoicesScheduled: (pfsItem.InvoicesScheduled),
+                    });
+                }
+            }
+            // PFB
+            pfbsItems = this.pfbresp.filter(pfb => pfb.ProjectNumber === this.selectedRowItem.ProjectCode && pfb.POLookup === this.selectedRowItem.PO);
+            if (pfbsItems.length) {
+                const amount = parseFloat(this.selectedRowItem.Amount.toFixed(2));
+                pfbsItems.forEach(pfbsItem => {
+                    if (this.selectedRowItem.ScheduleType === 'revenue') {
+                        pfbsItem.InvoicedRevenue = pfbsItem.InvoicedRevenue ? parseFloat(pfbsItem.InvoicedRevenue.toFixed(2)) - amount : 0;
+                        pfbsItem.ScheduledRevenue = pfbsItem.ScheduledRevenue ? parseFloat(pfbsItem.ScheduledRevenue.toFixed(2)) + amount : 0 + amount;
+                        pfbsItem.TotalInvoiced = pfbsItem.TotalInvoiced ? parseFloat(pfbsItem.TotalInvoiced.toFixed(2)) - amount : 0;
+                        pfbsItem.TotalScheduled = pfbsItem.TotalScheduled ? parseFloat(pfbsItem.TotalScheduled.toFixed(2)) + amount : 0 + amount;
+                        pfbs.push({
+                            Id: pfbsItem.Id,
+                            InvoicedRevenue: (pfbsItem.InvoicedRevenue),
+                            ScheduledRevenue: (pfbsItem.ScheduledRevenue),
+                            TotalInvoiced: (pfbsItem.TotalInvoiced),
+                            TotalScheduled: (pfbsItem.TotalScheduled),
+                        })
+                    } else if (this.selectedRowItem.ScheduleType === 'oop') {
+                        pfbsItem.ScheduledOOP = pfbsItem.ScheduledOOP ? parseFloat(pfbsItem.ScheduledOOP.toFixed(2)) + amount : 0 + amount;
+                        pfbsItem.InvoicedOOP = pfbsItem.InvoicedOOP ? parseFloat(pfbsItem.InvoicedOOP.toFixed(2)) - amount : 0;
+                        pfbsItem.TotalInvoiced = pfbsItem.TotalInvoiced ? parseFloat(pfbsItem.TotalInvoiced.toFixed(2)) - amount : 0;
+                        pfbsItem.TotalScheduled = pfbsItem.TotalScheduled ? parseFloat(pfbsItem.TotalScheduled.toFixed(2)) + amount : 0 + amount;
+                        pfbs.push({
+                            Id: pfbsItem.Id,
+                            ScheduledOOP: (pfbsItem.ScheduledOOP),
+                            InvoicedOOP: (pfbsItem.InvoicedOOP),
+                            TotalInvoiced: (pfbsItem.TotalInvoiced),
+                            TotalScheduled: (pfbsItem.TotalScheduled),
+                        })
+                    }
+                });
+            }
+        // });
+
+        if (pfs.length) {
+            for (let pf = 0; pf < pfs.length; pf++) {
+                const element = pfs[pf];
+                element['__metadata'] = { type: this.constantService.listNames.ProjectFinances.type };
+                const pfObj = Object.assign({}, this.queryConfig);
+                pfObj.url = this.spServices.getItemURL(this.constantService.listNames.ProjectFinances.name, +element.Id);
+                pfObj.listName = this.constantService.listNames.ProjectFinances.name;
+                pfObj.type = 'PATCH';
+                pfObj.data = element;
+                batchUrl.push(pfObj);
+            }
+        }
+
+        if (pfbs.length) {
+            for (let pfb = 0; pfb < pfbs.length; pfb++) {
+                const element = pfbs[pfb];
+                element['__metadata'] = { type: this.constantService.listNames.ProjectFinanceBreakup.type };
+                const pfbObj = Object.assign({}, this.queryConfig);
+                pfbObj.url = this.spServices.getItemURL(this.constantService.listNames.ProjectFinanceBreakup.name, +element.Id);
+                pfbObj.listName = this.constantService.listNames.ProjectFinanceBreakup.name;
+                pfbObj.type = 'PATCH';
+                pfbObj.data = element;
+                batchUrl.push(pfbObj);
+            }
+        }
+
+        // console.log(batchUrl);
+        this.submitForm(batchUrl, 'Detag Project');
+    }
+
+    async detagInvoice() {
+        await this.getFinanceListData();
+    }
+    
     setAppendixCol(sContent) {
         var oDiv = document.createElement('div');
         oDiv.innerHTML = sContent;
@@ -682,8 +1038,8 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 this.commonService.showToastrMessage(this.constantService.MessageType.error, this.constantService.Messages.SpecialCharMsg, false);
                 return false;
             }
-            let cleListName = this.getCLEListNameFromCLE(this.selectedRowItem.ClientLegalEntity)
-            this.FolderName = cleListName + '/Finance/Invoice/' + folderName;
+            let cleListName = this.getCLEListNameFromCLE(this.selectedRowData[0].ClientLegalEntity)
+            this.FolderName = cleListName + '/Finance/' + folderName;
             this.SelectedFile.push(new Object({ name: this.selectedFile.name, file: this.selectedFile }));
         }
     }
@@ -751,13 +1107,27 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                                 PaymentURL: uploadedfile[0].ServerRelativeUrl ? uploadedfile[0].ServerRelativeUrl : ''
                             };
                         }
-                        invData['__metadata'] = { type: this.constantService.listNames.Invoices.type };
-                        const invObj = Object.assign({}, this.queryConfig);
-                        invObj.url = this.spServices.getItemURL(this.constantService.listNames.Invoices.name, +this.selectedRowItem.Id);
-                        invObj.listName = this.constantService.listNames.Invoices.name;
-                        invObj.type = 'PATCH';
-                        invObj.data = invData;
-                        batchUrl.push(invObj);
+
+                        for (let i = 0; i < this.selectedRowData.length; i++) {
+                            const element = this.selectedRowData[i];
+                            
+                            // if(type === 'paymentResoved') {
+                            //     invData = {
+                            //         Status: 'Paid',
+                            //         PaymentURL: uploadedfile[0].ServerRelativeUrl ? uploadedfile[0].ServerRelativeUrl : ''
+                            //     };
+                            // }
+                            invData['__metadata'] = { type: this.constantService.listNames.Invoices.type };
+                            const invObj = Object.assign({}, this.queryConfig);
+                            invObj.url = this.spServices.getItemURL(this.constantService.listNames.Invoices.name, +element.Id);
+                            invObj.listName = this.constantService.listNames.Invoices.name;
+                            invObj.type = 'PATCH';
+                            invObj.data = invData;
+                            batchUrl.push(invObj);
+                        }
+
+                        // console.log(batchUrl);
+
                         this.submitForm(batchUrl, type);
                     }
                 }
@@ -856,21 +1226,41 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         } else if (type === 'sentToAP') {
             this.isPSInnerLoaderHidden = false;
             this.submitBtn.isClicked = true;
-            const sts = this.constantService.invoicesStatus.SentToAP;
-            // sts = type === 'Mark as Sent to Client' ? 'Sent' : 'Rejected'
-            const invData = {
-                __metadata: {
-                    type: this.constantService.listNames.Invoices.type
-                },
-                Status: sts
-            };
-            const invObj = Object.assign({}, this.queryConfig);
-            invObj.url = this.spServices.getItemURL(this.constantService.listNames.Invoices.name, +this.selectedRowItem.Id);
-            invObj.listName = this.constantService.listNames.Invoices.name;
-            invObj.type = 'PATCH';
-            invObj.data = invData;
-            batchUrl.push(invObj);
+            // this.selectedRowData = [this.selectedRowItem]
 
+            for (let i = 0; i < this.selectedRowData.length; i++) {
+                const element = this.selectedRowData[i];
+
+                const sts = this.constantService.invoicesStatus.SentToAP;
+                const invData = {
+                    __metadata: {
+                        type: this.constantService.listNames.Invoices.type
+                    },
+                    Status: sts
+                };
+                const invObj = Object.assign({}, this.queryConfig);
+                invObj.url = this.spServices.getItemURL(this.constantService.listNames.Invoices.name, element.Id);
+                invObj.listName = this.constantService.listNames.Invoices.name;
+                invObj.type = 'PATCH';
+                invObj.data = invData;
+                batchUrl.push(invObj);
+            }
+
+            // const sts = this.constantService.invoicesStatus.SentToAP;
+            // // sts = type === 'Mark as Sent to Client' ? 'Sent' : 'Rejected'
+            // const invData = {
+            //     __metadata: {
+            //         type: this.constantService.listNames.Invoices.type
+            //     },
+            //     Status: sts
+            // };
+            // const invObj = Object.assign({}, this.queryConfig);
+            // invObj.url = this.spServices.getItemURL(this.constantService.listNames.Invoices.name, +this.selectedRowItem.Id);
+            // invObj.listName = this.constantService.listNames.Invoices.name;
+            // invObj.type = 'PATCH';
+            // invObj.data = invData;
+            // batchUrl.push(invObj);
+            console.log(batchUrl);
             this.commonService.SetNewrelic('Finance-Dashboard', 'outstanding-invoices', 'submitForm');
             this.submitForm(batchUrl, type);
         }
@@ -903,6 +1293,8 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 this.submitForm(batchUrl, type);
             }
 
+        } else if(type === 'Detag Project') {
+            this.detagInvoice();
         }
     }
 
@@ -970,7 +1362,8 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             this.reFetchData();
         } else if (type === "sentToAP") {
 
-            this.commonService.showToastrMessage(this.constantService.MessageType.success, this.selectedRowItem.InvoiceNumber + ' ' + 'Invoice Status Changed.', true);
+            // this.commonService.showToastrMessage(this.constantService.MessageType.success, this.selectedRowItem.InvoiceNumber + ' ' + 'Invoice Status Changed.', true);
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Invoice Status Changed.', true);
             this.sentToAPModal = false;
             this.reFetchData();
         } else if (type === "disputeInvoice") {
@@ -979,7 +1372,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             this.disputeInvoiceModal = false;
         } else if (type === "paymentResoved") {
 
-            this.commonService.showToastrMessage(this.constantService.MessageType.success, this.selectedRowItem.InvoiceNumber + ' ' + 'Success.', true);
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Payment receipts uploaded successfully.', true);
             this.paymentResovedModal = false;
             this.reFetchData();
         } else if (type === "replaceInvoice") {
@@ -994,6 +1387,9 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Auxiliary Name for ' + this.selectedRowItem.InvoiceNumber + ' ' + ' updated sucessfully.', true);
             this.formSubmit.isSubmit = false;
             this.submitBtn.isClicked = false;
+            this.reFetchData();
+        } else if(type === 'Detag Project') {
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, this.selectedRowItem.ProjectCode + ' ' + ' Detached successfully from ' + this.parentData.InvoiceNumber , true);
             this.reFetchData();
         }
 
@@ -1102,6 +1498,42 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
 
     }
 
+    sentToAP() {
+        if (this.selectedRowData.length) {
+            const filterData = this.selectedRowData.filter(e=> e.InvoiceStatus !== 'Generated');
+            if(!filterData.length) {
+                this.sentToAPModal = true;
+            } else {
+                this.commonService.showToastrMessage(this.constantService.MessageType.info, 'Please select only those Row Item whose Invoices is Generated. ', false);
+            }
+        } else {
+            this.isPSInnerLoaderHidden = true;
+            this.submitBtn.isClicked = false;
+            this.sentToAPModal = false;
+            this.commonService.showToastrMessage(this.constantService.MessageType.info, 'Please select one of Row Item & try again.', false);
+        }
+    }
 
+    uploadReceipts() {
+        if (this.selectedRowData.length) {
+            const filterData = this.selectedRowData.filter(e=> e.InvoiceStatus !== 'Sent to AP');
+            const cle = this.selectedRowData[0].ClientLegalEntity;
+            const cleCheck = this.selectedRowData.filter(c=> c.ClientLegalEntity !== cle ); 
+            if(!filterData.length && !cleCheck.length) {
+                this.paymentResovedModal = true;
+            } else {
+                if(cleCheck.length) {
+                    this.commonService.showToastrMessage(this.constantService.MessageType.info, 'Please select only those Row Item whose Client is Similar. ', false);
+                } else {
+                    this.commonService.showToastrMessage(this.constantService.MessageType.info, 'Please select only those Row Item whose Invoices is Sent to AP. ', false);
+                }
+            }
+        } else {
+            this.isPSInnerLoaderHidden = true;
+            this.submitBtn.isClicked = false;
+            this.paymentResovedModal = false;
+            this.commonService.showToastrMessage(this.constantService.MessageType.info, 'Please select one of Row Item & try again.', false);
+        }
+    }
 
 }

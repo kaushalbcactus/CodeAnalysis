@@ -269,8 +269,8 @@ export class CsFinanceAuditDialogComponent implements OnInit {
       let dbInvoiceLineItems = [];
       let dbExpenseLineItems = [];
       if (dbExpenseInvoiceArray) {
-        dbInvoiceLineItems = [].concat(...dbExpenseInvoiceArray.filter(c => c.listName === 'InvoiceLineItems').map(c => c.retItems));
-        dbExpenseLineItems = [].concat(...dbExpenseInvoiceArray.filter(c => c.listName === 'SpendingInfo').map(c => c.retItems));
+        dbInvoiceLineItems = [].concat(...dbExpenseInvoiceArray.filter(c => c.listName === this.constants.listNames.InvoiceLineItems.name).map(c => c.retItems));
+        dbExpenseLineItems = [].concat(...dbExpenseInvoiceArray.filter(c => c.listName === this.constants.listNames.SpendingInfo.name).map(c => c.retItems));
       }
 
       let UniqueInvalidInvoices = [];
@@ -297,7 +297,7 @@ export class CsFinanceAuditDialogComponent implements OnInit {
       const errorMessage = [];
       if (UniqueInvalidExpenses.length > 0 || UniqueInvalidInvoices.length > 0) {
         if (UniqueInvalidInvoices.length > 0) {
-          this.commonService.showToastrMessage(this.constants.MessageType.error,UniqueInvalidInvoices.join(', ') + ' line items are not invoiced.',true);
+          this.commonService.showToastrMessage(this.constants.MessageType.error, UniqueInvalidInvoices.join(', ') + ' line items are not invoiced.',true);
         }
 
         if (UniqueInvalidExpenses.length > 0) {

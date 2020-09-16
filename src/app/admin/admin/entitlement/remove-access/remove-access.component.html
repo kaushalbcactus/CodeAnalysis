@@ -24,7 +24,7 @@
                 </div>
             </div>
             <div class="p-col-4">
-                <button type="button" pButton [disabled]="isSearchButtonDisabled" icon="pi pi-search" id="searchId" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" label="Search" class="adminBtn" (click)="searchAcess()"></button>
+                <button type="button" pButton [disabled]="isSearchButtonDisabled" icon="pi pi-search" id="searchId" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" label="Search" class="adminBtn" (click)="searchAccess()"></button>
                 <button type="button" pButton [disabled]="isRemoveButtonDisabled" icon="pi pi-minus" id="removeAccessId" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" label="Remove Access" class="adminBtn" (click)="removeUsers()"></button>
                 <button type="button" pButton [disabled]="isRefreshButtonDisabled" icon="pi pi-refresh" id="refreshId" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" label="Refresh" class="adminBtn" (click)="refresh()"></button>
             </div>
@@ -262,8 +262,5 @@
     </p-overlayPanel>
 </div>
 <div *ngIf="adminObject.isMainLoaderHidden && tableDataArray.length == 0 && !isRuleTable" style=" color:red;text-align: center;padding-top: 20px;">
-    No data available.
-</div>
-<div *ngIf="adminObject.isMainLoaderHidden && ruleTableArray.length == 0 && isRuleTable" style=" color:red;text-align: center;padding-top: 20px;">
     No data available.
 </div>

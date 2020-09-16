@@ -3,7 +3,7 @@
     <ng-template pTemplate="header" let-columns>
         <tr>
             <th>Sr No.</th>
-            <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+            <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
                 {{ col.header }}
                 <p-sortIcon *ngIf="col.field" [field]="col.field"></p-sortIcon>
             </th>
@@ -81,7 +81,7 @@
     <ng-template pTemplate="header" let-columns>
         <tr>
             <th>Sr No.</th>
-            <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+            <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
                 {{ col.header }}
                 <p-sortIcon *ngIf="col.field" [field]="col.field"></p-sortIcon>
             </th>
@@ -89,6 +89,8 @@
         <tr>
             <th></th>
             <th *ngFor="let col of columns" [hidden]="!col.visibility" [ngSwitch]="col.field">
+            <p-multiSelect *ngSwitchCase="'InternalReviewStartDate'" [style]="{'width':'100%'}" [options]="this.SOWBudgetFilters.InternalReviewStartDate" defaultLabel="Approval Date" (onChange)="SowBudgetTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+            filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
             <p-multiSelect *ngSwitchCase="'Status'" [style]="{'width':'100%'}" [options]="this.SOWBudgetFilters.Status" defaultLabel="Status" (onChange)="SowBudgetTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
             filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
             <p-multiSelect *ngSwitchCase="'TotalBudget'" [style]="{'width':'100%'}" [options]="this.SOWBudgetFilters.TotalBudget" defaultLabel="Total Budget" (onChange)="SowBudgetTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
@@ -107,8 +109,8 @@
                 filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
             <p-multiSelect *ngSwitchCase="'AddendumTaxBudget'" [style]="{'width':'100%'}" [options]="this.SOWBudgetFilters.AddendumTaxBudget" defaultLabel="Addendum Tax Budget" (onChange)="SowBudgetTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
                 filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-            <p-multiSelect *ngSwitchCase="'Currency'" [style]="{'width':'100%'}" [options]="this.SOWBudgetFilters.Currency" defaultLabel="Currency" (onChange)="SowBudgetTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+            <!-- <p-multiSelect *ngSwitchCase="'Currency'" [style]="{'width':'100%'}" [options]="this.SOWBudgetFilters.Currency" defaultLabel="Currency" (onChange)="SowBudgetTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect> -->
             </th>
         </tr>
     </ng-template>
@@ -117,7 +119,15 @@
             <td>
                 {{ rowIndex+1 }}
             </td>
-            <td>
+            <td *ngFor="let col of columns" [hidden]="!col.visibility">
+                <ng-container *ngIf="col.field == 'InternalReviewStartDate'">
+                    {{ rowData[col.field] | date:'MMM dd, yyyy'}}
+                </ng-container>
+                <ng-container *ngIf="col.field && col.field !== 'InternalReviewStartDate'">
+                    {{rowData[col.field]}}
+                </ng-container>
+            </td>
+            <!-- <td>
                 {{rowData.Status}}
             </td>
             <td>
@@ -143,10 +153,10 @@
             </td>
             <td>
                 {{rowData.AddendumTaxBudget}}
-            </td>
-            <td>
+            </td> -->
+            <!-- <td>
                 {{rowData.Currency}}
-            </td>
+            </td> -->
         </tr>
     </ng-template>
     <ng-template pTemplate="emptymessage" let-columns>

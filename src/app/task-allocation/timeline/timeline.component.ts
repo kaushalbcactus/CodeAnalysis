@@ -4106,7 +4106,7 @@ export class TimelineComponent
         return node.AssignedTo && node.AssignedTo.ID === objt.UserNamePG.ID;
       }
     );
-    const isValid = this.validateTaskDuration([node]);
+    const isValid = this.validateTask([node]);
     if (isValid) {
       await this.startDateChanged(node, type);
       // let time: any = this.commonService.getHrsAndMins(
@@ -6425,7 +6425,7 @@ export class TimelineComponent
         );
         return false;
       }
-      return this.validateTaskDuration(validateDates);
+      return this.validateTask(validateDates);
       if (milestone.data.status === "In Progress") {
         const zeroItem =
           milestone.children && milestone.children.length
@@ -6793,7 +6793,12 @@ export class TimelineComponent
       });
       newTasks = this.taskAllocateCommonService.getTasksFromMilestones(subMile, true, this.milestoneData, false);
       newTasks = newTasks.filter(c => c.itemType !== "Client Review");
-      previousTasks = previousTasks.filter(c => c.itemType !== "Client Review");
+      if(previousTasks && previousTasks.length) {
+
+        previousTasks = previousTasks.filter(c => c.itemType !== "Client Review");
+      } else {
+        previousTasks = [];
+      }
       // const isLastSubMilestone = +subMile.position === currentMilSubmil.length ? true : false;
       // if(!isLastSubMilestone) {
       // }
@@ -7426,17 +7431,8 @@ export class TimelineComponent
     this.dailyAllocateOP.hideOverlay();
   }
 
-  validateTaskDuration(nodes): boolean {
-    let errorMsgs = '';
-    for (const node of nodes) {
-      const startDate = node.pUserStart;
-      const endDate = node.pUserEnd;
-      const taskName = node.title;
-      const workingDays = this.commonService.calcBusinessDays(startDate, endDate);
-      if (workingDays > 50) {
-        errorMsgs = errorMsgs + 'Task \'' + taskName + '\' duration is ' + workingDays + ' days. Please select dates within 50 working days.\n';
-      }
-    }
+  validateTask(nodes): boolean {
+    const errorMsgs = this.commonService.validateTaskDuration(nodes, 50);
     if (errorMsgs) {
       this.commonService.showToastrMessage(this.constants.MessageType.error, errorMsgs, true);
       return false;

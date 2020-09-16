@@ -266,7 +266,7 @@ export class PMCommonService {
 
   async getUserProperties(): Promise<any> {
     if (this.pmObject.projectContactsItems.length === 0) {
-      this.commonService.SetNewrelic('Project-Management', 'pmcommon', 'getUserInfo');
+      this.commonService.SetNewrelic('projectManagment', 'pmcommon', 'getUserInfo');
       const userProp = await this.spServices.getUserInfo(this.globalObject.currentUser.userId);
       this.pmObject.currLoginInfo = userProp;
       if (userProp && userProp.Groups && userProp.Groups.results && userProp.Groups.results.length) {
@@ -829,7 +829,7 @@ export class PMCommonService {
   getIds(array) {
     const tempArray = [];
     array.forEach(element => {
-      if(element && element.ID) {
+      if (element && element.ID) {
         tempArray.push(element.ID);
       }
     });
@@ -1311,7 +1311,7 @@ export class PMCommonService {
           AddressType: element.address,
           Template: billingEntity && billingEntity.length ? billingEntity[0].InvoiceTemplate : '',
           SOWCode: addObj.SOWSelect.SOWCode,
-          CSId: {
+          AccessId: {
             results: CSIdArray
           },
         };
@@ -1842,7 +1842,8 @@ export class PMCommonService {
       data.NextTasks = milestoneTask.NextTasks;
       data.PrevTasks = milestoneTask.PrevTasks;
     }
-    if (milestoneTask.Skill === 'Editor' || milestoneTask.Skill === 'QC' || milestoneTask.Skill === 'Graphics') {
+    if (milestoneTask.Skill === 'Pub Support' ||
+      milestoneTask.Skill === 'Editor' || milestoneTask.Skill === 'QC' || milestoneTask.Skill === 'Graphics') {
       data.IsCentrallyAllocated = 'Yes';
       data.ContentTypeCH = this.constant.CONTENT_TYPE.SLOT;
     } else {

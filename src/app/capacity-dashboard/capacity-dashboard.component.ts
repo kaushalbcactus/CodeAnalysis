@@ -476,7 +476,7 @@ export class CapacityDashboardComponent implements OnInit {
         };
         console.log(blockResource);
         this.commonService.SetNewrelic(
-          "capacity-dashboard",
+          "CapacityDashboard",
           "blockResource",
           "CreateblockResource"
         );

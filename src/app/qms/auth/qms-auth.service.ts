@@ -58,7 +58,7 @@ export class QmsAuthService {
     batchUrl = [...batchUrl, ...this.getCurrentResourceGroups()];
     // 5th Batch Request
 
-    this.common.SetNewrelic('QMSAuth', 'qms-auth', 'GetReviewPendingTasksAndCurrentUserInfo');
+    this.common.SetNewrelic('QMS', 'qms-auth', 'GetReviewPendingTasksAndCurrentUserInfo');
     let result = await this.spService.executeBatch(batchUrl);
     result = result.length > 0 ? result : [];
     this.global.allResources = result[0].retItems.length ? result[0].retItems : [];

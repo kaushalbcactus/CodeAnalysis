@@ -385,7 +385,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
           // uploadedfile[0].hasOwnProperty('odata.error')
 
           this.getFileAndFolderName();
-          this.commonService.SetNewrelic('ProjectManagement', 'projectmanagement-CreateSOW', 'uploadFile');
+          this.commonService.SetNewrelic('projectManagment', 'projectmanagement-CreateSOW', 'uploadFile');
           this.commonService.UploadFilesProgress(this.SelectedFile, this.FolderName, true).then(async uploadedfile => {
             this.pmObject.isMainLoaderHidden = false;
             if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {

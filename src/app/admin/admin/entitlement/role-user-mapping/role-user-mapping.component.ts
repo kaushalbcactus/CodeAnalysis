@@ -144,7 +144,7 @@ export class RoleUserMappingComponent implements OnInit {
     this.common.clearToastrMessage()
     this.adminObject.isMainLoaderHidden = false;
     const groupName = this.selectedGroup;
-    this.common.SetNewrelic('Admin', 'entitlement-role-user-mapping', 'readGroupUsers');
+    this.common.SetNewrelic('admin', 'entitlement-role-user-mapping', 'readGroupUsers');
     const usersArrayResult = await this.spServices.readGroupUsers(groupName, null);
     if (usersArrayResult && usersArrayResult.length) {
       console.log(usersArrayResult);

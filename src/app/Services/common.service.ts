@@ -461,7 +461,7 @@ export class CommonService {
   }
 
   async checkTaskStatus(task) {
-    this.SetNewrelic('Service', 'Common-Service', 'readItem');
+    this.SetNewrelic('Services', 'Common-Service', 'readItem');
     const currentTask = await this.spServices.readItem(this.constants.listNames.Schedules.name, task.ID);
     let isActionRequired: boolean;
     if (currentTask) {
@@ -1150,5 +1150,21 @@ export class CommonService {
       }
     });
     return dayTimeSpent;
+  }
+
+  validateTaskDuration(nodes, days: number): string {
+    let errorMsgs = '';
+    for (const node of nodes) {
+      const startDate = node.pUserStart;
+      const endDate = node.pUserEnd;
+      const taskName = node.title;
+      const workingDays = this.calcBusinessDays(startDate, endDate);
+      if (workingDays > days) {
+        errorMsgs = taskName ?
+        errorMsgs + 'Task \'' + taskName + '\' duration is ' + workingDays + ' days. Please select dates within 50 working days.\n' :
+        errorMsgs + 'FTE Task duration is ' + workingDays + ' days. Please select dates within 50 working days.\n';
+      }
+    }
+    return errorMsgs;
   }
 }

@@ -684,11 +684,11 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             }
             this.commonService.confirmMessageDialog('Confirmation', ' Are you sure that you want to revert the invoice of ' + this.selectedRowItem.ProjectCode + ' from confirmed to scheduled status?', additionalMessage, ['Yes', 'No'], false).then(async Confirmation => {
                 if (Confirmation === 'Yes') {
-                    this.commonService.showToastrMessage(this.constantService.MessageType.info, 'You have Confirmed', false);
+                    // this.commonService.showToastrMessage(this.constantService.MessageType.info, 'You have Confirmed', false);
                     this.onSubmit('revertInvoice');
                 }
                 else if (Confirmation === 'No') {
-                    this.commonService.showToastrMessage(this.constantService.MessageType.info, 'You have Cancelled.', false);
+                    // this.commonService.showToastrMessage(this.constantService.MessageType.info, 'You have Cancelled.', false);
                 }
             });
         } else if (this.confirmDialog.title.toLowerCase() === 'show history') {
