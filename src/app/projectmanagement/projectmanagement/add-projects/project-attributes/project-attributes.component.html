@@ -22,7 +22,7 @@
             </div>
             <div class="ui-grid-col-2">Sub-Division</div>
             <div class="ui-grid-col-4">
-                <p-dropdown formControlName="subDivision" [options]="subDivisionArray" placeholder="Please Select" [showClear]="true"></p-dropdown>
+                <p-dropdown formControlName="subDivision" [options]="subDivisionArray" placeholder="Please Select" [showClear]="true" (onChange)="GetRulesOnChange()"></p-dropdown>
             </div>
         </div>
         <div class="ui-grid-row mt-20">
@@ -119,7 +119,7 @@
                     CM1 is required</div>
             </div>
             <div class="ui-grid-col-3">
-                <p-dropdown [options]="cmLevel2" formControlName="selectedActiveCM2" [filter]="true" [showClear]="true" placeholder="Please Select" resetFilterOnHide="true"></p-dropdown>
+                <p-dropdown [options]="cmLevel2" formControlName="selectedActiveCM2" [filter]="true" [showClear]="true" placeholder="Please Select" [disabled]=t rue resetFilterOnHide="true"></p-dropdown>
                 <div class="error" *ngIf="!addProjectAttributesForm.controls['selectedActiveCM2'].valid&&addProjectAttributesForm.controls['selectedActiveCM2'].touched">
                     CM2 is required</div>
             </div>
@@ -130,7 +130,7 @@
                 <p-multiSelect [options]="deliveryLevel1" formControlName="selectedActiveAD1" [filter]="true" defaultLabel="Please Select" resetFilterOnHide="true"></p-multiSelect>
             </div>
             <div class="ui-grid-col-3">
-                <p-dropdown [options]="deliveryLevel2" formControlName="selectedActiveAD2" [filter]="true" [showClear]="true" placeholder="Please Select" resetFilterOnHide="true"></p-dropdown>
+                <p-dropdown [options]="deliveryLevel2" formControlName="selectedActiveAD2" [filter]="true" [showClear]="true" placeholder="Please Select" resetFilterOnHide="true" [disabled]=t rue></p-dropdown>
                 <div class="error" *ngIf="!addProjectAttributesForm.controls['selectedActiveAD2'].valid&&addProjectAttributesForm.controls['selectedActiveAD2'].touched">
                     Active Delivery 2 is required</div>
             </div>

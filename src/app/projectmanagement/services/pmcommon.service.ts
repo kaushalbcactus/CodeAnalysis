@@ -2013,6 +2013,23 @@ export class PMCommonService {
   }
 
 
+  FilterRules(projectForm){
+    
+    let FilterRules =[];
+    let TempArray=[];
+    this.pmObject.RuleParamterArray.forEach(element => {
+      if(projectForm.get(element.value) && projectForm.get(element.value).value){
+        FilterRules.push.apply(FilterRules,this.pmObject.RuleArray.filter(c=> c.DisplayRules.filter(c=> c.DisplayName === element.label && c.Value === projectForm.get(element.value).value).length> 0)) 
+        TempArray.push(projectForm.get(element.value).value);
+      }
+    });
+    TempArray.sort();
+    FilterRules = [...new Set(FilterRules)];
+    this.pmObject.ProjetcRuleArray = FilterRules.filter(c=> c.DisplayRules.map(d=>d.Value).sort().filter(e=> !TempArray.includes(e)).length ===0 );
+    this.pmObject.ProjetcRuleArray.sort((a,b) => b.DisplayOrder - a.DisplayOrder);   
+  }
+
+
 
 
 

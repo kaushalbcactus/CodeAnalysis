@@ -10,14 +10,15 @@ import { CommonService } from "src/app/Services/common.service";
 import { ConstantsService } from "src/app/Services/constants.service";
 import { FormBuilder } from "@angular/forms";
 import { AddAccessService } from "../service/add-access.service";
-import { GlobalService } from "src/app/Services/global.service";
-import { OverlayPanel } from "primeng";
+import { OverlayPanel, DialogService } from "primeng";
+import { EditRuleUserComponent } from "../edit-rule-user/edit-rule-user.component";
 
 @Component({
   selector: "app-project-access",
   templateUrl: "./project-access.component.html",
   styleUrls: ["./project-access.component.css"],
   encapsulation: ViewEncapsulation.None,
+  providers: [DialogService],
 })
 export class ProjectAccessComponent implements OnInit {
   @ViewChild("showRuleDetails", { static: false }) panel: OverlayPanel;
@@ -30,6 +31,7 @@ export class ProjectAccessComponent implements OnInit {
     DELIVERYTYPE: [],
     RULES: [],
     DBRULES: [],
+    TEMPRULES: [],
     RULEPARAMETERS: [],
     RULEPARAMETERSDISPLAY: [],
     RESOURCECATEGORIZATION: [],
@@ -49,13 +51,27 @@ export class ProjectAccessComponent implements OnInit {
   loaderenable: boolean = true;
   subloaderenable: boolean = true;
   searchRulesForm = this.fb.group({
-    practiceArea: [""],
-    cle: [""],
-    subDivision: [""],
-    deliveryType: [""],
+    practiceArea:  [],
+    cle:  [],
+    subDivision:   [],
+    deliveryType:  [],
   });
 
-  AccessType = [
+  FilterArrayObj =[ { label: "Practice Area", value: "practiceArea" },
+  { label: "Client", value: "cle" },
+  { label: "Client Subdivision", value: "subDivision" },
+  { label: "Deliverable Type", value: "deliveryType" },
+]
+
+  AddAccessType = [
+    {
+      label: this.constant.RulesType.DELIVERY,
+      value: this.constant.RulesType.DELIVERY,
+    },
+    { label: this.constant.RulesType.CM, value: this.constant.RulesType.CM },
+  ];
+  ViewAccessType = [
+    { label: "All", value: "All" },
     {
       label: this.constant.RulesType.DELIVERY,
       value: this.constant.RulesType.DELIVERY,
@@ -63,14 +79,15 @@ export class ProjectAccessComponent implements OnInit {
     { label: this.constant.RulesType.CM, value: this.constant.RulesType.CM },
   ];
   headerName: string = "";
-  selectedAccessType: string = this.AccessType[0].value;
+  selectedAccessType: string = this.AddAccessType[0].value;
+  selectedViewAccessType: string = this.ViewAccessType[0].value;
   PanelDetails: any;
   constructor(
     public common: CommonService,
     private constant: ConstantsService,
     public fb: FormBuilder,
     public addAccessService: AddAccessService,
-    private globalObject: GlobalService
+    public dialogService: DialogService
   ) {}
 
   ngOnInit() {
@@ -102,10 +119,7 @@ export class ProjectAccessComponent implements OnInit {
     this.addAccessService.getPrametersDropdownData(
       this.filterData.RULEPARAMETERS
     );
-
-    console.log("filterData");
-
-    console.log(this.filterData);
+    this.filterRules();
   }
 
   dragStart(event, option) {
@@ -113,6 +127,11 @@ export class ProjectAccessComponent implements OnInit {
   }
 
   drop(event) {
+    if(this.selectedOption.length === 0 &&  this.filterData[this.selectedAccessType.toUpperCase()].length > 0){
+      this.filterData[this.selectedAccessType.toUpperCase()].map(c=>c.selectedValue='');
+    }
+
+
     if (this.draggedOption) {
       if (
         !this.selectedOption.find((c) => c.label === this.draggedOption.value)
@@ -128,12 +147,14 @@ export class ProjectAccessComponent implements OnInit {
               ? selectedOpt.dbRecords.map(
                   (o) =>
                     new Object({
-                      label: o["Title"],
-                      value: o["Title"],
+                      label: o[selectedOpt.NameST],
+                      value: o[selectedOpt.NameST],
                     })
                 )
               : [],
           selectedValue: "",
+          InternalName: selectedOpt.InternalName,
+          NameST: selectedOpt.NameST,
         };
 
         this.selectedOption = [...this.selectedOption, draggedObj];
@@ -158,7 +179,7 @@ export class ProjectAccessComponent implements OnInit {
           (this.selectedAccessType === this.constant.RulesType.CM &&
             this.filterData.CM.length === 0)
         ) {
-          this.GetAccessData();
+          this.GetAccessData(this.selectedAccessType);
         }
       }
 
@@ -166,15 +187,14 @@ export class ProjectAccessComponent implements OnInit {
     }
   }
 
-  GetAccessData() {
+  GetAccessData(RuleType) {
     for (var i = 0; i < 2; i++) {
-      debugger;
       const data = {
         label: i === 0 ? "ownerShip" : "accessUsers",
         selectedValue: "",
         values:
           i === 0
-            ? this.constant.RulesType.DELIVERY === this.selectedAccessType
+            ? this.constant.RulesType.DELIVERY === RuleType
               ? this.filterData.RESOURCECATEGORIZATION.filter(
                   (c) => c.RoleCH === this.constant.RoleType.DELIVERY2
                 ).map(
@@ -195,7 +215,7 @@ export class ProjectAccessComponent implements OnInit {
                       Id: o.UserNamePG.ID,
                     })
                 )
-            : this.constant.RulesType.DELIVERY === this.selectedAccessType
+            : this.constant.RulesType.DELIVERY === RuleType
             ? this.filterData.RESOURCECATEGORIZATION.filter(
                 (c) => c.RoleCH === this.constant.RoleType.DELIVERY1
               ).map(
@@ -217,7 +237,7 @@ export class ProjectAccessComponent implements OnInit {
                   })
               ),
       };
-      this.selectedAccessType === this.constant.RulesType.DELIVERY
+      RuleType === this.constant.RulesType.DELIVERY
         ? this.filterData.DELIVERY.push(data)
         : this.filterData.CM.push(data);
     }
@@ -245,12 +265,19 @@ export class ProjectAccessComponent implements OnInit {
   }
 
   onSubmit() {
-    this.index = 1;
+  this.index = -1;
+    this.filterRules();
+    setTimeout(() => {
+      this.index = 1;
+    }, 200);
+   
   }
 
   resetProjectFilters() {
-    this.index = -1;
+    this.index = 1;
     this.searchRulesForm.reset();
+    this.selectedViewAccessType = this.ViewAccessType[0].value;
+    this.filterRules();
   }
 
   CheckDataOnAccessType() {
@@ -261,7 +288,7 @@ export class ProjectAccessComponent implements OnInit {
         (this.selectedAccessType === this.constant.RulesType.CM &&
           this.filterData.CM.length === 0)
       ) {
-        this.GetAccessData();
+        this.GetAccessData(this.selectedAccessType);
       }
     }
   }
@@ -290,8 +317,8 @@ export class ProjectAccessComponent implements OnInit {
               .map(
                 (o) =>
                   new Object({
-                    label: o["Title"],
-                    value: o["Title"],
+                    label: o[value.NameST],
+                    value: o[value.NameST],
                   })
               )
           : [];
@@ -300,7 +327,6 @@ export class ProjectAccessComponent implements OnInit {
   }
 
   addRule() {
-    console.log(this.selectedOption);
     const unSelectedValue = this.selectedOption.find(
       (c) => c.selectedValue === ""
     );
@@ -334,9 +360,9 @@ export class ProjectAccessComponent implements OnInit {
       this.selectedOption.forEach((element) => {
         const obj = {
           DisplayName: element.label,
-          InternalName: element.InternalName,
+          InternalName: element.InternalName.split(":")[1],
           Value: element.selectedValue,
-          RefObject: "Current",
+          RefObject: element.InternalName.split(":")[0],
         };
         ruleArray.push(obj);
       });
@@ -369,10 +395,25 @@ export class ProjectAccessComponent implements OnInit {
             : {},
         DisplayRules: ruleArray,
         Rule: JSON.stringify(ruleArray),
+        DisplayOrder:
+          Math.max.apply(
+            null,
+            this.filterData.RULES.map((c) => c.DisplayOrder)
+          ) + 1,
       };
 
-      console.log(RuleObj);
-      this.filterData.RULES.push(RuleObj);
+      if(this.filterData.RULES.find((c) => RuleObj.DisplayRules.map(d=>d.Value).sort().join(',') === c.DisplayRules.map(d=>d.Value).sort().join(','))) {
+        this.common.showToastrMessage(
+          this.constant.MessageType.warn,
+          "Unable to add rule, rule already exist.",
+          false,
+          false
+        );
+        return false;
+      } else {
+        this.reArrangeRules(RuleObj);
+      }
+
       this.selectedAccessType = this.constant.RulesType.DELIVERY;
       this.selectedOption = [];
       this.filterData.CM = [];
@@ -384,19 +425,149 @@ export class ProjectAccessComponent implements OnInit {
         false,
         false
       );
-
     }
   }
-  RemoveRule(rowData) {
-    if (rowData.RuleType === "existing") {
-      rowData.IsActiveCH = rowData.IsActiveCH === "Yes" ? "No" : "Yes";
-      rowData.edited = rowData.IsActiveCH === "Yes" ? false : true;
+
+  reArrangeRules(RuleObj) {
+    if (this.filterData.RULES.length > 0) {
+
+      let listArray = this.filterData.RULES.filter(
+        (c) => c.DisplayRules[0].Value === RuleObj.DisplayRules[0].Value
+      );
+      let index = -1;
+      if( this.filterData.RULES.find((c) => c.DisplayRules.length >= RuleObj.DisplayRules.length)){
+        index =  this.filterData.RULES.indexOf(this.filterData.RULES.find(
+          (c) => c.DisplayRules[0].Value === RuleObj.DisplayRules[0].Value
+        ));
+      }
+      this.filterData.RULES = [
+        ...this.filterData.RULES.filter(
+          (c) => c.DisplayRules[0].Value !== RuleObj.DisplayRules[0].Value
+        ),
+      ];
+      listArray = [...this.InsertObjAtPosition(listArray, RuleObj)];
+      for (var i = listArray.length - 1; i >= 0; i--) {
+        this.filterData.RULES.splice(index > -1 ? index : 0, 0, listArray[i]);
+      }
     } else {
-      const  index = this.filterData.RULES.indexOf(rowData) 
-      if(index> -1){
-        this.filterData.RULES.splice(index, 1);
+      this.filterData.RULES.splice(0, 0, RuleObj);
+    }
+    this.filterData.RULES = [...this.filterData.RULES];
+    this.filterRules();
+  }
+
+  InsertObjAtPosition(RULES, RuleObj) {
+    if (RULES.find((c) => c.DisplayRules.length >= RuleObj.DisplayRules.length)) {
+      let index =RULES.indexOf(RULES.find((c) => c.DisplayRules.length === RuleObj.DisplayRules.length))
+      if(index > -1){
+        RULES.splice(index, 0, RuleObj);
+      }
+      else{
+        RULES.push(RuleObj);
+      }
+    } else {
+      RULES.splice(0, 0, RuleObj);
+    }
+    return RULES;
+  }
+
+  // reArrangeRules(RuleObj) {
+  //   if (this.filterData.RULES.length > 0) {
+  //     if (
+  //       this.filterData.RULES.find(
+  //         (c) => c.DisplayRules.length >= RuleObj.DisplayRules.length
+  //       )
+  //     ) {
+  //       this.filterData.RULES = [
+  //         ...this.InsertObjAtPosition(this.filterData.RULES, RuleObj),
+  //       ];
+  //     } else {
+  //       let listArray = this.filterData.RULES.filter(
+  //         (c) => c.DisplayRules[0].Value === RuleObj.DisplayRules[0].Value
+  //       );
+  //       this.filterData.RULES = [
+  //         ...this.filterData.RULES.filter(
+  //           (c) => c.DisplayRules[0].Value !== RuleObj.DisplayRules[0].Value
+  //         ),
+  //       ];
+  //       listArray = [...this.InsertObjAtPosition(listArray, RuleObj)];
+  //       this.filterData.RULES = [...listArray, ...this.filterData.RULES];
+  //     }
+  //   } else {
+  //     this.filterData.RULES.splice(0, 0, RuleObj);
+  //   }
+  //   this.filterData.RULES = [...this.filterData.RULES];
+  //   this.filterRules();
+  // }
+
+  // InsertObjAtPosition(RULES, RuleObj) {
+  //   if (
+  //     RULES.find((c) => c.DisplayRules.length >= RuleObj.DisplayRules.length)
+  //   ) {
+  //     for (let i = 0; i < RULES.length; i++) {
+  //       const existName = RULES[i - 1]
+  //         ? RULES[i - 1].DisplayRules[0].Value
+  //         : "";
+  //       if (i > 0) {
+  //         if (
+  //           RULES[i].DisplayRules[0].Value !== existName ||
+  //           RULES[i].DisplayRules[0].Value === RuleObj.DisplayRules[0].Value
+  //         ) {
+  //           if (RuleObj.DisplayRules.length >= RULES[i].DisplayRules.length) {
+  //             RULES.splice(i, 0, RuleObj);
+  //             break;
+  //           }
+  //         }
+  //       }
+  //     }
+  //     const isPresent = RULES.find((c) => c === RuleObj) ? true : false;
+  //     if (!isPresent) {
+  //       RULES.push(RuleObj);
+  //     }
+  //   } else {
+  //     RULES.splice(0, 0, RuleObj);
+  //   }
+  //   return RULES;
+  // }
+
+  // Remove Rule code
+  RemoveRule(rowData) {
+    this.common.clearToastrMessage();
+    if (rowData.RuleType === "existing") {
+      this.filterData.RULES.find((c) => c.ID === rowData.ID).IsActiveCH =
+        this.filterData.RULES.find((c) => c.ID === rowData.ID).IsActiveCH ===
+        "Yes"
+          ? "No"
+          : "Yes";
+      rowData.IsActiveCH = rowData.IsActiveCH === "Yes" ? "No" : "Yes";
+      this.common.showToastrMessage(
+        this.constant.MessageType.success,
+        rowData.IsActiveCH === "Yes"
+          ? "Rule recover sucessfully."
+          : "Rule deleted sucessfully, Please click on recover icon to recover rule.",
+        false,
+        false
+      );
+    } else {
+      const index = this.filterData.TEMPRULES.indexOf(rowData);
+      if (index > -1) {
+        this.filterData.TEMPRULES.splice(index, 1);
+        this.filterData.RULES.splice(
+          this.filterData.RULES.indexOf(
+            this.filterData.RULES.find((c) => c.ID === rowData.ID)
+          ),
+          1
+        );
+        this.common.showToastrMessage(
+          this.constant.MessageType.success,
+          "New added rule deleted sucessfully.",
+          false,
+          false
+        );
       }
     }
+    this.filterData.RULES = [...this.filterData.RULES];
+    this.filterRules();
   }
 
   // display data on i icon click
@@ -414,6 +585,138 @@ export class ProjectAccessComponent implements OnInit {
             : [],
       };
     }, 100);
-   
+  }
+
+  //to edit rule user :   used dynamic dialog
+  EditRule(dbRule) {
+    if (
+      (dbRule.ResourceType === this.constant.RulesType.DELIVERY &&
+        this.filterData.DELIVERY.length === 0) ||
+      (dbRule.ResourceType === this.constant.RulesType.CM &&
+        this.filterData.CM.length === 0)
+    ) {
+      this.GetAccessData(dbRule.ResourceType);
+    }
+    const ref = this.dialogService.open(EditRuleUserComponent, {
+      header: "Edit " + dbRule.ResourceType + " Rule",
+      closable: false,
+      width: "70vw",
+      contentStyle: { "min-height": "30vh", "overflow-y": "visible" },
+      data: {
+        rule: dbRule,
+        UserAccess:
+          dbRule.ResourceType === this.constant.RulesType.CM
+            ? this.filterData.CM
+            : this.filterData.DELIVERY,
+      },
+    });
+    ref.onClose.subscribe((rule) => {
+      if (rule) {
+        const OwnerPG = this.filterData[dbRule.ResourceType.toUpperCase()].find(
+          (c) => c.label === "ownerShip"
+        );
+        const AccessUsers = this.filterData[
+          dbRule.ResourceType.toUpperCase()
+        ].find((c) => c.label === "accessUsers");
+
+        dbRule.OwnerPG = {
+          ID: OwnerPG.values.find((c) => c.label === OwnerPG.selectedValue).Id,
+          Title: OwnerPG.values.find((c) => c.label === OwnerPG.selectedValue)
+            .value,
+        };
+        dbRule.Access =
+          AccessUsers.selectedValue !== ""
+            ? {
+                results: AccessUsers.values
+                  .filter((c) => AccessUsers.selectedValue.includes(c.label))
+                  .map(
+                    (o) =>
+                      new Object({
+                        ID: o.Id,
+                        Title: o.value,
+                      })
+                  ),
+              }
+            : {};
+        dbRule.edited = dbRule.RuleType === "existing" ? true : false;
+        this.common.showToastrMessage(
+          this.constant.MessageType.success,
+          "Current rule users updated sucessfully.",
+          false,
+          false
+        );
+
+        this.filterData.CM = [];
+        this.filterData.DELIVERY = [];
+        const index = this.filterData.RULES.indexOf(
+          this.filterData.RULES.find((c) => c.ID === dbRule.ID)
+        );
+        if (index > -1) {
+          this.filterData.RULES[index] = dbRule;
+        }
+        this.filterData.RULES = [...this.filterData.RULES];
+        this.filterRules();
+      }
+    });
+  }
+
+  filterRules() {
+    let  AllRules = JSON.parse(JSON.stringify(this.filterData.RULES));
+    if(this.searchRulesForm.value.cle && this.searchRulesForm.value.cle.length > 0  || this.searchRulesForm.value.deliveryType && this.searchRulesForm.value.deliveryType.length > 0   ||  this.searchRulesForm.value.practiceArea && this.searchRulesForm.value.practiceArea.length > 0   || this.searchRulesForm.value.subDivision && this.searchRulesForm.value.subDivision.length > 0) {
+      this.FilterArrayObj.forEach(element => {
+        if(this.searchRulesForm.value[element.value]) {
+          AllRules = AllRules.filter( c=>  c.DisplayRules.filter(d=> d.DisplayName === element.label && this.searchRulesForm.value[element.value].includes(d.Value)).length > 0)   
+       }
+      });
+    }
+    
+    if (
+      this.selectedViewAccessType === this.constant.RulesType.DELIVERY ||
+      this.selectedViewAccessType === this.constant.RulesType.CM
+    ) {
+      this.filterData.TEMPRULES = [
+        ...AllRules.filter(
+          (c) => c.ResourceType === this.selectedViewAccessType
+        ),
+      ];
+    } else {
+      this.filterData.TEMPRULES = [...AllRules];
+    }
+  }
+
+  async SaveRules() {
+    this.loaderenable = true;
+    await this.addAccessService.saveRules(this.filterData.RULES);
+    this.common.showToastrMessage(
+      this.constant.MessageType.success,
+      "Rules added / updated sucessfully.",
+      false
+    );
+
+    this.getDataOnLoad(this.RuleType, this.filterData);
+  }
+
+
+  onRowReorder(event){
+    let dragMainIndex= -1;
+    const DragObj = this.filterData.RULES.find(c=> c.DisplayOrder === this.filterData.TEMPRULES[event.dropIndex].DisplayOrder  && c.ID === this.filterData.TEMPRULES[event.dropIndex].ID);
+    if(DragObj){
+      dragMainIndex = this.filterData.RULES.indexOf(DragObj);
+    }
+    const IndexDropObj = this.filterData.RULES.indexOf(this.filterData.RULES.find(c=> c.DisplayOrder === this.filterData.TEMPRULES[event.dragIndex].DisplayOrder  && c.ID === this.filterData.TEMPRULES[event.dragIndex].ID)); 
+    
+    if (dragMainIndex > -1) {
+      this.filterData.RULES.splice(dragMainIndex, 1);
+
+      if(IndexDropObj > -1){
+        this.filterData.RULES.splice(IndexDropObj,0, DragObj);
+      }
+    }
+  }
+
+
+  removeOption(value){
+debugger;
+    this.selectedOption.splice(this.selectedOption.indexOf(this.selectedOption.find(c=>c === value)),1)
   }
 }

@@ -403,7 +403,7 @@ export class AdminConstantService {
       top: 4900,
     },
     GET_RULES_PARAMETER_BY_ACTIVE: {
-      select: "ID,Title,DisplayName,ListName,Query,Dependency,DisplayOrder",
+      select: "ID,Title,NameST,ListName,Query,Dependency,DisplayOrder,InternalName",
       filter: "IsActiveCH eq '{{isActive}}' and TypeST eq '{{type}}'",
       orderby: "DisplayOrder asc",
       top: 4900,

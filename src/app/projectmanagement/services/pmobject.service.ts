@@ -1,13 +1,11 @@
-import { Injectable } from '@angular/core';
-import { GlobalService } from 'src/app/Services/global.service';
+import { Injectable } from "@angular/core";
+import { GlobalService } from "src/app/Services/global.service";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class PMObjectService {
-  constructor(
-    private globalObject: GlobalService
-  ) { }
+  constructor(private globalObject: GlobalService) {}
   public tabMenuItems: any = [];
   public totalRecords = {
     SendToClient: 0,
@@ -19,7 +17,7 @@ export class PMObjectService {
     SelectSOW: 0,
     activeProject: 0,
     pipelineProject: 0,
-    inActiveProject: 0
+    inActiveProject: 0,
   };
   public loading = {
     SendToClient: false,
@@ -31,7 +29,7 @@ export class PMObjectService {
     SelectSOW: false,
     activeProject: false,
     pipelineProject: false,
-    inActiveProject: false
+    inActiveProject: false,
   };
   public allProjects = {
     activeProjectArray: [],
@@ -39,9 +37,9 @@ export class PMObjectService {
     pipelineProjectArray: [],
     pipelineProjectCopyArray: [],
     inActiveProjectArray: [],
-    inActiveProjectCopyArray: []
+    inActiveProjectCopyArray: [],
   };
-  public yearRange: any = '';
+  public yearRange: any = "";
   public sendToClientArray: any = [];
   // tslint:disable-next-line:variable-name
   public sendToClientArray_copy: any = [];
@@ -71,120 +69,120 @@ export class PMObjectService {
     paCount: 0,
     iapCount: 0,
     allProjectCount: 0,
-    allSOWCount: 0
+    allSOWCount: 0,
   };
   public sendToClient = {
-    ProjectCode: '',
-    ClientLegalEntity: '',
-    POC: '',
-    DeliverableType: '',
+    ProjectCode: "",
+    ClientLegalEntity: "",
+    POC: "",
+    DeliverableType: "",
     DueDate: new Date(),
-    Milestone: '',
-    PreviousTaskUser: '',
-    PreviousTaskStatus: '',
+    Milestone: "",
+    PreviousTaskUser: "",
+    PreviousTaskStatus: "",
     isBlueIndicator: false,
     isRedIndicator: false,
     isGreenIndicator: false,
-    ID: 0
+    ID: 0,
   };
 
   public clientReviewObj = {
-    ProjectCode: '',
-    ClientLegalEntity: '',
-    POC: '',
-    DeliverableType: '',
+    ProjectCode: "",
+    ClientLegalEntity: "",
+    POC: "",
+    DeliverableType: "",
     DueDate: new Date(),
-    Milestone: '',
+    Milestone: "",
     DeliveryDate: new Date(),
     isBlueIndicator: false,
     isRedIndicator: false,
     isGreenIndicator: false,
-    ID: 0
+    ID: 0,
   };
   public paObj = {
     ID: 0,
-    ProjectCode: '',
-    WBJID: '',
-    ClientLegalEntity: '',
-    POC: '',
-    DeliverableType: '',
-    TA: '',
-    Molecule: '',
-    PrimaryResource: '',
-    PrimaryResourceText: '',
-    Milestone: '',
-    Status: ''
+    ProjectCode: "",
+    WBJID: "",
+    ClientLegalEntity: "",
+    POC: "",
+    DeliverableType: "",
+    TA: "",
+    Molecule: "",
+    PrimaryResource: "",
+    PrimaryResourceText: "",
+    Milestone: "",
+    Status: "",
   };
   public allProject = {
-    SLA: '',
-    SOWCode: '',
-    ProjectCode: '',
-    ShortTitle: '',
-    ClientLegalEntity: '',
-    DeliverableType: '',
-    SubDeliverable: '',
-    ProjectType: '',
-    Status: '',
-    CreatedBy: '',
-    CreatedDate: '',
+    SLA: "",
+    SOWCode: "",
+    ProjectCode: "",
+    ShortTitle: "",
+    ClientLegalEntity: "",
+    DeliverableType: "",
+    SubDeliverable: "",
+    ProjectType: "",
+    Status: "",
+    CreatedBy: "",
+    CreatedDate: "",
     isBlueIndicator: false,
     isRedIndicator: false,
     isGreenIndicator: false,
     ID: 0,
     PrimaryPOC: 0,
-    PrimaryPOCText: '',
-    ProjectFolder: '',
+    PrimaryPOCText: "",
+    ProjectFolder: "",
     AuthorId: 0,
-    AuthorTitle: '',
-    SubDivision: '',
-    TA: '',
+    AuthorTitle: "",
+    SubDivision: "",
+    TA: "",
     ProposedStartDate: null,
     ProposedEndDate: null,
     ActualStartDate: null,
     ActualEndDate: null,
-    Description: '',
-    ConferenceJournal: '',
-    Comments: '',
-    PO: '',
-    Milestone: '',
-    Molecule: '',
-    Indication: '',
-    IsPubSupport: '',
-    SOWBoxLink: '',
+    Description: "",
+    ConferenceJournal: "",
+    Comments: "",
+    PO: "",
+    Milestone: "",
+    Molecule: "",
+    Indication: "",
+    IsPubSupport: "",
+    SOWBoxLink: "",
     StandardBudgetHrs: 0,
     CMLevel1ID: [],
     CMLevel1Title: [],
     CMLevel2ID: 0,
-    CMLevel2Title: '',
+    CMLevel2Title: "",
     DeliveryLevel1ID: [],
     DeliveryLevel1Title: [],
     DeliveryLevel2ID: 0,
-    DeliveryLevel2Title: '',
-    BusinessVertical: '',
-    BillingEntity: '',
-    SOWLink: '',
-    PubSupportStatus: '',
-    IsStandard: '',
-    StandardService: '',
-    Priority: '',
-    Authors: '',
-    Title: '',
+    DeliveryLevel2Title: "",
+    BusinessVertical: "",
+    BillingEntity: "",
+    SOWLink: "",
+    PubSupportStatus: "",
+    IsStandard: "",
+    StandardService: "",
+    Priority: "",
+    Authors: "",
+    Title: "",
     AdditionalPOC: [],
-    AdditionalPOCText: '',
+    AdditionalPOCText: "",
   };
   public allSOW = {
-    SOWCode: '',
-    ShortTitle: '',
-    ClientLegalEntity: '',
-    POC: '',
-    CreatedBy: '',
-    CreatedDate: '',
-    ID: 0
+    SOWCode: "",
+    ShortTitle: "",
+    ClientLegalEntity: "",
+    POC: "",
+    CreatedBy: "",
+    CreatedDate: "",
+    ID: 0,
   };
   public selectSOW = {
-    SOWCode: '',
-    ShortTitle: '',
-    SOWOwner: '',
+    SOWCode: "",
+    ShortTitle: "",
+    SOWOwner: "",
     ID: 0,
     TotalBudget: 0,
     NetBudget: 0,
@@ -198,67 +196,66 @@ export class PMObjectService {
     ScheduledRevenue: 0,
     TotalInvoiced: 0,
     InvoicedRevenue: 0,
-    ClientLegalEntity: ''
+    ClientLegalEntity: "",
   };
   public userRights = {
     isMangers: false,
     isHaveProjectFullAccess: false,
     isHaveSOWFullAccess: false,
     isHaveSOWBudgetManager: false,
-    isInvoiceTeam: false
+    isInvoiceTeam: false,
   };
   public isMainLoaderHidden = true;
   public activeIndex = 0;
   public isStandardChecked = true;
   public addProject = {
     SOWSelect: {
-      GlobalFilterValue: '',
-      GlobalFilterEvent: '',
-      SOWCode: '',
+      GlobalFilterValue: "",
+      GlobalFilterEvent: "",
+      SOWCode: "",
       SOWSelectedItem: {},
       sowTotalBalance: 0,
-      sowNetBalance: 0
+      sowNetBalance: 0,
     },
     ProjectAttributes: {
       ID: 0,
-      ClientLegalEntity: '',
-      SubDivision: '',
-      BillingEntity: '',
-      BilledBy: '',
-      PracticeArea: '',
-      Priority: '',
-      ProjectCode: '',
-      ProjectStatus: '',
-      PointOfContact1: '',
-      PointOfContact1Text: '',
+      ClientLegalEntity: "",
+      SubDivision: "",
+      BillingEntity: "",
+      BilledBy: "",
+      PracticeArea: "",
+      Priority: "",
+      ProjectCode: "",
+      ProjectStatus: "",
+      PointOfContact1: "",
+      PointOfContact1Text: "",
       PointOfContact2: [],
-      PointOfContact2Text: '',
-      Milestone: '',
-      Molecule: '',
-      TherapeuticArea: '',
-      Indication: '',
+      PointOfContact2Text: "",
+      Milestone: "",
+      Molecule: "",
+      TherapeuticArea: "",
+      Indication: "",
       PUBSupportRequired: false,
-      PUBSupportStatus: '',
+      PUBSupportStatus: "",
       ActiveCM1: [],
-      ActiveCM1Text: '',
-      ActiveCM2: '',
-      ActiveCM2Text: '',
+      ActiveCM1Text: "",
+      ActiveCM2: "",
+      ActiveCM2Text: "",
       ActiveDelivery1: [],
-      ActiveDelivery1Text: '',
-      ActiveDelivery2: '',
-      ActiveDelivery2Text: '',
-      ProjectTitle: '',
-      AlternateShortTitle: '',
-      EndUseofDeliverable: '',
-      SOWBoxLink: '',
-      ConferenceJournal: '',
-      Authors: '',
-      Comments: '',
+      ActiveDelivery1Text: "",
+      ActiveDelivery2: "",
+      ActiveDelivery2Text: "",
+      ProjectTitle: "",
+      AlternateShortTitle: "",
+      EndUseofDeliverable: "",
+      SOWBoxLink: "",
+      ConferenceJournal: "",
+      Authors: "",
+      Comments: "",
       AnnotationBinder: false,
       SlideCount: 0,
       PageCount: 0,
-      ReferenceCount: 0
-
+      ReferenceCount: 0,
     },
     Timeline: {
       Standard: {
@@ -273,73 +270,73 @@ export class PMObjectService {
         OverallTat: 0,
         IsRegisterButtonClicked: false,
         standardArray: [],
-        DeliverableType: '',
-        SubDeliverable: '',
+        DeliverableType: "",
+        SubDeliverable: "",
         Milestones: [],
-        ServiceLevel: '',
+        ServiceLevel: "",
         MilestonesArray: [],
-        TaskArray: []
+        TaskArray: [],
       },
       NonStandard: {
         IsStandard: false,
-        DeliverableType: '',
-        SubDeliverable: '',
-        Service: '',
+        DeliverableType: "",
+        SubDeliverable: "",
+        Service: "",
         ResourceName: {},
         ProposedStartDate: null,
         ProposedEndDate: null,
         IsRegisterButtonClicked: false,
         ProjectBudgetHours: 0,
-        months: []
-      }
+        months: [],
+      },
     },
     FinanceManagement: {
-      Currency: '',
-      ProjectSOW: '',
-      SelectedPO: '',
+      Currency: "",
+      ProjectSOW: "",
+      SelectedPO: "",
       POListArray: [],
       POArray: [],
       BudgetArray: [],
       UnassignedArray: [],
       AllOperationId: [],
-      SOWFileURL: '',
-      SOWFileName: '',
+      SOWFileURL: "",
+      SOWFileName: "",
       SOWFileProp: [],
       BudgetHours: 0,
       Budget: {
         Total: 0,
         Net: 0,
         OOP: 0,
-        Tax: 0
+        Tax: 0,
       },
-      OverNightRequest: '',
+      OverNightRequest: "",
       Rate: 0,
-      ClientLegalEntity: '',
-      BilledBy: '',
+      ClientLegalEntity: "",
+      BilledBy: "",
       selectedFile: null,
-      isBudgetRateAdded: false
-    }
+      isBudgetRateAdded: false,
+    },
   };
   public addSOW = {
     ID: 0,
-    ClientLegalEntity: '',
-    SOWCode: '',
-    BillingEntity: '',
-    PracticeArea: '',
-    Poc: '',
-    PocText: '',
+    ClientLegalEntity: "",
+    SOWCode: "",
+    BillingEntity: "",
+    PracticeArea: "",
+    Poc: "",
+    PocText: "",
     PocOptional: [],
-    PocOptionalText: '',
-    SOWTitle: '',
+    PocOptionalText: "",
+    SOWTitle: "",
     SOWCreationDate: null,
     SOWExpiryDate: null,
-    Status: '',
-    SOWFileURL: '',
-    SOWFileName: '',
+    Status: "",
+    SOWFileURL: "",
+    SOWFileName: "",
     SOWDocProperties: [],
-    Comments: '',
-    Currency: '',
-    SOWDocument: '',
+    Comments: "",
+    Currency: "",
+    SOWDocument: "",
     Budget: {
       Total: 0,
       Net: 0,
@@ -349,33 +346,33 @@ export class PMObjectService {
       NetBalance: 0,
       OOPBalance: 0,
       TaxBalance: 0,
-      LastUpdated: new Date()
+      LastUpdated: new Date(),
     },
     CM1: [],
-    CM1Text: '',
-    CM2: '',
-    CM2Text: '',
-    DeliveryOptional: '',
-    DeliveryOptionalText: '',
+    CM1Text: "",
+    CM2: "",
+    CM2Text: "",
+    DeliveryOptional: "",
+    DeliveryOptionalText: "",
     Delivery: [],
-    DeliveryText: '',
-    SOWOwner: '',
-    SOWOwnerText: '',
+    DeliveryText: "",
+    SOWOwner: "",
+    SOWOwnerText: "",
     Addendum: {
       NetBudget: 0,
       OOPBudget: 0,
       TaxBudget: 0,
-      TotalBudget: 0
+      TotalBudget: 0,
     },
     AllOperationId: [],
     Additonal: {
       NetBudget: 0,
       OOPBudget: 0,
       TaxBudget: 0,
-      TotalBudget: 0
+      TotalBudget: 0,
     },
     isSOWCodeDisabled: false,
-    isStatusDisabled: true
+    isStatusDisabled: true,
   };
   public oProjectCreation = {
     oProjectInfo: {
@@ -384,7 +381,7 @@ export class PMObjectService {
       clientLegalEntities: [],
       currency: [],
       deliverableType: [],
-      currentUser: '',
+      currentUser: "",
       molecule: [],
       projectType: [],
       subDeliverable: [],
@@ -406,8 +403,8 @@ export class PMObjectService {
       pubSupport: [],
       qc: [],
       reviewers: [],
-      writers: []
-    }
+      writers: [],
+    },
   };
   public standardPMResponse: any = [];
   public nonStandardPMResponse: any = [];
@@ -418,13 +415,13 @@ export class PMObjectService {
     oReviewer: [],
     oStandardTemplateForDeliverable: [],
     oAllSelectedResource: [],
-    oAllResource: []
+    oAllResource: [],
   };
   public oProjectManagement = {
     oClientLegalEntity: [],
     oDeliverableType: [],
     oProjectPerYear: 0,
-    oResourcesCat: []
+    oResourcesCat: [],
   };
   public oCapacity = {
     arrUserDetails: [],
@@ -433,26 +430,26 @@ export class PMObjectService {
     arrDateFormat: [],
   };
   public oUser = {
-    uid: '',
-    userName: '',
-    maxHrs: '',
+    uid: "",
+    userName: "",
+    maxHrs: "",
     dates: [],
     tasks: [],
     leaves: [],
     businessDays: [],
     totalAllocated: 0,
-    totalUnAllocated: 0
+    totalUnAllocated: 0,
   };
   public ngPrimeMilestoneGlobalObj = {
     data: {
-      MileId: '',
-      Name: '',
+      MileId: "",
+      Name: "",
       Hours: 0,
       Days: 0,
       StartDate: new Date(),
       EndDate: new Date(),
       Deviation: 0,
-      AssignedTo: '',
+      AssignedTo: "",
       ClientReviewDays: 0,
       clientReviewStartDate: new Date(),
       clientReviewEndDate: new Date(),
@@ -460,50 +457,50 @@ export class PMObjectService {
       isEndDateDisabled: true,
       toggleCapacity: true,
       showTime: false,
-      strSubMilestone: ''
+      strSubMilestone: "",
     },
-    children: []
+    children: [],
   };
   public ngPrimeSubMilestoneGlobalObj = {
     data: {
-      MileId: '',
-      Name: '',
+      MileId: "",
+      Name: "",
       Hours: 0,
       Days: 0,
       StartDate: new Date(),
       EndDate: new Date(),
       Deviation: 0,
-      AssignedTo: '',
-      isStartDateDisabled: true,
-      isEndDateDisabled: true,
-      toggleCapacity: true,
-      showTime: false
-    },
-    tasks: [],
-    children: []
-  };
-  public ngPrimeTaskGlobalObj = {
-    data: {
-      MileId: '',
-      Name: '',
-      Hours: 0,
-      Days: 0,
-      StartDate: new Date(),
-      EndDate: new Date(),
-      Deviation: 0,
-      AssignedTo: '',
+      AssignedTo: "",
       isStartDateDisabled: true,
       isEndDateDisabled: true,
       toggleCapacity: true,
       showTime: false,
-      assignedUserTimeZone: '+5.5',
-      Milestone: '',
-      SubMilestone: '',
+    },
+    tasks: [],
+    children: [],
+  };
+  public ngPrimeTaskGlobalObj = {
+    data: {
+      MileId: "",
+      Name: "",
+      Hours: 0,
+      Days: 0,
+      StartDate: new Date(),
+      EndDate: new Date(),
+      Deviation: 0,
+      AssignedTo: "",
+      isStartDateDisabled: true,
+      isEndDateDisabled: true,
+      toggleCapacity: true,
+      showTime: false,
+      assignedUserTimeZone: "+5.5",
+      Milestone: "",
+      SubMilestone: "",
       userId: 0,
-      taskFullName: '',
-      allocationPerDay: '',
-      allocationType: '',
-      allocationColor: ''
+      taskFullName: "",
+      allocationPerDay: "",
+      allocationType: "",
+      allocationColor: "",
     },
   };
   public currLoginInfo: any = [];
@@ -521,17 +518,25 @@ export class PMObjectService {
   public isProjectVisible = false;
   public columnFilter = {
     ProjectCode: [],
-    SOWCode: []
+    SOWCode: [],
   };
   public isReasonSectionVisible = false;
   public billedBy = [];
   public arrAdvanceInvoices = [];
   public milestoneArray = [];
   public taskArray = [];
-  public fileReader: any = '';
+  public fileReader: any = "";
   public updateInvoices = [];
 
+  public RuleArray = [];
+  public ProjetcRuleArray=[];
+
+  
+  public RuleParamterArray=[
+    {label : "Practice Area" , value: 'practiceArea'},
+    {label  :'Client',value:'clientLeagalEntity' },
+    {label  :'Client Subdivision',value:'subDivision' },
+    {label  :'Currency',value:'Currency' },
+    {label  :'Deliverable Type',value:'DeliverableType' },
+]
 }
-
-
-

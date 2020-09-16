@@ -1,0 +1,41 @@
+<div class='UserButton'>
+
+    <button type="button" pButton icon="pi pi-save" id="saveRule" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" class="ui-button-danger" (click)="saveDetails()" label="Save"></button>
+
+    <button type="button" pButton icon="pi pi-times" (click)="cancel();" label="Cancel" class="ui-button-danger"></button>
+</div>
+
+<!-- // display rule on dialog -->
+<div class="p-col">
+    <p-table [value]="rules">
+        <ng-template pTemplate="body" let-rowData>
+            <tr [ngStyle]="{'background-color' : rowData.RuleType === 'existing' && rowData.IsActiveCH === 'Yes' && rowData.edited === false ?  '#cdcdcd' : rowData.RuleType === 'new' ? '#f1e5ca' : rowData.RuleType === 'existing' && rowData.IsActiveCH === 'No' ?  '#f1caca' : '#ecfbd0' ,'margin': index === 0 ? '0px' : '15px 0px', 'cursor':'pointer'}"
+                class="p-grid Rules_tr">
+                <td style="font-size: 16px;">
+
+                    <i style="vertical-align: middle;" class="pi pi-bars"></i>
+                </td>
+                <td *ngFor='let Rule of rowData.DisplayRules;let j= index;' style=" font-weight: bold;margin: 0px; padding: 0px;" class="p-grid">
+                    <div class="p-grid" style="margin:5px;font-size:18px;">
+                        <p style="margin: 3px 0px 0px 0px ;"> {{Rule.Value}}</p>
+                    </div>
+                    <div class="p-col" style="font-size:20px;padding:7px;">
+                        <i *ngIf="rowData.DisplayRules[j + 1] &&  rowData.DisplayRules.length - 1 > j " style="vertical-align: middle;" class="pi pi-chevron-right"></i>
+                    </div>
+                </td>
+
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+
+<div class="p-col p-grid p-justify-start">
+    <div class="p-col" *ngFor='let ruleType of RuleTypeDD;let i=index;first as isFirst;' [ngStyle]="{'padding':isFirst ? '5px 0px 0px 5px' : '5px 5px 0px 5px'}">
+        <h1 class="first" style="    font-size: 20px;" *ngIf="isFirst">Owner</h1>
+        <p-dropdown *ngIf="isFirst" [options]="ruleType.values" [style]="{'width':'100%'}" resetFilterOnHide="true" [(ngModel)]="ruleType.selectedValue" placeholder="Select owner" [filter]="true" (keydown.enter)="$event.preventDefault()"></p-dropdown>
+        <h1 class="first" style="font-size: 20px;" *ngIf="!isFirst">Access</h1>
+        <p-multiSelect *ngIf="!isFirst" [options]="ruleType.values" resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" defaultLabel="Select User" [(ngModel)]="ruleType.selectedValue" [style]="{'width':'100%','z-index':'99999'}" [filter]="true"
+            filterBy="label"></p-multiSelect>
+    </div>
+</div>

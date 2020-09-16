@@ -38,6 +38,7 @@ import { RemoveAccessComponent } from './admin/entitlement/remove-access/remove-
 import { ProjectAccessComponent } from './admin/entitlement/add-access/project-access/project-access.component';
 
 import { ShowRuleComponent } from './admin/entitlement/remove-access/show-rule/show-rule.component';
+import { EditRuleUserComponent } from './admin/entitlement/add-access/edit-rule-user/edit-rule-user.component';
 
 @NgModule({
   declarations: [
@@ -68,7 +69,8 @@ import { ShowRuleComponent } from './admin/entitlement/remove-access/show-rule/s
     AddAccessComponent,
     RemoveAccessComponent,
     ProjectAccessComponent,
-    ShowRuleComponent],
+    ShowRuleComponent,
+    EditRuleUserComponent],
   imports: [
     SharedModule,
     AdminRoutingModule,
@@ -79,7 +81,7 @@ import { ShowRuleComponent } from './admin/entitlement/remove-access/show-rule/s
   ],
   providers: [
   ],
-  entryComponents : [AddEditUserProfileComponent, AddEditClientlegalentityDialogComponent,AddEditSubdivisionComponent, AddEditPocComponent,AddEditPoDialogComponent,ChangeBudgetDialogComponent,ShowRuleComponent]
+  entryComponents : [AddEditUserProfileComponent, AddEditClientlegalentityDialogComponent,AddEditSubdivisionComponent, AddEditPocComponent,AddEditPoDialogComponent,ChangeBudgetDialogComponent,ShowRuleComponent,EditRuleUserComponent]
 
 })
 export class AdminModule { }

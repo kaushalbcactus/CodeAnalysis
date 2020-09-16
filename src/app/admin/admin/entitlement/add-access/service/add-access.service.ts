@@ -3,7 +3,7 @@ import { ConstantsService } from "src/app/Services/constants.service";
 import { AdminConstantService } from "src/app/admin/services/admin-constant.service";
 import { SPOperationService } from "src/app/Services/spoperation.service";
 import { CommonService } from "src/app/Services/common.service";
-import { filter } from 'rxjs/operators';
+import { filter } from "rxjs/operators";
 
 @Injectable({
   providedIn: "root",
@@ -132,6 +132,8 @@ export class AddAccessService {
       "AddAccess"
     );
     const arrResults = await this.spServices.executeBatch(batchURL);
+
+    // Process Practice Area Data
     filterData.PRACTICEAREA =
       arrResults.find(
         (c) => c.listName === this.constants.listNames.PracticeArea.name
@@ -152,6 +154,7 @@ export class AddAccessService {
             )
         : [];
 
+    // Process CLE Data
     filterData.CLE =
       arrResults.find(
         (c) => c.listName === this.constants.listNames.ClientLegalEntity.name
@@ -173,6 +176,7 @@ export class AddAccessService {
             )
         : [];
 
+    //process Sub-division data
     filterData.SUBDIVISION =
       arrResults.find(
         (c) => c.listName === this.constants.listNames.ClientSubdivision.name
@@ -195,7 +199,7 @@ export class AddAccessService {
         : [];
 
     // filterData.filterSUBDIVISION = Object.assign({}, filterData.dbSUBDIVISION);
-
+    // Process Delivery data
     filterData.DELIVERYTYPE =
       arrResults.find(
         (c) => c.listName === this.constants.listNames.DeliverableType.name
@@ -217,18 +221,7 @@ export class AddAccessService {
             )
         : [];
 
-    filterData.RULES =
-      arrResults.find(
-        (c) => c.listName === this.constants.listNames.RuleStore.name
-      ) &&
-      arrResults.find(
-        (c) => c.listName === this.constants.listNames.RuleStore.name
-      ).retItems
-        ? arrResults.find(
-            (c) => c.listName === this.constants.listNames.RuleStore.name
-          ).retItems
-        : [];
-
+    // process rule parameters
     filterData.RULEPARAMETERS =
       arrResults.find(
         (c) => c.listName === this.constants.listNames.RuleParameters.name
@@ -241,6 +234,7 @@ export class AddAccessService {
           ).retItems
         : [];
 
+    // process rule parameter display
     filterData.RULEPARAMETERSDISPLAY =
       arrResults.find(
         (c) => c.listName === this.constants.listNames.RuleParameters.name
@@ -257,11 +251,12 @@ export class AddAccessService {
                 new Object({
                   label: o.Title,
                   value: o.Title,
-                  InternalName : o.InternalName
+                  InternalName: o.InternalName,
                 })
             )
         : [];
 
+    // Process Resource categorization
     filterData.RESOURCECATEGORIZATION =
       arrResults.find(
         (c) =>
@@ -278,30 +273,28 @@ export class AddAccessService {
           ).retItems
         : [];
 
-
-        
+    // process Rules
     filterData.DBRULES =
-    arrResults.find(
-      (c) =>
-        c.listName === this.constants.listNames.RuleStore.name
-    ) &&
-    arrResults.find(
-      (c) =>
-        c.listName === this.constants.listNames.RuleStore.name
-    ).retItems
-      ? arrResults.find(
-          (c) =>
-            c.listName ===
-            this.constants.listNames.RuleStore.name
-        ).retItems
-      : [];
+      arrResults.find(
+        (c) => c.listName === this.constants.listNames.RuleStore.name
+      ) &&
+      arrResults.find(
+        (c) => c.listName === this.constants.listNames.RuleStore.name
+      ).retItems
+        ? arrResults.find(
+            (c) => c.listName === this.constants.listNames.RuleStore.name
+          ).retItems
+        : [];
 
-      if(filterData.DBRULES.length > 0) {
-        filterData.RULES = JSON.parse(JSON.stringify(filterData.DBRULES));
-        filterData.RULES.map(c=>c.DisplayRules = JSON.parse(c.Rule));
-        filterData.RULES.map(c=>c.edited = false);
-        filterData.RULES.map(c=>c.RuleType ="existing");
-      }
+    if (filterData.DBRULES.length > 0) {
+      filterData.RULES = JSON.parse(JSON.stringify(filterData.DBRULES));
+      filterData.RULES.map((c) => (c.DisplayRules = JSON.parse(c.Rule)));
+      filterData.RULES.map((c) => (c.edited = false));
+      filterData.RULES.map((c) => (c.RuleType = "existing"));
+
+      filterData.TEMPRULES = JSON.parse(JSON.stringify(filterData.RULES));
+    }
+
     return filterData;
   }
 
@@ -332,5 +325,84 @@ export class AddAccessService {
       parameters.find((c) => c.ListName === element.listName).dbRecords =
         element.retItems;
     });
+  }
+
+  async saveRules(Rules) {
+    let batchURL = [];
+    let batchResults = [];
+    let MaxOrder = Math.max.apply(
+      null,
+      Rules.map((c) => c.DisplayOrder)
+    );
+    Rules.forEach(async (rule) => {
+      if (
+        rule.RuleType === "existing" &&
+        (rule.DisplayOrder !== MaxOrder ||
+          rule.IsActiveCH === "No" ||
+          rule.edited === true)
+      ) {
+        const editedRule = {
+          __metadata: { type: this.constants.listNames.RuleStore.type },
+          OwnerPGId: rule.OwnerPG.ID,
+          AccessId: rule.Access.results ? {results : rule.Access.results.map(c=>c.ID)}:{results:[]},
+          IsActiveCH: rule.IsActiveCH,
+          DisplayOrder: MaxOrder,
+        };
+
+        let url = this.spServices.getItemURL(
+          this.constants.listNames.RuleStore.name,
+          +rule.ID
+        );
+        this.commonService.setBatchObject(
+          batchURL,
+          url,
+          editedRule,
+          this.constants.Method.PATCH,
+          this.constants.listNames.RuleStore.name
+        );
+      } else if (rule.RuleType === "new") {
+        const NewRule = {
+          __metadata: { type: this.constants.listNames.RuleStore.type },
+          OwnerPGId: rule.OwnerPG.ID,
+          AccessId: rule.Access.results ? {results : rule.Access.results.map(c=>c.ID)}:{results:[]},
+          IsActiveCH: rule.IsActiveCH,
+          DisplayOrder: MaxOrder,
+          ResourceType: rule.ResourceType,
+          TypeST: rule.TypeST,
+          Rule: rule.Rule,
+        };
+        this.commonService.setBatchObject(
+          batchURL,
+          this.spServices.getReadURL(
+            this.constants.listNames.RuleStore.name,
+            null
+          ),
+          NewRule,
+          this.constants.Method.POST,
+          this.constants.listNames.RuleStore.name
+        );
+      }
+
+      if (batchURL.length === 99) {
+        this.commonService.SetNewrelic(
+          "UpdateRuleStore",
+          "AddAccessService",
+          "AddAccess"
+        );
+        batchResults = await this.spServices.executeBatch(batchURL);
+        batchURL = [];
+      }
+      MaxOrder--;
+    });
+
+    if (batchURL.length) {
+      this.commonService.SetNewrelic(
+        "UpdateRuleStore",
+        "AddAccessService",
+        "AddAccess"
+      );
+      console.log(batchURL);
+      batchResults = await this.spServices.executeBatch(batchURL);
+    }
   }
 }

@@ -202,7 +202,15 @@ export class PmconstantService {
       select: 'ID, Milestone',
       filter: 'ProjectCode eq \'{{projectCode}}\'',
       top: 4500
-    }
+    },
+
+    GET_RULES_BY_ACTIVE: {
+      select: "ID,OwnerPG/ID,OwnerPG/Title,DisplayOrder,ResourceType,Rule,IsActiveCH, Access/ID,Access/Title",
+      filter: "IsActiveCH eq '{{isActive}}' and TypeST eq '{{type}}'",
+      expand: "OwnerPG, Access",
+      orderby: "DisplayOrder desc",
+      top: 4900,
+    },
   };
   public SOW_QUERY = {
     ALL_SOW: {

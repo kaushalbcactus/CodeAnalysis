@@ -60,7 +60,9 @@ export class ProjectAttributesComponent implements OnInit {
     private globalObject: GlobalService
   ) { }
   async ngOnInit() {
+    debugger;
     this.initForm();
+    this.getAllRules();
     await this.pmCommonService.setBilledBy();
     this.isProjectAttributeLoaderHidden = false;
     this.isProjectAttributeTableHidden = true;
@@ -71,6 +73,7 @@ export class ProjectAttributesComponent implements OnInit {
       }
       this.addProjectAttributesForm.get('clientLeagalEntity').disable();
       this.addProjectAttributesForm.get('billingEntity').disable();
+      this.addProjectAttributesForm.get('Currency').disable();
       if (this.projObj) {
         this.addProjectAttributesForm.get('billedBy').disable();
         this.editProject(this.projObj);
@@ -86,11 +89,11 @@ export class ProjectAttributesComponent implements OnInit {
             ClientLegalEntity: sow[0].ClientLegalEntity,
             BillingEntity: sow[0].BillingEntity,
             PrimaryPOC: sow[0].PrimaryPOC ? sow[0].PrimaryPOC : 0,
-            CMLevel1: sow[0].CMLevel1 && sow[0].CMLevel1.results && sow[0].CMLevel1.results.length ? [...sow[0].CMLevel1.results, sow[0].CMLevel2.ID] : [],
-            CMLevel2: sow[0].CMLevel2.ID,
-            DeliveryLevel1: sow[0].DeliveryLevel1 && sow[0].DeliveryLevel1.results &&
-              sow[0].DeliveryLevel1.results.length ? [...sow[0].DeliveryLevel1.results, sow[0].DeliveryLevel2.ID] : [],
-            DeliveryLevel2: sow[0].DeliveryLevel2.ID,
+            // CMLevel1: sow[0].CMLevel1 && sow[0].CMLevel1.results && sow[0].CMLevel1.results.length ? [...sow[0].CMLevel1.results, sow[0].CMLevel2.ID] : [],
+            // CMLevel2: sow[0].CMLevel2.ID,
+            // DeliveryLevel1: sow[0].DeliveryLevel1 && sow[0].DeliveryLevel1.results &&
+            //   sow[0].DeliveryLevel1.results.length ? [...sow[0].DeliveryLevel1.results, sow[0].DeliveryLevel2.ID] : [],
+            // DeliveryLevel2: sow[0].DeliveryLevel2.ID,
             AdditionalPOC: sow[0].AdditionalPOC ? sow[0].AdditionalPOC.split(';#').map(x => parseInt(x, 10)) : []
           };
           this.setFieldProperties(this.pmObject.addProject.ProjectAttributes, sowObj, true);
@@ -116,18 +119,18 @@ export class ProjectAttributesComponent implements OnInit {
       this.addProjectAttributesForm.get('billingEntity').setValue(sowObj.BillingEntity);
       this.addProjectAttributesForm.get('poc').setValue(sowObj.PrimaryPOC);
       this.addProjectAttributesForm.get('poc2').setValue(sowObj.AdditionalPOC);
-      const cm1IdArray = this.pmCommonService.getIds(sowObj.CMLevel1);
-      const cm1found = this.cmLevel1.some(r => cm1IdArray.indexOf(r.value) >= 0);
-      if (cm1found) {
-        this.addProjectAttributesForm.get('selectedActiveCM1').setValue(cm1IdArray);
-      }
-      this.addProjectAttributesForm.get('selectedActiveCM2').setValue(sowObj.CMLevel2);
-      const deliveryIdArray = this.pmCommonService.getIds(sowObj.DeliveryLevel1);
-      const devlivery1found = this.deliveryLevel1.some(r => deliveryIdArray.indexOf(r.value) >= 0);
-      if (devlivery1found) {
-        this.addProjectAttributesForm.get('selectedActiveAD1').setValue(deliveryIdArray);
-      }
-      this.addProjectAttributesForm.get('selectedActiveAD2').setValue(sowObj.DeliveryLevel2);
+      // const cm1IdArray = this.pmCommonService.getIds(sowObj.CMLevel1);
+      // const cm1found = this.cmLevel1.some(r => cm1IdArray.indexOf(r.value) >= 0);
+      // if (cm1found) {
+      //   this.addProjectAttributesForm.get('selectedActiveCM1').setValue(cm1IdArray);
+      // }
+      // this.addProjectAttributesForm.get('selectedActiveCM2').setValue(sowObj.CMLevel2);
+      // const deliveryIdArray = this.pmCommonService.getIds(sowObj.DeliveryLevel1);
+      // const devlivery1found = this.deliveryLevel1.some(r => deliveryIdArray.indexOf(r.value) >= 0);
+      // if (devlivery1found) {
+      //   this.addProjectAttributesForm.get('selectedActiveAD1').setValue(deliveryIdArray);
+      // }
+      // this.addProjectAttributesForm.get('selectedActiveAD2').setValue(sowObj.DeliveryLevel2);
       projObj.ClientLegalEntity = this.addProjectAttributesForm.get('clientLeagalEntity').value;
     } else {
       this.addProjectAttributesForm.get('clientLeagalEntity').setValue(projObj.ClientLegalEntity);
@@ -177,18 +180,18 @@ export class ProjectAttributesComponent implements OnInit {
     if (projObj.PUBSupportStatus) {
       this.addProjectAttributesForm.get('pubSupportStatus').setValue(projObj.PUBSupportStatus);
     }
-    if (projObj.ActiveCM1.length) {
-      this.addProjectAttributesForm.get('selectedActiveCM1').setValue(projObj.ActiveCM1);
-    }
-    if (projObj.ActiveCM2) {
-      this.addProjectAttributesForm.get('selectedActiveCM2').setValue(projObj.ActiveCM2);
-    }
-    if (projObj.ActiveDelivery1.length) {
-      this.addProjectAttributesForm.get('selectedActiveAD1').setValue(projObj.ActiveDelivery1);
-    }
-    if (projObj.ActiveDelivery2) {
-      this.addProjectAttributesForm.get('selectedActiveAD2').setValue(projObj.ActiveDelivery2);
-    }
+    // if (projObj.ActiveCM1.length) {
+    //   this.addProjectAttributesForm.get('selectedActiveCM1').setValue(projObj.ActiveCM1);
+    // }
+    // if (projObj.ActiveCM2) {
+    //   this.addProjectAttributesForm.get('selectedActiveCM2').setValue(projObj.ActiveCM2);
+    // }
+    // if (projObj.ActiveDelivery1.length) {
+    //   this.addProjectAttributesForm.get('selectedActiveAD1').setValue(projObj.ActiveDelivery1);
+    // }
+    // if (projObj.ActiveDelivery2) {
+    //   this.addProjectAttributesForm.get('selectedActiveAD2').setValue(projObj.ActiveDelivery2);
+    // }
     if (projObj.ProjectTitle) {
       this.addProjectAttributesForm.get('projectTitle').setValue(projObj.ProjectTitle);
     }
@@ -319,6 +322,8 @@ export class ProjectAttributesComponent implements OnInit {
       ReferenceCount: [0],
       PageCount: [0],
       AnnotationBinder: [''],
+      Currency:[this.pmObject.addProject.FinanceManagement.Currency],
+
     });
 
     this.addMolecule = this.frmbuilder.group({
@@ -385,6 +390,8 @@ export class ProjectAttributesComponent implements OnInit {
     else {
       this.enableCountFields = false;
     }
+    
+    this.GetRulesOnChange();
 
   }
   /**
@@ -713,5 +720,39 @@ export class ProjectAttributesComponent implements OnInit {
 
   cancel() {
     this.dynamicDialogRef.close();
+  }
+
+
+
+  async getAllRules(){
+
+    const batchURL=[];
+    this.commonService.setBatchObject(
+          batchURL,
+          this.spServices
+            .getReadURL(
+              this.constant.listNames.RuleStore.name,
+              this.pmConstant.PM_QUERY.GET_RULES_BY_ACTIVE
+            )
+            .replace(/{{isActive}}/gi, "Yes")
+            .replace(/{{type}}/gi, 'Project'),
+          null,
+          this.constant.Method.GET,
+          this.constant.listNames.RuleStore.name
+        );
+
+        this.commonService.SetNewrelic('projectManagment', 'addproj-projectAttributes', 'GetAllRules');
+            const arrResults = await this.spServices.executeBatch(batchURL);
+            this.pmObject.RuleArray = arrResults && arrResults.length > 0 && arrResults[0].retItems.length > 0 ? arrResults[0].retItems :[];
+
+            if(this.pmObject.RuleArray.length > 0){
+              this.pmObject.RuleArray.map((c)=> c.DisplayRules = JSON.parse(c.Rule));
+            }
+  }
+
+  async GetRulesOnChange(){
+
+    await this.pmCommonService.FilterRules(this.addProjectAttributesForm);
+
   }
 }

@@ -3,7 +3,7 @@
 }
 
 .projectFilters>p-multiselect>.ui-multiselect>.ui-multiselect-label-container {
-    width: 250px !important;
+    min-width: 250px !important;
 }
 
 .projectFilters>p-button {
@@ -92,4 +92,45 @@
 
 .Rules_tr>td {
     border: none !important;
+}
+
+.ruleNames {
+    font-weight: bold !important;
+    margin: 0px !important;
+    padding: 0px !important;
+    width: 16% !important;
+}
+
+.input-color {
+    position: relative;
+    float: left;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.input-color label {
+    padding-left: 40px;
+    margin-bottom: 0.3rem;
+}
+
+.input-color .color-box {
+    width: 30px;
+    height: 20px;
+    display: inline-block;
+    background-color: #ccc;
+    position: absolute;
+    left: 5px;
+}
+
+.editButton {
+    margin: 0px 10px 0px 0px !important;
+    cursor: pointer !important;
+    height: 2rem !important;
+    width: 2rem !important;
+    float: none !important;
+    vertical-align: bottom !important;
+}
+
+.editButton>.ui-button-icon-left {
+    font-size: 20px !important;
 }
