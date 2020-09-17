@@ -2357,30 +2357,8 @@ export class AllProjectsComponent implements OnInit {
     this.pmObject.addProject.ProjectAttributes.ActiveDelivery1Text = this.pmCommonService.extractNameFromId(delivery1Array).join(', ');
     this.pmObject.addProject.ProjectAttributes.ActiveDelivery2 = proj.DeliveryLevel2ID ? proj.DeliveryLevel2ID : 0;
     this.pmObject.addProject.ProjectAttributes.ActiveDelivery2Text = proj.DeliveryLevel2Title ? proj.DeliveryLevel2Title : '';
-    // get data from project finance based on project code.
-    const projectFinanceFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.PROJECT_FINANCE_BY_PROJECTCODE);
-    projectFinanceFilter.filter = projectFinanceFilter.filter.replace(/{{projectCode}}/gi, proj.ProjectCode);
-    this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetProjectFinance');
-    const sResult = await this.spServices.readItems(this.constants.listNames.ProjectFinances.name, projectFinanceFilter);
-    if (sResult && sResult.length > 0) {
-      const fm = sResult[0];
-      this.pmObject.addProject.FinanceManagement.Currency = fm.Currency;
-      this.pmObject.addProject.FinanceManagement.BudgetHours = fm.BudgetHrs;
-      this.pmObject.addProject.FinanceManagement.Budget.Total = fm.Budget;
-      this.pmObject.addProject.FinanceManagement.Budget.Net = fm.RevenueBudget;
-      this.pmObject.addProject.FinanceManagement.Budget.OOP = fm.OOPBudget;
-      this.pmObject.addProject.FinanceManagement.Budget.Tax = fm.TaxBudget;
-      this.pmObject.addProject.FinanceManagement.ProjectSOW = proj.SOWLink;
-      if (this.pmObject.addProject.FinanceManagement.ProjectSOW) {
-        if (this.pmObject.addProject.FinanceManagement.ProjectSOW.
-          indexOf(this.globalObject.sharePointPageObject.webRelativeUrl) === -1) {
-          const client = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(e => e.Title === proj.ClientLegalEntity);
-          this.pmObject.addProject.FinanceManagement.ProjectSOW =
-            this.globalObject.sharePointPageObject.webRelativeUrl + '/' + client.ListName + '/Finance/SOW/' +
-            this.pmObject.addProject.FinanceManagement.ProjectSOW;
-        }
-      }
-    }
+   
+    await this.getProjectFinanceData(proj);
 
 
 
@@ -2390,6 +2368,35 @@ export class AllProjectsComponent implements OnInit {
     console.log('Test');
     console.log(this.projectViewDataArray);
     this.pmObject.isProjectRightSideVisible = true;
+  }
+
+
+
+  async getProjectFinanceData(proj){
+     // get data from project finance based on project code.
+     const projectFinanceFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.PROJECT_FINANCE_BY_PROJECTCODE);
+     projectFinanceFilter.filter = projectFinanceFilter.filter.replace(/{{projectCode}}/gi, proj.ProjectCode);
+     this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetProjectFinance');
+     const sResult = await this.spServices.readItems(this.constants.listNames.ProjectFinances.name, projectFinanceFilter);
+     if (sResult && sResult.length > 0) {
+       const fm = sResult[0];
+       this.pmObject.addProject.FinanceManagement.Currency = fm.Currency;
+       this.pmObject.addProject.FinanceManagement.BudgetHours = fm.BudgetHrs;
+       this.pmObject.addProject.FinanceManagement.Budget.Total = fm.Budget;
+       this.pmObject.addProject.FinanceManagement.Budget.Net = fm.RevenueBudget;
+       this.pmObject.addProject.FinanceManagement.Budget.OOP = fm.OOPBudget;
+       this.pmObject.addProject.FinanceManagement.Budget.Tax = fm.TaxBudget;
+       this.pmObject.addProject.FinanceManagement.ProjectSOW = proj.SOWLink;
+       if (this.pmObject.addProject.FinanceManagement.ProjectSOW) {
+         if (this.pmObject.addProject.FinanceManagement.ProjectSOW.
+           indexOf(this.globalObject.sharePointPageObject.webRelativeUrl) === -1) {
+           const client = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(e => e.Title === proj.ClientLegalEntity);
+           this.pmObject.addProject.FinanceManagement.ProjectSOW =
+             this.globalObject.sharePointPageObject.webRelativeUrl + '/' + client.ListName + '/Finance/SOW/' +
+             this.pmObject.addProject.FinanceManagement.ProjectSOW;
+         }
+       }
+     }
   }
 
 
@@ -2586,7 +2593,11 @@ export class AllProjectsComponent implements OnInit {
    * This method is used to edit the project code attributes
    * @param projObj pass the projObj as parameter.
    */
-  editProject(projObj) {
+  async editProject(projObj) {
+
+    await this.getProjectFinanceData(projObj);
+
+    projObj.Currency =  this.pmObject.addProject.FinanceManagement.Currency;
     const ref = this.dialogService.open(ProjectAttributesComponent, {
       header: 'Edit Project - ' + projObj.ProjectCode + '(' + projObj.Title + ')',
       width: '90vw',

@@ -601,6 +601,7 @@ export class PMCommonService {
       objProjectTask = this.globalObject.sharePointPageObject.serverRelativeUrl + '/' + this.constant.listNames.Schedules.name
         + '/' + addObj.ProjectAttributes.ProjectCode;
     }
+    debugger;
     const data: any = {
       __metadata: { type: this.constant.listNames.ProjectInformation.type },
       AllOperationresourcesId: {
@@ -622,7 +623,10 @@ export class PMCommonService {
           ? addObj.ProjectAttributes.ActiveDelivery1 : []
       },
       DeliveryLevel2Id: addObj.ProjectAttributes.ActiveDelivery2,
+
       SubDivision: addObj.ProjectAttributes.SubDivision ? addObj.ProjectAttributes.SubDivision : '',
+      CSRule :  this.pmObject.ProjetcRuleArray.CM && this.pmObject.ProjetcRuleArray.CM.length ?  this.pmObject.ProjetcRuleArray.CM.map(c=>c.ID).join(';#'):'',
+      DeliveryRule : this.pmObject.ProjetcRuleArray.Delivery && this.pmObject.ProjetcRuleArray.Delivery.length ?  this.pmObject.ProjetcRuleArray.Delivery.map(c=>c.ID).join(';#'):'',  
       PriorityST: addObj.ProjectAttributes.Priority,
       Indication: addObj.ProjectAttributes.Indication,
       Molecule: addObj.ProjectAttributes.Molecule,
@@ -2014,23 +2018,52 @@ export class PMCommonService {
   }
 
 
-  FilterRules(projectForm){
-    
+  FilterRules(){
     let FilterRules =[];
     let TempArray=[];
     this.pmObject.RuleParamterArray.forEach(element => {
-      if(projectForm.get(element.value) && projectForm.get(element.value).value){
-        FilterRules.push.apply(FilterRules,this.pmObject.RuleArray.filter(c=> c.DisplayRules.filter(c=> c.DisplayName === element.label && c.Value === projectForm.get(element.value).value).length> 0)) 
-        TempArray.push(projectForm.get(element.value).value);
+      if(element.value){
+        FilterRules.push.apply(FilterRules,this.pmObject.RuleArray.filter(c=> c.DisplayRules.filter(c=> c.DisplayName === element.Rulelabel && c.Value === element.value).length > 0)) 
+        TempArray.push(element.value);
       }
     });
     TempArray.sort();
     FilterRules = [...new Set(FilterRules)];
-    this.pmObject.ProjetcRuleArray = FilterRules.filter(c=> c.DisplayRules.map(d=>d.Value).sort().filter(e=> !TempArray.includes(e)).length ===0 );
-    this.pmObject.ProjetcRuleArray.sort((a,b) => b.DisplayOrder - a.DisplayOrder);   
+    const AllFilterRules = FilterRules.filter(c=> c.DisplayRules.map(d=>d.Value).sort().filter(e=> !TempArray.includes(e)).length ===0 );
+    
+    this.pmObject.ProjetcRuleArray.Delivery = AllFilterRules.filter(c=>c.ResourceType === this.constant.RulesType.DELIVERY) ? AllFilterRules.filter(c=>c.ResourceType === this.constant.RulesType.DELIVERY):[]; 
+    
+    this.pmObject.ProjetcRuleArray.CM = AllFilterRules.filter(c=>c.ResourceType === this.constant.RulesType.CM) ? AllFilterRules.filter(c=>c.ResourceType === this.constant.RulesType.CM):[]; 
+    
+    this.pmObject.ProjetcRuleArray.Delivery.sort((a,b) => b.DisplayOrder - a.DisplayOrder); 
+    this.pmObject.ProjetcRuleArray.CM.sort((a,b) => b.DisplayOrder - a.DisplayOrder); 
+
+    let IDsArray =[];
+
+    if (this.pmObject.ProjetcRuleArray.Delivery.length > 0) {
+      this.pmObject.OwnerAccess.selectedDeliveryOwner = this.pmObject.ProjetcRuleArray.Delivery[0].OwnerPG.ID;
+      IDsArray = this.pmObject.ProjetcRuleArray.Delivery.filter(
+        (c) => c.Access.hasOwnProperty("results")
+      ) ?  this.pmObject.ProjetcRuleArray.Delivery.filter(
+        (c) => c.Access.hasOwnProperty("results")
+      ).map(d=>d.Access.results.map(e=>e.ID)):[];
+      this.pmObject.OwnerAccess.selectedDeliveryAccess = [...new Set(IDsArray.reduce((a,b)=> [...a, ...b], []))];
+    }
+    if (this.pmObject.ProjetcRuleArray.CM.length > 0) {
+      this.pmObject.OwnerAccess.selectedCMOwner = this.pmObject.ProjetcRuleArray.CM[0].OwnerPG.ID;
+
+      IDsArray = this.pmObject.ProjetcRuleArray.CM.filter(
+        (c) => c.Access.hasOwnProperty("results")
+      ) ?  this.pmObject.ProjetcRuleArray.CM.filter(
+        (c) => c.Access.hasOwnProperty("results")
+      ).map(d=>d.Access.results.map(e=>e.ID)):[];
+
+      this.pmObject.OwnerAccess.selectedCMAccess =[...new Set(IDsArray.reduce((a,b)=> [...a, ...b], []))];
+    }
+    
   }
 
-
+ 
 
 
 

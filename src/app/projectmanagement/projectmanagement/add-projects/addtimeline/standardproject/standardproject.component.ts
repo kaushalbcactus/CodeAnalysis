@@ -132,6 +132,7 @@ export class StandardprojectComponent implements OnInit {
       this.setFieldProperties();
       this.isStandardLoaderHidden = true;
       this.isStandardTableHidden = false;
+      this.getProjectRules();
     }, 100);
   }
   onSeviceClear() {
@@ -2046,6 +2047,18 @@ export class StandardprojectComponent implements OnInit {
         return false;
       }
     }
+
+    if (
+      this.pmObject.OwnerAccess.selectedCMAccess &&
+      this.pmObject.OwnerAccess.selectedCMAccess.length === 0
+    ) {
+      this.commonService.showToastrMessage(
+        this.constants.MessageType.error,
+        " CM Access is required.",
+        false
+      );
+      return false;
+    }
     if (isRegisterClick && this.standardMilestone.milestones && this.standardMilestone.milestones.length) {
       for (const milestone of this.standardMilestone.milestones) {
         if (milestone.MilestoneDeviation > 0) {
@@ -2144,6 +2157,12 @@ export class StandardprojectComponent implements OnInit {
       this.pmObject.addProject.Timeline.Standard.StandardBudgetHrs = this.standardBudgetHrs;
       this.pmObject.addProject.Timeline.Standard.standardArray = this.standardFiles;
       this.pmObject.addProject.FinanceManagement.BudgetHours = this.pmObject.addProject.Timeline.Standard.StandardProjectBugetHours;
+      this.pmObject.addProject.ProjectAttributes.ActiveCM1 = this.pmObject.OwnerAccess.selectedCMAccess;
+      this.pmObject.addProject.ProjectAttributes.ActiveCM2 = this.pmObject.OwnerAccess.selectedCMOwner;
+
+      this.pmObject.addProject.ProjectAttributes.ActiveDelivery1 = this.pmObject.OwnerAccess.selectedDeliveryAccess;
+      this.pmObject.addProject.ProjectAttributes.ActiveDelivery2 = this.pmObject.OwnerAccess.selectedDeliveryOwner;
+    
       // await this.pmCommonService.validateAndSave();
       // new code by maxwell file upload progress bar
 
@@ -2396,5 +2415,10 @@ export class StandardprojectComponent implements OnInit {
 
   hideOverlayPanel() {
     this.dailyAllocateOP.hideOverlay();
+  }
+
+
+  async getProjectRules(){
+    await this.pmCommonService.FilterRules();   
   }
 }

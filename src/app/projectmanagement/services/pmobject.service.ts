@@ -529,14 +529,39 @@ export class PMObjectService {
   public updateInvoices = [];
 
   public RuleArray = [];
-  public ProjetcRuleArray=[];
+  public ProjetcRuleArray={ Delivery :[] , CM :[]};
 
   
   public RuleParamterArray=[
-    {label : "Practice Area" , value: 'practiceArea'},
-    {label  :'Client',value:'clientLeagalEntity' },
-    {label  :'Client Subdivision',value:'subDivision' },
-    {label  :'Currency',value:'Currency' },
-    {label  :'Deliverable Type',value:'DeliverableType' },
-]
+    { Rulelabel : "Practice Area" , value:'' },
+    {Rulelabel  :'Client', value:'' },
+    {Rulelabel  :'Client Subdivision', value:'' },
+    {Rulelabel  :'Currency', value:'' },
+    {Rulelabel  :'Deliverable Type', value:'' },
+];
+
+public OwnerAccess={
+  cmLevel1 : [],
+  cmLevel2 : [],
+  deliveryLevel1 : [],
+  deliveryLevel2 : [],
+  selectedCMOwner:'',
+  selectedCMAccess:[],
+  selectedDeliveryOwner:'',
+  selectedDeliveryAccess:[],
+
+};
+
+
+
+// public RuleParamterArray=[
+//   { Rulelabel : "Practice Area" , Formlabel: 'practiceArea', Objlabel : 'PracticeArea', value:'' },
+//   {Rulelabel  :'Client',Formlabel:'clientLeagalEntity' , Objlabel : 'ClientLegalEntity', value:'' },
+//   {Rulelabel  :'Client Subdivision',Formlabel:'subDivision' , Objlabel : 'SubDivision', value:'' },
+//   {Rulelabel  :'Currency',Formlabel:'Currency',  Objlabel : 'Currency', value:'' },
+//   {Rulelabel  :'Deliverable Type',Formlabel:'DeliverableType', Objlabel :'DeliverableType', value:'' },
+// ]
+
+
+
 }

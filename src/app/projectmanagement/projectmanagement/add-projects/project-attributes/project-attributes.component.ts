@@ -28,12 +28,10 @@ export class ProjectAttributesComponent implements OnInit {
   billedBy: SelectItem[];
   priority: SelectItem[];
   subDivisionArray: SelectItem[];
-  cmLevel1: SelectItem[];
-  cmLevel2: SelectItem[];
   deliveryLevel1: SelectItem[];
   deliveryLevel2: SelectItem[];
   isPubSupportDisabled = true;
-  showEditSave: boolean;
+  showEditSave: boolean = false;
   selectedFile;
   fileReader;
   projObj;
@@ -66,7 +64,7 @@ export class ProjectAttributesComponent implements OnInit {
     await this.pmCommonService.setBilledBy();
     this.isProjectAttributeLoaderHidden = false;
     this.isProjectAttributeTableHidden = true;
-    setTimeout(() => {
+    setTimeout(async () => {
       if (this.config && this.config.hasOwnProperty('data')) {
         this.projObj = this.config.data.projectObj;
         this.sowObj = this.config.data.sowObj;
@@ -84,6 +82,10 @@ export class ProjectAttributesComponent implements OnInit {
         if (sow && sow.length) {
           this.addProjectAttributesForm.get('billedBy').setValue(this.pmObject.addProject.FinanceManagement.BilledBy);
           this.addProjectAttributesForm.get('billedBy').disable();
+          this.addProjectAttributesForm.get('selectedActiveCM1').disable();
+          this.addProjectAttributesForm.get('selectedActiveCM2').disable();
+          this.addProjectAttributesForm.get('selectedActiveAD1').disable();
+          this.addProjectAttributesForm.get('selectedActiveAD2').disable();
           this.onBilledByChanged();
           const sowObj = {
             ClientLegalEntity: sow[0].ClientLegalEntity,
@@ -96,14 +98,17 @@ export class ProjectAttributesComponent implements OnInit {
             // DeliveryLevel2: sow[0].DeliveryLevel2.ID,
             AdditionalPOC: sow[0].AdditionalPOC ? sow[0].AdditionalPOC.split(';#').map(x => parseInt(x, 10)) : []
           };
-          this.setFieldProperties(this.pmObject.addProject.ProjectAttributes, sowObj, true);
+          await this.setFieldProperties(this.pmObject.addProject.ProjectAttributes, sowObj, true);
           this.showEditSave = false;
+          this.pmObject.RuleParamterArray.find(c=>c.Rulelabel === 'Client').value = this.pmObject.addProject.FinanceManagement.ClientLegalEntity;
+          this.pmObject.RuleParamterArray.find(c=>c.Rulelabel === 'Currency').value = this.pmObject.addProject.FinanceManagement.Currency;
+          // this.GetRulesOnChange();
         }
       }
     }, this.pmConstant.TIME_OUT);
   }
   /**
-   * This method is to set the field properties for all project object.
+   * This method is to set the field properties for all project object.s
    * @param projObj Pass projectObj as parameter.
    * @param sowObj Pass sowObj as parameter.
    * @param isCreate pass isCreate as parameter.
@@ -180,18 +185,18 @@ export class ProjectAttributesComponent implements OnInit {
     if (projObj.PUBSupportStatus) {
       this.addProjectAttributesForm.get('pubSupportStatus').setValue(projObj.PUBSupportStatus);
     }
-    // if (projObj.ActiveCM1.length) {
-    //   this.addProjectAttributesForm.get('selectedActiveCM1').setValue(projObj.ActiveCM1);
-    // }
-    // if (projObj.ActiveCM2) {
-    //   this.addProjectAttributesForm.get('selectedActiveCM2').setValue(projObj.ActiveCM2);
-    // }
-    // if (projObj.ActiveDelivery1.length) {
-    //   this.addProjectAttributesForm.get('selectedActiveAD1').setValue(projObj.ActiveDelivery1);
-    // }
-    // if (projObj.ActiveDelivery2) {
-    //   this.addProjectAttributesForm.get('selectedActiveAD2').setValue(projObj.ActiveDelivery2);
-    // }
+    if (projObj.ActiveCM1.length) {
+      this.addProjectAttributesForm.get('selectedActiveCM1').setValue(projObj.ActiveCM1);
+    }
+    if (projObj.ActiveCM2) {
+      this.addProjectAttributesForm.get('selectedActiveCM2').setValue(projObj.ActiveCM2);
+    }
+    if (projObj.ActiveDelivery1.length) {
+      this.addProjectAttributesForm.get('selectedActiveAD1').setValue(projObj.ActiveDelivery1);
+    }
+    if (projObj.ActiveDelivery2) {
+      this.addProjectAttributesForm.get('selectedActiveAD2').setValue(projObj.ActiveDelivery2);
+    }
     if (projObj.ProjectTitle) {
       this.addProjectAttributesForm.get('projectTitle').setValue(projObj.ProjectTitle);
     }
@@ -266,26 +271,26 @@ export class ProjectAttributesComponent implements OnInit {
       });
     }
     // set the CM1, CM2, AD1, AD2 dropdown value.
-    this.cmLevel1 = [];
-    this.cmLevel2 = [];
-    this.deliveryLevel1 = [];
-    this.deliveryLevel2 = [];
+    this.pmObject.OwnerAccess.cmLevel1 = [];
+    this.pmObject.OwnerAccess.cmLevel2 = [];
+    this.pmObject.OwnerAccess.deliveryLevel1 = [];
+    this.pmObject.OwnerAccess.deliveryLevel2 = [];
     this.pmObject.oProjectCreation.Resources.cmLevel1.forEach(element => {
-      this.cmLevel1.push({ label: element.Title, value: element.ID });
+      this.pmObject.OwnerAccess.cmLevel1.push({ label: element.Title, value: element.ID });
     });
     this.pmObject.oProjectCreation.Resources.cmLevel2.forEach(element => {
-      this.cmLevel1.push({ label: element.Title, value: element.ID });
-      this.cmLevel2.push({ label: element.Title, value: element.ID });
+      this.pmObject.OwnerAccess.cmLevel1.push({ label: element.Title, value: element.ID });
+      this.pmObject.OwnerAccess.cmLevel2.push({ label: element.Title, value: element.ID });
     });
     this.pmObject.oProjectCreation.Resources.deliveryLevel1.forEach(element => {
-      this.deliveryLevel1.push({ label: element.Title, value: element.ID });
+      this.pmObject.OwnerAccess.deliveryLevel1.push({ label: element.Title, value: element.ID });
     });
     this.pmObject.oProjectCreation.Resources.deliveryLevel2.forEach(element => {
-      this.deliveryLevel1.push({ label: element.Title, value: element.ID });
-      this.deliveryLevel2.push({ label: element.Title, value: element.ID });
+      this.pmObject.OwnerAccess.deliveryLevel1.push({ label: element.Title, value: element.ID });
+      this.pmObject.OwnerAccess.deliveryLevel2.push({ label: element.Title, value: element.ID });
     });
-    this.cmLevel1.sort((a, b) => (a.label > b.label) ? 1 : -1);
-    this.deliveryLevel1.sort((a, b) => (a.label > b.label) ? 1 : -1);
+    this.pmObject.OwnerAccess.cmLevel1.sort((a, b) => (a.label > b.label) ? 1 : -1);
+    this.pmObject.OwnerAccess.deliveryLevel1.sort((a, b) => (a.label > b.label) ? 1 : -1);
   }
   /**
    * This method is used to initiliaze the project attributes forms.
@@ -391,9 +396,22 @@ export class ProjectAttributesComponent implements OnInit {
       this.enableCountFields = false;
     }
     
-    this.GetRulesOnChange();
+    this.pmObject.RuleParamterArray.find(c=>c.Rulelabel === 'Practice Area').value = this.addProjectAttributesForm.get('practiceArea').value;
 
+    if(this.showEditSave){
+     this.GetRulesOnChange();
+    }
   }
+
+
+  OnSubDvisionChange(){
+    this.pmObject.RuleParamterArray.find(c=>c.Rulelabel === 'Client Subdivision').value = this.addProjectAttributesForm.get('subDivision').value;
+    if(this.showEditSave){
+     this.GetRulesOnChange();
+    }
+  }
+
+
   /**
    * This method is used to validate project attributes field.
    * @param formGroup Pass the formGroup as parameter.
@@ -489,6 +507,17 @@ export class ProjectAttributesComponent implements OnInit {
         this.addProjectAttributesForm.get('practiceArea').disable();
       }
     }
+
+    this.pmObject.RuleParamterArray.find(c=>c.Rulelabel === 'Practice Area').value = projObj.BusinessVertical;
+    this.pmObject.RuleParamterArray.find(c=>c.Rulelabel === 'Client').value = projObj.ClientLegalEntity;
+    this.pmObject.RuleParamterArray.find(c=>c.Rulelabel === 'Client Subdivision').value = projObj.SubDivision;
+    this.pmObject.RuleParamterArray.find(c=>c.Rulelabel === 'Currency').value = projObj.Currency;
+    this.pmObject.RuleParamterArray.find(c=>c.Rulelabel === 'Deliverable Type').value = projObj.DeliverableType;
+
+
+
+
+
     this.pmObject.addProject.ProjectAttributes.ClientLegalEntity = projObj.ClientLegalEntity;
     this.pmObject.addProject.ProjectAttributes.SubDivision = projObj.SubDivision;
     this.pmObject.addProject.ProjectAttributes.BillingEntity = projObj.BillingEntity;
@@ -750,8 +779,12 @@ export class ProjectAttributesComponent implements OnInit {
   }
 
   async GetRulesOnChange(){
+    await this.pmCommonService.FilterRules();
 
-    await this.pmCommonService.FilterRules(this.addProjectAttributesForm);
+      this.addProjectAttributesForm.get('selectedActiveCM1').setValue(this.pmObject.OwnerAccess.selectedCMAccess);
+      this.addProjectAttributesForm.get('selectedActiveCM2').setValue(this.pmObject.OwnerAccess.selectedCMOwner);
+      this.addProjectAttributesForm.get('selectedActiveAD1').setValue(this.pmObject.OwnerAccess.selectedDeliveryAccess);
+      this.addProjectAttributesForm.get('selectedActiveAD2').setValue(this.pmObject.OwnerAccess.selectedDeliveryOwner);
 
   }
 }
