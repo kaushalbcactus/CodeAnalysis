@@ -459,7 +459,6 @@ export class ProjectAttributesComponent implements OnInit {
       this.pmObject.addProject.ProjectAttributes.ReferenceCount = 0;
     }
 
-
   }
   /**
    * This method get called when user changed the billed by dropdonw value.
