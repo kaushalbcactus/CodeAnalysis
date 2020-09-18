@@ -1054,8 +1054,12 @@ export class UserProfileComponent implements OnInit {
           const todayDate = this.datePipe.transform(new Date(), 'MMM dd yyyy');
           if (dateOfExit <= todayDate) {
             data.IsActiveCH = this.adminConstants.LOGICAL_FIELD.NO;
+          } else {
+            data.IsActiveCH = this.adminConstants.LOGICAL_FIELD.YES;
           }
           data.DateofExit = formObj.dateofexit;
+        } else {
+          data.IsActiveCH = this.adminConstants.LOGICAL_FIELD.YES;
         }
       }
     }
@@ -1094,8 +1098,10 @@ export class UserProfileComponent implements OnInit {
 
       if (date.isFTEEffectiveDateActive && formObj.fTEEffectiveDate && formObj.isFTE === this.adminConstants.LOGICAL_FIELD.YES) {
         data.FTEEffectiveDate = formObj.fTEEffectiveDate;
-      } else if (formObj.isFTE === this.adminConstants.LOGICAL_FIELD.NO) {
+        data.DueDateDT = null;
+      } else if (date.isFTENo && formObj.fTeDueDate && formObj.isFTE === this.adminConstants.LOGICAL_FIELD.NO) {
         data.FTEEffectiveDate = null;
+        data.DueDateDT = formObj.fTeDueDate;
       }
     }
     return data;

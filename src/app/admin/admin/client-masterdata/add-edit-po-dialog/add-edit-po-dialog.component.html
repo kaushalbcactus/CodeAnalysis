@@ -17,7 +17,7 @@
         <!-- first Row html  -->
         <div class="p-grid">
             <div class="p-grid p-col">
-                <div class="p-col-4"><span class="compulsory">*</span>Po Number</div>
+                <div class="p-col-4"><span *ngIf="!showeditPO" class="compulsory">*</span>Po Number</div>
                 <div class="p-col-8">
                     <input type="text" style="width: 100%;" formControlName="poNumber" placeholder="PO Number" pInputText>
                     <div class="error" *ngIf="isPOFormSubmit && PoForm.controls.poNumber.errors">
@@ -27,7 +27,7 @@
                 </div>
             </div>
             <div class="p-grid p-col">
-                <div class="p-col-4"><span class="compulsory">*</span>PO Name</div>
+                <div class="p-col-4"><span *ngIf="!showeditPO" class="compulsory">*</span>PO Name</div>
                 <div class="p-col-8">
                     <input type="text" style="width: 100%;" formControlName="poName" placeholder="PO Name" pInputText>
                     <div class="error" *ngIf="isPOFormSubmit && PoForm.controls.poName.errors">
@@ -44,7 +44,7 @@
         <!-- second Row html if new -->
         <div class="p-grid" [hidden]="showeditPO">
             <div class="p-grid p-col">
-                <div class="p-col-4"><span class="compulsory">*</span>Total Amount</div>
+                <div class="p-col-4"><span *ngIf="!showeditPO" class="compulsory">*</span>Total Amount</div>
                 <div class="p-col-8">
                     <input type="number" size="30" style="width: 100%;" formControlName="total" placeholder="Total Amount" pInputText>
                     <div class="error" *ngIf="isPOFormSubmit && PoForm.controls.total.errors">
@@ -55,7 +55,7 @@
                 </div>
             </div>
             <div class="p-grid p-col">
-                <div class="p-col-4"><span class="compulsory">*</span>Revenue</div>
+                <div class="p-col-4"><span *ngIf="!showeditPO" class="compulsory">*</span>Revenue</div>
                 <div class="p-col-8">
                     <input type="number" size="30" style="width: 100%;" formControlName="revenue" placeholder="Revenue Amount" (change)="setPOTotal()" pInputText>
                     <div class="error" *ngIf="isPOFormSubmit && PoForm.controls.revenue.errors">
@@ -70,7 +70,7 @@
         <!-- third Row html if new -->
         <div class="p-grid" [hidden]="showeditPO">
             <div class="p-grid p-col">
-                <div class="p-col-4"><span class="compulsory">*</span>OOP Amount</div>
+                <div class="p-col-4"><span *ngIf="!showeditPO" class="compulsory">*</span>OOP Amount</div>
                 <div class="p-col-8">
                     <input type="number" size="30" style="width: 100%;" formControlName="oop" placeholder="OOP Amount" (change)="setPOTotal()" pInputText>
                     <div class="error" *ngIf="isPOFormSubmit && PoForm.controls.oop.errors">
@@ -81,7 +81,7 @@
                 </div>
             </div>
             <div class="p-grid p-col">
-                <div class="p-col-4"><span class="compulsory">*</span>Tax Amount</div>
+                <div class="p-col-4"><span *ngIf="!showeditPO" class="compulsory">*</span>Tax Amount</div>
                 <div class="p-col-8">
                     <input type="number" size="30" style="width: 100%;" formControlName="tax" placeholder="Tax Amount" (change)="setPOTotal()" pInputText>
                     <div class="error" *ngIf="isPOFormSubmit && PoForm.controls.tax.errors">
@@ -96,7 +96,7 @@
         <!-- forth Row html if new else for edit secod row  -->
         <div class="p-grid">
             <div class="p-grid p-col">
-                <div class="p-col-4"><span class="compulsory">*</span>Currency</div>
+                <div class="p-col-4"><span *ngIf="!showeditPO" class="compulsory">*</span>Currency</div>
                 <div class="p-col-8">
                     <p-dropdown [options]="adminObject.dropdown.CurrencyArray" placeholder="Select Currency" formControlName="currency" filter="true" resetFilterOnHide="true" [style]="{'width':'100%'}"></p-dropdown>
                     <div class="error" *ngIf="isPOFormSubmit && PoForm.controls.currency.errors">
@@ -107,7 +107,7 @@
             </div>
 
             <div class="p-grid p-col">
-                <div class="p-col-4"><span class="compulsory">*</span>PO Expiry Date</div>
+                <div class="p-col-4"><span *ngIf="!showeditPO" class="compulsory">*</span>PO Expiry Date</div>
                 <div class="p-col-8">
                     <p-calendar styleClass="pCalendarBtn" formControlName="poExpiryDate" [minDate]="minDateValue" [showIcon]="true" [maxDate]="minDateValue" dateFormat="M dd, yy"   [showOnFocus]="false"   [monthNavigator]="true" [readonlyInput]="true">
                     </p-calendar>
@@ -121,7 +121,7 @@
         <!-- fifth Row html if new else for edit third row  -->
         <div class="p-grid">
             <div class="p-grid p-col">
-                <div class="p-col-4"><span class="compulsory">*</span>Point of Contact</div>
+                <div class="p-col-4"><span *ngIf="!showeditPO" class="compulsory">*</span>Point of Contact</div>
                 <div class="p-col-8">
                     <p-dropdown [options]="adminObject.dropdown.POPointOfContactArray" placeholder="Select Point of Contact" formControlName="poc" filter="true" resetFilterOnHide="true" [style]="{'width':'100%'}"></p-dropdown>
                     <div class="error" *ngIf="isPOFormSubmit && PoForm.controls.poc.errors">
@@ -131,7 +131,7 @@
                 </div>
             </div>
             <div class="p-grid p-col">
-                <div class="p-col-4"><span class="compulsory">*</span>PO File</div>
+                <div class="p-col-4"><span *ngIf="!showeditPO" class="compulsory">*</span>PO File</div>
                 <div class="p-col-8">
                     <input type="file" style="width: 100%;" formControlName="poFile" (change)="onFileChange($event)" pInputText>
                     <div class="error" *ngIf="isPOFormSubmit && PoForm.controls.poFile.errors">
@@ -144,7 +144,7 @@
         <!-- sixth Row html if new else for edit fourth row  -->
         <div class="p-grid">
             <div class="p-grid p-col">
-                <div class="p-col-4"><span class="compulsory">*</span>TA</div>
+                <div class="p-col-4"><span *ngIf="!showeditPO" class="compulsory">*</span>TA</div>
                 <div class="p-col-8">
                     <p-dropdown [options]="adminObject.dropdown.POTAArray" placeholder="Select TA" formControlName="ta" filter="true" resetFilterOnHide="true" [style]="{'width':'100%'}">
                     </p-dropdown>
@@ -155,7 +155,7 @@
                 </div>
             </div>
             <div class="p-grid p-col">
-                <div class="p-col-4"><span class="compulsory">*</span>Molecule
+                <div class="p-col-4"><span *ngIf="!showeditPO" class="compulsory">*</span>Molecule
                 </div>
                 <div class="p-col-8">
                     <p-dropdown [options]="adminObject.dropdown.POMoleculeArray" placeholder="Select Molecule" formControlName="molecule" filter="true" resetFilterOnHide="true" [style]="{'width':'100%'}">
@@ -171,7 +171,7 @@
         <!-- seventh Row html if new else for edit fifth row  -->
         <div class="p-grid">
             <div class="p-grid p-col">
-                <div class="p-col-4"><span class="compulsory">*</span>CM Level 2</div>
+                <div class="p-col-4"><span *ngIf="!showeditPO" class="compulsory">*</span>CM Level 2</div>
                 <div class="p-col-8">
                     <p-dropdown [options]="adminObject.dropdown.CMLevel2Array" placeholder="Select CM Level 2" formControlName="cmLevel2" [style]="{'width':'100%'}">
                     </p-dropdown>
@@ -182,7 +182,7 @@
                 </div>
             </div>
             <div class="p-grid p-col">
-                <div class="p-col-4"><span class="compulsory">*</span>PO Buying Entity
+                <div class="p-col-4"><span *ngIf="!showeditPO" class="compulsory">*</span>PO Buying Entity
                 </div>
                 <div class="p-col-8">
                     <p-dropdown [options]="adminObject.dropdown.POBuyingEntityArray" placeholder="Select PO Buying Entity" formControlName="poBuyingEntity" filter="true" resetFilterOnHide="true" [style]="{'width':'100%'}">
