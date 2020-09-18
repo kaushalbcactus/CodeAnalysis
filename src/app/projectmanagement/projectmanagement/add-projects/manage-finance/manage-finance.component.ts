@@ -1100,7 +1100,7 @@ export class ManageFinanceComponent implements OnInit {
           retPOInfo.scTax = retPOInfo.scTax + 0;
           this.poData[poIndex].poInfoData.push(tempPOObj);
           this.showAddInvoiceDetails = false;
-          if (retPOInfo.oop === retPOInfo.scOOP || retPOInfo.revenue === retPOInfo.scRevenue) {
+          if (retPOInfo.oop === retPOInfo.scOOP && retPOInfo.revenue === retPOInfo.scRevenue) {
             retPOInfo.showAdd = false;
             retPOInfo.showDelete = false;
             retPOInfo.showInvoice = false;

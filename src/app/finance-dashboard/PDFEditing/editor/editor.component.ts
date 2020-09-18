@@ -1513,7 +1513,7 @@ export class EditorComponent implements OnInit {
         </tr>
         <tr>
             <td>
-                <p>A/603, 6th Floor, Satellite Gazebo, Guru Hargovind Singh Marg, Andheri (East), Mumbai 400093, India</p>
+                <p>B - 502, Satellite Gazebo, Guru Hargovindji Marg, Andheri East, Mumbai – 400093, India</p>
             </td>
         </tr>
         <tr>
@@ -1733,7 +1733,7 @@ export class EditorComponent implements OnInit {
                         <p>IFSC: HSBC0400002</p>
                         <p>Account #:  006263446001</p>
                         <p>Beneficiary Name : Cactus Communications Pvt. Ltd.</p>
-                        <p>Beneficiary Address : A/603, 6th Floor, Satellite Gazebo, Guru Hargovind Singh Marg, Andheri (East), Mumbai 400093, India </p>
+                        <p>Beneficiary Address : B - 502, Satellite Gazebo, Guru Hargovindji Marg, Andheri East, Mumbai – 400093, India </p>
                         <p>Recipient Phone : +91 22 67148888 </p>
                         </li>
                         </ul>
@@ -1821,7 +1821,7 @@ export class EditorComponent implements OnInit {
         </tr>
         <tr>
             <td>
-                <p>A/603, 6th Floor, Satellite Gazebo, Guru Hargovind Singh Marg, Andheri (East), Mumbai 400093, India</p>
+                <p>B - 502, Satellite Gazebo, Guru Hargovindji Marg, Andheri East, Mumbai – 400093, India</p>
             </td>
         </tr>
         <tr>
@@ -2001,7 +2001,7 @@ export class EditorComponent implements OnInit {
                 <p>IFSC: HSBC0400002</p>
                 <p>Account #:  006263446001</p>
                 <p>Beneficiary Name : Cactus Communications Pvt. Ltd.</p>
-                <p>Beneficiary Address : A/603, 6th Floor, Satellite Gazebo, Guru Hargovind Singh Marg, Andheri (East), Mumbai 400093, India </p>
+                <p>Beneficiary Address : B - 502, Satellite Gazebo, Guru Hargovindji Marg, Andheri East, Mumbai – 400093, India </p>
                 <p>Recipient Phone : +91 22 67148888 </p>
             </li>
         `,
