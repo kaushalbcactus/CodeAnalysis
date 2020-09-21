@@ -66,8 +66,8 @@
                                         <tr *ngIf="user.dates.length<=10 && !this.disableOverlay">
                                             <td>
                                                 <div class="taskBar" *ngFor="let task of user.tasks" [ngStyle]="{'width':task.cssWidth,'left':task.cssLeft,'top':task.cssTop,'display':task.cssHide}" [ngClass]="{'plannedTask':task.Status==='Not Confirmed' || task.Status==='Active' ,'confirmedTask':task.Status!=='Not confirmed'}">
-                                                    <span *ngIf="task.ProjectCode">
-                                                    {{task.TotalAllocated}} : {{task.ProjectCode}}</span>
+                                                    <!-- <span *ngIf="task.ProjectCode">
+                                                    {{task.TotalAllocated}} : {{task.ProjectCode}}</span> -->
                                                     <span *ngIf="task.Task === 'Adhoc';else showComment">
                                                         {{task.TotalAllocated}} : {{task.CommentsMT}}
                                                         </span>
