@@ -98,11 +98,24 @@
           </tr>
           <tr>
               <td>
-                  <p-dropdown class="tagPopup" [options]="qc.tagGroupItems" placeholder="Select Group Items" filter="true" resetFilterOnHide="true" optionLabel="Title" [(ngModel)]="qc.selectedTaggedItem" appendTo="body" loader="loading">
+                  <p-dropdown class="tagPopup" [options]="qc.tagGroupItems" placeholder="Select open project code" filter="true" resetFilterOnHide="true" optionLabel="Title" [(ngModel)]="qc.selectedTaggedItem" appendTo="body" loader="loading">
                   </p-dropdown> <span class="mandatory">*</span>
                   <div class="popupResourceLoader">
                       <div id="resourceLoader" [hidden]="hideResourceLoader"></div>
                   </div>
+                  <span class="orText">
+                  OR
+                  </span>
+                  <span class="p-input-icon-right searchProject">
+                    <i class="pi pi-search search-icon" (click)="searchProjectCode(closedPrjCode.value)"  *ngIf="!showPrjLoader"></i>
+                    <i class="pi pi-spin pi-spinner"  *ngIf="showPrjLoader"></i>
+                    <input type="text"
+                    [ngClass]="{'prjFound-search': showAccepted, 'prjNotFound-search':showRejected}"
+                    class="search-input"
+                    pInputText #closedPrjCode (keydown.enter)="searchProjectCode(closedPrjCode.value); $event.preventDefault()" placeholder="Select closed project code"/>
+                  </span>
+                  <span *ngIf="showAccepted" class="prjFound"><i class="pi pi-check-circle" ></i></span>
+                  <span  *ngIf="showRejected" class="prjNotFound"><i class="pi pi-times-circle"  ></i> Project not found.</span>
               </td>
           </tr>
           <tr>

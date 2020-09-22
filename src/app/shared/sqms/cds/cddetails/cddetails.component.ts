@@ -14,15 +14,10 @@ import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 })
 export class CddetailsComponent implements OnInit {
 
-  // Html for popup
-  // @ViewChild('popupContent', { static: true }) popupContent: ElementRef;
-
   // This property emits data to parent (CD) component to reflect changes done in popup
   @Output() bindTableEvent = new EventEmitter<{}>();
   @Output() setSuccessMessage = new EventEmitter<{}>();
   display = false;
-  // public successMessage: string;
-  // private success = new Subject<string>();
   public loading = false;
   public hidePopupLoader = false;
   public hidePopupTable = true;
@@ -37,7 +32,6 @@ export class CddetailsComponent implements OnInit {
     { label: 'EQG', value: 'EQG' },
     { label: 'CS / PM / RM / Others', value: 'CS / PM / RM / Others' }
     ],
-    // resources: [],
     businessImpact: [{ label: 'High', value: 'High' }, { label: 'Low', value: 'Low' }],
     cdCategories: [{ label: 'ATD issues', value: 'ATD issues' }, { label: 'Content issues', value: 'Content issues' },
     { label: 'Missed deadlines', value: 'Missed deadlines' }, { label: 'Communication issues', value: 'Communication issues' }],
@@ -48,7 +42,6 @@ export class CddetailsComponent implements OnInit {
     selectedGroup: null,
     selectedTaggedItem: null,
     selectedAccountableGroup: null,
-    // selectedResource: null,
     selectedBusinessImpact: null,
     selectedCDCategory: null,
     resourceIdentifiedComments: '',
@@ -104,6 +97,9 @@ export class CddetailsComponent implements OnInit {
     type: '',
     listName: ''
   };
+  public showPrjLoader = false;
+  public showAccepted = false;
+  public showRejected = false;
   public hideResourceLoader = true;
   constructor(private globalConstant: ConstantsService, private spService: SPOperationService,
     private global: GlobalService,
@@ -205,8 +201,6 @@ export class CddetailsComponent implements OnInit {
       msgType: '',
       msg: ''
     });
-    // this.resetAccountableResource();
-    // this.display = false;
   }
 
   /**
@@ -391,17 +385,9 @@ export class CddetailsComponent implements OnInit {
           this.commonService.SetNewrelic('QMS', 'CD-updateValidity', 'SendMail');
           this.spService.sendMail(strTo, this.global.currentUser.email, rejectMailSubject, rejectMailContent, this.global.currentUser.email);
         }
-        msg = 'CD rejected for ' + this.qc.projectCode + '.';
-        // this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD rejected for ' + this.qc.projectCode + '.' });
-      } else if (actionClicked === 'valid') {
-        msg = 'CD marked as valid and closed for ' + this.qc.projectCode + '.';
-        // this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD marked as valid and closed for ' + this.qc.projectCode + '.' });
-      } else if (actionClicked === 'invalid') {
-        msg = 'CD marked as invalid and closed for ' + this.qc.projectCode + '.';
-        // this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD marked as invalid and closed for ' + this.qc.projectCode + '.' });
-      }
-      // emit success message to CD component
-      // this.resetAccountableResource();
+        msg = 'CD rejected for ' + this.qc.projectCode + '.';} else if (actionClicked === 'valid') {
+        msg = 'CD marked as valid and closed for ' + this.qc.projectCode + '.';} else if (actionClicked === 'invalid') {
+        msg = 'CD marked as invalid and closed for ' + this.qc.projectCode + '.';}
       this.hidePopupLoader = true;
       this.hidePopupTable = false;
       this.popupConfig.close({
@@ -410,7 +396,6 @@ export class CddetailsComponent implements OnInit {
         msgType: this.globalConstant.MessageType.success,
         msg
       });
-      // this.close();
     }, 300);
   }
 
@@ -577,4 +562,27 @@ export class CddetailsComponent implements OnInit {
       return res;
     });
   }
+
+  searchProjectCode(value) {
+    this.showPrjLoader = true;
+    setTimeout(async () => {
+      const projectCode = value;
+      let projectInfoFilter;
+      projectInfoFilter = Object.assign({}, this.qmsConstant.common.getProjectCode);
+      projectInfoFilter.filter = projectInfoFilter.filter.replace(/{{projectCode}}/gi,
+        projectCode);
+      this.commonService.SetNewrelic('QMS', 'tagProject', 'GetClosedProjectInfo');
+      const results = await this.spService.readItems(this.globalConstant.listNames.ProjectInformation.name, projectInfoFilter);
+      if (results && results.length) {
+        this.qc.selectedTaggedItem = results.length ? results[0] : {};
+        this.showAccepted = true;
+        this.showRejected = false;
+      } else {
+        this.showRejected = true;
+        this.showAccepted = false;
+      }
+      this.showPrjLoader = false;
+    }, 100);
+  }
+
 }

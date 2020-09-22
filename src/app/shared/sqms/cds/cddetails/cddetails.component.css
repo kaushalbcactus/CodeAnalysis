@@ -13,8 +13,10 @@
 }
 
 ::ng-deep .mandatory {
+  float: left;
   color: darkred!important;
   padding-left: 6px!important;
+  margin-right: 20px;
 }
 
 ::ng-deep .tagPopup .ui-dropdown {
@@ -159,4 +161,43 @@
 }
 .hint {
   width: 95%;
+}
+
+.searchProject > i {
+  right: 0.5rem;
+  color: #6c757d;
+  position: absolute;
+  margin-top: -.5rem;
+  top: 50%;
+}
+.prjNotFound {
+  color: red!important;
+}
+.prjFound {
+  color: green;
+
+}
+.orText {
+  margin-right: 20px;
+}
+.searchProject {
+  position: relative;
+  display: inline-block;
+}
+.search-icon {
+  cursor: pointer;
+}
+.search-input {
+  width: 17.5em;
+}
+.prjFound-search {
+  border-color: green;
+  border-style: double;
+}
+.prjNotFound-search {
+  border-color: red;
+  border-style: double;
+}
+.pi-check-circle, .pi-times-circle {
+  vertical-align: sub;
 }

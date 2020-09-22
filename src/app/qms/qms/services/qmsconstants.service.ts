@@ -34,6 +34,11 @@ export class QMSConstantsService {
     getMilestoneTasks: {
       select: 'Title, DefaultSkill, ScorecardRatingAllowed',
       filter: "Status eq 'Active'",
+    },
+    getProjectCode: {
+      select: 'ID',
+      filter: 'ProjectCode eq \'{{projectCode}}\' and (Status eq \'Closed\' or Status eq \'Cancelled\')',
+      top: 4500
     }
   };
   public reviewerComponent = {
