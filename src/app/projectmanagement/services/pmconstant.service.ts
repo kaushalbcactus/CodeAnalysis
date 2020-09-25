@@ -546,6 +546,11 @@ export class PmconstantService {
       expand: "Editor,Author",
       top: 1,
     },
+    SPENDING_INFOByActive: {
+      select: "ID",
+      filter: "Title eq '{{Title}}' and (Status ne \'Cancelled\' or Status ne \'Rejected\')",
+      top: 1,
+    },
     sowList: {
       select: "ID,SOWCode,Title,ClientLegalEntity,Currency,BillingEntity,TotalLinked,OOPLinked,InvoicedOOP,TotalInvoiced,TotalScheduled,ScheduledOOP",
       filter: "Status ne 'CLosed' or Status ne 'Cancelled' ",

@@ -1538,10 +1538,10 @@ export class TimelineComponent
           this.getUserCapacity(task);
           break;
         case "confirmMilestone":
-          this.confirmMilestone(task);
+          this.setForConfirmMilestone(task);
           break;
         case "confirmSubmilestone":
-          this.confirmMilestone(task);
+          this.setForConfirmMilestone(task);
           break;
         case "editAllocation":
           this.editAllocation(task, "");
@@ -2178,6 +2178,39 @@ export class TimelineComponent
       return submilestone;
     }
     return milestone;
+  }
+
+  checkNotCompletedTask() {
+    let isValid = false;
+    let currentMilestone = this.milestoneData.find(e=> e.data.isCurrent == true && e.data.type== 'milestone');
+    if(currentMilestone) {
+      let currentTasks = this.taskAllocateCommonService.getTasksFromMilestones(
+        currentMilestone.data,
+        true,
+        this.milestoneData,
+        false
+      );
+        
+      currentTasks.forEach(e=> {
+        if(e.status !== 'Completed' && e.itemType !== 'Client Review') {
+          isValid = true;
+        }
+      })
+    }
+    return isValid;
+  }
+
+  async setForConfirmMilestone(task) {
+    let isValid = await this.checkNotCompletedTask();
+    if(isValid) {
+    await this.commonService.confirmMessageDialog('Confirmation','Previous Milestone/SubMilestone tasks are not completed and it will be mark as Auto Closed Are you sure that you want to proceed ?', null, ['Yes', 'No'], false).then(async Confirmation => {
+      if (Confirmation === 'Yes') { 
+       this.confirmMilestone(task);
+      }
+    });
+    } else {
+      this.confirmMilestone(task);
+    }
   }
 
   confirmMilestone(task) {
