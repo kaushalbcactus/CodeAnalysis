@@ -92,30 +92,39 @@
       <table class="full-width" *ngIf="qc.actionClicked ==='tag'">
           <tr>
               <td class="tagGroup">
-                  <p-dropdown class="tagPopup" [options]="qc.tagGroups" filter="true" resetFilterOnHide="true" placeholder="Select Project / Client" optionLabel="label" [(ngModel)]="qc.selectedGroup" (onChange)="getSelectedGroupItems()" appendTo="body">
+                  <p-dropdown class="tagPopup" #tagGroup [options]="qc.tagGroups" filter="true" resetFilterOnHide="true" placeholder="Project / Client" optionLabel="label" [(ngModel)]="qc.selectedGroup" (onChange)="getSelectedGroupItems()" appendTo="body">
                   </p-dropdown> <span class="mandatory">*</span>
+                  <div class="popupResourceLoader">
+                    <div id="resourceLoader" [hidden]="hideResourceLoader"></div>
+                </div>
               </td>
           </tr>
           <tr>
               <td>
-                  <p-dropdown class="tagPopup" [options]="qc.tagGroupItems" placeholder="Select open project code" filter="true" resetFilterOnHide="true" optionLabel="Title" [(ngModel)]="qc.selectedTaggedItem" appendTo="body" loader="loading">
+                  <p-dropdown class="tagPopup"  [disabled]="showAccepted" [options]="qc.tagGroupItems" [placeholder]="qc.selectedGroup && qc.selectedGroup.value === 'Project' ? 'Open Projects' : 'Name'" filter="true" resetFilterOnHide="true" optionLabel="Title" [(ngModel)]="qc.selectedTaggedItem" appendTo="body" loader="loading">
                   </p-dropdown> <span class="mandatory">*</span>
-                  <div class="popupResourceLoader">
-                      <div id="resourceLoader" [hidden]="hideResourceLoader"></div>
-                  </div>
-                  <span class="orText">
-                  OR
+                  <span *ngIf="qc.selectedGroup && qc.selectedGroup.value === 'Project' && qc.tagGroupItems.length">
+                    <span class="orText">
+                      OR
+                    </span>
+                    <span class="p-input-icon-right searchProject">
+                      <i class="pi pi-search search-icon" (click)="searchProjectCode(closedPrjCode.value)"  *ngIf="!showPrjLoader && !showAccepted && !showRejected"></i>
+                      <i class="pi pi-spin pi-spinner" *ngIf="showPrjLoader"></i>
+                      <i class="pi pi-times cursor" (click)="clear(closedPrjCode)" *ngIf="showAccepted || showRejected"></i>
+                      <input type="text" (change)="searchProjectCode(closedPrjCode.value)"
+                      [ngClass]="{'prjFound-search': showAccepted, 'prjNotFound-search':showRejected}"
+                      class="search-input"
+                      pInputText #closedPrjCode (keydown.enter)="searchProjectCode(closedPrjCode.value); $event.preventDefault()" placeholder="Search closed project code"/>
+                    </span>
+                    <span *ngIf="showAccepted" class="prjFound"><i class="pi pi-check-circle" ></i></span>
+                    <span  *ngIf="showRejected" class="prjNotFound"><i class="pi pi-times-circle"  ></i> Project not found.</span>
                   </span>
-                  <span class="p-input-icon-right searchProject">
-                    <i class="pi pi-search search-icon" (click)="searchProjectCode(closedPrjCode.value)"  *ngIf="!showPrjLoader"></i>
-                    <i class="pi pi-spin pi-spinner"  *ngIf="showPrjLoader"></i>
-                    <input type="text"
-                    [ngClass]="{'prjFound-search': showAccepted, 'prjNotFound-search':showRejected}"
-                    class="search-input"
-                    pInputText #closedPrjCode (keydown.enter)="searchProjectCode(closedPrjCode.value); $event.preventDefault()" placeholder="Select closed project code"/>
+                  <span *ngIf="qc.selectedGroup && qc.selectedGroup.value === 'Client' && qc.tagGroupItems.length">
+                    <p-multiSelect class="floatLeft csdel-dropdown" (onChange)="updateClientResource($event, 'cs')" [style]="{'width':'11.5em'}" [options]="this.csRes"  optionLabel="Title" defaultLabel="CS" [filter]="true" resetFilterOnHide="true" appendTo="body"></p-multiSelect>
+                    <p-multiSelect class="floatLeft csdel-dropdown" (onChange)="updateClientResource($event, 'delivery')" [style]="{'width':'11.5em'}" [options]="this.deliveryAccess"  optionLabel="Title" defaultLabel="Delivery Access" defaultLabel="Delivery Access" [filter]="true" resetFilterOnHide="true" appendTo="body" ></p-multiSelect>
+                    <p-dropdown class="tagPopup" [options]="this.deliveryOwner" placeholder="Delivery Owner" filter="true" resetFilterOnHide="true" optionLabel="Title" appendTo="body" loader="loading">
+                    </p-dropdown> <span class="mandatory">*</span>
                   </span>
-                  <span *ngIf="showAccepted" class="prjFound"><i class="pi pi-check-circle" ></i></span>
-                  <span  *ngIf="showRejected" class="prjNotFound"><i class="pi pi-times-circle"  ></i> Project not found.</span>
               </td>
           </tr>
           <tr>
@@ -212,7 +221,10 @@
       <div [hidden]='hidePopupTable'>
           <button type="button" class="btn btn-light button cancelbtn" (click)="close()">Cancel</button>
 
-          <button type="button" id='tagBtn' class="btn btn-light button savebtn" (click)="tag()" [disabled]="!qc.selectedTaggedItem" [hidden]="qc.actionClicked !== 'tag'"> Submit </button>
+          <button type="button" id='tagBtn' class="btn btn-light button savebtn"
+           (click)="tag()"
+           [disabled]="qc.selectedGroup && qc.selectedGroup.value === 'Client' ? !qc.selectedTaggedItem || isEmptyObject(qc.selectedTaggedItem.DeliveryLevel2) :!qc.selectedTaggedItem"
+           [hidden]="qc.actionClicked !== 'tag'"> Submit </button>
 
           <button type="button" id='deleteBtn' class="btn btn-light button savebtn" (click)="deleteCD()" [disabled]="!cdDelete.selectedReason" [hidden]="qc.actionClicked !== 'delete'"> Submit </button>
 

@@ -22,7 +22,7 @@ export class QMSConstantsService {
   //tslint:disable
   public common = {
     getAllResource: {
-      select: 'ID,UserNamePG/ID,UserNamePG/EMail,UserNamePG/Title,UserNamePG/Name,TimeZone/Title,Designation, Manager/ID, Manager/Title, Tasks/ID, Tasks/Title',
+      select: 'ID,UserNamePG/ID,UserNamePG/EMail,UserNamePG/Title,UserNamePG/Name,TimeZone/Title,Designation, Manager/ID, Manager/Title, Tasks/ID, Tasks/Title, RoleCH',
       expand: 'UserNamePG,TimeZone,Manager,Tasks',
       filter: "IsActiveCH eq 'Yes'",
       top: '4500'

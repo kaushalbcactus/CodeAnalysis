@@ -20,7 +20,7 @@
 }
 
 ::ng-deep .tagPopup .ui-dropdown {
-  width: 17.5em!important;
+  width: 11.5em!important;
 }
 ::ng-deep .cdPopupTable td{
   padding: 15px;
@@ -76,7 +76,7 @@
   -webkit-animation: spin 2s linear infinite;
   animation: spin 2s linear infinite;
   margin: 0 auto;
-  position: relative;
+  /* position: relative; */
   top: 50%;
   -webkit-transform: translateY(-50%);
   transform: translateY(-50%);
@@ -200,4 +200,17 @@
 }
 .pi-check-circle, .pi-times-circle {
   vertical-align: sub;
+}
+.floatLeft {
+  float:left;
+}
+.csdel-dropdown {
+  margin-right: 20px ;
+}
+.cursor {
+  cursor: pointer;
+}
+.popupResourceLoader {
+  display: inline-block;
+  vertical-align: -webkit-baseline-middle;
 }
