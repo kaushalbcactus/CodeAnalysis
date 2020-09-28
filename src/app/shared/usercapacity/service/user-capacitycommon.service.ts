@@ -70,8 +70,14 @@ export class UserCapacitycommonService {
         let taskCount = 0,
           totalTimeAllocatedPerDay = "0",
           totalTimeAllocated = 0;
+
+
+        const currentUserTimeZone =
+          (new Date().getTimezoneOffset() / 60) * -1;
         for (const j in oUser.tasks) {
           if (oUser.tasks.hasOwnProperty(j)) {
+            const sTimeZone =
+            oUser.tasks[j].TimeZoneNM === null ? "+5.5" : oUser.tasks[j].TimeZoneNM;
             const taskStartDate = new Date(
               this.datepipe.transform(
                 new Date(oUser.tasks[j].StartDate),
@@ -80,7 +86,7 @@ export class UserCapacitycommonService {
             );
             const taskEndDate = new Date(
               this.datepipe.transform(
-                new Date(oUser.tasks[j].DueDateDT),
+                new Date(oUser.tasks[j].DueDate),
                 "MMM dd, yyyy"
               )
             );
@@ -216,7 +222,11 @@ export class UserCapacitycommonService {
                 milestoneDeadline: "",
                 AssignedTo: oUser.tasks[j].AssignedTo,
                 startDate: oUser.tasks[j].StartDate,
-                dueDate: oUser.tasks[j].DueDate ? oUser.tasks[j].DueDate : oUser.tasks[j].DueDateDT,
+                dueDate: oUser.tasks[j].DueDate ? oUser.tasks[j].DueDate :  this.commonservice.calcTimeForDifferentTimeZone(
+                  new Date(oUser.tasks[j].DueDateDT),
+                  currentUserTimeZone,
+                  sTimeZone
+                ),
                 timeAllocatedPerDay: oUser.tasks[j].timeAllocatedPerDay,
                 displayTimeAllocatedPerDay:
                   oUser.tasks[j].timeAllocatedPerDay !== null
@@ -314,12 +324,12 @@ export class UserCapacitycommonService {
 
         const allTimeSpentArray = oUser.TimeSpentTasks.filter(
           (c) =>
-          new Date(c.TimeSpentDate).getTime() ===
+            new Date(c.TimeSpentDate).getTime() ===
             new Date(oUser.dates[i].date).getTime()
         )
           ? oUser.TimeSpentTasks.filter(
             (c) =>
-            new Date(c.TimeSpentDate).getTime() ===
+              new Date(c.TimeSpentDate).getTime() ===
               new Date(oUser.dates[i].date).getTime()
           ).map(
             (c) =>
@@ -419,11 +429,11 @@ export class UserCapacitycommonService {
       oUser.displayTotalTimeSpent.split(":")[1] +
       "m";
     oUser.displayTotalBenchExport =
-    oUser.Bench.split(":")[0] +
+      oUser.Bench.split(":")[0] +
       "h:" +
       oUser.Bench.split(":")[1] +
       "m";
-      
+
     oUser.dayTasks = [];
     oUser.TimeSpentDayTasks = [];
     return oUser;
@@ -715,7 +725,7 @@ export class UserCapacitycommonService {
           oCapacity.arrUserDetails[indexUser].tasks.length
         ) {
           oCapacity.arrUserDetails[indexUser].tasks.sort((a, b) => {
-            return b.DueDateDT - a.DueDateDT;
+            return b.DueDate - a.DueDate;
           });
 
           // tslint:disable
@@ -723,13 +733,13 @@ export class UserCapacitycommonService {
             new Date(sTopEndDate) >
               new Date(
                 this.datepipe.transform(
-                  oCapacity.arrUserDetails[indexUser].tasks[0].DueDateDT,
+                  oCapacity.arrUserDetails[indexUser].tasks[0].DueDate,
                   "yyyy-MM-ddT"
                 ) + "23:59:00.000Z"
               )
               ? new Date(sTopEndDate).toISOString()
               : this.datepipe.transform(
-                oCapacity.arrUserDetails[indexUser].tasks[0].DueDateDT,
+                oCapacity.arrUserDetails[indexUser].tasks[0].DueDate,
                 "yyyy-MM-ddT"
               ) + "23:59:00.000Z";
 
@@ -1249,7 +1259,7 @@ export class UserCapacitycommonService {
             Title: tasks[i].Title,
             projectCode: tasks[i].ProjectCode,
             StartDate: tasks[i].StartDate,
-            EndDate: tasks[i].DueDateDT,
+            EndDate: tasks[i].DueDate,
             TimeSpentDate: new Date(
               this.datepipe.transform(tasks[i].StartDate, "MM/dd/yyyy")
             ),
