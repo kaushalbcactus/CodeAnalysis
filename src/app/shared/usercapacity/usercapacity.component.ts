@@ -2026,7 +2026,7 @@ export class UsercapacityComponent implements OnInit {
                   )
                 ); // .format('MMM dd yyyy')
                 const nDays =
-                  this.commonservice.calcBusinessDays(
+                  this.userCapacityCommon.CalculateWorkingDays(
                     taskStartDate,
                     tblStartDate
                   ) - 1;

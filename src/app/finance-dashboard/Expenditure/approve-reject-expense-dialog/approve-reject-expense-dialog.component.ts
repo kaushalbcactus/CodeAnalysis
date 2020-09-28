@@ -64,9 +64,9 @@ export class ApproveRejectExpenseDialogComponent implements OnInit {
     if(this.expenseDialog.text == 'Approve') {
       this.approveExpenseFormField();
       this.addRemoveFormFieldForAE(this.selectedRowItem.RequestType);
-    } else if(this.expenseDialog.text == 'Reject' || this.expenseDialog.text == 'Cancel ') {
+    } else if(this.expenseDialog.text == 'Reject' || this.expenseDialog.text == 'Cancel') {
       this.canRejExpenseFormField();
-      this.expenseDialog.text === 'Cancel ' ?
+      this.expenseDialog.text === 'Cancel' ?
             this.getApproveExpenseMailContent(this.constant.EMAIL_TEMPLATE_NAME.CANCEL_EXPENSE)
                 : this.getApproveExpenseMailContent(this.constant.EMAIL_TEMPLATE_NAME.REJECT_EXPENSE);
     }

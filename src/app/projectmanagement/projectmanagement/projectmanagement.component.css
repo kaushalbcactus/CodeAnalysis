@@ -1266,6 +1266,10 @@ body .ui-corner-top {
     width: 26% !important;
 }
 
+.add-sow-section .ui-calendar-w-btn>input {
+    width: 200px !important;
+}
+ 
 body .ui-multiselect-panel .ui-multiselect-items .ui-multiselect-item.ui-state-highlight {
     background-color: #c53e3e !important;
     border: 1px solid #C53E3D !important;
