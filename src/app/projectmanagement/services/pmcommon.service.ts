@@ -601,7 +601,7 @@ export class PMCommonService {
       objProjectTask = this.globalObject.sharePointPageObject.serverRelativeUrl + '/' + this.constant.listNames.Schedules.name
         + '/' + addObj.ProjectAttributes.ProjectCode;
     }
-    debugger;
+
     const data: any = {
       __metadata: { type: this.constant.listNames.ProjectInformation.type },
       AllOperationresourcesId: {
@@ -625,8 +625,8 @@ export class PMCommonService {
       DeliveryLevel2Id: addObj.ProjectAttributes.ActiveDelivery2,
 
       SubDivision: addObj.ProjectAttributes.SubDivision ? addObj.ProjectAttributes.SubDivision : '',
-      CSRule :  this.pmObject.ProjetcRuleArray.CM && this.pmObject.ProjetcRuleArray.CM.length ?  this.pmObject.ProjetcRuleArray.CM.map(c=>c.ID).join(';#'):'',
-      DeliveryRule : this.pmObject.ProjetcRuleArray.Delivery && this.pmObject.ProjetcRuleArray.Delivery.length ?  this.pmObject.ProjetcRuleArray.Delivery.map(c=>c.ID).join(';#'):'',  
+      CSRule :  this.pmObject.RuleTypeArray.CM && this.pmObject.RuleTypeArray.CM.length ?  this.pmObject.RuleTypeArray.CM.map(c=>c.ID).join(';#'):'',
+      DeliveryRule : this.pmObject.RuleTypeArray.Delivery && this.pmObject.RuleTypeArray.Delivery.length ?  this.pmObject.RuleTypeArray.Delivery.map(c=>c.ID).join(';#'):'',  
       PriorityST: addObj.ProjectAttributes.Priority,
       Indication: addObj.ProjectAttributes.Indication,
       Molecule: addObj.ProjectAttributes.Molecule,
@@ -783,8 +783,7 @@ export class PMCommonService {
           this.pmObject.addSOW.SOWDocument;
       }
     }
-
-
+    
     this.pmObject.addSOW.Budget.Total = sowItem.TotalBudget ? sowItem.TotalBudget : 0;
     this.pmObject.addSOW.Budget.Net = sowItem.NetBudget ? sowItem.NetBudget : 0;
     this.pmObject.addSOW.Budget.OOP = sowItem.OOPBudget ? sowItem.OOPBudget : 0;
@@ -2018,10 +2017,38 @@ export class PMCommonService {
   }
 
 
+  async getAllRules(type){
+    const batchURL=[];
+    this.commonService.setBatchObject(
+          batchURL,
+          this.spServices
+            .getReadURL(
+              this.constant.listNames.RuleStore.name,
+              this.pmConstant.PM_QUERY.GET_RULES_BY_ACTIVE
+            )
+            .replace(/{{isActive}}/gi, "Yes")
+            .replace(/{{type}}/gi, type),
+          null,
+          this.constant.Method.GET,
+          this.constant.listNames.RuleStore.name
+        );
+
+        this.commonService.SetNewrelic('projectManagment', 'PmCommonService', 'GetAllRules');
+            const arrResults = await this.spServices.executeBatch(batchURL);
+            this.pmObject.RuleArray = arrResults && arrResults.length > 0 && arrResults[0].retItems.length > 0 ? arrResults[0].retItems :[];
+
+            if(this.pmObject.RuleArray.length > 0){
+              this.pmObject.RuleArray.map((c)=> c.DisplayRules = JSON.parse(c.Rule));
+            }
+  }
+
+
   FilterRules(){
     let FilterRules =[];
     let TempArray=[];
-    this.pmObject.RuleParamterArray.forEach(element => {
+    let selectedDeliveryAccess =[];
+    let selectedCMAccess=[];
+    this.constant.RuleParamterArray.forEach(element => {
       if(element.value){
         FilterRules.push.apply(FilterRules,this.pmObject.RuleArray.filter(c=> c.DisplayRules.filter(c=> c.DisplayName === element.Rulelabel && c.Value === element.value).length > 0)) 
         TempArray.push(element.value);
@@ -2031,38 +2058,80 @@ export class PMCommonService {
     FilterRules = [...new Set(FilterRules)];
     const AllFilterRules = FilterRules.filter(c=> c.DisplayRules.map(d=>d.Value).sort().filter(e=> !TempArray.includes(e)).length ===0 );
     
-    this.pmObject.ProjetcRuleArray.Delivery = AllFilterRules.filter(c=>c.ResourceType === this.constant.RulesType.DELIVERY) ? AllFilterRules.filter(c=>c.ResourceType === this.constant.RulesType.DELIVERY):[]; 
+    this.pmObject.RuleTypeArray.Delivery = AllFilterRules.filter(c=>c.ResourceType === this.constant.RulesType.DELIVERY) ? AllFilterRules.filter(c=>c.ResourceType === this.constant.RulesType.DELIVERY):[]; 
     
-    this.pmObject.ProjetcRuleArray.CM = AllFilterRules.filter(c=>c.ResourceType === this.constant.RulesType.CM) ? AllFilterRules.filter(c=>c.ResourceType === this.constant.RulesType.CM):[]; 
+    this.pmObject.RuleTypeArray.CM = AllFilterRules.filter(c=>c.ResourceType === this.constant.RulesType.CM) ? AllFilterRules.filter(c=>c.ResourceType === this.constant.RulesType.CM):[]; 
     
-    this.pmObject.ProjetcRuleArray.Delivery.sort((a,b) => b.DisplayOrder - a.DisplayOrder); 
-    this.pmObject.ProjetcRuleArray.CM.sort((a,b) => b.DisplayOrder - a.DisplayOrder); 
+    this.pmObject.RuleTypeArray.Delivery.sort((a,b) => b.DisplayOrder - a.DisplayOrder); 
+    this.pmObject.RuleTypeArray.CM.sort((a,b) => b.DisplayOrder - a.DisplayOrder); 
 
     let IDsArray =[];
 
-    if (this.pmObject.ProjetcRuleArray.Delivery.length > 0) {
-      this.pmObject.OwnerAccess.selectedDeliveryOwner = this.pmObject.ProjetcRuleArray.Delivery[0].OwnerPG.ID;
-      IDsArray = this.pmObject.ProjetcRuleArray.Delivery.filter(
-        (c) => c.Access.hasOwnProperty("results")
-      ) ?  this.pmObject.ProjetcRuleArray.Delivery.filter(
-        (c) => c.Access.hasOwnProperty("results")
-      ).map(d=>d.Access.results.map(e=>e.ID)):[];
-      this.pmObject.OwnerAccess.selectedDeliveryAccess = [...new Set(IDsArray.reduce((a,b)=> [...a, ...b], []))];
-    }
-    if (this.pmObject.ProjetcRuleArray.CM.length > 0) {
-      this.pmObject.OwnerAccess.selectedCMOwner = this.pmObject.ProjetcRuleArray.CM[0].OwnerPG.ID;
-
-      IDsArray = this.pmObject.ProjetcRuleArray.CM.filter(
-        (c) => c.Access.hasOwnProperty("results")
-      ) ?  this.pmObject.ProjetcRuleArray.CM.filter(
-        (c) => c.Access.hasOwnProperty("results")
-      ).map(d=>d.Access.results.map(e=>e.ID)):[];
-
-      this.pmObject.OwnerAccess.selectedCMAccess =[...new Set(IDsArray.reduce((a,b)=> [...a, ...b], []))];
-    }
     
+      this.pmObject.OwnerAccess.selectedDeliveryOwner = this.pmObject.RuleTypeArray.Delivery && this.pmObject.RuleTypeArray.Delivery.length> 0 ? this.pmObject.RuleTypeArray.Delivery[0].OwnerPG.ID: 0;
+      IDsArray =  this.pmObject.RuleTypeArray.Delivery && this.pmObject.RuleTypeArray.Delivery.length > 0 && this.pmObject.RuleTypeArray.Delivery.filter(
+        (c) => c.Access.hasOwnProperty("results")
+      ) ?  this.pmObject.RuleTypeArray.Delivery.filter(
+        (c) => c.Access.hasOwnProperty("results")
+      ).map(d=>d.Access.results.map(e=>e.ID)):[];
+      selectedDeliveryAccess = [...new Set(IDsArray.reduce((a,b)=> [...a, ...b], []))];
+    
+   
+      this.pmObject.OwnerAccess.selectedCMOwner =  this.pmObject.RuleTypeArray.CM && this.pmObject.RuleTypeArray.CM.length > 0 ? this.pmObject.RuleTypeArray.CM[0].OwnerPG.ID
+      : 0 ;
+      IDsArray =  this.pmObject.RuleTypeArray.CM && this.pmObject.RuleTypeArray.CM.length > 0 && this.pmObject.RuleTypeArray.CM.filter(
+        (c) => c.Access.hasOwnProperty("results")
+      ) ?  this.pmObject.RuleTypeArray.CM.filter(
+        (c) => c.Access.hasOwnProperty("results")
+      ).map(d=>d.Access.results.map(e=>e.ID)):[];
+
+      selectedCMAccess =[...new Set(IDsArray.reduce((a,b)=> [...a, ...b], []))];
+    
+    const existingRules = this.pmObject.TempRuleArray ?  JSON.parse(JSON.stringify(this.pmObject.TempRuleArray)) :[]; 
+  
+    this.pmObject.TempRuleArray = [...this.pmObject.RuleTypeArray.Delivery,...this.pmObject.RuleTypeArray.CM]; 
+
+    const RemovedRules =existingRules.filter(c=> !this.pmObject.TempRuleArray.map(d=>d.ID).includes(c.ID));
+    const AddedRules = this.pmObject.TempRuleArray.filter(c=> !existingRules.map(d=>d.ID).includes(c.ID));
+
+      if(RemovedRules && RemovedRules.length > 0) {  
+        if(RemovedRules.filter(c=>c.ResourceType === this.constant.RulesType.DELIVERY)){
+
+          const data = this.UserCMDeliveryIds(RemovedRules, this.constant.RulesType.DELIVERY, JSON.parse(JSON.stringify(this.pmObject.OwnerAccess.selectedDeliveryAccess)));
+          ; 
+          this.pmObject.OwnerAccess.selectedDeliveryAccess = [...new Set([...selectedDeliveryAccess , ...data.oldAccessIds.filter(f=> !data.IDs.includes(f))])];  
+        } 
+        if(RemovedRules.filter(c=>c.ResourceType === this.constant.RulesType.CM)){
+
+          const data = this.UserCMDeliveryIds(RemovedRules, this.constant.RulesType.CM,  JSON.parse(JSON.stringify(this.pmObject.OwnerAccess.selectedCMAccess)));
+          ; 
+          this.pmObject.OwnerAccess.selectedCMAccess =[...new Set([...selectedCMAccess , ...data.oldAccessIds.filter(f=> !data.IDs.includes(f))])];  
+        }
+      } else if(AddedRules && AddedRules.length > 0){
+        
+        if(AddedRules.filter(c=>c.ResourceType === this.constant.RulesType.DELIVERY)){
+
+          const data = this.UserCMDeliveryIds(AddedRules, this.constant.RulesType.DELIVERY,  JSON.parse(JSON.stringify(this.pmObject.OwnerAccess.selectedDeliveryAccess)));
+          ; 
+          this.pmObject.OwnerAccess.selectedDeliveryAccess = [...new Set([...data.oldAccessIds, ...data.IDs])];  
+        } 
+        if(AddedRules.filter(c=>c.ResourceType === this.constant.RulesType.CM)){
+
+          const data = this.UserCMDeliveryIds(AddedRules, this.constant.RulesType.CM,  JSON.parse(JSON.stringify(this.pmObject.OwnerAccess.selectedCMAccess)));
+          ; 
+          this.pmObject.OwnerAccess.selectedCMAccess = [...new Set([...data.oldAccessIds, ...data.IDs])];  
+        }
+      }    
   }
 
+
+  UserCMDeliveryIds(Rules,Type,oldValue){
+    const  Data={oldAccessIds:[],IDs:[]};
+    Data.oldAccessIds =  oldValue ? oldValue :[];
+    const RulesAccessIDs = Rules.filter(c=>c.ResourceType === Type).filter(c=>c.Access.hasOwnProperty('results')) ? Rules.filter(c=>c.ResourceType === Type).filter(c=>c.Access.hasOwnProperty('results')).map(d=>d.Access.results.map(e=>e.ID)) :[];
+    Data.IDs =[...new Set(RulesAccessIDs.reduce((a,b)=> [...a, ...b], []))];
+    return Data;
+  }
  
 
 

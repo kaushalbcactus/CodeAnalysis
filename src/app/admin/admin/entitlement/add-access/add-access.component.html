@@ -9,7 +9,12 @@
             <app-project-access [RuleType]="ruleType"></app-project-access>
         </ng-template>
     </p-accordionTab>
-    <p-accordionTab header="CD / TA" class="">
+    <p-accordionTab header="CD" class="">
+        <ng-template pTemplate="content">
+            <app-project-access [RuleType]="ruleType"></app-project-access>
+        </ng-template>
+    </p-accordionTab>
+    <p-accordionTab header="PF" class="">
         <ng-template pTemplate="content">
             <app-project-access [RuleType]="ruleType"></app-project-access>
         </ng-template>

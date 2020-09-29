@@ -256,6 +256,9 @@ export class PMObjectService {
       SlideCount: 0,
       PageCount: 0,
       ReferenceCount: 0,
+      CSRule : '',
+      DeliveryRule:''
+
     },
     Timeline: {
       Standard: {
@@ -373,6 +376,9 @@ export class PMObjectService {
     },
     isSOWCodeDisabled: false,
     isStatusDisabled: true,
+    CSRule :  '',
+    DeliveryRule : '', 
+
   };
   public oProjectCreation = {
     oProjectInfo: {
@@ -529,16 +535,9 @@ export class PMObjectService {
   public updateInvoices = [];
 
   public RuleArray = [];
-  public ProjetcRuleArray={ Delivery :[] , CM :[]};
+  public RuleTypeArray={ Delivery :[] , CM :[]};
+  public TempRuleArray=[];
 
-  
-  public RuleParamterArray=[
-    { Rulelabel : "Practice Area" , value:'' },
-    {Rulelabel  :'Client', value:'' },
-    {Rulelabel  :'Client Subdivision', value:'' },
-    {Rulelabel  :'Currency', value:'' },
-    {Rulelabel  :'Deliverable Type', value:'' },
-];
 
 public OwnerAccess={
   cmLevel1 : [],

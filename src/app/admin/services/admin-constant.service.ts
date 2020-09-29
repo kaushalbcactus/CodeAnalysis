@@ -420,6 +420,33 @@ export class AdminConstantService {
       orderby: "DisplayOrder asc",
       top: 4900,
     },
+    GET_PROJECT_INFO: {
+      select:
+        "ID,Title,SOWCode,BusinessVertical,WBJID,ProjectCode,ClientLegalEntity,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title," +
+        "DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title,AllOperationresources/ID,AllOperationresources/Title,Status,CSRule,DeliveryRule",
+      expand:
+        "CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title," +
+        "DeliveryLevel2/ID,DeliveryLevel2/Title,AllOperationresources/ID,AllOperationresources/Title",
+      filter:
+        "Status ne 'Closed' and Status ne 'Cancelled'",
+      top: 4900,
+    },
+    GET_PROJECT_FINANCE_BY_CURRENCY: {
+      select: 'ID, Title, Currency',
+      filter: 'Currency eq \'{{currency}}\''
+    },
+
+    GET_All_SOW: {
+      select:
+        "ID,Title,SOWCode,BusinessVertical,Currency,ClientLegalEntity,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title," +
+        "DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title,Status,CSRule,DeliveryRule",
+      expand:
+        "CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title," +
+        "DeliveryLevel2/ID,DeliveryLevel2/Title",
+      filter:
+        "Status ne 'Closed'",
+      top: 4900,
+    },
   };
   
   public LOGICAL_FIELD = {

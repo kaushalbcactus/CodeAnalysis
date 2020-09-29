@@ -539,6 +539,10 @@ export class AllProjectsComponent implements OnInit {
           this.pmCommonService.extractNameFromId(projObj.DeliveryLevel1ID).join(';#') : '';
         projObj.DeliveryLevel2ID = task.DeliveryLevel2.ID;
         projObj.DeliveryLevel2Title = task.DeliveryLevel2.Title;
+
+        projObj.CSRule = task.CSRule;
+        projObj.DeliveryRule = task.DeliveryRule;
+
         projObj.BusinessVertical = task.BusinessVertical ? task.BusinessVertical : '';
         projObj.BillingEntity = task.BillingEntity ? task.BillingEntity : '';
         projObj.SOWLink = task.SOWLink ? task.SOWLink : '';

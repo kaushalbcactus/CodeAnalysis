@@ -9,7 +9,7 @@
 <div class="p-col">
     <p-table [value]="rules">
         <ng-template pTemplate="body" let-rowData>
-            <tr [ngStyle]="{'background-color' : rowData.RuleType === 'existing' && rowData.IsActiveCH === 'Yes' && rowData.edited === false ?  '#cdcdcd' : rowData.RuleType === 'new' ? '#f1e5ca' : rowData.RuleType === 'existing' && rowData.IsActiveCH === 'No' ?  '#f1caca' : '#ecfbd0' ,'margin': index === 0 ? '0px' : '15px 0px', 'cursor':'pointer'}"
+            <tr [ngStyle]="{ 'background-color' : rowData.RuleType === 'existing' && rowData.edited.IsActiveCH === false  && rowData.edited.UserEdited === false ?  '#cdcdcd' : rowData.RuleType === 'new' ? '#f1e5ca' : rowData.RuleType === 'existing' && rowData.IsActiveCH === 'No' ?  '#f1caca' : '#ecfbd0' ,'margin': index === 0 ? '0px' : '15px 0px', 'cursor':'pointer'}"
                 class="p-grid Rules_tr">
                 <td style="font-size: 16px;">
 

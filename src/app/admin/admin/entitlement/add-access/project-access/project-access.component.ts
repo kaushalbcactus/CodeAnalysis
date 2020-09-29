@@ -27,6 +27,7 @@ export class ProjectAccessComponent implements OnInit {
   filterData = {
     PRACTICEAREA: [],
     CLE: [],
+    dbCLE:[],
     SUBDIVISION: [],
     DELIVERYTYPE: [],
     RULES: [],
@@ -95,8 +96,10 @@ export class ProjectAccessComponent implements OnInit {
       this.headerName = "Add Project Rules";
     } else if (this.RuleType === this.constant.RulesType.SOW) {
       this.headerName = "Add SOW Rules";
-    } else {
-      this.headerName = "Add CD / TA Rules";
+    } else if (this.RuleType === this.constant.RulesType.CD) {
+      this.headerName = "Add CD Rules";
+    }else {
+      this.headerName = "Add PF Rules";
     }
     this.getDataOnLoad(this.RuleType, this.filterData);
   }
@@ -130,7 +133,6 @@ export class ProjectAccessComponent implements OnInit {
     if(this.selectedOption.length === 0 &&  this.filterData[this.selectedAccessType.toUpperCase()].length > 0){
       this.filterData[this.selectedAccessType.toUpperCase()].map(c=>c.selectedValue='');
     }
-
 
     if (this.draggedOption) {
       if (
@@ -378,7 +380,7 @@ export class ProjectAccessComponent implements OnInit {
             .value,
         },
         RuleType: "new",
-        edited: false,
+        edited: {UserEdited : false , IsActiveCH: false},
         Access:
           AccessUsers.selectedValue !== ""
             ? {
@@ -402,7 +404,7 @@ export class ProjectAccessComponent implements OnInit {
           ) + 1,
       };
 
-      if(this.filterData.RULES.find((c) => RuleObj.DisplayRules.map(d=>d.Value).sort().join(',') === c.DisplayRules.map(d=>d.Value).sort().join(','))) {
+      if(this.filterData.RULES.find((c) => c.ResourceType === RuleObj.ResourceType  &&  RuleObj.DisplayRules.map(d=>d.Value).sort().join(',') === c.DisplayRules.map(d=>d.Value).sort().join(','))) {
         this.common.showToastrMessage(
           this.constant.MessageType.warn,
           "Unable to add rule, rule already exist.",
@@ -471,65 +473,7 @@ export class ProjectAccessComponent implements OnInit {
     return RULES;
   }
 
-  // reArrangeRules(RuleObj) {
-  //   if (this.filterData.RULES.length > 0) {
-  //     if (
-  //       this.filterData.RULES.find(
-  //         (c) => c.DisplayRules.length >= RuleObj.DisplayRules.length
-  //       )
-  //     ) {
-  //       this.filterData.RULES = [
-  //         ...this.InsertObjAtPosition(this.filterData.RULES, RuleObj),
-  //       ];
-  //     } else {
-  //       let listArray = this.filterData.RULES.filter(
-  //         (c) => c.DisplayRules[0].Value === RuleObj.DisplayRules[0].Value
-  //       );
-  //       this.filterData.RULES = [
-  //         ...this.filterData.RULES.filter(
-  //           (c) => c.DisplayRules[0].Value !== RuleObj.DisplayRules[0].Value
-  //         ),
-  //       ];
-  //       listArray = [...this.InsertObjAtPosition(listArray, RuleObj)];
-  //       this.filterData.RULES = [...listArray, ...this.filterData.RULES];
-  //     }
-  //   } else {
-  //     this.filterData.RULES.splice(0, 0, RuleObj);
-  //   }
-  //   this.filterData.RULES = [...this.filterData.RULES];
-  //   this.filterRules();
-  // }
-
-  // InsertObjAtPosition(RULES, RuleObj) {
-  //   if (
-  //     RULES.find((c) => c.DisplayRules.length >= RuleObj.DisplayRules.length)
-  //   ) {
-  //     for (let i = 0; i < RULES.length; i++) {
-  //       const existName = RULES[i - 1]
-  //         ? RULES[i - 1].DisplayRules[0].Value
-  //         : "";
-  //       if (i > 0) {
-  //         if (
-  //           RULES[i].DisplayRules[0].Value !== existName ||
-  //           RULES[i].DisplayRules[0].Value === RuleObj.DisplayRules[0].Value
-  //         ) {
-  //           if (RuleObj.DisplayRules.length >= RULES[i].DisplayRules.length) {
-  //             RULES.splice(i, 0, RuleObj);
-  //             break;
-  //           }
-  //         }
-  //       }
-  //     }
-  //     const isPresent = RULES.find((c) => c === RuleObj) ? true : false;
-  //     if (!isPresent) {
-  //       RULES.push(RuleObj);
-  //     }
-  //   } else {
-  //     RULES.splice(0, 0, RuleObj);
-  //   }
-  //   return RULES;
-  // }
-
+ 
   // Remove Rule code
   RemoveRule(rowData) {
     this.common.clearToastrMessage();
@@ -539,7 +483,12 @@ export class ProjectAccessComponent implements OnInit {
         "Yes"
           ? "No"
           : "Yes";
+      
       rowData.IsActiveCH = rowData.IsActiveCH === "Yes" ? "No" : "Yes";
+
+      this.filterData.RULES.find((c) => c.ID === rowData.ID).edited.IsActiveCH = rowData.IsActiveCH === "Yes" ? false : true;
+      rowData.edited.IsActiveCH = rowData.IsActiveCH === "Yes" ? false : true;
+
       this.common.showToastrMessage(
         this.constant.MessageType.success,
         rowData.IsActiveCH === "Yes"
@@ -638,7 +587,7 @@ export class ProjectAccessComponent implements OnInit {
                   ),
               }
             : {};
-        dbRule.edited = dbRule.RuleType === "existing" ? true : false;
+        dbRule.edited.UserEdited = dbRule.RuleType === "existing" ? true : false;
         this.common.showToastrMessage(
           this.constant.MessageType.success,
           "Current rule users updated sucessfully.",
@@ -686,14 +635,12 @@ export class ProjectAccessComponent implements OnInit {
 
   async SaveRules() {
     this.loaderenable = true;
-    await this.addAccessService.saveRules(this.filterData.RULES);
-    this.common.showToastrMessage(
-      this.constant.MessageType.success,
-      "Rules added / updated sucessfully.",
-      false
-    );
 
-    this.getDataOnLoad(this.RuleType, this.filterData);
+    await this.addAccessService.saveRules(this.filterData,this.RuleType);
+
+
+    this.loaderenable = false;
+   
   }
 
 
@@ -716,7 +663,6 @@ export class ProjectAccessComponent implements OnInit {
 
 
   removeOption(value){
-debugger;
     this.selectedOption.splice(this.selectedOption.indexOf(this.selectedOption.find(c=>c === value)),1)
   }
 }

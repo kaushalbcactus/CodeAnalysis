@@ -58,9 +58,9 @@ export class ProjectAttributesComponent implements OnInit {
     private globalObject: GlobalService
   ) { }
   async ngOnInit() {
-    debugger;
     this.initForm();
-    this.getAllRules();
+    await this.pmCommonService.getAllRules('Project');
+   
     await this.pmCommonService.setBilledBy();
     this.isProjectAttributeLoaderHidden = false;
     this.isProjectAttributeTableHidden = true;
@@ -100,9 +100,11 @@ export class ProjectAttributesComponent implements OnInit {
           };
           await this.setFieldProperties(this.pmObject.addProject.ProjectAttributes, sowObj, true);
           this.showEditSave = false;
-          this.pmObject.RuleParamterArray.find(c=>c.Rulelabel === 'Client').value = this.pmObject.addProject.FinanceManagement.ClientLegalEntity;
-          this.pmObject.RuleParamterArray.find(c=>c.Rulelabel === 'Currency').value = this.pmObject.addProject.FinanceManagement.Currency;
-          // this.GetRulesOnChange();
+          this.constant.RuleParamterArray.find(c=>c.Rulelabel === 'Client').value = this.pmObject.addProject.FinanceManagement.ClientLegalEntity;
+          this.constant.RuleParamterArray.find(c=>c.Rulelabel === 'Currency').value = this.pmObject.addProject.FinanceManagement.Currency;
+
+          this.constant.RuleParamterArray.find(c=>c.Rulelabel === 'Bucket').value = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(c=>c.Title === this.pmObject.addProject.FinanceManagement.ClientLegalEntity) ? this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(c=>c.Title === this.pmObject.addProject.FinanceManagement.ClientLegalEntity).Bucket :''; 
+         
         }
       }
     }, this.pmConstant.TIME_OUT);
@@ -396,7 +398,7 @@ export class ProjectAttributesComponent implements OnInit {
       this.enableCountFields = false;
     }
     
-    this.pmObject.RuleParamterArray.find(c=>c.Rulelabel === 'Practice Area').value = this.addProjectAttributesForm.get('practiceArea').value;
+    this.constant.RuleParamterArray.find(c=>c.Rulelabel === 'Practice Area').value = this.addProjectAttributesForm.get('practiceArea').value;
 
     if(this.showEditSave){
      this.GetRulesOnChange();
@@ -405,7 +407,7 @@ export class ProjectAttributesComponent implements OnInit {
 
 
   OnSubDvisionChange(){
-    this.pmObject.RuleParamterArray.find(c=>c.Rulelabel === 'Client Subdivision').value = this.addProjectAttributesForm.get('subDivision').value;
+    this.constant.RuleParamterArray.find(c=>c.Rulelabel === 'Client Subdivision').value = this.addProjectAttributesForm.get('subDivision').value;
     if(this.showEditSave){
      this.GetRulesOnChange();
     }
@@ -508,12 +510,25 @@ export class ProjectAttributesComponent implements OnInit {
       }
     }
 
-    this.pmObject.RuleParamterArray.find(c=>c.Rulelabel === 'Practice Area').value = projObj.BusinessVertical;
-    this.pmObject.RuleParamterArray.find(c=>c.Rulelabel === 'Client').value = projObj.ClientLegalEntity;
-    this.pmObject.RuleParamterArray.find(c=>c.Rulelabel === 'Client Subdivision').value = projObj.SubDivision;
-    this.pmObject.RuleParamterArray.find(c=>c.Rulelabel === 'Currency').value = projObj.Currency;
-    this.pmObject.RuleParamterArray.find(c=>c.Rulelabel === 'Deliverable Type').value = projObj.DeliverableType;
+    this.constant.RuleParamterArray.find(c=>c.Rulelabel === 'Practice Area').value = projObj.BusinessVertical;
+    this.constant.RuleParamterArray.find(c=>c.Rulelabel === 'Client').value = projObj.ClientLegalEntity;
+    this.constant.RuleParamterArray.find(c=>c.Rulelabel === 'Client Subdivision').value = projObj.SubDivision;
+    this.constant.RuleParamterArray.find(c=>c.Rulelabel === 'Currency').value = projObj.Currency;
+    this.constant.RuleParamterArray.find(c=>c.Rulelabel === 'Deliverable Type').value = projObj.DeliverableType;
 
+    this.constant.RuleParamterArray.find(c=>c.Rulelabel === 'Bucket').value = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(c=>c.Title === projObj.ClientLegalEntity) ? this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(c=>c.Title === projObj.ClientLegalEntity).Bucket :''; 
+
+    if(this.pmObject.RuleArray && this.pmObject.RuleArray.length > 0){
+
+      if(projObj.CSRule){
+        this.pmObject.RuleTypeArray.CM = this.pmObject.RuleArray.filter(c=> projObj.CSRule.split(';#').map(d=> +d).includes(c.ID)) ? this.pmObject.RuleArray.filter(c=> projObj.CSRule.split(';#').map(d=> +d).includes(c.ID)) : [];
+      }
+
+      if(projObj.DeliveryRule){
+        this.pmObject.RuleTypeArray.Delivery = this.pmObject.RuleArray.filter(c=> projObj.DeliveryRule.split(';#').map(d=> +d).includes(c.ID)) ?  this.pmObject.RuleArray.filter(c=> projObj.DeliveryRule.split(';#').map(d=> +d).includes(c.ID)):[];
+      }
+      this.pmObject.TempRuleArray = [...this.pmObject.RuleTypeArray.Delivery,...this.pmObject.RuleTypeArray.CM]; 
+    }
 
 
 
@@ -563,6 +578,12 @@ export class ProjectAttributesComponent implements OnInit {
     this.pmObject.addProject.ProjectAttributes.ActiveDelivery1 = deliveryIdArray && deliveryIdArray.length ?
       deliveryIdArray : [];
     this.pmObject.addProject.ProjectAttributes.ActiveDelivery2 = projObj.DeliveryLevel2ID;
+
+    this.pmObject.OwnerAccess.selectedCMAccess = this.pmObject.addProject.ProjectAttributes.ActiveCM1; 
+
+    this.pmObject.OwnerAccess.selectedDeliveryAccess = this.pmObject.addProject.ProjectAttributes.ActiveDelivery1; 
+
+
     this.pmObject.addProject.ProjectAttributes.ProjectTitle = projObj.Title;
     this.pmObject.addProject.ProjectAttributes.AlternateShortTitle = projObj.ShortTitle;
     this.pmObject.addProject.ProjectAttributes.EndUseofDeliverable = projObj.DescriptionMT;
@@ -752,39 +773,17 @@ export class ProjectAttributesComponent implements OnInit {
 
 
 
-  async getAllRules(){
-
-    const batchURL=[];
-    this.commonService.setBatchObject(
-          batchURL,
-          this.spServices
-            .getReadURL(
-              this.constant.listNames.RuleStore.name,
-              this.pmConstant.PM_QUERY.GET_RULES_BY_ACTIVE
-            )
-            .replace(/{{isActive}}/gi, "Yes")
-            .replace(/{{type}}/gi, 'Project'),
-          null,
-          this.constant.Method.GET,
-          this.constant.listNames.RuleStore.name
-        );
-
-        this.commonService.SetNewrelic('projectManagment', 'addproj-projectAttributes', 'GetAllRules');
-            const arrResults = await this.spServices.executeBatch(batchURL);
-            this.pmObject.RuleArray = arrResults && arrResults.length > 0 && arrResults[0].retItems.length > 0 ? arrResults[0].retItems :[];
-
-            if(this.pmObject.RuleArray.length > 0){
-              this.pmObject.RuleArray.map((c)=> c.DisplayRules = JSON.parse(c.Rule));
-            }
-  }
 
   async GetRulesOnChange(){
-    await this.pmCommonService.FilterRules();
-
+      await this.pmCommonService.FilterRules();
       this.addProjectAttributesForm.get('selectedActiveCM1').setValue(this.pmObject.OwnerAccess.selectedCMAccess);
-      this.addProjectAttributesForm.get('selectedActiveCM2').setValue(this.pmObject.OwnerAccess.selectedCMOwner);
       this.addProjectAttributesForm.get('selectedActiveAD1').setValue(this.pmObject.OwnerAccess.selectedDeliveryAccess);
+      this.addProjectAttributesForm.get('selectedActiveCM2').setValue(this.pmObject.OwnerAccess.selectedCMOwner);
       this.addProjectAttributesForm.get('selectedActiveAD2').setValue(this.pmObject.OwnerAccess.selectedDeliveryOwner);
-
   }
+
+
+  
+
+  
 }

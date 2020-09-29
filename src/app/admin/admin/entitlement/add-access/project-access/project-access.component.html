@@ -13,9 +13,11 @@
 
             <p-multiSelect [options]="filterData.CLE" resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" defaultLabel="Select Client Legal Entity" formControlName="cle" [filter]="true" filterBy="label" maxSelectedLabels="2"></p-multiSelect>
 
-            <p-multiSelect [options]="filterData.SUBDIVISION" resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" defaultLabel="Select Sub-Division" formControlName="subDivision" [filter]="true" filterBy="label" maxSelectedLabels="2"></p-multiSelect>
+            <p-multiSelect *ngIf="RuleType !== constant.RulesType.SOW" [options]="filterData.SUBDIVISION" resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" defaultLabel="Select Sub-Division" formControlName="subDivision" [filter]="true" filterBy="label"
+                maxSelectedLabels="2"></p-multiSelect>
 
-            <p-multiSelect [options]="filterData.DELIVERYTYPE" resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" defaultLabel="Select Delivery Type" formControlName="deliveryType" [filter]="true" filterBy="label" maxSelectedLabels="2"></p-multiSelect>
+            <p-multiSelect *ngIf="RuleType !== constant.RulesType.SOW" [options]="filterData.DELIVERYTYPE" resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" defaultLabel="Select Delivery Type" formControlName="deliveryType" [filter]="true" filterBy="label"
+                maxSelectedLabels="2"></p-multiSelect>
 
 
             <p-button pTooltip="Search" tooltipPosition="bottom" class="p-button-danger" icon="pi pi-search" type="submit"></p-button>
@@ -37,7 +39,7 @@
 
                         <button pButton pRipple type="button" icon="pi pi-refresh" class="p-button-rounded p-button-secondary p-button-outlined" pTooltip="Refresh" tooltipPosition="bottom" (click)="cleanData()"></button>
                         <button pButton pRipple style="margin-right:5px;cursor: pointer;" type="button" icon="pi pi-save" class="p-button-rounded p-button-outlined" pTooltip="Save" tooltipPosition="bottom" (click)="addRule()"></button>
-                        <p-selectButton class="selectionType" [options]="AddAccessType" [(ngModel)]="selectedAccessType" (onChange)="CheckDataOnAccessType()"></p-selectButton>
+                        <p-selectButton *ngIf="RuleType === this.constant.RulesType.PROJECT || RuleType === this.constant.RulesType.SOW" class="selectionType" [options]="AddAccessType" [(ngModel)]="selectedAccessType" (onChange)="CheckDataOnAccessType()"></p-selectButton>
 
 
                     </div>
@@ -217,7 +219,7 @@
                     </div>
                 </div>
 
-                <p-selectButton [style]="{'margin': '0px 0px 0px 50px'}" [options]="ViewAccessType" [(ngModel)]="selectedViewAccessType" (onChange)="filterRules()"></p-selectButton>
+                <p-selectButton *ngIf="RuleType === this.constant.RulesType.PROJECT || RuleType === this.constant.RulesType.SOW" [style]="{'margin': '0px 0px 0px 50px'}" [options]="ViewAccessType" [(ngModel)]="selectedViewAccessType" (onChange)="filterRules()"></p-selectButton>
 
                 <button [disabled]="filterData.TEMPRULES.length === 0 ? true : false" pButton pRipple style="margin-right:5px;cursor: pointer;" type="button" icon="pi pi-save" class="p-button-rounded p-button-secondary p-button-outlined" pTooltip="Save Rules" tooltipPosition="bottom"
                     (click)="SaveRules()"></button>
@@ -228,11 +230,12 @@
                 <p-table [columns]="cols" [value]="filterData.TEMPRULES" [reorderableColumns]="true" (onRowReorder)="onRowReorder($event)">
 
                     <ng-template pTemplate="body" let-rowData let-columns="columns" let-index="rowIndex">
-                        <tr [ngStyle]="{'background-color' : rowData.RuleType === 'existing' && rowData.IsActiveCH === 'Yes' && rowData.edited === false ?  '#cdcdcd' : rowData.RuleType === 'new' ? '#f1e5ca' : rowData.RuleType === 'existing' && rowData.IsActiveCH === 'No' ?  '#f1caca' : '#ecfbd0' ,'margin': index === 0 ? '0px' : '15px 0px', 'cursor':'pointer'}"
+                        <tr [ngStyle]="{'background-color' : rowData.RuleType === 'existing' && rowData.edited.IsActiveCH === false  && rowData.edited.UserEdited === false ?  '#cdcdcd' : rowData.RuleType === 'new' ? '#f1e5ca' : rowData.RuleType === 'existing' && rowData.IsActiveCH === 'No' ?  '#f1caca' : '#ecfbd0' ,'margin': index === 0 ? '0px' : '15px 0px', 'cursor':'pointer'}"
                             [pReorderableRow]="index" class="p-grid Rules_tr">
                             <td style="font-size: 16px;">
                                 <!-- {{index}} {{rowData |json}} -->
-                                <i style="vertical-align: middle;" class="pi pi-bars" pReorderableRowHandle></i>
+
+                                <i style="vertical-align: middle;" class="pi pi-bars" pReorderableRowHandle [pTooltip]="rowData.ResourceType" tooltipPosition="bottom"></i>
                             </td>
                             <td *ngFor='let Rule of rowData.DisplayRules;let j= index;' class="p-grid ruleNames">
                                 <div class="p-grid" style="margin:5px;font-size:18px;width:80%;">

@@ -751,7 +751,8 @@ export class ConstantsService {
   public RulesType = {
     PROJECT: "Project",
     SOW: "SOW",
-    CDTA: "CDTA",
+    CD: "CD",
+    PF :"PF",
     DELIVERY:"Delivery",
     CM:"CM"
   };
@@ -762,4 +763,15 @@ export class ConstantsService {
     CM1:"CM L1",
     CM2:"CM L2"
   }
+
+  public RuleParamterArray=[
+    { Rulelabel : "Practice Area" , value:'' },
+    {Rulelabel  :'Client', value:'' },
+    {Rulelabel  :'Client Subdivision', value:'' },
+    {Rulelabel  :'Currency', value:'' },
+    {Rulelabel  :'Deliverable Type', value:'' },
+    {Rulelabel  :'Bucket', value:'' },
+];
+
+  
 }

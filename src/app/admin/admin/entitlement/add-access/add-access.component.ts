@@ -30,7 +30,9 @@ export class AddAccessComponent implements OnInit {
     if (this.index === 1) {
       this.ruleType = this.constants.RulesType.SOW;
     } else if (this.index === 2) {
-      this.ruleType = this.constants.RulesType.CDTA;
+      this.ruleType = this.constants.RulesType.CD;
+    }else if (this.index === 3) {
+      this.ruleType = this.constants.RulesType.PF;
     } else {
       this.ruleType = this.constants.RulesType.PROJECT;
     }

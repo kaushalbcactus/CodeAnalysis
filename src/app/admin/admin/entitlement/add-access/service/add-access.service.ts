@@ -3,7 +3,7 @@ import { ConstantsService } from "src/app/Services/constants.service";
 import { AdminConstantService } from "src/app/admin/services/admin-constant.service";
 import { SPOperationService } from "src/app/Services/spoperation.service";
 import { CommonService } from "src/app/Services/common.service";
-import { filter } from "rxjs/operators";
+import { filter, retry } from "rxjs/operators";
 
 @Injectable({
   providedIn: "root",
@@ -155,26 +155,40 @@ export class AddAccessService {
         : [];
 
     // Process CLE Data
-    filterData.CLE =
-      arrResults.find(
-        (c) => c.listName === this.constants.listNames.ClientLegalEntity.name
-      ) &&
-      arrResults.find(
-        (c) => c.listName === this.constants.listNames.ClientLegalEntity.name
-      ).retItems
-        ? arrResults
-            .find(
-              (c) =>
-                c.listName === this.constants.listNames.ClientLegalEntity.name
-            )
-            .retItems.map(
-              (o) =>
-                new Object({
-                  label: o.Title,
-                  value: o.Title,
-                })
-            )
-        : [];
+    filterData.dbCLE =  arrResults.find(
+      (c) => c.listName === this.constants.listNames.ClientLegalEntity.name
+    ) &&
+    arrResults.find(
+      (c) => c.listName === this.constants.listNames.ClientLegalEntity.name
+    ).retItems
+      ? arrResults
+          .find(
+            (c) =>
+              c.listName === this.constants.listNames.ClientLegalEntity.name
+          )
+          .retItems : [];
+
+
+    filterData.CLE =  arrResults.find(
+      (c) => c.listName === this.constants.listNames.ClientLegalEntity.name
+    ) &&
+    arrResults.find(
+      (c) => c.listName === this.constants.listNames.ClientLegalEntity.name
+    ).retItems
+      ? arrResults
+          .find(
+            (c) =>
+              c.listName === this.constants.listNames.ClientLegalEntity.name
+          )
+          .retItems.map( (o) =>
+          new Object({
+            label: o.Title,
+            value: o.Title,
+            Bucket : o.Bucket
+          })) :[];
+    
+  
+    filterData.CLE = filterData.CLE && filterData.CLE.length > 0 ? filterData.CLE.map(e => e["value"]).map((e, i, final) => final.indexOf(e) === i && i).filter((e) => filterData.CLE[e]).map(e => filterData.CLE[e]) :[];
 
     //process Sub-division data
     filterData.SUBDIVISION =
@@ -273,6 +287,12 @@ export class AddAccessService {
           ).retItems
         : [];
 
+    this.processfetchedRules(filterData, arrResults);
+
+    return filterData;
+  }
+
+  processfetchedRules(filterData, arrResults) {
     // process Rules
     filterData.DBRULES =
       arrResults.find(
@@ -289,12 +309,13 @@ export class AddAccessService {
     if (filterData.DBRULES.length > 0) {
       filterData.RULES = JSON.parse(JSON.stringify(filterData.DBRULES));
       filterData.RULES.map((c) => (c.DisplayRules = JSON.parse(c.Rule)));
-      filterData.RULES.map((c) => (c.edited = false));
+      filterData.RULES.map(
+        (c) => (c.edited = { UserEdited: false, IsActiveCH: false })
+      );
       filterData.RULES.map((c) => (c.RuleType = "existing"));
 
       filterData.TEMPRULES = JSON.parse(JSON.stringify(filterData.RULES));
     }
-
     return filterData;
   }
 
@@ -327,28 +348,45 @@ export class AddAccessService {
     });
   }
 
-  async saveRules(Rules) {
+  async saveRules(filterData, type) {
+    const Rules = filterData.RULES;
+    this.commonService.showToastrMessage(
+      this.constants.MessageType.info,
+      "Updating Rules.......",
+      true,
+      true
+    );
+
     let batchURL = [];
     let batchResults = [];
-    let MaxOrder = Math.max.apply(
-      null,
-      Rules.map((c) => c.DisplayOrder)
-    );
-    Rules.forEach(async (rule) => {
+    let EditedRuleArray = [];
+    let addedRuleArray = [];
+    let NewRules = 0;
+    let updatedRules = 0;
+    let deletedRules = 0;
+    const dispalyOrderArray = Rules.map(
+      (c) => c.DisplayOrder
+    ).sort((one, two) => (one > two ? -1 : 1));
+    Rules.forEach(async (rule, i) => {
       if (
         rule.RuleType === "existing" &&
-        (rule.DisplayOrder !== MaxOrder ||
-          rule.IsActiveCH === "No" ||
-          rule.edited === true)
+        (rule.DisplayOrder !== dispalyOrderArray[i] ||
+          rule.edited.IsActiveCH === true ||
+          rule.edited.UserEdited === true)
       ) {
         const editedRule = {
           __metadata: { type: this.constants.listNames.RuleStore.type },
           OwnerPGId: rule.OwnerPG.ID,
-          AccessId: rule.Access.results ? {results : rule.Access.results.map(c=>c.ID)}:{results:[]},
+          AccessId: rule.Access.results
+            ? { results: rule.Access.results.map((c) => c.ID) }
+            : { results: [] },
           IsActiveCH: rule.IsActiveCH,
-          DisplayOrder: MaxOrder,
+          DisplayOrder: dispalyOrderArray[i],
         };
-
+        const exRule = filterData.DBRULES.find(c=>c.ID ===rule.ID) ? filterData.DBRULES.find(c=>c.ID ===rule.ID) : rule;
+        exRule.edited = rule.edited;
+        EditedRuleArray.push(exRule);
+        editedRule.IsActiveCH === "No" ? deletedRules++ : updatedRules++;
         let url = this.spServices.getItemURL(
           this.constants.listNames.RuleStore.name,
           +rule.ID
@@ -364,13 +402,16 @@ export class AddAccessService {
         const NewRule = {
           __metadata: { type: this.constants.listNames.RuleStore.type },
           OwnerPGId: rule.OwnerPG.ID,
-          AccessId: rule.Access.results ? {results : rule.Access.results.map(c=>c.ID)}:{results:[]},
+          AccessId: rule.Access.results
+            ? { results: rule.Access.results.map((c) => c.ID) }
+            : { results: [] },
           IsActiveCH: rule.IsActiveCH,
-          DisplayOrder: MaxOrder,
+          DisplayOrder: dispalyOrderArray[i],
           ResourceType: rule.ResourceType,
           TypeST: rule.TypeST,
           Rule: rule.Rule,
         };
+        NewRules++;
         this.commonService.setBatchObject(
           batchURL,
           this.spServices.getReadURL(
@@ -392,7 +433,6 @@ export class AddAccessService {
         batchResults = await this.spServices.executeBatch(batchURL);
         batchURL = [];
       }
-      MaxOrder--;
     });
 
     if (batchURL.length) {
@@ -404,5 +444,506 @@ export class AddAccessService {
       console.log(batchURL);
       batchResults = await this.spServices.executeBatch(batchURL);
     }
+
+    if(batchResults  && batchResults.length > 0){
+
+      addedRuleArray = batchResults.filter(c=>c.listName ==='RuleStoreCT') ? batchResults.filter(c=>c.listName ==='RuleStoreCT').map(c=>c.retItems):[];
+
+    }
+
+    console.log("added Rule");
+    console.log(addedRuleArray);
+
+    console.log("Edited Rule");
+    console.log(EditedRuleArray);
+
+    this.commonService.clearToastrMessage();
+
+    let Message = "";
+    if (NewRules > 0) {
+      Message = NewRules + " new rules added";
+    }
+    if (updatedRules > 0) {
+      Message =
+        Message === ""
+          ? updatedRules + " rules updated sucessfully."
+          : Message + " and " + updatedRules + " rules updated sucessfully.";
+    }
+    if (deletedRules > 0) {
+      Message =
+        Message === ""
+          ? deletedRules + " rules deleted sucessfully."
+          : Message + " and " + deletedRules + " rules deleted sucessfully.";
+    }
+    this.commonService.clearToastrMessage();
+    this.commonService.showToastrMessage(
+      this.constants.MessageType.success,
+      Message,
+      true,
+      true
+    );
+     if(type === this.constants.RulesType.PROJECT || type === this.constants.RulesType.SOW){
+       await  this.updateAllDetails(filterData, type, addedRuleArray, EditedRuleArray);
+     }
+      
+  }
+
+  async updateAllDetails(filterData, type, addedRuleArray, EditedRuleArray) {
+    let dbItemList=[];
+    let CLE = [];
+    let  batchURL = [];
+    let batchResults = [];
+
+    const Message = type === this.constants.RulesType.PROJECT ? "Fetching Projects....." : "Fetching SOW....."
+  
+    this.commonService.showToastrMessage(
+      this.constants.MessageType.info,
+      Message,
+      true,
+      true
+    );
+    if(type === this.constants.RulesType.PROJECT){
+      this.getAllOpenProjects(batchURL);
+    } else {
+      this.getAllSow(batchURL);
+    }
+  
+    this.GetRulesByType(batchURL, type);
+    this.commonService.SetNewrelic(
+      "getPrjectAndRules",
+      "AddAccessService",
+      "AddAccess"
+    );
+    console.log(batchURL);
+
+    batchResults = await this.spServices.executeBatch(batchURL);
+    filterData = this.processfetchedRules(filterData, batchResults);
+
+    dbItemList =  
+    batchResults.find(
+      (c) => c.listName === this.constants.listNames.ProjectInformation.name
+    ) &&
+    batchResults.find(
+      (c) => c.listName === this.constants.listNames.ProjectInformation.name
+    ).retItems
+      ? batchResults.find(
+          (c) =>
+            c.listName === this.constants.listNames.ProjectInformation.name
+        ).retItems :  batchResults.find(
+          (c) => c.listName === this.constants.listNames.SOW.name
+        ) &&
+        batchResults.find(
+          (c) => c.listName === this.constants.listNames.SOW.name
+        ).retItems
+          ? batchResults.find(
+              (c) =>
+                c.listName === this.constants.listNames.SOW.name
+            ).retItems :[];
+
+   
+    CLE = filterData.CLE;
+
+    dbItemList.map(c=>c.csRuleArray = c.CSRule && filterData.RULES.filter(d=> c.CSRule.split(';#').map(c=>+c).includes(d.ID)) ? filterData.RULES.filter(d=> c.CSRule.split(';#').map(c=>+c).includes(d.ID)).sort( function ( a, b ) { return b.DisplayOrder - a.DisplayOrder; } ):[])
+      
+    dbItemList.map(c=>c.deliveryRuleArray = c.DeliveryRule && filterData.RULES.filter(d=> c.DeliveryRule.split(';#').map(c=>+c).includes(d.ID)) ? filterData.RULES.filter(d=> c.DeliveryRule.split(';#').map(c=>+c).includes(d.ID)).sort( function ( a, b ) { return b.DisplayOrder - a.DisplayOrder; } ) :[]);
+
+
+    let AddRuleItemsCount =0;
+    const disMessage = type === this.constants.RulesType.PROJECT ? 'projects' : 'sow';
+    const parameter = type === this.constants.RulesType.PROJECT ? 'ProjectCode' : 'SOWCode';
+    if (addedRuleArray.length > 0) {
+      addedRuleArray = filterData.RULES.filter(c=> addedRuleArray.map(i=>i.ID).includes(c.ID));
+
+      if(type === this.constants.RulesType.PROJECT){
+        dbItemList = await this.fetchProjectFinanceForRule(addedRuleArray,dbItemList);
+      }
+     
+      dbItemList = await this.addRuleToItems(addedRuleArray,dbItemList,filterData,type,parameter);
+
+      AddRuleItemsCount = dbItemList.filter(c=>c.edited === true) ? dbItemList.filter(c=>c.edited === true).length : 0;
+
+    
+      this.commonService.clearToastrMessage();
+      this.commonService.showToastrMessage(
+        this.constants.MessageType.info,
+        "Applied rules to "+ AddRuleItemsCount + " "+ disMessage +".",
+        true,
+        true
+      );
+    }
+    else{
+      this.commonService.clearToastrMessage();
+    }
+
+    if(EditedRuleArray.length > 0){
+      // edited: {UserEdited : false , IsActiveCH: false},
+      const RemoveRuleArray = EditedRuleArray.filter(c=>c.edited.IsActiveCH === true);
+      if(RemoveRuleArray && RemoveRuleArray.length> 0){
+        this.commonService.showToastrMessage(
+          this.constants.MessageType.info,
+          "Removing "+ RemoveRuleArray.length + " rules from" + disMessage +".",
+          true,
+          true
+        );
+       
+        let ListOfAllItems=[];
+        RemoveRuleArray.forEach(async oldrule => {
+          let RuleItems=[];
+          if(oldrule.ResourceType === this.constants.RulesType.DELIVERY){
+
+            RuleItems = dbItemList.filter(c=> c.DeliveryRule && c.DeliveryRule.split(';#').map(c=>+c).includes(oldrule.ID)) ? dbItemList.filter(c=> c.DeliveryRule && c.DeliveryRule.split(';#').map(c=>+c).includes(oldrule.ID)).map(e=>e[parameter]):[];
+            if(RuleItems && RuleItems.length > 0){
+              dbItemList =  await this.UpdateItemsForRule('deliveryRuleArray',oldrule,dbItemList,'DeliveryLevel2','DeliveryLevel1',RuleItems,parameter);
+            }
+          
+          } else if(oldrule.ResourceType === this.constants.RulesType.CM){
+            RuleItems = dbItemList.filter(c=> c.CSRule && c.CSRule.split(';#').map(c=>+c).includes(oldrule.ID)) ? dbItemList.filter(c=> c.CSRule && c.CSRule.split(';#').map(c=>+c).includes(oldrule.ID)).map(e=>e[parameter]):[];
+            if(RuleItems && RuleItems.length > 0){
+            dbItemList = await this.UpdateItemsForRule('csRuleArray',oldrule,dbItemList,'CMLevel2','CMLevel1',RuleItems,parameter);
+            }
+          }
+          ListOfAllItems.push.apply(ListOfAllItems,RuleItems);
+
+        });
+
+        ListOfAllItems= [...new Set(ListOfAllItems)];
+        if(ListOfAllItems && ListOfAllItems.length > 0 ){
+             
+              this.commonService.showToastrMessage(
+                this.constants.MessageType.info,
+                "Removed rules from  "+ ListOfAllItems.length +" "+ disMessage +".",
+                true,
+                true
+              );
+        }
+
+      }
+
+      const UpdatedUserRuleArray = EditedRuleArray.filter(c=>c.edited.UserEdited === true);
+      if(UpdatedUserRuleArray && UpdatedUserRuleArray.length > 0){
+         const dbUpdatedUserRules = filterData.RULES.filter(c=> UpdatedUserRuleArray.map(d=>d.ID).includes(c.ID));
+         let ListOfProjects=[];
+         dbUpdatedUserRules.forEach(async updatedrule => {
+          let RuleItems=[];
+          const oldRule =  UpdatedUserRuleArray.find(c=>c.ID ===updatedrule.ID);
+          if(updatedrule.ResourceType === this.constants.RulesType.DELIVERY){
+            RuleItems = this.getItemCodes('deliveryRuleArray',dbItemList,oldRule,parameter);
+            if(RuleItems && RuleItems.length > 0){
+            dbItemList =  await this.UpdateItemsForRule('deliveryRuleArray',oldRule,dbItemList,'DeliveryLevel2','DeliveryLevel1',RuleItems,parameter);
+            }
+           } else if(updatedrule.ResourceType === this.constants.RulesType.CM){
+            RuleItems = this.getItemCodes('csRuleArray',dbItemList,oldRule,parameter);
+            if(RuleItems && RuleItems.length > 0){
+            dbItemList = await this.UpdateItemsForRule('csRuleArray',oldRule,dbItemList,'CMLevel2','CMLevel1',RuleItems,parameter);
+            }
+           }
+           ListOfProjects.push.apply(ListOfProjects,RuleItems);
+
+          });
+  
+          ListOfProjects= [...new Set(ListOfProjects)];
+          if(ListOfProjects && ListOfProjects.length > 0 ){
+             
+                this.commonService.showToastrMessage(
+                  this.constants.MessageType.info,
+                  "Updated rule users from  "+ ListOfProjects.length +" " + disMessage +".",
+                  true,
+                  true
+                );
+          }
+      }     
+
+      const sequenceUpdateRules = EditedRuleArray.filter(c=>c.edited.IsActiveCH === false && c.edited.UserEdited === false);
+      if(sequenceUpdateRules && sequenceUpdateRules.length > 0){
+        const dbsequenceUpdateRules = filterData.RULES.filter(c=> sequenceUpdateRules.map(d=>d.ID).includes(c.ID));
+        dbsequenceUpdateRules.forEach(async rule => {
+          if(rule.ResourceType === this.constants.RulesType.DELIVERY){
+            dbItemList =  await this.changeOwnerOfItems('deliveryRuleArray',dbItemList,rule,'DeliveryLevel2',parameter);
+           } else if(rule.ResourceType === this.constants.RulesType.CM){
+            dbItemList = await this.changeOwnerOfItems('csRuleArray',dbItemList,rule,'CMLevel2',parameter);
+           }      
+        });
+      }
+    }
+
+    this.commonService.clearToastrMessage();
+    this.commonService.showToastrMessage(
+      this.constants.MessageType.info,
+      "Updating "+ disMessage + "...",
+      true,
+      true
+    );
+    const ListOfUpdatedItems = dbItemList.filter(c=>c.edited === true);
+    if(ListOfUpdatedItems && ListOfUpdatedItems.length > 0){
+      await this.updateAllEditedItems(ListOfUpdatedItems,type);
+
+      this.commonService.clearToastrMessage();
+      this.commonService.showToastrMessage(
+        this.constants.MessageType.success,
+        "All " + disMessage + " of Rules updated sucessfully.",
+        false
+      );
+    }
+
+  }
+
+  getItemCodes(ruleArray, dbItemList,rule,parameter){
+        // list of project code / sow codes  to remove rules  
+        return dbItemList.filter(c=> c[ruleArray].find(d=>d.ID === rule.ID)) ? dbItemList.filter(c=> c[ruleArray].find(d=>d.ID === rule.ID)).map(e=>e[parameter]) :[] ;
+  }
+
+
+  async updateAllEditedItems(ListOfUpdatedItems,TypeName){
+    let batchURL=[];
+    let batchResults=[];
+
+    const ListName = TypeName === this.constants.RulesType.PROJECT ?  this.constants.listNames.ProjectInformation.name :this.constants.listNames.SOW.name
+    const ListType = TypeName === this.constants.RulesType.PROJECT ?  this.constants.listNames.ProjectInformation.type :this.constants.listNames.SOW.type
+    ListOfUpdatedItems.forEach(async item => {
+      const data ={
+        __metadata: { type: ListType  },
+        ID: item.ID,
+        CMLevel1Id: item.CMLevel1 && item.CMLevel1.hasOwnProperty('results') &&
+        item.CMLevel1.results.length ?  { results: item.CMLevel1.results.map((c) => c.ID) }
+        : { results: [] },
+        CMLevel2Id: item.CMLevel2 ? item.CMLevel2.ID : 0 ,
+        DeliveryLevel1Id : item.DeliveryLevel1 && item.DeliveryLevel1.hasOwnProperty('results') &&
+        item.DeliveryLevel1.results.length ?  { results: item.DeliveryLevel1.results.map((c) => c.ID) }
+        : { results: [] },
+        DeliveryLevel2Id: item.DeliveryLevel2 ? item.DeliveryLevel2.ID : 0 ,
+        CSRule:item.csRuleArray ? item.csRuleArray.map(c=>c.ID).join(';#'):'',
+        DeliveryRule: item.deliveryRuleArray ? item.deliveryRuleArray.map(c=>c.ID).join(';#'):''
+      }
+
+      let url = this.spServices.getItemURL(
+        ListName,
+        +item.ID
+      );
+      this.commonService.setBatchObject(
+        batchURL,
+        url,
+        data,
+        this.constants.Method.PATCH,
+        ListName
+      ); 
+      if (batchURL.length === 99) {
+        this.commonService.SetNewrelic(
+          "updateAllEditedItems",
+          "AddAccessService",
+          "AddAccess"
+        );
+        batchResults = await this.spServices.executeBatch(batchURL);
+        batchURL = [];
+      }
+    });
+
+    if (batchURL.length) {
+      this.commonService.SetNewrelic(
+        "updateAllEditedItems",
+        "AddAccessService",
+        "AddAccess"
+      );
+      console.log(batchURL);
+      batchResults = await this.spServices.executeBatch(batchURL);
+    }
+  }
+
+
+
+  async fetchProjectFinanceForRule(addedRuleArray,dbItemList){
+    let  ProjectFinance=[];
+  
+    let  CurrencyArray =addedRuleArray.filter(c=> c.DisplayRules.filter(c=> c.DisplayName === "Currency").length > 0) ? addedRuleArray.filter(c=> c.DisplayRules.filter(c=> c.DisplayName === "Currency").length > 0).map(c=>c.DisplayRules.find(c=>c.DisplayName === 'Currency')).map(c=>c.Value):[];
+
+    CurrencyArray= [...new Set(CurrencyArray)];
+
+    if(CurrencyArray.length > 0){
+
+      this.commonService.showToastrMessage(
+        this.constants.MessageType.info,
+        "Fetching Project Finance Details....",
+        true,
+        true
+      );
+
+      
+      const batchURL=[];
+      let batchResults=[];
+      CurrencyArray.forEach(element => {
+        this.commonService.setBatchObject(
+          batchURL,
+          this.spServices.getReadURL(
+            this.constants.listNames.ProjectFinances.name,
+            this.adminConstants.QUERY.GET_PROJECT_FINANCE_BY_CURRENCY
+          )
+          .replace(/{{currency}}/gi, element),
+          null,
+          this.constants.Method.GET,
+          this.constants.listNames.ProjectFinances.name
+        );
+      });
+
+      this.commonService.SetNewrelic(
+        "GetProjectFinance",
+        "AddAccessService",
+        "AddAccess"
+      );
+
+      batchResults = await this.spServices.executeBatch(batchURL);
+     
+      if(batchResults  && batchResults.length > 0){
+          ProjectFinance = batchResults.filter(c=>c.listName ==='ProjectFinancesCT') ? [...new Set(batchResults.filter(c=>c.listName ==='ProjectFinancesCT').map(c=>c.retItems).reduce((a,b)=> [...a, ...b], []))] :[];
+      }
+    }
+    // let ApplyRuleProjectArray=[];
+    if(ProjectFinance){
+      dbItemList.map(c=> c.Currency = ProjectFinance.find(d=>d.Title === c.ProjectCode) ? ProjectFinance.find(d=>d.Title === c.ProjectCode).Currency :'');
+    }
+    return dbItemList;
+  }
+
+  async addRuleToItems(addedRuleArray,dbItemList,filterData,type,parameter){
+   
+    const Message = type === this.constants.RulesType.PROJECT ?  "Applying new rule to projects...." : "Applying new rule to sow...."
+    this.commonService.showToastrMessage(
+      this.constants.MessageType.info,
+      Message,
+      true,
+      true
+    );
+     dbItemList.map(c=>c.Bucket = filterData.CLE.find(d=>d.value === c.ClientLegalEntity) ? filterData.CLE.find(d=>d.value === c.ClientLegalEntity).Bucket :'');
+     addedRuleArray.forEach(async Rule => {
+       let allItems =  JSON.parse(JSON.stringify(dbItemList));
+      Rule.DisplayRules.forEach(element => {
+        if(element.InternalName ==="Title"){
+          allItems = allItems.filter(c=> c['Bucket'] === element.Value);
+        }else{
+          allItems = allItems.filter(c=> c[element.InternalName] === element.Value);
+        }
+      });
+
+     
+      const AllCodeList = allItems.map(c=>c[parameter]);
+     
+      if(AllCodeList){
+        if(dbItemList.filter(c=> AllCodeList.includes(c[parameter]))  && dbItemList.filter(c=> AllCodeList.includes(c[parameter])).length > 0){
+          dbItemList.filter(c=> AllCodeList.includes(c[parameter])).map(d=> d.edited= true);
+        }
+        if(Rule.ResourceType === this.constants.RulesType.DELIVERY){
+          dbItemList =  await this.applyRuleToItem('deliveryRuleArray',Rule,dbItemList,AllCodeList,'DeliveryLevel2','DeliveryLevel1',parameter);
+        } else if(Rule.ResourceType === this.constants.RulesType.CM){
+         dbItemList =  await this.applyRuleToItem('csRuleArray',Rule,dbItemList,AllCodeList,'CMLevel2','CMLevel1',parameter);
+        }
+      }
+     });
+
+     return dbItemList;
+  }
+
+  applyRuleToItem(arrayName,Rule,dbItemList,AllCodeList,owner,access,parameter){
+
+    dbItemList.filter(c=> AllCodeList.includes(c[parameter])).map(d=> d[arrayName].push(Rule));
+    dbItemList.filter(c=> AllCodeList.includes(c[parameter])).map(d=> d[arrayName].sort( function ( a, b ) { return b.DisplayOrder - a.DisplayOrder; } ))
+
+    dbItemList.map(c=>c[owner] = c[arrayName] && c[arrayName].length > 0 ? c[arrayName][0].OwnerPG : c[owner]);
+
+    if(Rule.Access && Rule.Access.results){
+      dbItemList.map(c=>c[access] && c[access].results ? c[access].results.push.apply(c[access].results,Rule.Access.results) : c[access]);
+      dbItemList.filter(c=> c[access] && c[access].results).map(c=> c[access].results =  Array.from(new Set(c[access].results.map(a => a.ID)))
+      .map(id => {
+        return c[access].results.find(a => a.ID === id)
+      }));
+    }
+    return dbItemList;
+  }
+
+
+  UpdateItemsForRule(arrayName,oldrule,dbItemList,owner,access,RuleItems,parameter){
+       // make edited true for containing current rule
+       if(dbItemList.filter(c=> RuleItems.includes(c[parameter])) && dbItemList.filter(c=> RuleItems.includes(c[parameter])).length > 0 ){
+        dbItemList.filter(c=> RuleItems.includes(c[parameter])).map(d=> d.edited= true);
+       }
+
+       if(RuleItems  && RuleItems.length > 0){
+          // check current rule access user
+          if(oldrule.Access && oldrule.Access.results){
+            // remove access user from particular field cmlevel or delivery level
+             dbItemList.filter(c=> RuleItems.includes(c[parameter])).map(c=>c[access].results = c[access].results ? c[access].results.filter(e => !oldrule.Access.results.map(f=>f.ID).includes(e.ID)):[]);
+          }
+
+          //change owner of project 
+          dbItemList.filter(c=> RuleItems.includes(c[parameter])).map(d=> d[owner] = d[arrayName] && d[arrayName].length > 0 ? d[arrayName][0].OwnerPG : d[owner]);
+
+          // update access user with existing and new (adhoc user)
+          dbItemList.filter(c=> RuleItems.includes(c[parameter])).map(d=> d[access].results = d[arrayName] && d[arrayName].length > 0 && d[arrayName].filter(e=>e.Access.hasOwnProperty('results')) ?  [...new Set([...d[access].results , ...[...new Set(d[arrayName].filter(e=>e.Access.hasOwnProperty('results')).map(f=>f.Access.results.map(i=>i)).reduce((a,b)=> [...a, ...b], []))]])] : d[access].results);
+
+        }
+       return dbItemList;
+  }
+
+  changeOwnerOfItems(arrayName,dbItemList,rule,owner,parameter){
+    // make edited true for containing current rule
+    if( dbItemList.filter(c=> c[arrayName].find(d=>d.Id === rule.ID)) && dbItemList.filter(c=> c[arrayName].find(d=>d.Id === rule.ID)).length > 0 ){
+      dbItemList.filter(c=>c[arrayName].filter(c=>c.Id === rule.ID)).map(d=> d.edited = true);
+    }
+     // list of project code / Sow code containing rule  
+     const RuleItems =  dbItemList.filter(c=> c[arrayName].find(d=>d.ID === rule.ID)) ? dbItemList.filter(c=> c[arrayName].find(d=>d.ID === rule.ID)).map(e=>e[parameter]) :[] ;
+
+     if(RuleItems && RuleItems.length > 0){
+         //change owner of project /Sow
+         dbItemList.filter(c=> RuleItems.includes(c[parameter])).map(d=> d[owner] = d[arrayName] && d[arrayName].length > 0 ? d[arrayName][0].OwnerPG : d[owner]);
+     }
+     return dbItemList;
+  }
+
+
+  
+  // UpdateRuleUsers(arrayName,oldRule,dbItemList,owner,access){
+
+  //   const RuleContaingProjects = dbItemList.filter(c=> c[arrayName].find(d=> d.ID === oldRule.ID))? dbItemList.filter(c=> c[arrayName].find(d=> d.ID === oldRule.ID)).map(e=>e.ProjectCode):[];
+
+  //   if(RuleContaingProjects && RuleContaingProjects.length > 0){
+  //     if(oldRule.Access && oldRule.Access.results){
+  //       // remove access user from particular field cmlevel or delivery level of existing rule
+  //       dbItemList.filter(c=> RuleContaingProjects.includes(c.ProjectCode)).map(c=>c[access] = c[arrayName] && c[arrayName].length > 0 && c[arrayName].find(c=>c.ID === oldRule.ID) ? c[access].filter(d=> !oldRule.Access.results.map(e=>e.ID).includes(d.ID)) : c[access]);
+  //     }
+
+  //      //change owner of project 
+  //      dbItemList.filter(c=> RuleContaingProjects.includes(c.ProjectCode)).map(d=> d[owner] = d[arrayName] && d[arrayName].length > 0 ? d[arrayName][0].OwnerPG : d[owner]);
+
+
+  //        // update access user with existing and new (adhoc user)
+  //        dbItemList.filter(c=> RuleContaingProjects.includes(c.ProjectCode)).map(d=> d[access] = d[arrayName] && d[arrayName].length > 0 && d[arrayName].filter(e=>e.Access.hasOwnProperty('results')) ?  [...new Set([...d[access] , ...[...new Set(d[arrayName].filter(e=>e.Access.hasOwnProperty('results')).map(f=>f.Access.results.map(i=>i)).reduce((a,b)=> [...a, ...b], []))]])] : d[arrayName]);
+
+  //   }
+
+
+  //   return dbItemList;
+  // }
+
+  getAllOpenProjects(batchURL) {
+    this.commonService.setBatchObject(
+      batchURL,
+      this.spServices.getReadURL(
+        this.constants.listNames.ProjectInformation.name,
+        this.adminConstants.QUERY.GET_PROJECT_INFO
+      ),
+      null,
+      this.constants.Method.GET,
+      this.constants.listNames.ProjectInformation.name
+    );
+  }
+
+  getAllSow(batchURL){
+    this.commonService.setBatchObject(
+      batchURL,
+      this.spServices.getReadURL(
+        this.constants.listNames.SOW.name,
+        this.adminConstants.QUERY.GET_All_SOW
+      ),
+      null,
+      this.constants.Method.GET,
+      this.constants.listNames.SOW.name
+    );
   }
 }

@@ -470,11 +470,20 @@ export class StandardprojectComponent implements OnInit {
       let tempskillTypes = {};
       let temSkillArray = [];
       let tempReviewArray = [];
-      let selectedVal = event.value.BaseSkill;
-      let selectedService = event.value.Title;
+      let selectedVal = event.value ? event.value.BaseSkill : null;
+      let selectedService = event.value ? event.value.Title: null;
       this.sharedTaskAllocateObj.oStandardTemplateForDeliverable = await this.getStandardTemplateBasedOnDeliverable(selectedService);
-      this.deliverableType = event.value.Deliverable.Title;
+      this.deliverableType =event.value ?  event.value.Deliverable.Title : null;
       this.selectedService = selectedService;
+
+
+      this.constants.RuleParamterArray.find(
+        (c) => c.Rulelabel === "Deliverable Type"
+      ).value = this.deliverableType ? this.deliverableType:'';
+  
+      this.getProjectRules();
+
+
       this.changedProjectCode(this.deliverableType);
       // save the deliverable type and subDeliverable in global variable to save the project.
       this.pmObject.addProject.Timeline.Standard.DeliverableType = this.deliverableType;

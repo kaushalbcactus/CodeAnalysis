@@ -119,7 +119,7 @@ export class PmconstantService {
     ALL_PROJECT_INFORMATION: {
       // tslint:disable-next-line:max-line-length
       select: 'ID,Title,ProjectCode,DeliverableType,SubDeliverable,PrimaryPOC,ClientLegalEntity,ProjectFolder,SOWCode,WBJID,ProjectType,Status,Author/Id,Author/Title,Created,Modified,'
-        + 'Authors,POC,SubDivision, PriorityST, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,LastSubmissionDate,JournalSelectionURL,JournalSelectionDate,'
+        + 'Authors,POC,SubDivision, PriorityST, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,LastSubmissionDate,JournalSelectionURL,JournalSelectionDate,CSRule,DeliveryRule,'
         // tslint:disable-next-line:max-line-length
         + 'DescriptionMT, ConferenceJournal, CommentsMT, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
         + 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID,'
@@ -135,7 +135,7 @@ export class PmconstantService {
     USER_SPECIFIC_PROJECT_INFORMATION: {
       // tslint:disable-next-line:max-line-length
       select: 'ID,Title,ProjectCode,DeliverableType,SubDeliverable,PrimaryPOC,ClientLegalEntity,ProjectFolder,SOWCode,WBJID,ProjectType,Status,Author/Id,Author/Title,Created,Modified,'
-        + 'Authors,POC,SubDivision, PriorityST, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,LastSubmissionDate,JournalSelectionURL,JournalSelectionDate,'
+        + 'Authors,POC,SubDivision, PriorityST, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,LastSubmissionDate,JournalSelectionURL,JournalSelectionDate,CSRule,DeliveryRule,'
         // tslint:disable-next-line:max-line-length
         + 'DescriptionMT, ConferenceJournal, CommentsMT, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
         + 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID,'
@@ -152,7 +152,7 @@ export class PmconstantService {
     USER_SPECIFIC_PROJECT_INFORMATION_MY: {
       // tslint:disable-next-line:max-line-length
       select: 'ID,Title,ProjectCode,DeliverableType,SubDeliverable,PrimaryPOC,ClientLegalEntity,ProjectFolder,SOWCode,WBJID,ProjectType,Status,Author/Id,Author/Title,Created,'
-        + 'Authors,POC,SubDivision, PriorityST, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,LastSubmissionDate,JournalSelectionURL,JournalSelectionDate,'
+        + 'Authors,POC,SubDivision, PriorityST, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,LastSubmissionDate,JournalSelectionURL,JournalSelectionDate,CSRule,DeliveryRule,'
         // tslint:disable-next-line:max-line-length
         + 'DescriptionMT, ConferenceJournal, CommentsMT, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
         + 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID,'
@@ -277,7 +277,7 @@ export class PmconstantService {
         + 'TotalLinked,RevenueLinked,OOPLinked,TaxLinked,SOWLink,'
         + 'PrimaryPOC,BusinessVertical,CommentsMT,BD/ID, BD/Title,CMLevel1/ID, CMLevel1/Title,CMLevel2/ID, CMLevel2/Title,'
         + 'DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title, AdditionalPOC, BillingEntity,'
-        + 'CreatedDate, ExpiryDate',
+        + 'CreatedDate, ExpiryDate,CSRule,DeliveryRule',
       expand: 'BD/ID, BD/Title,CMLevel1/ID, CMLevel1/Title,CMLevel2/ID, CMLevel2/Title,DeliveryLevel1/ID,'
         + 'DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title ',
       filter: 'ID eq \'{{Id}}\'',
@@ -297,7 +297,7 @@ export class PmconstantService {
       top: 4900
     },
     CLIENT_LEGAL_ENTITY: {
-      select: 'ID,Title,Acronym,Currency,InvoiceName,ListName,APAddress,TimeZoneNM, SOWCounter, BillingEntity, ListName, '
+      select: 'ID,Title,Acronym,Currency,InvoiceName,ListName,APAddress,TimeZoneNM, SOWCounter, BillingEntity, ListName,Bucket, '
         + 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title,'
         + 'DeliveryLevel2/ID, DeliveryLevel2/Title',
       expand: 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title,'
