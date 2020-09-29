@@ -765,7 +765,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             for (let pi = 0; pi < this.totalLineItems.length; pi++) {
                 const element = this.totalLineItems[pi];
                 this.pcmLevels = [];
-                if (element) {
+                if (element && element.ProjectCode.CMLevel1 && element.ProjectCode.CMLevel2) {
                     for (let i = 0; i < element.ProjectCode.CMLevel1.results.length; i++) {
                         const ele = element.ProjectCode.CMLevel1.results[i];
                         this.pcmLevels.push(ele);

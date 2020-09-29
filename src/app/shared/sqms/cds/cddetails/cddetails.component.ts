@@ -14,15 +14,10 @@ import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 })
 export class CddetailsComponent implements OnInit {
 
-  // Html for popup
-  // @ViewChild('popupContent', { static: true }) popupContent: ElementRef;
-
   // This property emits data to parent (CD) component to reflect changes done in popup
   @Output() bindTableEvent = new EventEmitter<{}>();
   @Output() setSuccessMessage = new EventEmitter<{}>();
   display = false;
-  // public successMessage: string;
-  // private success = new Subject<string>();
   public loading = false;
   public hidePopupLoader = false;
   public hidePopupTable = true;
@@ -37,7 +32,6 @@ export class CddetailsComponent implements OnInit {
     { label: 'EQG', value: 'EQG' },
     { label: 'CS / PM / RM / Others', value: 'CS / PM / RM / Others' }
     ],
-    // resources: [],
     businessImpact: [{ label: 'High', value: 'High' }, { label: 'Low', value: 'Low' }],
     cdCategories: [{ label: 'ATD issues', value: 'ATD issues' }, { label: 'Content issues', value: 'Content issues' },
     { label: 'Missed deadlines', value: 'Missed deadlines' }, { label: 'Communication issues', value: 'Communication issues' }],
@@ -48,7 +42,6 @@ export class CddetailsComponent implements OnInit {
     selectedGroup: null,
     selectedTaggedItem: null,
     selectedAccountableGroup: null,
-    // selectedResource: null,
     selectedBusinessImpact: null,
     selectedCDCategory: null,
     resourceIdentifiedComments: '',
@@ -91,7 +84,10 @@ export class CddetailsComponent implements OnInit {
       ID: '',
       EMail: '',
       Title: ''
-    }
+    },
+    selectedDeliveryAccess: null,
+    selectedDeliveryOwner: null,
+    selectedCS: null,
   };
   public cdDelete = {
     reasons: [{ label: 'Duplicate Entry', value: 'Duplicate Entry' },
@@ -104,7 +100,14 @@ export class CddetailsComponent implements OnInit {
     type: '',
     listName: ''
   };
+  public allResources = [];
+  public showPrjLoader = false;
+  public showAccepted = false;
+  public showRejected = false;
   public hideResourceLoader = true;
+  public csRes = [];
+  public deliveryAccess = [];
+  public deliveryOwner = [];
   constructor(private globalConstant: ConstantsService, private spService: SPOperationService,
     private global: GlobalService,
     private qmsConstant: QMSConstantsService,
@@ -158,6 +161,7 @@ export class CddetailsComponent implements OnInit {
    * @param content-cd row
    */
   setQCObject(content, codeDetails) {
+    this.allResources = content.allResources;
     this.qc.qcID = '' + content.ID;
     this.qc.projectCode = content.Title;
     this.qc.actionClicked = content.actionClicked;
@@ -205,8 +209,6 @@ export class CddetailsComponent implements OnInit {
       msgType: '',
       msg: ''
     });
-    // this.resetAccountableResource();
-    // this.display = false;
   }
 
   /**
@@ -391,17 +393,9 @@ export class CddetailsComponent implements OnInit {
           this.commonService.SetNewrelic('QMS', 'CD-updateValidity', 'SendMail');
           this.spService.sendMail(strTo, this.global.currentUser.email, rejectMailSubject, rejectMailContent, this.global.currentUser.email);
         }
-        msg = 'CD rejected for ' + this.qc.projectCode + '.';
-        // this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD rejected for ' + this.qc.projectCode + '.' });
-      } else if (actionClicked === 'valid') {
-        msg = 'CD marked as valid and closed for ' + this.qc.projectCode + '.';
-        // this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD marked as valid and closed for ' + this.qc.projectCode + '.' });
-      } else if (actionClicked === 'invalid') {
-        msg = 'CD marked as invalid and closed for ' + this.qc.projectCode + '.';
-        // this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD marked as invalid and closed for ' + this.qc.projectCode + '.' });
-      }
-      // emit success message to CD component
-      // this.resetAccountableResource();
+        msg = 'CD rejected for ' + this.qc.projectCode + '.';} else if (actionClicked === 'valid') {
+        msg = 'CD marked as valid and closed for ' + this.qc.projectCode + '.';} else if (actionClicked === 'invalid') {
+        msg = 'CD marked as invalid and closed for ' + this.qc.projectCode + '.';}
       this.hidePopupLoader = true;
       this.hidePopupTable = false;
       this.popupConfig.close({
@@ -410,7 +404,6 @@ export class CddetailsComponent implements OnInit {
         msgType: this.globalConstant.MessageType.success,
         msg
       });
-      // this.close();
     }, 300);
   }
 
@@ -523,6 +516,7 @@ export class CddetailsComponent implements OnInit {
   getSelectedGroupItems() {
     this.qc.tagGroupItems = [];
     this.hideResourceLoader = false;
+    this.qc.selectedTaggedItem = null;
     setTimeout(async () => {
       const cdComponent = this.qmsConstant.ClientFeedback.ClientDissatisfactionComponent;
       const group = this.qc.selectedGroup;
@@ -549,7 +543,14 @@ export class CddetailsComponent implements OnInit {
         if (obj.CMLevel1.results) {
           this.updateResourceEmail(obj.CMLevel1.results);
         }
+        if(obj.DeliveryLevel2) {
+          delete obj.DeliveryLevel2.__metadata;
+        }
+        if(obj.CMLevel2) {
+          delete obj.CMLevel2.__metadata;
+        }
       });
+      this.getClientResources();
       this.hideResourceLoader = true;
     }, 300);
   }
@@ -574,7 +575,83 @@ export class CddetailsComponent implements OnInit {
     array = array.map(res => {
       var resource = this.global.allResources.filter(u => u.UserNamePG.ID === res.ID);
       res.EMail = resource.length > 0 ? resource[0].UserNamePG.EMail : '';
+      delete res.__metadata;
       return res;
     });
+  }
+
+  searchProjectCode(value) {
+    this.showPrjLoader = true;
+    setTimeout(async () => {
+      const projectCode = value;
+      let projectInfoFilter;
+      projectInfoFilter = Object.assign({}, this.qmsConstant.ClientFeedback.ClientDissatisfactionComponent.getProject);
+      projectInfoFilter.filter = projectInfoFilter.filter.replace(/{{projectCode}}/gi, projectCode);
+      this.commonService.SetNewrelic('QMS', 'tagProject', 'GetClosedProjectInfo');
+      const results = await this.spService.readItems(this.globalConstant.listNames.ProjectInformation.name, projectInfoFilter);
+      if (results && results.length) {
+        this.qc.selectedTaggedItem = results[0];
+        this.showAccepted = true;
+        this.showRejected = false;
+      } else {
+        this.showRejected = true;
+        this.showAccepted = false;
+      }
+      this.showPrjLoader = false;
+    }, 100);
+  }
+
+  clear(inputEvent) {
+    inputEvent.value = '';
+    this.qc.selectedTaggedItem = this.qc.selectedTaggedItem ? this.showAccepted ? null : this.qc.selectedTaggedItem : null;
+    this.showAccepted = false;
+    this.showRejected = false;
+  }
+
+  getClientResources() {
+    this.csRes = this.getResourcesName(this.allResources, ['CM L1', 'CM L2']);
+    this.deliveryAccess  = this.getResourcesName(this.allResources, ['Delivery L1', 'Delivery L2']);
+    this.deliveryOwner = this.getResourcesName(this.allResources, ['Delivery L2']);
+  }
+
+  getResourcesName(resources, filters) {
+    const filteredResources = resources.filter(ar => filters.indexOf(ar.RoleCH) > -1);
+    const mapped = filteredResources.map(element => ({ID: element.ID, Title: element.UserNamePG.Title, EMail: element.UserNamePG.EMail}));
+    return mapped;
+  }
+
+  updateClientResource(event, type) {
+    let taggedItem: any = {};
+    switch(type) {
+      case 'cs':
+        taggedItem = {
+          CMLevel1 : {
+            ...this.qc.selectedTaggedItem,
+            results : event.value
+          }
+        }
+        break;
+      case 'delivery':
+        taggedItem = {
+          DeliveryLevel1 : {
+            ...this.qc.selectedTaggedItem,
+            results : event.value
+          }
+        }
+        break;
+      case 'delivery2':
+        taggedItem = {
+          ...this.qc.selectedTaggedItem,
+          DeliveryLevel2 : event.value
+        }
+        break;
+    }
+    const itemIndex = this.qc.tagGroupItems.findIndex(qc => qc.Title === taggedItem.Title);
+    this.qc.tagGroupItems.splice(itemIndex, 1, taggedItem);
+    this.qc.selectedTaggedItem = {...taggedItem};
+  }
+
+  isEmptyObject(obj) {
+    return obj && Object.keys(obj).length ? false : true;
   }
 }

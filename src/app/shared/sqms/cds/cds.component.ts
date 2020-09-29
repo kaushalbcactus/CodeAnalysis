@@ -386,12 +386,13 @@ export class CdsComponent implements OnInit, AfterViewChecked, DoCheck {
     const ref = this.dialogService.open(CddetailsComponent, {
       data: {
         ...data,
+        allResources: this.common.sharedObject.allResources,
         actionClicked: event.currentTarget.id,
         actionClickedTitle: event.currentTarget.title
       },
       width: "60vw",
       header: event.currentTarget.title,
-      contentStyle: { "max-height": "100vh", "overflow-y": "auto" },
+      contentStyle: { "max-height": "150vh", "overflow-y": "auto" },
       closable: true
     });
     ref.onClose.subscribe((qcObj) => {
