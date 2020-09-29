@@ -178,6 +178,9 @@ export class CaDragdropComponent implements OnInit {
       // const position = $($('.task-drop .nodes').children()[Count]).position();
       // element.top = position.top;
       // element.left = position.left;
+      const position = document.querySelectorAll('.task-drop .nodes')[0].children[Count].getBoundingClientRect();
+      element.top = position.x;
+      element.left = position.y + 200;
       Count++;
     });
 
