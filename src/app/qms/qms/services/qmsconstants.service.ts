@@ -296,7 +296,7 @@ export class QMSConstantsService {
       getPF: {
         select: 'ID, Title, FileID, FileURL, Status, IsActiveCH, SentDate,SentBy/ID, SentBy/Title, Modified, Resources/ID,Resources/Title, DeliveryLeads/ID',
         expand: 'SentBy, Resources, DeliveryLeads',
-        filter: "IsActiveCH eq 'Yes' and Status ne 'Accepted' and Status ne 'Rejected' and DeliveryLeads/ID eq '" + this.global.currentUser.userId + "'" +
+        filter: "IsActiveCH eq 'Yes' and DeliveryLeads/ID eq '" + this.global.currentUser.userId + "'" +
           " and SentDate ge '{{startDate}}' and SentDate le '{{endDate}}'",
         top: '4900',
         orderby: 'SentDate desc'

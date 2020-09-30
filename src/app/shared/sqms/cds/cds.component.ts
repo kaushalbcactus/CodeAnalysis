@@ -212,6 +212,7 @@ export class CdsComponent implements OnInit, AfterViewChecked, DoCheck {
   async applyFilters(filterObj) {
     let arrQCs = [];
     if (filterObj && filterObj.projectCode) {
+      // used at mytimeline tab
       arrQCs = await this.getCDItemsByProject(4500, filterObj.projectCode);
     } else if (this.cdStatus) {
       arrQCs = await this.getQCItems(filterObj);
@@ -279,16 +280,6 @@ export class CdsComponent implements OnInit, AfterViewChecked, DoCheck {
   }
 
   /**
-   * Fetches all RCA and ClientSatisfaction url for CD clicked
-   * @param event - button clicked
-   * @param popupComponentRef popup component reference
-   * @param cdRow - CD row
-   */
-
-  viewCDFiles(event, popupComponentRef, cdRow) {
-    popupComponentRef.openPopup(event, cdRow, 'lg');
-  }
-  /**
    * Search value from input text
    * @param filterValue - typed value
    */
@@ -330,7 +321,6 @@ export class CdsComponent implements OnInit, AfterViewChecked, DoCheck {
       { label: 'Mark as valid CD', title: 'Mark as valid CD', id: 'valid', command: (e) => this.openPopup(e.originalEvent, data), visible: data.Status === this.globalConstant.cdStatus.ValidationPending && this.global.currentUser.isCDAdmin && !this.readOnly },
       { label: 'Mark as invalid CD', title: 'Mark as invalid CD', id: 'invalid', command: (e) => this.openPopup(e.originalEvent, data), visible: data.Status === this.globalConstant.cdStatus.ValidationPending && this.global.currentUser.isCDAdmin && !this.readOnly },
       { label: 'Reject and send for correction', title: 'Reject and send for correction', id: 'reject', command: (e) => this.openPopup(e.originalEvent, data), visible: data.Status === this.globalConstant.cdStatus.ValidationPending && this.global.currentUser.isCDAdmin && !this.readOnly },
-      { label: 'Tag to Project / Client', title: 'Tag to Project / Client', id: 'tag', command: (e) => this.openPopup(e.originalEvent, data), visible: data.Status === this.globalConstant.cdStatus.Created && data.Title === 'TBD' && this.global.currentUser.isCDAdmin && !this.readOnly },
       { label: 'View Comments', title: 'View Comments', id: 'viewComments', command: (e) => this.openPopup(e.originalEvent, data), visible: data.Status !== this.globalConstant.cdStatus.Created && data.Status !== this.globalConstant.cdStatus.Deleted }
     ];
   }

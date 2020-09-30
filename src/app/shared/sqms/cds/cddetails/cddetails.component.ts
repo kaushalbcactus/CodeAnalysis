@@ -139,19 +139,9 @@ export class CddetailsComponent implements OnInit {
     getPrjItemData.listName = this.globalConstant.listNames.ProjectInformation.name;
     getPrjItemData.type = 'GET';
     batchURL.push(getPrjItemData);
-
-    // Rest API to check if code is client code
-    const getClientItemData = Object.assign({}, this.options);
-    getClientItemData.url = this.spService.getReadURL(this.globalConstant.listNames.ClientLegalEntity.name,
-      this.qmsConstant.ClientFeedback.ClientDissatisfactionComponent.getClient);
-    getClientItemData.url = getClientItemData.url.replace('{{Title}}', code);
-    getClientItemData.listName = this.globalConstant.listNames.ClientLegalEntity.name;
-    getClientItemData.type = 'GET';
-    batchURL.push(getClientItemData);
     let arrResult = await this.spService.executeBatch(batchURL);
     arrResult = arrResult.map(d => d.retItems);
-    const detail = arrResult && arrResult.length > 0 && arrResult[0].length > 0 ? arrResult[0][0] : arrResult[1].length > 0 ?
-      arrResult[1][0] : [];
+    const detail = arrResult && arrResult.length ? arrResult[0] : [];
     return detail;
   }
 
@@ -210,17 +200,6 @@ export class CddetailsComponent implements OnInit {
       msg: ''
     });
   }
-
-  /**
-   * resets accountable resources
-   */
-  resetAccountableResource() {
-    this.qc.selectedAccountableGroup = this.qc.selectedBusinessImpact = this.qc.selectedCDCategory = null;
-    this.qc.rcaComments = this.qc.caComments = this.qc.paComments = this.qc.resourceIdentifiedComments = '';
-    this.qc.selectedGroup = this.qc.selectedTaggedItem = this.qc.selectedSegregation = null;
-    this.qc.deliveryLevel2 = this.qc.deliveryLevel1 = this.qc.cm = this.cdDelete.selectedReason = null;
-  }
-
 
   /**
    * updates CD
@@ -382,7 +361,6 @@ export class CddetailsComponent implements OnInit {
         cdDetails.Status + ' - ' + this.globalConstant.cdStatus.Valid : cdDetails.Status + ' - ' + this.globalConstant.cdStatus.InValid;
       this.qc.isActive = cdDetails.IsActiveCH;
       this.qc.rejectionComments = this.qc.rejectionComments + '\n' + this.qc.newRejectionComments;
-      // this.bindTableEvent.emit(this.qc);
       if (actionClicked === 'reject') {
         const rejectTemplate = await this.getMailContent(this.qmsConstant.EmailTemplates.CD.RejectQualityComplaint);
         if (rejectTemplate.length > 0) {
@@ -435,56 +413,6 @@ export class CddetailsComponent implements OnInit {
     };
   }
 
-  /**
-   * tag CD to project or client
-   */
-  tag() {
-    let msg = '';
-    this.showLoader();
-    setTimeout(async () => {
-      const cm = [...this.qc.selectedTaggedItem.CMLevel1.results.map(u => u.ID), this.qc.selectedTaggedItem.CMLevel2.ID ? this.qc.selectedTaggedItem.CMLevel2.ID : ''];
-      const delivery1 = this.qc.selectedTaggedItem.DeliveryLevel1.results ? this.qc.selectedTaggedItem.DeliveryLevel1.results : [];
-      const delivery2 = [this.qc.selectedTaggedItem.DeliveryLevel2.ID ? this.qc.selectedTaggedItem.DeliveryLevel2.ID : ''];
-      const delivery2EMail = [this.qc.selectedTaggedItem.DeliveryLevel2.EMail ? this.qc.selectedTaggedItem.DeliveryLevel2.EMail : ''];
-      const primaryResources = this.qc.selectedTaggedItem.PrimaryResMembers && this.qc.selectedTaggedItem.PrimaryResMembers.results ?
-        this.qc.selectedTaggedItem.PrimaryResMembers.results.map(u => u.ID) : [];
-      // update quality complaint line item
-      const cdDetails = {
-        __metadata: { type: this.globalConstant.listNames.QualityComplaints.type },
-        Title: this.qc.selectedTaggedItem.Title,
-        TLId: { 'results': delivery1.map(u => u.ID) },
-        ASDId: { 'results': delivery2 },
-        PrimaryResId: { 'results': primaryResources },
-        CSId: { 'results': cm },
-        ResourcesId: { 'results': delivery2 }
-      };
-      // update projectcode property to bind cd component
-      this.qc.projectCode = this.qc.selectedTaggedItem.Title;
-      this.qc.ASD = this.qc.selectedTaggedItem.DeliveryLevel1;
-      this.qc.TL.results.push(this.qc.selectedTaggedItem.DeliveryLevel2);
-      const cm1 = this.qc.selectedTaggedItem.CMLevel1.results ? this.qc.selectedTaggedItem.CMLevel1.results : [];
-      this.qc.CS.results = [...cm1, this.qc.selectedTaggedItem.CMLevel2];
-      this.updateCD(cdDetails);
-      const createCDTemplate = await this.getMailContent(this.qmsConstant.EmailTemplates.CD.CreateQualityComplaint);
-      if (createCDTemplate.length > 0) {
-        let createMailContent = createCDTemplate[0].ContentMT;
-        const createMailSubject = this.qc.projectCode + '(#' + this.qc.qcID + '): Dissatisfaction';
-        const strTo = delivery2EMail.toString();
-        createMailContent = this.replaceContent(createMailContent, "@@Val1@@", this.global.sharePointPageObject.webAbsoluteUrl + '/dashboard#/qms/clientFeedback/clientDissatisfaction');
-        this.commonService.SetNewrelic('QMS', 'CD-actions-popup-tag', 'SendMail');
-        this.spService.sendMail(strTo, this.global.currentUser.email, createMailSubject, createMailContent, this.global.currentUser.email);
-      }
-      msg = 'CD Tagged Successfully.'
-      this.showTable();
-      this.popupConfig.close({
-        qc: this.qc,
-        action: 'updateValidity',
-        msgType: this.globalConstant.MessageType.success,
-        msg
-      });
-    });
-  }
-
   async getMailContent(arrTemplateName) {
     const batchURL = [];
     let arrResult = [];
@@ -510,51 +438,6 @@ export class CddetailsComponent implements OnInit {
     return arrResult.length > 0 ? arrResult : [];;
   }
 
-  /**
-   * fetches resources based on accountable group
-   */
-  getSelectedGroupItems() {
-    this.qc.tagGroupItems = [];
-    this.hideResourceLoader = false;
-    this.qc.selectedTaggedItem = null;
-    setTimeout(async () => {
-      const cdComponent = this.qmsConstant.ClientFeedback.ClientDissatisfactionComponent;
-      const group = this.qc.selectedGroup;
-      const tagItemsUrl = group.value === 'Project' ? cdComponent.getOpenProjects : cdComponent.getClients;
-      const tagListName = group.value === 'Project' ? this.globalConstant.listNames.ProjectInformation.name : this.globalConstant.listNames.ClientLegalEntity.name;
-      this.commonService.SetNewrelic('QMS', 'cd-actionpopup-getSelectedGroupItems', 'readItems');
-      let items = await this.spService.readItems(tagListName, tagItemsUrl);
-      items = items.length > 0 ? items : [];
-      this.qc.tagGroupItems = [...items];
-
-      this.qc.tagGroupItems.map((obj) => {
-        if (group.value === 'Project') {
-          obj.Title = obj.ProjectCode;
-          if (obj.AllDeliveryResources.results) {
-            this.updateResourceEmail(obj.AllDeliveryResources.results);
-          }
-          if (obj.PrimaryResMembers.results) {
-            this.updateResourceEmail(obj.PrimaryResMembers.results);
-          }
-        }
-        if (obj.DeliveryLevel1.results) {
-          this.updateResourceEmail(obj.DeliveryLevel1.results);
-        }
-        if (obj.CMLevel1.results) {
-          this.updateResourceEmail(obj.CMLevel1.results);
-        }
-        if(obj.DeliveryLevel2) {
-          delete obj.DeliveryLevel2.__metadata;
-        }
-        if(obj.CMLevel2) {
-          delete obj.CMLevel2.__metadata;
-        }
-      });
-      this.getClientResources();
-      this.hideResourceLoader = true;
-    }, 300);
-  }
-
   showTable() {
     this.hidePopupLoader = true;
     this.hidePopupTable = false;
@@ -563,95 +446,5 @@ export class CddetailsComponent implements OnInit {
   showLoader() {
     this.hidePopupLoader = false;
     this.hidePopupTable = true;
-  }
-
-  /**
-   *
-   * @param obj - QC item
-   * @param array - array of resources
-   * @param includeInEMail - should resources email to be added in email
-   */
-  updateResourceEmail(array) {
-    array = array.map(res => {
-      var resource = this.global.allResources.filter(u => u.UserNamePG.ID === res.ID);
-      res.EMail = resource.length > 0 ? resource[0].UserNamePG.EMail : '';
-      delete res.__metadata;
-      return res;
-    });
-  }
-
-  searchProjectCode(value) {
-    this.showPrjLoader = true;
-    setTimeout(async () => {
-      const projectCode = value;
-      let projectInfoFilter;
-      projectInfoFilter = Object.assign({}, this.qmsConstant.ClientFeedback.ClientDissatisfactionComponent.getProject);
-      projectInfoFilter.filter = projectInfoFilter.filter.replace(/{{projectCode}}/gi, projectCode);
-      this.commonService.SetNewrelic('QMS', 'tagProject', 'GetClosedProjectInfo');
-      const results = await this.spService.readItems(this.globalConstant.listNames.ProjectInformation.name, projectInfoFilter);
-      if (results && results.length) {
-        this.qc.selectedTaggedItem = results[0];
-        this.showAccepted = true;
-        this.showRejected = false;
-      } else {
-        this.showRejected = true;
-        this.showAccepted = false;
-      }
-      this.showPrjLoader = false;
-    }, 100);
-  }
-
-  clear(inputEvent) {
-    inputEvent.value = '';
-    this.qc.selectedTaggedItem = this.qc.selectedTaggedItem ? this.showAccepted ? null : this.qc.selectedTaggedItem : null;
-    this.showAccepted = false;
-    this.showRejected = false;
-  }
-
-  getClientResources() {
-    this.csRes = this.getResourcesName(this.allResources, ['CM L1', 'CM L2']);
-    this.deliveryAccess  = this.getResourcesName(this.allResources, ['Delivery L1', 'Delivery L2']);
-    this.deliveryOwner = this.getResourcesName(this.allResources, ['Delivery L2']);
-  }
-
-  getResourcesName(resources, filters) {
-    const filteredResources = resources.filter(ar => filters.indexOf(ar.RoleCH) > -1);
-    const mapped = filteredResources.map(element => ({ID: element.ID, Title: element.UserNamePG.Title, EMail: element.UserNamePG.EMail}));
-    return mapped;
-  }
-
-  updateClientResource(event, type) {
-    let taggedItem: any = {};
-    switch(type) {
-      case 'cs':
-        taggedItem = {
-          CMLevel1 : {
-            ...this.qc.selectedTaggedItem,
-            results : event.value
-          }
-        }
-        break;
-      case 'delivery':
-        taggedItem = {
-          DeliveryLevel1 : {
-            ...this.qc.selectedTaggedItem,
-            results : event.value
-          }
-        }
-        break;
-      case 'delivery2':
-        taggedItem = {
-          ...this.qc.selectedTaggedItem,
-          DeliveryLevel2 : event.value
-        }
-        break;
-    }
-    const itemIndex = this.qc.tagGroupItems.findIndex(qc => qc.Title === taggedItem.Title);
-    this.qc.tagGroupItems.splice(itemIndex, 1, taggedItem);
-    this.qc.selectedTaggedItem = {...taggedItem};
-  }
-
-  isEmptyObject(obj) {
-    return obj && Object.keys(obj).length ? false : true;
   }
 }

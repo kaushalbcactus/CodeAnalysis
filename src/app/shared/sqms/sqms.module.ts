@@ -7,7 +7,6 @@ import { CdpfComponent } from './cdpf/cdpf.component';
 import { PrimengModule } from 'src/app/primeng/primeng.module';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { CddetailsComponent } from './cds/cddetails/cddetails.component';
-import { PfdetailsComponent } from './pfs/pfdetails/pfdetails.component';
 
 @NgModule({
   declarations: [
@@ -15,7 +14,6 @@ import { PfdetailsComponent } from './pfs/pfdetails/pfdetails.component';
     PfsComponent,
     CdpfComponent,
     CddetailsComponent,
-    PfdetailsComponent,
   ],
   imports: [
     CommonModule,
@@ -28,6 +26,6 @@ import { PfdetailsComponent } from './pfs/pfdetails/pfdetails.component';
     PfsComponent,
     CdpfComponent,
   ],
-  entryComponents: [CddetailsComponent, PfdetailsComponent]
+  entryComponents: [CddetailsComponent]
 })
 export class SqmsModule { }

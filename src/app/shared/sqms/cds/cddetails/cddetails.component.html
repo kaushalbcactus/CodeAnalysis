@@ -6,34 +6,33 @@
       <!--Dissatisfaction popup-->
       <div *ngIf="qc.actionClicked ==='close'">
 
-          <!-- <ngb-alert *ngIf="successMessage" type="success" (close)="successMessage = null">{{ successMessage }}</ngb-alert> -->
-          <div><span class="mandatory">All Fields are mandatory below</span></div>
+         <div><span class="mandatory-text">All Fields are mandatory below</span></div>
           <table class="cdPopupTable" id="identifyAccountableTable">
               <tr>
                   <td>
                       <p-dropdown [options]="qc.accountableGroup" placeholder="Select Accountable" filter="true" resetFilterOnHide="true" [(ngModel)]="qc.selectedAccountableGroup">
-                      </p-dropdown> <span class="mandatory">*</span>
+                      </p-dropdown> <span class="mandatory-text">*</span>
                   </td>
               </tr>
               <tr>
 
                   <td>
                       <p-dropdown [options]="qc.segregation" placeholder="Select Segregation" filter="true" resetFilterOnHide="true" [(ngModel)]="qc.selectedSegregation" [disabled]="qc.status !== 'Created'">
-                      </p-dropdown> <span class="mandatory">*</span>
+                      </p-dropdown> <span class="mandatory-text">*</span>
                   </td>
               </tr>
               <tr>
 
                   <td>
                       <p-dropdown [options]="qc.businessImpact" placeholder="Select Business Impact" filter="true" resetFilterOnHide="true" [(ngModel)]="qc.selectedBusinessImpact">
-                      </p-dropdown> <span class="mandatory">*</span>
+                      </p-dropdown> <span class="mandatory-text">*</span>
                   </td>
               </tr>
               <tr>
 
                   <td>
                       <p-dropdown [options]="qc.cdCategories" placeholder="Select CD Category" filter="true" resetFilterOnHide="true" [(ngModel)]="qc.selectedCDCategory">
-                      </p-dropdown> <span class="mandatory">*</span>
+                      </p-dropdown> <span class="mandatory-text">*</span>
                   </td>
               </tr>
               <tr>
@@ -88,49 +87,7 @@
               </tr>
           </table>
       </div>
-      <!--Tag CD to Client / Project popup-->
-      <table class="full-width" *ngIf="qc.actionClicked ==='tag'">
-          <tr>
-              <td class="tagGroup">
-                  <p-dropdown class="tagPopup" #tagGroup [options]="qc.tagGroups" filter="true" resetFilterOnHide="true" placeholder="Project / Client" optionLabel="label" [(ngModel)]="qc.selectedGroup" (onChange)="getSelectedGroupItems()" appendTo="body">
-                  </p-dropdown> <span class="mandatory">*</span>
-                  <div class="popupResourceLoader">
-                    <div id="resourceLoader" [hidden]="hideResourceLoader"></div>
-                </div>
-              </td>
-          </tr>
-          <tr>
-              <td>
-                  <p-dropdown class="tagPopup"  [disabled]="showAccepted" [options]="qc.tagGroupItems" [placeholder]="qc.selectedGroup && qc.selectedGroup.value === 'Project' ? 'Open Projects' : 'Name'" filter="true" resetFilterOnHide="true" optionLabel="Title" [(ngModel)]="qc.selectedTaggedItem" appendTo="body" loader="loading">
-                  </p-dropdown> <span class="mandatory">*</span>
-                  <span *ngIf="qc.selectedGroup && qc.selectedGroup.value === 'Project' && qc.tagGroupItems.length">
-                    <span class="orText">
-                      OR
-                    </span>
-                    <span class="p-input-icon-right searchProject">
-                      <i class="pi pi-search search-icon" (click)="searchProjectCode(closedPrjCode.value)"  *ngIf="!showPrjLoader && !showAccepted && !showRejected"></i>
-                      <i class="pi pi-spin pi-spinner" *ngIf="showPrjLoader"></i>
-                      <i class="pi pi-times cursor" (click)="clear(closedPrjCode)" *ngIf="showAccepted || showRejected"></i>
-                      <input type="text" (change)="searchProjectCode(closedPrjCode.value)"
-                      [ngClass]="{'prjFound-search': showAccepted, 'prjNotFound-search':showRejected}"
-                      class="search-input"
-                      pInputText #closedPrjCode (keydown.enter)="searchProjectCode(closedPrjCode.value); $event.preventDefault()" placeholder="Search closed project code"/>
-                    </span>
-                    <span *ngIf="showAccepted" class="prjFound"><i class="pi pi-check-circle" ></i></span>
-                    <span  *ngIf="showRejected" class="prjNotFound"><i class="pi pi-times-circle"  ></i> Project not found.</span>
-                  </span>
-                  <span *ngIf="qc.selectedGroup && qc.selectedGroup.value === 'Client' && qc.tagGroupItems.length">
-                    <p-multiSelect class="floatLeft csdel-dropdown" (onChange)="updateClientResource($event, 'cs')" [style]="{'width':'11.5em'}" [options]="this.csRes"  optionLabel="Title" defaultLabel="CS" [filter]="true" resetFilterOnHide="true" appendTo="body"></p-multiSelect>
-                    <p-multiSelect class="floatLeft csdel-dropdown" (onChange)="updateClientResource($event, 'delivery')" [style]="{'width':'11.5em'}" [options]="this.deliveryAccess"  optionLabel="Title" defaultLabel="Delivery Access" defaultLabel="Delivery Access" [filter]="true" resetFilterOnHide="true" appendTo="body" ></p-multiSelect>
-                    <p-dropdown class="tagPopup" [options]="this.deliveryOwner" placeholder="Delivery Owner" filter="true" resetFilterOnHide="true" optionLabel="Title" appendTo="body" loader="loading">
-                    </p-dropdown> <span class="mandatory">*</span>
-                  </span>
-              </td>
-          </tr>
-          <tr>
-      </table>
-      <!--View Comments for client dissatisfaction popup-->
-      <table class="viewCommentsPopupTable" *ngIf="qc.actionClicked ==='viewComments'">
+       <table class="viewCommentsPopupTable" *ngIf="qc.actionClicked ==='viewComments'">
           <tr [hidden]="qc.actionClicked !=='viewComments'">
               <td>
                 <span class="ui-float-label">
@@ -193,7 +150,7 @@
           <tr>
               <td>
                   <p-dropdown class="tagPopup" [options]="cdDelete.reasons" placeholder="Select deletion reason" filter="true" optionLabel="label" resetFilterOnHide="true" [(ngModel)]="cdDelete.selectedReason" appendTo="body">
-                  </p-dropdown><span class="mandatory">*</span>
+                  </p-dropdown><span class="mandatory-text">*</span>
               </td>
           </tr>
       </table>
@@ -220,11 +177,6 @@
   <div class="footer">
       <div [hidden]='hidePopupTable'>
           <button type="button" class="btn btn-light button cancelbtn" (click)="close()">Cancel</button>
-
-          <button type="button" id='tagBtn' class="btn btn-light button savebtn"
-           (click)="tag()"
-           [disabled]="qc.selectedGroup && qc.selectedGroup.value === 'Client' ? !qc.selectedTaggedItem || isEmptyObject(qc.selectedTaggedItem.DeliveryLevel2) :!qc.selectedTaggedItem"
-           [hidden]="qc.actionClicked !== 'tag'"> Submit </button>
 
           <button type="button" id='deleteBtn' class="btn btn-light button savebtn" (click)="deleteCD()" [disabled]="!cdDelete.selectedReason" [hidden]="qc.actionClicked !== 'delete'"> Submit </button>
 

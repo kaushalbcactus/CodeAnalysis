@@ -5,24 +5,25 @@
 ::ng-deep .closePopupTable {
   width: 50%;
 }
-::ng-deep .deletePopup, .tagPopup {
+::ng-deep .deletePopup,
+.tagPopup {
   float: left;
 }
 ::ng-deep .viewCommentsPopupTable {
-  width: 100%
+  width: 100%;
 }
 
 ::ng-deep .mandatory {
   float: left;
-  color: darkred!important;
-  padding-left: 6px!important;
+  color: darkred !important;
+  padding-left: 6px !important;
   margin-right: 20px;
 }
 
 ::ng-deep .tagPopup .ui-dropdown {
-  width: 11.5em!important;
+  width: 11.5em !important;
 }
-::ng-deep .cdPopupTable td{
+::ng-deep .cdPopupTable td {
   padding: 15px;
 }
 ::ng-deep .ellipsis {
@@ -32,12 +33,36 @@
   white-space: nowrap;
 }
 
-::ng-deep .savebtn{background-color: #B71C1C!important;padding: 6px 30px!important;color: #fff!important;border-radius: 4px!important;border: none!important;font-size: 16px!important;margin: 0px 6px!important;cursor: pointer!important}
-::ng-deep .savebtn:hover{background-color: #D92121!important;transition: 0.3s ease-in!important}
-::ng-deep .cancelbtn{background-color: #FAFAFA!important;padding: 6px 30px!important;color: #222222!important;border-radius: 4px!important;border: none!important;font-size: 16px!important;margin: 0px 6px!important;cursor: pointer!important}
-::ng-deep .cancelbtn:hover{background-color: #D7D7D7;transition: 0.3s ease-in}
+::ng-deep .savebtn {
+  background-color: #b71c1c !important;
+  padding: 6px 30px !important;
+  color: #fff !important;
+  border-radius: 4px !important;
+  border: none !important;
+  font-size: 16px !important;
+  margin: 0px 6px !important;
+  cursor: pointer !important;
+}
+::ng-deep .savebtn:hover {
+  background-color: #d92121 !important;
+  transition: 0.3s ease-in !important;
+}
+::ng-deep .cancelbtn {
+  background-color: #fafafa !important;
+  padding: 6px 30px !important;
+  color: #222222 !important;
+  border-radius: 4px !important;
+  border: none !important;
+  font-size: 16px !important;
+  margin: 0px 6px !important;
+  cursor: pointer !important;
+}
+::ng-deep .cancelbtn:hover {
+  background-color: #d7d7d7;
+  transition: 0.3s ease-in;
+}
 ::ng-deep .full-width {
-  width:100%;
+  width: 100%;
 }
 /* ::ng-deep .closePopupTable .textArea {
   padding-bottom: 24px;
@@ -45,24 +70,27 @@
 ::ng-deep #identifyAccountableTable .ui-dropdown {
   width: 95%;
   float: left;
-  min-width: 10em!important;
+  min-width: 10em !important;
 }
-::ng-deep .deletePopup .ui-dropdown,::ng-deep .tagPopup .ui-dropdown {
+::ng-deep .deletePopup .ui-dropdown,
+::ng-deep .tagPopup .ui-dropdown {
   width: 40%;
   float: left;
-  min-width: 10em!important;
+  min-width: 10em !important;
 }
-::ng-deep #identifyAccountableTable .mandatory, .deletePopup .mandatory, .tagPopup .mandatory{
+::ng-deep #identifyAccountableTable .mandatory,
+.deletePopup .mandatory,
+.tagPopup .mandatory {
   padding-left: 2%;
   color: red;
 }
 
-::ng-deep .closePopupTable .mandatory{
+::ng-deep .closePopupTable .mandatory {
   color: red;
   font-size: small;
   font-style: italic;
 }
-::ng-deep .tagGroup{
+::ng-deep .tagGroup {
   padding-bottom: 20px;
 }
 
@@ -83,8 +111,6 @@
   margin-top: 1%;
   bottom: 22px;
   right: 104px;
-
-
 }
 
 .footer {
@@ -97,10 +123,10 @@
   top: -1px;
 }
 ::ng-deep .popupTextArea {
-  width: 95%!important;
+  width: 95% !important;
 }
 ::ng-deep .wordCount {
-  font-size: x-small!important;
+  font-size: x-small !important;
 }
 .rejectionComments {
   padding-bottom: 10px;
@@ -128,7 +154,7 @@
   -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
   animation: loading-text-opacity 2s linear 0s infinite normal;
   color: black;
-  font-family: "Helvetica Neue, "Helvetica", ""arial";
+  font-family: "Helvetica Neue, " Helvetica ", " "arial";
   font-size: 10px;
   font-weight: bold;
   opacity: 0.5;
@@ -136,23 +162,31 @@
   text-transform: uppercase;
 }
 @-webkit-keyframes spin {
-  0% { -webkit-transform: rotate(0deg); }
-  100% { -webkit-transform: rotate(360deg); }
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 .hint-spacer {
   flex: 1 0 1em;
 }
 .hint-label {
-  color: rgba(0,0,0,.54);
+  color: rgba(0, 0, 0, 0.54);
   float: left;
   font-size: 10.5px;
   font-weight: 700;
-  padding-bottom: 13px
+  padding-bottom: 13px;
 }
 .wordCount {
   float: right;
@@ -167,15 +201,14 @@
   right: 0.5rem;
   color: #6c757d;
   position: absolute;
-  margin-top: -.5rem;
+  margin-top: -0.5rem;
   top: 50%;
 }
 .prjNotFound {
-  color: red!important;
+  color: red !important;
 }
 .prjFound {
   color: green;
-
 }
 .orText {
   margin-right: 20px;
@@ -198,14 +231,15 @@
   border-color: red;
   border-style: double;
 }
-.pi-check-circle, .pi-times-circle {
+.pi-check-circle,
+.pi-times-circle {
   vertical-align: sub;
 }
 .floatLeft {
-  float:left;
+  float: left;
 }
 .csdel-dropdown {
-  margin-right: 20px ;
+  margin-right: 20px;
 }
 .cursor {
   cursor: pointer;
@@ -213,4 +247,8 @@
 .popupResourceLoader {
   display: inline-block;
   vertical-align: -webkit-baseline-middle;
+}
+.mandatory-text {
+  color: #8b0000 !important;
+  padding-left: 6px !important;
 }
