@@ -921,7 +921,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     let pendingAmount = 0;
     // let pendingHrs = 0;
 
-    if(Invoiceform.getRawValue().InvoiceAmount < (rate * hrs)) {
+    if(Invoiceform.getRawValue().InvoiceAmount != 0 && Invoiceform.getRawValue().InvoiceAmount < (rate * hrs)) {
       totalVal = Invoiceform.getRawValue().InvoiceAmount;
       finalHrs = totalVal/rate;
       pendingAmount =  totalAmount - totalVal;
