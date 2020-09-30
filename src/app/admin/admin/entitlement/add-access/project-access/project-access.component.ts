@@ -250,7 +250,9 @@ export class ProjectAccessComponent implements OnInit {
   onTabOpen(event) {
     if (event.index === 0) {
       this.subloaderenable = true;
-
+      this.selectedOption = [];
+      this.filterData.DELIVERY = [];
+      this.filterData.CM = [];
       this.subloaderenable = false;
     } else {
     }

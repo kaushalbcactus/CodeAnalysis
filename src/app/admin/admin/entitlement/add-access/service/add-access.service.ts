@@ -451,12 +451,6 @@ export class AddAccessService {
 
     }
 
-    console.log("added Rule");
-    console.log(addedRuleArray);
-
-    console.log("Edited Rule");
-    console.log(EditedRuleArray);
-
     this.commonService.clearToastrMessage();
 
     let Message = "";
@@ -585,23 +579,17 @@ export class AddAccessService {
           true,
           true
         );
-       
+
         let ListOfAllItems=[];
         RemoveRuleArray.forEach(async oldrule => {
           let RuleItems=[];
-          if(oldrule.ResourceType === this.constants.RulesType.DELIVERY){
-
-            RuleItems = dbItemList.filter(c=> c.DeliveryRule && c.DeliveryRule.split(';#').map(c=>+c).includes(oldrule.ID)) ? dbItemList.filter(c=> c.DeliveryRule && c.DeliveryRule.split(';#').map(c=>+c).includes(oldrule.ID)).map(e=>e[parameter]):[];
-            if(RuleItems && RuleItems.length > 0){
-              dbItemList =  await this.UpdateItemsForRule('deliveryRuleArray',oldrule,dbItemList,'DeliveryLevel2','DeliveryLevel1',RuleItems,parameter);
+          const RuleTypeObj = this.constants.RuleTypeParameterArray.find(c=>c.label === oldrule.ResourceType);
+           if(RuleTypeObj){
+             RuleItems = dbItemList.filter(c=> c[RuleTypeObj.DBParameter] && c[RuleTypeObj.DBParameter].split(';#').map(c=>+c).includes(oldrule.ID)) ? dbItemList.filter(c=> c[RuleTypeObj.DBParameter] && c[RuleTypeObj.DBParameter].split(';#').map(c=>+c).includes(oldrule.ID)).map(e=>e[parameter]):[];
+             if(RuleItems && RuleItems.length > 0){
+               dbItemList =  await this.UpdateItemsForRule(RuleTypeObj.listName,oldrule,dbItemList,RuleTypeObj.Level2,RuleTypeObj.Level2,RuleItems,parameter);
+              }
             }
-          
-          } else if(oldrule.ResourceType === this.constants.RulesType.CM){
-            RuleItems = dbItemList.filter(c=> c.CSRule && c.CSRule.split(';#').map(c=>+c).includes(oldrule.ID)) ? dbItemList.filter(c=> c.CSRule && c.CSRule.split(';#').map(c=>+c).includes(oldrule.ID)).map(e=>e[parameter]):[];
-            if(RuleItems && RuleItems.length > 0){
-            dbItemList = await this.UpdateItemsForRule('csRuleArray',oldrule,dbItemList,'CMLevel2','CMLevel1',RuleItems,parameter);
-            }
-          }
           ListOfAllItems.push.apply(ListOfAllItems,RuleItems);
 
         });
@@ -626,19 +614,14 @@ export class AddAccessService {
          dbUpdatedUserRules.forEach(async updatedrule => {
           let RuleItems=[];
           const oldRule =  UpdatedUserRuleArray.find(c=>c.ID ===updatedrule.ID);
-          if(updatedrule.ResourceType === this.constants.RulesType.DELIVERY){
-            RuleItems = this.getItemCodes('deliveryRuleArray',dbItemList,oldRule,parameter);
+          const RuleTypeObj = this.constants.RuleTypeParameterArray.find(c=>c.label === updatedrule.ResourceType);
+          if(RuleTypeObj){
+            RuleItems = this.getItemCodes(RuleTypeObj.listName,dbItemList,oldRule,parameter);
             if(RuleItems && RuleItems.length > 0){
-            dbItemList =  await this.UpdateItemsForRule('deliveryRuleArray',oldRule,dbItemList,'DeliveryLevel2','DeliveryLevel1',RuleItems,parameter);
-            }
-           } else if(updatedrule.ResourceType === this.constants.RulesType.CM){
-            RuleItems = this.getItemCodes('csRuleArray',dbItemList,oldRule,parameter);
-            if(RuleItems && RuleItems.length > 0){
-            dbItemList = await this.UpdateItemsForRule('csRuleArray',oldRule,dbItemList,'CMLevel2','CMLevel1',RuleItems,parameter);
-            }
+              dbItemList =  await this.UpdateItemsForRule(RuleTypeObj.listName,oldRule,dbItemList,RuleTypeObj.Level2,RuleTypeObj.Level2,RuleItems,parameter);
+             }
            }
            ListOfProjects.push.apply(ListOfProjects,RuleItems);
-
           });
   
           ListOfProjects= [...new Set(ListOfProjects)];
@@ -657,11 +640,11 @@ export class AddAccessService {
       if(sequenceUpdateRules && sequenceUpdateRules.length > 0){
         const dbsequenceUpdateRules = filterData.RULES.filter(c=> sequenceUpdateRules.map(d=>d.ID).includes(c.ID));
         dbsequenceUpdateRules.forEach(async rule => {
-          if(rule.ResourceType === this.constants.RulesType.DELIVERY){
-            dbItemList =  await this.changeOwnerOfItems('deliveryRuleArray',dbItemList,rule,'DeliveryLevel2',parameter);
-           } else if(rule.ResourceType === this.constants.RulesType.CM){
-            dbItemList = await this.changeOwnerOfItems('csRuleArray',dbItemList,rule,'CMLevel2',parameter);
-           }      
+
+          const RuleTypeObj = this.constants.RuleTypeParameterArray.find(c=>c.label === rule.ResourceType);
+          if(RuleTypeObj){
+            dbItemList =  await this.changeOwnerOfItems(RuleTypeObj.listName,dbItemList,rule,RuleTypeObj.Level2,parameter);
+          }     
         });
       }
     }
@@ -829,10 +812,9 @@ export class AddAccessService {
         if(dbItemList.filter(c=> AllCodeList.includes(c[parameter]))  && dbItemList.filter(c=> AllCodeList.includes(c[parameter])).length > 0){
           dbItemList.filter(c=> AllCodeList.includes(c[parameter])).map(d=> d.edited= true);
         }
-        if(Rule.ResourceType === this.constants.RulesType.DELIVERY){
-          dbItemList =  await this.applyRuleToItem('deliveryRuleArray',Rule,dbItemList,AllCodeList,'DeliveryLevel2','DeliveryLevel1',parameter);
-        } else if(Rule.ResourceType === this.constants.RulesType.CM){
-         dbItemList =  await this.applyRuleToItem('csRuleArray',Rule,dbItemList,AllCodeList,'CMLevel2','CMLevel1',parameter);
+        const RuleTypeObj = this.constants.RuleTypeParameterArray.find(c=>c.label === Rule.ResourceType);
+        if(RuleTypeObj){
+          dbItemList =  await this.applyRuleToItem(RuleTypeObj.listName,Rule,dbItemList,AllCodeList,RuleTypeObj.Level2,RuleTypeObj.Level1,parameter);
         }
       }
      });

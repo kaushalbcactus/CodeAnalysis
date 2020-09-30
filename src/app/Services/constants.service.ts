@@ -773,5 +773,12 @@ export class ConstantsService {
     {Rulelabel  :'Bucket', value:'' },
 ];
 
-  
+public RuleTypeParameterArray=[
+  {
+    label : 'Delivery' , listName : 'deliveryRuleArray', Level1 : 'DeliveryLevel1',  Level2:'DeliveryLevel2', DBParameter : 'DeliveryRule'
+  },
+  {
+    label : 'CM' , listName : 'csRuleArray', Level1 : 'CMLevel1',  Level2:'CMLevel2' , DBParameter : 'CSRule'
+  }
+]
 }
