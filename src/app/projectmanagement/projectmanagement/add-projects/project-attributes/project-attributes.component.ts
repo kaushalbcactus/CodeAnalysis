@@ -695,22 +695,28 @@ export class ProjectAttributesComponent implements OnInit {
     });
     CSIdArray.push(this.pmObject.addProject.ProjectAttributes.ActiveCM2);
     if(invData.length) {
-      let invLineItem = {
-        __metadata: { type: this.constant.listNames.InvoiceLineItems.type },
-        AccessId: {
-          results: CSIdArray
-        },
+      for(let i=0;i<invData.length;i++) { 
+        let element = invData[i];
+        let invLineItem = {
+          __metadata: { type: this.constant.listNames.InvoiceLineItems.type },
+          AccessId: {
+            results: CSIdArray
+          },
+        }
+        await this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constant.listNames.InvoiceLineItems.name, element.Id), invLineItem, this.constant.Method.PATCH, this.constant.listNames.InvoiceLineItems.name);
       }
-      await this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constant.listNames.InvoiceLineItems.name, +invData[0].Id), invLineItem, this.constant.Method.PATCH, this.constant.listNames.InvoiceLineItems.name);
     } 
     if(spendInfoData.length) {
-      let spendInfo = {
-        __metadata: { type: this.constant.listNames.SpendingInfo.type },
-        AccessId: {
-          results: CSIdArray
-        },
+      for(let i=0;i<spendInfoData.length;i++) { 
+          let element = spendInfoData[i];
+        let spendInfo = {
+          __metadata: { type: this.constant.listNames.SpendingInfo.type },
+          AccessId: {
+            results: CSIdArray
+          },
+        }
+        await this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constant.listNames.SpendingInfo.name, element.Id), spendInfo, this.constant.Method.PATCH, this.constant.listNames.SpendingInfo.name);
       }
-      await this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constant.listNames.SpendingInfo.name, +spendInfoData[0].Id), spendInfo, this.constant.Method.PATCH, this.constant.listNames.SpendingInfo.name);
     }
     console.log(batchUrl);
     await this.spServices.executeBatch(batchUrl);

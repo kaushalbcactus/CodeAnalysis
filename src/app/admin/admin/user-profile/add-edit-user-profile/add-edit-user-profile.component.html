@@ -419,7 +419,7 @@
     <div class="p-grid p-col" *ngIf="date.isFTENo">
         <div class="p-col-4"></div>
         <div class="p-col-8">
-            <p-calendar styleClass="pCalendarBtn" formControlName="fTeDueDate" placeholder="FTE Effective Date" showIcon="true" [readonlyInput]="true" [minDate]="minPastMonth" [inputStyle]="{'width':'210px', 'border-radius': '5px 0px 0px 5px','border':'1px solid #cdcdcd'}"
+            <p-calendar styleClass="pCalendarBtn" formControlName="fTeDueDate" placeholder="FTE Due Date" showIcon="true" [readonlyInput]="true" [minDate]="minPastMonth" [inputStyle]="{'width':'210px', 'border-radius': '5px 0px 0px 5px','border':'1px solid #cdcdcd'}"
                 dateFormat="M dd, yy">
             </p-calendar>
             <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.fTeDueDate.errors">

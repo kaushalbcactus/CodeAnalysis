@@ -549,7 +549,7 @@ export class PmconstantService {
     SPENDING_INFOByActive: {
       select: "ID",
       filter: "Title eq '{{Title}}' and (Status ne \'Cancelled\' or Status ne \'Rejected\')",
-      top: 1,
+      top: 4500,
     },
     sowList: {
       select: "ID,SOWCode,Title,ClientLegalEntity,Currency,BillingEntity,TotalLinked,OOPLinked,InvoicedOOP,TotalInvoiced,TotalScheduled,ScheduledOOP",
@@ -630,6 +630,11 @@ export class PmconstantService {
       select: 'ID,Title,ProjectCode,IsActiveCH,ProjectCS/ID,ProjectCS/Title',
       expand: 'ProjectCS/ID,ProjectCS/Title',
       filter: 'IsActiveCH eq \'Yes\' and ProjectCSId eq {{UserID}} and Created ge \'{{LastOnceHour}}\''
+    },
+    standardTemplateOptions: {
+      select: 'ID,Title,Skill,IsActiveCH,TotalHours,StandardService/ID,StandardService/Title,LegalEntity/ID,LegalEntity/Title,AutoUpdate',
+      expand: 'StandardService/ID,StandardService/Title,LegalEntity/ID,LegalEntity/Title',
+      filter: 'StandardService/Title eq \'{{service}}\' and LegalEntity/Title eq \'{{clientLegalEntity}}\' and IsActiveCH eq \'Yes\''
     }
   };
   public PROJECT_TYPE = {

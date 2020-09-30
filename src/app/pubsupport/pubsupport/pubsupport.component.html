@@ -384,6 +384,10 @@
                     <div *ngIf="isValidAddUpdateJCDetailsForm.EntryType.errors.required" style="color:red;">
                         Please select one of type & try again.</div>
                 </div>
+                <div *ngIf="deliverableDetails.length && !deliverableDetails[0].EntryType">
+                    <div style="color:red;">
+                        There is no document type for this deliverable type.</div>
+                </div>
             </div>
             <div class="ui-g-12 ui-md-6 ui-lg-1">
                 List <span style="color:red">*</span>

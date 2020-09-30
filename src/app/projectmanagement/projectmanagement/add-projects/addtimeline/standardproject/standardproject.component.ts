@@ -2181,7 +2181,6 @@ export class StandardprojectComponent implements OnInit {
   async CallAddUpdateProject() {
     this.pmObject.isMainLoaderHidden = false;
     await this.pmCommonService.addUpdateProject();
-
     this.commonService.showToastrMessage(this.constants.MessageType.success, 'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode, true);
     this.pmCommonService.reloadPMPage();
   }

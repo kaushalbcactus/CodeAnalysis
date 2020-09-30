@@ -2180,19 +2180,27 @@ export class TimelineComponent
     return milestone;
   }
 
-  checkNotCompletedTask() {
-    let isValid = false;
-    let currentMilestone = this.milestoneData.find(e=> e.data.isCurrent == true && e.data.type== 'milestone');
+  checkNotCompletedTask(task): Boolean {
+    let isValid: Boolean = false;
+    let tasks = [];
+    let currentMilestone: TreeNode = this.milestoneData.find(e=> e.data.isCurrent == true && e.data.type== 'milestone');
     if(currentMilestone) {
       let currentTasks = this.taskAllocateCommonService.getTasksFromMilestones(
         currentMilestone.data,
         true,
         this.milestoneData,
-        false
+        true
       );
-        
-      currentTasks.forEach(e=> {
-        if(e.status !== 'Completed' && e.itemType !== 'Client Review') {
+
+      if(task.type == 'submilestone' && task.position !== "1") {
+        let submilestone = currentTasks.find(e=> e.type == 'submilestone' && e.position == task.position-1).title;
+        tasks = currentTasks.filter(t=> t.submilestone == submilestone);
+      } else {
+        tasks = currentTasks;
+      }
+
+      tasks.forEach(e=> {
+        if(e.status !== 'Completed' && (e.itemType !== 'Client Review' && e.itemType !== 'Send to client')) {
           isValid = true;
         }
       })
@@ -2201,7 +2209,7 @@ export class TimelineComponent
   }
 
   async setForConfirmMilestone(task) {
-    let isValid = await this.checkNotCompletedTask();
+    let isValid = await this.checkNotCompletedTask(task);
     if(isValid) {
     await this.commonService.confirmMessageDialog('Confirmation','Previous Milestone/SubMilestone tasks are not completed and it will be mark as Auto Closed Are you sure that you want to proceed ?', null, ['Yes', 'No'], false).then(async Confirmation => {
       if (Confirmation === 'Yes') { 

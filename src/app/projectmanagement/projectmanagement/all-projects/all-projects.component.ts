@@ -154,6 +154,9 @@ export class AllProjectsComponent implements OnInit {
   FinanceButtonEnable = false;
   res: void;
   groupITInfo: any;
+  newDeliverable: any;
+  changeDeliverable: boolean;
+  deliverableTypeOptions: any;
   constructor(
     public pmObject: PMObjectService,
     private datePipe: DatePipe,
@@ -337,6 +340,7 @@ export class AllProjectsComponent implements OnInit {
         items: [
           { label: 'View Project Details', command: (event) => this.viewProject(this.selectedProjectObj) },
           { label: 'Edit Project', command: (event) => this.editProject(this.selectedProjectObj) },
+          { label: 'Edit Deliverable Type', command: (event) => this.editDeliverable() },
           { label: 'Communications', command: (event) => this.communications(this.selectedProjectObj) },
           { label: 'Timeline', command: (event) => this.projectTimeline(this.selectedProjectObj) },
           { label: 'Go to Allocation', command: (event) => this.goToAllocationPage(this.selectedProjectObj) },
@@ -841,9 +845,14 @@ export class AllProjectsComponent implements OnInit {
     } else {
       menu.model[3].visible = false;
       if (this.selectedProjectObj.IsPubSupport === "Yes") {
-        menu.model[1].items[7].visible = true;
+        menu.model[1].items[8].visible = true;
       } else {
-        menu.model[1].items[7].visible = false;
+        menu.model[1].items[8].visible = false;
+      }
+      if (this.selectedProjectObj.IsStandard === "Yes") {
+        menu.model[1].items[2].visible = false;
+      } else {
+        menu.model[1].items[2].visible = true;
       }
       switch (status) {
         case this.constants.projectStatus.InDiscussion:
@@ -919,7 +928,7 @@ export class AllProjectsComponent implements OnInit {
         case this.constants.projectStatus.AwaitingCancelApproval:
           menu.model[0].visible = false;
           menu.model[1].items[1].visible = false;
-          menu.model[1].items[4].visible = false;
+          menu.model[1].items[5].visible = false;
           menu.model[2].visible = false;
           break;
       }
@@ -1498,6 +1507,17 @@ export class AllProjectsComponent implements OnInit {
       }
     }, this.pmConstant.TIME_OUT);
   }
+
+  async getStandardTemplateBasedOnDeliverable(selectedProjectObj) {
+    let standardTemplate = [];
+    const standardTemplateFilter = Object.assign({}, this.pmConstant.QUERY.standardTemplateOptions);
+    standardTemplateFilter.filter = standardTemplateFilter.filter.replace(/{{service}}/gi, selectedProjectObj.StandardService).replace(/{{clientLegalEntity}}/gi, selectedProjectObj.ClientLegalEntity);
+    standardTemplate = await this.spServices.readItems(this.constants.listNames.StandardTemplates.name, standardTemplateFilter)
+    if (standardTemplate.length > 0) {
+      return standardTemplate;
+    }
+  }
+
   async changeProjectStatusUnallocated(selectedProjectObj) {
     const projectBudgetBreakUPIds = this.toUpdateIds[0] && this.toUpdateIds[0].retItems && this.toUpdateIds[0].retItems.length ?
       this.toUpdateIds[0].retItems : [];
@@ -1529,6 +1549,14 @@ export class AllProjectsComponent implements OnInit {
           piUdateData.Status = this.constants.projectStatus.InProgress;
           this.changeMilestoneStatusFTE(selectedProjectObj);
         }
+      }
+    } else if(selectedProjectObj.ProjectType === this.pmConstant.PROJECT_TYPE.HOURLY.value && selectedProjectObj.IsStandard == "Yes") {
+      let standardTemplate = await this.getStandardTemplateBasedOnDeliverable(selectedProjectObj);
+      if(standardTemplate.filter(s=> s.IsActiveCH == 'Yes' && s.AutoUpdate == true && s.StandardService.Title == selectedProjectObj.StandardService)) {
+        const firstMilestone = selectedProjectObj.Milestones.split(';#');
+        piUdateData.Milestone = firstMilestone[0];
+        piUdateData.Status = this.constants.projectStatus.InProgress;
+        await this.changeStatusStandardProject(selectedProjectObj , firstMilestone[0]);
       }
     }
     const piUpdate = Object.assign({}, options);
@@ -1636,6 +1664,43 @@ export class AllProjectsComponent implements OnInit {
       }
     }
   }
+
+  async changeStatusStandardProject(selectedProjectObj, milestone) {
+    const scheduleFilter = Object.assign({}, this.pmConstant.QUERY.GET_SCHEDULE_LIST_ITEM_BY_PROJECT_CODE);
+    scheduleFilter.filter = scheduleFilter.filter.replace(/{{projectCode}}/gi, selectedProjectObj.ProjectCode);
+    const sResult = await this.spServices.readItems(this.constants.listNames.Schedules.name, scheduleFilter);
+    if (sResult && sResult.length > 0) {
+      const batchURL = [];
+      const options = {
+        data: null,
+        url: '',
+        type: '',
+        listName: ''
+      };
+      const statusNotStartedScheduleList = {
+        __metadata: {
+          type: this.constants.listNames.Schedules.type
+        },
+        Status: this.constants.STATUS.NOT_STARTED
+      };
+      sResult.forEach(element => {
+        if(element.Milestone == milestone) {
+          const scheduleStatusUpdate = Object.assign({}, options);
+          scheduleStatusUpdate.data = statusNotStartedScheduleList;
+          scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
+          scheduleStatusUpdate.type = 'PATCH';
+          scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
+            element.ID);
+          batchURL.push(scheduleStatusUpdate);
+        }
+      });
+      if (batchURL.length) {
+        this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetSchedules');
+        await this.spServices.executeBatch(batchURL);
+      }
+    }
+  }
+
   async changeProjectStatusAuditInProgress(selectedProjectObj, scheduleItems) {
     const projectFinanceID = this.toUpdateIds[1] && this.toUpdateIds[1].retItems && this.toUpdateIds[1].retItems.length ?
       this.toUpdateIds[1].retItems[0].ID : -1;
@@ -3212,6 +3277,63 @@ export class AllProjectsComponent implements OnInit {
     });
     ref.onClose.subscribe(element => {
     });
+  }
+
+  async editDeliverable() {
+    this.pmObject.isMainLoaderHidden = false;
+    this.deliverableTypeOptions = [];
+    const result = await this.spServices.readItems(this.constants.listNames.DeliverableType.name, this.pmConstant.TIMELINE_QUERY.DELIVERY_TYPE)
+    if(result.length) {
+      result.forEach(element => {
+        this.deliverableTypeOptions.push({ label: element.Title, value: element.Title });
+      });
+    }
+    this.pmObject.isMainLoaderHidden = true;
+    this.changeDeliverable = true;
+  }
+
+  async saveDeliverable() {
+    this.changeDeliverable = false;
+    let batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    const piUdateData = {
+      __metadata: {
+        type: this.constants.listNames.ProjectInformation.type
+      },
+     DeliverableType: this.newDeliverable
+    };
+    const piUpdate = Object.assign({}, options);
+    piUpdate.data = piUdateData;
+    piUpdate.listName = this.constants.listNames.ProjectInformation.name;
+    piUpdate.type = 'PATCH';
+    piUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name,
+      this.selectedProjectObj.ID);
+    batchURL.push(piUpdate);
+    const batchResults = await this.spServices.executeBatch(batchURL);
+    if(batchResults) {
+      this.commonService.showToastrMessage(this.constants.MessageType.success, 'Deliverable Type Updated' , true);
+    }
+    this.newDeliverable = undefined;
+    setTimeout(() => {
+      if (this.router.url === '/projectMgmt/allProjects') {
+        this.pmObject.allProjectItems = [];
+        this.reloadAllProject();
+      } else {
+        this.router.navigate(['/projectMgmt/allProjects']);
+      }
+      this.closeMoveSOW();
+    }, this.pmConstant.TIME_OUT);
+  }
+
+  closeDeliverable() {
+    this.changeDeliverable = false;
+    this.deliverableTypeOptions = []
+    this.newDeliverable = undefined;
   }
 
 }
