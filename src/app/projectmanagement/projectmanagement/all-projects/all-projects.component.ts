@@ -1697,6 +1697,7 @@ export class AllProjectsComponent implements OnInit {
       if (batchURL.length) {
         this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetSchedules');
         await this.spServices.executeBatch(batchURL);
+        this.commonService.showToastrMessage(this.constants.MessageType.success, + milestone + 'Milestone is Auto Confirmed - ', true);
       }
     }
   }
