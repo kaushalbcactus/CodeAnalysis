@@ -1681,12 +1681,29 @@ export class AllProjectsComponent implements OnInit {
         __metadata: {
           type: this.constants.listNames.Schedules.type
         },
-        Status: this.constants.STATUS.NOT_STARTED
+        Status: this.constants.STATUS.NOT_STARTED,
+        ActiveCA: 'No'
+      };
+      const statusInProgressScheduleList = {
+        __metadata: {
+          type: this.constants.listNames.Schedules.type
+        },
+        Status: this.constants.STATUS.IN_PROGRESS
       };
       sResult.forEach(element => {
-        if(element.Milestone == milestone) {
+        if(element.Title == milestone) {
+          const scheduleMilestoneStatusUpdate = Object.assign({}, options);
+          scheduleMilestoneStatusUpdate.data = statusInProgressScheduleList;
+          scheduleMilestoneStatusUpdate.listName = this.constants.listNames.Schedules.name;
+          scheduleMilestoneStatusUpdate.type = 'PATCH';
+          scheduleMilestoneStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
+            element.ID);
+          batchURL.push(scheduleMilestoneStatusUpdate);
+        } else if(element.Milestone == milestone) {
           const scheduleStatusUpdate = Object.assign({}, options);
-          scheduleStatusUpdate.data = statusNotStartedScheduleList;
+          const statusNotStartedSchedule = Object.assign({}, statusNotStartedScheduleList);
+          statusNotStartedSchedule.ActiveCA = element.ContentTypeCH === 'Slot' ? 'Yes' : 'No';
+          scheduleStatusUpdate.data = statusNotStartedSchedule;
           scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
           scheduleStatusUpdate.type = 'PATCH';
           scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
@@ -1697,7 +1714,7 @@ export class AllProjectsComponent implements OnInit {
       if (batchURL.length) {
         this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetSchedules');
         await this.spServices.executeBatch(batchURL);
-        this.commonService.showToastrMessage(this.constants.MessageType.success, + milestone + 'Milestone is Auto Confirmed - ', true);
+        this.commonService.showToastrMessage(this.constants.MessageType.success, milestone + ' Milestone is Auto Confirmed.', true);
       }
     }
   }
