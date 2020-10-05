@@ -2710,12 +2710,12 @@ export class AllProjectsComponent implements OnInit {
     this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetSow');
     arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
 
-    // if (arrResults && arrResults.length) {
-    //   this.pmObject.allSOWItems = arrResults;
-    // }
+    if (arrResults && arrResults.length) {
+      this.pmObject.allSOWItems = arrResults;
+    }
     //} 
 
-    const sowArray = arrResults; //this.pmObject.allSOWItems;
+    const sowArray = this.pmObject.allSOWItems;
     if (sowArray && sowArray.length) {
       sowArray.forEach(element => {
         this.sowDropDownArray.push({ label: element.SOWCode, value: element.SOWCode });
