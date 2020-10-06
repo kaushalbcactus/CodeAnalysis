@@ -2616,6 +2616,7 @@ export class AllProjectsComponent implements OnInit {
           objEmailBody.push({ key: '@@Val7@@', value: selectedProjectObj.StandardBudgetHrs });
         } else {
           objEmailBody.push({ key: '@@Val5@@', value: hrs });
+          objEmailBody.push({ key: '@@Val7@@', value: selectedProjectObj.StandardBudgetHrs });
         }
       }
     }
