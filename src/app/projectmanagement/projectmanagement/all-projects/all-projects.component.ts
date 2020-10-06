@@ -2605,7 +2605,7 @@ export class AllProjectsComponent implements OnInit {
       if (status === this.constants.projectStatus.SentToAMForApproval) {
         objEmailBody.push({ key: '@@Val2@@', value: selectedProjectObj.Title });
         objEmailBody.push({ key: '@@Val3@@', value: selectedProjectObj.DeliverableType });
-        objEmailBody.push({ key: '@@Val4@@', value: selectedProjectObj.Client });
+        objEmailBody.push({ key: '@@Val4@@', value: selectedProjectObj.ClientLegalEntity });
         objEmailBody.push({ key: '@@Val5@@', value: selectedProjectObj.PrimaryPOCText });
         objEmailBody.push({ key: '@@Val8@@', value: selectedProjectObj.PrimaryPOCText });
       }
@@ -2613,6 +2613,7 @@ export class AllProjectsComponent implements OnInit {
         const hrs = await this.updateUsedHrs();
         if (status === this.constants.projectStatus.SentToAMForApproval) {
           objEmailBody.push({ key: '@@Val6@@', value: hrs });
+          objEmailBody.push({ key: '@@Val7@@', value: selectedProjectObj.StandardBudgetHrs });
         } else {
           objEmailBody.push({ key: '@@Val5@@', value: hrs });
         }
