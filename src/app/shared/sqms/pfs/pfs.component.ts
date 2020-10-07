@@ -8,8 +8,7 @@ import { QMSConstantsService } from 'src/app/qms/qms/services/qmsconstants.servi
 import { GlobalService } from 'src/app/Services/global.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { QMSCommonService } from 'src/app/qms/qms/services/qmscommon.service';
-import { MenuItem, DialogService } from 'primeng';
-import { PfdetailsComponent } from './pfdetails/pfdetails.component';
+import { MenuItem} from 'primeng';
 
 @Component({
   selector: 'app-pfs',
@@ -29,7 +28,6 @@ export class PfsComponent implements OnInit, AfterViewChecked {
     private qmsCommon: QMSCommonService,
     private commonService: CommonService,
     private cdr: ChangeDetectorRef,
-    public pfDialogService: DialogService,
     public common: CommonService,
     public constants: ConstantsService
   ) {
@@ -38,9 +36,6 @@ export class PfsComponent implements OnInit, AfterViewChecked {
   CFColumns = [];
   CFRows = [];
   items: MenuItem[];
-
-  // @ViewChild('positveFilter', { static: false }) filter: FilterComponent;
-  // @ViewChild('PFPopup', { static: false }) PFPopup: PfdetailsComponent;
   @ViewChild('cfp', { static: false }) cfpositiveTable: Table;
 
   public hideLoader = true;
@@ -74,8 +69,6 @@ export class PfsComponent implements OnInit, AfterViewChecked {
       this.CFColumns.splice(2, 0, { field: 'Status', header: 'Status' });
     }
     setTimeout(async () => {
-      // this.pfs = await this.getPFItems();
-      // this.bindTable(this.pfs);
       await this.applyFilters(this.filterObj);
       this.showTable();
     }, 500);
@@ -248,7 +241,6 @@ export class PfsComponent implements OnInit, AfterViewChecked {
 
     this.commonService.SetNewrelic('QMS', 'ClientFeedBack-cfposition', 'savePF');
     this.spService.updateItem(this.globalConstant.listNames.PositiveFeedbacks.name, pf.ID, pfDetails);
-
     this.showToastMsg({ type: 'success', msg: 'Success', detail: 'Positive Feedback sent by ' + pf.SentBy.Title + ' is ' + pf.Status + '.' });
   }
 
@@ -260,25 +252,9 @@ export class PfsComponent implements OnInit, AfterViewChecked {
     return this.global.currentUser.isPFAdmin ? null : 'hidden-row';
   }
 
-  /**
-   * update PF table after accountable resource identified in actions popup component
-   *
-   */
-  updatePFTable(pf) {
-    const pfItem = this.pfs.filter(p => p.ID === +pf.pfID);
-    if (pfItem.length > 0) {
-      pfItem[0].Title = pf.projectCode ? pf.projectCode : pfItem[0].Title;
-      pfItem[0].resources = pf.resources.results ? pf.resources.results.map(a => a.Title).join(',') : pf.resources ? pf.resources : '';
-      pfItem[0].Status = pf.Status ? pf.Status : pfItem[0].Status;
-    }
-    this.bindTable(this.pfs);
-  }
-
   openMenuPopup(data) {
     this.items = [
-      { label: 'Tag to Project / Client', title: 'Tag to Project / Client', id: 'tag', command: (e) => this.openPopup(e.originalEvent, data), visible: data.Status === this.globalConstant.pfStatus.Pending && data.Title === 'TBD' && this.global.currentUser.isPFAdmin },
-      { label: 'Accept', title: 'Accept', id: 'accept', command: (e) => this.openPopup(e.originalEvent, data), visible: data.Status === this.globalConstant.pfStatus.Pending && data.Title !== 'TBD' && (data.isLoggedInDeliveryLead || this.global.currentUser.isPFAdmin) },
-      { label: 'Reject', title: 'Reject', id: 'reject', command: (e) => this.openPopup(e.originalEvent, data), visible: data.Status === this.globalConstant.pfStatus.Pending && data.Title !== 'TBD' && (data.isLoggedInDeliveryLead || this.global.currentUser.isPFAdmin) }
+      { label: 'Reject', title: 'Reject', id: 'reject', command: (e) => this.rejectPF(data), visible: data.Status === this.globalConstant.pfStatus.Accepted && (data.isLoggedInDeliveryLead || this.global.currentUser.isPFAdmin) }
     ];
   }
 
@@ -321,7 +297,6 @@ export class PfsComponent implements OnInit, AfterViewChecked {
       const obj = {
         tableData: this.cfpositiveTable,
         colFields: this.CFPositiveColArray,
-        // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
       };
       if (obj.tableData.filteredValue) {
         this.commonService.updateOptionValues(obj);
@@ -344,24 +319,23 @@ export class PfsComponent implements OnInit, AfterViewChecked {
     return this.appendPropertyTOObject(qcs);
   }
 
-  openPopup(event, data) {
-    const ref = this.pfDialogService.open(PfdetailsComponent, {
-      data: {
-        ...data,
-        actionClicked: event.currentTarget.id,
-        actionClickedTitle: event.currentTarget.title,
-        status: event.Status ? event.Status : ''
-      },
-      width: '50vw',
-      header: event.currentTarget.title,
-      contentStyle: { 'max-height': '100vh', 'overflow-y': 'auto' },
-      closable: true
-    });
-    ref.onClose.subscribe((pfObj) => {
-      if (pfObj.action !== 'Cancel') {
-        this.updatePFTable(pfObj.pf);
-        this.common.showToastrMessage(pfObj.msgType, pfObj.msg, false);
+  rejectPF(data) {
+    this.commonService.confirmMessageDialog('Confirmation', 'Are you sure you want to reject positive feedback ?', null, ['Yes', 'No'], false).then(async Confirmation => {
+      if (Confirmation === 'Yes') {
+        let pfDetails = {};
+        pfDetails = {
+          __metadata: { type: this.globalConstant.listNames.PositiveFeedbacks.type },
+          Status: this.globalConstant.pfStatus.Rejected
+        };
+        this.update(pfDetails, data.ID);
+        data.Status = this.globalConstant.pfStatus.Rejected;
+        const msg = 'Positive feedback rejected.';
       }
     });
+  }
+
+  update(pfDetails, pfID) {
+    this.commonService.SetNewrelic('QMS', 'ClientFeedBack-cfposition', 'updatepf');
+    this.spService.updateItem(this.globalConstant.listNames.PositiveFeedbacks.name, pfID, pfDetails);
   }
 }

@@ -1,7 +1,7 @@
 <div class="userdetails">
     <div class="downloadbutton">
-        <a (click)="downloadExcel(cfp)" class="download-worksheet download td-none"><i class="fa fa-download" aria-hidden="true"></i></a>
+        <a (click)="downloadExcel(cfp1)" class="download-worksheet download td-none"><i class="fa fa-download" aria-hidden="true"></i></a>
     </div>
 </div>
 <app-filter #positveFilter (callFilter)="applyFilters($event)"></app-filter>
-<app-pfs #cfp [parentComponent]="'clientFeedback'"></app-pfs>
+<app-pfs #cfp1 [parentComponent]="'clientFeedback'"></app-pfs>
