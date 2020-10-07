@@ -7,7 +7,7 @@ import { GlobalService } from "./global.service";
   providedIn: "root",
 })
 export class ConstantsService {
-  constructor(public globalService: GlobalService) { }
+  constructor(public globalService: GlobalService) {}
   loader = {
     isPSInnerLoaderHidden: false,
   };
@@ -362,17 +362,16 @@ export class ConstantsService {
       type: "SP.Data.PreferredResourcesListItem",
       contentTypeId: "0x01001C131EF299CBF741A4E84C62523A293A*",
     },
-    RuleStore:{
+    RuleStore: {
       name: "RuleStoreCT",
       type: "SP.Data.RuleStoreCTListItem",
       contentTypeId: "0x01001C131EF299CBF741A4E84C62523A293A*",
     },
-    RuleParameters:{
+    RuleParameters: {
       name: "RuleParametersCT",
       type: "SP.Data.RuleParametersCTListItem",
       contentTypeId: "",
-    }
-
+    },
   };
 
   public projectStatus = {
@@ -752,33 +751,91 @@ export class ConstantsService {
     PROJECT: "Project",
     SOW: "SOW",
     CD: "CD",
-    PF :"PF",
-    DELIVERY:"Delivery",
-    CM:"CM"
+    PF: "PF",
+    DELIVERY: "Delivery",
+    CM: "CM",
   };
 
-  public RoleType={
-    DELIVERY1:"Delivery L1",
-    DELIVERY2:"Delivery L2",
-    CM1:"CM L1",
-    CM2:"CM L2"
-  }
+  public RoleType = {
+    DELIVERY1: "Delivery L1",
+    DELIVERY2: "Delivery L2",
+    CM1: "CM L1",
+    CM2: "CM L2",
+  };
 
-  public RuleParamterArray=[
-    { Rulelabel : "Practice Area" , value:'' },
-    {Rulelabel  :'Client', value:'' },
-    {Rulelabel  :'Client Subdivision', value:'' },
-    {Rulelabel  :'Currency', value:'' },
-    {Rulelabel  :'Deliverable Type', value:'' },
-    {Rulelabel  :'Bucket', value:'' },
-];
+  public RuleParamterArray = [
+    { Rulelabel: "Practice Area", value: "" },
+    { Rulelabel: "Client", value: "" },
+    { Rulelabel: "Client Subdivision", value: "" },
+    { Rulelabel: "Currency", value: "" },
+    { Rulelabel: "Deliverable Type", value: "" },
+    { Rulelabel: "Bucket", value: "" },
+  ];
 
-public RuleTypeParameterArray=[
-  {
-    label : 'Delivery' , listName : 'deliveryRuleArray', Level1 : 'DeliveryLevel1',  Level2:'DeliveryLevel2', DBParameter : 'DeliveryRule'
-  },
-  {
-    label : 'CM' , listName : 'csRuleArray', Level1 : 'CMLevel1',  Level2:'CMLevel2' , DBParameter : 'CSRule'
-  }
-]
+  public RuleTypeParameterArray = [
+    {
+      label: "Project",
+      value: [
+        {
+          label: "Delivery",
+          listName: "deliveryRuleArray",
+          Level1: "DeliveryLevel1",
+          Level2: "DeliveryLevel2",
+          DBParameter: "DeliveryRule",
+        },
+        {
+          label: "CM",
+          listName: "csRuleArray",
+          Level1: "CMLevel1",
+          Level2: "CMLevel2",
+          DBParameter: "CSRule",
+        },
+      ],
+    },
+    {
+      label: "SOW",
+      value: [
+        {
+          label: "Delivery",
+          listName: "deliveryRuleArray",
+          Level1: "DeliveryLevel1",
+          Level2: "DeliveryLevel2",
+          DBParameter: "DeliveryRule",
+        },
+        {
+          label: "CM",
+          listName: "csRuleArray",
+          Level1: "CMLevel1",
+          Level2: "CMLevel2",
+          DBParameter: "CSRule",
+        },
+      ],
+    },
+    {
+      label: "CD",
+      value: [
+        {
+          label: "Delivery",
+          listName: "deliveryRuleArray",
+          Level1: "TL",
+          Level2: "ASD",
+          DBParameter: "DeliveryRule",
+        },
+
+      ],
+    },
+    {
+      label: "PF",
+      value: [
+        {
+          label: "Delivery",
+          listName: "deliveryRuleArray",
+          Level1: "DeliveryLeads",
+          Level2: "DeliveryLeads",
+          DBParameter: "DeliveryRule",
+        },
+
+      ],
+    },
+  ];
 }

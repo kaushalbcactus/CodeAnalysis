@@ -133,9 +133,9 @@
                         <!-- /// Owner and User Access Display  -->
                         <p-card class="p-col-5 accesslevelcardview" [style]="{'margin-top':'.5em', 'display':'flex', 'min-height':'200px'}">
                             <div *ngIf="selectedAccessType === constant.RulesType.DELIVERY && selectedOption.length > 0">
-                                <div class="p-grid" *ngFor='let delivery of filterData.DELIVERY;let i=index;first as isFirst;'>
+                                <div class="p-grid" style="padding: 20px 0px 0px 0px;" *ngFor='let delivery of filterData.DELIVERY;let i=index;first as isFirst;'>
                                     <span class="first" style="font-size: 20px;padding: 0px 20px 0px 15px;" *ngIf="isFirst && delivery.selectedValue !==''"> Owner :</span>
-                                    <span class="first" style="font-size: 20px;" *ngIf="!isFirst && delivery.selectedValue !==''"> Access :</span>
+                                    <span class="first" style="font-size: 20px;padding: 0px 20px 0px 15px;" *ngIf="!isFirst && delivery.selectedValue !==''"> Access :</span>
 
                                     <div *ngIf="delivery.selectedValue !==''  && isFirst" style="padding: 5px 20px;
                                     border: 1px solid #cdcdcd;

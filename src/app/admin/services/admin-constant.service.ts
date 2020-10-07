@@ -422,7 +422,7 @@ export class AdminConstantService {
     },
     GET_PROJECT_INFO: {
       select:
-        "ID,Title,SOWCode,BusinessVertical,WBJID,ProjectCode,ClientLegalEntity,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title," +
+        "ID,Title,SOWCode,BusinessVertical,WBJID,ProjectCode,SubDivision,ClientLegalEntity,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title," +
         "DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title,AllOperationresources/ID,AllOperationresources/Title,Status,CSRule,DeliveryRule",
       expand:
         "CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title," +
@@ -430,6 +430,16 @@ export class AdminConstantService {
       filter:
         "Status ne 'Closed' and Status ne 'Cancelled'",
       top: 4900,
+    },
+    GET_PROJECT_INFO_bY_PROJECTCODE:{
+      select:
+      "ID,Title,BusinessVertical,ProjectCode,DeliverableType,ClientLegalEntity,SubDivision,Status,CSRule,DeliveryRule,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title," +
+      "DeliveryLevel2/ID,DeliveryLevel2/Title",
+    expand:
+      "CMLevel1,CMLevel2,DeliveryLevel1,DeliveryLevel2",
+    filter:
+      "ProjectCode eq '{{projectcode}}'",
+    top: 4900,
     },
     GET_PROJECT_FINANCE_BY_CURRENCY: {
       select: 'ID, Title, Currency',
@@ -445,6 +455,20 @@ export class AdminConstantService {
         "DeliveryLevel2/ID,DeliveryLevel2/Title",
       filter:
         "Status ne 'Closed'",
+      top: 4900,
+    },
+    GET_All_QUALITY_COMPLAINTS: {
+      select:"ID,Title,Status,ASD/ID,ASD/Title,TL/ID,TL/Title,CSRule,DeliveryRule",
+      expand:"ASD,TL",
+      filter:
+        "Status eq 'Created'",
+      top: 4900,
+    },
+    GET_All_POSITIVE_FEEDBACK: {
+      select:"ID,Title,Status,DeliveryLeads/ID,DeliveryLeads/Title,CSRule,DeliveryRule",
+      expand:"DeliveryLeads",
+      filter:
+        "Status eq 'Accepted'",
       top: 4900,
     },
   };
