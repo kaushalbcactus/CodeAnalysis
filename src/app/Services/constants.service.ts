@@ -370,7 +370,7 @@ export class ConstantsService {
     RuleParameters: {
       name: "RuleParametersCT",
       type: "SP.Data.RuleParametersCTListItem",
-      contentTypeId: "",
+      contentTypeId: "0x010080C9A0031AB9AF49B3726642F1BF810600BF72DE562CCD1447BCE552EFF0A4F06B",
     },
   };
 

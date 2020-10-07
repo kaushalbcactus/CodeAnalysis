@@ -441,7 +441,7 @@ export class AddAccessService {
         "AddAccessService",
         "AddAccess"
       );
-      console.log(batchURL);
+     
       batchResults = await this.spServices.executeBatch(batchURL);
     }
 
@@ -524,8 +524,7 @@ export class AddAccessService {
       "AddAccessService",
       "AddAccess"
     );
-    console.log(batchURL);
-
+ 
     batchResults = await this.spServices.executeBatch(batchURL);
     filterData = this.processfetchedRules(filterData, batchResults);
 
@@ -787,7 +786,7 @@ export class AddAccessService {
         "AddAccessService",
         "AddAccess"
       );
-      console.log(batchURL);
+    
       batchResults = await this.spServices.executeBatch(batchURL);
     }
   }

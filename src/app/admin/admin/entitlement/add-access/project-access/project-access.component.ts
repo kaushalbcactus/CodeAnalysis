@@ -116,7 +116,7 @@ export class ProjectAccessComponent implements OnInit {
       batchURL,
       filterData
     );
-    console.log(this.filterData);
+
     this.loaderenable = false;
 
     this.addAccessService.getPrametersDropdownData(
@@ -298,7 +298,7 @@ export class ProjectAccessComponent implements OnInit {
   }
 
   checkNext(value, index) {
-    console.log(value);
+  
     const Dependency = this.filterData.RULEPARAMETERS.find(
       (c) => c.Title === value.label
     ).Dependency;
@@ -399,11 +399,11 @@ export class ProjectAccessComponent implements OnInit {
             : {},
         DisplayRules: ruleArray,
         Rule: JSON.stringify(ruleArray),
-        DisplayOrder:
+        DisplayOrder: this.filterData.RULES && this.filterData.RULES.length && this.filterData.RULES.length > 0 ?
           Math.max.apply(
             null,
             this.filterData.RULES.map((c) => c.DisplayOrder)
-          ) + 1,
+          ) + 1 : 1,
       };
 
       if(this.filterData.RULES.find((c) => c.ResourceType === RuleObj.ResourceType  &&  RuleObj.DisplayRules.map(d=>d.Value).sort().join(',') === c.DisplayRules.map(d=>d.Value).sort().join(','))) {
@@ -438,20 +438,44 @@ export class ProjectAccessComponent implements OnInit {
       let listArray = this.filterData.RULES.filter(
         (c) => c.DisplayRules[0].Value === RuleObj.DisplayRules[0].Value
       );
-      let index = -1;
-      if( this.filterData.RULES.find((c) => c.DisplayRules.length >= RuleObj.DisplayRules.length)){
-        index =  this.filterData.RULES.indexOf(this.filterData.RULES.find(
-          (c) => c.DisplayRules[0].Value === RuleObj.DisplayRules[0].Value
-        ));
-      }
-      this.filterData.RULES = [
-        ...this.filterData.RULES.filter(
-          (c) => c.DisplayRules[0].Value !== RuleObj.DisplayRules[0].Value
-        ),
-      ];
-      listArray = [...this.InsertObjAtPosition(listArray, RuleObj)];
-      for (var i = listArray.length - 1; i >= 0; i--) {
-        this.filterData.RULES.splice(index > -1 ? index : 0, 0, listArray[i]);
+       if(listArray  && listArray.length > 0) {
+        let index = -1;
+        if(this.filterData.RULES.find((c) => c.DisplayRules.length >= RuleObj.DisplayRules.length)){
+          index =  this.filterData.RULES.indexOf(this.filterData.RULES.find(
+            (c) => c.DisplayRules[0].Value === RuleObj.DisplayRules[0].Value
+          ));
+        }
+  
+        this.filterData.RULES = [
+          ...this.filterData.RULES.filter(
+            (c) => c.DisplayRules[0].Value !== RuleObj.DisplayRules[0].Value
+          ),
+        ];
+      
+        listArray = [...this.InsertObjAtPosition(listArray, RuleObj)];
+        for (var i = listArray.length - 1; i >= 0; i--) {
+          this.filterData.RULES.splice(index > -1 ? index : 0, 0, listArray[i]);
+        }
+       }
+       else {
+         let RulesList =[]; 
+        if(this.filterData.RULES[0].DisplayRules.length > RuleObj.DisplayRules.length){
+          const RuleList = this.filterData.RULES.filter((c) => c.DisplayRules.length >= RuleObj.DisplayRules.length);
+          const otherArrayList =  this.filterData.RULES.filter(c=> !RuleList.includes(c));
+  
+          RuleList.forEach(element => {
+             listArray = this.filterData.RULES.filter(
+              (c) => c.DisplayRules[0].Value === element.DisplayRules[0].Value
+            );
+            RulesList.push.apply(RulesList,listArray);  
+          });
+          RulesList.push(RuleObj);
+          RulesList.push.apply(RulesList,otherArrayList);
+
+          this.filterData.RULES = [...new Set(RulesList)];
+        } else {
+          this.filterData.RULES.splice(0, 0, RuleObj);
+        }
       }
     } else {
       this.filterData.RULES.splice(0, 0, RuleObj);
