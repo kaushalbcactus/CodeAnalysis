@@ -225,6 +225,18 @@ export class PmconstantService {
       orderby: 'Modified desc',
       top: 4500
     },
+    ALL_SOW_Client: {
+      select: 'ID,Title,SOWCode,PrimaryPOC,ClientLegalEntity,Author/Id,Author/Title,Created,TotalBudget,NetBudget,OOPBudget,TaxBudget,CommentsMT,Status,ExpiryDate,BusinessVertical,BD,'
+        + 'TotalLinked, RevenueLinked, OOPLinked, TaxLinked, TotalScheduled, ScheduledRevenue, TotalInvoiced, InvoicedRevenue,'
+        + 'BillingEntity, AdditionalPOC, CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title,'
+        + 'DeliveryLevel2/ID, DeliveryLevel2/Title, Currency, BD/ID, BD/Title,Editor/Title,Modified',
+      expand: 'Author/Id,Author/Title, CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title,'
+        + 'DeliveryLevel1/ID, DeliveryLevel1/Title,Editor/Title,'
+        + 'DeliveryLevel2/ID, DeliveryLevel2/Title, BD/ID, BD/Title',
+      filter: '(Status ne \'Closed\') and (Status ne \'Cancelled\') and (ClientLegalEntity eq \'{Client}\')',
+      orderby: 'Modified desc',
+      top: 4500
+    },
     SOW_CODE: {
       select: 'ID,Title,SOWCode,PrimaryPOC,ClientLegalEntity,Author/Id,Author/Title,Created,TotalBudget,NetBudget,OOPBudget,TaxBudget, '
         + 'TotalLinked, RevenueLinked, OOPLinked, TaxLinked, TotalScheduled, ScheduledRevenue, TotalInvoiced, InvoicedRevenue,'
@@ -554,6 +566,11 @@ export class PmconstantService {
       expand: "Editor,Author",
       top: 1,
     },
+    SPENDING_INFOByActive: {
+      select: "ID",
+      filter: "Title eq '{{Title}}' and (Status ne \'Cancelled\' or Status ne \'Rejected\')",
+      top: 4500,
+    },
     sowList: {
       select: "ID,SOWCode,Title,ClientLegalEntity,Currency,BillingEntity,TotalLinked,OOPLinked,InvoicedOOP,TotalInvoiced,TotalScheduled,ScheduledOOP",
       filter: "Status ne 'CLosed' or Status ne 'Cancelled' ",
@@ -626,13 +643,18 @@ export class PmconstantService {
       filter: 'ProjectNumber eq \'{{projectCode}}\' and Status eq \'Active\''
     },
     GET_SCHEDULE_LIST_ITEM_BY_PROJECT_CODE: {
-      select: 'ID,Title,Milestone,Status,Task,ProjectCode,TimeSpent,DueDateDT,IsCentrallyAllocated',
+      select: 'ID,Title,Milestone,Status,Task,ProjectCode,TimeSpent,DueDateDT,IsCentrallyAllocated,ContentTypeCH',
       filter: 'ProjectCode eq \'{{projectCode}}\''
     },
     GET_EARLY_TASK_COMPLETED: {
       select: 'ID,Title,ProjectCode,IsActiveCH,ProjectCS/ID,ProjectCS/Title',
       expand: 'ProjectCS/ID,ProjectCS/Title',
       filter: 'IsActiveCH eq \'Yes\' and ProjectCSId eq {{UserID}} and Created ge \'{{LastOnceHour}}\''
+    },
+    standardTemplateOptions: {
+      select: 'ID,Title,Skill,IsActiveCH,TotalHours,StandardService/ID,StandardService/Title,LegalEntity/ID,LegalEntity/Title,AutoUpdate',
+      expand: 'StandardService/ID,StandardService/Title,LegalEntity/ID,LegalEntity/Title',
+      filter: 'StandardService/Title eq \'{{service}}\' and LegalEntity/Title eq \'{{clientLegalEntity}}\' and IsActiveCH eq \'Yes\''
     }
   };
   public PROJECT_TYPE = {

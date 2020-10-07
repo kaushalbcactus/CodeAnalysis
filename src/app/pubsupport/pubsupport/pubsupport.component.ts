@@ -39,7 +39,7 @@ export class PubsupportComponent implements OnInit {
     
     @ViewChild('dt', { static: false })dt: Table;
     filterID: any;
-
+    deliverableDetails = [];
     constructor(
         private formBuilder: FormBuilder,
         public spOperationsService: SPOperationService,
@@ -659,6 +659,20 @@ export class PubsupportComponent implements OnInit {
         }
     }
 
+    async getDeliverableType() {
+    const obj = Object.assign({}, this.pubsupportService.pubsupportComponent.GET_DELIVERABLE_TYPE_BY_ACTIVE);
+      obj.filter = obj.filter.replace('{{DeliveryType}}', this.selectedProject.DeliverableType);
+      const getDeliverable = this.spOperationsService.getReadURL('' + this.constantService.listNames.DeliverableType.name + '', obj);
+      const deliveryObj = [{
+          url: getDeliverable,
+          type: 'GET',
+          listName: this.constantService.listNames.DeliverableType.name
+      }];
+      const res = await this.spOperationsService.executeBatch(deliveryObj);
+      const deliverableType = res[0].retItems;
+      return deliverableType;
+    }
+
     async openMenuContent(index, data) {
         if (data.Milestones) {
             this.milestonesList = data.Milestones.split(';#');
@@ -670,7 +684,7 @@ export class PubsupportComponent implements OnInit {
         this.submitted = false;
         this.selectedModal = '';
         this.selectedModal = index.item.label;
-
+        this.deliverableDetails = await this.getDeliverableType();
         if (this.selectedModal === 'Add Authors') {
             this.addAuthorcontainer.clear();
             const factory = this.componentFactoryResolver.resolveComponentFactory(AddAuthorComponent);
@@ -683,18 +697,26 @@ export class PubsupportComponent implements OnInit {
             // this.journalConfFormField();
             this.addJCDetailsModal = true;
             this.formatMilestone(this.milestonesList);
-            if (this.selectedProject.DeliverableType === 'Abstract' || this.selectedProject.DeliverableType === 'Poster' || this.selectedProject.DeliverableType === 'Oral Presentation'
-            || this.selectedProject.DeliverableType === 'Slide Deck') {
+            if(this.deliverableDetails.length && this.deliverableDetails[0].EntryType) {
                 this.documentTypes = [
                     { label: 'Select type', value: '' },
-                    { label: 'Conference', value: 'Conference' }
+                    { label: this.deliverableDetails[0].EntryType, value: this.deliverableDetails[0].EntryType }
                 ];
             } else {
-                this.documentTypes = [
-                    { label: 'Select type', value: '' },
-                    { label: 'Journal', value: 'Journal' },
-                ];
+                this.documentTypes = [];
             }
+            // if (this.selectedProject.DeliverableType === 'Abstract' || this.selectedProject.DeliverableType === 'Poster' || this.selectedProject.DeliverableType === 'Oral Presentation'
+            // || this.selectedProject.DeliverableType === 'Slide Deck') {
+            //     this.documentTypes = [
+            //         { label: 'Select type', value: '' },
+            //         { label: 'Conference', value: 'Conference' }
+            //     ];
+            // } else {
+            //     this.documentTypes = [
+            //         { label: 'Select type', value: '' },
+            //         { label: 'Journal', value: 'Journal' },
+            //     ];
+            // }
             return;
         } else if (this.selectedModal === 'Edit Journal / Conference') {
             await this.getJCDetails(data);

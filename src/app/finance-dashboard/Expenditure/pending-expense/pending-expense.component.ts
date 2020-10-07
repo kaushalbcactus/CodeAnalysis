@@ -625,21 +625,8 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         this.canRejExpenseFormField();
         this.selectedAllRowsItem.push(this.selectedRowItem);
         this.cancelRejectDialog.title = event.item.label;
-        if (this.cancelRejectDialog.title.toLowerCase() === 'cancel expense' || this.cancelRejectDialog.title.toLowerCase() === 'reject expense') {
-
-            // this.cancelRejectDialog.title.toLowerCase() === 'cancel expense' ?
-            // this.getApproveExpenseMailContent(this.constantService.EMAIL_TEMPLATE_NAME.CANCEL_EXPENSE)
-            //     : this.getApproveExpenseMailContent(this.constantService.EMAIL_TEMPLATE_NAME.REJECT_EXPENSE);
-
-            this.cancelRejectDialog.text = event.item.label.replace('Expense', '');
-        } else if (this.cancelRejectDialog.title.toLowerCase() === 'approve expense') {
-            this.cancelRejectDialog.text = event.item.label.replace('Expense', '');
-            // if (this.selectedRowItem.RequestType === 'Invoice Payment') {
-            //     this.addRemoveFormFieldForAE('Invoice Payment');
-            // } else if (this.selectedRowItem.RequestType === 'Credit Card') {
-            //     this.addRemoveFormFieldForAE('Credit Card');
-            // }
-
+        if (this.cancelRejectDialog.title.toLowerCase() === 'cancel expense' || this.cancelRejectDialog.title.toLowerCase() === 'reject expense' || this.cancelRejectDialog.title.toLowerCase() === 'approve expense') {
+            this.cancelRejectDialog.text = event.item.label.replace(' Expense', '');
         } else if (event.item.label === 'Details') {
             this.rightSideBar = !this.rightSideBar;
             return;

@@ -2183,6 +2183,7 @@ export class ClientMasterdataComponent implements OnInit {
    */
 
   async savePO(poDetails, selectedFile) {
+    if(selectedFile) {
     const tempFiles = [
       new Object({ name: selectedFile[0].name, file: selectedFile[0] }),
     ];
@@ -2289,6 +2290,33 @@ export class ClientMasterdataComponent implements OnInit {
           false
         );
       });
+    } else {
+      if (this.showeditPO) {
+        const poData = await this.getPOData(poDetails,'');
+        this.common.SetNewrelic(
+          "admin",
+          "admin-clientMaster",
+          "updatePO"
+        );
+        const results = await this.spServices.updateItem(
+          this.constantsService.listNames.PO.name,
+          this.currPOObj.ID,
+          poData,
+          this.constantsService.listNames.PO.type
+        );
+        this.common.showToastrMessage(
+          this.constantsService.MessageType.success,
+          "The Po " +
+            this.currPOObj.PoNumber +
+            " is updated successfully.",
+          false
+        );
+        await this.loadRecentPORecords(
+          this.currPOObj.ID,
+          this.adminConstants.ACTION.EDIT
+        );
+      }
+    }
   }
 
   /**
@@ -2309,8 +2337,10 @@ export class ClientMasterdataComponent implements OnInit {
       Molecule: poDetails.value.molecule,
       CMLevel2Id: poDetails.value.cmLevel2,
       BuyingEntity: poDetails.value.poBuyingEntity,
-      Link: selectedFile.name,
     };
+    if(selectedFile) {
+      data['Link'] = selectedFile.name;
+    }
     if (!this.showeditPO) {
       data.Currency = poDetails.value.currency;
       data.CreateDate = new Date();

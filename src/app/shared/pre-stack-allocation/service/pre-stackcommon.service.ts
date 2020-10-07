@@ -163,6 +163,7 @@ export class PreStackcommonService {
         newUserCapacity.tasks = this.filterTasks(newUserCapacity.tasks, taskStatus, adhoc);
         // newUserCapacity.tasks = newUserCapacity.tasks.filter(t => (taskStatus.indexOf(t.Status) < 0 || (t.Task === 'Adhoc' && adhoc.indexOf(t.CommentsMT) < 0))
         //                                                       && t.ID !== allocationData.ID);
+        newUserCapacity.tasks = newUserCapacity.tasks.filter(t => t.ID !== allocationData.ID);
         if (newUserCapacity.dates.length === newUserCapacity.businessDays.length) {
           newUserCapacity = this.userCapacityCommon.fetchUserCapacity(newUserCapacity);
         } else {

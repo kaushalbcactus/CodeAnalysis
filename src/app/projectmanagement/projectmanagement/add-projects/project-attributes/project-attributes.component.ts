@@ -693,6 +693,7 @@ export class ProjectAttributesComponent implements OnInit {
     this.commonService.SetNewrelic('projectManagment', 'addproj-projectAttributes', 'UpdateProjectInformation');
     await this.spServices.updateItem(this.constant.listNames.ProjectInformation.name, this.projObj.ID, projectInfo,
       this.constant.listNames.ProjectInformation.type);
+    await this.updateFinanceData();
     this.pmObject.isMainLoaderHidden = true;
 
     this.commonService.showToastrMessage(this.constant.MessageType.success,'Project Updated Successfully for the projectcode - ' + this.projObj.ProjectCode,false);
@@ -704,6 +705,77 @@ export class ProjectAttributesComponent implements OnInit {
         this.router.navigate(['/projectMgmt/allProjects']);
       }
     }, this.pmConstant.TIME_OUT);
+  }
+
+  async getFinanceData(projectObj) {
+    let batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    const invoiceLineItemsGet = Object.assign({}, options);
+    const invoiceLineItemsFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.INVOICE_LINE_ITEMS_BY_PROJECTCODE);
+    invoiceLineItemsFilter.filter = invoiceLineItemsFilter.filter.replace(/{{projectCode}}/gi,
+      projectObj.ProjectCode);
+    invoiceLineItemsGet.url = this.spServices.getReadURL(this.constant.listNames.InvoiceLineItems.name,
+      invoiceLineItemsFilter);
+    invoiceLineItemsGet.type = 'GET';
+    invoiceLineItemsGet.listName = this.constant.listNames.InvoiceLineItems.name;
+    batchURL.push(invoiceLineItemsGet);
+
+    const spendingInfoGet = Object.assign({}, options);
+    const spendingInfoFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.SPENDING_INFOByActive);
+    spendingInfoFilter.filter = spendingInfoFilter.filter.replace(/{{Title}}/gi,
+      projectObj.ProjectCode);
+    spendingInfoGet.url = this.spServices.getReadURL(this.constant.listNames.SpendingInfo.name,
+      spendingInfoFilter);
+    spendingInfoGet.type = 'GET';
+    spendingInfoGet.listName = this.constant.listNames.SpendingInfo.name;
+    batchURL.push(spendingInfoGet);
+
+    const result = await this.spServices.executeBatch(batchURL);
+    return result;
+  }
+
+  async updateFinanceData() {
+    const batchUrl = [];
+    let financeData = await this.getFinanceData(this.pmObject.addProject.ProjectAttributes);
+    console.log(financeData);
+    let invData = financeData[0].retItems;
+    let spendInfoData = financeData[1].retItems;
+    const CSIdArray = [];
+    this.pmObject.addProject.ProjectAttributes.ActiveCM1.forEach(cm => {
+      CSIdArray.push(cm);
+    });
+    CSIdArray.push(this.pmObject.addProject.ProjectAttributes.ActiveCM2);
+    if(invData.length) {
+      for(let i=0;i<invData.length;i++) { 
+        let element = invData[i];
+        let invLineItem = {
+          __metadata: { type: this.constant.listNames.InvoiceLineItems.type },
+          AccessId: {
+            results: CSIdArray
+          },
+        }
+        await this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constant.listNames.InvoiceLineItems.name, element.Id), invLineItem, this.constant.Method.PATCH, this.constant.listNames.InvoiceLineItems.name);
+      }
+    } 
+    if(spendInfoData.length) {
+      for(let i=0;i<spendInfoData.length;i++) { 
+          let element = spendInfoData[i];
+        let spendInfo = {
+          __metadata: { type: this.constant.listNames.SpendingInfo.type },
+          AccessId: {
+            results: CSIdArray
+          },
+        }
+        await this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constant.listNames.SpendingInfo.name, element.Id), spendInfo, this.constant.Method.PATCH, this.constant.listNames.SpendingInfo.name);
+      }
+    }
+    console.log(batchUrl);
+    await this.spServices.executeBatch(batchUrl);
   }
 
   /**

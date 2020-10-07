@@ -75,7 +75,7 @@ export class AddEditUserProfileComponent implements OnInit {
     private common: CommonService, ) { }
 
   async ngOnInit() {
-    this.minPastMonth = new Date(new Date().setDate(new Date().getDate() - 30));
+    this.minPastMonth = new Date(new Date().setDate(new Date().getDate() - 60));
     const currentYear = new Date();
     this.yearRange = this.common.getyearRange();
     this.initialAddUserForm();
@@ -104,7 +104,8 @@ export class AddEditUserProfileComponent implements OnInit {
     isDateExit: false,
     isBucketDateActive: false,
     isMaxHrsDateActive: false,
-    isFTEEffectiveDateActive: false
+    isFTEEffectiveDateActive: false,
+    isFTENo: false
   };
 
   cancel() {
@@ -150,6 +151,7 @@ export class AddEditUserProfileComponent implements OnInit {
       primarySkillEffectiveDate: [new Date(), null],
       skillLevelEffectiveDate: [new Date(), null],
       fTEEffectiveDate: [new Date(), null],
+      fTeDueDate: [new Date(), null],
       workSunday: [{ value: '', disabled: true }, null],
       workMonday: ['', null],
       workTuesday: ['', null],
@@ -345,11 +347,16 @@ export class AddEditUserProfileComponent implements OnInit {
 
   onFTEChange() {
     const isFTEEffectiveDateControl = this.addUser.get('fTEEffectiveDate');
+    const isFTEDueDateControl = this.addUser.get('fTeDueDate');
     const accountControl = this.addUser.get('account');
     if (this.showeditUser && this.addUser.value.isFTE === 'Yes') {
+      isFTEDueDateControl.setValue(null);
+      isFTEDueDateControl.clearValidators();
+      isFTEDueDateControl.updateValueAndValidity();
       isFTEEffectiveDateControl.setValidators([Validators.required]);
       isFTEEffectiveDateControl.updateValueAndValidity();
       this.date.isFTEEffectiveDateActive = true;
+      this.date.isFTENo = false;
       this.addUser.get('fTEEffectiveDate').setValue(null);
       this.addUser.get('fTEEffectiveDate').enable();
       accountControl.setValidators([Validators.required]);
@@ -362,13 +369,18 @@ export class AddEditUserProfileComponent implements OnInit {
       isFTEEffectiveDateControl.clearValidators();
       isFTEEffectiveDateControl.updateValueAndValidity();
       this.date.isFTEEffectiveDateActive = false;
+      this.date.isFTENo = true;
       accountControl.clearValidators();
       accountControl.updateValueAndValidity();
       this.addUser.get('account').setValue(null);
     }  else if (!this.showeditUser && this.addUser.value.isFTE === 'Yes') {
+      isFTEDueDateControl.setValue(null);
+      isFTEDueDateControl.clearValidators();
+      isFTEDueDateControl.updateValueAndValidity();
       isFTEEffectiveDateControl.setValidators([Validators.required]);
       isFTEEffectiveDateControl.updateValueAndValidity();
       this.date.isFTEEffectiveDateActive = true;
+      this.date.isFTENo = false;
       this.addUser.get('fTEEffectiveDate').setValue(null);
       this.addUser.get('fTEEffectiveDate').enable();
       this.addUser.get('account').setValue(null);
@@ -380,6 +392,7 @@ export class AddEditUserProfileComponent implements OnInit {
       isFTEEffectiveDateControl.clearValidators();
       isFTEEffectiveDateControl.updateValueAndValidity();
       this.date.isFTEEffectiveDateActive = false;
+      this.date.isFTENo = true;
       this.addUser.get('account').setValue(null);
       accountControl.clearValidators();
       accountControl.updateValueAndValidity();
