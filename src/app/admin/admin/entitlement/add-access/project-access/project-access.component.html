@@ -37,8 +37,8 @@
                         <span class="ui-panel-title" style="font-size:14px;display:inline-block;margin-top:8px">ADD ACCESS</span>
 
 
-                        <button pButton pRipple type="button" icon="pi pi-refresh" class="p-button-rounded p-button-secondary p-button-outlined" pTooltip="Refresh" tooltipPosition="bottom" (click)="cleanData()"></button>
-                        <button pButton pRipple style="margin-right:5px;cursor: pointer;" type="button" icon="pi pi-save" class="p-button-rounded p-button-outlined" pTooltip="Save" tooltipPosition="bottom" (click)="addRule()"></button>
+                        <button pButton pRipple type="button" icon="pi pi-refresh" class="p-button-rounded p-button-secondary p-button-outlined" pTooltip="Refresh" tooltipPosition="bottom" (click)="cleanData()" style=" min-width: 2em !important;"></button>
+                        <button pButton pRipple style="margin-right:5px;cursor: pointer; min-width: 2em !important;" type="button" icon="pi pi-save" class="p-button-rounded p-button-outlined" pTooltip="Save" tooltipPosition="bottom" (click)="addRule()"></button>
                         <p-selectButton *ngIf="RuleType === this.constant.RulesType.PROJECT || RuleType === this.constant.RulesType.SOW" class="selectionType" [options]="AddAccessType" [(ngModel)]="selectedAccessType" (onChange)="CheckDataOnAccessType()"></p-selectButton>
 
 
@@ -221,8 +221,8 @@
 
                 <p-selectButton *ngIf="RuleType === this.constant.RulesType.PROJECT || RuleType === this.constant.RulesType.SOW" [style]="{'margin': '0px 0px 0px 50px'}" [options]="ViewAccessType" [(ngModel)]="selectedViewAccessType" (onChange)="filterRules()"></p-selectButton>
 
-                <button [disabled]="filterData.TEMPRULES.length === 0 ? true : false" pButton pRipple style="margin-right:5px;cursor: pointer;" type="button" icon="pi pi-save" class="p-button-rounded p-button-secondary p-button-outlined" pTooltip="Save Rules" tooltipPosition="bottom"
-                    (click)="SaveRules()"></button>
+                <button [disabled]="filterData.TEMPRULES.length === 0 ? true : false" pButton pRipple style="margin-right:5px;cursor: pointer; min-width: 2em !important;" type="button" icon="pi pi-save" class="p-button-rounded p-button-secondary p-button-outlined" pTooltip="Save Rules"
+                    tooltipPosition="bottom" (click)="SaveRules()"></button>
 
             </div>
 
@@ -251,10 +251,10 @@
                                 <div style="display: inline-block;font-size:25px;vertical-align: top;margin: 0px 10px;">
                                     <i pTooltip="View Details" tooltipPosition="bottom" class="pi pi-info-circle" (click)="showDetails($event,rowData)" style="vertical-align: bottom;cursor: pointer;"></i>
                                 </div>
-                                <button pButton pRipple type="button" icon="pi pi-user-edit" class="p-button-rounded p-button-secondary p-button-outlined editButton" pTooltip="Edit Rule Users" tooltipPosition="bottom" (click)="EditRule(rowData)"></button>
+                                <button pButton pRipple type="button" icon="pi pi-user-edit" class="p-button-rounded p-button-secondary p-button-outlined editButton" pTooltip="Edit Rule Users" tooltipPosition="bottom" (click)="EditRule(rowData)" style=" min-width: 2em !important;"></button>
 
 
-                                <button pButton pRipple style="margin-right:5px;cursor: pointer;vertical-align: bottom;" type="button" [icon]="rowData.IsActiveCH === 'Yes' ? 'pi pi-times' : 'pi pi-undo'" [ngClass]=" rowData.IsActiveCH === 'Yes' ? 'p-button-rounded-delete p-button-outlined' : 'p-button-rounded-recover p-button-outlined'"
+                                <button pButton pRipple style="margin-right:5px;cursor: pointer;vertical-align: bottom; min-width: 2em !important;" type="button" [icon]="rowData.IsActiveCH === 'Yes' ? 'pi pi-times' : 'pi pi-undo'" [ngClass]=" rowData.IsActiveCH === 'Yes' ? 'p-button-rounded-delete p-button-outlined' : 'p-button-rounded-recover p-button-outlined'"
                                     [pTooltip]="rowData.IsActiveCH === 'Yes' ? 'Delete Rule' : 'Recover Rule'" tooltipPosition="bottom" (click)="RemoveRule(rowData)"></button>
 
 
