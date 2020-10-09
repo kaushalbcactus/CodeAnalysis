@@ -478,9 +478,10 @@ export class StandardprojectComponent implements OnInit {
 
 
       this.constants.RuleParamterArray.find(
-        (c) => c.Rulelabel === "Deliverable Type"
+        (c) => c.parameterName === "Deliverable Type"
       ).value = this.deliverableType ? this.deliverableType:'';
   
+   
       this.getProjectRules();
 
 

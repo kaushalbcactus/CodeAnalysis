@@ -211,6 +211,13 @@ export class PmconstantService {
       orderby: "DisplayOrder desc",
       top: 4900,
     },
+
+    GET_RULES_PARAMETER_BY_ACTIVE: {
+      select: "ID,TypeST,InternalName,Title,DisplayOrder,IsActiveCH",
+      filter: "IsActiveCH eq '{{isActive}}' and TypeST eq '{{type}}'",
+      orderby: "DisplayOrder asc",
+      top: 4900,
+    },
   };
   public SOW_QUERY = {
     ALL_SOW: {

@@ -76,8 +76,8 @@
                     </div>
                     <div class="ui-g-2"><span class="compulsory">*</span>Practice Area</div>
                     <div class="ui-g-4">
-                        <p-multiSelect class="mr-5" formControlName="practiceArea" [options]="sowDropDown.PracticeArea" [panelStyle]="{minWidth:'12em'}" [style]="{'width':'85%'}" defaultLabel="Please Select" [filter]="true" resetFilterOnHide="true" (onChange)="OnPracticeAreaChange()"></p-multiSelect>
-                        <div class="error" *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['practiceArea'].valid">
+                        <p-multiSelect class="mr-5" formControlName="businessVertical" [options]="sowDropDown.PracticeArea" [panelStyle]="{minWidth:'12em'}" [style]="{'width':'85%'}" defaultLabel="Please Select" [filter]="true" resetFilterOnHide="true"></p-multiSelect>
+                        <div class="error" *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['businessVertical'].valid">
                             Practice Area is required</div>
                     </div>
                 </div>

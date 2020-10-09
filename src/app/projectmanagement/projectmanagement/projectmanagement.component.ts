@@ -11,6 +11,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { DataService } from 'src/app/Services/data.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { DialogService } from 'primeng';
+import { BehaviorSubject } from 'rxjs';
 @Component({
   selector: 'app-projectmanagement',
   templateUrl: './projectmanagement.component.html',
@@ -47,6 +48,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
   subscription;
   FolderName: string;
   SelectedFile: any;
+
   constructor(
     public globalObject: GlobalService,
     public pmObject: PMObjectService,
@@ -148,6 +150,16 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.pmObject.isAddSOWVisible = true;
     this.pmObject.isSOWFormSubmit = false;
     await this.pmService.getAllRules('SOW');
+    await this.pmService.GetRuleParameters('SOW');
+
+    this.addSowForm.get('businessVertical').valueChanges.subscribe(val => {
+      this.constant.RuleParamterArray.find(c=>c.parameterName === 'BusinessVertical').value = this.addSowForm.value.businessVertical && this.addSowForm.value.businessVertical.length === 1 ? this.addSowForm.value.businessVertical[0]:'';
+      this.filterRulesBySelection();
+    });
+    this.addSowForm.get('businessVertical').valueChanges.subscribe(val => {
+      this.constant.RuleParamterArray.find(c=>c.parameterName === 'Currency').value = this.addSowForm.value.currency;
+      this.filterRulesBySelection();
+    });
   }
   /**
    * This method is used to set the dropdown value of add sow form.
@@ -197,7 +209,9 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    */
   async onChangeClientLegalEntity() {
 
-    this.constant.RuleParamterArray.find(c=>c.Rulelabel === 'Client').value = this.addSowForm.value.clientLegalEntity;
+   
+    this.constant.RuleParamterArray.find(c=>c.parameterName === 'clientLegalEntity').value = this.addSowForm.value.clientLegalEntity;
+   
     if (this.addSowForm.value.clientLegalEntity) {
     this.pmObject.addSOW.ClientLegalEntity = this.addSowForm.value.clientLegalEntity;
     }
@@ -207,7 +221,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
         x.Title === this.pmObject.addSOW.ClientLegalEntity);
       if (clientInfo && clientInfo.length) {
 
-        this.constant.RuleParamterArray.find(c=>c.Rulelabel === 'Bucket').value = clientInfo[0] ? clientInfo[0].Bucket :''; 
+        this.constant.RuleParamterArray.find(c=>c.parameterName === 'Title').value = clientInfo[0] ? clientInfo[0].Bucket :''; 
 
         this.currClientLegalEntityObj = clientInfo;
         this.addSowForm.get('cactusBillingEntity').setValue(clientInfo[0].BillingEntity);
@@ -264,7 +278,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       poc: ['', Validators.required],
       pocOptional: [null],
       cactusBillingEntity: ['', Validators.required],
-      practiceArea: ['', Validators.required],
+      businessVertical : ['', Validators.required],
       sowCode: [null, [Validators.required, Validators.maxLength(50)]],
       sowTitle: ['', [Validators.required, Validators.maxLength(255)]],
       sowCreationDate: ['', Validators.required],
@@ -358,7 +372,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
           this.pmObject.addSOW.ClientLegalEntity;
         this.pmObject.addSOW.SOWCode = this.addSowForm.value.sowCode ? this.addSowForm.value.sowCode + '-SOW' : this.pmObject.addSOW.SOWCode;
         this.pmObject.addSOW.BillingEntity = this.addSowForm.value.cactusBillingEntity;
-        this.pmObject.addSOW.PracticeArea = this.addSowForm.value.practiceArea;
+        this.pmObject.addSOW.BusinessVertical  = this.addSowForm.value.businessVertical;
         this.pmObject.addSOW.Poc = this.addSowForm.value.poc;
         this.pmObject.addSOW.PocOptional = this.addSowForm.value.pocOptional;
         this.pmObject.addSOW.SOWTitle = this.addSowForm.value.sowTitle;
@@ -475,7 +489,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.addSowForm.get('clientLegalEntity').setValue(this.pmObject.addSOW.ClientLegalEntity);
     this.addSowForm.get('sowCode').setValue(this.pmObject.addSOW.SOWCode);
     this.addSowForm.get('cactusBillingEntity').setValue(this.pmObject.addSOW.BillingEntity);
-    this.addSowForm.get('practiceArea').setValue(this.pmObject.addSOW.PracticeArea);
+    this.addSowForm.get('businessVertical').setValue(this.pmObject.addSOW.BusinessVertical);
     this.addSowForm.get('poc').setValue(this.pmObject.addSOW.Poc);
     this.addSowForm.get('pocOptional').setValue(this.pmObject.addSOW.PocOptional);
     this.addSowForm.get('sowTitle').setValue(this.pmObject.addSOW.SOWTitle);
@@ -892,7 +906,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.pmObject.addSOW.ClientLegalEntity = '';
     this.pmObject.addSOW.SOWCode = '';
     this.pmObject.addSOW.BillingEntity = '';
-    this.pmObject.addSOW.PracticeArea = '';
+    this.pmObject.addSOW.BusinessVertical = '';
     this.pmObject.addSOW.Poc = '';
     this.pmObject.addSOW.PocOptional = [];
     this.pmObject.addSOW.SOWTitle = '';
@@ -1002,11 +1016,14 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.pmObject.isAddSOWVisible = true;
       this.pmObject.isSOWFormSubmit = false;
 
-      this.constant.RuleParamterArray.find(c=>c.Rulelabel === 'Practice Area').value = this.pmObject.addSOW.PracticeArea && this.pmObject.addSOW.PracticeArea.length === 1 ? this.pmObject.addSOW.PracticeArea[0]:'' ;
-      this.constant.RuleParamterArray.find(c=>c.Rulelabel === 'Client').value = this.pmObject.addSOW.ClientLegalEntity;
-      this.constant.RuleParamterArray.find(c=>c.Rulelabel === 'Currency').value = this.pmObject.addSOW.Currency;     
-      this.constant.RuleParamterArray.find(c=>c.Rulelabel === 'Bucket').value = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(c=>c.Title === this.pmObject.addSOW.ClientLegalEntity) ? this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(c=>c.Title === this.pmObject.addSOW.ClientLegalEntity).Bucket :''; 
-       
+      this.constant.RuleParamterArray.forEach(element => {
+        if(Object.keys(this.pmObject.addSOW).find(element.parameterName)){
+          element.value = element.parameterName === 'BusinessVertical' ? this.pmObject.addSOW.BusinessVertical && this.pmObject.addSOW.BusinessVertical.length === 1 ? this.pmObject.addSOW[element.parameterName][0] : '' : this.pmObject.addSOW[element.parameterName];
+        } else {
+          element.value =  this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(c=>c.Title === this.pmObject.addSOW[element.parameterName]) ? this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(c=>c.Title === this.pmObject.addSOW[element.parameterName]).Bucket :'';
+        }   
+      });
+
       if(this.pmObject.RuleArray && this.pmObject.RuleArray.length > 0){
   
         if(sowItem.CSRule){
@@ -1082,18 +1099,6 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
         }
       }, this.pmConstant.TIME_OUT);
     }
-  }
-
-
-  OnCurrencyChange(){
-    this.constant.RuleParamterArray.find(c=>c.Rulelabel === 'Currency').value = this.addSowForm.value.currency;
-    this.filterRulesBySelection();
-  }
-
-
-  OnPracticeAreaChange(){
-    this.constant.RuleParamterArray.find(c=>c.Rulelabel === 'Practice Area').value = this.addSowForm.value.practiceArea && this.addSowForm.value.practiceArea.length === 1 ? this.addSowForm.value.practiceArea[0]:'';
-    this.filterRulesBySelection();
   }
 
 

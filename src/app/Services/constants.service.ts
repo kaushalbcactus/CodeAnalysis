@@ -763,14 +763,7 @@ export class ConstantsService {
     CM2: "CM L2",
   };
 
-  public RuleParamterArray = [
-    { Rulelabel: "Practice Area", value: "" },
-    { Rulelabel: "Client", value: "" },
-    { Rulelabel: "Client Subdivision", value: "" },
-    { Rulelabel: "Currency", value: "" },
-    { Rulelabel: "Deliverable Type", value: "" },
-    { Rulelabel: "Bucket", value: "" },
-  ];
+  public RuleParamterArray = [];
 
   public RuleTypeParameterArray = [
     {

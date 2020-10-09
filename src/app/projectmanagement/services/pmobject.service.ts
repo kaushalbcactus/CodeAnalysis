@@ -318,6 +318,7 @@ export class PMObjectService {
       BilledBy: "",
       selectedFile: null,
       isBudgetRateAdded: false,
+      Title:''
     },
   };
   public addSOW = {
@@ -325,7 +326,7 @@ export class PMObjectService {
     ClientLegalEntity: "",
     SOWCode: "",
     BillingEntity: "",
-    PracticeArea: "",
+    BusinessVertical:"",
     Poc: "",
     PocText: "",
     PocOptional: [],

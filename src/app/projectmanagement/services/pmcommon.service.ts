@@ -756,8 +756,8 @@ export class PMCommonService {
     this.pmObject.addSOW.ClientLegalEntity = sowItem.ClientLegalEntity;
     this.pmObject.addSOW.SOWCode = sowItem.SOWCode;
     this.pmObject.addSOW.BillingEntity = sowItem.BillingEntity;
-    const PracticeArea = sowItem.BusinessVertical ? sowItem.BusinessVertical.split(';#') : [];
-    this.pmObject.addSOW.PracticeArea = PracticeArea;
+    const BusinessVertical = sowItem.BusinessVertical ? sowItem.BusinessVertical.split(';#') : [];
+    this.pmObject.addSOW.BusinessVertical = BusinessVertical;
     this.pmObject.addSOW.Poc = sowItem.PrimaryPOC;
     this.pmObject.addSOW.PocText = this.extractNamefromPOC([sowItem.PrimaryPOC]).join(', ');
     const oldAdditonalPocArray = sowItem.AdditionalPOC ? sowItem.AdditionalPOC.split(';#') : null;
@@ -930,6 +930,8 @@ export class PMCommonService {
     this.pmObject.addProject.FinanceManagement.isBudgetRateAdded = false;
     this.pmObject.addProject.FinanceManagement.POArray = [];
     this.pmObject.addProject.SOWSelect.GlobalFilterValue = '';
+
+
 
   }
   async setBilledBy() {
@@ -2050,7 +2052,7 @@ export class PMCommonService {
     let selectedCMAccess=[];
     this.constant.RuleParamterArray.forEach(element => {
       if(element.value){
-        FilterRules.push.apply(FilterRules,this.pmObject.RuleArray.filter(c=> c.DisplayRules.filter(c=> c.DisplayName === element.Rulelabel && c.Value === element.value).length > 0)) 
+        FilterRules.push.apply(FilterRules,this.pmObject.RuleArray.filter(c=> c.DisplayRules.filter(c=> c.InternalName === element.parameterName && c.Value === element.value).length > 0)) 
         TempArray.push(element.value);
       }
     });
@@ -2133,6 +2135,25 @@ export class PMCommonService {
     return Data;
   }
  
+
+  async GetRuleParameters(type) {
+   
+    this.constant.RuleParamterArray = [];
+   
+    const contentFilter = Object.assign({}, this.pmConstant.PM_QUERY.GET_RULES_PARAMETER_BY_ACTIVE);
+    contentFilter.filter = contentFilter.filter.replace(/{{isActive}}/gi, 'Yes').replace(/{{type}}/gi, type);
+    this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetRuleParameters');
+    const sResults = await this.spServices.readItems(this.constant.listNames.RuleParameters.name, contentFilter);
+    if (sResults && sResults.length) {
+      const tempResult = [];
+      sResults.forEach(element => {
+        tempResult.push({ listName: element.InternalName.split(':')[0],parameterName:element.InternalName.split(':')[1],value:''});
+      });
+      this.constant.RuleParamterArray = tempResult;
+    }
+
+    debugger;
+  }
 
 
 

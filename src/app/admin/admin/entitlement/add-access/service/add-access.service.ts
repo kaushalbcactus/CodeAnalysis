@@ -305,8 +305,7 @@ export class AddAccessService {
             (c) => c.listName === this.constants.listNames.RuleStore.name
           ).retItems
         : [];
-
-    if (filterData.DBRULES.length > 0) {
+        
       filterData.RULES = JSON.parse(JSON.stringify(filterData.DBRULES));
       filterData.RULES.map((c) => (c.DisplayRules = JSON.parse(c.Rule)));
       filterData.RULES.map(
@@ -315,7 +314,7 @@ export class AddAccessService {
       filterData.RULES.map((c) => (c.RuleType = "existing"));
 
       filterData.TEMPRULES = JSON.parse(JSON.stringify(filterData.RULES));
-    }
+    
     return filterData;
   }
 
@@ -849,7 +848,7 @@ export class AddAccessService {
   async fetchProjectFinanceForRule(addedRuleArray,dbItemList){
     let  ProjectFinance=[];
   
-    let  CurrencyArray =addedRuleArray.filter(c=> c.DisplayRules.filter(c=> c.DisplayName === "Currency").length > 0) ? addedRuleArray.filter(c=> c.DisplayRules.filter(c=> c.DisplayName === "Currency").length > 0).map(c=>c.DisplayRules.find(c=>c.DisplayName === 'Currency')).map(c=>c.Value):[];
+    let  CurrencyArray =addedRuleArray.filter(c=> c.DisplayRules.filter(c=> c.InternalName === "Currency").length > 0) ? addedRuleArray.filter(c=> c.DisplayRules.filter(c=> c.InternalName === "Currency").length > 0).map(c=>c.DisplayRules.find(c=>c.InternalName === 'Currency')).map(c=>c.Value):[];
 
     CurrencyArray= [...new Set(CurrencyArray)];
 

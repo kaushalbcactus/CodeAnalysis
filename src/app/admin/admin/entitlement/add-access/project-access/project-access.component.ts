@@ -636,14 +636,14 @@ export class ProjectAccessComponent implements OnInit {
   }
 
   filterRules() {
+    debugger;
     let  AllRules = JSON.parse(JSON.stringify(this.filterData.RULES));
-    if(this.searchRulesForm.value.cle && this.searchRulesForm.value.cle.length > 0  || this.searchRulesForm.value.deliveryType && this.searchRulesForm.value.deliveryType.length > 0   ||  this.searchRulesForm.value.practiceArea && this.searchRulesForm.value.practiceArea.length > 0   || this.searchRulesForm.value.subDivision && this.searchRulesForm.value.subDivision.length > 0) {
       this.FilterArrayObj.forEach(element => {
-        if(this.searchRulesForm.value[element.value]) {
+        if(this.searchRulesForm.value[element.value] && this.searchRulesForm.value[element.value].length > 0) {
           AllRules = AllRules.filter( c=>  c.DisplayRules.filter(d=> d.DisplayName === element.label && this.searchRulesForm.value[element.value].includes(d.Value)).length > 0)   
        }
       });
-    }
+    
     
     if (
       this.selectedViewAccessType === this.constant.RulesType.DELIVERY ||

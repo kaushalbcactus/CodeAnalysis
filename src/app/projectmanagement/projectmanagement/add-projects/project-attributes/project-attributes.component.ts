@@ -13,6 +13,7 @@ import { DataService } from 'src/app/Services/data.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { DatePipe } from '@angular/common';
 import { GlobalService } from 'src/app/Services/global.service';
+import { BehaviorSubject } from 'rxjs';
 @Component({
   selector: 'app-project-attributes',
   templateUrl: './project-attributes.component.html',
@@ -41,6 +42,7 @@ export class ProjectAttributesComponent implements OnInit {
   enableCountFields = false;
   CountError = false;
   errorType = '';
+  
   constructor(
     private frmbuilder: FormBuilder,
     public pmObject: PMObjectService,
@@ -64,6 +66,8 @@ export class ProjectAttributesComponent implements OnInit {
     await this.pmCommonService.setBilledBy();
     this.isProjectAttributeLoaderHidden = false;
     this.isProjectAttributeTableHidden = true;
+
+    await this.pmCommonService.GetRuleParameters('Project');
     setTimeout(async () => {
       if (this.config && this.config.hasOwnProperty('data')) {
         this.projObj = this.config.data.projectObj;
@@ -100,14 +104,27 @@ export class ProjectAttributesComponent implements OnInit {
           };
           await this.setFieldProperties(this.pmObject.addProject.ProjectAttributes, sowObj, true);
           this.showEditSave = false;
-          this.constant.RuleParamterArray.find(c=>c.Rulelabel === 'Client').value = this.pmObject.addProject.FinanceManagement.ClientLegalEntity;
-          this.constant.RuleParamterArray.find(c=>c.Rulelabel === 'Currency').value = this.pmObject.addProject.FinanceManagement.Currency;
 
-          this.constant.RuleParamterArray.find(c=>c.Rulelabel === 'Bucket').value = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(c=>c.Title === this.pmObject.addProject.FinanceManagement.ClientLegalEntity) ? this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(c=>c.Title === this.pmObject.addProject.FinanceManagement.ClientLegalEntity).Bucket :''; 
-         
+          this.constant.RuleParamterArray.forEach(element => {
+
+            if(Object.keys(this.pmObject.addProject.FinanceManagement).includes(element.parameterName) && element.listName==='Current'){
+              element.value = this.pmObject.addProject.FinanceManagement[element.parameterName];
+            } else {
+              element.value =  this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(c=>c.Title === this.pmObject.addProject.FinanceManagement[element.parameterName]) ? this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(c=>c.Title === this.pmObject.addProject.FinanceManagement[element.parameterName]).Bucket :'';
+            } 
+           });         
         }
       }
     }, this.pmConstant.TIME_OUT);
+
+    this.addProjectAttributesForm.get('practiceArea').valueChanges.subscribe(val => {
+      this.constant.RuleParamterArray.find(c=>c.parameterName === 'BusinessVertical').value = val;
+      this.GetRulesOnChange();
+    });
+    this.addProjectAttributesForm.get('subDivision').valueChanges.subscribe(val => {
+      this.constant.RuleParamterArray.find(c=>c.parameterName === 'SubDivision').value = val;
+        this.GetRulesOnChange();
+    });
   }
   /**
    * This method is to set the field properties for all project object.s
@@ -397,22 +414,7 @@ export class ProjectAttributesComponent implements OnInit {
     else {
       this.enableCountFields = false;
     }
-    
-    this.constant.RuleParamterArray.find(c=>c.Rulelabel === 'Practice Area').value = this.addProjectAttributesForm.get('practiceArea').value;
-
-    if(this.showEditSave){
-     this.GetRulesOnChange();
-    }
   }
-
-
-  OnSubDvisionChange(){
-    this.constant.RuleParamterArray.find(c=>c.Rulelabel === 'Client Subdivision').value = this.addProjectAttributesForm.get('subDivision').value;
-    if(this.showEditSave){
-     this.GetRulesOnChange();
-    }
-  }
-
 
   /**
    * This method is used to validate project attributes field.
@@ -510,13 +512,13 @@ export class ProjectAttributesComponent implements OnInit {
       }
     }
 
-    this.constant.RuleParamterArray.find(c=>c.Rulelabel === 'Practice Area').value = projObj.BusinessVertical;
-    this.constant.RuleParamterArray.find(c=>c.Rulelabel === 'Client').value = projObj.ClientLegalEntity;
-    this.constant.RuleParamterArray.find(c=>c.Rulelabel === 'Client Subdivision').value = projObj.SubDivision;
-    this.constant.RuleParamterArray.find(c=>c.Rulelabel === 'Currency').value = projObj.Currency;
-    this.constant.RuleParamterArray.find(c=>c.Rulelabel === 'Deliverable Type').value = projObj.DeliverableType;
-
-    this.constant.RuleParamterArray.find(c=>c.Rulelabel === 'Bucket').value = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(c=>c.Title === projObj.ClientLegalEntity) ? this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(c=>c.Title === projObj.ClientLegalEntity).Bucket :''; 
+    this.constant.RuleParamterArray.forEach(element => {
+      if(Object.keys(projObj).includes(element.parameterName) && element.listName==='Current' ){
+        element.value = projObj[element.parameterName];
+      } else {
+        element.value =  this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(c=>c.Title === projObj[element.listName]) ? this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(c=>c.Title === projObj[element.listName]).Bucket :'';
+      }   
+    });
 
     if(this.pmObject.RuleArray && this.pmObject.RuleArray.length > 0){
 
@@ -529,9 +531,6 @@ export class ProjectAttributesComponent implements OnInit {
       }
       this.pmObject.TempRuleArray = [...this.pmObject.RuleTypeArray.Delivery,...this.pmObject.RuleTypeArray.CM]; 
     }
-
-
-
 
     this.pmObject.addProject.ProjectAttributes.ClientLegalEntity = projObj.ClientLegalEntity;
     this.pmObject.addProject.ProjectAttributes.SubDivision = projObj.SubDivision;
@@ -847,11 +846,13 @@ export class ProjectAttributesComponent implements OnInit {
 
 
   async GetRulesOnChange(){
+    if(this.showEditSave){
       await this.pmCommonService.FilterRules();
       this.addProjectAttributesForm.get('selectedActiveCM1').setValue(this.pmObject.OwnerAccess.selectedCMAccess);
       this.addProjectAttributesForm.get('selectedActiveAD1').setValue(this.pmObject.OwnerAccess.selectedDeliveryAccess);
       this.addProjectAttributesForm.get('selectedActiveCM2').setValue(this.pmObject.OwnerAccess.selectedCMOwner);
       this.addProjectAttributesForm.get('selectedActiveAD2').setValue(this.pmObject.OwnerAccess.selectedDeliveryOwner);
+    }
   }
 
 

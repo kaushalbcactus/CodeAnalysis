@@ -101,7 +101,7 @@ export class NonStandardprojectComponent implements OnInit {
     this.isNonStandardTableHidden = false;
 
     this.constants.RuleParamterArray.find(
-      (c) => c.Rulelabel === "Deliverable Type"
+      (c) => c.parameterName === "Deliverable Type"
     ).value ='';
 
     this.getProjectRules();
@@ -279,7 +279,7 @@ export class NonStandardprojectComponent implements OnInit {
     );
 
     this.constants.RuleParamterArray.find(
-      (c) => c.Rulelabel === "Deliverable Type"
+      (c) => c.parameterName === "DeliverableType"
     ).value = this.selectedDeliverableType;
 
     this.getProjectRules();
