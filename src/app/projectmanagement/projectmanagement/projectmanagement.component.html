@@ -145,7 +145,7 @@
                 <div class="ui-g mt-20">
                     <div class="ui-g-2"><span class="compulsory">*</span>Currency</div>
                     <div class="ui-g-4">
-                        <p-dropdown class="mr-5" [options]="sowDropDown.Currency" formControlName="currency" placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true" (onChange)="OnCurrencyChange()">
+                        <p-dropdown class="mr-5" [options]="sowDropDown.Currency" formControlName="currency" placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true">
                         </p-dropdown>
                         <div class="error" *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['currency'].disabled && !addSowForm.controls['currency'].valid">
                             Currency is required</div>
