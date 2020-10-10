@@ -95,24 +95,14 @@ export class ProjectAttributesComponent implements OnInit {
             ClientLegalEntity: sow[0].ClientLegalEntity,
             BillingEntity: sow[0].BillingEntity,
             PrimaryPOC: sow[0].PrimaryPOC ? sow[0].PrimaryPOC : 0,
-            // CMLevel1: sow[0].CMLevel1 && sow[0].CMLevel1.results && sow[0].CMLevel1.results.length ? [...sow[0].CMLevel1.results, sow[0].CMLevel2.ID] : [],
-            // CMLevel2: sow[0].CMLevel2.ID,
-            // DeliveryLevel1: sow[0].DeliveryLevel1 && sow[0].DeliveryLevel1.results &&
-            //   sow[0].DeliveryLevel1.results.length ? [...sow[0].DeliveryLevel1.results, sow[0].DeliveryLevel2.ID] : [],
-            // DeliveryLevel2: sow[0].DeliveryLevel2.ID,
             AdditionalPOC: sow[0].AdditionalPOC ? sow[0].AdditionalPOC.split(';#').map(x => parseInt(x, 10)) : []
           };
           await this.setFieldProperties(this.pmObject.addProject.ProjectAttributes, sowObj, true);
           this.showEditSave = false;
 
-          this.constant.RuleParamterArray.forEach(element => {
+          await this.pmCommonService.assignValueToParameter(this.pmObject.addProject.FinanceManagement);
 
-            if(Object.keys(this.pmObject.addProject.FinanceManagement).includes(element.parameterName) && element.listName==='Current'){
-              element.value = this.pmObject.addProject.FinanceManagement[element.parameterName];
-            } else {
-              element.value =  this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(c=>c.Title === this.pmObject.addProject.FinanceManagement[element.parameterName]) ? this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(c=>c.Title === this.pmObject.addProject.FinanceManagement[element.parameterName]).Bucket :'';
-            } 
-           });         
+                
         }
       }
     }, this.pmConstant.TIME_OUT);
@@ -143,18 +133,7 @@ export class ProjectAttributesComponent implements OnInit {
       this.addProjectAttributesForm.get('billingEntity').setValue(sowObj.BillingEntity);
       this.addProjectAttributesForm.get('poc').setValue(sowObj.PrimaryPOC);
       this.addProjectAttributesForm.get('poc2').setValue(sowObj.AdditionalPOC);
-      // const cm1IdArray = this.pmCommonService.getIds(sowObj.CMLevel1);
-      // const cm1found = this.cmLevel1.some(r => cm1IdArray.indexOf(r.value) >= 0);
-      // if (cm1found) {
-      //   this.addProjectAttributesForm.get('selectedActiveCM1').setValue(cm1IdArray);
-      // }
-      // this.addProjectAttributesForm.get('selectedActiveCM2').setValue(sowObj.CMLevel2);
-      // const deliveryIdArray = this.pmCommonService.getIds(sowObj.DeliveryLevel1);
-      // const devlivery1found = this.deliveryLevel1.some(r => deliveryIdArray.indexOf(r.value) >= 0);
-      // if (devlivery1found) {
-      //   this.addProjectAttributesForm.get('selectedActiveAD1').setValue(deliveryIdArray);
-      // }
-      // this.addProjectAttributesForm.get('selectedActiveAD2').setValue(sowObj.DeliveryLevel2);
+  
       projObj.ClientLegalEntity = this.addProjectAttributesForm.get('clientLeagalEntity').value;
     } else {
       this.addProjectAttributesForm.get('clientLeagalEntity').setValue(projObj.ClientLegalEntity);
@@ -499,7 +478,7 @@ export class ProjectAttributesComponent implements OnInit {
    * This method is used to the edit the project.
    * @param projObj Pass the projObj as parameter.
    */
-  editProject(projObj) {
+  async editProject(projObj) {
 
     if (projObj.ActualStartDate) {
       const actualStartDate = new Date(projObj.ActualStartDate);
@@ -512,26 +491,9 @@ export class ProjectAttributesComponent implements OnInit {
       }
     }
 
-    this.constant.RuleParamterArray.forEach(element => {
-      if(Object.keys(projObj).includes(element.parameterName) && element.listName==='Current' ){
-        element.value = projObj[element.parameterName];
-      } else {
-        element.value =  this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(c=>c.Title === projObj[element.listName]) ? this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(c=>c.Title === projObj[element.listName]).Bucket :'';
-      }   
-    });
-
-    if(this.pmObject.RuleArray && this.pmObject.RuleArray.length > 0){
-
-      if(projObj.CSRule){
-        this.pmObject.RuleTypeArray.CM = this.pmObject.RuleArray.filter(c=> projObj.CSRule.split(';#').map(d=> +d).includes(c.ID)) ? this.pmObject.RuleArray.filter(c=> projObj.CSRule.split(';#').map(d=> +d).includes(c.ID)) : [];
-      }
-
-      if(projObj.DeliveryRule){
-        this.pmObject.RuleTypeArray.Delivery = this.pmObject.RuleArray.filter(c=> projObj.DeliveryRule.split(';#').map(d=> +d).includes(c.ID)) ?  this.pmObject.RuleArray.filter(c=> projObj.DeliveryRule.split(';#').map(d=> +d).includes(c.ID)):[];
-      }
-      this.pmObject.TempRuleArray = [...this.pmObject.RuleTypeArray.Delivery,...this.pmObject.RuleTypeArray.CM]; 
-    }
-
+    await this.pmCommonService.assignValueToParameter(projObj);
+    await this.pmCommonService.storeRuleInArray(projObj);
+   
     this.pmObject.addProject.ProjectAttributes.ClientLegalEntity = projObj.ClientLegalEntity;
     this.pmObject.addProject.ProjectAttributes.SubDivision = projObj.SubDivision;
     this.pmObject.addProject.ProjectAttributes.BillingEntity = projObj.BillingEntity;
@@ -656,6 +618,24 @@ export class ProjectAttributesComponent implements OnInit {
 
   async SaveProject() {
     if (this.addProjectAttributesForm.valid) {
+
+      if (!this.pmObject.OwnerAccess.selectedDeliveryOwner || !this.pmObject.OwnerAccess.selectedCMOwner) {
+        const Message = !this.pmObject.OwnerAccess.selectedCMOwner ? 'CM' : 'Delivery';
+        this.commonService.showToastrMessage(this.constant.MessageType.warn,Message + ' Owner is required.Project rule not defined for '+Message+'. Please define at-least one '+ Message +' rule to update project.',false);
+        return false;
+      }
+      if (
+        this.pmObject.OwnerAccess.selectedCMAccess &&
+        this.pmObject.OwnerAccess.selectedCMAccess.length === 0
+      ) {
+        this.commonService.showToastrMessage(
+          this.constant.MessageType.error,
+          " CM Access is required.",
+          false
+        );
+        return false;
+      }
+
       this.pmObject.isMainLoaderHidden = false;
       this.setFormFieldValue();
       if (this.selectedFile) {

@@ -167,48 +167,48 @@
                     </div>
                     <div class="ui-g-2  mr-5">
                         <input formControlName="net" value="0" min="0" type="number" (change)="setSOWTotal()" placeholder="Net" pInputText>
-                        <!-- <div class="error" *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['net'].disabled && !addSowForm.controls['net'].valid">
+                        <div class="error" *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['net'].disabled && !addSowForm.controls['net'].valid">
                             Net is required
-                        </div> -->
+                        </div>
                     </div>
                     <div class="ui-g-2  mr-5">
                         <input formControlName="oop" value="0" min="0" type="number" (change)="setSOWTotal()" placeholder="OOP" pInputText>
-                        <!-- <div class="error" *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['oop'].disabled && !addSowForm.controls['oop'].valid">
+                        <div class="error" *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['oop'].disabled && !addSowForm.controls['oop'].valid">
                             OOP is required
-                        </div> -->
+                        </div>
                     </div>
                     <div class="ui-g-2">
                         <input formControlName="tax" value="0" min="0" type="number" (change)="setSOWTotal()" placeholder="Tax" pInputText>
-                        <!-- <div class="error" *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['tax'].disabled && !addSowForm.controls['tax'].valid">
+                        <div class="error" *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['tax'].disabled && !addSowForm.controls['tax'].valid">
                             TAX is required
-                        </div> -->
+                        </div>
                     </div>
                 </div>
                 <h3 class="center">2. Assign User Access</h3>
                 <div class="ui-g mt-20">
                     <div class="ui-g-2"><span class="compulsory">*</span>CM</div>
                     <div class="ui-g-4">
-                        <p-multiSelect formControlName="cm" [options]="sowDropDown.CMLevel1" [panelStyle]="{minWidth:'12em'}" [style]="{'width':'85%'}" defaultLabel="Please Select" [filter]="true" resetFilterOnHide="true" [(ngModel)]="pmObject.OwnerAccess.selectedCMAccess"></p-multiSelect>
+                        <p-multiSelect formControlName="cm" [options]="sowDropDown.CMLevel1" [panelStyle]="{minWidth:'12em'}" [style]="{'width':'85%'}" defaultLabel="Select Access" [filter]="true" resetFilterOnHide="true" [(ngModel)]="pmObject.OwnerAccess.selectedCMAccess"></p-multiSelect>
                         <div class="error" *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['cm'].valid">
-                            CM 1 is required</div>
+                            CM access is required</div>
                     </div>
                     <div class="ui-g-4">
-                        <p-dropdown formControlName="cm2" [options]="sowDropDown.CMLevel2" placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true" [(ngModel)]="pmObject.OwnerAccess.selectedCMOwner"></p-dropdown>
-                        <div class="error" *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['cm2'].valid">CM 2 is required
+                        <p-dropdown formControlName="cm2" [options]="sowDropDown.CMLevel2" placeholder="Select Owner" [showClear]="true" [filter]="true" resetFilterOnHide="true" [disabled]="true" [(ngModel)]="pmObject.OwnerAccess.selectedCMOwner"></p-dropdown>
+                        <div class="error" *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['cm2'].valid"> CM Owner is required.
                         </div>
                     </div>
                 </div>
                 <div class="ui-g mt-20">
                     <div class="ui-g-2"><span class="compulsory">*</span>Delivery</div>
                     <div class="ui-g-4">
-                        <p-multiSelect formControlName="delivery" [options]="sowDropDown.Delivery" [(ngModel)]="pmObject.OwnerAccess.selectedDeliveryAccess" [panelStyle]="{minWidth:'12em'}" [style]="{'width':'85%'}" defaultLabel="Please Select" inputId="Please Select" [filter]="true"
+                        <p-multiSelect formControlName="delivery" [options]="sowDropDown.Delivery" [(ngModel)]="pmObject.OwnerAccess.selectedDeliveryAccess" [panelStyle]="{minWidth:'12em'}" [style]="{'width':'85%'}" defaultLabel="Select Access" inputId="Select Access" [filter]="true"
                             resetFilterOnHide="true"></p-multiSelect>
                     </div>
                     <div class="ui-g-4">
-                        <p-dropdown formControlName="deliveryOptional" [options]="sowDropDown.DeliveryOptional" [(ngModel)]="pmObject.OwnerAccess.selectedDeliveryOwner" placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true">
+                        <p-dropdown formControlName="deliveryOptional" [options]="sowDropDown.DeliveryOptional" [(ngModel)]="pmObject.OwnerAccess.selectedDeliveryOwner" placeholder="Select Owner" [disabled]="true" [showClear]="true" [filter]="true" resetFilterOnHide="true">
                         </p-dropdown>
                         <div class="error" *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['deliveryOptional'].valid">
-                            Delivery 2 is required</div>
+                            Delivery Owner is required.</div>
                     </div>
                 </div>
                 <div class="ui-g mt-20">

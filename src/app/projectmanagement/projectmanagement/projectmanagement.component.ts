@@ -48,6 +48,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
   subscription;
   FolderName: string;
   SelectedFile: any;
+  // EnableOwner: boolean = false;
 
   constructor(
     public globalObject: GlobalService,
@@ -121,6 +122,8 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       const arrowButton: any = document.querySelector('.ui-splitbutton-menubutton');
       arrowButton.style.display = 'none';
     }
+
+
   }
   /**
    * This method will display the add project section.
@@ -152,14 +155,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     await this.pmService.getAllRules('SOW');
     await this.pmService.GetRuleParameters('SOW');
 
-    this.addSowForm.get('businessVertical').valueChanges.subscribe(val => {
-      this.constant.RuleParamterArray.find(c=>c.parameterName === 'BusinessVertical').value = this.addSowForm.value.businessVertical && this.addSowForm.value.businessVertical.length === 1 ? this.addSowForm.value.businessVertical[0]:'';
-      this.filterRulesBySelection();
-    });
-    this.addSowForm.get('businessVertical').valueChanges.subscribe(val => {
-      this.constant.RuleParamterArray.find(c=>c.parameterName === 'Currency').value = this.addSowForm.value.currency;
-      this.filterRulesBySelection();
-    });
+   
   }
   /**
    * This method is used to set the dropdown value of add sow form.
@@ -203,6 +199,16 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     });
     this.sowDropDown.CMLevel1.sort((a, b) => (a.label > b.label) ? 1 : -1);
     this.sowDropDown.Delivery.sort((a, b) => (a.label > b.label) ? 1 : -1);
+
+    this.addSowForm.get('businessVertical').valueChanges.subscribe(val => {
+      this.constant.RuleParamterArray.find(c=>c.parameterName === 'BusinessVertical').value = val && val.length === 1 ? val[0]:'';
+        // this.EnableOwner= val && val.length > 1 ?  true: false;
+      this.filterRulesBySelection();
+    });
+    this.addSowForm.get('currency').valueChanges.subscribe(val => {
+      this.constant.RuleParamterArray.find(c=>c.parameterName === 'Currency').value = val;
+      this.filterRulesBySelection();
+    });
   }
   /**
    * This method is called when client legal entity value is changed.
@@ -210,7 +216,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
   async onChangeClientLegalEntity() {
 
    
-    this.constant.RuleParamterArray.find(c=>c.parameterName === 'clientLegalEntity').value = this.addSowForm.value.clientLegalEntity;
+    this.constant.RuleParamterArray.find(c=>c.parameterName === "ClientLegalEntity").value = this.addSowForm.value.clientLegalEntity ?  this.addSowForm.value.clientLegalEntity : '' ;
    
     if (this.addSowForm.value.clientLegalEntity) {
     this.pmObject.addSOW.ClientLegalEntity = this.addSowForm.value.clientLegalEntity;
@@ -366,7 +372,16 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
         if (!this.selectedFile && !this.pmObject.addSOW.ID) {
           this.commonService.showToastrMessage(this.constant.MessageType.error,'Please select SOW document.',false);
           return false;
-        }
+        } else if(this.addSowForm.value.cm2 === 0 || this.addSowForm.value.deliveryOptional === 0){
+          // const Message = this.addSowForm.value.cm2 === 0 ? 'CM' : 'Delivery';
+          // if(this.EnableOwner){
+          //   this.commonService.showToastrMessage(this.constant.MessageType.error,Message + ' Owner is required.',false);
+          // } else {
+            const Message = this.addSowForm.value.cm2 === 0 ? 'CM' : 'Delivery';
+            this.commonService.showToastrMessage(this.constant.MessageType.error,'Rule not defined. Please define at-least one '+ Message +' rule to create/update sow.',false);
+          // }
+          return false;
+        } 
         // get all the value from form.
         this.pmObject.addSOW.ClientLegalEntity = this.addSowForm.value.clientLegalEntity ? this.addSowForm.value.clientLegalEntity :
           this.pmObject.addSOW.ClientLegalEntity;
@@ -836,7 +851,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       NetBudget: sowObj.Budget.Net,
       OOPBudget: sowObj.Budget.OOP,
       TaxBudget: sowObj.Budget.Tax,
-      BusinessVertical: sowObj.PracticeArea.join(';#'),
+      BusinessVertical: sowObj.BusinessVertical.join(';#'),
       //Year: year,
       CreatedDate: sowObj.SOWCreationDate,
       ExpiryDate: sowObj.SOWExpiryDate,
@@ -967,6 +982,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
   async getEditSOWData() {
 
     await this.pmService.getAllRules('SOW');
+    await this.pmService.GetRuleParameters('SOW');
 
     const currSelectedSOW = this.pmObject.selectedSOWTask;
     const batchURL = [];
@@ -1016,25 +1032,11 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.pmObject.isAddSOWVisible = true;
       this.pmObject.isSOWFormSubmit = false;
 
-      this.constant.RuleParamterArray.forEach(element => {
-        if(Object.keys(this.pmObject.addSOW).find(element.parameterName)){
-          element.value = element.parameterName === 'BusinessVertical' ? this.pmObject.addSOW.BusinessVertical && this.pmObject.addSOW.BusinessVertical.length === 1 ? this.pmObject.addSOW[element.parameterName][0] : '' : this.pmObject.addSOW[element.parameterName];
-        } else {
-          element.value =  this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(c=>c.Title === this.pmObject.addSOW[element.parameterName]) ? this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(c=>c.Title === this.pmObject.addSOW[element.parameterName]).Bucket :'';
-        }   
-      });
+      await this.pmService.assignValueToParameter(this.pmObject.addSOW);
 
-      if(this.pmObject.RuleArray && this.pmObject.RuleArray.length > 0){
+      await this.pmService.storeRuleInArray(sowItem);
+
   
-        if(sowItem.CSRule){
-          this.pmObject.RuleTypeArray.CM = this.pmObject.RuleArray.filter(c=> sowItem.CSRule.split(';#').map(d=> +d).includes(c.ID)) ? this.pmObject.RuleArray.filter(c=> sowItem.CSRule.split(';#').map(d=> +d).includes(c.ID)) : [];
-        }
-  
-        if(sowItem.DeliveryRule){
-          this.pmObject.RuleTypeArray.Delivery = this.pmObject.RuleArray.filter(c=> sowItem.DeliveryRule.split(';#').map(d=> +d).includes(c.ID)) ?  this.pmObject.RuleArray.filter(c=> sowItem.DeliveryRule.split(';#').map(d=> +d).includes(c.ID)):[];
-        }
-        this.pmObject.TempRuleArray = [...this.pmObject.RuleTypeArray.Delivery,...this.pmObject.RuleTypeArray.CM]; 
-      }
 
     }
   }

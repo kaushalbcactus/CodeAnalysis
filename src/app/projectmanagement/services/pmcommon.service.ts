@@ -2155,71 +2155,27 @@ export class PMCommonService {
     debugger;
   }
 
+  assignValueToParameter(object){
+    this.constant.RuleParamterArray.forEach(element => {
+      if(Object.keys(object).includes(element.parameterName) && element.listName==='Current'){
+        element.value = element.parameterName === 'BusinessVertical' ? Array.isArray(object[element.parameterName]) ? (object[element.parameterName].length === 1 ? object[element.parameterName][0] : '') : object[element.parameterName] : object[element.parameterName];
+      } else {
+        element.value =  this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(c=>c.Title === object[element.listName]) ? this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(c=>c.Title === object[element.listName]).Bucket :'';
+      }   
+    });
+  }
 
 
-  // SendEmail(){
-  //   var EmailTemplate = this.Emailtemplate.Content;
-  //   var objEmailBody = [];
+  storeRuleInArray(Item){
+    if(this.pmObject.RuleArray && this.pmObject.RuleArray.length > 0){
+      if(Item.CSRule){
+        this.pmObject.RuleTypeArray.CM = this.pmObject.RuleArray.filter(c=> Item.CSRule.split(';#').map(d=> +d).includes(c.ID)) ? this.pmObject.RuleArray.filter(c=> Item.CSRule.split(';#').map(d=> +d).includes(c.ID)) : [];
+      }
 
-  //   objEmailBody.push({
-  //     "key": "@@Val1@@",
-  //     "value": task.ProjectCode
-  //   });
-  //   objEmailBody.push({
-  //     "key": "@@Val2@@",
-  //     "value": element.SubMilestones ? element.SubMilestones !== "Default" ? element.Title + " - " +
-  //       element.SubMilestones : element.Title : element.Title
-  //   });
-  //   objEmailBody.push({
-  //     "key": "@@Val3@@",
-  //     "value": element.AssignedTo.Title
-  //   });
-  //   objEmailBody.push({
-  //     "key": "@@Val4@@",
-  //     "value": element.Task
-  //   });
-  //   objEmailBody.push({
-  //     "key": "@@Val5@@",
-  //     "value": element.Milestone
-  //   });
-  //   objEmailBody.push({
-  //     "key": "@@Val6@@",
-  //     "value": element.StartDate
-  //   });
-  //   objEmailBody.push({
-  //     "key": "@@Val7@@",
-  //     "value": element.DueDate
-  //   });
-  //   objEmailBody.push({
-  //     "key": "@@Val8@@",
-  //     "value": task.TaskComments ? task.TaskComments : ''
-  //   });
-  //   objEmailBody.push({
-  //     "key": "@@Val0@@",
-  //     "value": element.ID
-  //   });
-
-  //   objEmailBody.forEach(obj => {
-  //     EmailTemplate = EmailTemplate.replace(RegExp(obj.key, 'gi'), obj.value);
-  //   });
-
-  //   EmailTemplate = EmailTemplate.replace(RegExp("'", 'gi'), '');
-  //   EmailTemplate = EmailTemplate.replace(/\\/g, '\\\\');
-  //   mailSubject = mailSubject.replace(RegExp("'", 'gi'), '');
-  //   const sendEmailObj = {
-  //     __metadata: { type: this.constants.listNames.SendEmail.type },
-  //     Title: mailSubject,
-  //     MailBody: EmailTemplate,
-  //     Subject: mailSubject,
-  //     ToEmailId: element.AssignedTo.EMail,
-  //     FromEmailId: this.sharedObject.currentUser.email,
-  //     CCEmailId: this.sharedObject.currentUser.email
-  //   };
-  //   const createSendEmailObj = Object.assign({}, this.queryConfig);
-  //   createSendEmailObj.url = this.spServices.getReadURL(this.constants.listNames.SendEmail.name, null);
-  //   createSendEmailObj.data = sendEmailObj;
-  //   createSendEmailObj.type = 'POST';
-  //   createSendEmailObj.listName = this.constants.listNames.SendEmail.name;
-  //   batchUrl.push(createSendEmailObj);
-  // }
+      if(Item.DeliveryRule){
+        this.pmObject.RuleTypeArray.Delivery = this.pmObject.RuleArray.filter(c=> Item.DeliveryRule.split(';#').map(d=> +d).includes(c.ID)) ?  this.pmObject.RuleArray.filter(c=> Item.DeliveryRule.split(';#').map(d=> +d).includes(c.ID)):[];
+      }
+      this.pmObject.TempRuleArray = [...this.pmObject.RuleTypeArray.Delivery,...this.pmObject.RuleTypeArray.CM]; 
+    }
+  }
 }

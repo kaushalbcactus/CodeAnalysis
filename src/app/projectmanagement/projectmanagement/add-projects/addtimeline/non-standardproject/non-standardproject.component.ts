@@ -422,12 +422,20 @@ export class NonStandardprojectComponent implements OnInit {
       this.pmObject.OwnerAccess.selectedCMAccess.length === 0
     ) {
       this.commonService.showToastrMessage(
-        this.constants.MessageType.error,
+        this.constants.MessageType.warn,
         " CM Access is required.",
         false
       );
       return false;
     }
+
+    if (!this.pmObject.OwnerAccess.selectedDeliveryOwner || !this.pmObject.OwnerAccess.selectedCMOwner) {
+        const Message = !this.pmObject.OwnerAccess.selectedCMOwner ? 'CM' : 'Delivery';
+        this.commonService.showToastrMessage(this.constants.MessageType.warn,Message + ' Owner is required.Project rule not defined for '+Message+'. Please define at-least one '+ Message +' rule to create project.',false);
+        return false;
+      }
+  
+   
     return true;
   }
   disableField() {
