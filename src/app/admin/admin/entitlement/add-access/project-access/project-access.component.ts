@@ -331,6 +331,7 @@ export class ProjectAccessComponent implements OnInit {
   }
 
   addRule() {
+    this.resetProjectFilters();
     const unSelectedValue = this.selectedOption.find(
       (c) => c.selectedValue === ""
     );
@@ -636,7 +637,6 @@ export class ProjectAccessComponent implements OnInit {
   }
 
   filterRules() {
-    debugger;
     let  AllRules = JSON.parse(JSON.stringify(this.filterData.RULES));
       this.FilterArrayObj.forEach(element => {
         if(this.searchRulesForm.value[element.value] && this.searchRulesForm.value[element.value].length > 0) {
@@ -661,7 +661,7 @@ export class ProjectAccessComponent implements OnInit {
 
   async SaveRules() {
     this.loaderenable = true;
-
+    this.resetProjectFilters();
     await this.addAccessService.saveRules(this.filterData,this.RuleType);
 
 

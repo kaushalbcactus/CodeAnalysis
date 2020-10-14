@@ -987,7 +987,7 @@ export class AddAccessService {
 
           if(type !== this.constants.RulesType.PF){
             //change owner of project 
-            dbItemList.filter(c=> RuleItems.includes(c[parameter])).map(d=> d[owner] = d[arrayName] && d[arrayName].length > 0 ? d[arrayName][0].OwnerPG : d[owner]);
+            dbItemList.filter(c=> RuleItems.includes(c[parameter])).map(d=> d[owner] = d[arrayName] && d[arrayName].length > 0 ? d[arrayName][0].OwnerPG : 0);
           } else {
              // remove owner user from delivery leads for pf
             dbItemList.filter(c=> RuleItems.includes(c[parameter])).map(c=> c[access].results = c[access].results ? c[access].results.filter(e => e.ID !== oldrule.OwnerPG.ID):[]);
