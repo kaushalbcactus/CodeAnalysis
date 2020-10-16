@@ -751,6 +751,7 @@ export class AddAccessService {
         item.TL.results.length ?  { results: item.TL.results.map((c) => c.ID) }
         : { results: [] };
         data['ASDId'] =  item.ASD ? { results: [item.ASD.ID] }: 0;
+        data['CSId'] =  item.CSId ? { results: item.CSId.results }: 0;
       }
       else {
         data['DeliveryLeadsId'] =   item.DeliveryLeads && item.DeliveryLeads.hasOwnProperty('results') &&
@@ -980,9 +981,17 @@ export class AddAccessService {
           if(oldrule.Access && oldrule.Access.results){
             // remove access user from particular field cmlevel or delivery level
              dbItemList.filter(c=> RuleItems.includes(c[parameter])).map(c=>c[access].results = c[access].results ? c[access].results.filter(e => !oldrule.Access.results.map(f=>f.ID).includes(e.ID)):[]);
+
+             if(type == this.constants.RulesType.CD){
+              dbItemList.filter(c=> RuleItems.includes(c[parameter])).map(c=>c['CSId'].results = c['CSId'].results ? c['CSId'].results.filter(e => !oldrule.Access.results.map(f=>f.ID).includes(e.ID)):[]);
+             }
           }
 
           // update access user with existing and new (adhoc user)
+          if(type == this.constants.RulesType.CD){
+            dbItemList.filter(c=> RuleItems.includes(c[parameter])).map(d=> d['CSId'].results = d[arrayName] && d[arrayName].length > 0 && d[arrayName].filter(e=>e.Access.hasOwnProperty('results')) ?  [...new Set([...d['CSId'].results , ...[...new Set(d[arrayName].filter(e=>e.Access.hasOwnProperty('results')).map(f=>f.Access.results.map(i=>i.ID)).reduce((a,b)=> [...a, ...b], []))]])] : d['CSId'].results);
+          }
+
           dbItemList.filter(c=> RuleItems.includes(c[parameter])).map(d=> d[access].results = d[arrayName] && d[arrayName].length > 0 && d[arrayName].filter(e=>e.Access.hasOwnProperty('results')) ?  [...new Set([...d[access].results , ...[...new Set(d[arrayName].filter(e=>e.Access.hasOwnProperty('results')).map(f=>f.Access.results.map(i=>i)).reduce((a,b)=> [...a, ...b], []))]])] : d[access].results);
 
           if(type !== this.constants.RulesType.PF){

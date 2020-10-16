@@ -458,10 +458,10 @@ export class AdminConstantService {
       top: 4900,
     },
     GET_All_QUALITY_COMPLAINTS: {
-      select:"ID,Title,Status,ASD/ID,ASD/Title,TL/ID,TL/Title,CSRule,DeliveryRule",
+      select:"ID,Title,Status,ASD/ID,ASD/Title,TL/ID,TL/Title,CSRule,DeliveryRule,CSId",
       expand:"ASD,TL",
       filter:
-        "Status eq 'Created'",
+        "Status eq 'Created' or Status eq 'Rejected'",
       top: 4900,
     },
     GET_All_POSITIVE_FEEDBACK: {
