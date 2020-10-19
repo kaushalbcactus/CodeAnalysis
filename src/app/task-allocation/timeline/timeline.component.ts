@@ -986,11 +986,11 @@ export class TimelineComponent
         totalMilestoneBudgetHours
       );
 
+      this.reOrderTaskItems(this.milestoneData);
       if (this.projectDetails === undefined) {
         this.assignUsers(allRetrievedTasks);
       }
 
-      this.reOrderTaskItems(this.milestoneData);
       this.GanttchartData = this.getGanttTasksFromMilestones(
         this.milestoneData,
         true
