@@ -764,7 +764,7 @@ export class ManageFinanceComponent implements OnInit {
       const available = this.invoiceType == 'revenue' ? nAvailableToTag < retPOInfo.poRevenue : nAvailableToTag < retPOInfo.poOOP
 
     if (available) {
-      this.commonService.showToastrMessage(this.constant.MessageType.error, 'PO' + this.invoiceType + 'balance should be greater than or equal to the amount to reserved on PO.', true);
+      this.commonService.showToastrMessage(this.constant.MessageType.error, 'PO ' + this.invoiceType + ' balance should be greater than or equal to the amount to reserved on PO.', true);
       return;
     }
 
@@ -788,7 +788,7 @@ export class ManageFinanceComponent implements OnInit {
       // this.unassignedBudget[0].tax = this.unassignedBudget[0].tax - retPOInfo.tax;
     }
     // Add the value to Po header.
-    this.poHeader.total = (this.poHeader.total + retPOInfo.poRevenue + retPOInfo.poOOP).toFixed(2);
+    this.poHeader.total = parseFloat((this.poHeader.total + retPOInfo.poRevenue + retPOInfo.poOOP).toFixed(2));
     this.poHeader.revenue = this.poHeader.revenue + retPOInfo.poRevenue;
     // this.poHeader.tax = this.poHeader.tax + retPOInfo.tax;
     this.poHeader.oop = this.poHeader.oop + retPOInfo.poOOP;
@@ -799,7 +799,7 @@ export class ManageFinanceComponent implements OnInit {
     retPOInfo.showInvoice = this.invoiceType == 'revenue' ? true : false;
     retPOInfo.edited = true;
     this.error = false;
-    if (this.unassignedBudget && this.unassignedBudget.length && (this.unassignedBudget[0].revenue === 0 || this.unassignedBudget[0].oop === 0)) {
+    if (this.unassignedBudget && this.unassignedBudget.length && (this.unassignedBudget[0].revenue === 0 && this.unassignedBudget[0].oop === 0)) {
       this.poData.forEach(element => {
         element.poInfo[0].poRevenue = 0;
         element.poInfo[0].poTotal = 0;
@@ -820,7 +820,7 @@ export class ManageFinanceComponent implements OnInit {
       });
       this.isPoRevenueDisabled = true;
       this.isAddToProjectHidden = true;
-    } else if (this.unassignedBudget && this.unassignedBudget.length && (this.unassignedBudget[0].revenue !== 0 || this.unassignedBudget[0].oop !== 0)) {
+    } else if (this.unassignedBudget && this.unassignedBudget.length && (this.unassignedBudget[0].revenue !== 0 && this.unassignedBudget[0].oop !== 0)) {
       this.poData.forEach(element => {
         element.poInfo[0].poRevenue = this.unassignedBudget[0].revenue;
         element.poInfo[0].poTotal = this.unassignedBudget[0].total;
@@ -1225,10 +1225,10 @@ export class ManageFinanceComponent implements OnInit {
 
           let poData = {
             __metadata: { type: this.constant.listNames.PO.type },
-            OOPLinked: poLinkedAmt.toFixed(2),
-            TotalLinked: poTotalLinkedAmt.toFixed(2),
-            ScheduledOOP: poScheduledOOP.toFixed(2),
-            TotalScheduled: poTotalScheduled.toFixed(2),
+            OOPLinked: parseFloat(poLinkedAmt.toFixed(2)),
+            TotalLinked: parseFloat(poTotalLinkedAmt.toFixed(2)),
+            ScheduledOOP: parseFloat(poScheduledOOP.toFixed(2)),
+            TotalScheduled: parseFloat(poTotalScheduled.toFixed(2)),
           }
 
         await this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constant.listNames.PO.name, rowData.poId), poData, this.constant.Method.PATCH, this.constant.listNames.PO.name);
