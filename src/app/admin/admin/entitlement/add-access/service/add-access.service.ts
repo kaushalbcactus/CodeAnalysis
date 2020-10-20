@@ -481,6 +481,20 @@ export class AddAccessService {
       
   }
 
+  filterInactiveProjects(dbItemList: any ,projectData) {
+    for (const index in dbItemList) {
+      if (dbItemList.hasOwnProperty(index)) {
+        let projectInfo = projectData.find(e=> e.ProjectCode == dbItemList[index].Title)
+        if(projectInfo) {
+          dbItemList.splice(index,1);
+        }
+      }
+    }
+
+    return dbItemList;
+    
+  }
+
   async updateAllDetails(filterData, type, addedRuleArray, EditedRuleArray) {
     let dbItemList=[];
     let CLE=[];
@@ -489,6 +503,7 @@ export class AddAccessService {
     let disMessage='';
     let parameter='';
     let Message = '';
+    let inActiveProjectList = [];
      
     // let AllProjects={dbList:[],ProjectCodes:[]};
     switch (type) {
@@ -505,7 +520,8 @@ export class AddAccessService {
       Message ="Fetching Quality Complaints.....";
       break;
       case this.constants.RulesType.PF:
-      this.getAllPF(batchURL);
+      await this.getAllPF(batchURL);
+      await this.getInactiveProjects(batchURL);
       Message ="Fetching Positive Feedback.....";
       break;
     }
@@ -556,6 +572,10 @@ export class AddAccessService {
         dbItemList =  batchResults.find((c) => c.listName === this.constants.listNames.PositiveFeedbacks.name) &&
         batchResults.find((c) => c.listName === this.constants.listNames.PositiveFeedbacks.name).retItems ? 
         batchResults.find((c) => c.listName === this.constants.listNames.PositiveFeedbacks.name).retItems :[];
+        inActiveProjectList =  batchResults.find((c) => c.listName === this.constants.listNames.ProjectInformation.name) &&
+        batchResults.find((c) => c.listName === this.constants.listNames.ProjectInformation.name).retItems ? 
+        batchResults.find((c) => c.listName === this.constants.listNames.ProjectInformation.name).retItems :[];
+        await this.filterInactiveProjects(dbItemList,inActiveProjectList);
         disMessage = 'positive feedback';
         parameter = 'Title';
       break;
@@ -1074,6 +1094,19 @@ export class AddAccessService {
       null,
       this.constants.Method.GET,
       this.constants.listNames.PositiveFeedbacks.name
+    );
+  }
+
+  getInactiveProjects(batchURL){
+    this.commonService.setBatchObject(
+      batchURL,
+      this.spServices.getReadURL(
+        this.constants.listNames.ProjectInformation.name,
+        this.adminConstants.QUERY.GET_INACTIVE_PROJECT
+      ),
+      null,
+      this.constants.Method.GET,
+      this.constants.listNames.ProjectInformation.name
     );
   }
 

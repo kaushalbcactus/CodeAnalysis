@@ -423,10 +423,21 @@ export class ProjectAccessComponent implements OnInit {
       this.selectedOption = [];
       this.filterData.CM = [];
       this.filterData.DELIVERY = [];
+      this.index = -1;
+      setTimeout(() => {
+        this.index = 1;
+      }, 200);
 
       this.common.showToastrMessage(
         this.constant.MessageType.success,
         "New rule added sucessfully.",
+        false,
+        false
+      );
+
+      this.common.showToastrMessage(
+        this.constant.MessageType.warn,
+        "Rules are not saved. Please save",
         false,
         false
       );
@@ -524,6 +535,15 @@ export class ProjectAccessComponent implements OnInit {
         false,
         false
       );
+      
+      if(rowData.IsActiveCH !== "Yes") {
+        this.common.showToastrMessage(
+          this.constant.MessageType.warn,
+          "Rules are not saved. Please save",
+          false,
+          false
+        );
+      }
     } else {
       const index = this.filterData.TEMPRULES.indexOf(rowData);
       if (index > -1) {
@@ -618,6 +638,13 @@ export class ProjectAccessComponent implements OnInit {
         this.common.showToastrMessage(
           this.constant.MessageType.success,
           "Current rule users updated sucessfully.",
+          false,
+          false
+        );
+
+        this.common.showToastrMessage(
+          this.constant.MessageType.warn,
+          "Rules are not saved. Please save",
           false,
           false
         );

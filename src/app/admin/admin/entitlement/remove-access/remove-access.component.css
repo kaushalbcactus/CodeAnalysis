@@ -8,3 +8,7 @@
 .ui-table table {
     table-layout: auto !important;
 }
+
+::ng-deep .ui-overlaypanel .ui-overlaypanel-close {
+    background-color: #C53E3E !important;
+}

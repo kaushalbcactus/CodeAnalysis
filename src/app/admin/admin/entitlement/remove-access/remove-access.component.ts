@@ -182,15 +182,20 @@ export class RemoveAccessComponent implements OnInit {
       this.isSearchButtonDisabled = false;
       this.allRules.forEach(rule => {
         rule.RuleArray = JSON.parse(rule.Rule);
-        rule.RuleText = rule.RuleArray.map(x => x.Value).join(", ");
+        rule.RuleText = rule.RuleArray.map(x => x.Value).join(`<i style="vertical-align: middle;" class="pi pi-chevron-right rulesText"></i>`);
         rule.OwnerText = rule.OwnerPG && rule.OwnerPG.Title ? rule.OwnerPG.Title : '';
-        if (this.attribute === rule.TypeST && rule.Access && rule.Access.results && rule.Access.results.length) {
-          rule.AccessText = rule.Access.results.length ? rule.Access.results.map(x => x.Title).join(", ") : '';
-          rule.Access.results.forEach(element => {
-            if (element.ID === this.resourceId) {
-              this.ruleTableArray.push(rule);
-            }
-          });
+        if (this.attribute === rule.TypeST) {
+          if(rule.Access && rule.Access.results && rule.Access.results.length) {
+            rule.AccessText = rule.Access.results.length ? rule.Access.results.map(x => x.Title).join(", ") : '';
+            rule.Access.results.forEach(element => {
+              if (element.ID === this.resourceId) {
+                this.ruleTableArray.push(rule);
+              }
+            });
+          }
+          if(rule.OwnerPG && rule.OwnerPG.ID === this.resourceId && !this.ruleTableArray.find(e=> e.ID == rule.ID)) {
+            this.ruleTableArray.push(rule);
+          }
         }
       });
     }
@@ -215,7 +220,7 @@ export class RemoveAccessComponent implements OnInit {
     }
     if (role === this.adminConstants.FILTER.DELIVERY || role === this.adminConstants.FILTER.DELIVERY_LEVEL_1 || role === this.adminConstants.FILTER.DELIVERY_LEVEL_2) {
       delRuleIdArray = rowItem.DeliveryRule ? rowItem.DeliveryRule.split(',') : [];
-      this.ruleTableArray = this.getRules(csRuleIdArray);
+      this.ruleTableArray = this.getRules(delRuleIdArray);
     }
 
     this.showRuleDetailsview.clear();
@@ -235,7 +240,7 @@ export class RemoveAccessComponent implements OnInit {
       this.allRules.forEach(rule => {
         if (+element === rule.ID) {
           rule.RuleArray = JSON.parse(rule.Rule);
-          rule.RuleText = rule.RuleArray.map(x => x.Value).join(", ");
+          rule.RuleText = rule.RuleArray.map(x => x.Value).join(`<i style="vertical-align: middle;" class="pi pi-chevron-right rulesText"></i>`);
           rule.OwnerText = rule.OwnerPG && rule.OwnerPG.Title ? rule.OwnerPG.Title : '';
           rule.AccessText = rule.Access && rule.Access.results && rule.Access.results.length ? rule.Access.results.map(x => x.Title).join(", ") : '';
           tempRuleArray.push(rule);
@@ -310,6 +315,13 @@ export class RemoveAccessComponent implements OnInit {
         }
       }
     });
+
+    finalArray.forEach(e => {
+      if(e.BusinessVertical) {
+        e.BusinessVertical = e.BusinessVertical.replaceAll(';#',', ');
+      }
+    });
+
     return finalArray;
 
   }
@@ -718,5 +730,6 @@ export class RemoveAccessComponent implements OnInit {
     this.isRemoveButtonDisabled = true;
     this.isRefreshButtonDisabled = true;
     this.isSearchButtonDisabled = true;
+    this.ruleTableArray = []
   }
 }

@@ -10,3 +10,9 @@
 ::ng-deep .ruleTable .ui-table .ui-table-tbody > tr > td:nth-child(4){
     width: 20% !important;
 }
+
+::ng-deep span > .rulesText {
+    vertical-align: text-bottom !important;
+    margin-left: 3px !important; 
+    margin-right: 3px !important;
+}

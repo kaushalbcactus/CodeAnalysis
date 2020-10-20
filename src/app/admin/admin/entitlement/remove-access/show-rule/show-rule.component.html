@@ -12,9 +12,18 @@
         <ng-template pTemplate="body" let-node="rowData" let-rowData let-columns="columns" let-rowIndex="rowIndex">
             <tr>
                 <td>{{rowIndex+1}}</td>
-                <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility"
+                <!-- <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility"
                     [ngStyle]="{'background-color':rowData.IsAdhoc ? '#f7e7b7' : ''}">
                     {{rowData[col.field]}}
+                </td> -->
+                <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility"
+                [ngStyle]="{'background-color':rowData.IsAdhoc ? '#f7e7b7' : ''}">
+                    <ng-container *ngIf="col.field !== 'RuleText'">
+                        {{ rowData[col.field] }}
+                    </ng-container>
+                    <ng-container *ngIf="col.field == 'RuleText'">
+                        <span [innerHTML]="rowData[col.field]"></span>
+                    </ng-container>
                 </td>
             </tr>
         </ng-template>

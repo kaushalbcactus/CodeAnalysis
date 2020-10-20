@@ -441,6 +441,13 @@ export class AdminConstantService {
       "ProjectCode eq '{{projectcode}}'",
     top: 4900,
     },
+    GET_INACTIVE_PROJECT: {
+      select:
+        "ID,Title,ProjectCode,Status",
+      filter:
+        "Status eq 'Closed' or Status eq 'Cancelled' or Status eq 'On Hold'",
+      top: 4900,
+    },
     GET_PROJECT_FINANCE_BY_CURRENCY: {
       select: 'ID, Title, Currency',
       filter: 'Currency eq \'{{currency}}\''
