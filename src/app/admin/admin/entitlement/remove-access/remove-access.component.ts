@@ -83,6 +83,15 @@ export class RemoveAccessComponent implements OnInit {
     resourceNameArray: [],
     attributesArray: []
   };
+  selectionType = [
+    { label: "None", value: "None" },
+    {
+      label: 'Highlighted',
+      value: 'Highlighted',
+    },
+    { label: 'All', value: 'All' },
+  ];
+  selectedItemType: string = this.selectionType[0].value;
   ngOnInit() {
     this.loaddropdown();
     this.createTableCols();
@@ -172,6 +181,8 @@ export class RemoveAccessComponent implements OnInit {
     this.isRefreshButtonDisabled = false;
     this.resourceId = this.removeAccess.value.resourceName;
     this.attribute = this.removeAccess.value.attributes;
+    this.isRemoveButtonDisabled = true;
+    this.selectedItemType = this.selectionType[0].value;
     // extract the role of user based on selected users.
     this.totalResourceArray.forEach(resource => {
       if (this.resourceId === resource.UserNamePG.ID) {
@@ -253,6 +264,7 @@ export class RemoveAccessComponent implements OnInit {
    * This method is called when resourceName or attribute changes.
    */
   async searchAccess() {
+    this.selectedItemType = this.selectionType[0].value;
     if (this.removeAccess.valid) {
       this.isRuleTable = false;
       this.ruleTableArray = [];
@@ -291,7 +303,11 @@ export class RemoveAccessComponent implements OnInit {
         this.getBatchURL(options, this.constants.listNames.QualityComplaints.name, filterResource, batchURL, this.adminConstants.QUERY.GET_QC_BY_USERROLE);
         break;
       case this.adminConstants.ATTRIBUTES.POSITIVEFEEDBACK:
-        this.getBatchURL(options, this.constants.listNames.PositiveFeedbacks.name, filterResource, batchURL, this.adminConstants.QUERY.GET_POSITIVE_FEEDBACKS_BY_USERROLE);
+        let pfUrl = this.adminConstants.QUERY.GET_POSITIVE_FEEDBACKS_BY_USERROLE;
+        let startDate = new Date(new Date(new Date().setMonth(new Date().getMonth() - 12)).setHours(0, 0, 0, 0)).toISOString();
+        let endDate = new Date().toISOString();
+        pfUrl.filter = pfUrl.filter.replace('{{startDate}}', startDate).replace('{{endDate}}', endDate);
+        this.getBatchURL(options, this.constants.listNames.PositiveFeedbacks.name, filterResource, batchURL, pfUrl);
     }
     if (batchURL.length) {
       this.commonService.SetNewrelic("admin", "admin-entitlement-removeAccess", "getFilterData");
@@ -564,9 +580,31 @@ export class RemoveAccessComponent implements OnInit {
     console.log("ON Row UnSelect", this.selectedAllRowsItem);
   }
 
-  selectAllRows() {
-    this.isRemoveButtonDisabled = false;
-    console.log('in selectAllRows ', this.selectedAllRowsItem);
+  selectRows() {
+    this.selectedAllRowsItem = [];
+    if(this.tableDataArray.length) {
+      switch(this.selectedItemType){
+        case 'None':
+          this.selectedAllRowsItem = [];
+        break;
+
+        case 'Highlighted':
+          let adhocData = this.tableDataArray.filter(e=> e.IsAdhoc == true);
+          if(adhocData.length) {
+          this.selectedAllRowsItem = adhocData;
+          } else {
+            this.selectedAllRowsItem = [];
+          }
+        break;
+
+        case 'All':
+          this.selectedAllRowsItem = this.tableDataArray;
+        break; 
+      }
+      console.log('in selectAllRows ', this.selectedAllRowsItem);
+    }
+    this.isRemoveButtonDisabled = this.selectedAllRowsItem.length ? false : true;
+
   }
   /**
    * This method is used to remove user from selected Attribute
@@ -731,5 +769,6 @@ export class RemoveAccessComponent implements OnInit {
     this.isRefreshButtonDisabled = true;
     this.isSearchButtonDisabled = true;
     this.ruleTableArray = []
+    this.selectedItemType = this.selectionType[0].value;
   }
 }

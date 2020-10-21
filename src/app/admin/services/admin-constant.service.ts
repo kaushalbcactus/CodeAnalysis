@@ -38,7 +38,7 @@ export class AdminConstantService {
     GET_POSITIVE_FEEDBACKS_BY_USERROLE: {
       select:"ID,Title,Status,DeliveryLeads/ID,DeliveryLeads/Title,CSRule,DeliveryRule",
       expand:"DeliveryLeads",
-      filter:"(Status eq 'Pending' or Status eq 'Approved') and {{userRole}}",
+      filter:"Status eq 'Accepted' and {{userRole}} and SentDate ge '{{startDate}}' and SentDate le '{{endDate}}'",
       top: 4900
     },
     GET_ALL_ACTIVE_RULES:{

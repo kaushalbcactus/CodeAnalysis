@@ -12,3 +12,8 @@
 ::ng-deep .ui-overlaypanel .ui-overlaypanel-close {
     background-color: #C53E3E !important;
 }
+
+::ng-deep p-selectbutton .ui-selectbutton .ui-button.ui-state-active {
+    background-color: #c53e3e !important;
+    border-color: #c53e3e !important;
+}
