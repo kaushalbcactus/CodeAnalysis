@@ -306,6 +306,7 @@ export class ClientMasterdataComponent implements OnInit {
         groups.indexOf("SPTeam") > -1 ||
         groups.indexOf("Managers") > -1 ||
         groups.indexOf("Client_Admin") > -1
+        
       ) {
         this.isUserSPMCA = true;
         getClientLegalInfo = Object.assign(
@@ -316,7 +317,18 @@ export class ClientMasterdataComponent implements OnInit {
           /{{isActive}}/gi,
           this.adminConstants.LOGICAL_FIELD.YES
         );
-      } else {
+      }
+       else if(groups.indexOf("FinanceMembers") > -1) {
+        getClientLegalInfo = Object.assign(
+          {},
+          this.adminConstants.QUERY.GET_ALL_CLIENT_LEGAL_ENTITY_BY_ACTIVE
+        );
+        getClientLegalInfo.filter = getClientLegalInfo.filter.replace(
+          /{{isActive}}/gi,
+          this.adminConstants.LOGICAL_FIELD.YES
+        );
+       }
+       else {
         this.isUserSPMCA = false;
         getClientLegalInfo = Object.assign(
           {},
@@ -1008,7 +1020,7 @@ export class ClientMasterdataComponent implements OnInit {
    */
   pocMenu(data) {
     this.currPOCObj = data;
-    if (this.isUserSPMCA) {
+    //if (this.isUserSPMCA) {
       this.pocItems = [
         {
           label: "Edit",
@@ -1016,14 +1028,14 @@ export class ClientMasterdataComponent implements OnInit {
         },
         { label: "Delete", command: (e) => this.deletePOC() },
       ];
-    } else {
-      this.pocItems = [
-        {
-          label: "Edit",
-          command: (e) => this.addEditPOC("Edit Point Of Contact", data),
-        },
-      ];
-    }
+    // } else {
+    //   this.pocItems = [
+    //     {
+    //       label: "Edit",
+    //       command: (e) => this.addEditPOC("Edit Point Of Contact", data),
+    //     },
+    //   ];
+    // }
   }
   /**
    * Construct a method to remove the item from table.
