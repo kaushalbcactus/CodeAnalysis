@@ -30,8 +30,8 @@ export class AdminConstantService {
       top: 4900,
     },
     GET_QC_BY_USERROLE:{
-      select:"ID,Title,Status,CS/ID,CS/Title,TL/ID,TL/Title,CSRule,DeliveryRule",
-      expand:"CS,TL",
+      select:"ID,Title,Status,ASD/ID,ASD/Title,CS/ID,CS/Title,TL/ID,TL/Title,CSRule,DeliveryRule",
+      expand:"ASD,CS,TL",
       filter:"Status ne 'Closed' and {{userRole}}",
       top: 4900
     },

@@ -752,7 +752,7 @@ export class AddAccessService {
       
       const data ={
         __metadata: { type: ListType  },
-        ID: item.ID,
+        // ID: item.ID,
         DeliveryRule: item.deliveryRuleArray ? item.deliveryRuleArray.map(c=>c.ID).join(';#'):''
       };
 
@@ -761,17 +761,17 @@ export class AddAccessService {
         data['CMLevel1Id'] = item.CMLevel1 && item.CMLevel1.hasOwnProperty('results') &&
         item.CMLevel1.results.length ?  { results: item.CMLevel1.results.map((c) => c.ID) }
         : { results: [] };
-        data['CMLevel2Id'] =  item.CMLevel2 ? item.CMLevel2.ID : 0 ;
+        data['CMLevel2Id'] =  item.CMLevel2 ? item.CMLevel2.ID : -1 ;
         data['DeliveryLevel1Id'] =   item.DeliveryLevel1 && item.DeliveryLevel1.hasOwnProperty('results') &&
         item.DeliveryLevel1.results.length ?  { results: item.DeliveryLevel1.results.map((c) => c.ID) }
         : { results: [] };
-        data['DeliveryLevel2Id'] =  item.DeliveryLevel2 ? item.DeliveryLevel2.ID : 0;
+        data['DeliveryLevel2Id'] =  item.DeliveryLevel2 ? item.DeliveryLevel2.ID : -1;
       } else if(TypeName === this.constants.RulesType.CD ) { 
         data['TLId'] =   item.TL && item.TL.hasOwnProperty('results') &&
         item.TL.results.length ?  { results: item.TL.results.map((c) => c.ID) }
         : { results: [] };
-        data['ASDId'] =  item.ASD ? { results: [item.ASD.ID] }: 0;
-        data['CSId'] =  item.CSId ? { results: item.CSId.results }: 0;
+        data['ASDId'] =  item.ASD ? { results: [item.ASD.ID] }: { results: [] };
+        data['CSId'] =  item.CSId ? { results: item.CSId.results }: { results: [] };
       }
       else {
         data['DeliveryLeadsId'] =   item.DeliveryLeads && item.DeliveryLeads.hasOwnProperty('results') &&
