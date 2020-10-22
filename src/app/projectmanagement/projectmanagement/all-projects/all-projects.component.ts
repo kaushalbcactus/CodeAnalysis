@@ -1848,7 +1848,7 @@ export class AllProjectsComponent implements OnInit {
     this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetSchedulesByProjCode');
     const tasks = await this.spServices.readItems(this.constants.listNames.Schedules.name, scheduleFilter);
 
-    const filterTasks = tasks.filter(e => e.Task !== 'Select one' && e.Status !== this.constants.STATUS.DELETED
+    const filterTasks = tasks.filter(e => e.Task !== 'Select one' && e.Task !== 'Client Review' && e.Status !== this.constants.STATUS.DELETED
       && e.Milestone === this.selectedProjectObj.Milestone);
 
     const scNotStartedUpdateData = {
