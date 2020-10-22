@@ -226,11 +226,11 @@ export class RemoveAccessComponent implements OnInit {
     let delRuleIdArray = [];
     this.ruleTableArray = [];
     if (role === this.adminConstants.FILTER.CM_LEVEL_1 || role === this.adminConstants.FILTER.CM_LEVEL_2) {
-      csRuleIdArray = rowItem.CSRule ? rowItem.CSRule.split(',') : [];
+      csRuleIdArray = rowItem.CSRule ? rowItem.CSRule.split(';#') : [];
       this.ruleTableArray = this.getRules(csRuleIdArray);
     }
     if (role === this.adminConstants.FILTER.DELIVERY || role === this.adminConstants.FILTER.DELIVERY_LEVEL_1 || role === this.adminConstants.FILTER.DELIVERY_LEVEL_2) {
-      delRuleIdArray = rowItem.DeliveryRule ? rowItem.DeliveryRule.split(',') : [];
+      delRuleIdArray = rowItem.DeliveryRule ? rowItem.DeliveryRule.split(';#') : [];
       this.ruleTableArray = this.getRules(delRuleIdArray);
     }
 
@@ -286,6 +286,7 @@ export class RemoveAccessComponent implements OnInit {
   async getFilterData(attributes: string, filterResource: any) {
     let batchURL = [];
     let finalArray = [];
+    let inActiveProjectList = [];
     const options = {
       data: null,
       url: '',
@@ -308,10 +309,16 @@ export class RemoveAccessComponent implements OnInit {
         let endDate = new Date().toISOString();
         pfUrl.filter = pfUrl.filter.replace('{{startDate}}', startDate).replace('{{endDate}}', endDate);
         this.getBatchURL(options, this.constants.listNames.PositiveFeedbacks.name, filterResource, batchURL, pfUrl);
+        await this.getInactiveProjects(batchURL);
+
     }
     if (batchURL.length) {
       this.commonService.SetNewrelic("admin", "admin-entitlement-removeAccess", "getFilterData");
       finalArray = await this.spServices.executeBatch(batchURL);
+      inActiveProjectList =  finalArray.find((c) => c.listName === this.constants.listNames.ProjectInformation.name) &&
+      finalArray.find((c) => c.listName === this.constants.listNames.ProjectInformation.name).retItems ? 
+      finalArray.find((c) => c.listName === this.constants.listNames.ProjectInformation.name).retItems :[];
+      await this.filterInactiveProjects(finalArray,inActiveProjectList);
     }
     console.log("Final Results : ", finalArray)
     finalArray = finalArray && finalArray.length && finalArray[0] && finalArray[0].retItems && finalArray[0].retItems.length ? finalArray[0].retItems : [];
@@ -341,6 +348,21 @@ export class RemoveAccessComponent implements OnInit {
     return finalArray;
 
   }
+
+  filterInactiveProjects(pfData: any ,projectData) {
+    for (const index in pfData[0].retItems) {
+      if (pfData[0].retItems.hasOwnProperty(index)) {
+        let projectInfo = projectData.find(e=> e.ProjectCode == pfData[0].retItems[index].Title)
+        if(projectInfo) {
+          pfData[0].retItems.splice(index,1);
+        }
+      }
+    }
+
+    return pfData;
+    
+  }
+
   /**
    * This method is used to build the query based on attribute value.
    * @param options pass the query option as parameters
@@ -576,7 +598,11 @@ export class RemoveAccessComponent implements OnInit {
   }
 
   onRowUnselect(event) {
-    this.isRemoveButtonDisabled = true;
+    if(this.selectedAllRowsItem.length) {
+      this.isRemoveButtonDisabled = false;
+    } else {
+      this.isRemoveButtonDisabled = true;
+    }
     console.log("ON Row UnSelect", this.selectedAllRowsItem);
   }
 
@@ -770,5 +796,18 @@ export class RemoveAccessComponent implements OnInit {
     this.isSearchButtonDisabled = true;
     this.ruleTableArray = []
     this.selectedItemType = this.selectionType[0].value;
+  }
+
+  getInactiveProjects(batchURL){
+    this.commonService.setBatchObject(
+      batchURL,
+      this.spServices.getReadURL(
+        this.constants.listNames.ProjectInformation.name,
+        this.adminConstants.QUERY.GET_INACTIVE_PROJECT
+      ),
+      null,
+      this.constants.Method.GET,
+      this.constants.listNames.ProjectInformation.name
+    );
   }
 }

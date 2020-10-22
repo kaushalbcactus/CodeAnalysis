@@ -445,7 +445,7 @@ export class AdminConstantService {
       select:
         "ID,Title,ProjectCode,Status",
       filter:
-        "Status eq 'Closed' or Status eq 'Cancelled' or Status eq 'On Hold'",
+        "Status eq 'Closed' or Status eq 'Cancelled'",
       top: 4900,
     },
     GET_PROJECT_FINANCE_BY_CURRENCY: {
@@ -582,7 +582,7 @@ export class AdminConstantService {
   public ATTRIBUTES = {
     PROJECTCODE:"Project",
     SOWCODE: "SOW",
-    CLIENTDISSATISFACTION:"CD",
-    POSITIVEFEEDBACK: "PF"
+    CLIENTDISSATISFACTION:"Client Dissatisfaction",
+    POSITIVEFEEDBACK: "Positive Feedback"
   }
 }

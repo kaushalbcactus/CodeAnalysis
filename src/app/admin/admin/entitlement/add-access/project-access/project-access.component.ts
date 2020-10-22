@@ -97,9 +97,9 @@ export class ProjectAccessComponent implements OnInit {
     } else if (this.RuleType === this.constant.RulesType.SOW) {
       this.headerName = "Add SOW Rules";
     } else if (this.RuleType === this.constant.RulesType.CD) {
-      this.headerName = "Add CD Rules";
+      this.headerName = "Add Client Dissatisfaction Rules";
     }else {
-      this.headerName = "Add PF Rules";
+      this.headerName = "Add Positive Feedback Rules";
     }
     this.getDataOnLoad(this.RuleType, this.filterData);
   }
