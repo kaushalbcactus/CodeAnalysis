@@ -2220,7 +2220,7 @@ export class TimelineComponent
   async setForConfirmMilestone(task) {
     let isValid = await this.checkNotCompletedTask(task);
     if(isValid) {
-    await this.commonService.confirmMessageDialog('Confirmation','Previous Milestone/SubMilestone tasks are not completed and it will be mark as Auto Closed Are you sure that you want to proceed ?', null, ['Yes', 'No'], false).then(async Confirmation => {
+    await this.commonService.confirmMessageDialog('Confirmation','Previous Milestone/SubMilestone tasks are not completed and it will be mark as Auto Closed. Are you sure that you want to proceed ?', null, ['Yes', 'No'], false).then(async Confirmation => {
       if (Confirmation === 'Yes') { 
        this.confirmMilestone(task);
       }
