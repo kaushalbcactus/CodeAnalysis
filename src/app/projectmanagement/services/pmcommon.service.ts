@@ -2151,9 +2151,7 @@ export class PMCommonService {
       });
       this.constant.RuleParamterArray = tempResult;
     }
-
-    debugger;
-  }
+ }
 
   assignValueToParameter(object){
     this.constant.RuleParamterArray.forEach(element => {
