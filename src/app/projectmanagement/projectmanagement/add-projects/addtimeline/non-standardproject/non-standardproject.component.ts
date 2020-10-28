@@ -541,7 +541,7 @@ export class NonStandardprojectComponent implements OnInit {
       this.pmObject.addProject.ProjectAttributes.ActiveDelivery2 = this.pmObject.OwnerAccess.selectedDeliveryOwner;
 
 
-      if(this.pmObject.addProject.ProjectAttributes.ActiveCM1.find(c=> c !== this.globalObject.currentUser.userId)){
+      if(this.pmObject.addProject.ProjectAttributes.ActiveCM1.find(c=> c !== this.globalObject.currentUser.userId) && this.pmObject.OwnerAccess.cmLevel1.find(c=>c.value === this.globalObject.currentUser.userId)){
         this.pmObject.addProject.ProjectAttributes.ActiveCM1.push(this.globalObject.currentUser.userId);
       }
 

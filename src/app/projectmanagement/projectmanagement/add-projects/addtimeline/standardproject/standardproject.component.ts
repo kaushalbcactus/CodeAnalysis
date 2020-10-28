@@ -2181,7 +2181,8 @@ export class StandardprojectComponent implements OnInit {
       this.pmObject.addProject.ProjectAttributes.ActiveDelivery1 = this.pmObject.OwnerAccess.selectedDeliveryAccess;
       this.pmObject.addProject.ProjectAttributes.ActiveDelivery2 = this.pmObject.OwnerAccess.selectedDeliveryOwner;
      
-      if(this.pmObject.addProject.ProjectAttributes.ActiveCM1.find(c=> c !== this.sharedObject.currentUser.userId)){
+      if(this.pmObject.addProject.ProjectAttributes.ActiveCM1.find(c=> c !== this.sharedObject.currentUser.userId) && this.pmObject.OwnerAccess.cmLevel1.find(c=>c.value === this.sharedObject.currentUser.userId)){
+
         this.pmObject.addProject.ProjectAttributes.ActiveCM1.push(this.sharedObject.currentUser.userId);
       }
       // await this.pmCommonService.validateAndSave();
