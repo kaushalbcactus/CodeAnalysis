@@ -414,6 +414,15 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
         this.pmObject.addSOW.Delivery = this.addSowForm.value.delivery;
         this.pmObject.addSOW.SOWOwner = this.addSowForm.value.sowOwner;
 
+
+        if(this.pmObject.addSOW.Delivery.find(c=> c !== this.globalObject.currentUser.userId) && this.sowDropDown.Delivery.find(c=>c.value === this.globalObject.currentUser.userId)){
+          this.pmObject.addSOW.Delivery.push(this.globalObject.currentUser.userId);
+        }
+
+        if(this.pmObject.addSOW.CM1.find(c=> c !== this.globalObject.currentUser.userId) && this.sowDropDown.CMLevel1.find(c=>c.value === this.globalObject.currentUser.userId)){
+          this.pmObject.addSOW.CM1.push(this.globalObject.currentUser.userId);
+        }
+        
         // Add Rules
         this.pmObject.addSOW.CSRule =  this.pmObject.RuleTypeArray.CM && this.pmObject.RuleTypeArray.CM.length ?  this.pmObject.RuleTypeArray.CM.map(c=>c.ID).join(';#'):'',
         this.pmObject.addSOW.DeliveryRule = this.pmObject.RuleTypeArray.Delivery && this.pmObject.RuleTypeArray.Delivery.length ?  this.pmObject.RuleTypeArray.Delivery.map(c=>c.ID).join(';#'):'', 
