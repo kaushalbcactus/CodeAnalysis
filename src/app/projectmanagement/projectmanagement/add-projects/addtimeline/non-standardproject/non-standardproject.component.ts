@@ -544,7 +544,10 @@ export class NonStandardprojectComponent implements OnInit {
       if(this.pmObject.addProject.ProjectAttributes.ActiveCM1.find(c=> c !== this.globalObject.currentUser.userId) && this.pmObject.OwnerAccess.cmLevel1.find(c=>c.value === this.globalObject.currentUser.userId)){
         this.pmObject.addProject.ProjectAttributes.ActiveCM1.push(this.globalObject.currentUser.userId);
       }
-
+      if(this.pmObject.addProject.ProjectAttributes.ActiveDelivery1.find(c=> c !== this.globalObject.currentUser.userId) && this.pmObject.OwnerAccess.deliveryLevel1.find(c=>c.value === this.globalObject.currentUser.userId)){
+        this.pmObject.addProject.ProjectAttributes.ActiveDelivery1.push(this.globalObject.currentUser.userId);
+      }
+            
       this.pmObject.isMainLoaderHidden = false;
       const newProjectCode = await this.pmCommonService.verifyAndUpdateProjectCode();
       this.pmObject.addProject.ProjectAttributes.ProjectCode = newProjectCode;
