@@ -366,29 +366,32 @@ export class AddAccessService {
     const dispalyOrderArray = Rules.map(
       (c) => c.DisplayOrder
     ).sort((one, two) => (one > two ? -1 : 1));
-    Rules.forEach(async (rule, i) => {
+
+
+    for(let i=0; i< Rules.length;i++){
+
       if (
-        rule.RuleType === "existing" &&
-        (rule.DisplayOrder !== dispalyOrderArray[i] ||
-          rule.edited.IsActiveCH === true ||
-          rule.edited.UserEdited === true)
+        Rules[i].RuleType === "existing" &&
+        (Rules[i].DisplayOrder !== dispalyOrderArray[i] ||
+          Rules[i].edited.IsActiveCH === true ||
+          Rules[i].edited.UserEdited === true)
       ) {
         const editedRule = {
           __metadata: { type: this.constants.listNames.RuleStore.type },
-          OwnerPGId: rule.OwnerPG.ID,
-          AccessId: rule.Access.results
-            ? { results: rule.Access.results.map((c) => c.ID) }
+          OwnerPGId: Rules[i].OwnerPG.ID,
+          AccessId: Rules[i].Access.results
+            ? { results: Rules[i].Access.results.map((c) => c.ID) }
             : { results: [] },
-          IsActiveCH: rule.IsActiveCH,
+          IsActiveCH: Rules[i].IsActiveCH,
           DisplayOrder: dispalyOrderArray[i],
         };
-        const exRule = filterData.DBRULES.find(c=>c.ID ===rule.ID) ? filterData.DBRULES.find(c=>c.ID ===rule.ID) : rule;
-        exRule.edited = rule.edited;
+        const exRule = filterData.DBRULES.find(c=>c.ID ===Rules[i].ID) ? filterData.DBRULES.find(c=>c.ID ===Rules[i].ID) : Rules[i];
+        exRule.edited = Rules[i].edited;
         EditedRuleArray.push(exRule);
         editedRule.IsActiveCH === "No" ? deletedRules++ : updatedRules++;
         let url = this.spServices.getItemURL(
           this.constants.listNames.RuleStore.name,
-          +rule.ID
+          +Rules[i].ID
         );
         this.commonService.setBatchObject(
           batchURL,
@@ -397,18 +400,18 @@ export class AddAccessService {
           this.constants.Method.PATCH,
           this.constants.listNames.RuleStore.name
         );
-      } else if (rule.RuleType === "new") {
+      } else if (Rules[i].RuleType === "new") {
         const NewRule = {
           __metadata: { type: this.constants.listNames.RuleStore.type },
-          OwnerPGId: rule.OwnerPG.ID,
-          AccessId: rule.Access.results
-            ? { results: rule.Access.results.map((c) => c.ID) }
+          OwnerPGId: Rules[i].OwnerPG.ID,
+          AccessId: Rules[i].Access.results
+            ? { results: Rules[i].Access.results.map((c) => c.ID) }
             : { results: [] },
-          IsActiveCH: rule.IsActiveCH,
+          IsActiveCH: Rules[i].IsActiveCH,
           DisplayOrder: dispalyOrderArray[i],
-          ResourceType: rule.ResourceType,
-          TypeST: rule.TypeST,
-          Rule: rule.Rule,
+          ResourceType: Rules[i].ResourceType,
+          TypeST: Rules[i].TypeST,
+          Rule: Rules[i].Rule,
         };
         NewRules++;
         this.commonService.setBatchObject(
@@ -429,10 +432,11 @@ export class AddAccessService {
           "AddAccessService",
           "AddAccess"
         );
-        batchResults = await this.spServices.executeBatch(batchURL);
+        await this.spServices.executeBatch(batchURL);
         batchURL = [];
       }
-    });
+
+    }
 
     if (batchURL.length) {
       this.commonService.SetNewrelic(
@@ -441,7 +445,7 @@ export class AddAccessService {
         "AddAccess"
       );
      
-      batchResults = await this.spServices.executeBatch(batchURL);
+     await this.spServices.executeBatch(batchURL);
     }
 
     if(batchResults  && batchResults.length > 0){
@@ -725,7 +729,6 @@ export class AddAccessService {
 
   async updateAllEditedItems(ListOfUpdatedItems,TypeName){
     let batchURL=[];
-    let batchResults=[];
     let  ListName='';
     let ListType='';
     switch (TypeName) {
@@ -747,40 +750,39 @@ export class AddAccessService {
             break;
     }
 
-   
-    ListOfUpdatedItems.forEach(async item => {
-      
+
+    for (var i=0; i< ListOfUpdatedItems.length; i++){
       const data ={
         __metadata: { type: ListType  },
         // ID: item.ID,
-        DeliveryRule: item.deliveryRuleArray ? item.deliveryRuleArray.map(c=>c.ID).join(';#'):''
+        DeliveryRule: ListOfUpdatedItems[i].deliveryRuleArray ? ListOfUpdatedItems[i].deliveryRuleArray.map(c=>c.ID).join(';#'):''
       };
 
       if(TypeName === this.constants.RulesType.PROJECT || TypeName === this.constants.RulesType.SOW ){
-        data['CSRule'] = item.csRuleArray ? item.csRuleArray.map(c=>c.ID).join(';#'):'';
-        data['CMLevel1Id'] = item.CMLevel1 && item.CMLevel1.hasOwnProperty('results') &&
-        item.CMLevel1.results.length ?  { results: item.CMLevel1.results.map((c) => c.ID) }
+        data['CSRule'] = ListOfUpdatedItems[i].csRuleArray ? ListOfUpdatedItems[i].csRuleArray.map(c=>c.ID).join(';#'):'';
+        data['CMLevel1Id'] = ListOfUpdatedItems[i].CMLevel1 && ListOfUpdatedItems[i].CMLevel1.hasOwnProperty('results') &&
+        ListOfUpdatedItems[i].CMLevel1.results.length ?  { results: ListOfUpdatedItems[i].CMLevel1.results.map((c) => c.ID) }
         : { results: [] };
-        data['CMLevel2Id'] =  item.CMLevel2 ? item.CMLevel2.ID : -1 ;
-        data['DeliveryLevel1Id'] =   item.DeliveryLevel1 && item.DeliveryLevel1.hasOwnProperty('results') &&
-        item.DeliveryLevel1.results.length ?  { results: item.DeliveryLevel1.results.map((c) => c.ID) }
+        data['CMLevel2Id'] =  ListOfUpdatedItems[i].CMLevel2 ? ListOfUpdatedItems[i].CMLevel2.ID : -1 ;
+        data['DeliveryLevel1Id'] =   ListOfUpdatedItems[i].DeliveryLevel1 && ListOfUpdatedItems[i].DeliveryLevel1.hasOwnProperty('results') &&
+        ListOfUpdatedItems[i].DeliveryLevel1.results.length ?  { results: ListOfUpdatedItems[i].DeliveryLevel1.results.map((c) => c.ID) }
         : { results: [] };
-        data['DeliveryLevel2Id'] =  item.DeliveryLevel2 ? item.DeliveryLevel2.ID : -1;
+        data['DeliveryLevel2Id'] =  ListOfUpdatedItems[i].DeliveryLevel2 ? ListOfUpdatedItems[i].DeliveryLevel2.ID : -1;
       } else if(TypeName === this.constants.RulesType.CD ) { 
-        data['TLId'] =   item.TL && item.TL.hasOwnProperty('results') &&
-        item.TL.results.length ?  { results: item.TL.results.map((c) => c.ID) }
+        data['TLId'] =   ListOfUpdatedItems[i].TL && ListOfUpdatedItems[i].TL.hasOwnProperty('results') &&
+        ListOfUpdatedItems[i].TL.results.length ?  { results: ListOfUpdatedItems[i].TL.results.map((c) => c.ID) }
         : { results: [] };
-        data['ASDId'] =  item.ASD ? { results: [item.ASD.ID] }: { results: [] };
-        data['CSId'] =  item.CSId ? { results: item.CSId.results }: { results: [] };
+        data['ASDId'] =  ListOfUpdatedItems[i].ASD ? { results: [ListOfUpdatedItems[i].ASD.ID] }: { results: [] };
+        data['CSId'] =  ListOfUpdatedItems[i].CSId ? { results: ListOfUpdatedItems[i].CSId.results }: { results: [] };
       }
       else {
-        data['DeliveryLeadsId'] =   item.DeliveryLeads && item.DeliveryLeads.hasOwnProperty('results') &&
-        item.DeliveryLeads.results.length ?  { results: item.DeliveryLeads.results.map((c) => c.ID) }
+        data['DeliveryLeadsId'] =   ListOfUpdatedItems[i].DeliveryLeads && ListOfUpdatedItems[i].DeliveryLeads.hasOwnProperty('results') &&
+        ListOfUpdatedItems[i].DeliveryLeads.results.length ?  { results: ListOfUpdatedItems[i].DeliveryLeads.results.map((c) => c.ID) }
         : { results: [] };
       }
       let url = this.spServices.getItemURL(
         ListName,
-        +item.ID
+        +ListOfUpdatedItems[i].ID
       );
       this.commonService.setBatchObject(
         batchURL,
@@ -795,11 +797,11 @@ export class AddAccessService {
           "AddAccessService",
           "AddAccess"
         );
-        batchResults = await this.spServices.executeBatch(batchURL);
+       await this.spServices.executeBatch(batchURL);
         batchURL = [];
       }
-    });
-
+    }
+   
     if (batchURL.length) {
       this.commonService.SetNewrelic(
         "updateAllEditedItems",
@@ -807,7 +809,7 @@ export class AddAccessService {
         "AddAccess"
       );
     
-      batchResults = await this.spServices.executeBatch(batchURL);
+     await this.spServices.executeBatch(batchURL);
     }
   }
 
