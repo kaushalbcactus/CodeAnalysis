@@ -753,6 +753,50 @@ export class CommonService {
     }
   }
 
+  //For FTE Projects
+  //Fetch And Update resource name for Tasks
+  async getScheduleTasks(projectCode) {
+    const batchUrl = []
+    let scheduleTaskObj = Object.assign({}, this.queryConfig);
+    scheduleTaskObj.url = this.spServices.getReadURL(this.constants.listNames.Schedules.name, this.taskAllocationService.taskallocationComponent.SCHEDULE_LIST_BY_PROJECTCODE);
+    scheduleTaskObj.url = scheduleTaskObj.url.replace(/{{ProjectCode}}/gi, projectCode);
+    scheduleTaskObj.listName = this.constants.listNames.Schedules.name;
+    scheduleTaskObj.type = 'GET';
+    batchUrl.push(scheduleTaskObj);
+
+    const arrResult = await this.spServices.executeBatch(batchUrl);
+    return arrResult.length > 0 ? arrResult.map(a => a.retItems) : [];
+  }
+
+  async updateTasks(scheduleTasks ,primaryResources) {
+    const batchURL = [];
+    if(scheduleTasks && scheduleTasks.length && this.sharedTaskAllocateObj.oProjectDetails.projectType === 'FTE-Writing') {
+      let monthsArray = this.getMonths(new Date() , new Date(this.response[0][0].ProposedEndDate));
+      for(let i=0;i<scheduleTasks.length;i++) {
+        let element = scheduleTasks[i];
+        const scUpdateData = {
+          __metadata: {
+            type: this.constants.listNames.Schedules.type
+          },
+          AssignedToId: primaryResources ? primaryResources.Id : -1,
+        };
+        if((element.Task == 'Training' || element.Task == 'Blocking' || element.Task == 'Meeting') && monthsArray.some(e=> e.monthName == element.Milestone)) {
+          const scUpdate = Object.assign({}, this.queryConfig);
+          scUpdate.data = scUpdateData;
+          scUpdate.listName = this.constants.listNames.Schedules.name;
+          scUpdate.type = 'PATCH';
+          scUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
+            element.ID);
+          batchURL.push(scUpdate);
+        }
+      }
+      if(batchURL.length) {
+        await this.spServices.executeBatch(batchURL);
+      }
+    }
+  }
+
+
   // ***********************************************************************************************************************************
   // Get Project Data
   // ***********************************************************************************************************************************
@@ -1166,5 +1210,38 @@ export class CommonService {
       }
     }
     return errorMsgs;
+  }
+
+  getMonths(fromDate, toDate) { /// https://jsfiddle.net/fvkcxsdb/1/
+    const fromYear = fromDate.getFullYear();
+    const fromMonth = fromDate.getMonth();
+    const toYear = toDate.getFullYear();
+    const toMonth = toDate.getMonth();
+    const months = [];
+    const monthNames = this.pmConstant.MONTH_NAMES;
+    for (let year = fromYear; year <= toYear; year++) {
+      let month = year === fromYear ? fromMonth : 0;
+      const monthLimit = year === toYear ? toMonth : 11;
+      for (; month <= monthLimit; month++) {
+        // const monthStartDay = new Date(year, month, 1);
+        // const monthEndDay = new Date(year, month + 1, 0);
+        let monthStartDay = new Date();
+        let monthEndDay = new Date();
+        if (month === fromMonth) {
+          monthStartDay = new Date(year, month, fromDate.getDate());
+        } else {
+          monthStartDay = new Date(year, month, 1);
+        }
+        if (month === toMonth) {
+          monthEndDay = new Date(year, month, toDate.getDate());
+        } else {
+          monthEndDay = new Date(year, month + 1, 0);
+        }
+        const monthName = monthNames[month];
+        monthEndDay.setHours(23, 45);
+        months.push({ year, month, monthName, monthStartDay, monthEndDay });
+      }
+    }
+    return months;
   }
 }

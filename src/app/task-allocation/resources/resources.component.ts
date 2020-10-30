@@ -12,9 +12,11 @@ import { CommonService } from 'src/app/Services/common.service';
 export class ResourcesComponent implements OnInit {
 
   @Input() reloadResourcesEnable: boolean;
+  @Output() reloadTimeline = new EventEmitter<string>();
 
   public allPrimaryResources: PeoplePickerUser[];
-  primaryResoucesusers: PeoplePickerUser[] = [];
+  // primaryResoucesusers: PeoplePickerUser[] = [];
+  primaryResoucesusers: any;
   writerusers: PeoplePickerUser[] = [];
   reviewerusers: PeoplePickerUser[] = [];
   qualityusers: PeoplePickerUser[] = [];
@@ -65,19 +67,20 @@ export class ResourcesComponent implements OnInit {
 
     this.loaderEnable = true;
     this.resources = this.sharedTaskAllocateObj.oResources;
-    this.primaryResoucesusers = [];
+    this.primaryResoucesusers = {};
     this.writerusers = [];
     this.reviewerusers = [];
     this.qualityusers = [];
     this.editorusers = [];
     this.graphicsusers = [];
     this.pubsupportusers = [];
-    this.allPrimaryResources = this.resources.map(o => new Object({ Id: o.UserNamePG.ID, UserName: o.UserNamePG.Title }));
+    this.allPrimaryResources = this.sharedTaskAllocateObj.oProjectDetails.projectType === 'FTE-Writing' ? this.resources.filter(e=> e.IsFTE === 'Yes').map(o => new Object({ Id: o.UserNamePG.ID, UserName: o.UserNamePG.Title })) : this.resources.map(o => new Object({ Id: o.UserNamePG.ID, UserName: o.UserNamePG.Title }));
     this.filterPrimaryResources = this.allPrimaryResources;
     const projectDetails = this.sharedTaskAllocateObj.oProjectDetails;
     if (projectDetails.primaryResources.results) {
       projectDetails.primaryResources.results.forEach(resource => {
-        this.primaryResoucesusers.push({ Id: resource.ID, UserName: resource.Title });
+        // this.primaryResoucesusers.push({ Id: resource.ID, UserName: resource.Title });
+        this.primaryResoucesusers = { Id: resource.ID, UserName: resource.Title };
       });
     }
     if (projectDetails.writer.results) {
@@ -121,11 +124,11 @@ export class ResourcesComponent implements OnInit {
 
 
   async saveResources() {
-
     this.loaderEnable = true;
 
     const updateInformation = [];
     const project = this.sharedTaskAllocateObj.oProjectDetails;
+    let scheduleTasks = await this.commonService.getScheduleTasks(project.projectCode);
 
     updateInformation.push(new Object({ key: 'WritersId', value: this.writerusers.map(o => o.Id) }));
     updateInformation.push(new Object({ key: 'ReviewersId', value: this.reviewerusers.map(o => o.Id) }));
@@ -133,7 +136,7 @@ export class ResourcesComponent implements OnInit {
     updateInformation.push(new Object({ key: 'EditorsId', value: this.editorusers.map(o => o.Id) }));
     updateInformation.push(new Object({ key: 'GraphicsMembersId', value: this.graphicsusers.map(o => o.Id) }));
     updateInformation.push(new Object({ key: 'PSMembersId', value: this.pubsupportusers.map(o => o.Id) }));
-    updateInformation.push(new Object({ key: 'PrimaryResMembersId', value: this.primaryResoucesusers.map(o => o.Id) }));
+    updateInformation.push(new Object({ key: 'PrimaryResMembersId', value: [this.primaryResoucesusers.Id] }));
 
     const AlluniqueUsersId = [];
     updateInformation.filter(c => c.value.length > 0).map(c => c.value).forEach(element => {
@@ -162,9 +165,13 @@ export class ResourcesComponent implements OnInit {
     await this.spService.updateItem(this.constants.listNames.ProjectInformation.name, project.projectID,
       oBj, this.constants.listNames.ProjectInformation.type);
     this.commonService.SetNewrelic('TaskAllocation', 'resources-getProjectResources', 'saveResources');
+    await this.commonService.updateTasks(scheduleTasks[0],this.primaryResoucesusers);
     await this.commonService.getProjectResources(project.projectCode, true, false);
     this.loaderEnable = false;
     this.commonService.showToastrMessage(this.constants.MessageType.success,'Resources updated successfully.',false);
+    if(this.primaryResoucesusers.Id !== project.primaryResources.results[0].ID) {
+      this.reloadTimeline.emit();
+    }
   }
 
 

@@ -1675,22 +1675,22 @@ export class PMCommonService {
   }
   getFTETask(fteObj, projectCode, taskType) {
     const businessDay = this.commonService.calcBusinessDays(fteObj.monthStartDay, fteObj.monthEndDay);
-    const resourceObj: any = this.pmObject.addProject.Timeline.NonStandard.ResourceName.hasOwnProperty('UserNamePG') ? this.pmObject.addProject.Timeline.NonStandard.ResourceName : fteObj.Resources.hasOwnProperty('UserNamePG') ? fteObj.Resources : null;
+    const resourceObj: any = this.pmObject.addProject.Timeline.NonStandard.ResourceName ? this.pmObject.addProject.Timeline.NonStandard.ResourceName.hasOwnProperty('UserNamePG') ? this.pmObject.addProject.Timeline.NonStandard.ResourceName : fteObj.Resources.hasOwnProperty('UserNamePG') ? fteObj.Resources : null : null;
     let data: any;
     if (taskType === this.pmConstant.task.BLOCKING) {
       data = {
         __metadata: { type: this.constant.listNames.Schedules.type },
         StartDate: fteObj.monthStartDay,
         DueDateDT: fteObj.monthEndDay,
-        ExpectedTime: '' + businessDay * resourceObj.MaxHrs,
-        TimeZoneNM: resourceObj.TimeZone.Title,
+        ExpectedTime: resourceObj ? '' + businessDay * resourceObj.MaxHrs : '0',
+        TimeZoneNM: resourceObj ? resourceObj.TimeZone.Title: 0,
         TATBusinessDays: businessDay,
         Status: this.constant.STATUS.NOT_CONFIRMED,
         Title: projectCode + ' ' + fteObj.monthName + ' ' + this.pmConstant.task.BLOCKING,
         ProjectCode: projectCode,
         Task: this.pmConstant.task.BLOCKING,
         Milestone: fteObj.monthName,
-        AssignedToId: resourceObj.UserNamePG.ID,
+        AssignedToId: resourceObj ? resourceObj.UserNamePG.ID : -1,
         IsCentrallyAllocated: 'No',
         ActiveCA: 'No',
         ContentTypeCH: this.constant.CONTENT_TYPE.TASK
@@ -1702,14 +1702,14 @@ export class PMCommonService {
         StartDate: fteObj.monthStartDay,
         DueDateDT: fteObj.monthEndDay,
         ExpectedTime: '' + 0,
-        TimeZoneNM: resourceObj.TimeZone.Title,
+        TimeZoneNM: resourceObj ? resourceObj.TimeZone.Title: 0,
         TATBusinessDays: 0,
         Status: this.constant.STATUS.NOT_CONFIRMED,
         Title: projectCode + ' ' + fteObj.monthName + ' ' + this.pmConstant.task.MEETING,
         ProjectCode: projectCode,
         Task: this.pmConstant.task.MEETING,
         Milestone: fteObj.monthName,
-        AssignedToId: resourceObj.UserNamePG.ID,
+        AssignedToId: resourceObj ? resourceObj.UserNamePG.ID: -1,
         IsCentrallyAllocated: 'No',
         ActiveCA: 'No',
         ContentTypeCH: this.constant.CONTENT_TYPE.TASK
@@ -1721,14 +1721,14 @@ export class PMCommonService {
         StartDate: fteObj.monthStartDay,
         DueDateDT: fteObj.monthEndDay,
         ExpectedTime: '' + 0,
-        TimeZoneNM: resourceObj.TimeZone.Title,
+        TimeZoneNM: resourceObj ? resourceObj.TimeZone.Title: 0,
         TATBusinessDays: 0,
         Status: this.constant.STATUS.NOT_CONFIRMED,
         Title: projectCode + ' ' + fteObj.monthName + ' ' + this.pmConstant.task.TRAINING,
         ProjectCode: projectCode,
         Task: this.pmConstant.task.TRAINING,
         Milestone: fteObj.monthName,
-        AssignedToId: resourceObj.UserNamePG.ID,
+        AssignedToId: resourceObj ? resourceObj.UserNamePG.ID: -1,
         IsCentrallyAllocated: 'No',
         ActiveCA: 'No',
         ContentTypeCH: this.constant.CONTENT_TYPE.TASK

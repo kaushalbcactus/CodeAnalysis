@@ -39,7 +39,7 @@
                     </p-dropdown>
                 </div>
                 <div class="col-md-2 col-xs-2 col-lg-2">
-                    <div class="floatLeft catHeader"><span class="compulsory">*</span>Resource Name</div>
+                    <div class="floatLeft catHeader"><span class="compulsory" *ngIf="pmObject.addProject.FinanceManagement.BilledBy !== 'FTE-Writing'">*</span>Resource Name</div>
                 </div>
                 <div class="col-md-4 col-xs-4 col-lg-4">
                     <p-dropdown *ngIf="!pmObject.addProject.Timeline.NonStandard.IsRegisterButtonClicked" [options]="nonStandardResourceName" [(ngModel)]="ngModelSelectedResource" [filter]="true" [group]="true" placeholder="Select ResourceName" [disabled]="isStandardResourceNameDisabled"
