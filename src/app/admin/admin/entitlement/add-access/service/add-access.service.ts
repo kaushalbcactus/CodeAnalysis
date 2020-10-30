@@ -358,6 +358,7 @@ export class AddAccessService {
 
     let batchURL = [];
     let batchResults = [];
+    let batchResultsArray=[];
     let EditedRuleArray = [];
     let addedRuleArray = [];
     let NewRules = 0;
@@ -432,7 +433,9 @@ export class AddAccessService {
           "AddAccessService",
           "AddAccess"
         );
-        await this.spServices.executeBatch(batchURL);
+        batchResults = await this.spServices.executeBatch(batchURL);
+
+        batchResultsArray.push.apply(batchResultsArray,batchResults);
         batchURL = [];
       }
 
@@ -445,13 +448,15 @@ export class AddAccessService {
         "AddAccess"
       );
      
-     await this.spServices.executeBatch(batchURL);
+      batchResults = await this.spServices.executeBatch(batchURL);
+
+      batchResultsArray.push.apply(batchResultsArray,batchResults);
+
+
     }
 
-    if(batchResults  && batchResults.length > 0){
-
-      addedRuleArray = batchResults.filter(c=>c.listName ==='RuleStoreCT') ? batchResults.filter(c=>c.listName ==='RuleStoreCT').map(c=>c.retItems):[];
-
+    if(batchResultsArray  && batchResultsArray.length > 0){
+      addedRuleArray = batchResultsArray.filter(c=>c.listName ==='RuleStoreCT') ? batchResultsArray.filter(c=>c.listName ==='RuleStoreCT').map(c=>c.retItems):[];
     }
 
     this.commonService.clearToastrMessage();

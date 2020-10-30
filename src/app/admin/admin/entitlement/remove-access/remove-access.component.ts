@@ -381,7 +381,7 @@ export class RemoveAccessComponent implements OnInit {
           const CM1Options = Object.assign({}, options);
           const CM1EndPoint = this.spServices.getReadURL(listName, endPoint);
           if (this.attribute === this.adminConstants.ATTRIBUTES.PROJECTCODE || this.attribute === this.adminConstants.ATTRIBUTES.SOWCODE) {
-            CM1Options.url = CM1EndPoint.replace('{{userRole}}', 'CMLevel1/ID eq ' + filterResource.UserNamePG.ID + 'or CMLevel2/ID eq ' + filterResource.UserNamePG.ID + '');
+            CM1Options.url = CM1EndPoint.replace('{{userRole}}', ' ( CMLevel1/ID eq ' + filterResource.UserNamePG.ID + ' or CMLevel2/ID eq ' + filterResource.UserNamePG.ID + ' )');
           }
           if (this.attribute === this.adminConstants.ATTRIBUTES.CLIENTDISSATISFACTION) {
             CM1Options.url = CM1EndPoint.replace('{{userRole}}', 'CS/ID eq ' + filterResource.UserNamePG.ID + '');
@@ -396,10 +396,10 @@ export class RemoveAccessComponent implements OnInit {
           const DeliveryLevel1Options = Object.assign({}, options);
           const DeliveryLevel1EndPoint = this.spServices.getReadURL(listName, endPoint);
           if (this.attribute === this.adminConstants.ATTRIBUTES.PROJECTCODE || this.attribute === this.adminConstants.ATTRIBUTES.SOWCODE) {
-            DeliveryLevel1Options.url = DeliveryLevel1EndPoint.replace('{{userRole}}', 'DeliveryLevel1/ID eq ' + filterResource.UserNamePG.ID + ' or DeliveryLevel2/ID eq ' + filterResource.UserNamePG.ID + '');
+            DeliveryLevel1Options.url = DeliveryLevel1EndPoint.replace('{{userRole}}', ' ( DeliveryLevel1/ID eq ' + filterResource.UserNamePG.ID + ' or DeliveryLevel2/ID eq ' + filterResource.UserNamePG.ID + ' )');
           }
           if (this.attribute === this.adminConstants.ATTRIBUTES.CLIENTDISSATISFACTION) {
-            DeliveryLevel1Options.url = DeliveryLevel1EndPoint.replace('{{userRole}}', 'TL/ID eq ' + filterResource.UserNamePG.ID + ' or ASD/ID eq ' + filterResource.UserNamePG.ID + '');
+            DeliveryLevel1Options.url = DeliveryLevel1EndPoint.replace('{{userRole}}', ' ( TL/ID eq ' + filterResource.UserNamePG.ID + ' or ASD/ID eq ' + filterResource.UserNamePG.ID + ' )');
           }
           if (this.attribute === this.adminConstants.ATTRIBUTES.POSITIVEFEEDBACK) {
             DeliveryLevel1Options.url = DeliveryLevel1EndPoint.replace('{{userRole}}', 'DeliveryLeads/ID eq ' + filterResource.UserNamePG.ID + '');

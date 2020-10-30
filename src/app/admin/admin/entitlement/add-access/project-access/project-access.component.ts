@@ -581,8 +581,7 @@ export class ProjectAccessComponent implements OnInit {
         this.filterData.TEMPRULES.splice(index, 1);
         this.filterData.RULES.splice(
           this.filterData.RULES.indexOf(
-            this.filterData.RULES.find((c) => c.ID === rowData.ID)
-          ),
+            this.filterData.RULES.find((c) => c === rowData)),
           1
         );
         this.common.showToastrMessage(
