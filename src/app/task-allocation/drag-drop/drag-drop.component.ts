@@ -93,111 +93,111 @@ export class DragDropComponent implements OnInit {
     this.alldbMilestones = this.config.data.dbmilestones ? this.config.data.dbmilestones.map(c => c.milestone.Title) : [];
     this.AlldbRecords = this.config.data.dbmilestones ? this.config.data.dbmilestones : [];
     let links = [];
-    if (this.data.length > 0) {
-      this.data.forEach(element => {
-        const temp = {
-          data: element.data.title.includes('(Current)') ? element.data.title.replace('(Current)', '').trim() : element.data.title,
-          id: element.data.id,
-          position: element.data.position,
-          preTask: element.data.previousTask,
-          nextTask: element.data.nextTask,
-          taskType: element.data.title.toLowerCase().indexOf('adhoc') > -1 ? 'Adhoc' :
-            element.data.title.toLowerCase().indexOf('tb') > -1 ? 'TB' : element.data.itemType,
-          status: element.data.status,
-        };
-        this.submilestoneIndex = 0;
-        this.tempSubmileArray = [];
-        if (element.data.type === 'milestone') {
-          this.onDrop(temp, element.data.type, true);
-        } else {
-          this.onPageLoad(temp);
-          links = this.loadLinks(element.data, links).splice(0);
-          this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links = [...links];
-        }
-        if (element.data.type === 'milestone') {
-          this.milestoneIndex++;
-          links = [];
-        }
-        if (element.children !== undefined) {
-          if (element.children.length > 0) {
-
-            // tslint:disable-next-line: no-shadowed-variable
-            element.children.forEach(element => {
-              const temp1 = {
-                data: element.data.title,
-                id: element.data.id,
-                position: element.data.position,
-                preTask: element.data.previousTask,
-                nextTask: element.data.nextTask,
-                taskType: element.data.title.toLowerCase().indexOf('adhoc') > -1 ? 'Adhoc' :
-                  element.data.title.toLowerCase().indexOf('tb') > -1 ? 'TB' : element.data.itemType,
-                IsCentrallyAllocated: element.data.IsCentrallyAllocated,
-                CentralAllocationDone: element.data.CentralAllocationDone,
-                ActiveCA: element.data.ActiveCA,
-                status: element.data.status,
-              };
-              element.children = element.children ? element.children.filter(t => !t.data.parentSlot) : [];
-              if (element.children.length) {
-                if (temp1.position !== undefined) {
-                  this.tempSubmileArray.push(temp1);
-                }
-                // tslint:disable-next-line: no-shadowed-variable
-                element.children.forEach(obj => {
-                  if (temp1.status === undefined || temp1.status !== 'Not Confirmed' || temp1.status !== 'Not Started') {
-                    temp1.status = obj.data.status;
+      if (this.data.length > 0) {
+        this.data.forEach(element => {
+          const temp = {
+            data: element.data.title.includes('(Current)') ? element.data.title.replace('(Current)', '').trim() : element.data.title,
+            id: element.data.id,
+            position: element.data.position,
+            preTask: element.data.previousTask,
+            nextTask: element.data.nextTask,
+            taskType: element.data.title.toLowerCase().indexOf('adhoc') > -1 ? 'Adhoc' :
+              element.data.title.toLowerCase().indexOf('tb') > -1 ? 'TB' : element.data.itemType,
+            status: element.data.status,
+          };
+          this.submilestoneIndex = 0;
+          this.tempSubmileArray = [];
+          if (element.data.type === 'milestone') {
+            this.onDrop(temp, element.data.type, true);
+          } else {
+            this.onPageLoad(temp);
+            links = this.loadLinks(element.data, links).splice(0);
+            this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links = [...links];
+          }
+          if (element.data.type === 'milestone') {
+            this.milestoneIndex++;
+            links = [];
+          }
+          if (element.children !== undefined) {
+            if (element.children.length > 0) {
+  
+              // tslint:disable-next-line: no-shadowed-variable
+              element.children.forEach(element => {
+                const temp1 = {
+                  data: element.data.title,
+                  id: element.data.id,
+                  position: element.data.position,
+                  preTask: element.data.previousTask,
+                  nextTask: element.data.nextTask,
+                  taskType: element.data.title.toLowerCase().indexOf('adhoc') > -1 ? 'Adhoc' :
+                    element.data.title.toLowerCase().indexOf('tb') > -1 ? 'TB' : element.data.itemType,
+                  IsCentrallyAllocated: element.data.IsCentrallyAllocated,
+                  CentralAllocationDone: element.data.CentralAllocationDone,
+                  ActiveCA: element.data.ActiveCA,
+                  status: element.data.status,
+                };
+                element.children = element.children ? element.children.filter(t => !t.data.parentSlot) : [];
+                if (element.children.length) {
+                  if (temp1.position !== undefined) {
+                    this.tempSubmileArray.push(temp1);
                   }
-                });
-                this.onDrop(temp1, element.data.type, true);
-                this.submilestoneIndex++;
+                  // tslint:disable-next-line: no-shadowed-variable
+                  element.children.forEach(obj => {
+                    if (temp1.status === undefined || temp1.status !== 'Not Confirmed' || temp1.status !== 'Not Started') {
+                      temp1.status = obj.data.status;
+                    }
+                  });
+                  this.onDrop(temp1, element.data.type, true);
+                  this.submilestoneIndex++;
+                  links = [];
+                  // tslint:disable-next-line: no-shadowed-variable
+                  element.children.forEach(element => {
+                    const temp2 = {
+                      data: element.data.title,
+                      id: element.data.id,
+                      position: element.data.position,
+                      preTask: element.data.previousTask,
+                      nextTask: element.data.nextTask,
+                      taskType: element.data.title.toLowerCase().indexOf('adhoc') > -1 ? 'Adhoc' :
+                        element.data.title.toLowerCase().indexOf('tb') > -1 ? 'TB' : element.data.itemType,
+                      IsCentrallyAllocated: element.data.IsCentrallyAllocated,
+                      CentralAllocationDone: element.data.CentralAllocationDone,
+                      ActiveCA: element.data.ActiveCA,
+                      status: element.data.status,
+                    };
+                    this.onPageLoad(temp2);
+                  });
+                  // tslint:disable-next-line: no-shadowed-variable
+                  element.children.forEach(element => {
+                    links = this.loadLinks(element.data, links).splice(0);
+                  });
+                  this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links = [...links];
+                } else {
+                  this.submilestoneIndex = 0;
+                  this.onPageLoad(temp1);
+                }
+  
+              });
+              if (this.submilestoneIndex === 0) {
                 links = [];
-                // tslint:disable-next-line: no-shadowed-variable
-                element.children.forEach(element => {
-                  const temp2 = {
-                    data: element.data.title,
-                    id: element.data.id,
-                    position: element.data.position,
-                    preTask: element.data.previousTask,
-                    nextTask: element.data.nextTask,
-                    taskType: element.data.title.toLowerCase().indexOf('adhoc') > -1 ? 'Adhoc' :
-                      element.data.title.toLowerCase().indexOf('tb') > -1 ? 'TB' : element.data.itemType,
-                    IsCentrallyAllocated: element.data.IsCentrallyAllocated,
-                    CentralAllocationDone: element.data.CentralAllocationDone,
-                    ActiveCA: element.data.ActiveCA,
-                    status: element.data.status,
-                  };
-                  this.onPageLoad(temp2);
-                });
                 // tslint:disable-next-line: no-shadowed-variable
                 element.children.forEach(element => {
                   links = this.loadLinks(element.data, links).splice(0);
                 });
                 this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links = [...links];
-              } else {
-                this.submilestoneIndex = 0;
-                this.onPageLoad(temp1);
               }
-
-            });
-            if (this.submilestoneIndex === 0) {
-              links = [];
-              // tslint:disable-next-line: no-shadowed-variable
-              element.children.forEach(element => {
-                links = this.loadLinks(element.data, links).splice(0);
-              });
-              this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links = [...links];
             }
           }
-        }
-      });
-      this.milestoneIndex = -1;
-      this.submilestoneIndex = -1;
-      this.previoustaskeventdd = null;
-      this.initialLoad = false;
-      this.resizeGraph = 'milestone';
-      this.GraphResize();
-    } else {
-      this.initialLoad = false;
-    }
+        });
+        this.milestoneIndex = -1;
+        this.submilestoneIndex = -1;
+        this.previoustaskeventdd = null;
+        this.initialLoad = false;
+        this.resizeGraph = 'milestone';
+        this.GraphResize();
+      } else {
+        this.initialLoad = false;
+      }
   }
 
   setInitialWidth() {
@@ -486,10 +486,10 @@ export class DragDropComponent implements OnInit {
 
 
       var node = {
-        id: (this.getMaxNodeIDMilestone(miletype) + 1).toString(),
+        id: Restructureenable === true ? (previousnode ? (parseInt(previousnode[previousnode.length - 1]) + 1).toString() : '1') :  (this.getMaxNodeIDMilestone(miletype) + 1).toString(),
         dbId: event.id !== undefined ? event.id : 0,
         label: nodeLabel,
-        position: previousnode === null ? 'x1' : 'x' + this.getMaxNodeIDMilestone(miletype) + 1 ,
+        position: Restructureenable === true ?  (previousnode === null ? 'x1' : 'x' + (parseInt(previousnode[previousnode.length - 1]) + 1)): previousnode === null ? 'x1' : 'x' + this.getMaxNodeIDMilestone(miletype) + 1 ,
         color: '#e2e2e2',
         type: miletype,
         status: event.status !== undefined ? event.status : 'Not Saved',
@@ -520,14 +520,14 @@ export class DragDropComponent implements OnInit {
 
       if (event.position) {
         var link = {
-          source: miletype === 'milestone' ? (previousnode !== null ? (parseInt(previousnode[0])).toString() : '1') : prvnode.length > 0 && this.tempSubmileArray.length > 1 ? this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.find(c => c.label === prvnode[0].data).id : this.subpreviousSource !== undefined ? this.subpreviousSource : (previousnode !== null && event.position !== '1' ? ( this.getMaxNodeIDMilestone(miletype) + 1).toString() : '0'),
-          target: previousnode !== null && event.position.toString() !== '1' ? ( this.getMaxNodeIDMilestone(miletype) + 1).toString() : '0'
+          source: miletype === 'milestone' ? (previousnode !== null ? (parseInt(previousnode[0])).toString() : '1') : prvnode.length > 0 && this.tempSubmileArray.length > 1 ? this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.find(c => c.label === prvnode[0].data).id : this.subpreviousSource !== undefined ? this.subpreviousSource : previousnode !== null && event.position !== '1' ?   Restructureenable === true ? (parseInt(previousnode[previousnode.length - 1]) + 1).toString() :  ( this.getMaxNodeIDMilestone(miletype) + 1).toString() : '0',
+          target: previousnode !== null && event.position.toString() !== '1' ?  Restructureenable === true ? (parseInt(previousnode[previousnode.length - 1]) + 1).toString() : (this.getMaxNodeIDMilestone(miletype) + 1).toString() : '0'
         };
       }
       else {
         var link = {
           source: miletype === 'milestone' ? (previousnode !== null ? (parseInt(previousnode[0])).toString() : '1') : prvnode.length > 0 && this.tempSubmileArray.length > 1 ? this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.find(c => c.label === prvnode[0].data).id : this.subpreviousSource !== undefined ? this.subpreviousSource : (previousnode !== null && event.position !== '1' ? (previousnode[previousnode.length -1]).toString() : '0'),
-          target: previousnode !== null && event.position !== '1' ? (this.getMaxNodeIDMilestone(miletype) + 1).toString() : '0'
+          target: previousnode !== null && event.position !== '1' ? Restructureenable === true ? (parseInt(previousnode[previousnode.length - 1]) + 1).toString() : (this.getMaxNodeIDMilestone(miletype) + 1).toString() : '0'
         };
       }
     if (miletype === 'milestone') {
@@ -670,7 +670,7 @@ export class DragDropComponent implements OnInit {
     let itemID: number = 1;
     var outerHtmlElement: any = Type === 'milestone' ?  document.querySelector('.milestonesDropArea .ngx-charts .nodes') : document.querySelector('.submilestonesDropArea .ngx-charts .nodes');
 
-    var nodeChildren = outerHtmlElement.children;
+    var nodeChildren =  outerHtmlElement.children;
     for (var count = 0; count < nodeChildren.length; count++) {
       var element = nodeChildren[count];
       var nodeId = parseInt(element.getAttribute('id'));
@@ -686,7 +686,7 @@ export class DragDropComponent implements OnInit {
     var outerHtmlElementLinks: any =  Type === 'milestone' ?  document.querySelector('.milestonesDropArea .ngx-charts .links') :document.querySelector('.submilestonesDropArea .ngx-charts .links');
     let arrLinksCoord = [];
     let counter = 0;
-    const linksSVG = outerHtmlElementLinks.children;
+    const linksSVG = outerHtmlElementLinks ? outerHtmlElementLinks.children: [];
     const linksLength = linksSVG.length;
     for (let count = 0; count < linksLength; count++) {
       var element: any = linksSVG[count];
