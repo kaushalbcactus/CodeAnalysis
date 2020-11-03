@@ -714,7 +714,7 @@ export class AddAccessService {
     );
     const ListOfUpdatedItems = dbItemList.filter(c=>c.edited === true);
     if(ListOfUpdatedItems && ListOfUpdatedItems.length > 0){
-      await this.updateAllEditedItems(ListOfUpdatedItems,type);
+      await this.updateAllEditedItems(ListOfUpdatedItems,type, disMessage);
     } 
 
     this.commonService.clearToastrMessage();
@@ -732,7 +732,7 @@ export class AddAccessService {
   }
 
 
-  async updateAllEditedItems(ListOfUpdatedItems,TypeName){
+  async updateAllEditedItems(ListOfUpdatedItems,TypeName, disMessage){
     let batchURL=[];
     let  ListName='';
     let ListType='';
@@ -796,6 +796,15 @@ export class AddAccessService {
         this.constants.Method.PATCH,
         ListName
       ); 
+
+      this.commonService.clearToastrMessage();
+      this.commonService.showToastrMessage(
+        this.constants.MessageType.info,
+        "Updating "+ disMessage +" " + i + " of " + ListOfUpdatedItems.length ,
+        true,
+        true,"Updating "+ disMessage + "..."
+      );
+      
       if (batchURL.length === 99) {
         this.commonService.SetNewrelic(
           "updateAllEditedItems",

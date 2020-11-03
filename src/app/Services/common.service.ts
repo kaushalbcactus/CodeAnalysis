@@ -1092,7 +1092,7 @@ export class CommonService {
     return (currentYear.getFullYear() - 10) + ':' + (currentYear.getFullYear() + 10);
   }
 
-  showToastrMessage(type: string, message: string, stickyenable: boolean, showmodal?: boolean) {
+  showToastrMessage(type: string, message: string, stickyenable: boolean, showmodal?: boolean, summary?:string) {
     let summaryMessage = '';
     if (type === this.constants.MessageType.warn) {
       summaryMessage = 'Warn Message';
@@ -1103,8 +1103,11 @@ export class CommonService {
     } else if (type === this.constants.MessageType.info) {
       summaryMessage = 'Info Message';
     }
+    if(summary){
+      summaryMessage = summary;
+    }
 
-    this.messageService.add({ key: showmodal ? 'cls_ModaltoastrMessage' : 'cls_toastrMessage', severity: type, summary: summaryMessage, detail: message, sticky: stickyenable });
+    this.messageService.add({ key:  showmodal ? 'cls_ModaltoastrMessage' : 'cls_toastrMessage', severity: type, summary: summaryMessage, detail: message, sticky: stickyenable });
 
   }
 
