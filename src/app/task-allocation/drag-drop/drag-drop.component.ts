@@ -430,7 +430,7 @@ export class DragDropComponent implements OnInit {
   // To Add milestone / submilestone To milestonesGraph
   // *************************************************************************************************************************************
   // tslint:disable
-  onDrop(event, miletype, Restructureenable) {
+  async onDrop(event, miletype, Restructureenable) {
 
 
     this.resizeGraph = miletype;
@@ -479,7 +479,6 @@ export class DragDropComponent implements OnInit {
       }
     });
 
-    if (miletype === 'milestone' ? this.milestonesGraph.nodes.length > 0 : this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.length > 0) {
       var previousnode = null;
       if (miletype === 'milestone' ? this.milestonesGraph.nodes.length > 0 : this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.length > 0) {
         previousnode = miletype === 'milestone' ? this.milestonesGraph.nodes.map(c => c.id).filter(c => !this.milestonesGraph.links.map(c => c.source).includes(c)) : this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.map(c => c.id).filter(c => !this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.map(c => c.source).includes(c));
@@ -487,10 +486,10 @@ export class DragDropComponent implements OnInit {
 
 
       var node = {
-        id: previousnode === null ? '1' : (parseInt(previousnode[previousnode.length - 1]) + 1).toString(),
+        id: (this.getMaxNodeIDMilestone(miletype) + 1).toString(),
         dbId: event.id !== undefined ? event.id : 0,
         label: nodeLabel,
-        position: previousnode === null ? 'x1' : 'x' + (parseInt(previousnode[previousnode.length - 1]) + 1),
+        position: previousnode === null ? 'x1' : 'x' + this.getMaxNodeIDMilestone(miletype) + 1 ,
         color: '#e2e2e2',
         type: miletype,
         status: event.status !== undefined ? event.status : 'Not Saved',
@@ -521,59 +520,19 @@ export class DragDropComponent implements OnInit {
 
       if (event.position) {
         var link = {
-          source: miletype === 'milestone' ? (previousnode !== null ? (parseInt(previousnode[0])).toString() : '1') : prvnode.length > 0 && this.tempSubmileArray.length > 1 ? this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.find(c => c.label === prvnode[0].data).id : this.subpreviousSource !== undefined ? this.subpreviousSource : (previousnode !== null && event.position !== '1' ? (parseInt(previousnode[previousnode.length - 1])).toString() : '0'),
-          target: previousnode !== null && event.position.toString() !== '1' ? (parseInt(previousnode[previousnode.length - 1]) + 1).toString() : '0'
+          source: miletype === 'milestone' ? (previousnode !== null ? (parseInt(previousnode[0])).toString() : '1') : prvnode.length > 0 && this.tempSubmileArray.length > 1 ? this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.find(c => c.label === prvnode[0].data).id : this.subpreviousSource !== undefined ? this.subpreviousSource : (previousnode !== null && event.position !== '1' ? ( this.getMaxNodeIDMilestone(miletype) + 1).toString() : '0'),
+          target: previousnode !== null && event.position.toString() !== '1' ? ( this.getMaxNodeIDMilestone(miletype) + 1).toString() : '0'
         };
       }
       else {
         var link = {
-          source: miletype === 'milestone' ? (previousnode !== null ? (parseInt(previousnode[0])).toString() : '1') : prvnode.length > 0 && this.tempSubmileArray.length > 1 ? this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.find(c => c.label === prvnode[0].data).id : this.subpreviousSource !== undefined ? this.subpreviousSource : (previousnode !== null && event.position !== '1' ? (parseInt(previousnode[previousnode.length - 1])).toString() : '0'),
-          target: previousnode !== null && event.position !== '1' ? (parseInt(previousnode[previousnode.length - 1]) + 1).toString() : '0'
+          source: miletype === 'milestone' ? (previousnode !== null ? (parseInt(previousnode[0])).toString() : '1') : prvnode.length > 0 && this.tempSubmileArray.length > 1 ? this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.find(c => c.label === prvnode[0].data).id : this.subpreviousSource !== undefined ? this.subpreviousSource : (previousnode !== null && event.position !== '1' ? (previousnode[previousnode.length -1]).toString() : '0'),
+          target: previousnode !== null && event.position !== '1' ? (this.getMaxNodeIDMilestone(miletype) + 1).toString() : '0'
         };
       }
-    }
-    else {
-
-      node = {
-        id: '1',
-        dbId: event.id !== undefined ? event.id : 0,
-        label: nodeLabel,
-        position: 'x1',
-        color: '#e2e2e2',
-        type: miletype,
-        status: event.status !== undefined ? event.status : 'Not Saved',
-        task: miletype === 'milestone' ? null : { nodes: [], links: [], taskWidth: 1200 },
-        submilestone: miletype === 'milestone' ? {
-          nodes: [{
-            id: '1',
-            label: 'Default',
-            position: 'x1',
-            color: '#e2e2e2',
-            type: 'submilestone',
-            task: { nodes: [], links: [], taskWidth: 1200 }
-          }], links: [], nodeOrder: ['1'], taskWidth: 1200
-        } : null,
-        allsubmilestones: miletype === 'milestone' ? ['Default'] : null,
-        allTasks: milestoneTaskProcess
-      };
-
-      link = {
-        source: '1',
-        target: '2',
-      };
-    }
-
     if (miletype === 'milestone') {
       this.milestonesGraph.nodes.push(node);
       this.milestonesGraph.nodeOrder.push(node.id);
-
-      if (this.milestonesGraph.nodes.length > 1) {
-        if (link.target !== link.source) {
-          this.milestonesGraph.links.push(link);
-        }
-
-      }
-
       if (!Restructureenable) {
         if (!event.id) {
           const e = {
@@ -582,17 +541,19 @@ export class DragDropComponent implements OnInit {
           }
           this.DropCRDefault(e, this.milestonesGraph.nodes.length - 1, 0);
         }
-
-
       }
 
       this.previoussubeventdd = node.submilestone.nodes[0];
       this.previouseventdd = node;
       this.recentEventNode = this.previouseventdd.id;
       this.milestonesGraph.nodes = [...this.milestonesGraph.nodes];
-      this.milestonesGraph.links = [...this.milestonesGraph.links];
-
+   
       this.Allmilestones.push(event.data);
+
+      const reOrderData = await  this.ReorderMilestoneSubmilestone(event,this.milestonesGraph.nodes,this.milestonesGraph.links,node,true,link,miletype);
+
+      this.milestonesGraph.nodes = [...reOrderData.Nodes];
+      this.milestonesGraph.links = [...reOrderData.Links];
 
       if (!this.initialLoad)
         this.GraphResize();
@@ -628,47 +589,18 @@ export class DragDropComponent implements OnInit {
 
               DefaultList[i].target === id ? DefaultList[i].target = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.find(c => c.label === 'Default').id : DefaultList[i].target;
             }
-
             this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.push.apply(this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links, DefaultList);
           }
         }
-
         this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.push(node);
-        if (this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.length > 1) {
-
-          if (parseInt(link.source) !== (parseInt(node.id) - 1) || parseInt(link.target) !== parseInt(node.id) - 1) {
-            if (this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.filter(c => c.id === link.source).length > 0 && this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.filter(c => c.id === link.target).length > 0) {
-              if (link.source !== link.target) {
-                if (link.source !== '0' && link.target !== '0') {
-                  if (link.source !== link.target) {
-                    this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.push(link);
-                  }
-                }
-              }
-            }
-          }
-
-          if (prvnode.length > 1 && miletype !== 'milestone') {
-            for (var i = 1; i < prvnode.length; i++) {
-              var link = {
-                source: miletype === 'milestone' ? (previousnode !== null ? (parseInt(previousnode[0])).toString() : '1') : this.tempSubmileArray.length > 1 ? this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.find(c => c.label === prvnode[i].data).id : this.subpreviousSource !== undefined ? this.subpreviousSource : (previousnode !== null ? (parseInt(previousnode[previousnode.length - 1])).toString() : '0'),
-                target: previousnode !== null ? (parseInt(previousnode[previousnode.length - 1]) + 1).toString() : '0'
-              };
-
-              if (parseInt(link.source) !== (parseInt(node.id) - 1) || parseInt(link.target) !== parseInt(node.id) - 1) {
-                if (this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.filter(c => c.id === link.source).length > 0 && this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.filter(c => c.id === link.target).length > 0) {
-                  if (link.source !== link.target) {
-                    this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.push(link);
-                  }
-                }
-              }
-            }
-          }
-        }
         this.previoussubeventdd = node;
         this.recentEventNode = this.previoussubeventdd.id;;
         this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes = [...this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes];
-        this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links = [...this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links];
+      
+        const reOrderData = await  this.ReorderMilestoneSubmilestone(event,this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes,this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links,node,this.subMilestoneHoritontal,link,miletype);
+
+        this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes  = [...reOrderData.Nodes];
+        this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links = [...reOrderData.Links];
 
 
         if (!this.initialLoad)
@@ -677,6 +609,98 @@ export class DragDropComponent implements OnInit {
     }
   }
   // tslint:enable
+
+
+   ReorderMilestoneSubmilestone(event,Nodes,Links,node,Horizontal,link,Type){
+    if (Nodes.length) {
+      const coord = this.generatePathMatrixMilestoneSubMilestone(Links,Type);
+      var eventCoord = event.event;
+      var pathLocation = null;
+      if (!Horizontal) {
+        pathLocation = coord.find(e =>
+          (
+            ((e.left - 10) <= eventCoord.clientX) && ((e.right + 10) >= eventCoord.clientX) &&
+            (e.top <= eventCoord.clientY) && (e.bottom >= eventCoord.clientY)
+          )
+        );
+      }
+      else {
+        pathLocation = coord.find(e =>
+          (
+            (e.left <= eventCoord.clientX) && (e.right >= eventCoord.clientX) &&
+            ((e.top - 10) <= eventCoord.clientY) && ((e.bottom + 10) >= eventCoord.clientY)
+          )
+        );
+      }
+
+      if (pathLocation) {
+        var findPreNode = Nodes.find(e => e.id === pathLocation.source);
+        var findNextNode = Nodes.find(e => e.id === pathLocation.target);
+       
+          if (!(findNextNode.status === 'Completed')) {
+            var linkRemoveLink = Links.findIndex(e => (e.source === pathLocation.source && e.target === pathLocation.target))
+            Links.splice(linkRemoveLink, 1);
+            Links.push({
+              source: pathLocation.source,
+              target: node.id
+            });
+            Links.push({
+              source: node.id,
+              target: pathLocation.target
+            });   
+          }
+      }
+      else {
+        if (link && Nodes.length > 1 && Type === 'milestone' ) {
+          if (link.target !== link.source) {
+            Links.push(link);    
+          } 
+        } else  if (link && Nodes.length > 2 && Type !== 'milestone' ) {
+          if (link.target !== link.source) {
+            Links.push(link);    
+          } 
+        }
+      }
+      return {Nodes, Links};
+    }
+  }
+
+
+  getMaxNodeIDMilestone(Type) {
+    let itemID: number = 1;
+    var outerHtmlElement: any = Type === 'milestone' ?  document.querySelector('.milestonesDropArea .ngx-charts .nodes') : document.querySelector('.submilestonesDropArea .ngx-charts .nodes');
+
+    var nodeChildren = outerHtmlElement.children;
+    for (var count = 0; count < nodeChildren.length; count++) {
+      var element = nodeChildren[count];
+      var nodeId = parseInt(element.getAttribute('id'));
+      if (nodeId > itemID) {
+        itemID = nodeId;
+      }
+    }
+    return itemID;
+  }
+
+  generatePathMatrixMilestoneSubMilestone(links,Type) {
+    
+    var outerHtmlElementLinks: any =  Type === 'milestone' ?  document.querySelector('.milestonesDropArea .ngx-charts .links') :document.querySelector('.submilestonesDropArea .ngx-charts .links');
+    let arrLinksCoord = [];
+    let counter = 0;
+    const linksSVG = outerHtmlElementLinks.children;
+    const linksLength = linksSVG.length;
+    for (let count = 0; count < linksLength; count++) {
+      var element: any = linksSVG[count];
+      var coord = element.getBoundingClientRect();
+      var linkLocation = links[counter];
+      counter++;
+      coord.element = element;
+      coord.source = linkLocation.source;
+      coord.target = linkLocation.target;
+      arrLinksCoord.push(coord);
+    }
+
+    return arrLinksCoord;
+  }
 
   async GetAllTasksMilestones() {
     const batchUrl = [];
