@@ -486,10 +486,10 @@ export class DragDropComponent implements OnInit {
 
 
       var node = {
-        id: Restructureenable === true ? (previousnode ? (parseInt(previousnode[previousnode.length - 1]) + 1).toString() : '1') :  (this.getMaxNodeIDMilestone(miletype) + 1).toString(),
+        id: Restructureenable === true ? (previousnode ? (parseInt(previousnode[previousnode.length - 1]) + 1).toString() : '1') :  (this.getMaxNodeID(miletype) + 1).toString(),
         dbId: event.id !== undefined ? event.id : 0,
         label: nodeLabel,
-        position: Restructureenable === true ?  (previousnode === null ? 'x1' : 'x' + (parseInt(previousnode[previousnode.length - 1]) + 1)): previousnode === null ? 'x1' : 'x' + this.getMaxNodeIDMilestone(miletype) + 1 ,
+        position: Restructureenable === true ?  (previousnode === null ? 'x1' : 'x' + (parseInt(previousnode[previousnode.length - 1]) + 1)): previousnode === null ? 'x1' : 'x' + this.getMaxNodeID(miletype) + 1 ,
         color: '#e2e2e2',
         type: miletype,
         status: event.status !== undefined ? event.status : 'Not Saved',
@@ -520,14 +520,14 @@ export class DragDropComponent implements OnInit {
 
       if (event.position) {
         var link = {
-          source: miletype === 'milestone' ? (previousnode !== null ? (parseInt(previousnode[0])).toString() : '1') : prvnode.length > 0 && this.tempSubmileArray.length > 1 ? this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.find(c => c.label === prvnode[0].data).id : this.subpreviousSource !== undefined ? this.subpreviousSource : previousnode !== null && event.position !== '1' ?   Restructureenable === true ? (parseInt(previousnode[previousnode.length - 1]) + 1).toString() :  ( this.getMaxNodeIDMilestone(miletype) + 1).toString() : '0',
-          target: previousnode !== null && event.position.toString() !== '1' ?  Restructureenable === true ? (parseInt(previousnode[previousnode.length - 1]) + 1).toString() : (this.getMaxNodeIDMilestone(miletype) + 1).toString() : '0'
+          source: miletype === 'milestone' ? (previousnode !== null ? (parseInt(previousnode[0])).toString() : '1') : prvnode.length > 0 && this.tempSubmileArray.length > 1 ? this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.find(c => c.label === prvnode[0].data).id : this.subpreviousSource !== undefined ? this.subpreviousSource : previousnode !== null && event.position !== '1' ?   Restructureenable === true ? (parseInt(previousnode[previousnode.length - 1]) + 1).toString() :  ( this.getMaxNodeID(miletype) + 1).toString() : '0',
+          target: previousnode !== null && event.position.toString() !== '1' ?  Restructureenable === true ? (parseInt(previousnode[previousnode.length - 1]) + 1).toString() : (this.getMaxNodeID(miletype) + 1).toString() : '0'
         };
       }
       else {
         var link = {
           source: miletype === 'milestone' ? (previousnode !== null ? (parseInt(previousnode[0])).toString() : '1') : prvnode.length > 0 && this.tempSubmileArray.length > 1 ? this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.find(c => c.label === prvnode[0].data).id : this.subpreviousSource !== undefined ? this.subpreviousSource : (previousnode !== null && event.position !== '1' ? (previousnode[previousnode.length -1]).toString() : '0'),
-          target: previousnode !== null && event.position !== '1' ? Restructureenable === true ? (parseInt(previousnode[previousnode.length - 1]) + 1).toString() : (this.getMaxNodeIDMilestone(miletype) + 1).toString() : '0'
+          target: previousnode !== null && event.position !== '1' ? Restructureenable === true ? (parseInt(previousnode[previousnode.length - 1]) + 1).toString() : (this.getMaxNodeID(miletype) + 1).toString() : '0'
         };
       }
     if (miletype === 'milestone') {
@@ -613,7 +613,7 @@ export class DragDropComponent implements OnInit {
 
    ReorderMilestoneSubmilestone(event,Nodes,Links,node,Horizontal,link,Type){
     if (Nodes.length) {
-      const coord = this.generatePathMatrixMilestoneSubMilestone(Links,Type);
+      const coord = this.generatePathMatrix(Links,Type);
       var eventCoord = event.event;
       var pathLocation = null;
       if (!Horizontal) {
@@ -666,9 +666,9 @@ export class DragDropComponent implements OnInit {
   }
 
 
-  getMaxNodeIDMilestone(Type) {
+  getMaxNodeID(Type) {
     let itemID: number = 1;
-    var outerHtmlElement: any = Type === 'milestone' ?  document.querySelector('.milestonesDropArea .ngx-charts .nodes') : document.querySelector('.submilestonesDropArea .ngx-charts .nodes');
+    var outerHtmlElement: any = Type === 'milestone' ?  document.querySelector('.milestonesDropArea .ngx-charts .nodes') : Type === 'task' ?  document.querySelector(' .taskDropArea .ngx-charts .nodes') : document.querySelector('.submilestonesDropArea .ngx-charts .nodes');
 
     var nodeChildren =  outerHtmlElement.children;
     for (var count = 0; count < nodeChildren.length; count++) {
@@ -681,9 +681,9 @@ export class DragDropComponent implements OnInit {
     return itemID;
   }
 
-  generatePathMatrixMilestoneSubMilestone(links,Type) {
+  generatePathMatrix(links,Type) {
     
-    var outerHtmlElementLinks: any =  Type === 'milestone' ?  document.querySelector('.milestonesDropArea .ngx-charts .links') :document.querySelector('.submilestonesDropArea .ngx-charts .links');
+    var outerHtmlElementLinks: any =  Type === 'milestone' ?  document.querySelector('.milestonesDropArea .ngx-charts .links') : Type === 'task' ? document.querySelector('.taskDropArea .ngx-charts .links') : document.querySelector('.submilestonesDropArea .ngx-charts .links');
     let arrLinksCoord = [];
     let counter = 0;
     const linksSVG = outerHtmlElementLinks ? outerHtmlElementLinks.children: [];
@@ -1048,41 +1048,41 @@ this.sharedObject.oTaskAllocation.allTasks = arrResult.find(c => c.listName === 
   // To Add Task To milestonesGraph
   // *************************************************************************************************************************************
 
-  generatePathMatrix() {
-    const links = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links;
-    var outerHtmlElementLinks: any = document.querySelector('.taskDropArea .ngx-charts .links');
-    let arrLinksCoord = [];
-    let counter = 0;
-    const linksSVG = outerHtmlElementLinks.children;
-    const linksLength = linksSVG.length;
-    for (let count = 0; count < linksLength; count++) {
-      var element: any = linksSVG[count];
-      var coord = element.getBoundingClientRect();
-      var linkLocation = links[counter];
-      counter++;
-      coord.element = element;
-      coord.source = linkLocation.source;
-      coord.target = linkLocation.target;
-      arrLinksCoord.push(coord);
-    }
+  // generatePathMatrix() {
+  //   const links = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links;
+  //   var outerHtmlElementLinks: any = document.querySelector('.taskDropArea .ngx-charts .links');
+  //   let arrLinksCoord = [];
+  //   let counter = 0;
+  //   const linksSVG = outerHtmlElementLinks.children;
+  //   const linksLength = linksSVG.length;
+  //   for (let count = 0; count < linksLength; count++) {
+  //     var element: any = linksSVG[count];
+  //     var coord = element.getBoundingClientRect();
+  //     var linkLocation = links[counter];
+  //     counter++;
+  //     coord.element = element;
+  //     coord.source = linkLocation.source;
+  //     coord.target = linkLocation.target;
+  //     arrLinksCoord.push(coord);
+  //   }
 
-    return arrLinksCoord;
-  }
+  //   return arrLinksCoord;
+  // }
 
-  getMaxNodeID() {
-    let itemID: number = 0;
-    var outerHtmlElement: any = document.querySelector('.taskDropArea .ngx-charts .nodes');
+  // getMaxNodeID() {
+  //   let itemID: number = 0;
+  //   var outerHtmlElement: any = document.querySelector('.taskDropArea .ngx-charts .nodes');
 
-    var nodeChildren = outerHtmlElement.children;
-    for (var count = 0; count < nodeChildren.length; count++) {
-      var element = nodeChildren[count];
-      var nodeId = parseInt(element.getAttribute('id'));
-      if (nodeId > itemID) {
-        itemID = nodeId;
-      }
-    }
-    return itemID;
-  }
+  //   var nodeChildren = outerHtmlElement.children;
+  //   for (var count = 0; count < nodeChildren.length; count++) {
+  //     var element = nodeChildren[count];
+  //     var nodeId = parseInt(element.getAttribute('id'));
+  //     if (nodeId > itemID) {
+  //       itemID = nodeId;
+  //     }
+  //   }
+  //   return itemID;
+  // }
 
   onTaskDrop(event) {
     const MilTask = this.sharedObject.oTaskAllocation.allTasks.find(c => c.Title === event.data);
@@ -1121,7 +1121,7 @@ this.sharedObject.oTaskAllocation.allTasks = arrResult.find(c => c.listName === 
       const label = count > 0 ? event.data + ' ' + (count + 1) : event.data
       if (subMilestone.task.nodes.length) {
         node = {
-          id: (this.getMaxNodeID() + 1).toString(),
+          id: (this.getMaxNodeID('task') + 1).toString(),
           dbId: event.id !== undefined ? event.id : 0,
           label: label,
           color: '#e2e2e2',
@@ -1169,7 +1169,7 @@ this.sharedObject.oTaskAllocation.allTasks = arrResult.find(c => c.listName === 
       subMilestone.task.nodes = [...subMilestone.task.nodes];
       ////// Works on links 
       if (subMilestone.task.nodes.length) {
-        const coord = this.generatePathMatrix();
+        const coord = this.generatePathMatrix(this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links,'task');
         var eventCoord = event.event;
         var pathLocation = null;
         if (!this.tasksHoritontal) {
@@ -1626,7 +1626,7 @@ this.sharedObject.oTaskAllocation.allTasks = arrResult.find(c => c.listName === 
 
       if (subMilestone.task.nodes.length) {
         node = {
-          id: (this.getMaxNodeID() + 1).toString(),
+          id: (this.getMaxNodeID('task') + 1).toString(),
           dbId: event.id !== undefined ? event.id : 0,
           label: count > 0 ? event.data + ' ' + (count + 1) : event.data,
           color: '#e2e2e2',
