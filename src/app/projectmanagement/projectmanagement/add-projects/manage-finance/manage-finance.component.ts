@@ -165,6 +165,7 @@ export class ManageFinanceComponent implements OnInit {
   invoiceType: any = 'revenue';
   sowList: any;
   currentId: any;
+  enableCheckList: boolean = false;
 
   constructor(
     private frmbuilder: FormBuilder,
@@ -2691,5 +2692,10 @@ export class ManageFinanceComponent implements OnInit {
         return data;
       }
     }
+  }
+
+
+  enableMovePO(){
+    this.enableCheckList = this.enableCheckList === true ? false : true;
   }
 }
