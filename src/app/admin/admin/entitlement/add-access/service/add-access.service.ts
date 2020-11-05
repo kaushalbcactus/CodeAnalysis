@@ -530,7 +530,7 @@ export class AddAccessService {
       break;
       case this.constants.RulesType.PF:
       await this.getAllPF(batchURL);
-      await this.getAllOpenProjects(batchURL);
+      // await this.getAllOpenProjects(batchURL);
       Message ="Fetching Positive Feedback.....";
       break;
     }
@@ -581,10 +581,10 @@ export class AddAccessService {
         dbItemList =  batchResults.find((c) => c.listName === this.constants.listNames.PositiveFeedbacks.name) &&
         batchResults.find((c) => c.listName === this.constants.listNames.PositiveFeedbacks.name).retItems ? 
         batchResults.find((c) => c.listName === this.constants.listNames.PositiveFeedbacks.name).retItems :[];
-        ActiveProjectList =  batchResults.find((c) => c.listName === this.constants.listNames.ProjectInformation.name) &&
-        batchResults.find((c) => c.listName === this.constants.listNames.ProjectInformation.name).retItems ? 
-        batchResults.find((c) => c.listName === this.constants.listNames.ProjectInformation.name).retItems :[];
-        await this.filterInactiveProjects(dbItemList,ActiveProjectList);
+        // ActiveProjectList =  batchResults.find((c) => c.listName === this.constants.listNames.ProjectInformation.name) &&
+        // batchResults.find((c) => c.listName === this.constants.listNames.ProjectInformation.name).retItems ? 
+        // batchResults.find((c) => c.listName === this.constants.listNames.ProjectInformation.name).retItems :[];
+        // await this.filterInactiveProjects(dbItemList,ActiveProjectList);
         disMessage = 'positive feedback';
         parameter = 'Title';
       break;
@@ -605,6 +605,10 @@ export class AddAccessService {
 
       if(type === this.constants.RulesType.CD || type === this.constants.RulesType.PF){
         dbItemList = await this.fetchProjectForRule(dbItemList);
+
+        if(type === this.constants.RulesType.PF){
+          dbItemList= dbItemList.filter(c=> c.ProjectStatus !== this.constants.projectStatus.Cancelled && c.ProjectStatus !== this.constants.projectStatus.Closed);
+        }
       }
       if(type !== this.constants.RulesType.SOW ){
         dbItemList = await this.fetchProjectFinanceForRule(addedRuleArray,dbItemList);
@@ -878,6 +882,9 @@ export class AddAccessService {
 
       //assign deliverableType
       dbItemList.map(c=> c.DeliverableType = ProjectInformations.find(d=>d.ProjectCode === c.Title) ? ProjectInformations.find(d=>d.ProjectCode === c.Title).DeliverableType :'');
+
+
+      dbItemList.map(c=> c.ProjectStatus = ProjectInformations.find(d=>d.ProjectCode === c.Title) ? ProjectInformations.find(d=>d.ProjectCode === c.Title).Status :'');
     }
     return dbItemList;
   }
