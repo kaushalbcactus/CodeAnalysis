@@ -1112,18 +1112,4 @@ export class AddAccessService {
       this.constants.listNames.PositiveFeedbacks.name
     );
   }
-
-  getInactiveProjects(batchURL){
-    this.commonService.setBatchObject(
-      batchURL,
-      this.spServices.getReadURL(
-        this.constants.listNames.ProjectInformation.name,
-        this.adminConstants.QUERY.GET_INACTIVE_PROJECT
-      ),
-      null,
-      this.constants.Method.GET,
-      this.constants.listNames.ProjectInformation.name
-    );
-  }
-
 }
