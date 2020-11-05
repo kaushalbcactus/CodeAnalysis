@@ -512,7 +512,7 @@ export class AddAccessService {
     let disMessage='';
     let parameter='';
     let Message = '';
-    let inActiveProjectList = [];
+    let ActiveProjectList = [];
      
     // let AllProjects={dbList:[],ProjectCodes:[]};
     switch (type) {
@@ -530,7 +530,7 @@ export class AddAccessService {
       break;
       case this.constants.RulesType.PF:
       await this.getAllPF(batchURL);
-      await this.getInactiveProjects(batchURL);
+      await this.getAllOpenProjects(batchURL);
       Message ="Fetching Positive Feedback.....";
       break;
     }
@@ -581,10 +581,10 @@ export class AddAccessService {
         dbItemList =  batchResults.find((c) => c.listName === this.constants.listNames.PositiveFeedbacks.name) &&
         batchResults.find((c) => c.listName === this.constants.listNames.PositiveFeedbacks.name).retItems ? 
         batchResults.find((c) => c.listName === this.constants.listNames.PositiveFeedbacks.name).retItems :[];
-        inActiveProjectList =  batchResults.find((c) => c.listName === this.constants.listNames.ProjectInformation.name) &&
+        ActiveProjectList =  batchResults.find((c) => c.listName === this.constants.listNames.ProjectInformation.name) &&
         batchResults.find((c) => c.listName === this.constants.listNames.ProjectInformation.name).retItems ? 
         batchResults.find((c) => c.listName === this.constants.listNames.ProjectInformation.name).retItems :[];
-        await this.filterInactiveProjects(dbItemList,inActiveProjectList);
+        await this.filterInactiveProjects(dbItemList,ActiveProjectList);
         disMessage = 'positive feedback';
         parameter = 'Title';
       break;
