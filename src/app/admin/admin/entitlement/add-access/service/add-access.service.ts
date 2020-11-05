@@ -571,9 +571,6 @@ export class AddAccessService {
         dbItemList =  batchResults.find((c) => c.listName === this.constants.listNames.QualityComplaints.name) &&
         batchResults.find((c) => c.listName === this.constants.listNames.QualityComplaints.name).retItems ? 
         batchResults.find((c) => c.listName === this.constants.listNames.QualityComplaints.name).retItems :[];
- 
-        // dbItemList =  results.map(o => new Object({Id: o.Id, ProjectCode: o.Title, DeliveryRule:o.DeliveryRule, ASD: o.ASD,TL : o.TL}));
-
         disMessage = 'quality complaints';
         parameter = 'Title';
       break;
@@ -581,10 +578,6 @@ export class AddAccessService {
         dbItemList =  batchResults.find((c) => c.listName === this.constants.listNames.PositiveFeedbacks.name) &&
         batchResults.find((c) => c.listName === this.constants.listNames.PositiveFeedbacks.name).retItems ? 
         batchResults.find((c) => c.listName === this.constants.listNames.PositiveFeedbacks.name).retItems :[];
-        // ActiveProjectList =  batchResults.find((c) => c.listName === this.constants.listNames.ProjectInformation.name) &&
-        // batchResults.find((c) => c.listName === this.constants.listNames.ProjectInformation.name).retItems ? 
-        // batchResults.find((c) => c.listName === this.constants.listNames.ProjectInformation.name).retItems :[];
-        // await this.filterInactiveProjects(dbItemList,ActiveProjectList);
         disMessage = 'positive feedback';
         parameter = 'Title';
       break;
