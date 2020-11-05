@@ -344,6 +344,15 @@ export class DragDropComponent implements OnInit {
 
       if (errorM <= 0) {
         this.NodePosition();
+
+
+        this.MilestoneSubMilestoneNodePosition(this.milestonesGraph.nodes,'milestone');
+
+        this.milestonesGraph.nodes.sort((a, b) => {
+          return parseInt(a.left, 10) - parseInt(b.left, 10);
+        });
+
+
         this.milestonesGraph.nodes.forEach(milestone => {
 
           if (milestone.submilestone.nodes.length > 1) {
@@ -354,6 +363,14 @@ export class DragDropComponent implements OnInit {
               milestone.submilestone.nodes.push(DefaultObj);
             }
           }
+
+          this.MilestoneSubMilestoneNodePosition(milestone.submilestone.nodes,'submilestone');
+
+          milestone.submilestone.nodes.sort((a, b) => {
+            return parseInt(a.left, 10) - parseInt(b.left, 10);
+          });
+  
+  
 
           milestone.submilestone.nodes.forEach(submilestone => {
             submilestone.task.nodes.sort((a, b) => {
@@ -1423,6 +1440,17 @@ this.sharedObject.oTaskAllocation.allTasks = arrResult.find(c => c.listName === 
         Count++;
       });
     }
+  }
+
+  MilestoneSubMilestoneNodePosition(Nodes,Type){
+    var Count = 0;
+      Nodes.forEach(element => {
+        var position = Type === 'milestone' ?  $($('.milestones-drop .nodes').children()[Count]).position() : $($('.submilestones-drop .nodes').children()[Count]).position();
+        element.top = position ? position.top : 0;
+        element.left =position  ? position.left : 0;
+        Count++;
+      });
+    
   }
 
 
