@@ -796,11 +796,11 @@ export class AddAccessService {
         this.constants.Method.PATCH,
         ListName
       ); 
-
+      let count = i + 1;
       this.commonService.clearToastrMessage();
       this.commonService.showToastrMessage(
         this.constants.MessageType.info,
-        "Updating "+ disMessage +" " + i + " of " + ListOfUpdatedItems.length ,
+        "Updating "+ disMessage +" " + count + " of " + ListOfUpdatedItems.length ,
         true,
         true,"Updating "+ disMessage + "..."
       );

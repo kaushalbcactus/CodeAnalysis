@@ -181,6 +181,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.sowDropDown.BillingEntity.push({ label: element.Title, value: element.Title });
     });
     this.pmObject.oProjectCreation.Resources.cmLevel1.forEach(element => {
+      this.sowDropDown.CMLevel2.push({ label: element.Title, value: element.ID });
       this.sowDropDown.CMLevel1.push({ label: element.Title, value: element.ID });
     });
     this.pmObject.oProjectCreation.Resources.cmLevel2.forEach(element => {
@@ -189,6 +190,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     });
     this.pmObject.oProjectCreation.Resources.deliveryLevel1.forEach(element => {
       this.sowDropDown.Delivery.push({ label: element.Title, value: element.ID });
+      this.sowDropDown.DeliveryOptional.push({ label: element.Title, value: element.ID });
     });
     this.pmObject.oProjectCreation.Resources.deliveryLevel2.forEach(element => {
       this.sowDropDown.Delivery.push({ label: element.Title, value: element.ID });
@@ -198,7 +200,9 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.sowDropDown.SowOwner.push({ label: element.Title, value: element.ID });
     });
     this.sowDropDown.CMLevel1.sort((a, b) => (a.label > b.label) ? 1 : -1);
+    this.sowDropDown.CMLevel2.sort((a, b) => (a.label > b.label) ? 1 : -1);
     this.sowDropDown.Delivery.sort((a, b) => (a.label > b.label) ? 1 : -1);
+    this.sowDropDown.DeliveryOptional.sort((a, b) => (a.label > b.label) ? 1 : -1);
 
     this.addSowForm.get('businessVertical').valueChanges.subscribe(val => {
       this.constant.RuleParamterArray.find(c=>c.parameterName === 'BusinessVertical').value = val && val.length === 1 ? val[0]:'';
