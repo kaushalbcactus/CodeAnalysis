@@ -6475,7 +6475,10 @@ export class TimelineComponent
         );
         return false;
       }
-      return this.validateTask(validateDates);
+      const bTask =  this.validateTask(validateDates);
+      if(!bTask) {
+        return false;
+      } 
       if (milestone.data.status === "In Progress") {
         const zeroItem =
           milestone.children && milestone.children.length
