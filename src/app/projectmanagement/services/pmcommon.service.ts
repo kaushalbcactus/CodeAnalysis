@@ -1595,8 +1595,8 @@ export class PMCommonService {
 
     this.pmObject.isMainLoaderHidden = true;
   }
-  async createFTEMilestones(response, projectFolder) {
-    const monthObjArray = this.pmObject.addProject.Timeline.NonStandard.months;
+  async createFTEMilestones(response, projectFolder,months?,fteResource?,ProjectCode?) {
+    const monthObjArray = months ? months : this.pmObject.addProject.Timeline.NonStandard.months ;
     const options = {
       data: null,
       url: '',
@@ -1604,7 +1604,7 @@ export class PMCommonService {
       listName: ''
     };
     const batchURL = [];
-    const projectCode = this.pmObject.addProject.ProjectAttributes.ProjectCode;
+    const projectCode = ProjectCode ? ProjectCode : this.pmObject.addProject.ProjectAttributes.ProjectCode;
     monthObjArray.forEach(element => {
       const milestonedata = this.getFTEMilestoneData(element, projectCode);
       const milestoneCreate = Object.assign({}, options);
@@ -1626,7 +1626,7 @@ export class PMCommonService {
       createForderObj.url = this.spServices.getFolderCreationURL();
       batchURL.push(createForderObj);
       // create FTE Task.
-      const taskBlockingdata = this.getFTETask(element, projectCode, this.pmConstant.task.BLOCKING);
+      const taskBlockingdata = this.getFTETask(element, projectCode, this.pmConstant.task.BLOCKING,fteResource);
       const taskBlockingCreate = Object.assign({}, options);
       taskBlockingCreate.url = this.spServices.getReadURL(this.constant.listNames.Schedules.name, null);
       taskBlockingCreate.data = taskBlockingdata;
@@ -1635,7 +1635,7 @@ export class PMCommonService {
       batchURL.push(taskBlockingCreate);
 
       // create Meeting Task
-      const taskMeetingdata = this.getFTETask(element, projectCode, this.pmConstant.task.MEETING);
+      const taskMeetingdata = this.getFTETask(element, projectCode, this.pmConstant.task.MEETING,fteResource);
       const taskMeetingCreate = Object.assign({}, options);
       taskMeetingCreate.url = this.spServices.getReadURL(this.constant.listNames.Schedules.name, null);
       taskMeetingCreate.data = taskMeetingdata;
@@ -1643,7 +1643,7 @@ export class PMCommonService {
       taskMeetingCreate.listName = this.constant.listNames.Schedules.name;
       batchURL.push(taskMeetingCreate);
       // Create Training Task
-      const taskTrainingdata = this.getFTETask(element, projectCode, this.pmConstant.task.TRAINING);
+      const taskTrainingdata = this.getFTETask(element, projectCode, this.pmConstant.task.TRAINING,fteResource);
       const taskTrainingCreate = Object.assign({}, options);
       taskTrainingCreate.url = this.spServices.getReadURL(this.constant.listNames.Schedules.name, null);
       taskTrainingCreate.data = taskTrainingdata;
@@ -1673,9 +1673,9 @@ export class PMCommonService {
     };
     return data;
   }
-  getFTETask(fteObj, projectCode, taskType) {
+  getFTETask(fteObj, projectCode, taskType,Resource?) {
     const businessDay = this.commonService.calcBusinessDays(fteObj.monthStartDay, fteObj.monthEndDay);
-    const resourceObj: any = this.pmObject.addProject.Timeline.NonStandard.ResourceName ? this.pmObject.addProject.Timeline.NonStandard.ResourceName.hasOwnProperty('UserNamePG') ? this.pmObject.addProject.Timeline.NonStandard.ResourceName : fteObj.Resources.hasOwnProperty('UserNamePG') ? fteObj.Resources : null : null;
+    const resourceObj: any = Resource ? Resource : this.pmObject.addProject.Timeline.NonStandard.ResourceName ? this.pmObject.addProject.Timeline.NonStandard.ResourceName.hasOwnProperty('UserNamePG') ? this.pmObject.addProject.Timeline.NonStandard.ResourceName : fteObj.Resources.hasOwnProperty('UserNamePG') ? fteObj.Resources : null : null;
     let data: any;
     if (taskType === this.pmConstant.task.BLOCKING) {
       data = {

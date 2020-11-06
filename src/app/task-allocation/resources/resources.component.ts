@@ -165,7 +165,7 @@ export class ResourcesComponent implements OnInit {
     await this.spService.updateItem(this.constants.listNames.ProjectInformation.name, project.projectID,
       oBj, this.constants.listNames.ProjectInformation.type);
     this.commonService.SetNewrelic('TaskAllocation', 'resources-getProjectResources', 'saveResources');
-    await this.commonService.updateTasks(scheduleTasks[0],this.primaryResoucesusers);
+    await this.commonService.updateTasks(scheduleTasks,this.primaryResoucesusers);
     await this.commonService.getProjectResources(project.projectCode, true, false);
     this.loaderEnable = false;
     this.commonService.showToastrMessage(this.constants.MessageType.success,'Resources updated successfully.',false);

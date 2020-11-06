@@ -127,7 +127,7 @@ export class TaskAllocationConstantsService {
           top: 4500
         },
         SCHEDULE_LIST_BY_PROJECTCODE: {
-            select: 'ID, Title, Task,TimeSpent, Status,SubMilestones,Milestone',
+            select: 'ID, Title, Task,TimeSpent, Status,SubMilestones,Milestone,ContentTypeCH',
             filter: 'ProjectCode eq \'{{ProjectCode}}\'',
             top: 4900
         },

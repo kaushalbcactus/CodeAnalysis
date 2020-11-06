@@ -765,13 +765,12 @@ export class CommonService {
     batchUrl.push(scheduleTaskObj);
 
     const arrResult = await this.spServices.executeBatch(batchUrl);
-    return arrResult.length > 0 ? arrResult.map(a => a.retItems) : [];
+    return arrResult.length > 0 ? arrResult.map(a => a.retItems)[0] : [];
   }
 
   async updateTasks(scheduleTasks ,primaryResources) {
     const batchURL = [];
     if(scheduleTasks && scheduleTasks.length && this.sharedTaskAllocateObj.oProjectDetails.projectType === 'FTE-Writing') {
-      let monthsArray = this.getMonths(new Date() , new Date(this.response[0][0].ProposedEndDate));
       for(let i=0;i<scheduleTasks.length;i++) {
         let element = scheduleTasks[i];
         const scUpdateData = {
@@ -780,7 +779,7 @@ export class CommonService {
           },
           AssignedToId: primaryResources ? primaryResources.Id : -1,
         };
-        if((element.Task == 'Training' || element.Task == 'Blocking' || element.Task == 'Meeting') && monthsArray.some(e=> e.monthName == element.Milestone)) {
+        if((element.Task == 'Training' || element.Task == 'Blocking' || element.Task == 'Meeting') && (this.sharedTaskAllocateObj.oProjectDetails.currentMilestone == element.Milestone || this.sharedTaskAllocateObj.oProjectDetails.nextMilestone == element.Milestone)) {
           const scUpdate = Object.assign({}, this.queryConfig);
           scUpdate.data = scUpdateData;
           scUpdate.listName = this.constants.listNames.Schedules.name;
@@ -1212,36 +1211,4 @@ export class CommonService {
     return errorMsgs;
   }
 
-  getMonths(fromDate, toDate) { /// https://jsfiddle.net/fvkcxsdb/1/
-    const fromYear = fromDate.getFullYear();
-    const fromMonth = fromDate.getMonth();
-    const toYear = toDate.getFullYear();
-    const toMonth = toDate.getMonth();
-    const months = [];
-    const monthNames = this.pmConstant.MONTH_NAMES;
-    for (let year = fromYear; year <= toYear; year++) {
-      let month = year === fromYear ? fromMonth : 0;
-      const monthLimit = year === toYear ? toMonth : 11;
-      for (; month <= monthLimit; month++) {
-        // const monthStartDay = new Date(year, month, 1);
-        // const monthEndDay = new Date(year, month + 1, 0);
-        let monthStartDay = new Date();
-        let monthEndDay = new Date();
-        if (month === fromMonth) {
-          monthStartDay = new Date(year, month, fromDate.getDate());
-        } else {
-          monthStartDay = new Date(year, month, 1);
-        }
-        if (month === toMonth) {
-          monthEndDay = new Date(year, month, toDate.getDate());
-        } else {
-          monthEndDay = new Date(year, month + 1, 0);
-        }
-        const monthName = monthNames[month];
-        monthEndDay.setHours(23, 45);
-        months.push({ year, month, monthName, monthStartDay, monthEndDay });
-      }
-    }
-    return months;
-  }
 }

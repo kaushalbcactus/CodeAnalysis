@@ -86,7 +86,8 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
     this.taskMenu = [
       { label: 'View / Upload Documents', icon: 'pi pi-fw pi-upload', command: (e) => this.getAddUpdateDocument(data) },
       { label: 'View / Add Comment', icon: 'pi pi-fw pi-comment', command: (e) => this.getAddUpdateComment(data, false) },
-      { label: 'Project Scope', icon: 'pi pi-fw pi-file', command: (e) => this.goToProjectScope(data) }
+      { label: 'Project Scope', icon: 'pi pi-fw pi-file', command: (e) => this.goToProjectScope(data) },
+      { label: 'Rename Submilestone', icon: 'pi pi-fw pi-file', command: (e) => this.renameSubmilestone(data) }
     ];
 
     if (this.TabName !== 'MyCompletedTask') {
@@ -550,6 +551,10 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
 
   hideOverlayPanel() {
     this.dailyAllocateOP.hideOverlay();
+  }
+
+  renameSubmilestone(rowData) {
+    console.log(rowData)
   }
 
 }
