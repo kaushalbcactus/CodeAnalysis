@@ -3663,6 +3663,7 @@ export class TimelineComponent
             );
             if (subTempGantt && submilestoneObj.edited === true) {
               subTempGantt.edited = true;
+              subTempGantt.position = submilestoneObj.position;
             }
             if (submilestone.label !== "Default") {
               const tempsub = {
