@@ -512,7 +512,7 @@ export class AddAccessService {
     let disMessage='';
     let parameter='';
     let Message = '';
-    let inActiveProjectList = [];
+    let ActiveProjectList = [];
      
     // let AllProjects={dbList:[],ProjectCodes:[]};
     switch (type) {
@@ -530,7 +530,7 @@ export class AddAccessService {
       break;
       case this.constants.RulesType.PF:
       await this.getAllPF(batchURL);
-      await this.getInactiveProjects(batchURL);
+      // await this.getAllOpenProjects(batchURL);
       Message ="Fetching Positive Feedback.....";
       break;
     }
@@ -571,9 +571,6 @@ export class AddAccessService {
         dbItemList =  batchResults.find((c) => c.listName === this.constants.listNames.QualityComplaints.name) &&
         batchResults.find((c) => c.listName === this.constants.listNames.QualityComplaints.name).retItems ? 
         batchResults.find((c) => c.listName === this.constants.listNames.QualityComplaints.name).retItems :[];
- 
-        // dbItemList =  results.map(o => new Object({Id: o.Id, ProjectCode: o.Title, DeliveryRule:o.DeliveryRule, ASD: o.ASD,TL : o.TL}));
-
         disMessage = 'quality complaints';
         parameter = 'Title';
       break;
@@ -581,10 +578,6 @@ export class AddAccessService {
         dbItemList =  batchResults.find((c) => c.listName === this.constants.listNames.PositiveFeedbacks.name) &&
         batchResults.find((c) => c.listName === this.constants.listNames.PositiveFeedbacks.name).retItems ? 
         batchResults.find((c) => c.listName === this.constants.listNames.PositiveFeedbacks.name).retItems :[];
-        inActiveProjectList =  batchResults.find((c) => c.listName === this.constants.listNames.ProjectInformation.name) &&
-        batchResults.find((c) => c.listName === this.constants.listNames.ProjectInformation.name).retItems ? 
-        batchResults.find((c) => c.listName === this.constants.listNames.ProjectInformation.name).retItems :[];
-        await this.filterInactiveProjects(dbItemList,inActiveProjectList);
         disMessage = 'positive feedback';
         parameter = 'Title';
       break;
@@ -605,6 +598,10 @@ export class AddAccessService {
 
       if(type === this.constants.RulesType.CD || type === this.constants.RulesType.PF){
         dbItemList = await this.fetchProjectForRule(dbItemList);
+
+        if(type === this.constants.RulesType.PF){
+          dbItemList= dbItemList.filter(c=> c.ProjectStatus !== this.constants.projectStatus.Cancelled && c.ProjectStatus !== this.constants.projectStatus.Closed);
+        }
       }
       if(type !== this.constants.RulesType.SOW ){
         dbItemList = await this.fetchProjectFinanceForRule(addedRuleArray,dbItemList);
@@ -796,11 +793,11 @@ export class AddAccessService {
         this.constants.Method.PATCH,
         ListName
       ); 
-
+      let count = i + 1;
       this.commonService.clearToastrMessage();
       this.commonService.showToastrMessage(
         this.constants.MessageType.info,
-        "Updating "+ disMessage +" " + i + " of " + ListOfUpdatedItems.length ,
+        "Updating "+ disMessage +" " + count + " of " + ListOfUpdatedItems.length ,
         true,
         true,"Updating "+ disMessage + "..."
       );
@@ -878,6 +875,9 @@ export class AddAccessService {
 
       //assign deliverableType
       dbItemList.map(c=> c.DeliverableType = ProjectInformations.find(d=>d.ProjectCode === c.Title) ? ProjectInformations.find(d=>d.ProjectCode === c.Title).DeliverableType :'');
+
+
+      dbItemList.map(c=> c.ProjectStatus = ProjectInformations.find(d=>d.ProjectCode === c.Title) ? ProjectInformations.find(d=>d.ProjectCode === c.Title).Status :'');
     }
     return dbItemList;
   }
@@ -1112,18 +1112,4 @@ export class AddAccessService {
       this.constants.listNames.PositiveFeedbacks.name
     );
   }
-
-  getInactiveProjects(batchURL){
-    this.commonService.setBatchObject(
-      batchURL,
-      this.spServices.getReadURL(
-        this.constants.listNames.ProjectInformation.name,
-        this.adminConstants.QUERY.GET_INACTIVE_PROJECT
-      ),
-      null,
-      this.constants.Method.GET,
-      this.constants.listNames.ProjectInformation.name
-    );
-  }
-
 }
