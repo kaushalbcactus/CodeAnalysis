@@ -911,6 +911,7 @@ export class AllProjectsComponent implements OnInit {
           menu.model[0].items[5].visible = false;
           menu.model[0].items[7].visible = false;
           menu.model[0].items[8].visible = false;
+          menu.model[1].items[3].visible = false;
           break
 
         case this.constants.projectStatus.AuditInProgress:
@@ -3407,10 +3408,11 @@ export class AllProjectsComponent implements OnInit {
     if(this.selectedProjectObj.Status == this.constants.projectStatus.InProgress) {
       // this.disableStartDate = true;
       this.minDateValue = this.selectedProjectObj.ProposedStartDate;
-    } else if(this.selectedProjectObj.Status == this.constants.projectStatus.OnHold) {
+    } /*else if(this.selectedProjectObj.Status == this.constants.projectStatus.OnHold) {
       let milestones = this.selectedProjectObj.Milestones.split(';#');
       this.minDateValue = milestones.length ? this.selectedProjectObj.ProposedStartDate : null;  
-    } else {
+    } */ 
+    else {
       // this.disableStartDate = false
       this.minDateValue = null;
     }
@@ -3442,10 +3444,6 @@ export class AllProjectsComponent implements OnInit {
     }
   }
 
-  updateDetails() {
-
-  }
-
   async getResources(){
     let resources = [];
     let resouceData = Object.assign({}, this.pmConstant.FINANCE_QUERY.GET_RESOUCEBYID);
@@ -3453,6 +3451,31 @@ export class AllProjectsComponent implements OnInit {
     resources = await this.spServices.readItems(this.constants.listNames.ResourceCategorization.name, resouceData);
 
     return resources;
+  }
+
+  updateDetails(startDate, endDate,type) {
+    let taskData = {}
+    let milestoneData = {}
+    taskData['__metadata'] = { type: this.constants.listNames.Schedules.type }
+    milestoneData['__metadata'] = { type: this.constants.listNames.Schedules.type }
+    if(type == 'update') {
+      const businessDay = this.commonService.calcBusinessDays(startDate, endDate);
+      let resourceObj = this.resources[0];
+      taskData['StartDate'] = startDate;
+      taskData['DueDate'] = endDate;
+      taskData['ExpectedTime'] = resourceObj ? '' + businessDay * resourceObj.MaxHrs  : '0';
+      taskData['TATBusinessDays'] = businessDay;
+      milestoneData['Actual_x0020_Start_x0020_Date'] = startDate;
+      milestoneData['Actual_x0020_End_x0020_Date'] = endDate;
+      milestoneData['StartDate'] = startDate;
+      milestoneData['DueDate'] = endDate;
+    }
+    if(type == 'delete') {
+      taskData['Status'] = 'Deleted';
+      milestoneData['Status'] = 'Deleted';
+    }
+
+    return {taskData,milestoneData};
   }
 
   async saveProjectDate() {
@@ -3464,12 +3487,10 @@ export class AllProjectsComponent implements OnInit {
       listName: ''
     };
 
-    let taskData: any = {}
-    const milestoneData: any = {}
-      const getProjectFolder = Object.assign({}, this.pmConstant.ProjectInformation_Get_ProjectFolder_Options);
-      getProjectFolder.filter = getProjectFolder.filter.replace(/{{projectCode}}/gi, this.selectedProjectObj.ProjectCode);
-      const projectFolderResults = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, getProjectFolder);
-      const projectFolder = projectFolderResults && projectFolderResults.length ? projectFolderResults[0].ProjectFolder : '';
+    const getProjectFolder = Object.assign({}, this.pmConstant.ProjectInformation_Get_ProjectFolder_Options);
+    getProjectFolder.filter = getProjectFolder.filter.replace(/{{projectCode}}/gi, this.selectedProjectObj.ProjectCode);
+    const projectFolderResults = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, getProjectFolder);
+    const projectFolder = projectFolderResults && projectFolderResults.length ? projectFolderResults[0].ProjectFolder : '';
     this.allMilestones = this.selectedProjectObj.Milestones.split(';#');
     let months = this.pmCommonService.getMonths(this.proposedStartDate,this.proposedEndDate);
     if (months.length > 12) {
@@ -3489,27 +3510,16 @@ export class AllProjectsComponent implements OnInit {
       return false;
     }
     if(this.commonService.getMonthName(new Date(this.proposedStartDate)) === this.commonService.getMonthName(new Date(this.proposedEndDate)) && this.isMonthIncluded.length) {
-      const businessDay = this.commonService.calcBusinessDays(this.proposedStartDate, this.proposedEndDate);
-      let resourceObj = this.resources[0];
-      taskData['__metadata'] = { type: this.constants.listNames.Schedules.type }
-      taskData['StartDate'] = this.proposedStartDate;
-      taskData['DueDate'] = this.proposedEndDate;
-      taskData['ExpectedTime'] = resourceObj ? '' + businessDay * resourceObj.MaxHrs  : '0';
-      taskData['TATBusinessDays'] = businessDay;
-      milestoneData['__metadata'] = { type: this.constants.listNames.Schedules.type }
-      milestoneData['Actual_x0020_Start_x0020_Date'] = this.proposedStartDate;
-      milestoneData['Actual_x0020_End_x0020_Date'] = this.proposedEndDate;
-      milestoneData['StartDate'] = this.proposedStartDate;
-      milestoneData['DueDate'] = this.proposedEndDate;
+      let data = this.updateDetails(this.proposedStartDate,this.proposedEndDate,'update');
       for(let i=0;i<this.scheduledTasks.length;i++) {
         let element = this.scheduledTasks[i];
         if(element.ContentTypeCH == 'Task') {
-          await this.commonService.setBatchObject(batchURL, this.spServices.getItemURL(this.constants.listNames.Schedules.name, element.ID), taskData, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
+          await this.commonService.setBatchObject(batchURL, this.spServices.getItemURL(this.constants.listNames.Schedules.name, element.ID), data.taskData, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
         } else if(element.ContentTypeCH == 'Milestone') {
-          await this.commonService.setBatchObject(batchURL, this.spServices.getItemURL(this.constants.listNames.Schedules.name, element.ID), milestoneData, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
+          await this.commonService.setBatchObject(batchURL, this.spServices.getItemURL(this.constants.listNames.Schedules.name, element.ID), data.milestoneData, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
         }
       }
-    } else {//if(this.commonService.getMonthName(new Date(this.proposedStartDate)) !== this.commonService.getMonthName(new Date(this.proposedEndDate))) {
+    } else {
       let monthsObj = this.pmCommonService.getMonths(new Date(this.proposedStartDate),new Date(this.proposedEndDate));
         let milestones = this.selectedProjectObj.Milestones.split(';#')
         let deleteMonthArr = milestones.filter(e=> !monthsObj.find(m=> m.monthName == e));
@@ -3521,16 +3531,13 @@ export class AllProjectsComponent implements OnInit {
               if (arrIndex > -1) {
                 this.allMilestones.splice(arrIndex, 1);
               }
-              taskData['__metadata'] = { type: this.constants.listNames.Schedules.type }
-              taskData['Status'] = 'Deleted';
-              milestoneData['__metadata'] = { type: this.constants.listNames.Schedules.type }
-              milestoneData['Status'] = 'Deleted';
+              let data = this.updateDetails('','','delete');
               for(let i=0;i<this.scheduledTasks.length;i++) {
                 let task = this.scheduledTasks[i];
                 if(task.ContentTypeCH == 'Task' && task.Milestone == element) {
-                  await this.commonService.setBatchObject(batchURL, this.spServices.getItemURL(this.constants.listNames.Schedules.name, task.ID), taskData, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
+                  await this.commonService.setBatchObject(batchURL, this.spServices.getItemURL(this.constants.listNames.Schedules.name, task.ID), data.taskData, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
                 } else if(task.ContentTypeCH == 'Milestone' && task.Title == element) {
-                  await this.commonService.setBatchObject(batchURL, this.spServices.getItemURL(this.constants.listNames.Schedules.name, task.ID), milestoneData, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
+                  await this.commonService.setBatchObject(batchURL, this.spServices.getItemURL(this.constants.listNames.Schedules.name, task.ID), data.milestoneData, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
                 }
               }
             }
@@ -3541,24 +3548,13 @@ export class AllProjectsComponent implements OnInit {
           for (const index in monthArr) {
             if (monthArr.hasOwnProperty(index)) {
               let element = monthArr[index];
-              const businessDay = this.commonService.calcBusinessDays(element.monthStartDay, element.monthEndDay);
-              let resourceObj = this.resources[0];
-              taskData['__metadata'] = { type: this.constants.listNames.Schedules.type }
-              taskData['StartDate'] = element.monthStartDay;
-              taskData['DueDate'] = element.monthEndDay;
-              taskData['ExpectedTime'] = resourceObj ? '' + businessDay * resourceObj.MaxHrs  : '0';
-              taskData['TATBusinessDays'] = businessDay;
-              milestoneData['__metadata'] = { type: this.constants.listNames.Schedules.type }
-              milestoneData['Actual_x0020_Start_x0020_Date'] = element.monthStartDay;
-              milestoneData['Actual_x0020_End_x0020_Date'] = element.monthEndDay;
-              milestoneData['StartDate'] = element.monthStartDay;
-              milestoneData['DueDate'] = element.monthEndDay;
+              let data = this.updateDetails(element.monthStartDay,element.monthEndDay,'update');
               for(let i=0;i<this.scheduledTasks.length;i++) {
                 let task = this.scheduledTasks[i];
                 if(task.ContentTypeCH == 'Task' && task.Milestone == element.monthName) {
-                  await this.commonService.setBatchObject(batchURL, this.spServices.getItemURL(this.constants.listNames.Schedules.name, task.ID), taskData, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
+                  await this.commonService.setBatchObject(batchURL, this.spServices.getItemURL(this.constants.listNames.Schedules.name, task.ID), data.taskData, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
                 } else if(task.ContentTypeCH == 'Milestone' && task.Title == element.monthName) {
-                  await this.commonService.setBatchObject(batchURL, this.spServices.getItemURL(this.constants.listNames.Schedules.name, task.ID), milestoneData, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
+                  await this.commonService.setBatchObject(batchURL, this.spServices.getItemURL(this.constants.listNames.Schedules.name, task.ID), data.milestoneData, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
                 }
               }
             }

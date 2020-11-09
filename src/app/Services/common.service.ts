@@ -771,6 +771,10 @@ export class CommonService {
   async updateTasks(scheduleTasks ,primaryResources) {
     const batchURL = [];
     if(scheduleTasks && scheduleTasks.length && this.sharedTaskAllocateObj.oProjectDetails.projectType === 'FTE-Writing') {
+      let fteTasks = ['Training','Blocking','Meeting']
+      let allMilestones = this.sharedTaskAllocateObj.oProjectDetails.allMilestones
+      let currentMilIndex = allMilestones.indexOf(this.sharedTaskAllocateObj.oProjectDetails.currentMilestone);
+      let finalList = allMilestones.slice(currentMilIndex);
       for(let i=0;i<scheduleTasks.length;i++) {
         let element = scheduleTasks[i];
         const scUpdateData = {
@@ -779,7 +783,7 @@ export class CommonService {
           },
           AssignedToId: primaryResources ? primaryResources.Id : -1,
         };
-        if((element.Task == 'Training' || element.Task == 'Blocking' || element.Task == 'Meeting') && (this.sharedTaskAllocateObj.oProjectDetails.currentMilestone == element.Milestone || this.sharedTaskAllocateObj.oProjectDetails.nextMilestone == element.Milestone)) {
+        if(fteTasks.includes(element.Task) && finalList.length && finalList.includes(element.Milestone)) {
           const scUpdate = Object.assign({}, this.queryConfig);
           scUpdate.data = scUpdateData;
           scUpdate.listName = this.constants.listNames.Schedules.name;

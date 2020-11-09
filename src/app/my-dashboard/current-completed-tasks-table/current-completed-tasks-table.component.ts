@@ -3,7 +3,7 @@ import { ConstantsService } from 'src/app/Services/constants.service';
 import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
 import { DatePipe } from '@angular/common';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
-import { DialogService, MenuItem, Table, DynamicDialogConfig } from 'primeng';
+import { DialogService, MenuItem, Table, DynamicDialogConfig, Dropdown } from 'primeng';
 import { CommonService } from 'src/app/Services/common.service';
 import { ActivatedRoute } from '@angular/router';
 import { TimeSpentDialogComponent } from '../time-spent-dialog/time-spent-dialog.component';
@@ -41,6 +41,22 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
   selectedindex: any;
   tempClick: any;
   hideIcon: boolean = false;
+  renameSub: boolean = false;
+  public queryConfig = {
+    data: null,
+    url: '',
+    type: '',
+    listName: ''
+  };
+  subMilestonesArrayList: any;
+  taskArrayList: any;
+  subMilestonesArrayFormat: any[];
+  subMilestonesList: any[];
+  subMilestone: any;
+  createSubMilestone: boolean;
+  enteredSubMile: string;
+  errorMsg: string = '';
+
   constructor(public myDashboardConstantsService: MyDashboardConstantsService,
     private constants: ConstantsService,
     private datePipe: DatePipe,
@@ -86,12 +102,15 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
     this.taskMenu = [
       { label: 'View / Upload Documents', icon: 'pi pi-fw pi-upload', command: (e) => this.getAddUpdateDocument(data) },
       { label: 'View / Add Comment', icon: 'pi pi-fw pi-comment', command: (e) => this.getAddUpdateComment(data, false) },
-      { label: 'Project Scope', icon: 'pi pi-fw pi-file', command: (e) => this.goToProjectScope(data) },
-      { label: 'Rename Submilestone', icon: 'pi pi-fw pi-file', command: (e) => this.renameSubmilestone(data) }
+      { label: 'Project Scope', icon: 'pi pi-fw pi-file', command: (e) => this.goToProjectScope(data) }
     ];
 
     if (this.TabName !== 'MyCompletedTask') {
       this.taskMenu.push({ label: 'Mark Complete', icon: 'pi pi-fw pi-check', command: (e) => this.checkCompleteTask(data) })
+    }
+
+    if(data.ProjectType == 'FTE-Writing') {
+      this.taskMenu.push({ label: 'Rename Submilestone', icon: 'pi pi-fw pi-pencil', command: (e) => this.renameSubmilestone(data) });
     }
   }
 
@@ -484,6 +503,7 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
       const TaskProject = this.sharedObject.DashboardData.ProjectCodes ?
         this.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === task.ProjectCode) : null;
       let DisplayTitle;
+      let ProjectType = TaskProject !== undefined ? TaskProject.ProjectType : '';
       if (TaskProject !== undefined) {
         if (task.SubMilestones) {
           if (task.SubMilestones === 'Default') {
@@ -537,7 +557,8 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
         Title: task.Title,
         ParentSlot: task.ParentSlot,
         allocationPerDay: task.AllocationPerDay,
-        showAllocationSplit: task.AllocationPerDay ? true : false
+        showAllocationSplit: task.AllocationPerDay ? true : false,
+        ProjectType
       });
     }
     this.loaderenable = false;
@@ -553,8 +574,171 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
     this.dailyAllocateOP.hideOverlay();
   }
 
-  renameSubmilestone(rowData) {
-    console.log(rowData)
+  async getSubmilestones(projectCode, milestone) {
+    const batchUrl = [];
+    const dataObj = Object.assign({}, this.queryConfig);
+    const schedulesQuery = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.FTESchedulesSubMilestones);
+    schedulesQuery.filter = schedulesQuery.filter.replace('{{ProjectCode}}', projectCode).replace('{{Milestone}}', milestone);
+    dataObj.url = this.spOperations.getReadURL(this.constants.listNames.Schedules.name, schedulesQuery);
+    dataObj.listName = this.constants.listNames.Schedules.name;
+    dataObj.type = 'GET';
+    batchUrl.push(dataObj);
+
+    // Task list
+    const taskObj = Object.assign({}, this.queryConfig);
+    const taskQuery = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.FTESchedulesTask);
+    taskQuery.filter = taskQuery.filter.replace('{{ProjectCode}}', projectCode).replace('{{Milestone}}', milestone);
+    taskObj.url = this.spOperations.getReadURL(this.constants.listNames.Schedules.name, taskQuery);
+    taskObj.listName = this.constants.listNames.Schedules.name;
+    taskObj.type = 'GET';
+    batchUrl.push(taskObj);
+    const res = await this.spOperations.executeBatch(batchUrl);
+    this.subMilestonesArrayList = res.length ? res[0].retItems : [];
+    this.taskArrayList = res.length ? res[1].retItems : [];
+    console.log('this.taskArrayList ', this.taskArrayList);
+    if (this.subMilestonesArrayList.length) {
+      this.setSubmilestones(this.subMilestonesArrayList[0]);
+    }
+    console.log('this.subMilestonesArrayList ', this.subMilestonesArrayList);
   }
 
+  setSubmilestones(items) {
+    this.subMilestonesArrayFormat = [];
+    this.subMilestonesArrayFormat = items.SubMilestones ? items.SubMilestones.split(';#') : [];
+    this.subMilestonesArrayFormat = this.subMilestonesArrayFormat.filter(value => Object.keys(value).length !== 0);
+    const array = [];
+    this.subMilestonesArrayFormat.forEach(element => {
+      element ? array.push({ label: element.split(':')[0], value: element }) : '';
+    });
+    this.subMilestonesList = array;
+  }
+
+  onChangeDD(value: any) {
+    if (value) {
+        this.createSubMilestone = false;
+        this.enteredSubMile = '';
+    }
+  }
+
+  onSearchChange(val) {
+    this.enteredSubMile = val;
+    this.createSubMilestone = true;
+  }
+
+  checkSubMilestone(val) {
+    if (val) {
+      const item = val + ':1:In Progress';
+      const lowerCaseSubMile = this.subMilestonesArrayFormat && this.subMilestonesArrayFormat.length ?
+        this.subMilestonesArrayFormat.map((ele) => ele.toLowerCase()) : [];
+      const found = lowerCaseSubMile.indexOf(item.toLowerCase());
+      if (found === -1) {
+        this.createSubMilestone = true;
+        this.subMilestonesArrayFormat.push(item);
+      } else {
+        this.createSubMilestone = false;
+      }
+      return;
+    }
+  }
+
+  clearFilter(dropdown: Dropdown) {
+    if (dropdown.clearClick) {
+      this.subMilestone = '';
+      dropdown.resetFilter();
+      dropdown.focus();
+    }
+  }
+  
+  async renameSubmilestone(rowData) {
+    await this.getSubmilestones(rowData.ProjectCode, rowData.Milestone);
+    this.renameSub = true;
+  }
+
+  onUpdate() {
+  const batchUrl = [];
+    this.checkSubMilestone(this.enteredSubMile);
+    if (!this.subMilestone) {
+      this.errorMsg = 'Sub Milestone is required.';
+      return false;
+    } else if(typeof(this.subMilestone) == 'string' && this.subMilestone.length > 30) {
+      this.errorMsg = 'Maximum Sub Milestone character length is 30 only.';
+      return false;
+    } else {
+      this.errorMsg = '';
+    }
+
+    if (this.createSubMilestone) {
+      const array = [];
+      this.subMilestonesArrayFormat.forEach(ele => {
+        if (!ele.includes(';#')) {
+          array.push(ele);
+        } else {
+          array.push(ele);
+        }
+      });
+
+      let milestoneDataObj = {};
+      milestoneDataObj = {
+        SubMilestones: array.join(';#')
+      };
+
+      /* tslint:disable:no-string-literal */
+      milestoneDataObj['__metadata'] = { type: this.constants.listNames.Schedules.type };
+      /* tslint:enable:no-string-literal */
+
+      const milestoneObj = Object.assign({}, this.queryConfig);
+      milestoneObj.url = this.spOperations.getItemURL(
+        this.constants.listNames.Schedules.name, this.subMilestonesArrayList[0].ID);
+      milestoneObj.listName = this.constants.listNames.Schedules.name;
+      milestoneObj.type = 'PATCH';
+      milestoneObj.data = milestoneDataObj;
+      batchUrl.push(milestoneObj);
+    }
+
+    let taskObj = {};
+    const taskLength = this.taskArrayList.length ? this.taskArrayList.length + 1 : '';
+    taskObj = {
+      SubMilestones: this.subMilestone.label ? this.subMilestone.label :
+        this.subMilestone,
+    };
+    /* tslint:disable:no-string-literal */
+    taskObj['__metadata'] = { type: this.constants.listNames.Schedules.type };
+    /* tslint:enable:no-string-literal */
+
+    const invObj = Object.assign({}, this.queryConfig);
+    invObj.url = this.spOperations.getReadURL(this.constants.listNames.Schedules.name);
+    invObj.listName = this.constants.listNames.Schedules.name;
+    invObj.type = 'PATCH';
+    invObj.data = taskObj;
+    batchUrl.push(invObj);
+    console.log('final batchUrl ', batchUrl);
+
+    this.submit(batchUrl);
+    this.renameSub = false;
+  }
+
+  async submit(batchUrl: any) {
+    this.constants.loader.isPSInnerLoaderHidden = false;
+    
+    if (batchUrl.length) {
+      const res: any = await this.spOperations.executeBatch(batchUrl);
+      console.log('res ', res);
+      if (res.length) {
+        if (res[0].retItems.hasError) {
+          const errorMsg = res[0].retItems.message.value;
+          this.commonService.showToastrMessage(this.constants.MessageType.error,errorMsg,false);
+          return false;
+        }
+
+        this.commonService.showToastrMessage(this.constants.MessageType.success,'Task Submilestone Updated',false);
+        this.constants.loader.isPSInnerLoaderHidden = true;
+      }
+    }
+  }
+
+  cancelSub() {
+    this.enteredSubMile = '';
+    this.createSubMilestone = false;
+    this.renameSub = false;
+  }
 }

@@ -9,7 +9,7 @@
 
     <div class="ui-fluid" fxLayout="column" fxFlex="18">
         <span class="header">Primary Resources</span>
-        <p-autoComplete [(ngModel)]="primaryResoucesusers" [suggestions]="filterPrimaryResources" (completeMethod)="filterUsers($event)" [minLength]="1" placeholder="Select Resources" field="UserName" [multiple]="false" scrollHeight="135px" [dropdown]="true" class="primaryResource">
+        <p-autoComplete [(ngModel)]="primaryResoucesusers" [suggestions]="filterPrimaryResources" (completeMethod)="filterUsers($event)" [minLength]="1" placeholder="Select Resources" field="UserName" [multiple]="!forFTE" scrollHeight="135px" [dropdown]="true" class="primaryResource">
             <ng-template let-primaryResoucesusers pTemplate="item">
                 <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
                     <div class="user-name">
