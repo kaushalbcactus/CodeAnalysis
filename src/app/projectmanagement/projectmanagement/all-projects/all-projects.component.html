@@ -543,7 +543,7 @@
         <div class="ui-grid-col-4">Proposed Start Date</div>
         <p-calendar  class="pcalendarClass" [(ngModel)]="proposedStartDate"   [disabledDays]="[0,6]"   [readonlyInput]="true"   dateFormat="dd M, yy"   appendTo="body"   hideOnDateTimeSelect="true"   [required]="true"   [stepMinute]="15"   [showIcon]="true"
           [showOnFocus]="false"   [monthNavigator]="true"   [yearNavigator]="true"     yearRange="{{yearRange}}" [inputStyle]="{'width': '80%', 'min-width': '80%'}"
-         inputStyleClass="ngPrime-red" (onClose)="projectDateChange('start')" [minDate]="minDateValue">
+         inputStyleClass="ngPrime-red" (onClose)="projectDateChange('start')" [disabled]="disableStartDate" [minDate]="minDateValue">
         </p-calendar>
     </div>
     <div class="ui-grid-row mt-20">

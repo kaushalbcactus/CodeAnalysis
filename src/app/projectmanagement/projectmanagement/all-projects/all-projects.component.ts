@@ -165,7 +165,7 @@ export class AllProjectsComponent implements OnInit {
   scheduledTasks: any = [];
   resources: any[];
   isMonthIncluded: any;
-  disableStartDate: boolean;
+  disableStartDate: boolean = false;
   allMilestones: any;
   constructor(
     public pmObject: PMObjectService,
@@ -3406,14 +3406,14 @@ export class AllProjectsComponent implements OnInit {
   async editProjectDate() {
     this.scheduledTasks = [];
     if(this.selectedProjectObj.Status == this.constants.projectStatus.InProgress) {
-      // this.disableStartDate = true;
+      this.disableStartDate = true;
       this.minDateValue = this.selectedProjectObj.ProposedStartDate;
     } /*else if(this.selectedProjectObj.Status == this.constants.projectStatus.OnHold) {
       let milestones = this.selectedProjectObj.Milestones.split(';#');
       this.minDateValue = milestones.length ? this.selectedProjectObj.ProposedStartDate : null;  
     } */ 
     else {
-      // this.disableStartDate = false
+      this.disableStartDate = false
       this.minDateValue = null;
     }
     setTimeout(() => {
@@ -3462,13 +3462,13 @@ export class AllProjectsComponent implements OnInit {
       const businessDay = this.commonService.calcBusinessDays(startDate, endDate);
       let resourceObj = this.resources[0];
       taskData['StartDate'] = startDate;
-      taskData['DueDate'] = endDate;
+      taskData['DueDateDT'] = endDate;
       taskData['ExpectedTime'] = resourceObj ? '' + businessDay * resourceObj.MaxHrs  : '0';
       taskData['TATBusinessDays'] = businessDay;
       milestoneData['Actual_x0020_Start_x0020_Date'] = startDate;
       milestoneData['Actual_x0020_End_x0020_Date'] = endDate;
       milestoneData['StartDate'] = startDate;
-      milestoneData['DueDate'] = endDate;
+      milestoneData['DueDateDT'] = endDate;
     }
     if(type == 'delete') {
       taskData['Status'] = 'Deleted';

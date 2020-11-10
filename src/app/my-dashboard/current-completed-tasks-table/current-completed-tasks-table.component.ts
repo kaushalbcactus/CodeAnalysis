@@ -654,7 +654,7 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
     this.renameSub = true;
   }
 
-  onUpdate() {
+  async onUpdate() {
   const batchUrl = [];
     this.checkSubMilestone(this.enteredSubMile);
     if (!this.subMilestone) {
@@ -696,7 +696,6 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
     }
 
     let taskObj = {};
-    const taskLength = this.taskArrayList.length ? this.taskArrayList.length + 1 : '';
     taskObj = {
       SubMilestones: this.subMilestone.label ? this.subMilestone.label :
         this.subMilestone,
@@ -704,13 +703,16 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
     /* tslint:disable:no-string-literal */
     taskObj['__metadata'] = { type: this.constants.listNames.Schedules.type };
     /* tslint:enable:no-string-literal */
-
-    const invObj = Object.assign({}, this.queryConfig);
-    invObj.url = this.spOperations.getReadURL(this.constants.listNames.Schedules.name);
-    invObj.listName = this.constants.listNames.Schedules.name;
-    invObj.type = 'PATCH';
-    invObj.data = taskObj;
-    batchUrl.push(invObj);
+    for(let i=0;i<this.taskArrayList.length;i++){
+      let element = this.taskArrayList[i];
+      await this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constants.listNames.Schedules.name, element.ID), taskObj, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
+    }
+    // const invObj = Object.assign({}, this.queryConfig);
+    // invObj.url = this.spOperations.getReadURL(this.constants.listNames.Schedules.name);
+    // invObj.listName = this.constants.listNames.Schedules.name;
+    // invObj.type = 'PATCH';
+    // invObj.data = taskObj;
+    // batchUrl.push(invObj);
     console.log('final batchUrl ', batchUrl);
 
     this.submit(batchUrl);

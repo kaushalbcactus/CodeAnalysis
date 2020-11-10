@@ -95,7 +95,7 @@ export class AppComponent implements OnDestroy {
   }
 
   async initSPLoggedInUser() {
-    this.globalService.currentUser.userId = window.location.href.indexOf('localhost') > -1 ? 79
+    this.globalService.currentUser.userId = window.location.href.indexOf('localhost') > -1 ? 286
      : _spPageContextInfo.userId;
     this.globalService.currentUser.email = window.location.href.indexOf('localhost') > -1 ?
       'sneha.danduk@cactusglobal.com' : _spPageContextInfo.userEmail;
