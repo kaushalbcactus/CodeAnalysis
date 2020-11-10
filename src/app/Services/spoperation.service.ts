@@ -310,7 +310,7 @@ export class SPOperationService {
   }
 
   getFilesFromFoldersURL(folderName: string) {
-    return this.baseUrl + '/_api/web/GetFolderByServerRelativeUrl(\'' + folderName + '\')/Files?$expand=ListItemAllFields';
+    return this.baseUrl + '/_api/web/GetFolderByServerRelativeUrl(\'' + folderName + '\')/Files?$expand=ListItemAllFields, ModifiedBy';
   }
 
   async readFiles(folderName) {
@@ -792,10 +792,12 @@ export class SPOperationService {
     const name = zipName + '.zip';
     // tslint:disable-next-line:prefer-for-of
     for (let counter = 0; counter < files.length; counter++) {
+      if (files[counter]) {
       const element = files[counter];
       const fileData: any = await this.getFile(element);
       const b: any = new Blob([fileData], { type: '' + fileData.type + '' });
       zip.file(element.substring(element.lastIndexOf('/') + 1), b);
+      }
     }
     zip.generateAsync({ type: 'blob' }).then((content) => {
       if (content) {

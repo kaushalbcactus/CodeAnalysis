@@ -1,0 +1,40 @@
+::ng-deep .savebtn {
+  background-color: #b71c1c !important;
+  padding: 6px 30px !important;
+  color: #fff !important;
+  border-radius: 4px !important;
+  border: none !important;
+  font-size: 16px !important;
+  margin: 0px 6px !important;
+  cursor: pointer !important;
+}
+::ng-deep .savebtn:hover {
+  background-color: #d92121 !important;
+  transition: 0.3s ease-in !important;
+}
+::ng-deep .cancelbtn {
+  background-color: #fafafa !important;
+  padding: 6px 30px !important;
+  color: #222222 !important;
+  border-radius: 4px !important;
+  border: none !important;
+  font-size: 16px !important;
+  margin: 0px 6px !important;
+  cursor: pointer !important;
+}
+::ng-deep .cancelbtn:hover {
+  background-color: #d7d7d7;
+  transition: 0.3s ease-in;
+}
+::ng-deep .footer {
+  background-color: #ffffff;
+  color: #333333;
+  padding: 0.571em 1em;
+  margin: 0;
+  text-align: right;
+  position: relative;
+  top: -1px;
+}
+.fileName {
+  width: 80%;
+}

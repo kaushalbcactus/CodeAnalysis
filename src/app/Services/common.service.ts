@@ -1092,7 +1092,7 @@ export class CommonService {
     return (currentYear.getFullYear() - 10) + ':' + (currentYear.getFullYear() + 10);
   }
 
-  showToastrMessage(type: string, message: string, stickyenable: boolean, showmodal?: boolean, summary?:string) {
+  showToastrMessage(type: string, message: string, stickyenable: boolean, showmodal?: boolean, summary?: string) {
     let summaryMessage = '';
     if (type === this.constants.MessageType.warn) {
       summaryMessage = 'Warn Message';
@@ -1103,11 +1103,11 @@ export class CommonService {
     } else if (type === this.constants.MessageType.info) {
       summaryMessage = 'Info Message';
     }
-    if(summary){
+    if (summary) {
       summaryMessage = summary;
     }
 
-    this.messageService.add({ key:  showmodal ? 'cls_ModaltoastrMessage' : 'cls_toastrMessage', severity: type, summary: summaryMessage, detail: message, sticky: stickyenable });
+    this.messageService.add({ key: showmodal ? 'cls_ModaltoastrMessage' : 'cls_toastrMessage', severity: type, summary: summaryMessage, detail: message, sticky: stickyenable });
 
   }
 
@@ -1164,10 +1164,17 @@ export class CommonService {
       const workingDays = this.calcBusinessDays(startDate, endDate);
       if (workingDays > days) {
         errorMsgs = taskName ?
-        errorMsgs + 'Task \'' + taskName + '\' duration is ' + workingDays + ' days. Please select dates within 50 working days.\n' :
-        errorMsgs + 'FTE Task duration is ' + workingDays + ' days. Please select dates within 50 working days.\n';
+          errorMsgs + 'Task \'' + taskName + '\' duration is ' + workingDays + ' days. Please select dates within 50 working days.\n' :
+          errorMsgs + 'FTE Task duration is ' + workingDays + ' days. Please select dates within 50 working days.\n';
       }
     }
     return errorMsgs;
+  }
+
+  groupBy(list, props) {
+    return list.reduce((a, b) => {
+      (a[b[props]] = a[b[props]] || []).push({data: b});
+      return a;
+    }, {});
   }
 }
