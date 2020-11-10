@@ -224,6 +224,8 @@ export class PMObjectService {
       BillingEntity: "",
       BilledBy: "",
       PracticeArea: "",
+      BusinessVertical:'',
+      Currency:'',
       Priority: "",
       ProjectCode: "",
       ProjectStatus: "",

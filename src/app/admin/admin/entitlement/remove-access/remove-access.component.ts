@@ -381,7 +381,7 @@ export class RemoveAccessComponent implements OnInit {
           const CM1Options = Object.assign({}, options);
           const CM1EndPoint = this.spServices.getReadURL(listName, endPoint);
           if (this.attribute === this.adminConstants.ATTRIBUTES.PROJECTCODE || this.attribute === this.adminConstants.ATTRIBUTES.SOWCODE) {
-            CM1Options.url = CM1EndPoint.replace('{{userRole}}', 'CMLevel1/ID eq ' + filterResource.UserNamePG.ID + 'or CMLevel2/ID eq ' + filterResource.UserNamePG.ID + '');
+            CM1Options.url = CM1EndPoint.replace('{{userRole}}', ' ( CMLevel1/ID eq ' + filterResource.UserNamePG.ID + ' or CMLevel2/ID eq ' + filterResource.UserNamePG.ID + ' )');
           }
           if (this.attribute === this.adminConstants.ATTRIBUTES.CLIENTDISSATISFACTION) {
             CM1Options.url = CM1EndPoint.replace('{{userRole}}', 'CS/ID eq ' + filterResource.UserNamePG.ID + '');
@@ -396,10 +396,10 @@ export class RemoveAccessComponent implements OnInit {
           const DeliveryLevel1Options = Object.assign({}, options);
           const DeliveryLevel1EndPoint = this.spServices.getReadURL(listName, endPoint);
           if (this.attribute === this.adminConstants.ATTRIBUTES.PROJECTCODE || this.attribute === this.adminConstants.ATTRIBUTES.SOWCODE) {
-            DeliveryLevel1Options.url = DeliveryLevel1EndPoint.replace('{{userRole}}', 'DeliveryLevel1/ID eq ' + filterResource.UserNamePG.ID + ' or DeliveryLevel2/ID eq ' + filterResource.UserNamePG.ID + '');
+            DeliveryLevel1Options.url = DeliveryLevel1EndPoint.replace('{{userRole}}', ' ( DeliveryLevel1/ID eq ' + filterResource.UserNamePG.ID + ' or DeliveryLevel2/ID eq ' + filterResource.UserNamePG.ID + ' )');
           }
           if (this.attribute === this.adminConstants.ATTRIBUTES.CLIENTDISSATISFACTION) {
-            DeliveryLevel1Options.url = DeliveryLevel1EndPoint.replace('{{userRole}}', 'TL/ID eq ' + filterResource.UserNamePG.ID + ' or ASD/ID eq ' + filterResource.UserNamePG.ID + '');
+            DeliveryLevel1Options.url = DeliveryLevel1EndPoint.replace('{{userRole}}', ' ( TL/ID eq ' + filterResource.UserNamePG.ID + ' or ASD/ID eq ' + filterResource.UserNamePG.ID + ' )');
           }
           if (this.attribute === this.adminConstants.ATTRIBUTES.POSITIVEFEEDBACK) {
             DeliveryLevel1Options.url = DeliveryLevel1EndPoint.replace('{{userRole}}', 'DeliveryLeads/ID eq ' + filterResource.UserNamePG.ID + '');
@@ -660,49 +660,52 @@ export class RemoveAccessComponent implements OnInit {
             type: '',
             listName: ''
           };
-          this.selectedAllRowsItem.forEach(async element => {
-            element.CMLevel1IDArray = [];
-            element.DeliveryLevel1IDArray = [];
-            element.AllOperationresourcesIDArray = [];
-            element.AllResourcesIDArray = [];
-            element.TLIDArray = [];
-            element.CSIDArray = [];
-            element.DeliveryLeadsIDArray = [];
+
+
+          for(var i=0;i < this.selectedAllRowsItem.length; i++){
+
+            this.selectedAllRowsItem[i].CMLevel1IDArray = [];
+            this.selectedAllRowsItem[i].DeliveryLevel1IDArray = [];
+            this.selectedAllRowsItem[i].AllOperationresourcesIDArray = [];
+            this.selectedAllRowsItem[i].AllResourcesIDArray = [];
+            this.selectedAllRowsItem[i].TLIDArray = [];
+            this.selectedAllRowsItem[i].CSIDArray = [];
+            this.selectedAllRowsItem[i].DeliveryLeadsIDArray = [];
             switch (this.attribute) {
               case this.adminConstants.ATTRIBUTES.PROJECTCODE:
               case this.adminConstants.ATTRIBUTES.SOWCODE:
-                if (element.CMLevel1 && element.CMLevel1.results && element.CMLevel1.results.length) {
-                  element.CMLevel1IDArray = element.CMLevel1.results.filter(x => x.ID !== this.filterResource.UserNamePG.ID).map(x => x.ID);
+                if (this.selectedAllRowsItem[i].CMLevel1 && this.selectedAllRowsItem[i].CMLevel1.results && this.selectedAllRowsItem[i].CMLevel1.results.length) {
+                  this.selectedAllRowsItem[i].CMLevel1IDArray = this.selectedAllRowsItem[i].CMLevel1.results.filter(x => x.ID !== this.filterResource.UserNamePG.ID).map(x => x.ID);
                 }
-                if (element.DeliveryLevel1 && element.DeliveryLevel1.results && element.DeliveryLevel1.results.length) {
-                  element.DeliveryLevel1IDArray = element.DeliveryLevel1.results.filter(x => x.ID !== this.filterResource.UserNamePG.ID).map(x => x.ID);
+                if (this.selectedAllRowsItem[i].DeliveryLevel1 && this.selectedAllRowsItem[i].DeliveryLevel1.results && this.selectedAllRowsItem[i].DeliveryLevel1.results.length) {
+                  this.selectedAllRowsItem[i].DeliveryLevel1IDArray = this.selectedAllRowsItem[i].DeliveryLevel1.results.filter(x => x.ID !== this.filterResource.UserNamePG.ID).map(x => x.ID);
                 }
                 if (this.attribute === this.adminConstants.ATTRIBUTES.PROJECTCODE) {
-                  if (element.AllOperationresources && element.AllOperationresources.results && element.AllOperationresources.results.length) {
-                    element.AllOperationresourcesIDArray = element.AllOperationresources.results.filter(x => x.ID !== this.filterResource.UserNamePG.ID).map(x => x.ID);
+                  if (this.selectedAllRowsItem[i].AllOperationresources && this.selectedAllRowsItem[i].AllOperationresources.results && this.selectedAllRowsItem[i].AllOperationresources.results.length) {
+                    this.selectedAllRowsItem[i].AllOperationresourcesIDArray = this.selectedAllRowsItem[i].AllOperationresources.results.filter(x => x.ID !== this.filterResource.UserNamePG.ID).map(x => x.ID);
                   }
-                  this.getUserBatchURL(options, this.constants.listNames.ProjectInformation.name, this.constants.listNames.ProjectInformation.type, element, batchURL)
+                  this.getUserBatchURL(options, this.constants.listNames.ProjectInformation.name, this.constants.listNames.ProjectInformation.type, this.selectedAllRowsItem[i], batchURL)
                 } else {
-                  if (element.AllResources && element.AllResources.results && element.AllResources.results.length) {
-                    element.AllResourcesIDArray = element.AllResources.results.filter(x => x.ID !== this.filterResource.UserNamePG.ID).map(x => x.ID);
+                  if (this.selectedAllRowsItem[i].AllResources && this.selectedAllRowsItem[i].AllResources.results && this.selectedAllRowsItem[i].AllResources.results.length) {
+                    this.selectedAllRowsItem[i].AllResourcesIDArray = this.selectedAllRowsItem[i].AllResources.results.filter(x => x.ID !== this.filterResource.UserNamePG.ID).map(x => x.ID);
                   }
-                  this.getUserBatchURL(options, this.constants.listNames.SOW.name, this.constants.listNames.SOW.type, element, batchURL)
+                  this.getUserBatchURL(options, this.constants.listNames.SOW.name, this.constants.listNames.SOW.type, this.selectedAllRowsItem[i], batchURL)
                 }
                 break;
               case this.adminConstants.ATTRIBUTES.CLIENTDISSATISFACTION:
-                if (element.TL && element.TL.results && element.TL.results.length) {
-                  element.TLIDArray = element.TL.results.filter(x => x.ID !== this.filterResource.UserNamePG.ID).map(x => x.ID);
+                if (this.selectedAllRowsItem[i].TL && this.selectedAllRowsItem[i].TL.results && this.selectedAllRowsItem[i].TL.results.length) {
+                  this.selectedAllRowsItem[i].TLIDArray = this.selectedAllRowsItem[i].TL.results.filter(x => x.ID !== this.filterResource.UserNamePG.ID).map(x => x.ID);
                 }
-                if (element.CS && element.CS.results && element.CS.results.length) {
-                  element.CSIDArray = element.CS.results.filter(x => x.ID !== this.filterResource.UserNamePG.ID).map(x => x.ID);
+                if (this.selectedAllRowsItem[i].CS && this.selectedAllRowsItem[i].CS.results && this.selectedAllRowsItem[i].CS.results.length) {
+                  this.selectedAllRowsItem[i].CSIDArray = this.selectedAllRowsItem[i].CS.results.filter(x => x.ID !== this.filterResource.UserNamePG.ID).map(x => x.ID);
                 }
-                this.getUserBatchURL(options, this.constants.listNames.QualityComplaints.name, this.constants.listNames.QualityComplaints.type, element, batchURL)
+                this.getUserBatchURL(options, this.constants.listNames.QualityComplaints.name, this.constants.listNames.QualityComplaints.type, this.selectedAllRowsItem[i], batchURL)
                 break;
               case this.adminConstants.ATTRIBUTES.POSITIVEFEEDBACK:
-                if (element.DeliveryLeads && element.DeliveryLeads.results && element.DeliveryLeads.results.length) {
-                  element.DeliveryLeadsIDArray = element.DeliveryLeads.results.filter(x => x.ID !== this.filterResource.UserNamePG.ID).map(x => x.ID);
+                if (this.selectedAllRowsItem[i].DeliveryLeads && this.selectedAllRowsItem[i].DeliveryLeads.results && this.selectedAllRowsItem[i].DeliveryLeads.results.length) {
+                  this.selectedAllRowsItem[i].DeliveryLeadsIDArray = this.selectedAllRowsItem[i].DeliveryLeads.results.filter(x => x.ID !== this.filterResource.UserNamePG.ID).map(x => x.ID);
                 }
-                this.getUserBatchURL(options, this.constants.listNames.PositiveFeedbacks.name, this.constants.listNames.PositiveFeedbacks.type, element, batchURL)
+                this.getUserBatchURL(options, this.constants.listNames.PositiveFeedbacks.name, this.constants.listNames.PositiveFeedbacks.type, this.selectedAllRowsItem[i], batchURL)
                 break;
             }
             if (batchURL.length === 99) {
@@ -710,7 +713,7 @@ export class RemoveAccessComponent implements OnInit {
               await this.spServices.executeBatch(batchURL);
               batchURL = [];
             }
-          });
+          }
           if (batchURL.length) {
             this.commonService.SetNewrelic('admin', 'admin-entitlement-removeAccess', 'removeUsers');
             await this.spServices.executeBatch(batchURL);
