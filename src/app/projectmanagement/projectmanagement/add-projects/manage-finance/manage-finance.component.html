@@ -122,6 +122,12 @@
                     <p-button type="button" styleClass="pmBtn" class="mr-5" label="Add Po" appendTo="body" (click)="addPoToProject()">
                     </p-button>
                 </div>
+
+                <button pButton type="button" label="Move Line Items" style="float: right;display: inline-flex;" class="ui-button-raised ui-button-danger MoveLineItem" iconPos="right" (click)="enableMovePO()"> 
+                    <i class="fa fa-exchange" aria-hidden="true" style="padding: 8px 0px 8px 8px;"></i>
+                     
+                </button>
+
             </div>
             <div *ngIf="showPo">
                 <ng-container *ngFor="let poObj of poData">
@@ -210,7 +216,7 @@
                                     <td>{{rowData.pocText}}</td>
                                     <td>{{rowData.address}}</td>
                                     <td>
-
+                                        <span *ngIf="!enableCheckList">
                                         <i *ngIf="rowData.isInvoiceItemConfirm"  class="pi pi-check"  style="font-size:2em;cursor: pointer;vertical-align: middle;" (click)="confirmInvoiceItem(rowData)"></i>
                                         <i *ngIf="!rowData.isInvoiceItemConfirm && rowData.reasonsArray " class="pi pi-info-circle" (click)="op2.toggle($event)" style="font-size:2em;cursor: pointer; vertical-align: middle;"></i>
                                         <span class="infoindicator" style="position: relative;">
@@ -222,8 +228,11 @@
                                         </span>
 
                                         <i *ngIf="rowData.isInvoiceItemEdit || rowData.type== 'oop' && rowData.status== 'Scheduled' "  class="pi pi-pencil"  style="font-size:2em;cursor: pointer;vertical-align: middle;" (click)="editInvoiceItem(rowData)"></i>
-                                        <i *ngIf="rowData.type == 'oop' && rowData.status == 'Scheduled'"   class="pi pi-trash"  style="font-size:2em;cursor: pointer;vertical-align: middle;" (click)="cancelOOP(rowData)"></i>
-
+                                        <i *ngIf="rowData.type == 'oop' && rowData.status == 'Scheduled'"  class="pi pi-trash"  style="font-size:2em;cursor: pointer;vertical-align: middle;" (click)="cancelOOP(rowData)"></i>
+                                        </span>
+                                        <span *ngIf="enableCheckList">
+                                            <p-checkbox  binary="true"></p-checkbox>
+                                        </span>
                                     </td>
                                 </tr>
                             </ng-template>
