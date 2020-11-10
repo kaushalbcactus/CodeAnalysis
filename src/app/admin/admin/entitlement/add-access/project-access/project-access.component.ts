@@ -189,61 +189,92 @@ export class ProjectAccessComponent implements OnInit {
     }
   }
 
+
   GetAccessData(RuleType) {
     for (var i = 0; i < 2; i++) {
       const data = {
         label: i === 0 ? "ownerShip" : "accessUsers",
         selectedValue: "",
-        values:
-          i === 0
-            ? this.constant.RulesType.DELIVERY === RuleType
-              ? this.filterData.RESOURCECATEGORIZATION.filter(
-                  (c) => c.RoleCH === this.constant.RoleType.DELIVERY2
-                ).map(
-                  (o) =>
-                    new Object({
-                      label: o.UserNamePG.Title,
-                      value: o.UserNamePG.Title,
-                      Id: o.UserNamePG.ID,
-                    })
-                )
-              : this.filterData.RESOURCECATEGORIZATION.filter(
-                  (c) => c.RoleCH === this.constant.RoleType.CM2
-                ).map(
-                  (o) =>
-                    new Object({
-                      label: o.UserNamePG.Title,
-                      value: o.UserNamePG.Title,
-                      Id: o.UserNamePG.ID,
-                    })
-                )
-            : this.constant.RulesType.DELIVERY === RuleType
-            ? this.filterData.RESOURCECATEGORIZATION.filter(
-                (c) => c.RoleCH === this.constant.RoleType.DELIVERY1
-              ).map(
-                (o) =>
-                  new Object({
-                    label: o.UserNamePG.Title,
-                    value: o.UserNamePG.Title,
-                    Id: o.UserNamePG.ID,
-                  })
-              )
-            : this.filterData.RESOURCECATEGORIZATION.filter(
-                (c) => c.RoleCH === this.constant.RoleType.CM1
-              ).map(
-                (o) =>
-                  new Object({
-                    label: o.UserNamePG.Title,
-                    value: o.UserNamePG.Title,
-                    Id: o.UserNamePG.ID,
-                  })
-              ),
+        values: this.constant.RulesType.DELIVERY === RuleType ?   this.filterData.RESOURCECATEGORIZATION.filter(
+          (c) => c.RoleCH === this.constant.RoleType.DELIVERY1 || c.RoleCH === this.constant.RoleType.DELIVERY2
+        ).map(
+          (o) =>
+            new Object({
+              label: o.UserNamePG.Title,
+              value: o.UserNamePG.Title,
+              Id: o.UserNamePG.ID,
+            })
+        ) :  this.filterData.RESOURCECATEGORIZATION.filter(
+          (c) => c.RoleCH === this.constant.RoleType.CM1 || c.RoleCH === this.constant.RoleType.CM2
+        ).map(
+          (o) =>
+            new Object({
+              label: o.UserNamePG.Title,
+              value: o.UserNamePG.Title,
+              Id: o.UserNamePG.ID,
+            })
+        )
       };
       RuleType === this.constant.RulesType.DELIVERY
         ? this.filterData.DELIVERY.push(data)
         : this.filterData.CM.push(data);
     }
   }
+  // GetAccessData(RuleType) {
+  //   for (var i = 0; i < 2; i++) {
+  //     const data = {
+  //       label: i === 0 ? "ownerShip" : "accessUsers",
+  //       selectedValue: "",
+  //       values:
+  //         i === 0
+  //           ? this.constant.RulesType.DELIVERY === RuleType
+  //             ? this.filterData.RESOURCECATEGORIZATION.filter(
+  //                 (c) => c.RoleCH === this.constant.RoleType.DELIVERY2
+  //               ).map(
+  //                 (o) =>
+  //                   new Object({
+  //                     label: o.UserNamePG.Title,
+  //                     value: o.UserNamePG.Title,
+  //                     Id: o.UserNamePG.ID,
+  //                   })
+  //               )
+  //             : this.filterData.RESOURCECATEGORIZATION.filter(
+  //                 (c) => c.RoleCH === this.constant.RoleType.CM2
+  //               ).map(
+  //                 (o) =>
+  //                   new Object({
+  //                     label: o.UserNamePG.Title,
+  //                     value: o.UserNamePG.Title,
+  //                     Id: o.UserNamePG.ID,
+  //                   })
+  //               )
+  //           : this.constant.RulesType.DELIVERY === RuleType
+  //           ? this.filterData.RESOURCECATEGORIZATION.filter(
+  //               (c) => c.RoleCH === this.constant.RoleType.DELIVERY1
+  //             ).map(
+  //               (o) =>
+  //                 new Object({
+  //                   label: o.UserNamePG.Title,
+  //                   value: o.UserNamePG.Title,
+  //                   Id: o.UserNamePG.ID,
+  //                 })
+  //             )
+  //           : this.filterData.RESOURCECATEGORIZATION.filter(
+  //               (c) => c.RoleCH === this.constant.RoleType.CM1
+  //             ).map(
+  //               (o) =>
+  //                 new Object({
+  //                   label: o.UserNamePG.Title,
+  //                   value: o.UserNamePG.Title,
+  //                   Id: o.UserNamePG.ID,
+  //                 })
+  //             ),
+  //     };
+  //     RuleType === this.constant.RulesType.DELIVERY
+  //       ? this.filterData.DELIVERY.push(data)
+  //       : this.filterData.CM.push(data);
+  //   }
+  // }
 
   onTabClose(event) {}
 
@@ -550,8 +581,7 @@ export class ProjectAccessComponent implements OnInit {
         this.filterData.TEMPRULES.splice(index, 1);
         this.filterData.RULES.splice(
           this.filterData.RULES.indexOf(
-            this.filterData.RULES.find((c) => c.ID === rowData.ID)
-          ),
+            this.filterData.RULES.find((c) => c === rowData)),
           1
         );
         this.common.showToastrMessage(

@@ -275,6 +275,7 @@ export class ProjectAttributesComponent implements OnInit {
     this.pmObject.OwnerAccess.deliveryLevel2 = [];
     this.pmObject.oProjectCreation.Resources.cmLevel1.forEach(element => {
       this.pmObject.OwnerAccess.cmLevel1.push({ label: element.Title, value: element.ID });
+      this.pmObject.OwnerAccess.cmLevel2.push({ label: element.Title, value: element.ID });
     });
     this.pmObject.oProjectCreation.Resources.cmLevel2.forEach(element => {
       this.pmObject.OwnerAccess.cmLevel1.push({ label: element.Title, value: element.ID });
@@ -282,13 +283,16 @@ export class ProjectAttributesComponent implements OnInit {
     });
     this.pmObject.oProjectCreation.Resources.deliveryLevel1.forEach(element => {
       this.pmObject.OwnerAccess.deliveryLevel1.push({ label: element.Title, value: element.ID });
+      this.pmObject.OwnerAccess.deliveryLevel2.push({ label: element.Title, value: element.ID });
     });
     this.pmObject.oProjectCreation.Resources.deliveryLevel2.forEach(element => {
       this.pmObject.OwnerAccess.deliveryLevel1.push({ label: element.Title, value: element.ID });
       this.pmObject.OwnerAccess.deliveryLevel2.push({ label: element.Title, value: element.ID });
     });
     this.pmObject.OwnerAccess.cmLevel1.sort((a, b) => (a.label > b.label) ? 1 : -1);
+    this.pmObject.OwnerAccess.cmLevel2.sort((a, b) => (a.label > b.label) ? 1 : -1);
     this.pmObject.OwnerAccess.deliveryLevel1.sort((a, b) => (a.label > b.label) ? 1 : -1);
+    this.pmObject.OwnerAccess.deliveryLevel2.sort((a, b) => (a.label > b.label) ? 1 : -1);
   }
   /**
    * This method is used to initiliaze the project attributes forms.

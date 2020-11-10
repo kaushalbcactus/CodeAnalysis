@@ -3663,6 +3663,7 @@ export class TimelineComponent
             );
             if (subTempGantt && submilestoneObj.edited === true) {
               subTempGantt.edited = true;
+              subTempGantt.position = submilestoneObj.position;
             }
             if (submilestone.label !== "Default") {
               const tempsub = {
@@ -3756,9 +3757,10 @@ export class TimelineComponent
       if (restructureMilestones) {
         let tempmilestoneData = [],
           milestonesList = [];
-        restructureMilestones.nodes = this.reConfigureNodes(
-          restructureMilestones
-        );
+          debugger;
+        // restructureMilestones.nodes = this.reConfigureNodes(
+        //   restructureMilestones
+        // );
         this.restructureGanttData(
           restructureMilestones,
           tempmilestoneData,
@@ -6475,7 +6477,10 @@ export class TimelineComponent
         );
         return false;
       }
-      return this.validateTask(validateDates);
+      const bTask =  this.validateTask(validateDates);
+      if(!bTask) {
+        return false;
+      } 
       if (milestone.data.status === "In Progress") {
         const zeroItem =
           milestone.children && milestone.children.length
@@ -6516,6 +6521,7 @@ export class TimelineComponent
           return false;
         }
       }
+      debugger;
       // previousNode - Milestone
       // milestone.data. - client review
       if (

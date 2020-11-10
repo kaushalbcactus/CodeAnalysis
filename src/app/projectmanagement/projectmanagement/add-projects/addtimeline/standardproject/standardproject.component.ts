@@ -478,7 +478,7 @@ export class StandardprojectComponent implements OnInit {
 
 
       this.constants.RuleParamterArray.find(
-        (c) => c.parameterName === "Deliverable Type"
+        (c) => c.parameterName === "DeliverableType"
       ).value = this.deliverableType ? this.deliverableType:'';
   
    
@@ -2181,9 +2181,17 @@ export class StandardprojectComponent implements OnInit {
       this.pmObject.addProject.ProjectAttributes.ActiveDelivery1 = this.pmObject.OwnerAccess.selectedDeliveryAccess;
       this.pmObject.addProject.ProjectAttributes.ActiveDelivery2 = this.pmObject.OwnerAccess.selectedDeliveryOwner;
      
-      if(this.pmObject.addProject.ProjectAttributes.ActiveCM1.find(c=> c !== this.sharedObject.currentUser.userId)){
+      if(this.pmObject.addProject.ProjectAttributes.ActiveCM1.find(c=> c !== this.sharedObject.currentUser.userId) && this.pmObject.OwnerAccess.cmLevel1.find(c=>c.value === this.sharedObject.currentUser.userId)){
+
         this.pmObject.addProject.ProjectAttributes.ActiveCM1.push(this.sharedObject.currentUser.userId);
       }
+
+      if(this.pmObject.addProject.ProjectAttributes.ActiveDelivery1.find(c=> c !== this.sharedObject.currentUser.userId) && this.pmObject.OwnerAccess.deliveryLevel1.find(c=>c.value === this.sharedObject.currentUser.userId)){
+
+        this.pmObject.addProject.ProjectAttributes.ActiveDelivery1.push(this.sharedObject.currentUser.userId);
+      }
+
+
       // await this.pmCommonService.validateAndSave();
       // new code by maxwell file upload progress bar
 
