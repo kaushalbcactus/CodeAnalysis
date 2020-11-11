@@ -100,7 +100,14 @@ export class ProjectAttributesComponent implements OnInit {
           await this.setFieldProperties(this.pmObject.addProject.ProjectAttributes, sowObj, true);
           this.showEditSave = false;
 
-          await this.pmCommonService.assignValueToParameter(this.pmObject.addProject.FinanceManagement);
+          if(this.pmObject.addProject.ProjectAttributes.PracticeArea){
+            this.pmObject.addProject.ProjectAttributes.BusinessVertical = this.pmObject.addProject.ProjectAttributes.PracticeArea;
+          }
+          if(this.pmObject.addProject.FinanceManagement.Currency){
+            this.pmObject.addProject.ProjectAttributes.Currency = this.pmObject.addProject.FinanceManagement.Currency;
+          }
+          await this.pmCommonService.assignValueToParameter(this.pmObject.addProject.ProjectAttributes);
+
 
                 
         }
