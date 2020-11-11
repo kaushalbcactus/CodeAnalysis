@@ -3478,6 +3478,30 @@ export class AllProjectsComponent implements OnInit {
     return {taskData,milestoneData};
   }
 
+  async deleteMilestones(milestones,monthsObj,batchURL) {
+    let deleteMonthArr = milestones.filter(e=> !monthsObj.find(m=> m.monthName == e));
+    if(deleteMonthArr.length) {
+      for (const index in deleteMonthArr) {
+        if (deleteMonthArr.hasOwnProperty(index)) {
+          let element = deleteMonthArr[index];
+          const arrIndex = this.allMilestones.indexOf(element);
+          if (arrIndex > -1) {
+            this.allMilestones.splice(arrIndex, 1);
+          }
+          let data = this.updateDetails('','','delete');
+          for(let i=0;i<this.scheduledTasks.length;i++) {
+            let task = this.scheduledTasks[i];
+            if(task.ContentTypeCH == 'Task' && task.Milestone == element) {
+              await this.commonService.setBatchObject(batchURL, this.spServices.getItemURL(this.constants.listNames.Schedules.name, task.ID), data.taskData, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
+            } else if(task.ContentTypeCH == 'Milestone' && task.Title == element) {
+              await this.commonService.setBatchObject(batchURL, this.spServices.getItemURL(this.constants.listNames.Schedules.name, task.ID), data.milestoneData, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
+            }
+          }
+        }
+      }
+    }
+  }
+
   async saveProjectDate() {
     let batchURL = [];
     const options = {
@@ -3511,6 +3535,8 @@ export class AllProjectsComponent implements OnInit {
     }
     if(this.commonService.getMonthName(new Date(this.proposedStartDate)) === this.commonService.getMonthName(new Date(this.proposedEndDate)) && this.isMonthIncluded.length) {
       let data = this.updateDetails(this.proposedStartDate,this.proposedEndDate,'update');
+      let monthsObj = this.pmCommonService.getMonths(new Date(this.proposedStartDate),new Date(this.proposedEndDate));
+      let milestones = this.selectedProjectObj.Milestones.split(';#')
       for(let i=0;i<this.scheduledTasks.length;i++) {
         let element = this.scheduledTasks[i];
         if(element.ContentTypeCH == 'Task') {
@@ -3519,57 +3545,39 @@ export class AllProjectsComponent implements OnInit {
           await this.commonService.setBatchObject(batchURL, this.spServices.getItemURL(this.constants.listNames.Schedules.name, element.ID), data.milestoneData, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
         }
       }
+      await this.deleteMilestones(milestones,monthsObj,batchURL);
     } else {
       let monthsObj = this.pmCommonService.getMonths(new Date(this.proposedStartDate),new Date(this.proposedEndDate));
-        let milestones = this.selectedProjectObj.Milestones.split(';#')
-        let deleteMonthArr = milestones.filter(e=> !monthsObj.find(m=> m.monthName == e));
-        if(deleteMonthArr.length) {
-          for (const index in deleteMonthArr) {
-            if (deleteMonthArr.hasOwnProperty(index)) {
-              let element = deleteMonthArr[index];
-              const arrIndex = this.allMilestones.indexOf(element);
-              if (arrIndex > -1) {
-                this.allMilestones.splice(arrIndex, 1);
-              }
-              let data = this.updateDetails('','','delete');
-              for(let i=0;i<this.scheduledTasks.length;i++) {
-                let task = this.scheduledTasks[i];
-                if(task.ContentTypeCH == 'Task' && task.Milestone == element) {
-                  await this.commonService.setBatchObject(batchURL, this.spServices.getItemURL(this.constants.listNames.Schedules.name, task.ID), data.taskData, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
-                } else if(task.ContentTypeCH == 'Milestone' && task.Title == element) {
-                  await this.commonService.setBatchObject(batchURL, this.spServices.getItemURL(this.constants.listNames.Schedules.name, task.ID), data.milestoneData, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
-                }
-              }
-            }
-          }
-        }
-        if(monthsObj.filter(e=> milestones.includes(e.monthName)).length) {
-          let monthArr = monthsObj.filter(e=> milestones.includes(e.monthName))
-          for (const index in monthArr) {
-            if (monthArr.hasOwnProperty(index)) {
-              let element = monthArr[index];
-              let data = this.updateDetails(element.monthStartDay,element.monthEndDay,'update');
-              for(let i=0;i<this.scheduledTasks.length;i++) {
-                let task = this.scheduledTasks[i];
-                if(task.ContentTypeCH == 'Task' && task.Milestone == element.monthName) {
-                  await this.commonService.setBatchObject(batchURL, this.spServices.getItemURL(this.constants.listNames.Schedules.name, task.ID), data.taskData, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
-                } else if(task.ContentTypeCH == 'Milestone' && task.Title == element.monthName) {
-                  await this.commonService.setBatchObject(batchURL, this.spServices.getItemURL(this.constants.listNames.Schedules.name, task.ID), data.milestoneData, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
-                }
-              }
-            }
-          }
-        } 
+      let milestones = this.selectedProjectObj.Milestones.split(';#')
+      await this.deleteMilestones(milestones,monthsObj,batchURL);
 
-        if(monthsObj.filter(e=> !milestones.includes(e.monthName)).length) {
-          //Create new FTE Milestone tasks
-          let monthArr = monthsObj.filter(e=> !milestones.includes(e.monthName))
-          const monthName = monthArr.map(a => a.monthName);
-          this.allMilestones = [...this.allMilestones,...monthName]
-          let batchResults = await this.pmCommonService.createFTEMilestones('',projectFolder,monthArr,this.resources[0],this.selectedProjectObj.ProjectCode);
-          console.log(batchResults);
+      if(monthsObj.filter(e=> milestones.includes(e.monthName)).length) {
+        let monthArr = monthsObj.filter(e=> milestones.includes(e.monthName))
+        for (const index in monthArr) {
+          if (monthArr.hasOwnProperty(index)) {
+            let element = monthArr[index];
+            let data = this.updateDetails(element.monthStartDay,element.monthEndDay,'update');
+            for(let i=0;i<this.scheduledTasks.length;i++) {
+              let task = this.scheduledTasks[i];
+              if(task.ContentTypeCH == 'Task' && task.Milestone == element.monthName) {
+                await this.commonService.setBatchObject(batchURL, this.spServices.getItemURL(this.constants.listNames.Schedules.name, task.ID), data.taskData, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
+              } else if(task.ContentTypeCH == 'Milestone' && task.Title == element.monthName) {
+                await this.commonService.setBatchObject(batchURL, this.spServices.getItemURL(this.constants.listNames.Schedules.name, task.ID), data.milestoneData, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
+              }
+            }
+          }
         }
+      } 
+
+      if(monthsObj.filter(e=> !milestones.includes(e.monthName)).length) {
+        //Create new FTE Milestone tasks
+        let monthArr = monthsObj.filter(e=> !milestones.includes(e.monthName))
+        const monthName = monthArr.map(a => a.monthName);
+        this.allMilestones = [...this.allMilestones,...monthName]
+        let batchResults = await this.pmCommonService.createFTEMilestones('',projectFolder,monthArr,this.resources[0],this.selectedProjectObj.ProjectCode);
+        console.log(batchResults);
       }
+    }
     this.allMilestones = this.allMilestones.join(';#');
     const piUdateData = {
       __metadata: {

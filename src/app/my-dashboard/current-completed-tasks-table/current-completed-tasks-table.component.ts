@@ -109,7 +109,7 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
       this.taskMenu.push({ label: 'Mark Complete', icon: 'pi pi-fw pi-check', command: (e) => this.checkCompleteTask(data) })
     }
 
-    if(data.ProjectType == 'FTE-Writing') {
+    if(data.ProjectType == 'FTE-Writing' && data.SubMilestones) {
       this.taskMenu.push({ label: 'Rename Submilestone', icon: 'pi pi-fw pi-pencil', command: (e) => this.renameSubmilestone(data) });
     }
   }
