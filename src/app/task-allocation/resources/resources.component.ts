@@ -29,6 +29,7 @@ export class ResourcesComponent implements OnInit {
   navigationSubscription: any;
   tempClick: any;
   forFTE: boolean = false;
+  oProjectDetails: any;
   constructor(
     public sharedObject: GlobalService,
     private spService: SPOperationService,
@@ -75,9 +76,10 @@ export class ResourcesComponent implements OnInit {
     this.editorusers = [];
     this.graphicsusers = [];
     this.pubsupportusers = [];
-    this.allPrimaryResources = this.sharedTaskAllocateObj.oProjectDetails.projectType === 'FTE-Writing' ? this.resources.filter(e=> e.IsFTE === 'Yes').map(o => new Object({ Id: o.UserNamePG.ID, UserName: o.UserNamePG.Title })) : this.resources.map(o => new Object({ Id: o.UserNamePG.ID, UserName: o.UserNamePG.Title }));
+    this.allPrimaryResources = this.sharedTaskAllocateObj.oProjectDetails.projectType === 'FTE-Writing' ? this.resources.filter(e=> e.IsFTE === 'Yes' && e.Account.results.some(a=>a.Title == this.sharedTaskAllocateObj.oProjectDetails.account)).map(o => new Object({ Id: o.UserNamePG.ID, UserName: o.UserNamePG.Title })) : this.resources.map(o => new Object({ Id: o.UserNamePG.ID, UserName: o.UserNamePG.Title }));
     this.filterPrimaryResources = this.allPrimaryResources;
     const projectDetails = this.sharedTaskAllocateObj.oProjectDetails;
+    this.oProjectDetails = projectDetails;
     if (projectDetails.primaryResources.results) {
       projectDetails.primaryResources.results.forEach(resource => {
         // this.primaryResoucesusers.push({ Id: resource.ID, UserName: resource.Title });
@@ -198,8 +200,8 @@ export class ResourcesComponent implements OnInit {
           this.tempClick = undefined;
         }
       } else {
-        this.tempClick = event.target.parentElement.nextElementSibling;
-        this.tempClick.style.display = '';
+        // this.tempClick = event.target.parentElement.nextElementSibling;
+        // this.tempClick.style.display = '';
       }
 
     } else if (event.target.className === 'user-name') {

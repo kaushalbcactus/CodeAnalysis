@@ -774,7 +774,7 @@ export class CommonService {
       let fteTasks = ['Training','Blocking','Meeting']
       let allMilestones = this.sharedTaskAllocateObj.oProjectDetails.allMilestones
       let currentMilIndex = allMilestones.indexOf(this.sharedTaskAllocateObj.oProjectDetails.currentMilestone);
-      let finalList = allMilestones.slice(currentMilIndex);
+      let finalList = currentMilIndex == -1 ? allMilestones : allMilestones.slice(currentMilIndex);
       for(let i=0;i<scheduleTasks.length;i++) {
         let element = scheduleTasks[i];
         const scUpdateData = {
