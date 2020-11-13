@@ -95,7 +95,7 @@
             Sub milestones:
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
-            <p-dropdown #dd editable="true" [options]="subMilestonesList" [style]="{'width':'100%'}" appendTo="body" [(ngModel)]="subMilestone" optionLabel="label" (onChange)="onChangeDD($event.value)" (input)="onSearchChange($event.target.value)" (click)="clearFilter(dd)">
+            <p-dropdown #dd editable="true" [options]="subMilestonesList" [style]="{'width':'100%'}" appendTo="body" [(ngModel)]="subMilestone" optionLabel="label" (onChange)="onChangeDD($event.value)" (click)="clearFilter(dd)">
             </p-dropdown>
             <div *ngIf="errorMsg">
                 <div style="color: red;">{{errorMsg}}</div>

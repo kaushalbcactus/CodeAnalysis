@@ -53,7 +53,6 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
   subMilestonesArrayFormat: any[];
   subMilestonesList: any[];
   subMilestone: any;
-  createSubMilestone: boolean;
   enteredSubMile: string;
   errorMsg: string = '';
 
@@ -574,11 +573,11 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
     this.dailyAllocateOP.hideOverlay();
   }
 
-  async getSubmilestones(projectCode, milestone) {
+  async getSubmilestones(selectedItem) {
     const batchUrl = [];
     const dataObj = Object.assign({}, this.queryConfig);
     const schedulesQuery = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.FTESchedulesSubMilestones);
-    schedulesQuery.filter = schedulesQuery.filter.replace('{{ProjectCode}}', projectCode).replace('{{Milestone}}', milestone);
+    schedulesQuery.filter = schedulesQuery.filter.replace('{{ProjectCode}}', selectedItem.ProjectCode).replace('{{Milestone}}', selectedItem.Milestone);
     dataObj.url = this.spOperations.getReadURL(this.constants.listNames.Schedules.name, schedulesQuery);
     dataObj.listName = this.constants.listNames.Schedules.name;
     dataObj.type = 'GET';
@@ -587,55 +586,45 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
     // Task list
     const taskObj = Object.assign({}, this.queryConfig);
     const taskQuery = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.FTESchedulesTask);
-    taskQuery.filter = taskQuery.filter.replace('{{ProjectCode}}', projectCode).replace('{{Milestone}}', milestone);
+    taskQuery.filter = taskQuery.filter.replace('{{ProjectCode}}', selectedItem.ProjectCode).replace('{{Milestone}}', selectedItem.Milestone);
     taskObj.url = this.spOperations.getReadURL(this.constants.listNames.Schedules.name, taskQuery);
     taskObj.listName = this.constants.listNames.Schedules.name;
     taskObj.type = 'GET';
     batchUrl.push(taskObj);
     const res = await this.spOperations.executeBatch(batchUrl);
     this.subMilestonesArrayList = res.length ? res[0].retItems : [];
-    this.taskArrayList = res.length ? res[1].retItems : [];
+    this.taskArrayList = res.length ? res[1].retItems.filter(e=> e.SubMilestones == selectedItem.SubMilestones) : [];
     console.log('this.taskArrayList ', this.taskArrayList);
     if (this.subMilestonesArrayList.length) {
-      this.setSubmilestones(this.subMilestonesArrayList[0]);
+      this.setSubmilestones(this.subMilestonesArrayList[0],selectedItem);
     }
     console.log('this.subMilestonesArrayList ', this.subMilestonesArrayList);
   }
 
-  setSubmilestones(items) {
+  setSubmilestones(items,task) {
     this.subMilestonesArrayFormat = [];
     this.subMilestonesArrayFormat = items.SubMilestones ? items.SubMilestones.split(';#') : [];
     this.subMilestonesArrayFormat = this.subMilestonesArrayFormat.filter(value => Object.keys(value).length !== 0);
     const array = [];
     this.subMilestonesArrayFormat.forEach(element => {
-      element ? array.push({ label: element.split(':')[0], value: element }) : '';
+      element ? element.split(':')[0] == task.SubMilestones ? array.push({ label: element.split(':')[0], value: element }) : '' : '';
     });
     this.subMilestonesList = array;
   }
 
   onChangeDD(value: any) {
     if (value) {
-        this.createSubMilestone = false;
-        this.enteredSubMile = '';
+        this.enteredSubMile = value;
     }
-  }
-
-  onSearchChange(val) {
-    this.enteredSubMile = val;
-    this.createSubMilestone = true;
   }
 
   checkSubMilestone(val) {
     if (val) {
       const item = val + ':1:In Progress';
-      const lowerCaseSubMile = this.subMilestonesArrayFormat && this.subMilestonesArrayFormat.length ?
-        this.subMilestonesArrayFormat.map((ele) => ele.toLowerCase()) : [];
-      const found = lowerCaseSubMile.indexOf(item.toLowerCase());
-      if (found === -1) {
-        this.createSubMilestone = true;
-        this.subMilestonesArrayFormat.push(item);
-      } else {
-        this.createSubMilestone = false;
+      let submilestoneArray = this.subMilestonesArrayFormat.map(e=> e.split(':')[0]);
+      if(submilestoneArray.includes(this.taskArrayList[0].SubMilestones)) {
+        let subIndex = submilestoneArray.indexOf(this.taskArrayList[0].SubMilestones);
+        this.subMilestonesArrayFormat[subIndex] =  item;
       }
       return;
     }
@@ -650,7 +639,7 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
   }
   
   async renameSubmilestone(rowData) {
-    await this.getSubmilestones(rowData.ProjectCode, rowData.Milestone);
+    await this.getSubmilestones(rowData);
     this.renameSub = true;
   }
 
@@ -667,33 +656,31 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
       this.errorMsg = '';
     }
 
-    if (this.createSubMilestone) {
-      const array = [];
-      this.subMilestonesArrayFormat.forEach(ele => {
-        if (!ele.includes(';#')) {
-          array.push(ele);
-        } else {
-          array.push(ele);
-        }
-      });
+    const array = [];
+    this.subMilestonesArrayFormat.forEach(ele => {
+      if (!ele.includes(';#')) {
+        array.push(ele);
+      } else {
+        array.push(ele);
+      }
+    });
 
-      let milestoneDataObj = {};
-      milestoneDataObj = {
-        SubMilestones: array.join(';#')
-      };
+    let milestoneDataObj = {};
+    milestoneDataObj = {
+      SubMilestones: array.join(';#')
+    };
 
-      /* tslint:disable:no-string-literal */
-      milestoneDataObj['__metadata'] = { type: this.constants.listNames.Schedules.type };
-      /* tslint:enable:no-string-literal */
+    /* tslint:disable:no-string-literal */
+    milestoneDataObj['__metadata'] = { type: this.constants.listNames.Schedules.type };
+    /* tslint:enable:no-string-literal */
 
-      const milestoneObj = Object.assign({}, this.queryConfig);
-      milestoneObj.url = this.spOperations.getItemURL(
-        this.constants.listNames.Schedules.name, this.subMilestonesArrayList[0].ID);
-      milestoneObj.listName = this.constants.listNames.Schedules.name;
-      milestoneObj.type = 'PATCH';
-      milestoneObj.data = milestoneDataObj;
-      batchUrl.push(milestoneObj);
-    }
+    const milestoneObj = Object.assign({}, this.queryConfig);
+    milestoneObj.url = this.spOperations.getItemURL(
+      this.constants.listNames.Schedules.name, this.subMilestonesArrayList[0].ID);
+    milestoneObj.listName = this.constants.listNames.Schedules.name;
+    milestoneObj.type = 'PATCH';
+    milestoneObj.data = milestoneDataObj;
+    batchUrl.push(milestoneObj);
 
     let taskObj = {};
     taskObj = {
@@ -707,12 +694,7 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
       let element = this.taskArrayList[i];
       await this.commonService.setBatchObject(batchUrl, this.spServices.getItemURL(this.constants.listNames.Schedules.name, element.ID), taskObj, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
     }
-    // const invObj = Object.assign({}, this.queryConfig);
-    // invObj.url = this.spOperations.getReadURL(this.constants.listNames.Schedules.name);
-    // invObj.listName = this.constants.listNames.Schedules.name;
-    // invObj.type = 'PATCH';
-    // invObj.data = taskObj;
-    // batchUrl.push(invObj);
+
     console.log('final batchUrl ', batchUrl);
 
     this.submit(batchUrl);
@@ -725,22 +707,19 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
     if (batchUrl.length) {
       const res: any = await this.spOperations.executeBatch(batchUrl);
       console.log('res ', res);
-      if (res.length) {
-        if (res[0].retItems.hasError) {
-          const errorMsg = res[0].retItems.message.value;
-          this.commonService.showToastrMessage(this.constants.MessageType.error,errorMsg,false);
-          return false;
-        }
+      // if (res[0].retItems.hasError) {
+      //   const errorMsg = res[0].retItems.message.value;
+      //   this.commonService.showToastrMessage(this.constants.MessageType.error,errorMsg,false);
+      //   return false;
+      // }
 
-        this.commonService.showToastrMessage(this.constants.MessageType.success,'Task Submilestone Updated',false);
-        this.constants.loader.isPSInnerLoaderHidden = true;
-      }
+      this.commonService.showToastrMessage(this.constants.MessageType.success,'Task Submilestone Updated',false);
+      this.constants.loader.isPSInnerLoaderHidden = true;
     }
   }
 
   cancelSub() {
     this.enteredSubMile = '';
-    this.createSubMilestone = false;
     this.renameSub = false;
   }
 }
