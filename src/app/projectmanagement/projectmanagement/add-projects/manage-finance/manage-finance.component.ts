@@ -1077,7 +1077,6 @@ export class ManageFinanceComponent implements OnInit {
         this.saveInvoiceEdit();
       }
     } else {
-      debugger;
       const poIndex = this.poData.findIndex(item => item.poInfo[0].poId === this.selectedPo);
       const retPOInfo = this.poData[poIndex].poInfo[0];
       this.addInvoiceError = false;
@@ -2448,8 +2447,6 @@ export class ManageFinanceComponent implements OnInit {
    * @param poInfoObj pass the poInvoice object.
    */
   getProjectFinanceBreakupData(po, projObj, poInfoObj) {
-
-    debugger;
     const data: any = {
       __metadata: { type: this.constant.listNames.ProjectFinanceBreakup.type },
     };
@@ -2629,7 +2626,6 @@ export class ManageFinanceComponent implements OnInit {
     financeBreakupArray.forEach(element => {
       const poItem = poArray.filter(poObj => poObj.Id === (element.POLookup ? element.POLookup : element.POID));
       const poExistItem = poExistingItems.find(poObj => poObj.ID === element.ID);
-      debugger;
       if (poItem && poItem.length) {
         const data = {
           __metadata: { type: this.constant.listNames.PO.type },
