@@ -106,9 +106,7 @@ export class ProjectAttributesComponent implements OnInit {
           if(this.pmObject.addProject.FinanceManagement.Currency){
             this.pmObject.addProject.ProjectAttributes.Currency = this.pmObject.addProject.FinanceManagement.Currency;
           }
-          await this.pmCommonService.assignValueToParameter(this.pmObject.addProject.ProjectAttributes);
-
-                
+          await this.pmCommonService.assignValueToParameter(this.pmObject.addProject.ProjectAttributes);     
         }
       }
     }, this.pmConstant.TIME_OUT);
