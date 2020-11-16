@@ -31,7 +31,7 @@ export class TaskAllocationConstantsService {
     };
     taskallocationComponent = {
         projectResources: {
-            select: 'ID,ProjectCode,Milestone,Status,PrevStatus,WBJID,ProjectFolder,Milestones,TA,DeliverableType,ClientLegalEntity,ProjectType,BusinessVertical, Writers/ID,Writers/Name,Writers/Title,Reviewers/ID,Reviewers/Name,Reviewers/Title,QC/ID,QC/Name,QC/Title, Editors/ID,Editors/Name,Editors/Title,PSMembers/ID,PSMembers/Name,PSMembers/Title, GraphicsMembers/ID,GraphicsMembers/Name,GraphicsMembers/Title, PrimaryResMembers/ID,PrimaryResMembers/Name,PrimaryResMembers/Title, AllDeliveryResources/ID, AllDeliveryResources/Name, AllDeliveryResources/Title,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail,IsPubSupport',
+            select: 'ID,ProjectCode,Milestone,Status,PrevStatus,WBJID,ProjectFolder,Milestones,TA,DeliverableType,ClientLegalEntity,ProjectType,BusinessVertical, Writers/ID,Writers/Name,Writers/Title,Reviewers/ID,Reviewers/Name,Reviewers/Title,QC/ID,QC/Name,QC/Title, Editors/ID,Editors/Name,Editors/Title,PSMembers/ID,PSMembers/Name,PSMembers/Title, GraphicsMembers/ID,GraphicsMembers/Name,GraphicsMembers/Title, PrimaryResMembers/ID,PrimaryResMembers/Name,PrimaryResMembers/Title, AllDeliveryResources/ID, AllDeliveryResources/Name, AllDeliveryResources/Title,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail,IsPubSupport,ProposedEndDate,ProposedStartDate',
             expand: 'Writers/ID,Writers/Name,Writers/Title,Reviewers/ID,Reviewers/Name,Reviewers/Title,QC/ID,QC/Name,QC/Title, Editors/ID,Editors/Name,Editors/Title,PSMembers/ID,PSMembers/Name,PSMembers/Title, GraphicsMembers/ID,GraphicsMembers/Name,GraphicsMembers/Title, PrimaryResMembers/ID,PrimaryResMembers/Name,PrimaryResMembers/Title,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail,AllDeliveryResources/ID,AllDeliveryResources/Name,AllDeliveryResources/Title',
             filter: "ProjectCode eq '{{ProjectCode}}'",
             top: 4500
@@ -125,7 +125,12 @@ export class TaskAllocationConstantsService {
           expand: 'Resources',
           filter: "Practice_x0020_Area eq '{{practiceArea}}' and ActionBy/ID eq {{currentuser}} and IsActiveCH eq 'Yes'",
           top: 4500
-        }
+        },
+        SCHEDULE_LIST_BY_PROJECTCODE: {
+            select: 'ID, Title, Task,TimeSpent, Status,SubMilestones,Milestone,ContentTypeCH',
+            filter: 'ProjectCode eq \'{{ProjectCode}}\'',
+            top: 4900
+        },
     };
     myDashboardComponent = {
     //   SubmissionPkg: {

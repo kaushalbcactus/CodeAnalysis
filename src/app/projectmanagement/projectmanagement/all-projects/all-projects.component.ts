@@ -157,6 +157,16 @@ export class AllProjectsComponent implements OnInit {
   newDeliverable: any;
   changeDeliverable: boolean;
   deliverableTypeOptions: any;
+  proposedStartDate: any;
+  proposedEndDate: any;
+  updateProjectDate: boolean;
+  yearRange: any;
+  minDateValue: any;
+  scheduledTasks: any = [];
+  resources: any[];
+  isMonthIncluded: any;
+  disableStartDate: boolean = false;
+  allMilestones: any;
   constructor(
     public pmObject: PMObjectService,
     private datePipe: DatePipe,
@@ -341,6 +351,7 @@ export class AllProjectsComponent implements OnInit {
           { label: 'View Project Details', command: (event) => this.viewProject(this.selectedProjectObj) },
           { label: 'Edit Project', command: (event) => this.editProject(this.selectedProjectObj) },
           { label: 'Edit Deliverable Type', command: (event) => this.editDeliverable() },
+          { label: 'Edit Project Date', command: (event) => this.editProjectDate() },
           { label: 'Communications', command: (event) => this.communications(this.selectedProjectObj) },
           { label: 'Timeline', command: (event) => this.projectTimeline(this.selectedProjectObj) },
           { label: 'Go to Allocation', command: (event) => this.goToAllocationPage(this.selectedProjectObj) },
@@ -848,16 +859,19 @@ export class AllProjectsComponent implements OnInit {
       menu.model[2].visible = false;
     } else {
       menu.model[3].visible = false;
-      if (this.selectedProjectObj.IsPubSupport === "Yes") {
-        menu.model[1].items[8].visible = true;
-      } else {
-        menu.model[1].items[8].visible = false;
-      }
-      if (this.selectedProjectObj.IsStandard === "Yes") {
-        menu.model[1].items[2].visible = false;
-      } else {
-        menu.model[1].items[2].visible = true;
-      }
+      menu.model[1].items[3].visible = this.selectedProjectObj.ProjectType === this.pmConstant.PROJECT_TYPE.FTE.value ? true : false;
+      menu.model[1].items[9].visible = this.selectedProjectObj.IsPubSupport === "Yes" ? true : false;
+      menu.model[1].items[2].visible = this.selectedProjectObj.IsStandard === "Yes" ? false : true;
+      // if (this.selectedProjectObj.IsPubSupport === "Yes") {
+      //   menu.model[1].items[8].visible = true;
+      // } else {
+      //   menu.model[1].items[8].visible = false;
+      // }
+      // if (this.selectedProjectObj.IsStandard === "Yes") {
+      //   menu.model[1].items[2].visible = false;
+      // } else {
+      //   menu.model[1].items[2].visible = true;
+      // }
       switch (status) {
         case this.constants.projectStatus.InDiscussion:
           menu.model[0].items[1].visible = false;
@@ -870,6 +884,13 @@ export class AllProjectsComponent implements OnInit {
           break;
         case this.constants.projectStatus.Unallocated:
         case this.constants.projectStatus.InProgress:
+          menu.model[0].items[0].visible = false;
+          menu.model[0].items[2].visible = false;
+          menu.model[0].items[3].visible = false;
+          menu.model[0].items[6].visible = false;
+          menu.model[0].items[7].visible = false;
+          menu.model[0].items[8].visible = false;
+          break;
         case this.constants.projectStatus.ReadyForClient:
         case this.constants.projectStatus.AuthorReview:
           menu.model[0].items[0].visible = false;
@@ -878,6 +899,7 @@ export class AllProjectsComponent implements OnInit {
           menu.model[0].items[6].visible = false;
           menu.model[0].items[7].visible = false;
           menu.model[0].items[8].visible = false;
+          menu.model[1].items[3].visible = false;
           break;
 
         case this.constants.projectStatus.OnHold:
@@ -889,10 +911,12 @@ export class AllProjectsComponent implements OnInit {
           menu.model[0].items[5].visible = false;
           menu.model[0].items[7].visible = false;
           menu.model[0].items[8].visible = false;
+          menu.model[1].items[3].visible = false;
           break
 
         case this.constants.projectStatus.AuditInProgress:
           menu.model[0].visible = false;
+          menu.model[1].items[3].visible = false;
           // menu.model[0].items[0].visible = false;
           // menu.model[0].items[1].visible = false;
           // menu.model[0].items[3].visible = false;
@@ -908,6 +932,7 @@ export class AllProjectsComponent implements OnInit {
           menu.model[0].items[5].visible = false;
           menu.model[0].items[6].visible = false;
           menu.model[0].items[7].visible = false;
+          menu.model[1].items[3].visible = false;
           break;
         case this.constants.projectStatus.Closed:
           // menu.model[0].visible = false;
@@ -919,21 +944,25 @@ export class AllProjectsComponent implements OnInit {
           menu.model[0].items[5].visible = false;
           menu.model[0].items[6].visible = false;
           menu.model[0].items[8].visible = false;
+          menu.model[1].items[3].visible = false;
           break;
         case this.constants.projectStatus.Cancelled:
           menu.model[0].visible = false;
           menu.model[1].items[1].visible = false;
           menu.model[2].items[1].visible = false;
+          menu.model[1].items[3].visible = false;
           break;
         case this.constants.projectStatus.SentToAMForApproval:
           menu.model[0].visible = false;
           menu.model[1].items[1].visible = false;
+          menu.model[1].items[3].visible = false;
           break;
         case this.constants.projectStatus.AwaitingCancelApproval:
           menu.model[0].visible = false;
           menu.model[1].items[1].visible = false;
-          menu.model[1].items[5].visible = false;
+          menu.model[1].items[6].visible = false;
           menu.model[2].visible = false;
+          menu.model[1].items[3].visible = false;
           break;
       }
     }
@@ -3365,7 +3394,6 @@ export class AllProjectsComponent implements OnInit {
       } else {
         this.router.navigate(['/projectMgmt/allProjects']);
       }
-      this.closeMoveSOW();
     }, this.pmConstant.TIME_OUT);
   }
 
@@ -3373,6 +3401,221 @@ export class AllProjectsComponent implements OnInit {
     this.changeDeliverable = false;
     this.deliverableTypeOptions = []
     this.newDeliverable = undefined;
+  }
+
+  async editProjectDate() {
+    this.scheduledTasks = [];
+    if(this.selectedProjectObj.Status == this.constants.projectStatus.InProgress) {
+      this.disableStartDate = true;
+      this.minDateValue = this.selectedProjectObj.ProposedStartDate;
+    } /*else if(this.selectedProjectObj.Status == this.constants.projectStatus.OnHold) {
+      let milestones = this.selectedProjectObj.Milestones.split(';#');
+      this.minDateValue = milestones.length ? this.selectedProjectObj.ProposedStartDate : null;  
+    } */ 
+    else {
+      this.disableStartDate = false
+      this.minDateValue = null;
+    }
+    setTimeout(() => {
+    const currentYear = new Date().getFullYear();
+    const next10Year = currentYear + 10;
+    const prev5Year = currentYear - 5;
+    this.yearRange = "" + prev5Year + " : " + next10Year + "";
+    // this.minDateValue = new Date(
+    //   new Date().setDate(new Date().getDate() - 1)
+    // );
+    }, this.pmConstant.TIME_OUT);
+    this.scheduledTasks = await this.commonService.getScheduleTasks(this.selectedProjectObj.ProjectCode);
+    this.resources = this.selectedProjectObj.PrimaryResourcesId.length ? await this.getResources() : [];
+    this.proposedStartDate = this.selectedProjectObj.ProposedStartDate
+    this.proposedEndDate = this.selectedProjectObj.ProposedEndDate
+    this.updateProjectDate = true;
+  }
+
+  projectDateChange(type){
+    if(type == 'start') {
+      // let startMonth = this.commonService.getMonthName(this.proposedStartDate);
+      // let endMonth = this.commonService.getMonthName(this.proposedEndDate);
+      this.isMonthIncluded = this.selectedProjectObj.Milestones.split(';#').filter(e=> e == this.commonService.getMonthName(new Date(this.proposedStartDate)));
+    } else if(type === 'end') {
+      // let startMonth = this.commonService.getMonthName(this.proposedStartDate);
+      // let endMonth = this.commonService.getMonthName(this.proposedEndDate);
+      this.isMonthIncluded = this.selectedProjectObj.Milestones.split(';#').filter(e=> e == this.commonService.getMonthName(new Date(this.proposedEndDate)));
+    }
+  }
+
+  async getResources(){
+    let resources = [];
+    let resouceData = Object.assign({}, this.pmConstant.FINANCE_QUERY.GET_RESOUCEBYID);
+    resouceData.filter = resouceData.filter.replace(/{{Id}}/gi, this.selectedProjectObj.PrimaryResourcesId[0].Id);
+    resources = await this.spServices.readItems(this.constants.listNames.ResourceCategorization.name, resouceData);
+
+    return resources;
+  }
+
+  updateDetails(startDate, endDate,type) {
+    let taskData = {}
+    let milestoneData = {}
+    taskData['__metadata'] = { type: this.constants.listNames.Schedules.type }
+    milestoneData['__metadata'] = { type: this.constants.listNames.Schedules.type }
+    if(type == 'update') {
+      const businessDay = this.commonService.calcBusinessDays(startDate, endDate);
+      let resourceObj = this.resources[0];
+      taskData['StartDate'] = startDate;
+      taskData['DueDateDT'] = endDate;
+      taskData['ExpectedTime'] = resourceObj ? '' + businessDay * resourceObj.MaxHrs  : '0';
+      taskData['TATBusinessDays'] = businessDay;
+      milestoneData['Actual_x0020_Start_x0020_Date'] = startDate;
+      milestoneData['Actual_x0020_End_x0020_Date'] = endDate;
+      milestoneData['StartDate'] = startDate;
+      milestoneData['DueDateDT'] = endDate;
+    }
+    if(type == 'delete') {
+      taskData['Status'] = 'Deleted';
+      milestoneData['Status'] = 'Deleted';
+    }
+
+    return {taskData,milestoneData};
+  }
+
+  async deleteMilestones(milestones,monthsObj,batchURL) {
+    let deleteMonthArr = milestones.filter(e=> !monthsObj.find(m=> m.monthName == e));
+    if(deleteMonthArr.length) {
+      for (const index in deleteMonthArr) {
+        if (deleteMonthArr.hasOwnProperty(index)) {
+          let element = deleteMonthArr[index];
+          const arrIndex = this.allMilestones.indexOf(element);
+          if (arrIndex > -1) {
+            this.allMilestones.splice(arrIndex, 1);
+          }
+          let data = this.updateDetails('','','delete');
+          for(let i=0;i<this.scheduledTasks.length;i++) {
+            let task = this.scheduledTasks[i];
+            if(task.ContentTypeCH == 'Task' && task.Milestone == element) {
+              await this.commonService.setBatchObject(batchURL, this.spServices.getItemURL(this.constants.listNames.Schedules.name, task.ID), data.taskData, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
+            } else if(task.ContentTypeCH == 'Milestone' && task.Title == element) {
+              await this.commonService.setBatchObject(batchURL, this.spServices.getItemURL(this.constants.listNames.Schedules.name, task.ID), data.milestoneData, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  async saveProjectDate() {
+    let batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+
+    const getProjectFolder = Object.assign({}, this.pmConstant.ProjectInformation_Get_ProjectFolder_Options);
+    getProjectFolder.filter = getProjectFolder.filter.replace(/{{projectCode}}/gi, this.selectedProjectObj.ProjectCode);
+    const projectFolderResults = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, getProjectFolder);
+    const projectFolder = projectFolderResults && projectFolderResults.length ? projectFolderResults[0].ProjectFolder : '';
+    this.allMilestones = this.selectedProjectObj.Milestones.split(';#');
+    let months = this.pmCommonService.getMonths(this.proposedStartDate,this.proposedEndDate);
+    if (months.length > 12) {
+      this.commonService.showToastrMessage(
+        this.constants.MessageType.error,
+        "FTE Project cannot be created more than 1 year.",
+        false
+      );
+      return false;
+    }
+    if (this.proposedStartDate > this.proposedEndDate) {
+      this.commonService.showToastrMessage(
+        this.constants.MessageType.error,
+        "Proposed start date should be less than proposed end date.",
+        false
+      );
+      return false;
+    }
+    if(this.commonService.getMonthName(new Date(this.proposedStartDate)) === this.commonService.getMonthName(new Date(this.proposedEndDate)) && this.isMonthIncluded.length) {
+      let data = this.updateDetails(this.proposedStartDate,this.proposedEndDate,'update');
+      let monthsObj = this.pmCommonService.getMonths(new Date(this.proposedStartDate),new Date(this.proposedEndDate));
+      let milestones = this.selectedProjectObj.Milestones.split(';#')
+      for(let i=0;i<this.scheduledTasks.length;i++) {
+        let element = this.scheduledTasks[i];
+        if(element.ContentTypeCH == 'Task') {
+          await this.commonService.setBatchObject(batchURL, this.spServices.getItemURL(this.constants.listNames.Schedules.name, element.ID), data.taskData, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
+        } else if(element.ContentTypeCH == 'Milestone') {
+          await this.commonService.setBatchObject(batchURL, this.spServices.getItemURL(this.constants.listNames.Schedules.name, element.ID), data.milestoneData, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
+        }
+      }
+      await this.deleteMilestones(milestones,monthsObj,batchURL);
+    } else {
+      let monthsObj = this.pmCommonService.getMonths(new Date(this.proposedStartDate),new Date(this.proposedEndDate));
+      let milestones = this.selectedProjectObj.Milestones.split(';#')
+      await this.deleteMilestones(milestones,monthsObj,batchURL);
+
+      if(monthsObj.filter(e=> milestones.includes(e.monthName)).length) {
+        let monthArr = monthsObj.filter(e=> milestones.includes(e.monthName))
+        for (const index in monthArr) {
+          if (monthArr.hasOwnProperty(index)) {
+            let element = monthArr[index];
+            let data = this.updateDetails(element.monthStartDay,element.monthEndDay,'update');
+            for(let i=0;i<this.scheduledTasks.length;i++) {
+              let task = this.scheduledTasks[i];
+              if(task.ContentTypeCH == 'Task' && task.Milestone == element.monthName) {
+                await this.commonService.setBatchObject(batchURL, this.spServices.getItemURL(this.constants.listNames.Schedules.name, task.ID), data.taskData, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
+              } else if(task.ContentTypeCH == 'Milestone' && task.Title == element.monthName) {
+                await this.commonService.setBatchObject(batchURL, this.spServices.getItemURL(this.constants.listNames.Schedules.name, task.ID), data.milestoneData, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
+              }
+            }
+          }
+        }
+      } 
+
+      if(monthsObj.filter(e=> !milestones.includes(e.monthName)).length) {
+        //Create new FTE Milestone tasks
+        let monthArr = monthsObj.filter(e=> !milestones.includes(e.monthName))
+        const monthName = monthArr.map(a => a.monthName);
+        this.allMilestones = [...this.allMilestones,...monthName]
+        let batchResults = await this.pmCommonService.createFTEMilestones('',projectFolder,monthArr,this.resources[0],this.selectedProjectObj.ProjectCode);
+        console.log(batchResults);
+      }
+    }
+    this.allMilestones = this.allMilestones.join(';#');
+    const piUdateData = {
+      __metadata: {
+        type: this.constants.listNames.ProjectInformation.type
+      },
+    ProposedStartDate: this.proposedStartDate,
+    ProposedEndDate: this.proposedEndDate,
+    Milestones: this.allMilestones
+    };
+    const piUpdate = Object.assign({}, options);
+    piUpdate.data = piUdateData;
+    piUpdate.listName = this.constants.listNames.ProjectInformation.name;
+    piUpdate.type = 'PATCH';
+    piUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name,
+      this.selectedProjectObj.ID);
+    batchURL.push(piUpdate);
+    console.log(batchURL);
+    this.updateProjectDate = false;
+    const batchResults = await this.spServices.executeBatch(batchURL);
+    if(batchResults) {
+      this.commonService.showToastrMessage(this.constants.MessageType.success, 'Project Date Updated' , true);
+    }
+    this.proposedStartDate = null,
+    this.proposedEndDate = null 
+    setTimeout(() => {
+      if (this.router.url === '/projectMgmt/allProjects') {
+        this.pmObject.allProjectItems = [];
+        this.reloadAllProject();
+      } else {
+        this.router.navigate(['/projectMgmt/allProjects']);
+      }
+    }, this.pmConstant.TIME_OUT);
+  }
+
+  closeProjectDate() {
+    this.updateProjectDate = false;
+    this.proposedStartDate = null,
+    this.proposedEndDate = null 
   }
 
 }

@@ -753,6 +753,53 @@ export class CommonService {
     }
   }
 
+  //For FTE Projects
+  //Fetch And Update resource name for Tasks
+  async getScheduleTasks(projectCode) {
+    const batchUrl = []
+    let scheduleTaskObj = Object.assign({}, this.queryConfig);
+    scheduleTaskObj.url = this.spServices.getReadURL(this.constants.listNames.Schedules.name, this.taskAllocationService.taskallocationComponent.SCHEDULE_LIST_BY_PROJECTCODE);
+    scheduleTaskObj.url = scheduleTaskObj.url.replace(/{{ProjectCode}}/gi, projectCode);
+    scheduleTaskObj.listName = this.constants.listNames.Schedules.name;
+    scheduleTaskObj.type = 'GET';
+    batchUrl.push(scheduleTaskObj);
+
+    const arrResult = await this.spServices.executeBatch(batchUrl);
+    return arrResult.length > 0 ? arrResult.map(a => a.retItems)[0] : [];
+  }
+
+  async updateTasks(scheduleTasks ,primaryResources) {
+    const batchURL = [];
+    if(scheduleTasks && scheduleTasks.length && this.sharedTaskAllocateObj.oProjectDetails.projectType === 'FTE-Writing') {
+      let fteTasks = ['Training','Blocking','Meeting']
+      let allMilestones = this.sharedTaskAllocateObj.oProjectDetails.allMilestones
+      let currentMilIndex = allMilestones.indexOf(this.sharedTaskAllocateObj.oProjectDetails.currentMilestone);
+      let finalList = currentMilIndex == -1 ? allMilestones : allMilestones.slice(currentMilIndex);
+      for(let i=0;i<scheduleTasks.length;i++) {
+        let element = scheduleTasks[i];
+        const scUpdateData = {
+          __metadata: {
+            type: this.constants.listNames.Schedules.type
+          },
+          AssignedToId: primaryResources ? primaryResources.Id : -1,
+        };
+        if(fteTasks.includes(element.Task) && finalList.length && finalList.includes(element.Milestone)) {
+          const scUpdate = Object.assign({}, this.queryConfig);
+          scUpdate.data = scUpdateData;
+          scUpdate.listName = this.constants.listNames.Schedules.name;
+          scUpdate.type = 'PATCH';
+          scUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
+            element.ID);
+          batchURL.push(scUpdate);
+        }
+      }
+      if(batchURL.length) {
+        await this.spServices.executeBatch(batchURL);
+      }
+    }
+  }
+
+
   // ***********************************************************************************************************************************
   // Get Project Data
   // ***********************************************************************************************************************************

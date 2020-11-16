@@ -45,7 +45,7 @@
                     <mat-icon style="vertical-align: middle;">person</mat-icon> Resources
                 </h4>
             </mat-expansion-panel-header>
-            <app-resources fxLayout="column" #loadResources style="width:100%;" fxLayoutAlign="start start"></app-resources>
+            <app-resources fxLayout="column" #loadResources (reloadTimeline)="reloadTimelineData($event)" style="width:100%;" fxLayoutAlign="start start"></app-resources>
         </mat-expansion-panel>
         <!--********************************************************************************************
                                              TimeLine  panel

@@ -344,21 +344,36 @@ export class DragDropComponent implements OnInit {
 
       if (errorM <= 0) {
         this.NodePosition();
+
+
+        this.MilestoneSubMilestoneNodePosition(this.milestonesGraph.nodes,'milestone');
+
+        this.milestonesGraph.nodes.sort((a, b) => {
+          return parseInt(a.left, 10) - parseInt(b.left, 10);
+        });
+
+
         this.milestonesGraph.nodes.forEach(milestone => {
 
           if (milestone.submilestone.nodes.length > 1) {
+
+            this.MilestoneSubMilestoneNodePosition(milestone.submilestone.nodes,'submilestone');
+            milestone.submilestone.nodes.sort((a, b) => {
+                       return parseInt(a.left, 10) - parseInt(b.left, 10);
+                  });
+
             const DefaultObj = milestone.submilestone.nodes.find(c => c.label === 'Default');
             const index = milestone.submilestone.nodes.indexOf(DefaultObj);
             if (index > -1) {
+              debugger;
               milestone.submilestone.nodes.splice(index, 1);
               milestone.submilestone.nodes.push(DefaultObj);
             }
-          }
-
-          milestone.submilestone.nodes.forEach(submilestone => {
-            submilestone.task.nodes.sort((a, b) => {
-              return parseInt(a.left, 10) - parseInt(b.left, 10);
-            });
+           }
+            milestone.submilestone.nodes.forEach(submilestone => {
+              submilestone.task.nodes.sort((a, b) => {
+                 return parseInt(a.left, 10) - parseInt(b.left, 10);
+               });
           });
         });
 
@@ -541,6 +556,12 @@ export class DragDropComponent implements OnInit {
           }
           this.DropCRDefault(e, this.milestonesGraph.nodes.length - 1, 0);
         }
+      } else {
+        if (this.milestonesGraph.nodes.length > 1) {
+          if (link.target !== link.source) {
+            this.milestonesGraph.links.push(link);
+          }
+        }
       }
 
       this.previoussubeventdd = node.submilestone.nodes[0];
@@ -550,16 +571,21 @@ export class DragDropComponent implements OnInit {
    
       this.Allmilestones.push(event.data);
 
-      const reOrderData = await  this.ReorderMilestoneSubmilestone(event,this.milestonesGraph.nodes,this.milestonesGraph.links,node,true,link,miletype);
+      if(Restructureenable){
+        this.milestonesGraph.nodes = [...this.milestonesGraph.nodes];
+        this.milestonesGraph.links = [...this.milestonesGraph.links];
+      } else{
+        const reOrderData = await  this.ReorderMilestoneSubmilestone(event,this.milestonesGraph.nodes,this.milestonesGraph.links,node,true,link,miletype);
+        this.milestonesGraph.nodes = [...reOrderData.Nodes];
+        this.milestonesGraph.links = [...reOrderData.Links];
+      }
 
-      this.milestonesGraph.nodes = [...reOrderData.Nodes];
-      this.milestonesGraph.links = [...reOrderData.Links];
+     
 
       if (!this.initialLoad)
         this.GraphResize();
     }
     else {
-
       const submilestone = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.find(c => c.label === 'Default');
 
       if (submilestone.task.nodes.length > 1 || submilestone.task.nodes.filter(c => c.taskType !== 'Client Review').length > 0) {
@@ -596,12 +622,50 @@ export class DragDropComponent implements OnInit {
         this.previoussubeventdd = node;
         this.recentEventNode = this.previoussubeventdd.id;;
         this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes = [...this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes];
+
+        if(Restructureenable){
+          if (parseInt(link.source) !== (parseInt(node.id) - 1) || parseInt(link.target) !== parseInt(node.id) - 1) {
+            if (this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.filter(c => c.id === link.source).length > 0 && this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.filter(c => c.id === link.target).length > 0) {
+              if (link.source !== link.target) {
+                if (link.source !== '0' && link.target !== '0') {
+                  if (link.source !== link.target) {
+                    this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.push(link);
+                  }
+                }
+              }
+            }
+          }
+
+          if (prvnode.length > 1 && miletype !== 'milestone') {
+            for (var i = 1; i < prvnode.length; i++) {
+              var link = {
+                source: miletype === 'milestone' ? (previousnode !== null ? (parseInt(previousnode[0])).toString() : '1') : this.tempSubmileArray.length > 1 ? this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.find(c => c.label === prvnode[i].data).id : this.subpreviousSource !== undefined ? this.subpreviousSource : (previousnode !== null ? (parseInt(previousnode[previousnode.length - 1])).toString() : '0'),
+                target: previousnode !== null ? (parseInt(previousnode[previousnode.length - 1]) + 1).toString() : '0'
+              };
+
+              if (parseInt(link.source) !== (parseInt(node.id) - 1) || parseInt(link.target) !== parseInt(node.id) - 1) {
+                if (this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.filter(c => c.id === link.source).length > 0 && this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.filter(c => c.id === link.target).length > 0) {
+                  if (link.source !== link.target) {
+                    this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.push(link);
+                  }
+                }
+              }
+            }
+          }
+        
+        this.previoussubeventdd = node;
+        this.recentEventNode = this.previoussubeventdd.id;
+        this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes = [...this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes];
+        this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links = [...this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links];
+
+        } else {
+          const reOrderData = await this.ReorderMilestoneSubmilestone(event,this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes,this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links,node,this.subMilestoneHoritontal,link,miletype);
+          this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes  = [...reOrderData.Nodes];
+          this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links = [...reOrderData.Links];
+        }
       
-        const reOrderData = await  this.ReorderMilestoneSubmilestone(event,this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes,this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links,node,this.subMilestoneHoritontal,link,miletype);
 
-        this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes  = [...reOrderData.Nodes];
-        this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links = [...reOrderData.Links];
-
+         
 
         if (!this.initialLoad)
           this.GraphResize();
@@ -611,9 +675,9 @@ export class DragDropComponent implements OnInit {
   // tslint:enable
 
 
-   ReorderMilestoneSubmilestone(event,Nodes,Links,node,Horizontal,link,Type){
+   async ReorderMilestoneSubmilestone(event,Nodes,Links,node,Horizontal,link,Type){
     if (Nodes.length) {
-      const coord = this.generatePathMatrix(Links,Type);
+      const coord = await  this.generatePathMatrix(Links,Type);
       var eventCoord = event.event;
       var pathLocation = null;
       if (!Horizontal) {
@@ -1423,6 +1487,17 @@ this.sharedObject.oTaskAllocation.allTasks = arrResult.find(c => c.listName === 
         Count++;
       });
     }
+  }
+
+  MilestoneSubMilestoneNodePosition(Nodes,Type){
+    var Count = 0;
+      Nodes.forEach(element => {
+        var position = Type === 'milestone' ?  $($('.milestones-drop .nodes').children()[Count]).position() : $($('.submilestones-drop .nodes').children()[Count]).position();
+        element.top = position ? position.top : 0;
+        element.left =position  ? position.left : 0;
+        Count++;
+      });
+    
   }
 
 

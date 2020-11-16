@@ -227,4 +227,11 @@ export class TaskAllocationComponent implements OnInit {
 
     this.resourcesComponentChild.loadResources();
   }
+
+  reloadTimelineData(){
+    // this.getProjectDetails();
+    setTimeout(() => {
+      this.timelineChild.getMilestones(true);
+    }, 100);
+  }
 }

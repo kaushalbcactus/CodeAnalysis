@@ -101,7 +101,7 @@ export class NonStandardprojectComponent implements OnInit {
     this.isNonStandardTableHidden = false;
 
     this.constants.RuleParamterArray.find(
-      (c) => c.parameterName === "Deliverable Type"
+      (c) => c.parameterName === "DeliverableType"
     ).value ='';
 
     this.getProjectRules();
@@ -334,7 +334,7 @@ export class NonStandardprojectComponent implements OnInit {
       );
       return false;
     }
-    if (!this.selectedResource) {
+    if (!this.selectedResource && this.pmObject.addProject.FinanceManagement.BilledBy !== this.pmConstant.PROJECT_TYPE.FTE.value) {
       this.commonService.showToastrMessage(
         this.constants.MessageType.warn,
         "Please select the resource.",
@@ -527,7 +527,7 @@ export class NonStandardprojectComponent implements OnInit {
       this.pmObject.addProject.Timeline.NonStandard.DeliverableType = this.selectedDeliverableType;
       this.pmObject.addProject.Timeline.NonStandard.SubDeliverable = this.selectedSubType;
       this.pmObject.addProject.Timeline.NonStandard.Service = this.selectedServices;
-      this.pmObject.addProject.Timeline.NonStandard.ResourceName = this.selectedResource.value;
+      this.pmObject.addProject.Timeline.NonStandard.ResourceName = this.selectedResource ? this.selectedResource.value : '';
       this.setDropdownField();
       this.pmObject.addProject.Timeline.NonStandard.ProposedStartDate = this.ngNonStandardProposedStartDate;
       this.pmObject.addProject.Timeline.NonStandard.ProposedEndDate = this.ngNonStandardProposedEndDate;
