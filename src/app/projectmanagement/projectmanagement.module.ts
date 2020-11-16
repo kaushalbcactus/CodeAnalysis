@@ -48,6 +48,7 @@ import { JournalConferenceDetailsModule } from '../shared/journal-conference-det
 import { JournalConferenceDetailsComponent } from '../shared/journal-conference-details/journal-conference-details.component';
 import { ProjectBudgetBreakupComponent } from './projectmanagement/all-projects/project-budget-breakup/project-budget-breakup.component';
 import { CmDeliveyViewComponent } from './projectmanagement/add-projects/addtimeline/cm-delivey-view/cm-delivey-view.component';
+import { PoChangeDialogComponent } from './projectmanagement/add-projects/manage-finance/po-change-dialog/po-change-dialog.component';
 
 @NgModule({
   declarations: [
@@ -72,7 +73,8 @@ import { CmDeliveyViewComponent } from './projectmanagement/add-projects/addtime
     InvoiceLineitemsComponent,
     AddReduceSowbudgetDialogComponent,
     ProjectBudgetBreakupComponent,
-    CmDeliveyViewComponent],
+    CmDeliveyViewComponent,
+    PoChangeDialogComponent],
   imports: [
     SharedModule,
     CommonModule,
@@ -119,7 +121,8 @@ import { CmDeliveyViewComponent } from './projectmanagement/add-projects/addtime
     CdpfComponent,
     JournalConferenceDetailsComponent,
     ProjectBudgetBreakupComponent,
-    CmDeliveyViewComponent
+    CmDeliveyViewComponent,
+    PoChangeDialogComponent
   ]
 })
 export class ProjectmanagementModule { }

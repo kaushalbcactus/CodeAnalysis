@@ -1,0 +1,8 @@
+::ng-deep .POChangedialog {
+    overflow-y: visible !important;
+}
+
+::ng-deep .ChangePOButton {
+    float: right;
+    margin: -55px -7px 0px 0px;
+}

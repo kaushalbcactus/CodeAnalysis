@@ -4,13 +4,14 @@ import { PMObjectService } from 'src/app/projectmanagement/services/pmobject.ser
 import { PmconstantService } from 'src/app/projectmanagement/services/pmconstant.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { DatePipe } from '@angular/common';
-import { DynamicDialogConfig, DynamicDialogRef, SelectItem } from 'primeng';
+import { DialogService, DynamicDialogConfig, DynamicDialogRef, SelectItem } from 'primeng';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { DataService } from 'src/app/Services/data.service';
 import { Router } from '@angular/router';
+import { PoChangeDialogComponent } from './po-change-dialog/po-change-dialog.component';
 
 declare var $;
 @Component({
@@ -166,6 +167,8 @@ export class ManageFinanceComponent implements OnInit {
   sowList: any;
   currentId: any;
   enableCheckList: boolean = false;
+  PoReplaceLineItemList: any=[];
+  ReplacePOList: any=[];
 
   constructor(
     private frmbuilder: FormBuilder,
@@ -180,7 +183,8 @@ export class ManageFinanceComponent implements OnInit {
     private commonService: CommonService,
     private global: GlobalService,
     private router: Router,
-    private dataService: DataService
+    private dataService: DataService,
+    public dialogService: DialogService,
   ) {
     this.addPOForm = frmbuilder.group({
       poDate: ['', Validators.required],
@@ -618,6 +622,7 @@ export class ManageFinanceComponent implements OnInit {
         this.errorMsg = this.pmConstant.ERROR.ADD_PROJECT_TO_BUDGET;
       }
     }
+    this.enableCheckList = false;
   }
 
   increaseBudget() {
@@ -679,33 +684,7 @@ export class ManageFinanceComponent implements OnInit {
         }
         this.showPo = true;
         this.error = false;
-        const tempPOObj = $.extend(true, {}, this.poObj);
-        tempPOObj.poId = this.selectedPo;
-        const poValue = this.poArray.filter(x => x.ID === this.selectedPo);
-        if (poValue && poValue.length) {
-          tempPOObj.poValue = poValue[0].Number + ' - ' + poValue[0].NameST;
-        }
-        tempPOObj.total = 0;
-        tempPOObj.revenue = 0;
-        tempPOObj.oop = 0;
-        tempPOObj.tax = 0;
-        if (this.projectType === this.pmConstant.PROJECT_TYPE.HOURLY.value) {
-          tempPOObj.showAdd = false;
-          this.showSave = true;
-        } else {
-          tempPOObj.showAdd = true;
-        }
-        tempPOObj.showDelete = true;
-        tempPOObj.scValue = 'Scheduled + Invoiced';
-        tempPOObj.scTotal = 0;
-        tempPOObj.scRevenue = 0;
-        tempPOObj.scOOP = 0;
-        tempPOObj.scTax = 0;
-        tempPOObj.isExsitPO = false;
-        tempPOObj.edited = true;
-        tempPOObj.status = 'Not Saved';
-        tempPOObj.poRevenue = this.invoiceType == 'revenue' ? this.unassignedBudget[0].revenue : 0;
-        tempPOObj.poOOP =  this.invoiceType == 'oop' ? this.unassignedBudget[0].oop : 0;
+        const tempPOObj = this.getPOObjectDetails(this.selectedPo);
         const tempObj: any = { Id: 0, poInfo: [], poInfoData: [] };
         // tempObj.Id = tempPOObj.poId;
 
@@ -742,6 +721,39 @@ export class ManageFinanceComponent implements OnInit {
       this.error = true;
       this.errorMsg = this.pmConstant.ERROR.PO_NOT_SELECTED;
     }
+  }
+
+
+  getPOObjectDetails(selectedPo){
+    const tempPOObj = $.extend(true, {}, this.poObj);
+    tempPOObj.poId = selectedPo;
+    const poValue = this.poArray.filter(x => x.ID === selectedPo);
+    if (poValue && poValue.length) {
+      tempPOObj.poValue = poValue[0].Number + ' - ' + poValue[0].NameST;
+    }
+    tempPOObj.total = 0;
+    tempPOObj.revenue = 0;
+    tempPOObj.oop = 0;
+    tempPOObj.tax = 0;
+    if (this.projectType === this.pmConstant.PROJECT_TYPE.HOURLY.value) {
+      tempPOObj.showAdd = false;
+      this.showSave = true;
+    } else {
+      tempPOObj.showAdd = true;
+    }
+    tempPOObj.showDelete = true;
+    tempPOObj.scValue = 'Scheduled + Invoiced';
+    tempPOObj.scTotal = 0;
+    tempPOObj.scRevenue = 0;
+    tempPOObj.scOOP = 0;
+    tempPOObj.scTax = 0;
+    tempPOObj.isExsitPO = false;
+    tempPOObj.edited = true;
+    tempPOObj.status = 'Not Saved';
+    tempPOObj.poRevenue = this.invoiceType == 'revenue' ? this.unassignedBudget[0].revenue : 0;
+    tempPOObj.poOOP =  this.invoiceType == 'oop' ? this.unassignedBudget[0].oop : 0;
+
+    return tempPOObj;
   }
   /**
    * This function is used to scheduled the PO.
@@ -1065,6 +1077,7 @@ export class ManageFinanceComponent implements OnInit {
         this.saveInvoiceEdit();
       }
     } else {
+      debugger;
       const poIndex = this.poData.findIndex(item => item.poInfo[0].poId === this.selectedPo);
       const retPOInfo = this.poData[poIndex].poInfo[0];
       this.addInvoiceError = false;
@@ -1571,7 +1584,7 @@ export class ManageFinanceComponent implements OnInit {
         tempPOObj.poId = poItem.POLookup;
         const poValue = this.poArray.filter(x => x.ID === poItem.POLookup);
         if (poValue && poValue.length) {
-          tempPOObj.poValue = poValue[0].Number + ' - ' + poValue[0].NameST;
+          tempPOObj.poValue = poValue[0].Number + '-' + poValue[0].NameST;
         }
         tempPOObj.total = poItem.Amount;
         tempPOObj.revenue = poItem.AmountRevenue;
@@ -2435,6 +2448,8 @@ export class ManageFinanceComponent implements OnInit {
    * @param poInfoObj pass the poInvoice object.
    */
   getProjectFinanceBreakupData(po, projObj, poInfoObj) {
+
+    debugger;
     const data: any = {
       __metadata: { type: this.constant.listNames.ProjectFinanceBreakup.type },
     };
@@ -2614,6 +2629,7 @@ export class ManageFinanceComponent implements OnInit {
     financeBreakupArray.forEach(element => {
       const poItem = poArray.filter(poObj => poObj.Id === (element.POLookup ? element.POLookup : element.POID));
       const poExistItem = poExistingItems.find(poObj => poObj.ID === element.ID);
+      debugger;
       if (poItem && poItem.length) {
         const data = {
           __metadata: { type: this.constant.listNames.PO.type },
@@ -2697,5 +2713,193 @@ export class ManageFinanceComponent implements OnInit {
 
   enableMovePO(){
     this.enableCheckList = this.enableCheckList === true ? false : true;
+    if(!this.enableCheckList){
+      this.poData.map(c=>c.poInfoData.map(c=>c.selected = false));
+    
+      this.PoReplaceLineItemList=[];
+    }
+  }
+
+  changePO(){
+
+    if(this.PoReplaceLineItemList.length === 0){
+      this.commonService.showToastrMessage(this.constant.MessageType.warn,'Please select line item.',false);
+      return false;
+    }
+      const ExisitingPOList = this.poData.map(c=>c.poInfo.map(d=>d.poValue)) ? this.poData.map(c=>c.poInfo.map(d=>d.poValue)).reduce((a, b) => [...a, ...b], []) :[];
+    // const ReplacePOList = this.poList.filter(c=> !this.PoReplaceLineItemList.map(c=>c.PODetails.poValue).includes(c.label));
+
+    const ReplacePOList = this.poList.filter(c=> !ExisitingPOList.includes(c.label));
+
+    if(ReplacePOList && ReplacePOList.length > 0){
+      const ref = this.dialogService.open(PoChangeDialogComponent, {
+        data: {
+          POList: ReplacePOList,
+          LineItems : this.PoReplaceLineItemList
+        },
+         
+        header: 'Change PO',
+        width: '90%',
+        closable:false,
+        styleClass : 'POChangedialog'
+        
+      });
+      ref.onClose.subscribe(async (data) => {
+        if (data) {
+          this.pmObject.isMainLoaderHidden = false;
+          console.log("selected data");
+          console.log(data);  //LineItems
+
+          const batchURL=[];
+          const projectFinanceBreakArray = [];
+          const POInfo = this.getPOObjectDetails(data.selectedPO);
+          const allLineItems = data.LineItems.map(c=>c.LineItem);
+
+          allLineItems.forEach(item => {
+           POInfo.scTotal = POInfo.scTotal + item.amount;
+           POInfo.scRevenue = POInfo.scRevenue + (item.type == "revenue" ? item.amount : 0);
+           POInfo.scOOP = POInfo.scOOP + (item.type == "oop" ? item.amount : 0);
+           POInfo.scTax = POInfo.scTax + 0;
+           POInfo.total = POInfo.total + item.amount;
+           POInfo.revenue = POInfo.revenue + item.amount;
+           });  
+
+          allLineItems.forEach(element => {
+            const invData = {
+              __metadata: { type: this.constant.listNames.InvoiceLineItems.type },
+              PO : data.selectedPO
+            } 
+            this.commonService.setBatchObject(
+              batchURL,
+              this.spServices
+                .getItemURL(
+                  this.constant.listNames.InvoiceLineItems.name,
+                  +element.Id
+                ),
+                invData,
+              this.constant.Method.PATCH,
+              this.constant.listNames.InvoiceLineItems.name
+            );
+          });
+
+          const PODataTemp=[];
+          // { Id: 0, poInfo: [], poInfoData: [] };
+          this.poData.forEach(element => {
+            const POlineItems = element.poInfoData.filter(c=> !allLineItems.map(d=>d.Id).includes(c.Id));
+             element.poInfo[0].total = POlineItems.map(c=>c.amount).reduce((a, b) => a + b, 0);
+             element.poInfo[0].revenue =  POlineItems.map(c=>c.amount).reduce((a, b) => a + b, 0);
+            PODataTemp.push({Id : element.Id,poInfo:element.poInfo[0], poInfoData : POlineItems})
+          });
+
+          PODataTemp.push({ Id: 0,
+            poInfo: POInfo,
+            poInfoData: allLineItems });
+
+            PODataTemp.forEach(element => {
+              const projectFinanceBreakupData = this.getProjectFinanceBreakupData(element.poInfo, this.projObj, element);
+              if(element.poInfoData && element.poInfoData.length > 0){           
+                if (projectFinanceBreakupData.hasOwnProperty('Status')) {
+                  if (element.poInfo.isExsitPO) {
+                    this.commonService.setBatchObject(
+                      batchURL,
+                      this.spServices
+                      .getItemURL(
+                        this.constant.listNames.ProjectFinanceBreakup.name,
+                        +element.Id
+                        ),
+                        projectFinanceBreakupData,
+                        this.constant.Method.PATCH,
+                        this.constant.listNames.ProjectFinanceBreakup.name
+                        );
+                  } else {
+                    this.commonService.setBatchObject(
+                      batchURL,
+                      this.spServices
+                      .getReadURL(
+                        this.constant.listNames.ProjectFinanceBreakup.name,
+                        null
+                        ),
+                        projectFinanceBreakupData,
+                        this.constant.Method.POST,
+                        this.constant.listNames.ProjectFinanceBreakup.name
+                        );
+                  }
+               } 
+              } else {
+                this.commonService.setBatchObject(
+                  batchURL,
+                  this.spServices
+                  .getItemURL(
+                    this.constant.listNames.ProjectFinanceBreakup.name,
+                    +element.Id
+                    ),
+                     {
+                      __metadata: { type: this.constant.listNames.ProjectFinanceBreakup.type },
+                      Status : this.constant.STATUS.DELETED
+                    },
+                    this.constant.Method.PATCH,
+                    this.constant.listNames.ProjectFinanceBreakup.name
+                    );
+              }    
+
+              const pfbData = Object.assign({}, projectFinanceBreakupData);
+              pfbData.POID = POInfo.poId;
+              projectFinanceBreakArray.push(pfbData);
+            
+            });
+
+            if (projectFinanceBreakArray.length) {
+              const poItemArray = this.getPOData(projectFinanceBreakArray, this.poArray);
+              poItemArray.forEach(element => {
+                this.commonService.setBatchObject(
+                  batchURL,
+                  this.spServices
+                    .getItemURL(
+                      this.constant.listNames.PO.name,
+                      +element.ID
+                    ),
+                  element,
+                  this.constant.Method.PATCH,
+                  this.constant.listNames.PO.name
+                );
+              });
+            }
+            await this.spServices.executeBatch(batchURL);
+
+            this.enableCheckList = this.enableCheckList === true ? false : true;
+             if(!this.enableCheckList){
+                  this.poData.map(c=>c.poInfoData.map(c=>c.selected = false));
+    
+                   this.PoReplaceLineItemList=[];
+             }
+            this.commonService.showToastrMessage(this.constant.MessageType.success, 'Line items moved to new PO successfully.', true);
+            setTimeout(() => {
+              this.reInitializePopup();
+            }, this.pmConstant.TIME_OUT);
+        } 
+    });
+      
+    } else {
+      this.commonService.showToastrMessage(this.constant.MessageType.warn, "Unable to move to new PO, PO doesn't exist.",false);
+      return false;
+    }
+
+
+   
+
+
+
+  }
+
+
+  AddRemoveItem(rowData, poInfo){
+    if(rowData.selected){
+      this.PoReplaceLineItemList.push({LineItem: rowData, PODetails : poInfo});
+    } else{
+       const index = this.PoReplaceLineItemList.indexOf( this.PoReplaceLineItemList.find((c) => c.LineItem.Id === rowData.Id));
+       if(index > -1){
+        this.PoReplaceLineItemList.splice(index, 1);
+       }
+    }
   }
 }
