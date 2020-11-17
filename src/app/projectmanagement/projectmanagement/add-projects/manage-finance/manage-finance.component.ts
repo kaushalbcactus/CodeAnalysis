@@ -293,7 +293,7 @@ export class ManageFinanceComponent implements OnInit {
       this.poArray = unfilteredPOArray;
       if (this.poArray && this.poArray) {
         this.poArray.forEach((element) => {
-          this.poList.push({ label: element.Number + '-' + element.NameST, value: element.ID });
+          this.poList.push({ label: element.Number + ' - ' + element.NameST, value: element.ID });
         });
       }
       this.sowObj = arrResults[1].retItems[0];
@@ -1583,7 +1583,7 @@ export class ManageFinanceComponent implements OnInit {
         tempPOObj.poId = poItem.POLookup;
         const poValue = this.poArray.filter(x => x.ID === poItem.POLookup);
         if (poValue && poValue.length) {
-          tempPOObj.poValue = poValue[0].Number + '-' + poValue[0].NameST;
+          tempPOObj.poValue = poValue[0].Number + ' - ' + poValue[0].NameST;
         }
         tempPOObj.total = poItem.Amount;
         tempPOObj.revenue = poItem.AmountRevenue;

@@ -226,8 +226,6 @@ export class PMObjectService {
       BusinessVertical:'',
       Currency:'',
       PracticeArea: "",
-      BusinessVertical:'',
-      Currency:'',
       Priority: "",
       ProjectCode: "",
       ProjectStatus: "",
