@@ -225,7 +225,7 @@ export class QMSConstantsService {
           'SeverityLevel, BusinessImpact,Segregation,' +
           'ASD/ID, TL/ID, CS/ID, CommentsMT, RootCauseAnalysis, CorrectiveActions, PreventiveActions, RejectionComments',
         expand: 'SentBy, Resources, ASD, TL, CS',
-        filter: "{{statusFilter}} SentDate ge '{{startDate}}' and SentDate le '{{endDate}}' and (ASD/ID eq '" + this.global.currentUser.userId + "')",
+        filter: "{{statusFilter}} SentDate ge '{{startDate}}' and SentDate le '{{endDate}}' and (ASD/ID eq '" + this.global.currentUser.userId + "' or TL/ID eq '" + this.global.currentUser.userId + "')",
         top: '{{TopCount}}',
         orderby: 'SentDate desc'
       },

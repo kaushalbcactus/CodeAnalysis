@@ -1120,6 +1120,9 @@ export class MyDashboardConstantsService {
           previousTask.isWriter = !previousTask.isResourceEQG ? previousTask.skill.includes(writer) : false;
           previousTask.isReviewer = !previousTask.isResourceEQG && !previousTask.isWriter ? previousTask.skill.includes(reviewer) : false;
           previousTask.isReviewTask = previousTask.Task.indexOf('Review-') > -1 ? true : false;
+          if (currentTask.isReviewTask && previousTask.isResourceEQG ) {
+            currentTask.defaultSkill = 'Write';
+          }
           if (currentTask.isReviewTask || (!previousTask.isReviewTask && arrPrevTaskDocUrl.length > 0 &&
             ((currentTask.isEQGTask && previousTask.isWriter) ||
               (currentTask.isFinalizeTask && previousTask.isResourceEQG)
