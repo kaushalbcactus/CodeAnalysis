@@ -3577,6 +3577,11 @@ export class AllProjectsComponent implements OnInit {
         let batchResults = await this.pmCommonService.createFTEMilestones('',projectFolder,monthArr,this.resources[0],this.selectedProjectObj.ProjectCode);
         console.log(batchResults);
       }
+      
+      if(this.selectedProjectObj.Status === this.constants.projectStatus.InDiscussion || this.selectedProjectObj.Status === this.constants.projectStatus.Unallocated) {
+        this.allMilestones = monthsObj.map(m=> m.monthName);
+      }
+
     }
     this.allMilestones = this.allMilestones.join(';#');
     const piUdateData = {
