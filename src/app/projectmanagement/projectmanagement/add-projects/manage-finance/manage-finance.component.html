@@ -123,12 +123,12 @@
 
 
 
-                <button [hidden]="!isAddToProjectHidden" pButton type="button" [label]="enableCheckList ? 'Cancel' :'Move Line Items'" style="float: right;display: inline-flex;" class="ui-button-raised ui-button-danger MoveLineItem" iconPos="right" (click)="enableMovePO()"> 
+                <button [hidden]="hideMoveLineItem" pButton type="button" [label]="enableCheckList ? 'Cancel' :'Move Line Items'" style="float: right;display: inline-flex;" class="ui-button-raised ui-button-danger MoveLineItem" iconPos="right" (click)="enableMovePO()"> 
                     <i *ngIf="!enableCheckList" class="fa fa-exchange" aria-hidden="true" style="padding: 8px 0px 8px 8px;"></i>
                     <i *ngIf="enableCheckList" class="fa fa-times" aria-hidden="true" style="padding: 8px 0px 8px 8px;"></i>
                 </button>
 
-                <button *ngIf="enableCheckList && isAddToProjectHidden" pButton type="button" label="Change PO" style="float: right;display: inline-flex;margin: 0px 10px 0px 0px;" class="ui-button-raised ui-button-danger MoveLineItem" iconPos="right" (click)="changePO()"> 
+                <button *ngIf="enableCheckList && !hideMoveLineItem" pButton type="button" label="Change PO" style="float: right;display: inline-flex;margin: 0px 10px 0px 0px;" class="ui-button-raised ui-button-danger MoveLineItem" iconPos="right" (click)="changePO()"> 
                     <i   class="fa fa-book" aria-hidden="true" style="padding: 8px 0px 8px 8px;"></i>
                   
                 </button>
@@ -347,7 +347,7 @@
     </form>
     <p-footer>
         <button type="button" pButton styleClass="pmBtn" (click)="addInvoiceDetails()" value="Post Data" label="Save"></button>
-        <button type="button" pButton styleClass="pmBtn" (click)="showAddInvoiceDetails=false" label="Cancel">
+        <button type="button" pButton styleClass="pmBtn" (click)="showAddInvoiceDetails=false;hideMoveLineItem = hideMoveLineItem === true ? false : true;" label="Cancel">
     </button>
     </p-footer>
 </p-dialog>

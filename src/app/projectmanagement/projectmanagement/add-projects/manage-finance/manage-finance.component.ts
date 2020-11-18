@@ -169,7 +169,7 @@ export class ManageFinanceComponent implements OnInit {
   enableCheckList: boolean = false;
   PoReplaceLineItemList: any=[];
   ReplacePOList: any=[];
-
+  hideMoveLineItem: boolean = false;
   constructor(
     private frmbuilder: FormBuilder,
     public pmObject: PMObjectService,
@@ -223,10 +223,12 @@ export class ManageFinanceComponent implements OnInit {
         this.isPOEdit = true;
         // this.setBudget();
         this.projectType = this.projObj.ProjectType;
+        this.hideMoveLineItem = this.projectType === this.pmConstant.PROJECT_TYPE.HOURLY.value ? true: false;
         this.projectStatus = this.projObj.Status;
         await this.editManageFinances(this.projObj);
       }, this.pmConstant.TIME_OUT);
     } else {
+      this.hideMoveLineItem = true;
       this.projObj = undefined;
       this.isPOEdit = false;
       this.projectType = this.pmObject.addProject.ProjectAttributes.BilledBy;
@@ -1128,6 +1130,7 @@ export class ManageFinanceComponent implements OnInit {
       }
     }
     this.isInvoiceEdit = false;
+    this.hideMoveLineItem = this.hideMoveLineItem === true ? false : true;
   }
   /***
    * This function is used to validate the form field
@@ -1837,9 +1840,13 @@ export class ManageFinanceComponent implements OnInit {
   confirmInvoiceItem(rowData) {
     this.invoiceObj = rowData;
     console.log(rowData);
+
+    this.hideMoveLineItem =  this.hideMoveLineItem === false ? true : false;
     this.commonService.confirmMessageDialog('Confirm Invoice', 'Are you sure you want to confirm the invoice ?', null, ['Yes', 'No'], false).then(async Confirmation => {
       if (Confirmation === 'Yes') {
         this.commitInvoiceItem(rowData);
+      } else {
+        this.hideMoveLineItem =  this.hideMoveLineItem === false ? true : false;
       }
     });
   }
@@ -1902,6 +1909,7 @@ export class ManageFinanceComponent implements OnInit {
     }, this.pmConstant.TIME_OUT);
   }
   editInvoiceItem(rowData) {
+    this.hideMoveLineItem =  this.hideMoveLineItem === false ? true : false;
     this.invoiceHeader = 'Edit Invoice Line Item';
     console.log(rowData);
     this.invoiceObj = rowData;
@@ -2708,11 +2716,14 @@ export class ManageFinanceComponent implements OnInit {
 
 
   enableMovePO(){
-    this.enableCheckList = this.enableCheckList === true ? false : true;
-    if(!this.enableCheckList){
-      this.poData.map(c=>c.poInfoData.map(c=>c.selected = false));
-    
-      this.PoReplaceLineItemList=[];
+    if(this.poData.map(c=>c.poInfoData).reduce((a, b) => [...a, ...b], []).filter(d=>d.status === 'Scheduled').length > 0 ){
+      this.enableCheckList = this.enableCheckList === true ? false : true;
+      if(!this.enableCheckList){
+        this.poData.map(c=>c.poInfoData.map(c=>c.selected = false));
+        this.PoReplaceLineItemList=[];
+      }
+    } else {
+      this.commonService.showToastrMessage(this.constant.MessageType.info,'No Line Items Found to move.',false);
     }
   }
 
