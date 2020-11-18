@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
+import { CommonService } from 'src/app/Services/common.service';
+import { ConstantsService } from 'src/app/Services/constants.service';
 
 @Component({
   selector: 'app-po-change-dialog',
@@ -14,6 +16,8 @@ export class PoChangeDialogComponent implements OnInit {
   constructor(
     private config: DynamicDialogConfig,
     private dynamicDialogRef: DynamicDialogRef,
+    private common: CommonService,
+    private constant : ConstantsService
   ) { }
 
   ngOnInit() {
@@ -23,11 +27,15 @@ export class PoChangeDialogComponent implements OnInit {
 
 
   saveDetails(){
-    const Data ={
-      selectedPO : this.selectedPo,
-      LineItems : this.LineItems
+    if(this.selectedPo){
+      const Data ={
+        selectedPO : this.selectedPo,
+        LineItems : this.LineItems
+      }
+      this.dynamicDialogRef.close(Data);
+    } else{
+        this.common.showToastrMessage(this.constant.MessageType.warn,'Please select PO.',false);
     }
-    this.dynamicDialogRef.close(Data);
   }
 
   cancel(){
