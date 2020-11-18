@@ -2887,7 +2887,7 @@ export class ManageFinanceComponent implements OnInit {
     });
       
     } else {
-      this.commonService.showToastrMessage(this.constant.MessageType.warn, "Unable to move to new PO, PO doesn't exist.",false);
+      this.commonService.showToastrMessage(this.constant.MessageType.warn, "No Scheduled Line Items Found to move.",false);
       return false;
     }
 
