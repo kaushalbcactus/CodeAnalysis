@@ -2456,6 +2456,8 @@ export class ManageFinanceComponent implements OnInit {
    * @param poInfoObj pass the poInvoice object.
    */
   getProjectFinanceBreakupData(po, projObj, poInfoObj) {
+
+    debugger;
     const data: any = {
       __metadata: { type: this.constant.listNames.ProjectFinanceBreakup.type },
     };
@@ -2636,6 +2638,7 @@ export class ManageFinanceComponent implements OnInit {
       const poItem = poArray.filter(poObj => poObj.Id === (element.POLookup ? element.POLookup : element.POID));
       const poExistItem = poExistingItems.find(poObj => poObj.ID === element.ID);
       if (poItem && poItem.length) {
+        debugger
         const data = {
           __metadata: { type: this.constant.listNames.PO.type },
           TotalLinked: poItem[0].TotalLinked + element.Amount - (poExistItem ? poExistItem.Amount ? poExistItem.Amount : 0 : 0),
@@ -2647,6 +2650,8 @@ export class ManageFinanceComponent implements OnInit {
             (poExistItem ? poExistItem.TotalScheduled ? poExistItem.TotalScheduled : 0 : 0),
           ScheduledRevenue: poItem[0].ScheduledRevenue + element.ScheduledRevenue -
             (poExistItem ? poExistItem.ScheduledRevenue ? poExistItem.ScheduledRevenue : 0 : 0),
+          ScheduledOOP:  poItem[0].ScheduledOOP + element.ScheduledOOP -
+            (poExistItem ? poExistItem.ScheduledOOP ? poExistItem.ScheduledOOP : 0 : 0),
           ID: element.POLookup ? element.POLookup : element.POID
         };
         porray.push(data);
@@ -2724,7 +2729,7 @@ export class ManageFinanceComponent implements OnInit {
         this.PoReplaceLineItemList=[];
       }
     } else {
-      this.commonService.showToastrMessage(this.constant.MessageType.info,'No Line Items Found to move.',false);
+      this.commonService.showToastrMessage(this.constant.MessageType.info,'No Scheduled Line Items Found to move.',false);
     }
   }
 
@@ -2769,7 +2774,8 @@ export class ManageFinanceComponent implements OnInit {
            POInfo.scOOP = POInfo.scOOP + (item.type == "oop" ? item.amount : 0);
            POInfo.scTax = POInfo.scTax + 0;
            POInfo.total = POInfo.total + item.amount;
-           POInfo.revenue = POInfo.revenue + item.amount;
+           POInfo.revenue = item.type == "revenue" ? POInfo.revenue + item.amount : POInfo.revenue ;
+           POInfo.oop = item.type == "oop" ? POInfo.oop + item.amount :  POInfo.oop ;
            });  
 
           allLineItems.forEach(element => {
@@ -2795,7 +2801,8 @@ export class ManageFinanceComponent implements OnInit {
           this.poData.forEach(element => {
             const POlineItems = element.poInfoData.filter(c=> !allLineItems.map(d=>d.Id).includes(c.Id));
              element.poInfo[0].total = POlineItems.map(c=>c.amount).reduce((a, b) => a + b, 0);
-             element.poInfo[0].revenue =  POlineItems.map(c=>c.amount).reduce((a, b) => a + b, 0);
+             element.poInfo[0].revenue =  POlineItems.filter(c=>c.type ==='revenue').map(c=>c.amount).reduce((a, b) => a + b, 0);
+             element.poInfo[0].oop =  POlineItems.filter(c=>c.type ==='oop').map(c=>c.amount).reduce((a, b) => a + b, 0);
             PODataTemp.push({Id : element.Id,poInfo:element.poInfo[0], poInfoData : POlineItems})
           });
 
@@ -2888,7 +2895,7 @@ export class ManageFinanceComponent implements OnInit {
     });
       
     } else {
-      this.commonService.showToastrMessage(this.constant.MessageType.warn, "No Scheduled Line Items Found to move.",false);
+      this.commonService.showToastrMessage(this.constant.MessageType.warn, "Unable to move to new PO, PO doesn't exist.",false);
       return false;
     }
 
