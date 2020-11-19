@@ -226,8 +226,6 @@ export class PMObjectService {
       BusinessVertical:'',
       Currency:'',
       PracticeArea: "",
-      BusinessVertical:'',
-      Currency:'',
       Priority: "",
       ProjectCode: "",
       ProjectStatus: "",
@@ -382,7 +380,7 @@ export class PMObjectService {
     isSOWCodeDisabled: false,
     isStatusDisabled: true,
     CSRule :  '',
-    DeliveryRule : '', 
+    DeliveryRule : '',
 
   };
   public oProjectCreation = {
