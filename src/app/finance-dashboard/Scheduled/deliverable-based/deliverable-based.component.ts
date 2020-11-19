@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ViewEncapsulation, OnDestroy, HostListener, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
 import { SelectItem } from 'primeng/api';
-import { Calendar, Table, DialogService } from 'primeng';
+import { DialogService } from 'primeng/dynamicdialog';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
 import { formatDate, DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
@@ -13,6 +13,8 @@ import { TimelineHistoryComponent } from './../../../timeline/timeline-history/t
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { EditInvoiceDialogComponent } from '../../edit-invoice-dialog/edit-invoice-dialog.component';
+import { Table } from 'primeng/table';
+import { Calendar } from 'primeng/calendar';
 
 @Component({
     selector: 'app-deliverable-based',

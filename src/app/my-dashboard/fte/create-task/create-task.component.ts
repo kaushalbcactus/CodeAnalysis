@@ -8,7 +8,7 @@ import { MyDashboardConstantsService } from '../../services/my-dashboard-constan
 import { DatePipe } from '@angular/common';
 import { CommonService } from 'src/app/Services/common.service';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
-import { Dropdown } from 'primeng/primeng';
+import { Dropdown } from 'primeng/dropdown';
 
 @Component({
   selector: 'app-create-task',
@@ -178,11 +178,11 @@ export class CreateTaskComponent implements OnInit {
   }
 
   clearFilter(dropdown: Dropdown) {
-    if (dropdown.clearClick) {
+    // if (dropdown.clearClick) {
       this.create_task_form.value.SubMilestones = '';
       dropdown.resetFilter();
       dropdown.focus();
-    }
+    // }
   }
 
   onSearchChange(val) {

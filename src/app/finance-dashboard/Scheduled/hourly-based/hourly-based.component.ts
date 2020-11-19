@@ -8,7 +8,7 @@ import {
   NgZone,
   ChangeDetectorRef,
 } from "@angular/core";
-import { Calendar, Table, DialogService } from "primeng";
+import { DialogService } from "primeng/dynamicdialog";
 import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import { GlobalService } from "src/app/Services/global.service";
 import { SPOperationService } from "src/app/Services/spoperation.service";
@@ -27,6 +27,8 @@ import { Subscription } from "rxjs";
 import { Router } from "@angular/router";
 import { ApproveBillingDialogComponent } from "./approve-billing-dialog/approve-billing-dialog.component";
 import { EditInvoiceDialogComponent } from "../../edit-invoice-dialog/edit-invoice-dialog.component";
+import { Table } from 'primeng/table';
+import { Calendar } from 'primeng/calendar';
 
 @Component({
   selector: "app-hourly-based",

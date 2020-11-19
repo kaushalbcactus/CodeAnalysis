@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
 import { DataService } from 'src/app/Services/data.service';
 import { UsercapacityComponent } from 'src/app/shared/usercapacity/usercapacity.component';
 import { CommonService } from 'src/app/Services/common.service';
-import { DialogService, DynamicDialogRef } from 'primeng';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { IDailyAllocationTask } from 'src/app/shared/pre-stack-allocation/interface/prestack';
 import { PreStackAllocationComponent } from 'src/app/shared/pre-stack-allocation/pre-stack-allocation.component';
 import { AllocationOverlayComponent } from 'src/app/shared/pre-stack-allocation/allocation-overlay/allocation-overlay.component';

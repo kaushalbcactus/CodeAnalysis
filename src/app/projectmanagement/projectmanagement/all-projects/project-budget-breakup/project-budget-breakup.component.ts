@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
-import { DynamicDialogConfig, Table } from "primeng";
+import { DynamicDialogConfig } from "primeng/dynamicdialog";
 import { PmconstantService } from "src/app/projectmanagement/services/pmconstant.service";
 import { ConstantsService } from "src/app/Services/constants.service";
 import { SPOperationService } from "src/app/Services/spoperation.service";
@@ -261,12 +261,14 @@ export class ProjectBudgetBreakupComponent implements OnInit {
 
   uniqueArrayObj(array: any,field, date?) {
     // let column = field;
-    return [...new Set(array.map(element => element[field]))].map(a => {
-      const b = date == 'Date' ? { label: this.datePipe.transform(a,"MMM dd, yyyy"), value: a } : { label: a, value: a }
-      // const b = { label: a, value: a };
-      return b;
-    })
-    .filter(ele => ele.label)
+
+    debugger
+    // return [...new Set(array.map(element => element[field]))].map(a => {
+    //   const b = date == 'Date' ? { label: this.datePipe.transform(a,"MMM dd, yyyy"), value: a } : { label: a, value: a }
+    //   // const b = { label: a, value: a };
+    //   return b;
+    // })
+    // .filter(ele => ele.label)
   }
 
   sortData(arr, field) {

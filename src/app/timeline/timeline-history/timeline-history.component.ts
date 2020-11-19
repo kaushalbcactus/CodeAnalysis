@@ -3,11 +3,12 @@ import { Component, OnInit, ElementRef, ViewChild, ChangeDetectorRef } from '@an
 import { SPCommonService } from '../../Services/spcommon.service';
 import { TimelineConstantsService } from './../services/timeline-constants.service';
 import { DatePipe } from '@angular/common';
-import { LazyLoadEvent } from 'primeng/primeng';
+
 import { SPOperationService } from '../../Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { Table } from 'primeng/table';
+import { LazyLoadEvent } from 'primeng/api';
 
 
 @Component({

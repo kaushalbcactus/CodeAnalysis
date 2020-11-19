@@ -9,7 +9,7 @@ import {
   ChangeDetectorRef,
 } from "@angular/core";
 import { Message, SelectItem } from "primeng/api";
-import { Calendar, Table, DialogService } from "primeng";
+import { DialogService } from "primeng/dynamicdialog";
 import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import {
   formatDate,
@@ -27,6 +27,7 @@ import { TimelineHistoryComponent } from "src/app/timeline/timeline-history/time
 import { Subscription } from "rxjs";
 import { Router } from "@angular/router";
 import { EditInvoiceDialogComponent } from "../../edit-invoice-dialog/edit-invoice-dialog.component";
+import { Table } from 'primeng/table';
 
 @Component({
   selector: "app-oop",

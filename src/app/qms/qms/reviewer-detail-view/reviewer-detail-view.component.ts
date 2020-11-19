@@ -9,7 +9,7 @@ import { QMSConstantsService } from '../services/qmsconstants.service';
 import { QMSCommonService } from '../services/qmscommon.service';
 import { Table } from 'primeng/table';
 import { Router } from '@angular/router';
-import { DialogService } from 'primeng';
+import { DialogService } from 'primeng/dynamicdialog';
 
 @Component({
   selector: 'app-reviewer-detail-view',

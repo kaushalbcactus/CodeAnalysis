@@ -15,7 +15,7 @@ import { DatePipe } from "@angular/common";
 import { ConstantsService } from "src/app/Services/constants.service";
 import { GlobalService } from "src/app/Services/global.service";
 import { SPOperationService } from "src/app/Services/spoperation.service";
-import { DynamicDialogConfig, DialogService } from "primeng";
+import { DynamicDialogConfig, DialogService } from "primeng/dynamicdialog";
 import { CACommonService } from "src/app/ca/caservices/cacommon.service";
 import { SharedConstantsService } from "./service/shared-constants.service";
 import { MilestoneTasksDialogComponent } from "./milestone-tasks-dialog/milestone-tasks-dialog.component";

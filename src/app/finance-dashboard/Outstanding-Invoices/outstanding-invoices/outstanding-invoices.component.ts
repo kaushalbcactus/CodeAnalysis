@@ -12,7 +12,7 @@ import { Subscription } from 'rxjs';
 import { CommonService } from 'src/app/Services/common.service';
 import { Table } from 'primeng/table';
 import { Router } from '@angular/router';
-import { DialogService } from 'primeng';
+import { DialogService } from 'primeng/dynamicdialog';
 
 @Component({
     selector: 'app-outstanding-invoices',

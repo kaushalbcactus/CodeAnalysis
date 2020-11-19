@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewEncapsulation, ComponentFactoryResolver, ViewContainerRef, ViewChild, HostListener, ApplicationRef, NgZone } from '@angular/core';
-import { DialogService, Table } from 'primeng';
-import { MenuItem } from 'primeng';
+import { DialogService } from 'primeng/dynamicdialog';
+import { MenuItem } from 'primeng/api';
 import { FormBuilder, FormGroup, Validators, FormControl, MaxLengthValidator } from '@angular/forms';
 import { SPOperationService } from '../../Services/spoperation.service';
 import { ConstantsService } from '../../Services/constants.service';
@@ -15,6 +15,7 @@ import { AuthorDetailsComponent } from './author-details/author-details.componen
 import { CommonService } from 'src/app/Services/common.service';
 import { JournalConferenceDetailsComponent } from '../../shared/journal-conference-details/journal-conference-details.component';
 import { PubsuportConstantsService } from '../Services/pubsuport-constants.service';
+import { Table } from 'primeng/table';
 
 @Component({
     selector: 'app-pubsupport',

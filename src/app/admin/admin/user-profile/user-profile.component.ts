@@ -11,7 +11,7 @@ import { CommonService } from 'src/app/Services/common.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { Table } from 'primeng/table';
 import { AddEditUserProfileComponent } from './add-edit-user-profile/add-edit-user-profile.component';
-import { DialogService } from 'primeng';
+import { DialogService } from 'primeng/dynamicdialog';
 @Component({
   selector: 'app-user-profile',
   templateUrl: './user-profile.component.html',

@@ -25,7 +25,7 @@ import { DatePipe, PlatformLocation, LocationStrategy } from "@angular/common";
 import { Subscription } from "rxjs";
 import { Table } from "primeng/table";
 import { Router } from "@angular/router";
-import { DialogService } from "primeng";
+import { DialogService } from "primeng/dynamicdialog";
 import { ScheduleOopInvoiceDialogComponent } from "./schedule-oop-invoice-dialog/schedule-oop-invoice-dialog.component";
 import { MarkAsPaymentDialogComponent } from "../mark-as-payment-dialog/mark-as-payment-dialog.component";
 import { ApproveRejectExpenseDialogComponent } from '../approve-reject-expense-dialog/approve-reject-expense-dialog.component';

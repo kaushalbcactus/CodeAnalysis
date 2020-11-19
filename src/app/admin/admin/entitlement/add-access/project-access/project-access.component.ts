@@ -10,7 +10,8 @@ import { CommonService } from "src/app/Services/common.service";
 import { ConstantsService } from "src/app/Services/constants.service";
 import { FormBuilder } from "@angular/forms";
 import { AddAccessService } from "../service/add-access.service";
-import { OverlayPanel, DialogService } from "primeng";
+import { DialogService } from "primeng/dynamicdialog";
+import { OverlayPanel } from "primeng/overlaypanel";
 import { EditRuleUserComponent } from "../edit-rule-user/edit-rule-user.component";
 
 @Component({
@@ -598,7 +599,7 @@ export class ProjectAccessComponent implements OnInit {
 
   // display data on i icon click
   showDetails(event, value, target?: string) {
-    if (this.panel.visible === true) {
+    if (this.panel.overlayVisible === true) {
       this.panel.hide();
     }
     setTimeout(() => {

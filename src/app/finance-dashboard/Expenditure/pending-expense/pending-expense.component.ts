@@ -11,7 +11,7 @@ import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Table } from 'primeng/table';
-import { DialogService } from 'primeng';
+import { DialogService } from 'primeng/dynamicdialog';
 import { ApproveRejectExpenseDialogComponent } from '../approve-reject-expense-dialog/approve-reject-expense-dialog.component';
 
 @Component({

@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { DynamicDialogRef, DynamicDialogConfig } from 'primeng';
+import { DynamicDialogRef, DynamicDialogConfig } from 'primeng/dynamicdialog';
 
 @Component({
   selector: 'app-cdpf',

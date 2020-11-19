@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import {  DynamicDialogConfig, DynamicDialogRef } from 'primeng';
+import {  DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { DatePipe, formatDate } from '@angular/common';
 import { FdConstantsService } from 'src/app/finance-dashboard/fdServices/fd-constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';

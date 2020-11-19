@@ -30,7 +30,6 @@ import { CustomMaterialModule } from '../shared/material.module';
 import { TaskAllocationModule } from '../task-allocation/task-allocation.module';
 import { ProjectTimelineComponent } from './projectmanagement/all-projects/project-timeline/project-timeline.component';
 import { ViewUploadDocumentModule } from '../shared/view-upload-document-dialog/view-upload-document.module';
-import { SharedModule } from 'primeng';
 import { ViewUploadDocumentDialogComponent } from '../shared/view-upload-document-dialog/view-upload-document-dialog.component';
 import { UserCapacityModule } from '../shared/usercapacity/usercapacity.module';
 import { UsercapacityComponent } from '../shared/usercapacity/usercapacity.component';
@@ -49,6 +48,7 @@ import { JournalConferenceDetailsComponent } from '../shared/journal-conference-
 import { ProjectBudgetBreakupComponent } from './projectmanagement/all-projects/project-budget-breakup/project-budget-breakup.component';
 import { CmDeliveyViewComponent } from './projectmanagement/add-projects/addtimeline/cm-delivey-view/cm-delivey-view.component';
 import { PoChangeDialogComponent } from './projectmanagement/add-projects/manage-finance/po-change-dialog/po-change-dialog.component';
+import { SharedModule } from 'primeng/api';
 
 @NgModule({
   declarations: [

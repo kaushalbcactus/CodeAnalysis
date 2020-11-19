@@ -13,7 +13,7 @@ import { PMCommonService } from '../../services/pmcommon.service';
 import { Router } from '@angular/router';
 import { Table } from 'primeng/table';
 import { ViewUploadDocumentDialogComponent } from 'src/app/shared/view-upload-document-dialog/view-upload-document-dialog.component';
-import { DialogService } from 'primeng';
+import { DialogService } from 'primeng/dynamicdialog';
 
 declare var $;
 @Component({

@@ -1,11 +1,12 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
-import { DynamicDialogConfig, MenuItem } from 'primeng';
+import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { MyDashboardConstantsService } from '../../services/my-dashboard-constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { DatePipe } from '@angular/common';
 import { CommonService } from 'src/app/Services/common.service';
+import { MenuItem } from 'primeng/api';
 
 @Component({
   selector: 'app-project-drafts',

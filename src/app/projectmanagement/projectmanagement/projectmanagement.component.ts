@@ -10,7 +10,7 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DataService } from 'src/app/Services/data.service';
 import { CommonService } from 'src/app/Services/common.service';
-import { DialogService } from 'primeng';
+import { DialogService } from 'primeng/dynamicdialog';
 import { BehaviorSubject } from 'rxjs';
 @Component({
   selector: 'app-projectmanagement',

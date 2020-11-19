@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { FormGroup, FormBuilder, Validators } from "@angular/forms";
-import { DynamicDialogRef, DynamicDialogConfig } from "primeng";
+import { DynamicDialogRef, DynamicDialogConfig } from "primeng/dynamicdialog";
 import { CommonService } from "src/app/Services/common.service";
 import { formatDate } from "@angular/common";
 import { FdConstantsService } from "../fdServices/fd-constants.service";

@@ -3,7 +3,7 @@ import {
   ComponentFactoryResolver,
   ViewEncapsulation,
 } from '@angular/core';
-import { MenuItem, DialogService } from 'primeng';
+import { DialogService } from 'primeng/dynamicdialog';
 import { SPOperationService } from '../Services/spoperation.service';
 import { GlobalService } from '../Services/global.service';
 import { ConstantsService } from '../Services/constants.service';
@@ -14,6 +14,7 @@ import { CreateTaskComponent } from './fte/create-task/create-task.component';
 import { CommonService } from '../Services/common.service';
 import { DatePipe } from '@angular/common';
 import { CurrentCompletedTasksTableComponent } from './current-completed-tasks-table/current-completed-tasks-table.component';
+import { MenuItem } from 'primeng/api';
 
 @Component({
   selector: 'app-my-dashboard',

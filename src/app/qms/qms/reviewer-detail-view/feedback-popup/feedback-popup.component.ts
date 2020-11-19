@@ -5,7 +5,7 @@ import { SPOperationService } from '../../../../Services/spoperation.service';
 import { QMSConstantsService } from '../../services/qmsconstants.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { IScorecard, IScorecardTemplate } from '../../../interfaces/qms';
-import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { MyDashboardConstantsService } from 'src/app/my-dashboard/services/my-dashboard-constants.service';
 import { DatePipe } from '@angular/common';
 

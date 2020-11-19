@@ -254,5 +254,10 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
     width: 25em !important;
 }
 
+.dynamic-dialog-buttons {
+    margin: -57px 0px 0px -205px;
+    position: absolute;
+}
+
 
 /* Dynamic Dialog common Css end  */

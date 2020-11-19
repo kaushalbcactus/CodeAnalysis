@@ -12,7 +12,7 @@ import { QMSCommonService } from '../../services/qmscommon.service';
 import { Table } from 'primeng/table';
 import { Router } from '@angular/router';
 import { FeedbackPopupComponent } from '../../reviewer-detail-view/feedback-popup/feedback-popup.component';
-import { DialogService } from 'primeng';
+import { DialogService } from 'primeng/dynamicdialog';
 
 @Component({
   selector: 'app-admin-view',

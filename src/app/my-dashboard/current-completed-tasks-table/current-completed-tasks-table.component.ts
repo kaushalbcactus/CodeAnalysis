@@ -3,7 +3,7 @@ import { ConstantsService } from 'src/app/Services/constants.service';
 import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
 import { DatePipe } from '@angular/common';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
-import { DialogService, MenuItem, Table, DynamicDialogConfig, Dropdown } from 'primeng';
+import { DialogService, DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { CommonService } from 'src/app/Services/common.service';
 import { ActivatedRoute } from '@angular/router';
 import { TimeSpentDialogComponent } from '../time-spent-dialog/time-spent-dialog.component';
@@ -13,6 +13,9 @@ import { ViewUploadDocumentDialogComponent } from 'src/app/shared/view-upload-do
 import { FeedbackPopupComponent } from 'src/app/qms/qms/reviewer-detail-view/feedback-popup/feedback-popup.component';
 import { GlobalService } from 'src/app/Services/global.service';
 import { AllocationOverlayComponent } from 'src/app/shared/pre-stack-allocation/allocation-overlay/allocation-overlay.component';
+import { Table } from 'primeng/table';
+import { MenuItem } from 'primeng/api';
+import { Dropdown } from 'primeng/dropdown';
 
 @Component({
   selector: 'app-current-completed-tasks-table',
@@ -631,11 +634,11 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
   }
 
   clearFilter(dropdown: Dropdown) {
-    if (dropdown.clearClick) {
+    // if (dropdown.clearClick) {
       this.subMilestone = '';
       dropdown.resetFilter();
       dropdown.focus();
-    }
+    // }
   }
   
   async renameSubmilestone(rowData) {

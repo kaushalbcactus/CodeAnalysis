@@ -4,7 +4,7 @@ import { CommonService } from 'src/app/Services/common.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { PmconstantService } from '../../services/pmconstant.service';
 import { PMObjectService } from '../../services/pmobject.service';
-import { MenuItem, DialogService } from 'primeng';
+import { DialogService } from 'primeng/dynamicdialog';
 import { DataService } from 'src/app/Services/data.service';
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -16,6 +16,7 @@ import { takeUntil } from 'rxjs/operators';
 import { GlobalService } from 'src/app/Services/global.service';
 import { AddReduceSowbudgetDialogComponent } from './add-reduce-sowbudget-dialog/add-reduce-sowbudget-dialog.component';
 import { ProjectBudgetBreakupComponent } from '../all-projects/project-budget-breakup/project-budget-breakup.component';
+import { MenuItem } from 'primeng/api';
 
 declare var $;
 @Component({

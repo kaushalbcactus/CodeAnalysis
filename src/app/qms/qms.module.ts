@@ -30,7 +30,7 @@ import { FeedbackBymeComponent } from './qms/personal-feedback/feedback-byme/fee
 import { ScorecardsComponent } from './qms/admin/scorecards/scorecards.component';
 import { AdminComponent } from './qms/admin/admin.component';
 import { AverageRatingComponent } from './qms/average-rating/average-rating.component';
-import { DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng';
+import { DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { RatingOverlayComponent } from './qms/user-feedback/rating-overlay/rating-overlay.component';
 import { SqmsModule } from '../shared/sqms/sqms.module';
 

@@ -10,7 +10,7 @@ import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { CommonService } from 'src/app/Services/common.service';
 import { Subject, Observable, timer, Subscription } from 'rxjs';
-import { DynamicDialogRef, DialogService } from 'primeng';
+import { DynamicDialogRef, DialogService } from 'primeng/dynamicdialog';
 
 @Component({
     selector: 'app-expenditure',

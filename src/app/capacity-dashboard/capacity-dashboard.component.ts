@@ -6,7 +6,7 @@ import {
   ViewChild,
 } from "@angular/core";
 import { SelectItem } from "primeng/api";
-import { MultiSelect, DialogService } from "primeng";
+import {  DialogService } from "primeng/dynamicdialog";
 import { FormBuilder, Validators } from "@angular/forms";
 import { GlobalService } from "../Services/global.service";
 import { SPOperationService } from "../Services/spoperation.service";
@@ -15,6 +15,7 @@ import { CommonService } from "../Services/common.service";
 import { UsercapacityComponent } from "../shared/usercapacity/usercapacity.component";
 import { BlockResourceDialogComponent } from "./block-resource-dialog/block-resource-dialog.component";
 import { DatePipe } from "@angular/common";
+import { MultiSelect } from 'primeng/multiselect';
 
 @Component({
   selector: "app-capacity-dashboard",

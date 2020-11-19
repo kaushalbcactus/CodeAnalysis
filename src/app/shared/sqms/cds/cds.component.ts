@@ -1,5 +1,5 @@
 import { Component, OnInit, HostListener, ViewChild, Input, ChangeDetectorRef, AfterViewChecked, DoCheck } from '@angular/core';
-import { MenuItem, Table, DialogService } from 'primeng';
+import { DialogService } from 'primeng/dynamicdialog';
 import { QMSCommonService } from 'src/app/qms/qms/services/qmscommon.service';
 import { DatePipe } from '@angular/common';
 import { CommonService } from 'src/app/Services/common.service';
@@ -9,6 +9,8 @@ import { ConstantsService } from 'src/app/Services/constants.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { CddetailsComponent } from './cddetails/cddetails.component';
 import { DataService } from 'src/app/Services/data.service';
+import { MenuItem } from 'primeng/api';
+import { Table } from 'primeng/table';
 
 @Component({
   selector: 'app-cds',

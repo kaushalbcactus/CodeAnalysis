@@ -15,19 +15,6 @@
     margin-right: .25em;
 }
 
-
-/* :host ::ng-deep .custom-toast .ui-toast-message {
-    color: #ffffff;
-    background: #FC466B;
-    background: -webkit-linear-gradient(to right, #3F5EFB, #FC466B);
-    background: linear-gradient(to right, #3F5EFB, #FC466B);
-    width:25vw;
-}
-
-:host ::ng-deep .custom-toast .ui-toast-close-icon {
-    color: #ffffff;
-} */
-
 .mat-expansion-panel-header-title {
     width: 10%;
 }
@@ -115,11 +102,6 @@
     font: 21px bold arial;
 }
 
- ::ng-deep .storagebutton {
-    top: 10px;
-    right: 30px;
-}
-
 #graphInnerLoader {
     border: 10px solid #f3f3f3;
     border-radius: 50%;
@@ -155,26 +137,9 @@
     BACKGROUND: bottom;
 }
 
-/* .taskDropArea {
-    max-height: 300px;
-}
-
-.submilestonesDropArea {
-    max-height: 350px;
-} */
 ::ng-deep .ngx-charts-outer {
     margin: auto;
     border: 1px dashed #db1721;
-}
-
-.SaveButton {
-    background-color: #db1721;
-    border: 1px solid #db1721;
-}
-
-.SaveButton:enabled:hover {
-    background-color: #b3171f;
-    border: 1px solid #b3171f;
 }
 
 .dragDropFlex {
@@ -199,22 +164,6 @@
     margin-right: 0px !important;
 }
 
-.dragDropFlex .mat-accordion .mat-expansion-panel .mat-expansion-panel-header-description{
+.dragDropFlex .mat-accordion .mat-expansion-panel .mat-expansion-panel-header-description {
     display: none;
-}
-
-@media (min-width: 1400px) {
-     ::ng-deep .storagebutton {
-        position: fixed;
-        width: 100%;
-        /* margin: -2.6vw; */
-    }
-}
-
-@media (min-width: 1025px) and (max-width: 1400px) {
-     ::ng-deep .storagebutton {
-        position: fixed;
-        width: 100%;
-        /* margin: -3.6vw; */
-    }
 }

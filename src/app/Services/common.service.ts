@@ -6,10 +6,11 @@ import { ConstantsService } from './constants.service';
 import { PmconstantService } from '../projectmanagement/services/pmconstant.service';
 import { PMObjectService } from '../projectmanagement/services/pmobject.service';
 import { DatePipe } from '@angular/common';
-import { Table, DialogService, MessageService } from 'primeng';
+import {  DialogService} from 'primeng/dynamicdialog';
 import { FileUploadProgressDialogComponent } from '../shared/file-upload-progress-dialog/file-upload-progress-dialog.component';
 import { ConfirmationDialogComponent } from '../shared/confirmation-dialog/confirmation-dialog.component';
 import { ControlContainer, ValidatorFn, AbstractControl } from '@angular/forms';
+import { MessageService } from 'primeng/api';
 declare var $;
 
 declare const newrelic;
@@ -1154,7 +1155,7 @@ export class CommonService {
       summaryMessage = summary;
     }
 
-    this.messageService.add({ key: showmodal ? 'cls_ModaltoastrMessage' : 'cls_toastrMessage', severity: type, summary: summaryMessage, detail: message, sticky: stickyenable });
+    this.messageService.add({ key: showmodal ? 'cls_toastrMessage' : 'cls_toastrMessage', severity: type, summary: summaryMessage, detail: message, sticky: stickyenable });
 
   }
 

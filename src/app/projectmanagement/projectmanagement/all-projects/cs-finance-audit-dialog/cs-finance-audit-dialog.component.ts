@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
-import { DynamicDialogConfig, DynamicDialogRef, Table, DialogService } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef, DialogService } from 'primeng/dynamicdialog';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { AuditProjectDialogComponent } from '../audit-project-dialog/audit-project-dialog.component';
@@ -8,6 +8,7 @@ import { PMObjectService } from 'src/app/projectmanagement/services/pmobject.ser
 import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.service';
 import { PmconstantService } from 'src/app/projectmanagement/services/pmconstant.service';
 import { GlobalService } from 'src/app/Services/global.service';
+import { Table } from 'primeng/table';
 
 @Component({
   selector: 'app-cs-finance-audit-dialog',

@@ -11,7 +11,7 @@ import { AddAuthorComponent } from './pubsupport/add-author/add-author.component
 import { AuthorDetailsComponent } from './pubsupport/author-details/author-details.component';
 import { JournalConferenceDetailsModule } from '../shared/journal-conference-details/journal-conference-details.module';
 import { JournalConferenceDetailsComponent } from 'src/app/shared/journal-conference-details/journal-conference-details.component';
-import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 
 @NgModule({
   declarations: [PubsupportComponent, CreateConferenceComponent, CreateJournalComponent, AddAuthorComponent, AuthorDetailsComponent],

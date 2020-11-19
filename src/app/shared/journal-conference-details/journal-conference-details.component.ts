@@ -3,7 +3,7 @@ import { CommonService } from 'src/app/Services/common.service';
 import { ConstantsService } from '../../Services/constants.service';
 import { PubsuportConstantsService } from 'src/app/pubsupport/Services/pubsuport-constants.service';
 import { SPOperationService } from '../../Services/spoperation.service';
-import { DynamicDialogConfig, DynamicDialogRef, DialogService } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef, DialogService } from 'primeng/dynamicdialog';
 import { AuthorDetailsComponent } from 'src/app/pubsupport/pubsupport/author-details/author-details.component';
 import { GlobalService } from 'src/app/Services/global.service';
 

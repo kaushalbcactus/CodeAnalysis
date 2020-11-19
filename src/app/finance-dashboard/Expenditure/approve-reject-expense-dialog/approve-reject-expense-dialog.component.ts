@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { FormGroup, Validators, FormBuilder, FormControl } from "@angular/forms";
 import { Subscription } from "rxjs";
 import { FDDataShareService } from "../../fdServices/fd-shareData.service";
-import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { CommonService } from 'src/app/Services/common.service';

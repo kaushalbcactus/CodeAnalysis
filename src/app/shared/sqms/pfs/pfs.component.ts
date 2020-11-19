@@ -8,7 +8,8 @@ import { QMSConstantsService } from 'src/app/qms/qms/services/qmsconstants.servi
 import { GlobalService } from 'src/app/Services/global.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { QMSCommonService } from 'src/app/qms/qms/services/qmscommon.service';
-import { MenuItem} from 'primeng';
+import { MenuItem } from 'primeng/api';
+ 
 
 @Component({
   selector: 'app-pfs',

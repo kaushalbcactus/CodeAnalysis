@@ -1,5 +1,5 @@
 import { Component, OnInit, EventEmitter, Output, Input, SimpleChanges, OnDestroy } from '@angular/core';
-import { MenuItem, DynamicDialogConfig, DynamicDialogRef, DialogService, Table } from 'primeng';
+import {  DynamicDialogConfig, DynamicDialogRef, DialogService } from 'primeng/dynamicdialog';
 import { DatePipe, CommonModule } from '@angular/common';
 import { ConstantsService } from 'src/app/Services/constants.service';
 
@@ -11,6 +11,8 @@ import { CommonService } from 'src/app/Services/common.service';
 import { FileUploadProgressDialogComponent } from '../file-upload-progress-dialog/file-upload-progress-dialog.component';
 import { TagDocumentComponent } from './tag-document/tag-document.component';
 import { ViewChild } from '@angular/core';
+import { Table } from 'primeng/table';
+import { MenuItem } from 'primeng/api';
 
 @Component({
   selector: 'app-view-upload-document-dialog',

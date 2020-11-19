@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewEncapsulation, ViewChild, OnDestroy, HostListener, ElementRef, ApplicationRef, NgZone, TemplateRef, ChangeDetectorRef } from '@angular/core';
 import { SelectItem } from 'primeng/api';
-import { Calendar, Table, DialogService } from 'primeng';
+import { DialogService } from 'primeng/dynamicdialog';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -15,6 +15,7 @@ import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { AddUpdateProformaDialogComponent } from '../../add-update-proforma-dialog/add-update-proforma-dialog.component';
 import { EditInvoiceDialogComponent } from '../../edit-invoice-dialog/edit-invoice-dialog.component';
+import { Calendar } from 'primeng/calendar';
 
 
 @Component({
@@ -1562,7 +1563,8 @@ export class ProformaComponent implements OnInit, OnDestroy {
         for (let i = 0; i < uniqueTotalArr.length; i++) {
             const element = uniqueTotalArr[i];
             if (colName.toLowerCase().includes("date")) {
-                tempArr.push({ label: this.datePipe.transform(element, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(element, 'MMM dd, yyyy')) });
+                debugger;
+                // tempArr.push({ label: this.datePipe.transform(element, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(element, 'MMM dd, yyyy')) });
             } else {
                 tempArr.push({ label: element, value: element });
             }

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { PubsuportConstantsService } from '../../Services/pubsuport-constants.service';
-import { DynamicDialogRef, DynamicDialogConfig } from 'primeng';
+import { DynamicDialogRef, DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { CommonService } from 'src/app/Services/common.service';
 // import { Journal } from "./journal-interface";

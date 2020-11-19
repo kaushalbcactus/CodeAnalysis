@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ViewEncapsulation, EventEmitter, Output } from '@angular/core';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
-import { DynamicDialogConfig, DynamicDialogRef, DialogService, TreeNode } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef, DialogService } from 'primeng/dynamicdialog';
 import { DatePipe } from '@angular/common';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -10,6 +10,7 @@ import { TaskAllocationCommonService } from '../services/task-allocation-common.
 import { CommonService } from 'src/app/Services/common.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { PreStackcommonService } from 'src/app/shared/pre-stack-allocation/service/pre-stackcommon.service';
+import { TreeNode } from 'primeng/api';
 
 @Component({
   selector: 'app-gantt-edittask',

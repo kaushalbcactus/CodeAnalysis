@@ -8,7 +8,7 @@ import { DatePipe } from '@angular/common';
 import { Observable, Subject } from 'rxjs';
 import { CommonService } from 'src/app/Services/common.service';
 import { EditInvoiceDialogComponent } from '../edit-invoice-dialog/edit-invoice-dialog.component';
-import { DialogService } from 'primeng';
+import { DialogService } from 'primeng/dynamicdialog';
 
 @Injectable({
     providedIn: 'root'

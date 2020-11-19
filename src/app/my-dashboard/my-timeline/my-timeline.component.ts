@@ -3,8 +3,8 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import bootstrapPlugin from '@fullcalendar/bootstrap';
 import interactionPlugin from '@fullcalendar/interaction';
-import { MenuItem, DialogService, SelectItem } from 'primeng';
-import { MenuModule, Button } from 'primeng';
+import { DialogService} from 'primeng/dynamicdialog';
+import { MenuModule } from 'primeng/menu';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
@@ -17,6 +17,7 @@ import { Subscription } from 'rxjs';
 import { CommonService } from 'src/app/Services/common.service';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
 import { AllocationOverlayComponent } from 'src/app/shared/pre-stack-allocation/allocation-overlay/allocation-overlay.component';
+import { MenuItem, SelectItem } from 'primeng/api';
 
 declare var Tooltip: any;
 

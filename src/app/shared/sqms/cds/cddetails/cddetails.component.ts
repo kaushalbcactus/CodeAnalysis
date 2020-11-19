@@ -5,7 +5,7 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { QMSConstantsService } from 'src/app/qms/qms/services/qmsconstants.service';
 import { CommonService } from 'src/app/Services/common.service';
-import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 
 @Component({
   selector: 'app-cddetails',

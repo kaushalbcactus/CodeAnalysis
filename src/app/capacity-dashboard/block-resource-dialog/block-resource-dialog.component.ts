@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { FormGroup, FormBuilder, Validators } from "@angular/forms";
-import { DynamicDialogRef, DynamicDialogConfig, DialogService } from "primeng";
+import { DynamicDialogRef, DynamicDialogConfig, DialogService } from "primeng/dynamicdialog";
 import { CommonService } from "src/app/Services/common.service";
 import { ConstantsService } from "src/app/Services/constants.service";
 import { DatePipe } from '@angular/common';

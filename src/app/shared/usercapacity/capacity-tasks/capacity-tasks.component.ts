@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { GlobalService } from 'src/app/Services/global.service';
 import { MilestoneTasksDialogComponent } from '../milestone-tasks-dialog/milestone-tasks-dialog.component';
-import { DialogService } from 'primeng';
+import { DialogService } from 'primeng/dynamicdialog';
 import { TaskAllocationConstantsService } from 'src/app/task-allocation/services/task-allocation-constants.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';

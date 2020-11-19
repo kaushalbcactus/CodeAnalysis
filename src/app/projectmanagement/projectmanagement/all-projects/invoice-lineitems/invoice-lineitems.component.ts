@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DialogService, DynamicDialogRef , DynamicDialogConfig} from 'primeng';
+import { DialogService, DynamicDialogRef , DynamicDialogConfig} from 'primeng/dynamicdialog';
 import { PmconstantService } from 'src/app/projectmanagement/services/pmconstant.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';

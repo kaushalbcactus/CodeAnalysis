@@ -27,13 +27,15 @@ import { Router } from "@angular/router";
 import { removeSummaryDuplicates } from "@angular/compiler";
 import { GlobalService } from "src/app/Services/global.service";
 import { CommonService } from "src/app/Services/common.service";
-import { Table, DialogService, MultiSelect } from "primeng";
+import { DialogService } from "primeng/dynamicdialog";
 import { AddEditClientlegalentityDialogComponent } from "./add-edit-clientlegalentity-dialog/add-edit-clientlegalentity-dialog.component";
 import { AddEditSubdivisionComponent } from "./add-edit-subdivision/add-edit-subdivision.component";
 import { AddEditPocComponent } from "./add-edit-poc/add-edit-poc.component";
 import { AddEditPoDialogComponent } from "./add-edit-po-dialog/add-edit-po-dialog.component";
 import { ChangeBudgetDialogComponent } from "./change-budget-dialog/change-budget-dialog.component";
 import { PMObjectService } from "src/app/projectmanagement/services/pmobject.service";
+import { Table } from 'primeng/table';
+import { MultiSelect } from 'primeng/multiselect';
 
 @Component({
   selector: "app-client-masterdata",

@@ -7,7 +7,7 @@ import { ConstantsService } from 'src/app/Services/constants.service';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
 import { Router } from '@angular/router';
 import { CommonService } from 'src/app/Services/common.service';
-import { Table } from 'primeng';
+import { Table } from 'primeng/table';
 
 @Component({
   selector: 'app-project-types',

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { IDailyAllocationTask, IDailyAllocationObject, IPreStack, IPerformAllocationObject } from './interface/prestack';
 import { UsercapacityComponent } from 'src/app/shared/usercapacity/usercapacity.component';
-import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { CommonService } from 'src/app/Services/common.service';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
 import { GlobalService } from 'src/app/Services/global.service';

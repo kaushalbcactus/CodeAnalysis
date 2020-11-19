@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
 import { AdminCommonService } from 'src/app/admin/services/admin-common.service';

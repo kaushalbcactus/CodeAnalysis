@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewEncapsulation, ViewChild, OnDestroy, HostListener, ChangeDetectorRef, ApplicationRef, NgZone } from '@angular/core';
 import { Message, SelectItem } from 'primeng/api';
-import { Calendar, Table, DialogService } from 'primeng';
+import { DialogService } from 'primeng/dynamicdialog';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -15,6 +15,8 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { EditInvoiceDialogComponent } from '../../edit-invoice-dialog/edit-invoice-dialog.component';
 import { AddUpdateProformaDialogComponent } from '../../add-update-proforma-dialog/add-update-proforma-dialog.component';
+import { Table } from 'primeng/table';
+import { Calendar } from 'primeng/calendar';
 
 @Component({
     selector: 'app-confirmed',

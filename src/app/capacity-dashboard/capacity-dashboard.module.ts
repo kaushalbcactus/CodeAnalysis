@@ -1,6 +1,6 @@
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { DialogService, DynamicDialogConfig, DynamicDialogRef } from "primeng";
+import { DialogService, DynamicDialogConfig, DynamicDialogRef } from "primeng/dynamicdialog";
 import { CapacityDashboardComponent } from "./capacity-dashboard.component";
 import { CapacityDashboardRoutingModule } from "./capacity-dashboard-routing.module";
 import { PrimengModule } from "../primeng/primeng.module";

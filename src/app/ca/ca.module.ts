@@ -9,7 +9,7 @@ import { PrimengModule } from '../primeng/primeng.module';
 import { FormsModule } from '@angular/forms';
 import { CaRoutingModule } from './ca-routing.module';
 // import { CaComponent } from './ca.component';
-import { DynamicDialogRef, DynamicDialogConfig } from 'primeng';
+import { DynamicDialogRef, DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { UnallocatedAllocatedTasksComponent } from './unallocated-allocated-tasks/unallocated-allocated-tasks.component';
 import { UserCapacityModule } from '../shared/usercapacity/usercapacity.module';
 import { UsercapacityComponent } from '../shared/usercapacity/usercapacity.component';

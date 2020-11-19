@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, AfterViewInit, Output, EventEmitter, AfterViewChecked } from '@angular/core';
-import { DynamicDialogConfig, DynamicDialogRef, TreeNode, DialogService } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef, DialogService } from 'primeng/dynamicdialog';
 import { IConflictTask, IPopupConflictData, IConflictResource, IQueryOptions } from './interface/conflict-allocation';
 import { GlobalService } from 'src/app/Services/global.service';
 import { TaskAllocationCommonService } from '../../task-allocation/services/task-allocation-common.service';
@@ -9,6 +9,7 @@ import { TaskAllocationConstantsService } from '../../task-allocation/services/t
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { UserCapacitycommonService } from '../usercapacity/service/user-capacitycommon.service';
+import { TreeNode } from 'primeng/api';
 
 @Component({
   selector: 'app-conflict-allocation',

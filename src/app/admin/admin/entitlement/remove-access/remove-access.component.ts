@@ -9,7 +9,7 @@ import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { AdminObjectService } from 'src/app/admin/services/admin-object.service';
 import { TLSSocket } from 'tls';
 import { async } from '@angular/core/testing';
-import { OverlayPanel } from 'primeng';
+import { OverlayPanel } from 'primeng/overlaypanel';
 import { ShowRuleComponent } from './show-rule/show-rule.component';
 
 @Component({

@@ -7,11 +7,12 @@ import { GlobalService } from 'src/app/Services/global.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { CommonService } from 'src/app/Services/common.service';
-import { SelectItem, MenuItem, DialogService } from 'primeng';
+import { DialogService } from 'primeng/dynamicdialog';
 import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { CurrentCompletedTasksTableComponent } from '../current-completed-tasks-table/current-completed-tasks-table.component';
+import { SelectItem } from 'primeng/api';
 
 
 interface DateObj {

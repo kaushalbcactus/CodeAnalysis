@@ -10,7 +10,7 @@ import { Table } from 'primeng/table';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { CommonService } from 'src/app/Services/common.service';
-import { DialogService, MenuItem, SelectItem } from 'primeng';
+import { DialogService } from 'primeng/dynamicdialog';
 import { CaDragdropComponent } from '../ca-dragdrop/ca-dragdrop.component';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
 import { PreStackAllocationComponent } from 'src/app/shared/pre-stack-allocation/pre-stack-allocation.component';
@@ -19,6 +19,7 @@ import { AllocationOverlayComponent } from 'src/app/shared/pre-stack-allocation/
 import { ConflictAllocationComponent } from 'src/app/shared/conflict-allocations/conflict-allocation.component';
 import { PreStackcommonService } from 'src/app/shared/pre-stack-allocation/service/pre-stackcommon.service';
 import { IConflictResource } from 'src/app/shared/conflict-allocations/interface/conflict-allocation';
+import { MenuItem, SelectItem } from 'primeng/api';
 
 @Component({
   selector: 'app-unallocated-allocated-tasks',

@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild} from '@angular/core';
-import { OverlayPanel } from 'primeng';
+import { OverlayPanel } from 'primeng/overlaypanel';
 import { CommonService } from 'src/app/Services/common.service';
 @Component({
   selector: 'app-allocation-overlay',

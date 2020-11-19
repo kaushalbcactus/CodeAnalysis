@@ -4,7 +4,7 @@ import { GlobalService } from 'src/app/Services/global.service';
 import { PubsuportConstantsService } from '../../Services/pubsuport-constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { CommonService } from 'src/app/Services/common.service';
-import { DynamicDialogRef, DynamicDialogConfig } from 'primeng';
+import { DynamicDialogRef, DynamicDialogConfig } from 'primeng/dynamicdialog';
 
 @Component({
     selector: 'app-author-details',

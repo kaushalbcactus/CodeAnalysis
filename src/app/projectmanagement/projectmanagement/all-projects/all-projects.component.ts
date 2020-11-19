@@ -4,7 +4,7 @@ import { CommonService } from 'src/app/Services/common.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { PmconstantService } from '../../services/pmconstant.service';
 import { PMObjectService } from '../../services/pmobject.service';
-import { MenuItem, DialogService, SelectItem, SortEvent, DynamicDialogRef } from 'primeng';
+import {  DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { PMCommonService } from '../../services/pmcommon.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 // import { CommunicationComponent } from '../communication/communication.component';
@@ -22,6 +22,7 @@ import { InvoiceLineitemsComponent } from './invoice-lineitems/invoice-lineitems
 import { CdpfComponent } from 'src/app/shared/sqms/cdpf/cdpf.component';
 import { JournalConferenceDetailsComponent } from 'src/app/shared/journal-conference-details/journal-conference-details.component';
 import { ProjectBudgetBreakupComponent } from './project-budget-breakup/project-budget-breakup.component';
+import { MenuItem, SelectItem, SortEvent } from 'primeng/api';
 
 declare var $;
 @Component({

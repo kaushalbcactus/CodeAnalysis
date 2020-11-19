@@ -4,7 +4,7 @@ import { PMObjectService } from 'src/app/projectmanagement/services/pmobject.ser
 import { PmconstantService } from 'src/app/projectmanagement/services/pmconstant.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { DatePipe } from '@angular/common';
-import { DialogService, DynamicDialogConfig, DynamicDialogRef, SelectItem } from 'primeng';
+import { DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.service';
 import { CommonService } from 'src/app/Services/common.service';
@@ -12,6 +12,7 @@ import { GlobalService } from 'src/app/Services/global.service';
 import { DataService } from 'src/app/Services/data.service';
 import { Router } from '@angular/router';
 import { PoChangeDialogComponent } from './po-change-dialog/po-change-dialog.component';
+import { SelectItem } from 'primeng/api';
 
 declare var $;
 @Component({

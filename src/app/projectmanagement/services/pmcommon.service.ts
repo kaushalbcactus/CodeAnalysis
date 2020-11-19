@@ -7,7 +7,7 @@ import { CommonService } from 'src/app/Services/common.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { Router } from '@angular/router';
 import { DataService } from 'src/app/Services/data.service';
-import { DialogService } from 'primeng';
+import { DialogService } from 'primeng/dynamicdialog';
 
 declare var $;
 @Injectable({

@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { DynamicDialogRef, DynamicDialogConfig } from 'primeng';
+import { DynamicDialogRef, DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
@@ -1560,7 +1560,7 @@ this.sharedObject.oTaskAllocation.allTasks = arrResult.find(c => c.listName === 
   GraphResize() {
     this.grapLoading = true;
     setTimeout(() => {
-      let uiDialog: any = document.querySelector('.ui-dialog-content');
+      let uiDialog: any = document.querySelector('.allocation-drag-drop');
       switch (this.resizeGraph) {
         case 'milestone':
           var milestoneAreaWidth: any = document.querySelector('.milestonesDropArea');

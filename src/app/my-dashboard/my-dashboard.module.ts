@@ -15,7 +15,7 @@ import { TimeSpentDialogComponent } from './time-spent-dialog/time-spent-dialog.
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
 import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
-import {DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng';
+import {DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { MyCurrentCompletedTasksComponent } from './my-current-completed-tasks/my-current-completed-tasks.component';
 import { PreviosNextTasksDialogComponent } from './previos-next-tasks-dialog/previos-next-tasks-dialog.component';
 import { CustomMaterialModule } from '../shared/material.module';
@@ -27,7 +27,8 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgxGraphModule } from '@swimlane/ngx-graph';
 import { DndModule } from 'ngx-drag-drop';
 
-import { TreeTableModule, RatingModule } from 'primeng';
+import { TreeTableModule } from 'primeng/treetable';
+import {RatingModule} from 'primeng/rating';
 import { NgGanttEditorModule } from 'ng-gantt';
 import { ProjectmanagementModule } from '../projectmanagement/projectmanagement.module';
 import { TaskAllocationModule } from '../task-allocation/task-allocation.module';

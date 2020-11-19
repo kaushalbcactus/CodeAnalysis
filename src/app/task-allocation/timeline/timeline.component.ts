@@ -23,8 +23,8 @@ import { ConstantsService } from "src/app/Services/constants.service";
 import { GlobalService } from "src/app/Services/global.service";
 import { TaskAllocationConstantsService } from "../services/task-allocation-constants.service";
 import { CommonService } from "src/app/Services/common.service";
-import { TreeNode, DialogService, DynamicDialogRef } from "primeng";
-import { MenuItem } from "primeng/api";
+import { DialogService, DynamicDialogRef } from "primeng/dynamicdialog";
+import { MenuItem, TreeNode } from "primeng/api";
 import { DragDropComponent } from "../drag-drop/drag-drop.component";
 import { TaskDetailsDialogComponent } from "../task-details-dialog/task-details-dialog.component";
 import {
@@ -3746,6 +3746,7 @@ export class TimelineComponent
       header: "Task Allocation ",
       width: "100vw",
       height: "100vh",
+      styleClass:"allocation-drag-drop",
       contentStyle: { height: "90vh", overflow: "auto" },
       closable: false
     });

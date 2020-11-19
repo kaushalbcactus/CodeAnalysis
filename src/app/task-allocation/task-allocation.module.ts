@@ -8,7 +8,7 @@ import { CustomMaterialModule } from '../shared/material.module';
 import { TimelineComponent } from './timeline/timeline.component';
 import { NgGanttEditorModule } from 'ng-gantt';
 import { TreeTableModule } from 'primeng/treetable';
-import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { PrimengModule } from '../primeng/primeng.module';
 import { DragDropComponent } from './drag-drop/drag-drop.component';
 import { DndModule } from 'ngx-drag-drop';

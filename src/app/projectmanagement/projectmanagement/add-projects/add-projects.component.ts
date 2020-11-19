@@ -1,9 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { MenuItem, Dialog } from 'primeng';
+import { Dialog } from 'primeng/dialog';
 import { PMObjectService } from '../../services/pmobject.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { PmconstantService } from '../../services/pmconstant.service';
+import { MenuItem } from 'primeng/api';
 
 @Component({
   selector: 'app-add-projects',

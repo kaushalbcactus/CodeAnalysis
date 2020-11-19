@@ -7,7 +7,7 @@ import { ConstantsService } from 'src/app/Services/constants.service';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
 import { AdminCommonService } from 'src/app/admin/services/admin-common.service';
 import { Router } from '@angular/router';
-import { Table } from 'primeng';
+import { Table } from 'primeng/table';
 
 @Component({
   selector: 'app-bucket-masterdata',

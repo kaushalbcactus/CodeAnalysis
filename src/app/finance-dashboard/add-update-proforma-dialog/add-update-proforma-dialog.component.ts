@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DynamicDialogRef, DynamicDialogConfig, SelectItem } from 'primeng';
+import { DynamicDialogRef, DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DatePipe, formatDate } from '@angular/common';
 import { FdConstantsService } from '../fdServices/fd-constants.service';

@@ -1,8 +1,8 @@
-<div class="storagebutton" fxLayout="row" fxLayoutAlign="end center">
-
-    <button type="button" pButton class="SaveButton" icon="pi pi-check" style="margin-right: 5px;" (click)="SaveGraph()" label="Save"></button>
-    <button type="button" pButton icon="pi pi-times" (click)="cancelGraph();" label="Cancel" class="ui-button-secondary" style="background-color:ghostwhite;"></button>
-
+<div class="p-grid" style="float: right;">
+    <div class="dynamic-dialog-buttons">
+        <button pButton pRipple type="button" label="Save" class="p-button-danger SaveGraph" icon="pi pi-check" (click)="SaveGraph()" style="margin-right: 5px;"></button>
+        <button pButton pRipple type="button" label="Cancel" class="p-button-danger cancelGraph" icon="pi pi-times" (click)="cancelGraph()"></button>
+    </div>
 </div>
 
 
@@ -11,15 +11,15 @@
   <div id="scInnerLoaderText">Loading...</div>
 </div> -->
 
-<div class="dragDropFlex" fxLayout="column" fxLayoutGap="5px">
+<div class="dragDropFlex p-flex-column">
 
-    <mat-accordion fxLayout="column" fxLayoutGap="5px" fxLayoutAlign="space-around center">
+    <mat-accordion class="p-flex-column">
 
         <!--***************************************************************************************************************************************
                                                    Milestones  panel      
 ****************************************************************************************************************************************-->
 
-        <mat-expansion-panel [expanded]="step === 0" (opened)="setStep(0)" style=" border: 1px solid #db1721;
+        <mat-expansion-panel class="p-mb-2" [expanded]="step === 0" (opened)="setStep(0)" style=" border: 1px solid #db1721;
  border-radius: 0px;width:100%;" [hidden]="mainloaderenable">
             <mat-expansion-panel-header style=" background: #db1721;" [collapsedHeight]="customCollapsedHeight" [expandedHeight]="customCollapsedHeight">
                 <mat-panel-title>
@@ -68,8 +68,8 @@
                         <ng-template #nodeTemplate let-node>
                             <svg:g class="node" ngx-tooltip [tooltipPlacement]="'top'" [tooltipType]="'tooltip'" [tooltipTitle]="node.label" (mouseup)="onMilestoneUp($event, node)" (mousedown)="onMilestoneDown($event, node)" (click)="SelectMilestone(node,'milestone')" (contextmenu)="RemoveNode($event,node,'milestone')">
 
-                                <svg:rect [attr.width]="node.width" [attr.style.cursor]="pointer" [attr.height]="node.height" [attr.fill]="node.color || node.options.color" />
-                                <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.height / 2">
+                                <svg:rect [attr.width]="node.dimension.width" [attr.style.cursor]="pointer" [attr.height]="30" [attr.fill]="node.color || node.options.color" />
+                                <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.dimension.height / 2">
                                     {{node.label}}
                                 </svg:text>
                             </svg:g>
@@ -93,7 +93,7 @@
                                                    Sub Milestones  panel      
         ********************************************************************************************-->
 
-        <mat-expansion-panel *ngIf="milestoneIndex > -1" [expanded]="step === 1" (opened)="setStep(1)" style="border: 1px solid #db1721;border-radius: 0px;width: 100%;">
+        <mat-expansion-panel class="p-mb-2" *ngIf="milestoneIndex > -1" [expanded]="step === 1" (opened)="setStep(1)" style="border: 1px solid #db1721;border-radius: 0px;width: 100%;">
             <mat-expansion-panel-header style=" background: #db1721;" [collapsedHeight]="customCollapsedHeight" [expandedHeight]="customCollapsedHeight">
                 <mat-panel-title>
                     <h3 style="width: 250px; text-align: left;">Sub Milestones </h3>
@@ -144,8 +144,8 @@
                             <svg:g class="node" ngx-tooltip [tooltipPlacement]="'top'" [tooltipType]="'tooltip'" [tooltipTitle]="node.label" (mouseup)="onMilestoneUp($event, node)" (mousedown)="onMilestoneDown($event, node)" (click)="SelectMilestone(node,'submilestone')" (contextmenu)="RemoveNode($event,node,'submilestone')"
                                 *ngIf=" (milestonesGraph.nodes[milestoneIndex].submilestone.nodes.length > 1 && node.label !== 'Default') || milestonesGraph.nodes[milestoneIndex].submilestone.nodes.length === 1 ">
 
-                                <svg:rect [attr.width]="node.width" [attr.style.cursor]="pointer" [attr.height]="node.height" [attr.fill]="node.color || node.options.color" />
-                                <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.height / 2">
+                                <svg:rect [attr.width]="node.dimension.width" [attr.style.cursor]="pointer" [attr.height]="node.dimension.height" [attr.fill]="node.color || node.options.color" />
+                                <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.dimension.height / 2">
                                     {{node.label}}
                                 </svg:text>
                             </svg:g>
@@ -174,8 +174,8 @@
                             <svg:g class="node" ngx-tooltip [tooltipPlacement]="'top'" [tooltipType]="'tooltip'" [tooltipTitle]="node.label" (mouseup)="onMilestoneUp($event, node)" (mousedown)="onMilestoneDown($event, node)" (click)="SelectMilestone(node,'submilestone')" (contextmenu)="RemoveNode($event,node,'submilestone')"
                                 *ngIf="(milestonesGraph.nodes[milestoneIndex].submilestone.nodes.length > 1 && node.label !=='Default') || milestonesGraph.nodes[milestoneIndex].submilestone.nodes.length === 1 ">
 
-                                <svg:rect [attr.width]="node.width" [attr.style.cursor]="pointer" [attr.height]="node.height" [attr.fill]="node.color || node.options.color" />
-                                <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.height / 2">
+                                <svg:rect [attr.width]="node.dimension.width" [attr.style.cursor]="pointer" [attr.height]="node.dimension.height" [attr.fill]="node.color || node.options.color" />
+                                <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.dimension.height / 2">
                                     {{node.label}}
                                 </svg:text>
                             </svg:g>
@@ -259,8 +259,8 @@
 
                         <ng-template #nodeTemplate let-node>
                             <svg:g class="node" *ngIf="node.taskType !== 'Adhoc' && node.taskType !== 'TB' " ngx-tooltip [tooltipPlacement]="'top'" [tooltipType]="'tooltip'" [tooltipTitle]="node.label" (click)="ontaskClick(node)" (contextmenu)="RemoveNode($event,node,'task')">
-                                <svg:rect [attr.width]="node.width" [attr.style.cursor]="pointer" [attr.height]="node.height" [attr.fill]="node.color || node.options.color" />
-                                <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.height / 2">
+                                <svg:rect [attr.width]="node.dimension.width" [attr.style.cursor]="pointer" [attr.height]="node.dimension.height" [attr.fill]="node.color || node.options.color" />
+                                <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.dimension.height / 2">
                                     {{node.label}}
                                 </svg:text>
                             </svg:g>
@@ -288,8 +288,8 @@
                         <ng-template #nodeTemplate let-node>
 
                             <svg:g class="node" *ngIf="node.taskType !== 'Adhoc' && node.taskType !== 'TB' " ngx-tooltip [tooltipPlacement]="'top'" [tooltipType]="'tooltip'" [tooltipTitle]="node.label" (click)="ontaskClick(node)" (contextmenu)="RemoveNode($event,node,'task')">
-                                <svg:rect [attr.width]="node.width" [attr.style.cursor]="pointer" [attr.height]="node.height" [attr.fill]="node.color || node.options.color" />
-                                <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.height / 2">
+                                <svg:rect [attr.width]="node.dimension.width" [attr.style.cursor]="pointer" [attr.height]="node.dimension.height" [attr.fill]="node.color || node.options.color" />
+                                <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.dimension.height / 2">
                                     {{node.label}}
                                 </svg:text>
                             </svg:g>
