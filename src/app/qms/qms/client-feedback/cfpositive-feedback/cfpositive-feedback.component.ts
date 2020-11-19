@@ -34,7 +34,7 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
   CFRows = [];
   items: MenuItem[];
   private cfPFNavigationSubscription;
-  @ViewChild('cfp', { static: false }) cfpositive: PfsComponent;
+  @ViewChild('cfp1', { static: false }) cfpositive: PfsComponent;
 
   public hideLoader = true;
   public hideTable = false;
