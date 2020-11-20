@@ -2456,8 +2456,6 @@ export class ManageFinanceComponent implements OnInit {
    * @param poInfoObj pass the poInvoice object.
    */
   getProjectFinanceBreakupData(po, projObj, poInfoObj) {
-
-    debugger;
     const data: any = {
       __metadata: { type: this.constant.listNames.ProjectFinanceBreakup.type },
     };
@@ -2638,7 +2636,6 @@ export class ManageFinanceComponent implements OnInit {
       const poItem = poArray.filter(poObj => poObj.Id === (element.POLookup ? element.POLookup : element.POID));
       const poExistItem = poExistingItems.find(poObj => poObj.ID === element.ID);
       if (poItem && poItem.length) {
-        debugger
         const data = {
           __metadata: { type: this.constant.listNames.PO.type },
           TotalLinked: poItem[0].TotalLinked + element.Amount - (poExistItem ? poExistItem.Amount ? poExistItem.Amount : 0 : 0),
