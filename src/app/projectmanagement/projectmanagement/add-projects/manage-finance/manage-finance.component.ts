@@ -18,7 +18,8 @@ declare var $;
   selector: 'app-manage-finance',
   templateUrl: './manage-finance.component.html',
   styleUrls: ['./manage-finance.component.css'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  providers: [DialogService],
 })
 export class ManageFinanceComponent implements OnInit {
   @Input() billedBy: any;
@@ -795,16 +796,16 @@ export class ManageFinanceComponent implements OnInit {
       retPOInfo.oop = retPOInfo.oop + (retPOInfo.poOOP ? retPOInfo.poOOP : 0);
       retPOInfo.total = retPOInfo.revenue + retPOInfo.oop + retPOInfo.tax;
       retPOInfo.tax = retPOInfo.tax + (retPOInfo.tax ? retPOInfo.tax : 0);
-      this.unassignedBudget[0].total = this.unassignedBudget[0].total - retPOInfo.poRevenue - retPOInfo.poOOP; //- retPOInfo.tax;
+      this.unassignedBudget[0].total = this.unassignedBudget[0].total - retPOInfo.poRevenue - (retPOInfo.poOOP ? retPOInfo.poOOP : 0); //- retPOInfo.tax;
       this.unassignedBudget[0].revenue = this.unassignedBudget[0].revenue - retPOInfo.poRevenue;
-      this.unassignedBudget[0].oop = this.unassignedBudget[0].oop - retPOInfo.poOOP;
+      this.unassignedBudget[0].oop = this.unassignedBudget[0].oop - (retPOInfo.poOOP ? retPOInfo.poOOP : 0);
       // this.unassignedBudget[0].tax = this.unassignedBudget[0].tax - retPOInfo.tax;
     }
     // Add the value to Po header.
-    this.poHeader.total = parseFloat((this.poHeader.total + retPOInfo.poRevenue + retPOInfo.poOOP).toFixed(2));
+    this.poHeader.total = parseFloat((this.poHeader.total + retPOInfo.poRevenue + (retPOInfo.poOOP ? retPOInfo.poOOP : 0)).toFixed(2));
     this.poHeader.revenue = this.poHeader.revenue + retPOInfo.poRevenue;
     // this.poHeader.tax = this.poHeader.tax + retPOInfo.tax;
-    this.poHeader.oop = this.poHeader.oop + retPOInfo.poOOP;
+    this.poHeader.oop = this.poHeader.oop + (retPOInfo.poOOP ? retPOInfo.poOOP : 0);
     // }
     retPOInfo.poRevenue = 0;
     retPOInfo.poOOP = 0;
@@ -2453,8 +2454,6 @@ export class ManageFinanceComponent implements OnInit {
    * @param poInfoObj pass the poInvoice object.
    */
   getProjectFinanceBreakupData(po, projObj, poInfoObj) {
-
-    debugger;
     const data: any = {
       __metadata: { type: this.constant.listNames.ProjectFinanceBreakup.type },
     };
@@ -2635,7 +2634,6 @@ export class ManageFinanceComponent implements OnInit {
       const poItem = poArray.filter(poObj => poObj.Id === (element.POLookup ? element.POLookup : element.POID));
       const poExistItem = poExistingItems.find(poObj => poObj.ID === element.ID);
       if (poItem && poItem.length) {
-        debugger
         const data = {
           __metadata: { type: this.constant.listNames.PO.type },
           TotalLinked: poItem[0].TotalLinked + element.Amount - (poExistItem ? poExistItem.Amount ? poExistItem.Amount : 0 : 0),
