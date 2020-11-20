@@ -3986,171 +3986,7 @@ export class TimelineComponent
       this.allTasks
     );
     this.disableSave = false;
-
-    // const assignedTo = milestoneTask.AssignedTo;
-    // if (assignedTo) {
-    //   this.updateNextPreviousTasks(milestoneTask);
-    //   milestoneTask.assignedUserChanged = true;
-    //   if (assignedTo.hasOwnProperty("ID") && assignedTo.ID) {
-    //     milestoneTask.skillLevel = this.taskAllocateCommonService.getSkillName(
-    //       assignedTo.SkillText
-    //     );
-    //     const previousUserTimeZone = milestoneTask.assignedUserTimeZone;
-    //     const resource = this.sharedObject.oTaskAllocation.oResources.filter(
-    //       objt => {
-    //         return assignedTo.ID === objt.UserNamePG.ID;
-    //       }
-    //     );
-    //     await this.dailyAllocation.calcPrestackAllocation(
-    //       resource,
-    //       milestoneTask
-    //     );
-    //     milestoneTask.assignedUserTimeZone =
-    //       resource && resource.length > 0
-    //         ? resource[0].TimeZone.Title
-    //           ? resource[0].TimeZone.Title
-    //           : this.defaultTimeZone
-    //         : this.defaultTimeZone;
-
-    //     this.changeUserTimeZone(
-    //       milestoneTask,
-    //       previousUserTimeZone,
-    //       milestoneTask.assignedUserTimeZone
-    //     );
-    //     this.setDatePartAndTimePart(milestoneTask);
-
-    //     /// Change date as user changed in AssignedTo dropdown
-    //   } else {
-    //     const previousUserTimeZone = milestoneTask.assignedUserTimeZone;
-    //     milestoneTask.assignedUserTimeZone = this.defaultTimeZone;
-    //     this.changeUserTimeZone(
-    //       milestoneTask,
-    //       previousUserTimeZone,
-    //       milestoneTask.assignedUserTimeZone
-    //     );
-    //     this.setDatePartAndTimePart(milestoneTask);
-    //     milestoneTask.skillLevel = milestoneTask.AssignedTo.SkillText;
-    //     milestoneTask.user = milestoneTask.skillLevel;
-    //   }
-    //   milestoneTask.edited = true;
-    //   milestoneTask.user = milestoneTask.AssignedTo
-    //     ? milestoneTask.AssignedTo.Title
-    //     : milestoneTask.user;
-    // }
   }
-
-  // changeNextTaskPrevTask(
-  //   sNextPrev,
-  //   subMilestone,
-  //   currentTask,
-  //   newName,
-  //   sParam
-  // ) {
-  //   const sTasks = sNextPrev.split(";");
-  //   sTasks.forEach(task => {
-  //     const oTask = subMilestone.children.find(t => t.data.title === task);
-  //     const sNextPrevTasks = oTask.data[sParam].split(";");
-  //     const currentTaskIndex = sNextPrevTasks.indexOf(currentTask.title);
-  //     sNextPrevTasks[currentTaskIndex] = newName;
-  //     const prevNextTaskString = sNextPrevTasks.join(";");
-  //     oTask.data[sParam] = prevNextTaskString;
-  //   });
-  // }
-
-  // /**
-  //  * Update next previous task of submit/galley(Slot type as Both) slot based on skill/user
-  //  * @param milestoneTask - task whose assigned user changed
-  //  */
-  // async updateNextPreviousTasks(milestoneTask) {
-  //   const currentTask = milestoneTask;
-  //   const milestone = this.milestoneData.find(
-  //     m => m.data.title === milestoneTask.milestone
-  //   );
-
-  //   let subMilestone: TreeNode;
-  //   subMilestone = currentTask.submilestone
-  //     ? milestone.children.find(t => t.data.title === currentTask.submilestone)
-  //     : milestone;
-  //   let newName = "";
-  //   if (milestoneTask.slotType === "Both") {
-  //     if (milestoneTask.AssignedTo.ID) {
-  //       milestoneTask.ActiveCA = "No";
-  //       milestoneTask.itemType = milestoneTask.itemType.replace(/Slot/g, "");
-  //       if (milestoneTask.IsCentrallyAllocated === "Yes") {
-  //         newName = milestoneTask.itemType;
-  //         newName = this.getNewTaskName(milestoneTask, newName);
-  //         milestoneTask.IsCentrallyAllocated = "No";
-  //       } else {
-  //         newName = milestoneTask.title;
-  //       }
-  //     } else if (!milestoneTask.AssignedTo.ID) {
-  //       milestoneTask.IsCentrallyAllocated = "Yes";
-  //       milestoneTask.ActiveCA =
-  //         this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone ===
-  //           milestoneTask.milestone
-  //           ? "Yes"
-  //           : milestoneTask.ActiveCA;
-  //       milestoneTask.itemType = milestoneTask.itemType + "Slot";
-  //       newName = milestoneTask.itemType;
-  //       newName = this.getNewTaskName(milestoneTask, newName);
-  //     }
-  //     milestoneTask.title = milestoneTask.title = newName;
-
-  //     if (milestoneTask.nextTask) {
-  //       this.changeNextTaskPrevTask(
-  //         milestoneTask.nextTask,
-  //         subMilestone,
-  //         currentTask,
-  //         newName,
-  //         "previousTask"
-  //       );
-  //     }
-  //     if (milestoneTask.previousTask) {
-  //       this.changeNextTaskPrevTask(
-  //         milestoneTask.nextTask,
-  //         subMilestone,
-  //         currentTask,
-  //         newName,
-  //         "nextTask"
-  //       );
-  //     }
-  //   }
-  // }
-
-  // getNewTaskName(milestoneTask, originalName) {
-  //   let counter = 1;
-  //   let tasks = this.checkNameExists([], milestoneTask, originalName);
-  //   while (tasks.length) {
-  //     counter++;
-  //     originalName = milestoneTask.itemType + " " + counter;
-  //     tasks = this.checkNameExists(tasks, milestoneTask, originalName);
-  //   }
-
-  //   return originalName;
-  // }
-
-  // checkNameExists(tasks, milestoneTask, originalName) {
-  //   tasks = this.allRestructureTasks.filter(
-  //     e => e.title === originalName && e.milestone === milestoneTask.milestone
-  //   );
-  //   if (!tasks.length) {
-  //     tasks = this.allTasks.filter(e => {
-  //       const taskName = e.Title.replace(
-  //         this.sharedObject.oTaskAllocation.oProjectDetails.projectCode +
-  //         " " +
-  //         e.Milestone +
-  //         " ",
-  //         ""
-  //       );
-  //       return (
-  //         e.ContentTypeCH !== this.constants.CONTENT_TYPE.MILESTONE &&
-  //         taskName === originalName &&
-  //         e.Milestone === milestoneTask.milestone
-  //       );
-  //     });
-  //   }
-  //   return tasks;
-  // }
 
   // *************************************************************************************************
   // Cascading full data
@@ -4947,12 +4783,14 @@ export class TimelineComponent
 
           retTask = retTask.filter(tsk => {
             return (
-              (task.data.pUserStart <= tsk.DueDateDT &&
-                task.data.pUserEnd >= tsk.DueDateDT) ||
+              task.data.id != tsk.ID && 
+              (
+              (task.data.pUserStart <= tsk.DueDate &&
+                task.data.pUserEnd >= tsk.DueDate) ||
               (task.data.pUserStart <= tsk.StartDate &&
                 task.data.pUserEnd >= tsk.StartDate) ||
               (task.data.pUserStart >= tsk.StartDate &&
-                task.data.pUserEnd <= tsk.DueDateDT)
+                task.data.pUserEnd <= tsk.DueDate))
             );
           });
 
@@ -6492,7 +6330,7 @@ export class TimelineComponent
       if (validateCurrentTask) {
         this.commonService.showToastrMessage(
           this.constants.MessageType.warn,
-          'start date / end date of ' + validateCurrentTask.title + ' task in ' + validateCurrentTask.milestone + ' is on Saturday / Sunday so please change',
+          'Start date / End date of ' + validateCurrentTask.title + ' task in ' + validateCurrentTask.milestone + ' is on Saturday / Sunday so please change',
           false
         );
         return false;

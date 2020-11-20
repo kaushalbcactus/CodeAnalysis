@@ -768,8 +768,7 @@ export class ManageFinanceComponent implements OnInit {
     const poExistItem = this.existPOArray && this.existPOArray.retItems ?
       this.existPOArray.retItems.find(poObj => poObj.Id === this.poData[poIndex].Id) : null;
     if (this.invoiceType == 'revenue' ? (!retPOInfo.poRevenue) : (!retPOInfo.poOOP)) {
-
-      this.commonService.showToastrMessage(this.constant.MessageType.error, 'Enter' + this.invoiceType + 'amount to be assigned to PO.', true);
+      this.commonService.showToastrMessage(this.constant.MessageType.error, 'Enter ' + this.invoiceType + ' amount to be assigned to PO.', true);
     }
 
     const nAvailableToTag = this.invoiceType == 'revenue' ? reservePO.AmountRevenue - reservePO.RevenueLinked +
@@ -782,7 +781,6 @@ export class ManageFinanceComponent implements OnInit {
       this.commonService.showToastrMessage(this.constant.MessageType.error, 'PO ' + this.invoiceType + ' balance should be greater than or equal to the amount to reserved on PO.', true);
       return;
     }
-
 
     // if (retPOInfo.poRevenue) {
     if (this.unassignedBudget[0].total === 0 && (this.unassignedBudget[0].revenue === 0 || this.unassignedBudget[0].oop === 0 )) {
