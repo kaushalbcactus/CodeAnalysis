@@ -266,8 +266,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     } else {
       if (data.showAllocationSplit) {
         this.taskMenu.push(
-          { label: 'Edit Allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, '') },
-          { label: 'Equal Allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data, 'Equal') }
+          { label: 'Edit Allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data,Slot, '') },
+          { label: 'Equal Allocation', icon: 'pi pi-sliders-h', command: (event) => this.editAllocation(data,Slot, 'Equal') }
         );
       }
       if (!data.editMode) {
@@ -1802,7 +1802,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     return sVal;
   }
 
-  editAllocation(milestoneTask, allocationType): void {
+  editAllocation(milestoneTask, slotData ,allocationType): void {
     // milestoneTask.resources = this.resourceList.filter((objt) => {
     //   return objt.UserNamePG.ID === milestoneTask.AssignedTo.ID;
     // });
@@ -1845,6 +1845,9 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
         this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Resource is over allocated', false);
       }
+      this.disableSave = false;
+      slotData.editMode = true;
+      slotData.edited = true;
     });
   }
 
