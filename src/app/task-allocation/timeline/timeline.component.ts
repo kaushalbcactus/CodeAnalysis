@@ -656,14 +656,34 @@ export class TimelineComponent
         const subMilData = this.GanttchartData.find(
           c => c.title === element.subMile && c.parent === milestone.Id
         );
-        subMilData.start_date = tempSubmilestonesWOAT[0].data.start_date;
-        subMilData.end_date =
-          tempSubmilestonesWOAT[tempSubmilestonesWOAT.length - 1].data.end_date;
-        subMilData.pUserStart = tempSubmilestonesWOAT[0].data.start_date;
-        subMilData.pUserEnd =
-          tempSubmilestonesWOAT[tempSubmilestonesWOAT.length - 1].data.end_date;
+        if (tempSubmilestonesWOAT.length) {
+          subMilData.start_date = tempSubmilestonesWOAT[0].data.start_date;
+          subMilData.end_date =
+            tempSubmilestonesWOAT[
+              tempSubmilestonesWOAT.length - 1
+            ].data.end_date;
+          subMilData.pUserStart = tempSubmilestonesWOAT[0].data.start_date;
+          subMilData.pUserEnd =
+            tempSubmilestonesWOAT[
+              tempSubmilestonesWOAT.length - 1
+            ].data.end_date;
+         
+        } else {
+          subMilData.start_date = tempSubmilestones[0].data.start_date;
+          subMilData.end_date =
+          tempSubmilestones[
+            tempSubmilestones.length - 1
+            ].data.end_date;
+          subMilData.pUserStart = tempSubmilestones[0].data.start_date;
+          subMilData.pUserEnd =
+          tempSubmilestones[
+            tempSubmilestones.length - 1
+            ].data.end_date;
+        }
         this.setDatePartAndTimePart(subMilData);
       }
+
+      
       const temptasks = {
         data: this.GanttchartData.find(
           c => c.title === element.subMile && c.parent === milestone.Id

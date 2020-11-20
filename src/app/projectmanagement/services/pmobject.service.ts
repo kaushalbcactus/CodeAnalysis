@@ -380,7 +380,7 @@ export class PMObjectService {
     isSOWCodeDisabled: false,
     isStatusDisabled: true,
     CSRule :  '',
-    DeliveryRule : '', 
+    DeliveryRule : '',
 
   };
   public oProjectCreation = {
