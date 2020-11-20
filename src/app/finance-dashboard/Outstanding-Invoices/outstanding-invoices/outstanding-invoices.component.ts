@@ -410,8 +410,10 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         this.outstandingInvoicesRes = [...this.outstandingInvoicesRes];
         this.createColFieldValues(this.outstandingInvoicesRes);
         if (this.outInvTable.filteredValue && this.outInvTable.filters.DisplayInvoiceWithAuxiliary) {
-            this.DisplayInvoiceWithAuxiliaryArray = this.outstandingInvoicesRes.filter(c => this.outInvTable.filters.DisplayInvoiceWithAuxiliary.value.includes(c.DisplayInvoiceWithAuxiliary)) ? this.outstandingInvoicesRes.filter(c => this.outInvTable.filters.DisplayInvoiceWithAuxiliary.value.includes(c.DisplayInvoiceWithAuxiliary)).map(c => c.DisplayInvoiceWithAuxiliary) : [];
-            this.outInvTable.filter(this.DisplayInvoiceWithAuxiliaryArray, 'DisplayInvoiceWithAuxiliary', 'in')
+
+            // need to check 
+            // this.DisplayInvoiceWithAuxiliaryArray = this.outstandingInvoicesRes.filter(c => this.outInvTable.filters.DisplayInvoiceWithAuxiliary.value.includes(c.DisplayInvoiceWithAuxiliary)) ? this.outstandingInvoicesRes.filter(c => this.outInvTable.filters.DisplayInvoiceWithAuxiliary.value.includes(c.DisplayInvoiceWithAuxiliary)).map(c => c.DisplayInvoiceWithAuxiliary) : [];
+            // this.outInvTable.filter(this.DisplayInvoiceWithAuxiliaryArray, 'DisplayInvoiceWithAuxiliary', 'in')
         }
     }
 

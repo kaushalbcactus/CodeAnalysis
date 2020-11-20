@@ -1,140 +1,146 @@
 div.ms-wikicontent.ms-rtestate-field {
-  padding-right: 0px !important;
+    padding-right: 0px !important;
 }
 
 .Search-card {
-  width: 35vw;
-  border: 2px solid #b03f44;
+    width: 35vw;
+    border: 2px solid #b03f44;
 }
+
 
 /* ::ng-deep  */
 
 .searchIcon {
-  font-size: 2em !important;
+    font-size: 2em !important;
 }
+
 
 /* ::ng-deep  */
 
 .mat-card-content,
 .mat-card-subtitle {
-  font-size: 18px !important;
+    font-size: 18px !important;
 }
+
 
 /* :host ::ng-deep  */
 
 button {
-  margin-right: 0.25em;
+    margin-right: 0.25em;
 }
+
 
 /* :host ::ng-deep  */
 
 .custom-toast .ui-toast-message {
-  color: #ffffff;
-  background: #fc466b;
-  background: -webkit-linear-gradient(to right, #3f5efb, #fc466b);
-  background: linear-gradient(to right, #3f5efb, #fc466b);
+    color: #ffffff;
+    background: #fc466b;
+    background: -webkit-linear-gradient(to right, #3f5efb, #fc466b);
+    background: linear-gradient(to right, #3f5efb, #fc466b);
 }
+
 
 /* :host ::ng-deep  */
 
 .custom-toast .ui-toast-close-icon {
-  color: #ffffff;
+    color: #ffffff;
 }
 
 @-webkit-keyframes spin {
-  0% {
-    -webkit-transform: rotate(0deg);
-  }
-  100% {
-    -webkit-transform: rotate(360deg);
-  }
+    0% {
+        -webkit-transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
 }
 
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 #mainLoader,
 #scInnerLoader {
-  border: 10px solid #f3f3f3;
-  border-radius: 50%;
-  border-top: 10px solid red;
-  border-bottom: 10px solid red;
-  width: 100px;
-  height: 100px;
-  -webkit-animation: spin 2s linear infinite;
-  animation: spin 2s linear infinite;
-  margin: 0 auto;
-  position: relative;
-  top: 50%;
-  transform: translateY(-50%);
+    border: 10px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 10px solid red;
+    border-bottom: 10px solid red;
+    width: 100px;
+    height: 100px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    margin: 0 auto;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 #mainLoaderText,
 #scInnerLoaderText {
-  -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
-  -o-animation: loading-text-opacity 2s linear 0s infinite normal;
-  -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
-  animation: loading-text-opacity 2s linear 0s infinite normal;
-  color: black;
-  font-family: "Helvetica Neue, " Helvetica ", " "arial";
-  font-size: 10px;
-  font-weight: bold;
-  opacity: 0.5;
-  text-align: center;
-  text-transform: uppercase;
-  top: 0;
+    -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
+    -o-animation: loading-text-opacity 2s linear 0s infinite normal;
+    -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
+    animation: loading-text-opacity 2s linear 0s infinite normal;
+    color: black;
+    font-family: "Helvetica Neue, " Helvetica ", " "arial";
+    font-size: 10px;
+    font-weight: bold;
+    opacity: 0.5;
+    text-align: center;
+    text-transform: uppercase;
+    top: 0;
 }
 
 .tableLoader {
-  position: fixed;
-  /* or absolute */
-  z-index: 9999;
+    position: fixed;
+    /* or absolute */
+    z-index: 9999;
 }
 
 .floatLeft {
-  float: left;
+    float: left;
 }
 
 .floatRight {
-  float: right;
+    float: right;
 }
 
 .clearBoth {
-  clear: both;
+    clear: both;
 }
 
 #formHeaderText {
-  color: black;
-  font-size: 28px;
+    color: black;
+    font-size: 28px;
 }
 
-#formHeaderText + div > img {
-  cursor: pointer;
+#formHeaderText+div>img {
+    cursor: pointer;
 }
 
 .sp-peoplepicker-topLevel {
-  height: 100px !important;
+    height: 100px !important;
 }
 
 #codeSection {
-  margin: auto;
-  width: 98%;
+    margin: auto;
+    width: 98%;
 }
+
 
 /* mat-expansion-panel app-timeline{
     display: inline !important;
 }*/
+
 .searchPrj {
-  border: 0px !important;
+    border: 0px !important;
 }
 
-
 .matSectionPanel .mat-accordion>.mat-expansion-panel-spacing:last-child {
-  margin-top: 0px !important;
+    margin-top: 0px !important;
 }

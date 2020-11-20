@@ -1,44 +1,31 @@
+::ng-deep .p-autocomplete-list-item.p-state-highlight {
+    background-color: #db1721 !important;
+}
+
 ::ng-deep .ui-helper-clearfix {
     border: none !important;
 }
 
-::ng-deep .ui-autocomplete-list-item.ui-state-highlight {
-    background-color: #db1721 !important;
-}
-
-::ng-deep .ui-autocomplete-token {
-    font-size: 11px !important;
+::ng-deep .p-autocomplete-token {
+    font-size: 12px !important;
     background: #db1721 !important;
-    margin: 0.2em 0.286em 0 0 !important;
+    margin: .2em .286em 0 0!important;
 }
 
-::ng-deep .header {
-    font-weight: 500 !important;
-    font-size: 1em !important;
-}
-
-::ng-deep .ui-autocomplete-dropdown {
-    padding: 2em !important;
-    background-color: #db1721!important;
-    font-size: 5px !important;
-    border: 1px solid #db1721!important;
-}
-
-::ng-deep .ui-autocomplete-multiple-container {
+::ng-deep .p-autocomplete-multiple-container {
     border: 1px solid #db1721 !important;
     border-radius: 3px !important;
     overflow-y: auto !important;
+    display: block !important;
     max-height: 150px !important;
 }
 
-::ng-deep .ui-autocomplete-dropdown {
-    font-size: 6px !important;
+::ng-deep .p-autocomplete {
+    width: 100% !important;
 }
 
-::ng-deep .ui-autocomplete-dropdown>.ui-button-icon-left {
-    font-size: 30px !important;
-}
-
-::ng-deep .primaryResource>span>.ui-autocomplete-multiple-container {
-    width: 80% !important;
+::ng-deep .p-autocomplete-dropdown {
+    padding: 1em !important;
+    background-color: #db1721!important;
+    border: 1px solid #db1721!important;
 }

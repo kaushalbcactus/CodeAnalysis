@@ -487,43 +487,45 @@ export class CsFinanceAuditDialogComponent implements OnInit {
 
 
   updateTableFilterOption() {
-    if (this.allProjectRef.filters.ProjectCode) {
-      this.columnFilter.ProjectCode = this.allProjects.ProjectCode.map(c => c.value).filter(c => this.allProjectRef.filters.ProjectCode.value.includes(c));
-      this.allProjectRef.filter(this.columnFilter.ProjectCode, 'ProjectCode', 'in')
-    }
-    if (this.allProjectRef.filters.SOWCode) {
-      this.columnFilter.SOWCode = this.allProjects.SOWCode.map(c => c.value).filter(c => this.allProjectRef.filters.SOWCode.value.includes(c));
-      this.allProjectRef.filter(this.columnFilter.SOWCode, 'SOWCode', 'in')
-    }
-    if (this.allProjectRef.filters.ShortTitle) {
-      this.columnFilter.ShortTitle = this.allProjects.ShortTitle.map(c => c.value).filter(c => this.allProjectRef.filters.ShortTitle.value.includes(c));
-      this.allProjectRef.filter(this.columnFilter.ShortTitle, 'ShortTitle', 'in')
-    }
-    if (this.allProjectRef.filters.ClientLegalEntity) {
-      this.columnFilter.ClientLegalEntity = this.allProjects.ClientLegalEntity.map(c => c.value).filter(c => this.allProjectRef.filters.ClientLegalEntity.value.includes(c));
-      this.allProjectRef.filter(this.columnFilter.ClientLegalEntity, 'ClientLegalEntity', 'in')
-    }
-    if (this.allProjectRef.filters.ProjectType) {
-      this.columnFilter.ProjectType = this.allProjects.ProjectType.map(c => c.value).filter(c => this.allProjectRef.filters.ProjectType.value.includes(c));
-      this.allProjectRef.filter(this.columnFilter.ProjectType, 'ProjectType', 'in')
-    }
-    if (this.allProjectRef.filters.POC) {
-      this.columnFilter.POC = this.allProjects.POC.map(c => c.value).filter(c => this.allProjectRef.filters.POC.value.includes(c));
-      this.allProjectRef.filter(this.columnFilter.POC, 'POC', 'in');
-    }
-    if (this.allProjectRef.filters.PrimaryResources) {
-      this.columnFilter.PrimaryResources = this.allProjectRef.filters.PrimaryResources.value;
-      this.allProjectRef.filter(this.columnFilter.PrimaryResources, 'PrimaryResources', 'in')
-    }
-    if (this.allProjectRef.filters.TA) {
-      this.columnFilter.TA = this.allProjects.TA.map(c => c.value).filter(c => this.allProjectRef.filters.TA.value.includes(c));
-      this.allProjectRef.filter(this.columnFilter.TA, 'TA', 'in')
-    }
-    if (this.allProjectRef.filters.Molecule) {
 
-      this.columnFilter.Molecule = this.allProjects.Molecule.map(c => c.value).filter(c => this.allProjectRef.filters.Molecule.value.includes(c));
-      this.allProjectRef.filter(this.columnFilter.Molecule, 'Molecule', 'in')
-    }
+    // Need to check
+    // if (this.allProjectRef.filters.ProjectCode) {
+    //   this.columnFilter.ProjectCode = this.allProjects.ProjectCode.map(c => c.value).filter(c => this.allProjectRef.filters.ProjectCode.value.includes(c));
+    //   this.allProjectRef.filter(this.columnFilter.ProjectCode, 'ProjectCode', 'in')
+    // }
+    // if (this.allProjectRef.filters.SOWCode) {
+    //   this.columnFilter.SOWCode = this.allProjects.SOWCode.map(c => c.value).filter(c => this.allProjectRef.filters.SOWCode.value.includes(c));
+    //   this.allProjectRef.filter(this.columnFilter.SOWCode, 'SOWCode', 'in')
+    // }
+    // if (this.allProjectRef.filters.ShortTitle) {
+    //   this.columnFilter.ShortTitle = this.allProjects.ShortTitle.map(c => c.value).filter(c => this.allProjectRef.filters.ShortTitle.value.includes(c));
+    //   this.allProjectRef.filter(this.columnFilter.ShortTitle, 'ShortTitle', 'in')
+    // }
+    // if (this.allProjectRef.filters.ClientLegalEntity) {
+    //   this.columnFilter.ClientLegalEntity = this.allProjects.ClientLegalEntity.map(c => c.value).filter(c => this.allProjectRef.filters.ClientLegalEntity.value.includes(c));
+    //   this.allProjectRef.filter(this.columnFilter.ClientLegalEntity, 'ClientLegalEntity', 'in')
+    // }
+    // if (this.allProjectRef.filters.ProjectType) {
+    //   this.columnFilter.ProjectType = this.allProjects.ProjectType.map(c => c.value).filter(c => this.allProjectRef.filters.ProjectType.value.includes(c));
+    //   this.allProjectRef.filter(this.columnFilter.ProjectType, 'ProjectType', 'in')
+    // }
+    // if (this.allProjectRef.filters.POC) {
+    //   this.columnFilter.POC = this.allProjects.POC.map(c => c.value).filter(c => this.allProjectRef.filters.POC.value.includes(c));
+    //   this.allProjectRef.filter(this.columnFilter.POC, 'POC', 'in');
+    // }
+    // if (this.allProjectRef.filters.PrimaryResources) {
+    //   this.columnFilter.PrimaryResources = this.allProjectRef.filters.PrimaryResources.value;
+    //   this.allProjectRef.filter(this.columnFilter.PrimaryResources, 'PrimaryResources', 'in')
+    // }
+    // if (this.allProjectRef.filters.TA) {
+    //   this.columnFilter.TA = this.allProjects.TA.map(c => c.value).filter(c => this.allProjectRef.filters.TA.value.includes(c));
+    //   this.allProjectRef.filter(this.columnFilter.TA, 'TA', 'in')
+    // }
+    // if (this.allProjectRef.filters.Molecule) {
+
+    //   this.columnFilter.Molecule = this.allProjects.Molecule.map(c => c.value).filter(c => this.allProjectRef.filters.Molecule.value.includes(c));
+    //   this.allProjectRef.filter(this.columnFilter.Molecule, 'Molecule', 'in')
+    // }
 
   }
 
