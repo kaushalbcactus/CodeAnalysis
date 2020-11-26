@@ -2481,20 +2481,6 @@ export class TimelineComponent
           const maxBudgetHrs = await this.taskAllocateCommonService.setMaxBudgetHrs(
             this.updatedTasks
           );
-          // let time: any = this.commonService.getHrsAndMins(
-          //   this.updatedTasks.pUserStart,
-          //   this.updatedTasks.pUserEnd
-          // );
-          // let bhrs = this.commonService
-          //   .convertToHrsMins("" + this.updatedTasks.budgetHours)
-          //   .replace(".", ":");
-
-          // let hrs = parseInt(bhrs.split(":")[0]);
-          // let min = parseInt(bhrs.split(":")[1]);
-
-          // let bHrsTime: any = new Date();
-          // bHrsTime = bHrsTime.setHours(hrs, min, 0, 0);
-
           if (+this.updatedTasks.budgetHours > +maxBudgetHrs) {
             this.ogBudgethrs = this.budgetHrs;
             this.budgetHrs = 0;
@@ -3050,36 +3036,6 @@ export class TimelineComponent
       m.data.edited = false;
     });
   }
-
-  // cancelAll() {
-  //   const milestoneData = this.tempmilestoneData; //this.milestoneData;
-  //   milestoneData.forEach((mil, index) => {
-  //     if (mil.data) {
-  //       mil.data.edited = false;
-  //       mil.data.editMode = false;
-  //     }
-  //     if (mil.children && mil.children.length) {
-  //       mil.children.forEach((task) => {
-  //         if (task.data.type == 'submilestone') {
-  //           if (task.data) {
-  //             task.data.edited = false;
-  //             task.data.editMode = false;
-  //           }
-  //           if (task.children && task.children.length) {
-  //             task.children.forEach((sub) => {
-  //               sub.data.edited = false;
-  //               sub.data.editMode = false;
-  //             })
-  //           }
-  //         } else {
-  //           task.data.edited = false;
-  //           task.data.editMode = false;
-  //         }
-  //       })
-  //     }
-  //   })
-  //   return milestoneData;
-  // }
 
   // **************************************************************************************************************************************
   //  Convert string date to date format after cancel the changes
@@ -4017,20 +3973,6 @@ export class TimelineComponent
     const isValid = this.validateTask([node]);
     if (isValid) {
       await this.startDateChanged(node, type);
-      // let time: any = this.commonService.getHrsAndMins(
-      //   node.pUserStart,
-      //   node.pUserEnd
-      // );
-      // let bhrs = this.commonService
-      //   .convertToHrsMins("" + node.budgetHours)
-      //   .replace(".", ":");
-
-      // let hrs = parseInt(bhrs.split(":")[0]);
-      // let min = parseInt(bhrs.split(":")[1]);
-
-      // let bHrsTime: any = new Date();
-      // bHrsTime = bHrsTime.setHours(hrs, min, 0, 0);
-
       if (+node.budgetHours > +this.maxBudgetHrs) {
         this.ogBudgethrs = node.budgetHours;
         node.budgetHours = 0;

@@ -394,7 +394,7 @@ export class CapacityDashboardComponent implements OnInit {
           return false;
         } else {
           if (this.fetchDataloader) {
-            if(this.capacityDisplayUsers.length > 0){
+            if (this.capacityDisplayUsers.length > 0) {
               this.EnableBlockResourceDialog();
             } else {
               this.commonService.showToastrMessage(
@@ -404,7 +404,6 @@ export class CapacityDashboardComponent implements OnInit {
                 true
               );
             }
-
           } else {
             this.commonService.showToastrMessage(
               this.constants.MessageType.warn,
@@ -642,7 +641,7 @@ export class CapacityDashboardComponent implements OnInit {
   }
 
   receiveSelectedUser(event) {
-    this.capacityDisplayUsers=[];
+    this.capacityDisplayUsers = [];
     this.capacityDisplayUsers = event;
   }
 }
