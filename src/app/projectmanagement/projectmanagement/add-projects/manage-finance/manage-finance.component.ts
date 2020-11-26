@@ -862,14 +862,6 @@ export class ManageFinanceComponent implements OnInit {
     } else {
       this.showSave = false;
     }
-    // const zeroInv = element.poInfoData.filter(e => e.amount === 0);
-    // zeroInv.forEach(elementInv => {
-    //   const invIndex = element.poInfoData.findIndex(item => item === elementInv);
-    //   element.poInfoData.splice(invIndex, 1);
-    //   elementInv.poId = tempPOObj.poId;
-    //   elementInv.status = 'Scheduled';
-    //   tempObj.poInfoData.push(elementInv);
-    // });
   }
   setInvData() {
     const invID = this.advanceInvID;
@@ -938,22 +930,6 @@ export class ManageFinanceComponent implements OnInit {
       this.showSave = true;
     }
   }
-
-  // tagExistingInv() {
-  //   const arrINV = this.arrAdvanceInvoices.filter(e => e.PO === this.selectedPo);
-  //   this.advanceInvArray = [];
-  //   arrINV.forEach(element => {
-  //     this.advanceInvArray.push({ label: element.InvoiceNumber, value: element.ID });
-  //   });
-  //   this.relatedInvoiceLinkingPopup = false;
-  //   this.tagExistingInvSection = true;
-  // }
-
-  // scheduleNew() {
-  //   const poValue = this.poData.find(e => e.poInfo[0].poId === this.selectedPo);
-  //   this.relatedInvoiceLinkingPopup = false;
-  //   this.scheduleInvoice(poValue);
-  // }
 
   createScheduleInvoice(poValue) {
     this.selectedPo = poValue.poInfo[0].poId;
@@ -1055,7 +1031,7 @@ export class ManageFinanceComponent implements OnInit {
             this.addInvoiceErrorMsg = this.pmConstant.ERROR.INVOICE_AMOUNT_GREATER;
             return;
           }
-          if (retPOInfo.oop === retPOInfo.scOOP || retPOInfo.revenue === retPOInfo.scRevenue) {
+          if (retPOInfo.oop === retPOInfo.scOOP && retPOInfo.revenue === retPOInfo.scRevenue) {
             retPOInfo.showAdd = false;
             retPOInfo.showDelete = false;
             retPOInfo.showInvoice = false;
@@ -1342,10 +1318,6 @@ export class ManageFinanceComponent implements OnInit {
         );
 
         await this.spServices.executeBatch(batchUrl);
-        // this.poData.forEach((e)=>{ 
-        //   let currentPo = e.poInfo.filter(e1=> e1.poId == rowData.poId)[0];
-
-        // })
         this.commonService.showToastrMessage(this.constant.MessageType.success, 'OOP line item is Cancelled', true);
         setTimeout(() => {
           this.reInitializePopup();
@@ -1401,9 +1373,6 @@ export class ManageFinanceComponent implements OnInit {
   /***
    * This method is used to save the PO.
    */
-
-
-
   savePo() {
     this.savePOArray.push({
       budget: this.budgetData,
@@ -1445,19 +1414,12 @@ export class ManageFinanceComponent implements OnInit {
       this.isHourlyOverNightDisabled = true;
       // this.isAddBudgetButtonHidden = true;
     }
-    //  else if (this.projObj.ProjectType === this.pmConstant.PROJECT_TYPE.FTE.value) {
-    //   this.isAddBudgetButtonHidden = true;
-    //   this.showHourly = false;
-    //   this.isrevenueFieldDisabled = true;
-    //   this.isPoRevenueDisabled = true;
-    // } 
     else {
       this.showHourly = false;
       this.isrevenueFieldDisabled = false;
       this.isAddBudgetButtonHidden = false;
       this.isPoRevenueDisabled = false;
     }
-
 
     // Get Project Finance  ##0;
     const projectFinanceGet = Object.assign({}, options);
@@ -2893,11 +2855,6 @@ export class ManageFinanceComponent implements OnInit {
       this.commonService.showToastrMessage(this.constant.MessageType.warn, "Unable to move to new PO, PO doesn't exist.",false);
       return false;
     }
-
-
-   
-
-
 
   }
 

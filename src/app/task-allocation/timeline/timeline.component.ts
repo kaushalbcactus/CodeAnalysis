@@ -5604,7 +5604,7 @@ export class TimelineComponent
     updatedResources,
     batchUrl,
     projectStatus,
-    previosProjectStatus
+    previousProjectStatus
   ) {
     let updateProjectRes = {};
     const projectID = this.oProjectDetails.projectID;
@@ -5635,7 +5635,7 @@ export class TimelineComponent
       Milestones: restructureMilstoneStr,
       Milestone: currentMilestone,
       Status: projectStatus,
-      PrevStatus: previosProjectStatus
+      PrevStatus: previousProjectStatus
     };
 
     this.commonService.setBatchObject(
@@ -6597,11 +6597,11 @@ export class TimelineComponent
   async setAsNextMilestoneCall(task, msg) {
     await this.commonService.confirmMessageDialog('Confirmation', msg, null, ['Yes', 'No'], false).then(async Confirmation => {
       if (Confirmation === 'Yes') {
-        this.selectedSubMilestone = task;
+        //this.selectedSubMilestone = task;
         let isValid;
         if (this.oProjectDetails.isPubSupport == 'Yes') {
           let currMilTasks = this.taskAllocateCommonService.getTasksFromMilestones(
-            this.selectedSubMilestone,
+            task,
             false,
             this.milestoneData,
             false
@@ -6611,12 +6611,12 @@ export class TimelineComponent
           isValid = true;
         }
         if (isValid) {
-          const validateNextMilestone = this.validateNextMilestone(this.selectedSubMilestone);
+          const validateNextMilestone = this.validateNextMilestone(task);
           if (validateNextMilestone) {
             this.loaderenable = true;
-            setTimeout(async () => {
-              await this.setAsNextMilestone(this.selectedSubMilestone);
-            }, 200);
+            // setTimeout(async () => {
+              await this.setAsNextMilestone(task);
+            // }, 200);
           }
         }
       }
@@ -6655,9 +6655,7 @@ export class TimelineComponent
       } else {
         previousTasks = [];
       }
-      // const isLastSubMilestone = +subMile.position === currentMilSubmil.length ? true : false;
-      // if(!isLastSubMilestone) {
-      // }
+      
     } else {
       const newCurrentMilestone = this.milestoneData.find(obj => {
         return (

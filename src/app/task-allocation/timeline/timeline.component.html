@@ -158,7 +158,7 @@
                                 {{rowData.text}}</span>
                             <span style="color:#dc2038;cursor: pointer;" *ngIf="(rowData.type ==='task' && rowData.IsCentrallyAllocated !== 'Yes') || (rowData.IsCentrallyAllocated === 'Yes' && rowData.title.indexOf('Slot') < 0)" (click)="viewTaskDetails(rowData)"> {{rowData.text}}</span>
 
-                            <div id="nextMilestone" [title]=" rowData.type==='milestone' ? 'Set as Current Milestone':'Set as Current Sub-Milestone'" (click)=" setForConfirmMilestone(rowData,rowNode)" *ngIf="(rowData.isNext === true && !rowData.subMilestonePresent && !changeInRestructure) || (rowData.type==='submilestone' && rowData.isCurrent && !changeInRestructure) || (rowData.type==='submilestone' && rowData.isNext &&   !changeInRestructure)  "
+                            <div id="nextMilestone" [title]=" rowData.type==='milestone' ? 'Set as Current Milestone':'Set as Current Sub-Milestone'" (click)="setForConfirmMilestone(rowData,rowNode)" *ngIf="(rowData.isNext === true && !rowData.subMilestonePresent && !changeInRestructure) || (rowData.type==='submilestone' && rowData.isCurrent && !changeInRestructure) || (rowData.type==='submilestone' && rowData.isNext &&   !changeInRestructure)  "
                                 style="display: inline;" [hidden]=" (rowData.type==='milestone' && (oProjectDetails.status ==='In Discussion' || oProjectDetails.projectType === 'FTE-Writing' || rowData.status === 'Completed' || rowData.id === -1)) || (rowData.type==='submilestone' &&  rowData.status !== 'Not Confirmed') || projectDetails ">
                                 <i class="pi pi-check" style="font-size: 2em;vertical-align: middle;"></i>
                             </div>

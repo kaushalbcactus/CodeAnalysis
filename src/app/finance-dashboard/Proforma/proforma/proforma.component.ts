@@ -831,11 +831,11 @@ export class ProformaComponent implements OnInit, OnDestroy {
 
     // Generate Invoice Number
     invoiceNumber: any;
-    generateInvoiceNumber() {
+    async generateInvoiceNumber() {
         if (!this.generateInvoiceInProgress) {
             this.generateInvoiceInProgress = true;
             this.invoiceNumber = '';
-            this.addUpdateRequired();
+            await this.addUpdateRequired();
             this.generateInvoiceInProgress = false;
         }
     }
@@ -903,11 +903,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
         invObj.data = invData;
         batchUrl.push(invObj);
 
-        // const iEndpoint = this.fdConstantsService.fdComponent.addUpdateInvoice.create;
-        // let invobj = { objData: invData, endpoint: iEndpoint, requestPost: true }
-        // data.push(invobj);
-
-
         // Get Cle
         const cleData = {
             ID: cleItem.Id,
@@ -921,17 +916,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
         cleObj.type = 'PATCH';
         cleObj.data = cleData;
         batchUrl.push(cleObj);
-        // const cleEndpoint = this.fdConstantsService.fdComponent.addUpdateClientLegalEntity.update.replace('{{Id}}', cleItem.Id);
-        // let updateCle = { objData: cleObj, endpoint: cleEndpoint, requestPost: false }
-        // data.push(updateCle);
-
-        // // Update Proforma // ommited as it is called in call batch request
-        // let pObj = {
-        //     Status: 'Approved'
-        // }
-        // const pEndpoint = this.fdConstantsService.fdComponent.addUpdateProforma.update.replace("{{Id}}", this.selectedRowItem.Id);
-        // let updatePObj = { objData: pObj, endpoint: pEndpoint, requestPost: false }
-        // data.push(updatePObj);
 
         let proformaType: any = '';
         /// update PO
@@ -965,12 +949,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
         poObj.type = 'PATCH';
         poObj.data = poData;
         batchUrl.push(poObj);
-
-        // const poEndpoint = this.fdConstantsService.fdComponent.addUpdatePO.update.replace("{{Id}}", poItem.ID);
-
-        // let updatePOObj = { objData: poObj, endpoint: poEndpoint, requestPost: false }
-        // data.push(updatePOObj);
-
 
 
         // let iliEndpoint = [];
@@ -1088,11 +1066,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 pfObj.type = 'PATCH';
                 pfObj.data = element;
                 batchUrl.push(pfObj);
-                // data.push({
-                //     objData: element,
-                //     endpoint: this.fdConstantsService.fdComponent.addUpdateProjectFinances.update.replace("{{Id}}", element.Id),
-                //     requestPost: false
-                // });
             }
         }
 
@@ -1106,11 +1079,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 pfbObj.type = 'PATCH';
                 pfbObj.data = element;
                 batchUrl.push(pfbObj);
-                // data.push({
-                //     objData: element,
-                //     endpoint: this.fdConstantsService.fdComponent.addUpdateProjectFinanceBreakup.update.replace("{{Id}}", element.Id),
-                //     requestPost: false
-                // });
             }
         }
 
@@ -1125,43 +1093,14 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 sowObj.type = 'PATCH';
                 sowObj.data = element;
                 batchUrl.push(sowObj);
-
-                // data.push({
-                //     objData: element,
-                //     endpoint: this.fdConstantsService.fdComponent.addUpdateSow.update.replace("{{Id}}", element.Id),
-                //     requestPost: false
-                // });
             }
         }
 
         this.commonService.SetNewrelic('Finance-Dashboard', 'Proforma-proforma', 'submitingForm');
-        this.submitForm(batchUrl, 'generateInvoice');
+        await this.submitForm(batchUrl, 'generateInvoice');
     }
 
-    // findpfFrompfRes(ili) {
-    //     let found = this.pfresp.find((x) => {
-    //         if (x.Title === ili.Title) {
-    //             return x;
-    //         }
-    //     })
-    //     return found ? found : ''
-    // }
-    // findpfbFrompfbRes(ili) {
-    //     let found = this.pfbresp.find((x) => {
-    //         if (x.ProjectNumber === ili.Title) {
-    //             return x;
-    //         }
-    //     })
-    //     return found ? found : ''
-    // }
-    // findsowFromsowRes(ili) {
-    //     let found = this.sowresp.find((x) => {
-    //         if (x.SOWCode === ili.SOWCode) {
-    //             return x;
-    //         }
-    //     })
-    //     return found ? found : ''
-    // }
+    
 
     //  Generate Invoice Data End
 

@@ -121,8 +121,6 @@
                     </p-button>
                 </div>
 
-
-
                 <button [hidden]="hideMoveLineItem" pButton type="button" [label]="enableCheckList ? 'Cancel' :'Move Line Items'" style="float: right;display: inline-flex;" class="ui-button-raised ui-button-danger MoveLineItem" iconPos="right" (click)="enableMovePO()"> 
                     <i *ngIf="!enableCheckList" class="fa fa-exchange" aria-hidden="true" style="padding: 8px 0px 8px 8px;"></i>
                     <i *ngIf="enableCheckList" class="fa fa-times" aria-hidden="true" style="padding: 8px 0px 8px 8px;"></i>
@@ -454,27 +452,6 @@
         </p-button>
     </p-footer>
 </p-dialog>
-
-<!-- <p-dialog *ngIf="relatedInvoiceLinkingPopup" [(visible)]="relatedInvoiceLinkingPopup" appendTo='body' [style]="{width: '500px'}">
-    <p-header>
-        Advance invoice tagging decision
-    </p-header>
-    <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
-        <div class="ui-grid-col-12">
-            There is an advance invoice existing on this PO. Do you want to tag the project to that invoice or create a new schedule ?
-        </div>
-    </div>
-    <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
-        <div class="ui-grid-col-12">
-            Note: Ideally the project should be tagged to the advance invoice rather than scheduling new invoice on the PO.
-        </div>
-    </div>
-    <p-footer>
-        <button type="button" class="pmBtn" pButton (click)="tagExistingInv()" label="Tag to existing"></button>
-        <button type="button" class="pmBtn" pButton (click)="scheduleNew()" label="Schedule New Invoice"></button>
-        <button type="button" class="pmBtn" pButton (click)="relatedInvoiceLinkingPopup=false" label="Cancel"></button>
-    </p-footer>
-</p-dialog> -->
 
 <p-dialog *ngIf="tagExistingInvSection" [(visible)]="tagExistingInvSection" appendTo='body' [style]="{width: '500px'}">
     <p-header>
