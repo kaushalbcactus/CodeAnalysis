@@ -17,6 +17,7 @@ export interface IScorecard {
   taskID: number;
   assignedToID: number;
   assignedTo: string;
+  assignedToSkill: string;
   taskCompletionDate: Date;
   documentUrl: string;
   reviewTaskDocUrl: string;

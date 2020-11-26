@@ -114,3 +114,9 @@ body .ui-button {
 .docHeader2 {
   margin-left: 5px;
 }
+.nodata {
+  padding: 30px 0px 0px 0px!important;
+  color: #c53e3e!important;
+  font-size: 1.2em!important;
+  margin-left: 42px!important;
+}

@@ -56,6 +56,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   constantsService: any;
   clientDocuments: any[];
   create_task_form: any;
+  crTasks: any[];
   constructor(
     public config: DynamicDialogConfig,
     public ref: DynamicDialogRef,
@@ -73,6 +74,8 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   async ngOnInit() {
     this.loaderenable = true;
     this.DocumentArray = [];
+    this.crTasks = [];
+    this.crDocs = [];
     this.data = Object.keys(this.config.data ? this.config.data : this.config).length ? this.config.data : this.taskData;
     this.status = this.data.Status;
     this.enableNotification = this.data.emailNotificationEnable ? this.data.emailNotificationEnable : false;
@@ -242,35 +245,34 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     }
     const folderUrl = this.ProjectInformation.ProjectFolder;
     let completeFolderRelativeUrl = '';
-    if (selectedTab === 'Client Comments') {
-      completedCRList = await this.getCRTasks();
-      if (completedCRList.length) {
-        const dbMilestones = this.ProjectInformation.Milestones ? this.ProjectInformation.Milestones.split(';#') : [];
-        const Milestones = completedCRList.filter(c => dbMilestones.includes(c.Milestone)) ?
-          completedCRList.filter(c => dbMilestones.includes(c.Milestone)).map(c => c.Milestone) : [];
-        this.ProjectInformation.availableMilestones = Milestones;
-        if (Milestones) {
-          const options = {
-            data: null,
-            url: '',
-            type: '',
-            listName: ''
-          };
-          const batchURL = [];
-          Milestones.forEach(element => {
-            documentsUrl = '/Drafts/Internal/' + element;
-            completeFolderRelativeUrl = folderUrl + documentsUrl;
-            const documentGet = Object.assign({}, options);
-            documentGet.url = this.spServices.getFilesFromFoldersURL(completeFolderRelativeUrl);
-            documentGet.type = 'GET';
-            documentGet.listName = element;
-            batchURL.push(documentGet);
-          });
+    completedCRList = await this.getCRTasks();
+    if (selectedTab === 'Client Comments' && completedCRList.length) {
+      this.crTasks = [...completedCRList];
+      const dbMilestones = this.ProjectInformation.Milestones ? this.ProjectInformation.Milestones.split(';#') : [];
+      const Milestones = completedCRList.filter(c => dbMilestones.includes(c.Milestone)) ?
+        completedCRList.filter(c => dbMilestones.includes(c.Milestone)).map(c => c.Milestone) : [];
+      this.ProjectInformation.availableMilestones = Milestones;
+      if (Milestones) {
+        const options = {
+          data: null,
+          url: '',
+          type: '',
+          listName: ''
+        };
+        const batchURL = [];
+        Milestones.forEach(element => {
+          documentsUrl = '/Drafts/Internal/' + element;
+          completeFolderRelativeUrl = folderUrl + documentsUrl;
+          const documentGet = Object.assign({}, options);
+          documentGet.url = this.spServices.getFilesFromFoldersURL(completeFolderRelativeUrl);
+          documentGet.type = 'GET';
+          documentGet.listName = element;
+          batchURL.push(documentGet);
+        });
 
-          const FolderDocuments = await this.spServices.executeBatch(batchURL);
-          if (FolderDocuments) {
-            this.allDocuments = [].concat(...FolderDocuments.map(c => c.retItems.map(d => ({ ...d, Milestone: c.listName }))));
-          }
+        const FolderDocuments = await this.spServices.executeBatch(batchURL);
+        if (FolderDocuments) {
+          this.allDocuments = [].concat(...FolderDocuments.map(c => c.retItems.map(d => ({ ...d, Milestone: c.listName }))));
         }
       }
     } else {
@@ -294,7 +296,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     this.allDocuments = allDocs;
     if (this.selectedTab === 'My Drafts') {
       this.DocumentArray = this.allDocuments.filter(c => c.ListItemAllFields.TaskName === this.selectedTask.Title);
-    } else if (this.selectedTab === 'Client Comments' && completedCRList) {
+    } else if (this.selectedTab === 'Client Comments' && completedCRList.length) {
       const validMilestones = this.ProjectInformation.availableMilestones.map(m => ({ label: m, value: m }));
       const CRTaskTitles = completedCRList.map(c => c.Title);
       this.DocumentArray = this.allDocuments.filter(c => CRTaskTitles.includes(c.ListItemAllFields.TaskName));
@@ -311,7 +313,6 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
         oldMilestone: d.Milestone,
         ModifiedDateString: this.datePipe.transform(d.TimeLastModified, 'MMM d, y, h:mm a')
       }));
-      // this.clientDocuments = [...docs];
       this.clientDocuments = docs.sort((a, b) =>
         new Date(a.ModifiedDateString).getTime() < new Date(b.ModifiedDateString).getTime() ? 1 : -1
       );
@@ -490,7 +491,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
           this.selectedTask.WBJID + ' )' : this.selectedTask.ProjectCode;
         this.commonService.SetNewrelic('ViewDocuments', 'downloadFile', 'createZip');
         this.spServices.createZip(this.selectedDocuments
-            .map(c => c.ServerRelativeUrl ? c.ServerRelativeUrl : c.data.ServerRelativeUrl), downloadName);
+          .map(c => c.ServerRelativeUrl ? c.ServerRelativeUrl : c.data.ServerRelativeUrl), downloadName);
       }
 
     } else {
@@ -726,15 +727,17 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   // ************************************************************************************************
 
   async LinkDocumentToProject(uploadedFiles) {
-    const objPost = {
-      __metadata: { type: 'SP.ListItem' },
-      Status: '-',
-      TaskName: this.selectedTask.Title
-    };
+
     const batchUrl = [];
     uploadedFiles.forEach(async element => {
-      objPost.TaskName = this.selectedTab === 'Client Comments' ?
-        this.ProjectInformation.ProjectCode + ' ' + element.selectedMilestone + ' Client Review' : objPost.TaskName;
+      const objPost = {
+        __metadata: { type: 'SP.ListItem' },
+        Status: this.selectedTab === 'Client Comments' ? 'Client Review Complete' : '-',
+        TaskName: this.selectedTab === 'Client Comments' ?
+        this.ProjectInformation.ProjectCode + ' ' + element.selectedMilestone + ' Client Review' : this.selectedTask.Title
+      };
+      // objPost.TaskName = this.selectedTab === 'Client Comments' ?
+      //   this.ProjectInformation.ProjectCode + ' ' + element.selectedMilestone + ' Client Review' : objPost.TaskName;
       const listName = element.ServerRelativeUrl.split('/')[3];
       const taskObj = Object.assign({}, this.queryConfig);
       taskObj.url = this.spServices.getItemURL(listName, +element.ListItemAllFields.ID);
@@ -753,8 +756,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       this.selectedDocuments = uploadedFiles;
       this.selectedDocuments.map(c => c.status = '-');
       this.markAsFinal();
-    }
-    else {
+    } else {
       const docObj = await this.getAllDocuments(this.selectedTab);
       this.loadDraftDocs(docObj.allDocs, docObj.crTasks);
       this.commonService.showToastrMessage(this.constants.MessageType.success, 'Documents updated successfully.', false);
@@ -855,11 +857,9 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       moveItemObj.type = 'POST';
       batchUrl.push(moveItemObj);
       // }
-      this.commonService.SetNewrelic('MyDashboard', 'fteCreateTask', 'CreateTask');
+      this.commonService.SetNewrelic('PrjMgmt', 'CR', 'Update CR docs name or milestone');
       const moveToMilestoneRes: any = await this.spOperations.executeBatch(batchUrl);
-      const docObj = await this.getAllDocuments(this.selectedTab);
-      this.loadDraftDocs(docObj.allDocs, docObj.crTasks);
-      this.commonService.showToastrMessage(this.constants.MessageType.success, 'Documents updated successfully.', false);
+      this.LinkDocumentToProject([rowData]);
       this.loaderenable = false;
     }, 300);
   }
@@ -880,7 +880,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   saveAll() {
     this.loaderenable = true;
     setTimeout(async () => {
-      const alldocs = this.clientDocuments;
+      const alldocs = this.getArrDocs(this.crDocs);
       const batchUrl = [];
       for (const rowData of alldocs) {
         const fileUrl = rowData.ServerRelativeUrl ? rowData.ServerRelativeUrl : '';
@@ -898,11 +898,24 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       }
       this.commonService.SetNewrelic('ProjectMgmt', 'Client comments', 'update task documents');
       const moveToMilestoneRes: any = await this.spOperations.executeBatch(batchUrl);
-      const docObj = await this.getAllDocuments(this.selectedTab);
-      this.loadDraftDocs(docObj.allDocs, docObj.crTasks);
-      this.commonService.showToastrMessage(this.constants.MessageType.success, 'Documents updated successfully.', false);
+      this.LinkDocumentToProject(alldocs);
       this.loaderenable = false;
     }, 300);
+  }
+
+  getArrDocs(objDocs) {
+    const arrDocs = [];
+    for (const [key, value] of Object.entries(objDocs)) {
+      const childrens = value as any;
+      if (childrens.children) {
+        for (const doc of childrens.children) {
+          if (doc.data) {
+            arrDocs.push(doc.data);
+          }
+        }
+      }
+    }
+    return arrDocs;
   }
 
   stopEdit(event) {
