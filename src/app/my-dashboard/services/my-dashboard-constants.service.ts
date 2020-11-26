@@ -263,11 +263,9 @@ export class MyDashboardConstantsService {
       expand: 'CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title',
       filter: 'ID eq {{projectId}}',
     },
-
-
     ClientReviewSchedules: {
       select: 'ID,Title,Status,Task,Milestone,ProjectCode',
-      filter: 'ProjectCode eq \'{{projectCode}}\' and Task eq \'Client Review\' and (Status eq \'Completed\' or (Status eq \'Not Started\' and PreviousTaskClosureDate ne null))'
+      filter: 'ProjectCode eq \'{{projectCode}}\' and Task eq \'Client Review\' and (Status eq \'Completed\' or Status eq \'Not Started\')'
     }
 
   };
@@ -1103,6 +1101,7 @@ export class MyDashboardConstantsService {
       currentTask.isEQGTask = arrEQGTasks.indexOf(currentTask.Task) > -1 ? true : false;
       currentTask.isFinalizeTask = !currentTask.isEQGTask ? arrFinalizeTasks.indexOf(currentTask.Task) > -1 ? true : false : false;
       currentTask.isReviewTask = !currentTask.isEQGTask && !currentTask.isFinalizeTask ? currentTask.Task.indexOf('Review-') > -1 ? true : false : false;
+      currentTask.isReviewWriteTask = currentTask.Task.indexOf('Review-Write') > -1 ? true : false;
       const milestoneTask = milestoneTasks.find(t => t.Title === currentTask.Task);
       currentTask.defaultSkill = currentTask.isReviewTask ? 'Review' : milestoneTask.DefaultSkill ? milestoneTask.DefaultSkill : '';
       currentTask.scorecardRatingAllowed = milestoneTask.ScorecardRatingAllowed ? milestoneTask.ScorecardRatingAllowed : '';
@@ -1120,7 +1119,8 @@ export class MyDashboardConstantsService {
           previousTask.isWriter = !previousTask.isResourceEQG ? previousTask.skill.includes(writer) : false;
           previousTask.isReviewer = !previousTask.isResourceEQG && !previousTask.isWriter ? previousTask.skill.includes(reviewer) : false;
           previousTask.isReviewTask = previousTask.Task.indexOf('Review-') > -1 ? true : false;
-          if (currentTask.isReviewTask && previousTask.isResourceEQG ) {
+
+          if (currentTask.isReviewWriteTask && previousTask.isResourceEQG ) {
             currentTask.defaultSkill = 'Write';
           }
           if (currentTask.isReviewTask || (!previousTask.isReviewTask && arrPrevTaskDocUrl.length > 0 &&
