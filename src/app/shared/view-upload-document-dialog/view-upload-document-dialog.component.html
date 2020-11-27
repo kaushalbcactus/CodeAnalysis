@@ -6,7 +6,7 @@
     <div id="modalInnerLoaderText">Loading...</div>
 </div>
 
-<p-fileUpload [style]="{'margin-top':'1vh'}" *ngIf="!loaderenable && (selectedTab === 'My Drafts' || selectedTab ==='Source Docs' || selectedTab ==='References' || selectedTab ==='Meeting Notes' || selectedTab === 'Client Comments')"
+<p-fileUpload [style]="{'margin-top':'1vh'}" *ngIf="!loaderenable && (selectedTab === 'My Drafts' || selectedTab ==='Source Docs' || selectedTab ==='References' || selectedTab ==='Meeting Notes' || (selectedTab === 'Client Comments' && this.crTasks.length))"
   customUpload="true" (uploadHandler)="uploadDocs($event,selectedTab, crDocs)"
   multiple="multiple" maxFileSize="500000000">
 </p-fileUpload>
@@ -47,16 +47,16 @@
 </p-tabPanel>
 </div>
 
-<p-treeTable #dt [value]="crDocs" selectionMode="checkbox" [(selection)]="selectedDocuments" (onEditCancel)="edit($event)" (onEditComplete)="edit($event)" [hidden]="loaderenable" [style]="{'margin-top':'1vh','font-size':'12px'}" *ngIf="this.selectedTask.IsSearchProject && selectedTab === 'Client Comments'">
+<p-treeTable #dt [value]="crDocs" selectionMode="checkbox" [(selection)]="selectedDocuments" (onEditCancel)="edit($event)" (onEditComplete)="edit($event)" [hidden]="loaderenable" [style]="{'margin-top':'1vh','font-size':'12px'}" *ngIf="this?.selectedTask.IsSearchProject && selectedTab === 'Client Comments'">
   <ng-template pTemplate="header">
       <tr>
           <th width="40%">
             <span class="docHeader1">Document Name</span>
-            <div class="docHeader2">
+            <div *ngIf="crDocs.length" class="docHeader2">
               <p-treeTableHeaderCheckbox></p-treeTableHeaderCheckbox>
               (Click on the cell to edit the file name)
             </div>
-            <button style="float: right;font-size: 12px;" pButton type="button" label="Download" (click)="downloadFile()" class="ui-button-danger"></button>
+            <button *ngIf="crDocs.length" style="float: right;font-size: 12px;" pButton type="button" label="Download" (click)="downloadFile()" class="ui-button-danger"></button>
           </th>
           <th width="20%">
             Modified By
@@ -107,5 +107,10 @@
           </td>
       </tr>
   </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+        <td [attr.colspan]="cols.length" class="nodata"><div>* No Documents present.</div></td>
+    </tr>
+</ng-template>
 </p-treeTable>
-<div *ngIf="DocumentArray.length === 0 && !loaderenable && ModifiedSelectedTaskName !=='Client Review'" style="    padding: 30px 0px 0px 0px;color: #c53e3e;font-size: 1.2em;">* No Documents present for current task. </div>
+<div *ngIf="!DocumentArray.length && !loaderenable && ModifiedSelectedTaskName !=='Client Review' && selectedTab !== 'Client Comments'" style="padding: 30px 0px 0px 0px;color: #c53e3e;font-size: 1.2em;">* No Documents present for current task. </div>
