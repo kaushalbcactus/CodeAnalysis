@@ -359,7 +359,7 @@ export class MyTimelineComponent implements OnInit {
       this.commonService.setBatchObject(batchURL, MyAdhocTaskUrl, null, this.constants.Method.GET, this.constants.listNames.AdhocTask.name);
 
     }
-    this.commonService.SetNewrelic('MyDashboard', 'my-timeline', 'GetTasksAndLeaves');
+    this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'GetTasksAndLeaves', "GET-BATCH");
     this.response = await this.spServices.executeBatch(batchURL);
 
     // this.response = await this.spServices.getDataByApi(batchGuid, batchContents);
@@ -490,7 +490,7 @@ export class MyTimelineComponent implements OnInit {
       // this.response  = await this.spServices.readItems(this.constants.listNames.Schedules.name, TaskDetails);
       const mytasks = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.MyTasks);
       mytasks.filter = 'ID eq ' + +this.task.ID;
-      this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'getTaskById');
+      this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'getTaskById', 'GET');
       this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, mytasks);
       // this.response = await this.spServices.readItem(this.constants.listNames.Schedules.name, +this.task.ID);
       this.task = this.response ? this.response[0] : {};
@@ -603,12 +603,12 @@ export class MyTimelineComponent implements OnInit {
             this.commonService.setBatchObject(batchURL, availableHoursurl, availableHours, this.constants.Method.PATCH, this.constants.listNames.AvailableHours.name)
           });
 
-          this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'TimeBookingUpdate');
+          this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'TimeBookingUpdate', 'POST-BATCH');
           const arrResults = await this.spServices.executeBatch(batchURL);
           this.commonService.showToastrMessage(this.constants.MessageType.success, 'Leave created successfully.', false);
         } else {
           if (task === undefined) {
-            this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'Create Adhoc item');
+            this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'Create Adhoc item', 'POST');
             await this.spServices.createItem(this.constants.listNames.AdhocTask.name, blockTimeobj, this.constants.listNames.AdhocTask.type);
             this.commonService.showToastrMessage(this.constants.MessageType.success, 'Time Booking created successfully.', false);
 
@@ -617,7 +617,7 @@ export class MyTimelineComponent implements OnInit {
             if (blockTimeobj.IsDeleted !== undefined) {
               this.MarkAsDelete();
             } else {
-              this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'UpdateTask');
+              this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'UpdateTask', 'POST');
               await this.spServices.updateItem(this.constants.listNames.AdhocTask.name, task.ID, blockTimeobj,
                 this.constants.listNames.AdhocTask.type);
               this.commonService.showToastrMessage(this.constants.MessageType.success, 'Time Booking updated successfully.', false);
@@ -640,7 +640,7 @@ export class MyTimelineComponent implements OnInit {
     const data = {
       Status: 'Deleted'
     };
-    this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'DeleteTask');
+    this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'DeleteTask', 'POST');
     await this.spServices.updateItem(this.constants.listNames.AdhocTask.name, this.task.ID, data, this.constants.listNames.AdhocTask.type);
 
 
@@ -677,7 +677,7 @@ export class MyTimelineComponent implements OnInit {
 
     this.CalendarLoader = true;
     if (this.step !== 0) {
-      this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'GetTask');
+      this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'GetTask', 'GET');
       this.response = await this.spServices.readItem(this.constants.listNames.Schedules.name, +this.task.ID);
       this.task = this.response;
       this.task.AssignedTo = this.sharedObject.currentUser.title;
@@ -791,7 +791,7 @@ export class MyTimelineComponent implements OnInit {
         const taskUpdateUrl = this.spServices.getItemURL(this.constants.listNames.Schedules.name, task.ID);
         this.commonService.setBatchObject(batchURL, taskUpdateUrl, jsonData, this.constants.Method.PATCH, this.constants.listNames.Schedules.name);
 
-        this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'UpdateTask');
+        this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'UpdateTask', 'POST-BATCH');
         await this.spServices.executeBatch(batchURL);
 
         if (task.Status === this.constants.STATUS.IN_PROGRESS && task.ParentSlot) {
@@ -852,7 +852,7 @@ export class MyTimelineComponent implements OnInit {
       endDate = new Date(endDate.setDate(endDate.getDate() - 1));
     }
 
-    this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'GetAvailableHoursByUserAndSDED');
+    this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'GetAvailableHoursByUserAndSDED', "GET");
     const arrResults = await this.spServices.executeBatch(batchURL);
 
     if (arrResults) {
@@ -898,7 +898,7 @@ export class MyTimelineComponent implements OnInit {
       this.commonService.setBatchObject(batchURL, availableHoursUpdateurl, availableHours, this.constants.Method.PATCH, this.constants.listNames.AvailableHours.name)
     });
 
-    this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'GetLeavesAndAvailableHours');
+    this.commonService.SetNewrelic('MyDashboard', 'My-timeline', 'GetLeavesAndAvailableHours', 'POST-BATCH');
     await this.spServices.executeBatch(batchURL);
 
     this.getEvents(false, this.fullCalendar.calendar.state.dateProfile.currentRange.start,

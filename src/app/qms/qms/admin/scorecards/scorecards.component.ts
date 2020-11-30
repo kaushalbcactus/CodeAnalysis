@@ -98,7 +98,7 @@ export class ScorecardsComponent implements OnInit {
 
   async ngOnInit() {
     if (!this.global.currentUser.groups.length) {
-      this.commonService.SetNewrelic('QMS', 'admin-scorecards', 'getUserInfo');
+      this.commonService.SetNewrelic('QMS', 'admin-scorecards', 'getUserInfo', "GET");
       const result = await this.spService.getUserInfo(this.global.currentUser.userId);
       this.global.currentUser.groups = result.Groups.results ? result.Groups.results : [];
     }
@@ -114,7 +114,7 @@ export class ScorecardsComponent implements OnInit {
         // Fetch all active resources
         const adminComponent = JSON.parse(JSON.stringify(this.qmsConstant.AdminViewComponent));
         adminComponent.getResources.top = adminComponent.getResources.top.replace('{{TopCount}}', '4500');
-        this.commonService.SetNewrelic('QMS', 'scoreCard', 'CurrentUserInfo');
+        this.commonService.SetNewrelic('QMS', 'admin-scorecards', 'CurrentUserInfo', "GET");
         const arrResult = await this.spService.readItems(this.globalConstant.listNames.ResourceCategorization.name,
           adminComponent.getResources);
         this.resources = arrResult.length > 0 ? arrResult : [];
@@ -166,16 +166,13 @@ export class ScorecardsComponent implements OnInit {
     resources.forEach(element => {
       batchURL = [...batchURL, ...this.getScorecard(element.UserNamePG.ID, topCount, startDate, endDate)];
     });
-    this.commonService.SetNewrelic('QMS', 'scoreCard', 'getResourceRatingDetail');
+    this.commonService.SetNewrelic('QMS', 'admin-scorecards', 'getResourceRatingDetail', "GET-BATCH");
     arrResourceScoreCards = await this.spService.executeBatch(batchURL);
     arrResourceScoreCards = arrResourceScoreCards.length > 0 ? arrResourceScoreCards.map(s => s.retItems) : [];
     for (const key in arrResourceScoreCards) {
       if (arrResourceScoreCards.hasOwnProperty(key)) {
         const element = arrResourceScoreCards[key];
         resources[key].feedbackForMe = element;
-        // const averageRating = this.getAverageRating(element);
-        // resources[key].averageRating = averageRating.rating;
-        // resources[key].ratingCount = averageRating.count;
       }
     }
     return resources;

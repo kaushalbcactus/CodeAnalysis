@@ -328,7 +328,8 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     this.commonService.SetNewrelic(
       "ViewDocuments",
       "viewUpladDoc",
-      "getProjInfobyProjectCode"
+      "getProjInfobyProjectCode",
+      "GET"
     );
     const arrResult = await this.spServices.readItems(
       this.constants.listNames.ProjectInformation.name,
@@ -351,8 +352,9 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     );
     this.commonService.SetNewrelic(
       "ViewDocuments",
-      "view-uploadDocumentDialog",
-      "GetCRDocuments"
+      "viewUpladDoc",
+      "GetCRDocuments",
+      "GET"
     );
     const crTasks = await this.spServices.readItems(
       this.constants.listNames.Schedules.name,
@@ -417,7 +419,8 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       this.commonService.SetNewrelic(
         "ViewDocuments",
         "viewUpladDoc",
-        "getDocumentsByTabType"
+        "getDocumentsByTabType",
+        "GET-BATCH"
       );
       this.response = await this.spServices.readFiles(
         completeFolderRelativeUrl
@@ -580,7 +583,8 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     this.commonService.SetNewrelic(
       "ViewDocuments",
       "viewUpladDoc",
-      "getUsersById"
+      "getUsersById",
+      "GET-BATCH"
     );
     this.response = await this.spServices.executeBatch(batchUrl);
     this.response = this.response.length
@@ -636,7 +640,8 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
         this.commonService.SetNewrelic(
           "ViewDocuments",
           "viewUpladDoc",
-          "UpdateSchedules"
+          "UpdateSchedules",
+          "POST-BATCH"
         );
         const response = await this.spServices.executeBatch(batchUrl);
         this.selectedDocuments = [];
@@ -688,8 +693,9 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       if (this.selectedTask.DisplayTitle) {
         this.commonService.SetNewrelic(
           "ViewDocuments",
-          "downloadFile-DisplayTitle",
-          "createZip"
+          "viewUpladDoc",
+          "downloadFile-DisplayTitle-createZip",
+          "GET-BATCH"
         );
         this.spServices.createZip(
           this.selectedDocuments.map((c) => c.ServerRelativeUrl),
@@ -698,8 +704,9 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       } else if (this.selectedTask.ProjectName) {
         this.commonService.SetNewrelic(
           "ViewDocuments",
-          "downloadFile-ProjectName",
-          "createZip"
+          "viewUpladDoc",
+          "downloadFile-ProjectName-createZip",
+          "GET-BATCH"
         );
         this.spServices.createZip(
           this.selectedDocuments.map((c) => c.ServerRelativeUrl),
@@ -712,7 +719,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       } else {
         const downloadName = this.selectedTask.WBJID ? this.selectedTask.ProjectCode + ' (' +
           this.selectedTask.WBJID + ' )' : this.selectedTask.ProjectCode;
-        this.commonService.SetNewrelic('ViewDocuments', 'downloadFile', 'createZip');
+        this.commonService.SetNewrelic('ViewDocuments', 'viewUpladDoc', 'downloadFile-createZip', "GET-BATCH");
         this.spServices.createZip(this.selectedDocuments
           .map(c => c.ServerRelativeUrl ? c.ServerRelativeUrl : c.data.ServerRelativeUrl), downloadName);
       }
@@ -748,9 +755,10 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
         .then(async (Confirmation) => {
           if (Confirmation === "Yes") {
             this.commonService.SetNewrelic(
-              "Project Mgmt",
+              "ViewDocuments",
               "Client Review Tab",
-              "close CR task"
+              "close CR task",
+              "POST-BATCH"
             );
             this.uploadDocuments(event, type);
           }
@@ -758,9 +766,10 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     } else {
       if (this.selectedTab === "Client Comments") {
         this.commonService.SetNewrelic(
-          "Client Comments Tab",
+          "ViewDocuments",
           "Client Review Tab",
-          "upload client comments"
+          "upload client comments",
+          "POST-BATCH"
         );
         this.uploadClientDocs(event.files);
       } else {
@@ -769,9 +778,10 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
           this.selectedTab === "My Drafts"
         ) {
           this.commonService.SetNewrelic(
-            "Project Mgmt",
+            "ViewDocuments",
             "Client Review Tab",
-            "upload task documents"
+            "upload task documents",
+            "POST-BATCH"
           );
         }
         this.uploadDocuments(event, type);
@@ -1063,7 +1073,8 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     this.commonService.SetNewrelic(
       "ViewDocuments",
       "viewUpladDoc",
-      "linkDocToProject"
+      "linkDocToProject",
+      "POST-BATCH"
     );
     await this.spServices.executeBatch(batchUrl);
 
@@ -1071,11 +1082,6 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       this.ModifiedSelectedTaskName === "Client Review" &&
       this.selectedTab === "My Drafts"
     ) {
-      this.commonService.SetNewrelic(
-        "Project Mgmt",
-        "Client Review Tab",
-        "upload task documents"
-      );
       this.commonService.showToastrMessage(
         this.constants.MessageType.success,
         "Documents uploaded successfully.",
@@ -1137,7 +1143,8 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
         this.commonService.SetNewrelic(
           "ViewDocuments",
           "viewUpladDoc",
-          "SendMails"
+          "SendMails",
+          "POST-BATCH"
         );
         // Send  email
         this.spServices.sendMail(
@@ -1179,7 +1186,8 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     this.commonService.SetNewrelic(
       "ViewDocuments",
       "viewUpladDoc",
-      "getEmailTemplate"
+      "getEmailTemplate",
+      "GET"
     );
     const arrResults = await this.spServices.executeBatch(batchURL);
 
@@ -1215,7 +1223,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       moveItemObj.type = "POST";
       batchUrl.push(moveItemObj);
       // }
-      this.commonService.SetNewrelic('PrjMgmt', 'CR', 'Update CR docs name or milestone');
+      this.commonService.SetNewrelic('ViewDocuments', 'Client Review Tab', 'Update CR docs name or milestone', "POST-BATCH");
       const moveToMilestoneRes: any = await this.spOperations.executeBatch(batchUrl);
       this.LinkDocumentToProject([rowData]);
       this.loaderenable = false;
@@ -1269,7 +1277,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
         moveItemObj.type = "POST";
         batchUrl.push(moveItemObj);
       }
-      this.commonService.SetNewrelic('ProjectMgmt', 'Client comments', 'update task documents');
+      this.commonService.SetNewrelic('ViewDocuments', 'Client Review Tab', 'update task documents', "POST-BATCH");
       const moveToMilestoneRes: any = await this.spOperations.executeBatch(batchUrl);
       this.LinkDocumentToProject(alldocs);
       this.loaderenable = false;

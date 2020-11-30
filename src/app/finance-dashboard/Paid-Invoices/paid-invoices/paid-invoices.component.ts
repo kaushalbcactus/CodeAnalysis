@@ -378,7 +378,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         this.loggedInUserInfo = [];
         this.loggedInUserGroup = [];
         //let curruentUsrInfo = await this.spServices.getCurrentUser();
-        this.commonService.SetNewrelic('Finance-Dashboard', 'paid-invoices', 'getUserInfo');
+        this.commonService.SetNewrelic('Finance-Dashboard', 'paid-invoices', 'getUserInfo', 'GET');
         let currentUsrInfo = await this.spServices.getUserInfo(userId);
         this.loggedInUserInfo = currentUsrInfo.Groups.results;
         this.loggedInUserInfo.forEach(element => {
@@ -396,7 +396,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         const obj = Object.assign({}, this.fdConstantsService.fdComponent.paidInvoices);
         obj.filter = obj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
-        this.commonService.SetNewrelic('Finance-Dashboard', 'paid-invoices', 'getPaidInvoices');
+        this.commonService.SetNewrelic('Finance-Dashboard', 'paid-invoices', 'getPaidInvoices', 'GET');
         const res = await this.spServices.readItems(this.constantService.listNames.Invoices.name, obj);
         const arrResults = res.length ? res : [];
         this.formatData(arrResults);
@@ -804,24 +804,6 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
     async detagInvoice() {
         await this.getFinanceListData();
     }
-
-    // async getInvoiceLineItemByID() {
-    //     this.iliByidRes = [];
-    //     // this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
-    //     const iliObj = Object.assign({}, this.fdConstantsService.fdComponent.invoiceLineItemByInvoice);
-    //     iliObj.filter = iliObj.filter.replace('{{InvoiceLookup}}', this.selectedRowItem.InvoiceLookup);
-    //     this.commonService.SetNewrelic('Finance-Dashboard', 'Invoices', 'GetInviceLineItem');
-    //     const res = await this.spServices.readItems(this.constantService.listNames.InvoiceLineItems.name, iliObj);
-    //     const arrResults = res.length ? res : [];
-    //     // if (arrResults.length) {
-    //     // console.log(arrResults[0]);
-    //     this.iliByidRes = arrResults;
-    //     console.log('this.iliByidRes ', this.iliByidRes);
-
-    //     this.getFinanceListData(this.iliByidRes[0]);
-    //     // }
-    //     // this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
-    // }
 
     async getFinanceListData() {
         const batchUrl = [];

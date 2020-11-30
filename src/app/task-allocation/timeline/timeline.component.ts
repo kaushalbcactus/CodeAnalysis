@@ -345,7 +345,8 @@ export class TimelineComponent
     this.commonService.SetNewrelic(
       "TaskAllocation",
       "Timeline",
-      "GetProjectResources"
+      "GetProjectResources",
+      "GET"
     );
     await this.commonService.getProjectResources(
       this.oProjectDetails.projectCode,
@@ -796,12 +797,14 @@ export class TimelineComponent
     preferredResObj.listName = this.constants.listNames.PreferredResources.name;
     preferredResObj.type = "GET";
     batchUrl.push(preferredResObj);
-    const arrResult = await this.spServices.executeBatch(batchUrl);
+    
     this.commonService.SetNewrelic(
       "TaskAllocation",
-      "task-detailsDialog",
-      "GetMilestonesByProjectCode and preferred resources"
+      "Timeline",
+      "GetMilestonesByProjectCode and preferred resources",
+      "GET-BATCH"
     );
+    const arrResult = await this.spServices.executeBatch(batchUrl);
     const response = arrResult.length > 0 ? arrResult.map(a => a.retItems) : [];
     return {
       tasks: response.length > 0 ? response[0] : [],
@@ -5301,7 +5304,8 @@ export class TimelineComponent
     this.commonService.SetNewrelic(
       "TaskAllocation",
       "Timeline",
-      "SaveTasksMilestones"
+      "SaveTasksMilestones",
+      "POST-BATCH"
     );
     const responseInLines = await this.executeBulkRequests(
       restructureMilstoneStr,
@@ -5329,8 +5333,9 @@ export class TimelineComponent
     }
     this.commonService.SetNewrelic(
       "TaskAllocation",
-      "timeline-getProjectResources",
-      "setMilestone"
+      "Timeline",
+      "setMilestone-getProjectResources",
+      "GET-BATCH"
     );
     await this.commonService.getProjectResources(
       this.oProjectDetails.projectCode,
@@ -5652,7 +5657,8 @@ export class TimelineComponent
     this.commonService.SetNewrelic(
       "TaskAllocation",
       "Timeline",
-      "updateProjectInfo"
+      "updateProjectInfo",
+      "POST"
     );
     let response = await this.spServices.executeBatch(batchUrl);
     response = response.length ? response.map(a => a.retItems) : [];
@@ -5699,7 +5705,8 @@ export class TimelineComponent
         this.commonService.SetNewrelic(
           "TaskAllocation",
           "Timeline",
-          "sendMails"
+          "sendMails",
+          "POST"
         );
         await this.spServices.sendMail(
           to,
@@ -5743,7 +5750,8 @@ export class TimelineComponent
     this.commonService.SetNewrelic(
       "TaskAllocation",
       "Timeline",
-      "sendCentralTaskMail"
+      "sendCentralTaskMail",
+      "POST"
     );
     await this.spServices.sendMail(
       arrayTo.join(","),
@@ -5780,7 +5788,8 @@ export class TimelineComponent
     this.commonService.SetNewrelic(
       "TaskAllocation",
       "Timeline",
-      "sendReallocationCentralTaskMail"
+      "sendReallocationCentralTaskMail",
+      "POST"
     );
     await this.spServices.sendMail(
       arrayTo.join(","),
@@ -5807,8 +5816,9 @@ export class TimelineComponent
     mailObj.filter = mailObj.filter.replace("{{templateName}}", templateName);
     this.commonService.SetNewrelic(
       "TaskAllocation",
+      "Timeline",
       "timeline-getsendEmailObjBody",
-      "readItems"
+      "GET"
     );
     const templateData = await this.spServices.readItems(
       this.constants.listNames.MailContent.name,
@@ -5885,8 +5895,9 @@ export class TimelineComponent
     mailObj.filter = mailObj.filter.replace("{{templateName}}", templateName);
     this.commonService.SetNewrelic(
       "TaskAllocation",
+      "Timeline",
       "timeline-getReallocateEmailObjBody",
-      "readItems"
+      "GET"
     );
     const templateData = await this.spServices.readItems(
       this.constants.listNames.MailContent.name,
@@ -6854,7 +6865,8 @@ export class TimelineComponent
     this.commonService.SetNewrelic(
       "TaskAllocation",
       "Timeline",
-      "SetAsNextMilestone"
+      "SetAsNextMilestone",
+      "POST-BATCH"
     );
     const response = await this.spServices.executeBatch(batchUrl);
     if (response.length) {
@@ -6883,14 +6895,16 @@ export class TimelineComponent
       this.commonService.SetNewrelic(
         "TaskAllocation",
         "Timeline",
-        "SendEarlyTaskCompletionNotification"
+        "SendEarlyTaskCompletionNotification",
+        "POST"
       );
       await this.spServices.executeBatch(notificationBatchUrl);
     }
     this.commonService.SetNewrelic(
       "TaskAllocation",
-      "timeline-getProjectResources",
-      "setAsNextMilestone"
+      "Timeline",
+      "setAsNextMilestone-timeline-getProjectResources",
+      "GET-BATCH"
     );
     await this.commonService.getProjectResources(
       this.oProjectDetails.projectCode,

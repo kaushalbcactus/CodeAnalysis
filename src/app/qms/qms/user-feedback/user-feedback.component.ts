@@ -119,7 +119,7 @@ export class UserFeedbackComponent implements OnInit, AfterViewChecked {
       // tslint:disable-next-line: quotemark
       personalFeedbackComponent.getScorecard.filter.replace("{{FeedbackTypeFilter}}", "and FeedbackType eq '" + this.globalConstant.FeedbackType.taskRating + "'") :
       personalFeedbackComponent.getScorecard.filter.replace('{{FeedbackTypeFilter}}', '');
-    this.commonService.SetNewrelic('QMS', 'Userfeedback-getScorecardItems', 'readItems');
+    this.commonService.SetNewrelic('QMS', 'Userfeedback', 'readItems-getScorecardItems', "GET");
     const arrResult = await this.spService.readItems(this.globalConstant.listNames.Scorecard.name, personalFeedbackComponent.getScorecard);
     // If Last.. Filter used then fetch top Task Feedback only ( Rating) and Qualitative feedback based on rating item dates
     const arrScoreCards = arrResult.length > 0 ? arrResult : [];

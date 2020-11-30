@@ -170,10 +170,10 @@ export class ResourcesComponent implements OnInit {
         }
       }
     }
-    this.commonService.SetNewrelic('TaskAllocation', 'resources', 'SaveResources');
+    this.commonService.SetNewrelic('TaskAllocation', 'resources', 'SaveResources', "POST");
     await this.spService.updateItem(this.constants.listNames.ProjectInformation.name, project.projectID,
       oBj, this.constants.listNames.ProjectInformation.type);
-    this.commonService.SetNewrelic('TaskAllocation', 'resources-getProjectResources', 'saveResources');
+    this.commonService.SetNewrelic('TaskAllocation', 'resources', 'saveResources-getProjectResources', "POST-BATCH");
     await this.commonService.updateTasks(scheduleTasks,this.primaryResoucesusers);
     await this.commonService.getProjectResources(project.projectCode, true, false);
     this.loaderEnable = false;

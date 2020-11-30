@@ -349,8 +349,9 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     }
     this.commonService.SetNewrelic(
       "Finance-Dashboard",
-      "Expenditure-approvedBillable",
-      "GetSpendingInfo"
+      "approve-billable",
+      "GetSpendingInfo",
+      "GET"
     );
     const res = await this.spServices.readItems(
       this.constantService.listNames.SpendingInfo.name,
@@ -1062,7 +1063,8 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     this.commonService.SetNewrelic(
       "Finance-Dashboard",
       "approve-billable",
-      "formSubmitForSelectedRow"
+      "formSubmitForSelectedRow",
+      "POST-BATCH"
     );
     const res = await this.spServices.executeBatch(dataEndpointArray);
 
@@ -1220,7 +1222,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
       const ccUser = this.getCCList(type, expense);
       // ccUser.push(this.currentUserInfoData.Email);
       const tos = this.getTosList(type, expense);
-      this.commonService.SetNewrelic('Finance-Dashboard', 'pending-expense', 'sendMail');
+      this.commonService.SetNewrelic('Finance-Dashboard', 'approve-billable', 'sendApproveCanRejExpMail','POST');
       this.spServices.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
       this.reFetchData();
   }

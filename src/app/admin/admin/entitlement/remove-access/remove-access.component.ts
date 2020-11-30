@@ -129,7 +129,7 @@ export class RemoveAccessComponent implements OnInit {
   async getResourceData() {
     const getResoucesInfo = Object.assign({}, this.adminConstants.QUERY.GET_RESOURCE_CATEGERIZATION_ORDER_BY_USERNAME);
     getResoucesInfo.filter = getResoucesInfo.filter.replace(/{{isActive}}/gi, this.adminConstants.LOGICAL_FIELD.YES);
-    this.commonService.SetNewrelic("admin", "admin-entitlement-removeAccess", "getResouceData");
+    this.commonService.SetNewrelic("admin", "admin-entitlement-removeAccess", "getResouceData", "GET");
     const results = await this.spServices.readItems(this.constants.listNames.ResourceCategorization.name, getResoucesInfo);
     return results;
   }
@@ -157,7 +157,7 @@ export class RemoveAccessComponent implements OnInit {
     resourceFilter.filter = resourceFilter.filter.replace(/{{isActive}}/gi, this.adminConstants.LOGICAL_FIELD.YES);
     getResourceCat.url = this.spServices.getReadURL(this.constants.listNames.ResourceCategorization.name,
       resourceFilter);
-    getResourceCat.type = 'GET';
+    getResourceCat.type = this.constants.Method.GET;
     getResourceCat.listName = this.constants.listNames.ResourceCategorization.name;
     batchURL.push(getResourceCat);
 
@@ -166,12 +166,12 @@ export class RemoveAccessComponent implements OnInit {
     rulesFilter.filter = rulesFilter.filter.replace(/{{isActive}}/gi, this.adminConstants.LOGICAL_FIELD.YES);
     getActiveRules.url = this.spServices.getReadURL(this.constants.listNames.RuleStore.name,
       rulesFilter);
-    getActiveRules.type = 'GET';
+    getActiveRules.type = this.constants.Method.GET;
     getActiveRules.listName = this.constants.listNames.RuleStore.name;
     batchURL.push(getActiveRules);
     if (batchURL.length) {
+      this.commonService.SetNewrelic("admin", "admin-entitlement-removeAccess", "loadInitData", "GET-BATCH");
       const batchResults = await this.spServices.executeBatch(batchURL);
-      this.commonService.SetNewrelic("admin", "admin-entitlement-removeAccess", "loadInitData");
       return batchResults;
     }
   }
@@ -313,7 +313,7 @@ export class RemoveAccessComponent implements OnInit {
 
     }
     if (batchURL.length) {
-      this.commonService.SetNewrelic("admin", "admin-entitlement-removeAccess", "getFilterData");
+      this.commonService.SetNewrelic("admin", "admin-entitlement-removeAccess", "getFilterData","GET-BATCH");
       finalArray = await this.spServices.executeBatch(batchURL);
       if(attributes === this.adminConstants.ATTRIBUTES.POSITIVEFEEDBACK) {
         inActiveProjectList =  finalArray.find((c) => c.listName === this.constants.listNames.ProjectInformation.name) &&
@@ -709,13 +709,13 @@ export class RemoveAccessComponent implements OnInit {
                 break;
             }
             if (batchURL.length === 99) {
-              this.commonService.SetNewrelic('admin', 'admin-entitlement-removeAccess', 'removeUsers');
+              this.commonService.SetNewrelic('admin', 'admin-entitlement-removeAccess', 'removeUsers', "POST-BATCH");
               await this.spServices.executeBatch(batchURL);
               batchURL = [];
             }
           }
           if (batchURL.length) {
-            this.commonService.SetNewrelic('admin', 'admin-entitlement-removeAccess', 'removeUsers');
+            this.commonService.SetNewrelic('admin', 'admin-entitlement-removeAccess', 'removeUsers',"POST-BATCH");
             await this.spServices.executeBatch(batchURL);
           }
           this.commonService.showToastrMessage(this.constantsService.MessageType.success, 'Access has removed for ' + this.attribute + ' successfully.', true);

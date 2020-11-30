@@ -263,7 +263,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
                 .replace('{{EndDate}}', this.DateRange.endDate)
                 .replace('{{UserID}}', this.globalService.currentUser.userId.toString());
         }
-        this.commonService.SetNewrelic('Finance-Dashboard', 'approve-nonbillable', 'spendingInfo');
+        this.commonService.SetNewrelic('Finance-Dashboard', 'approve-nonbillable', 'spendingInfo', 'GET');
         const res = await this.spServices.readItems(this.constantService.listNames.SpendingInfo.name, speInfoObj);
         const arrResults = res.length ? res : [];
         this.formatData(arrResults);
@@ -557,7 +557,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
 
 
     async submitForm(batchUrl: any[], type: string) {
-        this.commonService.SetNewrelic('Finance-Dashboard', 'approve-nonbillable', 'submitForm');
+        this.commonService.SetNewrelic('Finance-Dashboard', 'approve-nonbillable', 'submitForm', 'POST-BATCH');
         await this.spServices.executeBatch(batchUrl);
         if (type === 'markAsPayment_form') {
 
@@ -696,7 +696,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         const ccUser = this.getCCList(type, expense);
         // ccUser.push(this.currentUserInfoData.Email);
         const tos = this.getTosList(type, expense);
-        this.commonService.SetNewrelic('Finance-Dashboard', 'pending-expense', 'sendMail');
+        this.commonService.SetNewrelic('Finance-Dashboard', 'approve-nonbillable', 'sendApproveCanRejExpMail', 'GET');
         this.spServices.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
         this.isPSInnerLoaderHidden = false;
         this.reFetchData();

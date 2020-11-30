@@ -329,7 +329,7 @@ export class ResourceSelectionComponent implements OnInit {
       ResourcesId: { results: [assignedTo] },
       IsActiveCH: 'Yes'
     };
-    this.commonService.SetNewrelic('TaskAllocation', 'timeline', 'Add Resource Preference - Creating Item');
+    this.commonService.SetNewrelic('TaskAllocation', 'resource-selection', 'Add Resource Preference - Creating Item', "POST");
     let item = await this.spService.createItem(this.constants.listNames.PreferredResources.name, data,
       this.constants.listNames.PreferredResources.type);
     item = item ? item : {};
@@ -340,7 +340,7 @@ export class ResourceSelectionComponent implements OnInit {
     const updateItem = {
       ResourcesId: { results: resources }
     };
-    this.commonService.SetNewrelic('TaskAllocation', 'timeline', 'Add Resource Preference - Update Item');
+    this.commonService.SetNewrelic('TaskAllocation', 'resource-selection', 'Add Resource Preference - Update Item', "POST");
     await this.spService.updateItem(this.constants.listNames.PreferredResources.name, itemID,
       updateItem, this.constants.listNames.PreferredResources.type);
   }

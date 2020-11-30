@@ -363,7 +363,7 @@ export class CsFinanceAuditDialogComponent implements OnInit {
       batchURL.push(ProjectUpdate);
 
       if (batchURL.length === 99) {
-        this.commonService.SetNewrelic('projectManagment', 'cs-finance-auditdialog', 'UpdateProjectFinanceAuditToClosed');
+        this.commonService.SetNewrelic('projectManagment', 'cs-finance-auditdialog', 'UpdateProjectFinanceAuditToClosed', "POST-BATCH");
         batchResults = await this.spServices.executeBatch(batchURL);
 
         finalArray = [...finalArray, ...batchResults];
@@ -372,7 +372,7 @@ export class CsFinanceAuditDialogComponent implements OnInit {
       }
     });
     if (batchURL.length) {
-      this.commonService.SetNewrelic('projectManagment', 'cs-finance-auditdialog', 'UpdateProjectFinanceAuditToClosed');
+      this.commonService.SetNewrelic('projectManagment', 'cs-finance-auditdialog', 'UpdateProjectFinanceAuditToClosed', "POST-BATCH");
       batchResults = await this.spServices.executeBatch(batchURL);
       finalArray = [...finalArray, ...batchResults];
       this.projectUpdated = true;
@@ -432,7 +432,7 @@ export class CsFinanceAuditDialogComponent implements OnInit {
       batchURL.push(expanseGet);
 
       if (batchURL.length === 98) {
-        this.commonService.SetNewrelic('projectManagment', 'cs-finance-auditdialog', 'UpdateProjectCSAuditToFinanceAudit');
+        this.commonService.SetNewrelic('projectManagment', 'cs-finance-auditdialog', 'getProjectsExpenseInvoiceLineItem', "GET-BATCH");
         batchResults = await this.spServices.executeBatch(batchURL);
 
         finalArray = [...finalArray, ...batchResults];
@@ -441,7 +441,7 @@ export class CsFinanceAuditDialogComponent implements OnInit {
       }
     });
     if (batchURL.length) {
-      this.commonService.SetNewrelic('projectManagment', 'cs-finance-auditdialog', 'getProjectsExpenseInvoiceLineItem');
+      this.commonService.SetNewrelic('projectManagment', 'cs-finance-auditdialog', 'getProjectsExpenseInvoiceLineItem', "GET-BATCH");
       batchResults = await this.spServices.executeBatch(batchURL);
       finalArray = [...finalArray, ...batchResults];
     }

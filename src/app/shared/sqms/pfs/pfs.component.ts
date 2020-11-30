@@ -106,7 +106,7 @@ export class PfsComponent implements OnInit, AfterViewChecked {
    */
   protected async getPFItems(filterObj?): Promise<[]> {
     const pfComponent = JSON.parse(JSON.stringify(this.qmsConstant.ClientFeedback.PositiveFeedbackComponent));
-    this.commonService.SetNewrelic('QMS', 'cfpositive-feedback', 'getGroupInfo');
+    this.commonService.SetNewrelic('QMS', 'SQMS-PFS', 'cfpositive-feedback', "GET");
     const result = await this.spService.getGroupInfo(this.globalConstant.Groups.PFAdmin);
     this.global.pfAdmins = result.results ? result.results : [];
     this.global.currentUser.isPFAdmin = this.global.pfAdmins.find(t => t.Id === this.global.currentUser.userId) ? true : false;
@@ -132,7 +132,7 @@ export class PfsComponent implements OnInit, AfterViewChecked {
       pfUrl = pfComponent.getPF;
     }
 
-    this.commonService.SetNewrelic('QMS', 'ClientFeedBack-cfposition', 'getPFItems');
+    this.commonService.SetNewrelic('QMS', 'SQMS-PFS', 'getPFItems-ClientFeedBack-cfposition', "GET");
     const arrResult = await this.spService.readItems(this.globalConstant.listNames.PositiveFeedbacks.name, pfUrl);
     const arrPFs = arrResult.length > 0 ? this.appendPropertyTOObject(arrResult) : [];
     return arrPFs;
@@ -150,7 +150,7 @@ export class PfsComponent implements OnInit, AfterViewChecked {
     pfComponent.getPF.top = pfComponent.getPF.top.replace('{{TopCount}}', '' + topCount);
     pfComponent.getPF.filter = pfComponent.getPF.filter.replace('{{startDate}}', startDate)
       .replace('{{endDate}}', endDate);
-    this.commonService.SetNewrelic('QMS', 'personalFeedback-positiveFeedback', 'getPFItems');
+    this.commonService.SetNewrelic('QMS', 'SQMS-PFS', 'getPFItems-personalFeedback-positiveFeedback', "GET");
     const arrResult = await this.spService.readItems(this.globalConstant.listNames.PositiveFeedbacks.name, pfComponent.getPF);
     this.global.templateMatrix.templates = arrResult.length > 0 ? arrResult : [];
     const arrPFs = arrResult.length > 0 ? this.appendPropertyTOObject(arrResult) : [];
@@ -239,7 +239,7 @@ export class PfsComponent implements OnInit, AfterViewChecked {
    */
   savePF(pfDetails, pf) {
 
-    this.commonService.SetNewrelic('QMS', 'ClientFeedBack-cfposition', 'savePF');
+    this.commonService.SetNewrelic('QMS', 'SQMS-PFS', 'savePF-ClientFeedBack-cfposition', "POST");
     this.spService.updateItem(this.globalConstant.listNames.PositiveFeedbacks.name, pf.ID, pfDetails);
     this.showToastMsg({ type: 'success', msg: 'Success', detail: 'Positive Feedback sent by ' + pf.SentBy.Title + ' is ' + pf.Status + '.' });
   }
@@ -312,7 +312,7 @@ export class PfsComponent implements OnInit, AfterViewChecked {
     const qcComponent = JSON.parse(JSON.stringify(this.qmsConstant.personalFeedbackComponent.PositiveFeedbacks));
     qcComponent.getPFByProject.top = qcComponent.getPFByProject.top.replace('{{TopCount}}', '' + topCount);
     qcComponent.getPFByProject.filter = qcComponent.getPFByProject.filter.replace('{{projectCode}}', projectCode);
-    this.commonService.SetNewrelic('QMS', 'personalfeedback-getPFItemsByProject', 'readItems');
+    this.commonService.SetNewrelic('QMS', 'SQMS-PFS', 'readItems-personalfeedback-getPFItemsByProject', "GET");
     let qcs = await this.spService.readItems(this.globalConstant.listNames.PositiveFeedbacks.name,
       qcComponent.getPFByProject);
     qcs = qcs.length > 0 ? qcs.sort((a, b) => new Date(a.SentDate).getTime() - new Date(b.SentDate).getTime()) : [];
@@ -335,7 +335,7 @@ export class PfsComponent implements OnInit, AfterViewChecked {
   }
 
   update(pfDetails, pfID) {
-    this.commonService.SetNewrelic('QMS', 'ClientFeedBack-cfposition', 'updatepf');
+    this.commonService.SetNewrelic('QMS', 'SQMS-PFS', 'updatepf-ClientFeedBack-cfposition', "POST");
     this.spService.updateItem(this.globalConstant.listNames.PositiveFeedbacks.name, pfID, pfDetails);
   }
 }

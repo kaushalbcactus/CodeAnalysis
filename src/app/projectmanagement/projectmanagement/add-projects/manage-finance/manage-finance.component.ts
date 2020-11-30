@@ -236,10 +236,6 @@ export class ManageFinanceComponent implements OnInit {
       this.projectStatus = this.constant.projectList.status.InDiscussion;
       await this.setBudget();
     }
-
-    // if (this.poData && this.poData.length >= 2) {
-    //   this.maximizeDialog.next(); // Maxmize finance dialog
-    // }
   }
 
 
@@ -288,7 +284,7 @@ export class ManageFinanceComponent implements OnInit {
     invGet.type = 'GET';
     invGet.listName = this.constant.listNames.Invoices.name;
     batchURL.push(invGet);
-    this.commonService.SetNewrelic('projectManagment', 'addproj-managefinance', 'GetPOSowInvoices');
+    this.commonService.SetNewrelic('projectManagment', 'manage-finance', 'GetPOSowInvoices', "GET-BATCH");
     const arrResults = await this.spServices.executeBatch(batchURL);
     if (arrResults && arrResults.length) {
 
@@ -412,7 +408,7 @@ export class ManageFinanceComponent implements OnInit {
   }
 
   async getTosList() {
-    this.commonService.SetNewrelic('Project-Management', 'manage-finance-getTosList', 'getGroupInfo');
+    this.commonService.SetNewrelic('projectManagment', 'manage-finance', 'getTosList', "GET");
     const approvers = await this.spServices.getGroupInfo('ExpenseApprovers');
     let arrayTo = [];
     if (approvers.results) {
@@ -1484,7 +1480,7 @@ export class ManageFinanceComponent implements OnInit {
     pbbGetALL.type = 'GET';
     pbbGetALL.listName = this.constant.listNames.ProjectBudgetBreakup.name;
     batchURL.push(pbbGetALL);
-    this.commonService.SetNewrelic('projectManagment', 'addproj-manageFinance', 'GetProjFinanceProjFinanceBreakupPBBInvoiceLineItem');
+    this.commonService.SetNewrelic('projectManagment', 'manage-finance', 'GET-PF-PFB-PBB-ILI', "GET-BATCH");
     const result = await this.spServices.executeBatch(batchURL);
     this.budgetData = [];
 
@@ -1534,7 +1530,7 @@ export class ManageFinanceComponent implements OnInit {
           batchURLs.push(poCloseGet);
 
         });
-        this.commonService.SetNewrelic('projectManagment', 'addproj-manageFinance', 'GetListNames');
+        this.commonService.SetNewrelic('projectManagment', 'manage-finance', 'GetListNames', "GET-BATCH");
         const POresult = await this.spServices.executeBatch(batchURLs);
         this.poArray.push.apply(this.poArray, POresult.map(c => c.retItems[0]));
       }
@@ -1768,7 +1764,7 @@ export class ManageFinanceComponent implements OnInit {
       proformaGet.listName = this.constant.listNames.Proforma.name;
       batchURL.push(proformaGet);
     }
-    this.commonService.SetNewrelic('projectManagment', 'addproj-manageFinance', 'GetInvoicesAndProforma');
+    this.commonService.SetNewrelic('projectManagment', 'manage-finance', 'GetInvoicesAndProforma', "GET-BATCH");
     const invoiceProformaResult = await this.spServices.executeBatch(batchURL);
     if (invoiceProformaResult && invoiceProformaResult.length) {
       return invoiceProformaResult;
@@ -1812,7 +1808,7 @@ export class ManageFinanceComponent implements OnInit {
     });
   }
   async commitInvoiceItem(rowData) {
-    this.commonService.SetNewrelic('projectManagment', 'manage-finance-commitInvoiceItem', 'getGroupInfo');
+    this.commonService.SetNewrelic('projectManagment', 'manage-finance', 'commitInvoiceItem', "GET");
     const groupInfo = await this.spServices.getGroupInfo('Invoice_Team');
     const approvers = groupInfo.results;
     const arrayTo = [];
@@ -1826,7 +1822,7 @@ export class ManageFinanceComponent implements OnInit {
     const data = {
       Status: this.constant.STATUS.CONFIRMED
     };
-    this.commonService.SetNewrelic('projectManagment', 'addproj-manageFinance', 'UpdateInvoiceLineItem');
+    this.commonService.SetNewrelic('projectManagment', 'manage-finance', 'UpdateInvoiceLineItem', "POST");
     const result = await this.spServices.updateItem(this.constant.listNames.InvoiceLineItems.name,
       rowData.Id, data, this.constant.listNames.InvoiceLineItems.type);
     const objEmailBody = [];
@@ -1900,7 +1896,7 @@ export class ManageFinanceComponent implements OnInit {
       MainPOC: primaryPoc,
       AddressType: address
     };
-    this.commonService.SetNewrelic('projectManagment', 'addproj-manageFinance', 'UpdateInvoiceLineitem');
+    this.commonService.SetNewrelic('projectManagment', 'manage-finance', 'UpdateInvoiceLineitem', "POST");
     const result = await this.spServices.updateItem(this.constant.listNames.InvoiceLineItems.name,
       this.invoiceObj.Id, data, this.constant.listNames.InvoiceLineItems.type);
 
@@ -2112,7 +2108,7 @@ export class ManageFinanceComponent implements OnInit {
 
           let milestoneCall = Object.assign({}, this.pmConstant.FINANCE_QUERY.GET_SCHEDULES_BY_PROJECTCODE);
           milestoneCall.filter = milestoneCall.filter.replace(/{{projectCode}}/gi, this.projObj.ProjectCode);
-          this.commonService.SetNewrelic('projectManagment', 'manage-finance', 'AddUpdatePO-GetSchedules');
+          this.commonService.SetNewrelic('projectManagment', 'manage-finance', 'AddUpdatePO-GetSchedules', "GET");
           const response = await this.spServices.readItems(this.constant.listNames.Schedules.name, milestoneCall);
           let Resources;
 
@@ -2124,7 +2120,7 @@ export class ManageFinanceComponent implements OnInit {
             if (!Resources) {
               let resouceCall = Object.assign({}, this.pmConstant.FINANCE_QUERY.GET_RESOUCEBYID);
               resouceCall.filter = resouceCall.filter.replace(/{{Id}}/gi, this.projObj.PrimaryResourcesId[0].Id);
-              this.commonService.SetNewrelic('projectManagment', 'manage-finance', 'AddUpdatePO-GetResource');
+              this.commonService.SetNewrelic('projectManagment', 'manage-finance', 'AddUpdatePO-GetResource', "GET");
               Resources = await this.spServices.readItems(this.constant.listNames.ResourceCategorization.name, resouceCall);
             }
 
@@ -2319,14 +2315,8 @@ export class ManageFinanceComponent implements OnInit {
 
     console.log(batchURL);
     if (batchURL.length) {
-      this.commonService.SetNewrelic('projectManagment', 'manageFinance', 'addupdateSchedulesFTEBudget');
+      this.commonService.SetNewrelic('projectManagment', 'manageFinance', 'addupdateSchedulesFTEBudget', "POST-BATCH");
       const res = await this.spServices.executeBatch(batchURL);
-      console.log(res);
-
-      if (res && res.filter(c => c.listName === 'Schedules')) {
-        const Schedules = res.filter(c => c.listName === 'Schedules')
-        await this.pmCommonService.moveMilestoneAndTask(Schedules, this.projObj.ProjectCode);
-      }
     }
     this.pmObject.isMainLoaderHidden = true;
 
