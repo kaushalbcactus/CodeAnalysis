@@ -10,7 +10,7 @@ import {
   FormGroup,
   FormBuilder,
   Validators,
-  FormControl,
+  FormControl, 
 } from "@angular/forms";
 import { PMObjectService } from "src/app/projectmanagement/services/pmobject.service";
 import { PmconstantService } from "src/app/projectmanagement/services/pmconstant.service";
@@ -211,6 +211,7 @@ export class ManageFinanceComponent implements OnInit {
       address: ["", Validators.required],
     });
   }
+
   ngOnInit() {
     this.reInitializePopup();
   }
@@ -351,6 +352,7 @@ export class ManageFinanceComponent implements OnInit {
       this.arrAdvanceInvoices = arrResults[2].retItems;
     }
   }
+
   /**
    * This method is used to set the default value for all the budget value.
    */
@@ -822,6 +824,7 @@ export class ManageFinanceComponent implements OnInit {
       }
     }
   }
+
   /**
    * This method is used to add Rate to project.
    */
@@ -842,6 +845,7 @@ export class ManageFinanceComponent implements OnInit {
       this.isAddToProjectHidden = false;
     }
   }
+
   /**
    * This method is used to add PO to project.
    */
@@ -942,6 +946,7 @@ export class ManageFinanceComponent implements OnInit {
 
     return tempPOObj;
   }
+
   /**
    * This function is used to scheduled the PO.
    */
@@ -1105,6 +1110,7 @@ export class ManageFinanceComponent implements OnInit {
       this.showSave = false;
     }
   }
+
   setInvData() {
     const invID = this.advanceInvID;
     const oInv = this.arrAdvanceInvoices.find((e) => e.ID === invID);
@@ -1255,6 +1261,7 @@ export class ManageFinanceComponent implements OnInit {
     }
     this.showAddInvoiceDetails = true;
   }
+
   /**
    * This method is used to add the invoice details.
    */
@@ -1461,6 +1468,7 @@ export class ManageFinanceComponent implements OnInit {
     this.isInvoiceEdit = false;
     this.hideMoveLineItem = this.hideMoveLineItem === true ? false : true;
   }
+
   /***
    * This function is used to validate the form field
    */
@@ -1474,6 +1482,7 @@ export class ManageFinanceComponent implements OnInit {
       }
     });
   }
+
   /***
    * This method is used to check whether if all the budget has been scheduled or not
    */
@@ -1506,6 +1515,7 @@ export class ManageFinanceComponent implements OnInit {
       return false;
     }
   }
+
   /***
    * This method is used to remove the the particular po if delete icon is clicked.
    * @param poObj The parameter should be PO object.
@@ -1882,6 +1892,8 @@ export class ManageFinanceComponent implements OnInit {
     this.pmObject.addProject.FinanceManagement.isBudgetRateAdded = true;
     this.pmObject.addProject.FinanceManagement.BilledBy = this.projectType;
   }
+
+  ////////// Refactor
   async editManageFinances(projObj) {
     this.hideRemoveButton = false;
     this.pmObject.isMainLoaderHidden = false;
@@ -2359,6 +2371,7 @@ export class ManageFinanceComponent implements OnInit {
       this.pmObject.isMainLoaderHidden = true;
     }
   }
+
   async getInvoiceProformaNumber(invoiceItems) {
     const uniqueInvoiceItems = this.commonService.unique(
       invoiceItems,
@@ -2483,6 +2496,7 @@ export class ManageFinanceComponent implements OnInit {
         }
       });
   }
+
   async commitInvoiceItem(rowData) {
     this.commonService.SetNewrelic(
       "projectManagment",
@@ -2570,6 +2584,7 @@ export class ManageFinanceComponent implements OnInit {
       this.reInitializePopup();
     }, this.pmConstant.TIME_OUT);
   }
+
   editInvoiceItem(rowData) {
     this.hideMoveLineItem = this.hideMoveLineItem === false ? true : false;
     this.invoiceHeader = "Edit Invoice Line Item";
@@ -2593,6 +2608,7 @@ export class ManageFinanceComponent implements OnInit {
     this.isInvoiceEdit = true;
     this.showAddInvoiceDetails = true;
   }
+
   async saveInvoiceEdit() {
     const date = this.addPOForm.get("poDate").value;
     const primaryPoc = this.addPOForm.get("primarypoc").value;
@@ -2631,6 +2647,7 @@ export class ManageFinanceComponent implements OnInit {
     this.saveUpdatePO(this.BudgetType);
   }
 
+  /////////// Refactor 
   async saveUpdatePO(budgetType) {
     const returnObj = {
       pfObj: {},
@@ -3305,6 +3322,7 @@ export class ManageFinanceComponent implements OnInit {
     }, this.pmConstant.TIME_OUT);
     return returnObj;
   }
+
   /**
    * This method is used to get Project Finances Update data
    * @param poArray pass the poArray as parameter
@@ -3458,6 +3476,7 @@ export class ManageFinanceComponent implements OnInit {
       return data;
     }
   }
+
   /**
    * This method is used to get Project budget breakup object.
    * @param budgetArray passed as budget array as paramaeter.
@@ -3950,7 +3969,7 @@ export class ManageFinanceComponent implements OnInit {
     }
   }
 
-  AddRemoveItem(rowData, poInfo) {
+  addRemoveItem(rowData, poInfo) {
     if (rowData.selected) {
       this.PoReplaceLineItemList.push({ LineItem: rowData, PODetails: poInfo });
     } else {
