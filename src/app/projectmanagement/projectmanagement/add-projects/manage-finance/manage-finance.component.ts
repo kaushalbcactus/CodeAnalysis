@@ -1588,7 +1588,7 @@ export class ManageFinanceComponent implements OnInit {
             __metadata: { type: this.constant.listNames.InvoiceLineItems.type },
             Status: "Deleted",
           };
-          await this.commonService.setBatchObject(
+          this.commonService.setBatchObject(
             batchUrl,
             this.spServices.getItemURL(
               this.constant.listNames.InvoiceLineItems.name,
@@ -1603,16 +1603,19 @@ export class ManageFinanceComponent implements OnInit {
             __metadata: { type: this.constant.listNames.SpendingInfo.type },
             Status: "Approved",
           };
-          await this.commonService.setBatchObject(
-            batchUrl,
-            this.spServices.getItemURL(
-              this.constant.listNames.SpendingInfo.name,
-              +this.spendingInfoDetails.retItems[0].Id
-            ),
-            spendInfo,
-            this.constant.Method.PATCH,
-            this.constant.listNames.SpendingInfo.name
-          );
+
+          this.spendingInfoDetails.retItems.forEach((spending) => {
+            this.commonService.setBatchObject(
+              batchUrl,
+              this.spServices.getItemURL(
+                this.constant.listNames.SpendingInfo.name,
+                +spending.Id
+              ),
+              spendInfo,
+              this.constant.Method.PATCH,
+              this.constant.listNames.SpendingInfo.name
+            );
+          });
 
           const poLinkedAmt = poItem[0].OOPLinked
             ? parseFloat(poItem[0].OOPLinked) - parseFloat(rowData.amount)
@@ -1635,7 +1638,7 @@ export class ManageFinanceComponent implements OnInit {
             TotalScheduled: parseFloat(poTotalScheduled.toFixed(2)),
           };
 
-          await this.commonService.setBatchObject(
+          this.commonService.setBatchObject(
             batchUrl,
             this.spServices.getItemURL(
               this.constant.listNames.PO.name,
@@ -1658,7 +1661,7 @@ export class ManageFinanceComponent implements OnInit {
             ProjectCode: this.projObj.ProjectCode,
           };
 
-          await this.commonService.setBatchObject(
+          this.commonService.setBatchObject(
             batchUrl,
             this.spServices.getReadURL(
               this.constant.listNames.ProjectBudgetBreakup.name
@@ -1694,7 +1697,7 @@ export class ManageFinanceComponent implements OnInit {
               : 0,
           };
 
-          await this.commonService.setBatchObject(
+          this.commonService.setBatchObject(
             batchUrl,
             this.spServices.getItemURL(
               this.constant.listNames.ProjectFinances.name,
@@ -1740,7 +1743,7 @@ export class ManageFinanceComponent implements OnInit {
             TotalScheduled: pfbTotalScheduled,
           };
 
-          await this.commonService.setBatchObject(
+          this.commonService.setBatchObject(
             batchUrl,
             this.spServices.getItemURL(
               this.constant.listNames.ProjectFinanceBreakup.name,
@@ -1769,7 +1772,7 @@ export class ManageFinanceComponent implements OnInit {
               : rowData.amount,
           };
 
-          await this.commonService.setBatchObject(
+          this.commonService.setBatchObject(
             batchUrl,
             this.spServices.getItemURL(
               this.constant.listNames.SOW.name,
@@ -2445,6 +2448,12 @@ export class ManageFinanceComponent implements OnInit {
       null,
       this.constant.Method.GET,
       this.constant.listNames.SpendingInfo.name
+    );
+    this.commonService.SetNewrelic(
+      "projectManagment",
+      "manage-finance",
+      "getSpendingDetails",
+      "GET"
     );
     const result = await this.spServices.executeBatch(batchURL);
     if (result && result.length) {
@@ -3180,7 +3189,7 @@ export class ManageFinanceComponent implements OnInit {
                       this.constant.listNames.Schedules.name,
                       task.Id
                     ),
-                    taskUpdate,
+                    taskUpdate.data,
                     this.constant.Method.PATCH,
                     this.constant.listNames.Schedules.name
                   );
