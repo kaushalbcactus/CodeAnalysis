@@ -105,6 +105,8 @@ export class PfsComponent implements OnInit, AfterViewChecked {
    * Get positive feedback items from POsitiveFeedbacks list
    */
   protected async getPFItems(filterObj?): Promise<[]> {
+
+    debugger
     const pfComponent = JSON.parse(JSON.stringify(this.qmsConstant.ClientFeedback.PositiveFeedbackComponent));
     this.commonService.SetNewrelic('QMS', 'cfpositive-feedback', 'getGroupInfo');
     const result = await this.spService.getGroupInfo(this.globalConstant.Groups.PFAdmin);
@@ -190,7 +192,7 @@ export class PfsComponent implements OnInit, AfterViewChecked {
    * @param arrayItems -  array of PF Items
    */
   bindTable(arrayItems) {
-
+debugger;
     this.CFRows = [];
     arrayItems.forEach(element => {
       this.CFRows.push({
@@ -210,7 +212,9 @@ export class PfsComponent implements OnInit, AfterViewChecked {
         FileUrl: element.FileURL,
         IsActive: element.IsActiveCH,
         isLoggedInDeliveryLead: element.isLoggedInDeliveryLead,
-        fullUrl: element.fullUrl
+        fullUrl: element.fullUrl,
+        EmailAddress: element.EmailAddress,
+        SurveyResponse : element.SurveyResponse.ID
       });
     });
     this.colFilters(this.CFRows);

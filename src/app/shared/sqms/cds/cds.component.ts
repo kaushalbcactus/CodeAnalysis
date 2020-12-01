@@ -260,6 +260,8 @@ export class CdsComponent implements OnInit, AfterViewChecked, DoCheck {
         BusinessImpact: element.BusinessImpact ? element.BusinessImpact : '',
         FullUrl: element.fullUrl,
         IdentifiedResource: element.IdentifiedResource ? element.IdentifiedResource : '',
+        SurveyResponse : element.SurveyResponse.ID,
+        EmailAddress : element.EmailAddress 
       });
     });
     this.colFilters(this.CDRows);
@@ -315,13 +317,14 @@ export class CdsComponent implements OnInit, AfterViewChecked, DoCheck {
   }
 
   openMenuPopup(data, popUpData) {
+    debugger
     this.items = [
       { label: 'Update and close CD', title: 'Update and close CD', id: 'close', command: (e) => this.openPopup(e.originalEvent, data), visible: ((data.Status === this.globalConstant.cdStatus.Created && data.Title !== 'TBD') || data.Status === this.globalConstant.cdStatus.Rejected) && (data.isLoggedInASD || this.global.currentUser.isCDAdmin) && !this.readOnly },
       { label: 'Delete CD', title: 'Delete CD', id: 'delete', command: (e) => this.openPopup(e.originalEvent, data), visible: data.Status === this.globalConstant.cdStatus.Created && data.Title !== 'TBD' && this.global.currentUser.isCDAdmin && !this.readOnly },
       { label: 'Mark as valid CD', title: 'Mark as valid CD', id: 'valid', command: (e) => this.openPopup(e.originalEvent, data), visible: data.Status === this.globalConstant.cdStatus.ValidationPending && this.global.currentUser.isCDAdmin && !this.readOnly },
       { label: 'Mark as invalid CD', title: 'Mark as invalid CD', id: 'invalid', command: (e) => this.openPopup(e.originalEvent, data), visible: data.Status === this.globalConstant.cdStatus.ValidationPending && this.global.currentUser.isCDAdmin && !this.readOnly },
       { label: 'Reject and send for correction', title: 'Reject and send for correction', id: 'reject', command: (e) => this.openPopup(e.originalEvent, data), visible: data.Status === this.globalConstant.cdStatus.ValidationPending && this.global.currentUser.isCDAdmin && !this.readOnly },
-      { label: 'View Comments', title: 'View Comments', id: 'viewComments', command: (e) => this.openPopup(e.originalEvent, data), visible: data.Status !== this.globalConstant.cdStatus.Created && data.Status !== this.globalConstant.cdStatus.Deleted }
+      { label: 'View Comments', title: 'View Comments', id: 'viewComments', command: (e) => this.openPopup(e.originalEvent, data), visible: (data.Status !== this.globalConstant.cdStatus.Created && data.Status !== this.globalConstant.cdStatus.Deleted) || data.SurveyResponse ? true : false }
     ];
   }
 
