@@ -228,7 +228,6 @@ export class CdsComponent implements OnInit, AfterViewChecked, DoCheck {
    * @param arrayItems -  array of CD Items
    */
   bindTable(arrayItems) {
-    debugger
     this.CDRows = [];
     arrayItems.forEach(async element => {
       this.CDRows.push({

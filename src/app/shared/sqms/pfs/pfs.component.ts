@@ -192,7 +192,6 @@ export class PfsComponent implements OnInit, AfterViewChecked {
    * @param arrayItems -  array of PF Items
    */
   bindTable(arrayItems) {
-    debugger
     this.CFRows = [];
     arrayItems.forEach(async element => {
       this.CFRows.push({

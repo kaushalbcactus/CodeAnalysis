@@ -153,7 +153,6 @@ export class CddetailsComponent implements OnInit {
    * @param content-cd row
    */
   setQCObject(content, codeDetails) {
-    debugger;
     this.allResources = content.allResources;
     this.qc.qcID = '' + content.ID;
     this.qc.projectCode = content.Title;
