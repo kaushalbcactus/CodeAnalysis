@@ -1,4 +1,4 @@
-<div class="pfTable">
+<div class="pfTable" style="margin-bottom: 50px;">
     <p-table #cfp id="pfTable" width="100%" [columns]="CFColumns" [value]="CFRows" exportFilename="Client Positive Feedback" [hidden]="hideTable">
         <ng-template pTemplate="header" let-columns>
             <tr>
@@ -47,7 +47,7 @@
                         <div style="float: right">
                             <p-menu #menu [style]="{'width': '20em'}" [model]="items" [popup]="true" (clickOutside)="clickout($event)">
                             </p-menu>
-                            <i class="pi pi-ellipsis-v" *ngIf="rowData['Status'] === 'Accepted'" style="font-size:2em;top: 100px !important;cursor: pointer;" (click)="menu.toggle($event);openMenuPopup(rowData)"></i>
+                            <i class="pi pi-ellipsis-v" *ngIf="rowData['Status'] === 'Accepted' || rowData.SurveyResponse" style="font-size:2em;top: 100px !important;cursor: pointer;" (click)="menu.toggle($event);openMenuPopup(rowData)"></i>
                         </div>
                     </ng-container>
                 </td>
@@ -66,3 +66,13 @@
     <div id="mainLoader"></div>
     <div id="mainLoaderText">Loading...</div>
 </div>
+
+
+
+<p-dialog [(visible)]="viewComments" [modal]="true" [style]="{width: '550px', minWidth: '200px'}">
+    <p-header>
+        Client Comments
+    </p-header>
+    {{comments}}
+
+</p-dialog>

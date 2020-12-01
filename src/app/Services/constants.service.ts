@@ -372,6 +372,13 @@ export class ConstantsService {
       type: "SP.Data.RuleParametersCTListItem",
       contentTypeId: "0x010080C9A0031AB9AF49B3726642F1BF810600BF72DE562CCD1447BCE552EFF0A4F06B",
     },
+
+    SurveyResponse: {
+      name: "SurveyResponse",
+      type: "SP.Data.SurveyResponseListItem",
+      contentTypeId: "",
+    },
+
   };
 
   public projectStatus = {

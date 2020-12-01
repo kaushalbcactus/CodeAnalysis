@@ -41,7 +41,7 @@
                         {{rowData[col.field] | date: 'MMM d, yyyy'}}
                     </ng-container>
                     <ng-container *ngIf="col.field == 'SentBy'">
-                        {{rowData[col.field]}}
+                        <span style="word-break: break-all;">  {{rowData[col.field]}} </span>
                     </ng-container>
                     <ng-container *ngIf="col.field == 'Title'">
                         <a [href]="rowData['FullUrl']" download>{{rowData[col.field]}}</a>
@@ -49,7 +49,8 @@
                     <ng-container *ngIf="col.field == ''">
                         <div style="float: right">
                             <p-menu #menu [style]="{'width': '20em'}" [model]="items" [popup]="true"></p-menu>
-                            <i (clickOutside)="clickout($event)" class="pi pi-ellipsis-v"  *ngIf="rowData['Status'] !== 'Deleted'" [hidden]="readOnly && rowData['Status'] === 'Created'" style="font-size:2em;top: 100px !important;cursor: pointer;" (click)="openMenuPopup(rowData,menu); menu.show($event);"></i>
+                            <i (clickOutside)="clickout($event)" class="pi pi-ellipsis-v"  *ngIf="rowData['Status'] !== 'Deleted' || rowData.SurveyResponse" [hidden]="readOnly && rowData['Status'] === 'Created' && !rowData.SurveyResponse" style="font-size:2em;top: 100px !important;cursor: pointer;"
+                                (click)="openMenuPopup(rowData,menu); menu.show($event);"></i>
                         </div>
                     </ng-container>
                 </td>

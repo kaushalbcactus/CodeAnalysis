@@ -228,8 +228,9 @@ export class CdsComponent implements OnInit, AfterViewChecked, DoCheck {
    * @param arrayItems -  array of CD Items
    */
   bindTable(arrayItems) {
+    debugger
     this.CDRows = [];
-    arrayItems.forEach(element => {
+    arrayItems.forEach(async element => {
       this.CDRows.push({
         ASD: element.ASD,
         CS: element.CS,
@@ -252,7 +253,7 @@ export class CdsComponent implements OnInit, AfterViewChecked, DoCheck {
         ID: element.ID,
         Title: element.Title,
         SentDate: element.SentDate ? new Date(this.datepipe.transform(element.SentDate, 'MMM d, yyyy')) : '',
-        SentBy: element.SentBy.Title ? element.SentBy.Title : '',
+        SentBy:  element.SurveyResponse.ID  ?  await this.getNameFromPOC(element.EmailAddress)    : element.SentBy.Title ? element.SentBy.Title : '',
         Status: element.Status ? element.Status : '',
         Accountable: element.CategoryST ? element.CategoryST : '',
         SeverityLevel: element.SeverityLevel ? element.SeverityLevel : '',
@@ -317,7 +318,6 @@ export class CdsComponent implements OnInit, AfterViewChecked, DoCheck {
   }
 
   openMenuPopup(data, popUpData) {
-    debugger
     this.items = [
       { label: 'Update and close CD', title: 'Update and close CD', id: 'close', command: (e) => this.openPopup(e.originalEvent, data), visible: ((data.Status === this.globalConstant.cdStatus.Created && data.Title !== 'TBD') || data.Status === this.globalConstant.cdStatus.Rejected) && (data.isLoggedInASD || this.global.currentUser.isCDAdmin) && !this.readOnly },
       { label: 'Delete CD', title: 'Delete CD', id: 'delete', command: (e) => this.openPopup(e.originalEvent, data), visible: data.Status === this.globalConstant.cdStatus.Created && data.Title !== 'TBD' && this.global.currentUser.isCDAdmin && !this.readOnly },
@@ -375,18 +375,32 @@ export class CdsComponent implements OnInit, AfterViewChecked, DoCheck {
     }
   }
 
-  openPopup(event, data) {
+  async openPopup(event, data) {
+
+    const actionClicked = event.currentTarget.id;
+    const actionClickedTitle = event.currentTarget.title; 
+    if(data.SurveyResponse && event.currentTarget.id === 'viewComments')
+    {
+      const getSurveyResInfo = Object.assign({}, this.qmsConstant.ClientFeedback.GET_SURVEYRESPONSE_BY_ID);
+      getSurveyResInfo.filter = getSurveyResInfo.filter.replace(/{{ID}}/gi,
+        data.SurveyResponse);
+      this.common.SetNewrelic('cds', 'shared-module', 'getSurveyResInfo');
+      const results = await this.spService.readItems(this.constants.listNames.SurveyResponse.name, getSurveyResInfo);
+
+      data.ClientComments = results && results.length > 0 ? results[0].CommentsMT : '';
+    }
+   
     const ref = this.dialogService.open(CddetailsComponent, {
       data: {
         ...data,
         allResources: this.common.sharedObject.allResources,
-        actionClicked: event.currentTarget.id,
-        actionClickedTitle: event.currentTarget.title
+        actionClicked: actionClicked,
+        actionClickedTitle: actionClickedTitle
       },
-      width: "60vw",
-      header: event.currentTarget.title,
-      contentStyle: { "max-height": "150vh", "overflow-y": "auto" },
-      closable: true
+      width: "75vw",
+      header: actionClickedTitle,
+      contentStyle: { "max-height": "82vh", "overflow-y": "auto" },
+      closable: false
     });
     ref.onClose.subscribe((qcObj) => {
       if (qcObj.action !== 'Cancel') {
@@ -394,5 +408,20 @@ export class CdsComponent implements OnInit, AfterViewChecked, DoCheck {
         this.common.showToastrMessage(qcObj.msgType, qcObj.msg, false);
       }
     });
+  }
+
+  async getNameFromPOC(email){
+
+    let response = email;
+    const getPOCInfo = Object.assign({}, this.qmsConstant.ClientFeedback.GET_POC_By_Email);
+    getPOCInfo.filter = getPOCInfo.filter.replace(/{{emailaddress}}/gi,
+      email);
+    this.common.SetNewrelic('cds', 'shared-module', 'getPOCinfo');
+    const results = await this.spService.readItems(this.constants.listNames.ProjectContacts.name, getPOCInfo);
+
+    if(results && results.length > 0 ){
+       response = results[0].FName + ' ' + results[0].LName;
+    }
+    return response;
   }
 }

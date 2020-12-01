@@ -50,6 +50,7 @@ export class CddetailsComponent implements OnInit {
     paComments: '',
     rejectionComments: '',
     newRejectionComments: '',
+    clientComments :'',
     isActive: '',
     ASD: {
       results: []
@@ -108,6 +109,7 @@ export class CddetailsComponent implements OnInit {
   public csRes = [];
   public deliveryAccess = [];
   public deliveryOwner = [];
+  disableSegregation: boolean = false;
   constructor(private globalConstant: ConstantsService, private spService: SPOperationService,
     private global: GlobalService,
     private qmsConstant: QMSConstantsService,
@@ -151,6 +153,7 @@ export class CddetailsComponent implements OnInit {
    * @param content-cd row
    */
   setQCObject(content, codeDetails) {
+    debugger;
     this.allResources = content.allResources;
     this.qc.qcID = '' + content.ID;
     this.qc.projectCode = content.Title;
@@ -166,6 +169,7 @@ export class CddetailsComponent implements OnInit {
     this.qc.caComments = content.PreventiveActions ? content.PreventiveActions : '';
     this.qc.otherResources = content.Resources.results ? content.Resources.results : [];
     this.qc.rejectionComments = content.RejectionComments ? content.RejectionComments : '';
+    this.qc.clientComments = content.ClientComments;
     this.qc.deliveryLevel2 = this.getResourceEmail(content.ASD);
     this.qc.deliveryLevel1 = this.getResourceEmail(content.TL);
     this.qc.cm = this.getResourceEmail(content.CS);
@@ -180,6 +184,9 @@ export class CddetailsComponent implements OnInit {
       this.qc.cm = codeDetails.CMLevel1 && codeDetails.CMLevel1.results ?
         this.getResourceEmail([...codeDetails.CMLevel1.results, ...[codeDetails.CMLevel2]]) : this.qc.cm;
     }
+
+    content.Segregation = content.SurveyResponse ? 'External' : null;
+    this.disableSegregation = content.SurveyResponse ? true : false;
     this.qc.selectedSegregation = content.Segregation ? content.Segregation : null;
     this.qc.allDeliveryResources = codeDetails.AllDeliveryResources && codeDetails.AllDeliveryResources.results ?
       this.getResourceEmail(codeDetails.AllDeliveryResources.results) : this.qc.allDeliveryResources;

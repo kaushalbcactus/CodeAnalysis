@@ -19,6 +19,8 @@ export class PfsComponent implements OnInit, AfterViewChecked {
   @Input() filterObj;
   @Input() parentComponent;
   isOptionFilter: boolean;
+  viewComments: boolean = false;
+  comments: any = null;
   constructor(
     private globalConstant: ConstantsService,
     private global: GlobalService,
@@ -105,8 +107,6 @@ export class PfsComponent implements OnInit, AfterViewChecked {
    * Get positive feedback items from POsitiveFeedbacks list
    */
   protected async getPFItems(filterObj?): Promise<[]> {
-
-    debugger
     const pfComponent = JSON.parse(JSON.stringify(this.qmsConstant.ClientFeedback.PositiveFeedbackComponent));
     this.commonService.SetNewrelic('QMS', 'cfpositive-feedback', 'getGroupInfo');
     const result = await this.spService.getGroupInfo(this.globalConstant.Groups.PFAdmin);
@@ -192,9 +192,9 @@ export class PfsComponent implements OnInit, AfterViewChecked {
    * @param arrayItems -  array of PF Items
    */
   bindTable(arrayItems) {
-debugger;
+    debugger
     this.CFRows = [];
-    arrayItems.forEach(element => {
+    arrayItems.forEach(async element => {
       this.CFRows.push({
         DeliveryLeads: element.DeliveryLeads,
         FileID: element.FileID,
@@ -207,7 +207,7 @@ debugger;
         SentDate: element.SentDate ? new Date(this.datepipe.transform(element.SentDate, 'MMM d, yyyy')) : '',
         Title: element.Title ? element.Title : '',
         AssignedTo: element.AssignedTo ? element.AssignedTo : '',
-        SentBy: element.SentBy.Title,
+        SentBy:  element.SurveyResponse.ID  ?  await this.getNameFromPOC(element.EmailAddress)    : element.SentBy.Title ? element.SentBy.Title : '',
         Resources: element.resources,
         FileUrl: element.FileURL,
         IsActive: element.IsActiveCH,
@@ -258,8 +258,28 @@ debugger;
 
   openMenuPopup(data) {
     this.items = [
-      { label: 'Reject', title: 'Reject', id: 'reject', command: (e) => this.rejectPF(data), visible: data.Status === this.globalConstant.pfStatus.Accepted && (data.isLoggedInDeliveryLead || this.global.currentUser.isPFAdmin) }
+      { label: 'Reject', title: 'Reject', id: 'reject', command: (e) => this.rejectPF(data), visible: data.Status === this.globalConstant.pfStatus.Accepted && (data.isLoggedInDeliveryLead || this.global.currentUser.isPFAdmin) },
+      { label: 'View Comments', title: 'View Comments', id: 'viewComments', command: (e) => this.showComments(data), visible: data.SurveyResponse ? true : false }
+
     ];
+  }
+
+  async showComments(data){
+
+    const getSurveyResInfo = Object.assign({}, this.qmsConstant.ClientFeedback.GET_SURVEYRESPONSE_BY_ID);
+    getSurveyResInfo.filter = getSurveyResInfo.filter.replace(/{{ID}}/gi,
+      data.SurveyResponse);
+    this.common.SetNewrelic('pfs', 'shared-module', 'getSurveyResInfo');
+    const results = await this.spService.readItems(this.constants.listNames.SurveyResponse.name, getSurveyResInfo);
+
+    if(results && results.length > 0 ){
+      this.comments = results[0].CommentsMT;
+    }
+    this.viewComments = this.comments ? true : false;
+
+    if(!this.viewComments){
+      this.commonService.showToastrMessage(this.constants.MessageType.info,'Comments not added.',false);
+    }
   }
 
   downloadExcel(cfp) {
@@ -342,4 +362,22 @@ debugger;
     this.commonService.SetNewrelic('QMS', 'ClientFeedBack-cfposition', 'updatepf');
     this.spService.updateItem(this.globalConstant.listNames.PositiveFeedbacks.name, pfID, pfDetails);
   }
+
+
+  async getNameFromPOC(email){
+
+    let response = email;
+    const getPOCInfo = Object.assign({}, this.qmsConstant.ClientFeedback.GET_POC_By_Email);
+    getPOCInfo.filter = getPOCInfo.filter.replace(/{{emailaddress}}/gi,
+      email);
+    this.common.SetNewrelic('pfs', 'shared-module', 'getPOCinfo');
+    const results = await this.spService.readItems(this.constants.listNames.ProjectContacts.name, getPOCInfo);
+
+    if(results && results.length > 0 ){
+       response = results[0].FName + ' ' + results[0].LName;
+    }
+    return response;
+  }
+
+
 }

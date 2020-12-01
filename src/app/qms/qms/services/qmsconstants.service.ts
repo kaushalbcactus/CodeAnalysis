@@ -308,6 +308,19 @@ export class QMSConstantsService {
         top: '4900',
         orderby: 'SentDate desc'
       }
+    },
+
+    GET_POC_By_Email: {
+      select: "ID,FName,LName,FullNameCC",
+      filter: "Status eq 'Active' and EmailAddress eq '{{emailaddress}}'",
+      orderby: "FName,LName asc",
+      top: 4900,
+    },
+
+    GET_SURVEYRESPONSE_BY_ID:{
+      select: "ID,CommentsMT,Title,IsActiveCH",
+      filter: "ID eq {{ID}} and IsActiveCH eq 'Yes'",
+      top: 4900,
     }
   };
 

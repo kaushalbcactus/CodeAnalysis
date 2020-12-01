@@ -1,53 +1,65 @@
 ::ng-deep .cdPopupTable {
-  width: 50%;
-  float: left;
+    width: 50%;
+    float: left;
 }
+
 ::ng-deep .closePopupTable {
-  width: 50%;
+    width: 50%;
 }
+
 ::ng-deep .deletePopup,
 .tagPopup {
-  float: left;
+    float: left;
 }
+
 ::ng-deep .viewCommentsPopupTable {
-  width: 100%;
+    width: 100%;
 }
 
 ::ng-deep .mandatory {
-  float: left;
-  color: darkred !important;
-  padding-left: 6px !important;
-  margin-right: 20px;
+    float: left;
+    color: darkred !important;
+    padding-left: 6px !important;
+    margin-right: 20px;
 }
 
 ::ng-deep .tagPopup .ui-dropdown {
-  width: 11.5em !important;
-}
-::ng-deep .cdPopupTable td {
-  padding: 15px;
-}
-::ng-deep .ellipsis {
-  max-width: 100px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+    width: 11.5em !important;
 }
 
+::ng-deep .cdPopupTable td {
+    padding: 15px;
+}
+
+::ng-deep .ellipsis {
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* 
 ::ng-deep .savebtn {
-  background-color: #b71c1c !important;
-  padding: 6px 30px !important;
-  color: #fff !important;
-  border-radius: 4px !important;
-  border: none !important;
-  font-size: 16px !important;
-  margin: 0px 6px !important;
-  cursor: pointer !important;
-}
+    background-color: #b71c1c !important;
+    padding: 6px 30px !important;
+    color: #fff !important;
+    border-radius: 4px !important;
+    border: none !important;
+    font-size: 16px !important;
+    margin: 0px 6px !important;
+    cursor: pointer !important;
+} */
+
+
+/* 
 ::ng-deep .savebtn:hover {
-  background-color: #d92121 !important;
-  transition: 0.3s ease-in !important;
-}
-::ng-deep .cancelbtn {
+    background-color: #d92121 !important;
+    transition: 0.3s ease-in !important;
+} */
+
+
+/* ::ng-deep .cancelbtn {
   background-color: #fafafa !important;
   padding: 6px 30px !important;
   color: #222222 !important;
@@ -60,195 +72,224 @@
 ::ng-deep .cancelbtn:hover {
   background-color: #d7d7d7;
   transition: 0.3s ease-in;
-}
+} */
+
 ::ng-deep .full-width {
-  width: 100%;
+    width: 100%;
 }
+
+
 /* ::ng-deep .closePopupTable .textArea {
   padding-bottom: 24px;
 } */
+
 ::ng-deep #identifyAccountableTable .ui-dropdown {
-  width: 95%;
-  float: left;
-  min-width: 10em !important;
+    width: 95%;
+    float: left;
+    min-width: 10em !important;
 }
+
 ::ng-deep .deletePopup .ui-dropdown,
 ::ng-deep .tagPopup .ui-dropdown {
-  width: 40%;
-  float: left;
-  min-width: 10em !important;
+    width: 40%;
+    float: left;
+    min-width: 10em !important;
 }
+
 ::ng-deep #identifyAccountableTable .mandatory,
 .deletePopup .mandatory,
 .tagPopup .mandatory {
-  padding-left: 2%;
-  color: red;
+    padding-left: 2%;
+    color: red;
 }
 
 ::ng-deep .closePopupTable .mandatory {
-  color: red;
-  font-size: small;
-  font-style: italic;
+    color: red;
+    font-size: small;
+    font-style: italic;
 }
+
 ::ng-deep .tagGroup {
-  padding-bottom: 20px;
+    padding-bottom: 20px;
 }
 
 ::ng-deep #resourceLoader {
-  border: 2px solid #f3f3f3;
-  border-radius: 50%;
-  border-top: 2px solid red;
-  border-bottom: 2px solid red;
-  width: 25px;
-  height: 25px;
-  -webkit-animation: spin 2s linear infinite;
-  animation: spin 2s linear infinite;
-  margin: 0 auto;
-  /* position: relative; */
-  top: 50%;
-  -webkit-transform: translateY(-50%);
-  transform: translateY(-50%);
-  margin-top: 1%;
-  bottom: 22px;
-  right: 104px;
+    border: 2px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 2px solid red;
+    border-bottom: 2px solid red;
+    width: 25px;
+    height: 25px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    margin: 0 auto;
+    /* position: relative; */
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+    margin-top: 1%;
+    bottom: 22px;
+    right: 104px;
 }
 
 .footer {
-  background-color: #ffffff;
-  color: #333333;
-  padding: 0.571em 1em;
-  margin: 0;
-  text-align: right;
-  position: relative;
-  top: -1px;
+    background-color: #ffffff;
+    color: #333333;
+    padding: 0.571em 1em;
+    margin: 0;
+    text-align: right;
+    position: relative;
+    top: -1px;
 }
+
 ::ng-deep .popupTextArea {
-  width: 95% !important;
+    width: 95% !important;
 }
+
 ::ng-deep .wordCount {
-  font-size: x-small !important;
+    font-size: x-small !important;
 }
+
 .rejectionComments {
-  padding-bottom: 10px;
+    padding-bottom: 10px;
 }
 
 #cdLoader {
-  border: 10px solid #f3f3f3;
-  border-radius: 50%;
-  border-top: 10px solid red;
-  border-bottom: 10px solid red;
-  width: 100px;
-  height: 100px;
-  -webkit-animation: spin 2s linear infinite;
-  animation: spin 2s linear infinite;
-  margin: 0 auto;
-  position: relative;
-  top: 27%;
-  transform: translateY(-50%);
-  margin-top: 1%;
+    border: 10px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 10px solid red;
+    border-bottom: 10px solid red;
+    width: 100px;
+    height: 100px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    margin: 0 auto;
+    position: relative;
+    top: 27%;
+    transform: translateY(-50%);
+    margin-top: 1%;
 }
 
 #cdLoaderText {
-  -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
-  -o-animation: loading-text-opacity 2s linear 0s infinite normal;
-  -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
-  animation: loading-text-opacity 2s linear 0s infinite normal;
-  color: black;
-  font-family: "Helvetica Neue, " Helvetica ", " "arial";
-  font-size: 10px;
-  font-weight: bold;
-  opacity: 0.5;
-  text-align: center;
-  text-transform: uppercase;
+    -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
+    -o-animation: loading-text-opacity 2s linear 0s infinite normal;
+    -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
+    animation: loading-text-opacity 2s linear 0s infinite normal;
+    color: black;
+    font-family: "Helvetica Neue, " Helvetica ", " "arial";
+    font-size: 10px;
+    font-weight: bold;
+    opacity: 0.5;
+    text-align: center;
+    text-transform: uppercase;
 }
+
 @-webkit-keyframes spin {
-  0% {
-    -webkit-transform: rotate(0deg);
-  }
-  100% {
-    -webkit-transform: rotate(360deg);
-  }
+    0% {
+        -webkit-transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
 }
 
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-.hint-spacer {
-  flex: 1 0 1em;
-}
-.hint-label {
-  color: rgba(0, 0, 0, 0.54);
-  float: left;
-  font-size: 10.5px;
-  font-weight: 700;
-  padding-bottom: 13px;
-}
-.wordCount {
-  float: right;
-  font-size: 10.5px;
-  font-weight: 400;
-}
-.hint {
-  width: 95%;
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
-.searchProject > i {
-  right: 0.5rem;
-  color: #6c757d;
-  position: absolute;
-  margin-top: -0.5rem;
-  top: 50%;
+.hint-spacer {
+    flex: 1 0 1em;
 }
+
+.hint-label {
+    color: rgba(0, 0, 0, 0.54);
+    float: left;
+    font-size: 10.5px;
+    font-weight: 700;
+    padding-bottom: 13px;
+}
+
+.wordCount {
+    float: right;
+    font-size: 10.5px;
+    font-weight: 400;
+}
+
+.hint {
+    width: 95%;
+}
+
+.searchProject>i {
+    right: 0.5rem;
+    color: #6c757d;
+    position: absolute;
+    margin-top: -0.5rem;
+    top: 50%;
+}
+
 .prjNotFound {
-  color: red !important;
+    color: red !important;
 }
+
 .prjFound {
-  color: green;
+    color: green;
 }
+
 .orText {
-  margin-right: 20px;
+    margin-right: 20px;
 }
+
 .searchProject {
-  position: relative;
-  display: inline-block;
+    position: relative;
+    display: inline-block;
 }
+
 .search-icon {
-  cursor: pointer;
+    cursor: pointer;
 }
+
 .search-input {
-  width: 17.5em;
+    width: 17.5em;
 }
+
 .prjFound-search {
-  border-color: green;
-  border-style: double;
+    border-color: green;
+    border-style: double;
 }
+
 .prjNotFound-search {
-  border-color: red;
-  border-style: double;
+    border-color: red;
+    border-style: double;
 }
+
 .pi-check-circle,
 .pi-times-circle {
-  vertical-align: sub;
+    vertical-align: sub;
 }
+
 .floatLeft {
-  float: left;
+    float: left;
 }
+
 .csdel-dropdown {
-  margin-right: 20px;
+    margin-right: 20px;
 }
+
 .cursor {
-  cursor: pointer;
+    cursor: pointer;
 }
+
 .popupResourceLoader {
-  display: inline-block;
-  vertical-align: -webkit-baseline-middle;
+    display: inline-block;
+    vertical-align: -webkit-baseline-middle;
 }
+
 .mandatory-text {
-  color: #8b0000 !important;
-  padding-left: 6px !important;
+    color: #8b0000 !important;
+    padding-left: 6px !important;
 }
