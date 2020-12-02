@@ -1,17 +1,17 @@
-import { Injectable } from '@angular/core';
-import { PmconstantService } from './pmconstant.service';
-import { PMObjectService } from './pmobject.service';
-import { SPOperationService } from 'src/app/Services/spoperation.service';
-import { ConstantsService } from 'src/app/Services/constants.service';
-import { CommonService } from 'src/app/Services/common.service';
-import { GlobalService } from 'src/app/Services/global.service';
-import { Router } from '@angular/router';
-import { DataService } from 'src/app/Services/data.service';
-import { DialogService } from 'primeng';
+import { Injectable } from "@angular/core";
+import { PmconstantService } from "./pmconstant.service";
+import { PMObjectService } from "./pmobject.service";
+import { SPOperationService } from "src/app/Services/spoperation.service";
+import { ConstantsService } from "src/app/Services/constants.service";
+import { CommonService } from "src/app/Services/common.service";
+import { GlobalService } from "src/app/Services/global.service";
+import { Router } from "@angular/router";
+import { DataService } from "src/app/Services/data.service";
+import { DialogService } from "primeng";
 
 declare var $;
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class PMCommonService {
   yearRange;
@@ -25,39 +25,59 @@ export class PMCommonService {
     private router: Router,
     private dialogService: DialogService,
     private dataService: DataService
-  ) {
-  }
+  ) {}
   validateForm(index) {
     return false;
   }
   getResourceByMatrix(filterResource, deliverableType) {
-    const clientLegalEntity = this.pmObject.addProject.ProjectAttributes.ClientLegalEntity;
+    const clientLegalEntity = this.pmObject.addProject.ProjectAttributes
+      .ClientLegalEntity;
     const ta = this.pmObject.addProject.ProjectAttributes.TherapeuticArea;
     const deliverable = deliverableType;
     const resources = filterResource;
     const filteredResources = [];
     const checkSkillLevel = true;
     if (resources && resources.length) {
-      resources.forEach(element => {
-        const deliveryExcUsers = element.DeliverableExclusion.results.length > 0 ?
-          // tslint:disable-next-line:only-arrow-functions
-          element.DeliverableExclusion.results.filter(objt => objt.Title === deliverable) : ['IncludeAll'];
+      resources.forEach((element) => {
+        const deliveryExcUsers =
+          element.DeliverableExclusion.results.length > 0
+            ? // tslint:disable-next-line:only-arrow-functions
+              element.DeliverableExclusion.results.filter(
+                (objt) => objt.Title === deliverable
+              )
+            : ["IncludeAll"];
         // tslint:disable-next-line:only-arrow-functions
-        const taExcUsers = element.TAExclusion.results.length > 0 ?
-          element.TAExclusion.results.filter(objt => objt.Title === ta) : ['IncludeAll'];
+        const taExcUsers =
+          element.TAExclusion.results.length > 0
+            ? element.TAExclusion.results.filter((objt) => objt.Title === ta)
+            : ["IncludeAll"];
         if (deliveryExcUsers.length > 0 && taExcUsers.length > 0) {
           if (checkSkillLevel) {
-            const recomendedUserByDelv = element.Deliverables.results.length > 0 ?
-              element.Deliverables.results.filter(objt => objt.Title === deliverable) : [];
-            const recomendedUserByTa = element.TA.results.length > 0 ?
-              element.TA.results.filter(objt => objt.Title === ta) : [];
-            const recomendedUserByAccount = element.Account.results.length > 0 ?
-              element.Account.results.filter(objt => objt.Title === clientLegalEntity) : [];
-            if (recomendedUserByDelv.length > 0 || recomendedUserByTa.length > 0 || recomendedUserByAccount.length > 0) {
-              element.userType = 'Recomended';
+            const recomendedUserByDelv =
+              element.Deliverables.results.length > 0
+                ? element.Deliverables.results.filter(
+                    (objt) => objt.Title === deliverable
+                  )
+                : [];
+            const recomendedUserByTa =
+              element.TA.results.length > 0
+                ? element.TA.results.filter((objt) => objt.Title === ta)
+                : [];
+            const recomendedUserByAccount =
+              element.Account.results.length > 0
+                ? element.Account.results.filter(
+                    (objt) => objt.Title === clientLegalEntity
+                  )
+                : [];
+            if (
+              recomendedUserByDelv.length > 0 ||
+              recomendedUserByTa.length > 0 ||
+              recomendedUserByAccount.length > 0
+            ) {
+              element.userType = "Recomended";
               filteredResources.push(element);
             } else {
-              element.userType = 'Other';
+              element.userType = "Other";
               filteredResources.push(element);
             }
             element.Title = element.UserNamePG.Title;
@@ -67,34 +87,37 @@ export class PMCommonService {
     }
     return filteredResources;
   }
-  calcBusinessDays(dDate1, dDate2) {         // input given as Date objects
+  calcBusinessDays(dDate1, dDate2) {
+    // input given as Date objects
     // tslint:disable-next-line:one-variable-per-declaration
-    let iWeeks, iDateDiff, iAdjust = 0;
+    let iWeeks,
+      iDateDiff,
+      iAdjust = 0;
     // dDate1 = new Date(dDate1.format('MMM dd, yyyy'));
     // dDate2 = new Date(dDate2.format('MMM dd, yyyy'));
     dDate1 = new Date(dDate1);
     dDate2 = new Date(dDate2);
     if (dDate2 < dDate1) {
       return -1;
-    }                                               // error code if dates transposed
-    let iWeekday1 = dDate1.getDay();                // day of week
+    } // error code if dates transposed
+    let iWeekday1 = dDate1.getDay(); // day of week
     let iWeekday2 = dDate2.getDay();
-    iWeekday1 = (iWeekday1 === 0) ? 7 : iWeekday1;   // change Sunday from 0 to 7
-    iWeekday2 = (iWeekday2 === 0) ? 7 : iWeekday2;
-    if ((iWeekday1 > 5) && (iWeekday2 > 5)) {
-      iAdjust = 1;  // adjustment if both days on weekend
+    iWeekday1 = iWeekday1 === 0 ? 7 : iWeekday1; // change Sunday from 0 to 7
+    iWeekday2 = iWeekday2 === 0 ? 7 : iWeekday2;
+    if (iWeekday1 > 5 && iWeekday2 > 5) {
+      iAdjust = 1; // adjustment if both days on weekend
     }
-    iWeekday1 = (iWeekday1 > 5) ? 5 : iWeekday1;    // only count weekdays
-    iWeekday2 = (iWeekday2 > 5) ? 5 : iWeekday2;
+    iWeekday1 = iWeekday1 > 5 ? 5 : iWeekday1; // only count weekdays
+    iWeekday2 = iWeekday2 > 5 ? 5 : iWeekday2;
     // calculate differnece in weeks (1000mS * 60sec * 60min * 24hrs * 7 days = 604800000)
     iWeeks = Math.floor((dDate2.getTime() - dDate1.getTime()) / 604800000);
     if (iWeekday1 <= iWeekday2) {
-      iDateDiff = (iWeeks * 5) + (iWeekday2 - iWeekday1);
+      iDateDiff = iWeeks * 5 + (iWeekday2 - iWeekday1);
     } else {
-      iDateDiff = ((iWeeks + 1) * 5) - (iWeekday1 - iWeekday2);
+      iDateDiff = (iWeeks + 1) * 5 - (iWeekday1 - iWeekday2);
     }
-    iDateDiff -= iAdjust;                            // take into account both days on weekend
-    return (iDateDiff + 1);                         // add 1 because dates are inclusive
+    iDateDiff -= iAdjust; // take into account both days on weekend
+    return iDateDiff + 1; // add 1 because dates are inclusive
   }
   addTime(date, h, m) {
     const checkDate = date.jsdate;
@@ -105,13 +128,13 @@ export class PMCommonService {
     }
     let tempM = m;
     if (!tempM) {
-      tempM = '0';
-    } else if (tempM && tempM === '25') {
-      tempM = '15';
-    } else if (tempM && tempM === '5') {
-      tempM = '30';
-    } else if (tempM && tempM === '75') {
-      tempM = '45';
+      tempM = "0";
+    } else if (tempM && tempM === "25") {
+      tempM = "15";
+    } else if (tempM && tempM === "5") {
+      tempM = "30";
+    } else if (tempM && tempM === "75") {
+      tempM = "45";
     }
     // tslint:disable-next-line:radix
     h = parseInt(h);
@@ -120,19 +143,30 @@ export class PMCommonService {
     const totalHrs = date.getHours() + h;
     if (totalHrs > this.pmConstant.task.PER_DAY_MAX_HOURS) {
       // tslint:disable-next-line:max-line-length
-      const excessHrs = date.getMinutes() > 0 ? totalHrs - this.pmConstant.task.PER_DAY_MAX_HOURS - 1 : totalHrs - this.pmConstant.task.PER_DAY_MAX_HOURS;
-      const excessMins = date.getMinutes() > 0 ? 0 + m + date.getMinutes() : 0 + m;
-      date.setDate(date.getDay() === 6 ? date.getDate() + 2 : date.getDate() + 1);
+      const excessHrs =
+        date.getMinutes() > 0
+          ? totalHrs - this.pmConstant.task.PER_DAY_MAX_HOURS - 1
+          : totalHrs - this.pmConstant.task.PER_DAY_MAX_HOURS;
+      const excessMins =
+        date.getMinutes() > 0 ? 0 + m + date.getMinutes() : 0 + m;
+      date.setDate(
+        date.getDay() === 6 ? date.getDate() + 2 : date.getDate() + 1
+      );
       date.setHours(9 + excessHrs);
       date.setMinutes(excessMins);
-      date.setDate(date.getDay() === 6 ? date.getDate() + 2 : date.getDate() + 0);
+      date.setDate(
+        date.getDay() === 6 ? date.getDate() + 2 : date.getDate() + 0
+      );
     } else {
       date.setHours(date.getHours() + h);
       date.setMinutes(date.getMinutes() + m);
     }
     let newHours = 0;
     let newMin = 0;
-    if (date.getHours() >= this.pmConstant.task.PER_DAY_MAX_END_HOURS && date.getMinutes() > 0) {
+    if (
+      date.getHours() >= this.pmConstant.task.PER_DAY_MAX_END_HOURS &&
+      date.getMinutes() > 0
+    ) {
       newHours = date.getHours() - this.pmConstant.task.PER_DAY_MAX_END_HOURS;
       newMin = date.getMinutes();
       if (date.getDay() === 5) {
@@ -152,57 +186,70 @@ export class PMCommonService {
   calcTimeForDifferentTimeZone(date, prevOffset, currentOffset) {
     date = new Date(date);
     const prevTimezone = parseFloat(prevOffset) * 60 * -1;
-    const utc = date.getTime() + (prevTimezone * 60000);
+    const utc = date.getTime() + prevTimezone * 60000;
     // create new Date object for different city
     // using supplied offset
-    const newDate = new Date(utc + (3600000 * currentOffset));
+    const newDate = new Date(utc + 3600000 * currentOffset);
     // return time as a string newDate.toLocaleString()
     return newDate;
   }
   convertToHrsMins(hours) {
     if (hours != null) {
-      if (hours.indexOf(':') > -1 || hours.indexOf('.') > -1) {
+      if (hours.indexOf(":") > -1 || hours.indexOf(".") > -1) {
         hours = parseFloat(hours).toFixed(2).toString();
-        const hrs = hours.indexOf(':') > -1 ? hours.split(':')[0] : hours.split('.')[0];
-        let mins = hours.indexOf(':') > -1 ? hours.split(':')[1] : hours.split('.')[1];
+        const hrs =
+          hours.indexOf(":") > -1 ? hours.split(":")[0] : hours.split(".")[0];
+        let mins =
+          hours.indexOf(":") > -1 ? hours.split(":")[1] : hours.split(".")[1];
         mins = mins * (60 / 100);
-        mins = mins < 10 && mins > 0 ? '0' + Math.round(mins) : Math.round(mins);
-        return hrs + ':' + mins;
-      } else if (hours.indexOf('.') === -1 || hours.indexOf(':') === -1) {
-        return hours + ':0';
+        mins =
+          mins < 10 && mins > 0 ? "0" + Math.round(mins) : Math.round(mins);
+        return hrs + ":" + mins;
+      } else if (hours.indexOf(".") === -1 || hours.indexOf(":") === -1) {
+        return hours + ":0";
       }
     } else {
-      return '0:0';
+      return "0:0";
     }
   }
   ajax_addHrsMins(arrayTotalTimeSpent) {
-    let totalTime = '';
+    let totalTime = "";
     let totalHrs: any = 0;
     let totalMins: any = 0;
     for (const i in arrayTotalTimeSpent) {
       if (arrayTotalTimeSpent.hasOwnProperty(i)) {
-        totalHrs = +(totalHrs) + +(arrayTotalTimeSpent[i].timeHrs);
-        totalMins = +(totalMins) + +(arrayTotalTimeSpent[i].timeMins);
+        totalHrs = +totalHrs + +arrayTotalTimeSpent[i].timeHrs;
+        totalMins = +totalMins + +arrayTotalTimeSpent[i].timeMins;
         if (totalMins >= 60) {
           totalHrs++;
           totalMins = totalMins - 60;
         }
       }
     }
-    totalMins = totalMins < 10 ? '0' + totalMins : totalMins;
-    totalTime = totalHrs + ':' + totalMins;
+    totalMins = totalMins < 10 ? "0" + totalMins : totalMins;
+    totalTime = totalHrs + ":" + totalMins;
     return totalTime;
   }
   ajax_subtractHrsMins(elem1, elem2) {
     let result = 0;
     let negative = false;
     let total = 0;
-    elem1 = elem1.indexOf('.') > -1 || elem1.indexOf(':') > -1 ? elem1 : elem1 + '.00';
-    elem2 = elem2.indexOf('.') > -1 || elem1.indexOf(':') > -1 ? elem2 : elem2 + '.00';
-    const totalMinsElem1 = elem1.indexOf('.') > -1 ? +(elem1.split('.')[0]) * 60 + +(elem1.split('.')[1]) :
-      +(elem1.split(':')[0]) * 60 + +(elem1.split(':')[1]);
-    const totalMinsElem2 = elem2.indexOf('.') > -1 ? +(elem2.split('.')[0]) * 60 + +(elem2.split('.')[1]) :
-      +(elem2.split(':')[0]) * 60 + +(elem2.split(':')[1]);
+    elem1 =
+      elem1.indexOf(".") > -1 || elem1.indexOf(":") > -1
+        ? elem1
+        : elem1 + ".00";
+    elem2 =
+      elem2.indexOf(".") > -1 || elem1.indexOf(":") > -1
+        ? elem2
+        : elem2 + ".00";
+    const totalMinsElem1 =
+      elem1.indexOf(".") > -1
+        ? +elem1.split(".")[0] * 60 + +elem1.split(".")[1]
+        : +elem1.split(":")[0] * 60 + +elem1.split(":")[1];
+    const totalMinsElem2 =
+      elem2.indexOf(".") > -1
+        ? +elem2.split(".")[0] * 60 + +elem2.split(".")[1]
+        : +elem2.split(":")[0] * 60 + +elem2.split(":")[1];
     if (totalMinsElem2 > totalMinsElem1) {
       negative = true;
       total = totalMinsElem2 - totalMinsElem1;
@@ -215,14 +262,14 @@ export class PMCommonService {
     } else {
       result = total / 60;
     }
-    return this.convertToHrsMins('' + result);
+    return this.convertToHrsMins("" + result);
   }
   bindGroupDropdown(dropArray) {
     const typeArray = [];
     const recomendedArray = [];
     const OtherArray = [];
     const finalArray = [];
-    dropArray.forEach(element => {
+    dropArray.forEach((element) => {
       switch (element.userType) {
         case this.pmConstant.USERTYPE.TYPE: {
           typeArray.push({ label: element.Title, value: element });
@@ -239,38 +286,60 @@ export class PMCommonService {
       }
     });
     if (typeArray && typeArray.length) {
-      finalArray.push({ label: this.pmConstant.USERTYPE.TYPE, items: typeArray });
+      finalArray.push({
+        label: this.pmConstant.USERTYPE.TYPE,
+        items: typeArray,
+      });
     }
     if (recomendedArray && recomendedArray.length) {
-      finalArray.push({ label: this.pmConstant.USERTYPE.RECOMENDED, items: recomendedArray });
+      finalArray.push({
+        label: this.pmConstant.USERTYPE.RECOMENDED,
+        items: recomendedArray,
+      });
     }
     if (OtherArray && OtherArray.length) {
-      finalArray.push({ label: this.pmConstant.USERTYPE.OTHER, items: OtherArray });
+      finalArray.push({
+        label: this.pmConstant.USERTYPE.OTHER,
+        items: OtherArray,
+      });
     }
     return finalArray;
   }
   toISODateString(dt) {
     try {
-      const tzoffset = (new Date(dt)).getTimezoneOffset() * 60000; // offset in milliseconds
-      const localISOTime = (new Date(new Date(dt).getTime() - tzoffset)).toISOString().slice(0, -5) + 'Z';
+      const tzoffset = new Date(dt).getTimezoneOffset() * 60000; // offset in milliseconds
+      const localISOTime =
+        new Date(new Date(dt).getTime() - tzoffset).toISOString().slice(0, -5) +
+        "Z";
       return localISOTime;
     } catch (err) {
-      return '';
+      return "";
     }
   }
 
   async resolveMain(): Promise<any> {
-    return '';
+    return "";
   }
-
 
   async getUserProperties(): Promise<any> {
     if (this.pmObject.projectContactsItems.length === 0) {
-      this.commonService.SetNewrelic('projectManagment', 'pmcommon', 'getUserInfo');
-      const userProp = await this.spServices.getUserInfo(this.globalObject.currentUser.userId);
+      this.commonService.SetNewrelic(
+        "projectManagment",
+        "pmcommon",
+        "getUserInfo",
+        "GET"
+      );
+      const userProp = await this.spServices.getUserInfo(
+        this.globalObject.currentUser.userId
+      );
       this.pmObject.currLoginInfo = userProp;
-      if (userProp && userProp.Groups && userProp.Groups.results && userProp.Groups.results.length) {
-        userProp.Groups.results.forEach(element => {
+      if (
+        userProp &&
+        userProp.Groups &&
+        userProp.Groups.results &&
+        userProp.Groups.results.length
+      ) {
+        userProp.Groups.results.forEach((element) => {
           switch (element.Title) {
             case this.constant.Groups.MANAGERS:
               this.pmObject.userRights.isMangers = true;
@@ -297,7 +366,7 @@ export class PMCommonService {
       }
       await this.checkUserRole();
     }
-    return '';
+    return "";
   }
   /***
    * This method is used to get all the data based on user rights.
@@ -307,38 +376,62 @@ export class PMCommonService {
     if (arrResults && arrResults.length) {
       this.pmObject.resourceCatItems = arrResults[0].retItems;
       if (this.pmObject.resourceCatItems.length) {
-        if (this.pmObject.resourceCatItems[0].RoleCH === this.pmConstant.resourCatConstant.CMLevel1 ||
-          this.pmObject.resourceCatItems[0].RoleCH === this.pmConstant.resourCatConstant.CMLevel2) {
+        if (
+          this.pmObject.resourceCatItems[0].RoleCH ===
+            this.pmConstant.resourCatConstant.CMLevel1 ||
+          this.pmObject.resourceCatItems[0].RoleCH ===
+            this.pmConstant.resourCatConstant.CMLevel2
+        ) {
           this.pmObject.isUserAllowed = false;
           // this.bindMenuItems();
         }
       }
-      this.pmObject.oProjectCreation.oProjectInfo.billingEntity = arrResults[1].retItems;
+      this.pmObject.oProjectCreation.oProjectInfo.billingEntity =
+        arrResults[1].retItems;
       this.pmObject.oProjectCreation.oProjectInfo.practiceArea = [];
-      arrResults[2].retItems.forEach(element => {
-        this.pmObject.oProjectCreation.oProjectInfo.practiceArea.push({ label: element.Title, value: element.Title });
+      arrResults[2].retItems.forEach((element) => {
+        this.pmObject.oProjectCreation.oProjectInfo.practiceArea.push({
+          label: element.Title,
+          value: element.Title,
+        });
       });
-      this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities = arrResults[3].retItems;
+      this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities =
+        arrResults[3].retItems;
 
       this.pmObject.oProjectCreation.oProjectInfo.currency = [];
-      arrResults[4].retItems.forEach(element => {
-        this.pmObject.oProjectCreation.oProjectInfo.currency.push({ label: element.Title, value: element.Title });
+      arrResults[4].retItems.forEach((element) => {
+        this.pmObject.oProjectCreation.oProjectInfo.currency.push({
+          label: element.Title,
+          value: element.Title,
+        });
       });
       this.pmObject.oProjectCreation.oProjectInfo.molecule = []; // getListItemsByColumn('Molecules', defaultQuery, "Title");
-      arrResults[5].retItems.forEach(element => {
-        this.pmObject.oProjectCreation.oProjectInfo.molecule.push({ label: element.Title, value: element.Title });
+      arrResults[5].retItems.forEach((element) => {
+        this.pmObject.oProjectCreation.oProjectInfo.molecule.push({
+          label: element.Title,
+          value: element.Title,
+        });
       });
       this.pmObject.oProjectCreation.oProjectInfo.projectType = []; // getListItemsByColumn('ProjectType', defaultQuery, "Title");
-      arrResults[6].retItems.forEach(element => {
-        this.pmObject.oProjectCreation.oProjectInfo.projectType.push({ label: element.Title, value: element.Title });
+      arrResults[6].retItems.forEach((element) => {
+        this.pmObject.oProjectCreation.oProjectInfo.projectType.push({
+          label: element.Title,
+          value: element.Title,
+        });
       });
       this.pmObject.oProjectCreation.oProjectInfo.subDeliverable = []; // getListItemsByColumn('SubDeliverables', defaultQuery, "Title");
-      arrResults[7].retItems.forEach(element => {
-        this.pmObject.oProjectCreation.oProjectInfo.subDeliverable.push({ label: element.Title, value: element.Title });
+      arrResults[7].retItems.forEach((element) => {
+        this.pmObject.oProjectCreation.oProjectInfo.subDeliverable.push({
+          label: element.Title,
+          value: element.Title,
+        });
       });
       this.pmObject.oProjectCreation.oProjectInfo.ta = []; // getListItemsByColumn('TA', defaultQuery, "Title");
-      arrResults[8].retItems.forEach(element => {
-        this.pmObject.oProjectCreation.oProjectInfo.ta.push({ label: element.Title, value: element.Title });
+      arrResults[8].retItems.forEach((element) => {
+        this.pmObject.oProjectCreation.oProjectInfo.ta.push({
+          label: element.Title,
+          value: element.Title,
+        });
       });
       if (arrResults[9].retItems && arrResults[9].retItems.length) {
         this.pmObject.oProjectManagement.oResourcesCat = arrResults[9].retItems;
@@ -362,24 +455,36 @@ export class PMCommonService {
     this.pmObject.oProjectCreation.Resources.pubSupport = [];
     this.pmObject.oProjectCreation.Resources.primaryRes = [];
     if (resourcesArray && resourcesArray.length) {
-      resourcesArray.forEach(element => {
+      resourcesArray.forEach((element) => {
         const role = element.RoleCH;
         switch (role) {
           case this.pmConstant.resourCatConstant.CMLevel1:
-            this.pmObject.oProjectCreation.Resources.cmLevel1.push(element.UserNamePG);
+            this.pmObject.oProjectCreation.Resources.cmLevel1.push(
+              element.UserNamePG
+            );
             break;
           case this.pmConstant.resourCatConstant.CMLevel2:
-            this.pmObject.oProjectCreation.Resources.cmLevel2.push(element.UserNamePG);
-            this.pmObject.oProjectCreation.Resources.businessDevelopment.push(element.UserNamePG);
+            this.pmObject.oProjectCreation.Resources.cmLevel2.push(
+              element.UserNamePG
+            );
+            this.pmObject.oProjectCreation.Resources.businessDevelopment.push(
+              element.UserNamePG
+            );
             break;
           case this.pmConstant.resourCatConstant.DELIVERY_LEVEL_1:
-            this.pmObject.oProjectCreation.Resources.deliveryLevel1.push(element.UserNamePG);
+            this.pmObject.oProjectCreation.Resources.deliveryLevel1.push(
+              element.UserNamePG
+            );
             break;
           case this.pmConstant.resourCatConstant.DELIVERY_LEVEL_2:
-            this.pmObject.oProjectCreation.Resources.deliveryLevel2.push(element.UserNamePG);
+            this.pmObject.oProjectCreation.Resources.deliveryLevel2.push(
+              element.UserNamePG
+            );
             break;
           case this.pmConstant.resourCatConstant.BUSINESS_DEVELOPMENT:
-            this.pmObject.oProjectCreation.Resources.businessDevelopment.push(element.UserNamePG);
+            this.pmObject.oProjectCreation.Resources.businessDevelopment.push(
+              element.UserNamePG
+            );
             break;
         }
         // if (element && element.Categories && element.Categories.results && element.Categories.results.length) {
@@ -414,98 +519,134 @@ export class PMCommonService {
    * This method is used to get all the items for particular user.
    */
   async getItems() {
-    const nextFiveDate = this.commonService.calcBusinessDate('Next', 5);
-    const pastFiveFilterDate = this.commonService.calcBusinessDate('Past', 5);
-    const startDate = new Date(pastFiveFilterDate.startDate.setHours(0, 0, 0, 0));
+    const nextFiveDate = this.commonService.calcBusinessDate("Next", 5);
+    const pastFiveFilterDate = this.commonService.calcBusinessDate("Past", 5);
+    const startDate = new Date(
+      pastFiveFilterDate.startDate.setHours(0, 0, 0, 0)
+    );
     const endDate = new Date(nextFiveDate.endDate.setHours(23, 59, 59, 0));
-    const startDateString = new Date(this.commonService.formatDate(startDate) + ' 00:00:00').toISOString();
-    const endDateString = new Date(this.commonService.formatDate(endDate) + ' 23:59:00').toISOString();
+    const startDateString = new Date(
+      this.commonService.formatDate(startDate) + " 00:00:00"
+    ).toISOString();
+    const endDateString = new Date(
+      this.commonService.formatDate(endDate) + " 23:59:00"
+    ).toISOString();
     const batchURL = [];
     const options = {
       data: null,
-      url: '',
-      type: '',
-      listName: ''
+      url: "",
+      type: "",
+      listName: "",
     };
     // Get the all the Resources  ##0
     const resourceGet = Object.assign({}, options);
-    const resourceEndPoint = this.spServices.getReadURL('' + this.constant.listNames.ResourceCategorization.name + '',
-      this.pmConstant.resourceQueryOptions);
-    resourceGet.url = resourceEndPoint.replace('{0}', '' + this.globalObject.currentUser.userId);
-    resourceGet.type = 'GET';
+    const resourceEndPoint = this.spServices.getReadURL(
+      "" + this.constant.listNames.ResourceCategorization.name + "",
+      this.pmConstant.resourceQueryOptions
+    );
+    resourceGet.url = resourceEndPoint.replace(
+      "{0}",
+      "" + this.globalObject.currentUser.userId
+    );
+    resourceGet.type = "GET";
     resourceGet.listName = this.constant.listNames.ResourceCategorization.name;
     batchURL.push(resourceGet);
     // Get Billing Entity  ##1
     const billingEndPoint = Object.assign({}, options);
-    billingEndPoint.url = this.spServices.getReadURL('' + this.constant.listNames.BillingEntity.name + '',
-      this.pmConstant.DROP_DOWN_QUERY.BILLING_ENTITY);
-    billingEndPoint.type = 'GET';
+    billingEndPoint.url = this.spServices.getReadURL(
+      "" + this.constant.listNames.BillingEntity.name + "",
+      this.pmConstant.DROP_DOWN_QUERY.BILLING_ENTITY
+    );
+    billingEndPoint.type = "GET";
     billingEndPoint.listName = this.constant.listNames.BillingEntity.name;
     batchURL.push(billingEndPoint);
     // Get Practice Area  ##2
     const practiceAreaEndPoint = Object.assign({}, options);
-    practiceAreaEndPoint.url = this.spServices.getReadURL('' + this.constant.listNames.PracticeArea.name + '',
-      this.pmConstant.DROP_DOWN_QUERY.PRACTICE_AREA);
-    practiceAreaEndPoint.type = 'GET',
-      practiceAreaEndPoint.listName = this.constant.listNames.PracticeArea.name;
+    practiceAreaEndPoint.url = this.spServices.getReadURL(
+      "" + this.constant.listNames.PracticeArea.name + "",
+      this.pmConstant.DROP_DOWN_QUERY.PRACTICE_AREA
+    );
+    (practiceAreaEndPoint.type = "GET"),
+      (practiceAreaEndPoint.listName = this.constant.listNames.PracticeArea.name);
     batchURL.push(practiceAreaEndPoint);
     // Get Client Legal Entity ##3
     const clientLegalEntityEndPoint = Object.assign({}, options);
-    clientLegalEntityEndPoint.url = this.spServices.getReadURL('' + this.constant.listNames.ClientLegalEntity.name + '',
-      this.pmConstant.DROP_DOWN_QUERY.CLIENT_LEGAL_ENTITY);
-    clientLegalEntityEndPoint.type = 'GET',
-      clientLegalEntityEndPoint.listName = this.constant.listNames.ClientLegalEntity.name;
+    clientLegalEntityEndPoint.url = this.spServices.getReadURL(
+      "" + this.constant.listNames.ClientLegalEntity.name + "",
+      this.pmConstant.DROP_DOWN_QUERY.CLIENT_LEGAL_ENTITY
+    );
+    (clientLegalEntityEndPoint.type = "GET"),
+      (clientLegalEntityEndPoint.listName = this.constant.listNames.ClientLegalEntity.name);
     batchURL.push(clientLegalEntityEndPoint);
     // Get Budget Rate Master ## 4
     const budgetRateMasterEndPoint = Object.assign({}, options);
-    budgetRateMasterEndPoint.url = this.spServices.getReadURL('' + this.constant.listNames.BudgetRateMaster.name + '',
-      this.pmConstant.DROP_DOWN_QUERY.BUDGET_RATE_MASTER);
-    budgetRateMasterEndPoint.type = 'GET',
-      budgetRateMasterEndPoint.listName = this.constant.listNames.BudgetRateMaster.name;
+    budgetRateMasterEndPoint.url = this.spServices.getReadURL(
+      "" + this.constant.listNames.BudgetRateMaster.name + "",
+      this.pmConstant.DROP_DOWN_QUERY.BUDGET_RATE_MASTER
+    );
+    (budgetRateMasterEndPoint.type = "GET"),
+      (budgetRateMasterEndPoint.listName = this.constant.listNames.BudgetRateMaster.name);
     batchURL.push(budgetRateMasterEndPoint);
     // Get Molecules ## 5
     const moleculesEndPoint = Object.assign({}, options);
-    moleculesEndPoint.url = this.spServices.getReadURL('' + this.constant.listNames.Molecules.name + '',
-      this.pmConstant.DROP_DOWN_QUERY.MOLECULES);
-    moleculesEndPoint.type = 'GET';
+    moleculesEndPoint.url = this.spServices.getReadURL(
+      "" + this.constant.listNames.Molecules.name + "",
+      this.pmConstant.DROP_DOWN_QUERY.MOLECULES
+    );
+    moleculesEndPoint.type = "GET";
     moleculesEndPoint.listName = this.constant.listNames.Molecules.name;
     batchURL.push(moleculesEndPoint);
     // Get projectType ## 6
     const projectTypeEndPoint = Object.assign({}, options);
-    projectTypeEndPoint.url = this.spServices.getReadURL('' + this.constant.listNames.ProjectType.name + '',
-      this.pmConstant.DROP_DOWN_QUERY.PROJECT_TYPE);
-    projectTypeEndPoint.type = 'GET';
+    projectTypeEndPoint.url = this.spServices.getReadURL(
+      "" + this.constant.listNames.ProjectType.name + "",
+      this.pmConstant.DROP_DOWN_QUERY.PROJECT_TYPE
+    );
+    projectTypeEndPoint.type = "GET";
     projectTypeEndPoint.listName = this.constant.listNames.ProjectType.name;
     batchURL.push(projectTypeEndPoint);
     // Get subdeliverables ## 7
     const subdeliverablesEndPoint = Object.assign({}, options);
-    subdeliverablesEndPoint.url = this.spServices.getReadURL('' + this.constant.listNames.SubDeliverables.name + '',
-      this.pmConstant.DROP_DOWN_QUERY.SUBDELIVERABLES);
-    subdeliverablesEndPoint.type = 'GET';
+    subdeliverablesEndPoint.url = this.spServices.getReadURL(
+      "" + this.constant.listNames.SubDeliverables.name + "",
+      this.pmConstant.DROP_DOWN_QUERY.SUBDELIVERABLES
+    );
+    subdeliverablesEndPoint.type = "GET";
     subdeliverablesEndPoint.listName = this.constant.listNames.SubDeliverables.name;
     batchURL.push(subdeliverablesEndPoint);
     // Get TA ## 8
     const taEndPoint = Object.assign({}, options);
-    taEndPoint.url = this.spServices.getReadURL('' + this.constant.listNames.TA.name + '',
-      this.pmConstant.DROP_DOWN_QUERY.TA);
-    taEndPoint.type = 'GET';
+    taEndPoint.url = this.spServices.getReadURL(
+      "" + this.constant.listNames.TA.name + "",
+      this.pmConstant.DROP_DOWN_QUERY.TA
+    );
+    taEndPoint.type = "GET";
     taEndPoint.listName = this.constant.listNames.TA.name;
     batchURL.push(taEndPoint);
     // Get Resources. ##9
     const resourCatEndPoint = Object.assign({}, options);
-    resourCatEndPoint.url = this.spServices.getReadURL('' + this.constant.listNames.ResourceCategorization.name + '',
-      this.pmConstant.TIMELINE_QUERY.STANDARD_RESOURCES_CATEGORIZATION);
-    resourCatEndPoint.type = 'GET';
+    resourCatEndPoint.url = this.spServices.getReadURL(
+      "" + this.constant.listNames.ResourceCategorization.name + "",
+      this.pmConstant.TIMELINE_QUERY.STANDARD_RESOURCES_CATEGORIZATION
+    );
+    resourCatEndPoint.type = "GET";
     resourCatEndPoint.listName = this.constant.listNames.ResourceCategorization.name;
     batchURL.push(resourCatEndPoint);
     // Get projectContancts ##10
     const projectContactsEndPoint = Object.assign({}, options);
-    projectContactsEndPoint.url = this.spServices.getReadURL('' + this.constant.listNames.ProjectContacts.name + '',
-      this.pmConstant.DROP_DOWN_QUERY.PROJECT_CONTANTCS);
-    projectContactsEndPoint.type = 'GET';
+    projectContactsEndPoint.url = this.spServices.getReadURL(
+      "" + this.constant.listNames.ProjectContacts.name + "",
+      this.pmConstant.DROP_DOWN_QUERY.PROJECT_CONTANTCS
+    );
+    projectContactsEndPoint.type = "GET";
     projectContactsEndPoint.listName = this.constant.listNames.ProjectContacts.name;
     batchURL.push(projectContactsEndPoint);
-    this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'getTARCProConactsSubDeliverablesProjTypeMoleculeCLEBusinessVerticleBillingEntity');
+    this.commonService.SetNewrelic(
+      "projectManagment",
+      "pmcommon",
+      "getTARCProConactsSubDeliverablesProjTypeMoleculeCLEBusinessVerticleBillingEntity",
+      "GET-BATCH"
+    );
     const arrResults = await this.spServices.executeBatch(batchURL);
     return arrResults;
   }
@@ -515,9 +656,13 @@ export class PMCommonService {
    */
   extractNameFromId(arrayOfIds) {
     const tempArray = [];
-    this.pmObject.oProjectManagement.oResourcesCat.forEach(element => {
-      arrayOfIds.forEach(tempOjb => {
-        if (element.UserNamePG && tempOjb.hasOwnProperty('ID') && element.UserNamePG.ID === tempOjb.ID) {
+    this.pmObject.oProjectManagement.oResourcesCat.forEach((element) => {
+      arrayOfIds.forEach((tempOjb) => {
+        if (
+          element.UserNamePG &&
+          tempOjb.hasOwnProperty("ID") &&
+          element.UserNamePG.ID === tempOjb.ID
+        ) {
           tempArray.push(element.UserNamePG.Title);
         } else if (element.UserNamePG && element.UserNamePG.ID === tempOjb) {
           tempArray.push(element.UserNamePG.Title);
@@ -533,7 +678,7 @@ export class PMCommonService {
   extractNamefromPOC(ids) {
     const tempArray = [];
     this.pmObject.projectContactsItems.forEach((element) => {
-      ids.forEach(tempOjb => {
+      ids.forEach((tempOjb) => {
         if (element.ID === tempOjb) {
           tempArray.push(element.FullNameCC);
         }
@@ -542,24 +687,48 @@ export class PMCommonService {
     return tempArray;
   }
   async getTemplate(templateName, objEmailBody, mailSubject, arrayTo, cc?) {
-    const contentFilter = Object.assign({}, this.pmConstant.SOW_QUERY.CONTENT_QUERY);
+    const contentFilter = Object.assign(
+      {},
+      this.pmConstant.SOW_QUERY.CONTENT_QUERY
+    );
     // tslint:disable-next-line:max-line-length
-    contentFilter.filter = contentFilter.filter.replace(/{{templateName}}/gi, templateName);
-    this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetMailContent');
-    const body = await this.spServices.readItems(this.constant.listNames.MailContent.name, contentFilter);
+    contentFilter.filter = contentFilter.filter.replace(
+      /{{templateName}}/gi,
+      templateName
+    );
+    this.commonService.SetNewrelic(
+      "projectManagment",
+      "pmcommon",
+      "GetMailContent",
+      "GET"
+    );
+    const body = await this.spServices.readItems(
+      this.constant.listNames.MailContent.name,
+      contentFilter
+    );
     let mailBody = body[0].ContentMT;
-    objEmailBody.forEach(element => {
-      mailBody = mailBody.replace(RegExp(element.key, 'gi'), element.value);
+    objEmailBody.forEach((element) => {
+      mailBody = mailBody.replace(RegExp(element.key, "gi"), element.value);
     });
-    this.commonService.SetNewrelic('ProjectManagement', 'pmcommon', 'SendMail');
-    this.spServices.sendMail(arrayTo.join(','), this.pmObject.currLoginInfo.Email, mailSubject, mailBody,
-      cc.join(','));
+    this.commonService.SetNewrelic("projectManagment", "pmcommon", "SendMail", "POST");
+    this.spServices.sendMail(
+      arrayTo.join(","),
+      this.pmObject.currLoginInfo.Email,
+      mailSubject,
+      mailBody,
+      cc.join(",")
+    );
   }
   getEmailId(tempArray) {
     const arrayTo = [];
-    this.pmObject.oProjectManagement.oResourcesCat.forEach(element => {
-      tempArray.forEach(tempOjb => {
-        if (tempOjb && tempOjb.hasOwnProperty('ID') && element.UserNamePG && element.UserNamePG.ID === tempOjb.ID) {
+    this.pmObject.oProjectManagement.oResourcesCat.forEach((element) => {
+      tempArray.forEach((tempOjb) => {
+        if (
+          tempOjb &&
+          tempOjb.hasOwnProperty("ID") &&
+          element.UserNamePG &&
+          element.UserNamePG.ID === tempOjb.ID
+        ) {
           arrayTo.push(element.UserNamePG.EMail);
         } else if (tempOjb && element.UserNamePG.ID === tempOjb) {
           arrayTo.push(element.UserNamePG.EMail);
@@ -572,40 +741,57 @@ export class PMCommonService {
    * This function is used to get the project data object.
    */
   getProjectData(addObj, isCreate) {
-    let objProjectFolder = '';
-    let objProjectTask = '';
+    let objProjectFolder = "";
+    let objProjectTask = "";
     const allOperationId = [];
     allOperationId.push(this.pmObject.currLoginInfo.Id);
-    addObj.ProjectAttributes.ActiveCM1 = addObj.ProjectAttributes.ActiveCM1.filter((el) => {
-      return el != null;
-    });
-    addObj.ProjectAttributes.ActiveCM1.forEach(element => {
+    addObj.ProjectAttributes.ActiveCM1 = addObj.ProjectAttributes.ActiveCM1.filter(
+      (el) => {
+        return el != null;
+      }
+    );
+    addObj.ProjectAttributes.ActiveCM1.forEach((element) => {
       allOperationId.push(element);
     });
-    if (addObj.ProjectAttributes.ActiveDelivery1 && addObj.ProjectAttributes.ActiveDelivery1.length) {
-      addObj.ProjectAttributes.ActiveDelivery1 = addObj.ProjectAttributes.ActiveDelivery1.filter((el) => {
-        return el != null;
-      });
-      addObj.ProjectAttributes.ActiveDelivery1.forEach(element => {
+    if (
+      addObj.ProjectAttributes.ActiveDelivery1 &&
+      addObj.ProjectAttributes.ActiveDelivery1.length
+    ) {
+      addObj.ProjectAttributes.ActiveDelivery1 = addObj.ProjectAttributes.ActiveDelivery1.filter(
+        (el) => {
+          return el != null;
+        }
+      );
+      addObj.ProjectAttributes.ActiveDelivery1.forEach((element) => {
         allOperationId.push(element);
       });
     }
     allOperationId.push(addObj.ProjectAttributes.ActiveCM2);
     allOperationId.push(addObj.ProjectAttributes.ActiveDelivery2);
-    const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
-      x.Title === this.pmObject.addProject.ProjectAttributes.ClientLegalEntity);
+    const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(
+      (x) =>
+        x.Title === this.pmObject.addProject.ProjectAttributes.ClientLegalEntity
+    );
     if (clientInfo && clientInfo.length) {
       const listName = clientInfo[0].ListName;
-      objProjectFolder = this.globalObject.sharePointPageObject.serverRelativeUrl + '/' + listName + '/' +
+      objProjectFolder =
+        this.globalObject.sharePointPageObject.serverRelativeUrl +
+        "/" +
+        listName +
+        "/" +
         addObj.ProjectAttributes.ProjectCode;
-      objProjectTask = this.globalObject.sharePointPageObject.serverRelativeUrl + '/' + this.constant.listNames.Schedules.name
-        + '/' + addObj.ProjectAttributes.ProjectCode;
+      objProjectTask =
+        this.globalObject.sharePointPageObject.serverRelativeUrl +
+        "/" +
+        this.constant.listNames.Schedules.name +
+        "/" +
+        addObj.ProjectAttributes.ProjectCode;
     }
 
     const data: any = {
       __metadata: { type: this.constant.listNames.ProjectInformation.type },
       AllOperationresourcesId: {
-        results: allOperationId
+        results: allOperationId,
       },
       Title: addObj.ProjectAttributes.ProjectTitle,
       TA: addObj.ProjectAttributes.TherapeuticArea,
@@ -615,116 +801,172 @@ export class PMCommonService {
       WBJID: addObj.ProjectAttributes.AlternateShortTitle,
       SOWBoxLink: addObj.ProjectAttributes.SOWBoxLink,
       CMLevel1Id: {
-        results: addObj.ProjectAttributes.ActiveCM1
+        results: addObj.ProjectAttributes.ActiveCM1,
       },
       CMLevel2Id: addObj.ProjectAttributes.ActiveCM2,
       DeliveryLevel1Id: {
-        results: addObj.ProjectAttributes.ActiveDelivery1 && addObj.ProjectAttributes.ActiveDelivery1.length
-          ? addObj.ProjectAttributes.ActiveDelivery1 : []
+        results:
+          addObj.ProjectAttributes.ActiveDelivery1 &&
+          addObj.ProjectAttributes.ActiveDelivery1.length
+            ? addObj.ProjectAttributes.ActiveDelivery1
+            : [],
       },
       DeliveryLevel2Id: addObj.ProjectAttributes.ActiveDelivery2,
 
-      SubDivision: addObj.ProjectAttributes.SubDivision ? addObj.ProjectAttributes.SubDivision : '',
-      CSRule :  this.pmObject.RuleTypeArray.CM && this.pmObject.RuleTypeArray.CM.length ?  this.pmObject.RuleTypeArray.CM.map(c=>c.ID).join(';#'):'',
-      DeliveryRule : this.pmObject.RuleTypeArray.Delivery && this.pmObject.RuleTypeArray.Delivery.length ?  this.pmObject.RuleTypeArray.Delivery.map(c=>c.ID).join(';#'):'',  
+      SubDivision: addObj.ProjectAttributes.SubDivision
+        ? addObj.ProjectAttributes.SubDivision
+        : "",
+      CSRule:
+        this.pmObject.RuleTypeArray.CM && this.pmObject.RuleTypeArray.CM.length
+          ? this.pmObject.RuleTypeArray.CM.map((c) => c.ID).join(";#")
+          : "",
+      DeliveryRule:
+        this.pmObject.RuleTypeArray.Delivery &&
+        this.pmObject.RuleTypeArray.Delivery.length
+          ? this.pmObject.RuleTypeArray.Delivery.map((c) => c.ID).join(";#")
+          : "",
       PriorityST: addObj.ProjectAttributes.Priority,
       Indication: addObj.ProjectAttributes.Indication,
       Molecule: addObj.ProjectAttributes.Molecule,
-      IsPubSupport: addObj.ProjectAttributes.PUBSupportRequired ? 'Yes' : 'No',
-      DescriptionMT: addObj.ProjectAttributes.EndUseofDeliverable ? addObj.ProjectAttributes.EndUseofDeliverable : '',
-      POC: addObj.ProjectAttributes.PointOfContact2 ? addObj.ProjectAttributes.PointOfContact2.join(';#') : '',
-      Authors: addObj.ProjectAttributes.Authors ? addObj.ProjectAttributes.Authors : '',
-      ConferenceJournal: addObj.ProjectAttributes.ConferenceJournal ? addObj.ProjectAttributes.ConferenceJournal : '',
-      CommentsMT: addObj.ProjectAttributes.Comments ? addObj.ProjectAttributes.Comments : '',
-      PubSupportStatus: addObj.ProjectAttributes.PUBSupportStatus ? addObj.ProjectAttributes.PUBSupportStatus : '',
-      SOWLink: addObj.FinanceManagement.SOWFileURL ? addObj.FinanceManagement.SOWFileURL : '',
+      IsPubSupport: addObj.ProjectAttributes.PUBSupportRequired ? "Yes" : "No",
+      DescriptionMT: addObj.ProjectAttributes.EndUseofDeliverable
+        ? addObj.ProjectAttributes.EndUseofDeliverable
+        : "",
+      POC: addObj.ProjectAttributes.PointOfContact2
+        ? addObj.ProjectAttributes.PointOfContact2.join(";#")
+        : "",
+      Authors: addObj.ProjectAttributes.Authors
+        ? addObj.ProjectAttributes.Authors
+        : "",
+      ConferenceJournal: addObj.ProjectAttributes.ConferenceJournal
+        ? addObj.ProjectAttributes.ConferenceJournal
+        : "",
+      CommentsMT: addObj.ProjectAttributes.Comments
+        ? addObj.ProjectAttributes.Comments
+        : "",
+      PubSupportStatus: addObj.ProjectAttributes.PUBSupportStatus
+        ? addObj.ProjectAttributes.PUBSupportStatus
+        : "",
+      SOWLink: addObj.FinanceManagement.SOWFileURL
+        ? addObj.FinanceManagement.SOWFileURL
+        : "",
       SlideCount: addObj.ProjectAttributes.SlideCount,
       PageCount: addObj.ProjectAttributes.PageCount,
       ReferenceCount: addObj.ProjectAttributes.ReferenceCount,
-      AnnotationBinder: addObj.ProjectAttributes.AnnotationBinder === true ? 'Yes' : 'No'
+      AnnotationBinder:
+        addObj.ProjectAttributes.AnnotationBinder === true ? "Yes" : "No",
     };
     if (isCreate) {
-      data.IsStandard = addObj.Timeline.Standard.IsStandard ? 'Yes' : 'No',
-        data.SOWCode = addObj.SOWSelect.SOWCode;
-      data.IsApproved = 'No';
-      data.QuickProject = 'No';
-      data.Milestones = '';
+      (data.IsStandard = addObj.Timeline.Standard.IsStandard ? "Yes" : "No"),
+        (data.SOWCode = addObj.SOWSelect.SOWCode);
+      data.IsApproved = "No";
+      data.QuickProject = "No";
+      data.Milestones = "";
       if (addObj.Timeline.Standard.IsStandard) {
-        data.Milestones = Array.from(new Set(addObj.Timeline.Standard.Milestones)).join(';#');
+        data.Milestones = Array.from(
+          new Set(addObj.Timeline.Standard.Milestones)
+        ).join(";#");
       }
       // changes for FTE Projects.
-      if (addObj.FinanceManagement.BilledBy === this.pmConstant.PROJECT_TYPE.FTE.value) {
-        const monthNameArray = this.pmObject.addProject.Timeline.NonStandard.months.map(a => a.monthName);
-        data.Milestones = monthNameArray.join(';#');
+      if (
+        addObj.FinanceManagement.BilledBy ===
+        this.pmConstant.PROJECT_TYPE.FTE.value
+      ) {
+        const monthNameArray = this.pmObject.addProject.Timeline.NonStandard.months.map(
+          (a) => a.monthName
+        );
+        data.Milestones = monthNameArray.join(";#");
       }
-      data.DeliverableType = addObj.Timeline.Standard.IsStandard ? addObj.Timeline.Standard.DeliverableType :
-        addObj.Timeline.NonStandard.DeliverableType;
+      data.DeliverableType = addObj.Timeline.Standard.IsStandard
+        ? addObj.Timeline.Standard.DeliverableType
+        : addObj.Timeline.NonStandard.DeliverableType;
       data.ProjectType = addObj.ProjectAttributes.BilledBy;
       data.ProjectCode = addObj.ProjectAttributes.ProjectCode;
       data.ClientLegalEntity = addObj.ProjectAttributes.ClientLegalEntity;
       data.Status = addObj.ProjectAttributes.ProjectStatus;
-      data.SubDeliverable = addObj.Timeline.Standard.IsStandard ? addObj.Timeline.Standard.SubDeliverable :
-        addObj.Timeline.NonStandard.SubDeliverable;
-      data.ProposedStartDate = addObj.Timeline.Standard.IsStandard ? addObj.Timeline.Standard.ProposedStartDate :
-        addObj.Timeline.NonStandard.ProposedStartDate,
-        data.ProposedEndDate = addObj.Timeline.Standard.IsStandard ? addObj.Timeline.Standard.ProposedEndDate :
-          addObj.Timeline.NonStandard.ProposedEndDate;
+      data.SubDeliverable = addObj.Timeline.Standard.IsStandard
+        ? addObj.Timeline.Standard.SubDeliverable
+        : addObj.Timeline.NonStandard.SubDeliverable;
+      (data.ProposedStartDate = addObj.Timeline.Standard.IsStandard
+        ? addObj.Timeline.Standard.ProposedStartDate
+        : addObj.Timeline.NonStandard.ProposedStartDate),
+        (data.ProposedEndDate = addObj.Timeline.Standard.IsStandard
+          ? addObj.Timeline.Standard.ProposedEndDate
+          : addObj.Timeline.NonStandard.ProposedEndDate);
       data.ProjectFolder = objProjectFolder;
       data.ProjectTask = objProjectTask;
-      data.ServiceLevel = addObj.Timeline.Standard.IsStandard ? addObj.Timeline.Standard.Service :
-        addObj.Timeline.NonStandard.Service;
-      data.OvernightRequest = addObj.FinanceManagement.OverNightRequest ? addObj.FinanceManagement.OverNightRequest : '';
-      data.StandardService = addObj.Timeline.Standard.IsStandard ? addObj.Timeline.Standard.Service : '';
-      data.StandardBudgetHrs = addObj.Timeline.Standard.IsStandard ? addObj.Timeline.Standard.StandardProjectBugetHours :
-        addObj.Timeline.NonStandard.ProjectBudgetHours;
+      data.ServiceLevel = addObj.Timeline.Standard.IsStandard
+        ? addObj.Timeline.Standard.Service
+        : addObj.Timeline.NonStandard.Service;
+      data.OvernightRequest = addObj.FinanceManagement.OverNightRequest
+        ? addObj.FinanceManagement.OverNightRequest
+        : "";
+      data.StandardService = addObj.Timeline.Standard.IsStandard
+        ? addObj.Timeline.Standard.Service
+        : "";
+      data.StandardBudgetHrs = addObj.Timeline.Standard.IsStandard
+        ? addObj.Timeline.Standard.StandardProjectBugetHours
+        : addObj.Timeline.NonStandard.ProjectBudgetHours;
     }
     const arrId = [];
     const primaryResourceId = [];
-    const resource: any = addObj.Timeline.Standard.IsStandard ? addObj.Timeline.Standard.Resource :
-      addObj.Timeline.NonStandard.ResourceName;
-    if (resource && resource.hasOwnProperty('userType') && resource.userType !== 'Type') {
+    const resource: any = addObj.Timeline.Standard.IsStandard
+      ? addObj.Timeline.Standard.Resource
+      : addObj.Timeline.NonStandard.ResourceName;
+    if (
+      resource &&
+      resource.hasOwnProperty("userType") &&
+      resource.userType !== "Type"
+    ) {
       primaryResourceId.push(resource.UserNamePG.ID);
-      const skillLevel = resource.SkillLevel.Title.replace(' Offsite', '').replace(' Onsite', '').replace('Jr ', '').replace('Sr ', '');
+      const skillLevel = resource.SkillLevel.Title.replace(" Offsite", "")
+        .replace(" Onsite", "")
+        .replace("Jr ", "")
+        .replace("Sr ", "");
       switch (skillLevel) {
         case this.constant.SKILL_LEVEL.WRITER:
           data.WritersId = {
-            results: [resource.UserNamePG.ID]
+            results: [resource.UserNamePG.ID],
           };
           break;
         case this.constant.SKILL_LEVEL.EDITOR:
           data.EditorsId = {
-            results: [resource.UserNamePG.ID]
+            results: [resource.UserNamePG.ID],
           };
           break;
         case this.constant.SKILL_LEVEL.GRAPHICS:
           data.GraphicsMembersId = {
-            results: [resource.UserNamePG.ID]
+            results: [resource.UserNamePG.ID],
           };
           break;
         case this.constant.SKILL_LEVEL.QC:
           data.QCId = {
-            results: [resource.UserNamePG.ID]
+            results: [resource.UserNamePG.ID],
           };
           break;
       }
       arrId.push(resource.UserNamePG.ID);
     }
     const reviewer: any = addObj.Timeline.Standard.Reviewer;
-    if (addObj.Timeline.Standard.IsStandard &&
-      reviewer && reviewer.hasOwnProperty('userType') && reviewer.userType !== 'Type') {
+    if (
+      addObj.Timeline.Standard.IsStandard &&
+      reviewer &&
+      reviewer.hasOwnProperty("userType") &&
+      reviewer.userType !== "Type"
+    ) {
       data.ReviewersId = {
-        results: [reviewer.UserNamePG.ID]
+        results: [reviewer.UserNamePG.ID],
       };
       arrId.push(reviewer.UserNamePG.ID);
     }
     if (arrId && arrId.length) {
       data.AllDeliveryResourcesId = {
-        results: arrId
+        results: arrId,
       };
     }
     if (primaryResourceId && primaryResourceId.length) {
       data.PrimaryResMembersId = {
-        results: primaryResourceId
+        results: primaryResourceId,
       };
     }
     return data;
@@ -733,90 +975,162 @@ export class PMCommonService {
    * this method is used to upload the file.
    */
   async submitFile(selectedFile, fileReader) {
-    const docFolder = 'Finance/SOW';
-    let libraryName = '';
-    const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
-      x.Title === this.pmObject.addProject.ProjectAttributes.ClientLegalEntity);
+    const docFolder = "Finance/SOW";
+    let libraryName = "";
+    const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(
+      (x) =>
+        x.Title === this.pmObject.addProject.ProjectAttributes.ClientLegalEntity
+    );
     if (clientInfo && clientInfo.length) {
       libraryName = clientInfo[0].ListName;
     }
-    const folderPath: string = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + libraryName + '/' + docFolder;
-    const filePathUrl = await this.spServices.getFileUploadUrl(folderPath, selectedFile.name, true);
-    this.commonService.SetNewrelic('projectmanagement', 'pmcommon-submitFile', 'uploadFile');
-    const res = await this.spServices.uploadFile(filePathUrl, fileReader.result);
-    if (res.hasOwnProperty('ServerRelativeUrl') && res.hasOwnProperty('Name') && !res.hasOwnProperty('hasError')) {
-      this.pmObject.addProject.FinanceManagement.SOWFileURL = res.ServerRelativeUrl;
+    const folderPath: string =
+      this.globalObject.sharePointPageObject.webRelativeUrl +
+      "/" +
+      libraryName +
+      "/" +
+      docFolder;
+    const filePathUrl = await this.spServices.getFileUploadUrl(
+      folderPath,
+      selectedFile.name,
+      true
+    );
+    this.commonService.SetNewrelic(
+      "projectManagment",
+      "pmcommon",
+      "uploadFile-submitFile",
+      "POST-BATCH"
+    );
+    const res = await this.spServices.uploadFile(
+      filePathUrl,
+      fileReader.result
+    );
+    if (
+      res.hasOwnProperty("ServerRelativeUrl") &&
+      res.hasOwnProperty("Name") &&
+      !res.hasOwnProperty("hasError")
+    ) {
+      this.pmObject.addProject.FinanceManagement.SOWFileURL =
+        res.ServerRelativeUrl;
       this.pmObject.addProject.FinanceManagement.SOWFileName = res.Name;
       this.pmObject.addProject.FinanceManagement.SOWFileProp = res;
     }
     return res;
   }
   setGlobalVariable(sowItem) {
-    this.pmObject.addSOW.ID = sowItem.hasOwnProperty('ID') ? sowItem.ID : 0;
+    this.pmObject.addSOW.ID = sowItem.hasOwnProperty("ID") ? sowItem.ID : 0;
     this.pmObject.addSOW.ClientLegalEntity = sowItem.ClientLegalEntity;
     this.pmObject.addSOW.SOWCode = sowItem.SOWCode;
     this.pmObject.addSOW.BillingEntity = sowItem.BillingEntity;
-    const BusinessVertical = sowItem.BusinessVertical ? sowItem.BusinessVertical.split(';#') : [];
+    const BusinessVertical = sowItem.BusinessVertical
+      ? sowItem.BusinessVertical.split(";#")
+      : [];
     this.pmObject.addSOW.BusinessVertical = BusinessVertical;
     this.pmObject.addSOW.Poc = sowItem.PrimaryPOC;
-    this.pmObject.addSOW.PocText = this.extractNamefromPOC([sowItem.PrimaryPOC]).join(', ');
-    const oldAdditonalPocArray = sowItem.AdditionalPOC ? sowItem.AdditionalPOC.split(';#') : null;
+    this.pmObject.addSOW.PocText = this.extractNamefromPOC([
+      sowItem.PrimaryPOC,
+    ]).join(", ");
+    const oldAdditonalPocArray = sowItem.AdditionalPOC
+      ? sowItem.AdditionalPOC.split(";#")
+      : null;
     const newAdditionalPocArray = [];
     if (oldAdditonalPocArray && oldAdditonalPocArray.length) {
-      oldAdditonalPocArray.forEach(element => {
+      oldAdditonalPocArray.forEach((element) => {
         newAdditionalPocArray.push(Number(element));
       });
     }
     this.pmObject.addSOW.PocOptional = newAdditionalPocArray;
-    this.pmObject.addSOW.PocOptionalText = this.extractNamefromPOC(newAdditionalPocArray).join(', ');
+    this.pmObject.addSOW.PocOptionalText = this.extractNamefromPOC(
+      newAdditionalPocArray
+    ).join(", ");
     this.pmObject.addSOW.SOWTitle = sowItem.Title;
     this.pmObject.addSOW.SOWCreationDate = new Date(sowItem.CreatedDate);
     this.pmObject.addSOW.SOWExpiryDate = new Date(sowItem.ExpiryDate);
     this.pmObject.addSOW.Status = sowItem.Status;
-    this.pmObject.addSOW.Comments = sowItem.CommentsMT ? sowItem.CommentsMT : '';
+    this.pmObject.addSOW.Comments = sowItem.CommentsMT
+      ? sowItem.CommentsMT
+      : "";
     this.pmObject.addSOW.Currency = sowItem.Currency;
-    this.pmObject.addSOW.SOWDocument = sowItem.SOWLink ? sowItem.SOWLink : '';
+    this.pmObject.addSOW.SOWDocument = sowItem.SOWLink ? sowItem.SOWLink : "";
     if (this.pmObject.addSOW.SOWDocument) {
-      if (this.pmObject.addSOW.SOWDocument.indexOf(this.globalObject.sharePointPageObject.webRelativeUrl) === -1) {
-        const client = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(e => e.Title === sowItem.ClientLegalEntity);
-        this.pmObject.addSOW.SOWDocument = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + client.ListName + '/Finance/SOW/' +
+      if (
+        this.pmObject.addSOW.SOWDocument.indexOf(
+          this.globalObject.sharePointPageObject.webRelativeUrl
+        ) === -1
+      ) {
+        const client = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(
+          (e) => e.Title === sowItem.ClientLegalEntity
+        );
+        this.pmObject.addSOW.SOWDocument =
+          this.globalObject.sharePointPageObject.webRelativeUrl +
+          "/" +
+          client.ListName +
+          "/Finance/SOW/" +
           this.pmObject.addSOW.SOWDocument;
       }
     }
-    
-    this.pmObject.addSOW.Budget.Total = sowItem.TotalBudget ? sowItem.TotalBudget : 0;
+
+    this.pmObject.addSOW.Budget.Total = sowItem.TotalBudget
+      ? sowItem.TotalBudget
+      : 0;
     this.pmObject.addSOW.Budget.Net = sowItem.NetBudget ? sowItem.NetBudget : 0;
     this.pmObject.addSOW.Budget.OOP = sowItem.OOPBudget ? sowItem.OOPBudget : 0;
     this.pmObject.addSOW.Budget.Tax = sowItem.TaxBudget ? sowItem.TaxBudget : 0;
-    this.pmObject.addSOW.Budget.TotalBalance = (sowItem.TotalBudget ? sowItem.TotalBudget : 0)
-      - (sowItem.TotalLinked ? sowItem.TotalLinked : 0);
-    this.pmObject.addSOW.Budget.TotalBalance = parseFloat(this.pmObject.addSOW.Budget.TotalBalance.toFixed(2));
-    this.pmObject.addSOW.Budget.NetBalance = (sowItem.NetBudget ? sowItem.NetBudget : 0)
-      - (sowItem.RevenueLinked ? sowItem.RevenueLinked : 0);
-    this.pmObject.addSOW.Budget.NetBalance = parseFloat(this.pmObject.addSOW.Budget.NetBalance.toFixed(2));
-    this.pmObject.addSOW.Budget.OOPBalance = (sowItem.OOPBudget ? sowItem.OOPBudget : 0) - (sowItem.OOPLinked ? sowItem.OOPLinked : 0);
-    this.pmObject.addSOW.Budget.OOPBalance = parseFloat(this.pmObject.addSOW.Budget.OOPBalance.toFixed(2));
-    this.pmObject.addSOW.Budget.TaxBalance = (sowItem.TaxBudget ? sowItem.TaxBudget : 0) - (sowItem.TaxLinked ? sowItem.TaxLinked : 0);
-    this.pmObject.addSOW.Budget.TaxBalance = parseFloat(this.pmObject.addSOW.Budget.TaxBalance.toFixed(2));
+    this.pmObject.addSOW.Budget.TotalBalance =
+      (sowItem.TotalBudget ? sowItem.TotalBudget : 0) -
+      (sowItem.TotalLinked ? sowItem.TotalLinked : 0);
+    this.pmObject.addSOW.Budget.TotalBalance = parseFloat(
+      this.pmObject.addSOW.Budget.TotalBalance.toFixed(2)
+    );
+    this.pmObject.addSOW.Budget.NetBalance =
+      (sowItem.NetBudget ? sowItem.NetBudget : 0) -
+      (sowItem.RevenueLinked ? sowItem.RevenueLinked : 0);
+    this.pmObject.addSOW.Budget.NetBalance = parseFloat(
+      this.pmObject.addSOW.Budget.NetBalance.toFixed(2)
+    );
+    this.pmObject.addSOW.Budget.OOPBalance =
+      (sowItem.OOPBudget ? sowItem.OOPBudget : 0) -
+      (sowItem.OOPLinked ? sowItem.OOPLinked : 0);
+    this.pmObject.addSOW.Budget.OOPBalance = parseFloat(
+      this.pmObject.addSOW.Budget.OOPBalance.toFixed(2)
+    );
+    this.pmObject.addSOW.Budget.TaxBalance =
+      (sowItem.TaxBudget ? sowItem.TaxBudget : 0) -
+      (sowItem.TaxLinked ? sowItem.TaxLinked : 0);
+    this.pmObject.addSOW.Budget.TaxBalance = parseFloat(
+      this.pmObject.addSOW.Budget.TaxBalance.toFixed(2)
+    );
     let cm1Array = [];
     let delivery1Array = [];
     if (sowItem.CMLevel1.results && sowItem.CMLevel1.results.length) {
       cm1Array = this.getIds(sowItem.CMLevel1.results);
     }
-    if (sowItem.DeliveryLevel1.results && sowItem.DeliveryLevel1.results.length) {
+    if (
+      sowItem.DeliveryLevel1.results &&
+      sowItem.DeliveryLevel1.results.length
+    ) {
       delivery1Array = this.getIds(sowItem.DeliveryLevel1.results);
     }
     this.pmObject.addSOW.CM1 = cm1Array;
-    this.pmObject.addSOW.CM1Text = this.extractNameFromId(cm1Array).join(', ');
+    this.pmObject.addSOW.CM1Text = this.extractNameFromId(cm1Array).join(", ");
     this.pmObject.addSOW.CM2 = sowItem.CMLevel2.ID;
-    this.pmObject.addSOW.CM2Text = this.extractNameFromId([sowItem.CMLevel2.ID]).join(', ');
+    this.pmObject.addSOW.CM2Text = this.extractNameFromId([
+      sowItem.CMLevel2.ID,
+    ]).join(", ");
     this.pmObject.addSOW.Delivery = delivery1Array;
-    this.pmObject.addSOW.DeliveryText = this.extractNameFromId(delivery1Array).join(', ');
+    this.pmObject.addSOW.DeliveryText = this.extractNameFromId(
+      delivery1Array
+    ).join(", ");
     this.pmObject.addSOW.DeliveryOptional = sowItem.DeliveryLevel2.ID;
-    this.pmObject.addSOW.DeliveryOptionalText = this.extractNameFromId([sowItem.DeliveryLevel2.ID]).join(', ');
+    this.pmObject.addSOW.DeliveryOptionalText = this.extractNameFromId([
+      sowItem.DeliveryLevel2.ID,
+    ]).join(", ");
     this.pmObject.addSOW.SOWOwner = sowItem.BD.ID;
-    this.pmObject.addSOW.SOWOwnerText = sowItem.BD ?
-      sowItem.BD.hasOwnProperty('ID') ? this.extractNameFromId([sowItem.BD.ID]).join(', ') : '' : '';
+    this.pmObject.addSOW.SOWOwnerText = sowItem.BD
+      ? sowItem.BD.hasOwnProperty("ID")
+        ? this.extractNameFromId([sowItem.BD.ID]).join(", ")
+        : ""
+      : "";
   }
   convertToExcelFile(cnf1) {
     if (Array.isArray(cnf1._selection)) {
@@ -831,7 +1145,7 @@ export class PMCommonService {
   }
   getIds(array) {
     const tempArray = [];
-    array.forEach(element => {
+    array.forEach((element) => {
       if (element && element.ID) {
         tempArray.push(element.ID);
       }
@@ -839,29 +1153,63 @@ export class PMCommonService {
     return tempArray;
   }
   async getProjects(bPM) {
-
     let arrResults: any = [];
 
-    const allProjects = localStorage.getItem('allProjects');
+    const allProjects = localStorage.getItem("allProjects");
     if (allProjects) {
       arrResults = JSON.parse(allProjects);
-      localStorage.removeItem('allProjects');
+      localStorage.removeItem("allProjects");
     } else {
-      if (this.pmObject.userRights.isMangers || this.pmObject.userRights.isHaveProjectFullAccess || this.pmObject.userRights.isInvoiceTeam) {
-        const projectManageFilter = Object.assign({}, this.pmConstant.PM_QUERY.ALL_PROJECT_INFORMATION);
-        this.commonService.SetNewrelic('projectManagment', 'PmCommon-FullAccess', 'GetProjectInfo');
-        arrResults = await this.spServices.readItems(this.constant.listNames.ProjectInformation.name, projectManageFilter);
+      if (
+        this.pmObject.userRights.isMangers ||
+        this.pmObject.userRights.isHaveProjectFullAccess ||
+        this.pmObject.userRights.isInvoiceTeam
+      ) {
+        const projectManageFilter = Object.assign(
+          {},
+          this.pmConstant.PM_QUERY.ALL_PROJECT_INFORMATION
+        );
+        this.commonService.SetNewrelic(
+          "projectManagment",
+          "pmcommon",
+          "GetProjectInfo-FullAccess",
+          "GET"
+        );
+        arrResults = await this.spServices.readItems(
+          this.constant.listNames.ProjectInformation.name,
+          projectManageFilter
+        );
       } else {
         let projectManageFilter: any;
         if (bPM) {
-          projectManageFilter = Object.assign({}, this.pmConstant.PM_QUERY.USER_SPECIFIC_PROJECT_INFORMATION);
-          projectManageFilter.filter = projectManageFilter.filter.replace('{{UserID}}', this.globalObject.currentUser.userId.toString());
+          projectManageFilter = Object.assign(
+            {},
+            this.pmConstant.PM_QUERY.USER_SPECIFIC_PROJECT_INFORMATION
+          );
+          projectManageFilter.filter = projectManageFilter.filter.replace(
+            "{{UserID}}",
+            this.globalObject.currentUser.userId.toString()
+          );
         } else {
-          projectManageFilter = Object.assign({}, this.pmConstant.PM_QUERY.USER_SPECIFIC_PROJECT_INFORMATION_MY);
-          projectManageFilter.filter = projectManageFilter.filter.replace(/{{UserID}}/gi, this.globalObject.currentUser.userId.toString());
+          projectManageFilter = Object.assign(
+            {},
+            this.pmConstant.PM_QUERY.USER_SPECIFIC_PROJECT_INFORMATION_MY
+          );
+          projectManageFilter.filter = projectManageFilter.filter.replace(
+            /{{UserID}}/gi,
+            this.globalObject.currentUser.userId.toString()
+          );
         }
-        this.commonService.SetNewrelic('projectManagment', 'PmCommon-getProjects', 'readItems');
-        arrResults = await this.spServices.readItems(this.constant.listNames.ProjectInformation.name, projectManageFilter);
+        this.commonService.SetNewrelic(
+          "projectManagment",
+          "pmcommon",
+          "GetProjectInfo-getProjects",
+          "GET"
+        );
+        arrResults = await this.spServices.readItems(
+          this.constant.listNames.ProjectInformation.name,
+          projectManageFilter
+        );
       }
     }
 
@@ -872,30 +1220,30 @@ export class PMCommonService {
    */
   resetAddProject() {
     this.pmObject.activeIndex = 0;
-    this.pmObject.addProject.SOWSelect.SOWCode = '';
+    this.pmObject.addProject.SOWSelect.SOWCode = "";
     this.pmObject.addProject.SOWSelect.sowTotalBalance = 0;
     this.pmObject.addProject.SOWSelect.sowNetBalance = 0;
-    this.pmObject.addProject.ProjectAttributes.ClientLegalEntity = '';
-    this.pmObject.addProject.ProjectAttributes.SubDivision = '';
-    this.pmObject.addProject.ProjectAttributes.BillingEntity = '';
-    this.pmObject.addProject.ProjectAttributes.BilledBy = '';
-    this.pmObject.addProject.ProjectAttributes.PracticeArea = '';
-    this.pmObject.addProject.ProjectAttributes.ProjectStatus = '';
-    this.pmObject.addProject.ProjectAttributes.PointOfContact1 = '';
+    this.pmObject.addProject.ProjectAttributes.ClientLegalEntity = "";
+    this.pmObject.addProject.ProjectAttributes.SubDivision = "";
+    this.pmObject.addProject.ProjectAttributes.BillingEntity = "";
+    this.pmObject.addProject.ProjectAttributes.BilledBy = "";
+    this.pmObject.addProject.ProjectAttributes.PracticeArea = "";
+    this.pmObject.addProject.ProjectAttributes.ProjectStatus = "";
+    this.pmObject.addProject.ProjectAttributes.PointOfContact1 = "";
     this.pmObject.addProject.ProjectAttributes.PointOfContact2 = [];
-    this.pmObject.addProject.ProjectAttributes.ProjectCode = '';
-    this.pmObject.addProject.ProjectAttributes.Molecule = '';
-    this.pmObject.addProject.ProjectAttributes.TherapeuticArea = '';
-    this.pmObject.addProject.ProjectAttributes.Indication = '';
+    this.pmObject.addProject.ProjectAttributes.ProjectCode = "";
+    this.pmObject.addProject.ProjectAttributes.Molecule = "";
+    this.pmObject.addProject.ProjectAttributes.TherapeuticArea = "";
+    this.pmObject.addProject.ProjectAttributes.Indication = "";
     this.pmObject.addProject.ProjectAttributes.PUBSupportRequired = false;
-    this.pmObject.addProject.ProjectAttributes.PUBSupportStatus = '';
-    this.pmObject.addProject.ProjectAttributes.ProjectTitle = '';
-    this.pmObject.addProject.ProjectAttributes.AlternateShortTitle = '';
-    this.pmObject.addProject.ProjectAttributes.EndUseofDeliverable = '';
-    this.pmObject.addProject.ProjectAttributes.SOWBoxLink = '';
-    this.pmObject.addProject.ProjectAttributes.ConferenceJournal = '';
-    this.pmObject.addProject.ProjectAttributes.Authors = '';
-    this.pmObject.addProject.ProjectAttributes.Comments = '';
+    this.pmObject.addProject.ProjectAttributes.PUBSupportStatus = "";
+    this.pmObject.addProject.ProjectAttributes.ProjectTitle = "";
+    this.pmObject.addProject.ProjectAttributes.AlternateShortTitle = "";
+    this.pmObject.addProject.ProjectAttributes.EndUseofDeliverable = "";
+    this.pmObject.addProject.ProjectAttributes.SOWBoxLink = "";
+    this.pmObject.addProject.ProjectAttributes.ConferenceJournal = "";
+    this.pmObject.addProject.ProjectAttributes.Authors = "";
+    this.pmObject.addProject.ProjectAttributes.Comments = "";
     this.pmObject.addProject.ProjectAttributes.SlideCount = 0;
     this.pmObject.addProject.ProjectAttributes.ReferenceCount = 0;
     this.pmObject.addProject.ProjectAttributes.PageCount = 0;
@@ -912,9 +1260,9 @@ export class PMCommonService {
     this.pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked = false;
     this.pmObject.addProject.Timeline.Standard.standardArray = [];
     this.pmObject.addProject.Timeline.NonStandard.IsStandard = false;
-    this.pmObject.addProject.Timeline.NonStandard.DeliverableType = '';
-    this.pmObject.addProject.Timeline.NonStandard.SubDeliverable = '';
-    this.pmObject.addProject.Timeline.NonStandard.Service = '';
+    this.pmObject.addProject.Timeline.NonStandard.DeliverableType = "";
+    this.pmObject.addProject.Timeline.NonStandard.SubDeliverable = "";
+    this.pmObject.addProject.Timeline.NonStandard.Service = "";
     this.pmObject.addProject.Timeline.NonStandard.ResourceName = {};
     this.pmObject.addProject.Timeline.NonStandard.ProposedStartDate = null;
     this.pmObject.addProject.Timeline.NonStandard.ProposedEndDate = null;
@@ -922,17 +1270,14 @@ export class PMCommonService {
     this.pmObject.addProject.Timeline.NonStandard.ProjectBudgetHours = 0;
     this.pmObject.addProject.ProjectAttributes.ActiveCM1 = [];
     this.pmObject.addProject.ProjectAttributes.ActiveDelivery1 = [];
-    this.pmObject.addProject.ProjectAttributes.ActiveCM2 = '';
-    this.pmObject.addProject.ProjectAttributes.ActiveDelivery2 = '';
-    this.pmObject.addProject.FinanceManagement.BilledBy = '';
-    this.pmObject.addProject.FinanceManagement.ClientLegalEntity = '';
-    this.pmObject.addProject.FinanceManagement.selectedFile = '';
+    this.pmObject.addProject.ProjectAttributes.ActiveCM2 = "";
+    this.pmObject.addProject.ProjectAttributes.ActiveDelivery2 = "";
+    this.pmObject.addProject.FinanceManagement.BilledBy = "";
+    this.pmObject.addProject.FinanceManagement.ClientLegalEntity = "";
+    this.pmObject.addProject.FinanceManagement.selectedFile = "";
     this.pmObject.addProject.FinanceManagement.isBudgetRateAdded = false;
     this.pmObject.addProject.FinanceManagement.POArray = [];
-    this.pmObject.addProject.SOWSelect.GlobalFilterValue = '';
-
-
-
+    this.pmObject.addProject.SOWSelect.GlobalFilterValue = "";
   }
   async setBilledBy() {
     // this.pmObject.billedBy = [
@@ -941,20 +1286,36 @@ export class PMCommonService {
     // ];
     this.pmObject.billedBy = [];
     // get items from project contacts type.
-    const contentFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.GET_PROJECT_TYPE);
+    const contentFilter = Object.assign(
+      {},
+      this.pmConstant.FINANCE_QUERY.GET_PROJECT_TYPE
+    );
     // tslint:disable-next-line:max-line-length
-    contentFilter.filter = contentFilter.filter.replace(/{{isActive}}/gi, 'Yes');
-    this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetProjType');
-    const sResults = await this.spServices.readItems(this.constant.listNames.ProjectType.name, contentFilter);
+    contentFilter.filter = contentFilter.filter.replace(
+      /{{isActive}}/gi,
+      "Yes"
+    );
+    this.commonService.SetNewrelic(
+      "projectManagment",
+      "pmcommon",
+      "GetProjType",
+      "GET"
+    );
+    const sResults = await this.spServices.readItems(
+      this.constant.listNames.ProjectType.name,
+      contentFilter
+    );
     if (sResults && sResults.length) {
       const tempResult = [];
-      sResults.forEach(element => {
-        tempResult.push({ label: element.Title.split('-')[0], value: element.Title });
+      sResults.forEach((element) => {
+        tempResult.push({
+          label: element.Title.split("-")[0],
+          value: element.Title,
+        });
       });
       this.pmObject.billedBy = tempResult;
     }
   }
-
 
   // async validateAndSave() {
   //   this.pmObject.isMainLoaderHidden = false;
@@ -978,30 +1339,48 @@ export class PMCommonService {
     let projectCode = this.pmObject.addProject.ProjectAttributes.ProjectCode;
     let currenValue = 0;
     let Id = -1;
-    const codeSplit = projectCode.split('-');
+    const codeSplit = projectCode.split("-");
     const codeValue = codeSplit[2];
     const year = codeValue.substring(0, 2);
     const oCurrentDate = new Date();
     const sYear = oCurrentDate.getFullYear();
     // sYear = oCurrentDate.getMonth() > 2 ? sYear + 1 : sYear;
-    const contentFilter = Object.assign({}, this.pmConstant.TIMELINE_QUERY.PROJECT_PER_YEAR);
+    const contentFilter = Object.assign(
+      {},
+      this.pmConstant.TIMELINE_QUERY.PROJECT_PER_YEAR
+    );
     // tslint:disable-next-line:max-line-length
-    contentFilter.filter = contentFilter.filter.replace(/{{Id}}/gi, sYear.toString());
-    this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetProjectPerYear');
-    const sResults = await this.spServices.readItems(this.constant.listNames.ProjectPerYear.name, contentFilter);
+    contentFilter.filter = contentFilter.filter.replace(
+      /{{Id}}/gi,
+      sYear.toString()
+    );
+    this.commonService.SetNewrelic(
+      "projectManagment",
+      "pmcommon",
+      "GetProjectPerYear",
+      "GET"
+    );
+    const sResults = await this.spServices.readItems(
+      this.constant.listNames.ProjectPerYear.name,
+      contentFilter
+    );
     if (sResults && sResults.length) {
       currenValue = parseInt(sResults[0].Count, 10);
       Id = sResults[0].ID;
       currenValue += 1;
-      let currentCount = '000' + currenValue;
+      let currentCount = "000" + currenValue;
       currentCount = currentCount.substring(currentCount.length - 4);
       codeSplit[2] = year + currentCount;
-      projectCode = codeSplit.join('-');
+      projectCode = codeSplit.join("-");
       const projectYearOptions = {
-        Count: currenValue
+        Count: currenValue,
       };
-      await this.spServices.updateItem(this.constant.listNames.ProjectPerYear.name, Id, projectYearOptions,
-        this.constant.listNames.ProjectPerYear.type);
+      await this.spServices.updateItem(
+        this.constant.listNames.ProjectPerYear.name,
+        Id,
+        projectYearOptions,
+        this.constant.listNames.ProjectPerYear.type
+      );
       return projectCode;
     }
   }
@@ -1014,9 +1393,9 @@ export class PMCommonService {
     let counter = 0;
     const options = {
       data: null,
-      url: '',
-      type: '',
-      listName: ''
+      url: "",
+      type: "",
+      listName: "",
     };
     // Create Main Summary Call ## 15
     /*const summaryObj = {
@@ -1033,27 +1412,35 @@ export class PMCommonService {
     batchURL.push(createSummaryObj);
     counter += 1;*/
     // Create Folder Call ## 1 - 14
-    const folderArray = this.createFolderArray(this.pmObject.addProject.ProjectAttributes.ClientLegalEntity,
-      this.pmObject.addProject.ProjectAttributes.ProjectCode);
-    folderArray.forEach(element => {
+    const folderArray = this.createFolderArray(
+      this.pmObject.addProject.ProjectAttributes.ClientLegalEntity,
+      this.pmObject.addProject.ProjectAttributes.ProjectCode
+    );
+    folderArray.forEach((element) => {
       const data = {
-        __metadata: { type: 'SP.Folder' },
-        ServerRelativeUrl: element
+        __metadata: { type: "SP.Folder" },
+        ServerRelativeUrl: element,
       };
       const createForderObj = Object.assign({}, options);
       createForderObj.data = data;
       createForderObj.listName = element;
-      createForderObj.type = 'POST';
+      createForderObj.type = "POST";
       createForderObj.url = this.spServices.getFolderCreationURL();
       counter += 1;
       batchURL.push(createForderObj);
     });
     // Add data to ProjectInformation call ##16
-    const projectInformationData = this.getProjectData(this.pmObject.addProject, true);
+    const projectInformationData = this.getProjectData(
+      this.pmObject.addProject,
+      true
+    );
     const projectCreate = Object.assign({}, options);
-    projectCreate.url = this.spServices.getReadURL(this.constant.listNames.ProjectInformation.name, null);
+    projectCreate.url = this.spServices.getReadURL(
+      this.constant.listNames.ProjectInformation.name,
+      null
+    );
     projectCreate.data = projectInformationData;
-    projectCreate.type = 'POST';
+    projectCreate.type = "POST";
     projectCreate.listName = this.constant.listNames.ProjectInformation.name;
     batchURL.push(projectCreate);
     counter += 1;
@@ -1061,77 +1448,108 @@ export class PMCommonService {
     // Add data to ProjectScope call ##17
     const projectScopeData = this.getProjectScopeData(projectInformationData);
     const projectScopeCreate = Object.assign({}, options);
-    projectScopeCreate.url = this.spServices.getReadURL(this.constant.listNames.ProjectScope.name, null);
+    projectScopeCreate.url = this.spServices.getReadURL(
+      this.constant.listNames.ProjectScope.name,
+      null
+    );
     projectScopeCreate.data = projectScopeData;
-    projectScopeCreate.type = 'POST';
+    projectScopeCreate.type = "POST";
     projectScopeCreate.listName = this.constant.listNames.ProjectScope.name;
     batchURL.push(projectScopeCreate);
     counter += 1;
     // Add data to ProjectFinances call ##18
     const projectFinanceData = this.getProjectFinancesData();
     const projectFinanceCreate = Object.assign({}, options);
-    projectFinanceCreate.url = this.spServices.getReadURL(this.constant.listNames.ProjectFinances.name, null);
+    projectFinanceCreate.url = this.spServices.getReadURL(
+      this.constant.listNames.ProjectFinances.name,
+      null
+    );
     projectFinanceCreate.data = projectFinanceData;
-    projectFinanceCreate.type = 'POST';
+    projectFinanceCreate.type = "POST";
     projectFinanceCreate.listName = this.constant.listNames.ProjectFinances.name;
     batchURL.push(projectFinanceCreate);
     counter += 1;
     // Add data to projectFinanceBreakup call ##18
     const projectFinanceBreakArray = this.getProjectFinanceBreakupData();
-    projectFinanceBreakArray.forEach(element => {
+    projectFinanceBreakArray.forEach((element) => {
       const projectFinanceBreakupCreate = Object.assign({}, options);
-      projectFinanceBreakupCreate.url = this.spServices.getReadURL(this.constant.listNames.ProjectFinanceBreakup.name, null);
+      projectFinanceBreakupCreate.url = this.spServices.getReadURL(
+        this.constant.listNames.ProjectFinanceBreakup.name,
+        null
+      );
       projectFinanceBreakupCreate.data = element;
-      projectFinanceBreakupCreate.type = 'POST';
+      projectFinanceBreakupCreate.type = "POST";
       projectFinanceBreakupCreate.listName = this.constant.listNames.ProjectFinanceBreakup.name;
       batchURL.push(projectFinanceBreakupCreate);
       counter += 1;
     });
-    if (this.pmObject.addProject.ProjectAttributes.BilledBy === this.pmConstant.PROJECT_TYPE.DELIVERABLE.value ||
-      this.pmObject.addProject.ProjectAttributes.BilledBy === this.pmConstant.PROJECT_TYPE.FTE.value) {
+    if (
+      this.pmObject.addProject.ProjectAttributes.BilledBy ===
+        this.pmConstant.PROJECT_TYPE.DELIVERABLE.value ||
+      this.pmObject.addProject.ProjectAttributes.BilledBy ===
+        this.pmConstant.PROJECT_TYPE.FTE.value
+    ) {
       //  Add data to  InvoiceLineItem call ## 19
       const invoiceLineItemArray = this.getInvoiceLineItemData();
-      invoiceLineItemArray.forEach(element => {
+      invoiceLineItemArray.forEach((element) => {
         const createForderObj: any = Object.assign({}, options);
-        createForderObj.url = this.spServices.getReadURL(this.constant.listNames.InvoiceLineItems.name, null);
+        createForderObj.url = this.spServices.getReadURL(
+          this.constant.listNames.InvoiceLineItems.name,
+          null
+        );
         createForderObj.data = element;
         createForderObj.listName = this.constant.listNames.InvoiceLineItems.name;
-        createForderObj.type = 'POST';
+        createForderObj.type = "POST";
         batchURL.push(createForderObj);
         counter += 1;
       });
       // Add data to  SOWItem call ## 20
       const sowItemData = this.getSowItemData(projectFinanceData);
-      const selectSOWItem: any = this.pmObject.addProject.SOWSelect.SOWSelectedItem;
+      const selectSOWItem: any = this.pmObject.addProject.SOWSelect
+        .SOWSelectedItem;
       const sowItemCreate = Object.assign({}, options);
-      sowItemCreate.url = this.spServices.getItemURL(this.constant.listNames.SOW.name, selectSOWItem.ID);
+      sowItemCreate.url = this.spServices.getItemURL(
+        this.constant.listNames.SOW.name,
+        selectSOWItem.ID
+      );
       sowItemCreate.data = sowItemData;
-      sowItemCreate.type = 'PATCH';
+      sowItemCreate.type = "PATCH";
       sowItemCreate.listName = this.constant.listNames.SOW.name;
       batchURL.push(sowItemCreate);
       counter += 1;
       // Add data to POItem call ## 21
       const poItemArray = this.getPoItemData(projectFinanceBreakArray);
-      poItemArray.forEach(element => {
+      poItemArray.forEach((element) => {
         const poItemCreate = Object.assign({}, options);
-        poItemCreate.url = this.spServices.getItemURL(this.constant.listNames.PO.name, element.ID);
+        poItemCreate.url = this.spServices.getItemURL(
+          this.constant.listNames.PO.name,
+          element.ID
+        );
         poItemCreate.data = element;
-        poItemCreate.type = 'PATCH';
+        poItemCreate.type = "PATCH";
         poItemCreate.listName = this.constant.listNames.PO.name;
         batchURL.push(poItemCreate);
       });
       if (this.pmObject.updateInvoices && this.pmObject.updateInvoices.length) {
-        this.pmObject.updateInvoices.forEach(element => {
+        this.pmObject.updateInvoices.forEach((element) => {
           const invoicecreate = Object.assign({}, options);
-          invoicecreate.url = this.spServices.getItemURL(this.constant.listNames.Invoices.name, element.ID);
+          invoicecreate.url = this.spServices.getItemURL(
+            this.constant.listNames.Invoices.name,
+            element.ID
+          );
           invoicecreate.data = element;
-          invoicecreate.type = 'PATCH';
+          invoicecreate.type = "PATCH";
           invoicecreate.listName = this.constant.listNames.Invoices.name;
           batchURL.push(invoicecreate);
         });
       }
     }
-    this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetSchedulesProjInfoPoInvoicesProFinanceBreakupInvoiceLineItem');
+    this.commonService.SetNewrelic(
+      "projectManagment",
+      "pmcommon",
+      "GetSchedulesProjInfoPoInvoicesProFinanceBreakupInvoiceLineItem",
+      "POST-BATCH"
+    );
     const res = await this.spServices.executeBatch(batchURL);
     console.log(res);
     if (res && res.length) {
@@ -1144,38 +1562,37 @@ export class PMCommonService {
    * @param projectCode pass the project code.
    */
   createFolderArray(ClientLegalEnity, projectCode) {
-    const legalEntity = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(e => e.Title === ClientLegalEnity);
+    const legalEntity = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(
+      (e) => e.Title === ClientLegalEnity
+    );
     const listName = legalEntity.ListName;
     const arrFolders = [
-      listName + '/' + projectCode,
-      listName + '/' + projectCode + '/Communications',
-      listName + '/' + projectCode + '/Drafts',
-      listName + '/' + projectCode + '/Emails',
+      listName + "/" + projectCode,
+      listName + "/" + projectCode + "/Communications",
+      listName + "/" + projectCode + "/Drafts",
+      listName + "/" + projectCode + "/Emails",
       //    listName + '/' + projectCode + '/Graphics',
-      listName + '/' + projectCode + '/Miscellaneous',
-      listName + '/' + projectCode + '/Publication Support',
-      listName + '/' + projectCode + '/References',
-      listName + '/' + projectCode + '/Source Documents',
-      listName + '/' + projectCode + '/Drafts/Client',
-      listName + '/' + projectCode + '/Drafts/Internal',
-      listName + '/' + projectCode + '/Publication Support/Author List Emails',
-      listName + '/' + projectCode + '/Publication Support/Forms',
-      listName + '/' + projectCode + '/Publication Support/Published Papers'
+      listName + "/" + projectCode + "/Miscellaneous",
+      listName + "/" + projectCode + "/Publication Support",
+      listName + "/" + projectCode + "/References",
+      listName + "/" + projectCode + "/Source Documents",
+      listName + "/" + projectCode + "/Drafts/Client",
+      listName + "/" + projectCode + "/Drafts/Internal",
+      listName + "/" + projectCode + "/Publication Support/Author List Emails",
+      listName + "/" + projectCode + "/Publication Support/Forms",
+      listName + "/" + projectCode + "/Publication Support/Published Papers",
     ];
     return arrFolders;
   }
-
 
   /**
    * This function is used to set the projectScope object
    */
   getProjectScopeData(ProjectInfo) {
-
     const data: any = {
       __metadata: { type: this.constant.listNames.ProjectScope.type },
       Title: ProjectInfo.ProjectCode,
       ProjectFolder: ProjectInfo.ProjectFolder,
-
     };
 
     return data;
@@ -1185,8 +1602,12 @@ export class PMCommonService {
    */
   getProjectFinancesData() {
     const addObj = this.pmObject.addProject;
-    const billingEntitys = this.pmObject.oProjectCreation.oProjectInfo.billingEntity;
-    const billingEntity = billingEntitys.filter(x => x.Title === this.pmObject.addProject.ProjectAttributes.BillingEntity);
+    const billingEntitys = this.pmObject.oProjectCreation.oProjectInfo
+      .billingEntity;
+    const billingEntity = billingEntitys.filter(
+      (x) =>
+        x.Title === this.pmObject.addProject.ProjectAttributes.BillingEntity
+    );
     const budgetArray = this.pmObject.addProject.FinanceManagement.BudgetArray;
     const poArray = this.pmObject.addProject.FinanceManagement.POArray;
     let invoiceSc = 0;
@@ -1194,7 +1615,7 @@ export class PMCommonService {
     let invoice = 0;
     let invoiceRevenue = 0;
     poArray.forEach((poInfoObj) => {
-      poInfoObj.poInfoData.forEach(element => {
+      poInfoObj.poInfoData.forEach((element) => {
         if (element.status === this.constant.STATUS.NOT_SAVED) {
           invoiceSc = invoiceSc + element.amount;
           scRevenue = scRevenue + element.amount;
@@ -1208,13 +1629,19 @@ export class PMCommonService {
     const data: any = {
       __metadata: { type: this.constant.listNames.ProjectFinances.type },
       Title: addObj.ProjectAttributes.ProjectCode,
-      Realization: '50',
-      Template: billingEntity && billingEntity.length ? billingEntity[0].InvoiceTemplate : '',
+      Realization: "50",
+      Template:
+        billingEntity && billingEntity.length
+          ? billingEntity[0].InvoiceTemplate
+          : "",
       Currency: addObj.FinanceManagement.Currency,
       BudgetHrs: addObj.FinanceManagement.BudgetHours,
-      LastInvoiceSent: 'No'
+      LastInvoiceSent: "No",
     };
-    if (addObj.ProjectAttributes.BilledBy === this.pmConstant.PROJECT_TYPE.HOURLY.value) {
+    if (
+      addObj.ProjectAttributes.BilledBy ===
+      this.pmConstant.PROJECT_TYPE.HOURLY.value
+    ) {
       data.Budget = addObj.FinanceManagement.Rate;
       data.OOPBudget = 0;
       data.RevenueBudget = 0;
@@ -1248,7 +1675,7 @@ export class PMCommonService {
       let invoice = 0;
       let invoiceRevenue = 0;
       const po = poInfoObj.poInfo[0];
-      poInfoObj.poInfoData.forEach(element => {
+      poInfoObj.poInfoData.forEach((element) => {
         if (element.status === this.constant.STATUS.NOT_SAVED) {
           totalScheduled += element.amount;
           scRevenue += element.amount;
@@ -1259,12 +1686,17 @@ export class PMCommonService {
         }
       });
       const data: any = {
-        __metadata: { type: this.constant.listNames.ProjectFinanceBreakup.type },
+        __metadata: {
+          type: this.constant.listNames.ProjectFinanceBreakup.type,
+        },
         ProjectNumber: addObj.ProjectAttributes.ProjectCode,
         POLookup: po.poId,
-        Status: 'Active'
+        Status: "Active",
       };
-      if (addObj.ProjectAttributes.BilledBy === this.pmConstant.PROJECT_TYPE.HOURLY.value) {
+      if (
+        addObj.ProjectAttributes.BilledBy ===
+        this.pmConstant.PROJECT_TYPE.HOURLY.value
+      ) {
         data.Amount = 0;
         data.AmountRevenue = 0;
         data.AmountOOP = 0;
@@ -1294,15 +1726,19 @@ export class PMCommonService {
     const addObj = this.pmObject.addProject;
     const invoiceArray = [];
     const CSIdArray = [];
-    addObj.ProjectAttributes.ActiveCM1.forEach(cm => {
+    addObj.ProjectAttributes.ActiveCM1.forEach((cm) => {
       CSIdArray.push(cm);
     });
     CSIdArray.push(addObj.ProjectAttributes.ActiveCM2);
     const poArray = this.pmObject.addProject.FinanceManagement.POArray;
-    const billingEntitys = this.pmObject.oProjectCreation.oProjectInfo.billingEntity;
-    const billingEntity = billingEntitys.filter(x => x.Title === this.pmObject.addProject.ProjectAttributes.BillingEntity);
+    const billingEntitys = this.pmObject.oProjectCreation.oProjectInfo
+      .billingEntity;
+    const billingEntity = billingEntitys.filter(
+      (x) =>
+        x.Title === this.pmObject.addProject.ProjectAttributes.BillingEntity
+    );
     poArray.forEach((poInfoObj) => {
-      poInfoObj.poInfoData.forEach(element => {
+      poInfoObj.poInfoData.forEach((element) => {
         const data: any = {
           __metadata: { type: this.constant.listNames.InvoiceLineItems.type },
           Title: addObj.ProjectAttributes.ProjectCode,
@@ -1310,26 +1746,33 @@ export class PMCommonService {
           Amount: element.amount,
           Currency: addObj.FinanceManagement.Currency,
           PO: element.poId,
-          Status: element.status === 'Not Saved' ? 'Scheduled' : element.status,
+          Status: element.status === "Not Saved" ? "Scheduled" : element.status,
           ScheduleType: element.type,
           MainPOC: element.poc,
           AddressType: element.address,
-          Template: billingEntity && billingEntity.length ? billingEntity[0].InvoiceTemplate : '',
+          Template:
+            billingEntity && billingEntity.length
+              ? billingEntity[0].InvoiceTemplate
+              : "",
           SOWCode: addObj.SOWSelect.SOWCode,
           AccessId: {
-            results: CSIdArray
+            results: CSIdArray,
           },
         };
         if (element.status === this.constant.STATUS.APPROVED) {
           data.ProformaLookup = element.proformaLookup;
           data.InvoiceLookup = element.invoiceLookup;
-          const invoice = this.pmObject.arrAdvanceInvoices.find(e => e.ID === element.invoiceLookup);
-          const tagAmount = invoice.TaggedAmount ? invoice.TaggedAmount + element.amount : element.amount;
+          const invoice = this.pmObject.arrAdvanceInvoices.find(
+            (e) => e.ID === element.invoiceLookup
+          );
+          const tagAmount = invoice.TaggedAmount
+            ? invoice.TaggedAmount + element.amount
+            : element.amount;
           const dataInv: any = {
             __metadata: { type: this.constant.listNames.Invoices.type },
             ID: invoice.ID,
             TaggedAmount: tagAmount,
-            IsTaggedFully: invoice.Amount === tagAmount ? 'Yes' : 'No'
+            IsTaggedFully: invoice.Amount === tagAmount ? "Yes" : "No",
           };
           this.pmObject.updateInvoices.push(dataInv);
         }
@@ -1346,18 +1789,21 @@ export class PMCommonService {
       RevenueLinked: sowObj.RevenueLinked + projectfinanceObj.RevenueBudget,
       OOPLinked: sowObj.OOPLinked + projectfinanceObj.OOPBudget,
       TaxLinked: sowObj.TaxLinked + projectfinanceObj.TaxBudget,
-      TotalScheduled: sowObj.TotalScheduled + projectfinanceObj.InvoicesScheduled,
-      ScheduledRevenue: sowObj.ScheduledRevenue + projectfinanceObj.ScheduledRevenue,
+      TotalScheduled:
+        sowObj.TotalScheduled + projectfinanceObj.InvoicesScheduled,
+      ScheduledRevenue:
+        sowObj.ScheduledRevenue + projectfinanceObj.ScheduledRevenue,
       TotalInvoiced: sowObj.TotalInvoiced + projectfinanceObj.Invoiced,
-      InvoicedRevenue: sowObj.InvoicedRevenue + projectfinanceObj.InvoicedRevenue,
+      InvoicedRevenue:
+        sowObj.InvoicedRevenue + projectfinanceObj.InvoicedRevenue,
     };
     return data;
   }
   getPoItemData(financeBreakupArray) {
     const porray = [];
     const poArray = this.pmObject.addProject.FinanceManagement.POListArray;
-    financeBreakupArray.forEach(element => {
-      const poItem = poArray.filter(poObj => poObj.ID === element.POLookup);
+    financeBreakupArray.forEach((element) => {
+      const poItem = poArray.filter((poObj) => poObj.ID === element.POLookup);
       if (poItem && poItem.length) {
         const data = {
           __metadata: { type: this.constant.listNames.PO.type },
@@ -1366,8 +1812,9 @@ export class PMCommonService {
           OOPLinked: poItem[0].OOPLinked + element.AmountOOP,
           TaxLinked: poItem[0].TaxLinked + element.AmountTax,
           TotalScheduled: poItem[0].TotalScheduled + element.TotalScheduled,
-          ScheduledRevenue: poItem[0].ScheduledRevenue + element.ScheduledRevenue,
-          ID: element.POLookup
+          ScheduledRevenue:
+            poItem[0].ScheduledRevenue + element.ScheduledRevenue,
+          ID: element.POLookup,
         };
         porray.push(data);
       }
@@ -1383,16 +1830,19 @@ export class PMCommonService {
     let counter = 0;
     const options = {
       data: null,
-      url: '',
-      type: '',
-      listName: ''
+      url: "",
+      type: "",
+      listName: "",
     };
     // create the projectBugetBreakup after project informations items created.
     const projectBudgetBreakupData = this.getProjectBudgetBreakupData(response);
     const projectBudgetBreakupCreate = Object.assign({}, options);
-    projectBudgetBreakupCreate.url = this.spServices.getReadURL(this.constant.listNames.ProjectBudgetBreakup.name, null);
+    projectBudgetBreakupCreate.url = this.spServices.getReadURL(
+      this.constant.listNames.ProjectBudgetBreakup.name,
+      null
+    );
     projectBudgetBreakupCreate.data = projectBudgetBreakupData;
-    projectBudgetBreakupCreate.type = 'POST';
+    projectBudgetBreakupCreate.type = "POST";
     projectBudgetBreakupCreate.listName = this.constant.listNames.ProjectBudgetBreakup.name;
     batchURL.push(projectBudgetBreakupCreate);
     // This call is used to rename the ProjectCode.
@@ -1411,52 +1861,88 @@ export class PMCommonService {
     batchURL.push(moveMilewithDataObj);*/
     // get project folder from projectInformation list
 
-    const getProjectFolder = Object.assign({}, this.pmConstant.ProjectInformation_Get_ProjectFolder_Options);
-    getProjectFolder.filter = getProjectFolder.filter.replace(/{{projectCode}}/gi,
-      this.pmObject.addProject.ProjectAttributes.ProjectCode);
-    const projectFolderResults = await this.spServices.readItems(this.constant.listNames.ProjectInformation.name, getProjectFolder);
-    const projectFolder = projectFolderResults && projectFolderResults.length ? projectFolderResults[0].ProjectFolder : '';
+    const getProjectFolder = Object.assign(
+      {},
+      this.pmConstant.ProjectInformation_Get_ProjectFolder_Options
+    );
+    getProjectFolder.filter = getProjectFolder.filter.replace(
+      /{{projectCode}}/gi,
+      this.pmObject.addProject.ProjectAttributes.ProjectCode
+    );
+    const projectFolderResults = await this.spServices.readItems(
+      this.constant.listNames.ProjectInformation.name,
+      getProjectFolder
+    );
+    const projectFolder =
+      projectFolderResults && projectFolderResults.length
+        ? projectFolderResults[0].ProjectFolder
+        : "";
     if (this.pmObject.addProject.Timeline.Standard.IsStandard) {
-      const milestones = this.pmObject.addProject.Timeline.Standard.standardArray;
-      const projectCode = this.pmObject.addProject.ProjectAttributes.ProjectCode;
-      for (let milestoneIndex = 0; milestoneIndex < milestones.length; milestoneIndex = milestoneIndex + 2) {
+      const milestones = this.pmObject.addProject.Timeline.Standard
+        .standardArray;
+      const projectCode = this.pmObject.addProject.ProjectAttributes
+        .ProjectCode;
+      for (
+        let milestoneIndex = 0;
+        milestoneIndex < milestones.length;
+        milestoneIndex = milestoneIndex + 2
+      ) {
         if (batchURL.length < 100) {
           const milestoneObj = milestones[milestoneIndex];
           this.pmObject.milestoneArray.push(milestoneObj.data);
-          const milestonedata = this.getMilestoneData(milestoneObj, projectCode);
+          const milestonedata = this.getMilestoneData(
+            milestoneObj,
+            projectCode
+          );
           const milestoneCreate = Object.assign({}, options);
-          milestoneCreate.url = this.spServices.getReadURL(this.constant.listNames.Schedules.name, null);
+          milestoneCreate.url = this.spServices.getReadURL(
+            this.constant.listNames.Schedules.name,
+            null
+          );
           milestoneCreate.data = milestonedata;
-          milestoneCreate.type = 'POST';
+          milestoneCreate.type = "POST";
           milestoneCreate.listName = this.constant.listNames.Schedules.name;
           counter += 1;
           batchURL.push(milestoneCreate);
           // create the milestone folder.
           const milestoneFolderBody = {
-            __metadata: { type: 'SP.Folder' },
-            ServerRelativeUrl: projectFolder + '/Drafts/Internal/' + milestoneObj.data.Name // projectCode- folder Internal
+            __metadata: { type: "SP.Folder" },
+            ServerRelativeUrl:
+              projectFolder + "/Drafts/Internal/" + milestoneObj.data.Name, // projectCode- folder Internal
           };
           const createForderObj = Object.assign({}, options);
           createForderObj.data = milestoneFolderBody;
           //createForderObj.listName = element;
-          createForderObj.type = 'POST';
+          createForderObj.type = "POST";
           createForderObj.url = this.spServices.getFolderCreationURL();
           counter += 1;
           batchURL.push(createForderObj);
 
           if (milestoneObj.SubMilestones) {
             // tslint:disable-next-line:prefer-for-of
-            for (let subMilestoneIndex = 0; subMilestoneIndex < milestoneObj.children.length; subMilestoneIndex++) {
+            for (
+              let subMilestoneIndex = 0;
+              subMilestoneIndex < milestoneObj.children.length;
+              subMilestoneIndex++
+            ) {
               const submilestone = milestoneObj.children[subMilestoneIndex];
               // tslint:disable-next-line:forin
               for (const taskIndex in submilestone.children) {
                 const task = submilestone.children[taskIndex];
                 this.pmObject.taskArray.push(task.data);
-                const taskdata = this.getTaskData(task, projectCode, milestoneObj, submilestone);
+                const taskdata = this.getTaskData(
+                  task,
+                  projectCode,
+                  milestoneObj,
+                  submilestone
+                );
                 const taskCreate = Object.assign({}, options);
-                taskCreate.url = this.spServices.getReadURL(this.constant.listNames.Schedules.name, null);
+                taskCreate.url = this.spServices.getReadURL(
+                  this.constant.listNames.Schedules.name,
+                  null
+                );
                 taskCreate.data = taskdata;
-                taskCreate.type = 'POST';
+                taskCreate.type = "POST";
                 taskCreate.listName = this.constant.listNames.Schedules.name;
                 counter += 1;
                 batchURL.push(taskCreate);
@@ -1467,11 +1953,19 @@ export class PMCommonService {
             for (const taskIndex in milestoneObj.children) {
               const task = milestoneObj.children[taskIndex];
               this.pmObject.taskArray.push(task.data);
-              const taskdata = this.getTaskData(task, projectCode, milestoneObj, null);
+              const taskdata = this.getTaskData(
+                task,
+                projectCode,
+                milestoneObj,
+                null
+              );
               const taskCreate = Object.assign({}, options);
-              taskCreate.url = this.spServices.getReadURL(this.constant.listNames.Schedules.name, null);
+              taskCreate.url = this.spServices.getReadURL(
+                this.constant.listNames.Schedules.name,
+                null
+              );
               taskCreate.data = taskdata;
-              taskCreate.type = 'POST';
+              taskCreate.type = "POST";
               taskCreate.listName = this.constant.listNames.Schedules.name;
               counter += 1;
               batchURL.push(taskCreate);
@@ -1479,25 +1973,40 @@ export class PMCommonService {
           }
           const taskObj = milestones[milestoneIndex + 1];
           taskObj.data.Hours = 0;
-          taskObj.data.UseTaskDays = 'Yes';
+          taskObj.data.UseTaskDays = "Yes";
           taskObj.data.TaskDays = taskObj.data.Days;
           taskObj.data.TaskName = taskObj.data.Name;
           taskObj.data.Task = taskObj.data.Name;
-          taskObj.data.NextTasks = '';
-          taskObj.data.PrevTasks = projectCode + ' ' + milestoneObj.MilestoneName + ' SC';
-          taskObj.data.Skill = 'CS';
-          taskObj.data.assignedUserTimeZone = (new Date()).getTimezoneOffset() / 60 * -1;
+          taskObj.data.NextTasks = "";
+          taskObj.data.PrevTasks =
+            projectCode + " " + milestoneObj.MilestoneName + " SC";
+          taskObj.data.Skill = "CS";
+          taskObj.data.assignedUserTimeZone =
+            (new Date().getTimezoneOffset() / 60) * -1;
           taskObj.data.userId = this.globalObject.currentUser.userId;
-          const crData = this.getTaskData(taskObj, projectCode, milestoneObj, null);
+          const crData = this.getTaskData(
+            taskObj,
+            projectCode,
+            milestoneObj,
+            null
+          );
           const crCreate = Object.assign({}, options);
-          crCreate.url = this.spServices.getReadURL(this.constant.listNames.Schedules.name, null);
+          crCreate.url = this.spServices.getReadURL(
+            this.constant.listNames.Schedules.name,
+            null
+          );
           crCreate.data = crData;
-          crCreate.type = 'POST';
+          crCreate.type = "POST";
           crCreate.listName = this.constant.listNames.Schedules.name;
           counter += 1;
           batchURL.push(crCreate);
           if (batchURL.length === 99) {
-            this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetProjectBudgetBreakupSchedules');
+            this.commonService.SetNewrelic(
+              "projectManagment",
+              "pmcommon",
+              "GetProjectBudgetBreakupSchedules",
+              "POST-BATCH"
+            );
             batchResults = await this.spServices.executeBatch(batchURL);
             console.log(batchResults);
             finalArray = [...finalArray, ...batchResults];
@@ -1506,153 +2015,137 @@ export class PMCommonService {
         }
       }
       if (batchURL.length) {
-        this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetProjectBudgetBreakupSchedules');
+        this.commonService.SetNewrelic(
+          "projectManagment",
+          "pmcommon",
+          "GetProjectBudgetBreakupSchedules",
+          "POST-BATCH"
+        );
         batchResults = await this.spServices.executeBatch(batchURL);
         finalArray = [...finalArray, ...batchResults];
       }
     } else {
-      this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetProjectBudgetBreakupSchedules');
+      this.commonService.SetNewrelic(
+        "projectManagment",
+        "pmcommon",
+        "GetProjectBudgetBreakupSchedules",
+        "POST-BATCH"
+      );
       batchResults = await this.spServices.executeBatch(batchURL);
       finalArray = [...finalArray, ...batchResults];
     }
     // Logic for creating Milestone and Task for FTE-Writing.
-    if (this.pmObject.addProject.FinanceManagement.BilledBy ===
-      this.pmConstant.PROJECT_TYPE.FTE.value) {
+    if (
+      this.pmObject.addProject.FinanceManagement.BilledBy ===
+      this.pmConstant.PROJECT_TYPE.FTE.value
+    ) {
       batchResults = await this.createFTEMilestones(response, projectFolder);
       finalArray = [...finalArray, ...batchResults];
     }
-
-    // if (finalArray && finalArray.length && (this.pmObject.addProject.Timeline.Standard.IsStandard ||
-    //   this.pmObject.addProject.FinanceManagement.BilledBy === this.pmConstant.PROJECT_TYPE.FTE.value)) {
-    //   await this.moveMilestoneAndTask(finalArray, this.pmObject.addProject.ProjectAttributes.ProjectCode);
-    // }
+    
   }
-  async moveMilestoneAndTask(results, ProjectCode) {
-
-    let batchURL = [];
-    let batchResults = [];
-    let finalArray = [];
+  
+  async createFTEMilestones(
+    response,
+    projectFolder,
+    months?,
+    fteResource?,
+    ProjectCode?
+  ) {
+    const monthObjArray = months
+      ? months
+      : this.pmObject.addProject.Timeline.NonStandard.months;
     const options = {
       data: null,
-      url: '',
-      type: '',
-      listName: ''
-    };
-    for (const response of results) {
-      if (batchURL.length < 100) {
-        const fileUrl = this.globalObject.sharePointPageObject.serverRelativeUrl +
-          '/Lists/' + this.constant.listNames.Schedules.name + '/' + response.retItems.ID + '_.000';
-        let moveFileUrl = this.globalObject.sharePointPageObject.serverRelativeUrl +
-          '/Lists/' + this.constant.listNames.Schedules.name + '/' +
-          ProjectCode;
-        if (response.retItems.Milestone === 'Select one') {
-          moveFileUrl = moveFileUrl + '/' + response.retItems.ID + '_.000';
-          const milestoneURL = this.globalObject.sharePointPageObject.webAbsoluteUrl +
-            '/_api/Web/Lists/getByTitle(\'' + this.constant.listNames.Schedules.name + '\')/Items' +
-            '(' + response.retItems.ID + ')';
-          const moveData = {
-            __metadata: { type: this.constant.listNames.Schedules.type },
-            FileLeafRef: response.retItems.Title
-          };
-          const url = this.globalObject.sharePointPageObject.webAbsoluteUrl +
-            '/_api/web/getfolderbyserverrelativeurl(\'' + fileUrl + '\')/moveto(newurl=\'' + moveFileUrl + '\')';
-          const moveMileObj = Object.assign({}, options);
-          moveMileObj.url = url;
-          moveMileObj.type = 'POST';
-          moveMileObj.listName = this.constant.listNames.Schedules.name;
-          batchURL.push(moveMileObj);
-          const moveMilewithDataObj = Object.assign({}, options);
-          moveMilewithDataObj.url = milestoneURL;
-          moveMilewithDataObj.data = moveData;
-          moveMilewithDataObj.type = 'PATCH';
-          moveMilewithDataObj.listName = this.constant.listNames.Schedules.name;
-          batchURL.push(moveMilewithDataObj);
-        } else {
-          moveFileUrl = moveFileUrl + '/' + response.retItems.Milestone + '/' + response.retItems.ID + '_.000';
-          const url = this.globalObject.sharePointPageObject.webAbsoluteUrl +
-            '/_api/web/getfilebyserverrelativeurl(\'' + fileUrl + '\')/moveto(newurl=\'' + moveFileUrl + '\',flags=1)';
-          const moveTaskObj = Object.assign({}, options);
-          moveTaskObj.url = url;
-          moveTaskObj.type = 'POST';
-          moveTaskObj.listName = this.constant.listNames.Schedules.name;
-          batchURL.push(moveTaskObj);
-        }
-        if (batchURL.length === 99) {
-          this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetSchedules');
-          batchResults = await this.spServices.executeBatch(batchURL);
-          console.log(batchResults);
-          finalArray = [...finalArray, ...batchResults];
-          batchURL = [];
-        }
-      }
-    }
-    if (batchURL.length) {
-      this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetSchedules');
-      batchResults = await this.spServices.executeBatch(batchURL);
-      console.log(batchResults);
-      finalArray = [...finalArray, ...batchResults];
-    }
-
-    this.pmObject.isMainLoaderHidden = true;
-  }
-  async createFTEMilestones(response, projectFolder,months?,fteResource?,ProjectCode?) {
-    const monthObjArray = months ? months : this.pmObject.addProject.Timeline.NonStandard.months ;
-    const options = {
-      data: null,
-      url: '',
-      type: '',
-      listName: ''
+      url: "",
+      type: "",
+      listName: "",
     };
     const batchURL = [];
-    const projectCode = ProjectCode ? ProjectCode : this.pmObject.addProject.ProjectAttributes.ProjectCode;
-    monthObjArray.forEach(element => {
+    const projectCode = ProjectCode
+      ? ProjectCode
+      : this.pmObject.addProject.ProjectAttributes.ProjectCode;
+    monthObjArray.forEach((element) => {
       const milestonedata = this.getFTEMilestoneData(element, projectCode);
       const milestoneCreate = Object.assign({}, options);
-      milestoneCreate.url = this.spServices.getReadURL(this.constant.listNames.Schedules.name, null);
+      milestoneCreate.url = this.spServices.getReadURL(
+        this.constant.listNames.Schedules.name,
+        null
+      );
       milestoneCreate.data = milestonedata;
-      milestoneCreate.type = 'POST';
+      milestoneCreate.type = "POST";
       milestoneCreate.listName = this.constant.listNames.Schedules.name;
       batchURL.push(milestoneCreate);
 
       // create the milestone folder.
       const milestoneFolderBody = {
-        __metadata: { type: 'SP.Folder' },
-        ServerRelativeUrl: projectFolder + '/Drafts/Internal/' + element.monthName
+        __metadata: { type: "SP.Folder" },
+        ServerRelativeUrl:
+          projectFolder + "/Drafts/Internal/" + element.monthName,
       };
       const createForderObj = Object.assign({}, options);
       createForderObj.data = milestoneFolderBody;
       // createForderObj.listName = element;
-      createForderObj.type = 'POST';
+      createForderObj.type = "POST";
       createForderObj.url = this.spServices.getFolderCreationURL();
       batchURL.push(createForderObj);
       // create FTE Task.
-      const taskBlockingdata = this.getFTETask(element, projectCode, this.pmConstant.task.BLOCKING,fteResource);
+      const taskBlockingdata = this.getFTETask(
+        element,
+        projectCode,
+        this.pmConstant.task.BLOCKING,
+        fteResource
+      );
       const taskBlockingCreate = Object.assign({}, options);
-      taskBlockingCreate.url = this.spServices.getReadURL(this.constant.listNames.Schedules.name, null);
+      taskBlockingCreate.url = this.spServices.getReadURL(
+        this.constant.listNames.Schedules.name,
+        null
+      );
       taskBlockingCreate.data = taskBlockingdata;
-      taskBlockingCreate.type = 'POST';
+      taskBlockingCreate.type = "POST";
       taskBlockingCreate.listName = this.constant.listNames.Schedules.name;
       batchURL.push(taskBlockingCreate);
 
       // create Meeting Task
-      const taskMeetingdata = this.getFTETask(element, projectCode, this.pmConstant.task.MEETING,fteResource);
+      const taskMeetingdata = this.getFTETask(
+        element,
+        projectCode,
+        this.pmConstant.task.MEETING,
+        fteResource
+      );
       const taskMeetingCreate = Object.assign({}, options);
-      taskMeetingCreate.url = this.spServices.getReadURL(this.constant.listNames.Schedules.name, null);
+      taskMeetingCreate.url = this.spServices.getReadURL(
+        this.constant.listNames.Schedules.name,
+        null
+      );
       taskMeetingCreate.data = taskMeetingdata;
-      taskMeetingCreate.type = 'POST';
+      taskMeetingCreate.type = "POST";
       taskMeetingCreate.listName = this.constant.listNames.Schedules.name;
       batchURL.push(taskMeetingCreate);
       // Create Training Task
-      const taskTrainingdata = this.getFTETask(element, projectCode, this.pmConstant.task.TRAINING,fteResource);
+      const taskTrainingdata = this.getFTETask(
+        element,
+        projectCode,
+        this.pmConstant.task.TRAINING,
+        fteResource
+      );
       const taskTrainingCreate = Object.assign({}, options);
-      taskTrainingCreate.url = this.spServices.getReadURL(this.constant.listNames.Schedules.name, null);
+      taskTrainingCreate.url = this.spServices.getReadURL(
+        this.constant.listNames.Schedules.name,
+        null
+      );
       taskTrainingCreate.data = taskTrainingdata;
-      taskTrainingCreate.type = 'POST';
+      taskTrainingCreate.type = "POST";
       taskTrainingCreate.listName = this.constant.listNames.Schedules.name;
       batchURL.push(taskTrainingCreate);
     });
     if (batchURL.length) {
-      this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetSchedules');
+      this.commonService.SetNewrelic(
+        "projectManagment",
+        "pmcommon",
+        "createFTEMilestones",
+        "POST-BATCH"
+      );
       const results = await this.spServices.executeBatch(batchURL);
       return results;
     }
@@ -1669,31 +2162,51 @@ export class PMCommonService {
       Title: fteObj.monthName,
       // FileSystemObjectType: 1,
       // ContentTypeId: '0x0120'
-      ContentTypeCH: this.constant.CONTENT_TYPE.MILESTONE
+      ContentTypeCH: this.constant.CONTENT_TYPE.MILESTONE,
     };
     return data;
   }
-  getFTETask(fteObj, projectCode, taskType,Resource?) {
-    const businessDay = this.commonService.calcBusinessDays(fteObj.monthStartDay, fteObj.monthEndDay);
-    const resourceObj: any = Resource ? Resource : this.pmObject.addProject.Timeline.NonStandard.ResourceName ? this.pmObject.addProject.Timeline.NonStandard.ResourceName.hasOwnProperty('UserNamePG') ? this.pmObject.addProject.Timeline.NonStandard.ResourceName : fteObj.Resources ? fteObj.Resources.hasOwnProperty('UserNamePG') ? fteObj.Resources : null : null : null;
+  getFTETask(fteObj, projectCode, taskType, Resource?) {
+    const businessDay = this.commonService.calcBusinessDays(
+      fteObj.monthStartDay,
+      fteObj.monthEndDay
+    );
+    const resourceObj: any = Resource
+      ? Resource
+      : this.pmObject.addProject.Timeline.NonStandard.ResourceName
+      ? this.pmObject.addProject.Timeline.NonStandard.ResourceName.hasOwnProperty(
+          "UserNamePG"
+        )
+        ? this.pmObject.addProject.Timeline.NonStandard.ResourceName
+        : fteObj.Resources
+        ? fteObj.Resources.hasOwnProperty("UserNamePG")
+          ? fteObj.Resources
+          : null
+        : null
+      : null;
     let data: any;
     if (taskType === this.pmConstant.task.BLOCKING) {
       data = {
         __metadata: { type: this.constant.listNames.Schedules.type },
         StartDate: fteObj.monthStartDay,
         DueDateDT: fteObj.monthEndDay,
-        ExpectedTime: resourceObj ? '' + businessDay * resourceObj.MaxHrs : '0',
-        TimeZoneNM: resourceObj ? resourceObj.TimeZone.Title: 0,
+        ExpectedTime: resourceObj ? "" + businessDay * resourceObj.MaxHrs : "0",
+        TimeZoneNM: resourceObj ? resourceObj.TimeZone.Title : 0,
         TATBusinessDays: businessDay,
         Status: this.constant.STATUS.NOT_CONFIRMED,
-        Title: projectCode + ' ' + fteObj.monthName + ' ' + this.pmConstant.task.BLOCKING,
+        Title:
+          projectCode +
+          " " +
+          fteObj.monthName +
+          " " +
+          this.pmConstant.task.BLOCKING,
         ProjectCode: projectCode,
         Task: this.pmConstant.task.BLOCKING,
         Milestone: fteObj.monthName,
         AssignedToId: resourceObj ? resourceObj.UserNamePG.ID : -1,
-        IsCentrallyAllocated: 'No',
-        ActiveCA: 'No',
-        ContentTypeCH: this.constant.CONTENT_TYPE.TASK
+        IsCentrallyAllocated: "No",
+        ActiveCA: "No",
+        ContentTypeCH: this.constant.CONTENT_TYPE.TASK,
       };
     }
     if (taskType === this.pmConstant.task.MEETING) {
@@ -1701,18 +2214,23 @@ export class PMCommonService {
         __metadata: { type: this.constant.listNames.Schedules.type },
         StartDate: fteObj.monthStartDay,
         DueDateDT: fteObj.monthEndDay,
-        ExpectedTime: '' + 0,
-        TimeZoneNM: resourceObj ? resourceObj.TimeZone.Title: 0,
+        ExpectedTime: "" + 0,
+        TimeZoneNM: resourceObj ? resourceObj.TimeZone.Title : 0,
         TATBusinessDays: 0,
         Status: this.constant.STATUS.NOT_CONFIRMED,
-        Title: projectCode + ' ' + fteObj.monthName + ' ' + this.pmConstant.task.MEETING,
+        Title:
+          projectCode +
+          " " +
+          fteObj.monthName +
+          " " +
+          this.pmConstant.task.MEETING,
         ProjectCode: projectCode,
         Task: this.pmConstant.task.MEETING,
         Milestone: fteObj.monthName,
-        AssignedToId: resourceObj ? resourceObj.UserNamePG.ID: -1,
-        IsCentrallyAllocated: 'No',
-        ActiveCA: 'No',
-        ContentTypeCH: this.constant.CONTENT_TYPE.TASK
+        AssignedToId: resourceObj ? resourceObj.UserNamePG.ID : -1,
+        IsCentrallyAllocated: "No",
+        ActiveCA: "No",
+        ContentTypeCH: this.constant.CONTENT_TYPE.TASK,
       };
     }
     if (taskType === this.pmConstant.task.TRAINING) {
@@ -1720,18 +2238,23 @@ export class PMCommonService {
         __metadata: { type: this.constant.listNames.Schedules.type },
         StartDate: fteObj.monthStartDay,
         DueDateDT: fteObj.monthEndDay,
-        ExpectedTime: '' + 0,
-        TimeZoneNM: resourceObj ? resourceObj.TimeZone.Title: 0,
+        ExpectedTime: "" + 0,
+        TimeZoneNM: resourceObj ? resourceObj.TimeZone.Title : 0,
         TATBusinessDays: 0,
         Status: this.constant.STATUS.NOT_CONFIRMED,
-        Title: projectCode + ' ' + fteObj.monthName + ' ' + this.pmConstant.task.TRAINING,
+        Title:
+          projectCode +
+          " " +
+          fteObj.monthName +
+          " " +
+          this.pmConstant.task.TRAINING,
         ProjectCode: projectCode,
         Task: this.pmConstant.task.TRAINING,
         Milestone: fteObj.monthName,
-        AssignedToId: resourceObj ? resourceObj.UserNamePG.ID: -1,
-        IsCentrallyAllocated: 'No',
-        ActiveCA: 'No',
-        ContentTypeCH: this.constant.CONTENT_TYPE.TASK
+        AssignedToId: resourceObj ? resourceObj.UserNamePG.ID : -1,
+        IsCentrallyAllocated: "No",
+        ActiveCA: "No",
+        ContentTypeCH: this.constant.CONTENT_TYPE.TASK,
       };
     }
     return data;
@@ -1749,7 +2272,7 @@ export class PMCommonService {
       Actual_x0020_End_x0020_Date: milestoneObj.EndDate,
       StartDate: milestoneObj.StartDate,
       DueDateDT: milestoneObj.EndDate,
-      ExpectedTime: '' + milestoneObj.Hours,
+      ExpectedTime: "" + milestoneObj.Hours,
       Status: this.constant.STATUS.NOT_CONFIRMED,
       TATBusinessDays: milestoneObj.Days,
       ProjectCode: projectCode,
@@ -1769,40 +2292,52 @@ export class PMCommonService {
   getTaskData(milestoneTask, projectCode, milestoneObj, subMilestoneObj) {
     milestoneTask = milestoneTask.data;
     milestoneTask.taskExist = true;
-    const startDate = this.calcTimeForDifferentTimeZone(milestoneTask.StartDate,
-      milestoneTask.assignedUserTimeZone, (new Date()).getTimezoneOffset() / 60 * -1);
-    const endDate = this.calcTimeForDifferentTimeZone(milestoneTask.EndDate,
-      milestoneTask.assignedUserTimeZone, (new Date()).getTimezoneOffset() / 60 * -1);
+    const startDate = this.calcTimeForDifferentTimeZone(
+      milestoneTask.StartDate,
+      milestoneTask.assignedUserTimeZone,
+      (new Date().getTimezoneOffset() / 60) * -1
+    );
+    const endDate = this.calcTimeForDifferentTimeZone(
+      milestoneTask.EndDate,
+      milestoneTask.assignedUserTimeZone,
+      (new Date().getTimezoneOffset() / 60) * -1
+    );
     const data: any = {
       __metadata: { type: this.constant.listNames.Schedules.type },
       StartDate: startDate,
       DueDateDT: endDate,
-      ExpectedTime: '' + milestoneTask.Hours,
+      ExpectedTime: "" + milestoneTask.Hours,
       TimeZoneNM: +milestoneTask.assignedUserTimeZone,
-      AllowCompletion: 'No',
+      AllowCompletion: "No",
       TATStatus: milestoneTask.UseTaskDays,
       TATBusinessDays: milestoneTask.TaskDays,
       Status: this.constant.STATUS.NOT_CONFIRMED,
       SubMilestones: milestoneTask.SubMilestone,
-      Title: projectCode + ' ' + milestoneObj.MilestoneName + ' ' + milestoneTask.TaskName.replace('Send to client', 'SC'),
+      Title:
+        projectCode +
+        " " +
+        milestoneObj.MilestoneName +
+        " " +
+        milestoneTask.TaskName.replace("Send to client", "SC"),
       ProjectCode: projectCode,
       Task: milestoneTask.Task,
       Milestone: milestoneObj.MilestoneName,
       SkillLevel: milestoneTask.Skill,
-      CentralAllocationDone: 'No',
-      DisableCascade: 'No',
-      AllocationPerDay: milestoneTask.allocationPerDay ? milestoneTask.allocationPerDay : ''
-
+      CentralAllocationDone: "No",
+      DisableCascade: "No",
+      AllocationPerDay: milestoneTask.allocationPerDay
+        ? milestoneTask.allocationPerDay
+        : "",
     };
     if (milestoneTask.userId > 0) {
       data.AssignedToId = milestoneTask.userId;
     }
-    if (milestoneTask.Task === 'Send to client') {
+    if (milestoneTask.Task === "Send to client") {
       data.AssignedToId = this.globalObject.currentUser.userId;
     }
-    if (milestoneTask.hasOwnProperty('PreviousTask')) {
-      let sNextTask = '';
-      let sPrevTask = '';
+    if (milestoneTask.hasOwnProperty("PreviousTask")) {
+      let sNextTask = "";
+      let sPrevTask = "";
       let arrTask;
       if (milestoneObj.SubMilestones) {
         arrTask = subMilestoneObj.children.filter((obj) => {
@@ -1815,13 +2350,28 @@ export class PMCommonService {
       }
       if (arrTask.length) {
         for (const oTask of arrTask) {
-          sNextTask = sNextTask ?
-            sNextTask + ';#' + projectCode + ' ' + milestoneObj.MilestoneName + ' ' + oTask.data.TaskName.replace('Send to client', 'SC')
-            : projectCode + ' ' + milestoneObj.MilestoneName + ' ' + oTask.data.TaskName.replace('Send to client', 'SC');
+          sNextTask = sNextTask
+            ? sNextTask +
+              ";#" +
+              projectCode +
+              " " +
+              milestoneObj.MilestoneName +
+              " " +
+              oTask.data.TaskName.replace("Send to client", "SC")
+            : projectCode +
+              " " +
+              milestoneObj.MilestoneName +
+              " " +
+              oTask.data.TaskName.replace("Send to client", "SC");
         }
       } else {
-        if (milestoneTask.Task === 'Send to client') {
-          sNextTask = projectCode + ' ' + milestoneObj.MilestoneName + ' ' + 'Client Review';
+        if (milestoneTask.Task === "Send to client") {
+          sNextTask =
+            projectCode +
+            " " +
+            milestoneObj.MilestoneName +
+            " " +
+            "Client Review";
         }
       }
       const arrPrevTasks = milestoneTask.PreviousTask;
@@ -1837,8 +2387,19 @@ export class PMCommonService {
           });
         }
         if (arrTasks.length) {
-          sPrevTask = sPrevTask ? sPrevTask + ';#' + projectCode + ' ' + milestoneObj.MilestoneName + ' ' + arrTasks[0].data.TaskName
-            : projectCode + ' ' + milestoneObj.MilestoneName + ' ' + arrTasks[0].data.TaskName;
+          sPrevTask = sPrevTask
+            ? sPrevTask +
+              ";#" +
+              projectCode +
+              " " +
+              milestoneObj.MilestoneName +
+              " " +
+              arrTasks[0].data.TaskName
+            : projectCode +
+              " " +
+              milestoneObj.MilestoneName +
+              " " +
+              arrTasks[0].data.TaskName;
         }
       }
       data.NextTasks = sNextTask;
@@ -1847,12 +2408,16 @@ export class PMCommonService {
       data.NextTasks = milestoneTask.NextTasks;
       data.PrevTasks = milestoneTask.PrevTasks;
     }
-    if (milestoneTask.Skill === 'Pub Support' ||
-      milestoneTask.Skill === 'Editor' || milestoneTask.Skill === 'QC' || milestoneTask.Skill === 'Graphics') {
-      data.IsCentrallyAllocated = 'Yes';
+    if (
+      milestoneTask.Skill === "Pub Support" ||
+      milestoneTask.Skill === "Editor" ||
+      milestoneTask.Skill === "QC" ||
+      milestoneTask.Skill === "Graphics"
+    ) {
+      data.IsCentrallyAllocated = "Yes";
       data.ContentTypeCH = this.constant.CONTENT_TYPE.SLOT;
     } else {
-      data.IsCentrallyAllocated = 'No';
+      data.IsCentrallyAllocated = "No";
       data.ContentTypeCH = this.constant.CONTENT_TYPE.TASK;
     }
     return data;
@@ -1868,9 +2433,12 @@ export class PMCommonService {
       ProjectCode: addObj.ProjectAttributes.ProjectCode,
       ProjectLookup: res[15].retItems.ID,
       Status: this.constant.STATUS.APPROVAL_PENDING,
-      BudgetHours: addObj.FinanceManagement.BudgetHours
+      BudgetHours: addObj.FinanceManagement.BudgetHours,
     };
-    if (addObj.ProjectAttributes.BilledBy === this.pmConstant.PROJECT_TYPE.HOURLY.value) {
+    if (
+      addObj.ProjectAttributes.BilledBy ===
+      this.pmConstant.PROJECT_TYPE.HOURLY.value
+    ) {
       data.OriginalBudget = 0;
       data.OOPBudget = 0;
       data.NetBudget = 0;
@@ -1888,9 +2456,9 @@ export class PMCommonService {
     let batchURL = [];
     const options = {
       data: null,
-      url: '',
-      type: '',
-      listName: ''
+      url: "",
+      type: "",
+      listName: "",
     };
     let batchResults = [];
     let finalArray = [];
@@ -1898,16 +2466,28 @@ export class PMCommonService {
       for (const element of projectArray) {
         if (batchURL.length < 100) {
           const projectFinanceGet = Object.assign({}, options);
-          const projectFinanceFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.PROJECT_FINANCE_BY_PROJECTCODE);
-          projectFinanceFilter.filter = projectFinanceFilter.filter.replace(/{{projectCode}}/gi,
-            element.ProjectCode);
-          projectFinanceGet.url = this.spServices.getReadURL(this.constant.listNames.ProjectFinances.name,
-            projectFinanceFilter);
-          projectFinanceGet.type = 'GET';
+          const projectFinanceFilter = Object.assign(
+            {},
+            this.pmConstant.FINANCE_QUERY.PROJECT_FINANCE_BY_PROJECTCODE
+          );
+          projectFinanceFilter.filter = projectFinanceFilter.filter.replace(
+            /{{projectCode}}/gi,
+            element.ProjectCode
+          );
+          projectFinanceGet.url = this.spServices.getReadURL(
+            this.constant.listNames.ProjectFinances.name,
+            projectFinanceFilter
+          );
+          projectFinanceGet.type = "GET";
           projectFinanceGet.listName = this.constant.listNames.ProjectFinances.name;
           batchURL.push(projectFinanceGet);
           if (batchURL.length === 99) {
-            this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetProjectFinance');
+            this.commonService.SetNewrelic(
+              "projectManagment",
+              "pmcommon",
+              "GetProjectFinance",
+              "GET-BATCH"
+            );
             batchResults = await this.spServices.executeBatch(batchURL);
             finalArray = [...finalArray, ...batchResults];
             batchURL = [];
@@ -1915,12 +2495,17 @@ export class PMCommonService {
         }
       }
       if (batchURL.length) {
-        this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetProjectFinance');
+        this.commonService.SetNewrelic(
+          "projectManagment",
+          "pmcommon",
+          "GetProjectFinance",
+          "GET-BATCH"
+        );
         batchResults = await this.spServices.executeBatch(batchURL);
         finalArray = [...finalArray, ...batchResults];
       }
     }
-    console.log('batch length: ' + batchURL.length);
+    console.log("batch length: " + batchURL.length);
     return finalArray;
   }
   customSort(data, order: number, fieldName?: string) {
@@ -1942,10 +2527,14 @@ export class PMCommonService {
     return data;
   }
   monthDifference(dateFrom, dateTo) {
-    return dateTo.getMonth() - dateFrom.getMonth() +
-      (12 * (dateTo.getFullYear() - dateFrom.getFullYear()));
+    return (
+      dateTo.getMonth() -
+      dateFrom.getMonth() +
+      12 * (dateTo.getFullYear() - dateFrom.getFullYear())
+    );
   }
-  getMonths(fromDate, toDate) { /// https://jsfiddle.net/fvkcxsdb/1/
+  getMonths(fromDate, toDate) {
+    /// https://jsfiddle.net/fvkcxsdb/1/
     const fromYear = fromDate.getFullYear();
     const fromMonth = fromDate.getMonth();
     const toYear = toDate.getFullYear();
@@ -1978,202 +2567,377 @@ export class PMCommonService {
     return months;
   }
 
-
   async getEmailTemplate(TemplateName) {
-    const contentFilter = Object.assign({}, this.pmConstant.SOW_QUERY.CONTENT_QUERY);
-    this.commonService.SetNewrelic('ProjectManagement', 'PmCommon', 'GetEmailTemplate');
-    contentFilter.filter = contentFilter.filter.replace(/{{templateName}}/gi, TemplateName);
-    const templateData = await this.spServices.readItems(this.constant.listNames.MailContent.name,
-      contentFilter);
+    const contentFilter = Object.assign(
+      {},
+      this.pmConstant.SOW_QUERY.CONTENT_QUERY
+    );
+    this.commonService.SetNewrelic(
+      "projectManagment",
+      "pmcommon",
+      "GetEmailTemplate",
+      "GET"
+    );
+    contentFilter.filter = contentFilter.filter.replace(
+      /{{templateName}}/gi,
+      TemplateName
+    );
+    const templateData = await this.spServices.readItems(
+      this.constant.listNames.MailContent.name,
+      contentFilter
+    );
     return templateData.length > 0 ? templateData[0] : [];
   }
 
   async getFolderName() {
-    const docFolder = 'Finance/SOW';
-    let libraryName = '';
-    const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
-      x.Title === this.pmObject.addProject.ProjectAttributes.ClientLegalEntity);
+    const docFolder = "Finance/SOW";
+    let libraryName = "";
+    const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(
+      (x) =>
+        x.Title === this.pmObject.addProject.ProjectAttributes.ClientLegalEntity
+    );
     if (clientInfo && clientInfo.length) {
       libraryName = clientInfo[0].ListName;
     }
-    return libraryName + '/' + docFolder;
+    return libraryName + "/" + docFolder;
   }
 
   async reloadPMPage() {
     setTimeout(() => {
       this.pmObject.isAddProjectVisible = false;
       this.pmObject.isMainLoaderHidden = true;
-      if (this.router.url === '/projectMgmt/allProjects') {
-        this.dataService.publish('reload-project');
+      if (this.router.url === "/projectMgmt/allProjects") {
+        this.dataService.publish("reload-project");
       } else {
         this.pmObject.allProjectItems = [];
-        this.router.navigate(['/projectMgmt/allProjects']);
+        this.router.navigate(["/projectMgmt/allProjects"]);
       }
     }, this.pmConstant.TIME_OUT);
   }
 
-
-
   replaceContent(mailContent, key, value) {
-    return mailContent.replace(new RegExp(key, 'g'), value);
+    return mailContent.replace(new RegExp(key, "g"), value);
   }
 
-
-  async getAllRules(type){
-    const batchURL=[];
+  async getAllRules(type) {
+    const batchURL = [];
     this.commonService.setBatchObject(
-          batchURL,
-          this.spServices
-            .getReadURL(
-              this.constant.listNames.RuleStore.name,
-              this.pmConstant.PM_QUERY.GET_RULES_BY_ACTIVE
-            )
-            .replace(/{{isActive}}/gi, "Yes")
-            .replace(/{{type}}/gi, type),
-          null,
-          this.constant.Method.GET,
-          this.constant.listNames.RuleStore.name
-        );
+      batchURL,
+      this.spServices
+        .getReadURL(
+          this.constant.listNames.RuleStore.name,
+          this.pmConstant.PM_QUERY.GET_RULES_BY_ACTIVE
+        )
+        .replace(/{{isActive}}/gi, "Yes")
+        .replace(/{{type}}/gi, type),
+      null,
+      this.constant.Method.GET,
+      this.constant.listNames.RuleStore.name
+    );
 
-        this.commonService.SetNewrelic('projectManagment', 'PmCommonService', 'GetAllRules');
-            const arrResults = await this.spServices.executeBatch(batchURL);
-            this.pmObject.RuleArray = arrResults && arrResults.length > 0 && arrResults[0].retItems.length > 0 ? arrResults[0].retItems :[];
+    this.commonService.SetNewrelic(
+      "projectManagment",
+      "pmcommon",
+      "GetAllRules",
+      "GET"
+    );
+    const arrResults = await this.spServices.executeBatch(batchURL);
+    this.pmObject.RuleArray =
+      arrResults && arrResults.length > 0 && arrResults[0].retItems.length > 0
+        ? arrResults[0].retItems
+        : [];
 
-            if(this.pmObject.RuleArray.length > 0){
-              this.pmObject.RuleArray.map((c)=> c.DisplayRules = JSON.parse(c.Rule));
-            }
+    if (this.pmObject.RuleArray.length > 0) {
+      this.pmObject.RuleArray.map((c) => (c.DisplayRules = JSON.parse(c.Rule)));
+    }
   }
 
-
-  FilterRules(){
-    let FilterRules =[];
-    let TempArray=[];
-    let selectedDeliveryAccess =[];
-    let selectedCMAccess=[];
-    this.constant.RuleParamterArray.forEach(element => {
-      if(element.value){
-        FilterRules.push.apply(FilterRules,this.pmObject.RuleArray.filter(c=> c.DisplayRules.filter(c=> c.InternalName === element.parameterName && c.Value === element.value).length > 0)) 
+  FilterRules() {
+    let FilterRules = [];
+    let TempArray = [];
+    let selectedDeliveryAccess = [];
+    let selectedCMAccess = [];
+    this.constant.RuleParamterArray.forEach((element) => {
+      if (element.value) {
+        FilterRules.push.apply(
+          FilterRules,
+          this.pmObject.RuleArray.filter(
+            (c) =>
+              c.DisplayRules.filter(
+                (c) =>
+                  c.InternalName === element.parameterName &&
+                  c.Value === element.value
+              ).length > 0
+          )
+        );
         TempArray.push(element.value);
       }
     });
     TempArray.sort();
     FilterRules = [...new Set(FilterRules)];
-    const AllFilterRules = FilterRules.filter(c=> c.DisplayRules.map(d=>d.Value).sort().filter(e=> !TempArray.includes(e)).length ===0 );
-    
-    this.pmObject.RuleTypeArray.Delivery = AllFilterRules.filter(c=>c.ResourceType === this.constant.RulesType.DELIVERY) ? AllFilterRules.filter(c=>c.ResourceType === this.constant.RulesType.DELIVERY):[]; 
-    
-    this.pmObject.RuleTypeArray.CM = AllFilterRules.filter(c=>c.ResourceType === this.constant.RulesType.CM) ? AllFilterRules.filter(c=>c.ResourceType === this.constant.RulesType.CM):[]; 
-    
-    this.pmObject.RuleTypeArray.Delivery.sort((a,b) => b.DisplayOrder - a.DisplayOrder); 
-    this.pmObject.RuleTypeArray.CM.sort((a,b) => b.DisplayOrder - a.DisplayOrder); 
+    const AllFilterRules = FilterRules.filter(
+      (c) =>
+        c.DisplayRules.map((d) => d.Value)
+          .sort()
+          .filter((e) => !TempArray.includes(e)).length === 0
+    );
 
-    let IDsArray =[];
+    this.pmObject.RuleTypeArray.Delivery = AllFilterRules.filter(
+      (c) => c.ResourceType === this.constant.RulesType.DELIVERY
+    )
+      ? AllFilterRules.filter(
+          (c) => c.ResourceType === this.constant.RulesType.DELIVERY
+        )
+      : [];
 
-    
-      this.pmObject.OwnerAccess.selectedDeliveryOwner = this.pmObject.RuleTypeArray.Delivery && this.pmObject.RuleTypeArray.Delivery.length> 0 ? this.pmObject.RuleTypeArray.Delivery[0].OwnerPG.ID: 0;
-      IDsArray =  this.pmObject.RuleTypeArray.Delivery && this.pmObject.RuleTypeArray.Delivery.length > 0 && this.pmObject.RuleTypeArray.Delivery.filter(
-        (c) => c.Access.hasOwnProperty("results")
-      ) ?  this.pmObject.RuleTypeArray.Delivery.filter(
-        (c) => c.Access.hasOwnProperty("results")
-      ).map(d=>d.Access.results.map(e=>e.ID)):[];
-      selectedDeliveryAccess = [...new Set(IDsArray.reduce((a,b)=> [...a, ...b], []))];
-    
-   
-      this.pmObject.OwnerAccess.selectedCMOwner =  this.pmObject.RuleTypeArray.CM && this.pmObject.RuleTypeArray.CM.length > 0 ? this.pmObject.RuleTypeArray.CM[0].OwnerPG.ID
-      : 0 ;
-      IDsArray =  this.pmObject.RuleTypeArray.CM && this.pmObject.RuleTypeArray.CM.length > 0 && this.pmObject.RuleTypeArray.CM.filter(
-        (c) => c.Access.hasOwnProperty("results")
-      ) ?  this.pmObject.RuleTypeArray.CM.filter(
-        (c) => c.Access.hasOwnProperty("results")
-      ).map(d=>d.Access.results.map(e=>e.ID)):[];
+    this.pmObject.RuleTypeArray.CM = AllFilterRules.filter(
+      (c) => c.ResourceType === this.constant.RulesType.CM
+    )
+      ? AllFilterRules.filter(
+          (c) => c.ResourceType === this.constant.RulesType.CM
+        )
+      : [];
 
-      selectedCMAccess =[...new Set(IDsArray.reduce((a,b)=> [...a, ...b], []))];
-    
-    const existingRules = this.pmObject.TempRuleArray ?  JSON.parse(JSON.stringify(this.pmObject.TempRuleArray)) :[]; 
-  
-    this.pmObject.TempRuleArray = [...this.pmObject.RuleTypeArray.Delivery,...this.pmObject.RuleTypeArray.CM]; 
+    this.pmObject.RuleTypeArray.Delivery.sort(
+      (a, b) => b.DisplayOrder - a.DisplayOrder
+    );
+    this.pmObject.RuleTypeArray.CM.sort(
+      (a, b) => b.DisplayOrder - a.DisplayOrder
+    );
 
-    const RemovedRules =existingRules.filter(c=> !this.pmObject.TempRuleArray.map(d=>d.ID).includes(c.ID));
-    const AddedRules = this.pmObject.TempRuleArray.filter(c=> !existingRules.map(d=>d.ID).includes(c.ID));
+    let IDsArray = [];
 
-      if(RemovedRules && RemovedRules.length > 0) {  
-        if(RemovedRules.filter(c=>c.ResourceType === this.constant.RulesType.DELIVERY)){
+    this.pmObject.OwnerAccess.selectedDeliveryOwner =
+      this.pmObject.RuleTypeArray.Delivery &&
+      this.pmObject.RuleTypeArray.Delivery.length > 0
+        ? this.pmObject.RuleTypeArray.Delivery[0].OwnerPG.ID
+        : 0;
+    IDsArray =
+      this.pmObject.RuleTypeArray.Delivery &&
+      this.pmObject.RuleTypeArray.Delivery.length > 0 &&
+      this.pmObject.RuleTypeArray.Delivery.filter((c) =>
+        c.Access.hasOwnProperty("results")
+      )
+        ? this.pmObject.RuleTypeArray.Delivery.filter((c) =>
+            c.Access.hasOwnProperty("results")
+          ).map((d) => d.Access.results.map((e) => e.ID))
+        : [];
+    selectedDeliveryAccess = [
+      ...new Set(IDsArray.reduce((a, b) => [...a, ...b], [])),
+    ];
 
-          const data = this.UserCMDeliveryIds(RemovedRules, this.constant.RulesType.DELIVERY, JSON.parse(JSON.stringify(this.pmObject.OwnerAccess.selectedDeliveryAccess)));
-          ; 
-          this.pmObject.OwnerAccess.selectedDeliveryAccess = [...new Set([...selectedDeliveryAccess , ...data.oldAccessIds.filter(f=> !data.IDs.includes(f))])];  
-        } 
-        if(RemovedRules.filter(c=>c.ResourceType === this.constant.RulesType.CM)){
+    this.pmObject.OwnerAccess.selectedCMOwner =
+      this.pmObject.RuleTypeArray.CM &&
+      this.pmObject.RuleTypeArray.CM.length > 0
+        ? this.pmObject.RuleTypeArray.CM[0].OwnerPG.ID
+        : 0;
+    IDsArray =
+      this.pmObject.RuleTypeArray.CM &&
+      this.pmObject.RuleTypeArray.CM.length > 0 &&
+      this.pmObject.RuleTypeArray.CM.filter((c) =>
+        c.Access.hasOwnProperty("results")
+      )
+        ? this.pmObject.RuleTypeArray.CM.filter((c) =>
+            c.Access.hasOwnProperty("results")
+          ).map((d) => d.Access.results.map((e) => e.ID))
+        : [];
 
-          const data = this.UserCMDeliveryIds(RemovedRules, this.constant.RulesType.CM,  JSON.parse(JSON.stringify(this.pmObject.OwnerAccess.selectedCMAccess)));
-          ; 
-          this.pmObject.OwnerAccess.selectedCMAccess =[...new Set([...selectedCMAccess , ...data.oldAccessIds.filter(f=> !data.IDs.includes(f))])];  
-        }
-      } else if(AddedRules && AddedRules.length > 0){
-        
-        if(AddedRules.filter(c=>c.ResourceType === this.constant.RulesType.DELIVERY)){
+    selectedCMAccess = [
+      ...new Set(IDsArray.reduce((a, b) => [...a, ...b], [])),
+    ];
 
-          const data = this.UserCMDeliveryIds(AddedRules, this.constant.RulesType.DELIVERY,  JSON.parse(JSON.stringify(this.pmObject.OwnerAccess.selectedDeliveryAccess)));
-          ; 
-          this.pmObject.OwnerAccess.selectedDeliveryAccess = [...new Set([...data.oldAccessIds, ...data.IDs])];  
-        } 
-        if(AddedRules.filter(c=>c.ResourceType === this.constant.RulesType.CM)){
+    const existingRules = this.pmObject.TempRuleArray
+      ? JSON.parse(JSON.stringify(this.pmObject.TempRuleArray))
+      : [];
 
-          const data = this.UserCMDeliveryIds(AddedRules, this.constant.RulesType.CM,  JSON.parse(JSON.stringify(this.pmObject.OwnerAccess.selectedCMAccess)));
-          ; 
-          this.pmObject.OwnerAccess.selectedCMAccess = [...new Set([...data.oldAccessIds, ...data.IDs])];  
-        }
-      }    
+    this.pmObject.TempRuleArray = [
+      ...this.pmObject.RuleTypeArray.Delivery,
+      ...this.pmObject.RuleTypeArray.CM,
+    ];
+
+    const RemovedRules = existingRules.filter(
+      (c) => !this.pmObject.TempRuleArray.map((d) => d.ID).includes(c.ID)
+    );
+    const AddedRules = this.pmObject.TempRuleArray.filter(
+      (c) => !existingRules.map((d) => d.ID).includes(c.ID)
+    );
+
+    if (RemovedRules && RemovedRules.length > 0) {
+      if (
+        RemovedRules.filter(
+          (c) => c.ResourceType === this.constant.RulesType.DELIVERY
+        )
+      ) {
+        const data = this.UserCMDeliveryIds(
+          RemovedRules,
+          this.constant.RulesType.DELIVERY,
+          JSON.parse(
+            JSON.stringify(this.pmObject.OwnerAccess.selectedDeliveryAccess)
+          )
+        );
+        this.pmObject.OwnerAccess.selectedDeliveryAccess = [
+          ...new Set([
+            ...selectedDeliveryAccess,
+            ...data.oldAccessIds.filter((f) => !data.IDs.includes(f)),
+          ]),
+        ];
+      }
+      if (
+        RemovedRules.filter(
+          (c) => c.ResourceType === this.constant.RulesType.CM
+        )
+      ) {
+        const data = this.UserCMDeliveryIds(
+          RemovedRules,
+          this.constant.RulesType.CM,
+          JSON.parse(JSON.stringify(this.pmObject.OwnerAccess.selectedCMAccess))
+        );
+        this.pmObject.OwnerAccess.selectedCMAccess = [
+          ...new Set([
+            ...selectedCMAccess,
+            ...data.oldAccessIds.filter((f) => !data.IDs.includes(f)),
+          ]),
+        ];
+      }
+    } else if (AddedRules && AddedRules.length > 0) {
+      if (
+        AddedRules.filter(
+          (c) => c.ResourceType === this.constant.RulesType.DELIVERY
+        )
+      ) {
+        const data = this.UserCMDeliveryIds(
+          AddedRules,
+          this.constant.RulesType.DELIVERY,
+          JSON.parse(
+            JSON.stringify(this.pmObject.OwnerAccess.selectedDeliveryAccess)
+          )
+        );
+        this.pmObject.OwnerAccess.selectedDeliveryAccess = [
+          ...new Set([...data.oldAccessIds, ...data.IDs]),
+        ];
+      }
+      if (
+        AddedRules.filter((c) => c.ResourceType === this.constant.RulesType.CM)
+      ) {
+        const data = this.UserCMDeliveryIds(
+          AddedRules,
+          this.constant.RulesType.CM,
+          JSON.parse(JSON.stringify(this.pmObject.OwnerAccess.selectedCMAccess))
+        );
+        this.pmObject.OwnerAccess.selectedCMAccess = [
+          ...new Set([...data.oldAccessIds, ...data.IDs]),
+        ];
+      }
+    }
   }
 
-
-  UserCMDeliveryIds(Rules,Type,oldValue){
-    const  Data={oldAccessIds:[],IDs:[]};
-    Data.oldAccessIds =  oldValue ? oldValue :[];
-    const RulesAccessIDs = Rules.filter(c=>c.ResourceType === Type).filter(c=>c.Access.hasOwnProperty('results')) ? Rules.filter(c=>c.ResourceType === Type).filter(c=>c.Access.hasOwnProperty('results')).map(d=>d.Access.results.map(e=>e.ID)) :[];
-    Data.IDs =[...new Set(RulesAccessIDs.reduce((a,b)=> [...a, ...b], []))];
+  UserCMDeliveryIds(Rules, Type, oldValue) {
+    const Data = { oldAccessIds: [], IDs: [] };
+    Data.oldAccessIds = oldValue ? oldValue : [];
+    const RulesAccessIDs = Rules.filter(
+      (c) => c.ResourceType === Type
+    ).filter((c) => c.Access.hasOwnProperty("results"))
+      ? Rules.filter((c) => c.ResourceType === Type)
+          .filter((c) => c.Access.hasOwnProperty("results"))
+          .map((d) => d.Access.results.map((e) => e.ID))
+      : [];
+    Data.IDs = [...new Set(RulesAccessIDs.reduce((a, b) => [...a, ...b], []))];
     return Data;
   }
- 
 
   async GetRuleParameters(type) {
-   
     this.constant.RuleParamterArray = [];
-   
-    const contentFilter = Object.assign({}, this.pmConstant.PM_QUERY.GET_RULES_PARAMETER_BY_ACTIVE);
-    contentFilter.filter = contentFilter.filter.replace(/{{isActive}}/gi, 'Yes').replace(/{{type}}/gi, type);
-    this.commonService.SetNewrelic('projectManagment', 'PmCommon', 'GetRuleParameters');
-    const sResults = await this.spServices.readItems(this.constant.listNames.RuleParameters.name, contentFilter);
+
+    const contentFilter = Object.assign(
+      {},
+      this.pmConstant.PM_QUERY.GET_RULES_PARAMETER_BY_ACTIVE
+    );
+    contentFilter.filter = contentFilter.filter
+      .replace(/{{isActive}}/gi, "Yes")
+      .replace(/{{type}}/gi, type);
+    this.commonService.SetNewrelic(
+      "projectManagment",
+      "pmcommon",
+      "GetRuleParameters",
+      "GET"
+    );
+    const sResults = await this.spServices.readItems(
+      this.constant.listNames.RuleParameters.name,
+      contentFilter
+    );
     if (sResults && sResults.length) {
       const tempResult = [];
-      sResults.forEach(element => {
-        tempResult.push({ listName: element.InternalName.split(':')[0],parameterName:element.InternalName.split(':')[1],value:''});
+      sResults.forEach((element) => {
+        tempResult.push({
+          listName: element.InternalName.split(":")[0],
+          parameterName: element.InternalName.split(":")[1],
+          value: "",
+        });
       });
       this.constant.RuleParamterArray = tempResult;
     }
- }
+  }
 
-  assignValueToParameter(object){
-    this.constant.RuleParamterArray.forEach(element => {
-      if(Object.keys(object).includes(element.parameterName) && element.listName==='Current'){
-        element.value = element.parameterName === 'BusinessVertical' ? Array.isArray(object[element.parameterName]) ? (object[element.parameterName].length === 1 ? object[element.parameterName][0] : '') : object[element.parameterName] : object[element.parameterName];
+  assignValueToParameter(object) {
+    this.constant.RuleParamterArray.forEach((element) => {
+      if (
+        Object.keys(object).includes(element.parameterName) &&
+        element.listName === "Current"
+      ) {
+        element.value =
+          element.parameterName === "BusinessVertical"
+            ? Array.isArray(object[element.parameterName])
+              ? object[element.parameterName].length === 1
+                ? object[element.parameterName][0]
+                : ""
+              : object[element.parameterName]
+            : object[element.parameterName];
       } else {
-        element.value =  this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(c=>c.Title === object[element.listName]) ? this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(c=>c.Title === object[element.listName]).Bucket :'';
-      }   
+        element.value = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(
+          (c) => c.Title === object[element.listName]
+        )
+          ? this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(
+              (c) => c.Title === object[element.listName]
+            ).Bucket
+          : "";
+      }
     });
   }
 
-
-  storeRuleInArray(Item){
-    if(this.pmObject.RuleArray && this.pmObject.RuleArray.length > 0){
-      if(Item.CSRule){
-        this.pmObject.RuleTypeArray.CM = this.pmObject.RuleArray.filter(c=> Item.CSRule.split(';#').map(d=> +d).includes(c.ID)) ? this.pmObject.RuleArray.filter(c=> Item.CSRule.split(';#').map(d=> +d).includes(c.ID)) : [];
+  storeRuleInArray(Item) {
+    if (this.pmObject.RuleArray && this.pmObject.RuleArray.length > 0) {
+      if (Item.CSRule) {
+        this.pmObject.RuleTypeArray.CM = this.pmObject.RuleArray.filter((c) =>
+          Item.CSRule.split(";#")
+            .map((d) => +d)
+            .includes(c.ID)
+        )
+          ? this.pmObject.RuleArray.filter((c) =>
+              Item.CSRule.split(";#")
+                .map((d) => +d)
+                .includes(c.ID)
+            )
+          : [];
       }
 
-      if(Item.DeliveryRule){
-        this.pmObject.RuleTypeArray.Delivery = this.pmObject.RuleArray.filter(c=> Item.DeliveryRule.split(';#').map(d=> +d).includes(c.ID)) ?  this.pmObject.RuleArray.filter(c=> Item.DeliveryRule.split(';#').map(d=> +d).includes(c.ID)):[];
+      if (Item.DeliveryRule) {
+        this.pmObject.RuleTypeArray.Delivery = this.pmObject.RuleArray.filter(
+          (c) =>
+            Item.DeliveryRule.split(";#")
+              .map((d) => +d)
+              .includes(c.ID)
+        )
+          ? this.pmObject.RuleArray.filter((c) =>
+              Item.DeliveryRule.split(";#")
+                .map((d) => +d)
+                .includes(c.ID)
+            )
+          : [];
       }
-      this.pmObject.TempRuleArray = [...this.pmObject.RuleTypeArray.Delivery,...this.pmObject.RuleTypeArray.CM]; 
+      this.pmObject.TempRuleArray = [
+        ...this.pmObject.RuleTypeArray.Delivery,
+        ...this.pmObject.RuleTypeArray.CM,
+      ];
     }
   }
 }

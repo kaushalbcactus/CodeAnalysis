@@ -254,7 +254,7 @@ export class SOWComponent implements OnInit, OnDestroy {
       currSelectedSOW = this.pmObject.selectedSOWTask;
       const sowItemFilter = Object.assign({}, this.pmConstant.SOW_QUERY.SOW_BY_ID);
       sowItemFilter.filter = sowItemFilter.filter.replace(/{{Id}}/gi, currSelectedSOW.ID);
-      this.commonService.SetNewrelic('projectManagment', 'sow', 'GetSow');
+      this.commonService.SetNewrelic('projectManagment', 'sow', 'GetSow', "GET");
       const sowItemResult = await this.spServices.readItems(this.constants.listNames.SOW.name, sowItemFilter);
       if (sowItemResult && sowItemResult.length) {
         this.pmCommonService.setGlobalVariable(sowItemResult[0]);
@@ -311,12 +311,12 @@ export class SOWComponent implements OnInit, OnDestroy {
       || this.pmObject.userRights.isHaveSOWFullAccess
       || this.pmObject.userRights.isHaveSOWBudgetManager) {
       const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.ALL_SOW);
-      this.commonService.SetNewrelic('projectManagment', 'sow', 'GetSow');
+      this.commonService.SetNewrelic('projectManagment', 'sow', 'GetSow', "GET");
       arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
     } else {
       const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.USER_SPECIFIC_SOW);
       sowFilter.filter = sowFilter.filter.replace('{{UserID}}', this.globalObject.currentUser.userId.toString());
-      this.commonService.SetNewrelic('projectManagment', 'sow', 'GetSow');
+      this.commonService.SetNewrelic('projectManagment', 'sow', 'GetSow', "GET");
       arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
     }
     if (arrResults && arrResults.length) {
@@ -547,7 +547,7 @@ export class SOWComponent implements OnInit, OnDestroy {
     }
 
     this.ProjectArray = [];
-    this.commonService.SetNewrelic('projectManagment', 'sow', 'GetProjectInformation');
+    this.commonService.SetNewrelic('projectManagment', 'sow', 'GetProjectInformation', "GET");
     const sResults = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, projectInformationFilter);
     this.ProjectArray = sResults;
     //  const budgetArray = await this.getBudget(sResults);
@@ -765,7 +765,7 @@ export class SOWComponent implements OnInit, OnDestroy {
           libraryName = clientInfo[0].ListName;
         }
         this.constants.loader.isPSInnerLoaderHidden = true;
-        this.commonService.SetNewrelic('ProjectManagement', 'projectmanagement-sowAddBudget', 'uploadFile');
+        this.commonService.SetNewrelic('projectManagment', 'sow', 'sowAddBudget-uploadFile', "POST-BATCH");
         this.commonService.UploadFilesProgress(SelectedFile, libraryName + '/' + docFolder, true).then(async uploadedfile => {
 
           if (uploadedfile.length === SelectedFile.length) {
@@ -864,7 +864,7 @@ export class SOWComponent implements OnInit, OnDestroy {
             // });
 
 
-            this.commonService.SetNewrelic('projectManagment', 'projectManagement', 'GetSowSowBudBreakup');
+            this.commonService.SetNewrelic('projectManagment', 'sow', 'GetSowSowBudBreakup',  "POST");
             const res = await this.spServices.executeBatch(batchURL);
 
             // this.updateBudgetEmail(this.pmObject.addSOW);

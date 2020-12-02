@@ -153,10 +153,7 @@ export class ReviewerDetailViewComponent implements OnInit {
     getReviewerTasks.listName = this.globalConstant.listNames.Schedules.name;
     getReviewerTasks.type = 'GET';
     batchURL.push(getReviewerTasks);
-    // const reviewerComponent = JSON.parse(JSON.stringify(this.qmsConstant.reviewerComponent));
-    // reviewerComponent.reviewerPendingTaskURL.top = reviewerComponent.reviewerPendingTaskURL.top.replace('{{TopCount}}', '' + itemCount);
-    // reviewerComponent.reviewerPendingTaskURL.filter = reviewerComponent.reviewerPendingTaskURL.filter.replace('{{PrevMonthDate}}', lastMonthDateString);
-    this.commonService.SetNewrelic('QMS', 'ReviewDetails-View', 'getPendingRatedTasks');
+    this.commonService.SetNewrelic('QMS', 'ReviewDetails-View', 'getPendingRatedTasks', "GET-BATCH");
     const arrResult = await this.spService.executeBatch(batchURL);
     this.milestoneTasks = arrResult.length > 0 ? arrResult[0].retItems : [];
     const reviewerTasks = arrResult.length > 1 ? arrResult[1].retItems : [];
@@ -214,7 +211,7 @@ export class ReviewerDetailViewComponent implements OnInit {
       IsRated: true
     };
     // Update review task rated 'yes' if this is last previous task not rated
-    this.commonService.SetNewrelic('QMS', 'ReviewDetails-View', 'updateTask');
+    this.commonService.SetNewrelic('QMS', 'ReviewDetails-View', 'updateTask', "POST");
     this.spService.updateItem(this.globalConstant.listNames.Schedules.name, taskDetail.ID, taskUpdateDetail);
   }
 
@@ -241,7 +238,7 @@ export class ReviewerDetailViewComponent implements OnInit {
       }
     });
 
-    this.commonService.SetNewrelic('QMS', 'ReviewDetails-View', 'getProjectInfo');
+    this.commonService.SetNewrelic('QMS', 'ReviewDetails-View', 'getProjectInfo', "GET-BATCH");
     let arrResult = await this.spService.executeBatch(batchURL);
     arrResult = arrResult.length > 0 ? arrResult.map(p => p.retItems.length ? p.retItems[0] : {}) : [];
     return arrResult;
@@ -278,7 +275,7 @@ export class ReviewerDetailViewComponent implements OnInit {
         });
       }
     });
-    this.commonService.SetNewrelic('QMS', 'ReviewDetails-View', 'getPreviousTasks');
+    this.commonService.SetNewrelic('QMS', 'ReviewDetails-View', 'getPreviousTasks', "GET-BATCH");
     let result = await this.spService.executeBatch(batchURL);
     result = result.map(t => t.retItems);
     prevTasksDetail = [...prevTasksDetail, ...result];

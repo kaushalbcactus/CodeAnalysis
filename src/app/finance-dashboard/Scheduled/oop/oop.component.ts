@@ -333,8 +333,9 @@ export class OopComponent implements OnInit, OnDestroy {
     }
     this.commonService.SetNewrelic(
       "Finance-Dashboard",
-      "Schedule-oop",
-      "GetInvoiceLineItem"
+      "Schedule-OOP",
+      "GetInvoiceLineItem",
+      "GET"
     );
     const res = await this.spServices.readItems(
       this.constantService.listNames.InvoiceLineItems.name,
@@ -771,7 +772,8 @@ export class OopComponent implements OnInit, OnDestroy {
           this.commonService.SetNewrelic(
             "Finance-Dashboard",
             "Schedule-OOP",
-            "updateInvoiceLineItem"
+            "updateInvoiceLineItem",
+            "POST"
           );
           this.submitForm(batchUrl, "editInvoice");
         }
@@ -821,8 +823,9 @@ export class OopComponent implements OnInit, OnDestroy {
       );
       this.commonService.SetNewrelic(
         "Finance-Dashboard",
-        "Schedule-oop",
-        "UpdateInvoiceLineItem"
+        "Schedule-OOP",
+        "UpdateInvoiceLineItem",
+        "POST"
       );
       this.submitForm(batchUrl, type);
     }
@@ -859,8 +862,9 @@ export class OopComponent implements OnInit, OnDestroy {
     objMailContent.filter = objMailContent.filter.replace("{{MailType}}", type);
     this.commonService.SetNewrelic(
       "Finance-Dashboard",
-      "Schedule-oop",
-      "GetEmailTemplate"
+      "Schedule-OOP",
+      "GetEmailTemplate",
+      "GET"
     );
     const res = await this.spServices.readItems(
       this.constantService.listNames.MailContent.name,
@@ -923,8 +927,9 @@ export class OopComponent implements OnInit, OnDestroy {
     const tos = this.getTosList();
     this.commonService.SetNewrelic(
       "Finance-Dashboard",
-      "oop-CreateExpense",
-      "SendMail"
+      "Schedule-OOP",
+      "CreateExpense-SendMail",
+      "POST"
     );
     await this.spOperationsService.sendMail(
       tos.join(","),

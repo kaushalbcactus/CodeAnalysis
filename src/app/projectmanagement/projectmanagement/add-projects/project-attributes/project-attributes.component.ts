@@ -265,7 +265,7 @@ export class ProjectAttributesComponent implements OnInit {
       top: 4900
     };
     // tslint:disable-next-line:max-line-length
-    this.commonService.SetNewrelic('projectManagment', 'addproj-projectAttributes', 'GetClientSubdivision');
+    this.commonService.SetNewrelic('projectManagment', 'addproj-projectAttributes', 'GetClientSubdivision', 'GET');
     const result = await this.spServices.readItems(this.constant.listNames.ClientSubdivision.name, queryOptions);
     if (result && result.length) {
       result.forEach(element => {
@@ -651,7 +651,7 @@ export class ProjectAttributesComponent implements OnInit {
 
         const FolderName = await this.pmCommonService.getFolderName();
         SelectedFile.push(new Object({ name: this.selectedFile.name, file: this.selectedFile }));
-        this.commonService.SetNewrelic('projectManagment', 'addproj-projectAttributes', 'UpdateProjectInformationfileupload');
+        this.commonService.SetNewrelic('projectManagment', 'addproj-projectAttributes', 'UpdateProjectInformationfileupload', "POST-BATCH");
         this.pmObject.isMainLoaderHidden = true;
 
         this.commonService.UploadFilesProgress(SelectedFile, FolderName, true).then(uploadedfile => {
@@ -677,7 +677,7 @@ export class ProjectAttributesComponent implements OnInit {
 
   async  continueSaveProject() {
     const projectInfo = this.pmCommonService.getProjectData(this.pmObject.addProject, false);
-    this.commonService.SetNewrelic('projectManagment', 'addproj-projectAttributes', 'UpdateProjectInformation');
+    this.commonService.SetNewrelic('projectManagment', 'addproj-projectAttributes', 'UpdateProjectInformation', "POST");
     await this.spServices.updateItem(this.constant.listNames.ProjectInformation.name, this.projObj.ID, projectInfo,
       this.constant.listNames.ProjectInformation.type);
     await this.updateFinanceData();
@@ -811,7 +811,7 @@ export class ProjectAttributesComponent implements OnInit {
       moleculeItemCreate.type = 'POST';
       moleculeItemCreate.listName = this.constant.listNames.Molecules.name;
       batchURL.push(moleculeItemCreate);
-      this.commonService.SetNewrelic('projectManagment', 'addproj-projectAttributes', 'GetMolecules');
+      this.commonService.SetNewrelic('projectManagment', 'addproj-projectAttributes', 'addMoleculeToList', "POST");
       await this.spServices.executeBatch(batchURL);
 
 

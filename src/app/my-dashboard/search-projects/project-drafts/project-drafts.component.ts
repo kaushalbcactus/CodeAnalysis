@@ -123,7 +123,7 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
 
     const project = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.projectInfo);
     project.filter = project.filter.replace(/{{projectCode}}/gi, ProjectCode);
-    this.commonService.SetNewrelic('MyDashboard', 'SearchProjetc-ProjectDraft', 'GetProjectInfoByProjectCode');
+    this.commonService.SetNewrelic('MyDashboard', 'SearchProject', 'GetProjectInfoByProjectCode-ProjectDraft', 'GET');
     this.response = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, project);
     this.sharedObject.DashboardData.ProjectInformation = this.response.length > 0 ? this.response[0] : {};
 
@@ -143,7 +143,7 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
     const folderUrl = this.ProjectInformation.ProjectFolder;
     completeFolderRelativeUrl = folderUrl + documentsUrl;
   
-    this.commonService.SetNewrelic('MyDashboard', 'SearchProjetc-ProjectDraft', 'GetDocumentsByTab');
+    this.commonService.SetNewrelic('MyDashboard', 'SearchProject', 'GetDocumentsByTab-ProjectDraft', 'GET');
     this.response = await this.spServices.readFiles(completeFolderRelativeUrl);
 
     this.allDocuments = this.response.length > 0 ? this.response : [];
@@ -202,7 +202,7 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
       batchURL.push(userDetailObj);
     
     });
-    this.commonService.SetNewrelic('MyDashboard', 'SearchProjetc-ProjectDraft', 'GetUsersByIds');
+    this.commonService.SetNewrelic('MyDashboard', 'SearchProject', 'GetUsersByIds-ProjectDraft', 'GET-BATCH');
     this.response = await this.spServices.executeBatch(batchURL);
     this.response = this.response.length > 0 ? this.response.map(c => c.retItems) : [];
     return this.response;
@@ -216,7 +216,7 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
   downloadFile() {
 
     if (this.selectedDocuments.length > 0) {
-      this.commonService.SetNewrelic('MyDashboard', 'searchproject-project-drafts', 'createZip');
+      this.commonService.SetNewrelic('MyDashboard', 'SearchProject', 'createZip-ProjectDraft', 'GET-BATCH');
       this.spServices.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), this.selectedTab);
     } else {
 

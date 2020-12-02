@@ -408,40 +408,15 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         this.submitBtn.isClicked = false;
     }
     async getVendorFreelanceData() {
-        // let data = [
-        //     { query: this.spServices.getReadURL('' + this.constantService.listNames.VendorFreelancer.name +
-        //     '', this.fdConstantsService.fdComponent.addUpdateFreelancer) },
-        // ]
-        // const batchContents = new Array();
-        // const batchGuid = this.spServices.generateUUID();
-        // // let vfQuery = this.spServices.getReadURL('' + this.constantService.listNames.VendorFreelancer.name +
-        //    '', this.fdConstantsService.fdComponent.addUpdateFreelancer);
-
-        // let endPoints = data;
-        // let userBatchBody = '';
-        // for (let i = 0; i < endPoints.length; i++) {
-        //     const element = endPoints[i];
-        //     this.spServices.getBatchBodyGet(batchContents, batchGuid, element.query);
-        // }
-        // batchContents.push('--batch_' + batchGuid + '--');
-        // userBatchBody = batchContents.join('\r\n');
-        // let arrResults: any = [];
-        // const res = await this.spServices.getFDData(batchGuid, userBatchBody);
         const vendorObj = Object.assign({}, this.fdConstantsService.fdComponent.addUpdateFreelancer);
-        this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'GetVendorFreelancerData');
+        this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'GetVendorFreelancerData', 'GET');
         const res = await this.spServices.readItems(this.constantService.listNames.VendorFreelancer.name, vendorObj);
         const arrResults = res.length ? res : [];
-        // if (arrResults.length) {
-        // console.log(arrResults);
         this.freelancerVendersRes = arrResults;
-        // console.log('this.freelancerVendersRes ', this.freelancerVendersRes);
-        // }
     }
     gropDDData() {
         this.piCleData = [];
         this.datas = [];
-        // this.piCleData = this.projectInfoData.concat(this.cleData);
-        // this.piCleData = [...this.projectInfoData, ...this.cleData];
         for (let i = 0; i < this.projectInfoData.length; i++) {
             const element = this.projectInfoData[i];
             const projectType = element.ProjectType ? element.ProjectType.toLowerCase() : '';
@@ -480,7 +455,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             type: 'GET',
             listName: this.constantService.listNames.MailContent.name
         }];
-        this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'GetMailContent');
+        this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'GetMailContent', 'GET');
         const res = await this.spServices.executeBatch(obj);
         this.mailContentRes = res.length ? res[0].retItems : [];
         // console.log('Mail Content res ', this.mailContentRes);
@@ -515,8 +490,6 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         const isPCPresent = pItem.hasOwnProperty('ProjectCode');
         const found = this.checkUniqueValue(isPCPresent ? pItem.ProjectCode : pItem.Title);
         if (found) {
-            // console.log('this.totalLineItems ', this.totalLineItems);
-            // console.log('this.selectedPCArrays ', this.selectedPCArrays);
             this.commonService.showToastrMessage(this.constantService.MessageType.warn,'You have already selected this project/client please select another one.',false);
             this.totalLineItems[index] = {};
             this.selectedPCArrays[index].ProjectCode = '';
@@ -562,11 +535,9 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
 
 
     async getPFByTitle(ProjectCode: any, index: number) {
-        // const batchContents = new Array();
-        // const batchGuid = this.spServices.generateUUID();
         const pfObj = Object.assign({}, this.fdConstantsService.fdComponent.projectFinances);
         pfObj.filter = pfObj.filter.replace('{{ProjectCode}}', ProjectCode);
-        this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'GetPFByProjectCode');
+        this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'GetPFByProjectCode', 'GET');
         const res = await this.spServices.readItems(this.constantService.listNames.ProjectFinances.name, pfObj);
         const arrResults = res.length ? res : [];
         if (arrResults.length) {
@@ -850,7 +821,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
 
     async uploadFileData() {
         const date = new Date();
-        this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'FileUpolad');
+        this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'FileUpolad', 'POST-BATCH');
         this.commonService.UploadFilesProgress(this.SelectedFile, 'SpendingInfoFiles/' + this.FolderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM'), true).then(async uploadedfile => {
             if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
                 if (uploadedfile[0].hasOwnProperty('odata.error') || uploadedfile[0].hasError) {
@@ -887,7 +858,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
 
     async uploadCAFileData() {
         const date = new Date();
-        this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'UploadCAFiles');
+        this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'UploadCAFiles', 'POST-BATCH');
         this.commonService.UploadFilesProgress(this.caSelectedFile, 'SpendingInfoFiles/' + this.caFolderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM'), true).then(async uploadedfile => {
             if (this.caSelectedFile.length > 0 && this.caSelectedFile.length === uploadedfile.length) {
                 if (uploadedfile[0].hasOwnProperty('odata.error') || uploadedfile[0].hasError) {
@@ -1043,7 +1014,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
 
             const ccUser = this.getCCList();
             const tos = this.getTosList();
-            this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'SendMail');
+            this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'SendMail', 'POST');
             this.spServices.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
         }
         this.reFetchData();

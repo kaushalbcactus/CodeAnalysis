@@ -97,14 +97,15 @@ export class CapacityDashboardComponent implements OnInit {
       "" + this.constants.listNames.ResourceCategorization.name + "",
       resourcesQuery
     );
-    resourcesGet.type = "GET";
+    resourcesGet.type = this.constants.Method.GET;
     resourcesGet.listName = this.constants.listNames.ResourceCategorization.name;
     batchURL.push(resourcesGet);
 
     this.commonService.SetNewrelic(
       "CapacityDashboard",
-      "CapacityDashboard",
-      "GetResourceCategorization"
+      "capacity-dashboard",
+      "GetResourceCategorization",
+      "GET"
     );
 
     const arrResults = await this.spServices.executeBatch(batchURL);
@@ -476,8 +477,9 @@ export class CapacityDashboardComponent implements OnInit {
         console.log(blockResource);
         this.commonService.SetNewrelic(
           "CapacityDashboard",
-          "blockResource",
-          "CreateblockResource"
+          "capacity-dashboard",
+          "CreateblockResource",
+          "POST"
         );
         const result = await this.spServices.createItem(
           this.constants.listNames.Blocking.name,
@@ -567,7 +569,8 @@ export class CapacityDashboardComponent implements OnInit {
     this.commonService.SetNewrelic(
       "CapacityDashboard",
       "capacity-dashboard",
-      "deleteBlocking"
+      "deleteBlocking",
+      "POST"
     );
     const updateResult = await this.spServices.updateItem(
       this.constants.listNames.Blocking.name,
@@ -617,7 +620,8 @@ export class CapacityDashboardComponent implements OnInit {
         this.commonService.SetNewrelic(
           "CapacityDashboard",
           "capacity-dashboard",
-          "updateBlocking"
+          "updateBlocking",
+          "POST"
         );
         const updateResult = await this.spServices.updateItem(
           this.constants.listNames.Blocking.name,

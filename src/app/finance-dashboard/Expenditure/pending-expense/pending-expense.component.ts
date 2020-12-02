@@ -406,19 +406,8 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 .replace('{{UserID}}', this.globalService.currentUser.userId.toString());
             speInfoObj.orderby = speInfoObj.orderby.replace('{{Status}}', 'Created');
         }
-        this.commonService.SetNewrelic('Finance-Dashboard', 'pending-expense', 'GetSpendingInfo');
+        this.commonService.SetNewrelic('Finance-Dashboard', 'pending-expense', 'GetSpendingInfo', 'GET');
         const res = await this.spServices.readItems(this.constantService.listNames.SpendingInfo.name, speInfoObj);
-        // const sinfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.SpendingInfo.name + '', speInfoObj);
-        // let endPoints = [sinfoEndpoint];
-        // let userBatchBody;
-        // for (let i = 0; i < endPoints.length; i++) {
-        //     const element = endPoints[i];
-        //     this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
-        // }
-        // batchContents.push('--batch_' + batchGuid + '--');
-        // userBatchBody = batchContents.join('\r\n');
-
-        // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
         const arrResults = res.length ? res : [];
         // console.log('--oo ', arrResults);
         this.formatData(arrResults);
@@ -702,7 +691,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
 
     async uploadFileData(type: string) {
         const date = new Date();
-        this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure-PendingExpense', 'UploadFiles');
+        this.commonService.SetNewrelic('Finance-Dashboard', 'pending-expense', 'UploadFiles', 'POST-BATCH');
 
         this.commonService.UploadFilesProgress(this.SelectedFile, 'SpendingInfoFiles/' + this.FolderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM'), true).then(async uploadedfile => {
             if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
@@ -825,7 +814,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
     }
 
     async submitForm(batchUrl, type: string) {
-        this.commonService.SetNewrelic('Finance-Dashboard', 'pending-expense', 'submitform');
+        this.commonService.SetNewrelic('Finance-Dashboard', 'pending-expense', 'submitform', 'POST-BATCH');
         await this.spServices.executeBatch(batchUrl);
         if (type === 'Approve Expense') {
 
@@ -862,7 +851,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             type: 'GET',
             listName: this.constantService.listNames.MailContent.name
         }];
-        this.commonService.SetNewrelic('Finance-Dashboard', 'pending-expense', 'getApproveExpenseMailContent');
+        this.commonService.SetNewrelic('Finance-Dashboard', 'pending-expense', 'getApproveExpenseMailContent', 'GET');
         const res = await this.spServices.executeBatch(obj);
         this.mailContentRes = res;
         console.log('Approve Mail Content res ', this.mailContentRes);
@@ -1001,7 +990,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         const ccUser = this.getCCList(type, expense);
         // ccUser.push(this.currentUserInfoData.Email);
         const tos = this.getTosList(type, expense);
-        this.commonService.SetNewrelic('Finance-Dashboard', 'pending-expense', 'sendMail');
+        this.commonService.SetNewrelic('Finance-Dashboard', 'pending-expense', 'sendMail', 'POST');
         this.spServices.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
         this.isPSInnerLoaderHidden = false;
         this.reFetchData();

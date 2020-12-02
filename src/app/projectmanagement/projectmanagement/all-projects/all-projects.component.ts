@@ -302,7 +302,8 @@ export class AllProjectsComponent implements OnInit {
     this.commonService.SetNewrelic(
       "projectManagment",
       "allProj-allprojects",
-      "CheckEarlyTaskNotifications"
+      "CheckEarlyTaskNotifications",
+      "GET"
     );
     const sResult = await this.spServices.readItems(
       this.constants.listNames.EarlyTaskCompleteNotifications.name,
@@ -337,7 +338,8 @@ export class AllProjectsComponent implements OnInit {
         this.commonService.SetNewrelic(
           "projectManagment",
           "allProj-allprojects",
-          "updateEarlyTaskNotification"
+          "updateEarlyTaskNotification",
+          "POST"
         );
         const retResults = await this.spServices.updateItem(
           this.constants.listNames.EarlyTaskCompleteNotifications.name,
@@ -1160,7 +1162,8 @@ export class AllProjectsComponent implements OnInit {
     this.commonService.SetNewrelic(
       "projectManagment",
       "allProj-allprojects",
-      "GetProjFinancePBBSow"
+      "GetProjFinancePBBSow",
+      "GET-BATCH"
     );
     const result = await this.spServices.executeBatch(batchURL);
 
@@ -1236,7 +1239,8 @@ export class AllProjectsComponent implements OnInit {
         this.commonService.SetNewrelic(
           "projectManagment",
           "allProj-allprojects",
-          "GetProjFinancePBBSow"
+          "GetProjFinancePBBSow",
+          "GET-BATCH"
         );
         const res = await this.spServices.executeBatch(batchURL);
 
@@ -1704,18 +1708,7 @@ export class AllProjectsComponent implements OnInit {
           };
           this.loaderView.nativeElement.classList.remove("show");
           this.spannerView.nativeElement.classList.remove("show");
-          // Get InvoiceLine Items ##1;
-          // const inoviceGet = Object.assign({}, options);
-          // const invoiceFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.INVOICE_LINE_ITEMS_BY_PROJECTCODE);
-          // invoiceFilter.filter = invoiceFilter.filter.replace(/{{projectCode}}/gi,
-          //   selectedProjectObj.ProjectCode);
-          // inoviceGet.url = this.spServices.getReadURL(this.constants.listNames.InvoiceLineItems.name,
-          //   invoiceFilter);
-          // inoviceGet.type = 'GET';
-          // inoviceGet.listName = this.constants.listNames.InvoiceLineItems.name;
-          // batchURL.push(inoviceGet);
-          // this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetInvoiceLineItem');
-          // const sResult = await this.spServices.executeBatch(batchURL);
+
           const invoiceItems = result.find(
             (c) => c.listName === this.constants.listNames.InvoiceLineItems.name
           )
@@ -1840,7 +1833,8 @@ export class AllProjectsComponent implements OnInit {
       this.commonService.SetNewrelic(
         "projectManagment",
         "allProj-allprojects",
-        "UpdateProjInformation"
+        "UpdateProjInformation",
+        "POST"
       );
       const retResults = await this.spServices.updateItem(
         this.constants.listNames.ProjectInformation.name,
@@ -1882,8 +1876,9 @@ export class AllProjectsComponent implements OnInit {
   async getTosList() {
     this.commonService.SetNewrelic(
       "projectManagment",
-      "all-projects-getTosList",
-      "getGroupInfo"
+      "allProj-allprojects",
+      "getTosList",
+      "GET"
     );
     const approvers = await this.spServices.getGroupInfo("ExpenseApprovers");
     let arrayTo = [];
@@ -2247,7 +2242,8 @@ export class AllProjectsComponent implements OnInit {
         this.commonService.SetNewrelic(
           "projectManagment",
           "allProj-allprojects",
-          "GetProjFinancePBBProjFinanceBreakupSow"
+          "changeProjectStatusCancelled",
+          "POST-BATCH"
         );
         const batchResults = await this.spServices.executeBatch(batchURL);
         batchURL = [];
@@ -2257,7 +2253,8 @@ export class AllProjectsComponent implements OnInit {
       this.commonService.SetNewrelic(
         "projectManagment",
         "allProj-allprojects",
-        "GetProjFinancePBBProjFinanceBreakupSow"
+        "changeProjectStatusCancelled",
+        "POST-BATCH"
       );
       const updateResults = await this.spServices.executeBatch(batchURL);
       // console.log(updateResults);
@@ -2321,7 +2318,8 @@ export class AllProjectsComponent implements OnInit {
     this.commonService.SetNewrelic(
       "projectManagment",
       "allProj-allprojects",
-      "GetProjInfo"
+      "changeProjectStatusClose",
+      "POST"
     );
     const sResult = await this.spServices.executeBatch(batchURL);
 
@@ -2451,7 +2449,8 @@ export class AllProjectsComponent implements OnInit {
     this.commonService.SetNewrelic(
       "projectManagment",
       "allProj-allprojects",
-      "GetProjBBreakupProjectInfo"
+      "UpdateProjBBreakupProjectInfo",
+      "POST-BATCH"
     );
     const sResult = await this.spServices.executeBatch(batchURL);
     this.sendEmailBasedOnStatus(
@@ -2486,7 +2485,8 @@ export class AllProjectsComponent implements OnInit {
     this.commonService.SetNewrelic(
       "projectManagment",
       "allProj-allprojects",
-      "GetSchedulesByProjCode"
+      "GetSchedulesByProjCode",
+      "GET"
     );
     const sResult = await this.spServices.readItems(
       this.constants.listNames.Schedules.name,
@@ -2562,7 +2562,8 @@ export class AllProjectsComponent implements OnInit {
         this.commonService.SetNewrelic(
           "projectManagment",
           "allProj-allprojects",
-          "GetSchedules"
+          "changeMilestoneStatusFTE",
+          "POST-BATCH"
         );
         await this.spServices.executeBatch(batchURL);
       }
@@ -2636,7 +2637,8 @@ export class AllProjectsComponent implements OnInit {
         this.commonService.SetNewrelic(
           "projectManagment",
           "allProj-allprojects",
-          "GetSchedules"
+          "changeStatusStandardProject",
+          "POST-BATCH"
         );
         await this.spServices.executeBatch(batchURL);
         this.commonService.showToastrMessage(
@@ -2685,8 +2687,9 @@ export class AllProjectsComponent implements OnInit {
     );
     this.commonService.SetNewrelic(
       "projectManagment",
-      "allprojects",
-      "fetchMilestone"
+      "allProj-allprojects",
+      "fetchMilestone",
+      "GET"
     );
     const response = await this.spServices.readItems(
       this.constants.listNames.Schedules.name,
@@ -2800,7 +2803,8 @@ export class AllProjectsComponent implements OnInit {
     this.commonService.SetNewrelic(
       "projectManagment",
       "allProj-allprojects",
-      "GetProjInformationProjectFinance"
+      "UpdateProjInformationProjectFinance",
+      "POST-BATCH"
     );
     const sResult = await this.spServices.executeBatch(batchURL);
     if (
@@ -2853,7 +2857,8 @@ export class AllProjectsComponent implements OnInit {
     this.commonService.SetNewrelic(
       "projectManagment",
       "allProj-allprojects",
-      "GetSchedulesByProjCode"
+      "GetSchedulesByProjCode",
+      "GET"
     );
     const tasks = await this.spServices.readItems(
       this.constants.listNames.Schedules.name,
@@ -3002,7 +3007,8 @@ export class AllProjectsComponent implements OnInit {
       this.commonService.SetNewrelic(
         "projectManagment",
         "allProj-allprojects",
-        "setProjectOnHold"
+        "setProjectOnHold",
+        "POST-BATCH"
       );
       await this.spServices.executeBatch(batchURL);
       this.commonService.showToastrMessage(
@@ -3080,7 +3086,8 @@ export class AllProjectsComponent implements OnInit {
       this.commonService.SetNewrelic(
         "projectManagment",
         "allProj-allprojects",
-        "undoOnHold"
+        "undoOnHold",
+        "POST-BATCH"
       );
       await this.spServices.executeBatch(batchURL);
 
@@ -3153,7 +3160,8 @@ export class AllProjectsComponent implements OnInit {
             this.commonService.SetNewrelic(
               "projectManagment",
               "allProj-allprojects",
-              "revertClosed"
+              "revertClosed",
+              "POST"
             );
             await this.spServices.executeBatch(batchURL);
 
@@ -3230,7 +3238,8 @@ export class AllProjectsComponent implements OnInit {
             this.commonService.SetNewrelic(
               "projectManagment",
               "allProj-allprojects",
-              "revertPendingClosure"
+              "revertPendingClosure",
+              "POST"
             );
             await this.spServices.executeBatch(batchURL);
             await this.sendNotificationMail(
@@ -3376,7 +3385,8 @@ export class AllProjectsComponent implements OnInit {
     this.commonService.SetNewrelic(
       "projectManagment",
       "allProj-allprojects",
-      "GetSchedulesPOInvoiceLineItemSowListNameProjectFinancePBB"
+      "GET-SC-PO-ILI-SOW-PF-PBB",
+      "GET-BATCH"
     );
     const results = await this.spServices.executeBatch(batchURL);
     if (results && results.length) {
@@ -3464,7 +3474,8 @@ export class AllProjectsComponent implements OnInit {
       this.commonService.SetNewrelic(
         "projectManagment",
         "allProj-allprojects",
-        "GetSchedulesbyProjectCode"
+        "GetSchedulesbyProjectCode",
+        "GET"
       );
       sResult = await this.spServices.readItems(
         this.constants.listNames.Schedules.name,
@@ -3567,7 +3578,8 @@ export class AllProjectsComponent implements OnInit {
         this.commonService.SetNewrelic(
           "projectManagment",
           "allProj-allprojects",
-          "GetSchedules"
+          "UpdateSchedulesOnClosure",
+          "POST-BATCH"
         );
         const batchResults = await this.spServices.executeBatch(batchURL);
       }
@@ -3733,7 +3745,8 @@ export class AllProjectsComponent implements OnInit {
     this.commonService.SetNewrelic(
       "projectManagment",
       "allProj-allprojects",
-      "GetProjectFinance"
+      "GetProjectFinance",
+      "GET"
     );
     const sResult = await this.spServices.readItems(
       this.constants.listNames.ProjectFinances.name,
@@ -4094,18 +4107,7 @@ export class AllProjectsComponent implements OnInit {
     // this.newSelectedSOW = projObj.SOWCode;
     //if (this.pmObject.allSOWItems.length === 0) {
     let arrResults = [];
-    // if (this.pmObject.userRights.isMangers
-    //   || this.pmObject.userRights.isHaveSOWFullAccess
-    //   || this.pmObject.userRights.isHaveSOWBudgetManager) {
-    //   const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.ALL_SOW);
-    //   this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetSow');
-    //   arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
-    // } else {
-    //   const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.USER_SPECIFIC_SOW);
-    //   sowFilter.filter = sowFilter.filter.replace('{{UserID}}', this.globalObject.currentUser.userId.toString());
-    //   this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetSow');
-    //   arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
-    // }
+    
     const sowFilter = Object.assign(
       {},
       this.pmConstant.SOW_QUERY.ALL_SOW_Client
@@ -4117,7 +4119,8 @@ export class AllProjectsComponent implements OnInit {
     this.commonService.SetNewrelic(
       "projectManagment",
       "allProj-allprojects",
-      "GetSow"
+      "GetSow",
+      "GET"
     );
     arrResults = await this.spServices.readItems(
       this.constants.listNames.SOW.name,
@@ -4376,7 +4379,8 @@ export class AllProjectsComponent implements OnInit {
     this.commonService.SetNewrelic(
       "projectManagment",
       "allProj-allprojects",
-      "GetSpendingInfoAndVendorFreelancer"
+      "GetSpendingInfoAndVendorFreelancer",
+      "GET-BATCH"
     );
     const arrResults = await this.spServices.executeBatch(batchURL);
 
@@ -4565,7 +4569,8 @@ export class AllProjectsComponent implements OnInit {
         this.commonService.SetNewrelic(
           "projectManagment",
           "allProj-allprojects",
-          "GetSowInvoiceLineItemProjectInfo"
+          "UpdateSowInvoiceLineItemProjectInfo",
+          "POST-BATCH"
         );
         const sResult = await this.spServices.executeBatch(batchURL);
         this.pmObject.isMainLoaderHidden = true;
@@ -4689,7 +4694,8 @@ export class AllProjectsComponent implements OnInit {
     this.commonService.SetNewrelic(
       "projectManagment",
       "allProj-allprojects",
-      "GetProjectFinanceInvoiceLineItem"
+      "GetProjectFinanceInvoiceLineItem",
+      "GET-BATCH"
     );
     const sResult = await this.spServices.executeBatch(batchURL);
     const sowObj = allSOWArray.filter((x) => x.SOWCode === newSOWCode);
@@ -4793,7 +4799,8 @@ export class AllProjectsComponent implements OnInit {
     this.commonService.SetNewrelic(
       "projectManagment",
       "allProj-allprojects",
-      "GetProjectInformation"
+      "GetProjectInformation",
+      "GET"
     );
     const results = await this.spServices.readItems(
       this.constants.listNames.ProjectInformation.name,

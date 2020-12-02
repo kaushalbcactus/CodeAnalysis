@@ -85,7 +85,7 @@ export class MyDashboardComponent implements OnInit {
 
   async GetCurrentUser() {
 
-    this.commonService.SetNewrelic('MyDashboard', 'MyDashboard', 'GetCurrentUserDetails');
+    this.commonService.SetNewrelic('MyDashboard', 'MyDashboard', 'GetCurrentUserDetails', "GET");
     const currentUser = await this.spServices.getUserInfo(this.sharedObject.currentUser.userId);
     this.sharedObject.currentUser.userId = currentUser.Id;
     this.sharedObject.currentUser.email = currentUser.Email;
@@ -135,7 +135,7 @@ export class MyDashboardComponent implements OnInit {
 
   async executeCommonCalls() {
 
-    this.commonService.SetNewrelic('MyDashboard', 'MyDashboard', 'GetCLERCPIPC');
+    
     this.firstload = false;
     const batchUrl = [];
     // ****************************************************************************************************
@@ -177,7 +177,7 @@ export class MyDashboardComponent implements OnInit {
     piObj.listName = this.constants.listNames.ProjectInformation.name;
     piObj.type = 'GET';
     batchUrl.push(piObj);
-
+    this.commonService.SetNewrelic('MyDashboard', 'MyDashboard', 'GetCLERCPIPC', "GET-BATCH");
     this.response = await this.spServices.executeBatch(batchUrl);
     this.sharedObject.DashboardData.ClientLegalEntity = this.response.length > 0 ? this.response[0].retItems : [];
     this.sharedObject.DashboardData.ResourceCategorization = this.response.length > 0 ? this.response[1].retItems : [];

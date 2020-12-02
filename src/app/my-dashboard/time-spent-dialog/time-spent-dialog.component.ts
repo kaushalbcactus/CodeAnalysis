@@ -88,7 +88,7 @@ export class TimeSpentDialogComponent implements OnInit {
   async getDatesForTimespent(task) {
     this.task = task;
     let TimeSpent = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.TimeSpent);
-    this.commonService.SetNewrelic('MyDashboard', 'timeSpentDialog', 'GetSchedulesByTaskId');
+    this.commonService.SetNewrelic('MyDashboard', 'timeSpentDialog', 'GetSchedulesByTaskId', "GET");
     this.response = await this.spServices.readItem(this.constants.listNames.Schedules.name, task.ID, TimeSpent);
 
     this.currentTaskTimeSpent = this.response;
@@ -297,10 +297,6 @@ export class TimeSpentDialogComponent implements OnInit {
       ActiveCA: 'No'
     };
 
-
-    this.commonService.SetNewrelic('MyDashboard', 'timeSpentDialog', 'UpdateTaskTimepent');
-    // await this.spServices.updateItem(this.constants.listNames.Schedules.name, task.ID, jsonData, 'SP.Data.SchedulesListItem');
-
     const taskUpdate = Object.assign({}, options);
     taskUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, task.ID);
     taskUpdate.data = jsonData;
@@ -320,7 +316,7 @@ export class TimeSpentDialogComponent implements OnInit {
       projectInfoUpdate.listName = this.constants.listNames.ProjectInformation.name;
       batchURL.push(projectInfoUpdate);
     }
-
+    this.commonService.SetNewrelic('MyDashboard', 'timeSpentDialog', 'UpdateTaskTimepent', "POST-BATCH");
     await this.spServices.executeBatch(batchURL);
 
 

@@ -128,7 +128,8 @@ export class AddAccessService {
     this.commonService.SetNewrelic(
       "admin",
       "AddAccessService",
-      "GetDataOnAddAccess"
+      "GetDataOnAddAccess",
+      "GET-BATCH"
     );
     const arrResults = await this.spServices.executeBatch(batchURL);
 
@@ -344,7 +345,8 @@ export class AddAccessService {
     this.commonService.SetNewrelic(
       "admin",
       "AddAccessService",
-      "GetParametersQueryData"
+      "getPrametersDropdownData",
+      "GET-BATCH"
     );
     const arrResults = await this.spServices.executeBatch(batchURL);
 
@@ -436,9 +438,10 @@ export class AddAccessService {
 
       if (batchURL.length === 99) {
         this.commonService.SetNewrelic(
-          "UpdateRuleStore",
+          "admin",
           "AddAccessService",
-          "AddAccess"
+          "saveRules",
+          "POST-BATCH"
         );
         batchResults = await this.spServices.executeBatch(batchURL);
 
@@ -449,9 +452,10 @@ export class AddAccessService {
 
     if (batchURL.length) {
       this.commonService.SetNewrelic(
-        "UpdateRuleStore",
+        "admin",
         "AddAccessService",
-        "AddAccess"
+        "saveRules",
+        "POST-BATCH"
       );
 
       batchResults = await this.spServices.executeBatch(batchURL);
@@ -556,14 +560,14 @@ export class AddAccessService {
       true,
       true
     );
-
-    this.GetRulesByType(batchURL, type);
     this.commonService.SetNewrelic(
-      "getPrjectAndRules",
+      "admin",
       "AddAccessService",
-      "AddAccess"
+      "updateAllDetails",
+      "GET"
     );
-
+    this.GetRulesByType(batchURL, type);
+   
     batchResults = await this.spServices.executeBatch(batchURL);
     filterData = this.processfetchedRules(filterData, batchResults);
 
@@ -1062,9 +1066,10 @@ export class AddAccessService {
 
       if (batchURL.length === 99) {
         this.commonService.SetNewrelic(
-          "updateAllEditedItems",
+          "admin",
           "AddAccessService",
-          "AddAccess"
+          "updateAllEditedItems",
+          "POST-BATCH"
         );
         await this.spServices.executeBatch(batchURL);
         batchURL = [];
@@ -1073,9 +1078,10 @@ export class AddAccessService {
 
     if (batchURL.length) {
       this.commonService.SetNewrelic(
-        "updateAllEditedItems",
+        "admin",
         "AddAccessService",
-        "AddAccess"
+        "updateAllEditedItems",
+        "POST-BATCH"
       );
 
       await this.spServices.executeBatch(batchURL);
@@ -1113,9 +1119,10 @@ export class AddAccessService {
         );
       });
       this.commonService.SetNewrelic(
-        "GetProjectInformation",
+        "admin",
         "AddAccessService",
-        "AddAccess"
+        "fetchProjectForRule",
+        "GET-BATCH"
       );
 
       batchResults = await this.spServices.executeBatch(batchURL);
@@ -1241,9 +1248,10 @@ export class AddAccessService {
       });
 
       this.commonService.SetNewrelic(
-        "GetProjectFinance",
+        "admin",
         "AddAccessService",
-        "AddAccess"
+        "fetchProjectFinanceForRule",
+        "GET-BATCH"
       );
 
       batchResults = await this.spServices.executeBatch(batchURL);

@@ -1092,7 +1092,7 @@ export class MyDashboardConstantsService {
       getDocuments.type = 'GET';
       batchUrl.push(getDocuments);
 
-      this.common.SetNewrelic('MyDashboard', 'MyDashboardConstants-callQMSPopup', 'readItems');
+      this.common.SetNewrelic('MyDashboard', 'MyDashboardConstants', 'readItems-callQMSPopup');
       const arrResults = await this.spServices.executeBatch(batchUrl);
       const milestoneTasks = arrResults.length > 0 ? arrResults[0].retItems : [];
       const documents = arrResults.length > 1 ? arrResults[1].retItems : [];

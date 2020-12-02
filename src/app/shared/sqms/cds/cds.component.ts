@@ -112,7 +112,7 @@ export class CdsComponent implements OnInit, AfterViewChecked, DoCheck {
    */
   protected async getQCItems(filterObj?): Promise<[]> {
     const qcComponent = JSON.parse(JSON.stringify(this.qmsConstant.ClientFeedback.ClientDissatisfactionComponent));
-    this.commonService.SetNewrelic('QMS', 'CD', 'getGroupInfo');
+    this.commonService.SetNewrelic('QMS', 'SQMS-CD', 'getGroupInfo', "GET");
     const result = await this.spService.getGroupInfo(this.globalConstant.Groups.CDAdmin);
     this.global.cdAdmins = result.results ? result.results : [];
     this.global.currentUser.isCDAdmin = this.global.cdAdmins.find(t => t.Id === this.global.currentUser.userId) ? true : false;
@@ -151,7 +151,7 @@ export class CdsComponent implements OnInit, AfterViewChecked, DoCheck {
       }
       qcUrl = qcComponent.getQC;
     }
-    this.commonService.SetNewrelic('QMS', 'ClientFeedback-cd-getQCItems', 'readItems');
+    this.commonService.SetNewrelic('QMS', 'SQMS-CD', 'ClientFeedback-cd-getQCItems', "GET");
     const arrResult = await this.spService.readItems(this.globalConstant.listNames.QualityComplaints.name, qcUrl);
     const arrQCs = arrResult.length > 0 ? this.appendPropertyTOObject(arrResult) : [];
     return arrQCs;
@@ -162,7 +162,7 @@ export class CdsComponent implements OnInit, AfterViewChecked, DoCheck {
     const qcComponent = JSON.parse(JSON.stringify(this.qmsConstant.personalFeedbackComponent.External));
     qcComponent.getQCByProject.top = qcComponent.getQCByProject.top.replace('{{TopCount}}', '' + topCount);
     qcComponent.getQCByProject.filter = qcComponent.getQCByProject.filter.replace('{{projectCode}}', projectCode);
-    this.commonService.SetNewrelic('QMS', 'personalfeedback-getCDItemsByProject', 'readItems');
+    this.commonService.SetNewrelic('QMS', 'SQMS-CD', 'personalfeedback-getCDItemsByProject', "GET");
     let qcs = await this.spService.readItems(this.globalConstant.listNames.QualityComplaints.name,
       qcComponent.getQCByProject);
     qcs = qcs.length > 0 ? qcs.sort((a, b) => new Date(a.SentDate).getTime() - new Date(b.SentDate).getTime()) : [];
@@ -180,7 +180,7 @@ export class CdsComponent implements OnInit, AfterViewChecked, DoCheck {
     qcComponent.getQC.top = qcComponent.getQC.top.replace('{{TopCount}}', '' + topCount);
     qcComponent.getQC.filter = qcComponent.getQC.filter.replace('{{startDate}}', startDate)
       .replace('{{endDate}}', endDate);
-    this.commonService.SetNewrelic('QMS', 'personalfeedback-external-getQCItems', 'readItems');
+    this.commonService.SetNewrelic('QMS', 'SQMS-CD', 'personalfeedback-external-getQCItems', "GET");
     let qcs = await this.spService.readItems(this.globalConstant.listNames.QualityComplaints.name,
       qcComponent.getQC);
     qcs = qcs.length > 0 ? qcs.sort((a, b) => new Date(a.SentDate).getTime() - new Date(b.SentDate).getTime()) : [];
