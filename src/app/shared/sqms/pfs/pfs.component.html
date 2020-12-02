@@ -32,7 +32,8 @@
                     </ng-container>
 
                     <ng-container *ngIf="col.field == 'Title'">
-                        <a [href]="rowData['fullUrl']" download>{{rowData[col.field]}}</a>
+                        <a *ngIf="!rowData.SurveyResponse" [href]="rowData['fullUrl']" download>{{rowData[col.field]}}</a>
+                        <span *ngIf="rowData.SurveyResponse"> {{rowData[col.field]}} </span>
                     </ng-container>
                     <ng-container *ngIf="col.field == 'SentDate'">
                         {{rowData[col.field] | date: 'MMM d, yyyy'}}

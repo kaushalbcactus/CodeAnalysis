@@ -44,7 +44,9 @@
                         <span style="word-break: break-all;">  {{rowData[col.field]}} </span>
                     </ng-container>
                     <ng-container *ngIf="col.field == 'Title'">
-                        <a [href]="rowData['FullUrl']" download>{{rowData[col.field]}}</a>
+                        <a *ngIf="!rowData.SurveyResponse" [href]="rowData['FullUrl']" download>{{rowData[col.field]}}</a>
+                        <span *ngIf="rowData.SurveyResponse"> {{rowData[col.field]}} </span>
+
                     </ng-container>
                     <ng-container *ngIf="col.field == ''">
                         <div style="float: right">
