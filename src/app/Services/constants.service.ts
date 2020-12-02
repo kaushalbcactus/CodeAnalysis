@@ -376,7 +376,7 @@ export class ConstantsService {
     SurveyResponse: {
       name: "SurveyResponse",
       type: "SP.Data.SurveyResponseListItem",
-      contentTypeId: "",
+      contentTypeId: "0x01005BD96CAA8E88CC469F259E2270EE1072008AE0A6E96DBCC54198A5F5732A2C48CA",
     },
 
   };
