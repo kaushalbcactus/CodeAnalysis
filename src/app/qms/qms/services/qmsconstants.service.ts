@@ -319,7 +319,7 @@ export class QMSConstantsService {
 
     GET_SURVEYRESPONSE_BY_ID:{
       select: "ID,CommentsMT,Title,IsActiveCH",
-      filter: "ID eq {{ID}} and IsActiveCH eq 'Yes'",
+      filter: "ID eq {{ID}}",
       top: 4900,
     }
   };

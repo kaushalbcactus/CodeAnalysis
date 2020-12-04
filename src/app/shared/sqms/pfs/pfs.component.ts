@@ -264,7 +264,7 @@ export class PfsComponent implements OnInit, AfterViewChecked {
   }
 
   async showComments(data){
-
+debugger;
     const getSurveyResInfo = Object.assign({}, this.qmsConstant.ClientFeedback.GET_SURVEYRESPONSE_BY_ID);
     getSurveyResInfo.filter = getSurveyResInfo.filter.replace(/{{ID}}/gi,
       data.SurveyResponse);
