@@ -422,7 +422,7 @@ export class AdminConstantService {
     },
     GET_PROJECT_INFO: {
       select:
-        "ID,Title,SOWCode,BusinessVertical,WBJID,ProjectCode,SubDivision,ClientLegalEntity,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title," +
+        "ID,Title,SOWCode,BusinessVertical,WBJID,ProjectCode,DeliverableType,SubDivision,ClientLegalEntity,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title," +
         "DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title,AllOperationresources/ID,AllOperationresources/Title,Status,CSRule,DeliveryRule",
       expand:
         "CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title," +
