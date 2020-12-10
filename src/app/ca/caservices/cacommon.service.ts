@@ -357,8 +357,8 @@ export class CACommonService {
     scTempArrays.taskTempArray.push({ label: scObj.Task, value: scObj.Task });
     scTempArrays.deliveryTypeTempArray.push({ label: scObj.DeliveryType, value: scObj.DeliveryType });
     scTempArrays.allocatedTempArray.push({ label: scObj.EstimatedTime, value: scObj.EstimatedTime });
-    scTempArrays.startTimeTempArray.push({ label: scObj.StartDateText, value: scObj.StartDate });
-    scTempArrays.endTimeTempArray.push({ label: scObj.DueDateText, value: scObj.DueDate });
+    scTempArrays.startTimeTempArray.push({ label: scObj.StartDateText, value: this.datePipe.transform(scObj.StartTime,'d MMM, yyyy, hh:mm a') });
+    scTempArrays.endTimeTempArray.push({ label: scObj.DueDateText, value: this.datePipe.transform(scObj.EndTime,'d MMM, yyyy, hh:mm a')});
     completeTaskArray.push(scObj);
   }
   /**
