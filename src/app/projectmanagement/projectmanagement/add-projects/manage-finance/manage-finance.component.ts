@@ -1673,7 +1673,7 @@ export class ManageFinanceComponent implements OnInit {
 
           this.commonService.setBatchObject(
             batchUrl,
-            this.spServices.getItemURL(
+            this.spServices.getReadURL(
               this.constant.listNames.ProjectBudgetBreakup.name,
               null
             ),
@@ -2691,7 +2691,7 @@ export class ManageFinanceComponent implements OnInit {
           } else {
             this.commonService.setBatchObject(
               batchURL,
-              this.spServices.getItemURL(
+              this.spServices.getReadURL(
                 this.constant.listNames.ProjectFinanceBreakup.name,
                 null
               ),
@@ -2817,7 +2817,7 @@ export class ManageFinanceComponent implements OnInit {
               );
               this.commonService.setBatchObject(
                 batchURL,
-                this.spServices.getItemURL(
+                this.spServices.getReadURL(
                   this.constant.listNames.ProjectBudgetBreakup.name,
                   null
                 ),
@@ -2841,7 +2841,7 @@ export class ManageFinanceComponent implements OnInit {
                 +sowObj.ID
               ),
               sowUpdateData,
-              this.constant.Method.POST,
+              this.constant.Method.PATCH,
               this.constant.listNames.SOW.name
             );
           }
@@ -2876,7 +2876,7 @@ export class ManageFinanceComponent implements OnInit {
             } else {
               this.commonService.setBatchObject(
                 batchURL,
-                this.spServices.getItemURL(
+                this.spServices.getReadURL(
                   this.constant.listNames.InvoiceLineItems.name,
                   null
                 ),
@@ -3061,7 +3061,7 @@ export class ManageFinanceComponent implements OnInit {
 
                 this.commonService.setBatchObject(
                   batchURL,
-                  this.spServices.getItemURL(
+                  this.spServices.getReadURL(
                     this.constant.listNames.Schedules.name,
                     null
                   ),
@@ -3103,7 +3103,7 @@ export class ManageFinanceComponent implements OnInit {
                 );
                 this.commonService.setBatchObject(
                   batchURL,
-                  this.spServices.getItemURL(
+                  this.spServices.getReadURL(
                     this.constant.listNames.Schedules.name,
                     null
                   ),
@@ -3120,7 +3120,7 @@ export class ManageFinanceComponent implements OnInit {
                 );
                 this.commonService.setBatchObject(
                   batchURL,
-                  this.spServices.getItemURL(
+                  this.spServices.getReadURL(
                     this.constant.listNames.Schedules.name,
                     null
                   ),
@@ -3136,7 +3136,7 @@ export class ManageFinanceComponent implements OnInit {
                 );
                 this.commonService.setBatchObject(
                   batchURL,
-                  this.spServices.getItemURL(
+                  this.spServices.getReadURL(
                     this.constant.listNames.Schedules.name,
                     null
                   ),
@@ -3889,7 +3889,7 @@ export class ManageFinanceComponent implements OnInit {
                 } else {
                   this.commonService.setBatchObject(
                     batchURL,
-                    this.spServices.getItemURL(
+                    this.spServices.getReadURL(
                       this.constant.listNames.ProjectFinanceBreakup.name,
                       null
                     ),
