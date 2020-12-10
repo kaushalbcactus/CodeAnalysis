@@ -367,8 +367,8 @@ export class CACommonService {
    * @param arrTasks
    */
   public async getMilestoneSchedules(scheduleList, arrTasks) {
-    const batchUrl = [];
-
+    let batchUrl = [];
+    let finalArray = [];
     for (const task of arrTasks) {
       const taskObj = Object.assign({}, this.queryConfig);
       taskObj.url = this.spServices.getReadURL(this.globalConstantService.listNames.Schedules.name, this.caConstantService.scheduleMilestoneQueryOptions);
@@ -376,12 +376,21 @@ export class CACommonService {
       taskObj.listName = this.globalConstantService.listNames.Schedules.name;
       taskObj.type = 'GET';
       batchUrl.push(taskObj);
+      if(batchUrl.length === 99) {
+        this.commonService.SetNewrelic('CA', 'caCommon', 'GetMilestoneSchedules', 'GET-BATCH');
+        const arrResults = await this.spServices.executeBatch(batchUrl);
+        finalArray = [ ...finalArray, ...arrResults];
+        batchUrl = [];
+      }
     }
-    
-    this.commonService.SetNewrelic('CA', 'caCommon', 'GetMilestoneSchedules', 'GET-BATCH');
-    const arrResults = await this.spServices.executeBatch(batchUrl);
+    if(batchUrl.length) {
+      this.commonService.SetNewrelic('CA', 'caCommon', 'GetMilestoneSchedules', 'GET-BATCH');
+      const arrResults = await this.spServices.executeBatch(batchUrl);
+      finalArray = [ ...finalArray, ...arrResults];
+    }
+
     for (const count in arrTasks) {
-      arrTasks[count].MilestoneTasks = arrResults[count].retItems;
+      arrTasks[count].MilestoneTasks = finalArray[count].retItems;
     }
     return arrTasks;
   }
