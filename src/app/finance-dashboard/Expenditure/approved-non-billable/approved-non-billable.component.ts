@@ -395,10 +395,12 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
     openTableAtt(data: any, popUpData: any) {
         this.items = [];
         const groups = this.globalService.userInfo.Groups.results.map(x => x.LoginName);
-        if(data.Status == 'Approved' || data.Status == 'Approved Payment Pending') {
-            this.items = [
-                { label: 'Reject Expense', command: (e) => this.openMenuContent(e, data) }
-            ];
+        if (groups.indexOf('ExpenseApprovers') > -1 || groups.indexOf('Managers') > -1) {
+            if(data.Status == 'Approved' || data.Status == 'Approved Payment Pending') {
+                this.items = [
+                    { label: 'Reject Expense', command: (e) => this.openMenuContent(e, data) }
+                ];
+            }
         }
         this.items.push({ label: 'Details', command: (e: any) => this.openMenuContent(e, data) });
     }

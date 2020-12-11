@@ -636,10 +636,13 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
   openTableAtt(data, popUpData) {
     this.items = [];
     console.log("this.selectedAllRowsItem ", this.selectedAllRowsItem);
-    if(data.Status == 'Approved' || data.Status == 'Approved Payment Pending') {
+    const groups = this.globalService.userInfo.Groups.results.map(x => x.LoginName);
+    if (groups.indexOf('ExpenseApprovers') > -1 || groups.indexOf('Managers') > -1) {
+      if(data.Status == 'Approved' || data.Status == 'Approved Payment Pending') {
         this.items = [
             { label: 'Reject Expense', command: (e) => this.openMenuContent(e, data) }
         ];
+      }
     }
     this.items.push({
       label: "Details",
